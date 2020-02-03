@@ -1,0 +1,206 @@
+stages:
+  - quality
+  - frontend-testing
+  - integration-testing
+  - load-testing
+  - publish
+
+before_script:
+  - mkdir -p /go/src/gitlab.com/prixfixe/
+  - cp -rf /builds/prixfixe/prixfixe /go/src/gitlab.com/prixfixe/
+  - cd /go/src/gitlab.com/prixfixe/prixfixe
+  - apt-get update -y && apt-get install -y make git gcc musl-dev
+
+coverage:
+  stage: quality
+  image: golang:stretch
+  variables:
+    GOPATH: "/go"
+  script:
+    - apt-get update -y && apt-get install -y make git gcc musl-dev
+    - GO111MODULES=off go get github.com/axw/gocov/gocov
+    - make artifacts/coverage.out
+
+linting:
+  stage: quality
+  image: golangci/golangci-lint:latest # v1.18
+  variables:
+    GO111MODULE: "on"
+  script:
+    - golangci-lint run --config=.golangci.yml --deadline=15m
+
+build-frontend:
+  stage: quality
+  image: node:10
+  before_script:
+    - cd frontend/v1
+    - npm install
+  script:
+    - npm run build
+
+integration-tests-sqlite:
+  stage: integration-testing
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    GOPATH: "/go"
+  script:
+    - apk add --update --no-cache py-pip openssl python-dev libffi-dev
+      openssl-dev gcc libc-dev make
+    - pip install docker-compose
+    - make integration-tests-sqlite
+
+integration-tests-mariadb:
+  stage: integration-testing
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    GOPATH: "/go"
+  script:
+    - apk add --update --no-cache py-pip openssl python-dev libffi-dev
+      openssl-dev gcc libc-dev make
+    - pip install docker-compose
+    - make integration-tests-mariadb
+
+integration-tests-postgres:
+  stage: integration-testing
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    GOPATH: "/go"
+  script:
+    - apk add --update --no-cache py-pip openssl python-dev libffi-dev
+      openssl-dev gcc libc-dev make
+    - pip install docker-compose
+    - make integration-tests-postgres
+
+frontend-selenium-tests:
+  stage: integration-testing
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    GOPATH: "/go"
+  script:
+    - apk add --update --no-cache py-pip openssl python-dev libffi-dev
+      openssl-dev gcc libc-dev make
+    - pip install docker-compose
+    - make frontend-tests
+
+# load tests
+load-tests-postgres:
+  stage: load-testing
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    GOPATH: "/go"
+    LOADTEST_RUN_TIME: "2m30s"
+  script:
+    - apk add --update --no-cache py-pip openssl python-dev libffi-dev
+      openssl-dev gcc libc-dev make
+    - pip install docker-compose
+    - ls -Al ./deploy/prometheus/local
+    - pwd
+    - make load-tests-postgres
+  except:
+    - schedules
+
+load-tests-sqlite:
+  stage: load-testing
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    GOPATH: "/go"
+    LOADTEST_RUN_TIME: "2m30s"
+  script:
+    - apk add --update --no-cache py-pip openssl python-dev libffi-dev
+      openssl-dev gcc libc-dev make
+    - pip install docker-compose
+    - make load-tests-sqlite
+  except:
+    - schedules
+
+load-tests-mariadb:
+  stage: load-testing
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    GOPATH: "/go"
+    LOADTEST_RUN_TIME: "5m00s"
+  script:
+    - apk add --update --no-cache py-pip openssl python-dev libffi-dev
+      openssl-dev gcc libc-dev make
+    - pip install docker-compose
+    - make load-tests-mariadb
+  except:
+    - schedules
+
+# daily load tests
+
+daily-load-tests-postgres:on-schedule:
+  stage: load-testing
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    GOPATH: "/go"
+    LOADTEST_RUN_TIME: "10m"
+  script:
+    - apk add --update --no-cache py-pip openssl python-dev libffi-dev
+      openssl-dev gcc libc-dev make
+    - pip install docker-compose
+    - make load-tests-postgres
+  only:
+    - schedules
+
+daily-load-tests-mariadb:on-schedule:
+  stage: load-testing
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    GOPATH: "/go"
+    LOADTEST_RUN_TIME: "10m"
+  script:
+    - apk add --update --no-cache py-pip openssl python-dev libffi-dev
+      openssl-dev gcc libc-dev make
+    - pip install docker-compose
+    - make load-tests-mariadb
+  only:
+    - schedules
+
+daily-load-tests-sqlite:on-schedule:
+  stage: load-testing
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    GOPATH: "/go"
+    LOADTEST_RUN_TIME: "10m"
+  script:
+    - apk add --update --no-cache py-pip openssl python-dev libffi-dev
+      openssl-dev gcc libc-dev make
+    - pip install docker-compose
+    - make load-tests-sqlite
+  only:
+    - schedules
+
+# miscellaneous
+
+gitlabcr:
+  stage: publish
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
+    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:latest --file dockerfiles/server.Dockerfile .
+    - docker push registry.gitlab.com/prixfixe/prixfixe:latest
+  only:
+    - master
