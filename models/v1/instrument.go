@@ -16,7 +16,6 @@ type (
 		CreatedOn   uint64  `json:"created_on"`
 		UpdatedOn   *uint64 `json:"updated_on"`
 		ArchivedOn  *uint64 `json:"archived_on"`
-		BelongsTo   uint64  `json:"belongs_to"`
 	}
 
 	// InstrumentList represents a list of instruments
@@ -31,7 +30,6 @@ type (
 		Variant     string `json:"variant"`
 		Description string `json:"description"`
 		Icon        string `json:"icon"`
-		BelongsTo   uint64 `json:"-"`
 	}
 
 	// InstrumentUpdateInput represents what a user could set as input for updating instruments
@@ -40,7 +38,6 @@ type (
 		Variant     string `json:"variant"`
 		Description string `json:"description"`
 		Icon        string `json:"icon"`
-		BelongsTo   uint64 `json:"-"`
 	}
 
 	// InstrumentDataManager describes a structure capable of storing instruments permanently

@@ -41,7 +41,6 @@ var (
 		"created_on",
 		"updated_on",
 		"archived_on",
-		"belongs_to",
 	}
 )
 
@@ -72,7 +71,6 @@ func scanIngredient(scan database.Scanner) (*models.Ingredient, error) {
 		&x.CreatedOn,
 		&x.UpdatedOn,
 		&x.ArchivedOn,
-		&x.BelongsTo,
 	); err != nil {
 		return nil, err
 	}
@@ -111,7 +109,6 @@ func (p *Postgres) buildGetIngredientQuery(ingredientID, userID uint64) (query s
 		From(ingredientsTableName).
 		Where(squirrel.Eq{
 			"id":         ingredientID,
-			"belongs_to": userID,
 		}).ToSql()
 
 	p.logQueryBuildingError(err)
@@ -135,7 +132,6 @@ func (p *Postgres) buildGetIngredientCountQuery(filter *models.QueryFilter, user
 		From(ingredientsTableName).
 		Where(squirrel.Eq{
 			"archived_on": nil,
-			"belongs_to":  userID,
 		})
 
 	if filter != nil {
@@ -191,7 +187,6 @@ func (p *Postgres) buildGetIngredientsQuery(filter *models.QueryFilter, userID u
 		From(ingredientsTableName).
 		Where(squirrel.Eq{
 			"archived_on": nil,
-			"belongs_to":  userID,
 		})
 
 	if filter != nil {
@@ -276,7 +271,6 @@ func (p *Postgres) buildCreateIngredientQuery(input *models.Ingredient) (query s
 			"animal_derived",
 			"considered_staple",
 			"icon",
-			"belongs_to",
 		).
 		Values(
 			input.Name,
@@ -297,7 +291,6 @@ func (p *Postgres) buildCreateIngredientQuery(input *models.Ingredient) (query s
 			input.AnimalDerived,
 			input.ConsideredStaple,
 			input.Icon,
-			input.BelongsTo,
 		).
 		Suffix("RETURNING id, created_on").
 		ToSql()
@@ -328,7 +321,6 @@ func (p *Postgres) CreateIngredient(ctx context.Context, input *models.Ingredien
 		AnimalDerived:     input.AnimalDerived,
 		ConsideredStaple:  input.ConsideredStaple,
 		Icon:              input.Icon,
-		BelongsTo:         input.BelongsTo,
 	}
 
 	query, args := p.buildCreateIngredientQuery(x)
@@ -368,7 +360,6 @@ func (p *Postgres) buildUpdateIngredientQuery(input *models.Ingredient) (query s
 		Set("updated_on", squirrel.Expr(CurrentUnixTimeQuery)).
 		Where(squirrel.Eq{
 			"id":         input.ID,
-			"belongs_to": input.BelongsTo,
 		}).
 		Suffix("RETURNING updated_on").
 		ToSql()
@@ -394,7 +385,6 @@ func (p *Postgres) buildArchiveIngredientQuery(ingredientID, userID uint64) (que
 		Where(squirrel.Eq{
 			"id":          ingredientID,
 			"archived_on": nil,
-			"belongs_to":  userID,
 		}).
 		Suffix("RETURNING archived_on").
 		ToSql()

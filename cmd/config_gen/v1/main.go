@@ -42,8 +42,6 @@ var (
 		"config_files/coverage.toml":                   coverageConfig,
 		"config_files/development.toml":                developmentConfig,
 		"config_files/integration-tests-postgres.toml": buildIntegrationTestForDBImplementation("postgres", postgresDBConnDetails),
-		"config_files/integration-tests-sqlite.toml":   buildIntegrationTestForDBImplementation("sqlite", "/tmp/db"),
-		"config_files/integration-tests-mariadb.toml":  buildIntegrationTestForDBImplementation("mariadb", "dbuser:hunter2@tcp(database:3306)/todo"),
 		"config_files/production.toml":                 productionConfig,
 	}
 )

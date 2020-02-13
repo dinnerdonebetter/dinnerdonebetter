@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/GuiaBolso/darwin"
 )
@@ -43,7 +44,7 @@ var (
 				"updated_on" BIGINT DEFAULT NULL,
 				"archived_on" BIGINT DEFAULT NULL,
 				"belongs_to" BIGINT NOT NULL,
-				FOREIGN KEY(belongs_to) REFERENCES users(id)
+				FOREIGN KEY ("belongs_to") REFERENCES "users"("id")
 			);`,
 		},
 		{
@@ -78,11 +79,10 @@ var (
 				"icon" CHARACTER VARYING NOT NULL,
 				"created_on" BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 				"updated_on" BIGINT DEFAULT NULL,
-				"archived_on" BIGINT DEFAULT NULL,
-				"belongs_to" BIGINT NOT NULL,
-				FOREIGN KEY ("belongs_to") REFERENCES "users"("id")
+				"archived_on" BIGINT DEFAULT NULL
 			);`,
 		},
+		/// we good above this line
 		{
 			Version:     5,
 			Description: "create ingredients table",
@@ -109,8 +109,7 @@ var (
 				"icon" CHARACTER VARYING NOT NULL,
 				"created_on" BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 				"updated_on" BIGINT DEFAULT NULL,
-				"archived_on" BIGINT DEFAULT NULL,
-				FOREIGN KEY ("belongs_to") REFERENCES "users"("id")
+				"archived_on" BIGINT DEFAULT NULL
 			);`,
 		},
 		{
@@ -126,9 +125,7 @@ var (
 				"icon" CHARACTER VARYING NOT NULL,
 				"created_on" BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 				"updated_on" BIGINT DEFAULT NULL,
-				"archived_on" BIGINT DEFAULT NULL,
-				"belongs_to" BIGINT NOT NULL,
-				FOREIGN KEY ("belongs_to") REFERENCES "users"("id")
+				"archived_on" BIGINT DEFAULT NULL
 			);`,
 		},
 		{
@@ -142,9 +139,7 @@ var (
 				"notes" CHARACTER VARYING NOT NULL,
 				"created_on" BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 				"updated_on" BIGINT DEFAULT NULL,
-				"archived_on" BIGINT DEFAULT NULL,
-				"belongs_to" BIGINT NOT NULL,
-				FOREIGN KEY ("belongs_to") REFERENCES "users"("id")
+				"archived_on" BIGINT DEFAULT NULL
 			);`,
 		},
 		{
@@ -273,7 +268,7 @@ var (
 		},
 		{
 			Version:     15,
-			Description: "create iteration medias table",
+			Description: "create iteration media table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS iteration_medias (
 				"id" BIGSERIAL NOT NULL PRIMARY KEY,
@@ -325,8 +320,23 @@ var (
 // migrate a postgres database
 func buildMigrationFunc(db *sql.DB) func() {
 	return func() {
+		x := make(chan darwin.MigrationInfo, len(migrations))
+
+		go func() {
+			for {
+				select {
+				case y := <-x:
+					if y.Error != nil {
+						fmt.Printf("fucked migration %v: %s\n", y.Error, y.Migration.Script)
+					} else {
+						fmt.Printf("completed migration %q: %s\n", y.Migration.Checksum(), y.Migration.Script)
+					}
+				}
+			}
+		}()
+
 		driver := darwin.NewGenericDriver(db, darwin.PostgresDialect{})
-		if err := darwin.New(driver, migrations, nil).Migrate(); err != nil {
+		if err := darwin.New(driver, migrations, x).Migrate(); err != nil {
 			panic(err)
 		}
 	}

@@ -116,7 +116,7 @@ frontend-tests:
 ## DELETE ME
 
 .PHONY: gamut
-gamut: revendor rewire config_files quicktest lint integration-tests-postgres integration-tests-sqlite integration-tests-mariadb frontend-tests
+gamut: revendor rewire config_files quicktest lint integration-tests-postgres frontend-tests
 
 ## Integration tests
 
@@ -127,31 +127,11 @@ lintegration-tests: integration-tests lint
 integration-tests: integration-tests-postgres
 
 .PHONY: integration-tests
-integration-tests: integration-tests-postgres integration-tests-sqlite integration-tests-mariadb
+integration-tests: integration-tests-postgres
 
 .PHONY: integration-tests-postgres
 integration-tests-postgres:
 	docker-compose --file compose-files/integration-tests-postgres.json up \
-	--build \
-	--force-recreate \
-	--remove-orphans \
-	--renew-anon-volumes \
-	--always-recreate-deps \
-	--abort-on-container-exit
-
-.PHONY: integration-tests-sqlite
-integration-tests-sqlite:
-	docker-compose --file compose-files/integration-tests-sqlite.json up \
-	--build \
-	--force-recreate \
-	--remove-orphans \
-	--renew-anon-volumes \
-	--always-recreate-deps \
-	--abort-on-container-exit
-
-.PHONY: integration-tests-mariadb
-integration-tests-mariadb:
-	docker-compose --file compose-files/integration-tests-mariadb.json up \
 	--build \
 	--force-recreate \
 	--remove-orphans \
@@ -181,26 +161,6 @@ load-tests: load-tests-postgres
 .PHONY: load-tests-postgres
 load-tests-postgres:
 	docker-compose --file compose-files/load-tests-postgres.json up \
-	--build \
-	--force-recreate \
-	--remove-orphans \
-	--renew-anon-volumes \
-	--always-recreate-deps \
-	--abort-on-container-exit
-
-.PHONY: load-tests-sqlite
-load-tests-sqlite:
-	docker-compose --file compose-files/load-tests-sqlite.json up \
-	--build \
-	--force-recreate \
-	--remove-orphans \
-	--renew-anon-volumes \
-	--always-recreate-deps \
-	--abort-on-container-exit
-
-.PHONY: load-tests-mariadb
-load-tests-mariadb:
-	docker-compose --file compose-files/load-tests-mariadb.json up \
 	--build \
 	--force-recreate \
 	--remove-orphans \

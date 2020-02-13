@@ -27,7 +27,6 @@ var (
 		"created_on",
 		"updated_on",
 		"archived_on",
-		"belongs_to",
 	}
 )
 
@@ -44,7 +43,6 @@ func scanInstrument(scan database.Scanner) (*models.Instrument, error) {
 		&x.CreatedOn,
 		&x.UpdatedOn,
 		&x.ArchivedOn,
-		&x.BelongsTo,
 	); err != nil {
 		return nil, err
 	}
@@ -83,7 +81,6 @@ func (p *Postgres) buildGetInstrumentQuery(instrumentID, userID uint64) (query s
 		From(instrumentsTableName).
 		Where(squirrel.Eq{
 			"id":         instrumentID,
-			"belongs_to": userID,
 		}).ToSql()
 
 	p.logQueryBuildingError(err)
@@ -107,7 +104,6 @@ func (p *Postgres) buildGetInstrumentCountQuery(filter *models.QueryFilter, user
 		From(instrumentsTableName).
 		Where(squirrel.Eq{
 			"archived_on": nil,
-			"belongs_to":  userID,
 		})
 
 	if filter != nil {
@@ -163,7 +159,6 @@ func (p *Postgres) buildGetInstrumentsQuery(filter *models.QueryFilter, userID u
 		From(instrumentsTableName).
 		Where(squirrel.Eq{
 			"archived_on": nil,
-			"belongs_to":  userID,
 		})
 
 	if filter != nil {
@@ -234,14 +229,12 @@ func (p *Postgres) buildCreateInstrumentQuery(input *models.Instrument) (query s
 			"variant",
 			"description",
 			"icon",
-			"belongs_to",
 		).
 		Values(
 			input.Name,
 			input.Variant,
 			input.Description,
 			input.Icon,
-			input.BelongsTo,
 		).
 		Suffix("RETURNING id, created_on").
 		ToSql()
@@ -258,7 +251,6 @@ func (p *Postgres) CreateInstrument(ctx context.Context, input *models.Instrumen
 		Variant:     input.Variant,
 		Description: input.Description,
 		Icon:        input.Icon,
-		BelongsTo:   input.BelongsTo,
 	}
 
 	query, args := p.buildCreateInstrumentQuery(x)
@@ -284,7 +276,6 @@ func (p *Postgres) buildUpdateInstrumentQuery(input *models.Instrument) (query s
 		Set("updated_on", squirrel.Expr(CurrentUnixTimeQuery)).
 		Where(squirrel.Eq{
 			"id":         input.ID,
-			"belongs_to": input.BelongsTo,
 		}).
 		Suffix("RETURNING updated_on").
 		ToSql()
@@ -310,7 +301,6 @@ func (p *Postgres) buildArchiveInstrumentQuery(instrumentID, userID uint64) (que
 		Where(squirrel.Eq{
 			"id":          instrumentID,
 			"archived_on": nil,
-			"belongs_to":  userID,
 		}).
 		Suffix("RETURNING archived_on").
 		ToSql()

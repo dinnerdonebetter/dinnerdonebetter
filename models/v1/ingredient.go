@@ -30,7 +30,6 @@ type (
 		CreatedOn         uint64  `json:"created_on"`
 		UpdatedOn         *uint64 `json:"updated_on"`
 		ArchivedOn        *uint64 `json:"archived_on"`
-		BelongsTo         uint64  `json:"belongs_to"`
 	}
 
 	// IngredientList represents a list of ingredients
@@ -59,7 +58,6 @@ type (
 		AnimalDerived     bool   `json:"animal_derived"`
 		ConsideredStaple  bool   `json:"considered_staple"`
 		Icon              string `json:"icon"`
-		BelongsTo         uint64 `json:"-"`
 	}
 
 	// IngredientUpdateInput represents what a user could set as input for updating ingredients
@@ -82,7 +80,6 @@ type (
 		AnimalDerived     bool   `json:"animal_derived"`
 		ConsideredStaple  bool   `json:"considered_staple"`
 		Icon              string `json:"icon"`
-		BelongsTo         uint64 `json:"-"`
 	}
 
 	// IngredientDataManager describes a structure capable of storing ingredients permanently

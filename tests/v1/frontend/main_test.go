@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/tebeka/selenium"
 )
 
 func runTestOnAllSupportedBrowsers(T *testing.T, tp testProvider) {

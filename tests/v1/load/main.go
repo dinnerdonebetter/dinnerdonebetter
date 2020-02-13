@@ -9,6 +9,8 @@ import (
 	"time"
 
 	client "gitlab.com/prixfixe/prixfixe/client/v1/http"
+
+	"github.com/emicklei/hazana"
 )
 
 // ServiceAttacker implements hazana's Attacker interface

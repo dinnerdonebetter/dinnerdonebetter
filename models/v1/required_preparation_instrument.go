@@ -15,7 +15,6 @@ type (
 		CreatedOn     uint64  `json:"created_on"`
 		UpdatedOn     *uint64 `json:"updated_on"`
 		ArchivedOn    *uint64 `json:"archived_on"`
-		BelongsTo     uint64  `json:"belongs_to"`
 	}
 
 	// RequiredPreparationInstrumentList represents a list of required preparation instruments
@@ -29,7 +28,6 @@ type (
 		InstrumentID  uint64 `json:"instrument_id"`
 		PreparationID uint64 `json:"preparation_id"`
 		Notes         string `json:"notes"`
-		BelongsTo     uint64 `json:"-"`
 	}
 
 	// RequiredPreparationInstrumentUpdateInput represents what a user could set as input for updating required preparation instruments
@@ -37,7 +35,6 @@ type (
 		InstrumentID  uint64 `json:"instrument_id"`
 		PreparationID uint64 `json:"preparation_id"`
 		Notes         string `json:"notes"`
-		BelongsTo     uint64 `json:"-"`
 	}
 
 	// RequiredPreparationInstrumentDataManager describes a structure capable of storing required preparation instruments permanently

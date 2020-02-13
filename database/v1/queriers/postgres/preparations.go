@@ -28,7 +28,6 @@ var (
 		"created_on",
 		"updated_on",
 		"archived_on",
-		"belongs_to",
 	}
 )
 
@@ -46,7 +45,6 @@ func scanPreparation(scan database.Scanner) (*models.Preparation, error) {
 		&x.CreatedOn,
 		&x.UpdatedOn,
 		&x.ArchivedOn,
-		&x.BelongsTo,
 	); err != nil {
 		return nil, err
 	}
@@ -84,8 +82,7 @@ func (p *Postgres) buildGetPreparationQuery(preparationID, userID uint64) (query
 		Select(preparationsTableColumns...).
 		From(preparationsTableName).
 		Where(squirrel.Eq{
-			"id":         preparationID,
-			"belongs_to": userID,
+			"id": preparationID,
 		}).ToSql()
 
 	p.logQueryBuildingError(err)
@@ -109,7 +106,6 @@ func (p *Postgres) buildGetPreparationCountQuery(filter *models.QueryFilter, use
 		From(preparationsTableName).
 		Where(squirrel.Eq{
 			"archived_on": nil,
-			"belongs_to":  userID,
 		})
 
 	if filter != nil {
@@ -165,7 +161,6 @@ func (p *Postgres) buildGetPreparationsQuery(filter *models.QueryFilter, userID 
 		From(preparationsTableName).
 		Where(squirrel.Eq{
 			"archived_on": nil,
-			"belongs_to":  userID,
 		})
 
 	if filter != nil {
@@ -237,7 +232,6 @@ func (p *Postgres) buildCreatePreparationQuery(input *models.Preparation) (query
 			"description",
 			"allergy_warning",
 			"icon",
-			"belongs_to",
 		).
 		Values(
 			input.Name,
@@ -245,7 +239,6 @@ func (p *Postgres) buildCreatePreparationQuery(input *models.Preparation) (query
 			input.Description,
 			input.AllergyWarning,
 			input.Icon,
-			input.BelongsTo,
 		).
 		Suffix("RETURNING id, created_on").
 		ToSql()
@@ -263,7 +256,6 @@ func (p *Postgres) CreatePreparation(ctx context.Context, input *models.Preparat
 		Description:    input.Description,
 		AllergyWarning: input.AllergyWarning,
 		Icon:           input.Icon,
-		BelongsTo:      input.BelongsTo,
 	}
 
 	query, args := p.buildCreatePreparationQuery(x)
@@ -289,8 +281,7 @@ func (p *Postgres) buildUpdatePreparationQuery(input *models.Preparation) (query
 		Set("icon", input.Icon).
 		Set("updated_on", squirrel.Expr(CurrentUnixTimeQuery)).
 		Where(squirrel.Eq{
-			"id":         input.ID,
-			"belongs_to": input.BelongsTo,
+			"id": input.ID,
 		}).
 		Suffix("RETURNING updated_on").
 		ToSql()
@@ -316,7 +307,6 @@ func (p *Postgres) buildArchivePreparationQuery(preparationID, userID uint64) (q
 		Where(squirrel.Eq{
 			"id":          preparationID,
 			"archived_on": nil,
-			"belongs_to":  userID,
 		}).
 		Suffix("RETURNING archived_on").
 		ToSql()

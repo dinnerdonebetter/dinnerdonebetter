@@ -81,7 +81,6 @@ func (s *Service) CreateHandler() http.HandlerFunc {
 			return
 		}
 		logger = logger.WithValue("input", input)
-		input.BelongsTo = userID
 
 		// create required preparation instrument in database
 		x, err := s.requiredPreparationInstrumentDatabase.CreateRequiredPreparationInstrument(ctx, input)

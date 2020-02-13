@@ -26,7 +26,6 @@ var (
 		"created_on",
 		"updated_on",
 		"archived_on",
-		"belongs_to",
 	}
 )
 
@@ -42,7 +41,6 @@ func scanRequiredPreparationInstrument(scan database.Scanner) (*models.RequiredP
 		&x.CreatedOn,
 		&x.UpdatedOn,
 		&x.ArchivedOn,
-		&x.BelongsTo,
 	); err != nil {
 		return nil, err
 	}
@@ -81,7 +79,6 @@ func (p *Postgres) buildGetRequiredPreparationInstrumentQuery(requiredPreparatio
 		From(requiredPreparationInstrumentsTableName).
 		Where(squirrel.Eq{
 			"id":         requiredPreparationInstrumentID,
-			"belongs_to": userID,
 		}).ToSql()
 
 	p.logQueryBuildingError(err)
@@ -105,7 +102,6 @@ func (p *Postgres) buildGetRequiredPreparationInstrumentCountQuery(filter *model
 		From(requiredPreparationInstrumentsTableName).
 		Where(squirrel.Eq{
 			"archived_on": nil,
-			"belongs_to":  userID,
 		})
 
 	if filter != nil {
@@ -161,7 +157,6 @@ func (p *Postgres) buildGetRequiredPreparationInstrumentsQuery(filter *models.Qu
 		From(requiredPreparationInstrumentsTableName).
 		Where(squirrel.Eq{
 			"archived_on": nil,
-			"belongs_to":  userID,
 		})
 
 	if filter != nil {
@@ -231,13 +226,11 @@ func (p *Postgres) buildCreateRequiredPreparationInstrumentQuery(input *models.R
 			"instrument_id",
 			"preparation_id",
 			"notes",
-			"belongs_to",
 		).
 		Values(
 			input.InstrumentID,
 			input.PreparationID,
 			input.Notes,
-			input.BelongsTo,
 		).
 		Suffix("RETURNING id, created_on").
 		ToSql()
@@ -253,7 +246,6 @@ func (p *Postgres) CreateRequiredPreparationInstrument(ctx context.Context, inpu
 		InstrumentID:  input.InstrumentID,
 		PreparationID: input.PreparationID,
 		Notes:         input.Notes,
-		BelongsTo:     input.BelongsTo,
 	}
 
 	query, args := p.buildCreateRequiredPreparationInstrumentQuery(x)
@@ -278,7 +270,6 @@ func (p *Postgres) buildUpdateRequiredPreparationInstrumentQuery(input *models.R
 		Set("updated_on", squirrel.Expr(CurrentUnixTimeQuery)).
 		Where(squirrel.Eq{
 			"id":         input.ID,
-			"belongs_to": input.BelongsTo,
 		}).
 		Suffix("RETURNING updated_on").
 		ToSql()
@@ -304,7 +295,6 @@ func (p *Postgres) buildArchiveRequiredPreparationInstrumentQuery(requiredPrepar
 		Where(squirrel.Eq{
 			"id":          requiredPreparationInstrumentID,
 			"archived_on": nil,
-			"belongs_to":  userID,
 		}).
 		Suffix("RETURNING archived_on").
 		ToSql()
