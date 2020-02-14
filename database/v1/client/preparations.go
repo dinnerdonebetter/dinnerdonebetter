@@ -19,32 +19,29 @@ func attachPreparationIDToSpan(span *trace.Span, preparationID uint64) {
 }
 
 // GetPreparation fetches a preparation from the database
-func (c *Client) GetPreparation(ctx context.Context, preparationID, userID uint64) (*models.Preparation, error) {
+func (c *Client) GetPreparation(ctx context.Context, preparationID uint64) (*models.Preparation, error) {
 	ctx, span := trace.StartSpan(ctx, "GetPreparation")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
 	attachPreparationIDToSpan(span, preparationID)
 
 	c.logger.WithValues(map[string]interface{}{
 		"preparation_id": preparationID,
-		"user_id":        userID,
 	}).Debug("GetPreparation called")
 
-	return c.querier.GetPreparation(ctx, preparationID, userID)
+	return c.querier.GetPreparation(ctx, preparationID)
 }
 
 // GetPreparationCount fetches the count of preparations from the database that meet a particular filter
-func (c *Client) GetPreparationCount(ctx context.Context, filter *models.QueryFilter, userID uint64) (count uint64, err error) {
+func (c *Client) GetPreparationCount(ctx context.Context, filter *models.QueryFilter) (count uint64, err error) {
 	ctx, span := trace.StartSpan(ctx, "GetPreparationCount")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
 	attachFilterToSpan(span, filter)
 
-	c.logger.WithValue("user_id", userID).Debug("GetPreparationCount called")
+	c.logger.Debug("GetPreparationCount called")
 
-	return c.querier.GetPreparationCount(ctx, filter, userID)
+	return c.querier.GetPreparationCount(ctx, filter)
 }
 
 // GetAllPreparationsCount fetches the count of preparations from the database that meet a particular filter
@@ -58,29 +55,15 @@ func (c *Client) GetAllPreparationsCount(ctx context.Context) (count uint64, err
 }
 
 // GetPreparations fetches a list of preparations from the database that meet a particular filter
-func (c *Client) GetPreparations(ctx context.Context, filter *models.QueryFilter, userID uint64) (*models.PreparationList, error) {
+func (c *Client) GetPreparations(ctx context.Context, filter *models.QueryFilter) (*models.PreparationList, error) {
 	ctx, span := trace.StartSpan(ctx, "GetPreparations")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
 	attachFilterToSpan(span, filter)
 
-	c.logger.WithValue("user_id", userID).Debug("GetPreparations called")
+	c.logger.Debug("GetPreparations called")
 
-	preparationList, err := c.querier.GetPreparations(ctx, filter, userID)
-
-	return preparationList, err
-}
-
-// GetAllPreparationsForUser fetches a list of preparations from the database that meet a particular filter
-func (c *Client) GetAllPreparationsForUser(ctx context.Context, userID uint64) ([]models.Preparation, error) {
-	ctx, span := trace.StartSpan(ctx, "GetAllPreparationsForUser")
-	defer span.End()
-
-	attachUserIDToSpan(span, userID)
-	c.logger.WithValue("user_id", userID).Debug("GetAllPreparationsForUser called")
-
-	preparationList, err := c.querier.GetAllPreparationsForUser(ctx, userID)
+	preparationList, err := c.querier.GetPreparations(ctx, filter)
 
 	return preparationList, err
 }
@@ -108,17 +91,15 @@ func (c *Client) UpdatePreparation(ctx context.Context, input *models.Preparatio
 }
 
 // ArchivePreparation archives a preparation from the database by its ID
-func (c *Client) ArchivePreparation(ctx context.Context, preparationID, userID uint64) error {
+func (c *Client) ArchivePreparation(ctx context.Context, preparationID uint64) error {
 	ctx, span := trace.StartSpan(ctx, "ArchivePreparation")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
 	attachPreparationIDToSpan(span, preparationID)
 
 	c.logger.WithValues(map[string]interface{}{
 		"preparation_id": preparationID,
-		"user_id":        userID,
 	}).Debug("ArchivePreparation called")
 
-	return c.querier.ArchivePreparation(ctx, preparationID, userID)
+	return c.querier.ArchivePreparation(ctx, preparationID)
 }

@@ -16,14 +16,14 @@ type PreparationDataManager struct {
 }
 
 // GetPreparation is a mock function
-func (m *PreparationDataManager) GetPreparation(ctx context.Context, preparationID, userID uint64) (*models.Preparation, error) {
-	args := m.Called(ctx, preparationID, userID)
+func (m *PreparationDataManager) GetPreparation(ctx context.Context, preparationID uint64) (*models.Preparation, error) {
+	args := m.Called(ctx, preparationID)
 	return args.Get(0).(*models.Preparation), args.Error(1)
 }
 
 // GetPreparationCount is a mock function
-func (m *PreparationDataManager) GetPreparationCount(ctx context.Context, filter *models.QueryFilter, userID uint64) (uint64, error) {
-	args := m.Called(ctx, filter, userID)
+func (m *PreparationDataManager) GetPreparationCount(ctx context.Context, filter *models.QueryFilter) (uint64, error) {
+	args := m.Called(ctx, filter)
 	return args.Get(0).(uint64), args.Error(1)
 }
 
@@ -34,15 +34,9 @@ func (m *PreparationDataManager) GetAllPreparationsCount(ctx context.Context) (u
 }
 
 // GetPreparations is a mock function
-func (m *PreparationDataManager) GetPreparations(ctx context.Context, filter *models.QueryFilter, userID uint64) (*models.PreparationList, error) {
-	args := m.Called(ctx, filter, userID)
+func (m *PreparationDataManager) GetPreparations(ctx context.Context, filter *models.QueryFilter) (*models.PreparationList, error) {
+	args := m.Called(ctx, filter)
 	return args.Get(0).(*models.PreparationList), args.Error(1)
-}
-
-// GetAllPreparationsForUser is a mock function
-func (m *PreparationDataManager) GetAllPreparationsForUser(ctx context.Context, userID uint64) ([]models.Preparation, error) {
-	args := m.Called(ctx, userID)
-	return args.Get(0).([]models.Preparation), args.Error(1)
 }
 
 // CreatePreparation is a mock function
@@ -57,6 +51,6 @@ func (m *PreparationDataManager) UpdatePreparation(ctx context.Context, updated 
 }
 
 // ArchivePreparation is a mock function
-func (m *PreparationDataManager) ArchivePreparation(ctx context.Context, id, userID uint64) error {
-	return m.Called(ctx, id, userID).Error(0)
+func (m *PreparationDataManager) ArchivePreparation(ctx context.Context, id uint64) error {
+	return m.Called(ctx, id).Error(0)
 }

@@ -19,32 +19,29 @@ func attachRequiredPreparationInstrumentIDToSpan(span *trace.Span, requiredPrepa
 }
 
 // GetRequiredPreparationInstrument fetches a required preparation instrument from the database
-func (c *Client) GetRequiredPreparationInstrument(ctx context.Context, requiredPreparationInstrumentID, userID uint64) (*models.RequiredPreparationInstrument, error) {
+func (c *Client) GetRequiredPreparationInstrument(ctx context.Context, requiredPreparationInstrumentID uint64) (*models.RequiredPreparationInstrument, error) {
 	ctx, span := trace.StartSpan(ctx, "GetRequiredPreparationInstrument")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
 	attachRequiredPreparationInstrumentIDToSpan(span, requiredPreparationInstrumentID)
 
 	c.logger.WithValues(map[string]interface{}{
 		"required_preparation_instrument_id": requiredPreparationInstrumentID,
-		"user_id":                            userID,
 	}).Debug("GetRequiredPreparationInstrument called")
 
-	return c.querier.GetRequiredPreparationInstrument(ctx, requiredPreparationInstrumentID, userID)
+	return c.querier.GetRequiredPreparationInstrument(ctx, requiredPreparationInstrumentID)
 }
 
 // GetRequiredPreparationInstrumentCount fetches the count of required preparation instruments from the database that meet a particular filter
-func (c *Client) GetRequiredPreparationInstrumentCount(ctx context.Context, filter *models.QueryFilter, userID uint64) (count uint64, err error) {
+func (c *Client) GetRequiredPreparationInstrumentCount(ctx context.Context, filter *models.QueryFilter) (count uint64, err error) {
 	ctx, span := trace.StartSpan(ctx, "GetRequiredPreparationInstrumentCount")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
 	attachFilterToSpan(span, filter)
 
-	c.logger.WithValue("user_id", userID).Debug("GetRequiredPreparationInstrumentCount called")
+	c.logger.Debug("GetRequiredPreparationInstrumentCount called")
 
-	return c.querier.GetRequiredPreparationInstrumentCount(ctx, filter, userID)
+	return c.querier.GetRequiredPreparationInstrumentCount(ctx, filter)
 }
 
 // GetAllRequiredPreparationInstrumentsCount fetches the count of required preparation instruments from the database that meet a particular filter
@@ -58,29 +55,15 @@ func (c *Client) GetAllRequiredPreparationInstrumentsCount(ctx context.Context) 
 }
 
 // GetRequiredPreparationInstruments fetches a list of required preparation instruments from the database that meet a particular filter
-func (c *Client) GetRequiredPreparationInstruments(ctx context.Context, filter *models.QueryFilter, userID uint64) (*models.RequiredPreparationInstrumentList, error) {
+func (c *Client) GetRequiredPreparationInstruments(ctx context.Context, filter *models.QueryFilter) (*models.RequiredPreparationInstrumentList, error) {
 	ctx, span := trace.StartSpan(ctx, "GetRequiredPreparationInstruments")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
 	attachFilterToSpan(span, filter)
 
-	c.logger.WithValue("user_id", userID).Debug("GetRequiredPreparationInstruments called")
+	c.logger.Debug("GetRequiredPreparationInstruments called")
 
-	requiredPreparationInstrumentList, err := c.querier.GetRequiredPreparationInstruments(ctx, filter, userID)
-
-	return requiredPreparationInstrumentList, err
-}
-
-// GetAllRequiredPreparationInstrumentsForUser fetches a list of required preparation instruments from the database that meet a particular filter
-func (c *Client) GetAllRequiredPreparationInstrumentsForUser(ctx context.Context, userID uint64) ([]models.RequiredPreparationInstrument, error) {
-	ctx, span := trace.StartSpan(ctx, "GetAllRequiredPreparationInstrumentsForUser")
-	defer span.End()
-
-	attachUserIDToSpan(span, userID)
-	c.logger.WithValue("user_id", userID).Debug("GetAllRequiredPreparationInstrumentsForUser called")
-
-	requiredPreparationInstrumentList, err := c.querier.GetAllRequiredPreparationInstrumentsForUser(ctx, userID)
+	requiredPreparationInstrumentList, err := c.querier.GetRequiredPreparationInstruments(ctx, filter)
 
 	return requiredPreparationInstrumentList, err
 }
@@ -108,17 +91,15 @@ func (c *Client) UpdateRequiredPreparationInstrument(ctx context.Context, input 
 }
 
 // ArchiveRequiredPreparationInstrument archives a required preparation instrument from the database by its ID
-func (c *Client) ArchiveRequiredPreparationInstrument(ctx context.Context, requiredPreparationInstrumentID, userID uint64) error {
+func (c *Client) ArchiveRequiredPreparationInstrument(ctx context.Context, requiredPreparationInstrumentID uint64) error {
 	ctx, span := trace.StartSpan(ctx, "ArchiveRequiredPreparationInstrument")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
 	attachRequiredPreparationInstrumentIDToSpan(span, requiredPreparationInstrumentID)
 
 	c.logger.WithValues(map[string]interface{}{
 		"required_preparation_instrument_id": requiredPreparationInstrumentID,
-		"user_id":                            userID,
 	}).Debug("ArchiveRequiredPreparationInstrument called")
 
-	return c.querier.ArchiveRequiredPreparationInstrument(ctx, requiredPreparationInstrumentID, userID)
+	return c.querier.ArchiveRequiredPreparationInstrument(ctx, requiredPreparationInstrumentID)
 }

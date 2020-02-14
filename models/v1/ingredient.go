@@ -84,14 +84,13 @@ type (
 
 	// IngredientDataManager describes a structure capable of storing ingredients permanently
 	IngredientDataManager interface {
-		GetIngredient(ctx context.Context, ingredientID, userID uint64) (*Ingredient, error)
-		GetIngredientCount(ctx context.Context, filter *QueryFilter, userID uint64) (uint64, error)
+		GetIngredient(ctx context.Context, ingredientID uint64) (*Ingredient, error)
+		GetIngredientCount(ctx context.Context, filter *QueryFilter) (uint64, error)
 		GetAllIngredientsCount(ctx context.Context) (uint64, error)
-		GetIngredients(ctx context.Context, filter *QueryFilter, userID uint64) (*IngredientList, error)
-		GetAllIngredientsForUser(ctx context.Context, userID uint64) ([]Ingredient, error)
+		GetIngredients(ctx context.Context, filter *QueryFilter) (*IngredientList, error)
 		CreateIngredient(ctx context.Context, input *IngredientCreationInput) (*Ingredient, error)
 		UpdateIngredient(ctx context.Context, updated *Ingredient) error
-		ArchiveIngredient(ctx context.Context, id, userID uint64) error
+		ArchiveIngredient(ctx context.Context, id uint64) error
 	}
 
 	// IngredientDataServer describes a structure capable of serving traffic related to ingredients

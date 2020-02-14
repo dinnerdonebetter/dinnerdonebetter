@@ -17,7 +17,6 @@ type (
 		CreatedOn      uint64  `json:"created_on"`
 		UpdatedOn      *uint64 `json:"updated_on"`
 		ArchivedOn     *uint64 `json:"archived_on"`
-		BelongsTo      uint64  `json:"belongs_to"`
 	}
 
 	// PreparationList represents a list of preparations
@@ -33,7 +32,6 @@ type (
 		Description    string `json:"description"`
 		AllergyWarning string `json:"allergy_warning"`
 		Icon           string `json:"icon"`
-		BelongsTo      uint64 `json:"-"`
 	}
 
 	// PreparationUpdateInput represents what a user could set as input for updating preparations
@@ -43,19 +41,17 @@ type (
 		Description    string `json:"description"`
 		AllergyWarning string `json:"allergy_warning"`
 		Icon           string `json:"icon"`
-		BelongsTo      uint64 `json:"-"`
 	}
 
 	// PreparationDataManager describes a structure capable of storing preparations permanently
 	PreparationDataManager interface {
-		GetPreparation(ctx context.Context, preparationID, userID uint64) (*Preparation, error)
-		GetPreparationCount(ctx context.Context, filter *QueryFilter, userID uint64) (uint64, error)
+		GetPreparation(ctx context.Context, preparationID uint64) (*Preparation, error)
+		GetPreparationCount(ctx context.Context, filter *QueryFilter) (uint64, error)
 		GetAllPreparationsCount(ctx context.Context) (uint64, error)
-		GetPreparations(ctx context.Context, filter *QueryFilter, userID uint64) (*PreparationList, error)
-		GetAllPreparationsForUser(ctx context.Context, userID uint64) ([]Preparation, error)
+		GetPreparations(ctx context.Context, filter *QueryFilter) (*PreparationList, error)
 		CreatePreparation(ctx context.Context, input *PreparationCreationInput) (*Preparation, error)
 		UpdatePreparation(ctx context.Context, updated *Preparation) error
-		ArchivePreparation(ctx context.Context, id, userID uint64) error
+		ArchivePreparation(ctx context.Context, id uint64) error
 	}
 
 	// PreparationDataServer describes a structure capable of serving traffic related to preparations

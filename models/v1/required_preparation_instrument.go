@@ -39,14 +39,13 @@ type (
 
 	// RequiredPreparationInstrumentDataManager describes a structure capable of storing required preparation instruments permanently
 	RequiredPreparationInstrumentDataManager interface {
-		GetRequiredPreparationInstrument(ctx context.Context, requiredPreparationInstrumentID, userID uint64) (*RequiredPreparationInstrument, error)
-		GetRequiredPreparationInstrumentCount(ctx context.Context, filter *QueryFilter, userID uint64) (uint64, error)
+		GetRequiredPreparationInstrument(ctx context.Context, requiredPreparationInstrumentID uint64) (*RequiredPreparationInstrument, error)
+		GetRequiredPreparationInstrumentCount(ctx context.Context, filter *QueryFilter) (uint64, error)
 		GetAllRequiredPreparationInstrumentsCount(ctx context.Context) (uint64, error)
-		GetRequiredPreparationInstruments(ctx context.Context, filter *QueryFilter, userID uint64) (*RequiredPreparationInstrumentList, error)
-		GetAllRequiredPreparationInstrumentsForUser(ctx context.Context, userID uint64) ([]RequiredPreparationInstrument, error)
+		GetRequiredPreparationInstruments(ctx context.Context, filter *QueryFilter) (*RequiredPreparationInstrumentList, error)
 		CreateRequiredPreparationInstrument(ctx context.Context, input *RequiredPreparationInstrumentCreationInput) (*RequiredPreparationInstrument, error)
 		UpdateRequiredPreparationInstrument(ctx context.Context, updated *RequiredPreparationInstrument) error
-		ArchiveRequiredPreparationInstrument(ctx context.Context, id, userID uint64) error
+		ArchiveRequiredPreparationInstrument(ctx context.Context, id uint64) error
 	}
 
 	// RequiredPreparationInstrumentDataServer describes a structure capable of serving traffic related to required preparation instruments

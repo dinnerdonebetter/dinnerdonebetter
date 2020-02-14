@@ -19,32 +19,29 @@ func attachInstrumentIDToSpan(span *trace.Span, instrumentID uint64) {
 }
 
 // GetInstrument fetches an instrument from the database
-func (c *Client) GetInstrument(ctx context.Context, instrumentID, userID uint64) (*models.Instrument, error) {
+func (c *Client) GetInstrument(ctx context.Context, instrumentID uint64) (*models.Instrument, error) {
 	ctx, span := trace.StartSpan(ctx, "GetInstrument")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
 	attachInstrumentIDToSpan(span, instrumentID)
 
 	c.logger.WithValues(map[string]interface{}{
 		"instrument_id": instrumentID,
-		"user_id":       userID,
 	}).Debug("GetInstrument called")
 
-	return c.querier.GetInstrument(ctx, instrumentID, userID)
+	return c.querier.GetInstrument(ctx, instrumentID)
 }
 
 // GetInstrumentCount fetches the count of instruments from the database that meet a particular filter
-func (c *Client) GetInstrumentCount(ctx context.Context, filter *models.QueryFilter, userID uint64) (count uint64, err error) {
+func (c *Client) GetInstrumentCount(ctx context.Context, filter *models.QueryFilter) (count uint64, err error) {
 	ctx, span := trace.StartSpan(ctx, "GetInstrumentCount")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
 	attachFilterToSpan(span, filter)
 
-	c.logger.WithValue("user_id", userID).Debug("GetInstrumentCount called")
+	c.logger.Debug("GetInstrumentCount called")
 
-	return c.querier.GetInstrumentCount(ctx, filter, userID)
+	return c.querier.GetInstrumentCount(ctx, filter)
 }
 
 // GetAllInstrumentsCount fetches the count of instruments from the database that meet a particular filter
@@ -58,29 +55,15 @@ func (c *Client) GetAllInstrumentsCount(ctx context.Context) (count uint64, err 
 }
 
 // GetInstruments fetches a list of instruments from the database that meet a particular filter
-func (c *Client) GetInstruments(ctx context.Context, filter *models.QueryFilter, userID uint64) (*models.InstrumentList, error) {
+func (c *Client) GetInstruments(ctx context.Context, filter *models.QueryFilter) (*models.InstrumentList, error) {
 	ctx, span := trace.StartSpan(ctx, "GetInstruments")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
 	attachFilterToSpan(span, filter)
 
-	c.logger.WithValue("user_id", userID).Debug("GetInstruments called")
+	c.logger.Debug("GetInstruments called")
 
-	instrumentList, err := c.querier.GetInstruments(ctx, filter, userID)
-
-	return instrumentList, err
-}
-
-// GetAllInstrumentsForUser fetches a list of instruments from the database that meet a particular filter
-func (c *Client) GetAllInstrumentsForUser(ctx context.Context, userID uint64) ([]models.Instrument, error) {
-	ctx, span := trace.StartSpan(ctx, "GetAllInstrumentsForUser")
-	defer span.End()
-
-	attachUserIDToSpan(span, userID)
-	c.logger.WithValue("user_id", userID).Debug("GetAllInstrumentsForUser called")
-
-	instrumentList, err := c.querier.GetAllInstrumentsForUser(ctx, userID)
+	instrumentList, err := c.querier.GetInstruments(ctx, filter)
 
 	return instrumentList, err
 }
@@ -108,17 +91,15 @@ func (c *Client) UpdateInstrument(ctx context.Context, input *models.Instrument)
 }
 
 // ArchiveInstrument archives an instrument from the database by its ID
-func (c *Client) ArchiveInstrument(ctx context.Context, instrumentID, userID uint64) error {
+func (c *Client) ArchiveInstrument(ctx context.Context, instrumentID uint64) error {
 	ctx, span := trace.StartSpan(ctx, "ArchiveInstrument")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
 	attachInstrumentIDToSpan(span, instrumentID)
 
 	c.logger.WithValues(map[string]interface{}{
 		"instrument_id": instrumentID,
-		"user_id":       userID,
 	}).Debug("ArchiveInstrument called")
 
-	return c.querier.ArchiveInstrument(ctx, instrumentID, userID)
+	return c.querier.ArchiveInstrument(ctx, instrumentID)
 }

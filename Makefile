@@ -94,11 +94,6 @@ coverage-clean:
 .PHONY: coverage
 coverage: coverage-clean $(COVERAGE_OUT)
 
-.PHONY: test
-test:
-	docker build --tag coverage-$(SERVER_DOCKER_IMAGE_NAME):latest --file dockerfiles/coverage.Dockerfile .
-	docker run --rm --volume `pwd`:`pwd` --workdir=`pwd` coverage-$(SERVER_DOCKER_IMAGE_NAME):latest
-
 .PHONY: format
 format:
 	for file in `find $(PWD) -name '*.go'`; do $(GO_FORMAT) $$file; done

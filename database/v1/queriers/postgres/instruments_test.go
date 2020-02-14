@@ -23,7 +23,6 @@ func buildMockRowFromInstrument(x *models.Instrument) *sqlmock.Rows {
 		x.CreatedOn,
 		x.UpdatedOn,
 		x.ArchivedOn,
-		x.BelongsTo,
 	)
 
 	return exampleRows
@@ -38,7 +37,6 @@ func buildErroneousMockRowFromInstrument(x *models.Instrument) *sqlmock.Rows {
 		x.Icon,
 		x.CreatedOn,
 		x.UpdatedOn,
-		x.BelongsTo,
 		x.ID,
 	)
 
@@ -51,16 +49,14 @@ func TestPostgres_buildGetInstrumentQuery(T *testing.T) {
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
 		exampleInstrumentID := uint64(123)
-		exampleUserID := uint64(321)
 
-		expectedArgCount := 2
-		expectedQuery := "SELECT id, name, variant, description, icon, created_on, updated_on, archived_on, belongs_to FROM instruments WHERE belongs_to = $1 AND id = $2"
-		actualQuery, args := p.buildGetInstrumentQuery(exampleInstrumentID, exampleUserID)
+		expectedArgCount := 1
+		expectedQuery := "SELECT id, name, variant, description, icon, created_on, updated_on, archived_on FROM instruments WHERE id = $1"
+		actualQuery, args := p.buildGetInstrumentQuery(exampleInstrumentID)
 
 		assert.Equal(t, expectedQuery, actualQuery)
 		assert.Len(t, args, expectedArgCount)
-		assert.Equal(t, exampleUserID, args[0].(uint64))
-		assert.Equal(t, exampleInstrumentID, args[1].(uint64))
+		assert.Equal(t, exampleInstrumentID, args[0].(uint64))
 	})
 }
 
@@ -68,18 +64,17 @@ func TestPostgres_GetInstrument(T *testing.T) {
 	T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
-		expectedQuery := "SELECT id, name, variant, description, icon, created_on, updated_on, archived_on, belongs_to FROM instruments WHERE belongs_to = $1 AND id = $2"
+		expectedQuery := "SELECT id, name, variant, description, icon, created_on, updated_on, archived_on FROM instruments WHERE id = $1"
 		expected := &models.Instrument{
 			ID: 123,
 		}
-		expectedUserID := uint64(321)
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
-			WithArgs(expectedUserID, expected.ID).
+			WithArgs(expected.ID).
 			WillReturnRows(buildMockRowFromInstrument(expected))
 
-		actual, err := p.GetInstrument(context.Background(), expected.ID, expectedUserID)
+		actual, err := p.GetInstrument(context.Background(), expected.ID)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -87,18 +82,17 @@ func TestPostgres_GetInstrument(T *testing.T) {
 	})
 
 	T.Run("surfaces sql.ErrNoRows", func(t *testing.T) {
-		expectedQuery := "SELECT id, name, variant, description, icon, created_on, updated_on, archived_on, belongs_to FROM instruments WHERE belongs_to = $1 AND id = $2"
+		expectedQuery := "SELECT id, name, variant, description, icon, created_on, updated_on, archived_on FROM instruments WHERE id = $1"
 		expected := &models.Instrument{
 			ID: 123,
 		}
-		expectedUserID := uint64(321)
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
-			WithArgs(expectedUserID, expected.ID).
+			WithArgs(expected.ID).
 			WillReturnError(sql.ErrNoRows)
 
-		actual, err := p.GetInstrument(context.Background(), expected.ID, expectedUserID)
+		actual, err := p.GetInstrument(context.Background(), expected.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 		assert.Equal(t, sql.ErrNoRows, err)
@@ -112,15 +106,13 @@ func TestPostgres_buildGetInstrumentCountQuery(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
-		exampleUserID := uint64(321)
 
-		expectedArgCount := 1
-		expectedQuery := "SELECT COUNT(id) FROM instruments WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
+		expectedArgCount := 0
+		expectedQuery := "SELECT COUNT(id) FROM instruments WHERE archived_on IS NULL LIMIT 20"
 
-		actualQuery, args := p.buildGetInstrumentCountQuery(models.DefaultQueryFilter(), exampleUserID)
+		actualQuery, args := p.buildGetInstrumentCountQuery(models.DefaultQueryFilter())
 		assert.Equal(t, expectedQuery, actualQuery)
 		assert.Len(t, args, expectedArgCount)
-		assert.Equal(t, exampleUserID, args[0].(uint64))
 	})
 }
 
@@ -128,16 +120,14 @@ func TestPostgres_GetInstrumentCount(T *testing.T) {
 	T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
-		expectedUserID := uint64(321)
-		expectedQuery := "SELECT COUNT(id) FROM instruments WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
+		expectedQuery := "SELECT COUNT(id) FROM instruments WHERE archived_on IS NULL LIMIT 20"
 		expectedCount := uint64(666)
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
-			WithArgs(expectedUserID).
 			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
 
-		actualCount, err := p.GetInstrumentCount(context.Background(), models.DefaultQueryFilter(), expectedUserID)
+		actualCount, err := p.GetInstrumentCount(context.Background(), models.DefaultQueryFilter())
 		assert.NoError(t, err)
 		assert.Equal(t, expectedCount, actualCount)
 
@@ -181,15 +171,13 @@ func TestPostgres_buildGetInstrumentsQuery(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
-		exampleUserID := uint64(321)
 
-		expectedArgCount := 1
-		expectedQuery := "SELECT id, name, variant, description, icon, created_on, updated_on, archived_on, belongs_to FROM instruments WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
-		actualQuery, args := p.buildGetInstrumentsQuery(models.DefaultQueryFilter(), exampleUserID)
+		expectedArgCount := 0
+		expectedQuery := "SELECT id, name, variant, description, icon, created_on, updated_on, archived_on FROM instruments WHERE archived_on IS NULL LIMIT 20"
+		actualQuery, args := p.buildGetInstrumentsQuery(models.DefaultQueryFilter())
 
 		assert.Equal(t, expectedQuery, actualQuery)
 		assert.Len(t, args, expectedArgCount)
-		assert.Equal(t, exampleUserID, args[0].(uint64))
 	})
 }
 
@@ -197,8 +185,7 @@ func TestPostgres_GetInstruments(T *testing.T) {
 	T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		expectedListQuery := "SELECT id, name, variant, description, icon, created_on, updated_on, archived_on, belongs_to FROM instruments WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
+		expectedListQuery := "SELECT id, name, variant, description, icon, created_on, updated_on, archived_on FROM instruments WHERE archived_on IS NULL LIMIT 20"
 		expectedCountQuery := "SELECT COUNT(id) FROM instruments WHERE archived_on IS NULL"
 		expectedInstrument := &models.Instrument{
 			ID: 321,
@@ -217,12 +204,11 @@ func TestPostgres_GetInstruments(T *testing.T) {
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
 			WillReturnRows(buildMockRowFromInstrument(expectedInstrument))
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
 			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
 
-		actual, err := p.GetInstruments(context.Background(), models.DefaultQueryFilter(), expectedUserID)
+		actual, err := p.GetInstruments(context.Background(), models.DefaultQueryFilter())
 
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
@@ -231,15 +217,13 @@ func TestPostgres_GetInstruments(T *testing.T) {
 	})
 
 	T.Run("surfaces sql.ErrNoRows", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		expectedListQuery := "SELECT id, name, variant, description, icon, created_on, updated_on, archived_on, belongs_to FROM instruments WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
+		expectedListQuery := "SELECT id, name, variant, description, icon, created_on, updated_on, archived_on FROM instruments WHERE archived_on IS NULL LIMIT 20"
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
 			WillReturnError(sql.ErrNoRows)
 
-		actual, err := p.GetInstruments(context.Background(), models.DefaultQueryFilter(), expectedUserID)
+		actual, err := p.GetInstruments(context.Background(), models.DefaultQueryFilter())
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 		assert.Equal(t, sql.ErrNoRows, err)
@@ -248,15 +232,13 @@ func TestPostgres_GetInstruments(T *testing.T) {
 	})
 
 	T.Run("with error executing read query", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		expectedListQuery := "SELECT id, name, variant, description, icon, created_on, updated_on, archived_on, belongs_to FROM instruments WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
+		expectedListQuery := "SELECT id, name, variant, description, icon, created_on, updated_on, archived_on FROM instruments WHERE archived_on IS NULL LIMIT 20"
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := p.GetInstruments(context.Background(), models.DefaultQueryFilter(), expectedUserID)
+		actual, err := p.GetInstruments(context.Background(), models.DefaultQueryFilter())
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -264,18 +246,16 @@ func TestPostgres_GetInstruments(T *testing.T) {
 	})
 
 	T.Run("with error scanning instrument", func(t *testing.T) {
-		expectedUserID := uint64(123)
 		expected := &models.Instrument{
 			ID: 321,
 		}
-		expectedListQuery := "SELECT id, name, variant, description, icon, created_on, updated_on, archived_on, belongs_to FROM instruments WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
+		expectedListQuery := "SELECT id, name, variant, description, icon, created_on, updated_on, archived_on FROM instruments WHERE archived_on IS NULL LIMIT 20"
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
 			WillReturnRows(buildErroneousMockRowFromInstrument(expected))
 
-		actual, err := p.GetInstruments(context.Background(), models.DefaultQueryFilter(), expectedUserID)
+		actual, err := p.GetInstruments(context.Background(), models.DefaultQueryFilter())
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -283,98 +263,19 @@ func TestPostgres_GetInstruments(T *testing.T) {
 	})
 
 	T.Run("with error querying for count", func(t *testing.T) {
-		expectedUserID := uint64(123)
 		expected := &models.Instrument{
 			ID: 321,
 		}
-		expectedListQuery := "SELECT id, name, variant, description, icon, created_on, updated_on, archived_on, belongs_to FROM instruments WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
+		expectedListQuery := "SELECT id, name, variant, description, icon, created_on, updated_on, archived_on FROM instruments WHERE archived_on IS NULL LIMIT 20"
 		expectedCountQuery := "SELECT COUNT(id) FROM instruments WHERE archived_on IS NULL"
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
 			WillReturnRows(buildMockRowFromInstrument(expected))
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := p.GetInstruments(context.Background(), models.DefaultQueryFilter(), expectedUserID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
-	})
-}
-
-func TestPostgres_GetAllInstrumentsForUser(T *testing.T) {
-	T.Parallel()
-
-	T.Run("happy path", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		expectedInstrument := &models.Instrument{
-			ID: 321,
-		}
-		expectedListQuery := "SELECT id, name, variant, description, icon, created_on, updated_on, archived_on, belongs_to FROM instruments WHERE archived_on IS NULL AND belongs_to = $1"
-
-		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
-			WillReturnRows(buildMockRowFromInstrument(expectedInstrument))
-
-		expected := []models.Instrument{*expectedInstrument}
-		actual, err := p.GetAllInstrumentsForUser(context.Background(), expectedUserID)
-
-		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
-
-		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
-	})
-
-	T.Run("surfaces sql.ErrNoRows", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		expectedListQuery := "SELECT id, name, variant, description, icon, created_on, updated_on, archived_on, belongs_to FROM instruments WHERE archived_on IS NULL AND belongs_to = $1"
-
-		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
-			WillReturnError(sql.ErrNoRows)
-
-		actual, err := p.GetAllInstrumentsForUser(context.Background(), expectedUserID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-		assert.Equal(t, sql.ErrNoRows, err)
-
-		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
-	})
-
-	T.Run("with error querying database", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		expectedListQuery := "SELECT id, name, variant, description, icon, created_on, updated_on, archived_on, belongs_to FROM instruments WHERE archived_on IS NULL AND belongs_to = $1"
-
-		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := p.GetAllInstrumentsForUser(context.Background(), expectedUserID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
-	})
-
-	T.Run("with unscannable response", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		exampleInstrument := &models.Instrument{
-			ID: 321,
-		}
-		expectedListQuery := "SELECT id, name, variant, description, icon, created_on, updated_on, archived_on, belongs_to FROM instruments WHERE archived_on IS NULL AND belongs_to = $1"
-
-		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
-			WillReturnRows(buildErroneousMockRowFromInstrument(exampleInstrument))
-
-		actual, err := p.GetAllInstrumentsForUser(context.Background(), expectedUserID)
+		actual, err := p.GetInstruments(context.Background(), models.DefaultQueryFilter())
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -388,11 +289,10 @@ func TestPostgres_buildCreateInstrumentQuery(T *testing.T) {
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
 		expected := &models.Instrument{
-			ID:        321,
-			BelongsTo: 123,
+			ID: 321,
 		}
-		expectedArgCount := 5
-		expectedQuery := "INSERT INTO instruments (name,variant,description,icon,belongs_to) VALUES ($1,$2,$3,$4,$5) RETURNING id, created_on"
+		expectedArgCount := 4
+		expectedQuery := "INSERT INTO instruments (name,variant,description,icon) VALUES ($1,$2,$3,$4) RETURNING id, created_on"
 		actualQuery, args := p.buildCreateInstrumentQuery(expected)
 
 		assert.Equal(t, expectedQuery, actualQuery)
@@ -401,7 +301,6 @@ func TestPostgres_buildCreateInstrumentQuery(T *testing.T) {
 		assert.Equal(t, expected.Variant, args[1].(string))
 		assert.Equal(t, expected.Description, args[2].(string))
 		assert.Equal(t, expected.Icon, args[3].(string))
-		assert.Equal(t, expected.BelongsTo, args[4].(uint64))
 	})
 }
 
@@ -409,10 +308,8 @@ func TestPostgres_CreateInstrument(T *testing.T) {
 	T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
-		expectedUserID := uint64(321)
 		expected := &models.Instrument{
 			ID:        123,
-			BelongsTo: expectedUserID,
 			CreatedOn: uint64(time.Now().Unix()),
 		}
 		expectedInput := &models.InstrumentCreationInput{
@@ -420,10 +317,9 @@ func TestPostgres_CreateInstrument(T *testing.T) {
 			Variant:     expected.Variant,
 			Description: expected.Description,
 			Icon:        expected.Icon,
-			BelongsTo:   expected.BelongsTo,
 		}
 		exampleRows := sqlmock.NewRows([]string{"id", "created_on"}).AddRow(expected.ID, uint64(time.Now().Unix()))
-		expectedQuery := "INSERT INTO instruments (name,variant,description,icon,belongs_to) VALUES ($1,$2,$3,$4,$5) RETURNING id, created_on"
+		expectedQuery := "INSERT INTO instruments (name,variant,description,icon) VALUES ($1,$2,$3,$4) RETURNING id, created_on"
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
@@ -432,7 +328,6 @@ func TestPostgres_CreateInstrument(T *testing.T) {
 				expected.Variant,
 				expected.Description,
 				expected.Icon,
-				expected.BelongsTo,
 			).WillReturnRows(exampleRows)
 
 		actual, err := p.CreateInstrument(context.Background(), expectedInput)
@@ -443,10 +338,8 @@ func TestPostgres_CreateInstrument(T *testing.T) {
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
-		expectedUserID := uint64(321)
 		expected := &models.Instrument{
 			ID:        123,
-			BelongsTo: expectedUserID,
 			CreatedOn: uint64(time.Now().Unix()),
 		}
 		expectedInput := &models.InstrumentCreationInput{
@@ -454,9 +347,8 @@ func TestPostgres_CreateInstrument(T *testing.T) {
 			Variant:     expected.Variant,
 			Description: expected.Description,
 			Icon:        expected.Icon,
-			BelongsTo:   expected.BelongsTo,
 		}
-		expectedQuery := "INSERT INTO instruments (name,variant,description,icon,belongs_to) VALUES ($1,$2,$3,$4,$5) RETURNING id, created_on"
+		expectedQuery := "INSERT INTO instruments (name,variant,description,icon) VALUES ($1,$2,$3,$4) RETURNING id, created_on"
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
@@ -465,7 +357,6 @@ func TestPostgres_CreateInstrument(T *testing.T) {
 				expected.Variant,
 				expected.Description,
 				expected.Icon,
-				expected.BelongsTo,
 			).WillReturnError(errors.New("blah"))
 
 		actual, err := p.CreateInstrument(context.Background(), expectedInput)
@@ -482,11 +373,10 @@ func TestPostgres_buildUpdateInstrumentQuery(T *testing.T) {
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
 		expected := &models.Instrument{
-			ID:        321,
-			BelongsTo: 123,
+			ID: 321,
 		}
-		expectedArgCount := 6
-		expectedQuery := "UPDATE instruments SET name = $1, variant = $2, description = $3, icon = $4, updated_on = extract(epoch FROM NOW()) WHERE belongs_to = $5 AND id = $6 RETURNING updated_on"
+		expectedArgCount := 5
+		expectedQuery := "UPDATE instruments SET name = $1, variant = $2, description = $3, icon = $4, updated_on = extract(epoch FROM NOW()) WHERE id = $5 RETURNING updated_on"
 		actualQuery, args := p.buildUpdateInstrumentQuery(expected)
 
 		assert.Equal(t, expectedQuery, actualQuery)
@@ -495,8 +385,7 @@ func TestPostgres_buildUpdateInstrumentQuery(T *testing.T) {
 		assert.Equal(t, expected.Variant, args[1].(string))
 		assert.Equal(t, expected.Description, args[2].(string))
 		assert.Equal(t, expected.Icon, args[3].(string))
-		assert.Equal(t, expected.BelongsTo, args[4].(uint64))
-		assert.Equal(t, expected.ID, args[5].(uint64))
+		assert.Equal(t, expected.ID, args[4].(uint64))
 	})
 }
 
@@ -504,14 +393,12 @@ func TestPostgres_UpdateInstrument(T *testing.T) {
 	T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
-		expectedUserID := uint64(321)
 		expected := &models.Instrument{
 			ID:        123,
-			BelongsTo: expectedUserID,
 			CreatedOn: uint64(time.Now().Unix()),
 		}
 		exampleRows := sqlmock.NewRows([]string{"updated_on"}).AddRow(uint64(time.Now().Unix()))
-		expectedQuery := "UPDATE instruments SET name = $1, variant = $2, description = $3, icon = $4, updated_on = extract(epoch FROM NOW()) WHERE belongs_to = $5 AND id = $6 RETURNING updated_on"
+		expectedQuery := "UPDATE instruments SET name = $1, variant = $2, description = $3, icon = $4, updated_on = extract(epoch FROM NOW()) WHERE id = $5 RETURNING updated_on"
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
@@ -520,7 +407,6 @@ func TestPostgres_UpdateInstrument(T *testing.T) {
 				expected.Variant,
 				expected.Description,
 				expected.Icon,
-				expected.BelongsTo,
 				expected.ID,
 			).WillReturnRows(exampleRows)
 
@@ -531,13 +417,11 @@ func TestPostgres_UpdateInstrument(T *testing.T) {
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
-		expectedUserID := uint64(321)
 		expected := &models.Instrument{
 			ID:        123,
-			BelongsTo: expectedUserID,
 			CreatedOn: uint64(time.Now().Unix()),
 		}
-		expectedQuery := "UPDATE instruments SET name = $1, variant = $2, description = $3, icon = $4, updated_on = extract(epoch FROM NOW()) WHERE belongs_to = $5 AND id = $6 RETURNING updated_on"
+		expectedQuery := "UPDATE instruments SET name = $1, variant = $2, description = $3, icon = $4, updated_on = extract(epoch FROM NOW()) WHERE id = $5 RETURNING updated_on"
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
@@ -546,7 +430,6 @@ func TestPostgres_UpdateInstrument(T *testing.T) {
 				expected.Variant,
 				expected.Description,
 				expected.Icon,
-				expected.BelongsTo,
 				expected.ID,
 			).WillReturnError(errors.New("blah"))
 
@@ -563,17 +446,15 @@ func TestPostgres_buildArchiveInstrumentQuery(T *testing.T) {
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
 		expected := &models.Instrument{
-			ID:        321,
-			BelongsTo: 123,
+			ID: 321,
 		}
-		expectedArgCount := 2
-		expectedQuery := "UPDATE instruments SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to = $1 AND id = $2 RETURNING archived_on"
-		actualQuery, args := p.buildArchiveInstrumentQuery(expected.ID, expected.BelongsTo)
+		expectedArgCount := 1
+		expectedQuery := "UPDATE instruments SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $1 RETURNING archived_on"
+		actualQuery, args := p.buildArchiveInstrumentQuery(expected.ID)
 
 		assert.Equal(t, expectedQuery, actualQuery)
 		assert.Len(t, args, expectedArgCount)
-		assert.Equal(t, expected.BelongsTo, args[0].(uint64))
-		assert.Equal(t, expected.ID, args[1].(uint64))
+		assert.Equal(t, expected.ID, args[0].(uint64))
 	})
 }
 
@@ -581,44 +462,38 @@ func TestPostgres_ArchiveInstrument(T *testing.T) {
 	T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
-		expectedUserID := uint64(321)
 		expected := &models.Instrument{
 			ID:        123,
-			BelongsTo: expectedUserID,
 			CreatedOn: uint64(time.Now().Unix()),
 		}
-		expectedQuery := "UPDATE instruments SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to = $1 AND id = $2 RETURNING archived_on"
+		expectedQuery := "UPDATE instruments SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $1 RETURNING archived_on"
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectExec(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				expected.BelongsTo,
 				expected.ID,
 			).WillReturnResult(sqlmock.NewResult(1, 1))
 
-		err := p.ArchiveInstrument(context.Background(), expected.ID, expectedUserID)
+		err := p.ArchiveInstrument(context.Background(), expected.ID)
 		assert.NoError(t, err)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
-		expectedUserID := uint64(321)
 		example := &models.Instrument{
 			ID:        123,
-			BelongsTo: expectedUserID,
 			CreatedOn: uint64(time.Now().Unix()),
 		}
-		expectedQuery := "UPDATE instruments SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to = $1 AND id = $2 RETURNING archived_on"
+		expectedQuery := "UPDATE instruments SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $1 RETURNING archived_on"
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectExec(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				example.BelongsTo,
 				example.ID,
 			).WillReturnError(errors.New("blah"))
 
-		err := p.ArchiveInstrument(context.Background(), example.ID, expectedUserID)
+		err := p.ArchiveInstrument(context.Background(), example.ID)
 		assert.Error(t, err)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")

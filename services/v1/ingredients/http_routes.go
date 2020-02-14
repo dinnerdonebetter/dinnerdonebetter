@@ -43,7 +43,7 @@ func (s *Service) ListHandler() http.HandlerFunc {
 		attachUserIDToSpan(span, userID)
 
 		// fetch ingredients from database
-		ingredients, err := s.ingredientDatabase.GetIngredients(ctx, qf, userID)
+		ingredients, err := s.ingredientDatabase.GetIngredients(ctx, qf)
 		if err == sql.ErrNoRows {
 			// in the event no rows exist return an empty list
 			ingredients = &models.IngredientList{
@@ -124,7 +124,7 @@ func (s *Service) ReadHandler() http.HandlerFunc {
 		attachUserIDToSpan(span, userID)
 
 		// fetch ingredient from database
-		x, err := s.ingredientDatabase.GetIngredient(ctx, ingredientID, userID)
+		x, err := s.ingredientDatabase.GetIngredient(ctx, ingredientID)
 		if err == sql.ErrNoRows {
 			res.WriteHeader(http.StatusNotFound)
 			return
@@ -166,7 +166,7 @@ func (s *Service) UpdateHandler() http.HandlerFunc {
 		attachUserIDToSpan(span, userID)
 
 		// fetch ingredient from database
-		x, err := s.ingredientDatabase.GetIngredient(ctx, ingredientID, userID)
+		x, err := s.ingredientDatabase.GetIngredient(ctx, ingredientID)
 		if err == sql.ErrNoRows {
 			res.WriteHeader(http.StatusNotFound)
 			return
@@ -217,7 +217,7 @@ func (s *Service) ArchiveHandler() http.HandlerFunc {
 		attachUserIDToSpan(span, userID)
 
 		// archive the ingredient in the database
-		err := s.ingredientDatabase.ArchiveIngredient(ctx, ingredientID, userID)
+		err := s.ingredientDatabase.ArchiveIngredient(ctx, ingredientID)
 		if err == sql.ErrNoRows {
 			res.WriteHeader(http.StatusNotFound)
 			return

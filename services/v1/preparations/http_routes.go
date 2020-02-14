@@ -43,7 +43,7 @@ func (s *Service) ListHandler() http.HandlerFunc {
 		attachUserIDToSpan(span, userID)
 
 		// fetch preparations from database
-		preparations, err := s.preparationDatabase.GetPreparations(ctx, qf, userID)
+		preparations, err := s.preparationDatabase.GetPreparations(ctx, qf)
 		if err == sql.ErrNoRows {
 			// in the event no rows exist return an empty list
 			preparations = &models.PreparationList{
@@ -124,7 +124,7 @@ func (s *Service) ReadHandler() http.HandlerFunc {
 		attachUserIDToSpan(span, userID)
 
 		// fetch preparation from database
-		x, err := s.preparationDatabase.GetPreparation(ctx, preparationID, userID)
+		x, err := s.preparationDatabase.GetPreparation(ctx, preparationID)
 		if err == sql.ErrNoRows {
 			res.WriteHeader(http.StatusNotFound)
 			return
@@ -166,7 +166,7 @@ func (s *Service) UpdateHandler() http.HandlerFunc {
 		attachUserIDToSpan(span, userID)
 
 		// fetch preparation from database
-		x, err := s.preparationDatabase.GetPreparation(ctx, preparationID, userID)
+		x, err := s.preparationDatabase.GetPreparation(ctx, preparationID)
 		if err == sql.ErrNoRows {
 			res.WriteHeader(http.StatusNotFound)
 			return
@@ -217,7 +217,7 @@ func (s *Service) ArchiveHandler() http.HandlerFunc {
 		attachUserIDToSpan(span, userID)
 
 		// archive the preparation in the database
-		err := s.preparationDatabase.ArchivePreparation(ctx, preparationID, userID)
+		err := s.preparationDatabase.ArchivePreparation(ctx, preparationID)
 		if err == sql.ErrNoRows {
 			res.WriteHeader(http.StatusNotFound)
 			return

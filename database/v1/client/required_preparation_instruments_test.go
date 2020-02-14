@@ -15,13 +15,12 @@ func TestClient_GetRequiredPreparationInstrument(T *testing.T) {
 
 	T.Run("obligatory", func(t *testing.T) {
 		exampleRequiredPreparationInstrumentID := uint64(123)
-		exampleUserID := uint64(123)
 		expected := &models.RequiredPreparationInstrument{}
 
 		c, mockDB := buildTestClient()
-		mockDB.RequiredPreparationInstrumentDataManager.On("GetRequiredPreparationInstrument", mock.Anything, exampleRequiredPreparationInstrumentID, exampleUserID).Return(expected, nil)
+		mockDB.RequiredPreparationInstrumentDataManager.On("GetRequiredPreparationInstrument", mock.Anything, exampleRequiredPreparationInstrumentID).Return(expected, nil)
 
-		actual, err := c.GetRequiredPreparationInstrument(context.Background(), exampleRequiredPreparationInstrumentID, exampleUserID)
+		actual, err := c.GetRequiredPreparationInstrument(context.Background(), exampleRequiredPreparationInstrumentID)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -34,12 +33,11 @@ func TestClient_GetRequiredPreparationInstrumentCount(T *testing.T) {
 
 	T.Run("obligatory", func(t *testing.T) {
 		expected := uint64(321)
-		exampleUserID := uint64(123)
 
 		c, mockDB := buildTestClient()
-		mockDB.RequiredPreparationInstrumentDataManager.On("GetRequiredPreparationInstrumentCount", mock.Anything, models.DefaultQueryFilter(), exampleUserID).Return(expected, nil)
+		mockDB.RequiredPreparationInstrumentDataManager.On("GetRequiredPreparationInstrumentCount", mock.Anything, models.DefaultQueryFilter()).Return(expected, nil)
 
-		actual, err := c.GetRequiredPreparationInstrumentCount(context.Background(), models.DefaultQueryFilter(), exampleUserID)
+		actual, err := c.GetRequiredPreparationInstrumentCount(context.Background(), models.DefaultQueryFilter())
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -48,12 +46,11 @@ func TestClient_GetRequiredPreparationInstrumentCount(T *testing.T) {
 
 	T.Run("with nil filter", func(t *testing.T) {
 		expected := uint64(321)
-		exampleUserID := uint64(123)
 
 		c, mockDB := buildTestClient()
-		mockDB.RequiredPreparationInstrumentDataManager.On("GetRequiredPreparationInstrumentCount", mock.Anything, (*models.QueryFilter)(nil), exampleUserID).Return(expected, nil)
+		mockDB.RequiredPreparationInstrumentDataManager.On("GetRequiredPreparationInstrumentCount", mock.Anything, (*models.QueryFilter)(nil)).Return(expected, nil)
 
-		actual, err := c.GetRequiredPreparationInstrumentCount(context.Background(), nil, exampleUserID)
+		actual, err := c.GetRequiredPreparationInstrumentCount(context.Background(), nil)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -81,13 +78,12 @@ func TestClient_GetRequiredPreparationInstruments(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		exampleUserID := uint64(123)
 		c, mockDB := buildTestClient()
 		expected := &models.RequiredPreparationInstrumentList{}
 
-		mockDB.RequiredPreparationInstrumentDataManager.On("GetRequiredPreparationInstruments", mock.Anything, models.DefaultQueryFilter(), exampleUserID).Return(expected, nil)
+		mockDB.RequiredPreparationInstrumentDataManager.On("GetRequiredPreparationInstruments", mock.Anything, models.DefaultQueryFilter()).Return(expected, nil)
 
-		actual, err := c.GetRequiredPreparationInstruments(context.Background(), models.DefaultQueryFilter(), exampleUserID)
+		actual, err := c.GetRequiredPreparationInstruments(context.Background(), models.DefaultQueryFilter())
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -95,13 +91,12 @@ func TestClient_GetRequiredPreparationInstruments(T *testing.T) {
 	})
 
 	T.Run("with nil filter", func(t *testing.T) {
-		exampleUserID := uint64(123)
 		c, mockDB := buildTestClient()
 		expected := &models.RequiredPreparationInstrumentList{}
 
-		mockDB.RequiredPreparationInstrumentDataManager.On("GetRequiredPreparationInstruments", mock.Anything, (*models.QueryFilter)(nil), exampleUserID).Return(expected, nil)
+		mockDB.RequiredPreparationInstrumentDataManager.On("GetRequiredPreparationInstruments", mock.Anything, (*models.QueryFilter)(nil)).Return(expected, nil)
 
-		actual, err := c.GetRequiredPreparationInstruments(context.Background(), nil, exampleUserID)
+		actual, err := c.GetRequiredPreparationInstruments(context.Background(), nil)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -146,14 +141,13 @@ func TestClient_ArchiveRequiredPreparationInstrument(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		exampleUserID := uint64(123)
 		exampleRequiredPreparationInstrumentID := uint64(123)
 		var expected error
 
 		c, mockDB := buildTestClient()
-		mockDB.RequiredPreparationInstrumentDataManager.On("ArchiveRequiredPreparationInstrument", mock.Anything, exampleRequiredPreparationInstrumentID, exampleUserID).Return(expected)
+		mockDB.RequiredPreparationInstrumentDataManager.On("ArchiveRequiredPreparationInstrument", mock.Anything, exampleRequiredPreparationInstrumentID).Return(expected)
 
-		err := c.ArchiveRequiredPreparationInstrument(context.Background(), exampleUserID, exampleRequiredPreparationInstrumentID)
+		err := c.ArchiveRequiredPreparationInstrument(context.Background(), exampleRequiredPreparationInstrumentID)
 		assert.NoError(t, err)
 	})
 }

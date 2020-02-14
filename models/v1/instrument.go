@@ -42,14 +42,13 @@ type (
 
 	// InstrumentDataManager describes a structure capable of storing instruments permanently
 	InstrumentDataManager interface {
-		GetInstrument(ctx context.Context, instrumentID, userID uint64) (*Instrument, error)
-		GetInstrumentCount(ctx context.Context, filter *QueryFilter, userID uint64) (uint64, error)
+		GetInstrument(ctx context.Context, instrumentID uint64) (*Instrument, error)
+		GetInstrumentCount(ctx context.Context, filter *QueryFilter) (uint64, error)
 		GetAllInstrumentsCount(ctx context.Context) (uint64, error)
-		GetInstruments(ctx context.Context, filter *QueryFilter, userID uint64) (*InstrumentList, error)
-		GetAllInstrumentsForUser(ctx context.Context, userID uint64) ([]Instrument, error)
+		GetInstruments(ctx context.Context, filter *QueryFilter) (*InstrumentList, error)
 		CreateInstrument(ctx context.Context, input *InstrumentCreationInput) (*Instrument, error)
 		UpdateInstrument(ctx context.Context, updated *Instrument) error
-		ArchiveInstrument(ctx context.Context, id, userID uint64) error
+		ArchiveInstrument(ctx context.Context, id uint64) error
 	}
 
 	// InstrumentDataServer describes a structure capable of serving traffic related to instruments

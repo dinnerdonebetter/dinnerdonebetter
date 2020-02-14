@@ -15,13 +15,12 @@ func TestClient_GetInstrument(T *testing.T) {
 
 	T.Run("obligatory", func(t *testing.T) {
 		exampleInstrumentID := uint64(123)
-		exampleUserID := uint64(123)
 		expected := &models.Instrument{}
 
 		c, mockDB := buildTestClient()
-		mockDB.InstrumentDataManager.On("GetInstrument", mock.Anything, exampleInstrumentID, exampleUserID).Return(expected, nil)
+		mockDB.InstrumentDataManager.On("GetInstrument", mock.Anything, exampleInstrumentID).Return(expected, nil)
 
-		actual, err := c.GetInstrument(context.Background(), exampleInstrumentID, exampleUserID)
+		actual, err := c.GetInstrument(context.Background(), exampleInstrumentID)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -34,12 +33,11 @@ func TestClient_GetInstrumentCount(T *testing.T) {
 
 	T.Run("obligatory", func(t *testing.T) {
 		expected := uint64(321)
-		exampleUserID := uint64(123)
 
 		c, mockDB := buildTestClient()
-		mockDB.InstrumentDataManager.On("GetInstrumentCount", mock.Anything, models.DefaultQueryFilter(), exampleUserID).Return(expected, nil)
+		mockDB.InstrumentDataManager.On("GetInstrumentCount", mock.Anything, models.DefaultQueryFilter()).Return(expected, nil)
 
-		actual, err := c.GetInstrumentCount(context.Background(), models.DefaultQueryFilter(), exampleUserID)
+		actual, err := c.GetInstrumentCount(context.Background(), models.DefaultQueryFilter())
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -48,12 +46,11 @@ func TestClient_GetInstrumentCount(T *testing.T) {
 
 	T.Run("with nil filter", func(t *testing.T) {
 		expected := uint64(321)
-		exampleUserID := uint64(123)
 
 		c, mockDB := buildTestClient()
-		mockDB.InstrumentDataManager.On("GetInstrumentCount", mock.Anything, (*models.QueryFilter)(nil), exampleUserID).Return(expected, nil)
+		mockDB.InstrumentDataManager.On("GetInstrumentCount", mock.Anything, (*models.QueryFilter)(nil)).Return(expected, nil)
 
-		actual, err := c.GetInstrumentCount(context.Background(), nil, exampleUserID)
+		actual, err := c.GetInstrumentCount(context.Background(), nil)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -81,13 +78,12 @@ func TestClient_GetInstruments(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		exampleUserID := uint64(123)
 		c, mockDB := buildTestClient()
 		expected := &models.InstrumentList{}
 
-		mockDB.InstrumentDataManager.On("GetInstruments", mock.Anything, models.DefaultQueryFilter(), exampleUserID).Return(expected, nil)
+		mockDB.InstrumentDataManager.On("GetInstruments", mock.Anything, models.DefaultQueryFilter()).Return(expected, nil)
 
-		actual, err := c.GetInstruments(context.Background(), models.DefaultQueryFilter(), exampleUserID)
+		actual, err := c.GetInstruments(context.Background(), models.DefaultQueryFilter())
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -95,13 +91,12 @@ func TestClient_GetInstruments(T *testing.T) {
 	})
 
 	T.Run("with nil filter", func(t *testing.T) {
-		exampleUserID := uint64(123)
 		c, mockDB := buildTestClient()
 		expected := &models.InstrumentList{}
 
-		mockDB.InstrumentDataManager.On("GetInstruments", mock.Anything, (*models.QueryFilter)(nil), exampleUserID).Return(expected, nil)
+		mockDB.InstrumentDataManager.On("GetInstruments", mock.Anything, (*models.QueryFilter)(nil)).Return(expected, nil)
 
-		actual, err := c.GetInstruments(context.Background(), nil, exampleUserID)
+		actual, err := c.GetInstruments(context.Background(), nil)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -146,14 +141,13 @@ func TestClient_ArchiveInstrument(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		exampleUserID := uint64(123)
 		exampleInstrumentID := uint64(123)
 		var expected error
 
 		c, mockDB := buildTestClient()
-		mockDB.InstrumentDataManager.On("ArchiveInstrument", mock.Anything, exampleInstrumentID, exampleUserID).Return(expected)
+		mockDB.InstrumentDataManager.On("ArchiveInstrument", mock.Anything, exampleInstrumentID).Return(expected)
 
-		err := c.ArchiveInstrument(context.Background(), exampleUserID, exampleInstrumentID)
+		err := c.ArchiveInstrument(context.Background(), exampleInstrumentID)
 		assert.NoError(t, err)
 	})
 }

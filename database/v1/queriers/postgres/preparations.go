@@ -76,7 +76,7 @@ func scanPreparations(logger logging.Logger, rows *sql.Rows) ([]models.Preparati
 }
 
 // buildGetPreparationQuery constructs a SQL query for fetching a preparation with a given ID belong to a user with a given ID.
-func (p *Postgres) buildGetPreparationQuery(preparationID, userID uint64) (query string, args []interface{}) {
+func (p *Postgres) buildGetPreparationQuery(preparationID uint64) (query string, args []interface{}) {
 	var err error
 	query, args, err = p.sqlBuilder.
 		Select(preparationsTableColumns...).
@@ -91,15 +91,15 @@ func (p *Postgres) buildGetPreparationQuery(preparationID, userID uint64) (query
 }
 
 // GetPreparation fetches a preparation from the postgres database
-func (p *Postgres) GetPreparation(ctx context.Context, preparationID, userID uint64) (*models.Preparation, error) {
-	query, args := p.buildGetPreparationQuery(preparationID, userID)
+func (p *Postgres) GetPreparation(ctx context.Context, preparationID uint64) (*models.Preparation, error) {
+	query, args := p.buildGetPreparationQuery(preparationID)
 	row := p.db.QueryRowContext(ctx, query, args...)
 	return scanPreparation(row)
 }
 
 // buildGetPreparationCountQuery takes a QueryFilter and a user ID and returns a SQL query (and the relevant arguments) for
 // fetching the number of preparations belonging to a given user that meet a given query
-func (p *Postgres) buildGetPreparationCountQuery(filter *models.QueryFilter, userID uint64) (query string, args []interface{}) {
+func (p *Postgres) buildGetPreparationCountQuery(filter *models.QueryFilter) (query string, args []interface{}) {
 	var err error
 	builder := p.sqlBuilder.
 		Select(CountQuery).
@@ -119,8 +119,8 @@ func (p *Postgres) buildGetPreparationCountQuery(filter *models.QueryFilter, use
 }
 
 // GetPreparationCount will fetch the count of preparations from the database that meet a particular filter and belong to a particular user.
-func (p *Postgres) GetPreparationCount(ctx context.Context, filter *models.QueryFilter, userID uint64) (count uint64, err error) {
-	query, args := p.buildGetPreparationCountQuery(filter, userID)
+func (p *Postgres) GetPreparationCount(ctx context.Context, filter *models.QueryFilter) (count uint64, err error) {
+	query, args := p.buildGetPreparationCountQuery(filter)
 	err = p.db.QueryRowContext(ctx, query, args...).Scan(&count)
 	return count, err
 }
@@ -154,7 +154,7 @@ func (p *Postgres) GetAllPreparationsCount(ctx context.Context) (count uint64, e
 
 // buildGetPreparationsQuery builds a SQL query selecting preparations that adhere to a given QueryFilter and belong to a given user,
 // and returns both the query and the relevant args to pass to the query executor.
-func (p *Postgres) buildGetPreparationsQuery(filter *models.QueryFilter, userID uint64) (query string, args []interface{}) {
+func (p *Postgres) buildGetPreparationsQuery(filter *models.QueryFilter) (query string, args []interface{}) {
 	var err error
 	builder := p.sqlBuilder.
 		Select(preparationsTableColumns...).
@@ -174,8 +174,8 @@ func (p *Postgres) buildGetPreparationsQuery(filter *models.QueryFilter, userID 
 }
 
 // GetPreparations fetches a list of preparations from the database that meet a particular filter
-func (p *Postgres) GetPreparations(ctx context.Context, filter *models.QueryFilter, userID uint64) (*models.PreparationList, error) {
-	query, args := p.buildGetPreparationsQuery(filter, userID)
+func (p *Postgres) GetPreparations(ctx context.Context, filter *models.QueryFilter) (*models.PreparationList, error) {
+	query, args := p.buildGetPreparationsQuery(filter)
 
 	rows, err := p.db.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -187,7 +187,7 @@ func (p *Postgres) GetPreparations(ctx context.Context, filter *models.QueryFilt
 		return nil, fmt.Errorf("scanning response from database: %w", err)
 	}
 
-	count, err := p.GetPreparationCount(ctx, filter, userID)
+	count, err := p.GetPreparationCount(ctx, filter)
 	if err != nil {
 		return nil, fmt.Errorf("fetching preparation count: %w", err)
 	}
@@ -202,23 +202,6 @@ func (p *Postgres) GetPreparations(ctx context.Context, filter *models.QueryFilt
 	}
 
 	return x, nil
-}
-
-// GetAllPreparationsForUser fetches every preparation belonging to a user
-func (p *Postgres) GetAllPreparationsForUser(ctx context.Context, userID uint64) ([]models.Preparation, error) {
-	query, args := p.buildGetPreparationsQuery(nil, userID)
-
-	rows, err := p.db.QueryContext(ctx, query, args...)
-	if err != nil {
-		return nil, buildError(err, "fetching preparations for user")
-	}
-
-	list, err := scanPreparations(p.logger, rows)
-	if err != nil {
-		return nil, fmt.Errorf("parsing database results: %w", err)
-	}
-
-	return list, nil
 }
 
 // buildCreatePreparationQuery takes a preparation and returns a creation query for that preparation and the relevant arguments.
@@ -298,7 +281,7 @@ func (p *Postgres) UpdatePreparation(ctx context.Context, input *models.Preparat
 }
 
 // buildArchivePreparationQuery returns a SQL query which marks a given preparation belonging to a given user as archived.
-func (p *Postgres) buildArchivePreparationQuery(preparationID, userID uint64) (query string, args []interface{}) {
+func (p *Postgres) buildArchivePreparationQuery(preparationID uint64) (query string, args []interface{}) {
 	var err error
 	query, args, err = p.sqlBuilder.
 		Update(preparationsTableName).
@@ -317,8 +300,8 @@ func (p *Postgres) buildArchivePreparationQuery(preparationID, userID uint64) (q
 }
 
 // ArchivePreparation marks a preparation as archived in the database
-func (p *Postgres) ArchivePreparation(ctx context.Context, preparationID, userID uint64) error {
-	query, args := p.buildArchivePreparationQuery(preparationID, userID)
+func (p *Postgres) ArchivePreparation(ctx context.Context, preparationID uint64) error {
+	query, args := p.buildArchivePreparationQuery(preparationID)
 	_, err := p.db.ExecContext(ctx, query, args...)
 	return err
 }

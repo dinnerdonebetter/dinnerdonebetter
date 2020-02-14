@@ -43,7 +43,7 @@ func (s *Service) ListHandler() http.HandlerFunc {
 		attachUserIDToSpan(span, userID)
 
 		// fetch instruments from database
-		instruments, err := s.instrumentDatabase.GetInstruments(ctx, qf, userID)
+		instruments, err := s.instrumentDatabase.GetInstruments(ctx, qf)
 		if err == sql.ErrNoRows {
 			// in the event no rows exist return an empty list
 			instruments = &models.InstrumentList{
@@ -124,7 +124,7 @@ func (s *Service) ReadHandler() http.HandlerFunc {
 		attachUserIDToSpan(span, userID)
 
 		// fetch instrument from database
-		x, err := s.instrumentDatabase.GetInstrument(ctx, instrumentID, userID)
+		x, err := s.instrumentDatabase.GetInstrument(ctx, instrumentID)
 		if err == sql.ErrNoRows {
 			res.WriteHeader(http.StatusNotFound)
 			return
@@ -166,7 +166,7 @@ func (s *Service) UpdateHandler() http.HandlerFunc {
 		attachUserIDToSpan(span, userID)
 
 		// fetch instrument from database
-		x, err := s.instrumentDatabase.GetInstrument(ctx, instrumentID, userID)
+		x, err := s.instrumentDatabase.GetInstrument(ctx, instrumentID)
 		if err == sql.ErrNoRows {
 			res.WriteHeader(http.StatusNotFound)
 			return
@@ -217,7 +217,7 @@ func (s *Service) ArchiveHandler() http.HandlerFunc {
 		attachUserIDToSpan(span, userID)
 
 		// archive the instrument in the database
-		err := s.instrumentDatabase.ArchiveInstrument(ctx, instrumentID, userID)
+		err := s.instrumentDatabase.ArchiveInstrument(ctx, instrumentID)
 		if err == sql.ErrNoRows {
 			res.WriteHeader(http.StatusNotFound)
 			return

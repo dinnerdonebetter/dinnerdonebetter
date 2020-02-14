@@ -16,14 +16,14 @@ type IngredientDataManager struct {
 }
 
 // GetIngredient is a mock function
-func (m *IngredientDataManager) GetIngredient(ctx context.Context, ingredientID, userID uint64) (*models.Ingredient, error) {
-	args := m.Called(ctx, ingredientID, userID)
+func (m *IngredientDataManager) GetIngredient(ctx context.Context, ingredientID uint64) (*models.Ingredient, error) {
+	args := m.Called(ctx, ingredientID)
 	return args.Get(0).(*models.Ingredient), args.Error(1)
 }
 
 // GetIngredientCount is a mock function
-func (m *IngredientDataManager) GetIngredientCount(ctx context.Context, filter *models.QueryFilter, userID uint64) (uint64, error) {
-	args := m.Called(ctx, filter, userID)
+func (m *IngredientDataManager) GetIngredientCount(ctx context.Context, filter *models.QueryFilter) (uint64, error) {
+	args := m.Called(ctx, filter)
 	return args.Get(0).(uint64), args.Error(1)
 }
 
@@ -34,15 +34,9 @@ func (m *IngredientDataManager) GetAllIngredientsCount(ctx context.Context) (uin
 }
 
 // GetIngredients is a mock function
-func (m *IngredientDataManager) GetIngredients(ctx context.Context, filter *models.QueryFilter, userID uint64) (*models.IngredientList, error) {
-	args := m.Called(ctx, filter, userID)
+func (m *IngredientDataManager) GetIngredients(ctx context.Context, filter *models.QueryFilter) (*models.IngredientList, error) {
+	args := m.Called(ctx, filter)
 	return args.Get(0).(*models.IngredientList), args.Error(1)
-}
-
-// GetAllIngredientsForUser is a mock function
-func (m *IngredientDataManager) GetAllIngredientsForUser(ctx context.Context, userID uint64) ([]models.Ingredient, error) {
-	args := m.Called(ctx, userID)
-	return args.Get(0).([]models.Ingredient), args.Error(1)
 }
 
 // CreateIngredient is a mock function
@@ -57,6 +51,6 @@ func (m *IngredientDataManager) UpdateIngredient(ctx context.Context, updated *m
 }
 
 // ArchiveIngredient is a mock function
-func (m *IngredientDataManager) ArchiveIngredient(ctx context.Context, id, userID uint64) error {
-	return m.Called(ctx, id, userID).Error(0)
+func (m *IngredientDataManager) ArchiveIngredient(ctx context.Context, id uint64) error {
+	return m.Called(ctx, id).Error(0)
 }

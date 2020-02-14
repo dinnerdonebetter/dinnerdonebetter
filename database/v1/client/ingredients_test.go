@@ -15,13 +15,12 @@ func TestClient_GetIngredient(T *testing.T) {
 
 	T.Run("obligatory", func(t *testing.T) {
 		exampleIngredientID := uint64(123)
-		exampleUserID := uint64(123)
 		expected := &models.Ingredient{}
 
 		c, mockDB := buildTestClient()
-		mockDB.IngredientDataManager.On("GetIngredient", mock.Anything, exampleIngredientID, exampleUserID).Return(expected, nil)
+		mockDB.IngredientDataManager.On("GetIngredient", mock.Anything, exampleIngredientID).Return(expected, nil)
 
-		actual, err := c.GetIngredient(context.Background(), exampleIngredientID, exampleUserID)
+		actual, err := c.GetIngredient(context.Background(), exampleIngredientID)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -34,12 +33,11 @@ func TestClient_GetIngredientCount(T *testing.T) {
 
 	T.Run("obligatory", func(t *testing.T) {
 		expected := uint64(321)
-		exampleUserID := uint64(123)
 
 		c, mockDB := buildTestClient()
-		mockDB.IngredientDataManager.On("GetIngredientCount", mock.Anything, models.DefaultQueryFilter(), exampleUserID).Return(expected, nil)
+		mockDB.IngredientDataManager.On("GetIngredientCount", mock.Anything, models.DefaultQueryFilter()).Return(expected, nil)
 
-		actual, err := c.GetIngredientCount(context.Background(), models.DefaultQueryFilter(), exampleUserID)
+		actual, err := c.GetIngredientCount(context.Background(), models.DefaultQueryFilter())
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -48,12 +46,11 @@ func TestClient_GetIngredientCount(T *testing.T) {
 
 	T.Run("with nil filter", func(t *testing.T) {
 		expected := uint64(321)
-		exampleUserID := uint64(123)
 
 		c, mockDB := buildTestClient()
-		mockDB.IngredientDataManager.On("GetIngredientCount", mock.Anything, (*models.QueryFilter)(nil), exampleUserID).Return(expected, nil)
+		mockDB.IngredientDataManager.On("GetIngredientCount", mock.Anything, (*models.QueryFilter)(nil)).Return(expected, nil)
 
-		actual, err := c.GetIngredientCount(context.Background(), nil, exampleUserID)
+		actual, err := c.GetIngredientCount(context.Background(), nil)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -81,13 +78,12 @@ func TestClient_GetIngredients(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		exampleUserID := uint64(123)
 		c, mockDB := buildTestClient()
 		expected := &models.IngredientList{}
 
-		mockDB.IngredientDataManager.On("GetIngredients", mock.Anything, models.DefaultQueryFilter(), exampleUserID).Return(expected, nil)
+		mockDB.IngredientDataManager.On("GetIngredients", mock.Anything, models.DefaultQueryFilter()).Return(expected, nil)
 
-		actual, err := c.GetIngredients(context.Background(), models.DefaultQueryFilter(), exampleUserID)
+		actual, err := c.GetIngredients(context.Background(), models.DefaultQueryFilter())
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -95,13 +91,12 @@ func TestClient_GetIngredients(T *testing.T) {
 	})
 
 	T.Run("with nil filter", func(t *testing.T) {
-		exampleUserID := uint64(123)
 		c, mockDB := buildTestClient()
 		expected := &models.IngredientList{}
 
-		mockDB.IngredientDataManager.On("GetIngredients", mock.Anything, (*models.QueryFilter)(nil), exampleUserID).Return(expected, nil)
+		mockDB.IngredientDataManager.On("GetIngredients", mock.Anything, (*models.QueryFilter)(nil)).Return(expected, nil)
 
-		actual, err := c.GetIngredients(context.Background(), nil, exampleUserID)
+		actual, err := c.GetIngredients(context.Background(), nil)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -146,14 +141,13 @@ func TestClient_ArchiveIngredient(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		exampleUserID := uint64(123)
 		exampleIngredientID := uint64(123)
 		var expected error
 
 		c, mockDB := buildTestClient()
-		mockDB.IngredientDataManager.On("ArchiveIngredient", mock.Anything, exampleIngredientID, exampleUserID).Return(expected)
+		mockDB.IngredientDataManager.On("ArchiveIngredient", mock.Anything, exampleIngredientID).Return(expected)
 
-		err := c.ArchiveIngredient(context.Background(), exampleUserID, exampleIngredientID)
+		err := c.ArchiveIngredient(context.Background(), exampleIngredientID)
 		assert.NoError(t, err)
 	})
 }

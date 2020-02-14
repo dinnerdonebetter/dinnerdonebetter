@@ -101,14 +101,14 @@ func scanIngredients(logger logging.Logger, rows *sql.Rows) ([]models.Ingredient
 	return list, nil
 }
 
-// buildGetIngredientQuery constructs a SQL query for fetching an ingredient with a given ID belong to a user with a given ID.
-func (p *Postgres) buildGetIngredientQuery(ingredientID, userID uint64) (query string, args []interface{}) {
+// buildGetIngredientQuery constructs a SQL query for fetching an ingredient with a given ID.
+func (p *Postgres) buildGetIngredientQuery(ingredientID uint64) (query string, args []interface{}) {
 	var err error
 	query, args, err = p.sqlBuilder.
 		Select(ingredientsTableColumns...).
 		From(ingredientsTableName).
 		Where(squirrel.Eq{
-			"id":         ingredientID,
+			"id": ingredientID,
 		}).ToSql()
 
 	p.logQueryBuildingError(err)
@@ -117,15 +117,15 @@ func (p *Postgres) buildGetIngredientQuery(ingredientID, userID uint64) (query s
 }
 
 // GetIngredient fetches an ingredient from the postgres database
-func (p *Postgres) GetIngredient(ctx context.Context, ingredientID, userID uint64) (*models.Ingredient, error) {
-	query, args := p.buildGetIngredientQuery(ingredientID, userID)
+func (p *Postgres) GetIngredient(ctx context.Context, ingredientID uint64) (*models.Ingredient, error) {
+	query, args := p.buildGetIngredientQuery(ingredientID)
 	row := p.db.QueryRowContext(ctx, query, args...)
 	return scanIngredient(row)
 }
 
-// buildGetIngredientCountQuery takes a QueryFilter and a user ID and returns a SQL query (and the relevant arguments) for
-// fetching the number of ingredients belonging to a given user that meet a given query
-func (p *Postgres) buildGetIngredientCountQuery(filter *models.QueryFilter, userID uint64) (query string, args []interface{}) {
+// buildGetIngredientCountQuery takes a QueryFilter and returns a SQL query (and the relevant arguments) for
+// fetching the number of ingredients that meet a given query
+func (p *Postgres) buildGetIngredientCountQuery(filter *models.QueryFilter) (query string, args []interface{}) {
 	var err error
 	builder := p.sqlBuilder.
 		Select(CountQuery).
@@ -144,9 +144,9 @@ func (p *Postgres) buildGetIngredientCountQuery(filter *models.QueryFilter, user
 	return query, args
 }
 
-// GetIngredientCount will fetch the count of ingredients from the database that meet a particular filter and belong to a particular user.
-func (p *Postgres) GetIngredientCount(ctx context.Context, filter *models.QueryFilter, userID uint64) (count uint64, err error) {
-	query, args := p.buildGetIngredientCountQuery(filter, userID)
+// GetIngredientCount will fetch the count of ingredients from the database that meet a particular filter.
+func (p *Postgres) GetIngredientCount(ctx context.Context, filter *models.QueryFilter) (count uint64, err error) {
+	query, args := p.buildGetIngredientCountQuery(filter)
 	err = p.db.QueryRowContext(ctx, query, args...).Scan(&count)
 	return count, err
 }
@@ -178,9 +178,9 @@ func (p *Postgres) GetAllIngredientsCount(ctx context.Context) (count uint64, er
 	return count, err
 }
 
-// buildGetIngredientsQuery builds a SQL query selecting ingredients that adhere to a given QueryFilter and belong to a given user,
+// buildGetIngredientsQuery builds a SQL query selecting ingredients that adhere to a given QueryFilter,
 // and returns both the query and the relevant args to pass to the query executor.
-func (p *Postgres) buildGetIngredientsQuery(filter *models.QueryFilter, userID uint64) (query string, args []interface{}) {
+func (p *Postgres) buildGetIngredientsQuery(filter *models.QueryFilter) (query string, args []interface{}) {
 	var err error
 	builder := p.sqlBuilder.
 		Select(ingredientsTableColumns...).
@@ -200,8 +200,8 @@ func (p *Postgres) buildGetIngredientsQuery(filter *models.QueryFilter, userID u
 }
 
 // GetIngredients fetches a list of ingredients from the database that meet a particular filter
-func (p *Postgres) GetIngredients(ctx context.Context, filter *models.QueryFilter, userID uint64) (*models.IngredientList, error) {
-	query, args := p.buildGetIngredientsQuery(filter, userID)
+func (p *Postgres) GetIngredients(ctx context.Context, filter *models.QueryFilter) (*models.IngredientList, error) {
+	query, args := p.buildGetIngredientsQuery(filter)
 
 	rows, err := p.db.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -213,7 +213,7 @@ func (p *Postgres) GetIngredients(ctx context.Context, filter *models.QueryFilte
 		return nil, fmt.Errorf("scanning response from database: %w", err)
 	}
 
-	count, err := p.GetIngredientCount(ctx, filter, userID)
+	count, err := p.GetIngredientCount(ctx, filter)
 	if err != nil {
 		return nil, fmt.Errorf("fetching ingredient count: %w", err)
 	}
@@ -228,23 +228,6 @@ func (p *Postgres) GetIngredients(ctx context.Context, filter *models.QueryFilte
 	}
 
 	return x, nil
-}
-
-// GetAllIngredientsForUser fetches every ingredient belonging to a user
-func (p *Postgres) GetAllIngredientsForUser(ctx context.Context, userID uint64) ([]models.Ingredient, error) {
-	query, args := p.buildGetIngredientsQuery(nil, userID)
-
-	rows, err := p.db.QueryContext(ctx, query, args...)
-	if err != nil {
-		return nil, buildError(err, "fetching ingredients for user")
-	}
-
-	list, err := scanIngredients(p.logger, rows)
-	if err != nil {
-		return nil, fmt.Errorf("parsing database results: %w", err)
-	}
-
-	return list, nil
 }
 
 // buildCreateIngredientQuery takes an ingredient and returns a creation query for that ingredient and the relevant arguments.
@@ -359,7 +342,7 @@ func (p *Postgres) buildUpdateIngredientQuery(input *models.Ingredient) (query s
 		Set("icon", input.Icon).
 		Set("updated_on", squirrel.Expr(CurrentUnixTimeQuery)).
 		Where(squirrel.Eq{
-			"id":         input.ID,
+			"id": input.ID,
 		}).
 		Suffix("RETURNING updated_on").
 		ToSql()
@@ -375,8 +358,8 @@ func (p *Postgres) UpdateIngredient(ctx context.Context, input *models.Ingredien
 	return p.db.QueryRowContext(ctx, query, args...).Scan(&input.UpdatedOn)
 }
 
-// buildArchiveIngredientQuery returns a SQL query which marks a given ingredient belonging to a given user as archived.
-func (p *Postgres) buildArchiveIngredientQuery(ingredientID, userID uint64) (query string, args []interface{}) {
+// buildArchiveIngredientQuery returns a SQL query which marks a given ingredient as archived.
+func (p *Postgres) buildArchiveIngredientQuery(ingredientID uint64) (query string, args []interface{}) {
 	var err error
 	query, args, err = p.sqlBuilder.
 		Update(ingredientsTableName).
@@ -395,8 +378,8 @@ func (p *Postgres) buildArchiveIngredientQuery(ingredientID, userID uint64) (que
 }
 
 // ArchiveIngredient marks an ingredient as archived in the database
-func (p *Postgres) ArchiveIngredient(ctx context.Context, ingredientID, userID uint64) error {
-	query, args := p.buildArchiveIngredientQuery(ingredientID, userID)
+func (p *Postgres) ArchiveIngredient(ctx context.Context, ingredientID uint64) error {
+	query, args := p.buildArchiveIngredientQuery(ingredientID)
 	_, err := p.db.ExecContext(ctx, query, args...)
 	return err
 }

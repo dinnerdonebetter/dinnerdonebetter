@@ -43,7 +43,7 @@ func (s *Service) ListHandler() http.HandlerFunc {
 		attachUserIDToSpan(span, userID)
 
 		// fetch required preparation instruments from database
-		requiredPreparationInstruments, err := s.requiredPreparationInstrumentDatabase.GetRequiredPreparationInstruments(ctx, qf, userID)
+		requiredPreparationInstruments, err := s.requiredPreparationInstrumentDatabase.GetRequiredPreparationInstruments(ctx, qf)
 		if err == sql.ErrNoRows {
 			// in the event no rows exist return an empty list
 			requiredPreparationInstruments = &models.RequiredPreparationInstrumentList{
@@ -124,7 +124,7 @@ func (s *Service) ReadHandler() http.HandlerFunc {
 		attachUserIDToSpan(span, userID)
 
 		// fetch required preparation instrument from database
-		x, err := s.requiredPreparationInstrumentDatabase.GetRequiredPreparationInstrument(ctx, requiredPreparationInstrumentID, userID)
+		x, err := s.requiredPreparationInstrumentDatabase.GetRequiredPreparationInstrument(ctx, requiredPreparationInstrumentID)
 		if err == sql.ErrNoRows {
 			res.WriteHeader(http.StatusNotFound)
 			return
@@ -166,7 +166,7 @@ func (s *Service) UpdateHandler() http.HandlerFunc {
 		attachUserIDToSpan(span, userID)
 
 		// fetch required preparation instrument from database
-		x, err := s.requiredPreparationInstrumentDatabase.GetRequiredPreparationInstrument(ctx, requiredPreparationInstrumentID, userID)
+		x, err := s.requiredPreparationInstrumentDatabase.GetRequiredPreparationInstrument(ctx, requiredPreparationInstrumentID)
 		if err == sql.ErrNoRows {
 			res.WriteHeader(http.StatusNotFound)
 			return
@@ -217,7 +217,7 @@ func (s *Service) ArchiveHandler() http.HandlerFunc {
 		attachUserIDToSpan(span, userID)
 
 		// archive the required preparation instrument in the database
-		err := s.requiredPreparationInstrumentDatabase.ArchiveRequiredPreparationInstrument(ctx, requiredPreparationInstrumentID, userID)
+		err := s.requiredPreparationInstrumentDatabase.ArchiveRequiredPreparationInstrument(ctx, requiredPreparationInstrumentID)
 		if err == sql.ErrNoRows {
 			res.WriteHeader(http.StatusNotFound)
 			return

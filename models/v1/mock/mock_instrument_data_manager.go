@@ -16,14 +16,14 @@ type InstrumentDataManager struct {
 }
 
 // GetInstrument is a mock function
-func (m *InstrumentDataManager) GetInstrument(ctx context.Context, instrumentID, userID uint64) (*models.Instrument, error) {
-	args := m.Called(ctx, instrumentID, userID)
+func (m *InstrumentDataManager) GetInstrument(ctx context.Context, instrumentID uint64) (*models.Instrument, error) {
+	args := m.Called(ctx, instrumentID)
 	return args.Get(0).(*models.Instrument), args.Error(1)
 }
 
 // GetInstrumentCount is a mock function
-func (m *InstrumentDataManager) GetInstrumentCount(ctx context.Context, filter *models.QueryFilter, userID uint64) (uint64, error) {
-	args := m.Called(ctx, filter, userID)
+func (m *InstrumentDataManager) GetInstrumentCount(ctx context.Context, filter *models.QueryFilter) (uint64, error) {
+	args := m.Called(ctx, filter)
 	return args.Get(0).(uint64), args.Error(1)
 }
 
@@ -34,15 +34,9 @@ func (m *InstrumentDataManager) GetAllInstrumentsCount(ctx context.Context) (uin
 }
 
 // GetInstruments is a mock function
-func (m *InstrumentDataManager) GetInstruments(ctx context.Context, filter *models.QueryFilter, userID uint64) (*models.InstrumentList, error) {
-	args := m.Called(ctx, filter, userID)
+func (m *InstrumentDataManager) GetInstruments(ctx context.Context, filter *models.QueryFilter) (*models.InstrumentList, error) {
+	args := m.Called(ctx, filter)
 	return args.Get(0).(*models.InstrumentList), args.Error(1)
-}
-
-// GetAllInstrumentsForUser is a mock function
-func (m *InstrumentDataManager) GetAllInstrumentsForUser(ctx context.Context, userID uint64) ([]models.Instrument, error) {
-	args := m.Called(ctx, userID)
-	return args.Get(0).([]models.Instrument), args.Error(1)
 }
 
 // CreateInstrument is a mock function
@@ -57,6 +51,6 @@ func (m *InstrumentDataManager) UpdateInstrument(ctx context.Context, updated *m
 }
 
 // ArchiveInstrument is a mock function
-func (m *InstrumentDataManager) ArchiveInstrument(ctx context.Context, id, userID uint64) error {
-	return m.Called(ctx, id, userID).Error(0)
+func (m *InstrumentDataManager) ArchiveInstrument(ctx context.Context, id uint64) error {
+	return m.Called(ctx, id).Error(0)
 }

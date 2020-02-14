@@ -74,13 +74,13 @@ func scanInstruments(logger logging.Logger, rows *sql.Rows) ([]models.Instrument
 }
 
 // buildGetInstrumentQuery constructs a SQL query for fetching an instrument with a given ID belong to a user with a given ID.
-func (p *Postgres) buildGetInstrumentQuery(instrumentID, userID uint64) (query string, args []interface{}) {
+func (p *Postgres) buildGetInstrumentQuery(instrumentID uint64) (query string, args []interface{}) {
 	var err error
 	query, args, err = p.sqlBuilder.
 		Select(instrumentsTableColumns...).
 		From(instrumentsTableName).
 		Where(squirrel.Eq{
-			"id":         instrumentID,
+			"id": instrumentID,
 		}).ToSql()
 
 	p.logQueryBuildingError(err)
@@ -89,15 +89,15 @@ func (p *Postgres) buildGetInstrumentQuery(instrumentID, userID uint64) (query s
 }
 
 // GetInstrument fetches an instrument from the postgres database
-func (p *Postgres) GetInstrument(ctx context.Context, instrumentID, userID uint64) (*models.Instrument, error) {
-	query, args := p.buildGetInstrumentQuery(instrumentID, userID)
+func (p *Postgres) GetInstrument(ctx context.Context, instrumentID uint64) (*models.Instrument, error) {
+	query, args := p.buildGetInstrumentQuery(instrumentID)
 	row := p.db.QueryRowContext(ctx, query, args...)
 	return scanInstrument(row)
 }
 
 // buildGetInstrumentCountQuery takes a QueryFilter and a user ID and returns a SQL query (and the relevant arguments) for
 // fetching the number of instruments belonging to a given user that meet a given query
-func (p *Postgres) buildGetInstrumentCountQuery(filter *models.QueryFilter, userID uint64) (query string, args []interface{}) {
+func (p *Postgres) buildGetInstrumentCountQuery(filter *models.QueryFilter) (query string, args []interface{}) {
 	var err error
 	builder := p.sqlBuilder.
 		Select(CountQuery).
@@ -117,8 +117,8 @@ func (p *Postgres) buildGetInstrumentCountQuery(filter *models.QueryFilter, user
 }
 
 // GetInstrumentCount will fetch the count of instruments from the database that meet a particular filter and belong to a particular user.
-func (p *Postgres) GetInstrumentCount(ctx context.Context, filter *models.QueryFilter, userID uint64) (count uint64, err error) {
-	query, args := p.buildGetInstrumentCountQuery(filter, userID)
+func (p *Postgres) GetInstrumentCount(ctx context.Context, filter *models.QueryFilter) (count uint64, err error) {
+	query, args := p.buildGetInstrumentCountQuery(filter)
 	err = p.db.QueryRowContext(ctx, query, args...).Scan(&count)
 	return count, err
 }
@@ -152,7 +152,7 @@ func (p *Postgres) GetAllInstrumentsCount(ctx context.Context) (count uint64, er
 
 // buildGetInstrumentsQuery builds a SQL query selecting instruments that adhere to a given QueryFilter and belong to a given user,
 // and returns both the query and the relevant args to pass to the query executor.
-func (p *Postgres) buildGetInstrumentsQuery(filter *models.QueryFilter, userID uint64) (query string, args []interface{}) {
+func (p *Postgres) buildGetInstrumentsQuery(filter *models.QueryFilter) (query string, args []interface{}) {
 	var err error
 	builder := p.sqlBuilder.
 		Select(instrumentsTableColumns...).
@@ -172,8 +172,8 @@ func (p *Postgres) buildGetInstrumentsQuery(filter *models.QueryFilter, userID u
 }
 
 // GetInstruments fetches a list of instruments from the database that meet a particular filter
-func (p *Postgres) GetInstruments(ctx context.Context, filter *models.QueryFilter, userID uint64) (*models.InstrumentList, error) {
-	query, args := p.buildGetInstrumentsQuery(filter, userID)
+func (p *Postgres) GetInstruments(ctx context.Context, filter *models.QueryFilter) (*models.InstrumentList, error) {
+	query, args := p.buildGetInstrumentsQuery(filter)
 
 	rows, err := p.db.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -185,7 +185,7 @@ func (p *Postgres) GetInstruments(ctx context.Context, filter *models.QueryFilte
 		return nil, fmt.Errorf("scanning response from database: %w", err)
 	}
 
-	count, err := p.GetInstrumentCount(ctx, filter, userID)
+	count, err := p.GetInstrumentCount(ctx, filter)
 	if err != nil {
 		return nil, fmt.Errorf("fetching instrument count: %w", err)
 	}
@@ -200,23 +200,6 @@ func (p *Postgres) GetInstruments(ctx context.Context, filter *models.QueryFilte
 	}
 
 	return x, nil
-}
-
-// GetAllInstrumentsForUser fetches every instrument belonging to a user
-func (p *Postgres) GetAllInstrumentsForUser(ctx context.Context, userID uint64) ([]models.Instrument, error) {
-	query, args := p.buildGetInstrumentsQuery(nil, userID)
-
-	rows, err := p.db.QueryContext(ctx, query, args...)
-	if err != nil {
-		return nil, buildError(err, "fetching instruments for user")
-	}
-
-	list, err := scanInstruments(p.logger, rows)
-	if err != nil {
-		return nil, fmt.Errorf("parsing database results: %w", err)
-	}
-
-	return list, nil
 }
 
 // buildCreateInstrumentQuery takes an instrument and returns a creation query for that instrument and the relevant arguments.
@@ -275,7 +258,7 @@ func (p *Postgres) buildUpdateInstrumentQuery(input *models.Instrument) (query s
 		Set("icon", input.Icon).
 		Set("updated_on", squirrel.Expr(CurrentUnixTimeQuery)).
 		Where(squirrel.Eq{
-			"id":         input.ID,
+			"id": input.ID,
 		}).
 		Suffix("RETURNING updated_on").
 		ToSql()
@@ -292,7 +275,7 @@ func (p *Postgres) UpdateInstrument(ctx context.Context, input *models.Instrumen
 }
 
 // buildArchiveInstrumentQuery returns a SQL query which marks a given instrument belonging to a given user as archived.
-func (p *Postgres) buildArchiveInstrumentQuery(instrumentID, userID uint64) (query string, args []interface{}) {
+func (p *Postgres) buildArchiveInstrumentQuery(instrumentID uint64) (query string, args []interface{}) {
 	var err error
 	query, args, err = p.sqlBuilder.
 		Update(instrumentsTableName).
@@ -311,8 +294,8 @@ func (p *Postgres) buildArchiveInstrumentQuery(instrumentID, userID uint64) (que
 }
 
 // ArchiveInstrument marks an instrument as archived in the database
-func (p *Postgres) ArchiveInstrument(ctx context.Context, instrumentID, userID uint64) error {
-	query, args := p.buildArchiveInstrumentQuery(instrumentID, userID)
+func (p *Postgres) ArchiveInstrument(ctx context.Context, instrumentID uint64) error {
+	query, args := p.buildArchiveInstrumentQuery(instrumentID)
 	_, err := p.db.ExecContext(ctx, query, args...)
 	return err
 }

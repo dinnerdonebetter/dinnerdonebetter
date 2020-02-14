@@ -72,13 +72,13 @@ func scanRequiredPreparationInstruments(logger logging.Logger, rows *sql.Rows) (
 }
 
 // buildGetRequiredPreparationInstrumentQuery constructs a SQL query for fetching a required preparation instrument with a given ID belong to a user with a given ID.
-func (p *Postgres) buildGetRequiredPreparationInstrumentQuery(requiredPreparationInstrumentID, userID uint64) (query string, args []interface{}) {
+func (p *Postgres) buildGetRequiredPreparationInstrumentQuery(requiredPreparationInstrumentID uint64) (query string, args []interface{}) {
 	var err error
 	query, args, err = p.sqlBuilder.
 		Select(requiredPreparationInstrumentsTableColumns...).
 		From(requiredPreparationInstrumentsTableName).
 		Where(squirrel.Eq{
-			"id":         requiredPreparationInstrumentID,
+			"id": requiredPreparationInstrumentID,
 		}).ToSql()
 
 	p.logQueryBuildingError(err)
@@ -87,15 +87,15 @@ func (p *Postgres) buildGetRequiredPreparationInstrumentQuery(requiredPreparatio
 }
 
 // GetRequiredPreparationInstrument fetches a required preparation instrument from the postgres database
-func (p *Postgres) GetRequiredPreparationInstrument(ctx context.Context, requiredPreparationInstrumentID, userID uint64) (*models.RequiredPreparationInstrument, error) {
-	query, args := p.buildGetRequiredPreparationInstrumentQuery(requiredPreparationInstrumentID, userID)
+func (p *Postgres) GetRequiredPreparationInstrument(ctx context.Context, requiredPreparationInstrumentID uint64) (*models.RequiredPreparationInstrument, error) {
+	query, args := p.buildGetRequiredPreparationInstrumentQuery(requiredPreparationInstrumentID)
 	row := p.db.QueryRowContext(ctx, query, args...)
 	return scanRequiredPreparationInstrument(row)
 }
 
 // buildGetRequiredPreparationInstrumentCountQuery takes a QueryFilter and a user ID and returns a SQL query (and the relevant arguments) for
 // fetching the number of required preparation instruments belonging to a given user that meet a given query
-func (p *Postgres) buildGetRequiredPreparationInstrumentCountQuery(filter *models.QueryFilter, userID uint64) (query string, args []interface{}) {
+func (p *Postgres) buildGetRequiredPreparationInstrumentCountQuery(filter *models.QueryFilter) (query string, args []interface{}) {
 	var err error
 	builder := p.sqlBuilder.
 		Select(CountQuery).
@@ -115,8 +115,8 @@ func (p *Postgres) buildGetRequiredPreparationInstrumentCountQuery(filter *model
 }
 
 // GetRequiredPreparationInstrumentCount will fetch the count of required preparation instruments from the database that meet a particular filter and belong to a particular user.
-func (p *Postgres) GetRequiredPreparationInstrumentCount(ctx context.Context, filter *models.QueryFilter, userID uint64) (count uint64, err error) {
-	query, args := p.buildGetRequiredPreparationInstrumentCountQuery(filter, userID)
+func (p *Postgres) GetRequiredPreparationInstrumentCount(ctx context.Context, filter *models.QueryFilter) (count uint64, err error) {
+	query, args := p.buildGetRequiredPreparationInstrumentCountQuery(filter)
 	err = p.db.QueryRowContext(ctx, query, args...).Scan(&count)
 	return count, err
 }
@@ -148,9 +148,9 @@ func (p *Postgres) GetAllRequiredPreparationInstrumentsCount(ctx context.Context
 	return count, err
 }
 
-// buildGetRequiredPreparationInstrumentsQuery builds a SQL query selecting required preparation instruments that adhere to a given QueryFilter and belong to a given user,
+// buildGetRequiredPreparationInstrumentsQuery builds a SQL query selecting required preparation instruments that adhere to a given QueryFilter,
 // and returns both the query and the relevant args to pass to the query executor.
-func (p *Postgres) buildGetRequiredPreparationInstrumentsQuery(filter *models.QueryFilter, userID uint64) (query string, args []interface{}) {
+func (p *Postgres) buildGetRequiredPreparationInstrumentsQuery(filter *models.QueryFilter) (query string, args []interface{}) {
 	var err error
 	builder := p.sqlBuilder.
 		Select(requiredPreparationInstrumentsTableColumns...).
@@ -170,8 +170,8 @@ func (p *Postgres) buildGetRequiredPreparationInstrumentsQuery(filter *models.Qu
 }
 
 // GetRequiredPreparationInstruments fetches a list of required preparation instruments from the database that meet a particular filter
-func (p *Postgres) GetRequiredPreparationInstruments(ctx context.Context, filter *models.QueryFilter, userID uint64) (*models.RequiredPreparationInstrumentList, error) {
-	query, args := p.buildGetRequiredPreparationInstrumentsQuery(filter, userID)
+func (p *Postgres) GetRequiredPreparationInstruments(ctx context.Context, filter *models.QueryFilter) (*models.RequiredPreparationInstrumentList, error) {
+	query, args := p.buildGetRequiredPreparationInstrumentsQuery(filter)
 
 	rows, err := p.db.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -183,7 +183,7 @@ func (p *Postgres) GetRequiredPreparationInstruments(ctx context.Context, filter
 		return nil, fmt.Errorf("scanning response from database: %w", err)
 	}
 
-	count, err := p.GetRequiredPreparationInstrumentCount(ctx, filter, userID)
+	count, err := p.GetRequiredPreparationInstrumentCount(ctx, filter)
 	if err != nil {
 		return nil, fmt.Errorf("fetching required preparation instrument count: %w", err)
 	}
@@ -198,23 +198,6 @@ func (p *Postgres) GetRequiredPreparationInstruments(ctx context.Context, filter
 	}
 
 	return x, nil
-}
-
-// GetAllRequiredPreparationInstrumentsForUser fetches every required preparation instrument belonging to a user
-func (p *Postgres) GetAllRequiredPreparationInstrumentsForUser(ctx context.Context, userID uint64) ([]models.RequiredPreparationInstrument, error) {
-	query, args := p.buildGetRequiredPreparationInstrumentsQuery(nil, userID)
-
-	rows, err := p.db.QueryContext(ctx, query, args...)
-	if err != nil {
-		return nil, buildError(err, "fetching required preparation instruments for user")
-	}
-
-	list, err := scanRequiredPreparationInstruments(p.logger, rows)
-	if err != nil {
-		return nil, fmt.Errorf("parsing database results: %w", err)
-	}
-
-	return list, nil
 }
 
 // buildCreateRequiredPreparationInstrumentQuery takes a required preparation instrument and returns a creation query for that required preparation instrument and the relevant arguments.
@@ -269,7 +252,7 @@ func (p *Postgres) buildUpdateRequiredPreparationInstrumentQuery(input *models.R
 		Set("notes", input.Notes).
 		Set("updated_on", squirrel.Expr(CurrentUnixTimeQuery)).
 		Where(squirrel.Eq{
-			"id":         input.ID,
+			"id": input.ID,
 		}).
 		Suffix("RETURNING updated_on").
 		ToSql()
@@ -286,7 +269,7 @@ func (p *Postgres) UpdateRequiredPreparationInstrument(ctx context.Context, inpu
 }
 
 // buildArchiveRequiredPreparationInstrumentQuery returns a SQL query which marks a given required preparation instrument belonging to a given user as archived.
-func (p *Postgres) buildArchiveRequiredPreparationInstrumentQuery(requiredPreparationInstrumentID, userID uint64) (query string, args []interface{}) {
+func (p *Postgres) buildArchiveRequiredPreparationInstrumentQuery(requiredPreparationInstrumentID uint64) (query string, args []interface{}) {
 	var err error
 	query, args, err = p.sqlBuilder.
 		Update(requiredPreparationInstrumentsTableName).
@@ -305,8 +288,8 @@ func (p *Postgres) buildArchiveRequiredPreparationInstrumentQuery(requiredPrepar
 }
 
 // ArchiveRequiredPreparationInstrument marks a required preparation instrument as archived in the database
-func (p *Postgres) ArchiveRequiredPreparationInstrument(ctx context.Context, requiredPreparationInstrumentID, userID uint64) error {
-	query, args := p.buildArchiveRequiredPreparationInstrumentQuery(requiredPreparationInstrumentID, userID)
+func (p *Postgres) ArchiveRequiredPreparationInstrument(ctx context.Context, requiredPreparationInstrumentID uint64) error {
+	query, args := p.buildArchiveRequiredPreparationInstrumentQuery(requiredPreparationInstrumentID)
 	_, err := p.db.ExecContext(ctx, query, args...)
 	return err
 }

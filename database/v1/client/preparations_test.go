@@ -15,13 +15,12 @@ func TestClient_GetPreparation(T *testing.T) {
 
 	T.Run("obligatory", func(t *testing.T) {
 		examplePreparationID := uint64(123)
-		exampleUserID := uint64(123)
 		expected := &models.Preparation{}
 
 		c, mockDB := buildTestClient()
-		mockDB.PreparationDataManager.On("GetPreparation", mock.Anything, examplePreparationID, exampleUserID).Return(expected, nil)
+		mockDB.PreparationDataManager.On("GetPreparation", mock.Anything, examplePreparationID).Return(expected, nil)
 
-		actual, err := c.GetPreparation(context.Background(), examplePreparationID, exampleUserID)
+		actual, err := c.GetPreparation(context.Background(), examplePreparationID)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -34,12 +33,11 @@ func TestClient_GetPreparationCount(T *testing.T) {
 
 	T.Run("obligatory", func(t *testing.T) {
 		expected := uint64(321)
-		exampleUserID := uint64(123)
 
 		c, mockDB := buildTestClient()
-		mockDB.PreparationDataManager.On("GetPreparationCount", mock.Anything, models.DefaultQueryFilter(), exampleUserID).Return(expected, nil)
+		mockDB.PreparationDataManager.On("GetPreparationCount", mock.Anything, models.DefaultQueryFilter()).Return(expected, nil)
 
-		actual, err := c.GetPreparationCount(context.Background(), models.DefaultQueryFilter(), exampleUserID)
+		actual, err := c.GetPreparationCount(context.Background(), models.DefaultQueryFilter())
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -48,12 +46,11 @@ func TestClient_GetPreparationCount(T *testing.T) {
 
 	T.Run("with nil filter", func(t *testing.T) {
 		expected := uint64(321)
-		exampleUserID := uint64(123)
 
 		c, mockDB := buildTestClient()
-		mockDB.PreparationDataManager.On("GetPreparationCount", mock.Anything, (*models.QueryFilter)(nil), exampleUserID).Return(expected, nil)
+		mockDB.PreparationDataManager.On("GetPreparationCount", mock.Anything, (*models.QueryFilter)(nil)).Return(expected, nil)
 
-		actual, err := c.GetPreparationCount(context.Background(), nil, exampleUserID)
+		actual, err := c.GetPreparationCount(context.Background(), nil)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -81,13 +78,12 @@ func TestClient_GetPreparations(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		exampleUserID := uint64(123)
 		c, mockDB := buildTestClient()
 		expected := &models.PreparationList{}
 
-		mockDB.PreparationDataManager.On("GetPreparations", mock.Anything, models.DefaultQueryFilter(), exampleUserID).Return(expected, nil)
+		mockDB.PreparationDataManager.On("GetPreparations", mock.Anything, models.DefaultQueryFilter()).Return(expected, nil)
 
-		actual, err := c.GetPreparations(context.Background(), models.DefaultQueryFilter(), exampleUserID)
+		actual, err := c.GetPreparations(context.Background(), models.DefaultQueryFilter())
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -95,13 +91,12 @@ func TestClient_GetPreparations(T *testing.T) {
 	})
 
 	T.Run("with nil filter", func(t *testing.T) {
-		exampleUserID := uint64(123)
 		c, mockDB := buildTestClient()
 		expected := &models.PreparationList{}
 
-		mockDB.PreparationDataManager.On("GetPreparations", mock.Anything, (*models.QueryFilter)(nil), exampleUserID).Return(expected, nil)
+		mockDB.PreparationDataManager.On("GetPreparations", mock.Anything, (*models.QueryFilter)(nil)).Return(expected, nil)
 
-		actual, err := c.GetPreparations(context.Background(), nil, exampleUserID)
+		actual, err := c.GetPreparations(context.Background(), nil)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -146,14 +141,13 @@ func TestClient_ArchivePreparation(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		exampleUserID := uint64(123)
 		examplePreparationID := uint64(123)
 		var expected error
 
 		c, mockDB := buildTestClient()
-		mockDB.PreparationDataManager.On("ArchivePreparation", mock.Anything, examplePreparationID, exampleUserID).Return(expected)
+		mockDB.PreparationDataManager.On("ArchivePreparation", mock.Anything, examplePreparationID).Return(expected)
 
-		err := c.ArchivePreparation(context.Background(), exampleUserID, examplePreparationID)
+		err := c.ArchivePreparation(context.Background(), examplePreparationID)
 		assert.NoError(t, err)
 	})
 }

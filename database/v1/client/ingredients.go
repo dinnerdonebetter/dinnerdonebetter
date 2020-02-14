@@ -19,32 +19,29 @@ func attachIngredientIDToSpan(span *trace.Span, ingredientID uint64) {
 }
 
 // GetIngredient fetches an ingredient from the database
-func (c *Client) GetIngredient(ctx context.Context, ingredientID, userID uint64) (*models.Ingredient, error) {
+func (c *Client) GetIngredient(ctx context.Context, ingredientID uint64) (*models.Ingredient, error) {
 	ctx, span := trace.StartSpan(ctx, "GetIngredient")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
 	attachIngredientIDToSpan(span, ingredientID)
 
 	c.logger.WithValues(map[string]interface{}{
 		"ingredient_id": ingredientID,
-		"user_id":       userID,
 	}).Debug("GetIngredient called")
 
-	return c.querier.GetIngredient(ctx, ingredientID, userID)
+	return c.querier.GetIngredient(ctx, ingredientID)
 }
 
 // GetIngredientCount fetches the count of ingredients from the database that meet a particular filter
-func (c *Client) GetIngredientCount(ctx context.Context, filter *models.QueryFilter, userID uint64) (count uint64, err error) {
+func (c *Client) GetIngredientCount(ctx context.Context, filter *models.QueryFilter) (count uint64, err error) {
 	ctx, span := trace.StartSpan(ctx, "GetIngredientCount")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
 	attachFilterToSpan(span, filter)
 
-	c.logger.WithValue("user_id", userID).Debug("GetIngredientCount called")
+	c.logger.Debug("GetIngredientCount called")
 
-	return c.querier.GetIngredientCount(ctx, filter, userID)
+	return c.querier.GetIngredientCount(ctx, filter)
 }
 
 // GetAllIngredientsCount fetches the count of ingredients from the database that meet a particular filter
@@ -58,29 +55,15 @@ func (c *Client) GetAllIngredientsCount(ctx context.Context) (count uint64, err 
 }
 
 // GetIngredients fetches a list of ingredients from the database that meet a particular filter
-func (c *Client) GetIngredients(ctx context.Context, filter *models.QueryFilter, userID uint64) (*models.IngredientList, error) {
+func (c *Client) GetIngredients(ctx context.Context, filter *models.QueryFilter) (*models.IngredientList, error) {
 	ctx, span := trace.StartSpan(ctx, "GetIngredients")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
 	attachFilterToSpan(span, filter)
 
-	c.logger.WithValue("user_id", userID).Debug("GetIngredients called")
+	c.logger.Debug("GetIngredients called")
 
-	ingredientList, err := c.querier.GetIngredients(ctx, filter, userID)
-
-	return ingredientList, err
-}
-
-// GetAllIngredientsForUser fetches a list of ingredients from the database that meet a particular filter
-func (c *Client) GetAllIngredientsForUser(ctx context.Context, userID uint64) ([]models.Ingredient, error) {
-	ctx, span := trace.StartSpan(ctx, "GetAllIngredientsForUser")
-	defer span.End()
-
-	attachUserIDToSpan(span, userID)
-	c.logger.WithValue("user_id", userID).Debug("GetAllIngredientsForUser called")
-
-	ingredientList, err := c.querier.GetAllIngredientsForUser(ctx, userID)
+	ingredientList, err := c.querier.GetIngredients(ctx, filter)
 
 	return ingredientList, err
 }
@@ -108,17 +91,15 @@ func (c *Client) UpdateIngredient(ctx context.Context, input *models.Ingredient)
 }
 
 // ArchiveIngredient archives an ingredient from the database by its ID
-func (c *Client) ArchiveIngredient(ctx context.Context, ingredientID, userID uint64) error {
+func (c *Client) ArchiveIngredient(ctx context.Context, ingredientID uint64) error {
 	ctx, span := trace.StartSpan(ctx, "ArchiveIngredient")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
 	attachIngredientIDToSpan(span, ingredientID)
 
 	c.logger.WithValues(map[string]interface{}{
 		"ingredient_id": ingredientID,
-		"user_id":       userID,
 	}).Debug("ArchiveIngredient called")
 
-	return c.querier.ArchiveIngredient(ctx, ingredientID, userID)
+	return c.querier.ArchiveIngredient(ctx, ingredientID)
 }
