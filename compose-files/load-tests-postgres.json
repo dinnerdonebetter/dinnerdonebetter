@@ -17,7 +17,7 @@
     },
     "load-tests": {
       "environment": {
-        "TARGET_ADDRESS": "http://todo-server:8888"
+        "TARGET_ADDRESS": "http://prixfixe-server:8888"
       },
       "links": [
         "prixfixe-server"
