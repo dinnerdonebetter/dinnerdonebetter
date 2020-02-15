@@ -39,7 +39,7 @@ func TestRequiredPreparationInstrumentsService_List(T *testing.T) {
 		}
 
 		id := &mockmodels.RequiredPreparationInstrumentDataManager{}
-		id.On("GetRequiredPreparationInstruments", mock.Anything, mock.Anything, requestingUser.ID).Return(expected, nil)
+		id.On("GetRequiredPreparationInstruments", mock.Anything, mock.Anything).Return(expected, nil)
 		s.requiredPreparationInstrumentDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -69,7 +69,7 @@ func TestRequiredPreparationInstrumentsService_List(T *testing.T) {
 		}
 
 		id := &mockmodels.RequiredPreparationInstrumentDataManager{}
-		id.On("GetRequiredPreparationInstruments", mock.Anything, mock.Anything, requestingUser.ID).Return((*models.RequiredPreparationInstrumentList)(nil), sql.ErrNoRows)
+		id.On("GetRequiredPreparationInstruments", mock.Anything, mock.Anything).Return((*models.RequiredPreparationInstrumentList)(nil), sql.ErrNoRows)
 		s.requiredPreparationInstrumentDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -99,7 +99,7 @@ func TestRequiredPreparationInstrumentsService_List(T *testing.T) {
 		}
 
 		id := &mockmodels.RequiredPreparationInstrumentDataManager{}
-		id.On("GetRequiredPreparationInstruments", mock.Anything, mock.Anything, requestingUser.ID).Return((*models.RequiredPreparationInstrumentList)(nil), errors.New("blah"))
+		id.On("GetRequiredPreparationInstruments", mock.Anything, mock.Anything).Return((*models.RequiredPreparationInstrumentList)(nil), errors.New("blah"))
 		s.requiredPreparationInstrumentDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -133,7 +133,7 @@ func TestRequiredPreparationInstrumentsService_List(T *testing.T) {
 		}
 
 		id := &mockmodels.RequiredPreparationInstrumentDataManager{}
-		id.On("GetRequiredPreparationInstruments", mock.Anything, mock.Anything, requestingUser.ID).Return(expected, nil)
+		id.On("GetRequiredPreparationInstruments", mock.Anything, mock.Anything).Return(expected, nil)
 		s.requiredPreparationInstrumentDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -344,7 +344,7 @@ func TestRequiredPreparationInstrumentsService_Read(T *testing.T) {
 		}
 
 		id := &mockmodels.RequiredPreparationInstrumentDataManager{}
-		id.On("GetRequiredPreparationInstrument", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
+		id.On("GetRequiredPreparationInstrument", mock.Anything, expected.ID).Return(expected, nil)
 		s.requiredPreparationInstrumentDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -382,7 +382,7 @@ func TestRequiredPreparationInstrumentsService_Read(T *testing.T) {
 		}
 
 		id := &mockmodels.RequiredPreparationInstrumentDataManager{}
-		id.On("GetRequiredPreparationInstrument", mock.Anything, expected.ID, requestingUser.ID).Return((*models.RequiredPreparationInstrument)(nil), sql.ErrNoRows)
+		id.On("GetRequiredPreparationInstrument", mock.Anything, expected.ID).Return((*models.RequiredPreparationInstrument)(nil), sql.ErrNoRows)
 		s.requiredPreparationInstrumentDatabase = id
 
 		res := httptest.NewRecorder()
@@ -416,7 +416,7 @@ func TestRequiredPreparationInstrumentsService_Read(T *testing.T) {
 		}
 
 		id := &mockmodels.RequiredPreparationInstrumentDataManager{}
-		id.On("GetRequiredPreparationInstrument", mock.Anything, expected.ID, requestingUser.ID).Return((*models.RequiredPreparationInstrument)(nil), errors.New("blah"))
+		id.On("GetRequiredPreparationInstrument", mock.Anything, expected.ID).Return((*models.RequiredPreparationInstrument)(nil), errors.New("blah"))
 		s.requiredPreparationInstrumentDatabase = id
 
 		res := httptest.NewRecorder()
@@ -450,7 +450,7 @@ func TestRequiredPreparationInstrumentsService_Read(T *testing.T) {
 		}
 
 		id := &mockmodels.RequiredPreparationInstrumentDataManager{}
-		id.On("GetRequiredPreparationInstrument", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
+		id.On("GetRequiredPreparationInstrument", mock.Anything, expected.ID).Return(expected, nil)
 		s.requiredPreparationInstrumentDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -500,7 +500,7 @@ func TestRequiredPreparationInstrumentsService_Update(T *testing.T) {
 		}
 
 		id := &mockmodels.RequiredPreparationInstrumentDataManager{}
-		id.On("GetRequiredPreparationInstrument", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
+		id.On("GetRequiredPreparationInstrument", mock.Anything, expected.ID).Return(expected, nil)
 		id.On("UpdateRequiredPreparationInstrument", mock.Anything, mock.Anything).Return(nil)
 		s.requiredPreparationInstrumentDatabase = id
 
@@ -563,7 +563,7 @@ func TestRequiredPreparationInstrumentsService_Update(T *testing.T) {
 		}
 
 		id := &mockmodels.RequiredPreparationInstrumentDataManager{}
-		id.On("GetRequiredPreparationInstrument", mock.Anything, expected.ID, requestingUser.ID).Return((*models.RequiredPreparationInstrument)(nil), sql.ErrNoRows)
+		id.On("GetRequiredPreparationInstrument", mock.Anything, expected.ID).Return((*models.RequiredPreparationInstrument)(nil), sql.ErrNoRows)
 		s.requiredPreparationInstrumentDatabase = id
 
 		res := httptest.NewRecorder()
@@ -604,7 +604,7 @@ func TestRequiredPreparationInstrumentsService_Update(T *testing.T) {
 		}
 
 		id := &mockmodels.RequiredPreparationInstrumentDataManager{}
-		id.On("GetRequiredPreparationInstrument", mock.Anything, expected.ID, requestingUser.ID).Return((*models.RequiredPreparationInstrument)(nil), errors.New("blah"))
+		id.On("GetRequiredPreparationInstrument", mock.Anything, expected.ID).Return((*models.RequiredPreparationInstrument)(nil), errors.New("blah"))
 		s.requiredPreparationInstrumentDatabase = id
 
 		res := httptest.NewRecorder()
@@ -653,7 +653,7 @@ func TestRequiredPreparationInstrumentsService_Update(T *testing.T) {
 		}
 
 		id := &mockmodels.RequiredPreparationInstrumentDataManager{}
-		id.On("GetRequiredPreparationInstrument", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
+		id.On("GetRequiredPreparationInstrument", mock.Anything, expected.ID).Return(expected, nil)
 		id.On("UpdateRequiredPreparationInstrument", mock.Anything, mock.Anything).Return(errors.New("blah"))
 		s.requiredPreparationInstrumentDatabase = id
 
@@ -707,7 +707,7 @@ func TestRequiredPreparationInstrumentsService_Update(T *testing.T) {
 		}
 
 		id := &mockmodels.RequiredPreparationInstrumentDataManager{}
-		id.On("GetRequiredPreparationInstrument", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
+		id.On("GetRequiredPreparationInstrument", mock.Anything, expected.ID).Return(expected, nil)
 		id.On("UpdateRequiredPreparationInstrument", mock.Anything, mock.Anything).Return(nil)
 		s.requiredPreparationInstrumentDatabase = id
 
@@ -765,7 +765,7 @@ func TestRequiredPreparationInstrumentsService_Archive(T *testing.T) {
 		}
 
 		id := &mockmodels.RequiredPreparationInstrumentDataManager{}
-		id.On("ArchiveRequiredPreparationInstrument", mock.Anything, expected.ID, requestingUser.ID).Return(nil)
+		id.On("ArchiveRequiredPreparationInstrument", mock.Anything, expected.ID).Return(nil)
 		s.requiredPreparationInstrumentDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -803,7 +803,7 @@ func TestRequiredPreparationInstrumentsService_Archive(T *testing.T) {
 		}
 
 		id := &mockmodels.RequiredPreparationInstrumentDataManager{}
-		id.On("ArchiveRequiredPreparationInstrument", mock.Anything, expected.ID, requestingUser.ID).Return(sql.ErrNoRows)
+		id.On("ArchiveRequiredPreparationInstrument", mock.Anything, expected.ID).Return(sql.ErrNoRows)
 		s.requiredPreparationInstrumentDatabase = id
 
 		res := httptest.NewRecorder()
@@ -837,7 +837,7 @@ func TestRequiredPreparationInstrumentsService_Archive(T *testing.T) {
 		}
 
 		id := &mockmodels.RequiredPreparationInstrumentDataManager{}
-		id.On("ArchiveRequiredPreparationInstrument", mock.Anything, expected.ID, requestingUser.ID).Return(errors.New("blah"))
+		id.On("ArchiveRequiredPreparationInstrument", mock.Anything, expected.ID).Return(errors.New("blah"))
 		s.requiredPreparationInstrumentDatabase = id
 
 		res := httptest.NewRecorder()

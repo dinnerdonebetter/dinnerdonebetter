@@ -39,7 +39,7 @@ func TestInstrumentsService_List(T *testing.T) {
 		}
 
 		id := &mockmodels.InstrumentDataManager{}
-		id.On("GetInstruments", mock.Anything, mock.Anything, requestingUser.ID).Return(expected, nil)
+		id.On("GetInstruments", mock.Anything, mock.Anything).Return(expected, nil)
 		s.instrumentDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -69,7 +69,7 @@ func TestInstrumentsService_List(T *testing.T) {
 		}
 
 		id := &mockmodels.InstrumentDataManager{}
-		id.On("GetInstruments", mock.Anything, mock.Anything, requestingUser.ID).Return((*models.InstrumentList)(nil), sql.ErrNoRows)
+		id.On("GetInstruments", mock.Anything, mock.Anything).Return((*models.InstrumentList)(nil), sql.ErrNoRows)
 		s.instrumentDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -99,7 +99,7 @@ func TestInstrumentsService_List(T *testing.T) {
 		}
 
 		id := &mockmodels.InstrumentDataManager{}
-		id.On("GetInstruments", mock.Anything, mock.Anything, requestingUser.ID).Return((*models.InstrumentList)(nil), errors.New("blah"))
+		id.On("GetInstruments", mock.Anything, mock.Anything).Return((*models.InstrumentList)(nil), errors.New("blah"))
 		s.instrumentDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -133,7 +133,7 @@ func TestInstrumentsService_List(T *testing.T) {
 		}
 
 		id := &mockmodels.InstrumentDataManager{}
-		id.On("GetInstruments", mock.Anything, mock.Anything, requestingUser.ID).Return(expected, nil)
+		id.On("GetInstruments", mock.Anything, mock.Anything).Return(expected, nil)
 		s.instrumentDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -347,7 +347,7 @@ func TestInstrumentsService_Read(T *testing.T) {
 		}
 
 		id := &mockmodels.InstrumentDataManager{}
-		id.On("GetInstrument", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
+		id.On("GetInstrument", mock.Anything, expected.ID).Return(expected, nil)
 		s.instrumentDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -385,7 +385,7 @@ func TestInstrumentsService_Read(T *testing.T) {
 		}
 
 		id := &mockmodels.InstrumentDataManager{}
-		id.On("GetInstrument", mock.Anything, expected.ID, requestingUser.ID).Return((*models.Instrument)(nil), sql.ErrNoRows)
+		id.On("GetInstrument", mock.Anything, expected.ID).Return((*models.Instrument)(nil), sql.ErrNoRows)
 		s.instrumentDatabase = id
 
 		res := httptest.NewRecorder()
@@ -419,7 +419,7 @@ func TestInstrumentsService_Read(T *testing.T) {
 		}
 
 		id := &mockmodels.InstrumentDataManager{}
-		id.On("GetInstrument", mock.Anything, expected.ID, requestingUser.ID).Return((*models.Instrument)(nil), errors.New("blah"))
+		id.On("GetInstrument", mock.Anything, expected.ID).Return((*models.Instrument)(nil), errors.New("blah"))
 		s.instrumentDatabase = id
 
 		res := httptest.NewRecorder()
@@ -453,7 +453,7 @@ func TestInstrumentsService_Read(T *testing.T) {
 		}
 
 		id := &mockmodels.InstrumentDataManager{}
-		id.On("GetInstrument", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
+		id.On("GetInstrument", mock.Anything, expected.ID).Return(expected, nil)
 		s.instrumentDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -503,7 +503,7 @@ func TestInstrumentsService_Update(T *testing.T) {
 		}
 
 		id := &mockmodels.InstrumentDataManager{}
-		id.On("GetInstrument", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
+		id.On("GetInstrument", mock.Anything, expected.ID).Return(expected, nil)
 		id.On("UpdateInstrument", mock.Anything, mock.Anything).Return(nil)
 		s.instrumentDatabase = id
 
@@ -567,7 +567,7 @@ func TestInstrumentsService_Update(T *testing.T) {
 		}
 
 		id := &mockmodels.InstrumentDataManager{}
-		id.On("GetInstrument", mock.Anything, expected.ID, requestingUser.ID).Return((*models.Instrument)(nil), sql.ErrNoRows)
+		id.On("GetInstrument", mock.Anything, expected.ID).Return((*models.Instrument)(nil), sql.ErrNoRows)
 		s.instrumentDatabase = id
 
 		res := httptest.NewRecorder()
@@ -609,7 +609,7 @@ func TestInstrumentsService_Update(T *testing.T) {
 		}
 
 		id := &mockmodels.InstrumentDataManager{}
-		id.On("GetInstrument", mock.Anything, expected.ID, requestingUser.ID).Return((*models.Instrument)(nil), errors.New("blah"))
+		id.On("GetInstrument", mock.Anything, expected.ID).Return((*models.Instrument)(nil), errors.New("blah"))
 		s.instrumentDatabase = id
 
 		res := httptest.NewRecorder()
@@ -659,7 +659,7 @@ func TestInstrumentsService_Update(T *testing.T) {
 		}
 
 		id := &mockmodels.InstrumentDataManager{}
-		id.On("GetInstrument", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
+		id.On("GetInstrument", mock.Anything, expected.ID).Return(expected, nil)
 		id.On("UpdateInstrument", mock.Anything, mock.Anything).Return(errors.New("blah"))
 		s.instrumentDatabase = id
 
@@ -714,7 +714,7 @@ func TestInstrumentsService_Update(T *testing.T) {
 		}
 
 		id := &mockmodels.InstrumentDataManager{}
-		id.On("GetInstrument", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
+		id.On("GetInstrument", mock.Anything, expected.ID).Return(expected, nil)
 		id.On("UpdateInstrument", mock.Anything, mock.Anything).Return(nil)
 		s.instrumentDatabase = id
 
@@ -773,7 +773,7 @@ func TestInstrumentsService_Archive(T *testing.T) {
 		}
 
 		id := &mockmodels.InstrumentDataManager{}
-		id.On("ArchiveInstrument", mock.Anything, expected.ID, requestingUser.ID).Return(nil)
+		id.On("ArchiveInstrument", mock.Anything, expected.ID).Return(nil)
 		s.instrumentDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -811,7 +811,7 @@ func TestInstrumentsService_Archive(T *testing.T) {
 		}
 
 		id := &mockmodels.InstrumentDataManager{}
-		id.On("ArchiveInstrument", mock.Anything, expected.ID, requestingUser.ID).Return(sql.ErrNoRows)
+		id.On("ArchiveInstrument", mock.Anything, expected.ID).Return(sql.ErrNoRows)
 		s.instrumentDatabase = id
 
 		res := httptest.NewRecorder()
@@ -845,7 +845,7 @@ func TestInstrumentsService_Archive(T *testing.T) {
 		}
 
 		id := &mockmodels.InstrumentDataManager{}
-		id.On("ArchiveInstrument", mock.Anything, expected.ID, requestingUser.ID).Return(errors.New("blah"))
+		id.On("ArchiveInstrument", mock.Anything, expected.ID).Return(errors.New("blah"))
 		s.instrumentDatabase = id
 
 		res := httptest.NewRecorder()

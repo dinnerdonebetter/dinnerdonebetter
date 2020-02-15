@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 
 	"github.com/GuiaBolso/darwin"
 )
@@ -82,7 +81,6 @@ var (
 				"archived_on" BIGINT DEFAULT NULL
 			);`,
 		},
-		/// we good above this line
 		{
 			Version:     5,
 			Description: "create ingredients table",
@@ -316,27 +314,11 @@ var (
 	}
 )
 
-// buildMigrationFunc returns a sync.Once compatible function closure that will
-// migrate a postgres database
+// buildMigrationFunc returns a sync.Once compatible function closure that will migrate a postgres database
 func buildMigrationFunc(db *sql.DB) func() {
 	return func() {
-		x := make(chan darwin.MigrationInfo, len(migrations))
-
-		go func() {
-			for {
-				select {
-				case y := <-x:
-					if y.Error != nil {
-						fmt.Printf("fucked migration %v: %s\n", y.Error, y.Migration.Script)
-					} else {
-						fmt.Printf("completed migration %q: %s\n", y.Migration.Checksum(), y.Migration.Script)
-					}
-				}
-			}
-		}()
-
 		driver := darwin.NewGenericDriver(db, darwin.PostgresDialect{})
-		if err := darwin.New(driver, migrations, x).Migrate(); err != nil {
+		if err := darwin.New(driver, migrations, nil).Migrate(); err != nil {
 			panic(err)
 		}
 	}

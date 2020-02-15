@@ -39,7 +39,7 @@ func TestIngredientsService_List(T *testing.T) {
 		}
 
 		id := &mockmodels.IngredientDataManager{}
-		id.On("GetIngredients", mock.Anything, mock.Anything, requestingUser.ID).Return(expected, nil)
+		id.On("GetIngredients", mock.Anything, mock.Anything).Return(expected, nil)
 		s.ingredientDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -69,7 +69,7 @@ func TestIngredientsService_List(T *testing.T) {
 		}
 
 		id := &mockmodels.IngredientDataManager{}
-		id.On("GetIngredients", mock.Anything, mock.Anything, requestingUser.ID).Return((*models.IngredientList)(nil), sql.ErrNoRows)
+		id.On("GetIngredients", mock.Anything, mock.Anything).Return((*models.IngredientList)(nil), sql.ErrNoRows)
 		s.ingredientDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -99,7 +99,7 @@ func TestIngredientsService_List(T *testing.T) {
 		}
 
 		id := &mockmodels.IngredientDataManager{}
-		id.On("GetIngredients", mock.Anything, mock.Anything, requestingUser.ID).Return((*models.IngredientList)(nil), errors.New("blah"))
+		id.On("GetIngredients", mock.Anything, mock.Anything).Return((*models.IngredientList)(nil), errors.New("blah"))
 		s.ingredientDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -133,7 +133,7 @@ func TestIngredientsService_List(T *testing.T) {
 		}
 
 		id := &mockmodels.IngredientDataManager{}
-		id.On("GetIngredients", mock.Anything, mock.Anything, requestingUser.ID).Return(expected, nil)
+		id.On("GetIngredients", mock.Anything, mock.Anything).Return(expected, nil)
 		s.ingredientDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -389,7 +389,7 @@ func TestIngredientsService_Read(T *testing.T) {
 		}
 
 		id := &mockmodels.IngredientDataManager{}
-		id.On("GetIngredient", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
+		id.On("GetIngredient", mock.Anything, expected.ID).Return(expected, nil)
 		s.ingredientDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -427,7 +427,7 @@ func TestIngredientsService_Read(T *testing.T) {
 		}
 
 		id := &mockmodels.IngredientDataManager{}
-		id.On("GetIngredient", mock.Anything, expected.ID, requestingUser.ID).Return((*models.Ingredient)(nil), sql.ErrNoRows)
+		id.On("GetIngredient", mock.Anything, expected.ID).Return((*models.Ingredient)(nil), sql.ErrNoRows)
 		s.ingredientDatabase = id
 
 		res := httptest.NewRecorder()
@@ -461,7 +461,7 @@ func TestIngredientsService_Read(T *testing.T) {
 		}
 
 		id := &mockmodels.IngredientDataManager{}
-		id.On("GetIngredient", mock.Anything, expected.ID, requestingUser.ID).Return((*models.Ingredient)(nil), errors.New("blah"))
+		id.On("GetIngredient", mock.Anything, expected.ID).Return((*models.Ingredient)(nil), errors.New("blah"))
 		s.ingredientDatabase = id
 
 		res := httptest.NewRecorder()
@@ -495,7 +495,7 @@ func TestIngredientsService_Read(T *testing.T) {
 		}
 
 		id := &mockmodels.IngredientDataManager{}
-		id.On("GetIngredient", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
+		id.On("GetIngredient", mock.Anything, expected.ID).Return(expected, nil)
 		s.ingredientDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -545,7 +545,7 @@ func TestIngredientsService_Update(T *testing.T) {
 		}
 
 		id := &mockmodels.IngredientDataManager{}
-		id.On("GetIngredient", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
+		id.On("GetIngredient", mock.Anything, expected.ID).Return(expected, nil)
 		id.On("UpdateIngredient", mock.Anything, mock.Anything).Return(nil)
 		s.ingredientDatabase = id
 
@@ -623,7 +623,7 @@ func TestIngredientsService_Update(T *testing.T) {
 		}
 
 		id := &mockmodels.IngredientDataManager{}
-		id.On("GetIngredient", mock.Anything, expected.ID, requestingUser.ID).Return((*models.Ingredient)(nil), sql.ErrNoRows)
+		id.On("GetIngredient", mock.Anything, expected.ID).Return((*models.Ingredient)(nil), sql.ErrNoRows)
 		s.ingredientDatabase = id
 
 		res := httptest.NewRecorder()
@@ -679,7 +679,7 @@ func TestIngredientsService_Update(T *testing.T) {
 		}
 
 		id := &mockmodels.IngredientDataManager{}
-		id.On("GetIngredient", mock.Anything, expected.ID, requestingUser.ID).Return((*models.Ingredient)(nil), errors.New("blah"))
+		id.On("GetIngredient", mock.Anything, expected.ID).Return((*models.Ingredient)(nil), errors.New("blah"))
 		s.ingredientDatabase = id
 
 		res := httptest.NewRecorder()
@@ -743,7 +743,7 @@ func TestIngredientsService_Update(T *testing.T) {
 		}
 
 		id := &mockmodels.IngredientDataManager{}
-		id.On("GetIngredient", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
+		id.On("GetIngredient", mock.Anything, expected.ID).Return(expected, nil)
 		id.On("UpdateIngredient", mock.Anything, mock.Anything).Return(errors.New("blah"))
 		s.ingredientDatabase = id
 
@@ -812,7 +812,7 @@ func TestIngredientsService_Update(T *testing.T) {
 		}
 
 		id := &mockmodels.IngredientDataManager{}
-		id.On("GetIngredient", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
+		id.On("GetIngredient", mock.Anything, expected.ID).Return(expected, nil)
 		id.On("UpdateIngredient", mock.Anything, mock.Anything).Return(nil)
 		s.ingredientDatabase = id
 
@@ -885,7 +885,7 @@ func TestIngredientsService_Archive(T *testing.T) {
 		}
 
 		id := &mockmodels.IngredientDataManager{}
-		id.On("ArchiveIngredient", mock.Anything, expected.ID, requestingUser.ID).Return(nil)
+		id.On("ArchiveIngredient", mock.Anything, expected.ID).Return(nil)
 		s.ingredientDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -923,7 +923,7 @@ func TestIngredientsService_Archive(T *testing.T) {
 		}
 
 		id := &mockmodels.IngredientDataManager{}
-		id.On("ArchiveIngredient", mock.Anything, expected.ID, requestingUser.ID).Return(sql.ErrNoRows)
+		id.On("ArchiveIngredient", mock.Anything, expected.ID).Return(sql.ErrNoRows)
 		s.ingredientDatabase = id
 
 		res := httptest.NewRecorder()
@@ -957,7 +957,7 @@ func TestIngredientsService_Archive(T *testing.T) {
 		}
 
 		id := &mockmodels.IngredientDataManager{}
-		id.On("ArchiveIngredient", mock.Anything, expected.ID, requestingUser.ID).Return(errors.New("blah"))
+		id.On("ArchiveIngredient", mock.Anything, expected.ID).Return(errors.New("blah"))
 		s.ingredientDatabase = id
 
 		res := httptest.NewRecorder()

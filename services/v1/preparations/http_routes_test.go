@@ -39,7 +39,7 @@ func TestPreparationsService_List(T *testing.T) {
 		}
 
 		id := &mockmodels.PreparationDataManager{}
-		id.On("GetPreparations", mock.Anything, mock.Anything, requestingUser.ID).Return(expected, nil)
+		id.On("GetPreparations", mock.Anything, mock.Anything).Return(expected, nil)
 		s.preparationDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -69,7 +69,7 @@ func TestPreparationsService_List(T *testing.T) {
 		}
 
 		id := &mockmodels.PreparationDataManager{}
-		id.On("GetPreparations", mock.Anything, mock.Anything, requestingUser.ID).Return((*models.PreparationList)(nil), sql.ErrNoRows)
+		id.On("GetPreparations", mock.Anything, mock.Anything).Return((*models.PreparationList)(nil), sql.ErrNoRows)
 		s.preparationDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -99,7 +99,7 @@ func TestPreparationsService_List(T *testing.T) {
 		}
 
 		id := &mockmodels.PreparationDataManager{}
-		id.On("GetPreparations", mock.Anything, mock.Anything, requestingUser.ID).Return((*models.PreparationList)(nil), errors.New("blah"))
+		id.On("GetPreparations", mock.Anything, mock.Anything).Return((*models.PreparationList)(nil), errors.New("blah"))
 		s.preparationDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -133,7 +133,7 @@ func TestPreparationsService_List(T *testing.T) {
 		}
 
 		id := &mockmodels.PreparationDataManager{}
-		id.On("GetPreparations", mock.Anything, mock.Anything, requestingUser.ID).Return(expected, nil)
+		id.On("GetPreparations", mock.Anything, mock.Anything).Return(expected, nil)
 		s.preparationDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -350,7 +350,7 @@ func TestPreparationsService_Read(T *testing.T) {
 		}
 
 		id := &mockmodels.PreparationDataManager{}
-		id.On("GetPreparation", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
+		id.On("GetPreparation", mock.Anything, expected.ID).Return(expected, nil)
 		s.preparationDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -388,7 +388,7 @@ func TestPreparationsService_Read(T *testing.T) {
 		}
 
 		id := &mockmodels.PreparationDataManager{}
-		id.On("GetPreparation", mock.Anything, expected.ID, requestingUser.ID).Return((*models.Preparation)(nil), sql.ErrNoRows)
+		id.On("GetPreparation", mock.Anything, expected.ID).Return((*models.Preparation)(nil), sql.ErrNoRows)
 		s.preparationDatabase = id
 
 		res := httptest.NewRecorder()
@@ -422,7 +422,7 @@ func TestPreparationsService_Read(T *testing.T) {
 		}
 
 		id := &mockmodels.PreparationDataManager{}
-		id.On("GetPreparation", mock.Anything, expected.ID, requestingUser.ID).Return((*models.Preparation)(nil), errors.New("blah"))
+		id.On("GetPreparation", mock.Anything, expected.ID).Return((*models.Preparation)(nil), errors.New("blah"))
 		s.preparationDatabase = id
 
 		res := httptest.NewRecorder()
@@ -456,7 +456,7 @@ func TestPreparationsService_Read(T *testing.T) {
 		}
 
 		id := &mockmodels.PreparationDataManager{}
-		id.On("GetPreparation", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
+		id.On("GetPreparation", mock.Anything, expected.ID).Return(expected, nil)
 		s.preparationDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -506,7 +506,7 @@ func TestPreparationsService_Update(T *testing.T) {
 		}
 
 		id := &mockmodels.PreparationDataManager{}
-		id.On("GetPreparation", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
+		id.On("GetPreparation", mock.Anything, expected.ID).Return(expected, nil)
 		id.On("UpdatePreparation", mock.Anything, mock.Anything).Return(nil)
 		s.preparationDatabase = id
 
@@ -571,7 +571,7 @@ func TestPreparationsService_Update(T *testing.T) {
 		}
 
 		id := &mockmodels.PreparationDataManager{}
-		id.On("GetPreparation", mock.Anything, expected.ID, requestingUser.ID).Return((*models.Preparation)(nil), sql.ErrNoRows)
+		id.On("GetPreparation", mock.Anything, expected.ID).Return((*models.Preparation)(nil), sql.ErrNoRows)
 		s.preparationDatabase = id
 
 		res := httptest.NewRecorder()
@@ -614,7 +614,7 @@ func TestPreparationsService_Update(T *testing.T) {
 		}
 
 		id := &mockmodels.PreparationDataManager{}
-		id.On("GetPreparation", mock.Anything, expected.ID, requestingUser.ID).Return((*models.Preparation)(nil), errors.New("blah"))
+		id.On("GetPreparation", mock.Anything, expected.ID).Return((*models.Preparation)(nil), errors.New("blah"))
 		s.preparationDatabase = id
 
 		res := httptest.NewRecorder()
@@ -665,7 +665,7 @@ func TestPreparationsService_Update(T *testing.T) {
 		}
 
 		id := &mockmodels.PreparationDataManager{}
-		id.On("GetPreparation", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
+		id.On("GetPreparation", mock.Anything, expected.ID).Return(expected, nil)
 		id.On("UpdatePreparation", mock.Anything, mock.Anything).Return(errors.New("blah"))
 		s.preparationDatabase = id
 
@@ -721,7 +721,7 @@ func TestPreparationsService_Update(T *testing.T) {
 		}
 
 		id := &mockmodels.PreparationDataManager{}
-		id.On("GetPreparation", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
+		id.On("GetPreparation", mock.Anything, expected.ID).Return(expected, nil)
 		id.On("UpdatePreparation", mock.Anything, mock.Anything).Return(nil)
 		s.preparationDatabase = id
 
@@ -781,7 +781,7 @@ func TestPreparationsService_Archive(T *testing.T) {
 		}
 
 		id := &mockmodels.PreparationDataManager{}
-		id.On("ArchivePreparation", mock.Anything, expected.ID, requestingUser.ID).Return(nil)
+		id.On("ArchivePreparation", mock.Anything, expected.ID).Return(nil)
 		s.preparationDatabase = id
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -819,7 +819,7 @@ func TestPreparationsService_Archive(T *testing.T) {
 		}
 
 		id := &mockmodels.PreparationDataManager{}
-		id.On("ArchivePreparation", mock.Anything, expected.ID, requestingUser.ID).Return(sql.ErrNoRows)
+		id.On("ArchivePreparation", mock.Anything, expected.ID).Return(sql.ErrNoRows)
 		s.preparationDatabase = id
 
 		res := httptest.NewRecorder()
@@ -853,7 +853,7 @@ func TestPreparationsService_Archive(T *testing.T) {
 		}
 
 		id := &mockmodels.PreparationDataManager{}
-		id.On("ArchivePreparation", mock.Anything, expected.ID, requestingUser.ID).Return(errors.New("blah"))
+		id.On("ArchivePreparation", mock.Anything, expected.ID).Return(errors.New("blah"))
 		s.preparationDatabase = id
 
 		res := httptest.NewRecorder()

@@ -5,10 +5,11 @@ import (
 	"errors"
 	"fmt"
 
-	"contrib.go.opencensus.io/integrations/ocsql"
 	database "gitlab.com/prixfixe/prixfixe/database/v1"
 	dbclient "gitlab.com/prixfixe/prixfixe/database/v1/client"
 	"gitlab.com/prixfixe/prixfixe/database/v1/queriers/postgres"
+
+	"contrib.go.opencensus.io/integrations/ocsql"
 	"gitlab.com/verygoodsoftwarenotvirus/logging/v1"
 )
 
