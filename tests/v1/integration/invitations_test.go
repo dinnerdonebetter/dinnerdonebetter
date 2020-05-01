@@ -4,12 +4,11 @@ import (
 	"context"
 	"testing"
 
+	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 
-	fake "github.com/brianvoe/gofakeit"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"go.opencensus.io/trace"
 )
 
 func checkInvitationEquality(t *testing.T, expected, actual *models.Invitation) {
@@ -21,66 +20,52 @@ func checkInvitationEquality(t *testing.T, expected, actual *models.Invitation) 
 	assert.NotZero(t, actual.CreatedOn)
 }
 
-func buildDummyInvitation(t *testing.T) *models.Invitation {
-	t.Helper()
-
-	x := &models.InvitationCreationInput{
-		Code:     fake.Word(),
-		Consumed: fake.Bool(),
-	}
-	y, err := todoClient.CreateInvitation(context.Background(), x)
-	require.NoError(t, err)
-	return y
-}
-
 func TestInvitations(test *testing.T) {
-	test.Parallel()
-
 	test.Run("Creating", func(T *testing.T) {
 		T.Run("should be createable", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create invitation
-			expected := &models.Invitation{
-				Code:     fake.Word(),
-				Consumed: fake.Bool(),
-			}
-			premade, err := todoClient.CreateInvitation(ctx, &models.InvitationCreationInput{
-				Code:     expected.Code,
-				Consumed: expected.Consumed,
-			})
-			checkValueAndError(t, premade, err)
+			// Create invitation.
+			exampleInvitation := fakemodels.BuildFakeInvitation()
+			exampleInvitationInput := fakemodels.BuildFakeInvitationCreationInputFromInvitation(exampleInvitation)
+			createdInvitation, err := prixfixeClient.CreateInvitation(ctx, exampleInvitationInput)
+			checkValueAndError(t, createdInvitation, err)
 
-			// Assert invitation equality
-			checkInvitationEquality(t, expected, premade)
+			// Assert invitation equality.
+			checkInvitationEquality(t, exampleInvitation, createdInvitation)
 
-			// Clean up
-			err = todoClient.ArchiveInvitation(ctx, premade.ID)
+			// Clean up.
+			err = prixfixeClient.ArchiveInvitation(ctx, createdInvitation.ID)
 			assert.NoError(t, err)
 
-			actual, err := todoClient.GetInvitation(ctx, premade.ID)
+			actual, err := prixfixeClient.GetInvitation(ctx, createdInvitation.ID)
 			checkValueAndError(t, actual, err)
-			checkInvitationEquality(t, expected, actual)
+			checkInvitationEquality(t, exampleInvitation, actual)
+			assert.NotNil(t, actual.ArchivedOn)
 			assert.NotZero(t, actual.ArchivedOn)
 		})
 	})
 
 	test.Run("Listing", func(T *testing.T) {
 		T.Run("should be able to be read in a list", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create invitations
+			// Create invitations.
 			var expected []*models.Invitation
 			for i := 0; i < 5; i++ {
-				expected = append(expected, buildDummyInvitation(t))
+				// Create invitation.
+				exampleInvitation := fakemodels.BuildFakeInvitation()
+				exampleInvitationInput := fakemodels.BuildFakeInvitationCreationInputFromInvitation(exampleInvitation)
+				createdInvitation, invitationCreationErr := prixfixeClient.CreateInvitation(ctx, exampleInvitationInput)
+				checkValueAndError(t, createdInvitation, invitationCreationErr)
+
+				expected = append(expected, createdInvitation)
 			}
 
-			// Assert invitation list equality
-			actual, err := todoClient.GetInvitations(ctx, nil)
+			// Assert invitation list equality.
+			actual, err := prixfixeClient.GetInvitations(ctx, nil)
 			checkValueAndError(t, actual, err)
 			assert.True(
 				t,
@@ -90,119 +75,136 @@ func TestInvitations(test *testing.T) {
 				len(actual.Invitations),
 			)
 
-			// Clean up
-			for _, x := range actual.Invitations {
-				err = todoClient.ArchiveInvitation(ctx, x.ID)
+			// Clean up.
+			for _, createdInvitation := range actual.Invitations {
+				err = prixfixeClient.ArchiveInvitation(ctx, createdInvitation.ID)
 				assert.NoError(t, err)
 			}
 		})
 	})
 
-	test.Run("Reading", func(T *testing.T) {
-		T.Run("it should return an error when trying to read something that doesn't exist", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+	test.Run("ExistenceChecking", func(T *testing.T) {
+		T.Run("it should return false with no error when checking something that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Fetch invitation
-			_, err := todoClient.GetInvitation(ctx, nonexistentID)
+			// Attempt to fetch nonexistent invitation.
+			actual, err := prixfixeClient.InvitationExists(ctx, nonexistentID)
+			assert.NoError(t, err)
+			assert.False(t, actual)
+		})
+
+		T.Run("it should return true with no error when the relevant invitation exists", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create invitation.
+			exampleInvitation := fakemodels.BuildFakeInvitation()
+			exampleInvitationInput := fakemodels.BuildFakeInvitationCreationInputFromInvitation(exampleInvitation)
+			createdInvitation, err := prixfixeClient.CreateInvitation(ctx, exampleInvitationInput)
+			checkValueAndError(t, createdInvitation, err)
+
+			// Fetch invitation.
+			actual, err := prixfixeClient.InvitationExists(ctx, createdInvitation.ID)
+			assert.NoError(t, err)
+			assert.True(t, actual)
+
+			// Clean up invitation.
+			assert.NoError(t, prixfixeClient.ArchiveInvitation(ctx, createdInvitation.ID))
+		})
+	})
+
+	test.Run("Reading", func(T *testing.T) {
+		T.Run("it should return an error when trying to read something that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Attempt to fetch nonexistent invitation.
+			_, err := prixfixeClient.GetInvitation(ctx, nonexistentID)
 			assert.Error(t, err)
 		})
 
 		T.Run("it should be readable", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create invitation
-			expected := &models.Invitation{
-				Code:     fake.Word(),
-				Consumed: fake.Bool(),
-			}
-			premade, err := todoClient.CreateInvitation(ctx, &models.InvitationCreationInput{
-				Code:     expected.Code,
-				Consumed: expected.Consumed,
-			})
-			checkValueAndError(t, premade, err)
+			// Create invitation.
+			exampleInvitation := fakemodels.BuildFakeInvitation()
+			exampleInvitationInput := fakemodels.BuildFakeInvitationCreationInputFromInvitation(exampleInvitation)
+			createdInvitation, err := prixfixeClient.CreateInvitation(ctx, exampleInvitationInput)
+			checkValueAndError(t, createdInvitation, err)
 
-			// Fetch invitation
-			actual, err := todoClient.GetInvitation(ctx, premade.ID)
+			// Fetch invitation.
+			actual, err := prixfixeClient.GetInvitation(ctx, createdInvitation.ID)
 			checkValueAndError(t, actual, err)
 
-			// Assert invitation equality
-			checkInvitationEquality(t, expected, actual)
+			// Assert invitation equality.
+			checkInvitationEquality(t, exampleInvitation, actual)
 
-			// Clean up
-			err = todoClient.ArchiveInvitation(ctx, actual.ID)
-			assert.NoError(t, err)
+			// Clean up invitation.
+			assert.NoError(t, prixfixeClient.ArchiveInvitation(ctx, createdInvitation.ID))
 		})
 	})
 
 	test.Run("Updating", func(T *testing.T) {
-		T.Run("it should return an error when trying to update something that doesn't exist", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+		T.Run("it should return an error when trying to update something that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			err := todoClient.UpdateInvitation(ctx, &models.Invitation{ID: nonexistentID})
-			assert.Error(t, err)
+			exampleInvitation := fakemodels.BuildFakeInvitation()
+			exampleInvitation.ID = nonexistentID
+
+			assert.Error(t, prixfixeClient.UpdateInvitation(ctx, exampleInvitation))
 		})
 
 		T.Run("it should be updatable", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create invitation
-			expected := &models.Invitation{
-				Code:     fake.Word(),
-				Consumed: fake.Bool(),
-			}
-			premade, err := todoClient.CreateInvitation(tctx, &models.InvitationCreationInput{
-				Code:     fake.Word(),
-				Consumed: fake.Bool(),
-			})
-			checkValueAndError(t, premade, err)
+			// Create invitation.
+			exampleInvitation := fakemodels.BuildFakeInvitation()
+			exampleInvitationInput := fakemodels.BuildFakeInvitationCreationInputFromInvitation(exampleInvitation)
+			createdInvitation, err := prixfixeClient.CreateInvitation(ctx, exampleInvitationInput)
+			checkValueAndError(t, createdInvitation, err)
 
-			// Change invitation
-			premade.Update(expected.ToInput())
-			err = todoClient.UpdateInvitation(ctx, premade)
+			// Change invitation.
+			createdInvitation.Update(exampleInvitation.ToUpdateInput())
+			err = prixfixeClient.UpdateInvitation(ctx, createdInvitation)
 			assert.NoError(t, err)
 
-			// Fetch invitation
-			actual, err := todoClient.GetInvitation(ctx, premade.ID)
+			// Fetch invitation.
+			actual, err := prixfixeClient.GetInvitation(ctx, createdInvitation.ID)
 			checkValueAndError(t, actual, err)
 
-			// Assert invitation equality
-			checkInvitationEquality(t, expected, actual)
+			// Assert invitation equality.
+			checkInvitationEquality(t, exampleInvitation, actual)
 			assert.NotNil(t, actual.UpdatedOn)
 
-			// Clean up
-			err = todoClient.ArchiveInvitation(ctx, actual.ID)
-			assert.NoError(t, err)
+			// Clean up invitation.
+			assert.NoError(t, prixfixeClient.ArchiveInvitation(ctx, createdInvitation.ID))
 		})
 	})
 
 	test.Run("Deleting", func(T *testing.T) {
-		T.Run("should be able to be deleted", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+		T.Run("it should return an error when trying to delete something that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create invitation
-			expected := &models.Invitation{
-				Code:     fake.Word(),
-				Consumed: fake.Bool(),
-			}
-			premade, err := todoClient.CreateInvitation(ctx, &models.InvitationCreationInput{
-				Code:     expected.Code,
-				Consumed: expected.Consumed,
-			})
-			checkValueAndError(t, premade, err)
+			assert.Error(t, prixfixeClient.ArchiveInvitation(ctx, nonexistentID))
+		})
 
-			// Clean up
-			err = todoClient.ArchiveInvitation(ctx, premade.ID)
-			assert.NoError(t, err)
+		T.Run("should be able to be deleted", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create invitation.
+			exampleInvitation := fakemodels.BuildFakeInvitation()
+			exampleInvitationInput := fakemodels.BuildFakeInvitationCreationInputFromInvitation(exampleInvitation)
+			createdInvitation, err := prixfixeClient.CreateInvitation(ctx, exampleInvitationInput)
+			checkValueAndError(t, createdInvitation, err)
+
+			// Clean up invitation.
+			assert.NoError(t, prixfixeClient.ArchiveInvitation(ctx, createdInvitation.ID))
 		})
 	})
 }

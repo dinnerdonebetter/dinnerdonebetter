@@ -4,12 +4,11 @@ import (
 	"context"
 	"testing"
 
+	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 
-	fake "github.com/brianvoe/gofakeit"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"go.opencensus.io/trace"
 )
 
 func checkRecipeEquality(t *testing.T, expected, actual *models.Recipe) {
@@ -20,75 +19,56 @@ func checkRecipeEquality(t *testing.T, expected, actual *models.Recipe) {
 	assert.Equal(t, expected.Source, actual.Source, "expected Source for ID %d to be %v, but it was %v ", expected.ID, expected.Source, actual.Source)
 	assert.Equal(t, expected.Description, actual.Description, "expected Description for ID %d to be %v, but it was %v ", expected.ID, expected.Description, actual.Description)
 	assert.Equal(t, *expected.InspiredByRecipeID, *actual.InspiredByRecipeID, "expected InspiredByRecipeID to be %v, but it was %v ", expected.InspiredByRecipeID, actual.InspiredByRecipeID)
+	assert.Equal(t, expected.Private, actual.Private, "expected Private for ID %d to be %v, but it was %v ", expected.ID, expected.Private, actual.Private)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
-func buildDummyRecipe(t *testing.T) *models.Recipe {
-	t.Helper()
-
-	x := &models.RecipeCreationInput{
-		Name:               fake.Word(),
-		Source:             fake.Word(),
-		Description:        fake.Word(),
-		InspiredByRecipeID: func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
-	}
-	y, err := todoClient.CreateRecipe(context.Background(), x)
-	require.NoError(t, err)
-	return y
-}
-
 func TestRecipes(test *testing.T) {
-	test.Parallel()
-
 	test.Run("Creating", func(T *testing.T) {
 		T.Run("should be createable", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create recipe
-			expected := &models.Recipe{
-				Name:               fake.Word(),
-				Source:             fake.Word(),
-				Description:        fake.Word(),
-				InspiredByRecipeID: func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
-			}
-			premade, err := todoClient.CreateRecipe(ctx, &models.RecipeCreationInput{
-				Name:               expected.Name,
-				Source:             expected.Source,
-				Description:        expected.Description,
-				InspiredByRecipeID: expected.InspiredByRecipeID,
-			})
-			checkValueAndError(t, premade, err)
+			// Create recipe.
+			exampleRecipe := fakemodels.BuildFakeRecipe()
+			exampleRecipeInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+			createdRecipe, err := prixfixeClient.CreateRecipe(ctx, exampleRecipeInput)
+			checkValueAndError(t, createdRecipe, err)
 
-			// Assert recipe equality
-			checkRecipeEquality(t, expected, premade)
+			// Assert recipe equality.
+			checkRecipeEquality(t, exampleRecipe, createdRecipe)
 
-			// Clean up
-			err = todoClient.ArchiveRecipe(ctx, premade.ID)
+			// Clean up.
+			err = prixfixeClient.ArchiveRecipe(ctx, createdRecipe.ID)
 			assert.NoError(t, err)
 
-			actual, err := todoClient.GetRecipe(ctx, premade.ID)
+			actual, err := prixfixeClient.GetRecipe(ctx, createdRecipe.ID)
 			checkValueAndError(t, actual, err)
-			checkRecipeEquality(t, expected, actual)
+			checkRecipeEquality(t, exampleRecipe, actual)
+			assert.NotNil(t, actual.ArchivedOn)
 			assert.NotZero(t, actual.ArchivedOn)
 		})
 	})
 
 	test.Run("Listing", func(T *testing.T) {
 		T.Run("should be able to be read in a list", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create recipes
+			// Create recipes.
 			var expected []*models.Recipe
 			for i := 0; i < 5; i++ {
-				expected = append(expected, buildDummyRecipe(t))
+				// Create recipe.
+				exampleRecipe := fakemodels.BuildFakeRecipe()
+				exampleRecipeInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+				createdRecipe, recipeCreationErr := prixfixeClient.CreateRecipe(ctx, exampleRecipeInput)
+				checkValueAndError(t, createdRecipe, recipeCreationErr)
+
+				expected = append(expected, createdRecipe)
 			}
 
-			// Assert recipe list equality
-			actual, err := todoClient.GetRecipes(ctx, nil)
+			// Assert recipe list equality.
+			actual, err := prixfixeClient.GetRecipes(ctx, nil)
 			checkValueAndError(t, actual, err)
 			assert.True(
 				t,
@@ -98,131 +78,136 @@ func TestRecipes(test *testing.T) {
 				len(actual.Recipes),
 			)
 
-			// Clean up
-			for _, x := range actual.Recipes {
-				err = todoClient.ArchiveRecipe(ctx, x.ID)
+			// Clean up.
+			for _, createdRecipe := range actual.Recipes {
+				err = prixfixeClient.ArchiveRecipe(ctx, createdRecipe.ID)
 				assert.NoError(t, err)
 			}
 		})
 	})
 
-	test.Run("Reading", func(T *testing.T) {
-		T.Run("it should return an error when trying to read something that doesn't exist", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+	test.Run("ExistenceChecking", func(T *testing.T) {
+		T.Run("it should return false with no error when checking something that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Fetch recipe
-			_, err := todoClient.GetRecipe(ctx, nonexistentID)
+			// Attempt to fetch nonexistent recipe.
+			actual, err := prixfixeClient.RecipeExists(ctx, nonexistentID)
+			assert.NoError(t, err)
+			assert.False(t, actual)
+		})
+
+		T.Run("it should return true with no error when the relevant recipe exists", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create recipe.
+			exampleRecipe := fakemodels.BuildFakeRecipe()
+			exampleRecipeInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+			createdRecipe, err := prixfixeClient.CreateRecipe(ctx, exampleRecipeInput)
+			checkValueAndError(t, createdRecipe, err)
+
+			// Fetch recipe.
+			actual, err := prixfixeClient.RecipeExists(ctx, createdRecipe.ID)
+			assert.NoError(t, err)
+			assert.True(t, actual)
+
+			// Clean up recipe.
+			assert.NoError(t, prixfixeClient.ArchiveRecipe(ctx, createdRecipe.ID))
+		})
+	})
+
+	test.Run("Reading", func(T *testing.T) {
+		T.Run("it should return an error when trying to read something that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Attempt to fetch nonexistent recipe.
+			_, err := prixfixeClient.GetRecipe(ctx, nonexistentID)
 			assert.Error(t, err)
 		})
 
 		T.Run("it should be readable", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create recipe
-			expected := &models.Recipe{
-				Name:               fake.Word(),
-				Source:             fake.Word(),
-				Description:        fake.Word(),
-				InspiredByRecipeID: func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
-			}
-			premade, err := todoClient.CreateRecipe(ctx, &models.RecipeCreationInput{
-				Name:               expected.Name,
-				Source:             expected.Source,
-				Description:        expected.Description,
-				InspiredByRecipeID: expected.InspiredByRecipeID,
-			})
-			checkValueAndError(t, premade, err)
+			// Create recipe.
+			exampleRecipe := fakemodels.BuildFakeRecipe()
+			exampleRecipeInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+			createdRecipe, err := prixfixeClient.CreateRecipe(ctx, exampleRecipeInput)
+			checkValueAndError(t, createdRecipe, err)
 
-			// Fetch recipe
-			actual, err := todoClient.GetRecipe(ctx, premade.ID)
+			// Fetch recipe.
+			actual, err := prixfixeClient.GetRecipe(ctx, createdRecipe.ID)
 			checkValueAndError(t, actual, err)
 
-			// Assert recipe equality
-			checkRecipeEquality(t, expected, actual)
+			// Assert recipe equality.
+			checkRecipeEquality(t, exampleRecipe, actual)
 
-			// Clean up
-			err = todoClient.ArchiveRecipe(ctx, actual.ID)
-			assert.NoError(t, err)
+			// Clean up recipe.
+			assert.NoError(t, prixfixeClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		})
 	})
 
 	test.Run("Updating", func(T *testing.T) {
-		T.Run("it should return an error when trying to update something that doesn't exist", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+		T.Run("it should return an error when trying to update something that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			err := todoClient.UpdateRecipe(ctx, &models.Recipe{ID: nonexistentID})
-			assert.Error(t, err)
+			exampleRecipe := fakemodels.BuildFakeRecipe()
+			exampleRecipe.ID = nonexistentID
+
+			assert.Error(t, prixfixeClient.UpdateRecipe(ctx, exampleRecipe))
 		})
 
 		T.Run("it should be updatable", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create recipe
-			expected := &models.Recipe{
-				Name:               fake.Word(),
-				Source:             fake.Word(),
-				Description:        fake.Word(),
-				InspiredByRecipeID: func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
-			}
-			premade, err := todoClient.CreateRecipe(tctx, &models.RecipeCreationInput{
-				Name:               fake.Word(),
-				Source:             fake.Word(),
-				Description:        fake.Word(),
-				InspiredByRecipeID: func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
-			})
-			checkValueAndError(t, premade, err)
+			// Create recipe.
+			exampleRecipe := fakemodels.BuildFakeRecipe()
+			exampleRecipeInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+			createdRecipe, err := prixfixeClient.CreateRecipe(ctx, exampleRecipeInput)
+			checkValueAndError(t, createdRecipe, err)
 
-			// Change recipe
-			premade.Update(expected.ToInput())
-			err = todoClient.UpdateRecipe(ctx, premade)
+			// Change recipe.
+			createdRecipe.Update(exampleRecipe.ToUpdateInput())
+			err = prixfixeClient.UpdateRecipe(ctx, createdRecipe)
 			assert.NoError(t, err)
 
-			// Fetch recipe
-			actual, err := todoClient.GetRecipe(ctx, premade.ID)
+			// Fetch recipe.
+			actual, err := prixfixeClient.GetRecipe(ctx, createdRecipe.ID)
 			checkValueAndError(t, actual, err)
 
-			// Assert recipe equality
-			checkRecipeEquality(t, expected, actual)
+			// Assert recipe equality.
+			checkRecipeEquality(t, exampleRecipe, actual)
 			assert.NotNil(t, actual.UpdatedOn)
 
-			// Clean up
-			err = todoClient.ArchiveRecipe(ctx, actual.ID)
-			assert.NoError(t, err)
+			// Clean up recipe.
+			assert.NoError(t, prixfixeClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		})
 	})
 
 	test.Run("Deleting", func(T *testing.T) {
-		T.Run("should be able to be deleted", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+		T.Run("it should return an error when trying to delete something that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create recipe
-			expected := &models.Recipe{
-				Name:               fake.Word(),
-				Source:             fake.Word(),
-				Description:        fake.Word(),
-				InspiredByRecipeID: func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
-			}
-			premade, err := todoClient.CreateRecipe(ctx, &models.RecipeCreationInput{
-				Name:               expected.Name,
-				Source:             expected.Source,
-				Description:        expected.Description,
-				InspiredByRecipeID: expected.InspiredByRecipeID,
-			})
-			checkValueAndError(t, premade, err)
+			assert.Error(t, prixfixeClient.ArchiveRecipe(ctx, nonexistentID))
+		})
 
-			// Clean up
-			err = todoClient.ArchiveRecipe(ctx, premade.ID)
-			assert.NoError(t, err)
+		T.Run("should be able to be deleted", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create recipe.
+			exampleRecipe := fakemodels.BuildFakeRecipe()
+			exampleRecipeInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+			createdRecipe, err := prixfixeClient.CreateRecipe(ctx, exampleRecipeInput)
+			checkValueAndError(t, createdRecipe, err)
+
+			// Clean up recipe.
+			assert.NoError(t, prixfixeClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		})
 	})
 }

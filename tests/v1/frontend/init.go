@@ -7,7 +7,6 @@ import (
 
 	"gitlab.com/prixfixe/prixfixe/tests/v1/testutil"
 
-	fake "github.com/brianvoe/gofakeit"
 	"gitlab.com/verygoodsoftwarenotvirus/logging/v1/zerolog"
 )
 
@@ -24,10 +23,8 @@ func init() {
 	logger.WithValue("url", urlToUse).Info("checking server")
 	testutil.EnsureServerIsUp(urlToUse)
 
-	fake.Seed(time.Now().UnixNano())
-
 	// NOTE: this is sad, but also the only thing that consistently works
-	// see above for my vain attempts at a real solution to this problem
+	// see above for my vain attempts at a real solution to this problem.
 	time.Sleep(10 * time.Second)
 
 	fiftySpaces := strings.Repeat("\n", 50)

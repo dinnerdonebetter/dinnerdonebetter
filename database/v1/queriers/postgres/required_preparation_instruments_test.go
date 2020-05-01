@@ -3,26 +3,45 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"database/sql/driver"
 	"errors"
 	"testing"
 	"time"
 
+	database "gitlab.com/prixfixe/prixfixe/database/v1"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 )
 
-func buildMockRowFromRequiredPreparationInstrument(x *models.RequiredPreparationInstrument) *sqlmock.Rows {
-	exampleRows := sqlmock.NewRows(requiredPreparationInstrumentsTableColumns).AddRow(
-		x.ID,
-		x.InstrumentID,
-		x.PreparationID,
-		x.Notes,
-		x.CreatedOn,
-		x.UpdatedOn,
-		x.ArchivedOn,
-	)
+func buildMockRowsFromRequiredPreparationInstrument(requiredPreparationInstruments ...*models.RequiredPreparationInstrument) *sqlmock.Rows {
+	includeCount := len(requiredPreparationInstruments) > 1
+	columns := requiredPreparationInstrumentsTableColumns
+
+	if includeCount {
+		columns = append(columns, "count")
+	}
+	exampleRows := sqlmock.NewRows(columns)
+
+	for _, x := range requiredPreparationInstruments {
+		rowValues := []driver.Value{
+			x.ID,
+			x.ValidInstrumentID,
+			x.Notes,
+			x.CreatedOn,
+			x.UpdatedOn,
+			x.ArchivedOn,
+			x.BelongsToValidPreparation,
+		}
+
+		if includeCount {
+			rowValues = append(rowValues, len(requiredPreparationInstruments))
+		}
+
+		exampleRows.AddRow(rowValues...)
+	}
 
 	return exampleRows
 }
@@ -30,15 +49,118 @@ func buildMockRowFromRequiredPreparationInstrument(x *models.RequiredPreparation
 func buildErroneousMockRowFromRequiredPreparationInstrument(x *models.RequiredPreparationInstrument) *sqlmock.Rows {
 	exampleRows := sqlmock.NewRows(requiredPreparationInstrumentsTableColumns).AddRow(
 		x.ArchivedOn,
-		x.InstrumentID,
-		x.PreparationID,
+		x.ValidInstrumentID,
 		x.Notes,
 		x.CreatedOn,
 		x.UpdatedOn,
+		x.BelongsToValidPreparation,
 		x.ID,
 	)
 
 	return exampleRows
+}
+
+func TestPostgres_ScanRequiredPreparationInstruments(T *testing.T) {
+	T.Parallel()
+
+	T.Run("surfaces row errors", func(t *testing.T) {
+		p, _ := buildTestService(t)
+		mockRows := &database.MockResultIterator{}
+
+		mockRows.On("Next").Return(false)
+		mockRows.On("Err").Return(errors.New("blah"))
+
+		_, _, err := p.scanRequiredPreparationInstruments(mockRows)
+		assert.Error(t, err)
+	})
+
+	T.Run("logs row closing errors", func(t *testing.T) {
+		p, _ := buildTestService(t)
+		mockRows := &database.MockResultIterator{}
+
+		mockRows.On("Next").Return(false)
+		mockRows.On("Err").Return(nil)
+		mockRows.On("Close").Return(errors.New("blah"))
+
+		_, _, err := p.scanRequiredPreparationInstruments(mockRows)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPostgres_buildRequiredPreparationInstrumentExistsQuery(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		p, _ := buildTestService(t)
+
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
+
+		expectedQuery := "SELECT EXISTS ( SELECT required_preparation_instruments.id FROM required_preparation_instruments JOIN valid_preparations ON required_preparation_instruments.belongs_to_valid_preparation=valid_preparations.id WHERE required_preparation_instruments.belongs_to_valid_preparation = $1 AND required_preparation_instruments.id = $2 AND valid_preparations.id = $3 )"
+		expectedArgs := []interface{}{
+			exampleValidPreparation.ID,
+			exampleRequiredPreparationInstrument.ID,
+			exampleValidPreparation.ID,
+		}
+		actualQuery, actualArgs := p.buildRequiredPreparationInstrumentExistsQuery(exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+}
+
+func TestPostgres_RequiredPreparationInstrumentExists(T *testing.T) {
+	T.Parallel()
+
+	expectedQuery := "SELECT EXISTS ( SELECT required_preparation_instruments.id FROM required_preparation_instruments JOIN valid_preparations ON required_preparation_instruments.belongs_to_valid_preparation=valid_preparations.id WHERE required_preparation_instruments.belongs_to_valid_preparation = $1 AND required_preparation_instruments.id = $2 AND valid_preparations.id = $3 )"
+
+	T.Run("happy path", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
+
+		p, mockDB := buildTestService(t)
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+			WithArgs(
+				exampleValidPreparation.ID,
+				exampleRequiredPreparationInstrument.ID,
+				exampleValidPreparation.ID,
+			).
+			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
+
+		actual, err := p.RequiredPreparationInstrumentExists(ctx, exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID)
+		assert.NoError(t, err)
+		assert.True(t, actual)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with no rows", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
+
+		p, mockDB := buildTestService(t)
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+			WithArgs(
+				exampleValidPreparation.ID,
+				exampleRequiredPreparationInstrument.ID,
+				exampleValidPreparation.ID,
+			).
+			WillReturnError(sql.ErrNoRows)
+
+		actual, err := p.RequiredPreparationInstrumentExists(ctx, exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID)
+		assert.NoError(t, err)
+		assert.False(t, actual)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
 }
 
 func TestPostgres_buildGetRequiredPreparationInstrumentQuery(T *testing.T) {
@@ -46,88 +168,73 @@ func TestPostgres_buildGetRequiredPreparationInstrumentQuery(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
-		exampleRequiredPreparationInstrumentID := uint64(123)
 
-		expectedArgCount := 1
-		expectedQuery := "SELECT id, instrument_id, preparation_id, notes, created_on, updated_on, archived_on FROM required_preparation_instruments WHERE id = $1"
-		actualQuery, args := p.buildGetRequiredPreparationInstrumentQuery(exampleRequiredPreparationInstrumentID)
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
 
+		expectedQuery := "SELECT required_preparation_instruments.id, required_preparation_instruments.valid_instrument_id, required_preparation_instruments.notes, required_preparation_instruments.created_on, required_preparation_instruments.updated_on, required_preparation_instruments.archived_on, required_preparation_instruments.belongs_to_valid_preparation FROM required_preparation_instruments JOIN valid_preparations ON required_preparation_instruments.belongs_to_valid_preparation=valid_preparations.id WHERE required_preparation_instruments.belongs_to_valid_preparation = $1 AND required_preparation_instruments.id = $2 AND valid_preparations.id = $3"
+		expectedArgs := []interface{}{
+			exampleValidPreparation.ID,
+			exampleRequiredPreparationInstrument.ID,
+			exampleValidPreparation.ID,
+		}
+		actualQuery, actualArgs := p.buildGetRequiredPreparationInstrumentQuery(exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
-		assert.Len(t, args, expectedArgCount)
-		assert.Equal(t, exampleRequiredPreparationInstrumentID, args[0].(uint64))
+		assert.Equal(t, expectedArgs, actualArgs)
 	})
 }
 
 func TestPostgres_GetRequiredPreparationInstrument(T *testing.T) {
 	T.Parallel()
 
+	expectedQuery := "SELECT required_preparation_instruments.id, required_preparation_instruments.valid_instrument_id, required_preparation_instruments.notes, required_preparation_instruments.created_on, required_preparation_instruments.updated_on, required_preparation_instruments.archived_on, required_preparation_instruments.belongs_to_valid_preparation FROM required_preparation_instruments JOIN valid_preparations ON required_preparation_instruments.belongs_to_valid_preparation=valid_preparations.id WHERE required_preparation_instruments.belongs_to_valid_preparation = $1 AND required_preparation_instruments.id = $2 AND valid_preparations.id = $3"
+
 	T.Run("happy path", func(t *testing.T) {
-		expectedQuery := "SELECT id, instrument_id, preparation_id, notes, created_on, updated_on, archived_on FROM required_preparation_instruments WHERE id = $1"
-		expected := &models.RequiredPreparationInstrument{
-			ID: 123,
-		}
+		ctx := context.Background()
+
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
-			WithArgs(expected.ID).
-			WillReturnRows(buildMockRowFromRequiredPreparationInstrument(expected))
+			WithArgs(
+				exampleValidPreparation.ID,
+				exampleRequiredPreparationInstrument.ID,
+				exampleValidPreparation.ID,
+			).
+			WillReturnRows(buildMockRowsFromRequiredPreparationInstrument(exampleRequiredPreparationInstrument))
 
-		actual, err := p.GetRequiredPreparationInstrument(context.Background(), expected.ID)
+		actual, err := p.GetRequiredPreparationInstrument(ctx, exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleRequiredPreparationInstrument, actual)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
 	})
 
 	T.Run("surfaces sql.ErrNoRows", func(t *testing.T) {
-		expectedQuery := "SELECT id, instrument_id, preparation_id, notes, created_on, updated_on, archived_on FROM required_preparation_instruments WHERE id = $1"
-		expected := &models.RequiredPreparationInstrument{
-			ID: 123,
-		}
+		ctx := context.Background()
+
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
-			WithArgs(expected.ID).
+			WithArgs(
+				exampleValidPreparation.ID,
+				exampleRequiredPreparationInstrument.ID,
+				exampleValidPreparation.ID,
+			).
 			WillReturnError(sql.ErrNoRows)
 
-		actual, err := p.GetRequiredPreparationInstrument(context.Background(), expected.ID)
+		actual, err := p.GetRequiredPreparationInstrument(ctx, exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 		assert.Equal(t, sql.ErrNoRows, err)
-
-		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
-	})
-}
-
-func TestPostgres_buildGetRequiredPreparationInstrumentCountQuery(T *testing.T) {
-	T.Parallel()
-
-	T.Run("happy path", func(t *testing.T) {
-		p, _ := buildTestService(t)
-
-		expectedArgCount := 0
-		expectedQuery := "SELECT COUNT(id) FROM required_preparation_instruments WHERE archived_on IS NULL LIMIT 20"
-
-		actualQuery, args := p.buildGetRequiredPreparationInstrumentCountQuery(models.DefaultQueryFilter())
-		assert.Equal(t, expectedQuery, actualQuery)
-		assert.Len(t, args, expectedArgCount)
-	})
-}
-
-func TestPostgres_GetRequiredPreparationInstrumentCount(T *testing.T) {
-	T.Parallel()
-
-	T.Run("happy path", func(t *testing.T) {
-		expectedQuery := "SELECT COUNT(id) FROM required_preparation_instruments WHERE archived_on IS NULL LIMIT 20"
-		expectedCount := uint64(666)
-
-		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
-			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
-
-		actualCount, err := p.GetRequiredPreparationInstrumentCount(context.Background(), models.DefaultQueryFilter())
-		assert.NoError(t, err)
-		assert.Equal(t, expectedCount, actualCount)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
 	})
@@ -138,9 +245,11 @@ func TestPostgres_buildGetAllRequiredPreparationInstrumentsCountQuery(T *testing
 
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
-		expectedQuery := "SELECT COUNT(id) FROM required_preparation_instruments WHERE archived_on IS NULL"
 
+		expectedQuery := "SELECT COUNT(required_preparation_instruments.id) FROM required_preparation_instruments WHERE required_preparation_instruments.archived_on IS NULL"
 		actualQuery := p.buildGetAllRequiredPreparationInstrumentsCountQuery()
+
+		ensureArgCountMatchesQuery(t, actualQuery, []interface{}{})
 		assert.Equal(t, expectedQuery, actualQuery)
 	})
 }
@@ -149,14 +258,16 @@ func TestPostgres_GetAllRequiredPreparationInstrumentsCount(T *testing.T) {
 	T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
-		expectedQuery := "SELECT COUNT(id) FROM required_preparation_instruments WHERE archived_on IS NULL"
-		expectedCount := uint64(666)
+		ctx := context.Background()
+
+		expectedQuery := "SELECT COUNT(required_preparation_instruments.id) FROM required_preparation_instruments WHERE required_preparation_instruments.archived_on IS NULL"
+		expectedCount := uint64(123)
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
 
-		actualCount, err := p.GetAllRequiredPreparationInstrumentsCount(context.Background())
+		actualCount, err := p.GetAllRequiredPreparationInstrumentsCount(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, expectedCount, actualCount)
 
@@ -170,58 +281,78 @@ func TestPostgres_buildGetRequiredPreparationInstrumentsQuery(T *testing.T) {
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
 
-		expectedArgCount := 0
-		expectedQuery := "SELECT id, instrument_id, preparation_id, notes, created_on, updated_on, archived_on FROM required_preparation_instruments WHERE archived_on IS NULL LIMIT 20"
-		actualQuery, args := p.buildGetRequiredPreparationInstrumentsQuery(models.DefaultQueryFilter())
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+		filter := fakemodels.BuildFleshedOutQueryFilter()
 
+		expectedQuery := "SELECT required_preparation_instruments.id, required_preparation_instruments.valid_instrument_id, required_preparation_instruments.notes, required_preparation_instruments.created_on, required_preparation_instruments.updated_on, required_preparation_instruments.archived_on, required_preparation_instruments.belongs_to_valid_preparation, COUNT(required_preparation_instruments.id) FROM required_preparation_instruments JOIN valid_preparations ON required_preparation_instruments.belongs_to_valid_preparation=valid_preparations.id WHERE required_preparation_instruments.archived_on IS NULL AND required_preparation_instruments.belongs_to_valid_preparation = $1 AND valid_preparations.id = $2 AND required_preparation_instruments.created_on > $3 AND required_preparation_instruments.created_on < $4 AND required_preparation_instruments.updated_on > $5 AND required_preparation_instruments.updated_on < $6 GROUP BY required_preparation_instruments.id LIMIT 20 OFFSET 180"
+		expectedArgs := []interface{}{
+			exampleValidPreparation.ID,
+			exampleValidPreparation.ID,
+			filter.CreatedAfter,
+			filter.CreatedBefore,
+			filter.UpdatedAfter,
+			filter.UpdatedBefore,
+		}
+		actualQuery, actualArgs := p.buildGetRequiredPreparationInstrumentsQuery(exampleValidPreparation.ID, filter)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
-		assert.Len(t, args, expectedArgCount)
+		assert.Equal(t, expectedArgs, actualArgs)
 	})
 }
 
 func TestPostgres_GetRequiredPreparationInstruments(T *testing.T) {
 	T.Parallel()
 
+	expectedListQuery := "SELECT required_preparation_instruments.id, required_preparation_instruments.valid_instrument_id, required_preparation_instruments.notes, required_preparation_instruments.created_on, required_preparation_instruments.updated_on, required_preparation_instruments.archived_on, required_preparation_instruments.belongs_to_valid_preparation, COUNT(required_preparation_instruments.id) FROM required_preparation_instruments JOIN valid_preparations ON required_preparation_instruments.belongs_to_valid_preparation=valid_preparations.id WHERE required_preparation_instruments.archived_on IS NULL AND required_preparation_instruments.belongs_to_valid_preparation = $1 AND valid_preparations.id = $2 GROUP BY required_preparation_instruments.id LIMIT 20"
+
 	T.Run("happy path", func(t *testing.T) {
-		expectedListQuery := "SELECT id, instrument_id, preparation_id, notes, created_on, updated_on, archived_on FROM required_preparation_instruments WHERE archived_on IS NULL LIMIT 20"
-		expectedCountQuery := "SELECT COUNT(id) FROM required_preparation_instruments WHERE archived_on IS NULL"
-		expectedRequiredPreparationInstrument := &models.RequiredPreparationInstrument{
-			ID: 321,
-		}
-		expectedCount := uint64(666)
-		expected := &models.RequiredPreparationInstrumentList{
-			Pagination: models.Pagination{
-				Page:       1,
-				Limit:      20,
-				TotalCount: expectedCount,
-			},
-			RequiredPreparationInstruments: []models.RequiredPreparationInstrument{
-				*expectedRequiredPreparationInstrument,
-			},
-		}
+		ctx := context.Background()
+
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 
 		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WillReturnRows(buildMockRowFromRequiredPreparationInstrument(expectedRequiredPreparationInstrument))
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
-			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
+		filter := models.DefaultQueryFilter()
 
-		actual, err := p.GetRequiredPreparationInstruments(context.Background(), models.DefaultQueryFilter())
+		exampleRequiredPreparationInstrumentList := fakemodels.BuildFakeRequiredPreparationInstrumentList()
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
+			WithArgs(
+				exampleValidPreparation.ID,
+				exampleValidPreparation.ID,
+			).
+			WillReturnRows(
+				buildMockRowsFromRequiredPreparationInstrument(
+					&exampleRequiredPreparationInstrumentList.RequiredPreparationInstruments[0],
+					&exampleRequiredPreparationInstrumentList.RequiredPreparationInstruments[1],
+					&exampleRequiredPreparationInstrumentList.RequiredPreparationInstruments[2],
+				),
+			)
+
+		actual, err := p.GetRequiredPreparationInstruments(ctx, exampleValidPreparation.ID, filter)
 
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleRequiredPreparationInstrumentList, actual)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
 	})
 
 	T.Run("surfaces sql.ErrNoRows", func(t *testing.T) {
-		expectedListQuery := "SELECT id, instrument_id, preparation_id, notes, created_on, updated_on, archived_on FROM required_preparation_instruments WHERE archived_on IS NULL LIMIT 20"
+		ctx := context.Background()
+
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 
 		p, mockDB := buildTestService(t)
+		filter := models.DefaultQueryFilter()
+
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
+			WithArgs(
+				exampleValidPreparation.ID,
+				exampleValidPreparation.ID,
+			).
 			WillReturnError(sql.ErrNoRows)
 
-		actual, err := p.GetRequiredPreparationInstruments(context.Background(), models.DefaultQueryFilter())
+		actual, err := p.GetRequiredPreparationInstruments(ctx, exampleValidPreparation.ID, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 		assert.Equal(t, sql.ErrNoRows, err)
@@ -230,13 +361,21 @@ func TestPostgres_GetRequiredPreparationInstruments(T *testing.T) {
 	})
 
 	T.Run("with error executing read query", func(t *testing.T) {
-		expectedListQuery := "SELECT id, instrument_id, preparation_id, notes, created_on, updated_on, archived_on FROM required_preparation_instruments WHERE archived_on IS NULL LIMIT 20"
+		ctx := context.Background()
+
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 
 		p, mockDB := buildTestService(t)
+		filter := models.DefaultQueryFilter()
+
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
+			WithArgs(
+				exampleValidPreparation.ID,
+				exampleValidPreparation.ID,
+			).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := p.GetRequiredPreparationInstruments(context.Background(), models.DefaultQueryFilter())
+		actual, err := p.GetRequiredPreparationInstruments(ctx, exampleValidPreparation.ID, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -244,36 +383,23 @@ func TestPostgres_GetRequiredPreparationInstruments(T *testing.T) {
 	})
 
 	T.Run("with error scanning required preparation instrument", func(t *testing.T) {
-		expected := &models.RequiredPreparationInstrument{
-			ID: 321,
-		}
-		expectedListQuery := "SELECT id, instrument_id, preparation_id, notes, created_on, updated_on, archived_on FROM required_preparation_instruments WHERE archived_on IS NULL LIMIT 20"
+		ctx := context.Background()
+
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 
 		p, mockDB := buildTestService(t)
+		filter := models.DefaultQueryFilter()
+
+		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WillReturnRows(buildErroneousMockRowFromRequiredPreparationInstrument(expected))
+			WithArgs(
+				exampleValidPreparation.ID,
+				exampleValidPreparation.ID,
+			).
+			WillReturnRows(buildErroneousMockRowFromRequiredPreparationInstrument(exampleRequiredPreparationInstrument))
 
-		actual, err := p.GetRequiredPreparationInstruments(context.Background(), models.DefaultQueryFilter())
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
-	})
-
-	T.Run("with error querying for count", func(t *testing.T) {
-		expected := &models.RequiredPreparationInstrument{
-			ID: 321,
-		}
-		expectedListQuery := "SELECT id, instrument_id, preparation_id, notes, created_on, updated_on, archived_on FROM required_preparation_instruments WHERE archived_on IS NULL LIMIT 20"
-		expectedCountQuery := "SELECT COUNT(id) FROM required_preparation_instruments WHERE archived_on IS NULL"
-
-		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WillReturnRows(buildMockRowFromRequiredPreparationInstrument(expected))
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := p.GetRequiredPreparationInstruments(context.Background(), models.DefaultQueryFilter())
+		actual, err := p.GetRequiredPreparationInstruments(ctx, exampleValidPreparation.ID, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -286,73 +412,73 @@ func TestPostgres_buildCreateRequiredPreparationInstrumentQuery(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
-		expected := &models.RequiredPreparationInstrument{
-			ID: 321,
-		}
-		expectedArgCount := 3
-		expectedQuery := "INSERT INTO required_preparation_instruments (instrument_id,preparation_id,notes) VALUES ($1,$2,$3) RETURNING id, created_on"
-		actualQuery, args := p.buildCreateRequiredPreparationInstrumentQuery(expected)
 
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
+
+		expectedQuery := "INSERT INTO required_preparation_instruments (valid_instrument_id,notes,belongs_to_valid_preparation) VALUES ($1,$2,$3) RETURNING id, created_on"
+		expectedArgs := []interface{}{
+			exampleRequiredPreparationInstrument.ValidInstrumentID,
+			exampleRequiredPreparationInstrument.Notes,
+			exampleRequiredPreparationInstrument.BelongsToValidPreparation,
+		}
+		actualQuery, actualArgs := p.buildCreateRequiredPreparationInstrumentQuery(exampleRequiredPreparationInstrument)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
-		assert.Len(t, args, expectedArgCount)
-		assert.Equal(t, expected.InstrumentID, args[0].(uint64))
-		assert.Equal(t, expected.PreparationID, args[1].(uint64))
-		assert.Equal(t, expected.Notes, args[2].(string))
+		assert.Equal(t, expectedArgs, actualArgs)
 	})
 }
 
 func TestPostgres_CreateRequiredPreparationInstrument(T *testing.T) {
 	T.Parallel()
 
+	expectedCreationQuery := "INSERT INTO required_preparation_instruments (valid_instrument_id,notes,belongs_to_valid_preparation) VALUES ($1,$2,$3) RETURNING id, created_on"
+
 	T.Run("happy path", func(t *testing.T) {
-		expected := &models.RequiredPreparationInstrument{
-			ID:        123,
-			CreatedOn: uint64(time.Now().Unix()),
-		}
-		expectedInput := &models.RequiredPreparationInstrumentCreationInput{
-			InstrumentID:  expected.InstrumentID,
-			PreparationID: expected.PreparationID,
-			Notes:         expected.Notes,
-		}
-		exampleRows := sqlmock.NewRows([]string{"id", "created_on"}).AddRow(expected.ID, uint64(time.Now().Unix()))
-		expectedQuery := "INSERT INTO required_preparation_instruments (instrument_id,preparation_id,notes) VALUES ($1,$2,$3) RETURNING id, created_on"
+		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
+		exampleInput := fakemodels.BuildFakeRequiredPreparationInstrumentCreationInputFromRequiredPreparationInstrument(exampleRequiredPreparationInstrument)
+
+		exampleRows := sqlmock.NewRows([]string{"id", "created_on"}).AddRow(exampleRequiredPreparationInstrument.ID, exampleRequiredPreparationInstrument.CreatedOn)
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCreationQuery)).
 			WithArgs(
-				expected.InstrumentID,
-				expected.PreparationID,
-				expected.Notes,
+				exampleRequiredPreparationInstrument.ValidInstrumentID,
+				exampleRequiredPreparationInstrument.Notes,
+				exampleRequiredPreparationInstrument.BelongsToValidPreparation,
 			).WillReturnRows(exampleRows)
 
-		actual, err := p.CreateRequiredPreparationInstrument(context.Background(), expectedInput)
+		actual, err := p.CreateRequiredPreparationInstrument(ctx, exampleInput)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleRequiredPreparationInstrument, actual)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
-		expected := &models.RequiredPreparationInstrument{
-			ID:        123,
-			CreatedOn: uint64(time.Now().Unix()),
-		}
-		expectedInput := &models.RequiredPreparationInstrumentCreationInput{
-			InstrumentID:  expected.InstrumentID,
-			PreparationID: expected.PreparationID,
-			Notes:         expected.Notes,
-		}
-		expectedQuery := "INSERT INTO required_preparation_instruments (instrument_id,preparation_id,notes) VALUES ($1,$2,$3) RETURNING id, created_on"
+		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
+		exampleInput := fakemodels.BuildFakeRequiredPreparationInstrumentCreationInputFromRequiredPreparationInstrument(exampleRequiredPreparationInstrument)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCreationQuery)).
 			WithArgs(
-				expected.InstrumentID,
-				expected.PreparationID,
-				expected.Notes,
+				exampleRequiredPreparationInstrument.ValidInstrumentID,
+				exampleRequiredPreparationInstrument.Notes,
+				exampleRequiredPreparationInstrument.BelongsToValidPreparation,
 			).WillReturnError(errors.New("blah"))
 
-		actual, err := p.CreateRequiredPreparationInstrument(context.Background(), expectedInput)
+		actual, err := p.CreateRequiredPreparationInstrument(ctx, exampleInput)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -365,65 +491,73 @@ func TestPostgres_buildUpdateRequiredPreparationInstrumentQuery(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
-		expected := &models.RequiredPreparationInstrument{
-			ID: 321,
-		}
-		expectedArgCount := 4
-		expectedQuery := "UPDATE required_preparation_instruments SET instrument_id = $1, preparation_id = $2, notes = $3, updated_on = extract(epoch FROM NOW()) WHERE id = $4 RETURNING updated_on"
-		actualQuery, args := p.buildUpdateRequiredPreparationInstrumentQuery(expected)
 
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
+
+		expectedQuery := "UPDATE required_preparation_instruments SET valid_instrument_id = $1, notes = $2, updated_on = extract(epoch FROM NOW()) WHERE belongs_to_valid_preparation = $3 AND id = $4 RETURNING updated_on"
+		expectedArgs := []interface{}{
+			exampleRequiredPreparationInstrument.ValidInstrumentID,
+			exampleRequiredPreparationInstrument.Notes,
+			exampleRequiredPreparationInstrument.BelongsToValidPreparation,
+			exampleRequiredPreparationInstrument.ID,
+		}
+		actualQuery, actualArgs := p.buildUpdateRequiredPreparationInstrumentQuery(exampleRequiredPreparationInstrument)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
-		assert.Len(t, args, expectedArgCount)
-		assert.Equal(t, expected.InstrumentID, args[0].(uint64))
-		assert.Equal(t, expected.PreparationID, args[1].(uint64))
-		assert.Equal(t, expected.Notes, args[2].(string))
-		assert.Equal(t, expected.ID, args[3].(uint64))
+		assert.Equal(t, expectedArgs, actualArgs)
 	})
 }
 
 func TestPostgres_UpdateRequiredPreparationInstrument(T *testing.T) {
 	T.Parallel()
 
+	expectedQuery := "UPDATE required_preparation_instruments SET valid_instrument_id = $1, notes = $2, updated_on = extract(epoch FROM NOW()) WHERE belongs_to_valid_preparation = $3 AND id = $4 RETURNING updated_on"
+
 	T.Run("happy path", func(t *testing.T) {
-		expected := &models.RequiredPreparationInstrument{
-			ID:        123,
-			CreatedOn: uint64(time.Now().Unix()),
-		}
-		exampleRows := sqlmock.NewRows([]string{"updated_on"}).AddRow(uint64(time.Now().Unix()))
-		expectedQuery := "UPDATE required_preparation_instruments SET instrument_id = $1, preparation_id = $2, notes = $3, updated_on = extract(epoch FROM NOW()) WHERE id = $4 RETURNING updated_on"
+		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
+
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
+
+		exampleRows := sqlmock.NewRows([]string{"updated_on"}).AddRow(uint64(time.Now().Unix()))
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				expected.InstrumentID,
-				expected.PreparationID,
-				expected.Notes,
-				expected.ID,
+				exampleRequiredPreparationInstrument.ValidInstrumentID,
+				exampleRequiredPreparationInstrument.Notes,
+				exampleRequiredPreparationInstrument.BelongsToValidPreparation,
+				exampleRequiredPreparationInstrument.ID,
 			).WillReturnRows(exampleRows)
 
-		err := p.UpdateRequiredPreparationInstrument(context.Background(), expected)
+		err := p.UpdateRequiredPreparationInstrument(ctx, exampleRequiredPreparationInstrument)
 		assert.NoError(t, err)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
-		expected := &models.RequiredPreparationInstrument{
-			ID:        123,
-			CreatedOn: uint64(time.Now().Unix()),
-		}
-		expectedQuery := "UPDATE required_preparation_instruments SET instrument_id = $1, preparation_id = $2, notes = $3, updated_on = extract(epoch FROM NOW()) WHERE id = $4 RETURNING updated_on"
+		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
+
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
+
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				expected.InstrumentID,
-				expected.PreparationID,
-				expected.Notes,
-				expected.ID,
+				exampleRequiredPreparationInstrument.ValidInstrumentID,
+				exampleRequiredPreparationInstrument.Notes,
+				exampleRequiredPreparationInstrument.BelongsToValidPreparation,
+				exampleRequiredPreparationInstrument.ID,
 			).WillReturnError(errors.New("blah"))
 
-		err := p.UpdateRequiredPreparationInstrument(context.Background(), expected)
+		err := p.UpdateRequiredPreparationInstrument(ctx, exampleRequiredPreparationInstrument)
 		assert.Error(t, err)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
@@ -435,55 +569,88 @@ func TestPostgres_buildArchiveRequiredPreparationInstrumentQuery(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
-		expected := &models.RequiredPreparationInstrument{
-			ID: 321,
-		}
-		expectedArgCount := 1
-		expectedQuery := "UPDATE required_preparation_instruments SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $1 RETURNING archived_on"
-		actualQuery, args := p.buildArchiveRequiredPreparationInstrumentQuery(expected.ID)
 
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
+
+		expectedQuery := "UPDATE required_preparation_instruments SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_valid_preparation = $1 AND id = $2 RETURNING archived_on"
+		expectedArgs := []interface{}{
+			exampleValidPreparation.ID,
+			exampleRequiredPreparationInstrument.ID,
+		}
+		actualQuery, actualArgs := p.buildArchiveRequiredPreparationInstrumentQuery(exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
-		assert.Len(t, args, expectedArgCount)
-		assert.Equal(t, expected.ID, args[0].(uint64))
+		assert.Equal(t, expectedArgs, actualArgs)
 	})
 }
 
 func TestPostgres_ArchiveRequiredPreparationInstrument(T *testing.T) {
 	T.Parallel()
 
+	expectedQuery := "UPDATE required_preparation_instruments SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_valid_preparation = $1 AND id = $2 RETURNING archived_on"
+
 	T.Run("happy path", func(t *testing.T) {
-		expected := &models.RequiredPreparationInstrument{
-			ID:        123,
-			CreatedOn: uint64(time.Now().Unix()),
-		}
-		expectedQuery := "UPDATE required_preparation_instruments SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $1 RETURNING archived_on"
+		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
+
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
+
 		mockDB.ExpectExec(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				expected.ID,
+				exampleValidPreparation.ID,
+				exampleRequiredPreparationInstrument.ID,
 			).WillReturnResult(sqlmock.NewResult(1, 1))
 
-		err := p.ArchiveRequiredPreparationInstrument(context.Background(), expected.ID)
+		err := p.ArchiveRequiredPreparationInstrument(ctx, exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID)
 		assert.NoError(t, err)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
 	})
 
-	T.Run("with error writing to database", func(t *testing.T) {
-		example := &models.RequiredPreparationInstrument{
-			ID:        123,
-			CreatedOn: uint64(time.Now().Unix()),
-		}
-		expectedQuery := "UPDATE required_preparation_instruments SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $1 RETURNING archived_on"
+	T.Run("returns sql.ErrNoRows with no rows affected", func(t *testing.T) {
+		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
+
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
+
 		mockDB.ExpectExec(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				example.ID,
+				exampleValidPreparation.ID,
+				exampleRequiredPreparationInstrument.ID,
+			).WillReturnResult(sqlmock.NewResult(0, 0))
+
+		err := p.ArchiveRequiredPreparationInstrument(ctx, exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID)
+		assert.Error(t, err)
+		assert.Equal(t, sql.ErrNoRows, err)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with error writing to database", func(t *testing.T) {
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
+
+		mockDB.ExpectExec(formatQueryForSQLMock(expectedQuery)).
+			WithArgs(
+				exampleValidPreparation.ID,
+				exampleRequiredPreparationInstrument.ID,
 			).WillReturnError(errors.New("blah"))
 
-		err := p.ArchiveRequiredPreparationInstrument(context.Background(), example.ID)
+		err := p.ArchiveRequiredPreparationInstrument(ctx, exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID)
 		assert.Error(t, err)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")

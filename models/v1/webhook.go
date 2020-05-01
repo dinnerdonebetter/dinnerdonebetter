@@ -9,20 +9,18 @@ import (
 )
 
 type (
-	// WebhookDataManager describes a structure capable of storing webhooks
+	// WebhookDataManager describes a structure capable of storing webhooks.
 	WebhookDataManager interface {
 		GetWebhook(ctx context.Context, webhookID, userID uint64) (*Webhook, error)
-		GetWebhookCount(ctx context.Context, filter *QueryFilter, userID uint64) (uint64, error)
 		GetAllWebhooksCount(ctx context.Context) (uint64, error)
-		GetWebhooks(ctx context.Context, filter *QueryFilter, userID uint64) (*WebhookList, error)
+		GetWebhooks(ctx context.Context, userID uint64, filter *QueryFilter) (*WebhookList, error)
 		GetAllWebhooks(ctx context.Context) (*WebhookList, error)
-		GetAllWebhooksForUser(ctx context.Context, userID uint64) ([]Webhook, error)
 		CreateWebhook(ctx context.Context, input *WebhookCreationInput) (*Webhook, error)
 		UpdateWebhook(ctx context.Context, updated *Webhook) error
 		ArchiveWebhook(ctx context.Context, webhookID, userID uint64) error
 	}
 
-	// WebhookDataServer describes a structure capable of serving traffic related to webhooks
+	// WebhookDataServer describes a structure capable of serving traffic related to webhooks.
 	WebhookDataServer interface {
 		CreationInputMiddleware(next http.Handler) http.Handler
 		UpdateInputMiddleware(next http.Handler) http.Handler
@@ -34,54 +32,54 @@ type (
 		ArchiveHandler() http.HandlerFunc
 	}
 
-	// Webhook represents a webhook listener, an endpoint to send an HTTP request to upon an event
+	// Webhook represents a webhook listener, an endpoint to send an HTTP request to upon an event.
 	Webhook struct {
-		ID          uint64   `json:"id"`
-		Name        string   `json:"name"`
-		ContentType string   `json:"content_type"`
-		URL         string   `json:"url"`
-		Method      string   `json:"method"`
-		Events      []string `json:"events"`
-		DataTypes   []string `json:"data_types"`
-		Topics      []string `json:"topics"`
-		CreatedOn   uint64   `json:"created_on"`
-		UpdatedOn   *uint64  `json:"updated_on"`
-		ArchivedOn  *uint64  `json:"archived_on"`
-		BelongsTo   uint64   `json:"belongs_to"`
+		ID            uint64   `json:"id"`
+		Name          string   `json:"name"`
+		ContentType   string   `json:"content_type"`
+		URL           string   `json:"url"`
+		Method        string   `json:"method"`
+		Events        []string `json:"events"`
+		DataTypes     []string `json:"data_types"`
+		Topics        []string `json:"topics"`
+		CreatedOn     uint64   `json:"created_on"`
+		UpdatedOn     *uint64  `json:"updated_on"`
+		ArchivedOn    *uint64  `json:"archived_on"`
+		BelongsToUser uint64   `json:"belongs_to_user"`
 	}
 
-	// WebhookCreationInput represents what a user could set as input for creating a webhook
+	// WebhookCreationInput represents what a user could set as input for creating a webhook.
 	WebhookCreationInput struct {
-		Name        string   `json:"name"`
-		ContentType string   `json:"content_type"`
-		URL         string   `json:"url"`
-		Method      string   `json:"method"`
-		Events      []string `json:"events"`
-		DataTypes   []string `json:"data_types"`
-		Topics      []string `json:"topics"`
-		BelongsTo   uint64   `json:"-"`
+		Name          string   `json:"name"`
+		ContentType   string   `json:"content_type"`
+		URL           string   `json:"url"`
+		Method        string   `json:"method"`
+		Events        []string `json:"events"`
+		DataTypes     []string `json:"data_types"`
+		Topics        []string `json:"topics"`
+		BelongsToUser uint64   `json:"-"`
 	}
 
-	// WebhookUpdateInput represents what a user could set as input for updating a webhook
+	// WebhookUpdateInput represents what a user could set as input for updating a webhook.
 	WebhookUpdateInput struct {
-		Name        string   `json:"name"`
-		ContentType string   `json:"content_type"`
-		URL         string   `json:"url"`
-		Method      string   `json:"method"`
-		Events      []string `json:"events"`
-		DataTypes   []string `json:"data_types"`
-		Topics      []string `json:"topics"`
-		BelongsTo   uint64   `json:"-"`
+		Name          string   `json:"name"`
+		ContentType   string   `json:"content_type"`
+		URL           string   `json:"url"`
+		Method        string   `json:"method"`
+		Events        []string `json:"events"`
+		DataTypes     []string `json:"data_types"`
+		Topics        []string `json:"topics"`
+		BelongsToUser uint64   `json:"-"`
 	}
 
-	// WebhookList represents a list of webhooks
+	// WebhookList represents a list of webhooks.
 	WebhookList struct {
 		Pagination
 		Webhooks []Webhook `json:"webhooks"`
 	}
 )
 
-// Update merges an WebhookCreationInput with an Webhook
+// Update merges an WebhookCreationInput with an Webhook.
 func (w *Webhook) Update(input *WebhookUpdateInput) {
 	if input.Name != "" {
 		w.Name = input.Name
@@ -117,7 +115,7 @@ func buildErrorLogFunc(w *Webhook, logger logging.Logger) func(error) {
 	}
 }
 
-// ToListener creates a newsman Listener from a Webhook
+// ToListener creates a newsman Listener from a Webhook.
 func (w *Webhook) ToListener(logger logging.Logger) newsman.Listener {
 	return newsman.NewWebhookListener(
 		buildErrorLogFunc(w, logger),

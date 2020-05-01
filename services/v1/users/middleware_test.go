@@ -45,7 +45,9 @@ func TestService_UserInputMiddleware(T *testing.T) {
 		actual := s.UserInputMiddleware(mh)
 		actual.ServeHTTP(res, req)
 
-		assert.Equal(t, res.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, ed, mh)
 	})
 
 	T.Run("with error decoding request", func(t *testing.T) {
@@ -57,16 +59,16 @@ func TestService_UserInputMiddleware(T *testing.T) {
 		ed.On("DecodeRequest", mock.Anything, mock.Anything).Return(errors.New("blah"))
 		s.encoderDecoder = ed
 
-		mh := &MockHTTPHandler{}
-		mh.On("ServeHTTP", mock.Anything, mock.Anything).Return()
-
 		req := buildRequest(t)
 		res := httptest.NewRecorder()
 
+		mh := &MockHTTPHandler{}
 		actual := s.UserInputMiddleware(mh)
 		actual.ServeHTTP(res, req)
 
-		assert.Equal(t, res.Code, http.StatusBadRequest)
+		assert.Equal(t, http.StatusBadRequest, res.Code)
+
+		mock.AssertExpectationsForObjects(t, ed, mh)
 	})
 }
 
@@ -91,7 +93,9 @@ func TestService_PasswordUpdateInputMiddleware(T *testing.T) {
 		actual := s.PasswordUpdateInputMiddleware(mh)
 		actual.ServeHTTP(res, req)
 
-		assert.Equal(t, res.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, ed, mh)
 	})
 
 	T.Run("with error decoding request", func(t *testing.T) {
@@ -101,22 +105,22 @@ func TestService_PasswordUpdateInputMiddleware(T *testing.T) {
 
 		mockDB := database.BuildMockDatabase()
 		mockDB.UserDataManager.On("GetUserCount", mock.Anything, mock.Anything).Return(uint64(123), nil)
-		s.database = mockDB
+		s.userDataManager = mockDB
 
 		ed := &mockencoding.EncoderDecoder{}
 		ed.On("DecodeRequest", mock.Anything, mock.Anything).Return(errors.New("blah"))
 		s.encoderDecoder = ed
 
-		mh := &MockHTTPHandler{}
-		mh.On("ServeHTTP", mock.Anything, mock.Anything).Return()
-
 		req := buildRequest(t)
 		res := httptest.NewRecorder()
 
+		mh := &MockHTTPHandler{}
 		actual := s.PasswordUpdateInputMiddleware(mh)
 		actual.ServeHTTP(res, req)
 
-		assert.Equal(t, res.Code, http.StatusBadRequest)
+		assert.Equal(t, http.StatusBadRequest, res.Code)
+
+		mock.AssertExpectationsForObjects(t, ed, mh)
 	})
 }
 
@@ -141,7 +145,9 @@ func TestService_TOTPSecretRefreshInputMiddleware(T *testing.T) {
 		actual := s.TOTPSecretRefreshInputMiddleware(mh)
 		actual.ServeHTTP(res, req)
 
-		assert.Equal(t, res.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, ed, mh)
 	})
 
 	T.Run("with error decoding request", func(t *testing.T) {
@@ -153,15 +159,15 @@ func TestService_TOTPSecretRefreshInputMiddleware(T *testing.T) {
 		ed.On("DecodeRequest", mock.Anything, mock.Anything).Return(errors.New("blah"))
 		s.encoderDecoder = ed
 
-		mh := &MockHTTPHandler{}
-		mh.On("ServeHTTP", mock.Anything, mock.Anything).Return()
-
 		req := buildRequest(t)
 		res := httptest.NewRecorder()
 
+		mh := &MockHTTPHandler{}
 		actual := s.TOTPSecretRefreshInputMiddleware(mh)
 		actual.ServeHTTP(res, req)
 
-		assert.Equal(t, res.Code, http.StatusBadRequest)
+		assert.Equal(t, http.StatusBadRequest, res.Code)
+
+		mock.AssertExpectationsForObjects(t, ed, mh)
 	})
 }

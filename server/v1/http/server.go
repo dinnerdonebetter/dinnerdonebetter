@@ -2,6 +2,7 @@ package httpserver
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"net/http"
@@ -12,8 +13,8 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/v1/config"
 	"gitlab.com/prixfixe/prixfixe/internal/v1/encoding"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
-	"gitlab.com/prixfixe/prixfixe/services/v1/auth"
-	"gitlab.com/prixfixe/prixfixe/services/v1/frontend"
+	authservice "gitlab.com/prixfixe/prixfixe/services/v1/auth"
+	frontendservice "gitlab.com/prixfixe/prixfixe/services/v1/frontend"
 
 	"github.com/go-chi/chi"
 	"gitlab.com/verygoodsoftwarenotvirus/logging/v1"
@@ -22,36 +23,40 @@ import (
 )
 
 const (
-	maxTimeout = 120 * time.Second
+	maxTimeout      = 120 * time.Second
+	serverNamespace = "todo-service"
 )
 
 type (
-	// Server is our API httpServer
+	// Server is our API httpServer.
 	Server struct {
 		DebugMode bool
 
-		// Services
-		authService                           *auth.Service
-		frontendService                       *frontend.Service
+		// Services.
+		authService                           *authservice.Service
+		frontendService                       *frontendservice.Service
 		usersService                          models.UserDataServer
 		oauth2ClientsService                  models.OAuth2ClientDataServer
 		webhooksService                       models.WebhookDataServer
-		instrumentsService                    models.InstrumentDataServer
-		ingredientsService                    models.IngredientDataServer
-		preparationsService                   models.PreparationDataServer
+		validInstrumentsService               models.ValidInstrumentDataServer
+		validIngredientsService               models.ValidIngredientDataServer
+		validIngredientTagsService            models.ValidIngredientTagDataServer
+		ingredientTagMappingsService          models.IngredientTagMappingDataServer
+		validPreparationsService              models.ValidPreparationDataServer
 		requiredPreparationInstrumentsService models.RequiredPreparationInstrumentDataServer
+		validIngredientPreparationsService    models.ValidIngredientPreparationDataServer
 		recipesService                        models.RecipeDataServer
+		recipeTagsService                     models.RecipeTagDataServer
 		recipeStepsService                    models.RecipeStepDataServer
-		recipeStepInstrumentsService          models.RecipeStepInstrumentDataServer
+		recipeStepPreparationsService         models.RecipeStepPreparationDataServer
 		recipeStepIngredientsService          models.RecipeStepIngredientDataServer
-		recipeStepProductsService             models.RecipeStepProductDataServer
 		recipeIterationsService               models.RecipeIterationDataServer
-		recipeStepEventsService               models.RecipeStepEventDataServer
+		recipeIterationStepsService           models.RecipeIterationStepDataServer
 		iterationMediasService                models.IterationMediaDataServer
 		invitationsService                    models.InvitationDataServer
 		reportsService                        models.ReportDataServer
 
-		// infra things
+		// infra things.
 		db          database.Database
 		config      *config.ServerConfig
 		router      *chi.Mux
@@ -62,23 +67,26 @@ type (
 	}
 )
 
-// ProvideServer builds a new Server instance
+// ProvideServer builds a new Server instance.
 func ProvideServer(
 	ctx context.Context,
 	cfg *config.ServerConfig,
-	authService *auth.Service,
-	frontendService *frontend.Service,
-	instrumentsService models.InstrumentDataServer,
-	ingredientsService models.IngredientDataServer,
-	preparationsService models.PreparationDataServer,
+	authService *authservice.Service,
+	frontendService *frontendservice.Service,
+	validInstrumentsService models.ValidInstrumentDataServer,
+	validIngredientsService models.ValidIngredientDataServer,
+	validIngredientTagsService models.ValidIngredientTagDataServer,
+	ingredientTagMappingsService models.IngredientTagMappingDataServer,
+	validPreparationsService models.ValidPreparationDataServer,
 	requiredPreparationInstrumentsService models.RequiredPreparationInstrumentDataServer,
+	validIngredientPreparationsService models.ValidIngredientPreparationDataServer,
 	recipesService models.RecipeDataServer,
+	recipeTagsService models.RecipeTagDataServer,
 	recipeStepsService models.RecipeStepDataServer,
-	recipeStepInstrumentsService models.RecipeStepInstrumentDataServer,
+	recipeStepPreparationsService models.RecipeStepPreparationDataServer,
 	recipeStepIngredientsService models.RecipeStepIngredientDataServer,
-	recipeStepProductsService models.RecipeStepProductDataServer,
 	recipeIterationsService models.RecipeIterationDataServer,
-	recipeStepEventsService models.RecipeStepEventDataServer,
+	recipeIterationStepsService models.RecipeIterationStepDataServer,
 	iterationMediasService models.IterationMediaDataServer,
 	invitationsService models.InvitationDataServer,
 	reportsService models.ReportDataServer,
@@ -110,17 +118,20 @@ func ProvideServer(
 		frontendService:                       frontendService,
 		usersService:                          usersService,
 		authService:                           authService,
-		instrumentsService:                    instrumentsService,
-		ingredientsService:                    ingredientsService,
-		preparationsService:                   preparationsService,
+		validInstrumentsService:               validInstrumentsService,
+		validIngredientsService:               validIngredientsService,
+		validIngredientTagsService:            validIngredientTagsService,
+		ingredientTagMappingsService:          ingredientTagMappingsService,
+		validPreparationsService:              validPreparationsService,
 		requiredPreparationInstrumentsService: requiredPreparationInstrumentsService,
+		validIngredientPreparationsService:    validIngredientPreparationsService,
 		recipesService:                        recipesService,
+		recipeTagsService:                     recipeTagsService,
 		recipeStepsService:                    recipeStepsService,
-		recipeStepInstrumentsService:          recipeStepInstrumentsService,
+		recipeStepPreparationsService:         recipeStepPreparationsService,
 		recipeStepIngredientsService:          recipeStepIngredientsService,
-		recipeStepProductsService:             recipeStepProductsService,
 		recipeIterationsService:               recipeIterationsService,
-		recipeStepEventsService:               recipeStepEventsService,
+		recipeIterationStepsService:           recipeIterationStepsService,
 		iterationMediasService:                iterationMediasService,
 		invitationsService:                    invitationsService,
 		reportsService:                        reportsService,
@@ -160,12 +171,27 @@ func ProvideServer(
 	return srv, nil
 }
 
-// Serve serves HTTP traffic
+/*
+func (s *Server) logRoutes() {
+	if err := chi.Walk(s.router, func(method string, route string, _ http.Handler, _ ...func(http.Handler) http.Handler) error {
+		s.logger.WithValues(map[string]interface{}{
+			"method": method,
+			"route":  route,
+		}).Debug("route found")
+
+		return nil
+	}); err != nil {
+		s.logger.Error(err, "logging routes")
+	}
+}
+*/
+
+// Serve serves HTTP traffic.
 func (s *Server) Serve() {
 	s.httpServer.Addr = fmt.Sprintf(":%d", s.config.Server.HTTPPort)
 	s.logger.Debug(fmt.Sprintf("Listening for HTTP requests on %q", s.httpServer.Addr))
 
-	// returns ErrServerClosed on graceful close
+	// returns ErrServerClosed on graceful close.
 	if err := s.httpServer.ListenAndServe(); err != nil {
 		s.logger.Error(err, "server shutting down")
 		if err == http.ErrServerClosed {
@@ -174,4 +200,32 @@ func (s *Server) Serve() {
 			os.Exit(0)
 		}
 	}
+}
+
+// provideHTTPServer provides an HTTP httpServer.
+func provideHTTPServer() *http.Server {
+	// heavily inspired by https://blog.cloudflare.com/exposing-go-on-the-internet/
+	srv := &http.Server{
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  120 * time.Second,
+		TLSConfig: &tls.Config{
+			PreferServerCipherSuites: true,
+			// "Only use curves which have assembly implementations"
+			CurvePreferences: []tls.CurveID{
+				tls.CurveP256,
+				tls.X25519,
+			},
+			MinVersion: tls.VersionTLS12,
+			CipherSuites: []uint16{
+				tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+				tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+				tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
+				tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
+				tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+				tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+			},
+		},
+	}
+	return srv
 }

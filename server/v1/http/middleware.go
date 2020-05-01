@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"time"
 
-	middleware "github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/middleware"
 )
 
 var (

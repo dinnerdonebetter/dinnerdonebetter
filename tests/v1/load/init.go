@@ -12,7 +12,6 @@ import (
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
 	"gitlab.com/prixfixe/prixfixe/tests/v1/testutil"
 
-	fake "github.com/brianvoe/gofakeit"
 	"gitlab.com/verygoodsoftwarenotvirus/logging/v1/zerolog"
 )
 
@@ -28,8 +27,6 @@ func init() {
 
 	logger.WithValue("url", urlToUse).Info("checking server")
 	testutil.EnsureServerIsUp(urlToUse)
-
-	fake.Seed(time.Now().UnixNano())
 
 	u, err := testutil.CreateObligatoryUser(urlToUse, debug)
 	if err != nil {

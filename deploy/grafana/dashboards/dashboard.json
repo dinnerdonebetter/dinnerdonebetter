@@ -143,27 +143,43 @@
 			"steppedLine": false,
 			"targets": [
 				{
-					"expr": "prixfixe_server_instruments_count",
+					"expr": "prixfixe_server_valid_instruments_count",
 					"format": "time_series",
 					"instant": false,
 					"intervalFactor": 1,
-					"legendFormat": "instruments",
+					"legendFormat": "valid instruments",
 					"refId": "A"
 				},
 				{
-					"expr": "prixfixe_server_ingredients_count",
+					"expr": "prixfixe_server_valid_ingredients_count",
 					"format": "time_series",
 					"instant": false,
 					"intervalFactor": 1,
-					"legendFormat": "ingredients",
+					"legendFormat": "valid ingredients",
 					"refId": "A"
 				},
 				{
-					"expr": "prixfixe_server_preparations_count",
+					"expr": "prixfixe_server_valid_ingredient_tags_count",
 					"format": "time_series",
 					"instant": false,
 					"intervalFactor": 1,
-					"legendFormat": "preparations",
+					"legendFormat": "valid ingredient tags",
+					"refId": "A"
+				},
+				{
+					"expr": "prixfixe_server_ingredient_tag_mappings_count",
+					"format": "time_series",
+					"instant": false,
+					"intervalFactor": 1,
+					"legendFormat": "ingredient tag mappings",
+					"refId": "A"
+				},
+				{
+					"expr": "prixfixe_server_valid_preparations_count",
+					"format": "time_series",
+					"instant": false,
+					"intervalFactor": 1,
+					"legendFormat": "valid preparations",
 					"refId": "A"
 				},
 				{
@@ -175,11 +191,27 @@
 					"refId": "A"
 				},
 				{
+					"expr": "prixfixe_server_valid_ingredient_preparations_count",
+					"format": "time_series",
+					"instant": false,
+					"intervalFactor": 1,
+					"legendFormat": "valid ingredient preparations",
+					"refId": "A"
+				},
+				{
 					"expr": "prixfixe_server_recipes_count",
 					"format": "time_series",
 					"instant": false,
 					"intervalFactor": 1,
 					"legendFormat": "recipes",
+					"refId": "A"
+				},
+				{
+					"expr": "prixfixe_server_recipe_tags_count",
+					"format": "time_series",
+					"instant": false,
+					"intervalFactor": 1,
+					"legendFormat": "recipe tags",
 					"refId": "A"
 				},
 				{
@@ -191,11 +223,11 @@
 					"refId": "A"
 				},
 				{
-					"expr": "prixfixe_server_recipe_step_instruments_count",
+					"expr": "prixfixe_server_recipe_step_preparations_count",
 					"format": "time_series",
 					"instant": false,
 					"intervalFactor": 1,
-					"legendFormat": "recipe step instruments",
+					"legendFormat": "recipe step preparations",
 					"refId": "A"
 				},
 				{
@@ -207,14 +239,6 @@
 					"refId": "A"
 				},
 				{
-					"expr": "prixfixe_server_recipe_step_products_count",
-					"format": "time_series",
-					"instant": false,
-					"intervalFactor": 1,
-					"legendFormat": "recipe step products",
-					"refId": "A"
-				},
-				{
 					"expr": "prixfixe_server_recipe_iterations_count",
 					"format": "time_series",
 					"instant": false,
@@ -223,11 +247,11 @@
 					"refId": "A"
 				},
 				{
-					"expr": "prixfixe_server_recipe_step_events_count",
+					"expr": "prixfixe_server_recipe_iteration_steps_count",
 					"format": "time_series",
 					"instant": false,
 					"intervalFactor": 1,
-					"legendFormat": "recipe step events",
+					"legendFormat": "recipe iteration steps",
 					"refId": "A"
 				},
 				{

@@ -1,7 +1,6 @@
 package invitations
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
@@ -14,13 +13,13 @@ import (
 )
 
 const (
-	// CreateMiddlewareCtxKey is a string alias we can use for referring to invitation input data in contexts
+	// CreateMiddlewareCtxKey is a string alias we can use for referring to invitation input data in contexts.
 	CreateMiddlewareCtxKey models.ContextKey = "invitation_create_input"
-	// UpdateMiddlewareCtxKey is a string alias we can use for referring to invitation update data in contexts
+	// UpdateMiddlewareCtxKey is a string alias we can use for referring to invitation update data in contexts.
 	UpdateMiddlewareCtxKey models.ContextKey = "invitation_update_input"
 
 	counterName        metrics.CounterName = "invitations"
-	counterDescription                     = "the number of invitations managed by the invitations service"
+	counterDescription string              = "the number of invitations managed by the invitations service"
 	topicName          string              = "invitations"
 	serviceName        string              = "invitations_service"
 )
@@ -32,29 +31,28 @@ var (
 type (
 	// Service handles to-do list invitations
 	Service struct {
-		logger              logging.Logger
-		invitationCounter   metrics.UnitCounter
-		invitationDatabase  models.InvitationDataManager
-		userIDFetcher       UserIDFetcher
-		invitationIDFetcher InvitationIDFetcher
-		encoderDecoder      encoding.EncoderDecoder
-		reporter            newsman.Reporter
+		logger                logging.Logger
+		invitationDataManager models.InvitationDataManager
+		invitationIDFetcher   InvitationIDFetcher
+		userIDFetcher         UserIDFetcher
+		invitationCounter     metrics.UnitCounter
+		encoderDecoder        encoding.EncoderDecoder
+		reporter              newsman.Reporter
 	}
 
-	// UserIDFetcher is a function that fetches user IDs
+	// UserIDFetcher is a function that fetches user IDs.
 	UserIDFetcher func(*http.Request) uint64
 
-	// InvitationIDFetcher is a function that fetches invitation IDs
+	// InvitationIDFetcher is a function that fetches invitation IDs.
 	InvitationIDFetcher func(*http.Request) uint64
 )
 
-// ProvideInvitationsService builds a new InvitationsService
+// ProvideInvitationsService builds a new InvitationsService.
 func ProvideInvitationsService(
-	ctx context.Context,
 	logger logging.Logger,
-	db models.InvitationDataManager,
-	userIDFetcher UserIDFetcher,
+	invitationDataManager models.InvitationDataManager,
 	invitationIDFetcher InvitationIDFetcher,
+	userIDFetcher UserIDFetcher,
 	encoder encoding.EncoderDecoder,
 	invitationCounterProvider metrics.UnitCounterProvider,
 	reporter newsman.Reporter,
@@ -65,20 +63,14 @@ func ProvideInvitationsService(
 	}
 
 	svc := &Service{
-		logger:              logger.WithName(serviceName),
-		invitationDatabase:  db,
-		encoderDecoder:      encoder,
-		invitationCounter:   invitationCounter,
-		userIDFetcher:       userIDFetcher,
-		invitationIDFetcher: invitationIDFetcher,
-		reporter:            reporter,
+		logger:                logger.WithName(serviceName),
+		invitationIDFetcher:   invitationIDFetcher,
+		userIDFetcher:         userIDFetcher,
+		invitationDataManager: invitationDataManager,
+		encoderDecoder:        encoder,
+		invitationCounter:     invitationCounter,
+		reporter:              reporter,
 	}
-
-	invitationCount, err := svc.invitationDatabase.GetAllInvitationsCount(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("setting current invitation count: %w", err)
-	}
-	svc.invitationCounter.IncrementBy(ctx, invitationCount)
 
 	return svc, nil
 }

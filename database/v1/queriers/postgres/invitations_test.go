@@ -3,26 +3,45 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"database/sql/driver"
 	"errors"
 	"testing"
 	"time"
 
+	database "gitlab.com/prixfixe/prixfixe/database/v1"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 )
 
-func buildMockRowFromInvitation(x *models.Invitation) *sqlmock.Rows {
-	exampleRows := sqlmock.NewRows(invitationsTableColumns).AddRow(
-		x.ID,
-		x.Code,
-		x.Consumed,
-		x.CreatedOn,
-		x.UpdatedOn,
-		x.ArchivedOn,
-		x.BelongsTo,
-	)
+func buildMockRowsFromInvitation(invitations ...*models.Invitation) *sqlmock.Rows {
+	includeCount := len(invitations) > 1
+	columns := invitationsTableColumns
+
+	if includeCount {
+		columns = append(columns, "count")
+	}
+	exampleRows := sqlmock.NewRows(columns)
+
+	for _, x := range invitations {
+		rowValues := []driver.Value{
+			x.ID,
+			x.Code,
+			x.Consumed,
+			x.CreatedOn,
+			x.UpdatedOn,
+			x.ArchivedOn,
+			x.BelongsToUser,
+		}
+
+		if includeCount {
+			rowValues = append(rowValues, len(invitations))
+		}
+
+		exampleRows.AddRow(rowValues...)
+	}
 
 	return exampleRows
 }
@@ -34,11 +53,108 @@ func buildErroneousMockRowFromInvitation(x *models.Invitation) *sqlmock.Rows {
 		x.Consumed,
 		x.CreatedOn,
 		x.UpdatedOn,
-		x.BelongsTo,
+		x.BelongsToUser,
 		x.ID,
 	)
 
 	return exampleRows
+}
+
+func TestPostgres_ScanInvitations(T *testing.T) {
+	T.Parallel()
+
+	T.Run("surfaces row errors", func(t *testing.T) {
+		p, _ := buildTestService(t)
+		mockRows := &database.MockResultIterator{}
+
+		mockRows.On("Next").Return(false)
+		mockRows.On("Err").Return(errors.New("blah"))
+
+		_, _, err := p.scanInvitations(mockRows)
+		assert.Error(t, err)
+	})
+
+	T.Run("logs row closing errors", func(t *testing.T) {
+		p, _ := buildTestService(t)
+		mockRows := &database.MockResultIterator{}
+
+		mockRows.On("Next").Return(false)
+		mockRows.On("Err").Return(nil)
+		mockRows.On("Close").Return(errors.New("blah"))
+
+		_, _, err := p.scanInvitations(mockRows)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPostgres_buildInvitationExistsQuery(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		p, _ := buildTestService(t)
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+
+		expectedQuery := "SELECT EXISTS ( SELECT invitations.id FROM invitations WHERE invitations.id = $1 )"
+		expectedArgs := []interface{}{
+			exampleInvitation.ID,
+		}
+		actualQuery, actualArgs := p.buildInvitationExistsQuery(exampleInvitation.ID)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+}
+
+func TestPostgres_InvitationExists(T *testing.T) {
+	T.Parallel()
+
+	expectedQuery := "SELECT EXISTS ( SELECT invitations.id FROM invitations WHERE invitations.id = $1 )"
+
+	T.Run("happy path", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+
+		p, mockDB := buildTestService(t)
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+			WithArgs(
+				exampleInvitation.ID,
+			).
+			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
+
+		actual, err := p.InvitationExists(ctx, exampleInvitation.ID)
+		assert.NoError(t, err)
+		assert.True(t, actual)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with no rows", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+
+		p, mockDB := buildTestService(t)
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+			WithArgs(
+				exampleInvitation.ID,
+			).
+			WillReturnError(sql.ErrNoRows)
+
+		actual, err := p.InvitationExists(ctx, exampleInvitation.ID)
+		assert.NoError(t, err)
+		assert.False(t, actual)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
 }
 
 func TestPostgres_buildGetInvitationQuery(T *testing.T) {
@@ -46,96 +162,66 @@ func TestPostgres_buildGetInvitationQuery(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
-		exampleInvitationID := uint64(123)
-		exampleUserID := uint64(321)
 
-		expectedArgCount := 2
-		expectedQuery := "SELECT id, code, consumed, created_on, updated_on, archived_on, belongs_to FROM invitations WHERE belongs_to = $1 AND id = $2"
-		actualQuery, args := p.buildGetInvitationQuery(exampleInvitationID, exampleUserID)
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
 
+		expectedQuery := "SELECT invitations.id, invitations.code, invitations.consumed, invitations.created_on, invitations.updated_on, invitations.archived_on, invitations.belongs_to_user FROM invitations WHERE invitations.id = $1"
+		expectedArgs := []interface{}{
+			exampleInvitation.ID,
+		}
+		actualQuery, actualArgs := p.buildGetInvitationQuery(exampleInvitation.ID)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
-		assert.Len(t, args, expectedArgCount)
-		assert.Equal(t, exampleUserID, args[0].(uint64))
-		assert.Equal(t, exampleInvitationID, args[1].(uint64))
+		assert.Equal(t, expectedArgs, actualArgs)
 	})
 }
 
 func TestPostgres_GetInvitation(T *testing.T) {
 	T.Parallel()
 
+	exampleUser := fakemodels.BuildFakeUser()
+	expectedQuery := "SELECT invitations.id, invitations.code, invitations.consumed, invitations.created_on, invitations.updated_on, invitations.archived_on, invitations.belongs_to_user FROM invitations WHERE invitations.id = $1"
+
 	T.Run("happy path", func(t *testing.T) {
-		expectedQuery := "SELECT id, code, consumed, created_on, updated_on, archived_on, belongs_to FROM invitations WHERE belongs_to = $1 AND id = $2"
-		expected := &models.Invitation{
-			ID: 123,
-		}
-		expectedUserID := uint64(321)
+		ctx := context.Background()
+
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
-			WithArgs(expectedUserID, expected.ID).
-			WillReturnRows(buildMockRowFromInvitation(expected))
+			WithArgs(
+				exampleInvitation.ID,
+			).
+			WillReturnRows(buildMockRowsFromInvitation(exampleInvitation))
 
-		actual, err := p.GetInvitation(context.Background(), expected.ID, expectedUserID)
+		actual, err := p.GetInvitation(ctx, exampleInvitation.ID)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleInvitation, actual)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
 	})
 
 	T.Run("surfaces sql.ErrNoRows", func(t *testing.T) {
-		expectedQuery := "SELECT id, code, consumed, created_on, updated_on, archived_on, belongs_to FROM invitations WHERE belongs_to = $1 AND id = $2"
-		expected := &models.Invitation{
-			ID: 123,
-		}
-		expectedUserID := uint64(321)
+		ctx := context.Background()
+
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
-			WithArgs(expectedUserID, expected.ID).
+			WithArgs(
+				exampleInvitation.ID,
+			).
 			WillReturnError(sql.ErrNoRows)
 
-		actual, err := p.GetInvitation(context.Background(), expected.ID, expectedUserID)
+		actual, err := p.GetInvitation(ctx, exampleInvitation.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 		assert.Equal(t, sql.ErrNoRows, err)
-
-		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
-	})
-}
-
-func TestPostgres_buildGetInvitationCountQuery(T *testing.T) {
-	T.Parallel()
-
-	T.Run("happy path", func(t *testing.T) {
-		p, _ := buildTestService(t)
-		exampleUserID := uint64(321)
-
-		expectedArgCount := 1
-		expectedQuery := "SELECT COUNT(id) FROM invitations WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
-
-		actualQuery, args := p.buildGetInvitationCountQuery(models.DefaultQueryFilter(), exampleUserID)
-		assert.Equal(t, expectedQuery, actualQuery)
-		assert.Len(t, args, expectedArgCount)
-		assert.Equal(t, exampleUserID, args[0].(uint64))
-	})
-}
-
-func TestPostgres_GetInvitationCount(T *testing.T) {
-	T.Parallel()
-
-	T.Run("happy path", func(t *testing.T) {
-		expectedUserID := uint64(321)
-		expectedQuery := "SELECT COUNT(id) FROM invitations WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
-		expectedCount := uint64(666)
-
-		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
-			WithArgs(expectedUserID).
-			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
-
-		actualCount, err := p.GetInvitationCount(context.Background(), models.DefaultQueryFilter(), expectedUserID)
-		assert.NoError(t, err)
-		assert.Equal(t, expectedCount, actualCount)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
 	})
@@ -146,9 +232,11 @@ func TestPostgres_buildGetAllInvitationsCountQuery(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
-		expectedQuery := "SELECT COUNT(id) FROM invitations WHERE archived_on IS NULL"
 
+		expectedQuery := "SELECT COUNT(invitations.id) FROM invitations WHERE invitations.archived_on IS NULL"
 		actualQuery := p.buildGetAllInvitationsCountQuery()
+
+		ensureArgCountMatchesQuery(t, actualQuery, []interface{}{})
 		assert.Equal(t, expectedQuery, actualQuery)
 	})
 }
@@ -157,14 +245,16 @@ func TestPostgres_GetAllInvitationsCount(T *testing.T) {
 	T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
-		expectedQuery := "SELECT COUNT(id) FROM invitations WHERE archived_on IS NULL"
-		expectedCount := uint64(666)
+		ctx := context.Background()
+
+		expectedQuery := "SELECT COUNT(invitations.id) FROM invitations WHERE invitations.archived_on IS NULL"
+		expectedCount := uint64(123)
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
 
-		actualCount, err := p.GetAllInvitationsCount(context.Background())
+		actualCount, err := p.GetAllInvitationsCount(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, expectedCount, actualCount)
 
@@ -177,65 +267,64 @@ func TestPostgres_buildGetInvitationsQuery(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
-		exampleUserID := uint64(321)
 
-		expectedArgCount := 1
-		expectedQuery := "SELECT id, code, consumed, created_on, updated_on, archived_on, belongs_to FROM invitations WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
-		actualQuery, args := p.buildGetInvitationsQuery(models.DefaultQueryFilter(), exampleUserID)
+		filter := fakemodels.BuildFleshedOutQueryFilter()
 
+		expectedQuery := "SELECT invitations.id, invitations.code, invitations.consumed, invitations.created_on, invitations.updated_on, invitations.archived_on, invitations.belongs_to_user, COUNT(invitations.id) FROM invitations WHERE invitations.archived_on IS NULL AND invitations.created_on > $1 AND invitations.created_on < $2 AND invitations.updated_on > $3 AND invitations.updated_on < $4 GROUP BY invitations.id LIMIT 20 OFFSET 180"
+		expectedArgs := []interface{}{
+			filter.CreatedAfter,
+			filter.CreatedBefore,
+			filter.UpdatedAfter,
+			filter.UpdatedBefore,
+		}
+		actualQuery, actualArgs := p.buildGetInvitationsQuery(filter)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
-		assert.Len(t, args, expectedArgCount)
-		assert.Equal(t, exampleUserID, args[0].(uint64))
+		assert.Equal(t, expectedArgs, actualArgs)
 	})
 }
 
 func TestPostgres_GetInvitations(T *testing.T) {
 	T.Parallel()
 
+	expectedListQuery := "SELECT invitations.id, invitations.code, invitations.consumed, invitations.created_on, invitations.updated_on, invitations.archived_on, invitations.belongs_to_user, COUNT(invitations.id) FROM invitations WHERE invitations.archived_on IS NULL GROUP BY invitations.id LIMIT 20"
+
 	T.Run("happy path", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		expectedListQuery := "SELECT id, code, consumed, created_on, updated_on, archived_on, belongs_to FROM invitations WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
-		expectedCountQuery := "SELECT COUNT(id) FROM invitations WHERE archived_on IS NULL"
-		expectedInvitation := &models.Invitation{
-			ID: 321,
-		}
-		expectedCount := uint64(666)
-		expected := &models.InvitationList{
-			Pagination: models.Pagination{
-				Page:       1,
-				Limit:      20,
-				TotalCount: expectedCount,
-			},
-			Invitations: []models.Invitation{
-				*expectedInvitation,
-			},
-		}
+		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
-			WillReturnRows(buildMockRowFromInvitation(expectedInvitation))
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
-			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
+		filter := models.DefaultQueryFilter()
 
-		actual, err := p.GetInvitations(context.Background(), models.DefaultQueryFilter(), expectedUserID)
+		exampleInvitationList := fakemodels.BuildFakeInvitationList()
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
+			WillReturnRows(
+				buildMockRowsFromInvitation(
+					&exampleInvitationList.Invitations[0],
+					&exampleInvitationList.Invitations[1],
+					&exampleInvitationList.Invitations[2],
+				),
+			)
+
+		actual, err := p.GetInvitations(ctx, filter)
 
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleInvitationList, actual)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
 	})
 
 	T.Run("surfaces sql.ErrNoRows", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		expectedListQuery := "SELECT id, code, consumed, created_on, updated_on, archived_on, belongs_to FROM invitations WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
+		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
+		filter := models.DefaultQueryFilter()
+
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
 			WillReturnError(sql.ErrNoRows)
 
-		actual, err := p.GetInvitations(context.Background(), models.DefaultQueryFilter(), expectedUserID)
+		actual, err := p.GetInvitations(ctx, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 		assert.Equal(t, sql.ErrNoRows, err)
@@ -244,15 +333,12 @@ func TestPostgres_GetInvitations(T *testing.T) {
 	})
 
 	T.Run("with error executing read query", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		expectedListQuery := "SELECT id, code, consumed, created_on, updated_on, archived_on, belongs_to FROM invitations WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
+		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
-			WillReturnError(errors.New("blah"))
+		filter := models.DefaultQueryFilter()
 
-		actual, err := p.GetInvitations(context.Background(), models.DefaultQueryFilter(), expectedUserID)
+		actual, err := p.GetInvitations(ctx, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -260,117 +346,19 @@ func TestPostgres_GetInvitations(T *testing.T) {
 	})
 
 	T.Run("with error scanning invitation", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		expected := &models.Invitation{
-			ID: 321,
-		}
-		expectedListQuery := "SELECT id, code, consumed, created_on, updated_on, archived_on, belongs_to FROM invitations WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
+		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
+		filter := models.DefaultQueryFilter()
+
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
-			WillReturnRows(buildErroneousMockRowFromInvitation(expected))
+			WillReturnRows(
+				buildErroneousMockRowFromInvitation(exampleInvitation),
+			)
 
-		actual, err := p.GetInvitations(context.Background(), models.DefaultQueryFilter(), expectedUserID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
-	})
-
-	T.Run("with error querying for count", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		expected := &models.Invitation{
-			ID: 321,
-		}
-		expectedListQuery := "SELECT id, code, consumed, created_on, updated_on, archived_on, belongs_to FROM invitations WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
-		expectedCountQuery := "SELECT COUNT(id) FROM invitations WHERE archived_on IS NULL"
-
-		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
-			WillReturnRows(buildMockRowFromInvitation(expected))
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := p.GetInvitations(context.Background(), models.DefaultQueryFilter(), expectedUserID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
-	})
-}
-
-func TestPostgres_GetAllInvitationsForUser(T *testing.T) {
-	T.Parallel()
-
-	T.Run("happy path", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		expectedInvitation := &models.Invitation{
-			ID: 321,
-		}
-		expectedListQuery := "SELECT id, code, consumed, created_on, updated_on, archived_on, belongs_to FROM invitations WHERE archived_on IS NULL AND belongs_to = $1"
-
-		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
-			WillReturnRows(buildMockRowFromInvitation(expectedInvitation))
-
-		expected := []models.Invitation{*expectedInvitation}
-		actual, err := p.GetAllInvitationsForUser(context.Background(), expectedUserID)
-
-		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
-
-		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
-	})
-
-	T.Run("surfaces sql.ErrNoRows", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		expectedListQuery := "SELECT id, code, consumed, created_on, updated_on, archived_on, belongs_to FROM invitations WHERE archived_on IS NULL AND belongs_to = $1"
-
-		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
-			WillReturnError(sql.ErrNoRows)
-
-		actual, err := p.GetAllInvitationsForUser(context.Background(), expectedUserID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-		assert.Equal(t, sql.ErrNoRows, err)
-
-		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
-	})
-
-	T.Run("with error querying database", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		expectedListQuery := "SELECT id, code, consumed, created_on, updated_on, archived_on, belongs_to FROM invitations WHERE archived_on IS NULL AND belongs_to = $1"
-
-		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := p.GetAllInvitationsForUser(context.Background(), expectedUserID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
-	})
-
-	T.Run("with unscannable response", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		exampleInvitation := &models.Invitation{
-			ID: 321,
-		}
-		expectedListQuery := "SELECT id, code, consumed, created_on, updated_on, archived_on, belongs_to FROM invitations WHERE archived_on IS NULL AND belongs_to = $1"
-
-		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
-			WillReturnRows(buildErroneousMockRowFromInvitation(exampleInvitation))
-
-		actual, err := p.GetAllInvitationsForUser(context.Background(), expectedUserID)
+		actual, err := p.GetInvitations(ctx, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -383,78 +371,73 @@ func TestPostgres_buildCreateInvitationQuery(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
-		expected := &models.Invitation{
-			ID:        321,
-			BelongsTo: 123,
-		}
-		expectedArgCount := 3
-		expectedQuery := "INSERT INTO invitations (code,consumed,belongs_to) VALUES ($1,$2,$3) RETURNING id, created_on"
-		actualQuery, args := p.buildCreateInvitationQuery(expected)
 
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+
+		expectedQuery := "INSERT INTO invitations (code,consumed,belongs_to_user) VALUES ($1,$2,$3) RETURNING id, created_on"
+		expectedArgs := []interface{}{
+			exampleInvitation.Code,
+			exampleInvitation.Consumed,
+			exampleInvitation.BelongsToUser,
+		}
+		actualQuery, actualArgs := p.buildCreateInvitationQuery(exampleInvitation)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
-		assert.Len(t, args, expectedArgCount)
-		assert.Equal(t, expected.Code, args[0].(string))
-		assert.Equal(t, expected.Consumed, args[1].(bool))
-		assert.Equal(t, expected.BelongsTo, args[2].(uint64))
+		assert.Equal(t, expectedArgs, actualArgs)
 	})
 }
 
 func TestPostgres_CreateInvitation(T *testing.T) {
 	T.Parallel()
 
+	expectedCreationQuery := "INSERT INTO invitations (code,consumed,belongs_to_user) VALUES ($1,$2,$3) RETURNING id, created_on"
+
 	T.Run("happy path", func(t *testing.T) {
-		expectedUserID := uint64(321)
-		expected := &models.Invitation{
-			ID:        123,
-			BelongsTo: expectedUserID,
-			CreatedOn: uint64(time.Now().Unix()),
-		}
-		expectedInput := &models.InvitationCreationInput{
-			Code:      expected.Code,
-			Consumed:  expected.Consumed,
-			BelongsTo: expected.BelongsTo,
-		}
-		exampleRows := sqlmock.NewRows([]string{"id", "created_on"}).AddRow(expected.ID, uint64(time.Now().Unix()))
-		expectedQuery := "INSERT INTO invitations (code,consumed,belongs_to) VALUES ($1,$2,$3) RETURNING id, created_on"
+		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeInvitationCreationInputFromInvitation(exampleInvitation)
+
+		exampleRows := sqlmock.NewRows([]string{"id", "created_on"}).AddRow(exampleInvitation.ID, exampleInvitation.CreatedOn)
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCreationQuery)).
 			WithArgs(
-				expected.Code,
-				expected.Consumed,
-				expected.BelongsTo,
+				exampleInvitation.Code,
+				exampleInvitation.Consumed,
+				exampleInvitation.BelongsToUser,
 			).WillReturnRows(exampleRows)
 
-		actual, err := p.CreateInvitation(context.Background(), expectedInput)
+		actual, err := p.CreateInvitation(ctx, exampleInput)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleInvitation, actual)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
-		expectedUserID := uint64(321)
-		expected := &models.Invitation{
-			ID:        123,
-			BelongsTo: expectedUserID,
-			CreatedOn: uint64(time.Now().Unix()),
-		}
-		expectedInput := &models.InvitationCreationInput{
-			Code:      expected.Code,
-			Consumed:  expected.Consumed,
-			BelongsTo: expected.BelongsTo,
-		}
-		expectedQuery := "INSERT INTO invitations (code,consumed,belongs_to) VALUES ($1,$2,$3) RETURNING id, created_on"
+		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeInvitationCreationInputFromInvitation(exampleInvitation)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCreationQuery)).
 			WithArgs(
-				expected.Code,
-				expected.Consumed,
-				expected.BelongsTo,
+				exampleInvitation.Code,
+				exampleInvitation.Consumed,
+				exampleInvitation.BelongsToUser,
 			).WillReturnError(errors.New("blah"))
 
-		actual, err := p.CreateInvitation(context.Background(), expectedInput)
+		actual, err := p.CreateInvitation(ctx, exampleInput)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -467,70 +450,73 @@ func TestPostgres_buildUpdateInvitationQuery(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
-		expected := &models.Invitation{
-			ID:        321,
-			BelongsTo: 123,
-		}
-		expectedArgCount := 4
-		expectedQuery := "UPDATE invitations SET code = $1, consumed = $2, updated_on = extract(epoch FROM NOW()) WHERE belongs_to = $3 AND id = $4 RETURNING updated_on"
-		actualQuery, args := p.buildUpdateInvitationQuery(expected)
 
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+
+		expectedQuery := "UPDATE invitations SET code = $1, consumed = $2, updated_on = extract(epoch FROM NOW()) WHERE belongs_to_user = $3 AND id = $4 RETURNING updated_on"
+		expectedArgs := []interface{}{
+			exampleInvitation.Code,
+			exampleInvitation.Consumed,
+			exampleInvitation.BelongsToUser,
+			exampleInvitation.ID,
+		}
+		actualQuery, actualArgs := p.buildUpdateInvitationQuery(exampleInvitation)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
-		assert.Len(t, args, expectedArgCount)
-		assert.Equal(t, expected.Code, args[0].(string))
-		assert.Equal(t, expected.Consumed, args[1].(bool))
-		assert.Equal(t, expected.BelongsTo, args[2].(uint64))
-		assert.Equal(t, expected.ID, args[3].(uint64))
+		assert.Equal(t, expectedArgs, actualArgs)
 	})
 }
 
 func TestPostgres_UpdateInvitation(T *testing.T) {
 	T.Parallel()
 
+	expectedQuery := "UPDATE invitations SET code = $1, consumed = $2, updated_on = extract(epoch FROM NOW()) WHERE belongs_to_user = $3 AND id = $4 RETURNING updated_on"
+
 	T.Run("happy path", func(t *testing.T) {
-		expectedUserID := uint64(321)
-		expected := &models.Invitation{
-			ID:        123,
-			BelongsTo: expectedUserID,
-			CreatedOn: uint64(time.Now().Unix()),
-		}
-		exampleRows := sqlmock.NewRows([]string{"updated_on"}).AddRow(uint64(time.Now().Unix()))
-		expectedQuery := "UPDATE invitations SET code = $1, consumed = $2, updated_on = extract(epoch FROM NOW()) WHERE belongs_to = $3 AND id = $4 RETURNING updated_on"
+		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+
+		exampleRows := sqlmock.NewRows([]string{"updated_on"}).AddRow(uint64(time.Now().Unix()))
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				expected.Code,
-				expected.Consumed,
-				expected.BelongsTo,
-				expected.ID,
+				exampleInvitation.Code,
+				exampleInvitation.Consumed,
+				exampleInvitation.BelongsToUser,
+				exampleInvitation.ID,
 			).WillReturnRows(exampleRows)
 
-		err := p.UpdateInvitation(context.Background(), expected)
+		err := p.UpdateInvitation(ctx, exampleInvitation)
 		assert.NoError(t, err)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
-		expectedUserID := uint64(321)
-		expected := &models.Invitation{
-			ID:        123,
-			BelongsTo: expectedUserID,
-			CreatedOn: uint64(time.Now().Unix()),
-		}
-		expectedQuery := "UPDATE invitations SET code = $1, consumed = $2, updated_on = extract(epoch FROM NOW()) WHERE belongs_to = $3 AND id = $4 RETURNING updated_on"
+		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				expected.Code,
-				expected.Consumed,
-				expected.BelongsTo,
-				expected.ID,
+				exampleInvitation.Code,
+				exampleInvitation.Consumed,
+				exampleInvitation.BelongsToUser,
+				exampleInvitation.ID,
 			).WillReturnError(errors.New("blah"))
 
-		err := p.UpdateInvitation(context.Background(), expected)
+		err := p.UpdateInvitation(ctx, exampleInvitation)
 		assert.Error(t, err)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
@@ -542,63 +528,88 @@ func TestPostgres_buildArchiveInvitationQuery(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
-		expected := &models.Invitation{
-			ID:        321,
-			BelongsTo: 123,
-		}
-		expectedArgCount := 2
-		expectedQuery := "UPDATE invitations SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to = $1 AND id = $2 RETURNING archived_on"
-		actualQuery, args := p.buildArchiveInvitationQuery(expected.ID, expected.BelongsTo)
 
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+
+		expectedQuery := "UPDATE invitations SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_user = $1 AND id = $2 RETURNING archived_on"
+		expectedArgs := []interface{}{
+			exampleUser.ID,
+			exampleInvitation.ID,
+		}
+		actualQuery, actualArgs := p.buildArchiveInvitationQuery(exampleInvitation.ID, exampleUser.ID)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
-		assert.Len(t, args, expectedArgCount)
-		assert.Equal(t, expected.BelongsTo, args[0].(uint64))
-		assert.Equal(t, expected.ID, args[1].(uint64))
+		assert.Equal(t, expectedArgs, actualArgs)
 	})
 }
 
 func TestPostgres_ArchiveInvitation(T *testing.T) {
 	T.Parallel()
 
+	expectedQuery := "UPDATE invitations SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_user = $1 AND id = $2 RETURNING archived_on"
+
 	T.Run("happy path", func(t *testing.T) {
-		expectedUserID := uint64(321)
-		expected := &models.Invitation{
-			ID:        123,
-			BelongsTo: expectedUserID,
-			CreatedOn: uint64(time.Now().Unix()),
-		}
-		expectedQuery := "UPDATE invitations SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to = $1 AND id = $2 RETURNING archived_on"
+		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+
 		mockDB.ExpectExec(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				expected.BelongsTo,
-				expected.ID,
+				exampleUser.ID,
+				exampleInvitation.ID,
 			).WillReturnResult(sqlmock.NewResult(1, 1))
 
-		err := p.ArchiveInvitation(context.Background(), expected.ID, expectedUserID)
+		err := p.ArchiveInvitation(ctx, exampleInvitation.ID, exampleUser.ID)
 		assert.NoError(t, err)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
 	})
 
-	T.Run("with error writing to database", func(t *testing.T) {
-		expectedUserID := uint64(321)
-		example := &models.Invitation{
-			ID:        123,
-			BelongsTo: expectedUserID,
-			CreatedOn: uint64(time.Now().Unix()),
-		}
-		expectedQuery := "UPDATE invitations SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to = $1 AND id = $2 RETURNING archived_on"
+	T.Run("returns sql.ErrNoRows with no rows affected", func(t *testing.T) {
+		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+
 		mockDB.ExpectExec(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				example.BelongsTo,
-				example.ID,
+				exampleUser.ID,
+				exampleInvitation.ID,
+			).WillReturnResult(sqlmock.NewResult(0, 0))
+
+		err := p.ArchiveInvitation(ctx, exampleInvitation.ID, exampleUser.ID)
+		assert.Error(t, err)
+		assert.Equal(t, sql.ErrNoRows, err)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with error writing to database", func(t *testing.T) {
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+
+		mockDB.ExpectExec(formatQueryForSQLMock(expectedQuery)).
+			WithArgs(
+				exampleUser.ID,
+				exampleInvitation.ID,
 			).WillReturnError(errors.New("blah"))
 
-		err := p.ArchiveInvitation(context.Background(), example.ID, expectedUserID)
+		err := p.ArchiveInvitation(ctx, exampleInvitation.ID, exampleUser.ID)
 		assert.Error(t, err)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")

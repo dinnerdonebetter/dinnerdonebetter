@@ -4,103 +4,143 @@ import (
 	"context"
 	"testing"
 
+	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 
-	fake "github.com/brianvoe/gofakeit"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"go.opencensus.io/trace"
 )
 
 func checkRecipeStepIngredientEquality(t *testing.T, expected, actual *models.RecipeStepIngredient) {
 	t.Helper()
 
 	assert.NotZero(t, actual.ID)
-	assert.Equal(t, *expected.IngredientID, *actual.IngredientID, "expected IngredientID to be %v, but it was %v ", expected.IngredientID, actual.IngredientID)
+	assert.Equal(t, expected.ValidIngredientID, actual.ValidIngredientID, "expected ValidIngredientID for ID %d to be %v, but it was %v ", expected.ID, expected.ValidIngredientID, actual.ValidIngredientID)
+	assert.Equal(t, expected.IngredientNotes, actual.IngredientNotes, "expected IngredientNotes for ID %d to be %v, but it was %v ", expected.ID, expected.IngredientNotes, actual.IngredientNotes)
 	assert.Equal(t, expected.QuantityType, actual.QuantityType, "expected QuantityType for ID %d to be %v, but it was %v ", expected.ID, expected.QuantityType, actual.QuantityType)
 	assert.Equal(t, expected.QuantityValue, actual.QuantityValue, "expected QuantityValue for ID %d to be %v, but it was %v ", expected.ID, expected.QuantityValue, actual.QuantityValue)
 	assert.Equal(t, expected.QuantityNotes, actual.QuantityNotes, "expected QuantityNotes for ID %d to be %v, but it was %v ", expected.ID, expected.QuantityNotes, actual.QuantityNotes)
-	assert.Equal(t, expected.ProductOfRecipe, actual.ProductOfRecipe, "expected ProductOfRecipe for ID %d to be %v, but it was %v ", expected.ID, expected.ProductOfRecipe, actual.ProductOfRecipe)
-	assert.Equal(t, expected.IngredientNotes, actual.IngredientNotes, "expected IngredientNotes for ID %d to be %v, but it was %v ", expected.ID, expected.IngredientNotes, actual.IngredientNotes)
-	assert.Equal(t, expected.RecipeStepID, actual.RecipeStepID, "expected RecipeStepID for ID %d to be %v, but it was %v ", expected.ID, expected.RecipeStepID, actual.RecipeStepID)
+	assert.Equal(t, *expected.ProductOfRecipeStepID, *actual.ProductOfRecipeStepID, "expected ProductOfRecipeStepID to be %v, but it was %v ", expected.ProductOfRecipeStepID, actual.ProductOfRecipeStepID)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
-func buildDummyRecipeStepIngredient(t *testing.T) *models.RecipeStepIngredient {
-	t.Helper()
-
-	x := &models.RecipeStepIngredientCreationInput{
-		IngredientID:    func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
-		QuantityType:    fake.Word(),
-		QuantityValue:   fake.Float32(),
-		QuantityNotes:   fake.Word(),
-		ProductOfRecipe: fake.Bool(),
-		IngredientNotes: fake.Word(),
-		RecipeStepID:    uint64(fake.Uint32()),
-	}
-	y, err := todoClient.CreateRecipeStepIngredient(context.Background(), x)
-	require.NoError(t, err)
-	return y
-}
-
 func TestRecipeStepIngredients(test *testing.T) {
-	test.Parallel()
-
 	test.Run("Creating", func(T *testing.T) {
 		T.Run("should be createable", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create recipe step ingredient
-			expected := &models.RecipeStepIngredient{
-				IngredientID:    func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
-				QuantityType:    fake.Word(),
-				QuantityValue:   fake.Float32(),
-				QuantityNotes:   fake.Word(),
-				ProductOfRecipe: fake.Bool(),
-				IngredientNotes: fake.Word(),
-				RecipeStepID:    uint64(fake.Uint32()),
-			}
-			premade, err := todoClient.CreateRecipeStepIngredient(ctx, &models.RecipeStepIngredientCreationInput{
-				IngredientID:    expected.IngredientID,
-				QuantityType:    expected.QuantityType,
-				QuantityValue:   expected.QuantityValue,
-				QuantityNotes:   expected.QuantityNotes,
-				ProductOfRecipe: expected.ProductOfRecipe,
-				IngredientNotes: expected.IngredientNotes,
-				RecipeStepID:    expected.RecipeStepID,
-			})
-			checkValueAndError(t, premade, err)
+			// Create recipe.
+			exampleRecipe := fakemodels.BuildFakeRecipe()
+			exampleRecipeInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+			createdRecipe, err := prixfixeClient.CreateRecipe(ctx, exampleRecipeInput)
+			checkValueAndError(t, createdRecipe, err)
 
-			// Assert recipe step ingredient equality
-			checkRecipeStepIngredientEquality(t, expected, premade)
+			// Create recipe step.
+			exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
+			exampleRecipeStepInput := fakemodels.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
+			createdRecipeStep, err := prixfixeClient.CreateRecipeStep(ctx, exampleRecipeStepInput)
+			checkValueAndError(t, createdRecipeStep, err)
 
-			// Clean up
-			err = todoClient.ArchiveRecipeStepIngredient(ctx, premade.ID)
+			// Create recipe step ingredient.
+			exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
+			exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStep.ID
+			exampleRecipeStepIngredientInput := fakemodels.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
+			createdRecipeStepIngredient, err := prixfixeClient.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
+			checkValueAndError(t, createdRecipeStepIngredient, err)
+
+			// Assert recipe step ingredient equality.
+			checkRecipeStepIngredientEquality(t, exampleRecipeStepIngredient, createdRecipeStepIngredient)
+
+			// Clean up.
+			err = prixfixeClient.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID)
 			assert.NoError(t, err)
 
-			actual, err := todoClient.GetRecipeStepIngredient(ctx, premade.ID)
+			actual, err := prixfixeClient.GetRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID)
 			checkValueAndError(t, actual, err)
-			checkRecipeStepIngredientEquality(t, expected, actual)
+			checkRecipeStepIngredientEquality(t, exampleRecipeStepIngredient, actual)
+			assert.NotNil(t, actual.ArchivedOn)
 			assert.NotZero(t, actual.ArchivedOn)
+
+			// Clean up recipe step.
+			assert.NoError(t, prixfixeClient.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+
+			// Clean up recipe.
+			assert.NoError(t, prixfixeClient.ArchiveRecipe(ctx, createdRecipe.ID))
+		})
+
+		T.Run("should fail to create for nonexistent recipe", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create recipe step ingredient.
+			exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
+			exampleRecipeStepIngredient.BelongsToRecipeStep = nonexistentID
+			exampleRecipeStepIngredientInput := fakemodels.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
+			createdRecipeStepIngredient, err := prixfixeClient.CreateRecipeStepIngredient(ctx, nonexistentID, exampleRecipeStepIngredientInput)
+
+			assert.Nil(t, createdRecipeStepIngredient)
+			assert.Error(t, err)
+		})
+
+		T.Run("should fail to create for nonexistent recipe step", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create recipe.
+			exampleRecipe := fakemodels.BuildFakeRecipe()
+			exampleRecipeInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+			createdRecipe, err := prixfixeClient.CreateRecipe(ctx, exampleRecipeInput)
+			checkValueAndError(t, createdRecipe, err)
+
+			// Create recipe step ingredient.
+			exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
+			exampleRecipeStepIngredient.BelongsToRecipeStep = nonexistentID
+			exampleRecipeStepIngredientInput := fakemodels.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
+			createdRecipeStepIngredient, err := prixfixeClient.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
+
+			assert.Nil(t, createdRecipeStepIngredient)
+			assert.Error(t, err)
+
+			// Clean up recipe.
+			assert.NoError(t, prixfixeClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		})
 	})
 
 	test.Run("Listing", func(T *testing.T) {
 		T.Run("should be able to be read in a list", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create recipe step ingredients
+			// Create recipe.
+			exampleRecipe := fakemodels.BuildFakeRecipe()
+			exampleRecipeInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+			createdRecipe, err := prixfixeClient.CreateRecipe(ctx, exampleRecipeInput)
+			checkValueAndError(t, createdRecipe, err)
+
+			// Create recipe step.
+			exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
+			exampleRecipeStepInput := fakemodels.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
+			createdRecipeStep, err := prixfixeClient.CreateRecipeStep(ctx, exampleRecipeStepInput)
+			checkValueAndError(t, createdRecipeStep, err)
+
+			// Create recipe step ingredients.
 			var expected []*models.RecipeStepIngredient
 			for i := 0; i < 5; i++ {
-				expected = append(expected, buildDummyRecipeStepIngredient(t))
+				// Create recipe step ingredient.
+				exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
+				exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStep.ID
+				exampleRecipeStepIngredientInput := fakemodels.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
+				createdRecipeStepIngredient, recipeStepIngredientCreationErr := prixfixeClient.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
+				checkValueAndError(t, createdRecipeStepIngredient, recipeStepIngredientCreationErr)
+
+				expected = append(expected, createdRecipeStepIngredient)
 			}
 
-			// Assert recipe step ingredient list equality
-			actual, err := todoClient.GetRecipeStepIngredients(ctx, nil)
+			// Assert recipe step ingredient list equality.
+			actual, err := prixfixeClient.GetRecipeStepIngredients(ctx, createdRecipe.ID, createdRecipeStep.ID, nil)
 			checkValueAndError(t, actual, err)
 			assert.True(
 				t,
@@ -110,149 +150,450 @@ func TestRecipeStepIngredients(test *testing.T) {
 				len(actual.RecipeStepIngredients),
 			)
 
-			// Clean up
-			for _, x := range actual.RecipeStepIngredients {
-				err = todoClient.ArchiveRecipeStepIngredient(ctx, x.ID)
+			// Clean up.
+			for _, createdRecipeStepIngredient := range actual.RecipeStepIngredients {
+				err = prixfixeClient.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID)
 				assert.NoError(t, err)
 			}
+
+			// Clean up recipe step.
+			assert.NoError(t, prixfixeClient.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+
+			// Clean up recipe.
+			assert.NoError(t, prixfixeClient.ArchiveRecipe(ctx, createdRecipe.ID))
+		})
+	})
+
+	test.Run("ExistenceChecking", func(T *testing.T) {
+		T.Run("it should return false with no error when checking something that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create recipe.
+			exampleRecipe := fakemodels.BuildFakeRecipe()
+			exampleRecipeInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+			createdRecipe, err := prixfixeClient.CreateRecipe(ctx, exampleRecipeInput)
+			checkValueAndError(t, createdRecipe, err)
+
+			// Create recipe step.
+			exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
+			exampleRecipeStepInput := fakemodels.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
+			createdRecipeStep, err := prixfixeClient.CreateRecipeStep(ctx, exampleRecipeStepInput)
+			checkValueAndError(t, createdRecipeStep, err)
+
+			// Attempt to fetch nonexistent recipe step ingredient.
+			actual, err := prixfixeClient.RecipeStepIngredientExists(ctx, createdRecipe.ID, createdRecipeStep.ID, nonexistentID)
+			assert.NoError(t, err)
+			assert.False(t, actual)
+
+			// Clean up recipe step.
+			assert.NoError(t, prixfixeClient.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+
+			// Clean up recipe.
+			assert.NoError(t, prixfixeClient.ArchiveRecipe(ctx, createdRecipe.ID))
+		})
+
+		T.Run("it should return true with no error when the relevant recipe step ingredient exists", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create recipe.
+			exampleRecipe := fakemodels.BuildFakeRecipe()
+			exampleRecipeInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+			createdRecipe, err := prixfixeClient.CreateRecipe(ctx, exampleRecipeInput)
+			checkValueAndError(t, createdRecipe, err)
+
+			// Create recipe step.
+			exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
+			exampleRecipeStepInput := fakemodels.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
+			createdRecipeStep, err := prixfixeClient.CreateRecipeStep(ctx, exampleRecipeStepInput)
+			checkValueAndError(t, createdRecipeStep, err)
+
+			// Create recipe step ingredient.
+			exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
+			exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStep.ID
+			exampleRecipeStepIngredientInput := fakemodels.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
+			createdRecipeStepIngredient, err := prixfixeClient.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
+			checkValueAndError(t, createdRecipeStepIngredient, err)
+
+			// Fetch recipe step ingredient.
+			actual, err := prixfixeClient.RecipeStepIngredientExists(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID)
+			assert.NoError(t, err)
+			assert.True(t, actual)
+
+			// Clean up recipe step ingredient.
+			assert.NoError(t, prixfixeClient.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID))
+
+			// Clean up recipe step.
+			assert.NoError(t, prixfixeClient.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+
+			// Clean up recipe.
+			assert.NoError(t, prixfixeClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		})
 	})
 
 	test.Run("Reading", func(T *testing.T) {
-		T.Run("it should return an error when trying to read something that doesn't exist", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+		T.Run("it should return an error when trying to read something that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Fetch recipe step ingredient
-			_, err := todoClient.GetRecipeStepIngredient(ctx, nonexistentID)
+			// Create recipe.
+			exampleRecipe := fakemodels.BuildFakeRecipe()
+			exampleRecipeInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+			createdRecipe, err := prixfixeClient.CreateRecipe(ctx, exampleRecipeInput)
+			checkValueAndError(t, createdRecipe, err)
+
+			// Create recipe step.
+			exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
+			exampleRecipeStepInput := fakemodels.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
+			createdRecipeStep, err := prixfixeClient.CreateRecipeStep(ctx, exampleRecipeStepInput)
+			checkValueAndError(t, createdRecipeStep, err)
+
+			// Attempt to fetch nonexistent recipe step ingredient.
+			_, err = prixfixeClient.GetRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, nonexistentID)
 			assert.Error(t, err)
+
+			// Clean up recipe step.
+			assert.NoError(t, prixfixeClient.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+
+			// Clean up recipe.
+			assert.NoError(t, prixfixeClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		})
 
 		T.Run("it should be readable", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create recipe step ingredient
-			expected := &models.RecipeStepIngredient{
-				IngredientID:    func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
-				QuantityType:    fake.Word(),
-				QuantityValue:   fake.Float32(),
-				QuantityNotes:   fake.Word(),
-				ProductOfRecipe: fake.Bool(),
-				IngredientNotes: fake.Word(),
-				RecipeStepID:    uint64(fake.Uint32()),
-			}
-			premade, err := todoClient.CreateRecipeStepIngredient(ctx, &models.RecipeStepIngredientCreationInput{
-				IngredientID:    expected.IngredientID,
-				QuantityType:    expected.QuantityType,
-				QuantityValue:   expected.QuantityValue,
-				QuantityNotes:   expected.QuantityNotes,
-				ProductOfRecipe: expected.ProductOfRecipe,
-				IngredientNotes: expected.IngredientNotes,
-				RecipeStepID:    expected.RecipeStepID,
-			})
-			checkValueAndError(t, premade, err)
+			// Create recipe.
+			exampleRecipe := fakemodels.BuildFakeRecipe()
+			exampleRecipeInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+			createdRecipe, err := prixfixeClient.CreateRecipe(ctx, exampleRecipeInput)
+			checkValueAndError(t, createdRecipe, err)
 
-			// Fetch recipe step ingredient
-			actual, err := todoClient.GetRecipeStepIngredient(ctx, premade.ID)
+			// Create recipe step.
+			exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
+			exampleRecipeStepInput := fakemodels.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
+			createdRecipeStep, err := prixfixeClient.CreateRecipeStep(ctx, exampleRecipeStepInput)
+			checkValueAndError(t, createdRecipeStep, err)
+
+			// Create recipe step ingredient.
+			exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
+			exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStep.ID
+			exampleRecipeStepIngredientInput := fakemodels.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
+			createdRecipeStepIngredient, err := prixfixeClient.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
+			checkValueAndError(t, createdRecipeStepIngredient, err)
+
+			// Fetch recipe step ingredient.
+			actual, err := prixfixeClient.GetRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID)
 			checkValueAndError(t, actual, err)
 
-			// Assert recipe step ingredient equality
-			checkRecipeStepIngredientEquality(t, expected, actual)
+			// Assert recipe step ingredient equality.
+			checkRecipeStepIngredientEquality(t, exampleRecipeStepIngredient, actual)
 
-			// Clean up
-			err = todoClient.ArchiveRecipeStepIngredient(ctx, actual.ID)
-			assert.NoError(t, err)
+			// Clean up recipe step ingredient.
+			assert.NoError(t, prixfixeClient.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID))
+
+			// Clean up recipe step.
+			assert.NoError(t, prixfixeClient.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+
+			// Clean up recipe.
+			assert.NoError(t, prixfixeClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		})
 	})
 
 	test.Run("Updating", func(T *testing.T) {
-		T.Run("it should return an error when trying to update something that doesn't exist", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+		T.Run("it should return an error when trying to update something that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			err := todoClient.UpdateRecipeStepIngredient(ctx, &models.RecipeStepIngredient{ID: nonexistentID})
-			assert.Error(t, err)
+			// Create recipe.
+			exampleRecipe := fakemodels.BuildFakeRecipe()
+			exampleRecipeInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+			createdRecipe, err := prixfixeClient.CreateRecipe(ctx, exampleRecipeInput)
+			checkValueAndError(t, createdRecipe, err)
+
+			// Create recipe step.
+			exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
+			exampleRecipeStepInput := fakemodels.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
+			createdRecipeStep, err := prixfixeClient.CreateRecipeStep(ctx, exampleRecipeStepInput)
+			checkValueAndError(t, createdRecipeStep, err)
+
+			exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
+			exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStep.ID
+			exampleRecipeStepIngredient.ID = nonexistentID
+
+			assert.Error(t, prixfixeClient.UpdateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredient))
+
+			// Clean up recipe step.
+			assert.NoError(t, prixfixeClient.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+
+			// Clean up recipe.
+			assert.NoError(t, prixfixeClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		})
 
 		T.Run("it should be updatable", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create recipe step ingredient
-			expected := &models.RecipeStepIngredient{
-				IngredientID:    func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
-				QuantityType:    fake.Word(),
-				QuantityValue:   fake.Float32(),
-				QuantityNotes:   fake.Word(),
-				ProductOfRecipe: fake.Bool(),
-				IngredientNotes: fake.Word(),
-				RecipeStepID:    uint64(fake.Uint32()),
-			}
-			premade, err := todoClient.CreateRecipeStepIngredient(tctx, &models.RecipeStepIngredientCreationInput{
-				IngredientID:    func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
-				QuantityType:    fake.Word(),
-				QuantityValue:   fake.Float32(),
-				QuantityNotes:   fake.Word(),
-				ProductOfRecipe: fake.Bool(),
-				IngredientNotes: fake.Word(),
-				RecipeStepID:    uint64(fake.Uint32()),
-			})
-			checkValueAndError(t, premade, err)
+			// Create recipe.
+			exampleRecipe := fakemodels.BuildFakeRecipe()
+			exampleRecipeInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+			createdRecipe, err := prixfixeClient.CreateRecipe(ctx, exampleRecipeInput)
+			checkValueAndError(t, createdRecipe, err)
 
-			// Change recipe step ingredient
-			premade.Update(expected.ToInput())
-			err = todoClient.UpdateRecipeStepIngredient(ctx, premade)
+			// Create recipe step.
+			exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
+			exampleRecipeStepInput := fakemodels.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
+			createdRecipeStep, err := prixfixeClient.CreateRecipeStep(ctx, exampleRecipeStepInput)
+			checkValueAndError(t, createdRecipeStep, err)
+
+			// Create recipe step ingredient.
+			exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
+			exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStep.ID
+			exampleRecipeStepIngredientInput := fakemodels.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
+			createdRecipeStepIngredient, err := prixfixeClient.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
+			checkValueAndError(t, createdRecipeStepIngredient, err)
+
+			// Change recipe step ingredient.
+			createdRecipeStepIngredient.Update(exampleRecipeStepIngredient.ToUpdateInput())
+			err = prixfixeClient.UpdateRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepIngredient)
 			assert.NoError(t, err)
 
-			// Fetch recipe step ingredient
-			actual, err := todoClient.GetRecipeStepIngredient(ctx, premade.ID)
+			// Fetch recipe step ingredient.
+			actual, err := prixfixeClient.GetRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID)
 			checkValueAndError(t, actual, err)
 
-			// Assert recipe step ingredient equality
-			checkRecipeStepIngredientEquality(t, expected, actual)
+			// Assert recipe step ingredient equality.
+			checkRecipeStepIngredientEquality(t, exampleRecipeStepIngredient, actual)
 			assert.NotNil(t, actual.UpdatedOn)
 
-			// Clean up
-			err = todoClient.ArchiveRecipeStepIngredient(ctx, actual.ID)
-			assert.NoError(t, err)
+			// Clean up recipe step ingredient.
+			assert.NoError(t, prixfixeClient.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID))
+
+			// Clean up recipe step.
+			assert.NoError(t, prixfixeClient.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+
+			// Clean up recipe.
+			assert.NoError(t, prixfixeClient.ArchiveRecipe(ctx, createdRecipe.ID))
+		})
+
+		T.Run("it should return an error when trying to update something that belongs to a recipe that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create recipe.
+			exampleRecipe := fakemodels.BuildFakeRecipe()
+			exampleRecipeInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+			createdRecipe, err := prixfixeClient.CreateRecipe(ctx, exampleRecipeInput)
+			checkValueAndError(t, createdRecipe, err)
+
+			// Create recipe step.
+			exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
+			exampleRecipeStepInput := fakemodels.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
+			createdRecipeStep, err := prixfixeClient.CreateRecipeStep(ctx, exampleRecipeStepInput)
+			checkValueAndError(t, createdRecipeStep, err)
+
+			// Create recipe step ingredient.
+			exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
+			exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStep.ID
+			exampleRecipeStepIngredientInput := fakemodels.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
+			createdRecipeStepIngredient, err := prixfixeClient.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
+			checkValueAndError(t, createdRecipeStepIngredient, err)
+
+			// Change recipe step ingredient.
+			createdRecipeStepIngredient.Update(exampleRecipeStepIngredient.ToUpdateInput())
+			err = prixfixeClient.UpdateRecipeStepIngredient(ctx, nonexistentID, createdRecipeStepIngredient)
+			assert.Error(t, err)
+
+			// Clean up recipe step ingredient.
+			assert.NoError(t, prixfixeClient.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID))
+
+			// Clean up recipe step.
+			assert.NoError(t, prixfixeClient.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+
+			// Clean up recipe.
+			assert.NoError(t, prixfixeClient.ArchiveRecipe(ctx, createdRecipe.ID))
+		})
+
+		T.Run("it should return an error when trying to update something that belongs to a recipe step that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create recipe.
+			exampleRecipe := fakemodels.BuildFakeRecipe()
+			exampleRecipeInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+			createdRecipe, err := prixfixeClient.CreateRecipe(ctx, exampleRecipeInput)
+			checkValueAndError(t, createdRecipe, err)
+
+			// Create recipe step.
+			exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
+			exampleRecipeStepInput := fakemodels.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
+			createdRecipeStep, err := prixfixeClient.CreateRecipeStep(ctx, exampleRecipeStepInput)
+			checkValueAndError(t, createdRecipeStep, err)
+
+			// Create recipe step ingredient.
+			exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
+			exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStep.ID
+			exampleRecipeStepIngredientInput := fakemodels.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
+			createdRecipeStepIngredient, err := prixfixeClient.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
+			checkValueAndError(t, createdRecipeStepIngredient, err)
+
+			// Change recipe step ingredient.
+			createdRecipeStepIngredient.Update(exampleRecipeStepIngredient.ToUpdateInput())
+			createdRecipeStepIngredient.BelongsToRecipeStep = nonexistentID
+			err = prixfixeClient.UpdateRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepIngredient)
+			assert.Error(t, err)
+
+			// Clean up recipe step ingredient.
+			assert.NoError(t, prixfixeClient.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID))
+
+			// Clean up recipe step.
+			assert.NoError(t, prixfixeClient.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+
+			// Clean up recipe.
+			assert.NoError(t, prixfixeClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		})
 	})
 
 	test.Run("Deleting", func(T *testing.T) {
-		T.Run("should be able to be deleted", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+		T.Run("it should return an error when trying to delete something that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create recipe step ingredient
-			expected := &models.RecipeStepIngredient{
-				IngredientID:    func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
-				QuantityType:    fake.Word(),
-				QuantityValue:   fake.Float32(),
-				QuantityNotes:   fake.Word(),
-				ProductOfRecipe: fake.Bool(),
-				IngredientNotes: fake.Word(),
-				RecipeStepID:    uint64(fake.Uint32()),
-			}
-			premade, err := todoClient.CreateRecipeStepIngredient(ctx, &models.RecipeStepIngredientCreationInput{
-				IngredientID:    expected.IngredientID,
-				QuantityType:    expected.QuantityType,
-				QuantityValue:   expected.QuantityValue,
-				QuantityNotes:   expected.QuantityNotes,
-				ProductOfRecipe: expected.ProductOfRecipe,
-				IngredientNotes: expected.IngredientNotes,
-				RecipeStepID:    expected.RecipeStepID,
-			})
-			checkValueAndError(t, premade, err)
+			// Create recipe.
+			exampleRecipe := fakemodels.BuildFakeRecipe()
+			exampleRecipeInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+			createdRecipe, err := prixfixeClient.CreateRecipe(ctx, exampleRecipeInput)
+			checkValueAndError(t, createdRecipe, err)
 
-			// Clean up
-			err = todoClient.ArchiveRecipeStepIngredient(ctx, premade.ID)
-			assert.NoError(t, err)
+			// Create recipe step.
+			exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
+			exampleRecipeStepInput := fakemodels.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
+			createdRecipeStep, err := prixfixeClient.CreateRecipeStep(ctx, exampleRecipeStepInput)
+			checkValueAndError(t, createdRecipeStep, err)
+
+			assert.Error(t, prixfixeClient.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, nonexistentID))
+
+			// Clean up recipe step.
+			assert.NoError(t, prixfixeClient.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+
+			// Clean up recipe.
+			assert.NoError(t, prixfixeClient.ArchiveRecipe(ctx, createdRecipe.ID))
+		})
+
+		T.Run("should be able to be deleted", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create recipe.
+			exampleRecipe := fakemodels.BuildFakeRecipe()
+			exampleRecipeInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+			createdRecipe, err := prixfixeClient.CreateRecipe(ctx, exampleRecipeInput)
+			checkValueAndError(t, createdRecipe, err)
+
+			// Create recipe step.
+			exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
+			exampleRecipeStepInput := fakemodels.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
+			createdRecipeStep, err := prixfixeClient.CreateRecipeStep(ctx, exampleRecipeStepInput)
+			checkValueAndError(t, createdRecipeStep, err)
+
+			// Create recipe step ingredient.
+			exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
+			exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStep.ID
+			exampleRecipeStepIngredientInput := fakemodels.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
+			createdRecipeStepIngredient, err := prixfixeClient.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
+			checkValueAndError(t, createdRecipeStepIngredient, err)
+
+			// Clean up recipe step ingredient.
+			assert.NoError(t, prixfixeClient.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID))
+
+			// Clean up recipe step.
+			assert.NoError(t, prixfixeClient.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+
+			// Clean up recipe.
+			assert.NoError(t, prixfixeClient.ArchiveRecipe(ctx, createdRecipe.ID))
+		})
+
+		T.Run("returns error when trying to archive post belonging to nonexistent recipe", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create recipe.
+			exampleRecipe := fakemodels.BuildFakeRecipe()
+			exampleRecipeInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+			createdRecipe, err := prixfixeClient.CreateRecipe(ctx, exampleRecipeInput)
+			checkValueAndError(t, createdRecipe, err)
+
+			// Create recipe step.
+			exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
+			exampleRecipeStepInput := fakemodels.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
+			createdRecipeStep, err := prixfixeClient.CreateRecipeStep(ctx, exampleRecipeStepInput)
+			checkValueAndError(t, createdRecipeStep, err)
+
+			// Create recipe step ingredient.
+			exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
+			exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStep.ID
+			exampleRecipeStepIngredientInput := fakemodels.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
+			createdRecipeStepIngredient, err := prixfixeClient.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
+			checkValueAndError(t, createdRecipeStepIngredient, err)
+
+			assert.Error(t, prixfixeClient.ArchiveRecipeStepIngredient(ctx, nonexistentID, createdRecipeStep.ID, createdRecipeStepIngredient.ID))
+
+			// Clean up recipe step ingredient.
+			assert.NoError(t, prixfixeClient.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID))
+
+			// Clean up recipe step.
+			assert.NoError(t, prixfixeClient.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+
+			// Clean up recipe.
+			assert.NoError(t, prixfixeClient.ArchiveRecipe(ctx, createdRecipe.ID))
+		})
+
+		T.Run("returns error when trying to archive post belonging to nonexistent recipe step", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create recipe.
+			exampleRecipe := fakemodels.BuildFakeRecipe()
+			exampleRecipeInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+			createdRecipe, err := prixfixeClient.CreateRecipe(ctx, exampleRecipeInput)
+			checkValueAndError(t, createdRecipe, err)
+
+			// Create recipe step.
+			exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
+			exampleRecipeStepInput := fakemodels.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
+			createdRecipeStep, err := prixfixeClient.CreateRecipeStep(ctx, exampleRecipeStepInput)
+			checkValueAndError(t, createdRecipeStep, err)
+
+			// Create recipe step ingredient.
+			exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
+			exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStep.ID
+			exampleRecipeStepIngredientInput := fakemodels.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
+			createdRecipeStepIngredient, err := prixfixeClient.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
+			checkValueAndError(t, createdRecipeStepIngredient, err)
+
+			assert.Error(t, prixfixeClient.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, nonexistentID, createdRecipeStepIngredient.ID))
+
+			// Clean up recipe step ingredient.
+			assert.NoError(t, prixfixeClient.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID))
+
+			// Clean up recipe step.
+			assert.NoError(t, prixfixeClient.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+
+			// Clean up recipe.
+			assert.NoError(t, prixfixeClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		})
 	})
 }

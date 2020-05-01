@@ -3,28 +3,45 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"database/sql/driver"
 	"errors"
 	"testing"
 	"time"
 
+	database "gitlab.com/prixfixe/prixfixe/database/v1"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 )
 
-func buildMockRowFromIterationMedia(x *models.IterationMedia) *sqlmock.Rows {
-	exampleRows := sqlmock.NewRows(iterationMediasTableColumns).AddRow(
-		x.ID,
-		x.Path,
-		x.Mimetype,
-		x.RecipeIterationID,
-		x.RecipeStepID,
-		x.CreatedOn,
-		x.UpdatedOn,
-		x.ArchivedOn,
-		x.BelongsTo,
-	)
+func buildMockRowsFromIterationMedia(iterationMedias ...*models.IterationMedia) *sqlmock.Rows {
+	includeCount := len(iterationMedias) > 1
+	columns := iterationMediasTableColumns
+
+	if includeCount {
+		columns = append(columns, "count")
+	}
+	exampleRows := sqlmock.NewRows(columns)
+
+	for _, x := range iterationMedias {
+		rowValues := []driver.Value{
+			x.ID,
+			x.Source,
+			x.Mimetype,
+			x.CreatedOn,
+			x.UpdatedOn,
+			x.ArchivedOn,
+			x.BelongsToRecipeIteration,
+		}
+
+		if includeCount {
+			rowValues = append(rowValues, len(iterationMedias))
+		}
+
+		exampleRows.AddRow(rowValues...)
+	}
 
 	return exampleRows
 }
@@ -32,17 +49,136 @@ func buildMockRowFromIterationMedia(x *models.IterationMedia) *sqlmock.Rows {
 func buildErroneousMockRowFromIterationMedia(x *models.IterationMedia) *sqlmock.Rows {
 	exampleRows := sqlmock.NewRows(iterationMediasTableColumns).AddRow(
 		x.ArchivedOn,
-		x.Path,
+		x.Source,
 		x.Mimetype,
-		x.RecipeIterationID,
-		x.RecipeStepID,
 		x.CreatedOn,
 		x.UpdatedOn,
-		x.BelongsTo,
+		x.BelongsToRecipeIteration,
 		x.ID,
 	)
 
 	return exampleRows
+}
+
+func TestPostgres_ScanIterationMedias(T *testing.T) {
+	T.Parallel()
+
+	T.Run("surfaces row errors", func(t *testing.T) {
+		p, _ := buildTestService(t)
+		mockRows := &database.MockResultIterator{}
+
+		mockRows.On("Next").Return(false)
+		mockRows.On("Err").Return(errors.New("blah"))
+
+		_, _, err := p.scanIterationMedias(mockRows)
+		assert.Error(t, err)
+	})
+
+	T.Run("logs row closing errors", func(t *testing.T) {
+		p, _ := buildTestService(t)
+		mockRows := &database.MockResultIterator{}
+
+		mockRows.On("Next").Return(false)
+		mockRows.On("Err").Return(nil)
+		mockRows.On("Close").Return(errors.New("blah"))
+
+		_, _, err := p.scanIterationMedias(mockRows)
+		assert.NoError(t, err)
+	})
+}
+
+func TestPostgres_buildIterationMediaExistsQuery(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		p, _ := buildTestService(t)
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
+		exampleIterationMedia := fakemodels.BuildFakeIterationMedia()
+		exampleIterationMedia.BelongsToRecipeIteration = exampleRecipeIteration.ID
+
+		expectedQuery := "SELECT EXISTS ( SELECT iteration_medias.id FROM iteration_medias JOIN recipe_iterations ON iteration_medias.belongs_to_recipe_iteration=recipe_iterations.id JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id WHERE iteration_medias.belongs_to_recipe_iteration = $1 AND iteration_medias.id = $2 AND recipe_iterations.belongs_to_recipe = $3 AND recipe_iterations.id = $4 AND recipes.id = $5 )"
+		expectedArgs := []interface{}{
+			exampleRecipeIteration.ID,
+			exampleIterationMedia.ID,
+			exampleRecipe.ID,
+			exampleRecipeIteration.ID,
+			exampleRecipe.ID,
+		}
+		actualQuery, actualArgs := p.buildIterationMediaExistsQuery(exampleRecipe.ID, exampleRecipeIteration.ID, exampleIterationMedia.ID)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+}
+
+func TestPostgres_IterationMediaExists(T *testing.T) {
+	T.Parallel()
+
+	expectedQuery := "SELECT EXISTS ( SELECT iteration_medias.id FROM iteration_medias JOIN recipe_iterations ON iteration_medias.belongs_to_recipe_iteration=recipe_iterations.id JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id WHERE iteration_medias.belongs_to_recipe_iteration = $1 AND iteration_medias.id = $2 AND recipe_iterations.belongs_to_recipe = $3 AND recipe_iterations.id = $4 AND recipes.id = $5 )"
+
+	T.Run("happy path", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
+		exampleIterationMedia := fakemodels.BuildFakeIterationMedia()
+		exampleIterationMedia.BelongsToRecipeIteration = exampleRecipeIteration.ID
+
+		p, mockDB := buildTestService(t)
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+			WithArgs(
+				exampleRecipeIteration.ID,
+				exampleIterationMedia.ID,
+				exampleRecipe.ID,
+				exampleRecipeIteration.ID,
+				exampleRecipe.ID,
+			).
+			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
+
+		actual, err := p.IterationMediaExists(ctx, exampleRecipe.ID, exampleRecipeIteration.ID, exampleIterationMedia.ID)
+		assert.NoError(t, err)
+		assert.True(t, actual)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with no rows", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
+		exampleIterationMedia := fakemodels.BuildFakeIterationMedia()
+		exampleIterationMedia.BelongsToRecipeIteration = exampleRecipeIteration.ID
+
+		p, mockDB := buildTestService(t)
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+			WithArgs(
+				exampleRecipeIteration.ID,
+				exampleIterationMedia.ID,
+				exampleRecipe.ID,
+				exampleRecipeIteration.ID,
+				exampleRecipe.ID,
+			).
+			WillReturnError(sql.ErrNoRows)
+
+		actual, err := p.IterationMediaExists(ctx, exampleRecipe.ID, exampleRecipeIteration.ID, exampleIterationMedia.ID)
+		assert.NoError(t, err)
+		assert.False(t, actual)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
 }
 
 func TestPostgres_buildGetIterationMediaQuery(T *testing.T) {
@@ -50,96 +186,90 @@ func TestPostgres_buildGetIterationMediaQuery(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
-		exampleIterationMediaID := uint64(123)
-		exampleUserID := uint64(321)
 
-		expectedArgCount := 2
-		expectedQuery := "SELECT id, path, mimetype, recipe_iteration_id, recipe_step_id, created_on, updated_on, archived_on, belongs_to FROM iteration_medias WHERE belongs_to = $1 AND id = $2"
-		actualQuery, args := p.buildGetIterationMediaQuery(exampleIterationMediaID, exampleUserID)
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
+		exampleIterationMedia := fakemodels.BuildFakeIterationMedia()
+		exampleIterationMedia.BelongsToRecipeIteration = exampleRecipeIteration.ID
 
+		expectedQuery := "SELECT iteration_medias.id, iteration_medias.source, iteration_medias.mimetype, iteration_medias.created_on, iteration_medias.updated_on, iteration_medias.archived_on, iteration_medias.belongs_to_recipe_iteration FROM iteration_medias JOIN recipe_iterations ON iteration_medias.belongs_to_recipe_iteration=recipe_iterations.id JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id WHERE iteration_medias.belongs_to_recipe_iteration = $1 AND iteration_medias.id = $2 AND recipe_iterations.belongs_to_recipe = $3 AND recipe_iterations.id = $4 AND recipes.id = $5"
+		expectedArgs := []interface{}{
+			exampleRecipeIteration.ID,
+			exampleIterationMedia.ID,
+			exampleRecipe.ID,
+			exampleRecipeIteration.ID,
+			exampleRecipe.ID,
+		}
+		actualQuery, actualArgs := p.buildGetIterationMediaQuery(exampleRecipe.ID, exampleRecipeIteration.ID, exampleIterationMedia.ID)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
-		assert.Len(t, args, expectedArgCount)
-		assert.Equal(t, exampleUserID, args[0].(uint64))
-		assert.Equal(t, exampleIterationMediaID, args[1].(uint64))
+		assert.Equal(t, expectedArgs, actualArgs)
 	})
 }
 
 func TestPostgres_GetIterationMedia(T *testing.T) {
 	T.Parallel()
 
+	exampleUser := fakemodels.BuildFakeUser()
+	expectedQuery := "SELECT iteration_medias.id, iteration_medias.source, iteration_medias.mimetype, iteration_medias.created_on, iteration_medias.updated_on, iteration_medias.archived_on, iteration_medias.belongs_to_recipe_iteration FROM iteration_medias JOIN recipe_iterations ON iteration_medias.belongs_to_recipe_iteration=recipe_iterations.id JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id WHERE iteration_medias.belongs_to_recipe_iteration = $1 AND iteration_medias.id = $2 AND recipe_iterations.belongs_to_recipe = $3 AND recipe_iterations.id = $4 AND recipes.id = $5"
+
 	T.Run("happy path", func(t *testing.T) {
-		expectedQuery := "SELECT id, path, mimetype, recipe_iteration_id, recipe_step_id, created_on, updated_on, archived_on, belongs_to FROM iteration_medias WHERE belongs_to = $1 AND id = $2"
-		expected := &models.IterationMedia{
-			ID: 123,
-		}
-		expectedUserID := uint64(321)
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
+		exampleIterationMedia := fakemodels.BuildFakeIterationMedia()
+		exampleIterationMedia.BelongsToRecipeIteration = exampleRecipeIteration.ID
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
-			WithArgs(expectedUserID, expected.ID).
-			WillReturnRows(buildMockRowFromIterationMedia(expected))
+			WithArgs(
+				exampleRecipeIteration.ID,
+				exampleIterationMedia.ID,
+				exampleRecipe.ID,
+				exampleRecipeIteration.ID,
+				exampleRecipe.ID,
+			).
+			WillReturnRows(buildMockRowsFromIterationMedia(exampleIterationMedia))
 
-		actual, err := p.GetIterationMedia(context.Background(), expected.ID, expectedUserID)
+		actual, err := p.GetIterationMedia(ctx, exampleRecipe.ID, exampleRecipeIteration.ID, exampleIterationMedia.ID)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleIterationMedia, actual)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
 	})
 
 	T.Run("surfaces sql.ErrNoRows", func(t *testing.T) {
-		expectedQuery := "SELECT id, path, mimetype, recipe_iteration_id, recipe_step_id, created_on, updated_on, archived_on, belongs_to FROM iteration_medias WHERE belongs_to = $1 AND id = $2"
-		expected := &models.IterationMedia{
-			ID: 123,
-		}
-		expectedUserID := uint64(321)
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
+		exampleIterationMedia := fakemodels.BuildFakeIterationMedia()
+		exampleIterationMedia.BelongsToRecipeIteration = exampleRecipeIteration.ID
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
-			WithArgs(expectedUserID, expected.ID).
+			WithArgs(
+				exampleRecipeIteration.ID,
+				exampleIterationMedia.ID,
+				exampleRecipe.ID,
+				exampleRecipeIteration.ID,
+				exampleRecipe.ID,
+			).
 			WillReturnError(sql.ErrNoRows)
 
-		actual, err := p.GetIterationMedia(context.Background(), expected.ID, expectedUserID)
+		actual, err := p.GetIterationMedia(ctx, exampleRecipe.ID, exampleRecipeIteration.ID, exampleIterationMedia.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 		assert.Equal(t, sql.ErrNoRows, err)
-
-		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
-	})
-}
-
-func TestPostgres_buildGetIterationMediaCountQuery(T *testing.T) {
-	T.Parallel()
-
-	T.Run("happy path", func(t *testing.T) {
-		p, _ := buildTestService(t)
-		exampleUserID := uint64(321)
-
-		expectedArgCount := 1
-		expectedQuery := "SELECT COUNT(id) FROM iteration_medias WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
-
-		actualQuery, args := p.buildGetIterationMediaCountQuery(models.DefaultQueryFilter(), exampleUserID)
-		assert.Equal(t, expectedQuery, actualQuery)
-		assert.Len(t, args, expectedArgCount)
-		assert.Equal(t, exampleUserID, args[0].(uint64))
-	})
-}
-
-func TestPostgres_GetIterationMediaCount(T *testing.T) {
-	T.Parallel()
-
-	T.Run("happy path", func(t *testing.T) {
-		expectedUserID := uint64(321)
-		expectedQuery := "SELECT COUNT(id) FROM iteration_medias WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
-		expectedCount := uint64(666)
-
-		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
-			WithArgs(expectedUserID).
-			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
-
-		actualCount, err := p.GetIterationMediaCount(context.Background(), models.DefaultQueryFilter(), expectedUserID)
-		assert.NoError(t, err)
-		assert.Equal(t, expectedCount, actualCount)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
 	})
@@ -150,9 +280,11 @@ func TestPostgres_buildGetAllIterationMediasCountQuery(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
-		expectedQuery := "SELECT COUNT(id) FROM iteration_medias WHERE archived_on IS NULL"
 
+		expectedQuery := "SELECT COUNT(iteration_medias.id) FROM iteration_medias WHERE iteration_medias.archived_on IS NULL"
 		actualQuery := p.buildGetAllIterationMediasCountQuery()
+
+		ensureArgCountMatchesQuery(t, actualQuery, []interface{}{})
 		assert.Equal(t, expectedQuery, actualQuery)
 	})
 }
@@ -161,14 +293,16 @@ func TestPostgres_GetAllIterationMediasCount(T *testing.T) {
 	T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
-		expectedQuery := "SELECT COUNT(id) FROM iteration_medias WHERE archived_on IS NULL"
-		expectedCount := uint64(666)
+		ctx := context.Background()
+
+		expectedQuery := "SELECT COUNT(iteration_medias.id) FROM iteration_medias WHERE iteration_medias.archived_on IS NULL"
+		expectedCount := uint64(123)
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
 
-		actualCount, err := p.GetAllIterationMediasCount(context.Background())
+		actualCount, err := p.GetAllIterationMediasCount(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, expectedCount, actualCount)
 
@@ -181,65 +315,91 @@ func TestPostgres_buildGetIterationMediasQuery(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
-		exampleUserID := uint64(321)
 
-		expectedArgCount := 1
-		expectedQuery := "SELECT id, path, mimetype, recipe_iteration_id, recipe_step_id, created_on, updated_on, archived_on, belongs_to FROM iteration_medias WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
-		actualQuery, args := p.buildGetIterationMediasQuery(models.DefaultQueryFilter(), exampleUserID)
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
+		filter := fakemodels.BuildFleshedOutQueryFilter()
 
+		expectedQuery := "SELECT iteration_medias.id, iteration_medias.source, iteration_medias.mimetype, iteration_medias.created_on, iteration_medias.updated_on, iteration_medias.archived_on, iteration_medias.belongs_to_recipe_iteration, COUNT(iteration_medias.id) FROM iteration_medias JOIN recipe_iterations ON iteration_medias.belongs_to_recipe_iteration=recipe_iterations.id JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id WHERE iteration_medias.archived_on IS NULL AND iteration_medias.belongs_to_recipe_iteration = $1 AND recipe_iterations.belongs_to_recipe = $2 AND recipe_iterations.id = $3 AND recipes.id = $4 AND iteration_medias.created_on > $5 AND iteration_medias.created_on < $6 AND iteration_medias.updated_on > $7 AND iteration_medias.updated_on < $8 GROUP BY iteration_medias.id LIMIT 20 OFFSET 180"
+		expectedArgs := []interface{}{
+			exampleRecipeIteration.ID,
+			exampleRecipe.ID,
+			exampleRecipeIteration.ID,
+			exampleRecipe.ID,
+			filter.CreatedAfter,
+			filter.CreatedBefore,
+			filter.UpdatedAfter,
+			filter.UpdatedBefore,
+		}
+		actualQuery, actualArgs := p.buildGetIterationMediasQuery(exampleRecipe.ID, exampleRecipeIteration.ID, filter)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
-		assert.Len(t, args, expectedArgCount)
-		assert.Equal(t, exampleUserID, args[0].(uint64))
+		assert.Equal(t, expectedArgs, actualArgs)
 	})
 }
 
 func TestPostgres_GetIterationMedias(T *testing.T) {
 	T.Parallel()
 
+	expectedListQuery := "SELECT iteration_medias.id, iteration_medias.source, iteration_medias.mimetype, iteration_medias.created_on, iteration_medias.updated_on, iteration_medias.archived_on, iteration_medias.belongs_to_recipe_iteration, COUNT(iteration_medias.id) FROM iteration_medias JOIN recipe_iterations ON iteration_medias.belongs_to_recipe_iteration=recipe_iterations.id JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id WHERE iteration_medias.archived_on IS NULL AND iteration_medias.belongs_to_recipe_iteration = $1 AND recipe_iterations.belongs_to_recipe = $2 AND recipe_iterations.id = $3 AND recipes.id = $4 GROUP BY iteration_medias.id LIMIT 20"
+
 	T.Run("happy path", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		expectedListQuery := "SELECT id, path, mimetype, recipe_iteration_id, recipe_step_id, created_on, updated_on, archived_on, belongs_to FROM iteration_medias WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
-		expectedCountQuery := "SELECT COUNT(id) FROM iteration_medias WHERE archived_on IS NULL"
-		expectedIterationMedia := &models.IterationMedia{
-			ID: 321,
-		}
-		expectedCount := uint64(666)
-		expected := &models.IterationMediaList{
-			Pagination: models.Pagination{
-				Page:       1,
-				Limit:      20,
-				TotalCount: expectedCount,
-			},
-			IterationMedias: []models.IterationMedia{
-				*expectedIterationMedia,
-			},
-		}
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
 
 		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
-			WillReturnRows(buildMockRowFromIterationMedia(expectedIterationMedia))
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
-			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
+		filter := models.DefaultQueryFilter()
 
-		actual, err := p.GetIterationMedias(context.Background(), models.DefaultQueryFilter(), expectedUserID)
+		exampleIterationMediaList := fakemodels.BuildFakeIterationMediaList()
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
+			WithArgs(
+				exampleRecipeIteration.ID,
+				exampleRecipe.ID,
+				exampleRecipeIteration.ID,
+				exampleRecipe.ID,
+			).
+			WillReturnRows(
+				buildMockRowsFromIterationMedia(
+					&exampleIterationMediaList.IterationMedias[0],
+					&exampleIterationMediaList.IterationMedias[1],
+					&exampleIterationMediaList.IterationMedias[2],
+				),
+			)
+
+		actual, err := p.GetIterationMedias(ctx, exampleRecipe.ID, exampleRecipeIteration.ID, filter)
 
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleIterationMediaList, actual)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
 	})
 
 	T.Run("surfaces sql.ErrNoRows", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		expectedListQuery := "SELECT id, path, mimetype, recipe_iteration_id, recipe_step_id, created_on, updated_on, archived_on, belongs_to FROM iteration_medias WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
 
 		p, mockDB := buildTestService(t)
+		filter := models.DefaultQueryFilter()
+
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
+			WithArgs(
+				exampleRecipeIteration.ID,
+				exampleRecipe.ID,
+				exampleRecipeIteration.ID,
+				exampleRecipe.ID,
+			).
 			WillReturnError(sql.ErrNoRows)
 
-		actual, err := p.GetIterationMedias(context.Background(), models.DefaultQueryFilter(), expectedUserID)
+		actual, err := p.GetIterationMedias(ctx, exampleRecipe.ID, exampleRecipeIteration.ID, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 		assert.Equal(t, sql.ErrNoRows, err)
@@ -248,15 +408,25 @@ func TestPostgres_GetIterationMedias(T *testing.T) {
 	})
 
 	T.Run("with error executing read query", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		expectedListQuery := "SELECT id, path, mimetype, recipe_iteration_id, recipe_step_id, created_on, updated_on, archived_on, belongs_to FROM iteration_medias WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
 
 		p, mockDB := buildTestService(t)
+		filter := models.DefaultQueryFilter()
+
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
+			WithArgs(
+				exampleRecipeIteration.ID,
+				exampleRecipe.ID,
+				exampleRecipeIteration.ID,
+				exampleRecipe.ID,
+			).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := p.GetIterationMedias(context.Background(), models.DefaultQueryFilter(), expectedUserID)
+		actual, err := p.GetIterationMedias(ctx, exampleRecipe.ID, exampleRecipeIteration.ID, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -264,117 +434,27 @@ func TestPostgres_GetIterationMedias(T *testing.T) {
 	})
 
 	T.Run("with error scanning iteration media", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		expected := &models.IterationMedia{
-			ID: 321,
-		}
-		expectedListQuery := "SELECT id, path, mimetype, recipe_iteration_id, recipe_step_id, created_on, updated_on, archived_on, belongs_to FROM iteration_medias WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
 
 		p, mockDB := buildTestService(t)
+		filter := models.DefaultQueryFilter()
+
+		exampleIterationMedia := fakemodels.BuildFakeIterationMedia()
+
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
-			WillReturnRows(buildErroneousMockRowFromIterationMedia(expected))
-
-		actual, err := p.GetIterationMedias(context.Background(), models.DefaultQueryFilter(), expectedUserID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
-	})
-
-	T.Run("with error querying for count", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		expected := &models.IterationMedia{
-			ID: 321,
-		}
-		expectedListQuery := "SELECT id, path, mimetype, recipe_iteration_id, recipe_step_id, created_on, updated_on, archived_on, belongs_to FROM iteration_medias WHERE archived_on IS NULL AND belongs_to = $1 LIMIT 20"
-		expectedCountQuery := "SELECT COUNT(id) FROM iteration_medias WHERE archived_on IS NULL"
-
-		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
-			WillReturnRows(buildMockRowFromIterationMedia(expected))
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := p.GetIterationMedias(context.Background(), models.DefaultQueryFilter(), expectedUserID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
-	})
-}
-
-func TestPostgres_GetAllIterationMediasForUser(T *testing.T) {
-	T.Parallel()
-
-	T.Run("happy path", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		expectedIterationMedia := &models.IterationMedia{
-			ID: 321,
-		}
-		expectedListQuery := "SELECT id, path, mimetype, recipe_iteration_id, recipe_step_id, created_on, updated_on, archived_on, belongs_to FROM iteration_medias WHERE archived_on IS NULL AND belongs_to = $1"
-
-		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
-			WillReturnRows(buildMockRowFromIterationMedia(expectedIterationMedia))
-
-		expected := []models.IterationMedia{*expectedIterationMedia}
-		actual, err := p.GetAllIterationMediasForUser(context.Background(), expectedUserID)
-
-		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
-
-		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
-	})
-
-	T.Run("surfaces sql.ErrNoRows", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		expectedListQuery := "SELECT id, path, mimetype, recipe_iteration_id, recipe_step_id, created_on, updated_on, archived_on, belongs_to FROM iteration_medias WHERE archived_on IS NULL AND belongs_to = $1"
-
-		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
-			WillReturnError(sql.ErrNoRows)
-
-		actual, err := p.GetAllIterationMediasForUser(context.Background(), expectedUserID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-		assert.Equal(t, sql.ErrNoRows, err)
-
-		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
-	})
-
-	T.Run("with error querying database", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		expectedListQuery := "SELECT id, path, mimetype, recipe_iteration_id, recipe_step_id, created_on, updated_on, archived_on, belongs_to FROM iteration_medias WHERE archived_on IS NULL AND belongs_to = $1"
-
-		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := p.GetAllIterationMediasForUser(context.Background(), expectedUserID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
-	})
-
-	T.Run("with unscannable response", func(t *testing.T) {
-		expectedUserID := uint64(123)
-		exampleIterationMedia := &models.IterationMedia{
-			ID: 321,
-		}
-		expectedListQuery := "SELECT id, path, mimetype, recipe_iteration_id, recipe_step_id, created_on, updated_on, archived_on, belongs_to FROM iteration_medias WHERE archived_on IS NULL AND belongs_to = $1"
-
-		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(expectedUserID).
+			WithArgs(
+				exampleRecipeIteration.ID,
+				exampleRecipe.ID,
+				exampleRecipeIteration.ID,
+				exampleRecipe.ID,
+			).
 			WillReturnRows(buildErroneousMockRowFromIterationMedia(exampleIterationMedia))
 
-		actual, err := p.GetAllIterationMediasForUser(context.Background(), expectedUserID)
+		actual, err := p.GetIterationMedias(ctx, exampleRecipe.ID, exampleRecipeIteration.ID, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -387,88 +467,85 @@ func TestPostgres_buildCreateIterationMediaQuery(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
-		expected := &models.IterationMedia{
-			ID:        321,
-			BelongsTo: 123,
-		}
-		expectedArgCount := 5
-		expectedQuery := "INSERT INTO iteration_medias (path,mimetype,recipe_iteration_id,recipe_step_id,belongs_to) VALUES ($1,$2,$3,$4,$5) RETURNING id, created_on"
-		actualQuery, args := p.buildCreateIterationMediaQuery(expected)
 
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
+		exampleIterationMedia := fakemodels.BuildFakeIterationMedia()
+		exampleIterationMedia.BelongsToRecipeIteration = exampleRecipeIteration.ID
+
+		expectedQuery := "INSERT INTO iteration_medias (source,mimetype,belongs_to_recipe_iteration) VALUES ($1,$2,$3) RETURNING id, created_on"
+		expectedArgs := []interface{}{
+			exampleIterationMedia.Source,
+			exampleIterationMedia.Mimetype,
+			exampleIterationMedia.BelongsToRecipeIteration,
+		}
+		actualQuery, actualArgs := p.buildCreateIterationMediaQuery(exampleIterationMedia)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
-		assert.Len(t, args, expectedArgCount)
-		assert.Equal(t, expected.Path, args[0].(string))
-		assert.Equal(t, expected.Mimetype, args[1].(string))
-		assert.Equal(t, expected.RecipeIterationID, args[2].(uint64))
-		assert.Equal(t, expected.RecipeStepID, args[3].(*uint64))
-		assert.Equal(t, expected.BelongsTo, args[4].(uint64))
+		assert.Equal(t, expectedArgs, actualArgs)
 	})
 }
 
 func TestPostgres_CreateIterationMedia(T *testing.T) {
 	T.Parallel()
 
+	expectedCreationQuery := "INSERT INTO iteration_medias (source,mimetype,belongs_to_recipe_iteration) VALUES ($1,$2,$3) RETURNING id, created_on"
+
 	T.Run("happy path", func(t *testing.T) {
-		expectedUserID := uint64(321)
-		expected := &models.IterationMedia{
-			ID:        123,
-			BelongsTo: expectedUserID,
-			CreatedOn: uint64(time.Now().Unix()),
-		}
-		expectedInput := &models.IterationMediaCreationInput{
-			Path:              expected.Path,
-			Mimetype:          expected.Mimetype,
-			RecipeIterationID: expected.RecipeIterationID,
-			RecipeStepID:      expected.RecipeStepID,
-			BelongsTo:         expected.BelongsTo,
-		}
-		exampleRows := sqlmock.NewRows([]string{"id", "created_on"}).AddRow(expected.ID, uint64(time.Now().Unix()))
-		expectedQuery := "INSERT INTO iteration_medias (path,mimetype,recipe_iteration_id,recipe_step_id,belongs_to) VALUES ($1,$2,$3,$4,$5) RETURNING id, created_on"
+		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
+		exampleIterationMedia := fakemodels.BuildFakeIterationMedia()
+		exampleIterationMedia.BelongsToRecipeIteration = exampleRecipeIteration.ID
+		exampleInput := fakemodels.BuildFakeIterationMediaCreationInputFromIterationMedia(exampleIterationMedia)
+
+		exampleRows := sqlmock.NewRows([]string{"id", "created_on"}).AddRow(exampleIterationMedia.ID, exampleIterationMedia.CreatedOn)
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCreationQuery)).
 			WithArgs(
-				expected.Path,
-				expected.Mimetype,
-				expected.RecipeIterationID,
-				expected.RecipeStepID,
-				expected.BelongsTo,
+				exampleIterationMedia.Source,
+				exampleIterationMedia.Mimetype,
+				exampleIterationMedia.BelongsToRecipeIteration,
 			).WillReturnRows(exampleRows)
 
-		actual, err := p.CreateIterationMedia(context.Background(), expectedInput)
+		actual, err := p.CreateIterationMedia(ctx, exampleInput)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleIterationMedia, actual)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
-		expectedUserID := uint64(321)
-		expected := &models.IterationMedia{
-			ID:        123,
-			BelongsTo: expectedUserID,
-			CreatedOn: uint64(time.Now().Unix()),
-		}
-		expectedInput := &models.IterationMediaCreationInput{
-			Path:              expected.Path,
-			Mimetype:          expected.Mimetype,
-			RecipeIterationID: expected.RecipeIterationID,
-			RecipeStepID:      expected.RecipeStepID,
-			BelongsTo:         expected.BelongsTo,
-		}
-		expectedQuery := "INSERT INTO iteration_medias (path,mimetype,recipe_iteration_id,recipe_step_id,belongs_to) VALUES ($1,$2,$3,$4,$5) RETURNING id, created_on"
+		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
+		exampleIterationMedia := fakemodels.BuildFakeIterationMedia()
+		exampleIterationMedia.BelongsToRecipeIteration = exampleRecipeIteration.ID
+		exampleInput := fakemodels.BuildFakeIterationMediaCreationInputFromIterationMedia(exampleIterationMedia)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCreationQuery)).
 			WithArgs(
-				expected.Path,
-				expected.Mimetype,
-				expected.RecipeIterationID,
-				expected.RecipeStepID,
-				expected.BelongsTo,
+				exampleIterationMedia.Source,
+				exampleIterationMedia.Mimetype,
+				exampleIterationMedia.BelongsToRecipeIteration,
 			).WillReturnError(errors.New("blah"))
 
-		actual, err := p.CreateIterationMedia(context.Background(), expectedInput)
+		actual, err := p.CreateIterationMedia(ctx, exampleInput)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -481,76 +558,85 @@ func TestPostgres_buildUpdateIterationMediaQuery(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
-		expected := &models.IterationMedia{
-			ID:        321,
-			BelongsTo: 123,
-		}
-		expectedArgCount := 6
-		expectedQuery := "UPDATE iteration_medias SET path = $1, mimetype = $2, recipe_iteration_id = $3, recipe_step_id = $4, updated_on = extract(epoch FROM NOW()) WHERE belongs_to = $5 AND id = $6 RETURNING updated_on"
-		actualQuery, args := p.buildUpdateIterationMediaQuery(expected)
 
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
+		exampleIterationMedia := fakemodels.BuildFakeIterationMedia()
+		exampleIterationMedia.BelongsToRecipeIteration = exampleRecipeIteration.ID
+
+		expectedQuery := "UPDATE iteration_medias SET source = $1, mimetype = $2, updated_on = extract(epoch FROM NOW()) WHERE belongs_to_recipe_iteration = $3 AND id = $4 RETURNING updated_on"
+		expectedArgs := []interface{}{
+			exampleIterationMedia.Source,
+			exampleIterationMedia.Mimetype,
+			exampleIterationMedia.BelongsToRecipeIteration,
+			exampleIterationMedia.ID,
+		}
+		actualQuery, actualArgs := p.buildUpdateIterationMediaQuery(exampleIterationMedia)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
-		assert.Len(t, args, expectedArgCount)
-		assert.Equal(t, expected.Path, args[0].(string))
-		assert.Equal(t, expected.Mimetype, args[1].(string))
-		assert.Equal(t, expected.RecipeIterationID, args[2].(uint64))
-		assert.Equal(t, expected.RecipeStepID, args[3].(*uint64))
-		assert.Equal(t, expected.BelongsTo, args[4].(uint64))
-		assert.Equal(t, expected.ID, args[5].(uint64))
+		assert.Equal(t, expectedArgs, actualArgs)
 	})
 }
 
 func TestPostgres_UpdateIterationMedia(T *testing.T) {
 	T.Parallel()
 
+	expectedQuery := "UPDATE iteration_medias SET source = $1, mimetype = $2, updated_on = extract(epoch FROM NOW()) WHERE belongs_to_recipe_iteration = $3 AND id = $4 RETURNING updated_on"
+
 	T.Run("happy path", func(t *testing.T) {
-		expectedUserID := uint64(321)
-		expected := &models.IterationMedia{
-			ID:        123,
-			BelongsTo: expectedUserID,
-			CreatedOn: uint64(time.Now().Unix()),
-		}
-		exampleRows := sqlmock.NewRows([]string{"updated_on"}).AddRow(uint64(time.Now().Unix()))
-		expectedQuery := "UPDATE iteration_medias SET path = $1, mimetype = $2, recipe_iteration_id = $3, recipe_step_id = $4, updated_on = extract(epoch FROM NOW()) WHERE belongs_to = $5 AND id = $6 RETURNING updated_on"
+		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
+		exampleIterationMedia := fakemodels.BuildFakeIterationMedia()
+		exampleIterationMedia.BelongsToRecipeIteration = exampleRecipeIteration.ID
+
+		exampleRows := sqlmock.NewRows([]string{"updated_on"}).AddRow(uint64(time.Now().Unix()))
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				expected.Path,
-				expected.Mimetype,
-				expected.RecipeIterationID,
-				expected.RecipeStepID,
-				expected.BelongsTo,
-				expected.ID,
+				exampleIterationMedia.Source,
+				exampleIterationMedia.Mimetype,
+				exampleIterationMedia.BelongsToRecipeIteration,
+				exampleIterationMedia.ID,
 			).WillReturnRows(exampleRows)
 
-		err := p.UpdateIterationMedia(context.Background(), expected)
+		err := p.UpdateIterationMedia(ctx, exampleIterationMedia)
 		assert.NoError(t, err)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
-		expectedUserID := uint64(321)
-		expected := &models.IterationMedia{
-			ID:        123,
-			BelongsTo: expectedUserID,
-			CreatedOn: uint64(time.Now().Unix()),
-		}
-		expectedQuery := "UPDATE iteration_medias SET path = $1, mimetype = $2, recipe_iteration_id = $3, recipe_step_id = $4, updated_on = extract(epoch FROM NOW()) WHERE belongs_to = $5 AND id = $6 RETURNING updated_on"
+		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
+		exampleIterationMedia := fakemodels.BuildFakeIterationMedia()
+		exampleIterationMedia.BelongsToRecipeIteration = exampleRecipeIteration.ID
+
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				expected.Path,
-				expected.Mimetype,
-				expected.RecipeIterationID,
-				expected.RecipeStepID,
-				expected.BelongsTo,
-				expected.ID,
+				exampleIterationMedia.Source,
+				exampleIterationMedia.Mimetype,
+				exampleIterationMedia.BelongsToRecipeIteration,
+				exampleIterationMedia.ID,
 			).WillReturnError(errors.New("blah"))
 
-		err := p.UpdateIterationMedia(context.Background(), expected)
+		err := p.UpdateIterationMedia(ctx, exampleIterationMedia)
 		assert.Error(t, err)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
@@ -562,63 +648,104 @@ func TestPostgres_buildArchiveIterationMediaQuery(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
-		expected := &models.IterationMedia{
-			ID:        321,
-			BelongsTo: 123,
-		}
-		expectedArgCount := 2
-		expectedQuery := "UPDATE iteration_medias SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to = $1 AND id = $2 RETURNING archived_on"
-		actualQuery, args := p.buildArchiveIterationMediaQuery(expected.ID, expected.BelongsTo)
 
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
+		exampleIterationMedia := fakemodels.BuildFakeIterationMedia()
+		exampleIterationMedia.BelongsToRecipeIteration = exampleRecipeIteration.ID
+
+		expectedQuery := "UPDATE iteration_medias SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_iteration = $1 AND id = $2 RETURNING archived_on"
+		expectedArgs := []interface{}{
+			exampleRecipeIteration.ID,
+			exampleIterationMedia.ID,
+		}
+		actualQuery, actualArgs := p.buildArchiveIterationMediaQuery(exampleRecipeIteration.ID, exampleIterationMedia.ID)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
-		assert.Len(t, args, expectedArgCount)
-		assert.Equal(t, expected.BelongsTo, args[0].(uint64))
-		assert.Equal(t, expected.ID, args[1].(uint64))
+		assert.Equal(t, expectedArgs, actualArgs)
 	})
 }
 
 func TestPostgres_ArchiveIterationMedia(T *testing.T) {
 	T.Parallel()
 
+	expectedQuery := "UPDATE iteration_medias SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_iteration = $1 AND id = $2 RETURNING archived_on"
+
 	T.Run("happy path", func(t *testing.T) {
-		expectedUserID := uint64(321)
-		expected := &models.IterationMedia{
-			ID:        123,
-			BelongsTo: expectedUserID,
-			CreatedOn: uint64(time.Now().Unix()),
-		}
-		expectedQuery := "UPDATE iteration_medias SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to = $1 AND id = $2 RETURNING archived_on"
+		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
+		exampleIterationMedia := fakemodels.BuildFakeIterationMedia()
+		exampleIterationMedia.BelongsToRecipeIteration = exampleRecipeIteration.ID
+
 		mockDB.ExpectExec(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				expected.BelongsTo,
-				expected.ID,
+				exampleRecipeIteration.ID,
+				exampleIterationMedia.ID,
 			).WillReturnResult(sqlmock.NewResult(1, 1))
 
-		err := p.ArchiveIterationMedia(context.Background(), expected.ID, expectedUserID)
+		err := p.ArchiveIterationMedia(ctx, exampleRecipeIteration.ID, exampleIterationMedia.ID)
 		assert.NoError(t, err)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
 	})
 
-	T.Run("with error writing to database", func(t *testing.T) {
-		expectedUserID := uint64(321)
-		example := &models.IterationMedia{
-			ID:        123,
-			BelongsTo: expectedUserID,
-			CreatedOn: uint64(time.Now().Unix()),
-		}
-		expectedQuery := "UPDATE iteration_medias SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to = $1 AND id = $2 RETURNING archived_on"
+	T.Run("returns sql.ErrNoRows with no rows affected", func(t *testing.T) {
+		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
+		exampleIterationMedia := fakemodels.BuildFakeIterationMedia()
+		exampleIterationMedia.BelongsToRecipeIteration = exampleRecipeIteration.ID
+
 		mockDB.ExpectExec(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				example.BelongsTo,
-				example.ID,
+				exampleRecipeIteration.ID,
+				exampleIterationMedia.ID,
+			).WillReturnResult(sqlmock.NewResult(0, 0))
+
+		err := p.ArchiveIterationMedia(ctx, exampleRecipeIteration.ID, exampleIterationMedia.ID)
+		assert.Error(t, err)
+		assert.Equal(t, sql.ErrNoRows, err)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with error writing to database", func(t *testing.T) {
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
+		exampleIterationMedia := fakemodels.BuildFakeIterationMedia()
+		exampleIterationMedia.BelongsToRecipeIteration = exampleRecipeIteration.ID
+
+		mockDB.ExpectExec(formatQueryForSQLMock(expectedQuery)).
+			WithArgs(
+				exampleRecipeIteration.ID,
+				exampleIterationMedia.ID,
 			).WillReturnError(errors.New("blah"))
 
-		err := p.ArchiveIterationMedia(context.Background(), example.ID, expectedUserID)
+		err := p.ArchiveIterationMedia(ctx, exampleRecipeIteration.ID, exampleIterationMedia.ID)
 		assert.Error(t, err)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")

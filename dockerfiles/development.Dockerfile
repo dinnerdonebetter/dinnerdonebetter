@@ -15,7 +15,7 @@ WORKDIR /go/src/gitlab.com/prixfixe/prixfixe
 COPY . .
 COPY --from=frontend-build-stage /app/public /frontend
 
-RUN go build -o /prixfixe gitlab.com/prixfixe/prixfixe/cmd/server/v1
+RUN go build -trimpath -o /prixfixe gitlab.com/prixfixe/prixfixe/cmd/server/v1
 
 # final stage
 FROM debian:stretch

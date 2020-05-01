@@ -2,54 +2,48 @@ package dbclient
 
 import (
 	"context"
-	"strconv"
 
+	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
-
-	"go.opencensus.io/trace"
 )
 
 var _ models.RecipeStepDataManager = (*Client)(nil)
 
-// attachRecipeStepIDToSpan provides a consistent way to attach a recipe step's ID to a span
-func attachRecipeStepIDToSpan(span *trace.Span, recipeStepID uint64) {
-	if span != nil {
-		span.AddAttributes(trace.StringAttribute("recipe_step_id", strconv.FormatUint(recipeStepID, 10)))
-	}
-}
-
-// GetRecipeStep fetches a recipe step from the database
-func (c *Client) GetRecipeStep(ctx context.Context, recipeStepID, userID uint64) (*models.RecipeStep, error) {
-	ctx, span := trace.StartSpan(ctx, "GetRecipeStep")
+// RecipeStepExists fetches whether or not a recipe step exists from the database.
+func (c *Client) RecipeStepExists(ctx context.Context, recipeID, recipeStepID uint64) (bool, error) {
+	ctx, span := tracing.StartSpan(ctx, "RecipeStepExists")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
-	attachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
 	c.logger.WithValues(map[string]interface{}{
+		"recipe_id":      recipeID,
 		"recipe_step_id": recipeStepID,
-		"user_id":        userID,
-	}).Debug("GetRecipeStep called")
+	}).Debug("RecipeStepExists called")
 
-	return c.querier.GetRecipeStep(ctx, recipeStepID, userID)
+	return c.querier.RecipeStepExists(ctx, recipeID, recipeStepID)
 }
 
-// GetRecipeStepCount fetches the count of recipe steps from the database that meet a particular filter
-func (c *Client) GetRecipeStepCount(ctx context.Context, filter *models.QueryFilter, userID uint64) (count uint64, err error) {
-	ctx, span := trace.StartSpan(ctx, "GetRecipeStepCount")
+// GetRecipeStep fetches a recipe step from the database.
+func (c *Client) GetRecipeStep(ctx context.Context, recipeID, recipeStepID uint64) (*models.RecipeStep, error) {
+	ctx, span := tracing.StartSpan(ctx, "GetRecipeStep")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
-	attachFilterToSpan(span, filter)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
-	c.logger.WithValue("user_id", userID).Debug("GetRecipeStepCount called")
+	c.logger.WithValues(map[string]interface{}{
+		"recipe_id":      recipeID,
+		"recipe_step_id": recipeStepID,
+	}).Debug("GetRecipeStep called")
 
-	return c.querier.GetRecipeStepCount(ctx, filter, userID)
+	return c.querier.GetRecipeStep(ctx, recipeID, recipeStepID)
 }
 
-// GetAllRecipeStepsCount fetches the count of recipe steps from the database that meet a particular filter
+// GetAllRecipeStepsCount fetches the count of recipe steps from the database that meet a particular filter.
 func (c *Client) GetAllRecipeStepsCount(ctx context.Context) (count uint64, err error) {
-	ctx, span := trace.StartSpan(ctx, "GetAllRecipeStepsCount")
+	ctx, span := tracing.StartSpan(ctx, "GetAllRecipeStepsCount")
 	defer span.End()
 
 	c.logger.Debug("GetAllRecipeStepsCount called")
@@ -57,37 +51,26 @@ func (c *Client) GetAllRecipeStepsCount(ctx context.Context) (count uint64, err 
 	return c.querier.GetAllRecipeStepsCount(ctx)
 }
 
-// GetRecipeSteps fetches a list of recipe steps from the database that meet a particular filter
-func (c *Client) GetRecipeSteps(ctx context.Context, filter *models.QueryFilter, userID uint64) (*models.RecipeStepList, error) {
-	ctx, span := trace.StartSpan(ctx, "GetRecipeSteps")
+// GetRecipeSteps fetches a list of recipe steps from the database that meet a particular filter.
+func (c *Client) GetRecipeSteps(ctx context.Context, recipeID uint64, filter *models.QueryFilter) (*models.RecipeStepList, error) {
+	ctx, span := tracing.StartSpan(ctx, "GetRecipeSteps")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
-	attachFilterToSpan(span, filter)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachFilterToSpan(span, filter)
 
-	c.logger.WithValue("user_id", userID).Debug("GetRecipeSteps called")
+	c.logger.WithValues(map[string]interface{}{
+		"recipe_id": recipeID,
+	}).Debug("GetRecipeSteps called")
 
-	recipeStepList, err := c.querier.GetRecipeSteps(ctx, filter, userID)
+	recipeStepList, err := c.querier.GetRecipeSteps(ctx, recipeID, filter)
 
 	return recipeStepList, err
 }
 
-// GetAllRecipeStepsForUser fetches a list of recipe steps from the database that meet a particular filter
-func (c *Client) GetAllRecipeStepsForUser(ctx context.Context, userID uint64) ([]models.RecipeStep, error) {
-	ctx, span := trace.StartSpan(ctx, "GetAllRecipeStepsForUser")
-	defer span.End()
-
-	attachUserIDToSpan(span, userID)
-	c.logger.WithValue("user_id", userID).Debug("GetAllRecipeStepsForUser called")
-
-	recipeStepList, err := c.querier.GetAllRecipeStepsForUser(ctx, userID)
-
-	return recipeStepList, err
-}
-
-// CreateRecipeStep creates a recipe step in the database
+// CreateRecipeStep creates a recipe step in the database.
 func (c *Client) CreateRecipeStep(ctx context.Context, input *models.RecipeStepCreationInput) (*models.RecipeStep, error) {
-	ctx, span := trace.StartSpan(ctx, "CreateRecipeStep")
+	ctx, span := tracing.StartSpan(ctx, "CreateRecipeStep")
 	defer span.End()
 
 	c.logger.WithValue("input", input).Debug("CreateRecipeStep called")
@@ -97,28 +80,28 @@ func (c *Client) CreateRecipeStep(ctx context.Context, input *models.RecipeStepC
 
 // UpdateRecipeStep updates a particular recipe step. Note that UpdateRecipeStep expects the
 // provided input to have a valid ID.
-func (c *Client) UpdateRecipeStep(ctx context.Context, input *models.RecipeStep) error {
-	ctx, span := trace.StartSpan(ctx, "UpdateRecipeStep")
+func (c *Client) UpdateRecipeStep(ctx context.Context, updated *models.RecipeStep) error {
+	ctx, span := tracing.StartSpan(ctx, "UpdateRecipeStep")
 	defer span.End()
 
-	attachRecipeStepIDToSpan(span, input.ID)
-	c.logger.WithValue("recipe_step_id", input.ID).Debug("UpdateRecipeStep called")
+	tracing.AttachRecipeStepIDToSpan(span, updated.ID)
+	c.logger.WithValue("recipe_step_id", updated.ID).Debug("UpdateRecipeStep called")
 
-	return c.querier.UpdateRecipeStep(ctx, input)
+	return c.querier.UpdateRecipeStep(ctx, updated)
 }
 
-// ArchiveRecipeStep archives a recipe step from the database by its ID
-func (c *Client) ArchiveRecipeStep(ctx context.Context, recipeStepID, userID uint64) error {
-	ctx, span := trace.StartSpan(ctx, "ArchiveRecipeStep")
+// ArchiveRecipeStep archives a recipe step from the database by its ID.
+func (c *Client) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID uint64) error {
+	ctx, span := tracing.StartSpan(ctx, "ArchiveRecipeStep")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
-	attachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
 	c.logger.WithValues(map[string]interface{}{
 		"recipe_step_id": recipeStepID,
-		"user_id":        userID,
+		"recipe_id":      recipeID,
 	}).Debug("ArchiveRecipeStep called")
 
-	return c.querier.ArchiveRecipeStep(ctx, recipeStepID, userID)
+	return c.querier.ArchiveRecipeStep(ctx, recipeID, recipeStepID)
 }

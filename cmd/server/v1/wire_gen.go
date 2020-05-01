@@ -16,22 +16,25 @@ import (
 	"gitlab.com/prixfixe/prixfixe/server/v1/http"
 	auth2 "gitlab.com/prixfixe/prixfixe/services/v1/auth"
 	"gitlab.com/prixfixe/prixfixe/services/v1/frontend"
-	"gitlab.com/prixfixe/prixfixe/services/v1/ingredients"
-	"gitlab.com/prixfixe/prixfixe/services/v1/instruments"
+	"gitlab.com/prixfixe/prixfixe/services/v1/ingredienttagmappings"
 	"gitlab.com/prixfixe/prixfixe/services/v1/invitations"
 	"gitlab.com/prixfixe/prixfixe/services/v1/iterationmedias"
 	"gitlab.com/prixfixe/prixfixe/services/v1/oauth2clients"
-	"gitlab.com/prixfixe/prixfixe/services/v1/preparations"
 	"gitlab.com/prixfixe/prixfixe/services/v1/recipeiterations"
+	"gitlab.com/prixfixe/prixfixe/services/v1/recipeiterationsteps"
 	"gitlab.com/prixfixe/prixfixe/services/v1/recipes"
-	"gitlab.com/prixfixe/prixfixe/services/v1/recipestepevents"
 	"gitlab.com/prixfixe/prixfixe/services/v1/recipestepingredients"
-	"gitlab.com/prixfixe/prixfixe/services/v1/recipestepinstruments"
-	"gitlab.com/prixfixe/prixfixe/services/v1/recipestepproducts"
+	"gitlab.com/prixfixe/prixfixe/services/v1/recipesteppreparations"
 	"gitlab.com/prixfixe/prixfixe/services/v1/recipesteps"
+	"gitlab.com/prixfixe/prixfixe/services/v1/recipetags"
 	"gitlab.com/prixfixe/prixfixe/services/v1/reports"
 	"gitlab.com/prixfixe/prixfixe/services/v1/requiredpreparationinstruments"
 	"gitlab.com/prixfixe/prixfixe/services/v1/users"
+	"gitlab.com/prixfixe/prixfixe/services/v1/validingredientpreparations"
+	"gitlab.com/prixfixe/prixfixe/services/v1/validingredients"
+	"gitlab.com/prixfixe/prixfixe/services/v1/validingredienttags"
+	"gitlab.com/prixfixe/prixfixe/services/v1/validinstruments"
+	"gitlab.com/prixfixe/prixfixe/services/v1/validpreparations"
 	"gitlab.com/prixfixe/prixfixe/services/v1/webhooks"
 	"gitlab.com/verygoodsoftwarenotvirus/logging/v1"
 	"gitlab.com/verygoodsoftwarenotvirus/newsman"
@@ -43,151 +46,184 @@ func BuildServer(ctx context.Context, cfg *config.ServerConfig, logger logging.L
 	bcryptHashCost := auth.ProvideBcryptHashCost()
 	authenticator := auth.ProvideBcryptAuthenticator(bcryptHashCost, logger)
 	userDataManager := users.ProvideUserDataManager(database2)
-	clientIDFetcher := httpserver.ProvideOAuth2ServiceClientIDFetcher(logger)
+	clientIDFetcher := httpserver.ProvideOAuth2ClientsServiceClientIDFetcher(logger)
 	encoderDecoder := encoding.ProvideResponseEncoder()
 	unitCounterProvider := metrics.ProvideUnitCounterProvider()
-	service, err := oauth2clients.ProvideOAuth2ClientsService(ctx, logger, database2, authenticator, clientIDFetcher, encoderDecoder, unitCounterProvider)
+	service, err := oauth2clients.ProvideOAuth2ClientsService(logger, database2, authenticator, clientIDFetcher, encoderDecoder, unitCounterProvider)
 	if err != nil {
 		return nil, err
 	}
 	oAuth2ClientValidator := auth2.ProvideOAuth2ClientValidator(service)
-	userIDFetcher := httpserver.ProvideAuthUserIDFetcher()
-	authService := auth2.ProvideAuthService(logger, cfg, authenticator, userDataManager, oAuth2ClientValidator, userIDFetcher, encoderDecoder)
+	userIDFetcher := httpserver.ProvideAuthServiceUserIDFetcher()
+	authService, err := auth2.ProvideAuthService(logger, cfg, authenticator, userDataManager, oAuth2ClientValidator, userIDFetcher, encoderDecoder)
+	if err != nil {
+		return nil, err
+	}
 	frontendSettings := config.ProvideConfigFrontendSettings(cfg)
 	frontendService := frontend.ProvideFrontendService(logger, frontendSettings)
-	instrumentDataManager := instruments.ProvideInstrumentDataManager(database2)
-	instrumentsUserIDFetcher := httpserver.ProvideInstrumentServiceUserIDFetcher()
-	instrumentIDFetcher := httpserver.ProvideInstrumentIDFetcher(logger)
+	validInstrumentDataManager := validinstruments.ProvideValidInstrumentDataManager(database2)
+	validInstrumentIDFetcher := httpserver.ProvideValidInstrumentsServiceValidInstrumentIDFetcher(logger)
 	websocketAuthFunc := auth2.ProvideWebsocketAuthFunc(authService)
-	typeNameManipulationFunc := httpserver.ProvideNewsmanTypeNameManipulationFunc(logger)
+	typeNameManipulationFunc := httpserver.ProvideNewsmanTypeNameManipulationFunc()
 	newsmanNewsman := newsman.NewNewsman(websocketAuthFunc, typeNameManipulationFunc)
 	reporter := ProvideReporter(newsmanNewsman)
-	instrumentsService, err := instruments.ProvideInstrumentsService(ctx, logger, instrumentDataManager, instrumentsUserIDFetcher, instrumentIDFetcher, encoderDecoder, unitCounterProvider, reporter)
+	validinstrumentsService, err := validinstruments.ProvideValidInstrumentsService(logger, validInstrumentDataManager, validInstrumentIDFetcher, encoderDecoder, unitCounterProvider, reporter)
 	if err != nil {
 		return nil, err
 	}
-	instrumentDataServer := instruments.ProvideInstrumentDataServer(instrumentsService)
-	ingredientDataManager := ingredients.ProvideIngredientDataManager(database2)
-	ingredientsUserIDFetcher := httpserver.ProvideIngredientServiceUserIDFetcher()
-	ingredientIDFetcher := httpserver.ProvideIngredientIDFetcher(logger)
-	ingredientsService, err := ingredients.ProvideIngredientsService(ctx, logger, ingredientDataManager, ingredientsUserIDFetcher, ingredientIDFetcher, encoderDecoder, unitCounterProvider, reporter)
+	validInstrumentDataServer := validinstruments.ProvideValidInstrumentDataServer(validinstrumentsService)
+	validIngredientDataManager := validingredients.ProvideValidIngredientDataManager(database2)
+	validIngredientIDFetcher := httpserver.ProvideValidIngredientsServiceValidIngredientIDFetcher(logger)
+	validingredientsService, err := validingredients.ProvideValidIngredientsService(logger, validIngredientDataManager, validIngredientIDFetcher, encoderDecoder, unitCounterProvider, reporter)
 	if err != nil {
 		return nil, err
 	}
-	ingredientDataServer := ingredients.ProvideIngredientDataServer(ingredientsService)
-	preparationDataManager := preparations.ProvidePreparationDataManager(database2)
-	preparationsUserIDFetcher := httpserver.ProvidePreparationServiceUserIDFetcher()
-	preparationIDFetcher := httpserver.ProvidePreparationIDFetcher(logger)
-	preparationsService, err := preparations.ProvidePreparationsService(ctx, logger, preparationDataManager, preparationsUserIDFetcher, preparationIDFetcher, encoderDecoder, unitCounterProvider, reporter)
+	validIngredientDataServer := validingredients.ProvideValidIngredientDataServer(validingredientsService)
+	validIngredientTagDataManager := validingredienttags.ProvideValidIngredientTagDataManager(database2)
+	validIngredientTagIDFetcher := httpserver.ProvideValidIngredientTagsServiceValidIngredientTagIDFetcher(logger)
+	validingredienttagsService, err := validingredienttags.ProvideValidIngredientTagsService(logger, validIngredientTagDataManager, validIngredientTagIDFetcher, encoderDecoder, unitCounterProvider, reporter)
 	if err != nil {
 		return nil, err
 	}
-	preparationDataServer := preparations.ProvidePreparationDataServer(preparationsService)
+	validIngredientTagDataServer := validingredienttags.ProvideValidIngredientTagDataServer(validingredienttagsService)
+	ingredientTagMappingDataManager := ingredienttagmappings.ProvideIngredientTagMappingDataManager(database2)
+	ingredienttagmappingsValidIngredientIDFetcher := httpserver.ProvideIngredientTagMappingsServiceValidIngredientIDFetcher(logger)
+	ingredientTagMappingIDFetcher := httpserver.ProvideIngredientTagMappingsServiceIngredientTagMappingIDFetcher(logger)
+	ingredienttagmappingsService, err := ingredienttagmappings.ProvideIngredientTagMappingsService(logger, validIngredientDataManager, ingredientTagMappingDataManager, ingredienttagmappingsValidIngredientIDFetcher, ingredientTagMappingIDFetcher, encoderDecoder, unitCounterProvider, reporter)
+	if err != nil {
+		return nil, err
+	}
+	ingredientTagMappingDataServer := ingredienttagmappings.ProvideIngredientTagMappingDataServer(ingredienttagmappingsService)
+	validPreparationDataManager := validpreparations.ProvideValidPreparationDataManager(database2)
+	validPreparationIDFetcher := httpserver.ProvideValidPreparationsServiceValidPreparationIDFetcher(logger)
+	validpreparationsService, err := validpreparations.ProvideValidPreparationsService(logger, validPreparationDataManager, validPreparationIDFetcher, encoderDecoder, unitCounterProvider, reporter)
+	if err != nil {
+		return nil, err
+	}
+	validPreparationDataServer := validpreparations.ProvideValidPreparationDataServer(validpreparationsService)
 	requiredPreparationInstrumentDataManager := requiredpreparationinstruments.ProvideRequiredPreparationInstrumentDataManager(database2)
-	requiredpreparationinstrumentsUserIDFetcher := httpserver.ProvideRequiredPreparationInstrumentServiceUserIDFetcher()
-	requiredPreparationInstrumentIDFetcher := httpserver.ProvideRequiredPreparationInstrumentIDFetcher(logger)
-	requiredpreparationinstrumentsService, err := requiredpreparationinstruments.ProvideRequiredPreparationInstrumentsService(ctx, logger, requiredPreparationInstrumentDataManager, requiredpreparationinstrumentsUserIDFetcher, requiredPreparationInstrumentIDFetcher, encoderDecoder, unitCounterProvider, reporter)
+	requiredpreparationinstrumentsValidPreparationIDFetcher := httpserver.ProvideRequiredPreparationInstrumentsServiceValidPreparationIDFetcher(logger)
+	requiredPreparationInstrumentIDFetcher := httpserver.ProvideRequiredPreparationInstrumentsServiceRequiredPreparationInstrumentIDFetcher(logger)
+	requiredpreparationinstrumentsService, err := requiredpreparationinstruments.ProvideRequiredPreparationInstrumentsService(logger, validPreparationDataManager, requiredPreparationInstrumentDataManager, requiredpreparationinstrumentsValidPreparationIDFetcher, requiredPreparationInstrumentIDFetcher, encoderDecoder, unitCounterProvider, reporter)
 	if err != nil {
 		return nil, err
 	}
 	requiredPreparationInstrumentDataServer := requiredpreparationinstruments.ProvideRequiredPreparationInstrumentDataServer(requiredpreparationinstrumentsService)
+	validIngredientPreparationDataManager := validingredientpreparations.ProvideValidIngredientPreparationDataManager(database2)
+	validingredientpreparationsValidIngredientIDFetcher := httpserver.ProvideValidIngredientPreparationsServiceValidIngredientIDFetcher(logger)
+	validIngredientPreparationIDFetcher := httpserver.ProvideValidIngredientPreparationsServiceValidIngredientPreparationIDFetcher(logger)
+	validingredientpreparationsService, err := validingredientpreparations.ProvideValidIngredientPreparationsService(logger, validIngredientDataManager, validIngredientPreparationDataManager, validingredientpreparationsValidIngredientIDFetcher, validIngredientPreparationIDFetcher, encoderDecoder, unitCounterProvider, reporter)
+	if err != nil {
+		return nil, err
+	}
+	validIngredientPreparationDataServer := validingredientpreparations.ProvideValidIngredientPreparationDataServer(validingredientpreparationsService)
 	recipeDataManager := recipes.ProvideRecipeDataManager(database2)
-	recipesUserIDFetcher := httpserver.ProvideRecipeServiceUserIDFetcher()
-	recipeIDFetcher := httpserver.ProvideRecipeIDFetcher(logger)
-	recipesService, err := recipes.ProvideRecipesService(ctx, logger, recipeDataManager, recipesUserIDFetcher, recipeIDFetcher, encoderDecoder, unitCounterProvider, reporter)
+	recipeIDFetcher := httpserver.ProvideRecipesServiceRecipeIDFetcher(logger)
+	recipesUserIDFetcher := httpserver.ProvideRecipesServiceUserIDFetcher()
+	recipesService, err := recipes.ProvideRecipesService(logger, recipeDataManager, recipeIDFetcher, recipesUserIDFetcher, encoderDecoder, unitCounterProvider, reporter)
 	if err != nil {
 		return nil, err
 	}
 	recipeDataServer := recipes.ProvideRecipeDataServer(recipesService)
+	recipeTagDataManager := recipetags.ProvideRecipeTagDataManager(database2)
+	recipetagsRecipeIDFetcher := httpserver.ProvideRecipeTagsServiceRecipeIDFetcher(logger)
+	recipeTagIDFetcher := httpserver.ProvideRecipeTagsServiceRecipeTagIDFetcher(logger)
+	recipetagsUserIDFetcher := httpserver.ProvideRecipeTagsServiceUserIDFetcher()
+	recipetagsService, err := recipetags.ProvideRecipeTagsService(logger, recipeDataManager, recipeTagDataManager, recipetagsRecipeIDFetcher, recipeTagIDFetcher, recipetagsUserIDFetcher, encoderDecoder, unitCounterProvider, reporter)
+	if err != nil {
+		return nil, err
+	}
+	recipeTagDataServer := recipetags.ProvideRecipeTagDataServer(recipetagsService)
 	recipeStepDataManager := recipesteps.ProvideRecipeStepDataManager(database2)
-	recipestepsUserIDFetcher := httpserver.ProvideRecipeStepServiceUserIDFetcher()
-	recipeStepIDFetcher := httpserver.ProvideRecipeStepIDFetcher(logger)
-	recipestepsService, err := recipesteps.ProvideRecipeStepsService(ctx, logger, recipeStepDataManager, recipestepsUserIDFetcher, recipeStepIDFetcher, encoderDecoder, unitCounterProvider, reporter)
+	recipestepsRecipeIDFetcher := httpserver.ProvideRecipeStepsServiceRecipeIDFetcher(logger)
+	recipeStepIDFetcher := httpserver.ProvideRecipeStepsServiceRecipeStepIDFetcher(logger)
+	recipestepsUserIDFetcher := httpserver.ProvideRecipeStepsServiceUserIDFetcher()
+	recipestepsService, err := recipesteps.ProvideRecipeStepsService(logger, recipeDataManager, recipeStepDataManager, recipestepsRecipeIDFetcher, recipeStepIDFetcher, recipestepsUserIDFetcher, encoderDecoder, unitCounterProvider, reporter)
 	if err != nil {
 		return nil, err
 	}
 	recipeStepDataServer := recipesteps.ProvideRecipeStepDataServer(recipestepsService)
-	recipeStepInstrumentDataManager := recipestepinstruments.ProvideRecipeStepInstrumentDataManager(database2)
-	recipestepinstrumentsUserIDFetcher := httpserver.ProvideRecipeStepInstrumentServiceUserIDFetcher()
-	recipeStepInstrumentIDFetcher := httpserver.ProvideRecipeStepInstrumentIDFetcher(logger)
-	recipestepinstrumentsService, err := recipestepinstruments.ProvideRecipeStepInstrumentsService(ctx, logger, recipeStepInstrumentDataManager, recipestepinstrumentsUserIDFetcher, recipeStepInstrumentIDFetcher, encoderDecoder, unitCounterProvider, reporter)
+	recipeStepPreparationDataManager := recipesteppreparations.ProvideRecipeStepPreparationDataManager(database2)
+	recipesteppreparationsRecipeIDFetcher := httpserver.ProvideRecipeStepPreparationsServiceRecipeIDFetcher(logger)
+	recipesteppreparationsRecipeStepIDFetcher := httpserver.ProvideRecipeStepPreparationsServiceRecipeStepIDFetcher(logger)
+	recipeStepPreparationIDFetcher := httpserver.ProvideRecipeStepPreparationsServiceRecipeStepPreparationIDFetcher(logger)
+	recipesteppreparationsUserIDFetcher := httpserver.ProvideRecipeStepPreparationsServiceUserIDFetcher()
+	recipesteppreparationsService, err := recipesteppreparations.ProvideRecipeStepPreparationsService(logger, recipeDataManager, recipeStepDataManager, recipeStepPreparationDataManager, recipesteppreparationsRecipeIDFetcher, recipesteppreparationsRecipeStepIDFetcher, recipeStepPreparationIDFetcher, recipesteppreparationsUserIDFetcher, encoderDecoder, unitCounterProvider, reporter)
 	if err != nil {
 		return nil, err
 	}
-	recipeStepInstrumentDataServer := recipestepinstruments.ProvideRecipeStepInstrumentDataServer(recipestepinstrumentsService)
+	recipeStepPreparationDataServer := recipesteppreparations.ProvideRecipeStepPreparationDataServer(recipesteppreparationsService)
 	recipeStepIngredientDataManager := recipestepingredients.ProvideRecipeStepIngredientDataManager(database2)
-	recipestepingredientsUserIDFetcher := httpserver.ProvideRecipeStepIngredientServiceUserIDFetcher()
-	recipeStepIngredientIDFetcher := httpserver.ProvideRecipeStepIngredientIDFetcher(logger)
-	recipestepingredientsService, err := recipestepingredients.ProvideRecipeStepIngredientsService(ctx, logger, recipeStepIngredientDataManager, recipestepingredientsUserIDFetcher, recipeStepIngredientIDFetcher, encoderDecoder, unitCounterProvider, reporter)
+	recipestepingredientsRecipeIDFetcher := httpserver.ProvideRecipeStepIngredientsServiceRecipeIDFetcher(logger)
+	recipestepingredientsRecipeStepIDFetcher := httpserver.ProvideRecipeStepIngredientsServiceRecipeStepIDFetcher(logger)
+	recipeStepIngredientIDFetcher := httpserver.ProvideRecipeStepIngredientsServiceRecipeStepIngredientIDFetcher(logger)
+	recipestepingredientsUserIDFetcher := httpserver.ProvideRecipeStepIngredientsServiceUserIDFetcher()
+	recipestepingredientsService, err := recipestepingredients.ProvideRecipeStepIngredientsService(logger, recipeDataManager, recipeStepDataManager, recipeStepIngredientDataManager, recipestepingredientsRecipeIDFetcher, recipestepingredientsRecipeStepIDFetcher, recipeStepIngredientIDFetcher, recipestepingredientsUserIDFetcher, encoderDecoder, unitCounterProvider, reporter)
 	if err != nil {
 		return nil, err
 	}
 	recipeStepIngredientDataServer := recipestepingredients.ProvideRecipeStepIngredientDataServer(recipestepingredientsService)
-	recipeStepProductDataManager := recipestepproducts.ProvideRecipeStepProductDataManager(database2)
-	recipestepproductsUserIDFetcher := httpserver.ProvideRecipeStepProductServiceUserIDFetcher()
-	recipeStepProductIDFetcher := httpserver.ProvideRecipeStepProductIDFetcher(logger)
-	recipestepproductsService, err := recipestepproducts.ProvideRecipeStepProductsService(ctx, logger, recipeStepProductDataManager, recipestepproductsUserIDFetcher, recipeStepProductIDFetcher, encoderDecoder, unitCounterProvider, reporter)
-	if err != nil {
-		return nil, err
-	}
-	recipeStepProductDataServer := recipestepproducts.ProvideRecipeStepProductDataServer(recipestepproductsService)
 	recipeIterationDataManager := recipeiterations.ProvideRecipeIterationDataManager(database2)
-	recipeiterationsUserIDFetcher := httpserver.ProvideRecipeIterationServiceUserIDFetcher()
-	recipeIterationIDFetcher := httpserver.ProvideRecipeIterationIDFetcher(logger)
-	recipeiterationsService, err := recipeiterations.ProvideRecipeIterationsService(ctx, logger, recipeIterationDataManager, recipeiterationsUserIDFetcher, recipeIterationIDFetcher, encoderDecoder, unitCounterProvider, reporter)
+	recipeiterationsRecipeIDFetcher := httpserver.ProvideRecipeIterationsServiceRecipeIDFetcher(logger)
+	recipeIterationIDFetcher := httpserver.ProvideRecipeIterationsServiceRecipeIterationIDFetcher(logger)
+	recipeiterationsUserIDFetcher := httpserver.ProvideRecipeIterationsServiceUserIDFetcher()
+	recipeiterationsService, err := recipeiterations.ProvideRecipeIterationsService(logger, recipeDataManager, recipeIterationDataManager, recipeiterationsRecipeIDFetcher, recipeIterationIDFetcher, recipeiterationsUserIDFetcher, encoderDecoder, unitCounterProvider, reporter)
 	if err != nil {
 		return nil, err
 	}
 	recipeIterationDataServer := recipeiterations.ProvideRecipeIterationDataServer(recipeiterationsService)
-	recipeStepEventDataManager := recipestepevents.ProvideRecipeStepEventDataManager(database2)
-	recipestepeventsUserIDFetcher := httpserver.ProvideRecipeStepEventServiceUserIDFetcher()
-	recipeStepEventIDFetcher := httpserver.ProvideRecipeStepEventIDFetcher(logger)
-	recipestepeventsService, err := recipestepevents.ProvideRecipeStepEventsService(ctx, logger, recipeStepEventDataManager, recipestepeventsUserIDFetcher, recipeStepEventIDFetcher, encoderDecoder, unitCounterProvider, reporter)
+	recipeIterationStepDataManager := recipeiterationsteps.ProvideRecipeIterationStepDataManager(database2)
+	recipeiterationstepsRecipeIDFetcher := httpserver.ProvideRecipeIterationStepsServiceRecipeIDFetcher(logger)
+	recipeIterationStepIDFetcher := httpserver.ProvideRecipeIterationStepsServiceRecipeIterationStepIDFetcher(logger)
+	recipeiterationstepsUserIDFetcher := httpserver.ProvideRecipeIterationStepsServiceUserIDFetcher()
+	recipeiterationstepsService, err := recipeiterationsteps.ProvideRecipeIterationStepsService(logger, recipeDataManager, recipeIterationStepDataManager, recipeiterationstepsRecipeIDFetcher, recipeIterationStepIDFetcher, recipeiterationstepsUserIDFetcher, encoderDecoder, unitCounterProvider, reporter)
 	if err != nil {
 		return nil, err
 	}
-	recipeStepEventDataServer := recipestepevents.ProvideRecipeStepEventDataServer(recipestepeventsService)
+	recipeIterationStepDataServer := recipeiterationsteps.ProvideRecipeIterationStepDataServer(recipeiterationstepsService)
 	iterationMediaDataManager := iterationmedias.ProvideIterationMediaDataManager(database2)
-	iterationmediasUserIDFetcher := httpserver.ProvideIterationMediaServiceUserIDFetcher()
-	iterationMediaIDFetcher := httpserver.ProvideIterationMediaIDFetcher(logger)
-	iterationmediasService, err := iterationmedias.ProvideIterationMediasService(ctx, logger, iterationMediaDataManager, iterationmediasUserIDFetcher, iterationMediaIDFetcher, encoderDecoder, unitCounterProvider, reporter)
+	iterationmediasRecipeIDFetcher := httpserver.ProvideIterationMediasServiceRecipeIDFetcher(logger)
+	iterationmediasRecipeIterationIDFetcher := httpserver.ProvideIterationMediasServiceRecipeIterationIDFetcher(logger)
+	iterationMediaIDFetcher := httpserver.ProvideIterationMediasServiceIterationMediaIDFetcher(logger)
+	iterationmediasUserIDFetcher := httpserver.ProvideIterationMediasServiceUserIDFetcher()
+	iterationmediasService, err := iterationmedias.ProvideIterationMediasService(logger, recipeDataManager, recipeIterationDataManager, iterationMediaDataManager, iterationmediasRecipeIDFetcher, iterationmediasRecipeIterationIDFetcher, iterationMediaIDFetcher, iterationmediasUserIDFetcher, encoderDecoder, unitCounterProvider, reporter)
 	if err != nil {
 		return nil, err
 	}
 	iterationMediaDataServer := iterationmedias.ProvideIterationMediaDataServer(iterationmediasService)
 	invitationDataManager := invitations.ProvideInvitationDataManager(database2)
-	invitationsUserIDFetcher := httpserver.ProvideInvitationServiceUserIDFetcher()
-	invitationIDFetcher := httpserver.ProvideInvitationIDFetcher(logger)
-	invitationsService, err := invitations.ProvideInvitationsService(ctx, logger, invitationDataManager, invitationsUserIDFetcher, invitationIDFetcher, encoderDecoder, unitCounterProvider, reporter)
+	invitationIDFetcher := httpserver.ProvideInvitationsServiceInvitationIDFetcher(logger)
+	invitationsUserIDFetcher := httpserver.ProvideInvitationsServiceUserIDFetcher()
+	invitationsService, err := invitations.ProvideInvitationsService(logger, invitationDataManager, invitationIDFetcher, invitationsUserIDFetcher, encoderDecoder, unitCounterProvider, reporter)
 	if err != nil {
 		return nil, err
 	}
 	invitationDataServer := invitations.ProvideInvitationDataServer(invitationsService)
 	reportDataManager := reports.ProvideReportDataManager(database2)
-	reportsUserIDFetcher := httpserver.ProvideReportServiceUserIDFetcher()
-	reportIDFetcher := httpserver.ProvideReportIDFetcher(logger)
-	reportsService, err := reports.ProvideReportsService(ctx, logger, reportDataManager, reportsUserIDFetcher, reportIDFetcher, encoderDecoder, unitCounterProvider, reporter)
+	reportIDFetcher := httpserver.ProvideReportsServiceReportIDFetcher(logger)
+	reportsUserIDFetcher := httpserver.ProvideReportsServiceUserIDFetcher()
+	reportsService, err := reports.ProvideReportsService(logger, reportDataManager, reportIDFetcher, reportsUserIDFetcher, encoderDecoder, unitCounterProvider, reporter)
 	if err != nil {
 		return nil, err
 	}
 	reportDataServer := reports.ProvideReportDataServer(reportsService)
 	authSettings := config.ProvideConfigAuthSettings(cfg)
-	usersUserIDFetcher := httpserver.ProvideUsernameFetcher(logger)
-	usersService, err := users.ProvideUsersService(ctx, authSettings, logger, database2, authenticator, usersUserIDFetcher, encoderDecoder, unitCounterProvider, reporter)
+	usersUserIDFetcher := httpserver.ProvideUsersServiceUserIDFetcher(logger)
+	usersService, err := users.ProvideUsersService(authSettings, logger, userDataManager, authenticator, usersUserIDFetcher, encoderDecoder, unitCounterProvider, reporter)
 	if err != nil {
 		return nil, err
 	}
 	userDataServer := users.ProvideUserDataServer(usersService)
 	oAuth2ClientDataServer := oauth2clients.ProvideOAuth2ClientDataServer(service)
 	webhookDataManager := webhooks.ProvideWebhookDataManager(database2)
-	webhooksUserIDFetcher := httpserver.ProvideWebhooksUserIDFetcher()
-	webhookIDFetcher := httpserver.ProvideWebhookIDFetcher(logger)
-	webhooksService, err := webhooks.ProvideWebhooksService(ctx, logger, webhookDataManager, webhooksUserIDFetcher, webhookIDFetcher, encoderDecoder, unitCounterProvider, newsmanNewsman)
+	webhooksUserIDFetcher := httpserver.ProvideWebhooksServiceUserIDFetcher()
+	webhookIDFetcher := httpserver.ProvideWebhooksServiceWebhookIDFetcher(logger)
+	webhooksService, err := webhooks.ProvideWebhooksService(logger, webhookDataManager, webhooksUserIDFetcher, webhookIDFetcher, encoderDecoder, unitCounterProvider, newsmanNewsman)
 	if err != nil {
 		return nil, err
 	}
 	webhookDataServer := webhooks.ProvideWebhookDataServer(webhooksService)
-	httpserverServer, err := httpserver.ProvideServer(ctx, cfg, authService, frontendService, instrumentDataServer, ingredientDataServer, preparationDataServer, requiredPreparationInstrumentDataServer, recipeDataServer, recipeStepDataServer, recipeStepInstrumentDataServer, recipeStepIngredientDataServer, recipeStepProductDataServer, recipeIterationDataServer, recipeStepEventDataServer, iterationMediaDataServer, invitationDataServer, reportDataServer, userDataServer, oAuth2ClientDataServer, webhookDataServer, database2, logger, encoderDecoder, newsmanNewsman)
+	httpserverServer, err := httpserver.ProvideServer(ctx, cfg, authService, frontendService, validInstrumentDataServer, validIngredientDataServer, validIngredientTagDataServer, ingredientTagMappingDataServer, validPreparationDataServer, requiredPreparationInstrumentDataServer, validIngredientPreparationDataServer, recipeDataServer, recipeTagDataServer, recipeStepDataServer, recipeStepPreparationDataServer, recipeStepIngredientDataServer, recipeIterationDataServer, recipeIterationStepDataServer, iterationMediaDataServer, invitationDataServer, reportDataServer, userDataServer, oAuth2ClientDataServer, webhookDataServer, database2, logger, encoderDecoder, newsmanNewsman)
 	if err != nil {
 		return nil, err
 	}
@@ -200,7 +236,7 @@ func BuildServer(ctx context.Context, cfg *config.ServerConfig, logger logging.L
 
 // wire.go:
 
-// ProvideReporter is an obligatory function that hopefully wire will eliminate for me one day
+// ProvideReporter is an obligatory function that hopefully wire will eliminate for me one day.
 func ProvideReporter(n *newsman.Newsman) newsman.Reporter {
 	return n
 }

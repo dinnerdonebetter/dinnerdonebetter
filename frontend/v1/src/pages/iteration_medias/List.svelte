@@ -9,20 +9,12 @@
       key: "id"
     },
     {
-      title: "Path",
-      key: "path"
+      title: "Source",
+      key: "source"
     },
     {
       title: "Mimetype",
       key: "mimetype"
-    },
-    {
-      title: "RecipeIterationID",
-      key: "recipe_iteration_id"
-    },
-    {
-      title: "RecipeStepID",
-      key: "recipe_step_id"
     },
     {
       title: "Created On",

@@ -9,8 +9,12 @@
       key: "id"
     },
     {
-      title: "IngredientID",
-      key: "ingredient_id"
+      title: "ValidIngredientID",
+      key: "valid_ingredient_id"
+    },
+    {
+      title: "IngredientNotes",
+      key: "ingredient_notes"
     },
     {
       title: "QuantityType",
@@ -25,16 +29,8 @@
       key: "quantity_notes"
     },
     {
-      title: "ProductOfRecipe",
-      key: "product_of_recipe"
-    },
-    {
-      title: "IngredientNotes",
-      key: "ingredient_notes"
-    },
-    {
-      title: "RecipeStepID",
-      key: "recipe_step_id"
+      title: "ProductOfRecipeStepID",
+      key: "product_of_recipe_step_id"
     },
     {
       title: "Created On",

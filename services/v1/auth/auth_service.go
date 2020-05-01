@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"gitlab.com/prixfixe/prixfixe/internal/v1/auth"
@@ -19,7 +20,7 @@ const (
 
 type (
 	// OAuth2ClientValidator is a stand-in interface, where we needed to abstract
-	// a regular structure with an interface for testing purposes
+	// a regular structure with an interface for testing purposes.
 	OAuth2ClientValidator interface {
 		ExtractOAuth2ClientFromRequest(ctx context.Context, req *http.Request) (*models.OAuth2Client, error)
 	}
@@ -30,7 +31,7 @@ type (
 		Decode(name, value string, dst interface{}) error
 	}
 
-	// UserIDFetcher is a function that fetches user IDs
+	// UserIDFetcher is a function that fetches user IDs.
 	UserIDFetcher func(*http.Request) uint64
 
 	// Service handles authentication service-wide
@@ -46,7 +47,7 @@ type (
 	}
 )
 
-// ProvideAuthService builds a new AuthService
+// ProvideAuthService builds a new AuthService.
 func ProvideAuthService(
 	logger logging.Logger,
 	cfg *config.ServerConfig,
@@ -55,7 +56,11 @@ func ProvideAuthService(
 	oauth2ClientsService OAuth2ClientValidator,
 	userIDFetcher UserIDFetcher,
 	encoder encoding.EncoderDecoder,
-) *Service {
+) (*Service, error) {
+	if cfg == nil {
+		return nil, errors.New("nil config provided")
+	}
+
 	svc := &Service{
 		logger:               logger.WithName(serviceName),
 		encoderDecoder:       encoder,
@@ -70,5 +75,5 @@ func ProvideAuthService(
 		),
 	}
 
-	return svc
+	return svc, nil
 }

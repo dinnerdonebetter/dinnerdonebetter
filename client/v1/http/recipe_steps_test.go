@@ -11,26 +11,96 @@ import (
 	"testing"
 
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func TestV1Client_BuildRecipeStepExistsRequest(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		ctx := context.Background()
+
+		expectedMethod := http.MethodHead
+		ts := httptest.NewTLSServer(nil)
+
+		c := buildTestClient(t, ts)
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		exampleRecipeStep.BelongsToRecipe = exampleRecipe.ID
+		actual, err := c.BuildRecipeStepExistsRequest(ctx, exampleRecipe.ID, exampleRecipeStep.ID)
+
+		require.NotNil(t, actual)
+		assert.NoError(t, err, "no error should be returned")
+		assert.True(t, strings.HasSuffix(actual.URL.String(), fmt.Sprintf("%d", exampleRecipeStep.ID)))
+		assert.Equal(t, actual.Method, expectedMethod, "request should be a %s request", expectedMethod)
+	})
+}
+
+func TestV1Client_RecipeStepExists(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		exampleRecipeStep.BelongsToRecipe = exampleRecipe.ID
+
+		ts := httptest.NewTLSServer(
+			http.HandlerFunc(
+				func(res http.ResponseWriter, req *http.Request) {
+					assert.True(t, strings.HasSuffix(req.URL.String(), strconv.Itoa(int(exampleRecipeStep.ID))))
+					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/recipes/%d/recipe_steps/%d", exampleRecipe.ID, exampleRecipeStep.ID), "expected and actual paths do not match")
+					assert.Equal(t, req.Method, http.MethodHead)
+					res.WriteHeader(http.StatusOK)
+				},
+			),
+		)
+
+		c := buildTestClient(t, ts)
+		actual, err := c.RecipeStepExists(ctx, exampleRecipe.ID, exampleRecipeStep.ID)
+
+		assert.NoError(t, err, "no error should be returned")
+		assert.True(t, actual)
+	})
+
+	T.Run("with erroneous response", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		exampleRecipeStep.BelongsToRecipe = exampleRecipe.ID
+
+		c := buildTestClientWithInvalidURL(t)
+		actual, err := c.RecipeStepExists(ctx, exampleRecipe.ID, exampleRecipeStep.ID)
+
+		assert.Error(t, err, "error should be returned")
+		assert.False(t, actual)
+	})
+}
 
 func TestV1Client_BuildGetRecipeStepRequest(T *testing.T) {
 	T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
+
 		expectedMethod := http.MethodGet
 		ts := httptest.NewTLSServer(nil)
 
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		exampleRecipeStep.BelongsToRecipe = exampleRecipe.ID
+
 		c := buildTestClient(t, ts)
-		expectedID := uint64(1)
-		actual, err := c.BuildGetRecipeStepRequest(ctx, expectedID)
+		actual, err := c.BuildGetRecipeStepRequest(ctx, exampleRecipe.ID, exampleRecipeStep.ID)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err, "no error should be returned")
-		assert.True(t, strings.HasSuffix(actual.URL.String(), fmt.Sprintf("%d", expectedID)))
+		assert.True(t, strings.HasSuffix(actual.URL.String(), fmt.Sprintf("%d", exampleRecipeStep.ID)))
 		assert.Equal(t, actual.Method, expectedMethod, "request should be a %s request", expectedMethod)
 	})
 }
@@ -40,27 +110,67 @@ func TestV1Client_GetRecipeStep(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
-		expected := &models.RecipeStep{
-			ID: 1,
-		}
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		exampleRecipeStep.BelongsToRecipe = exampleRecipe.ID
 
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.True(t, strings.HasSuffix(req.URL.String(), strconv.Itoa(int(expected.ID))))
-					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/recipe_steps/%d", expected.ID), "expected and actual path don't match")
+					assert.True(t, strings.HasSuffix(req.URL.String(), strconv.Itoa(int(exampleRecipeStep.ID))))
+					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/recipes/%d/recipe_steps/%d", exampleRecipe.ID, exampleRecipeStep.ID), "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodGet)
-					require.NoError(t, json.NewEncoder(res).Encode(expected))
+					require.NoError(t, json.NewEncoder(res).Encode(exampleRecipeStep))
 				},
 			),
 		)
 
 		c := buildTestClient(t, ts)
-		actual, err := c.GetRecipeStep(ctx, expected.ID)
+		actual, err := c.GetRecipeStep(ctx, exampleRecipe.ID, exampleRecipeStep.ID)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err, "no error should be returned")
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleRecipeStep, actual)
+	})
+
+	T.Run("with invalid client URL", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		exampleRecipeStep.BelongsToRecipe = exampleRecipe.ID
+
+		c := buildTestClientWithInvalidURL(t)
+		actual, err := c.GetRecipeStep(ctx, exampleRecipe.ID, exampleRecipeStep.ID)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err, "error should be returned")
+	})
+
+	T.Run("with invalid response", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		exampleRecipeStep.BelongsToRecipe = exampleRecipe.ID
+
+		ts := httptest.NewTLSServer(
+			http.HandlerFunc(
+				func(res http.ResponseWriter, req *http.Request) {
+					assert.True(t, strings.HasSuffix(req.URL.String(), strconv.Itoa(int(exampleRecipeStep.ID))))
+					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/recipes/%d/recipe_steps/%d", exampleRecipe.ID, exampleRecipeStep.ID), "expected and actual paths do not match")
+					assert.Equal(t, req.Method, http.MethodGet)
+					require.NoError(t, json.NewEncoder(res).Encode("BLAH"))
+				},
+			),
+		)
+
+		c := buildTestClient(t, ts)
+		actual, err := c.GetRecipeStep(ctx, exampleRecipe.ID, exampleRecipeStep.ID)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err, "error should be returned")
 	})
 }
 
@@ -69,11 +179,14 @@ func TestV1Client_BuildGetRecipeStepsRequest(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		filter := (*models.QueryFilter)(nil)
 		expectedMethod := http.MethodGet
 		ts := httptest.NewTLSServer(nil)
 
 		c := buildTestClient(t, ts)
-		actual, err := c.BuildGetRecipeStepsRequest(ctx, nil)
+		actual, err := c.BuildGetRecipeStepsRequest(ctx, exampleRecipe.ID, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err, "no error should be returned")
@@ -86,30 +199,64 @@ func TestV1Client_GetRecipeSteps(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
-		expected := &models.RecipeStepList{
-			RecipeSteps: []models.RecipeStep{
-				{
-					ID: 1,
-				},
-			},
-		}
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		filter := (*models.QueryFilter)(nil)
+
+		exampleRecipeStepList := fakemodels.BuildFakeRecipeStepList()
 
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, "/api/v1/recipe_steps", "expected and actual path don't match")
+					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/recipes/%d/recipe_steps", exampleRecipe.ID), "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodGet)
-					require.NoError(t, json.NewEncoder(res).Encode(expected))
+					require.NoError(t, json.NewEncoder(res).Encode(exampleRecipeStepList))
 				},
 			),
 		)
 
 		c := buildTestClient(t, ts)
-		actual, err := c.GetRecipeSteps(ctx, nil)
+		actual, err := c.GetRecipeSteps(ctx, exampleRecipe.ID, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err, "no error should be returned")
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleRecipeStepList, actual)
+	})
+
+	T.Run("with invalid client URL", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		filter := (*models.QueryFilter)(nil)
+
+		c := buildTestClientWithInvalidURL(t)
+		actual, err := c.GetRecipeSteps(ctx, exampleRecipe.ID, filter)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err, "error should be returned")
+	})
+
+	T.Run("with invalid response", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		filter := (*models.QueryFilter)(nil)
+
+		ts := httptest.NewTLSServer(
+			http.HandlerFunc(
+				func(res http.ResponseWriter, req *http.Request) {
+					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/recipes/%d/recipe_steps", exampleRecipe.ID), "expected and actual paths do not match")
+					assert.Equal(t, req.Method, http.MethodGet)
+					require.NoError(t, json.NewEncoder(res).Encode("BLAH"))
+				},
+			),
+		)
+
+		c := buildTestClient(t, ts)
+		actual, err := c.GetRecipeSteps(ctx, exampleRecipe.ID, filter)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err, "error should be returned")
 	})
 }
 
@@ -118,19 +265,17 @@ func TestV1Client_BuildCreateRecipeStepRequest(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		exampleRecipeStep.BelongsToRecipe = exampleRecipe.ID
+		exampleInput := fakemodels.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
+
 		expectedMethod := http.MethodPost
 		ts := httptest.NewTLSServer(nil)
 
-		exampleInput := &models.RecipeStepCreationInput{
-			Index:                     1,
-			PreparationID:             1,
-			PrerequisiteStep:          1,
-			MinEstimatedTimeInSeconds: 1,
-			MaxEstimatedTimeInSeconds: 1,
-			TemperatureInCelsius:      func(x uint16) *uint16 { return &x }(1),
-			Notes:                     "example",
-			RecipeID:                  1,
-		}
 		c := buildTestClient(t, ts)
 		actual, err := c.BuildCreateRecipeStepRequest(ctx, exampleInput)
 
@@ -145,39 +290,25 @@ func TestV1Client_CreateRecipeStep(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
-		expected := &models.RecipeStep{
-			ID:                        1,
-			Index:                     1,
-			PreparationID:             1,
-			PrerequisiteStep:          1,
-			MinEstimatedTimeInSeconds: 1,
-			MaxEstimatedTimeInSeconds: 1,
-			TemperatureInCelsius:      func(x uint16) *uint16 { return &x }(1),
-			Notes:                     "example",
-			RecipeID:                  1,
-		}
-		exampleInput := &models.RecipeStepCreationInput{
-			Index:                     expected.Index,
-			PreparationID:             expected.PreparationID,
-			PrerequisiteStep:          expected.PrerequisiteStep,
-			MinEstimatedTimeInSeconds: expected.MinEstimatedTimeInSeconds,
-			MaxEstimatedTimeInSeconds: expected.MaxEstimatedTimeInSeconds,
-			TemperatureInCelsius:      expected.TemperatureInCelsius,
-			Notes:                     expected.Notes,
-			RecipeID:                  expected.RecipeID,
-		}
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		exampleRecipeStep.BelongsToRecipe = exampleRecipe.ID
+		exampleInput := fakemodels.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
 
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, "/api/v1/recipe_steps", "expected and actual path don't match")
+					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/recipes/%d/recipe_steps", exampleRecipe.ID), "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodPost)
 
 					var x *models.RecipeStepCreationInput
 					require.NoError(t, json.NewDecoder(req.Body).Decode(&x))
+
+					exampleInput.BelongsToRecipe = 0
 					assert.Equal(t, exampleInput, x)
 
-					require.NoError(t, json.NewEncoder(res).Encode(expected))
+					require.NoError(t, json.NewEncoder(res).Encode(exampleRecipeStep))
 				},
 			),
 		)
@@ -187,7 +318,22 @@ func TestV1Client_CreateRecipeStep(T *testing.T) {
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err, "no error should be returned")
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleRecipeStep, actual)
+	})
+
+	T.Run("with invalid client URL", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		exampleRecipeStep.BelongsToRecipe = exampleRecipe.ID
+		exampleInput := fakemodels.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
+
+		c := buildTestClientWithInvalidURL(t)
+		actual, err := c.CreateRecipeStep(ctx, exampleInput)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err, "error should be returned")
 	})
 }
 
@@ -196,14 +342,13 @@ func TestV1Client_BuildUpdateRecipeStepRequest(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
+
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
 		expectedMethod := http.MethodPut
-		exampleInput := &models.RecipeStep{
-			ID: 1,
-		}
 
 		ts := httptest.NewTLSServer(nil)
 		c := buildTestClient(t, ts)
-		actual, err := c.BuildUpdateRecipeStepRequest(ctx, exampleInput)
+		actual, err := c.BuildUpdateRecipeStepRequest(ctx, exampleRecipeStep)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err, "no error should be returned")
@@ -216,22 +361,30 @@ func TestV1Client_UpdateRecipeStep(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
-		expected := &models.RecipeStep{
-			ID: 1,
-		}
+
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
 
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/recipe_steps/%d", expected.ID), "expected and actual path don't match")
+					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/recipes/%d/recipe_steps/%d", exampleRecipeStep.BelongsToRecipe, exampleRecipeStep.ID), "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodPut)
-					assert.NoError(t, json.NewEncoder(res).Encode(&models.RecipeStep{}))
+					assert.NoError(t, json.NewEncoder(res).Encode(exampleRecipeStep))
 				},
 			),
 		)
 
-		err := buildTestClient(t, ts).UpdateRecipeStep(ctx, expected)
+		err := buildTestClient(t, ts).UpdateRecipeStep(ctx, exampleRecipeStep)
 		assert.NoError(t, err, "no error should be returned")
+	})
+
+	T.Run("with invalid client URL", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+
+		err := buildTestClientWithInvalidURL(t).UpdateRecipeStep(ctx, exampleRecipeStep)
+		assert.Error(t, err, "error should be returned")
 	})
 }
 
@@ -240,16 +393,19 @@ func TestV1Client_BuildArchiveRecipeStepRequest(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
+
 		expectedMethod := http.MethodDelete
 		ts := httptest.NewTLSServer(nil)
 
-		expectedID := uint64(1)
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+
 		c := buildTestClient(t, ts)
-		actual, err := c.BuildArchiveRecipeStepRequest(ctx, expectedID)
+		actual, err := c.BuildArchiveRecipeStepRequest(ctx, exampleRecipe.ID, exampleRecipeStep.ID)
 
 		require.NotNil(t, actual)
 		require.NotNil(t, actual.URL)
-		assert.True(t, strings.HasSuffix(actual.URL.String(), fmt.Sprintf("%d", expectedID)))
+		assert.True(t, strings.HasSuffix(actual.URL.String(), fmt.Sprintf("%d", exampleRecipeStep.ID)))
 		assert.NoError(t, err, "no error should be returned")
 		assert.Equal(t, actual.Method, expectedMethod, "request should be a %s request", expectedMethod)
 	})
@@ -260,19 +416,31 @@ func TestV1Client_ArchiveRecipeStep(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
-		expected := uint64(1)
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
 
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/recipe_steps/%d", expected), "expected and actual path don't match")
+					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/recipes/%d/recipe_steps/%d", exampleRecipe.ID, exampleRecipeStep.ID), "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodDelete)
 					res.WriteHeader(http.StatusOK)
 				},
 			),
 		)
 
-		err := buildTestClient(t, ts).ArchiveRecipeStep(ctx, expected)
+		err := buildTestClient(t, ts).ArchiveRecipeStep(ctx, exampleRecipe.ID, exampleRecipeStep.ID)
 		assert.NoError(t, err, "no error should be returned")
+	})
+
+	T.Run("with invalid client URL", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+
+		err := buildTestClientWithInvalidURL(t).ArchiveRecipeStep(ctx, exampleRecipe.ID, exampleRecipeStep.ID)
+		assert.Error(t, err, "error should be returned")
 	})
 }

@@ -6,11 +6,11 @@ import (
 	"encoding/base32"
 	"net/http"
 	"testing"
-	"time"
 
+	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 
-	fake "github.com/brianvoe/gofakeit"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -22,7 +22,7 @@ func init() {
 	}
 }
 
-// randString produces a random string
+// randString produces a random string.
 // https://blog.questionable.services/article/generating-secure-random-numbers-crypto-rand/
 func randString() (string, error) {
 	b := make([]byte, 64)
@@ -34,25 +34,13 @@ func randString() (string, error) {
 	return base32.StdEncoding.EncodeToString(b), nil
 }
 
-func buildDummyUserInput(t *testing.T) *models.UserInput {
-	t.Helper()
-
-	fake.Seed(time.Now().UnixNano())
-	userInput := &models.UserInput{
-		Username: fake.Username(),
-		Password: fake.Password(true, true, true, true, true, 64),
-	}
-
-	return userInput
-}
-
-func buildDummyUser(t *testing.T) (*models.UserCreationResponse, *models.UserInput, *http.Cookie) {
+func buildDummyUser(t *testing.T) (*models.UserCreationResponse, *models.UserCreationInput, *http.Cookie) {
 	t.Helper()
 	ctx := context.Background()
 
-	// build user creation route input
-	userInput := buildDummyUserInput(t)
-	user, err := todoClient.CreateUser(ctx, userInput)
+	// build user creation route input.
+	userInput := fakemodels.BuildFakeUserCreationInput()
+	user, err := prixfixeClient.CreateUser(ctx, userInput)
 	assert.NotNil(t, user)
 	require.NoError(t, err)
 
@@ -67,7 +55,7 @@ func buildDummyUser(t *testing.T) (*models.UserCreationResponse, *models.UserInp
 	return user, userInput, cookie
 }
 
-func checkUserCreationEquality(t *testing.T, expected *models.UserInput, actual *models.UserCreationResponse) {
+func checkUserCreationEquality(t *testing.T, expected *models.UserCreationInput, actual *models.UserCreationResponse) {
 	t.Helper()
 
 	assert.NotZero(t, actual.ID)
@@ -78,7 +66,7 @@ func checkUserCreationEquality(t *testing.T, expected *models.UserInput, actual 
 	assert.Nil(t, actual.ArchivedOn)
 }
 
-func checkUserEquality(t *testing.T, expected *models.UserInput, actual *models.User) {
+func checkUserEquality(t *testing.T, expected *models.UserCreationInput, actual *models.User) {
 	t.Helper()
 
 	assert.NotZero(t, actual.ID)
@@ -89,72 +77,68 @@ func checkUserEquality(t *testing.T, expected *models.UserInput, actual *models.
 }
 
 func TestUsers(test *testing.T) {
-	test.Parallel()
-
 	test.Run("Creating", func(T *testing.T) {
 		T.Run("should be creatable", func(t *testing.T) {
-			tctx := context.Background()
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
 
-			// Create user
-			expected := buildDummyUserInput(t)
-			actual, err := todoClient.CreateUser(tctx, &models.UserInput{
-				Username: expected.Username,
-				Password: expected.Password,
-			})
+			// Create user.
+			exampleUserInput := fakemodels.BuildFakeUserCreationInput()
+			actual, err := prixfixeClient.CreateUser(ctx, exampleUserInput)
 			checkValueAndError(t, actual, err)
 
-			// Assert user equality
-			checkUserCreationEquality(t, expected, actual)
+			// Assert user equality.
+			checkUserCreationEquality(t, exampleUserInput, actual)
 
-			// Clean up
-			assert.NoError(t, todoClient.ArchiveUser(tctx, actual.ID))
+			// Clean up.
+			assert.NoError(t, prixfixeClient.ArchiveUser(ctx, actual.ID))
 		})
 	})
 
 	test.Run("Reading", func(T *testing.T) {
 		T.Run("it should return an error when trying to read something that doesn't exist", func(t *testing.T) {
-			tctx := context.Background()
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
 
-			// Fetch user
-			actual, err := todoClient.GetUser(tctx, nonexistentID)
+			// Fetch user.
+			actual, err := prixfixeClient.GetUser(ctx, nonexistentID)
 			assert.Nil(t, actual)
 			assert.Error(t, err)
 		})
 
 		T.Run("it should be readable", func(t *testing.T) {
-			tctx := context.Background()
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
 
-			// Create user
-			expected := buildDummyUserInput(t)
-			premade, err := todoClient.CreateUser(tctx, &models.UserInput{
-				Username: expected.Username,
-				Password: expected.Password,
-			})
+			// Create user.
+			exampleUserInput := fakemodels.BuildFakeUserCreationInput()
+			premade, err := prixfixeClient.CreateUser(ctx, exampleUserInput)
 			checkValueAndError(t, premade, err)
 			assert.NotEmpty(t, premade.TwoFactorSecret)
 
-			// Fetch user
-			actual, err := todoClient.GetUser(tctx, premade.ID)
+			// Fetch user.
+			actual, err := prixfixeClient.GetUser(ctx, premade.ID)
 			if err != nil {
 				t.Logf("error encountered trying to fetch user %q: %v\n", premade.Username, err)
 			}
 			checkValueAndError(t, actual, err)
 
-			// Assert user equality
-			checkUserEquality(t, expected, actual)
+			// Assert user equality.
+			checkUserEquality(t, exampleUserInput, actual)
 
-			// Clean up
-			assert.NoError(t, todoClient.ArchiveUser(tctx, actual.ID))
+			// Clean up.
+			assert.NoError(t, prixfixeClient.ArchiveUser(ctx, actual.ID))
 		})
 	})
 
 	test.Run("Deleting", func(T *testing.T) {
 		T.Run("should be able to be deleted", func(t *testing.T) {
-			tctx := context.Background()
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
 
-			// Create user
-			y := buildDummyUserInput(t)
-			u, err := todoClient.CreateUser(tctx, y)
+			// Create user.
+			exampleUserInput := fakemodels.BuildFakeUserCreationInput()
+			u, err := prixfixeClient.CreateUser(ctx, exampleUserInput)
 			assert.NoError(t, err)
 			assert.NotNil(t, u)
 
@@ -163,17 +147,18 @@ func TestUsers(test *testing.T) {
 				t.FailNow()
 			}
 
-			// Execute
-			err = todoClient.ArchiveUser(tctx, u.ID)
+			// Execute.
+			err = prixfixeClient.ArchiveUser(ctx, u.ID)
 			assert.NoError(t, err)
 		})
 	})
 
 	test.Run("Listing", func(T *testing.T) {
 		T.Run("should be able to be read in a list", func(t *testing.T) {
-			tctx := context.Background()
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
 
-			// Create users
+			// Create users.
 			var expected []*models.UserCreationResponse
 			for i := 0; i < 5; i++ {
 				user, _, c := buildDummyUser(t)
@@ -181,14 +166,14 @@ func TestUsers(test *testing.T) {
 				expected = append(expected, user)
 			}
 
-			// Assert user list equality
-			actual, err := todoClient.GetUsers(tctx, nil)
+			// Assert user list equality.
+			actual, err := prixfixeClient.GetUsers(ctx, nil)
 			checkValueAndError(t, actual, err)
 			assert.True(t, len(expected) <= len(actual.Users))
 
-			// Clean up
+			// Clean up.
 			for _, user := range actual.Users {
-				err = todoClient.ArchiveUser(tctx, user.ID)
+				err = prixfixeClient.ArchiveUser(ctx, user.ID)
 				assert.NoError(t, err)
 			}
 		})

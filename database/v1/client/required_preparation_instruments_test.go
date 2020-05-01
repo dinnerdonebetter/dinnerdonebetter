@@ -5,56 +5,51 @@ import (
 	"testing"
 
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
+func TestClient_RequiredPreparationInstrumentExists(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
+
+		c, mockDB := buildTestClient()
+		mockDB.RequiredPreparationInstrumentDataManager.On("RequiredPreparationInstrumentExists", mock.Anything, exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID).Return(true, nil)
+
+		actual, err := c.RequiredPreparationInstrumentExists(ctx, exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID)
+		assert.NoError(t, err)
+		assert.True(t, actual)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
 func TestClient_GetRequiredPreparationInstrument(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		exampleRequiredPreparationInstrumentID := uint64(123)
-		expected := &models.RequiredPreparationInstrument{}
+		ctx := context.Background()
+
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
 
 		c, mockDB := buildTestClient()
-		mockDB.RequiredPreparationInstrumentDataManager.On("GetRequiredPreparationInstrument", mock.Anything, exampleRequiredPreparationInstrumentID).Return(expected, nil)
+		mockDB.RequiredPreparationInstrumentDataManager.On("GetRequiredPreparationInstrument", mock.Anything, exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID).Return(exampleRequiredPreparationInstrument, nil)
 
-		actual, err := c.GetRequiredPreparationInstrument(context.Background(), exampleRequiredPreparationInstrumentID)
+		actual, err := c.GetRequiredPreparationInstrument(ctx, exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleRequiredPreparationInstrument, actual)
 
-		mockDB.AssertExpectations(t)
-	})
-}
-
-func TestClient_GetRequiredPreparationInstrumentCount(T *testing.T) {
-	T.Parallel()
-
-	T.Run("obligatory", func(t *testing.T) {
-		expected := uint64(321)
-
-		c, mockDB := buildTestClient()
-		mockDB.RequiredPreparationInstrumentDataManager.On("GetRequiredPreparationInstrumentCount", mock.Anything, models.DefaultQueryFilter()).Return(expected, nil)
-
-		actual, err := c.GetRequiredPreparationInstrumentCount(context.Background(), models.DefaultQueryFilter())
-		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
-
-		mockDB.AssertExpectations(t)
-	})
-
-	T.Run("with nil filter", func(t *testing.T) {
-		expected := uint64(321)
-
-		c, mockDB := buildTestClient()
-		mockDB.RequiredPreparationInstrumentDataManager.On("GetRequiredPreparationInstrumentCount", mock.Anything, (*models.QueryFilter)(nil)).Return(expected, nil)
-
-		actual, err := c.GetRequiredPreparationInstrumentCount(context.Background(), nil)
-		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
-
-		mockDB.AssertExpectations(t)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }
 
@@ -62,15 +57,18 @@ func TestClient_GetAllRequiredPreparationInstrumentsCount(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		expected := uint64(321)
+		ctx := context.Background()
+
+		exampleCount := uint64(123)
+
 		c, mockDB := buildTestClient()
-		mockDB.RequiredPreparationInstrumentDataManager.On("GetAllRequiredPreparationInstrumentsCount", mock.Anything).Return(expected, nil)
+		mockDB.RequiredPreparationInstrumentDataManager.On("GetAllRequiredPreparationInstrumentsCount", mock.Anything).Return(exampleCount, nil)
 
-		actual, err := c.GetAllRequiredPreparationInstrumentsCount(context.Background())
+		actual, err := c.GetAllRequiredPreparationInstrumentsCount(ctx)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleCount, actual)
 
-		mockDB.AssertExpectations(t)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }
 
@@ -78,29 +76,37 @@ func TestClient_GetRequiredPreparationInstruments(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+		filter := models.DefaultQueryFilter()
+		exampleRequiredPreparationInstrumentList := fakemodels.BuildFakeRequiredPreparationInstrumentList()
+
 		c, mockDB := buildTestClient()
-		expected := &models.RequiredPreparationInstrumentList{}
+		mockDB.RequiredPreparationInstrumentDataManager.On("GetRequiredPreparationInstruments", mock.Anything, exampleValidPreparation.ID, filter).Return(exampleRequiredPreparationInstrumentList, nil)
 
-		mockDB.RequiredPreparationInstrumentDataManager.On("GetRequiredPreparationInstruments", mock.Anything, models.DefaultQueryFilter()).Return(expected, nil)
-
-		actual, err := c.GetRequiredPreparationInstruments(context.Background(), models.DefaultQueryFilter())
+		actual, err := c.GetRequiredPreparationInstruments(ctx, exampleValidPreparation.ID, filter)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleRequiredPreparationInstrumentList, actual)
 
-		mockDB.AssertExpectations(t)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 
 	T.Run("with nil filter", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+		filter := (*models.QueryFilter)(nil)
+		exampleRequiredPreparationInstrumentList := fakemodels.BuildFakeRequiredPreparationInstrumentList()
+
 		c, mockDB := buildTestClient()
-		expected := &models.RequiredPreparationInstrumentList{}
+		mockDB.RequiredPreparationInstrumentDataManager.On("GetRequiredPreparationInstruments", mock.Anything, exampleValidPreparation.ID, filter).Return(exampleRequiredPreparationInstrumentList, nil)
 
-		mockDB.RequiredPreparationInstrumentDataManager.On("GetRequiredPreparationInstruments", mock.Anything, (*models.QueryFilter)(nil)).Return(expected, nil)
-
-		actual, err := c.GetRequiredPreparationInstruments(context.Background(), nil)
+		actual, err := c.GetRequiredPreparationInstruments(ctx, exampleValidPreparation.ID, filter)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleRequiredPreparationInstrumentList, actual)
 
-		mockDB.AssertExpectations(t)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }
 
@@ -108,17 +114,19 @@ func TestClient_CreateRequiredPreparationInstrument(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		exampleInput := &models.RequiredPreparationInstrumentCreationInput{}
+		ctx := context.Background()
+
+		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+		exampleInput := fakemodels.BuildFakeRequiredPreparationInstrumentCreationInputFromRequiredPreparationInstrument(exampleRequiredPreparationInstrument)
+
 		c, mockDB := buildTestClient()
-		expected := &models.RequiredPreparationInstrument{}
+		mockDB.RequiredPreparationInstrumentDataManager.On("CreateRequiredPreparationInstrument", mock.Anything, exampleInput).Return(exampleRequiredPreparationInstrument, nil)
 
-		mockDB.RequiredPreparationInstrumentDataManager.On("CreateRequiredPreparationInstrument", mock.Anything, exampleInput).Return(expected, nil)
-
-		actual, err := c.CreateRequiredPreparationInstrument(context.Background(), exampleInput)
+		actual, err := c.CreateRequiredPreparationInstrument(ctx, exampleInput)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleRequiredPreparationInstrument, actual)
 
-		mockDB.AssertExpectations(t)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }
 
@@ -126,14 +134,19 @@ func TestClient_UpdateRequiredPreparationInstrument(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		exampleInput := &models.RequiredPreparationInstrument{}
-		c, mockDB := buildTestClient()
+		ctx := context.Background()
 		var expected error
 
-		mockDB.RequiredPreparationInstrumentDataManager.On("UpdateRequiredPreparationInstrument", mock.Anything, exampleInput).Return(expected)
+		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
 
-		err := c.UpdateRequiredPreparationInstrument(context.Background(), exampleInput)
+		c, mockDB := buildTestClient()
+
+		mockDB.RequiredPreparationInstrumentDataManager.On("UpdateRequiredPreparationInstrument", mock.Anything, exampleRequiredPreparationInstrument).Return(expected)
+
+		err := c.UpdateRequiredPreparationInstrument(ctx, exampleRequiredPreparationInstrument)
 		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }
 
@@ -141,13 +154,18 @@ func TestClient_ArchiveRequiredPreparationInstrument(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		exampleRequiredPreparationInstrumentID := uint64(123)
+		ctx := context.Background()
+
 		var expected error
 
-		c, mockDB := buildTestClient()
-		mockDB.RequiredPreparationInstrumentDataManager.On("ArchiveRequiredPreparationInstrument", mock.Anything, exampleRequiredPreparationInstrumentID).Return(expected)
+		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
 
-		err := c.ArchiveRequiredPreparationInstrument(context.Background(), exampleRequiredPreparationInstrumentID)
+		c, mockDB := buildTestClient()
+		mockDB.RequiredPreparationInstrumentDataManager.On("ArchiveRequiredPreparationInstrument", mock.Anything, exampleRequiredPreparationInstrument.BelongsToValidPreparation, exampleRequiredPreparationInstrument.ID).Return(expected)
+
+		err := c.ArchiveRequiredPreparationInstrument(ctx, exampleRequiredPreparationInstrument.BelongsToValidPreparation, exampleRequiredPreparationInstrument.ID)
 		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }

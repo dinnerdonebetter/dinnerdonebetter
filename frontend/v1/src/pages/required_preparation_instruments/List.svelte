@@ -9,12 +9,8 @@
       key: "id"
     },
     {
-      title: "InstrumentID",
-      key: "instrument_id"
-    },
-    {
-      title: "PreparationID",
-      key: "preparation_id"
+      title: "ValidInstrumentID",
+      key: "valid_instrument_id"
     },
     {
       title: "Notes",

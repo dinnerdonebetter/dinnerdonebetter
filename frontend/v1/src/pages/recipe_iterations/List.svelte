@@ -9,10 +9,6 @@
       key: "id"
     },
     {
-      title: "RecipeID",
-      key: "recipe_id"
-    },
-    {
       title: "EndDifficultyRating",
       key: "end_difficulty_rating"
     },

@@ -5,59 +5,59 @@ import (
 	"testing"
 
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
+func TestClient_RecipeStepIngredientExists(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		exampleRecipeStep.BelongsToRecipe = exampleRecipe.ID
+		exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
+		exampleRecipeStepIngredient.BelongsToRecipeStep = exampleRecipeStep.ID
+
+		c, mockDB := buildTestClient()
+		mockDB.RecipeStepIngredientDataManager.On("RecipeStepIngredientExists", mock.Anything, exampleRecipe.ID, exampleRecipeStep.ID, exampleRecipeStepIngredient.ID).Return(true, nil)
+
+		actual, err := c.RecipeStepIngredientExists(ctx, exampleRecipe.ID, exampleRecipeStep.ID, exampleRecipeStepIngredient.ID)
+		assert.NoError(t, err)
+		assert.True(t, actual)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
 func TestClient_GetRecipeStepIngredient(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		exampleRecipeStepIngredientID := uint64(123)
-		exampleUserID := uint64(123)
-		expected := &models.RecipeStepIngredient{}
+		ctx := context.Background()
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		exampleRecipeStep.BelongsToRecipe = exampleRecipe.ID
+		exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
+		exampleRecipeStepIngredient.BelongsToRecipeStep = exampleRecipeStep.ID
 
 		c, mockDB := buildTestClient()
-		mockDB.RecipeStepIngredientDataManager.On("GetRecipeStepIngredient", mock.Anything, exampleRecipeStepIngredientID, exampleUserID).Return(expected, nil)
+		mockDB.RecipeStepIngredientDataManager.On("GetRecipeStepIngredient", mock.Anything, exampleRecipe.ID, exampleRecipeStep.ID, exampleRecipeStepIngredient.ID).Return(exampleRecipeStepIngredient, nil)
 
-		actual, err := c.GetRecipeStepIngredient(context.Background(), exampleRecipeStepIngredientID, exampleUserID)
+		actual, err := c.GetRecipeStepIngredient(ctx, exampleRecipe.ID, exampleRecipeStep.ID, exampleRecipeStepIngredient.ID)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleRecipeStepIngredient, actual)
 
-		mockDB.AssertExpectations(t)
-	})
-}
-
-func TestClient_GetRecipeStepIngredientCount(T *testing.T) {
-	T.Parallel()
-
-	T.Run("obligatory", func(t *testing.T) {
-		expected := uint64(321)
-		exampleUserID := uint64(123)
-
-		c, mockDB := buildTestClient()
-		mockDB.RecipeStepIngredientDataManager.On("GetRecipeStepIngredientCount", mock.Anything, models.DefaultQueryFilter(), exampleUserID).Return(expected, nil)
-
-		actual, err := c.GetRecipeStepIngredientCount(context.Background(), models.DefaultQueryFilter(), exampleUserID)
-		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
-
-		mockDB.AssertExpectations(t)
-	})
-
-	T.Run("with nil filter", func(t *testing.T) {
-		expected := uint64(321)
-		exampleUserID := uint64(123)
-
-		c, mockDB := buildTestClient()
-		mockDB.RecipeStepIngredientDataManager.On("GetRecipeStepIngredientCount", mock.Anything, (*models.QueryFilter)(nil), exampleUserID).Return(expected, nil)
-
-		actual, err := c.GetRecipeStepIngredientCount(context.Background(), nil, exampleUserID)
-		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
-
-		mockDB.AssertExpectations(t)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }
 
@@ -65,15 +65,18 @@ func TestClient_GetAllRecipeStepIngredientsCount(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		expected := uint64(321)
+		ctx := context.Background()
+
+		exampleCount := uint64(123)
+
 		c, mockDB := buildTestClient()
-		mockDB.RecipeStepIngredientDataManager.On("GetAllRecipeStepIngredientsCount", mock.Anything).Return(expected, nil)
+		mockDB.RecipeStepIngredientDataManager.On("GetAllRecipeStepIngredientsCount", mock.Anything).Return(exampleCount, nil)
 
-		actual, err := c.GetAllRecipeStepIngredientsCount(context.Background())
+		actual, err := c.GetAllRecipeStepIngredientsCount(ctx)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleCount, actual)
 
-		mockDB.AssertExpectations(t)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }
 
@@ -81,31 +84,39 @@ func TestClient_GetRecipeStepIngredients(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		exampleUserID := uint64(123)
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		filter := models.DefaultQueryFilter()
+		exampleRecipeStepIngredientList := fakemodels.BuildFakeRecipeStepIngredientList()
+
 		c, mockDB := buildTestClient()
-		expected := &models.RecipeStepIngredientList{}
+		mockDB.RecipeStepIngredientDataManager.On("GetRecipeStepIngredients", mock.Anything, exampleRecipe.ID, exampleRecipeStep.ID, filter).Return(exampleRecipeStepIngredientList, nil)
 
-		mockDB.RecipeStepIngredientDataManager.On("GetRecipeStepIngredients", mock.Anything, models.DefaultQueryFilter(), exampleUserID).Return(expected, nil)
-
-		actual, err := c.GetRecipeStepIngredients(context.Background(), models.DefaultQueryFilter(), exampleUserID)
+		actual, err := c.GetRecipeStepIngredients(ctx, exampleRecipe.ID, exampleRecipeStep.ID, filter)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleRecipeStepIngredientList, actual)
 
-		mockDB.AssertExpectations(t)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 
 	T.Run("with nil filter", func(t *testing.T) {
-		exampleUserID := uint64(123)
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		filter := (*models.QueryFilter)(nil)
+		exampleRecipeStepIngredientList := fakemodels.BuildFakeRecipeStepIngredientList()
+
 		c, mockDB := buildTestClient()
-		expected := &models.RecipeStepIngredientList{}
+		mockDB.RecipeStepIngredientDataManager.On("GetRecipeStepIngredients", mock.Anything, exampleRecipe.ID, exampleRecipeStep.ID, filter).Return(exampleRecipeStepIngredientList, nil)
 
-		mockDB.RecipeStepIngredientDataManager.On("GetRecipeStepIngredients", mock.Anything, (*models.QueryFilter)(nil), exampleUserID).Return(expected, nil)
-
-		actual, err := c.GetRecipeStepIngredients(context.Background(), nil, exampleUserID)
+		actual, err := c.GetRecipeStepIngredients(ctx, exampleRecipe.ID, exampleRecipeStep.ID, filter)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleRecipeStepIngredientList, actual)
 
-		mockDB.AssertExpectations(t)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }
 
@@ -113,17 +124,19 @@ func TestClient_CreateRecipeStepIngredient(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		exampleInput := &models.RecipeStepIngredientCreationInput{}
+		ctx := context.Background()
+
+		exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
+		exampleInput := fakemodels.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
+
 		c, mockDB := buildTestClient()
-		expected := &models.RecipeStepIngredient{}
+		mockDB.RecipeStepIngredientDataManager.On("CreateRecipeStepIngredient", mock.Anything, exampleInput).Return(exampleRecipeStepIngredient, nil)
 
-		mockDB.RecipeStepIngredientDataManager.On("CreateRecipeStepIngredient", mock.Anything, exampleInput).Return(expected, nil)
-
-		actual, err := c.CreateRecipeStepIngredient(context.Background(), exampleInput)
+		actual, err := c.CreateRecipeStepIngredient(ctx, exampleInput)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleRecipeStepIngredient, actual)
 
-		mockDB.AssertExpectations(t)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }
 
@@ -131,14 +144,19 @@ func TestClient_UpdateRecipeStepIngredient(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		exampleInput := &models.RecipeStepIngredient{}
-		c, mockDB := buildTestClient()
+		ctx := context.Background()
 		var expected error
 
-		mockDB.RecipeStepIngredientDataManager.On("UpdateRecipeStepIngredient", mock.Anything, exampleInput).Return(expected)
+		exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
 
-		err := c.UpdateRecipeStepIngredient(context.Background(), exampleInput)
+		c, mockDB := buildTestClient()
+
+		mockDB.RecipeStepIngredientDataManager.On("UpdateRecipeStepIngredient", mock.Anything, exampleRecipeStepIngredient).Return(expected)
+
+		err := c.UpdateRecipeStepIngredient(ctx, exampleRecipeStepIngredient)
 		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }
 
@@ -146,14 +164,18 @@ func TestClient_ArchiveRecipeStepIngredient(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		exampleUserID := uint64(123)
-		exampleRecipeStepIngredientID := uint64(123)
+		ctx := context.Background()
+
 		var expected error
 
-		c, mockDB := buildTestClient()
-		mockDB.RecipeStepIngredientDataManager.On("ArchiveRecipeStepIngredient", mock.Anything, exampleRecipeStepIngredientID, exampleUserID).Return(expected)
+		exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
 
-		err := c.ArchiveRecipeStepIngredient(context.Background(), exampleUserID, exampleRecipeStepIngredientID)
+		c, mockDB := buildTestClient()
+		mockDB.RecipeStepIngredientDataManager.On("ArchiveRecipeStepIngredient", mock.Anything, exampleRecipeStepIngredient.BelongsToRecipeStep, exampleRecipeStepIngredient.ID).Return(expected)
+
+		err := c.ArchiveRecipeStepIngredient(ctx, exampleRecipeStepIngredient.BelongsToRecipeStep, exampleRecipeStepIngredient.ID)
 		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }

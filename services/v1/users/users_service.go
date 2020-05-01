@@ -1,12 +1,10 @@
 package users
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"net/http"
 
-	database "gitlab.com/prixfixe/prixfixe/database/v1"
 	"gitlab.com/prixfixe/prixfixe/internal/v1/auth"
 	"gitlab.com/prixfixe/prixfixe/internal/v1/config"
 	"gitlab.com/prixfixe/prixfixe/internal/v1/encoding"
@@ -18,11 +16,10 @@ import (
 )
 
 const (
-	// MiddlewareCtxKey is the context key we search for when interacting with user-related requests
-	MiddlewareCtxKey models.ContextKey   = "user_input"
-	counterName      metrics.CounterName = "users"
-	topicName                            = "users"
-	serviceName                          = "users_service"
+	serviceName        = "users_service"
+	topicName          = "users"
+	counterDescription = "number of users managed by the users service"
+	counterName        = metrics.CounterName(serviceName)
 )
 
 var (
@@ -30,15 +27,15 @@ var (
 )
 
 type (
-	// RequestValidator validates request
+	// RequestValidator validates request.
 	RequestValidator interface {
 		Validate(req *http.Request) (bool, error)
 	}
 
-	// Service handles our users
+	// Service handles our users.
 	Service struct {
 		cookieSecret        []byte
-		database            database.Database
+		userDataManager     models.UserDataManager
 		authenticator       auth.Authenticator
 		logger              logging.Logger
 		encoderDecoder      encoding.EncoderDecoder
@@ -48,16 +45,15 @@ type (
 		userCreationEnabled bool
 	}
 
-	// UserIDFetcher fetches usernames from requests
+	// UserIDFetcher fetches usernames from requests.
 	UserIDFetcher func(*http.Request) uint64
 )
 
-// ProvideUsersService builds a new UsersService
+// ProvideUsersService builds a new UsersService.
 func ProvideUsersService(
-	ctx context.Context,
 	authSettings config.AuthSettings,
 	logger logging.Logger,
-	db database.Database,
+	userDataManager models.UserDataManager,
 	authenticator auth.Authenticator,
 	userIDFetcher UserIDFetcher,
 	encoder encoding.EncoderDecoder,
@@ -68,21 +64,15 @@ func ProvideUsersService(
 		return nil, errors.New("userIDFetcher must be provided")
 	}
 
-	counter, err := counterProvider(counterName, "number of users managed by the users service")
+	counter, err := counterProvider(counterName, counterDescription)
 	if err != nil {
 		return nil, fmt.Errorf("error initializing counter: %w", err)
 	}
 
-	userCount, err := db.GetUserCount(ctx, nil)
-	if err != nil {
-		return nil, fmt.Errorf("fetching user count: %w", err)
-	}
-	counter.IncrementBy(ctx, userCount)
-
-	us := &Service{
+	svc := &Service{
 		cookieSecret:        []byte(authSettings.CookieSecret),
 		logger:              logger.WithName(serviceName),
-		database:            db,
+		userDataManager:     userDataManager,
 		authenticator:       authenticator,
 		userIDFetcher:       userIDFetcher,
 		encoderDecoder:      encoder,
@@ -90,5 +80,6 @@ func ProvideUsersService(
 		reporter:            reporter,
 		userCreationEnabled: authSettings.EnableUserSignup,
 	}
-	return us, nil
+
+	return svc, nil
 }

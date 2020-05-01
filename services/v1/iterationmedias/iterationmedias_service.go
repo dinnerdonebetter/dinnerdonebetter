@@ -1,7 +1,6 @@
 package iterationmedias
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
@@ -14,13 +13,13 @@ import (
 )
 
 const (
-	// CreateMiddlewareCtxKey is a string alias we can use for referring to iteration media input data in contexts
+	// CreateMiddlewareCtxKey is a string alias we can use for referring to iteration media input data in contexts.
 	CreateMiddlewareCtxKey models.ContextKey = "iteration_media_create_input"
-	// UpdateMiddlewareCtxKey is a string alias we can use for referring to iteration media update data in contexts
+	// UpdateMiddlewareCtxKey is a string alias we can use for referring to iteration media update data in contexts.
 	UpdateMiddlewareCtxKey models.ContextKey = "iteration_media_update_input"
 
 	counterName        metrics.CounterName = "iterationMedias"
-	counterDescription                     = "the number of iterationMedias managed by the iterationMedias service"
+	counterDescription string              = "the number of iterationMedias managed by the iterationMedias service"
 	topicName          string              = "iteration_medias"
 	serviceName        string              = "iteration_medias_service"
 )
@@ -32,29 +31,42 @@ var (
 type (
 	// Service handles to-do list iteration medias
 	Service struct {
-		logger                  logging.Logger
-		iterationMediaCounter   metrics.UnitCounter
-		iterationMediaDatabase  models.IterationMediaDataManager
-		userIDFetcher           UserIDFetcher
-		iterationMediaIDFetcher IterationMediaIDFetcher
-		encoderDecoder          encoding.EncoderDecoder
-		reporter                newsman.Reporter
+		logger                     logging.Logger
+		recipeDataManager          models.RecipeDataManager
+		recipeIterationDataManager models.RecipeIterationDataManager
+		iterationMediaDataManager  models.IterationMediaDataManager
+		recipeIDFetcher            RecipeIDFetcher
+		recipeIterationIDFetcher   RecipeIterationIDFetcher
+		iterationMediaIDFetcher    IterationMediaIDFetcher
+		userIDFetcher              UserIDFetcher
+		iterationMediaCounter      metrics.UnitCounter
+		encoderDecoder             encoding.EncoderDecoder
+		reporter                   newsman.Reporter
 	}
 
-	// UserIDFetcher is a function that fetches user IDs
+	// UserIDFetcher is a function that fetches user IDs.
 	UserIDFetcher func(*http.Request) uint64
 
-	// IterationMediaIDFetcher is a function that fetches iteration media IDs
+	// RecipeIDFetcher is a function that fetches recipe IDs.
+	RecipeIDFetcher func(*http.Request) uint64
+
+	// RecipeIterationIDFetcher is a function that fetches recipe iteration IDs.
+	RecipeIterationIDFetcher func(*http.Request) uint64
+
+	// IterationMediaIDFetcher is a function that fetches iteration media IDs.
 	IterationMediaIDFetcher func(*http.Request) uint64
 )
 
-// ProvideIterationMediasService builds a new IterationMediasService
+// ProvideIterationMediasService builds a new IterationMediasService.
 func ProvideIterationMediasService(
-	ctx context.Context,
 	logger logging.Logger,
-	db models.IterationMediaDataManager,
-	userIDFetcher UserIDFetcher,
+	recipeDataManager models.RecipeDataManager,
+	recipeIterationDataManager models.RecipeIterationDataManager,
+	iterationMediaDataManager models.IterationMediaDataManager,
+	recipeIDFetcher RecipeIDFetcher,
+	recipeIterationIDFetcher RecipeIterationIDFetcher,
 	iterationMediaIDFetcher IterationMediaIDFetcher,
+	userIDFetcher UserIDFetcher,
 	encoder encoding.EncoderDecoder,
 	iterationMediaCounterProvider metrics.UnitCounterProvider,
 	reporter newsman.Reporter,
@@ -65,20 +77,18 @@ func ProvideIterationMediasService(
 	}
 
 	svc := &Service{
-		logger:                  logger.WithName(serviceName),
-		iterationMediaDatabase:  db,
-		encoderDecoder:          encoder,
-		iterationMediaCounter:   iterationMediaCounter,
-		userIDFetcher:           userIDFetcher,
-		iterationMediaIDFetcher: iterationMediaIDFetcher,
-		reporter:                reporter,
+		logger:                     logger.WithName(serviceName),
+		recipeIDFetcher:            recipeIDFetcher,
+		recipeIterationIDFetcher:   recipeIterationIDFetcher,
+		iterationMediaIDFetcher:    iterationMediaIDFetcher,
+		userIDFetcher:              userIDFetcher,
+		recipeDataManager:          recipeDataManager,
+		recipeIterationDataManager: recipeIterationDataManager,
+		iterationMediaDataManager:  iterationMediaDataManager,
+		encoderDecoder:             encoder,
+		iterationMediaCounter:      iterationMediaCounter,
+		reporter:                   reporter,
 	}
-
-	iterationMediaCount, err := svc.iterationMediaDatabase.GetAllIterationMediasCount(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("setting current iteration media count: %w", err)
-	}
-	svc.iterationMediaCounter.IncrementBy(ctx, iterationMediaCount)
 
 	return svc, nil
 }

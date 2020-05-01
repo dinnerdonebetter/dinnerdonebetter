@@ -16,7 +16,7 @@ import (
 	client "gitlab.com/prixfixe/prixfixe/client/v1/http"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
 
-	fake "github.com/brianvoe/gofakeit"
+	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/moul/http2curl"
 	"github.com/pquerna/otp/totp"
 )
@@ -25,7 +25,7 @@ func init() {
 	fake.Seed(time.Now().UnixNano())
 }
 
-// DetermineServiceURL returns the URL, if properly configured
+// DetermineServiceURL returns the URL, if properly configured.
 func DetermineServiceURL() string {
 	ta := os.Getenv("TARGET_ADDRESS")
 	if ta == "" {
@@ -40,7 +40,7 @@ func DetermineServiceURL() string {
 	return u.String()
 }
 
-// EnsureServerIsUp checks that a server is up and doesn't return until it's certain one way or the other
+// EnsureServerIsUp checks that a server is up and doesn't return until it's certain one way or the other.
 func EnsureServerIsUp(address string) {
 	var (
 		isDown           = true
@@ -63,7 +63,7 @@ func EnsureServerIsUp(address string) {
 	}
 }
 
-// IsUp can check if an instance of our server is alive
+// IsUp can check if an instance of our server is alive.
 func IsUp(address string) bool {
 	uri := fmt.Sprintf("%s/_meta_/ready", address)
 	req, err := http.NewRequest(http.MethodGet, uri, nil)
@@ -83,7 +83,7 @@ func IsUp(address string) bool {
 	return res.StatusCode == http.StatusOK
 }
 
-// CreateObligatoryUser creates a user for the sake of having an OAuth2 client
+// CreateObligatoryUser creates a user for the sake of having an OAuth2 client.
 func CreateObligatoryUser(address string, debug bool) (*models.User, error) {
 	tu, err := url.Parse(address)
 	if err != nil {
@@ -98,7 +98,7 @@ func CreateObligatoryUser(address string, debug bool) (*models.User, error) {
 	// I had difficulty ensuring these values were unique, even when fake.Seed was called. Could've been fake's fault,
 	// could've been docker's fault. In either case, it wasn't worth the time to investigate and determine the culprit
 	username := fake.Username() + fake.HexColor() + fake.Country()
-	in := &models.UserInput{
+	in := &models.UserCreationInput{
 		Username: username,
 		Password: fake.Password(true, true, true, true, true, 64),
 	}
@@ -185,7 +185,7 @@ func getLoginCookie(serviceURL string, u *models.User) (*http.Cookie, error) {
 	return nil, errors.New("no cookie found :(")
 }
 
-// CreateObligatoryClient creates the OAuth2 client we need for tests
+// CreateObligatoryClient creates the OAuth2 client we need for tests.
 func CreateObligatoryClient(serviceURL string, u *models.User) (*models.OAuth2Client, error) {
 	firstOAuth2ClientURI := buildURL(serviceURL, "oauth2", "client")
 
@@ -206,7 +206,7 @@ func CreateObligatoryClient(serviceURL string, u *models.User) (*models.OAuth2Cl
 		"password": %q,
 		"totp_token": %q,
 
-		"belongs_to": %d,
+		"belongs_to_user": %d,
 		"scopes": ["*"]
 	}
 		`, u.Username, u.HashedPassword, code, u.ID)),

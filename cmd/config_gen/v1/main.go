@@ -33,6 +33,7 @@ const (
 	dbDebug                          = "database.debug"
 	dbProvider                       = "database.provider"
 	dbDeets                          = "database.connection_details"
+	postgres                         = "postgres"
 )
 
 type configFunc func(filepath string) error
@@ -41,7 +42,7 @@ var (
 	files = map[string]configFunc{
 		"config_files/coverage.toml":                   coverageConfig,
 		"config_files/development.toml":                developmentConfig,
-		"config_files/integration-tests-postgres.toml": buildIntegrationTestForDBImplementation("postgres", postgresDBConnDetails),
+		"config_files/integration-tests-postgres.toml": buildIntegrationTestForDBImplementation(postgres, postgresDBConnDetails),
 		"config_files/production.toml":                 productionConfig,
 	}
 )
@@ -128,12 +129,14 @@ func productionConfig(filepath string) error {
 	return cfg.WriteConfigAs(filepath)
 }
 
-func buildIntegrationTestForDBImplementation(dbprov, dbDeet string) configFunc {
+func buildIntegrationTestForDBImplementation(dbprov, dbDetails string) configFunc {
 	return func(filepath string) error {
 		cfg := config.BuildConfig()
 
 		cfg.Set(metaDebug, false)
-		cfg.Set(metaStartupDeadline, time.Minute)
+
+		sd := time.Minute
+		cfg.Set(metaStartupDeadline, sd)
 
 		cfg.Set(serverHTTPPort, defaultPort)
 		cfg.Set(serverDebug, true)
@@ -146,7 +149,7 @@ func buildIntegrationTestForDBImplementation(dbprov, dbDeet string) configFunc {
 
 		cfg.Set(dbDebug, false)
 		cfg.Set(dbProvider, dbprov)
-		cfg.Set(dbDeets, dbDeet)
+		cfg.Set(dbDeets, dbDetails)
 
 		return cfg.WriteConfigAs(filepath)
 	}

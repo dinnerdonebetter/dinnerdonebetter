@@ -11,6 +11,7 @@ import (
 	mockencoding "gitlab.com/prixfixe/prixfixe/internal/v1/encoding/mock"
 	mockmetrics "gitlab.com/prixfixe/prixfixe/internal/v1/metrics/mock"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 	mockmodels "gitlab.com/prixfixe/prixfixe/models/v1/mock"
 
 	"github.com/stretchr/testify/assert"
@@ -19,31 +20,27 @@ import (
 	mocknewsman "gitlab.com/verygoodsoftwarenotvirus/newsman/mock"
 )
 
-func TestInvitationsService_List(T *testing.T) {
+func TestInvitationsService_ListHandler(T *testing.T) {
 	T.Parallel()
+
+	exampleUser := fakemodels.BuildFakeUser()
+	userIDFetcher := func(_ *http.Request) uint64 {
+		return exampleUser.ID
+	}
 
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.InvitationList{
-			Invitations: []models.Invitation{
-				{
-					ID: 123,
-				},
-			},
-		}
+		s.userIDFetcher = userIDFetcher
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
+		exampleInvitationList := fakemodels.BuildFakeInvitationList()
 
-		id := &mockmodels.InvitationDataManager{}
-		id.On("GetInvitations", mock.Anything, mock.Anything, requestingUser.ID).Return(expected, nil)
-		s.invitationDatabase = id
+		invitationDataManager := &mockmodels.InvitationDataManager{}
+		invitationDataManager.On("GetInvitations", mock.Anything, mock.AnythingOfType("*models.QueryFilter")).Return(exampleInvitationList, nil)
+		s.invitationDataManager = invitationDataManager
 
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.InvitationList")).Return(nil)
 		s.encoderDecoder = ed
 
 		res := httptest.NewRecorder()
@@ -57,23 +54,22 @@ func TestInvitationsService_List(T *testing.T) {
 
 		s.ListHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, invitationDataManager, ed)
 	})
 
 	T.Run("with no rows returned", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
+		s.userIDFetcher = userIDFetcher
 
-		id := &mockmodels.InvitationDataManager{}
-		id.On("GetInvitations", mock.Anything, mock.Anything, requestingUser.ID).Return((*models.InvitationList)(nil), sql.ErrNoRows)
-		s.invitationDatabase = id
+		invitationDataManager := &mockmodels.InvitationDataManager{}
+		invitationDataManager.On("GetInvitations", mock.Anything, mock.AnythingOfType("*models.QueryFilter")).Return((*models.InvitationList)(nil), sql.ErrNoRows)
+		s.invitationDataManager = invitationDataManager
 
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.InvitationList")).Return(nil)
 		s.encoderDecoder = ed
 
 		res := httptest.NewRecorder()
@@ -87,24 +83,19 @@ func TestInvitationsService_List(T *testing.T) {
 
 		s.ListHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, invitationDataManager, ed)
 	})
 
 	T.Run("with error fetching invitations from database", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
+		s.userIDFetcher = userIDFetcher
 
-		id := &mockmodels.InvitationDataManager{}
-		id.On("GetInvitations", mock.Anything, mock.Anything, requestingUser.ID).Return((*models.InvitationList)(nil), errors.New("blah"))
-		s.invitationDatabase = id
-
-		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
-		s.encoderDecoder = ed
+		invitationDataManager := &mockmodels.InvitationDataManager{}
+		invitationDataManager.On("GetInvitations", mock.Anything, mock.AnythingOfType("*models.QueryFilter")).Return((*models.InvitationList)(nil), errors.New("blah"))
+		s.invitationDataManager = invitationDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -117,27 +108,24 @@ func TestInvitationsService_List(T *testing.T) {
 
 		s.ListHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusInternalServerError)
+		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, invitationDataManager)
 	})
 
 	T.Run("with error encoding response", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.InvitationList{
-			Invitations: []models.Invitation{},
-		}
+		s.userIDFetcher = userIDFetcher
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
+		exampleInvitationList := fakemodels.BuildFakeInvitationList()
 
-		id := &mockmodels.InvitationDataManager{}
-		id.On("GetInvitations", mock.Anything, mock.Anything, requestingUser.ID).Return(expected, nil)
-		s.invitationDatabase = id
+		invitationDataManager := &mockmodels.InvitationDataManager{}
+		invitationDataManager.On("GetInvitations", mock.Anything, mock.AnythingOfType("*models.QueryFilter")).Return(exampleInvitationList, nil)
+		s.invitationDataManager = invitationDataManager
 
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(errors.New("blah"))
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.InvitationList")).Return(errors.New("blah"))
 		s.encoderDecoder = ed
 
 		res := httptest.NewRecorder()
@@ -151,39 +139,43 @@ func TestInvitationsService_List(T *testing.T) {
 
 		s.ListHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, invitationDataManager, ed)
 	})
 }
 
-func TestInvitationsService_Create(T *testing.T) {
+func TestInvitationsService_CreateHandler(T *testing.T) {
 	T.Parallel()
+
+	exampleUser := fakemodels.BuildFakeUser()
+	userIDFetcher := func(_ *http.Request) uint64 {
+		return exampleUser.ID
+	}
 
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Invitation{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
+
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeInvitationCreationInputFromInvitation(exampleInvitation)
+
+		invitationDataManager := &mockmodels.InvitationDataManager{}
+		invitationDataManager.On("CreateInvitation", mock.Anything, mock.AnythingOfType("*models.InvitationCreationInput")).Return(exampleInvitation, nil)
+		s.invitationDataManager = invitationDataManager
 
 		mc := &mockmetrics.UnitCounter{}
 		mc.On("Increment", mock.Anything)
 		s.invitationCounter = mc
 
 		r := &mocknewsman.Reporter{}
-		r.On("Report", mock.Anything).Return()
+		r.On("Report", mock.AnythingOfType("newsman.Event")).Return()
 		s.reporter = r
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
-
-		id := &mockmodels.InvitationDataManager{}
-		id.On("CreateInvitation", mock.Anything, mock.Anything).Return(expected, nil)
-		s.invitationDatabase = id
-
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.Invitation")).Return(nil)
 		s.encoderDecoder = ed
 
 		res := httptest.NewRecorder()
@@ -195,28 +187,19 @@ func TestInvitationsService_Create(T *testing.T) {
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		exampleInput := &models.InvitationCreationInput{
-			Code:     expected.Code,
-			Consumed: expected.Consumed,
-		}
 		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
 
 		s.CreateHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusCreated)
+		assert.Equal(t, http.StatusCreated, res.Code)
+
+		mock.AssertExpectationsForObjects(t, invitationDataManager, mc, r, ed)
 	})
 
 	T.Run("without input attached", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
-
-		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
-		s.encoderDecoder = ed
+		s.userIDFetcher = userIDFetcher
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -229,28 +212,21 @@ func TestInvitationsService_Create(T *testing.T) {
 
 		s.CreateHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusBadRequest)
+		assert.Equal(t, http.StatusBadRequest, res.Code)
 	})
 
 	T.Run("with error creating invitation", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Invitation{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeInvitationCreationInputFromInvitation(exampleInvitation)
 
-		id := &mockmodels.InvitationDataManager{}
-		id.On("CreateInvitation", mock.Anything, mock.Anything).Return((*models.Invitation)(nil), errors.New("blah"))
-		s.invitationDatabase = id
-
-		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
-		s.encoderDecoder = ed
+		invitationDataManager := &mockmodels.InvitationDataManager{}
+		invitationDataManager.On("CreateInvitation", mock.Anything, mock.AnythingOfType("*models.InvitationCreationInput")).Return(exampleInvitation, errors.New("blah"))
+		s.invitationDataManager = invitationDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -261,43 +237,38 @@ func TestInvitationsService_Create(T *testing.T) {
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		exampleInput := &models.InvitationCreationInput{
-			Code:     expected.Code,
-			Consumed: expected.Consumed,
-		}
 		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
 
 		s.CreateHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusInternalServerError)
+		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, invitationDataManager)
 	})
 
 	T.Run("with error encoding response", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Invitation{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
+
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeInvitationCreationInputFromInvitation(exampleInvitation)
+
+		invitationDataManager := &mockmodels.InvitationDataManager{}
+		invitationDataManager.On("CreateInvitation", mock.Anything, mock.AnythingOfType("*models.InvitationCreationInput")).Return(exampleInvitation, nil)
+		s.invitationDataManager = invitationDataManager
 
 		mc := &mockmetrics.UnitCounter{}
 		mc.On("Increment", mock.Anything)
 		s.invitationCounter = mc
 
 		r := &mocknewsman.Reporter{}
-		r.On("Report", mock.Anything).Return()
+		r.On("Report", mock.AnythingOfType("newsman.Event")).Return()
 		s.reporter = r
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
-
-		id := &mockmodels.InvitationDataManager{}
-		id.On("CreateInvitation", mock.Anything, mock.Anything).Return(expected, nil)
-		s.invitationDatabase = id
-
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(errors.New("blah"))
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.Invitation")).Return(errors.New("blah"))
 		s.encoderDecoder = ed
 
 		res := httptest.NewRecorder()
@@ -309,44 +280,38 @@ func TestInvitationsService_Create(T *testing.T) {
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		exampleInput := &models.InvitationCreationInput{
-			Code:     expected.Code,
-			Consumed: expected.Consumed,
-		}
 		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
 
 		s.CreateHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusCreated)
+		assert.Equal(t, http.StatusCreated, res.Code)
+
+		mock.AssertExpectationsForObjects(t, invitationDataManager, mc, r, ed)
 	})
 }
 
-func TestInvitationsService_Read(T *testing.T) {
+func TestInvitationsService_ExistenceHandler(T *testing.T) {
 	T.Parallel()
+
+	exampleUser := fakemodels.BuildFakeUser()
+	userIDFetcher := func(_ *http.Request) uint64 {
+		return exampleUser.ID
+	}
 
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Invitation{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
-
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
 		s.invitationIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
+			return exampleInvitation.ID
 		}
 
-		id := &mockmodels.InvitationDataManager{}
-		id.On("GetInvitation", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
-		s.invitationDatabase = id
-
-		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
-		s.encoderDecoder = ed
+		invitationDataManager := &mockmodels.InvitationDataManager{}
+		invitationDataManager.On("InvitationExists", mock.Anything, exampleInvitation.ID).Return(true, nil)
+		s.invitationDataManager = invitationDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -357,30 +322,27 @@ func TestInvitationsService_Read(T *testing.T) {
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ReadHandler()(res, req)
+		s.ExistenceHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, invitationDataManager)
 	})
 
 	T.Run("with no such invitation in database", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Invitation{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
-
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
 		s.invitationIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
+			return exampleInvitation.ID
 		}
 
-		id := &mockmodels.InvitationDataManager{}
-		id.On("GetInvitation", mock.Anything, expected.ID, requestingUser.ID).Return((*models.Invitation)(nil), sql.ErrNoRows)
-		s.invitationDatabase = id
+		invitationDataManager := &mockmodels.InvitationDataManager{}
+		invitationDataManager.On("InvitationExists", mock.Anything, exampleInvitation.ID).Return(false, sql.ErrNoRows)
+		s.invitationDataManager = invitationDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -391,30 +353,71 @@ func TestInvitationsService_Read(T *testing.T) {
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ReadHandler()(res, req)
+		s.ExistenceHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusNotFound)
+		assert.Equal(t, http.StatusNotFound, res.Code)
+
+		mock.AssertExpectationsForObjects(t, invitationDataManager)
 	})
 
 	T.Run("with error fetching invitation from database", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Invitation{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
-
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
 		s.invitationIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
+			return exampleInvitation.ID
 		}
 
-		id := &mockmodels.InvitationDataManager{}
-		id.On("GetInvitation", mock.Anything, expected.ID, requestingUser.ID).Return((*models.Invitation)(nil), errors.New("blah"))
-		s.invitationDatabase = id
+		invitationDataManager := &mockmodels.InvitationDataManager{}
+		invitationDataManager.On("InvitationExists", mock.Anything, exampleInvitation.ID).Return(false, errors.New("blah"))
+		s.invitationDataManager = invitationDataManager
+
+		res := httptest.NewRecorder()
+		req, err := http.NewRequest(
+			http.MethodGet,
+			"http://todo.verygoodsoftwarenotvirus.ru",
+			nil,
+		)
+		require.NotNil(t, req)
+		require.NoError(t, err)
+
+		s.ExistenceHandler()(res, req)
+
+		assert.Equal(t, http.StatusNotFound, res.Code)
+
+		mock.AssertExpectationsForObjects(t, invitationDataManager)
+	})
+}
+
+func TestInvitationsService_ReadHandler(T *testing.T) {
+	T.Parallel()
+
+	exampleUser := fakemodels.BuildFakeUser()
+	userIDFetcher := func(_ *http.Request) uint64 {
+		return exampleUser.ID
+	}
+
+	T.Run("happy path", func(t *testing.T) {
+		s := buildTestService()
+
+		s.userIDFetcher = userIDFetcher
+
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+		s.invitationIDFetcher = func(req *http.Request) uint64 {
+			return exampleInvitation.ID
+		}
+
+		invitationDataManager := &mockmodels.InvitationDataManager{}
+		invitationDataManager.On("GetInvitation", mock.Anything, exampleInvitation.ID).Return(exampleInvitation, nil)
+		s.invitationDataManager = invitationDataManager
+
+		ed := &mockencoding.EncoderDecoder{}
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.Invitation")).Return(nil)
+		s.encoderDecoder = ed
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -427,31 +430,90 @@ func TestInvitationsService_Read(T *testing.T) {
 
 		s.ReadHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusInternalServerError)
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, invitationDataManager, ed)
+	})
+
+	T.Run("with no such invitation in database", func(t *testing.T) {
+		s := buildTestService()
+
+		s.userIDFetcher = userIDFetcher
+
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+		s.invitationIDFetcher = func(req *http.Request) uint64 {
+			return exampleInvitation.ID
+		}
+
+		invitationDataManager := &mockmodels.InvitationDataManager{}
+		invitationDataManager.On("GetInvitation", mock.Anything, exampleInvitation.ID).Return((*models.Invitation)(nil), sql.ErrNoRows)
+		s.invitationDataManager = invitationDataManager
+
+		res := httptest.NewRecorder()
+		req, err := http.NewRequest(
+			http.MethodGet,
+			"http://todo.verygoodsoftwarenotvirus.ru",
+			nil,
+		)
+		require.NotNil(t, req)
+		require.NoError(t, err)
+
+		s.ReadHandler()(res, req)
+
+		assert.Equal(t, http.StatusNotFound, res.Code)
+
+		mock.AssertExpectationsForObjects(t, invitationDataManager)
+	})
+
+	T.Run("with error fetching invitation from database", func(t *testing.T) {
+		s := buildTestService()
+
+		s.userIDFetcher = userIDFetcher
+
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+		s.invitationIDFetcher = func(req *http.Request) uint64 {
+			return exampleInvitation.ID
+		}
+
+		invitationDataManager := &mockmodels.InvitationDataManager{}
+		invitationDataManager.On("GetInvitation", mock.Anything, exampleInvitation.ID).Return((*models.Invitation)(nil), errors.New("blah"))
+		s.invitationDataManager = invitationDataManager
+
+		res := httptest.NewRecorder()
+		req, err := http.NewRequest(
+			http.MethodGet,
+			"http://todo.verygoodsoftwarenotvirus.ru",
+			nil,
+		)
+		require.NotNil(t, req)
+		require.NoError(t, err)
+
+		s.ReadHandler()(res, req)
+
+		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, invitationDataManager)
 	})
 
 	T.Run("with error encoding response", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Invitation{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
-
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
 		s.invitationIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
+			return exampleInvitation.ID
 		}
 
-		id := &mockmodels.InvitationDataManager{}
-		id.On("GetInvitation", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
-		s.invitationDatabase = id
+		invitationDataManager := &mockmodels.InvitationDataManager{}
+		invitationDataManager.On("GetInvitation", mock.Anything, exampleInvitation.ID).Return(exampleInvitation, nil)
+		s.invitationDataManager = invitationDataManager
 
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(errors.New("blah"))
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.Invitation")).Return(errors.New("blah"))
 		s.encoderDecoder = ed
 
 		res := httptest.NewRecorder()
@@ -465,44 +527,44 @@ func TestInvitationsService_Read(T *testing.T) {
 
 		s.ReadHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, invitationDataManager, ed)
 	})
 }
 
-func TestInvitationsService_Update(T *testing.T) {
+func TestInvitationsService_UpdateHandler(T *testing.T) {
 	T.Parallel()
+
+	exampleUser := fakemodels.BuildFakeUser()
+	userIDFetcher := func(_ *http.Request) uint64 {
+		return exampleUser.ID
+	}
 
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Invitation{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		mc := &mockmetrics.UnitCounter{}
-		mc.On("Increment", mock.Anything)
-		s.invitationCounter = mc
-
-		r := &mocknewsman.Reporter{}
-		r.On("Report", mock.Anything).Return()
-		s.reporter = r
-
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeInvitationUpdateInputFromInvitation(exampleInvitation)
 
 		s.invitationIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
+			return exampleInvitation.ID
 		}
 
-		id := &mockmodels.InvitationDataManager{}
-		id.On("GetInvitation", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
-		id.On("UpdateInvitation", mock.Anything, mock.Anything).Return(nil)
-		s.invitationDatabase = id
+		invitationDataManager := &mockmodels.InvitationDataManager{}
+		invitationDataManager.On("GetInvitation", mock.Anything, exampleInvitation.ID).Return(exampleInvitation, nil)
+		invitationDataManager.On("UpdateInvitation", mock.Anything, mock.AnythingOfType("*models.Invitation")).Return(nil)
+		s.invitationDataManager = invitationDataManager
+
+		r := &mocknewsman.Reporter{}
+		r.On("Report", mock.AnythingOfType("newsman.Event")).Return()
+		s.reporter = r
 
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.Invitation")).Return(nil)
 		s.encoderDecoder = ed
 
 		res := httptest.NewRecorder()
@@ -514,20 +576,20 @@ func TestInvitationsService_Update(T *testing.T) {
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		exampleInput := &models.InvitationUpdateInput{
-			Code:     expected.Code,
-			Consumed: expected.Consumed,
-		}
 		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
 
 		s.UpdateHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, r, invitationDataManager, ed)
 	})
 
 	T.Run("without update input", func(t *testing.T) {
 		s := buildTestService()
 
+		s.userIDFetcher = userIDFetcher
+
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
@@ -539,28 +601,25 @@ func TestInvitationsService_Update(T *testing.T) {
 
 		s.UpdateHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusBadRequest)
+		assert.Equal(t, http.StatusBadRequest, res.Code)
 	})
 
 	T.Run("with no rows fetching invitation", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Invitation{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeInvitationUpdateInputFromInvitation(exampleInvitation)
 
 		s.invitationIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
+			return exampleInvitation.ID
 		}
 
-		id := &mockmodels.InvitationDataManager{}
-		id.On("GetInvitation", mock.Anything, expected.ID, requestingUser.ID).Return((*models.Invitation)(nil), sql.ErrNoRows)
-		s.invitationDatabase = id
+		invitationDataManager := &mockmodels.InvitationDataManager{}
+		invitationDataManager.On("GetInvitation", mock.Anything, exampleInvitation.ID).Return((*models.Invitation)(nil), sql.ErrNoRows)
+		s.invitationDataManager = invitationDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -571,36 +630,31 @@ func TestInvitationsService_Update(T *testing.T) {
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		exampleInput := &models.InvitationUpdateInput{
-			Code:     expected.Code,
-			Consumed: expected.Consumed,
-		}
 		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
 
 		s.UpdateHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusNotFound)
+		assert.Equal(t, http.StatusNotFound, res.Code)
+
+		mock.AssertExpectationsForObjects(t, invitationDataManager)
 	})
 
 	T.Run("with error fetching invitation", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Invitation{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeInvitationUpdateInputFromInvitation(exampleInvitation)
 
 		s.invitationIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
+			return exampleInvitation.ID
 		}
 
-		id := &mockmodels.InvitationDataManager{}
-		id.On("GetInvitation", mock.Anything, expected.ID, requestingUser.ID).Return((*models.Invitation)(nil), errors.New("blah"))
-		s.invitationDatabase = id
+		invitationDataManager := &mockmodels.InvitationDataManager{}
+		invitationDataManager.On("GetInvitation", mock.Anything, exampleInvitation.ID).Return((*models.Invitation)(nil), errors.New("blah"))
+		s.invitationDataManager = invitationDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -611,49 +665,32 @@ func TestInvitationsService_Update(T *testing.T) {
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		exampleInput := &models.InvitationUpdateInput{
-			Code:     expected.Code,
-			Consumed: expected.Consumed,
-		}
 		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
 
 		s.UpdateHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusInternalServerError)
+		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, invitationDataManager)
 	})
 
 	T.Run("with error updating invitation", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Invitation{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		mc := &mockmetrics.UnitCounter{}
-		mc.On("Increment", mock.Anything)
-		s.invitationCounter = mc
-
-		r := &mocknewsman.Reporter{}
-		r.On("Report", mock.Anything).Return()
-		s.reporter = r
-
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeInvitationUpdateInputFromInvitation(exampleInvitation)
 
 		s.invitationIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
+			return exampleInvitation.ID
 		}
 
-		id := &mockmodels.InvitationDataManager{}
-		id.On("GetInvitation", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
-		id.On("UpdateInvitation", mock.Anything, mock.Anything).Return(errors.New("blah"))
-		s.invitationDatabase = id
-
-		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
-		s.encoderDecoder = ed
+		invitationDataManager := &mockmodels.InvitationDataManager{}
+		invitationDataManager.On("GetInvitation", mock.Anything, exampleInvitation.ID).Return(exampleInvitation, nil)
+		invitationDataManager.On("UpdateInvitation", mock.Anything, mock.AnythingOfType("*models.Invitation")).Return(errors.New("blah"))
+		s.invitationDataManager = invitationDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -664,48 +701,39 @@ func TestInvitationsService_Update(T *testing.T) {
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		exampleInput := &models.InvitationUpdateInput{
-			Code:     expected.Code,
-			Consumed: expected.Consumed,
-		}
 		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
 
 		s.UpdateHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusInternalServerError)
+		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, invitationDataManager)
 	})
 
 	T.Run("with error encoding response", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Invitation{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		mc := &mockmetrics.UnitCounter{}
-		mc.On("Increment", mock.Anything)
-		s.invitationCounter = mc
-
-		r := &mocknewsman.Reporter{}
-		r.On("Report", mock.Anything).Return()
-		s.reporter = r
-
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeInvitationUpdateInputFromInvitation(exampleInvitation)
 
 		s.invitationIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
+			return exampleInvitation.ID
 		}
 
-		id := &mockmodels.InvitationDataManager{}
-		id.On("GetInvitation", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
-		id.On("UpdateInvitation", mock.Anything, mock.Anything).Return(nil)
-		s.invitationDatabase = id
+		invitationDataManager := &mockmodels.InvitationDataManager{}
+		invitationDataManager.On("GetInvitation", mock.Anything, exampleInvitation.ID).Return(exampleInvitation, nil)
+		invitationDataManager.On("UpdateInvitation", mock.Anything, mock.AnythingOfType("*models.Invitation")).Return(nil)
+		s.invitationDataManager = invitationDataManager
+
+		r := &mocknewsman.Reporter{}
+		r.On("Report", mock.AnythingOfType("newsman.Event")).Return()
+		s.reporter = r
 
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(errors.New("blah"))
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.Invitation")).Return(errors.New("blah"))
 		s.encoderDecoder = ed
 
 		res := httptest.NewRecorder()
@@ -717,52 +745,46 @@ func TestInvitationsService_Update(T *testing.T) {
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		exampleInput := &models.InvitationUpdateInput{
-			Code:     expected.Code,
-			Consumed: expected.Consumed,
-		}
 		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
 
 		s.UpdateHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, r, invitationDataManager, ed)
 	})
 }
 
-func TestInvitationsService_Archive(T *testing.T) {
+func TestInvitationsService_ArchiveHandler(T *testing.T) {
 	T.Parallel()
+
+	exampleUser := fakemodels.BuildFakeUser()
+	userIDFetcher := func(_ *http.Request) uint64 {
+		return exampleUser.ID
+	}
 
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Invitation{
-			ID: 123,
+		s.userIDFetcher = userIDFetcher
+
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
+		s.invitationIDFetcher = func(req *http.Request) uint64 {
+			return exampleInvitation.ID
 		}
 
+		invitationDataManager := &mockmodels.InvitationDataManager{}
+		invitationDataManager.On("ArchiveInvitation", mock.Anything, exampleInvitation.ID, exampleUser.ID).Return(nil)
+		s.invitationDataManager = invitationDataManager
+
 		r := &mocknewsman.Reporter{}
-		r.On("Report", mock.Anything).Return()
+		r.On("Report", mock.AnythingOfType("newsman.Event")).Return()
 		s.reporter = r
 
 		mc := &mockmetrics.UnitCounter{}
-		mc.On("Decrement").Return()
+		mc.On("Decrement", mock.Anything).Return()
 		s.invitationCounter = mc
-
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
-
-		s.invitationIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
-		}
-
-		id := &mockmodels.InvitationDataManager{}
-		id.On("ArchiveInvitation", mock.Anything, expected.ID, requestingUser.ID).Return(nil)
-		s.invitationDatabase = id
-
-		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
-		s.encoderDecoder = ed
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -775,28 +797,25 @@ func TestInvitationsService_Archive(T *testing.T) {
 
 		s.ArchiveHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusNoContent)
+		assert.Equal(t, http.StatusNoContent, res.Code)
+
+		mock.AssertExpectationsForObjects(t, invitationDataManager, mc, r)
 	})
 
 	T.Run("with no invitation in database", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Invitation{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
-
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
 		s.invitationIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
+			return exampleInvitation.ID
 		}
 
-		id := &mockmodels.InvitationDataManager{}
-		id.On("ArchiveInvitation", mock.Anything, expected.ID, requestingUser.ID).Return(sql.ErrNoRows)
-		s.invitationDatabase = id
+		invitationDataManager := &mockmodels.InvitationDataManager{}
+		invitationDataManager.On("ArchiveInvitation", mock.Anything, exampleInvitation.ID, exampleUser.ID).Return(sql.ErrNoRows)
+		s.invitationDataManager = invitationDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -809,28 +828,25 @@ func TestInvitationsService_Archive(T *testing.T) {
 
 		s.ArchiveHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusNotFound)
+		assert.Equal(t, http.StatusNotFound, res.Code)
+
+		mock.AssertExpectationsForObjects(t, invitationDataManager)
 	})
 
-	T.Run("with error reading from database", func(t *testing.T) {
+	T.Run("with error writing to database", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Invitation{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
-
+		exampleInvitation := fakemodels.BuildFakeInvitation()
+		exampleInvitation.BelongsToUser = exampleUser.ID
 		s.invitationIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
+			return exampleInvitation.ID
 		}
 
-		id := &mockmodels.InvitationDataManager{}
-		id.On("ArchiveInvitation", mock.Anything, expected.ID, requestingUser.ID).Return(errors.New("blah"))
-		s.invitationDatabase = id
+		invitationDataManager := &mockmodels.InvitationDataManager{}
+		invitationDataManager.On("ArchiveInvitation", mock.Anything, exampleInvitation.ID, exampleUser.ID).Return(errors.New("blah"))
+		s.invitationDataManager = invitationDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -843,6 +859,8 @@ func TestInvitationsService_Archive(T *testing.T) {
 
 		s.ArchiveHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusInternalServerError)
+		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, invitationDataManager)
 	})
 }

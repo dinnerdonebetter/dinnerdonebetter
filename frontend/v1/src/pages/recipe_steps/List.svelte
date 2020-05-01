@@ -13,12 +13,12 @@
       key: "index"
     },
     {
-      title: "PreparationID",
-      key: "preparation_id"
+      title: "ValidPreparationID",
+      key: "valid_preparation_id"
     },
     {
-      title: "PrerequisiteStep",
-      key: "prerequisite_step"
+      title: "PrerequisiteStepID",
+      key: "prerequisite_step_id"
     },
     {
       title: "MinEstimatedTimeInSeconds",
@@ -29,16 +29,16 @@
       key: "max_estimated_time_in_seconds"
     },
     {
-      title: "TemperatureInCelsius",
-      key: "temperature_in_celsius"
+      title: "YieldsProductName",
+      key: "yields_product_name"
+    },
+    {
+      title: "YieldsQuantity",
+      key: "yields_quantity"
     },
     {
       title: "Notes",
       key: "notes"
-    },
-    {
-      title: "RecipeID",
-      key: "recipe_id"
     },
     {
       title: "Created On",

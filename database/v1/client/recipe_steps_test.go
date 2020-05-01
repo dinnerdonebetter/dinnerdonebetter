@@ -5,59 +5,55 @@ import (
 	"testing"
 
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
+func TestClient_RecipeStepExists(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		exampleRecipeStep.BelongsToRecipe = exampleRecipe.ID
+
+		c, mockDB := buildTestClient()
+		mockDB.RecipeStepDataManager.On("RecipeStepExists", mock.Anything, exampleRecipe.ID, exampleRecipeStep.ID).Return(true, nil)
+
+		actual, err := c.RecipeStepExists(ctx, exampleRecipe.ID, exampleRecipeStep.ID)
+		assert.NoError(t, err)
+		assert.True(t, actual)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
 func TestClient_GetRecipeStep(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		exampleRecipeStepID := uint64(123)
-		exampleUserID := uint64(123)
-		expected := &models.RecipeStep{}
+		ctx := context.Background()
+
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		exampleRecipeStep.BelongsToRecipe = exampleRecipe.ID
 
 		c, mockDB := buildTestClient()
-		mockDB.RecipeStepDataManager.On("GetRecipeStep", mock.Anything, exampleRecipeStepID, exampleUserID).Return(expected, nil)
+		mockDB.RecipeStepDataManager.On("GetRecipeStep", mock.Anything, exampleRecipe.ID, exampleRecipeStep.ID).Return(exampleRecipeStep, nil)
 
-		actual, err := c.GetRecipeStep(context.Background(), exampleRecipeStepID, exampleUserID)
+		actual, err := c.GetRecipeStep(ctx, exampleRecipe.ID, exampleRecipeStep.ID)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleRecipeStep, actual)
 
-		mockDB.AssertExpectations(t)
-	})
-}
-
-func TestClient_GetRecipeStepCount(T *testing.T) {
-	T.Parallel()
-
-	T.Run("obligatory", func(t *testing.T) {
-		expected := uint64(321)
-		exampleUserID := uint64(123)
-
-		c, mockDB := buildTestClient()
-		mockDB.RecipeStepDataManager.On("GetRecipeStepCount", mock.Anything, models.DefaultQueryFilter(), exampleUserID).Return(expected, nil)
-
-		actual, err := c.GetRecipeStepCount(context.Background(), models.DefaultQueryFilter(), exampleUserID)
-		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
-
-		mockDB.AssertExpectations(t)
-	})
-
-	T.Run("with nil filter", func(t *testing.T) {
-		expected := uint64(321)
-		exampleUserID := uint64(123)
-
-		c, mockDB := buildTestClient()
-		mockDB.RecipeStepDataManager.On("GetRecipeStepCount", mock.Anything, (*models.QueryFilter)(nil), exampleUserID).Return(expected, nil)
-
-		actual, err := c.GetRecipeStepCount(context.Background(), nil, exampleUserID)
-		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
-
-		mockDB.AssertExpectations(t)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }
 
@@ -65,15 +61,18 @@ func TestClient_GetAllRecipeStepsCount(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		expected := uint64(321)
+		ctx := context.Background()
+
+		exampleCount := uint64(123)
+
 		c, mockDB := buildTestClient()
-		mockDB.RecipeStepDataManager.On("GetAllRecipeStepsCount", mock.Anything).Return(expected, nil)
+		mockDB.RecipeStepDataManager.On("GetAllRecipeStepsCount", mock.Anything).Return(exampleCount, nil)
 
-		actual, err := c.GetAllRecipeStepsCount(context.Background())
+		actual, err := c.GetAllRecipeStepsCount(ctx)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleCount, actual)
 
-		mockDB.AssertExpectations(t)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }
 
@@ -81,31 +80,37 @@ func TestClient_GetRecipeSteps(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		exampleUserID := uint64(123)
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		filter := models.DefaultQueryFilter()
+		exampleRecipeStepList := fakemodels.BuildFakeRecipeStepList()
+
 		c, mockDB := buildTestClient()
-		expected := &models.RecipeStepList{}
+		mockDB.RecipeStepDataManager.On("GetRecipeSteps", mock.Anything, exampleRecipe.ID, filter).Return(exampleRecipeStepList, nil)
 
-		mockDB.RecipeStepDataManager.On("GetRecipeSteps", mock.Anything, models.DefaultQueryFilter(), exampleUserID).Return(expected, nil)
-
-		actual, err := c.GetRecipeSteps(context.Background(), models.DefaultQueryFilter(), exampleUserID)
+		actual, err := c.GetRecipeSteps(ctx, exampleRecipe.ID, filter)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleRecipeStepList, actual)
 
-		mockDB.AssertExpectations(t)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 
 	T.Run("with nil filter", func(t *testing.T) {
-		exampleUserID := uint64(123)
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		filter := (*models.QueryFilter)(nil)
+		exampleRecipeStepList := fakemodels.BuildFakeRecipeStepList()
+
 		c, mockDB := buildTestClient()
-		expected := &models.RecipeStepList{}
+		mockDB.RecipeStepDataManager.On("GetRecipeSteps", mock.Anything, exampleRecipe.ID, filter).Return(exampleRecipeStepList, nil)
 
-		mockDB.RecipeStepDataManager.On("GetRecipeSteps", mock.Anything, (*models.QueryFilter)(nil), exampleUserID).Return(expected, nil)
-
-		actual, err := c.GetRecipeSteps(context.Background(), nil, exampleUserID)
+		actual, err := c.GetRecipeSteps(ctx, exampleRecipe.ID, filter)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleRecipeStepList, actual)
 
-		mockDB.AssertExpectations(t)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }
 
@@ -113,17 +118,19 @@ func TestClient_CreateRecipeStep(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		exampleInput := &models.RecipeStepCreationInput{}
+		ctx := context.Background()
+
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		exampleInput := fakemodels.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
+
 		c, mockDB := buildTestClient()
-		expected := &models.RecipeStep{}
+		mockDB.RecipeStepDataManager.On("CreateRecipeStep", mock.Anything, exampleInput).Return(exampleRecipeStep, nil)
 
-		mockDB.RecipeStepDataManager.On("CreateRecipeStep", mock.Anything, exampleInput).Return(expected, nil)
-
-		actual, err := c.CreateRecipeStep(context.Background(), exampleInput)
+		actual, err := c.CreateRecipeStep(ctx, exampleInput)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleRecipeStep, actual)
 
-		mockDB.AssertExpectations(t)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }
 
@@ -131,14 +138,19 @@ func TestClient_UpdateRecipeStep(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		exampleInput := &models.RecipeStep{}
-		c, mockDB := buildTestClient()
+		ctx := context.Background()
 		var expected error
 
-		mockDB.RecipeStepDataManager.On("UpdateRecipeStep", mock.Anything, exampleInput).Return(expected)
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
 
-		err := c.UpdateRecipeStep(context.Background(), exampleInput)
+		c, mockDB := buildTestClient()
+
+		mockDB.RecipeStepDataManager.On("UpdateRecipeStep", mock.Anything, exampleRecipeStep).Return(expected)
+
+		err := c.UpdateRecipeStep(ctx, exampleRecipeStep)
 		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }
 
@@ -146,14 +158,18 @@ func TestClient_ArchiveRecipeStep(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		exampleUserID := uint64(123)
-		exampleRecipeStepID := uint64(123)
+		ctx := context.Background()
+
 		var expected error
 
-		c, mockDB := buildTestClient()
-		mockDB.RecipeStepDataManager.On("ArchiveRecipeStep", mock.Anything, exampleRecipeStepID, exampleUserID).Return(expected)
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
 
-		err := c.ArchiveRecipeStep(context.Background(), exampleUserID, exampleRecipeStepID)
+		c, mockDB := buildTestClient()
+		mockDB.RecipeStepDataManager.On("ArchiveRecipeStep", mock.Anything, exampleRecipeStep.BelongsToRecipe, exampleRecipeStep.ID).Return(expected)
+
+		err := c.ArchiveRecipeStep(ctx, exampleRecipeStep.BelongsToRecipe, exampleRecipeStep.ID)
 		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }

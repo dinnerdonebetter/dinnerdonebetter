@@ -1,7 +1,6 @@
 package requiredpreparationinstruments
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
@@ -14,13 +13,13 @@ import (
 )
 
 const (
-	// CreateMiddlewareCtxKey is a string alias we can use for referring to required preparation instrument input data in contexts
+	// CreateMiddlewareCtxKey is a string alias we can use for referring to required preparation instrument input data in contexts.
 	CreateMiddlewareCtxKey models.ContextKey = "required_preparation_instrument_create_input"
-	// UpdateMiddlewareCtxKey is a string alias we can use for referring to required preparation instrument update data in contexts
+	// UpdateMiddlewareCtxKey is a string alias we can use for referring to required preparation instrument update data in contexts.
 	UpdateMiddlewareCtxKey models.ContextKey = "required_preparation_instrument_update_input"
 
 	counterName        metrics.CounterName = "requiredPreparationInstruments"
-	counterDescription                     = "the number of requiredPreparationInstruments managed by the requiredPreparationInstruments service"
+	counterDescription string              = "the number of requiredPreparationInstruments managed by the requiredPreparationInstruments service"
 	topicName          string              = "required_preparation_instruments"
 	serviceName        string              = "required_preparation_instruments_service"
 )
@@ -32,28 +31,29 @@ var (
 type (
 	// Service handles to-do list required preparation instruments
 	Service struct {
-		logger                                 logging.Logger
-		requiredPreparationInstrumentCounter   metrics.UnitCounter
-		requiredPreparationInstrumentDatabase  models.RequiredPreparationInstrumentDataManager
-		userIDFetcher                          UserIDFetcher
-		requiredPreparationInstrumentIDFetcher RequiredPreparationInstrumentIDFetcher
-		encoderDecoder                         encoding.EncoderDecoder
-		reporter                               newsman.Reporter
+		logger                                   logging.Logger
+		validPreparationDataManager              models.ValidPreparationDataManager
+		requiredPreparationInstrumentDataManager models.RequiredPreparationInstrumentDataManager
+		validPreparationIDFetcher                ValidPreparationIDFetcher
+		requiredPreparationInstrumentIDFetcher   RequiredPreparationInstrumentIDFetcher
+		requiredPreparationInstrumentCounter     metrics.UnitCounter
+		encoderDecoder                           encoding.EncoderDecoder
+		reporter                                 newsman.Reporter
 	}
 
-	// UserIDFetcher is a function that fetches user IDs
-	UserIDFetcher func(*http.Request) uint64
+	// ValidPreparationIDFetcher is a function that fetches valid preparation IDs.
+	ValidPreparationIDFetcher func(*http.Request) uint64
 
-	// RequiredPreparationInstrumentIDFetcher is a function that fetches required preparation instrument IDs
+	// RequiredPreparationInstrumentIDFetcher is a function that fetches required preparation instrument IDs.
 	RequiredPreparationInstrumentIDFetcher func(*http.Request) uint64
 )
 
-// ProvideRequiredPreparationInstrumentsService builds a new RequiredPreparationInstrumentsService
+// ProvideRequiredPreparationInstrumentsService builds a new RequiredPreparationInstrumentsService.
 func ProvideRequiredPreparationInstrumentsService(
-	ctx context.Context,
 	logger logging.Logger,
-	db models.RequiredPreparationInstrumentDataManager,
-	userIDFetcher UserIDFetcher,
+	validPreparationDataManager models.ValidPreparationDataManager,
+	requiredPreparationInstrumentDataManager models.RequiredPreparationInstrumentDataManager,
+	validPreparationIDFetcher ValidPreparationIDFetcher,
 	requiredPreparationInstrumentIDFetcher RequiredPreparationInstrumentIDFetcher,
 	encoder encoding.EncoderDecoder,
 	requiredPreparationInstrumentCounterProvider metrics.UnitCounterProvider,
@@ -65,20 +65,15 @@ func ProvideRequiredPreparationInstrumentsService(
 	}
 
 	svc := &Service{
-		logger:                                 logger.WithName(serviceName),
-		requiredPreparationInstrumentDatabase:  db,
-		encoderDecoder:                         encoder,
-		requiredPreparationInstrumentCounter:   requiredPreparationInstrumentCounter,
-		userIDFetcher:                          userIDFetcher,
-		requiredPreparationInstrumentIDFetcher: requiredPreparationInstrumentIDFetcher,
-		reporter:                               reporter,
+		logger:                                   logger.WithName(serviceName),
+		validPreparationIDFetcher:                validPreparationIDFetcher,
+		requiredPreparationInstrumentIDFetcher:   requiredPreparationInstrumentIDFetcher,
+		validPreparationDataManager:              validPreparationDataManager,
+		requiredPreparationInstrumentDataManager: requiredPreparationInstrumentDataManager,
+		encoderDecoder:                           encoder,
+		requiredPreparationInstrumentCounter:     requiredPreparationInstrumentCounter,
+		reporter:                                 reporter,
 	}
-
-	requiredPreparationInstrumentCount, err := svc.requiredPreparationInstrumentDatabase.GetAllRequiredPreparationInstrumentsCount(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("setting current required preparation instrument count: %w", err)
-	}
-	svc.requiredPreparationInstrumentCounter.IncrementBy(ctx, requiredPreparationInstrumentCount)
 
 	return svc, nil
 }

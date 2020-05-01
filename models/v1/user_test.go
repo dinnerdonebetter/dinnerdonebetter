@@ -11,12 +11,12 @@ func TestUser_Update(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		actual := User{
-			Username:        "username",
+			Username:        "old_username",
 			HashedPassword:  "hashed_pass",
 			TwoFactorSecret: "two factor secret",
 		}
 		exampleInput := User{
-			Username:        "newUsername",
+			Username:        "new_username",
 			HashedPassword:  "updated_hashed_pass",
 			TwoFactorSecret: "new fancy secret",
 		}

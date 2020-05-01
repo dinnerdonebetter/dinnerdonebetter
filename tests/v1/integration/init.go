@@ -12,7 +12,6 @@ import (
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
 	"gitlab.com/prixfixe/prixfixe/tests/v1/testutil"
 
-	fake "github.com/brianvoe/gofakeit"
 	"gitlab.com/verygoodsoftwarenotvirus/logging/v1/zerolog"
 )
 
@@ -22,8 +21,8 @@ const (
 )
 
 var (
-	urlToUse   string
-	todoClient *client.V1Client
+	urlToUse       string
+	prixfixeClient *client.V1Client
 )
 
 func init() {
@@ -32,8 +31,6 @@ func init() {
 
 	logger.WithValue("url", urlToUse).Info("checking server")
 	testutil.EnsureServerIsUp(urlToUse)
-
-	fake.Seed(time.Now().UnixNano())
 
 	ogUser, err := testutil.CreateObligatoryUser(urlToUse, debug)
 	if err != nil {
@@ -45,7 +42,7 @@ func init() {
 		logger.Fatal(err)
 	}
 
-	todoClient = initializeClient(oa2Client)
+	prixfixeClient = initializeClient(oa2Client)
 
 	fiftySpaces := strings.Repeat("\n", 50)
 	fmt.Printf("%s\tRunning tests%s", fiftySpaces, fiftySpaces)

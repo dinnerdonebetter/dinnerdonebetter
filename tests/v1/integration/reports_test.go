@@ -4,12 +4,11 @@ import (
 	"context"
 	"testing"
 
+	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 
-	fake "github.com/brianvoe/gofakeit"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"go.opencensus.io/trace"
 )
 
 func checkReportEquality(t *testing.T, expected, actual *models.Report) {
@@ -21,66 +20,52 @@ func checkReportEquality(t *testing.T, expected, actual *models.Report) {
 	assert.NotZero(t, actual.CreatedOn)
 }
 
-func buildDummyReport(t *testing.T) *models.Report {
-	t.Helper()
-
-	x := &models.ReportCreationInput{
-		ReportType: fake.Word(),
-		Concern:    fake.Word(),
-	}
-	y, err := todoClient.CreateReport(context.Background(), x)
-	require.NoError(t, err)
-	return y
-}
-
 func TestReports(test *testing.T) {
-	test.Parallel()
-
 	test.Run("Creating", func(T *testing.T) {
 		T.Run("should be createable", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create report
-			expected := &models.Report{
-				ReportType: fake.Word(),
-				Concern:    fake.Word(),
-			}
-			premade, err := todoClient.CreateReport(ctx, &models.ReportCreationInput{
-				ReportType: expected.ReportType,
-				Concern:    expected.Concern,
-			})
-			checkValueAndError(t, premade, err)
+			// Create report.
+			exampleReport := fakemodels.BuildFakeReport()
+			exampleReportInput := fakemodels.BuildFakeReportCreationInputFromReport(exampleReport)
+			createdReport, err := prixfixeClient.CreateReport(ctx, exampleReportInput)
+			checkValueAndError(t, createdReport, err)
 
-			// Assert report equality
-			checkReportEquality(t, expected, premade)
+			// Assert report equality.
+			checkReportEquality(t, exampleReport, createdReport)
 
-			// Clean up
-			err = todoClient.ArchiveReport(ctx, premade.ID)
+			// Clean up.
+			err = prixfixeClient.ArchiveReport(ctx, createdReport.ID)
 			assert.NoError(t, err)
 
-			actual, err := todoClient.GetReport(ctx, premade.ID)
+			actual, err := prixfixeClient.GetReport(ctx, createdReport.ID)
 			checkValueAndError(t, actual, err)
-			checkReportEquality(t, expected, actual)
+			checkReportEquality(t, exampleReport, actual)
+			assert.NotNil(t, actual.ArchivedOn)
 			assert.NotZero(t, actual.ArchivedOn)
 		})
 	})
 
 	test.Run("Listing", func(T *testing.T) {
 		T.Run("should be able to be read in a list", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create reports
+			// Create reports.
 			var expected []*models.Report
 			for i := 0; i < 5; i++ {
-				expected = append(expected, buildDummyReport(t))
+				// Create report.
+				exampleReport := fakemodels.BuildFakeReport()
+				exampleReportInput := fakemodels.BuildFakeReportCreationInputFromReport(exampleReport)
+				createdReport, reportCreationErr := prixfixeClient.CreateReport(ctx, exampleReportInput)
+				checkValueAndError(t, createdReport, reportCreationErr)
+
+				expected = append(expected, createdReport)
 			}
 
-			// Assert report list equality
-			actual, err := todoClient.GetReports(ctx, nil)
+			// Assert report list equality.
+			actual, err := prixfixeClient.GetReports(ctx, nil)
 			checkValueAndError(t, actual, err)
 			assert.True(
 				t,
@@ -90,119 +75,136 @@ func TestReports(test *testing.T) {
 				len(actual.Reports),
 			)
 
-			// Clean up
-			for _, x := range actual.Reports {
-				err = todoClient.ArchiveReport(ctx, x.ID)
+			// Clean up.
+			for _, createdReport := range actual.Reports {
+				err = prixfixeClient.ArchiveReport(ctx, createdReport.ID)
 				assert.NoError(t, err)
 			}
 		})
 	})
 
-	test.Run("Reading", func(T *testing.T) {
-		T.Run("it should return an error when trying to read something that doesn't exist", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+	test.Run("ExistenceChecking", func(T *testing.T) {
+		T.Run("it should return false with no error when checking something that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Fetch report
-			_, err := todoClient.GetReport(ctx, nonexistentID)
+			// Attempt to fetch nonexistent report.
+			actual, err := prixfixeClient.ReportExists(ctx, nonexistentID)
+			assert.NoError(t, err)
+			assert.False(t, actual)
+		})
+
+		T.Run("it should return true with no error when the relevant report exists", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create report.
+			exampleReport := fakemodels.BuildFakeReport()
+			exampleReportInput := fakemodels.BuildFakeReportCreationInputFromReport(exampleReport)
+			createdReport, err := prixfixeClient.CreateReport(ctx, exampleReportInput)
+			checkValueAndError(t, createdReport, err)
+
+			// Fetch report.
+			actual, err := prixfixeClient.ReportExists(ctx, createdReport.ID)
+			assert.NoError(t, err)
+			assert.True(t, actual)
+
+			// Clean up report.
+			assert.NoError(t, prixfixeClient.ArchiveReport(ctx, createdReport.ID))
+		})
+	})
+
+	test.Run("Reading", func(T *testing.T) {
+		T.Run("it should return an error when trying to read something that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Attempt to fetch nonexistent report.
+			_, err := prixfixeClient.GetReport(ctx, nonexistentID)
 			assert.Error(t, err)
 		})
 
 		T.Run("it should be readable", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create report
-			expected := &models.Report{
-				ReportType: fake.Word(),
-				Concern:    fake.Word(),
-			}
-			premade, err := todoClient.CreateReport(ctx, &models.ReportCreationInput{
-				ReportType: expected.ReportType,
-				Concern:    expected.Concern,
-			})
-			checkValueAndError(t, premade, err)
+			// Create report.
+			exampleReport := fakemodels.BuildFakeReport()
+			exampleReportInput := fakemodels.BuildFakeReportCreationInputFromReport(exampleReport)
+			createdReport, err := prixfixeClient.CreateReport(ctx, exampleReportInput)
+			checkValueAndError(t, createdReport, err)
 
-			// Fetch report
-			actual, err := todoClient.GetReport(ctx, premade.ID)
+			// Fetch report.
+			actual, err := prixfixeClient.GetReport(ctx, createdReport.ID)
 			checkValueAndError(t, actual, err)
 
-			// Assert report equality
-			checkReportEquality(t, expected, actual)
+			// Assert report equality.
+			checkReportEquality(t, exampleReport, actual)
 
-			// Clean up
-			err = todoClient.ArchiveReport(ctx, actual.ID)
-			assert.NoError(t, err)
+			// Clean up report.
+			assert.NoError(t, prixfixeClient.ArchiveReport(ctx, createdReport.ID))
 		})
 	})
 
 	test.Run("Updating", func(T *testing.T) {
-		T.Run("it should return an error when trying to update something that doesn't exist", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+		T.Run("it should return an error when trying to update something that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			err := todoClient.UpdateReport(ctx, &models.Report{ID: nonexistentID})
-			assert.Error(t, err)
+			exampleReport := fakemodels.BuildFakeReport()
+			exampleReport.ID = nonexistentID
+
+			assert.Error(t, prixfixeClient.UpdateReport(ctx, exampleReport))
 		})
 
 		T.Run("it should be updatable", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create report
-			expected := &models.Report{
-				ReportType: fake.Word(),
-				Concern:    fake.Word(),
-			}
-			premade, err := todoClient.CreateReport(tctx, &models.ReportCreationInput{
-				ReportType: fake.Word(),
-				Concern:    fake.Word(),
-			})
-			checkValueAndError(t, premade, err)
+			// Create report.
+			exampleReport := fakemodels.BuildFakeReport()
+			exampleReportInput := fakemodels.BuildFakeReportCreationInputFromReport(exampleReport)
+			createdReport, err := prixfixeClient.CreateReport(ctx, exampleReportInput)
+			checkValueAndError(t, createdReport, err)
 
-			// Change report
-			premade.Update(expected.ToInput())
-			err = todoClient.UpdateReport(ctx, premade)
+			// Change report.
+			createdReport.Update(exampleReport.ToUpdateInput())
+			err = prixfixeClient.UpdateReport(ctx, createdReport)
 			assert.NoError(t, err)
 
-			// Fetch report
-			actual, err := todoClient.GetReport(ctx, premade.ID)
+			// Fetch report.
+			actual, err := prixfixeClient.GetReport(ctx, createdReport.ID)
 			checkValueAndError(t, actual, err)
 
-			// Assert report equality
-			checkReportEquality(t, expected, actual)
+			// Assert report equality.
+			checkReportEquality(t, exampleReport, actual)
 			assert.NotNil(t, actual.UpdatedOn)
 
-			// Clean up
-			err = todoClient.ArchiveReport(ctx, actual.ID)
-			assert.NoError(t, err)
+			// Clean up report.
+			assert.NoError(t, prixfixeClient.ArchiveReport(ctx, createdReport.ID))
 		})
 	})
 
 	test.Run("Deleting", func(T *testing.T) {
-		T.Run("should be able to be deleted", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+		T.Run("it should return an error when trying to delete something that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create report
-			expected := &models.Report{
-				ReportType: fake.Word(),
-				Concern:    fake.Word(),
-			}
-			premade, err := todoClient.CreateReport(ctx, &models.ReportCreationInput{
-				ReportType: expected.ReportType,
-				Concern:    expected.Concern,
-			})
-			checkValueAndError(t, premade, err)
+			assert.Error(t, prixfixeClient.ArchiveReport(ctx, nonexistentID))
+		})
 
-			// Clean up
-			err = todoClient.ArchiveReport(ctx, premade.ID)
-			assert.NoError(t, err)
+		T.Run("should be able to be deleted", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create report.
+			exampleReport := fakemodels.BuildFakeReport()
+			exampleReportInput := fakemodels.BuildFakeReportCreationInputFromReport(exampleReport)
+			createdReport, err := prixfixeClient.CreateReport(ctx, exampleReportInput)
+			checkValueAndError(t, createdReport, err)
+
+			// Clean up report.
+			assert.NoError(t, prixfixeClient.ArchiveReport(ctx, createdReport.ID))
 		})
 	})
 }

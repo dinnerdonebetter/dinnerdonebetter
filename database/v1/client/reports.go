@@ -2,54 +2,44 @@ package dbclient
 
 import (
 	"context"
-	"strconv"
 
+	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
-
-	"go.opencensus.io/trace"
 )
 
 var _ models.ReportDataManager = (*Client)(nil)
 
-// attachReportIDToSpan provides a consistent way to attach a report's ID to a span
-func attachReportIDToSpan(span *trace.Span, reportID uint64) {
-	if span != nil {
-		span.AddAttributes(trace.StringAttribute("report_id", strconv.FormatUint(reportID, 10)))
-	}
-}
-
-// GetReport fetches a report from the database
-func (c *Client) GetReport(ctx context.Context, reportID, userID uint64) (*models.Report, error) {
-	ctx, span := trace.StartSpan(ctx, "GetReport")
+// ReportExists fetches whether or not a report exists from the database.
+func (c *Client) ReportExists(ctx context.Context, reportID uint64) (bool, error) {
+	ctx, span := tracing.StartSpan(ctx, "ReportExists")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
-	attachReportIDToSpan(span, reportID)
+	tracing.AttachReportIDToSpan(span, reportID)
 
 	c.logger.WithValues(map[string]interface{}{
 		"report_id": reportID,
-		"user_id":   userID,
-	}).Debug("GetReport called")
+	}).Debug("ReportExists called")
 
-	return c.querier.GetReport(ctx, reportID, userID)
+	return c.querier.ReportExists(ctx, reportID)
 }
 
-// GetReportCount fetches the count of reports from the database that meet a particular filter
-func (c *Client) GetReportCount(ctx context.Context, filter *models.QueryFilter, userID uint64) (count uint64, err error) {
-	ctx, span := trace.StartSpan(ctx, "GetReportCount")
+// GetReport fetches a report from the database.
+func (c *Client) GetReport(ctx context.Context, reportID uint64) (*models.Report, error) {
+	ctx, span := tracing.StartSpan(ctx, "GetReport")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
-	attachFilterToSpan(span, filter)
+	tracing.AttachReportIDToSpan(span, reportID)
 
-	c.logger.WithValue("user_id", userID).Debug("GetReportCount called")
+	c.logger.WithValues(map[string]interface{}{
+		"report_id": reportID,
+	}).Debug("GetReport called")
 
-	return c.querier.GetReportCount(ctx, filter, userID)
+	return c.querier.GetReport(ctx, reportID)
 }
 
-// GetAllReportsCount fetches the count of reports from the database that meet a particular filter
+// GetAllReportsCount fetches the count of reports from the database that meet a particular filter.
 func (c *Client) GetAllReportsCount(ctx context.Context) (count uint64, err error) {
-	ctx, span := trace.StartSpan(ctx, "GetAllReportsCount")
+	ctx, span := tracing.StartSpan(ctx, "GetAllReportsCount")
 	defer span.End()
 
 	c.logger.Debug("GetAllReportsCount called")
@@ -57,37 +47,23 @@ func (c *Client) GetAllReportsCount(ctx context.Context) (count uint64, err erro
 	return c.querier.GetAllReportsCount(ctx)
 }
 
-// GetReports fetches a list of reports from the database that meet a particular filter
-func (c *Client) GetReports(ctx context.Context, filter *models.QueryFilter, userID uint64) (*models.ReportList, error) {
-	ctx, span := trace.StartSpan(ctx, "GetReports")
+// GetReports fetches a list of reports from the database that meet a particular filter.
+func (c *Client) GetReports(ctx context.Context, filter *models.QueryFilter) (*models.ReportList, error) {
+	ctx, span := tracing.StartSpan(ctx, "GetReports")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
-	attachFilterToSpan(span, filter)
+	tracing.AttachFilterToSpan(span, filter)
 
-	c.logger.WithValue("user_id", userID).Debug("GetReports called")
+	c.logger.Debug("GetReports called")
 
-	reportList, err := c.querier.GetReports(ctx, filter, userID)
+	reportList, err := c.querier.GetReports(ctx, filter)
 
 	return reportList, err
 }
 
-// GetAllReportsForUser fetches a list of reports from the database that meet a particular filter
-func (c *Client) GetAllReportsForUser(ctx context.Context, userID uint64) ([]models.Report, error) {
-	ctx, span := trace.StartSpan(ctx, "GetAllReportsForUser")
-	defer span.End()
-
-	attachUserIDToSpan(span, userID)
-	c.logger.WithValue("user_id", userID).Debug("GetAllReportsForUser called")
-
-	reportList, err := c.querier.GetAllReportsForUser(ctx, userID)
-
-	return reportList, err
-}
-
-// CreateReport creates a report in the database
+// CreateReport creates a report in the database.
 func (c *Client) CreateReport(ctx context.Context, input *models.ReportCreationInput) (*models.Report, error) {
-	ctx, span := trace.StartSpan(ctx, "CreateReport")
+	ctx, span := tracing.StartSpan(ctx, "CreateReport")
 	defer span.End()
 
 	c.logger.WithValue("input", input).Debug("CreateReport called")
@@ -97,23 +73,23 @@ func (c *Client) CreateReport(ctx context.Context, input *models.ReportCreationI
 
 // UpdateReport updates a particular report. Note that UpdateReport expects the
 // provided input to have a valid ID.
-func (c *Client) UpdateReport(ctx context.Context, input *models.Report) error {
-	ctx, span := trace.StartSpan(ctx, "UpdateReport")
+func (c *Client) UpdateReport(ctx context.Context, updated *models.Report) error {
+	ctx, span := tracing.StartSpan(ctx, "UpdateReport")
 	defer span.End()
 
-	attachReportIDToSpan(span, input.ID)
-	c.logger.WithValue("report_id", input.ID).Debug("UpdateReport called")
+	tracing.AttachReportIDToSpan(span, updated.ID)
+	c.logger.WithValue("report_id", updated.ID).Debug("UpdateReport called")
 
-	return c.querier.UpdateReport(ctx, input)
+	return c.querier.UpdateReport(ctx, updated)
 }
 
-// ArchiveReport archives a report from the database by its ID
+// ArchiveReport archives a report from the database by its ID.
 func (c *Client) ArchiveReport(ctx context.Context, reportID, userID uint64) error {
-	ctx, span := trace.StartSpan(ctx, "ArchiveReport")
+	ctx, span := tracing.StartSpan(ctx, "ArchiveReport")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
-	attachReportIDToSpan(span, reportID)
+	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachReportIDToSpan(span, reportID)
 
 	c.logger.WithValues(map[string]interface{}{
 		"report_id": reportID,

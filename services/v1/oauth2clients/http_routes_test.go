@@ -13,6 +13,7 @@ import (
 	mockencoding "gitlab.com/prixfixe/prixfixe/internal/v1/encoding/mock"
 	mockmetrics "gitlab.com/prixfixe/prixfixe/internal/v1/metrics/mock"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -47,16 +48,16 @@ func Test_fetchUserID(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		req := buildRequest(t)
-		expected := uint64(123)
+		exampleUser := fakemodels.BuildFakeUser()
 
 		// for the service.fetchUserID() call
 		req = req.WithContext(
-			context.WithValue(req.Context(), models.UserIDKey, expected),
+			context.WithValue(req.Context(), models.UserIDKey, exampleUser.ID),
 		)
 		s := buildTestService(t)
 
 		actual := s.fetchUserID(req)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, exampleUser.ID, actual)
 	})
 
 	T.Run("without context value present", func(t *testing.T) {
@@ -73,134 +74,132 @@ func Test_fetchUserID(T *testing.T) {
 func TestService_ListHandler(T *testing.T) {
 	T.Parallel()
 
+	requestingUser := fakemodels.BuildFakeUser()
+
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService(t)
-		userID := uint64(1)
+
+		exampleOAuth2ClientList := fakemodels.BuildFakeOAuth2ClientList()
 
 		mockDB := database.BuildMockDatabase()
 		mockDB.OAuth2ClientDataManager.On(
 			"GetOAuth2Clients",
 			mock.Anything,
-			mock.Anything,
-			userID,
-		).Return(&models.OAuth2ClientList{}, nil)
+			requestingUser.ID,
+			mock.AnythingOfType("*models.QueryFilter"),
+		).Return(exampleOAuth2ClientList, nil)
 		s.database = mockDB
 
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.OAuth2ClientList")).Return(nil)
 		s.encoderDecoder = ed
 
 		req := buildRequest(t)
 		// for the service.fetchUserID() call
 		req = req.WithContext(
-			context.WithValue(req.Context(), models.UserIDKey, userID),
+			context.WithValue(req.Context(), models.UserIDKey, requestingUser.ID),
 		)
 		res := httptest.NewRecorder()
 
 		s.ListHandler()(res, req)
 		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, ed)
 	})
 
 	T.Run("with no rows returned", func(t *testing.T) {
 		s := buildTestService(t)
-		userID := uint64(1)
 
 		mockDB := database.BuildMockDatabase()
 		mockDB.OAuth2ClientDataManager.On(
 			"GetOAuth2Clients",
 			mock.Anything,
-			mock.Anything,
-			userID,
+			requestingUser.ID,
+			mock.AnythingOfType("*models.QueryFilter"),
 		).Return((*models.OAuth2ClientList)(nil), sql.ErrNoRows)
 		s.database = mockDB
 
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.OAuth2ClientList")).Return(nil)
 		s.encoderDecoder = ed
 
 		req := buildRequest(t)
 		req = req.WithContext(
-			context.WithValue(req.Context(), models.UserIDKey, userID),
+			context.WithValue(req.Context(), models.UserIDKey, requestingUser.ID),
 		)
 		res := httptest.NewRecorder()
 
 		s.ListHandler()(res, req)
 		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, ed)
 	})
 
 	T.Run("with error fetching from database", func(t *testing.T) {
 		s := buildTestService(t)
-		userID := uint64(1)
 
 		mockDB := database.BuildMockDatabase()
 		mockDB.OAuth2ClientDataManager.On(
 			"GetOAuth2Clients",
 			mock.Anything,
-			mock.Anything,
-			userID,
+			requestingUser.ID,
+			mock.AnythingOfType("*models.QueryFilter"),
 		).Return((*models.OAuth2ClientList)(nil), errors.New("blah"))
 		s.database = mockDB
 
-		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
-		s.encoderDecoder = ed
-
 		req := buildRequest(t)
 		req = req.WithContext(
-			context.WithValue(req.Context(), models.UserIDKey, userID),
+			context.WithValue(req.Context(), models.UserIDKey, requestingUser.ID),
 		)
 		res := httptest.NewRecorder()
 
 		s.ListHandler()(res, req)
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 
 	T.Run("with error encoding response", func(t *testing.T) {
 		s := buildTestService(t)
-		userID := uint64(1)
+
+		exampleOAuth2ClientList := fakemodels.BuildFakeOAuth2ClientList()
 
 		mockDB := database.BuildMockDatabase()
 		mockDB.OAuth2ClientDataManager.On(
 			"GetOAuth2Clients",
 			mock.Anything,
-			mock.Anything,
-			userID,
-		).Return(&models.OAuth2ClientList{}, nil)
+			requestingUser.ID,
+			mock.AnythingOfType("*models.QueryFilter"),
+		).Return(exampleOAuth2ClientList, nil)
 		s.database = mockDB
 
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(errors.New("blah"))
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.OAuth2ClientList")).Return(errors.New("blah"))
 		s.encoderDecoder = ed
 
 		req := buildRequest(t)
 		req = req.WithContext(
-			context.WithValue(req.Context(), models.UserIDKey, userID),
+			context.WithValue(req.Context(), models.UserIDKey, requestingUser.ID),
 		)
 		res := httptest.NewRecorder()
 
 		s.ListHandler()(res, req)
 		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, ed)
 	})
 }
 
 func TestService_CreateHandler(T *testing.T) {
 	T.Parallel()
 
-	T.Run("happy path", func(t *testing.T) {
-		exampleUser := &models.User{
-			ID:              123,
-			HashedPassword:  "hashed_pass",
-			Salt:            []byte("blah"),
-			TwoFactorSecret: "SUPER SECRET",
-		}
+	exampleUser := fakemodels.BuildFakeUser()
 
-		exampleInput := &models.OAuth2ClientCreationInput{
-			UserLoginInput: models.UserLoginInput{
-				Username:  "username",
-				Password:  "password",
-				TOTPToken: "123456",
-			},
-		}
+	T.Run("happy path", func(t *testing.T) {
+		exampleOAuth2Client := fakemodels.BuildFakeOAuth2Client()
+		exampleOAuth2Client.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeOAuth2ClientCreationInputFromClient(exampleOAuth2Client)
+
 		s := buildTestService(t)
 
 		mockDB := database.BuildMockDatabase()
@@ -213,7 +212,7 @@ func TestService_CreateHandler(T *testing.T) {
 			"CreateOAuth2Client",
 			mock.Anything,
 			exampleInput,
-		).Return(&models.OAuth2Client{}, nil)
+		).Return(exampleOAuth2Client, nil)
 		s.database = mockDB
 
 		a := &mockauth.Authenticator{}
@@ -233,7 +232,7 @@ func TestService_CreateHandler(T *testing.T) {
 		s.oauth2ClientCounter = uc
 
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.OAuth2Client")).Return(nil)
 		s.encoderDecoder = ed
 
 		req := buildRequest(t)
@@ -247,6 +246,8 @@ func TestService_CreateHandler(T *testing.T) {
 
 		s.CreateHandler()(res, req)
 		assert.Equal(t, http.StatusCreated, res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, a, uc, ed)
 	})
 
 	T.Run("with missing input", func(t *testing.T) {
@@ -260,20 +261,10 @@ func TestService_CreateHandler(T *testing.T) {
 	})
 
 	T.Run("with error getting user", func(t *testing.T) {
-		exampleUser := &models.User{
-			ID:              123,
-			HashedPassword:  "hashed_pass",
-			Salt:            []byte("blah"),
-			TwoFactorSecret: "SUPER SECRET",
-		}
+		exampleOAuth2Client := fakemodels.BuildFakeOAuth2Client()
+		exampleOAuth2Client.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeOAuth2ClientCreationInputFromClient(exampleOAuth2Client)
 
-		exampleInput := &models.OAuth2ClientCreationInput{
-			UserLoginInput: models.UserLoginInput{
-				Username:  "username",
-				Password:  "password",
-				TOTPToken: "123456",
-			},
-		}
 		s := buildTestService(t)
 
 		mockDB := database.BuildMockDatabase()
@@ -289,29 +280,21 @@ func TestService_CreateHandler(T *testing.T) {
 			context.WithValue(req.Context(), CreationMiddlewareCtxKey, exampleInput),
 		)
 		req = req.WithContext(
-			context.WithValue(req.Context(), models.UserIDKey, exampleUser.ID),
+			context.WithValue(req.Context(), models.UserIDKey, exampleOAuth2Client.BelongsToUser),
 		)
 		res := httptest.NewRecorder()
 
 		s.CreateHandler()(res, req)
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 
 	T.Run("with invalid credentials", func(t *testing.T) {
-		exampleUser := &models.User{
-			ID:              123,
-			HashedPassword:  "hashed_pass",
-			Salt:            []byte("blah"),
-			TwoFactorSecret: "SUPER SECRET",
-		}
+		exampleOAuth2Client := fakemodels.BuildFakeOAuth2Client()
+		exampleOAuth2Client.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeOAuth2ClientCreationInputFromClient(exampleOAuth2Client)
 
-		exampleInput := &models.OAuth2ClientCreationInput{
-			UserLoginInput: models.UserLoginInput{
-				Username:  "username",
-				Password:  "password",
-				TOTPToken: "123456",
-			},
-		}
 		s := buildTestService(t)
 
 		mockDB := database.BuildMockDatabase()
@@ -324,7 +307,7 @@ func TestService_CreateHandler(T *testing.T) {
 			"CreateOAuth2Client",
 			mock.Anything,
 			exampleInput,
-		).Return(&models.OAuth2Client{}, nil)
+		).Return(exampleOAuth2Client, nil)
 		s.database = mockDB
 
 		a := &mockauth.Authenticator{}
@@ -350,23 +333,15 @@ func TestService_CreateHandler(T *testing.T) {
 
 		s.CreateHandler()(res, req)
 		assert.Equal(t, http.StatusUnauthorized, res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, a)
 	})
 
 	T.Run("with error validating password", func(t *testing.T) {
-		exampleUser := &models.User{
-			ID:              123,
-			HashedPassword:  "hashed_pass",
-			Salt:            []byte("blah"),
-			TwoFactorSecret: "SUPER SECRET",
-		}
+		exampleOAuth2Client := fakemodels.BuildFakeOAuth2Client()
+		exampleOAuth2Client.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeOAuth2ClientCreationInputFromClient(exampleOAuth2Client)
 
-		exampleInput := &models.OAuth2ClientCreationInput{
-			UserLoginInput: models.UserLoginInput{
-				Username:  "username",
-				Password:  "password",
-				TOTPToken: "123456",
-			},
-		}
 		s := buildTestService(t)
 
 		mockDB := database.BuildMockDatabase()
@@ -379,7 +354,7 @@ func TestService_CreateHandler(T *testing.T) {
 			"CreateOAuth2Client",
 			mock.Anything,
 			exampleInput,
-		).Return(&models.OAuth2Client{}, nil)
+		).Return(exampleOAuth2Client, nil)
 		s.database = mockDB
 
 		a := &mockauth.Authenticator{}
@@ -405,23 +380,15 @@ func TestService_CreateHandler(T *testing.T) {
 
 		s.CreateHandler()(res, req)
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, a)
 	})
 
 	T.Run("with error creating oauth2 client", func(t *testing.T) {
-		exampleUser := &models.User{
-			ID:              123,
-			HashedPassword:  "hashed_pass",
-			Salt:            []byte("blah"),
-			TwoFactorSecret: "SUPER SECRET",
-		}
+		exampleOAuth2Client := fakemodels.BuildFakeOAuth2Client()
+		exampleOAuth2Client.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeOAuth2ClientCreationInputFromClient(exampleOAuth2Client)
 
-		exampleInput := &models.OAuth2ClientCreationInput{
-			UserLoginInput: models.UserLoginInput{
-				Username:  "username",
-				Password:  "password",
-				TOTPToken: "123456",
-			},
-		}
 		s := buildTestService(t)
 
 		mockDB := database.BuildMockDatabase()
@@ -460,23 +427,15 @@ func TestService_CreateHandler(T *testing.T) {
 
 		s.CreateHandler()(res, req)
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, a)
 	})
 
 	T.Run("with error encoding response", func(t *testing.T) {
-		exampleUser := &models.User{
-			ID:              123,
-			HashedPassword:  "hashed_pass",
-			Salt:            []byte("blah"),
-			TwoFactorSecret: "SUPER SECRET",
-		}
+		exampleOAuth2Client := fakemodels.BuildFakeOAuth2Client()
+		exampleOAuth2Client.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeOAuth2ClientCreationInputFromClient(exampleOAuth2Client)
 
-		exampleInput := &models.OAuth2ClientCreationInput{
-			UserLoginInput: models.UserLoginInput{
-				Username:  "username",
-				Password:  "password",
-				TOTPToken: "123456",
-			},
-		}
 		s := buildTestService(t)
 
 		mockDB := database.BuildMockDatabase()
@@ -489,7 +448,7 @@ func TestService_CreateHandler(T *testing.T) {
 			"CreateOAuth2Client",
 			mock.Anything,
 			exampleInput,
-		).Return(&models.OAuth2Client{}, nil)
+		).Return(exampleOAuth2Client, nil)
 		s.database = mockDB
 
 		a := &mockauth.Authenticator{}
@@ -509,7 +468,7 @@ func TestService_CreateHandler(T *testing.T) {
 		s.oauth2ClientCounter = uc
 
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(errors.New("blah"))
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.OAuth2Client")).Return(errors.New("blah"))
 		s.encoderDecoder = ed
 
 		req := buildRequest(t)
@@ -523,165 +482,167 @@ func TestService_CreateHandler(T *testing.T) {
 
 		s.CreateHandler()(res, req)
 		assert.Equal(t, http.StatusCreated, res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, a, uc, ed)
 	})
 }
 
 func TestService_ReadHandler(T *testing.T) {
 	T.Parallel()
 
+	exampleUser := fakemodels.BuildFakeUser()
+
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService(t)
-		userID := uint64(1)
-		exampleOAuth2ClientID := uint64(2)
+		exampleOAuth2Client := fakemodels.BuildFakeOAuth2Client()
+		exampleOAuth2Client.BelongsToUser = exampleUser.ID
 
 		s.urlClientIDExtractor = func(req *http.Request) uint64 {
-			return exampleOAuth2ClientID
+			return exampleOAuth2Client.ID
 		}
 
 		mockDB := database.BuildMockDatabase()
 		mockDB.OAuth2ClientDataManager.On(
 			"GetOAuth2Client",
 			mock.Anything,
-			exampleOAuth2ClientID,
-			userID,
-		).Return(&models.OAuth2Client{}, nil)
+			exampleOAuth2Client.ID,
+			exampleOAuth2Client.BelongsToUser,
+		).Return(exampleOAuth2Client, nil)
 		s.database = mockDB
 
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.OAuth2Client")).Return(nil)
 		s.encoderDecoder = ed
 
 		req := buildRequest(t)
 		req = req.WithContext(
-			context.WithValue(req.Context(), models.UserIDKey, userID),
+			context.WithValue(req.Context(), models.UserIDKey, exampleOAuth2Client.BelongsToUser),
 		)
 		res := httptest.NewRecorder()
 
 		s.ReadHandler()(res, req)
 		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, ed)
 	})
 
 	T.Run("with no rows found", func(t *testing.T) {
 		s := buildTestService(t)
-		userID := uint64(1)
-		exampleOAuth2ClientID := uint64(2)
+		exampleOAuth2Client := fakemodels.BuildFakeOAuth2Client()
+		exampleOAuth2Client.BelongsToUser = exampleUser.ID
 
 		s.urlClientIDExtractor = func(req *http.Request) uint64 {
-			return exampleOAuth2ClientID
+			return exampleOAuth2Client.ID
 		}
 
 		mockDB := database.BuildMockDatabase()
 		mockDB.OAuth2ClientDataManager.On(
 			"GetOAuth2Client",
 			mock.Anything,
-			exampleOAuth2ClientID,
-			userID,
-		).Return(&models.OAuth2Client{}, sql.ErrNoRows)
+			exampleOAuth2Client.ID,
+			exampleOAuth2Client.BelongsToUser,
+		).Return(exampleOAuth2Client, sql.ErrNoRows)
 		s.database = mockDB
-
-		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
-		s.encoderDecoder = ed
 
 		req := buildRequest(t)
 		req = req.WithContext(
-			context.WithValue(req.Context(), models.UserIDKey, userID),
+			context.WithValue(req.Context(), models.UserIDKey, exampleOAuth2Client.BelongsToUser),
 		)
 		res := httptest.NewRecorder()
 
 		s.ReadHandler()(res, req)
 		assert.Equal(t, http.StatusNotFound, res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 
 	T.Run("with error fetching client from database", func(t *testing.T) {
 		s := buildTestService(t)
-		userID := uint64(1)
-		exampleOAuth2ClientID := uint64(2)
+		exampleOAuth2Client := fakemodels.BuildFakeOAuth2Client()
+		exampleOAuth2Client.BelongsToUser = exampleUser.ID
 
 		s.urlClientIDExtractor = func(req *http.Request) uint64 {
-			return exampleOAuth2ClientID
+			return exampleOAuth2Client.ID
 		}
 
 		mockDB := database.BuildMockDatabase()
 		mockDB.OAuth2ClientDataManager.On(
 			"GetOAuth2Client",
 			mock.Anything,
-			exampleOAuth2ClientID,
-			userID,
+			exampleOAuth2Client.ID,
+			exampleOAuth2Client.BelongsToUser,
 		).Return((*models.OAuth2Client)(nil), errors.New("blah"))
 		s.database = mockDB
 
-		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
-		s.encoderDecoder = ed
-
 		req := buildRequest(t)
 		req = req.WithContext(
-			context.WithValue(req.Context(), models.UserIDKey, userID),
+			context.WithValue(req.Context(), models.UserIDKey, exampleOAuth2Client.BelongsToUser),
 		)
 		res := httptest.NewRecorder()
 
 		s.ReadHandler()(res, req)
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 
 	T.Run("with error encoding response", func(t *testing.T) {
 		s := buildTestService(t)
-		userID := uint64(1)
-		exampleOAuth2ClientID := uint64(2)
+		exampleOAuth2Client := fakemodels.BuildFakeOAuth2Client()
+		exampleOAuth2Client.BelongsToUser = exampleUser.ID
 
 		s.urlClientIDExtractor = func(req *http.Request) uint64 {
-			return exampleOAuth2ClientID
+			return exampleOAuth2Client.ID
 		}
 
 		mockDB := database.BuildMockDatabase()
 		mockDB.OAuth2ClientDataManager.On(
 			"GetOAuth2Client",
 			mock.Anything,
-			exampleOAuth2ClientID,
-			userID,
-		).Return(&models.OAuth2Client{}, nil)
+			exampleOAuth2Client.ID,
+			exampleOAuth2Client.BelongsToUser,
+		).Return(exampleOAuth2Client, nil)
 		s.database = mockDB
 
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(errors.New("blah"))
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.OAuth2Client")).Return(errors.New("blah"))
 		s.encoderDecoder = ed
 
 		req := buildRequest(t)
 		req = req.WithContext(
-			context.WithValue(req.Context(), models.UserIDKey, userID),
+			context.WithValue(req.Context(), models.UserIDKey, exampleOAuth2Client.BelongsToUser),
 		)
 		res := httptest.NewRecorder()
 
 		s.ReadHandler()(res, req)
 		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, ed)
 	})
 }
 
 func TestService_ArchiveHandler(T *testing.T) {
 	T.Parallel()
 
+	exampleUser := fakemodels.BuildFakeUser()
+
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService(t)
-		userID := uint64(1)
-		exampleOAuth2ClientID := uint64(2)
+		exampleOAuth2Client := fakemodels.BuildFakeOAuth2Client()
+		exampleOAuth2Client.BelongsToUser = exampleUser.ID
 
 		s.urlClientIDExtractor = func(req *http.Request) uint64 {
-			return exampleOAuth2ClientID
+			return exampleOAuth2Client.ID
 		}
 
 		mockDB := database.BuildMockDatabase()
 		mockDB.OAuth2ClientDataManager.On(
 			"ArchiveOAuth2Client",
 			mock.Anything,
-			exampleOAuth2ClientID,
-			userID,
+			exampleOAuth2Client.ID,
+			exampleOAuth2Client.BelongsToUser,
 		).Return(nil)
 		s.database = mockDB
-
-		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
-		s.encoderDecoder = ed
 
 		uc := &mockmetrics.UnitCounter{}
 		uc.On("Decrement", mock.Anything).Return()
@@ -689,67 +650,73 @@ func TestService_ArchiveHandler(T *testing.T) {
 
 		req := buildRequest(t)
 		req = req.WithContext(
-			context.WithValue(req.Context(), models.UserIDKey, userID),
+			context.WithValue(req.Context(), models.UserIDKey, exampleOAuth2Client.BelongsToUser),
 		)
 		res := httptest.NewRecorder()
 
 		s.ArchiveHandler()(res, req)
 		assert.Equal(t, http.StatusNoContent, res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, uc)
 	})
 
 	T.Run("with no rows found", func(t *testing.T) {
 		s := buildTestService(t)
-		userID := uint64(1)
-		exampleOAuth2ClientID := uint64(2)
+		exampleOAuth2Client := fakemodels.BuildFakeOAuth2Client()
+		exampleOAuth2Client.BelongsToUser = exampleUser.ID
 
 		s.urlClientIDExtractor = func(req *http.Request) uint64 {
-			return exampleOAuth2ClientID
+			return exampleOAuth2Client.ID
 		}
 
 		mockDB := database.BuildMockDatabase()
 		mockDB.OAuth2ClientDataManager.On(
 			"ArchiveOAuth2Client",
 			mock.Anything,
-			exampleOAuth2ClientID,
-			userID,
+			exampleOAuth2Client.ID,
+			exampleOAuth2Client.BelongsToUser,
 		).Return(sql.ErrNoRows)
 		s.database = mockDB
 
 		req := buildRequest(t)
 		req = req.WithContext(
-			context.WithValue(req.Context(), models.UserIDKey, userID),
+			context.WithValue(req.Context(), models.UserIDKey, exampleOAuth2Client.BelongsToUser),
 		)
 		res := httptest.NewRecorder()
 
 		s.ArchiveHandler()(res, req)
 		assert.Equal(t, http.StatusNotFound, res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 
 	T.Run("with error deleting record", func(t *testing.T) {
 		s := buildTestService(t)
-		userID := uint64(1)
-		exampleOAuth2ClientID := uint64(2)
+		exampleOAuth2Client := fakemodels.BuildFakeOAuth2Client()
+		exampleOAuth2Client.BelongsToUser = exampleUser.ID
 
 		s.urlClientIDExtractor = func(req *http.Request) uint64 {
-			return exampleOAuth2ClientID
+			return exampleOAuth2Client.ID
 		}
 
 		mockDB := database.BuildMockDatabase()
 		mockDB.OAuth2ClientDataManager.On(
 			"ArchiveOAuth2Client",
 			mock.Anything,
-			exampleOAuth2ClientID,
-			userID,
+			exampleOAuth2Client.ID,
+			exampleOAuth2Client.BelongsToUser,
 		).Return(errors.New("blah"))
 		s.database = mockDB
 
 		req := buildRequest(t)
 		req = req.WithContext(
-			context.WithValue(req.Context(), models.UserIDKey, userID),
+			context.WithValue(req.Context(), models.UserIDKey, exampleOAuth2Client.BelongsToUser),
 		)
 		res := httptest.NewRecorder()
 
 		s.ArchiveHandler()(res, req)
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }

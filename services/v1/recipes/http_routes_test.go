@@ -11,6 +11,7 @@ import (
 	mockencoding "gitlab.com/prixfixe/prixfixe/internal/v1/encoding/mock"
 	mockmetrics "gitlab.com/prixfixe/prixfixe/internal/v1/metrics/mock"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 	mockmodels "gitlab.com/prixfixe/prixfixe/models/v1/mock"
 
 	"github.com/stretchr/testify/assert"
@@ -19,31 +20,27 @@ import (
 	mocknewsman "gitlab.com/verygoodsoftwarenotvirus/newsman/mock"
 )
 
-func TestRecipesService_List(T *testing.T) {
+func TestRecipesService_ListHandler(T *testing.T) {
 	T.Parallel()
+
+	exampleUser := fakemodels.BuildFakeUser()
+	userIDFetcher := func(_ *http.Request) uint64 {
+		return exampleUser.ID
+	}
 
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.RecipeList{
-			Recipes: []models.Recipe{
-				{
-					ID: 123,
-				},
-			},
-		}
+		s.userIDFetcher = userIDFetcher
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
+		exampleRecipeList := fakemodels.BuildFakeRecipeList()
 
-		id := &mockmodels.RecipeDataManager{}
-		id.On("GetRecipes", mock.Anything, mock.Anything, requestingUser.ID).Return(expected, nil)
-		s.recipeDatabase = id
+		recipeDataManager := &mockmodels.RecipeDataManager{}
+		recipeDataManager.On("GetRecipes", mock.Anything, mock.AnythingOfType("*models.QueryFilter")).Return(exampleRecipeList, nil)
+		s.recipeDataManager = recipeDataManager
 
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.RecipeList")).Return(nil)
 		s.encoderDecoder = ed
 
 		res := httptest.NewRecorder()
@@ -57,23 +54,22 @@ func TestRecipesService_List(T *testing.T) {
 
 		s.ListHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager, ed)
 	})
 
 	T.Run("with no rows returned", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
+		s.userIDFetcher = userIDFetcher
 
-		id := &mockmodels.RecipeDataManager{}
-		id.On("GetRecipes", mock.Anything, mock.Anything, requestingUser.ID).Return((*models.RecipeList)(nil), sql.ErrNoRows)
-		s.recipeDatabase = id
+		recipeDataManager := &mockmodels.RecipeDataManager{}
+		recipeDataManager.On("GetRecipes", mock.Anything, mock.AnythingOfType("*models.QueryFilter")).Return((*models.RecipeList)(nil), sql.ErrNoRows)
+		s.recipeDataManager = recipeDataManager
 
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.RecipeList")).Return(nil)
 		s.encoderDecoder = ed
 
 		res := httptest.NewRecorder()
@@ -87,24 +83,19 @@ func TestRecipesService_List(T *testing.T) {
 
 		s.ListHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager, ed)
 	})
 
 	T.Run("with error fetching recipes from database", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
+		s.userIDFetcher = userIDFetcher
 
-		id := &mockmodels.RecipeDataManager{}
-		id.On("GetRecipes", mock.Anything, mock.Anything, requestingUser.ID).Return((*models.RecipeList)(nil), errors.New("blah"))
-		s.recipeDatabase = id
-
-		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
-		s.encoderDecoder = ed
+		recipeDataManager := &mockmodels.RecipeDataManager{}
+		recipeDataManager.On("GetRecipes", mock.Anything, mock.AnythingOfType("*models.QueryFilter")).Return((*models.RecipeList)(nil), errors.New("blah"))
+		s.recipeDataManager = recipeDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -117,27 +108,24 @@ func TestRecipesService_List(T *testing.T) {
 
 		s.ListHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusInternalServerError)
+		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
 
 	T.Run("with error encoding response", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.RecipeList{
-			Recipes: []models.Recipe{},
-		}
+		s.userIDFetcher = userIDFetcher
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
+		exampleRecipeList := fakemodels.BuildFakeRecipeList()
 
-		id := &mockmodels.RecipeDataManager{}
-		id.On("GetRecipes", mock.Anything, mock.Anything, requestingUser.ID).Return(expected, nil)
-		s.recipeDatabase = id
+		recipeDataManager := &mockmodels.RecipeDataManager{}
+		recipeDataManager.On("GetRecipes", mock.Anything, mock.AnythingOfType("*models.QueryFilter")).Return(exampleRecipeList, nil)
+		s.recipeDataManager = recipeDataManager
 
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(errors.New("blah"))
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.RecipeList")).Return(errors.New("blah"))
 		s.encoderDecoder = ed
 
 		res := httptest.NewRecorder()
@@ -151,39 +139,43 @@ func TestRecipesService_List(T *testing.T) {
 
 		s.ListHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager, ed)
 	})
 }
 
-func TestRecipesService_Create(T *testing.T) {
+func TestRecipesService_CreateHandler(T *testing.T) {
 	T.Parallel()
+
+	exampleUser := fakemodels.BuildFakeUser()
+	userIDFetcher := func(_ *http.Request) uint64 {
+		return exampleUser.ID
+	}
 
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Recipe{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+
+		recipeDataManager := &mockmodels.RecipeDataManager{}
+		recipeDataManager.On("CreateRecipe", mock.Anything, mock.AnythingOfType("*models.RecipeCreationInput")).Return(exampleRecipe, nil)
+		s.recipeDataManager = recipeDataManager
 
 		mc := &mockmetrics.UnitCounter{}
 		mc.On("Increment", mock.Anything)
 		s.recipeCounter = mc
 
 		r := &mocknewsman.Reporter{}
-		r.On("Report", mock.Anything).Return()
+		r.On("Report", mock.AnythingOfType("newsman.Event")).Return()
 		s.reporter = r
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
-
-		id := &mockmodels.RecipeDataManager{}
-		id.On("CreateRecipe", mock.Anything, mock.Anything).Return(expected, nil)
-		s.recipeDatabase = id
-
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.Recipe")).Return(nil)
 		s.encoderDecoder = ed
 
 		res := httptest.NewRecorder()
@@ -195,30 +187,19 @@ func TestRecipesService_Create(T *testing.T) {
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		exampleInput := &models.RecipeCreationInput{
-			Name:               expected.Name,
-			Source:             expected.Source,
-			Description:        expected.Description,
-			InspiredByRecipeID: expected.InspiredByRecipeID,
-		}
 		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
 
 		s.CreateHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusCreated)
+		assert.Equal(t, http.StatusCreated, res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager, mc, r, ed)
 	})
 
 	T.Run("without input attached", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
-
-		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
-		s.encoderDecoder = ed
+		s.userIDFetcher = userIDFetcher
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -231,28 +212,21 @@ func TestRecipesService_Create(T *testing.T) {
 
 		s.CreateHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusBadRequest)
+		assert.Equal(t, http.StatusBadRequest, res.Code)
 	})
 
 	T.Run("with error creating recipe", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Recipe{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
 
-		id := &mockmodels.RecipeDataManager{}
-		id.On("CreateRecipe", mock.Anything, mock.Anything).Return((*models.Recipe)(nil), errors.New("blah"))
-		s.recipeDatabase = id
-
-		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
-		s.encoderDecoder = ed
+		recipeDataManager := &mockmodels.RecipeDataManager{}
+		recipeDataManager.On("CreateRecipe", mock.Anything, mock.AnythingOfType("*models.RecipeCreationInput")).Return(exampleRecipe, errors.New("blah"))
+		s.recipeDataManager = recipeDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -263,45 +237,38 @@ func TestRecipesService_Create(T *testing.T) {
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		exampleInput := &models.RecipeCreationInput{
-			Name:               expected.Name,
-			Source:             expected.Source,
-			Description:        expected.Description,
-			InspiredByRecipeID: expected.InspiredByRecipeID,
-		}
 		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
 
 		s.CreateHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusInternalServerError)
+		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
 
 	T.Run("with error encoding response", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Recipe{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+
+		recipeDataManager := &mockmodels.RecipeDataManager{}
+		recipeDataManager.On("CreateRecipe", mock.Anything, mock.AnythingOfType("*models.RecipeCreationInput")).Return(exampleRecipe, nil)
+		s.recipeDataManager = recipeDataManager
 
 		mc := &mockmetrics.UnitCounter{}
 		mc.On("Increment", mock.Anything)
 		s.recipeCounter = mc
 
 		r := &mocknewsman.Reporter{}
-		r.On("Report", mock.Anything).Return()
+		r.On("Report", mock.AnythingOfType("newsman.Event")).Return()
 		s.reporter = r
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
-
-		id := &mockmodels.RecipeDataManager{}
-		id.On("CreateRecipe", mock.Anything, mock.Anything).Return(expected, nil)
-		s.recipeDatabase = id
-
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(errors.New("blah"))
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.Recipe")).Return(errors.New("blah"))
 		s.encoderDecoder = ed
 
 		res := httptest.NewRecorder()
@@ -313,46 +280,38 @@ func TestRecipesService_Create(T *testing.T) {
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		exampleInput := &models.RecipeCreationInput{
-			Name:               expected.Name,
-			Source:             expected.Source,
-			Description:        expected.Description,
-			InspiredByRecipeID: expected.InspiredByRecipeID,
-		}
 		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
 
 		s.CreateHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusCreated)
+		assert.Equal(t, http.StatusCreated, res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager, mc, r, ed)
 	})
 }
 
-func TestRecipesService_Read(T *testing.T) {
+func TestRecipesService_ExistenceHandler(T *testing.T) {
 	T.Parallel()
+
+	exampleUser := fakemodels.BuildFakeUser()
+	userIDFetcher := func(_ *http.Request) uint64 {
+		return exampleUser.ID
+	}
 
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Recipe{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
-
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
 		s.recipeIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
+			return exampleRecipe.ID
 		}
 
-		id := &mockmodels.RecipeDataManager{}
-		id.On("GetRecipe", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
-		s.recipeDatabase = id
-
-		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
-		s.encoderDecoder = ed
+		recipeDataManager := &mockmodels.RecipeDataManager{}
+		recipeDataManager.On("RecipeExists", mock.Anything, exampleRecipe.ID).Return(true, nil)
+		s.recipeDataManager = recipeDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -363,30 +322,27 @@ func TestRecipesService_Read(T *testing.T) {
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ReadHandler()(res, req)
+		s.ExistenceHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
 
 	T.Run("with no such recipe in database", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Recipe{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
-
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
 		s.recipeIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
+			return exampleRecipe.ID
 		}
 
-		id := &mockmodels.RecipeDataManager{}
-		id.On("GetRecipe", mock.Anything, expected.ID, requestingUser.ID).Return((*models.Recipe)(nil), sql.ErrNoRows)
-		s.recipeDatabase = id
+		recipeDataManager := &mockmodels.RecipeDataManager{}
+		recipeDataManager.On("RecipeExists", mock.Anything, exampleRecipe.ID).Return(false, sql.ErrNoRows)
+		s.recipeDataManager = recipeDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -397,30 +353,71 @@ func TestRecipesService_Read(T *testing.T) {
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ReadHandler()(res, req)
+		s.ExistenceHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusNotFound)
+		assert.Equal(t, http.StatusNotFound, res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
 
 	T.Run("with error fetching recipe from database", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Recipe{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
-
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
 		s.recipeIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
+			return exampleRecipe.ID
 		}
 
-		id := &mockmodels.RecipeDataManager{}
-		id.On("GetRecipe", mock.Anything, expected.ID, requestingUser.ID).Return((*models.Recipe)(nil), errors.New("blah"))
-		s.recipeDatabase = id
+		recipeDataManager := &mockmodels.RecipeDataManager{}
+		recipeDataManager.On("RecipeExists", mock.Anything, exampleRecipe.ID).Return(false, errors.New("blah"))
+		s.recipeDataManager = recipeDataManager
+
+		res := httptest.NewRecorder()
+		req, err := http.NewRequest(
+			http.MethodGet,
+			"http://todo.verygoodsoftwarenotvirus.ru",
+			nil,
+		)
+		require.NotNil(t, req)
+		require.NoError(t, err)
+
+		s.ExistenceHandler()(res, req)
+
+		assert.Equal(t, http.StatusNotFound, res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager)
+	})
+}
+
+func TestRecipesService_ReadHandler(T *testing.T) {
+	T.Parallel()
+
+	exampleUser := fakemodels.BuildFakeUser()
+	userIDFetcher := func(_ *http.Request) uint64 {
+		return exampleUser.ID
+	}
+
+	T.Run("happy path", func(t *testing.T) {
+		s := buildTestService()
+
+		s.userIDFetcher = userIDFetcher
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		s.recipeIDFetcher = func(req *http.Request) uint64 {
+			return exampleRecipe.ID
+		}
+
+		recipeDataManager := &mockmodels.RecipeDataManager{}
+		recipeDataManager.On("GetRecipe", mock.Anything, exampleRecipe.ID).Return(exampleRecipe, nil)
+		s.recipeDataManager = recipeDataManager
+
+		ed := &mockencoding.EncoderDecoder{}
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.Recipe")).Return(nil)
+		s.encoderDecoder = ed
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -433,31 +430,90 @@ func TestRecipesService_Read(T *testing.T) {
 
 		s.ReadHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusInternalServerError)
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager, ed)
+	})
+
+	T.Run("with no such recipe in database", func(t *testing.T) {
+		s := buildTestService()
+
+		s.userIDFetcher = userIDFetcher
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		s.recipeIDFetcher = func(req *http.Request) uint64 {
+			return exampleRecipe.ID
+		}
+
+		recipeDataManager := &mockmodels.RecipeDataManager{}
+		recipeDataManager.On("GetRecipe", mock.Anything, exampleRecipe.ID).Return((*models.Recipe)(nil), sql.ErrNoRows)
+		s.recipeDataManager = recipeDataManager
+
+		res := httptest.NewRecorder()
+		req, err := http.NewRequest(
+			http.MethodGet,
+			"http://todo.verygoodsoftwarenotvirus.ru",
+			nil,
+		)
+		require.NotNil(t, req)
+		require.NoError(t, err)
+
+		s.ReadHandler()(res, req)
+
+		assert.Equal(t, http.StatusNotFound, res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager)
+	})
+
+	T.Run("with error fetching recipe from database", func(t *testing.T) {
+		s := buildTestService()
+
+		s.userIDFetcher = userIDFetcher
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		s.recipeIDFetcher = func(req *http.Request) uint64 {
+			return exampleRecipe.ID
+		}
+
+		recipeDataManager := &mockmodels.RecipeDataManager{}
+		recipeDataManager.On("GetRecipe", mock.Anything, exampleRecipe.ID).Return((*models.Recipe)(nil), errors.New("blah"))
+		s.recipeDataManager = recipeDataManager
+
+		res := httptest.NewRecorder()
+		req, err := http.NewRequest(
+			http.MethodGet,
+			"http://todo.verygoodsoftwarenotvirus.ru",
+			nil,
+		)
+		require.NotNil(t, req)
+		require.NoError(t, err)
+
+		s.ReadHandler()(res, req)
+
+		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
 
 	T.Run("with error encoding response", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Recipe{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
-
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
 		s.recipeIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
+			return exampleRecipe.ID
 		}
 
-		id := &mockmodels.RecipeDataManager{}
-		id.On("GetRecipe", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
-		s.recipeDatabase = id
+		recipeDataManager := &mockmodels.RecipeDataManager{}
+		recipeDataManager.On("GetRecipe", mock.Anything, exampleRecipe.ID).Return(exampleRecipe, nil)
+		s.recipeDataManager = recipeDataManager
 
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(errors.New("blah"))
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.Recipe")).Return(errors.New("blah"))
 		s.encoderDecoder = ed
 
 		res := httptest.NewRecorder()
@@ -471,44 +527,44 @@ func TestRecipesService_Read(T *testing.T) {
 
 		s.ReadHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager, ed)
 	})
 }
 
-func TestRecipesService_Update(T *testing.T) {
+func TestRecipesService_UpdateHandler(T *testing.T) {
 	T.Parallel()
+
+	exampleUser := fakemodels.BuildFakeUser()
+	userIDFetcher := func(_ *http.Request) uint64 {
+		return exampleUser.ID
+	}
 
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Recipe{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		mc := &mockmetrics.UnitCounter{}
-		mc.On("Increment", mock.Anything)
-		s.recipeCounter = mc
-
-		r := &mocknewsman.Reporter{}
-		r.On("Report", mock.Anything).Return()
-		s.reporter = r
-
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeRecipeUpdateInputFromRecipe(exampleRecipe)
 
 		s.recipeIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
+			return exampleRecipe.ID
 		}
 
-		id := &mockmodels.RecipeDataManager{}
-		id.On("GetRecipe", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
-		id.On("UpdateRecipe", mock.Anything, mock.Anything).Return(nil)
-		s.recipeDatabase = id
+		recipeDataManager := &mockmodels.RecipeDataManager{}
+		recipeDataManager.On("GetRecipe", mock.Anything, exampleRecipe.ID).Return(exampleRecipe, nil)
+		recipeDataManager.On("UpdateRecipe", mock.Anything, mock.AnythingOfType("*models.Recipe")).Return(nil)
+		s.recipeDataManager = recipeDataManager
+
+		r := &mocknewsman.Reporter{}
+		r.On("Report", mock.AnythingOfType("newsman.Event")).Return()
+		s.reporter = r
 
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.Recipe")).Return(nil)
 		s.encoderDecoder = ed
 
 		res := httptest.NewRecorder()
@@ -520,22 +576,20 @@ func TestRecipesService_Update(T *testing.T) {
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		exampleInput := &models.RecipeUpdateInput{
-			Name:               expected.Name,
-			Source:             expected.Source,
-			Description:        expected.Description,
-			InspiredByRecipeID: expected.InspiredByRecipeID,
-		}
 		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
 
 		s.UpdateHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, r, recipeDataManager, ed)
 	})
 
 	T.Run("without update input", func(t *testing.T) {
 		s := buildTestService()
 
+		s.userIDFetcher = userIDFetcher
+
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
@@ -547,28 +601,25 @@ func TestRecipesService_Update(T *testing.T) {
 
 		s.UpdateHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusBadRequest)
+		assert.Equal(t, http.StatusBadRequest, res.Code)
 	})
 
 	T.Run("with no rows fetching recipe", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Recipe{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeRecipeUpdateInputFromRecipe(exampleRecipe)
 
 		s.recipeIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
+			return exampleRecipe.ID
 		}
 
-		id := &mockmodels.RecipeDataManager{}
-		id.On("GetRecipe", mock.Anything, expected.ID, requestingUser.ID).Return((*models.Recipe)(nil), sql.ErrNoRows)
-		s.recipeDatabase = id
+		recipeDataManager := &mockmodels.RecipeDataManager{}
+		recipeDataManager.On("GetRecipe", mock.Anything, exampleRecipe.ID).Return((*models.Recipe)(nil), sql.ErrNoRows)
+		s.recipeDataManager = recipeDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -579,38 +630,31 @@ func TestRecipesService_Update(T *testing.T) {
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		exampleInput := &models.RecipeUpdateInput{
-			Name:               expected.Name,
-			Source:             expected.Source,
-			Description:        expected.Description,
-			InspiredByRecipeID: expected.InspiredByRecipeID,
-		}
 		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
 
 		s.UpdateHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusNotFound)
+		assert.Equal(t, http.StatusNotFound, res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
 
 	T.Run("with error fetching recipe", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Recipe{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeRecipeUpdateInputFromRecipe(exampleRecipe)
 
 		s.recipeIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
+			return exampleRecipe.ID
 		}
 
-		id := &mockmodels.RecipeDataManager{}
-		id.On("GetRecipe", mock.Anything, expected.ID, requestingUser.ID).Return((*models.Recipe)(nil), errors.New("blah"))
-		s.recipeDatabase = id
+		recipeDataManager := &mockmodels.RecipeDataManager{}
+		recipeDataManager.On("GetRecipe", mock.Anything, exampleRecipe.ID).Return((*models.Recipe)(nil), errors.New("blah"))
+		s.recipeDataManager = recipeDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -621,51 +665,32 @@ func TestRecipesService_Update(T *testing.T) {
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		exampleInput := &models.RecipeUpdateInput{
-			Name:               expected.Name,
-			Source:             expected.Source,
-			Description:        expected.Description,
-			InspiredByRecipeID: expected.InspiredByRecipeID,
-		}
 		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
 
 		s.UpdateHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusInternalServerError)
+		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
 
 	T.Run("with error updating recipe", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Recipe{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		mc := &mockmetrics.UnitCounter{}
-		mc.On("Increment", mock.Anything)
-		s.recipeCounter = mc
-
-		r := &mocknewsman.Reporter{}
-		r.On("Report", mock.Anything).Return()
-		s.reporter = r
-
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeRecipeUpdateInputFromRecipe(exampleRecipe)
 
 		s.recipeIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
+			return exampleRecipe.ID
 		}
 
-		id := &mockmodels.RecipeDataManager{}
-		id.On("GetRecipe", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
-		id.On("UpdateRecipe", mock.Anything, mock.Anything).Return(errors.New("blah"))
-		s.recipeDatabase = id
-
-		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
-		s.encoderDecoder = ed
+		recipeDataManager := &mockmodels.RecipeDataManager{}
+		recipeDataManager.On("GetRecipe", mock.Anything, exampleRecipe.ID).Return(exampleRecipe, nil)
+		recipeDataManager.On("UpdateRecipe", mock.Anything, mock.AnythingOfType("*models.Recipe")).Return(errors.New("blah"))
+		s.recipeDataManager = recipeDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -676,50 +701,39 @@ func TestRecipesService_Update(T *testing.T) {
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		exampleInput := &models.RecipeUpdateInput{
-			Name:               expected.Name,
-			Source:             expected.Source,
-			Description:        expected.Description,
-			InspiredByRecipeID: expected.InspiredByRecipeID,
-		}
 		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
 
 		s.UpdateHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusInternalServerError)
+		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
 
 	T.Run("with error encoding response", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Recipe{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		mc := &mockmetrics.UnitCounter{}
-		mc.On("Increment", mock.Anything)
-		s.recipeCounter = mc
-
-		r := &mocknewsman.Reporter{}
-		r.On("Report", mock.Anything).Return()
-		s.reporter = r
-
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		exampleInput := fakemodels.BuildFakeRecipeUpdateInputFromRecipe(exampleRecipe)
 
 		s.recipeIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
+			return exampleRecipe.ID
 		}
 
-		id := &mockmodels.RecipeDataManager{}
-		id.On("GetRecipe", mock.Anything, expected.ID, requestingUser.ID).Return(expected, nil)
-		id.On("UpdateRecipe", mock.Anything, mock.Anything).Return(nil)
-		s.recipeDatabase = id
+		recipeDataManager := &mockmodels.RecipeDataManager{}
+		recipeDataManager.On("GetRecipe", mock.Anything, exampleRecipe.ID).Return(exampleRecipe, nil)
+		recipeDataManager.On("UpdateRecipe", mock.Anything, mock.AnythingOfType("*models.Recipe")).Return(nil)
+		s.recipeDataManager = recipeDataManager
+
+		r := &mocknewsman.Reporter{}
+		r.On("Report", mock.AnythingOfType("newsman.Event")).Return()
+		s.reporter = r
 
 		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(errors.New("blah"))
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.Recipe")).Return(errors.New("blah"))
 		s.encoderDecoder = ed
 
 		res := httptest.NewRecorder()
@@ -731,54 +745,46 @@ func TestRecipesService_Update(T *testing.T) {
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		exampleInput := &models.RecipeUpdateInput{
-			Name:               expected.Name,
-			Source:             expected.Source,
-			Description:        expected.Description,
-			InspiredByRecipeID: expected.InspiredByRecipeID,
-		}
 		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
 
 		s.UpdateHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusOK)
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, r, recipeDataManager, ed)
 	})
 }
 
-func TestRecipesService_Archive(T *testing.T) {
+func TestRecipesService_ArchiveHandler(T *testing.T) {
 	T.Parallel()
+
+	exampleUser := fakemodels.BuildFakeUser()
+	userIDFetcher := func(_ *http.Request) uint64 {
+		return exampleUser.ID
+	}
 
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Recipe{
-			ID: 123,
+		s.userIDFetcher = userIDFetcher
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
+		s.recipeIDFetcher = func(req *http.Request) uint64 {
+			return exampleRecipe.ID
 		}
 
+		recipeDataManager := &mockmodels.RecipeDataManager{}
+		recipeDataManager.On("ArchiveRecipe", mock.Anything, exampleRecipe.ID, exampleUser.ID).Return(nil)
+		s.recipeDataManager = recipeDataManager
+
 		r := &mocknewsman.Reporter{}
-		r.On("Report", mock.Anything).Return()
+		r.On("Report", mock.AnythingOfType("newsman.Event")).Return()
 		s.reporter = r
 
 		mc := &mockmetrics.UnitCounter{}
-		mc.On("Decrement").Return()
+		mc.On("Decrement", mock.Anything).Return()
 		s.recipeCounter = mc
-
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
-
-		s.recipeIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
-		}
-
-		id := &mockmodels.RecipeDataManager{}
-		id.On("ArchiveRecipe", mock.Anything, expected.ID, requestingUser.ID).Return(nil)
-		s.recipeDatabase = id
-
-		ed := &mockencoding.EncoderDecoder{}
-		ed.On("EncodeResponse", mock.Anything, mock.Anything).Return(nil)
-		s.encoderDecoder = ed
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -791,28 +797,25 @@ func TestRecipesService_Archive(T *testing.T) {
 
 		s.ArchiveHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusNoContent)
+		assert.Equal(t, http.StatusNoContent, res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager, mc, r)
 	})
 
 	T.Run("with no recipe in database", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Recipe{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
-
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
 		s.recipeIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
+			return exampleRecipe.ID
 		}
 
-		id := &mockmodels.RecipeDataManager{}
-		id.On("ArchiveRecipe", mock.Anything, expected.ID, requestingUser.ID).Return(sql.ErrNoRows)
-		s.recipeDatabase = id
+		recipeDataManager := &mockmodels.RecipeDataManager{}
+		recipeDataManager.On("ArchiveRecipe", mock.Anything, exampleRecipe.ID, exampleUser.ID).Return(sql.ErrNoRows)
+		s.recipeDataManager = recipeDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -825,28 +828,25 @@ func TestRecipesService_Archive(T *testing.T) {
 
 		s.ArchiveHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusNotFound)
+		assert.Equal(t, http.StatusNotFound, res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
 
-	T.Run("with error reading from database", func(t *testing.T) {
+	T.Run("with error writing to database", func(t *testing.T) {
 		s := buildTestService()
 
-		requestingUser := &models.User{ID: 1}
-		expected := &models.Recipe{
-			ID: 123,
-		}
+		s.userIDFetcher = userIDFetcher
 
-		s.userIDFetcher = func(req *http.Request) uint64 {
-			return requestingUser.ID
-		}
-
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipe.BelongsToUser = exampleUser.ID
 		s.recipeIDFetcher = func(req *http.Request) uint64 {
-			return expected.ID
+			return exampleRecipe.ID
 		}
 
-		id := &mockmodels.RecipeDataManager{}
-		id.On("ArchiveRecipe", mock.Anything, expected.ID, requestingUser.ID).Return(errors.New("blah"))
-		s.recipeDatabase = id
+		recipeDataManager := &mockmodels.RecipeDataManager{}
+		recipeDataManager.On("ArchiveRecipe", mock.Anything, exampleRecipe.ID, exampleUser.ID).Return(errors.New("blah"))
+		s.recipeDataManager = recipeDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
@@ -859,6 +859,8 @@ func TestRecipesService_Archive(T *testing.T) {
 
 		s.ArchiveHandler()(res, req)
 
-		assert.Equal(t, res.Code, http.StatusInternalServerError)
+		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
 }

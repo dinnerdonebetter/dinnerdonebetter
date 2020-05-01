@@ -12,37 +12,40 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/v1/metrics"
 	server "gitlab.com/prixfixe/prixfixe/server/v1"
 	httpserver "gitlab.com/prixfixe/prixfixe/server/v1/http"
-	auth1 "gitlab.com/prixfixe/prixfixe/services/v1/auth"
-	"gitlab.com/prixfixe/prixfixe/services/v1/frontend"
-	"gitlab.com/prixfixe/prixfixe/services/v1/ingredients"
-	"gitlab.com/prixfixe/prixfixe/services/v1/instruments"
-	"gitlab.com/prixfixe/prixfixe/services/v1/invitations"
-	"gitlab.com/prixfixe/prixfixe/services/v1/iterationmedias"
-	"gitlab.com/prixfixe/prixfixe/services/v1/oauth2clients"
-	"gitlab.com/prixfixe/prixfixe/services/v1/preparations"
-	"gitlab.com/prixfixe/prixfixe/services/v1/recipeiterations"
-	"gitlab.com/prixfixe/prixfixe/services/v1/recipes"
-	"gitlab.com/prixfixe/prixfixe/services/v1/recipestepevents"
-	"gitlab.com/prixfixe/prixfixe/services/v1/recipestepingredients"
-	"gitlab.com/prixfixe/prixfixe/services/v1/recipestepinstruments"
-	"gitlab.com/prixfixe/prixfixe/services/v1/recipestepproducts"
-	"gitlab.com/prixfixe/prixfixe/services/v1/recipesteps"
-	"gitlab.com/prixfixe/prixfixe/services/v1/reports"
-	"gitlab.com/prixfixe/prixfixe/services/v1/requiredpreparationinstruments"
-	"gitlab.com/prixfixe/prixfixe/services/v1/users"
-	"gitlab.com/prixfixe/prixfixe/services/v1/webhooks"
+	authservice "gitlab.com/prixfixe/prixfixe/services/v1/auth"
+	frontendservice "gitlab.com/prixfixe/prixfixe/services/v1/frontend"
+	ingredienttagmappingsservice "gitlab.com/prixfixe/prixfixe/services/v1/ingredienttagmappings"
+	invitationsservice "gitlab.com/prixfixe/prixfixe/services/v1/invitations"
+	iterationmediasservice "gitlab.com/prixfixe/prixfixe/services/v1/iterationmedias"
+	oauth2clientsservice "gitlab.com/prixfixe/prixfixe/services/v1/oauth2clients"
+	recipeiterationsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipeiterations"
+	recipeiterationstepsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipeiterationsteps"
+	recipesservice "gitlab.com/prixfixe/prixfixe/services/v1/recipes"
+	recipestepingredientsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipestepingredients"
+	recipesteppreparationsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipesteppreparations"
+	recipestepsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipesteps"
+	recipetagsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipetags"
+	reportsservice "gitlab.com/prixfixe/prixfixe/services/v1/reports"
+	requiredpreparationinstrumentsservice "gitlab.com/prixfixe/prixfixe/services/v1/requiredpreparationinstruments"
+	usersservice "gitlab.com/prixfixe/prixfixe/services/v1/users"
+	validingredientpreparationsservice "gitlab.com/prixfixe/prixfixe/services/v1/validingredientpreparations"
+	validingredientsservice "gitlab.com/prixfixe/prixfixe/services/v1/validingredients"
+	validingredienttagsservice "gitlab.com/prixfixe/prixfixe/services/v1/validingredienttags"
+	validinstrumentsservice "gitlab.com/prixfixe/prixfixe/services/v1/validinstruments"
+	validpreparationsservice "gitlab.com/prixfixe/prixfixe/services/v1/validpreparations"
+	webhooksservice "gitlab.com/prixfixe/prixfixe/services/v1/webhooks"
 
 	"github.com/google/wire"
 	"gitlab.com/verygoodsoftwarenotvirus/logging/v1"
 	"gitlab.com/verygoodsoftwarenotvirus/newsman"
 )
 
-// ProvideReporter is an obligatory function that hopefully wire will eliminate for me one day
+// ProvideReporter is an obligatory function that hopefully wire will eliminate for me one day.
 func ProvideReporter(n *newsman.Newsman) newsman.Reporter {
 	return n
 }
 
-// BuildServer builds a server
+// BuildServer builds a server.
 func BuildServer(
 	ctx context.Context,
 	cfg *config.ServerConfig,
@@ -62,25 +65,28 @@ func BuildServer(
 		newsman.NewNewsman,
 		ProvideReporter,
 		// services,
-		auth1.Providers,
-		users.Providers,
-		instruments.Providers,
-		ingredients.Providers,
-		preparations.Providers,
-		requiredpreparationinstruments.Providers,
-		recipes.Providers,
-		recipesteps.Providers,
-		recipestepinstruments.Providers,
-		recipestepingredients.Providers,
-		recipestepproducts.Providers,
-		recipeiterations.Providers,
-		recipestepevents.Providers,
-		iterationmedias.Providers,
-		invitations.Providers,
-		reports.Providers,
-		frontend.Providers,
-		webhooks.Providers,
-		oauth2clients.Providers,
+		authservice.Providers,
+		usersservice.Providers,
+		validinstrumentsservice.Providers,
+		validingredientsservice.Providers,
+		validingredienttagsservice.Providers,
+		ingredienttagmappingsservice.Providers,
+		validpreparationsservice.Providers,
+		requiredpreparationinstrumentsservice.Providers,
+		validingredientpreparationsservice.Providers,
+		recipesservice.Providers,
+		recipetagsservice.Providers,
+		recipestepsservice.Providers,
+		recipesteppreparationsservice.Providers,
+		recipestepingredientsservice.Providers,
+		recipeiterationsservice.Providers,
+		recipeiterationstepsservice.Providers,
+		iterationmediasservice.Providers,
+		invitationsservice.Providers,
+		reportsservice.Providers,
+		frontendservice.Providers,
+		webhooksservice.Providers,
+		oauth2clientsservice.Providers,
 	)
 	return nil, nil
 }

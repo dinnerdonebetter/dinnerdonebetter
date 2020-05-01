@@ -26,9 +26,9 @@ func TestBcrypt_HashPassword(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		t.Parallel()
-		tctx := context.Background()
+		ctx := context.Background()
 
-		actual, err := x.HashPassword(tctx, "password")
+		actual, err := x.HashPassword(ctx, "password")
 		assert.NoError(t, err)
 		assert.NotEmpty(t, actual)
 	})
@@ -41,17 +41,17 @@ func TestBcrypt_PasswordMatches(T *testing.T) {
 
 	T.Run("normal usage", func(t *testing.T) {
 		t.Parallel()
-		tctx := context.Background()
+		ctx := context.Background()
 
-		actual := x.PasswordMatches(tctx, hashedExamplePassword, examplePassword, nil)
+		actual := x.PasswordMatches(ctx, hashedExamplePassword, examplePassword, nil)
 		assert.True(t, actual)
 	})
 
 	T.Run("when passwords don't match", func(t *testing.T) {
 		t.Parallel()
-		tctx := context.Background()
+		ctx := context.Background()
 
-		actual := x.PasswordMatches(tctx, hashedExamplePassword, "password", nil)
+		actual := x.PasswordMatches(ctx, hashedExamplePassword, "password", nil)
 		assert.False(t, actual)
 	})
 }
@@ -76,12 +76,13 @@ func TestBcrypt_ValidateLogin(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		t.Parallel()
+		ctx := context.Background()
 
 		code, err := totp.GenerateCode(exampleTwoFactorSecret, time.Now().UTC())
 		assert.NoError(t, err, "error generating code to validate login")
 
 		valid, err := x.ValidateLogin(
-			context.Background(),
+			ctx,
 			hashedExamplePassword,
 			examplePassword,
 			exampleTwoFactorSecret,
@@ -94,12 +95,13 @@ func TestBcrypt_ValidateLogin(T *testing.T) {
 
 	T.Run("with weak hash", func(t *testing.T) {
 		t.Parallel()
+		ctx := context.Background()
 
 		code, err := totp.GenerateCode(exampleTwoFactorSecret, time.Now().UTC())
 		assert.NoError(t, err, "error generating code to validate login")
 
 		valid, err := x.ValidateLogin(
-			context.Background(),
+			ctx,
 			weaklyHashedExamplePassword,
 			examplePassword,
 			exampleTwoFactorSecret,
@@ -112,12 +114,13 @@ func TestBcrypt_ValidateLogin(T *testing.T) {
 
 	T.Run("with non-matching password", func(t *testing.T) {
 		t.Parallel()
+		ctx := context.Background()
 
 		code, err := totp.GenerateCode(exampleTwoFactorSecret, time.Now().UTC())
 		assert.NoError(t, err, "error generating code to validate login")
 
 		valid, err := x.ValidateLogin(
-			context.Background(),
+			ctx,
 			hashedExamplePassword,
 			"examplePassword",
 			exampleTwoFactorSecret,
@@ -130,9 +133,10 @@ func TestBcrypt_ValidateLogin(T *testing.T) {
 
 	T.Run("with invalid code", func(t *testing.T) {
 		t.Parallel()
+		ctx := context.Background()
 
 		valid, err := x.ValidateLogin(
-			context.Background(),
+			ctx,
 			hashedExamplePassword,
 			examplePassword,
 			exampleTwoFactorSecret,

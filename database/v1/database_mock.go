@@ -10,20 +10,23 @@ import (
 
 var _ Database = (*MockDatabase)(nil)
 
-// BuildMockDatabase builds a mock database
+// BuildMockDatabase builds a mock database.
 func BuildMockDatabase() *MockDatabase {
 	return &MockDatabase{
-		InstrumentDataManager:                    &mockmodels.InstrumentDataManager{},
-		IngredientDataManager:                    &mockmodels.IngredientDataManager{},
-		PreparationDataManager:                   &mockmodels.PreparationDataManager{},
+		ValidInstrumentDataManager:               &mockmodels.ValidInstrumentDataManager{},
+		ValidIngredientDataManager:               &mockmodels.ValidIngredientDataManager{},
+		ValidIngredientTagDataManager:            &mockmodels.ValidIngredientTagDataManager{},
+		IngredientTagMappingDataManager:          &mockmodels.IngredientTagMappingDataManager{},
+		ValidPreparationDataManager:              &mockmodels.ValidPreparationDataManager{},
 		RequiredPreparationInstrumentDataManager: &mockmodels.RequiredPreparationInstrumentDataManager{},
+		ValidIngredientPreparationDataManager:    &mockmodels.ValidIngredientPreparationDataManager{},
 		RecipeDataManager:                        &mockmodels.RecipeDataManager{},
+		RecipeTagDataManager:                     &mockmodels.RecipeTagDataManager{},
 		RecipeStepDataManager:                    &mockmodels.RecipeStepDataManager{},
-		RecipeStepInstrumentDataManager:          &mockmodels.RecipeStepInstrumentDataManager{},
+		RecipeStepPreparationDataManager:         &mockmodels.RecipeStepPreparationDataManager{},
 		RecipeStepIngredientDataManager:          &mockmodels.RecipeStepIngredientDataManager{},
-		RecipeStepProductDataManager:             &mockmodels.RecipeStepProductDataManager{},
 		RecipeIterationDataManager:               &mockmodels.RecipeIterationDataManager{},
-		RecipeStepEventDataManager:               &mockmodels.RecipeStepEventDataManager{},
+		RecipeIterationStepDataManager:           &mockmodels.RecipeIterationStepDataManager{},
 		IterationMediaDataManager:                &mockmodels.IterationMediaDataManager{},
 		InvitationDataManager:                    &mockmodels.InvitationDataManager{},
 		ReportDataManager:                        &mockmodels.ReportDataManager{},
@@ -33,21 +36,24 @@ func BuildMockDatabase() *MockDatabase {
 	}
 }
 
-// MockDatabase is our mock database structure
+// MockDatabase is our mock database structure.
 type MockDatabase struct {
 	mock.Mock
 
-	*mockmodels.InstrumentDataManager
-	*mockmodels.IngredientDataManager
-	*mockmodels.PreparationDataManager
+	*mockmodels.ValidInstrumentDataManager
+	*mockmodels.ValidIngredientDataManager
+	*mockmodels.ValidIngredientTagDataManager
+	*mockmodels.IngredientTagMappingDataManager
+	*mockmodels.ValidPreparationDataManager
 	*mockmodels.RequiredPreparationInstrumentDataManager
+	*mockmodels.ValidIngredientPreparationDataManager
 	*mockmodels.RecipeDataManager
+	*mockmodels.RecipeTagDataManager
 	*mockmodels.RecipeStepDataManager
-	*mockmodels.RecipeStepInstrumentDataManager
+	*mockmodels.RecipeStepPreparationDataManager
 	*mockmodels.RecipeStepIngredientDataManager
-	*mockmodels.RecipeStepProductDataManager
 	*mockmodels.RecipeIterationDataManager
-	*mockmodels.RecipeStepEventDataManager
+	*mockmodels.RecipeIterationStepDataManager
 	*mockmodels.IterationMediaDataManager
 	*mockmodels.InvitationDataManager
 	*mockmodels.ReportDataManager
@@ -56,14 +62,39 @@ type MockDatabase struct {
 	*mockmodels.WebhookDataManager
 }
 
-// Migrate satisfies the database.Database interface
+// Migrate satisfies the Database interface.
 func (m *MockDatabase) Migrate(ctx context.Context) error {
-	args := m.Called(ctx)
-	return args.Error(0)
+	return m.Called(ctx).Error(0)
 }
 
-// IsReady satisfies the database.Database interface
+// IsReady satisfies the Database interface.
 func (m *MockDatabase) IsReady(ctx context.Context) (ready bool) {
-	args := m.Called(ctx)
-	return args.Bool(0)
+	return m.Called(ctx).Bool(0)
+}
+
+var _ ResultIterator = (*MockResultIterator)(nil)
+
+// MockResultIterator is our mock sql.Rows structure.
+type MockResultIterator struct {
+	mock.Mock
+}
+
+// Scan satisfies the ResultIterator interface.
+func (m *MockResultIterator) Scan(dest ...interface{}) error {
+	return m.Called(dest...).Error(0)
+}
+
+// Next satisfies the ResultIterator interface.
+func (m *MockResultIterator) Next() bool {
+	return m.Called().Bool(0)
+}
+
+// Err satisfies the ResultIterator interface.
+func (m *MockResultIterator) Err() error {
+	return m.Called().Error(0)
+}
+
+// Close satisfies the ResultIterator interface.
+func (m *MockResultIterator) Close() error {
+	return m.Called().Error(0)
 }

@@ -14,16 +14,14 @@ import (
 
 func Test_randString(t *testing.T) {
 	t.Parallel()
-	// obligatory
 
 	actual := randString()
 	assert.NotEmpty(t, actual)
 	assert.Len(t, actual, 52)
 }
 
-func Test_buildConfig(t *testing.T) {
+func TestBuildConfig(t *testing.T) {
 	t.Parallel()
-	// obligatory
 
 	actual := BuildConfig()
 	assert.NotNil(t, actual)
@@ -70,7 +68,7 @@ connection_details = "%s"
 		assert.Equal(t, expectedConfig.Database.Debug, cfg.Database.Debug)
 		assert.Equal(t, expectedConfig.Database.ConnectionDetails, cfg.Database.ConnectionDetails)
 
-		os.Remove(tf.Name())
+		assert.NoError(t, os.Remove(tf.Name()))
 	})
 
 	T.Run("with nonexistent file", func(t *testing.T) {
