@@ -6,92 +6,92 @@ import (
 )
 
 type (
-	// RecipeStep represents a recipe step
+	// RecipeStep represents a recipe step.
 	RecipeStep struct {
 		ID                        uint64  `json:"id"`
 		Index                     uint    `json:"index"`
-		PreparationID             uint64  `json:"preparation_id"`
-		PrerequisiteStep          uint64  `json:"prerequisite_step"`
+		ValidPreparationID        uint64  `json:"valid_preparation_id"`
+		PrerequisiteStepID        *uint64 `json:"prerequisite_step_id"`
 		MinEstimatedTimeInSeconds uint32  `json:"min_estimated_time_in_seconds"`
 		MaxEstimatedTimeInSeconds uint32  `json:"max_estimated_time_in_seconds"`
-		TemperatureInCelsius      *uint16 `json:"temperature_in_celsius"`
+		YieldsProductName         string  `json:"yields_product_name"`
+		YieldsQuantity            uint    `json:"yields_quantity"`
 		Notes                     string  `json:"notes"`
-		RecipeID                  uint64  `json:"recipe_id"`
 		CreatedOn                 uint64  `json:"created_on"`
 		UpdatedOn                 *uint64 `json:"updated_on"`
 		ArchivedOn                *uint64 `json:"archived_on"`
-		BelongsTo                 uint64  `json:"belongs_to"`
+		BelongsToRecipe           uint64  `json:"belongs_to_recipe"`
 	}
 
-	// RecipeStepList represents a list of recipe steps
+	// RecipeStepList represents a list of recipe steps.
 	RecipeStepList struct {
 		Pagination
 		RecipeSteps []RecipeStep `json:"recipe_steps"`
 	}
 
-	// RecipeStepCreationInput represents what a user could set as input for creating recipe steps
+	// RecipeStepCreationInput represents what a user could set as input for creating recipe steps.
 	RecipeStepCreationInput struct {
 		Index                     uint    `json:"index"`
-		PreparationID             uint64  `json:"preparation_id"`
-		PrerequisiteStep          uint64  `json:"prerequisite_step"`
+		ValidPreparationID        uint64  `json:"valid_preparation_id"`
+		PrerequisiteStepID        *uint64 `json:"prerequisite_step_id"`
 		MinEstimatedTimeInSeconds uint32  `json:"min_estimated_time_in_seconds"`
 		MaxEstimatedTimeInSeconds uint32  `json:"max_estimated_time_in_seconds"`
-		TemperatureInCelsius      *uint16 `json:"temperature_in_celsius"`
+		YieldsProductName         string  `json:"yields_product_name"`
+		YieldsQuantity            uint    `json:"yields_quantity"`
 		Notes                     string  `json:"notes"`
-		RecipeID                  uint64  `json:"recipe_id"`
-		BelongsTo                 uint64  `json:"-"`
+		BelongsToRecipe           uint64  `json:"-"`
 	}
 
-	// RecipeStepUpdateInput represents what a user could set as input for updating recipe steps
+	// RecipeStepUpdateInput represents what a user could set as input for updating recipe steps.
 	RecipeStepUpdateInput struct {
 		Index                     uint    `json:"index"`
-		PreparationID             uint64  `json:"preparation_id"`
-		PrerequisiteStep          uint64  `json:"prerequisite_step"`
+		ValidPreparationID        uint64  `json:"valid_preparation_id"`
+		PrerequisiteStepID        *uint64 `json:"prerequisite_step_id"`
 		MinEstimatedTimeInSeconds uint32  `json:"min_estimated_time_in_seconds"`
 		MaxEstimatedTimeInSeconds uint32  `json:"max_estimated_time_in_seconds"`
-		TemperatureInCelsius      *uint16 `json:"temperature_in_celsius"`
+		YieldsProductName         string  `json:"yields_product_name"`
+		YieldsQuantity            uint    `json:"yields_quantity"`
 		Notes                     string  `json:"notes"`
-		RecipeID                  uint64  `json:"recipe_id"`
-		BelongsTo                 uint64  `json:"-"`
+		BelongsToRecipe           uint64  `json:"belongs_to_recipe"`
 	}
 
-	// RecipeStepDataManager describes a structure capable of storing recipe steps permanently
+	// RecipeStepDataManager describes a structure capable of storing recipe steps permanently.
 	RecipeStepDataManager interface {
-		GetRecipeStep(ctx context.Context, recipeStepID, userID uint64) (*RecipeStep, error)
-		GetRecipeStepCount(ctx context.Context, filter *QueryFilter, userID uint64) (uint64, error)
+		RecipeStepExists(ctx context.Context, recipeID, recipeStepID uint64) (bool, error)
+		GetRecipeStep(ctx context.Context, recipeID, recipeStepID uint64) (*RecipeStep, error)
 		GetAllRecipeStepsCount(ctx context.Context) (uint64, error)
-		GetRecipeSteps(ctx context.Context, filter *QueryFilter, userID uint64) (*RecipeStepList, error)
-		GetAllRecipeStepsForUser(ctx context.Context, userID uint64) ([]RecipeStep, error)
+		GetRecipeSteps(ctx context.Context, recipeID uint64, filter *QueryFilter) (*RecipeStepList, error)
 		CreateRecipeStep(ctx context.Context, input *RecipeStepCreationInput) (*RecipeStep, error)
 		UpdateRecipeStep(ctx context.Context, updated *RecipeStep) error
-		ArchiveRecipeStep(ctx context.Context, id, userID uint64) error
+		ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID uint64) error
 	}
 
-	// RecipeStepDataServer describes a structure capable of serving traffic related to recipe steps
+	// RecipeStepDataServer describes a structure capable of serving traffic related to recipe steps.
 	RecipeStepDataServer interface {
 		CreationInputMiddleware(next http.Handler) http.Handler
 		UpdateInputMiddleware(next http.Handler) http.Handler
 
 		ListHandler() http.HandlerFunc
 		CreateHandler() http.HandlerFunc
+		ExistenceHandler() http.HandlerFunc
 		ReadHandler() http.HandlerFunc
 		UpdateHandler() http.HandlerFunc
 		ArchiveHandler() http.HandlerFunc
 	}
 )
 
-// Update merges an RecipeStepInput with a recipe step
+// Update merges an RecipeStepInput with a recipe step.
 func (x *RecipeStep) Update(input *RecipeStepUpdateInput) {
 	if input.Index != x.Index {
 		x.Index = input.Index
 	}
 
-	if input.PreparationID != x.PreparationID {
-		x.PreparationID = input.PreparationID
+	if input.ValidPreparationID != x.ValidPreparationID {
+		x.ValidPreparationID = input.ValidPreparationID
 	}
 
-	if input.PrerequisiteStep != x.PrerequisiteStep {
-		x.PrerequisiteStep = input.PrerequisiteStep
+	if input.PrerequisiteStepID != nil && input.PrerequisiteStepID != x.PrerequisiteStepID {
+		x.PrerequisiteStepID = input.PrerequisiteStepID
 	}
 
 	if input.MinEstimatedTimeInSeconds != x.MinEstimatedTimeInSeconds {
@@ -102,29 +102,29 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateInput) {
 		x.MaxEstimatedTimeInSeconds = input.MaxEstimatedTimeInSeconds
 	}
 
-	if input.TemperatureInCelsius != nil && input.TemperatureInCelsius != x.TemperatureInCelsius {
-		x.TemperatureInCelsius = input.TemperatureInCelsius
+	if input.YieldsProductName != "" && input.YieldsProductName != x.YieldsProductName {
+		x.YieldsProductName = input.YieldsProductName
+	}
+
+	if input.YieldsQuantity != x.YieldsQuantity {
+		x.YieldsQuantity = input.YieldsQuantity
 	}
 
 	if input.Notes != "" && input.Notes != x.Notes {
 		x.Notes = input.Notes
 	}
-
-	if input.RecipeID != x.RecipeID {
-		x.RecipeID = input.RecipeID
-	}
 }
 
-// ToInput creates a RecipeStepUpdateInput struct for a recipe step
-func (x *RecipeStep) ToInput() *RecipeStepUpdateInput {
+// ToUpdateInput creates a RecipeStepUpdateInput struct for a recipe step.
+func (x *RecipeStep) ToUpdateInput() *RecipeStepUpdateInput {
 	return &RecipeStepUpdateInput{
 		Index:                     x.Index,
-		PreparationID:             x.PreparationID,
-		PrerequisiteStep:          x.PrerequisiteStep,
+		ValidPreparationID:        x.ValidPreparationID,
+		PrerequisiteStepID:        x.PrerequisiteStepID,
 		MinEstimatedTimeInSeconds: x.MinEstimatedTimeInSeconds,
 		MaxEstimatedTimeInSeconds: x.MaxEstimatedTimeInSeconds,
-		TemperatureInCelsius:      x.TemperatureInCelsius,
+		YieldsProductName:         x.YieldsProductName,
+		YieldsQuantity:            x.YieldsQuantity,
 		Notes:                     x.Notes,
-		RecipeID:                  x.RecipeID,
 	}
 }

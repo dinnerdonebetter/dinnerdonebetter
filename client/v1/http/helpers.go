@@ -2,6 +2,7 @@ package client
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,10 +11,11 @@ import (
 	"net/http"
 	"reflect"
 
+	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
 )
 
-// argIsNotPointer checks an argument and returns whether or not it is a pointer
+// argIsNotPointer checks an argument and returns whether or not it is a pointer.
 func argIsNotPointer(i interface{}) (notAPointer bool, err error) {
 	if i == nil || reflect.TypeOf(i).Kind() != reflect.Ptr {
 		return true, errors.New("value is not a pointer")
@@ -21,7 +23,7 @@ func argIsNotPointer(i interface{}) (notAPointer bool, err error) {
 	return false, nil
 }
 
-// argIsNotNil checks an argument and returns whether or not it is nil
+// argIsNotNil checks an argument and returns whether or not it is nil.
 func argIsNotNil(i interface{}) (isNil bool, err error) {
 	if i == nil {
 		return true, errors.New("value is nil")
@@ -31,7 +33,7 @@ func argIsNotNil(i interface{}) (isNil bool, err error) {
 
 // argIsNotPointerOrNil does what it says on the tin. This function
 // is primarily useful for detecting if a destination value is valid
-// before decoding an HTTP response, for instance
+// before decoding an HTTP response, for instance.
 func argIsNotPointerOrNil(i interface{}) error {
 	if nn, err := argIsNotNil(i); nn || err != nil {
 		return err
@@ -49,7 +51,10 @@ func argIsNotPointerOrNil(i interface{}) error {
 // pointer to an object. Ideally, response is also not nil.
 // The error returned here should only ever be received in
 // testing, and should never be encountered by an end-user.
-func unmarshalBody(res *http.Response, dest interface{}) error {
+func unmarshalBody(ctx context.Context, res *http.Response, dest interface{}) error {
+	_, span := tracing.StartSpan(ctx, "unmarshalBody")
+	defer span.End()
+
 	if err := argIsNotPointerOrNil(dest); err != nil {
 		return err
 	}

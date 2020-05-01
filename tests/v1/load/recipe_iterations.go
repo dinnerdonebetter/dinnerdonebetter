@@ -2,17 +2,18 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"math/rand"
 	"net/http"
 
 	client "gitlab.com/prixfixe/prixfixe/client/v1/http"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
-	randmodel "gitlab.com/prixfixe/prixfixe/tests/v1/testutil/rand/model"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 )
 
-// fetchRandomRecipeIteration retrieves a random recipe iteration from the list of available recipe iterations
-func fetchRandomRecipeIteration(c *client.V1Client) *models.RecipeIteration {
-	recipeIterationsRes, err := c.GetRecipeIterations(context.Background(), nil)
+// fetchRandomRecipeIteration retrieves a random recipe iteration from the list of available recipe iterations.
+func fetchRandomRecipeIteration(ctx context.Context, c *client.V1Client, recipeID uint64) *models.RecipeIteration {
+	recipeIterationsRes, err := c.GetRecipeIterations(ctx, recipeID, nil)
 	if err != nil || recipeIterationsRes == nil || len(recipeIterationsRes.RecipeIterations) == 0 {
 		return nil
 	}
@@ -26,38 +27,75 @@ func buildRecipeIterationActions(c *client.V1Client) map[string]*Action {
 		"CreateRecipeIteration": {
 			Name: "CreateRecipeIteration",
 			Action: func() (*http.Request, error) {
-				return c.BuildCreateRecipeIterationRequest(context.Background(), randmodel.RandomRecipeIterationCreationInput())
+				ctx := context.Background()
+
+				// Create recipe.
+				exampleRecipe := fakemodels.BuildFakeRecipe()
+				exampleRecipeInput := fakemodels.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+				createdRecipe, err := c.CreateRecipe(ctx, exampleRecipeInput)
+				if err != nil {
+					return nil, err
+				}
+
+				recipeIterationInput := fakemodels.BuildFakeRecipeIterationCreationInput()
+				recipeIterationInput.BelongsToRecipe = createdRecipe.ID
+
+				return c.BuildCreateRecipeIterationRequest(ctx, recipeIterationInput)
 			},
 			Weight: 100,
 		},
 		"GetRecipeIteration": {
 			Name: "GetRecipeIteration",
 			Action: func() (*http.Request, error) {
-				if randomRecipeIteration := fetchRandomRecipeIteration(c); randomRecipeIteration != nil {
-					return c.BuildGetRecipeIterationRequest(context.Background(), randomRecipeIteration.ID)
+				ctx := context.Background()
+
+				randomRecipe := fetchRandomRecipe(ctx, c)
+				if randomRecipe == nil {
+					return nil, fmt.Errorf("retrieving random recipe: %w", ErrUnavailableYet)
 				}
-				return nil, ErrUnavailableYet
+
+				randomRecipeIteration := fetchRandomRecipeIteration(ctx, c, randomRecipe.ID)
+				if randomRecipeIteration == nil {
+					return nil, fmt.Errorf("retrieving random recipe iteration: %w", ErrUnavailableYet)
+				}
+
+				return c.BuildGetRecipeIterationRequest(ctx, randomRecipe.ID, randomRecipeIteration.ID)
 			},
 			Weight: 100,
 		},
 		"GetRecipeIterations": {
 			Name: "GetRecipeIterations",
 			Action: func() (*http.Request, error) {
-				return c.BuildGetRecipeIterationsRequest(context.Background(), nil)
+				ctx := context.Background()
+
+				randomRecipe := fetchRandomRecipe(ctx, c)
+				if randomRecipe == nil {
+					return nil, fmt.Errorf("retrieving random recipe: %w", ErrUnavailableYet)
+				}
+
+				return c.BuildGetRecipeIterationsRequest(ctx, randomRecipe.ID, nil)
 			},
 			Weight: 100,
 		},
 		"UpdateRecipeIteration": {
 			Name: "UpdateRecipeIteration",
 			Action: func() (*http.Request, error) {
-				if randomRecipeIteration := fetchRandomRecipeIteration(c); randomRecipeIteration != nil {
-					randomRecipeIteration.RecipeID = randmodel.RandomRecipeIterationCreationInput().RecipeID
-					randomRecipeIteration.EndDifficultyRating = randmodel.RandomRecipeIterationCreationInput().EndDifficultyRating
-					randomRecipeIteration.EndComplexityRating = randmodel.RandomRecipeIterationCreationInput().EndComplexityRating
-					randomRecipeIteration.EndTasteRating = randmodel.RandomRecipeIterationCreationInput().EndTasteRating
-					randomRecipeIteration.EndOverallRating = randmodel.RandomRecipeIterationCreationInput().EndOverallRating
-					return c.BuildUpdateRecipeIterationRequest(context.Background(), randomRecipeIteration)
+				ctx := context.Background()
+
+				randomRecipe := fetchRandomRecipe(ctx, c)
+				if randomRecipe == nil {
+					return nil, fmt.Errorf("retrieving random recipe: %w", ErrUnavailableYet)
 				}
+
+				if randomRecipeIteration := fetchRandomRecipeIteration(ctx, c, randomRecipe.ID); randomRecipeIteration != nil {
+					newRecipeIteration := fakemodels.BuildFakeRecipeIterationCreationInput()
+					randomRecipeIteration.EndDifficultyRating = newRecipeIteration.EndDifficultyRating
+					randomRecipeIteration.EndComplexityRating = newRecipeIteration.EndComplexityRating
+					randomRecipeIteration.EndTasteRating = newRecipeIteration.EndTasteRating
+					randomRecipeIteration.EndOverallRating = newRecipeIteration.EndOverallRating
+					return c.BuildUpdateRecipeIterationRequest(ctx, randomRecipeIteration)
+				}
+
 				return nil, ErrUnavailableYet
 			},
 			Weight: 100,
@@ -65,10 +103,19 @@ func buildRecipeIterationActions(c *client.V1Client) map[string]*Action {
 		"ArchiveRecipeIteration": {
 			Name: "ArchiveRecipeIteration",
 			Action: func() (*http.Request, error) {
-				if randomRecipeIteration := fetchRandomRecipeIteration(c); randomRecipeIteration != nil {
-					return c.BuildArchiveRecipeIterationRequest(context.Background(), randomRecipeIteration.ID)
+				ctx := context.Background()
+
+				randomRecipe := fetchRandomRecipe(ctx, c)
+				if randomRecipe == nil {
+					return nil, fmt.Errorf("retrieving random recipe: %w", ErrUnavailableYet)
 				}
-				return nil, ErrUnavailableYet
+
+				randomRecipeIteration := fetchRandomRecipeIteration(ctx, c, randomRecipe.ID)
+				if randomRecipeIteration == nil {
+					return nil, fmt.Errorf("retrieving random recipe iteration: %w", ErrUnavailableYet)
+				}
+
+				return c.BuildArchiveRecipeIterationRequest(ctx, randomRecipe.ID, randomRecipeIteration.ID)
 			},
 			Weight: 85,
 		},

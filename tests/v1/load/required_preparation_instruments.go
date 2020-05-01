@@ -2,17 +2,18 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"math/rand"
 	"net/http"
 
 	client "gitlab.com/prixfixe/prixfixe/client/v1/http"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
-	randmodel "gitlab.com/prixfixe/prixfixe/tests/v1/testutil/rand/model"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 )
 
-// fetchRandomRequiredPreparationInstrument retrieves a random required preparation instrument from the list of available required preparation instruments
-func fetchRandomRequiredPreparationInstrument(c *client.V1Client) *models.RequiredPreparationInstrument {
-	requiredPreparationInstrumentsRes, err := c.GetRequiredPreparationInstruments(context.Background(), nil)
+// fetchRandomRequiredPreparationInstrument retrieves a random required preparation instrument from the list of available required preparation instruments.
+func fetchRandomRequiredPreparationInstrument(ctx context.Context, c *client.V1Client, validPreparationID uint64) *models.RequiredPreparationInstrument {
+	requiredPreparationInstrumentsRes, err := c.GetRequiredPreparationInstruments(ctx, validPreparationID, nil)
 	if err != nil || requiredPreparationInstrumentsRes == nil || len(requiredPreparationInstrumentsRes.RequiredPreparationInstruments) == 0 {
 		return nil
 	}
@@ -26,36 +27,73 @@ func buildRequiredPreparationInstrumentActions(c *client.V1Client) map[string]*A
 		"CreateRequiredPreparationInstrument": {
 			Name: "CreateRequiredPreparationInstrument",
 			Action: func() (*http.Request, error) {
-				return c.BuildCreateRequiredPreparationInstrumentRequest(context.Background(), randmodel.RandomRequiredPreparationInstrumentCreationInput())
+				ctx := context.Background()
+
+				// Create valid preparation.
+				exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+				exampleValidPreparationInput := fakemodels.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+				createdValidPreparation, err := c.CreateValidPreparation(ctx, exampleValidPreparationInput)
+				if err != nil {
+					return nil, err
+				}
+
+				requiredPreparationInstrumentInput := fakemodels.BuildFakeRequiredPreparationInstrumentCreationInput()
+				requiredPreparationInstrumentInput.BelongsToValidPreparation = createdValidPreparation.ID
+
+				return c.BuildCreateRequiredPreparationInstrumentRequest(ctx, requiredPreparationInstrumentInput)
 			},
 			Weight: 100,
 		},
 		"GetRequiredPreparationInstrument": {
 			Name: "GetRequiredPreparationInstrument",
 			Action: func() (*http.Request, error) {
-				if randomRequiredPreparationInstrument := fetchRandomRequiredPreparationInstrument(c); randomRequiredPreparationInstrument != nil {
-					return c.BuildGetRequiredPreparationInstrumentRequest(context.Background(), randomRequiredPreparationInstrument.ID)
+				ctx := context.Background()
+
+				randomValidPreparation := fetchRandomValidPreparation(ctx, c)
+				if randomValidPreparation == nil {
+					return nil, fmt.Errorf("retrieving random valid preparation: %w", ErrUnavailableYet)
 				}
-				return nil, ErrUnavailableYet
+
+				randomRequiredPreparationInstrument := fetchRandomRequiredPreparationInstrument(ctx, c, randomValidPreparation.ID)
+				if randomRequiredPreparationInstrument == nil {
+					return nil, fmt.Errorf("retrieving random required preparation instrument: %w", ErrUnavailableYet)
+				}
+
+				return c.BuildGetRequiredPreparationInstrumentRequest(ctx, randomValidPreparation.ID, randomRequiredPreparationInstrument.ID)
 			},
 			Weight: 100,
 		},
 		"GetRequiredPreparationInstruments": {
 			Name: "GetRequiredPreparationInstruments",
 			Action: func() (*http.Request, error) {
-				return c.BuildGetRequiredPreparationInstrumentsRequest(context.Background(), nil)
+				ctx := context.Background()
+
+				randomValidPreparation := fetchRandomValidPreparation(ctx, c)
+				if randomValidPreparation == nil {
+					return nil, fmt.Errorf("retrieving random valid preparation: %w", ErrUnavailableYet)
+				}
+
+				return c.BuildGetRequiredPreparationInstrumentsRequest(ctx, randomValidPreparation.ID, nil)
 			},
 			Weight: 100,
 		},
 		"UpdateRequiredPreparationInstrument": {
 			Name: "UpdateRequiredPreparationInstrument",
 			Action: func() (*http.Request, error) {
-				if randomRequiredPreparationInstrument := fetchRandomRequiredPreparationInstrument(c); randomRequiredPreparationInstrument != nil {
-					randomRequiredPreparationInstrument.InstrumentID = randmodel.RandomRequiredPreparationInstrumentCreationInput().InstrumentID
-					randomRequiredPreparationInstrument.PreparationID = randmodel.RandomRequiredPreparationInstrumentCreationInput().PreparationID
-					randomRequiredPreparationInstrument.Notes = randmodel.RandomRequiredPreparationInstrumentCreationInput().Notes
-					return c.BuildUpdateRequiredPreparationInstrumentRequest(context.Background(), randomRequiredPreparationInstrument)
+				ctx := context.Background()
+
+				randomValidPreparation := fetchRandomValidPreparation(ctx, c)
+				if randomValidPreparation == nil {
+					return nil, fmt.Errorf("retrieving random valid preparation: %w", ErrUnavailableYet)
 				}
+
+				if randomRequiredPreparationInstrument := fetchRandomRequiredPreparationInstrument(ctx, c, randomValidPreparation.ID); randomRequiredPreparationInstrument != nil {
+					newRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrumentCreationInput()
+					randomRequiredPreparationInstrument.ValidInstrumentID = newRequiredPreparationInstrument.ValidInstrumentID
+					randomRequiredPreparationInstrument.Notes = newRequiredPreparationInstrument.Notes
+					return c.BuildUpdateRequiredPreparationInstrumentRequest(ctx, randomRequiredPreparationInstrument)
+				}
+
 				return nil, ErrUnavailableYet
 			},
 			Weight: 100,
@@ -63,10 +101,19 @@ func buildRequiredPreparationInstrumentActions(c *client.V1Client) map[string]*A
 		"ArchiveRequiredPreparationInstrument": {
 			Name: "ArchiveRequiredPreparationInstrument",
 			Action: func() (*http.Request, error) {
-				if randomRequiredPreparationInstrument := fetchRandomRequiredPreparationInstrument(c); randomRequiredPreparationInstrument != nil {
-					return c.BuildArchiveRequiredPreparationInstrumentRequest(context.Background(), randomRequiredPreparationInstrument.ID)
+				ctx := context.Background()
+
+				randomValidPreparation := fetchRandomValidPreparation(ctx, c)
+				if randomValidPreparation == nil {
+					return nil, fmt.Errorf("retrieving random valid preparation: %w", ErrUnavailableYet)
 				}
-				return nil, ErrUnavailableYet
+
+				randomRequiredPreparationInstrument := fetchRandomRequiredPreparationInstrument(ctx, c, randomValidPreparation.ID)
+				if randomRequiredPreparationInstrument == nil {
+					return nil, fmt.Errorf("retrieving random required preparation instrument: %w", ErrUnavailableYet)
+				}
+
+				return c.BuildArchiveRequiredPreparationInstrumentRequest(ctx, randomValidPreparation.ID, randomRequiredPreparationInstrument.ID)
 			},
 			Weight: 85,
 		},

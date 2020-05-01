@@ -2,54 +2,52 @@ package dbclient
 
 import (
 	"context"
-	"strconv"
 
+	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
-
-	"go.opencensus.io/trace"
 )
 
 var _ models.IterationMediaDataManager = (*Client)(nil)
 
-// attachIterationMediaIDToSpan provides a consistent way to attach an iteration media's ID to a span
-func attachIterationMediaIDToSpan(span *trace.Span, iterationMediaID uint64) {
-	if span != nil {
-		span.AddAttributes(trace.StringAttribute("iteration_media_id", strconv.FormatUint(iterationMediaID, 10)))
-	}
-}
-
-// GetIterationMedia fetches an iteration media from the database
-func (c *Client) GetIterationMedia(ctx context.Context, iterationMediaID, userID uint64) (*models.IterationMedia, error) {
-	ctx, span := trace.StartSpan(ctx, "GetIterationMedia")
+// IterationMediaExists fetches whether or not an iteration media exists from the database.
+func (c *Client) IterationMediaExists(ctx context.Context, recipeID, recipeIterationID, iterationMediaID uint64) (bool, error) {
+	ctx, span := tracing.StartSpan(ctx, "IterationMediaExists")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
-	attachIterationMediaIDToSpan(span, iterationMediaID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachRecipeIterationIDToSpan(span, recipeIterationID)
+	tracing.AttachIterationMediaIDToSpan(span, iterationMediaID)
 
 	c.logger.WithValues(map[string]interface{}{
-		"iteration_media_id": iterationMediaID,
-		"user_id":            userID,
-	}).Debug("GetIterationMedia called")
+		"recipe_id":           recipeID,
+		"recipe_iteration_id": recipeIterationID,
+		"iteration_media_id":  iterationMediaID,
+	}).Debug("IterationMediaExists called")
 
-	return c.querier.GetIterationMedia(ctx, iterationMediaID, userID)
+	return c.querier.IterationMediaExists(ctx, recipeID, recipeIterationID, iterationMediaID)
 }
 
-// GetIterationMediaCount fetches the count of iteration medias from the database that meet a particular filter
-func (c *Client) GetIterationMediaCount(ctx context.Context, filter *models.QueryFilter, userID uint64) (count uint64, err error) {
-	ctx, span := trace.StartSpan(ctx, "GetIterationMediaCount")
+// GetIterationMedia fetches an iteration media from the database.
+func (c *Client) GetIterationMedia(ctx context.Context, recipeID, recipeIterationID, iterationMediaID uint64) (*models.IterationMedia, error) {
+	ctx, span := tracing.StartSpan(ctx, "GetIterationMedia")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
-	attachFilterToSpan(span, filter)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachRecipeIterationIDToSpan(span, recipeIterationID)
+	tracing.AttachIterationMediaIDToSpan(span, iterationMediaID)
 
-	c.logger.WithValue("user_id", userID).Debug("GetIterationMediaCount called")
+	c.logger.WithValues(map[string]interface{}{
+		"recipe_id":           recipeID,
+		"recipe_iteration_id": recipeIterationID,
+		"iteration_media_id":  iterationMediaID,
+	}).Debug("GetIterationMedia called")
 
-	return c.querier.GetIterationMediaCount(ctx, filter, userID)
+	return c.querier.GetIterationMedia(ctx, recipeID, recipeIterationID, iterationMediaID)
 }
 
-// GetAllIterationMediasCount fetches the count of iteration medias from the database that meet a particular filter
+// GetAllIterationMediasCount fetches the count of iteration medias from the database that meet a particular filter.
 func (c *Client) GetAllIterationMediasCount(ctx context.Context) (count uint64, err error) {
-	ctx, span := trace.StartSpan(ctx, "GetAllIterationMediasCount")
+	ctx, span := tracing.StartSpan(ctx, "GetAllIterationMediasCount")
 	defer span.End()
 
 	c.logger.Debug("GetAllIterationMediasCount called")
@@ -57,37 +55,28 @@ func (c *Client) GetAllIterationMediasCount(ctx context.Context) (count uint64, 
 	return c.querier.GetAllIterationMediasCount(ctx)
 }
 
-// GetIterationMedias fetches a list of iteration medias from the database that meet a particular filter
-func (c *Client) GetIterationMedias(ctx context.Context, filter *models.QueryFilter, userID uint64) (*models.IterationMediaList, error) {
-	ctx, span := trace.StartSpan(ctx, "GetIterationMedias")
+// GetIterationMedias fetches a list of iteration medias from the database that meet a particular filter.
+func (c *Client) GetIterationMedias(ctx context.Context, recipeID, recipeIterationID uint64, filter *models.QueryFilter) (*models.IterationMediaList, error) {
+	ctx, span := tracing.StartSpan(ctx, "GetIterationMedias")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
-	attachFilterToSpan(span, filter)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachRecipeIterationIDToSpan(span, recipeIterationID)
+	tracing.AttachFilterToSpan(span, filter)
 
-	c.logger.WithValue("user_id", userID).Debug("GetIterationMedias called")
+	c.logger.WithValues(map[string]interface{}{
+		"recipe_id":           recipeID,
+		"recipe_iteration_id": recipeIterationID,
+	}).Debug("GetIterationMedias called")
 
-	iterationMediaList, err := c.querier.GetIterationMedias(ctx, filter, userID)
+	iterationMediaList, err := c.querier.GetIterationMedias(ctx, recipeID, recipeIterationID, filter)
 
 	return iterationMediaList, err
 }
 
-// GetAllIterationMediasForUser fetches a list of iteration medias from the database that meet a particular filter
-func (c *Client) GetAllIterationMediasForUser(ctx context.Context, userID uint64) ([]models.IterationMedia, error) {
-	ctx, span := trace.StartSpan(ctx, "GetAllIterationMediasForUser")
-	defer span.End()
-
-	attachUserIDToSpan(span, userID)
-	c.logger.WithValue("user_id", userID).Debug("GetAllIterationMediasForUser called")
-
-	iterationMediaList, err := c.querier.GetAllIterationMediasForUser(ctx, userID)
-
-	return iterationMediaList, err
-}
-
-// CreateIterationMedia creates an iteration media in the database
+// CreateIterationMedia creates an iteration media in the database.
 func (c *Client) CreateIterationMedia(ctx context.Context, input *models.IterationMediaCreationInput) (*models.IterationMedia, error) {
-	ctx, span := trace.StartSpan(ctx, "CreateIterationMedia")
+	ctx, span := tracing.StartSpan(ctx, "CreateIterationMedia")
 	defer span.End()
 
 	c.logger.WithValue("input", input).Debug("CreateIterationMedia called")
@@ -97,28 +86,28 @@ func (c *Client) CreateIterationMedia(ctx context.Context, input *models.Iterati
 
 // UpdateIterationMedia updates a particular iteration media. Note that UpdateIterationMedia expects the
 // provided input to have a valid ID.
-func (c *Client) UpdateIterationMedia(ctx context.Context, input *models.IterationMedia) error {
-	ctx, span := trace.StartSpan(ctx, "UpdateIterationMedia")
+func (c *Client) UpdateIterationMedia(ctx context.Context, updated *models.IterationMedia) error {
+	ctx, span := tracing.StartSpan(ctx, "UpdateIterationMedia")
 	defer span.End()
 
-	attachIterationMediaIDToSpan(span, input.ID)
-	c.logger.WithValue("iteration_media_id", input.ID).Debug("UpdateIterationMedia called")
+	tracing.AttachIterationMediaIDToSpan(span, updated.ID)
+	c.logger.WithValue("iteration_media_id", updated.ID).Debug("UpdateIterationMedia called")
 
-	return c.querier.UpdateIterationMedia(ctx, input)
+	return c.querier.UpdateIterationMedia(ctx, updated)
 }
 
-// ArchiveIterationMedia archives an iteration media from the database by its ID
-func (c *Client) ArchiveIterationMedia(ctx context.Context, iterationMediaID, userID uint64) error {
-	ctx, span := trace.StartSpan(ctx, "ArchiveIterationMedia")
+// ArchiveIterationMedia archives an iteration media from the database by its ID.
+func (c *Client) ArchiveIterationMedia(ctx context.Context, recipeIterationID, iterationMediaID uint64) error {
+	ctx, span := tracing.StartSpan(ctx, "ArchiveIterationMedia")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
-	attachIterationMediaIDToSpan(span, iterationMediaID)
+	tracing.AttachRecipeIterationIDToSpan(span, recipeIterationID)
+	tracing.AttachIterationMediaIDToSpan(span, iterationMediaID)
 
 	c.logger.WithValues(map[string]interface{}{
-		"iteration_media_id": iterationMediaID,
-		"user_id":            userID,
+		"iteration_media_id":  iterationMediaID,
+		"recipe_iteration_id": recipeIterationID,
 	}).Debug("ArchiveIterationMedia called")
 
-	return c.querier.ArchiveIterationMedia(ctx, iterationMediaID, userID)
+	return c.querier.ArchiveIterationMedia(ctx, recipeIterationID, iterationMediaID)
 }

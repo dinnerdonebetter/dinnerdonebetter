@@ -2,54 +2,44 @@ package dbclient
 
 import (
 	"context"
-	"strconv"
 
+	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
-
-	"go.opencensus.io/trace"
 )
 
 var _ models.InvitationDataManager = (*Client)(nil)
 
-// attachInvitationIDToSpan provides a consistent way to attach an invitation's ID to a span
-func attachInvitationIDToSpan(span *trace.Span, invitationID uint64) {
-	if span != nil {
-		span.AddAttributes(trace.StringAttribute("invitation_id", strconv.FormatUint(invitationID, 10)))
-	}
-}
-
-// GetInvitation fetches an invitation from the database
-func (c *Client) GetInvitation(ctx context.Context, invitationID, userID uint64) (*models.Invitation, error) {
-	ctx, span := trace.StartSpan(ctx, "GetInvitation")
+// InvitationExists fetches whether or not an invitation exists from the database.
+func (c *Client) InvitationExists(ctx context.Context, invitationID uint64) (bool, error) {
+	ctx, span := tracing.StartSpan(ctx, "InvitationExists")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
-	attachInvitationIDToSpan(span, invitationID)
+	tracing.AttachInvitationIDToSpan(span, invitationID)
 
 	c.logger.WithValues(map[string]interface{}{
 		"invitation_id": invitationID,
-		"user_id":       userID,
-	}).Debug("GetInvitation called")
+	}).Debug("InvitationExists called")
 
-	return c.querier.GetInvitation(ctx, invitationID, userID)
+	return c.querier.InvitationExists(ctx, invitationID)
 }
 
-// GetInvitationCount fetches the count of invitations from the database that meet a particular filter
-func (c *Client) GetInvitationCount(ctx context.Context, filter *models.QueryFilter, userID uint64) (count uint64, err error) {
-	ctx, span := trace.StartSpan(ctx, "GetInvitationCount")
+// GetInvitation fetches an invitation from the database.
+func (c *Client) GetInvitation(ctx context.Context, invitationID uint64) (*models.Invitation, error) {
+	ctx, span := tracing.StartSpan(ctx, "GetInvitation")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
-	attachFilterToSpan(span, filter)
+	tracing.AttachInvitationIDToSpan(span, invitationID)
 
-	c.logger.WithValue("user_id", userID).Debug("GetInvitationCount called")
+	c.logger.WithValues(map[string]interface{}{
+		"invitation_id": invitationID,
+	}).Debug("GetInvitation called")
 
-	return c.querier.GetInvitationCount(ctx, filter, userID)
+	return c.querier.GetInvitation(ctx, invitationID)
 }
 
-// GetAllInvitationsCount fetches the count of invitations from the database that meet a particular filter
+// GetAllInvitationsCount fetches the count of invitations from the database that meet a particular filter.
 func (c *Client) GetAllInvitationsCount(ctx context.Context) (count uint64, err error) {
-	ctx, span := trace.StartSpan(ctx, "GetAllInvitationsCount")
+	ctx, span := tracing.StartSpan(ctx, "GetAllInvitationsCount")
 	defer span.End()
 
 	c.logger.Debug("GetAllInvitationsCount called")
@@ -57,37 +47,23 @@ func (c *Client) GetAllInvitationsCount(ctx context.Context) (count uint64, err 
 	return c.querier.GetAllInvitationsCount(ctx)
 }
 
-// GetInvitations fetches a list of invitations from the database that meet a particular filter
-func (c *Client) GetInvitations(ctx context.Context, filter *models.QueryFilter, userID uint64) (*models.InvitationList, error) {
-	ctx, span := trace.StartSpan(ctx, "GetInvitations")
+// GetInvitations fetches a list of invitations from the database that meet a particular filter.
+func (c *Client) GetInvitations(ctx context.Context, filter *models.QueryFilter) (*models.InvitationList, error) {
+	ctx, span := tracing.StartSpan(ctx, "GetInvitations")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
-	attachFilterToSpan(span, filter)
+	tracing.AttachFilterToSpan(span, filter)
 
-	c.logger.WithValue("user_id", userID).Debug("GetInvitations called")
+	c.logger.Debug("GetInvitations called")
 
-	invitationList, err := c.querier.GetInvitations(ctx, filter, userID)
+	invitationList, err := c.querier.GetInvitations(ctx, filter)
 
 	return invitationList, err
 }
 
-// GetAllInvitationsForUser fetches a list of invitations from the database that meet a particular filter
-func (c *Client) GetAllInvitationsForUser(ctx context.Context, userID uint64) ([]models.Invitation, error) {
-	ctx, span := trace.StartSpan(ctx, "GetAllInvitationsForUser")
-	defer span.End()
-
-	attachUserIDToSpan(span, userID)
-	c.logger.WithValue("user_id", userID).Debug("GetAllInvitationsForUser called")
-
-	invitationList, err := c.querier.GetAllInvitationsForUser(ctx, userID)
-
-	return invitationList, err
-}
-
-// CreateInvitation creates an invitation in the database
+// CreateInvitation creates an invitation in the database.
 func (c *Client) CreateInvitation(ctx context.Context, input *models.InvitationCreationInput) (*models.Invitation, error) {
-	ctx, span := trace.StartSpan(ctx, "CreateInvitation")
+	ctx, span := tracing.StartSpan(ctx, "CreateInvitation")
 	defer span.End()
 
 	c.logger.WithValue("input", input).Debug("CreateInvitation called")
@@ -97,23 +73,23 @@ func (c *Client) CreateInvitation(ctx context.Context, input *models.InvitationC
 
 // UpdateInvitation updates a particular invitation. Note that UpdateInvitation expects the
 // provided input to have a valid ID.
-func (c *Client) UpdateInvitation(ctx context.Context, input *models.Invitation) error {
-	ctx, span := trace.StartSpan(ctx, "UpdateInvitation")
+func (c *Client) UpdateInvitation(ctx context.Context, updated *models.Invitation) error {
+	ctx, span := tracing.StartSpan(ctx, "UpdateInvitation")
 	defer span.End()
 
-	attachInvitationIDToSpan(span, input.ID)
-	c.logger.WithValue("invitation_id", input.ID).Debug("UpdateInvitation called")
+	tracing.AttachInvitationIDToSpan(span, updated.ID)
+	c.logger.WithValue("invitation_id", updated.ID).Debug("UpdateInvitation called")
 
-	return c.querier.UpdateInvitation(ctx, input)
+	return c.querier.UpdateInvitation(ctx, updated)
 }
 
-// ArchiveInvitation archives an invitation from the database by its ID
+// ArchiveInvitation archives an invitation from the database by its ID.
 func (c *Client) ArchiveInvitation(ctx context.Context, invitationID, userID uint64) error {
-	ctx, span := trace.StartSpan(ctx, "ArchiveInvitation")
+	ctx, span := tracing.StartSpan(ctx, "ArchiveInvitation")
 	defer span.End()
 
-	attachUserIDToSpan(span, userID)
-	attachInvitationIDToSpan(span, invitationID)
+	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachInvitationIDToSpan(span, invitationID)
 
 	c.logger.WithValues(map[string]interface{}{
 		"invitation_id": invitationID,

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
 )
 
@@ -13,16 +14,59 @@ const (
 	recipeStepsBasePath = "recipe_steps"
 )
 
-// BuildGetRecipeStepRequest builds an HTTP request for fetching a recipe step
-func (c *V1Client) BuildGetRecipeStepRequest(ctx context.Context, id uint64) (*http.Request, error) {
-	uri := c.BuildURL(nil, recipeStepsBasePath, strconv.FormatUint(id, 10))
+// BuildRecipeStepExistsRequest builds an HTTP request for checking the existence of a recipe step.
+func (c *V1Client) BuildRecipeStepExistsRequest(ctx context.Context, recipeID, recipeStepID uint64) (*http.Request, error) {
+	ctx, span := tracing.StartSpan(ctx, "BuildRecipeStepExistsRequest")
+	defer span.End()
 
-	return http.NewRequest(http.MethodGet, uri, nil)
+	uri := c.BuildURL(
+		nil,
+		recipesBasePath,
+		strconv.FormatUint(recipeID, 10),
+		recipeStepsBasePath,
+		strconv.FormatUint(recipeStepID, 10),
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+
+	return http.NewRequestWithContext(ctx, http.MethodHead, uri, nil)
 }
 
-// GetRecipeStep retrieves a recipe step
-func (c *V1Client) GetRecipeStep(ctx context.Context, id uint64) (recipeStep *models.RecipeStep, err error) {
-	req, err := c.BuildGetRecipeStepRequest(ctx, id)
+// RecipeStepExists retrieves whether or not a recipe step exists.
+func (c *V1Client) RecipeStepExists(ctx context.Context, recipeID, recipeStepID uint64) (exists bool, err error) {
+	ctx, span := tracing.StartSpan(ctx, "RecipeStepExists")
+	defer span.End()
+
+	req, err := c.BuildRecipeStepExistsRequest(ctx, recipeID, recipeStepID)
+	if err != nil {
+		return false, fmt.Errorf("building request: %w", err)
+	}
+
+	return c.checkExistence(ctx, req)
+}
+
+// BuildGetRecipeStepRequest builds an HTTP request for fetching a recipe step.
+func (c *V1Client) BuildGetRecipeStepRequest(ctx context.Context, recipeID, recipeStepID uint64) (*http.Request, error) {
+	ctx, span := tracing.StartSpan(ctx, "BuildGetRecipeStepRequest")
+	defer span.End()
+
+	uri := c.BuildURL(
+		nil,
+		recipesBasePath,
+		strconv.FormatUint(recipeID, 10),
+		recipeStepsBasePath,
+		strconv.FormatUint(recipeStepID, 10),
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+}
+
+// GetRecipeStep retrieves a recipe step.
+func (c *V1Client) GetRecipeStep(ctx context.Context, recipeID, recipeStepID uint64) (recipeStep *models.RecipeStep, err error) {
+	ctx, span := tracing.StartSpan(ctx, "GetRecipeStep")
+	defer span.End()
+
+	req, err := c.BuildGetRecipeStepRequest(ctx, recipeID, recipeStepID)
 	if err != nil {
 		return nil, fmt.Errorf("building request: %w", err)
 	}
@@ -34,16 +78,28 @@ func (c *V1Client) GetRecipeStep(ctx context.Context, id uint64) (recipeStep *mo
 	return recipeStep, nil
 }
 
-// BuildGetRecipeStepsRequest builds an HTTP request for fetching recipe steps
-func (c *V1Client) BuildGetRecipeStepsRequest(ctx context.Context, filter *models.QueryFilter) (*http.Request, error) {
-	uri := c.BuildURL(filter.ToValues(), recipeStepsBasePath)
+// BuildGetRecipeStepsRequest builds an HTTP request for fetching recipe steps.
+func (c *V1Client) BuildGetRecipeStepsRequest(ctx context.Context, recipeID uint64, filter *models.QueryFilter) (*http.Request, error) {
+	ctx, span := tracing.StartSpan(ctx, "BuildGetRecipeStepsRequest")
+	defer span.End()
 
-	return http.NewRequest(http.MethodGet, uri, nil)
+	uri := c.BuildURL(
+		filter.ToValues(),
+		recipesBasePath,
+		strconv.FormatUint(recipeID, 10),
+		recipeStepsBasePath,
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 }
 
-// GetRecipeSteps retrieves a list of recipe steps
-func (c *V1Client) GetRecipeSteps(ctx context.Context, filter *models.QueryFilter) (recipeSteps *models.RecipeStepList, err error) {
-	req, err := c.BuildGetRecipeStepsRequest(ctx, filter)
+// GetRecipeSteps retrieves a list of recipe steps.
+func (c *V1Client) GetRecipeSteps(ctx context.Context, recipeID uint64, filter *models.QueryFilter) (recipeSteps *models.RecipeStepList, err error) {
+	ctx, span := tracing.StartSpan(ctx, "GetRecipeSteps")
+	defer span.End()
+
+	req, err := c.BuildGetRecipeStepsRequest(ctx, recipeID, filter)
 	if err != nil {
 		return nil, fmt.Errorf("building request: %w", err)
 	}
@@ -55,15 +111,27 @@ func (c *V1Client) GetRecipeSteps(ctx context.Context, filter *models.QueryFilte
 	return recipeSteps, nil
 }
 
-// BuildCreateRecipeStepRequest builds an HTTP request for creating a recipe step
-func (c *V1Client) BuildCreateRecipeStepRequest(ctx context.Context, body *models.RecipeStepCreationInput) (*http.Request, error) {
-	uri := c.BuildURL(nil, recipeStepsBasePath)
+// BuildCreateRecipeStepRequest builds an HTTP request for creating a recipe step.
+func (c *V1Client) BuildCreateRecipeStepRequest(ctx context.Context, input *models.RecipeStepCreationInput) (*http.Request, error) {
+	ctx, span := tracing.StartSpan(ctx, "BuildCreateRecipeStepRequest")
+	defer span.End()
 
-	return c.buildDataRequest(http.MethodPost, uri, body)
+	uri := c.BuildURL(
+		nil,
+		recipesBasePath,
+		strconv.FormatUint(input.BelongsToRecipe, 10),
+		recipeStepsBasePath,
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+
+	return c.buildDataRequest(ctx, http.MethodPost, uri, input)
 }
 
-// CreateRecipeStep creates a recipe step
+// CreateRecipeStep creates a recipe step.
 func (c *V1Client) CreateRecipeStep(ctx context.Context, input *models.RecipeStepCreationInput) (recipeStep *models.RecipeStep, err error) {
+	ctx, span := tracing.StartSpan(ctx, "CreateRecipeStep")
+	defer span.End()
+
 	req, err := c.BuildCreateRecipeStepRequest(ctx, input)
 	if err != nil {
 		return nil, fmt.Errorf("building request: %w", err)
@@ -73,33 +141,59 @@ func (c *V1Client) CreateRecipeStep(ctx context.Context, input *models.RecipeSte
 	return recipeStep, err
 }
 
-// BuildUpdateRecipeStepRequest builds an HTTP request for updating a recipe step
-func (c *V1Client) BuildUpdateRecipeStepRequest(ctx context.Context, updated *models.RecipeStep) (*http.Request, error) {
-	uri := c.BuildURL(nil, recipeStepsBasePath, strconv.FormatUint(updated.ID, 10))
+// BuildUpdateRecipeStepRequest builds an HTTP request for updating a recipe step.
+func (c *V1Client) BuildUpdateRecipeStepRequest(ctx context.Context, recipeStep *models.RecipeStep) (*http.Request, error) {
+	ctx, span := tracing.StartSpan(ctx, "BuildUpdateRecipeStepRequest")
+	defer span.End()
 
-	return c.buildDataRequest(http.MethodPut, uri, updated)
+	uri := c.BuildURL(
+		nil,
+		recipesBasePath,
+		strconv.FormatUint(recipeStep.BelongsToRecipe, 10),
+		recipeStepsBasePath,
+		strconv.FormatUint(recipeStep.ID, 10),
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+
+	return c.buildDataRequest(ctx, http.MethodPut, uri, recipeStep)
 }
 
-// UpdateRecipeStep updates a recipe step
-func (c *V1Client) UpdateRecipeStep(ctx context.Context, updated *models.RecipeStep) error {
-	req, err := c.BuildUpdateRecipeStepRequest(ctx, updated)
+// UpdateRecipeStep updates a recipe step.
+func (c *V1Client) UpdateRecipeStep(ctx context.Context, recipeStep *models.RecipeStep) error {
+	ctx, span := tracing.StartSpan(ctx, "UpdateRecipeStep")
+	defer span.End()
+
+	req, err := c.BuildUpdateRecipeStepRequest(ctx, recipeStep)
 	if err != nil {
 		return fmt.Errorf("building request: %w", err)
 	}
 
-	return c.executeRequest(ctx, req, &updated)
+	return c.executeRequest(ctx, req, &recipeStep)
 }
 
-// BuildArchiveRecipeStepRequest builds an HTTP request for updating a recipe step
-func (c *V1Client) BuildArchiveRecipeStepRequest(ctx context.Context, id uint64) (*http.Request, error) {
-	uri := c.BuildURL(nil, recipeStepsBasePath, strconv.FormatUint(id, 10))
+// BuildArchiveRecipeStepRequest builds an HTTP request for updating a recipe step.
+func (c *V1Client) BuildArchiveRecipeStepRequest(ctx context.Context, recipeID, recipeStepID uint64) (*http.Request, error) {
+	ctx, span := tracing.StartSpan(ctx, "BuildArchiveRecipeStepRequest")
+	defer span.End()
 
-	return http.NewRequest(http.MethodDelete, uri, nil)
+	uri := c.BuildURL(
+		nil,
+		recipesBasePath,
+		strconv.FormatUint(recipeID, 10),
+		recipeStepsBasePath,
+		strconv.FormatUint(recipeStepID, 10),
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+
+	return http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
 }
 
-// ArchiveRecipeStep archives a recipe step
-func (c *V1Client) ArchiveRecipeStep(ctx context.Context, id uint64) error {
-	req, err := c.BuildArchiveRecipeStepRequest(ctx, id)
+// ArchiveRecipeStep archives a recipe step.
+func (c *V1Client) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID uint64) error {
+	ctx, span := tracing.StartSpan(ctx, "ArchiveRecipeStep")
+	defer span.End()
+
+	req, err := c.BuildArchiveRecipeStepRequest(ctx, recipeID, recipeStepID)
 	if err != nil {
 		return fmt.Errorf("building request: %w", err)
 	}

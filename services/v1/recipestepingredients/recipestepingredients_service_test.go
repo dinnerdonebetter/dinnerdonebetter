@@ -1,7 +1,6 @@
 package recipestepingredients
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -11,20 +10,23 @@ import (
 	mockmetrics "gitlab.com/prixfixe/prixfixe/internal/v1/metrics/mock"
 	mockmodels "gitlab.com/prixfixe/prixfixe/models/v1/mock"
 
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 	"gitlab.com/verygoodsoftwarenotvirus/logging/v1/noop"
 )
 
 func buildTestService() *Service {
 	return &Service{
-		logger:                        noop.ProvideNoopLogger(),
-		recipeStepIngredientCounter:   &mockmetrics.UnitCounter{},
-		recipeStepIngredientDatabase:  &mockmodels.RecipeStepIngredientDataManager{},
-		userIDFetcher:                 func(req *http.Request) uint64 { return 0 },
-		recipeStepIngredientIDFetcher: func(req *http.Request) uint64 { return 0 },
-		encoderDecoder:                &mockencoding.EncoderDecoder{},
-		reporter:                      nil,
+		logger:                          noop.ProvideNoopLogger(),
+		recipeStepIngredientCounter:     &mockmetrics.UnitCounter{},
+		recipeDataManager:               &mockmodels.RecipeDataManager{},
+		recipeStepDataManager:           &mockmodels.RecipeStepDataManager{},
+		recipeStepIngredientDataManager: &mockmodels.RecipeStepIngredientDataManager{},
+		recipeIDFetcher:                 func(req *http.Request) uint64 { return 0 },
+		recipeStepIDFetcher:             func(req *http.Request) uint64 { return 0 },
+		recipeStepIngredientIDFetcher:   func(req *http.Request) uint64 { return 0 },
+		userIDFetcher:                   func(req *http.Request) uint64 { return 0 },
+		encoderDecoder:                  &mockencoding.EncoderDecoder{},
+		reporter:                        nil,
 	}
 }
 
@@ -32,24 +34,17 @@ func TestProvideRecipeStepIngredientsService(T *testing.T) {
 	T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
-		expectation := uint64(123)
-		uc := &mockmetrics.UnitCounter{}
-		uc.On("IncrementBy", expectation).Return()
-
-		var ucp metrics.UnitCounterProvider = func(
-			counterName metrics.CounterName,
-			description string,
-		) (metrics.UnitCounter, error) {
-			return uc, nil
+		var ucp metrics.UnitCounterProvider = func(counterName metrics.CounterName, description string) (metrics.UnitCounter, error) {
+			return &mockmetrics.UnitCounter{}, nil
 		}
 
-		idm := &mockmodels.RecipeStepIngredientDataManager{}
-		idm.On("GetAllRecipeStepIngredientsCount", mock.Anything).Return(expectation, nil)
-
 		s, err := ProvideRecipeStepIngredientsService(
-			context.Background(),
 			noop.ProvideNoopLogger(),
-			idm,
+			&mockmodels.RecipeDataManager{},
+			&mockmodels.RecipeStepDataManager{},
+			&mockmodels.RecipeStepIngredientDataManager{},
+			func(req *http.Request) uint64 { return 0 },
+			func(req *http.Request) uint64 { return 0 },
 			func(req *http.Request) uint64 { return 0 },
 			func(req *http.Request) uint64 { return 0 },
 			&mockencoding.EncoderDecoder{},
@@ -57,29 +52,22 @@ func TestProvideRecipeStepIngredientsService(T *testing.T) {
 			nil,
 		)
 
-		require.NotNil(t, s)
-		require.NoError(t, err)
+		assert.NotNil(t, s)
+		assert.NoError(t, err)
 	})
 
 	T.Run("with error providing unit counter", func(t *testing.T) {
-		expectation := uint64(123)
-		uc := &mockmetrics.UnitCounter{}
-		uc.On("IncrementBy", expectation).Return()
-
-		var ucp metrics.UnitCounterProvider = func(
-			counterName metrics.CounterName,
-			description string,
-		) (metrics.UnitCounter, error) {
-			return uc, errors.New("blah")
+		var ucp metrics.UnitCounterProvider = func(counterName metrics.CounterName, description string) (metrics.UnitCounter, error) {
+			return nil, errors.New("blah")
 		}
 
-		idm := &mockmodels.RecipeStepIngredientDataManager{}
-		idm.On("GetAllRecipeStepIngredientsCount", mock.Anything).Return(expectation, nil)
-
 		s, err := ProvideRecipeStepIngredientsService(
-			context.Background(),
 			noop.ProvideNoopLogger(),
-			idm,
+			&mockmodels.RecipeDataManager{},
+			&mockmodels.RecipeStepDataManager{},
+			&mockmodels.RecipeStepIngredientDataManager{},
+			func(req *http.Request) uint64 { return 0 },
+			func(req *http.Request) uint64 { return 0 },
 			func(req *http.Request) uint64 { return 0 },
 			func(req *http.Request) uint64 { return 0 },
 			&mockencoding.EncoderDecoder{},
@@ -87,37 +75,7 @@ func TestProvideRecipeStepIngredientsService(T *testing.T) {
 			nil,
 		)
 
-		require.Nil(t, s)
-		require.Error(t, err)
-	})
-
-	T.Run("with error fetching recipe step ingredient count", func(t *testing.T) {
-		expectation := uint64(123)
-		uc := &mockmetrics.UnitCounter{}
-		uc.On("IncrementBy", expectation).Return()
-
-		var ucp metrics.UnitCounterProvider = func(
-			counterName metrics.CounterName,
-			description string,
-		) (metrics.UnitCounter, error) {
-			return uc, nil
-		}
-
-		idm := &mockmodels.RecipeStepIngredientDataManager{}
-		idm.On("GetAllRecipeStepIngredientsCount", mock.Anything).Return(expectation, errors.New("blah"))
-
-		s, err := ProvideRecipeStepIngredientsService(
-			context.Background(),
-			noop.ProvideNoopLogger(),
-			idm,
-			func(req *http.Request) uint64 { return 0 },
-			func(req *http.Request) uint64 { return 0 },
-			&mockencoding.EncoderDecoder{},
-			ucp,
-			nil,
-		)
-
-		require.Nil(t, s)
-		require.Error(t, err)
+		assert.Nil(t, s)
+		assert.Error(t, err)
 	})
 }

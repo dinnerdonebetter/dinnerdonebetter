@@ -25,6 +25,10 @@
       key: "inspired_by_recipe_id"
     },
     {
+      title: "Private",
+      key: "private"
+    },
+    {
       title: "Created On",
       key: "created_on"
     },

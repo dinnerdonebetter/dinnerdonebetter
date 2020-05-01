@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"math"
 	"net/http"
 	"net/url"
@@ -11,9 +12,9 @@ import (
 )
 
 const (
-	// MaxLimit is the maximum value for list queries
+	// MaxLimit is the maximum value for list queries.
 	MaxLimit = 250
-	// DefaultLimit represents how many results we return in a response by default
+	// DefaultLimit represents how many results we return in a response by default.
 	DefaultLimit = 20
 
 	pageKey          = "page"
@@ -25,7 +26,7 @@ const (
 	sortByKey        = "sort_by"
 )
 
-// QueryFilter represents all the filters a user could apply to a list query
+// QueryFilter represents all the filters a user could apply to a list query.
 type QueryFilter struct {
 	Page          uint64   `json:"page"`
 	Limit         uint64   `json:"limit"`
@@ -36,7 +37,7 @@ type QueryFilter struct {
 	SortBy        sortType `json:"sort_by"`
 }
 
-// DefaultQueryFilter builds the default query filter
+// DefaultQueryFilter builds the default query filter.
 func DefaultQueryFilter() *QueryFilter {
 	return &QueryFilter{
 		Page:   1,
@@ -79,12 +80,12 @@ func (qf *QueryFilter) FromParams(params url.Values) {
 	}
 }
 
-// SetPage sets the current page with certain constraints
+// SetPage sets the current page with certain constraints.
 func (qf *QueryFilter) SetPage(page uint64) {
 	qf.Page = uint64(math.Max(1, float64(page)))
 }
 
-// QueryPage calculates a query page from the current filter values
+// QueryPage calculates a query page from the current filter values.
 func (qf *QueryFilter) QueryPage() uint64 {
 	return qf.Limit * (qf.Page - 1)
 }
@@ -121,11 +122,16 @@ func (qf *QueryFilter) ToValues() url.Values {
 	return v
 }
 
-// ApplyToQueryBuilder applies the query filter to a query builder
-func (qf *QueryFilter) ApplyToQueryBuilder(queryBuilder squirrel.SelectBuilder) squirrel.SelectBuilder {
+// ApplyToQueryBuilder applies the query filter to a query builder.
+func (qf *QueryFilter) ApplyToQueryBuilder(queryBuilder squirrel.SelectBuilder, tableName string) squirrel.SelectBuilder {
 	if qf == nil {
 		return queryBuilder
 	}
+
+	const (
+		createdOnKey = "created_on"
+		updatedOnKey = "updated_on"
+	)
 
 	qf.SetPage(qf.Page)
 	if qp := qf.QueryPage(); qp > 0 {
@@ -139,25 +145,25 @@ func (qf *QueryFilter) ApplyToQueryBuilder(queryBuilder squirrel.SelectBuilder) 
 	}
 
 	if qf.CreatedAfter > 0 {
-		queryBuilder = queryBuilder.Where(squirrel.Gt{"created_on": qf.CreatedAfter})
+		queryBuilder = queryBuilder.Where(squirrel.Gt{fmt.Sprintf("%s.%s", tableName, createdOnKey): qf.CreatedAfter})
 	}
 
 	if qf.CreatedBefore > 0 {
-		queryBuilder = queryBuilder.Where(squirrel.Lt{"created_on": qf.CreatedBefore})
+		queryBuilder = queryBuilder.Where(squirrel.Lt{fmt.Sprintf("%s.%s", tableName, createdOnKey): qf.CreatedBefore})
 	}
 
 	if qf.UpdatedAfter > 0 {
-		queryBuilder = queryBuilder.Where(squirrel.Gt{"updated_on": qf.UpdatedAfter})
+		queryBuilder = queryBuilder.Where(squirrel.Gt{fmt.Sprintf("%s.%s", tableName, updatedOnKey): qf.UpdatedAfter})
 	}
 
 	if qf.UpdatedBefore > 0 {
-		queryBuilder = queryBuilder.Where(squirrel.Lt{"updated_on": qf.UpdatedBefore})
+		queryBuilder = queryBuilder.Where(squirrel.Lt{fmt.Sprintf("%s.%s", tableName, updatedOnKey): qf.UpdatedBefore})
 	}
 
 	return queryBuilder
 }
 
-// ExtractQueryFilter can extract a QueryFilter from a request
+// ExtractQueryFilter can extract a QueryFilter from a request.
 func ExtractQueryFilter(req *http.Request) *QueryFilter {
 	qf := &QueryFilter{}
 	qf.FromParams(req.URL.Query())

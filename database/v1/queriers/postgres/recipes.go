@@ -10,80 +10,104 @@ import (
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
 
 	"github.com/Masterminds/squirrel"
-	"gitlab.com/verygoodsoftwarenotvirus/logging/v1"
 )
 
 const (
-	recipesTableName = "recipes"
+	recipesTableName           = "recipes"
+	recipesUserOwnershipColumn = "belongs_to_user"
 )
 
 var (
 	recipesTableColumns = []string{
-		"id",
-		"name",
-		"source",
-		"description",
-		"inspired_by_recipe_id",
-		"created_on",
-		"updated_on",
-		"archived_on",
-		"belongs_to",
+		fmt.Sprintf("%s.%s", recipesTableName, "id"),
+		fmt.Sprintf("%s.%s", recipesTableName, "name"),
+		fmt.Sprintf("%s.%s", recipesTableName, "source"),
+		fmt.Sprintf("%s.%s", recipesTableName, "description"),
+		fmt.Sprintf("%s.%s", recipesTableName, "inspired_by_recipe_id"),
+		fmt.Sprintf("%s.%s", recipesTableName, "private"),
+		fmt.Sprintf("%s.%s", recipesTableName, "created_on"),
+		fmt.Sprintf("%s.%s", recipesTableName, "updated_on"),
+		fmt.Sprintf("%s.%s", recipesTableName, "archived_on"),
+		fmt.Sprintf("%s.%s", recipesTableName, recipesUserOwnershipColumn),
 	}
+
+	recipesOnRecipeTagsJoinClause           = fmt.Sprintf("%s ON %s.%s=%s.id", recipesTableName, recipeTagsTableName, recipeTagsTableOwnershipColumn, recipesTableName)
+	recipesOnRecipeStepsJoinClause          = fmt.Sprintf("%s ON %s.%s=%s.id", recipesTableName, recipeStepsTableName, recipeStepsTableOwnershipColumn, recipesTableName)
+	recipesOnRecipeIterationsJoinClause     = fmt.Sprintf("%s ON %s.%s=%s.id", recipesTableName, recipeIterationsTableName, recipeIterationsTableOwnershipColumn, recipesTableName)
+	recipesOnRecipeIterationStepsJoinClause = fmt.Sprintf("%s ON %s.%s=%s.id", recipesTableName, recipeIterationStepsTableName, recipeIterationStepsTableOwnershipColumn, recipesTableName)
 )
 
 // scanRecipe takes a database Scanner (i.e. *sql.Row) and scans the result into a Recipe struct
-func scanRecipe(scan database.Scanner) (*models.Recipe, error) {
+func (p *Postgres) scanRecipe(scan database.Scanner, includeCount bool) (*models.Recipe, uint64, error) {
 	x := &models.Recipe{}
+	var count uint64
 
-	if err := scan.Scan(
+	targetVars := []interface{}{
 		&x.ID,
 		&x.Name,
 		&x.Source,
 		&x.Description,
 		&x.InspiredByRecipeID,
+		&x.Private,
 		&x.CreatedOn,
 		&x.UpdatedOn,
 		&x.ArchivedOn,
-		&x.BelongsTo,
-	); err != nil {
-		return nil, err
+		&x.BelongsToUser,
 	}
 
-	return x, nil
+	if includeCount {
+		targetVars = append(targetVars, &count)
+	}
+
+	if err := scan.Scan(targetVars...); err != nil {
+		return nil, 0, err
+	}
+
+	return x, count, nil
 }
 
-// scanRecipes takes a logger and some database rows and turns them into a slice of recipes
-func scanRecipes(logger logging.Logger, rows *sql.Rows) ([]models.Recipe, error) {
-	var list []models.Recipe
+// scanRecipes takes a logger and some database rows and turns them into a slice of recipes.
+func (p *Postgres) scanRecipes(rows database.ResultIterator) ([]models.Recipe, uint64, error) {
+	var (
+		list  []models.Recipe
+		count uint64
+	)
 
 	for rows.Next() {
-		x, err := scanRecipe(rows)
+		x, c, err := p.scanRecipe(rows, true)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
+
+		if count == 0 {
+			count = c
+		}
+
 		list = append(list, *x)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	if closeErr := rows.Close(); closeErr != nil {
-		logger.Error(closeErr, "closing database rows")
+		p.logger.Error(closeErr, "closing database rows")
 	}
 
-	return list, nil
+	return list, count, nil
 }
 
-// buildGetRecipeQuery constructs a SQL query for fetching a recipe with a given ID belong to a user with a given ID.
-func (p *Postgres) buildGetRecipeQuery(recipeID, userID uint64) (query string, args []interface{}) {
+//
+func (p *Postgres) buildRecipeExistsQuery(recipeID uint64) (query string, args []interface{}) {
 	var err error
+
 	query, args, err = p.sqlBuilder.
-		Select(recipesTableColumns...).
+		Select(fmt.Sprintf("%s.id", recipesTableName)).
+		Prefix(existencePrefix).
 		From(recipesTableName).
+		Suffix(existenceSuffix).
 		Where(squirrel.Eq{
-			"id":         recipeID,
-			"belongs_to": userID,
+			fmt.Sprintf("%s.id", recipesTableName): recipeID,
 		}).ToSql()
 
 	p.logQueryBuildingError(err)
@@ -91,40 +115,42 @@ func (p *Postgres) buildGetRecipeQuery(recipeID, userID uint64) (query string, a
 	return query, args
 }
 
-// GetRecipe fetches a recipe from the postgres database
-func (p *Postgres) GetRecipe(ctx context.Context, recipeID, userID uint64) (*models.Recipe, error) {
-	query, args := p.buildGetRecipeQuery(recipeID, userID)
-	row := p.db.QueryRowContext(ctx, query, args...)
-	return scanRecipe(row)
-}
+// RecipeExists queries the database to see if a given recipe belonging to a given user exists.
+func (p *Postgres) RecipeExists(ctx context.Context, recipeID uint64) (exists bool, err error) {
+	query, args := p.buildRecipeExistsQuery(recipeID)
 
-// buildGetRecipeCountQuery takes a QueryFilter and a user ID and returns a SQL query (and the relevant arguments) for
-// fetching the number of recipes belonging to a given user that meet a given query
-func (p *Postgres) buildGetRecipeCountQuery(filter *models.QueryFilter, userID uint64) (query string, args []interface{}) {
-	var err error
-	builder := p.sqlBuilder.
-		Select(CountQuery).
-		From(recipesTableName).
-		Where(squirrel.Eq{
-			"archived_on": nil,
-			"belongs_to":  userID,
-		})
-
-	if filter != nil {
-		builder = filter.ApplyToQueryBuilder(builder)
+	err = p.db.QueryRowContext(ctx, query, args...).Scan(&exists)
+	if err == sql.ErrNoRows {
+		return false, nil
 	}
 
-	query, args, err = builder.ToSql()
+	return exists, err
+}
+
+//
+func (p *Postgres) buildGetRecipeQuery(recipeID uint64) (query string, args []interface{}) {
+	var err error
+
+	query, args, err = p.sqlBuilder.
+		Select(recipesTableColumns...).
+		From(recipesTableName).
+		Where(squirrel.Eq{
+			fmt.Sprintf("%s.id", recipesTableName): recipeID,
+		}).
+		ToSql()
+
 	p.logQueryBuildingError(err)
 
 	return query, args
 }
 
-// GetRecipeCount will fetch the count of recipes from the database that meet a particular filter and belong to a particular user.
-func (p *Postgres) GetRecipeCount(ctx context.Context, filter *models.QueryFilter, userID uint64) (count uint64, err error) {
-	query, args := p.buildGetRecipeCountQuery(filter, userID)
-	err = p.db.QueryRowContext(ctx, query, args...).Scan(&count)
-	return count, err
+// GetRecipe fetches a recipe from the database.
+func (p *Postgres) GetRecipe(ctx context.Context, recipeID uint64) (*models.Recipe, error) {
+	query, args := p.buildGetRecipeQuery(recipeID)
+	row := p.db.QueryRowContext(ctx, query, args...)
+
+	recipe, _, err := p.scanRecipe(row, false)
+	return recipe, err
 }
 
 var (
@@ -137,10 +163,13 @@ var (
 func (p *Postgres) buildGetAllRecipesCountQuery() string {
 	allRecipesCountQueryBuilder.Do(func() {
 		var err error
+
 		allRecipesCountQuery, _, err = p.sqlBuilder.
-			Select(CountQuery).
+			Select(fmt.Sprintf(countQuery, recipesTableName)).
 			From(recipesTableName).
-			Where(squirrel.Eq{"archived_on": nil}).
+			Where(squirrel.Eq{
+				fmt.Sprintf("%s.archived_on", recipesTableName): nil,
+			}).
 			ToSql()
 		p.logQueryBuildingError(err)
 	})
@@ -148,26 +177,27 @@ func (p *Postgres) buildGetAllRecipesCountQuery() string {
 	return allRecipesCountQuery
 }
 
-// GetAllRecipesCount will fetch the count of recipes from the database
+// GetAllRecipesCount will fetch the count of recipes from the database.
 func (p *Postgres) GetAllRecipesCount(ctx context.Context) (count uint64, err error) {
 	err = p.db.QueryRowContext(ctx, p.buildGetAllRecipesCountQuery()).Scan(&count)
 	return count, err
 }
 
-// buildGetRecipesQuery builds a SQL query selecting recipes that adhere to a given QueryFilter and belong to a given user,
+// buildGetRecipesQuery builds a SQL query selecting recipes that adhere to a given QueryFilter,
 // and returns both the query and the relevant args to pass to the query executor.
-func (p *Postgres) buildGetRecipesQuery(filter *models.QueryFilter, userID uint64) (query string, args []interface{}) {
+func (p *Postgres) buildGetRecipesQuery(filter *models.QueryFilter) (query string, args []interface{}) {
 	var err error
+
 	builder := p.sqlBuilder.
-		Select(recipesTableColumns...).
+		Select(append(recipesTableColumns, fmt.Sprintf(countQuery, recipesTableName))...).
 		From(recipesTableName).
 		Where(squirrel.Eq{
-			"archived_on": nil,
-			"belongs_to":  userID,
-		})
+			fmt.Sprintf("%s.archived_on", recipesTableName): nil,
+		}).
+		GroupBy(fmt.Sprintf("%s.id", recipesTableName))
 
 	if filter != nil {
-		builder = filter.ApplyToQueryBuilder(builder)
+		builder = filter.ApplyToQueryBuilder(builder, recipesTableName)
 	}
 
 	query, args, err = builder.ToSql()
@@ -176,49 +206,27 @@ func (p *Postgres) buildGetRecipesQuery(filter *models.QueryFilter, userID uint6
 	return query, args
 }
 
-// GetRecipes fetches a list of recipes from the database that meet a particular filter
-func (p *Postgres) GetRecipes(ctx context.Context, filter *models.QueryFilter, userID uint64) (*models.RecipeList, error) {
-	query, args := p.buildGetRecipesQuery(filter, userID)
+// GetRecipes fetches a list of recipes from the database that meet a particular filter.
+func (p *Postgres) GetRecipes(ctx context.Context, filter *models.QueryFilter) (*models.RecipeList, error) {
+	query, args := p.buildGetRecipesQuery(filter)
 
 	rows, err := p.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, buildError(err, "querying database for recipes")
 	}
 
-	list, err := scanRecipes(p.logger, rows)
+	recipes, count, err := p.scanRecipes(rows)
 	if err != nil {
 		return nil, fmt.Errorf("scanning response from database: %w", err)
 	}
 
-	count, err := p.GetRecipeCount(ctx, filter, userID)
-	if err != nil {
-		return nil, fmt.Errorf("fetching recipe count: %w", err)
-	}
-
-	x := &models.RecipeList{
+	list := &models.RecipeList{
 		Pagination: models.Pagination{
 			Page:       filter.Page,
 			Limit:      filter.Limit,
 			TotalCount: count,
 		},
-		Recipes: list,
-	}
-
-	return x, nil
-}
-
-// GetAllRecipesForUser fetches every recipe belonging to a user
-func (p *Postgres) GetAllRecipesForUser(ctx context.Context, userID uint64) ([]models.Recipe, error) {
-	query, args := p.buildGetRecipesQuery(nil, userID)
-
-	rows, err := p.db.QueryContext(ctx, query, args...)
-	if err != nil {
-		return nil, buildError(err, "fetching recipes for user")
-	}
-
-	list, err := scanRecipes(p.logger, rows)
-	if err != nil {
-		return nil, fmt.Errorf("parsing database results: %w", err)
+		Recipes: recipes,
 	}
 
 	return list, nil
@@ -227,6 +235,7 @@ func (p *Postgres) GetAllRecipesForUser(ctx context.Context, userID uint64) ([]m
 // buildCreateRecipeQuery takes a recipe and returns a creation query for that recipe and the relevant arguments.
 func (p *Postgres) buildCreateRecipeQuery(input *models.Recipe) (query string, args []interface{}) {
 	var err error
+
 	query, args, err = p.sqlBuilder.
 		Insert(recipesTableName).
 		Columns(
@@ -234,14 +243,16 @@ func (p *Postgres) buildCreateRecipeQuery(input *models.Recipe) (query string, a
 			"source",
 			"description",
 			"inspired_by_recipe_id",
-			"belongs_to",
+			"private",
+			recipesUserOwnershipColumn,
 		).
 		Values(
 			input.Name,
 			input.Source,
 			input.Description,
 			input.InspiredByRecipeID,
-			input.BelongsTo,
+			input.Private,
+			input.BelongsToUser,
 		).
 		Suffix("RETURNING id, created_on").
 		ToSql()
@@ -251,19 +262,20 @@ func (p *Postgres) buildCreateRecipeQuery(input *models.Recipe) (query string, a
 	return query, args
 }
 
-// CreateRecipe creates a recipe in the database
+// CreateRecipe creates a recipe in the database.
 func (p *Postgres) CreateRecipe(ctx context.Context, input *models.RecipeCreationInput) (*models.Recipe, error) {
 	x := &models.Recipe{
 		Name:               input.Name,
 		Source:             input.Source,
 		Description:        input.Description,
 		InspiredByRecipeID: input.InspiredByRecipeID,
-		BelongsTo:          input.BelongsTo,
+		Private:            input.Private,
+		BelongsToUser:      input.BelongsToUser,
 	}
 
 	query, args := p.buildCreateRecipeQuery(x)
 
-	// create the recipe
+	// create the recipe.
 	err := p.db.QueryRowContext(ctx, query, args...).Scan(&x.ID, &x.CreatedOn)
 	if err != nil {
 		return nil, fmt.Errorf("error executing recipe creation query: %w", err)
@@ -272,19 +284,21 @@ func (p *Postgres) CreateRecipe(ctx context.Context, input *models.RecipeCreatio
 	return x, nil
 }
 
-// buildUpdateRecipeQuery takes a recipe and returns an update SQL query, with the relevant query parameters
+// buildUpdateRecipeQuery takes a recipe and returns an update SQL query, with the relevant query parameters.
 func (p *Postgres) buildUpdateRecipeQuery(input *models.Recipe) (query string, args []interface{}) {
 	var err error
+
 	query, args, err = p.sqlBuilder.
 		Update(recipesTableName).
 		Set("name", input.Name).
 		Set("source", input.Source).
 		Set("description", input.Description).
 		Set("inspired_by_recipe_id", input.InspiredByRecipeID).
-		Set("updated_on", squirrel.Expr(CurrentUnixTimeQuery)).
+		Set("private", input.Private).
+		Set("updated_on", squirrel.Expr(currentUnixTimeQuery)).
 		Where(squirrel.Eq{
-			"id":         input.ID,
-			"belongs_to": input.BelongsTo,
+			"id":                       input.ID,
+			recipesUserOwnershipColumn: input.BelongsToUser,
 		}).
 		Suffix("RETURNING updated_on").
 		ToSql()
@@ -303,14 +317,15 @@ func (p *Postgres) UpdateRecipe(ctx context.Context, input *models.Recipe) error
 // buildArchiveRecipeQuery returns a SQL query which marks a given recipe belonging to a given user as archived.
 func (p *Postgres) buildArchiveRecipeQuery(recipeID, userID uint64) (query string, args []interface{}) {
 	var err error
+
 	query, args, err = p.sqlBuilder.
 		Update(recipesTableName).
-		Set("updated_on", squirrel.Expr(CurrentUnixTimeQuery)).
-		Set("archived_on", squirrel.Expr(CurrentUnixTimeQuery)).
+		Set("updated_on", squirrel.Expr(currentUnixTimeQuery)).
+		Set("archived_on", squirrel.Expr(currentUnixTimeQuery)).
 		Where(squirrel.Eq{
-			"id":          recipeID,
-			"archived_on": nil,
-			"belongs_to":  userID,
+			"id":                       recipeID,
+			"archived_on":              nil,
+			recipesUserOwnershipColumn: userID,
 		}).
 		Suffix("RETURNING archived_on").
 		ToSql()
@@ -320,9 +335,16 @@ func (p *Postgres) buildArchiveRecipeQuery(recipeID, userID uint64) (query strin
 	return query, args
 }
 
-// ArchiveRecipe marks a recipe as archived in the database
+// ArchiveRecipe marks a recipe as archived in the database.
 func (p *Postgres) ArchiveRecipe(ctx context.Context, recipeID, userID uint64) error {
 	query, args := p.buildArchiveRecipeQuery(recipeID, userID)
-	_, err := p.db.ExecContext(ctx, query, args...)
+
+	res, err := p.db.ExecContext(ctx, query, args...)
+	if res != nil {
+		if rowCount, rowCountErr := res.RowsAffected(); rowCountErr == nil && rowCount == 0 {
+			return sql.ErrNoRows
+		}
+	}
+
 	return err
 }

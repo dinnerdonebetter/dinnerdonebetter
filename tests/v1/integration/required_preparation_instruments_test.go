@@ -4,87 +4,99 @@ import (
 	"context"
 	"testing"
 
+	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 
-	fake "github.com/brianvoe/gofakeit"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"go.opencensus.io/trace"
 )
 
 func checkRequiredPreparationInstrumentEquality(t *testing.T, expected, actual *models.RequiredPreparationInstrument) {
 	t.Helper()
 
 	assert.NotZero(t, actual.ID)
-	assert.Equal(t, expected.InstrumentID, actual.InstrumentID, "expected InstrumentID for ID %d to be %v, but it was %v ", expected.ID, expected.InstrumentID, actual.InstrumentID)
-	assert.Equal(t, expected.PreparationID, actual.PreparationID, "expected PreparationID for ID %d to be %v, but it was %v ", expected.ID, expected.PreparationID, actual.PreparationID)
+	assert.Equal(t, expected.ValidInstrumentID, actual.ValidInstrumentID, "expected ValidInstrumentID for ID %d to be %v, but it was %v ", expected.ID, expected.ValidInstrumentID, actual.ValidInstrumentID)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for ID %d to be %v, but it was %v ", expected.ID, expected.Notes, actual.Notes)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
-func buildDummyRequiredPreparationInstrument(t *testing.T) *models.RequiredPreparationInstrument {
-	t.Helper()
-
-	x := &models.RequiredPreparationInstrumentCreationInput{
-		InstrumentID:  uint64(fake.Uint32()),
-		PreparationID: uint64(fake.Uint32()),
-		Notes:         fake.Word(),
-	}
-	y, err := todoClient.CreateRequiredPreparationInstrument(context.Background(), x)
-	require.NoError(t, err)
-	return y
-}
-
 func TestRequiredPreparationInstruments(test *testing.T) {
-	test.Parallel()
-
 	test.Run("Creating", func(T *testing.T) {
 		T.Run("should be createable", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create required preparation instrument
-			expected := &models.RequiredPreparationInstrument{
-				InstrumentID:  uint64(fake.Uint32()),
-				PreparationID: uint64(fake.Uint32()),
-				Notes:         fake.Word(),
-			}
-			premade, err := todoClient.CreateRequiredPreparationInstrument(ctx, &models.RequiredPreparationInstrumentCreationInput{
-				InstrumentID:  expected.InstrumentID,
-				PreparationID: expected.PreparationID,
-				Notes:         expected.Notes,
-			})
-			checkValueAndError(t, premade, err)
+			// Create valid preparation.
+			exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakemodels.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := prixfixeClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			checkValueAndError(t, createdValidPreparation, err)
 
-			// Assert required preparation instrument equality
-			checkRequiredPreparationInstrumentEquality(t, expected, premade)
+			// Create required preparation instrument.
+			exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+			exampleRequiredPreparationInstrument.BelongsToValidPreparation = createdValidPreparation.ID
+			exampleRequiredPreparationInstrumentInput := fakemodels.BuildFakeRequiredPreparationInstrumentCreationInputFromRequiredPreparationInstrument(exampleRequiredPreparationInstrument)
+			createdRequiredPreparationInstrument, err := prixfixeClient.CreateRequiredPreparationInstrument(ctx, exampleRequiredPreparationInstrumentInput)
+			checkValueAndError(t, createdRequiredPreparationInstrument, err)
 
-			// Clean up
-			err = todoClient.ArchiveRequiredPreparationInstrument(ctx, premade.ID)
+			// Assert required preparation instrument equality.
+			checkRequiredPreparationInstrumentEquality(t, exampleRequiredPreparationInstrument, createdRequiredPreparationInstrument)
+
+			// Clean up.
+			err = prixfixeClient.ArchiveRequiredPreparationInstrument(ctx, createdValidPreparation.ID, createdRequiredPreparationInstrument.ID)
 			assert.NoError(t, err)
 
-			actual, err := todoClient.GetRequiredPreparationInstrument(ctx, premade.ID)
+			actual, err := prixfixeClient.GetRequiredPreparationInstrument(ctx, createdValidPreparation.ID, createdRequiredPreparationInstrument.ID)
 			checkValueAndError(t, actual, err)
-			checkRequiredPreparationInstrumentEquality(t, expected, actual)
+			checkRequiredPreparationInstrumentEquality(t, exampleRequiredPreparationInstrument, actual)
+			assert.NotNil(t, actual.ArchivedOn)
 			assert.NotZero(t, actual.ArchivedOn)
+
+			// Clean up valid preparation.
+			assert.NoError(t, prixfixeClient.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
+		})
+
+		T.Run("should fail to create for nonexistent valid preparation", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create required preparation instrument.
+			exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+			exampleRequiredPreparationInstrument.BelongsToValidPreparation = nonexistentID
+			exampleRequiredPreparationInstrumentInput := fakemodels.BuildFakeRequiredPreparationInstrumentCreationInputFromRequiredPreparationInstrument(exampleRequiredPreparationInstrument)
+			createdRequiredPreparationInstrument, err := prixfixeClient.CreateRequiredPreparationInstrument(ctx, exampleRequiredPreparationInstrumentInput)
+
+			assert.Nil(t, createdRequiredPreparationInstrument)
+			assert.Error(t, err)
 		})
 	})
 
 	test.Run("Listing", func(T *testing.T) {
 		T.Run("should be able to be read in a list", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create required preparation instruments
+			// Create valid preparation.
+			exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakemodels.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := prixfixeClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			checkValueAndError(t, createdValidPreparation, err)
+
+			// Create required preparation instruments.
 			var expected []*models.RequiredPreparationInstrument
 			for i := 0; i < 5; i++ {
-				expected = append(expected, buildDummyRequiredPreparationInstrument(t))
+				// Create required preparation instrument.
+				exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+				exampleRequiredPreparationInstrument.BelongsToValidPreparation = createdValidPreparation.ID
+				exampleRequiredPreparationInstrumentInput := fakemodels.BuildFakeRequiredPreparationInstrumentCreationInputFromRequiredPreparationInstrument(exampleRequiredPreparationInstrument)
+				createdRequiredPreparationInstrument, requiredPreparationInstrumentCreationErr := prixfixeClient.CreateRequiredPreparationInstrument(ctx, exampleRequiredPreparationInstrumentInput)
+				checkValueAndError(t, createdRequiredPreparationInstrument, requiredPreparationInstrumentCreationErr)
+
+				expected = append(expected, createdRequiredPreparationInstrument)
 			}
 
-			// Assert required preparation instrument list equality
-			actual, err := todoClient.GetRequiredPreparationInstruments(ctx, nil)
+			// Assert required preparation instrument list equality.
+			actual, err := prixfixeClient.GetRequiredPreparationInstruments(ctx, createdValidPreparation.ID, nil)
 			checkValueAndError(t, actual, err)
 			assert.True(
 				t,
@@ -94,125 +106,272 @@ func TestRequiredPreparationInstruments(test *testing.T) {
 				len(actual.RequiredPreparationInstruments),
 			)
 
-			// Clean up
-			for _, x := range actual.RequiredPreparationInstruments {
-				err = todoClient.ArchiveRequiredPreparationInstrument(ctx, x.ID)
+			// Clean up.
+			for _, createdRequiredPreparationInstrument := range actual.RequiredPreparationInstruments {
+				err = prixfixeClient.ArchiveRequiredPreparationInstrument(ctx, createdValidPreparation.ID, createdRequiredPreparationInstrument.ID)
 				assert.NoError(t, err)
 			}
+
+			// Clean up valid preparation.
+			assert.NoError(t, prixfixeClient.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
+		})
+	})
+
+	test.Run("ExistenceChecking", func(T *testing.T) {
+		T.Run("it should return false with no error when checking something that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create valid preparation.
+			exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakemodels.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := prixfixeClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			checkValueAndError(t, createdValidPreparation, err)
+
+			// Attempt to fetch nonexistent required preparation instrument.
+			actual, err := prixfixeClient.RequiredPreparationInstrumentExists(ctx, createdValidPreparation.ID, nonexistentID)
+			assert.NoError(t, err)
+			assert.False(t, actual)
+
+			// Clean up valid preparation.
+			assert.NoError(t, prixfixeClient.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
+		})
+
+		T.Run("it should return true with no error when the relevant required preparation instrument exists", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create valid preparation.
+			exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakemodels.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := prixfixeClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			checkValueAndError(t, createdValidPreparation, err)
+
+			// Create required preparation instrument.
+			exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+			exampleRequiredPreparationInstrument.BelongsToValidPreparation = createdValidPreparation.ID
+			exampleRequiredPreparationInstrumentInput := fakemodels.BuildFakeRequiredPreparationInstrumentCreationInputFromRequiredPreparationInstrument(exampleRequiredPreparationInstrument)
+			createdRequiredPreparationInstrument, err := prixfixeClient.CreateRequiredPreparationInstrument(ctx, exampleRequiredPreparationInstrumentInput)
+			checkValueAndError(t, createdRequiredPreparationInstrument, err)
+
+			// Fetch required preparation instrument.
+			actual, err := prixfixeClient.RequiredPreparationInstrumentExists(ctx, createdValidPreparation.ID, createdRequiredPreparationInstrument.ID)
+			assert.NoError(t, err)
+			assert.True(t, actual)
+
+			// Clean up required preparation instrument.
+			assert.NoError(t, prixfixeClient.ArchiveRequiredPreparationInstrument(ctx, createdValidPreparation.ID, createdRequiredPreparationInstrument.ID))
+
+			// Clean up valid preparation.
+			assert.NoError(t, prixfixeClient.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
 		})
 	})
 
 	test.Run("Reading", func(T *testing.T) {
-		T.Run("it should return an error when trying to read something that doesn't exist", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+		T.Run("it should return an error when trying to read something that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Fetch required preparation instrument
-			_, err := todoClient.GetRequiredPreparationInstrument(ctx, nonexistentID)
+			// Create valid preparation.
+			exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakemodels.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := prixfixeClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			checkValueAndError(t, createdValidPreparation, err)
+
+			// Attempt to fetch nonexistent required preparation instrument.
+			_, err = prixfixeClient.GetRequiredPreparationInstrument(ctx, createdValidPreparation.ID, nonexistentID)
 			assert.Error(t, err)
+
+			// Clean up valid preparation.
+			assert.NoError(t, prixfixeClient.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
 		})
 
 		T.Run("it should be readable", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create required preparation instrument
-			expected := &models.RequiredPreparationInstrument{
-				InstrumentID:  uint64(fake.Uint32()),
-				PreparationID: uint64(fake.Uint32()),
-				Notes:         fake.Word(),
-			}
-			premade, err := todoClient.CreateRequiredPreparationInstrument(ctx, &models.RequiredPreparationInstrumentCreationInput{
-				InstrumentID:  expected.InstrumentID,
-				PreparationID: expected.PreparationID,
-				Notes:         expected.Notes,
-			})
-			checkValueAndError(t, premade, err)
+			// Create valid preparation.
+			exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakemodels.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := prixfixeClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			checkValueAndError(t, createdValidPreparation, err)
 
-			// Fetch required preparation instrument
-			actual, err := todoClient.GetRequiredPreparationInstrument(ctx, premade.ID)
+			// Create required preparation instrument.
+			exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+			exampleRequiredPreparationInstrument.BelongsToValidPreparation = createdValidPreparation.ID
+			exampleRequiredPreparationInstrumentInput := fakemodels.BuildFakeRequiredPreparationInstrumentCreationInputFromRequiredPreparationInstrument(exampleRequiredPreparationInstrument)
+			createdRequiredPreparationInstrument, err := prixfixeClient.CreateRequiredPreparationInstrument(ctx, exampleRequiredPreparationInstrumentInput)
+			checkValueAndError(t, createdRequiredPreparationInstrument, err)
+
+			// Fetch required preparation instrument.
+			actual, err := prixfixeClient.GetRequiredPreparationInstrument(ctx, createdValidPreparation.ID, createdRequiredPreparationInstrument.ID)
 			checkValueAndError(t, actual, err)
 
-			// Assert required preparation instrument equality
-			checkRequiredPreparationInstrumentEquality(t, expected, actual)
+			// Assert required preparation instrument equality.
+			checkRequiredPreparationInstrumentEquality(t, exampleRequiredPreparationInstrument, actual)
 
-			// Clean up
-			err = todoClient.ArchiveRequiredPreparationInstrument(ctx, actual.ID)
-			assert.NoError(t, err)
+			// Clean up required preparation instrument.
+			assert.NoError(t, prixfixeClient.ArchiveRequiredPreparationInstrument(ctx, createdValidPreparation.ID, createdRequiredPreparationInstrument.ID))
+
+			// Clean up valid preparation.
+			assert.NoError(t, prixfixeClient.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
 		})
 	})
 
 	test.Run("Updating", func(T *testing.T) {
-		T.Run("it should return an error when trying to update something that doesn't exist", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+		T.Run("it should return an error when trying to update something that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			err := todoClient.UpdateRequiredPreparationInstrument(ctx, &models.RequiredPreparationInstrument{ID: nonexistentID})
-			assert.Error(t, err)
+			// Create valid preparation.
+			exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakemodels.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := prixfixeClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			checkValueAndError(t, createdValidPreparation, err)
+
+			exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+			exampleRequiredPreparationInstrument.BelongsToValidPreparation = createdValidPreparation.ID
+			exampleRequiredPreparationInstrument.ID = nonexistentID
+
+			assert.Error(t, prixfixeClient.UpdateRequiredPreparationInstrument(ctx, exampleRequiredPreparationInstrument))
+
+			// Clean up valid preparation.
+			assert.NoError(t, prixfixeClient.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
 		})
 
 		T.Run("it should be updatable", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create required preparation instrument
-			expected := &models.RequiredPreparationInstrument{
-				InstrumentID:  uint64(fake.Uint32()),
-				PreparationID: uint64(fake.Uint32()),
-				Notes:         fake.Word(),
-			}
-			premade, err := todoClient.CreateRequiredPreparationInstrument(tctx, &models.RequiredPreparationInstrumentCreationInput{
-				InstrumentID:  uint64(fake.Uint32()),
-				PreparationID: uint64(fake.Uint32()),
-				Notes:         fake.Word(),
-			})
-			checkValueAndError(t, premade, err)
+			// Create valid preparation.
+			exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakemodels.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := prixfixeClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			checkValueAndError(t, createdValidPreparation, err)
 
-			// Change required preparation instrument
-			premade.Update(expected.ToInput())
-			err = todoClient.UpdateRequiredPreparationInstrument(ctx, premade)
+			// Create required preparation instrument.
+			exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+			exampleRequiredPreparationInstrument.BelongsToValidPreparation = createdValidPreparation.ID
+			exampleRequiredPreparationInstrumentInput := fakemodels.BuildFakeRequiredPreparationInstrumentCreationInputFromRequiredPreparationInstrument(exampleRequiredPreparationInstrument)
+			createdRequiredPreparationInstrument, err := prixfixeClient.CreateRequiredPreparationInstrument(ctx, exampleRequiredPreparationInstrumentInput)
+			checkValueAndError(t, createdRequiredPreparationInstrument, err)
+
+			// Change required preparation instrument.
+			createdRequiredPreparationInstrument.Update(exampleRequiredPreparationInstrument.ToUpdateInput())
+			err = prixfixeClient.UpdateRequiredPreparationInstrument(ctx, createdRequiredPreparationInstrument)
 			assert.NoError(t, err)
 
-			// Fetch required preparation instrument
-			actual, err := todoClient.GetRequiredPreparationInstrument(ctx, premade.ID)
+			// Fetch required preparation instrument.
+			actual, err := prixfixeClient.GetRequiredPreparationInstrument(ctx, createdValidPreparation.ID, createdRequiredPreparationInstrument.ID)
 			checkValueAndError(t, actual, err)
 
-			// Assert required preparation instrument equality
-			checkRequiredPreparationInstrumentEquality(t, expected, actual)
+			// Assert required preparation instrument equality.
+			checkRequiredPreparationInstrumentEquality(t, exampleRequiredPreparationInstrument, actual)
 			assert.NotNil(t, actual.UpdatedOn)
 
-			// Clean up
-			err = todoClient.ArchiveRequiredPreparationInstrument(ctx, actual.ID)
-			assert.NoError(t, err)
+			// Clean up required preparation instrument.
+			assert.NoError(t, prixfixeClient.ArchiveRequiredPreparationInstrument(ctx, createdValidPreparation.ID, createdRequiredPreparationInstrument.ID))
+
+			// Clean up valid preparation.
+			assert.NoError(t, prixfixeClient.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
+		})
+
+		T.Run("it should return an error when trying to update something that belongs to a valid preparation that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create valid preparation.
+			exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakemodels.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := prixfixeClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			checkValueAndError(t, createdValidPreparation, err)
+
+			// Create required preparation instrument.
+			exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+			exampleRequiredPreparationInstrument.BelongsToValidPreparation = createdValidPreparation.ID
+			exampleRequiredPreparationInstrumentInput := fakemodels.BuildFakeRequiredPreparationInstrumentCreationInputFromRequiredPreparationInstrument(exampleRequiredPreparationInstrument)
+			createdRequiredPreparationInstrument, err := prixfixeClient.CreateRequiredPreparationInstrument(ctx, exampleRequiredPreparationInstrumentInput)
+			checkValueAndError(t, createdRequiredPreparationInstrument, err)
+
+			// Change required preparation instrument.
+			createdRequiredPreparationInstrument.Update(exampleRequiredPreparationInstrument.ToUpdateInput())
+			createdRequiredPreparationInstrument.BelongsToValidPreparation = nonexistentID
+			err = prixfixeClient.UpdateRequiredPreparationInstrument(ctx, createdRequiredPreparationInstrument)
+			assert.Error(t, err)
+
+			// Clean up required preparation instrument.
+			assert.NoError(t, prixfixeClient.ArchiveRequiredPreparationInstrument(ctx, createdValidPreparation.ID, createdRequiredPreparationInstrument.ID))
+
+			// Clean up valid preparation.
+			assert.NoError(t, prixfixeClient.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
 		})
 	})
 
 	test.Run("Deleting", func(T *testing.T) {
-		T.Run("should be able to be deleted", func(t *testing.T) {
-			tctx := context.Background()
-			ctx, span := trace.StartSpan(tctx, t.Name())
+		T.Run("it should return an error when trying to delete something that does not exist", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create required preparation instrument
-			expected := &models.RequiredPreparationInstrument{
-				InstrumentID:  uint64(fake.Uint32()),
-				PreparationID: uint64(fake.Uint32()),
-				Notes:         fake.Word(),
-			}
-			premade, err := todoClient.CreateRequiredPreparationInstrument(ctx, &models.RequiredPreparationInstrumentCreationInput{
-				InstrumentID:  expected.InstrumentID,
-				PreparationID: expected.PreparationID,
-				Notes:         expected.Notes,
-			})
-			checkValueAndError(t, premade, err)
+			// Create valid preparation.
+			exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakemodels.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := prixfixeClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			checkValueAndError(t, createdValidPreparation, err)
 
-			// Clean up
-			err = todoClient.ArchiveRequiredPreparationInstrument(ctx, premade.ID)
-			assert.NoError(t, err)
+			assert.Error(t, prixfixeClient.ArchiveRequiredPreparationInstrument(ctx, createdValidPreparation.ID, nonexistentID))
+
+			// Clean up valid preparation.
+			assert.NoError(t, prixfixeClient.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
+		})
+
+		T.Run("should be able to be deleted", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create valid preparation.
+			exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakemodels.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := prixfixeClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			checkValueAndError(t, createdValidPreparation, err)
+
+			// Create required preparation instrument.
+			exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+			exampleRequiredPreparationInstrument.BelongsToValidPreparation = createdValidPreparation.ID
+			exampleRequiredPreparationInstrumentInput := fakemodels.BuildFakeRequiredPreparationInstrumentCreationInputFromRequiredPreparationInstrument(exampleRequiredPreparationInstrument)
+			createdRequiredPreparationInstrument, err := prixfixeClient.CreateRequiredPreparationInstrument(ctx, exampleRequiredPreparationInstrumentInput)
+			checkValueAndError(t, createdRequiredPreparationInstrument, err)
+
+			// Clean up required preparation instrument.
+			assert.NoError(t, prixfixeClient.ArchiveRequiredPreparationInstrument(ctx, createdValidPreparation.ID, createdRequiredPreparationInstrument.ID))
+
+			// Clean up valid preparation.
+			assert.NoError(t, prixfixeClient.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
+		})
+
+		T.Run("returns error when trying to archive post belonging to nonexistent valid preparation", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create valid preparation.
+			exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakemodels.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := prixfixeClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			checkValueAndError(t, createdValidPreparation, err)
+
+			// Create required preparation instrument.
+			exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
+			exampleRequiredPreparationInstrument.BelongsToValidPreparation = createdValidPreparation.ID
+			exampleRequiredPreparationInstrumentInput := fakemodels.BuildFakeRequiredPreparationInstrumentCreationInputFromRequiredPreparationInstrument(exampleRequiredPreparationInstrument)
+			createdRequiredPreparationInstrument, err := prixfixeClient.CreateRequiredPreparationInstrument(ctx, exampleRequiredPreparationInstrumentInput)
+			checkValueAndError(t, createdRequiredPreparationInstrument, err)
+
+			assert.Error(t, prixfixeClient.ArchiveRequiredPreparationInstrument(ctx, nonexistentID, createdRequiredPreparationInstrument.ID))
+
+			// Clean up required preparation instrument.
+			assert.NoError(t, prixfixeClient.ArchiveRequiredPreparationInstrument(ctx, createdValidPreparation.ID, createdRequiredPreparationInstrument.ID))
+
+			// Clean up valid preparation.
+			assert.NoError(t, prixfixeClient.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
 		})
 	})
 }

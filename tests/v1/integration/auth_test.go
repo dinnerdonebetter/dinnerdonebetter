@@ -13,9 +13,10 @@ import (
 	"time"
 
 	client "gitlab.com/prixfixe/prixfixe/client/v1/http"
+	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 	"gitlab.com/prixfixe/prixfixe/tests/v1/testutil"
-	randmodel "gitlab.com/prixfixe/prixfixe/tests/v1/testutil/rand/model"
 
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/assert"
@@ -24,7 +25,7 @@ import (
 )
 
 func loginUser(t *testing.T, username, password, totpSecret string) *http.Cookie {
-	loginURL := fmt.Sprintf("%s://%s:%s/users/login", todoClient.URL.Scheme, todoClient.URL.Hostname(), todoClient.URL.Port())
+	loginURL := fmt.Sprintf("%s://%s:%s/users/login", prixfixeClient.URL.Scheme, prixfixeClient.URL.Hostname(), prixfixeClient.URL.Port())
 
 	code, err := totp.GenerateCode(strings.ToUpper(totpSecret), time.Now().UTC())
 	assert.NoError(t, err)
@@ -57,44 +58,44 @@ func loginUser(t *testing.T, username, password, totpSecret string) *http.Cookie
 }
 
 func TestAuth(test *testing.T) {
-	test.Parallel()
-
 	test.Run("should be able to login", func(t *testing.T) {
-		tctx := context.Background()
+		ctx, span := tracing.StartSpan(context.Background(), t.Name())
+		defer span.End()
 
-		// create a user
-		ui := randmodel.RandomUserInput()
-		req, err := todoClient.BuildCreateUserRequest(tctx, ui)
+		// create a user.
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleUserCreationInput := fakemodels.BuildFakeUserCreationInputFromUser(exampleUser)
+		req, err := prixfixeClient.BuildCreateUserRequest(ctx, exampleUserCreationInput)
 		checkValueAndError(t, req, err)
 
-		res, err := todoClient.PlainClient().Do(req)
+		res, err := prixfixeClient.PlainClient().Do(req)
 		checkValueAndError(t, res, err)
 
-		// load user response
+		// load user response.
 		ucr := &models.UserCreationResponse{}
 		require.NoError(t, json.NewDecoder(res.Body).Decode(ucr))
 
-		// create login request
+		// create login request.
 		token, err := totp.GenerateCode(ucr.TwoFactorSecret, time.Now().UTC())
 		checkValueAndError(t, token, err)
 		r := &models.UserLoginInput{
-			Username:  ucr.Username,
-			Password:  ui.Password,
+			Username:  exampleUserCreationInput.Username,
+			Password:  exampleUserCreationInput.Password,
 			TOTPToken: token,
 		}
 		out, err := json.Marshal(r)
 		require.NoError(t, err)
 		body := bytes.NewReader(out)
 
-		u, err := url.Parse(todoClient.BuildURL(nil))
+		u, err := url.Parse(prixfixeClient.BuildURL(nil))
 		require.NoError(t, err)
 		u.Path = "/users/login"
 
 		req, err = http.NewRequest(http.MethodPost, u.String(), body)
 		checkValueAndError(t, req, err)
 
-		// execute login request
-		res, err = todoClient.PlainClient().Do(req)
+		// execute login request.
+		res, err = prixfixeClient.PlainClient().Do(req)
 		checkValueAndError(t, res, err)
 		assert.Equal(t, http.StatusNoContent, res.StatusCode)
 
@@ -103,13 +104,15 @@ func TestAuth(test *testing.T) {
 	})
 
 	test.Run("should be able to logout", func(t *testing.T) {
-		tctx := context.Background()
+		ctx, span := tracing.StartSpan(context.Background(), t.Name())
+		defer span.End()
 
-		ui := randmodel.RandomUserInput()
-		req, err := todoClient.BuildCreateUserRequest(tctx, ui)
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleUserCreationInput := fakemodels.BuildFakeUserCreationInputFromUser(exampleUser)
+		req, err := prixfixeClient.BuildCreateUserRequest(ctx, exampleUserCreationInput)
 		checkValueAndError(t, req, err)
 
-		res, err := todoClient.PlainClient().Do(req)
+		res, err := prixfixeClient.PlainClient().Do(req)
 		checkValueAndError(t, res, err)
 
 		ucr := &models.UserCreationResponse{}
@@ -118,33 +121,33 @@ func TestAuth(test *testing.T) {
 		token, err := totp.GenerateCode(ucr.TwoFactorSecret, time.Now().UTC())
 		checkValueAndError(t, token, err)
 		r := &models.UserLoginInput{
-			Username:  ucr.Username,
-			Password:  ui.Password,
+			Username:  exampleUserCreationInput.Username,
+			Password:  exampleUserCreationInput.Password,
 			TOTPToken: token,
 		}
 		out, err := json.Marshal(r)
 		require.NoError(t, err)
 		body := bytes.NewReader(out)
 
-		u, err := url.Parse(todoClient.BuildURL(nil))
+		u, err := url.Parse(prixfixeClient.BuildURL(nil))
 		require.NoError(t, err)
 		u.Path = "/users/login"
 
 		req, err = http.NewRequest(http.MethodPost, u.String(), body)
 		checkValueAndError(t, req, err)
 
-		// execute login request
-		res, err = todoClient.PlainClient().Do(req)
+		// execute login request.
+		res, err = prixfixeClient.PlainClient().Do(req)
 		checkValueAndError(t, res, err)
 		assert.Equal(t, http.StatusNoContent, res.StatusCode)
 
-		// extract cookie
+		// extract cookie.
 		cookies := res.Cookies()
 		require.Len(t, cookies, 1)
 		loginCookie := cookies[0]
 
-		// build logout request
-		u2, err := url.Parse(todoClient.BuildURL(nil))
+		// build logout request.
+		u2, err := url.Parse(prixfixeClient.BuildURL(nil))
 		require.NoError(t, err)
 		u2.Path = "/users/logout"
 
@@ -152,52 +155,54 @@ func TestAuth(test *testing.T) {
 		checkValueAndError(t, req, err)
 		req.AddCookie(loginCookie)
 
-		// execute logout request
-		res, err = todoClient.PlainClient().Do(req)
+		// execute logout request.
+		res, err = prixfixeClient.PlainClient().Do(req)
 		checkValueAndError(t, res, err)
 		assert.Equal(t, http.StatusOK, res.StatusCode)
 	})
 
 	test.Run("login request without body fails", func(t *testing.T) {
-		u, err := url.Parse(todoClient.BuildURL(nil))
+		u, err := url.Parse(prixfixeClient.BuildURL(nil))
 		require.NoError(t, err)
 		u.Path = "/users/login"
 
 		req, err := http.NewRequest(http.MethodPost, u.String(), nil)
 		checkValueAndError(t, req, err)
 
-		// execute login request
-		res, err := todoClient.PlainClient().Do(req)
+		// execute login request.
+		res, err := prixfixeClient.PlainClient().Do(req)
 		checkValueAndError(t, res, err)
 		assert.Equal(t, http.StatusBadRequest, res.StatusCode)
 	})
 
 	test.Run("should not be able to log in with the wrong password", func(t *testing.T) {
-		tctx := context.Background()
+		ctx, span := tracing.StartSpan(context.Background(), t.Name())
+		defer span.End()
 
-		// create a user
-		ui := randmodel.RandomUserInput()
-		req, err := todoClient.BuildCreateUserRequest(tctx, ui)
+		// create a user.
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleUserCreationInput := fakemodels.BuildFakeUserCreationInputFromUser(exampleUser)
+		req, err := prixfixeClient.BuildCreateUserRequest(ctx, exampleUserCreationInput)
 		checkValueAndError(t, req, err)
 
-		res, err := todoClient.PlainClient().Do(req)
+		res, err := prixfixeClient.PlainClient().Do(req)
 		checkValueAndError(t, res, err)
 
-		// load user response
+		// load user response.
 		ucr := &models.UserCreationResponse{}
 		require.NoError(t, json.NewDecoder(res.Body).Decode(ucr))
 
-		// create login request
+		// create login request.
 		var badPassword string
-		for _, v := range ui.Password {
+		for _, v := range exampleUserCreationInput.Password {
 			badPassword = string(v) + badPassword
 		}
 
-		// create login request
+		// create login request.
 		token, err := totp.GenerateCode(ucr.TwoFactorSecret, time.Now().UTC())
 		checkValueAndError(t, token, err)
 		r := &models.UserLoginInput{
-			Username:  ucr.Username,
+			Username:  exampleUserCreationInput.Username,
 			Password:  badPassword,
 			TOTPToken: token,
 		}
@@ -205,21 +210,22 @@ func TestAuth(test *testing.T) {
 		require.NoError(t, err)
 		body := bytes.NewReader(out)
 
-		u, err := url.Parse(todoClient.BuildURL(nil))
+		u, err := url.Parse(prixfixeClient.BuildURL(nil))
 		require.NoError(t, err)
 		u.Path = "/users/login"
 
 		req, err = http.NewRequest(http.MethodPost, u.String(), body)
 		checkValueAndError(t, req, err)
 
-		// execute login request
-		res, err = todoClient.PlainClient().Do(req)
+		// execute login request.
+		res, err = prixfixeClient.PlainClient().Do(req)
 		checkValueAndError(t, res, err)
 		assert.Equal(t, http.StatusUnauthorized, res.StatusCode)
 	})
 
 	test.Run("should not be able to login as someone that doesn't exist", func(t *testing.T) {
-		ui := randmodel.RandomUserInput()
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleUserCreationInput := fakemodels.BuildFakeUserCreationInputFromUser(exampleUser)
 
 		s, err := randString()
 		require.NoError(t, err)
@@ -227,22 +233,22 @@ func TestAuth(test *testing.T) {
 		token, err := totp.GenerateCode(s, time.Now().UTC())
 		checkValueAndError(t, token, err)
 		r := &models.UserLoginInput{
-			Username:  ui.Username,
-			Password:  ui.Password,
+			Username:  exampleUserCreationInput.Username,
+			Password:  exampleUserCreationInput.Password,
 			TOTPToken: token,
 		}
 		out, err := json.Marshal(r)
 		require.NoError(t, err)
 		body := bytes.NewReader(out)
 
-		u, err := url.Parse(todoClient.BuildURL(nil))
+		u, err := url.Parse(prixfixeClient.BuildURL(nil))
 		require.NoError(t, err)
 		u.Path = "/users/login"
 
 		req, err := http.NewRequest(http.MethodPost, u.String(), body)
 		checkValueAndError(t, req, err)
 
-		res, err := todoClient.PlainClient().Do(req)
+		res, err := prixfixeClient.PlainClient().Do(req)
 		checkValueAndError(t, res, err)
 		assert.Equal(t, http.StatusUnauthorized, res.StatusCode)
 
@@ -251,26 +257,26 @@ func TestAuth(test *testing.T) {
 	})
 
 	test.Run("should reject an unauthenticated request", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, todoClient.BuildURL(nil, "webhooks"), nil)
+		req, err := http.NewRequest(http.MethodGet, prixfixeClient.BuildURL(nil, "webhooks"), nil)
 		assert.NoError(t, err)
 
-		res, err := todoClient.PlainClient().Do(req)
+		res, err := prixfixeClient.PlainClient().Do(req)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusUnauthorized, res.StatusCode)
 	})
 
 	test.Run("should be able to change password", func(t *testing.T) {
-		// create user
+		// create user.
 		user, ui, cookie := buildDummyUser(test)
 		require.NotNil(test, cookie)
 
-		// create login request
+		// create login request.
 		var backwardsPass string
 		for _, v := range ui.Password {
 			backwardsPass = string(v) + backwardsPass
 		}
 
-		// create password update request
+		// create password update request.
 		token, err := totp.GenerateCode(user.TwoFactorSecret, time.Now().UTC())
 		checkValueAndError(t, token, err)
 		r := &models.PasswordUpdateInput{
@@ -282,7 +288,7 @@ func TestAuth(test *testing.T) {
 		require.NoError(t, err)
 		body := bytes.NewReader(out)
 
-		u, err := url.Parse(todoClient.BuildURL(nil))
+		u, err := url.Parse(prixfixeClient.BuildURL(nil))
 		require.NoError(t, err)
 		u.Path = "/users/password/new"
 
@@ -290,14 +296,14 @@ func TestAuth(test *testing.T) {
 		checkValueAndError(t, req, err)
 		req.AddCookie(cookie)
 
-		// execute password update request
-		res, err := todoClient.PlainClient().Do(req)
+		// execute password update request.
+		res, err := prixfixeClient.PlainClient().Do(req)
 		checkValueAndError(t, res, err)
 		assert.Equal(t, http.StatusAccepted, res.StatusCode)
 
-		// logout
+		// logout.
 
-		u2, err := url.Parse(todoClient.BuildURL(nil))
+		u2, err := url.Parse(prixfixeClient.BuildURL(nil))
 		require.NoError(t, err)
 		u2.Path = "/users/logout"
 
@@ -305,11 +311,11 @@ func TestAuth(test *testing.T) {
 		checkValueAndError(t, req, err)
 		req.AddCookie(cookie)
 
-		res, err = todoClient.PlainClient().Do(req)
+		res, err = prixfixeClient.PlainClient().Do(req)
 		checkValueAndError(t, res, err)
 		assert.Equal(t, http.StatusOK, res.StatusCode)
 
-		// create login request
+		// create login request.
 		newToken, err := totp.GenerateCode(user.TwoFactorSecret, time.Now().UTC())
 		checkValueAndError(t, newToken, err)
 		l, err := json.Marshal(&models.UserLoginInput{
@@ -320,15 +326,15 @@ func TestAuth(test *testing.T) {
 		require.NoError(t, err)
 		body = bytes.NewReader(l)
 
-		u3, err := url.Parse(todoClient.BuildURL(nil))
+		u3, err := url.Parse(prixfixeClient.BuildURL(nil))
 		require.NoError(t, err)
 		u3.Path = "/users/login"
 
 		req, err = http.NewRequest(http.MethodPost, u3.String(), body)
 		checkValueAndError(t, req, err)
 
-		// execute login request
-		res, err = todoClient.PlainClient().Do(req)
+		// execute login request.
+		res, err = prixfixeClient.PlainClient().Do(req)
 		checkValueAndError(t, res, err)
 		assert.Equal(t, http.StatusNoContent, res.StatusCode)
 
@@ -338,11 +344,11 @@ func TestAuth(test *testing.T) {
 	})
 
 	test.Run("should be able to change 2FA Token", func(t *testing.T) {
-		// create user
+		// create user.
 		user, ui, cookie := buildDummyUser(test)
 		require.NotNil(test, cookie)
 
-		// create TOTP secret update request
+		// create TOTP secret update request.
 		token, err := totp.GenerateCode(user.TwoFactorSecret, time.Now().UTC())
 		checkValueAndError(t, token, err)
 		ir := &models.TOTPSecretRefreshInput{
@@ -353,7 +359,7 @@ func TestAuth(test *testing.T) {
 		require.NoError(t, err)
 		body := bytes.NewReader(out)
 
-		u, err := url.Parse(todoClient.BuildURL(nil))
+		u, err := url.Parse(prixfixeClient.BuildURL(nil))
 		require.NoError(t, err)
 		u.Path = "/users/totp_secret/new"
 
@@ -361,19 +367,19 @@ func TestAuth(test *testing.T) {
 		checkValueAndError(t, req, err)
 		req.AddCookie(cookie)
 
-		// execute TOTP secret update request
-		res, err := todoClient.PlainClient().Do(req)
+		// execute TOTP secret update request.
+		res, err := prixfixeClient.PlainClient().Do(req)
 		checkValueAndError(t, res, err)
 		assert.Equal(t, http.StatusAccepted, res.StatusCode)
 
-		// load user response
+		// load user response.
 		r := &models.TOTPSecretRefreshResponse{}
 		require.NoError(t, json.NewDecoder(res.Body).Decode(r))
 		require.NotEqual(t, user.TwoFactorSecret, r.TwoFactorSecret)
 
-		// logout
+		// logout.
 
-		u2, err := url.Parse(todoClient.BuildURL(nil))
+		u2, err := url.Parse(prixfixeClient.BuildURL(nil))
 		require.NoError(t, err)
 		u2.Path = "/users/logout"
 
@@ -381,11 +387,11 @@ func TestAuth(test *testing.T) {
 		checkValueAndError(t, req, err)
 		req.AddCookie(cookie)
 
-		res, err = todoClient.PlainClient().Do(req)
+		res, err = prixfixeClient.PlainClient().Do(req)
 		checkValueAndError(t, res, err)
 		assert.Equal(t, http.StatusOK, res.StatusCode)
 
-		// create login request
+		// create login request.
 		newToken, err := totp.GenerateCode(r.TwoFactorSecret, time.Now().UTC())
 		checkValueAndError(t, newToken, err)
 		l, err := json.Marshal(&models.UserLoginInput{
@@ -396,15 +402,15 @@ func TestAuth(test *testing.T) {
 		require.NoError(t, err)
 		body = bytes.NewReader(l)
 
-		u3, err := url.Parse(todoClient.BuildURL(nil))
+		u3, err := url.Parse(prixfixeClient.BuildURL(nil))
 		require.NoError(t, err)
 		u3.Path = "/users/login"
 
 		req, err = http.NewRequest(http.MethodPost, u3.String(), body)
 		checkValueAndError(t, req, err)
 
-		// execute login request
-		res, err = todoClient.PlainClient().Do(req)
+		// execute login request.
+		res, err = prixfixeClient.PlainClient().Do(req)
 		checkValueAndError(t, res, err)
 		assert.Equal(t, http.StatusNoContent, res.StatusCode)
 
@@ -414,11 +420,11 @@ func TestAuth(test *testing.T) {
 	})
 
 	test.Run("should accept a login cookie if a token is missing", func(t *testing.T) {
-		// create user
+		// create user.
 		_, _, cookie := buildDummyUser(test)
-		assert.NotNil(test, cookie)
+		assert.NotNil(t, cookie)
 
-		req, err := http.NewRequest(http.MethodGet, todoClient.BuildURL(nil, "webhooks"), nil)
+		req, err := http.NewRequest(http.MethodGet, prixfixeClient.BuildURL(nil, "webhooks"), nil)
 		assert.NoError(t, err)
 		req.AddCookie(cookie)
 
@@ -428,9 +434,10 @@ func TestAuth(test *testing.T) {
 	})
 
 	test.Run("should only allow users to see their own content", func(t *testing.T) {
-		tctx := context.Background()
+		ctx, span := tracing.StartSpan(context.Background(), t.Name())
+		defer span.End()
 
-		// create user and oauth2 client A
+		// create user and oauth2 client A.
 		userA, err := testutil.CreateObligatoryUser(urlToUse, debug)
 		require.NoError(t, err)
 
@@ -438,10 +445,10 @@ func TestAuth(test *testing.T) {
 		require.NoError(t, err)
 
 		clientA, err := client.NewClient(
-			tctx,
+			ctx,
 			ca.ClientID,
 			ca.ClientSecret,
-			todoClient.URL,
+			prixfixeClient.URL,
 			noop.ProvideNoopLogger(),
 			buildHTTPClient(),
 			ca.Scopes,
@@ -449,7 +456,7 @@ func TestAuth(test *testing.T) {
 		)
 		checkValueAndError(test, clientA, err)
 
-		// create user and oauth2 client B
+		// create user and oauth2 client B.
 		userB, err := testutil.CreateObligatoryUser(urlToUse, debug)
 		require.NoError(t, err)
 
@@ -457,10 +464,10 @@ func TestAuth(test *testing.T) {
 		require.NoError(t, err)
 
 		clientB, err := client.NewClient(
-			tctx,
+			ctx,
 			cb.ClientID,
 			cb.ClientSecret,
-			todoClient.URL,
+			prixfixeClient.URL,
 			noop.ProvideNoopLogger(),
 			buildHTTPClient(),
 			cb.Scopes,
@@ -468,46 +475,43 @@ func TestAuth(test *testing.T) {
 		)
 		checkValueAndError(test, clientA, err)
 
-		// create webhook for user A
-		webhookA, err := clientA.CreateWebhook(tctx, &models.WebhookCreationInput{
-			Method: http.MethodPatch,
-			Name:   "A",
-		})
+		// create webhook for user A.
+		wciA := fakemodels.BuildFakeWebhookCreationInput()
+		webhookA, err := clientA.CreateWebhook(ctx, wciA)
 		checkValueAndError(t, webhookA, err)
 
-		// create webhook for user B
-		webhookB, err := clientB.CreateWebhook(tctx, &models.WebhookCreationInput{
-			Method: http.MethodPatch,
-			Name:   "B",
-		})
+		// create webhook for user B.
+		wciB := fakemodels.BuildFakeWebhookCreationInput()
+		webhookB, err := clientB.CreateWebhook(ctx, wciB)
 		checkValueAndError(t, webhookB, err)
 
-		i, err := clientB.GetWebhook(tctx, webhookA.ID)
+		i, err := clientB.GetWebhook(ctx, webhookA.ID)
 		assert.Nil(t, i)
 		assert.Error(t, err, "should experience error trying to fetch entry they're not authorized for")
 
-		// Clean up
-		assert.NoError(t, todoClient.ArchiveWebhook(tctx, webhookA.ID))
-		assert.NoError(t, todoClient.ArchiveWebhook(tctx, webhookB.ID))
+		// Clean up.
+		assert.NoError(t, prixfixeClient.ArchiveWebhook(ctx, webhookA.ID))
+		assert.NoError(t, prixfixeClient.ArchiveWebhook(ctx, webhookB.ID))
 	})
 
 	test.Run("should only allow clients with a given scope to see that scope's content", func(t *testing.T) {
-		tctx := context.Background()
+		ctx, span := tracing.StartSpan(context.Background(), t.Name())
+		defer span.End()
 
-		// create user
+		// create user.
 		x, y, cookie := buildDummyUser(test)
-		assert.NotNil(test, cookie)
+		assert.NotNil(t, cookie)
 
 		input := buildDummyOAuth2ClientInput(test, x.Username, y.Password, x.TwoFactorSecret)
 		input.Scopes = []string{"absolutelynevergonnaexistascopelikethis"}
-		premade, err := todoClient.CreateOAuth2Client(tctx, cookie, input)
+		premade, err := prixfixeClient.CreateOAuth2Client(ctx, cookie, input)
 		checkValueAndError(test, premade, err)
 
 		c, err := client.NewClient(
-			context.Background(),
+			ctx,
 			premade.ClientID,
 			premade.ClientSecret,
-			todoClient.URL,
+			prixfixeClient.URL,
 			noop.ProvideNoopLogger(),
 			buildHTTPClient(),
 			premade.Scopes,
@@ -515,7 +519,7 @@ func TestAuth(test *testing.T) {
 		)
 		checkValueAndError(test, c, err)
 
-		i, err := c.GetOAuth2Clients(tctx, nil)
+		i, err := c.GetOAuth2Clients(ctx, nil)
 		assert.Nil(t, i)
 		assert.Error(t, err, "should experience error trying to fetch entry they're not authorized for")
 	})

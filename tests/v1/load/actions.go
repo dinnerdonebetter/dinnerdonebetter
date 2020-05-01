@@ -8,19 +8,19 @@ import (
 	"time"
 
 	client "gitlab.com/prixfixe/prixfixe/client/v1/http"
-	randmodel "gitlab.com/prixfixe/prixfixe/tests/v1/testutil/rand/model"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 )
 
 var (
-	// ErrUnavailableYet is a sentinel error value
+	// ErrUnavailableYet is a sentinel error value.
 	ErrUnavailableYet = errors.New("can't do this yet")
 )
 
 type (
-	// actionFunc represents a thing you can do
+	// actionFunc represents a thing you can do.
 	actionFunc func() (*http.Request, error)
 
-	// Action is a wrapper struct around some important values
+	// Action is a wrapper struct around some important values.
 	Action struct {
 		Action actionFunc
 		Weight int
@@ -28,34 +28,45 @@ type (
 	}
 )
 
-// RandomAction takes a client and returns a closure which is an action
+// RandomAction takes a client and returns a closure which is an action.
 func RandomAction(c *client.V1Client) *Action {
-	ctx := context.Background()
 	allActions := map[string]*Action{
 		"GetHealthCheck": {
-			Name:   "GetHealthCheck",
-			Action: c.BuildHealthCheckRequest,
+			Name: "GetHealthCheck",
+			Action: func() (*http.Request, error) {
+				ctx := context.Background()
+				return c.BuildHealthCheckRequest(ctx)
+			},
 			Weight: 100,
 		},
 		"CreateUser": {
 			Name: "CreateUser",
 			Action: func() (*http.Request, error) {
-				ui := randmodel.RandomUserInput()
+				ctx := context.Background()
+				ui := fakemodels.BuildFakeUserCreationInput()
 				return c.BuildCreateUserRequest(ctx, ui)
 			},
 			Weight: 100,
 		},
 	}
 
-	for k, v := range buildInstrumentActions(c) {
+	for k, v := range buildValidInstrumentActions(c) {
 		allActions[k] = v
 	}
 
-	for k, v := range buildIngredientActions(c) {
+	for k, v := range buildValidIngredientActions(c) {
 		allActions[k] = v
 	}
 
-	for k, v := range buildPreparationActions(c) {
+	for k, v := range buildValidIngredientTagActions(c) {
+		allActions[k] = v
+	}
+
+	for k, v := range buildIngredientTagMappingActions(c) {
+		allActions[k] = v
+	}
+
+	for k, v := range buildValidPreparationActions(c) {
 		allActions[k] = v
 	}
 
@@ -63,7 +74,15 @@ func RandomAction(c *client.V1Client) *Action {
 		allActions[k] = v
 	}
 
+	for k, v := range buildValidIngredientPreparationActions(c) {
+		allActions[k] = v
+	}
+
 	for k, v := range buildRecipeActions(c) {
+		allActions[k] = v
+	}
+
+	for k, v := range buildRecipeTagActions(c) {
 		allActions[k] = v
 	}
 
@@ -71,7 +90,7 @@ func RandomAction(c *client.V1Client) *Action {
 		allActions[k] = v
 	}
 
-	for k, v := range buildRecipeStepInstrumentActions(c) {
+	for k, v := range buildRecipeStepPreparationActions(c) {
 		allActions[k] = v
 	}
 
@@ -79,15 +98,11 @@ func RandomAction(c *client.V1Client) *Action {
 		allActions[k] = v
 	}
 
-	for k, v := range buildRecipeStepProductActions(c) {
-		allActions[k] = v
-	}
-
 	for k, v := range buildRecipeIterationActions(c) {
 		allActions[k] = v
 	}
 
-	for k, v := range buildRecipeStepEventActions(c) {
+	for k, v := range buildRecipeIterationStepActions(c) {
 		allActions[k] = v
 	}
 

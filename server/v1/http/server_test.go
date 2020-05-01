@@ -2,32 +2,37 @@ package httpserver
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	database "gitlab.com/prixfixe/prixfixe/database/v1"
 	"gitlab.com/prixfixe/prixfixe/internal/v1/config"
 	mockencoding "gitlab.com/prixfixe/prixfixe/internal/v1/encoding/mock"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 	mockmodels "gitlab.com/prixfixe/prixfixe/models/v1/mock"
-	"gitlab.com/prixfixe/prixfixe/services/v1/auth"
-	"gitlab.com/prixfixe/prixfixe/services/v1/frontend"
-	"gitlab.com/prixfixe/prixfixe/services/v1/ingredients"
-	"gitlab.com/prixfixe/prixfixe/services/v1/instruments"
-	"gitlab.com/prixfixe/prixfixe/services/v1/invitations"
-	"gitlab.com/prixfixe/prixfixe/services/v1/iterationmedias"
-	"gitlab.com/prixfixe/prixfixe/services/v1/oauth2clients"
-	"gitlab.com/prixfixe/prixfixe/services/v1/preparations"
-	"gitlab.com/prixfixe/prixfixe/services/v1/recipeiterations"
-	"gitlab.com/prixfixe/prixfixe/services/v1/recipes"
-	"gitlab.com/prixfixe/prixfixe/services/v1/recipestepevents"
-	"gitlab.com/prixfixe/prixfixe/services/v1/recipestepingredients"
-	"gitlab.com/prixfixe/prixfixe/services/v1/recipestepinstruments"
-	"gitlab.com/prixfixe/prixfixe/services/v1/recipestepproducts"
-	"gitlab.com/prixfixe/prixfixe/services/v1/recipesteps"
-	"gitlab.com/prixfixe/prixfixe/services/v1/reports"
-	"gitlab.com/prixfixe/prixfixe/services/v1/requiredpreparationinstruments"
-	"gitlab.com/prixfixe/prixfixe/services/v1/users"
-	"gitlab.com/prixfixe/prixfixe/services/v1/webhooks"
+	authservice "gitlab.com/prixfixe/prixfixe/services/v1/auth"
+	frontendservice "gitlab.com/prixfixe/prixfixe/services/v1/frontend"
+	ingredienttagmappingsservice "gitlab.com/prixfixe/prixfixe/services/v1/ingredienttagmappings"
+	invitationsservice "gitlab.com/prixfixe/prixfixe/services/v1/invitations"
+	iterationmediasservice "gitlab.com/prixfixe/prixfixe/services/v1/iterationmedias"
+	oauth2clientsservice "gitlab.com/prixfixe/prixfixe/services/v1/oauth2clients"
+	recipeiterationsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipeiterations"
+	recipeiterationstepsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipeiterationsteps"
+	recipesservice "gitlab.com/prixfixe/prixfixe/services/v1/recipes"
+	recipestepingredientsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipestepingredients"
+	recipesteppreparationsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipesteppreparations"
+	recipestepsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipesteps"
+	recipetagsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipetags"
+	reportsservice "gitlab.com/prixfixe/prixfixe/services/v1/reports"
+	requiredpreparationinstrumentsservice "gitlab.com/prixfixe/prixfixe/services/v1/requiredpreparationinstruments"
+	usersservice "gitlab.com/prixfixe/prixfixe/services/v1/users"
+	validingredientpreparationsservice "gitlab.com/prixfixe/prixfixe/services/v1/validingredientpreparations"
+	validingredientsservice "gitlab.com/prixfixe/prixfixe/services/v1/validingredients"
+	validingredienttagsservice "gitlab.com/prixfixe/prixfixe/services/v1/validingredienttags"
+	validinstrumentsservice "gitlab.com/prixfixe/prixfixe/services/v1/validinstruments"
+	validpreparationsservice "gitlab.com/prixfixe/prixfixe/services/v1/validpreparations"
+	webhooksservice "gitlab.com/prixfixe/prixfixe/services/v1/webhooks"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -43,29 +48,33 @@ func buildTestServer() *Server {
 		encoder:    &mockencoding.EncoderDecoder{},
 		httpServer: provideHTTPServer(),
 		logger:     noop.ProvideNoopLogger(),
-		frontendService: frontend.ProvideFrontendService(
+		frontendService: frontendservice.ProvideFrontendService(
 			noop.ProvideNoopLogger(),
 			config.FrontendSettings{},
 		),
 		webhooksService:                       &mockmodels.WebhookDataServer{},
 		usersService:                          &mockmodels.UserDataServer{},
-		authService:                           &auth.Service{},
-		instrumentsService:                    &mockmodels.InstrumentDataServer{},
-		ingredientsService:                    &mockmodels.IngredientDataServer{},
-		preparationsService:                   &mockmodels.PreparationDataServer{},
+		authService:                           &authservice.Service{},
+		validInstrumentsService:               &mockmodels.ValidInstrumentDataServer{},
+		validIngredientsService:               &mockmodels.ValidIngredientDataServer{},
+		validIngredientTagsService:            &mockmodels.ValidIngredientTagDataServer{},
+		ingredientTagMappingsService:          &mockmodels.IngredientTagMappingDataServer{},
+		validPreparationsService:              &mockmodels.ValidPreparationDataServer{},
 		requiredPreparationInstrumentsService: &mockmodels.RequiredPreparationInstrumentDataServer{},
+		validIngredientPreparationsService:    &mockmodels.ValidIngredientPreparationDataServer{},
 		recipesService:                        &mockmodels.RecipeDataServer{},
+		recipeTagsService:                     &mockmodels.RecipeTagDataServer{},
 		recipeStepsService:                    &mockmodels.RecipeStepDataServer{},
-		recipeStepInstrumentsService:          &mockmodels.RecipeStepInstrumentDataServer{},
+		recipeStepPreparationsService:         &mockmodels.RecipeStepPreparationDataServer{},
 		recipeStepIngredientsService:          &mockmodels.RecipeStepIngredientDataServer{},
-		recipeStepProductsService:             &mockmodels.RecipeStepProductDataServer{},
 		recipeIterationsService:               &mockmodels.RecipeIterationDataServer{},
-		recipeStepEventsService:               &mockmodels.RecipeStepEventDataServer{},
+		recipeIterationStepsService:           &mockmodels.RecipeIterationStepDataServer{},
 		iterationMediasService:                &mockmodels.IterationMediaDataServer{},
 		invitationsService:                    &mockmodels.InvitationDataServer{},
 		reportsService:                        &mockmodels.ReportDataServer{},
 		oauth2ClientsService:                  &mockmodels.OAuth2ClientDataServer{},
 	}
+
 	return s
 }
 
@@ -73,35 +82,42 @@ func TestProvideServer(T *testing.T) {
 	T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleWebhookList := fakemodels.BuildFakeWebhookList()
+
 		mockDB := database.BuildMockDatabase()
-		mockDB.WebhookDataManager.On("GetAllWebhooks", mock.Anything).Return(&models.WebhookList{}, nil)
+		mockDB.WebhookDataManager.On("GetAllWebhooks", mock.Anything).Return(exampleWebhookList, nil)
 
 		actual, err := ProvideServer(
-			context.Background(),
+			ctx,
 			&config.ServerConfig{
 				Auth: config.AuthSettings{
 					CookieSecret: "THISISAVERYLONGSTRINGFORTESTPURPOSES",
 				},
 			},
-			&auth.Service{},
-			&frontend.Service{},
-			&instruments.Service{},
-			&ingredients.Service{},
-			&preparations.Service{},
-			&requiredpreparationinstruments.Service{},
-			&recipes.Service{},
-			&recipesteps.Service{},
-			&recipestepinstruments.Service{},
-			&recipestepingredients.Service{},
-			&recipestepproducts.Service{},
-			&recipeiterations.Service{},
-			&recipestepevents.Service{},
-			&iterationmedias.Service{},
-			&invitations.Service{},
-			&reports.Service{},
-			&users.Service{},
-			&oauth2clients.Service{},
-			&webhooks.Service{},
+			&authservice.Service{},
+			&frontendservice.Service{},
+			&validinstrumentsservice.Service{},
+			&validingredientsservice.Service{},
+			&validingredienttagsservice.Service{},
+			&ingredienttagmappingsservice.Service{},
+			&validpreparationsservice.Service{},
+			&requiredpreparationinstrumentsservice.Service{},
+			&validingredientpreparationsservice.Service{},
+			&recipesservice.Service{},
+			&recipetagsservice.Service{},
+			&recipestepsservice.Service{},
+			&recipesteppreparationsservice.Service{},
+			&recipestepingredientsservice.Service{},
+			&recipeiterationsservice.Service{},
+			&recipeiterationstepsservice.Service{},
+			&iterationmediasservice.Service{},
+			&invitationsservice.Service{},
+			&reportsservice.Service{},
+			&usersservice.Service{},
+			&oauth2clientsservice.Service{},
+			&webhooksservice.Service{},
 			mockDB,
 			noop.ProvideNoopLogger(),
 			&mockencoding.EncoderDecoder{},
@@ -110,5 +126,103 @@ func TestProvideServer(T *testing.T) {
 
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+
+	T.Run("with invalid cookie secret", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleWebhookList := fakemodels.BuildFakeWebhookList()
+
+		mockDB := database.BuildMockDatabase()
+		mockDB.WebhookDataManager.On("GetAllWebhooks", mock.Anything).Return(exampleWebhookList, nil)
+
+		actual, err := ProvideServer(
+			ctx,
+			&config.ServerConfig{
+				Auth: config.AuthSettings{
+					CookieSecret: "THISSTRINGISNTLONGENOUGH:(",
+				},
+			},
+			&authservice.Service{},
+			&frontendservice.Service{},
+			&validinstrumentsservice.Service{},
+			&validingredientsservice.Service{},
+			&validingredienttagsservice.Service{},
+			&ingredienttagmappingsservice.Service{},
+			&validpreparationsservice.Service{},
+			&requiredpreparationinstrumentsservice.Service{},
+			&validingredientpreparationsservice.Service{},
+			&recipesservice.Service{},
+			&recipetagsservice.Service{},
+			&recipestepsservice.Service{},
+			&recipesteppreparationsservice.Service{},
+			&recipestepingredientsservice.Service{},
+			&recipeiterationsservice.Service{},
+			&recipeiterationstepsservice.Service{},
+			&iterationmediasservice.Service{},
+			&invitationsservice.Service{},
+			&reportsservice.Service{},
+			&usersservice.Service{},
+			&oauth2clientsservice.Service{},
+			&webhooksservice.Service{},
+			mockDB,
+			noop.ProvideNoopLogger(),
+			&mockencoding.EncoderDecoder{},
+			newsman.NewNewsman(nil, nil),
+		)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+
+	T.Run("with error fetching webhooks", func(t *testing.T) {
+		ctx := context.Background()
+
+		mockDB := database.BuildMockDatabase()
+		mockDB.WebhookDataManager.On("GetAllWebhooks", mock.Anything).Return((*models.WebhookList)(nil), errors.New("blah"))
+
+		actual, err := ProvideServer(
+			ctx,
+			&config.ServerConfig{
+				Auth: config.AuthSettings{
+					CookieSecret: "THISISAVERYLONGSTRINGFORTESTPURPOSES",
+				},
+			},
+			&authservice.Service{},
+			&frontendservice.Service{},
+			&validinstrumentsservice.Service{},
+			&validingredientsservice.Service{},
+			&validingredienttagsservice.Service{},
+			&ingredienttagmappingsservice.Service{},
+			&validpreparationsservice.Service{},
+			&requiredpreparationinstrumentsservice.Service{},
+			&validingredientpreparationsservice.Service{},
+			&recipesservice.Service{},
+			&recipetagsservice.Service{},
+			&recipestepsservice.Service{},
+			&recipesteppreparationsservice.Service{},
+			&recipestepingredientsservice.Service{},
+			&recipeiterationsservice.Service{},
+			&recipeiterationstepsservice.Service{},
+			&iterationmediasservice.Service{},
+			&invitationsservice.Service{},
+			&reportsservice.Service{},
+			&usersservice.Service{},
+			&oauth2clientsservice.Service{},
+			&webhooksservice.Service{},
+			mockDB,
+			noop.ProvideNoopLogger(),
+			&mockencoding.EncoderDecoder{},
+			newsman.NewNewsman(nil, nil),
+		)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }

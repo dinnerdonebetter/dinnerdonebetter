@@ -3,49 +3,38 @@ package requiredpreparationinstruments
 import (
 	"database/sql"
 	"net/http"
-	"strconv"
 
+	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
 
 	"gitlab.com/verygoodsoftwarenotvirus/newsman"
-	"go.opencensus.io/trace"
 )
 
 const (
-	// URIParamKey is a standard string that we'll use to refer to required preparation instrument IDs with
+	// URIParamKey is a standard string that we'll use to refer to required preparation instrument IDs with.
 	URIParamKey = "requiredPreparationInstrumentID"
 )
 
-func attachRequiredPreparationInstrumentIDToSpan(span *trace.Span, requiredPreparationInstrumentID uint64) {
-	if span != nil {
-		span.AddAttributes(trace.StringAttribute("required_preparation_instrument_id", strconv.FormatUint(requiredPreparationInstrumentID, 10)))
-	}
-}
-
-func attachUserIDToSpan(span *trace.Span, userID uint64) {
-	if span != nil {
-		span.AddAttributes(trace.StringAttribute("user_id", strconv.FormatUint(userID, 10)))
-	}
-}
-
-// ListHandler is our list route
+// ListHandler is our list route.
 func (s *Service) ListHandler() http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
-		ctx, span := trace.StartSpan(req.Context(), "ListHandler")
+		ctx, span := tracing.StartSpan(req.Context(), "ListHandler")
 		defer span.End()
 
-		// ensure query filter
-		qf := models.ExtractQueryFilter(req)
+		logger := s.logger.WithRequest(req)
 
-		// determine user ID
-		userID := s.userIDFetcher(req)
-		logger := s.logger.WithValue("user_id", userID)
-		attachUserIDToSpan(span, userID)
+		// ensure query filter.
+		filter := models.ExtractQueryFilter(req)
 
-		// fetch required preparation instruments from database
-		requiredPreparationInstruments, err := s.requiredPreparationInstrumentDatabase.GetRequiredPreparationInstruments(ctx, qf)
+		// determine valid preparation ID.
+		validPreparationID := s.validPreparationIDFetcher(req)
+		tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+		logger = logger.WithValue("valid_preparation_id", validPreparationID)
+
+		// fetch required preparation instruments from database.
+		requiredPreparationInstruments, err := s.requiredPreparationInstrumentDataManager.GetRequiredPreparationInstruments(ctx, validPreparationID, filter)
 		if err == sql.ErrNoRows {
-			// in the event no rows exist return an empty list
+			// in the event no rows exist return an empty list.
 			requiredPreparationInstruments = &models.RequiredPreparationInstrumentList{
 				RequiredPreparationInstruments: []models.RequiredPreparationInstrument{},
 			}
@@ -55,76 +44,127 @@ func (s *Service) ListHandler() http.HandlerFunc {
 			return
 		}
 
-		// encode our response and peace
+		// encode our response and peace.
 		if err = s.encoderDecoder.EncodeResponse(res, requiredPreparationInstruments); err != nil {
-			s.logger.Error(err, "encoding response")
+			logger.Error(err, "encoding response")
 		}
 	}
 }
 
-// CreateHandler is our required preparation instrument creation route
+// CreateHandler is our required preparation instrument creation route.
 func (s *Service) CreateHandler() http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
-		ctx, span := trace.StartSpan(req.Context(), "CreateHandler")
+		ctx, span := tracing.StartSpan(req.Context(), "CreateHandler")
 		defer span.End()
 
-		// determine user ID
-		userID := s.userIDFetcher(req)
-		attachUserIDToSpan(span, userID)
-		logger := s.logger.WithValue("user_id", userID)
+		logger := s.logger.WithRequest(req)
 
-		// check request context for parsed input struct
+		// check request context for parsed input struct.
 		input, ok := ctx.Value(CreateMiddlewareCtxKey).(*models.RequiredPreparationInstrumentCreationInput)
 		if !ok {
 			logger.Info("valid input not attached to request")
 			res.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		logger = logger.WithValue("input", input)
 
-		// create required preparation instrument in database
-		x, err := s.requiredPreparationInstrumentDatabase.CreateRequiredPreparationInstrument(ctx, input)
+		// determine valid preparation ID.
+		validPreparationID := s.validPreparationIDFetcher(req)
+		logger = logger.WithValue("valid_preparation_id", validPreparationID)
+		tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+
+		input.BelongsToValidPreparation = validPreparationID
+
+		validPreparationExists, err := s.validPreparationDataManager.ValidPreparationExists(ctx, validPreparationID)
+		if err != nil && err != sql.ErrNoRows {
+			logger.Error(err, "error checking valid preparation existence")
+			res.WriteHeader(http.StatusInternalServerError)
+			return
+		} else if !validPreparationExists {
+			res.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		// create required preparation instrument in database.
+		x, err := s.requiredPreparationInstrumentDataManager.CreateRequiredPreparationInstrument(ctx, input)
 		if err != nil {
 			logger.Error(err, "error creating required preparation instrument")
 			res.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		// notify relevant parties
+		tracing.AttachRequiredPreparationInstrumentIDToSpan(span, x.ID)
+		logger = logger.WithValue("required_preparation_instrument_id", x.ID)
+
+		// notify relevant parties.
 		s.requiredPreparationInstrumentCounter.Increment(ctx)
-		attachRequiredPreparationInstrumentIDToSpan(span, x.ID)
 		s.reporter.Report(newsman.Event{
 			Data:      x,
 			Topics:    []string{topicName},
 			EventType: string(models.Create),
 		})
 
-		// encode our response and peace
+		// encode our response and peace.
 		res.WriteHeader(http.StatusCreated)
 		if err = s.encoderDecoder.EncodeResponse(res, x); err != nil {
-			s.logger.Error(err, "encoding response")
+			logger.Error(err, "encoding response")
 		}
 	}
 }
 
-// ReadHandler returns a GET handler that returns a required preparation instrument
-func (s *Service) ReadHandler() http.HandlerFunc {
+// ExistenceHandler returns a HEAD handler that returns 200 if a required preparation instrument exists, 404 otherwise.
+func (s *Service) ExistenceHandler() http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
-		ctx, span := trace.StartSpan(req.Context(), "ReadHandler")
+		ctx, span := tracing.StartSpan(req.Context(), "ExistenceHandler")
 		defer span.End()
 
-		// determine relevant information
-		userID := s.userIDFetcher(req)
-		requiredPreparationInstrumentID := s.requiredPreparationInstrumentIDFetcher(req)
-		logger := s.logger.WithValues(map[string]interface{}{
-			"user_id":                            userID,
-			"required_preparation_instrument_id": requiredPreparationInstrumentID,
-		})
-		attachRequiredPreparationInstrumentIDToSpan(span, requiredPreparationInstrumentID)
-		attachUserIDToSpan(span, userID)
+		logger := s.logger.WithRequest(req)
 
-		// fetch required preparation instrument from database
-		x, err := s.requiredPreparationInstrumentDatabase.GetRequiredPreparationInstrument(ctx, requiredPreparationInstrumentID)
+		// determine valid preparation ID.
+		validPreparationID := s.validPreparationIDFetcher(req)
+		tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+		logger = logger.WithValue("valid_preparation_id", validPreparationID)
+
+		// determine required preparation instrument ID.
+		requiredPreparationInstrumentID := s.requiredPreparationInstrumentIDFetcher(req)
+		tracing.AttachRequiredPreparationInstrumentIDToSpan(span, requiredPreparationInstrumentID)
+		logger = logger.WithValue("required_preparation_instrument_id", requiredPreparationInstrumentID)
+
+		// fetch required preparation instrument from database.
+		exists, err := s.requiredPreparationInstrumentDataManager.RequiredPreparationInstrumentExists(ctx, validPreparationID, requiredPreparationInstrumentID)
+		if err != nil && err != sql.ErrNoRows {
+			logger.Error(err, "error checking required preparation instrument existence in database")
+			res.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		if exists {
+			res.WriteHeader(http.StatusOK)
+		} else {
+			res.WriteHeader(http.StatusNotFound)
+		}
+	}
+}
+
+// ReadHandler returns a GET handler that returns a required preparation instrument.
+func (s *Service) ReadHandler() http.HandlerFunc {
+	return func(res http.ResponseWriter, req *http.Request) {
+		ctx, span := tracing.StartSpan(req.Context(), "ReadHandler")
+		defer span.End()
+
+		logger := s.logger.WithRequest(req)
+
+		// determine valid preparation ID.
+		validPreparationID := s.validPreparationIDFetcher(req)
+		tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+		logger = logger.WithValue("valid_preparation_id", validPreparationID)
+
+		// determine required preparation instrument ID.
+		requiredPreparationInstrumentID := s.requiredPreparationInstrumentIDFetcher(req)
+		tracing.AttachRequiredPreparationInstrumentIDToSpan(span, requiredPreparationInstrumentID)
+		logger = logger.WithValue("required_preparation_instrument_id", requiredPreparationInstrumentID)
+
+		// fetch required preparation instrument from database.
+		x, err := s.requiredPreparationInstrumentDataManager.GetRequiredPreparationInstrument(ctx, validPreparationID, requiredPreparationInstrumentID)
 		if err == sql.ErrNoRows {
 			res.WriteHeader(http.StatusNotFound)
 			return
@@ -134,39 +174,43 @@ func (s *Service) ReadHandler() http.HandlerFunc {
 			return
 		}
 
-		// encode our response and peace
+		// encode our response and peace.
 		if err = s.encoderDecoder.EncodeResponse(res, x); err != nil {
-			s.logger.Error(err, "encoding response")
+			logger.Error(err, "encoding response")
 		}
 	}
 }
 
-// UpdateHandler returns a handler that updates a required preparation instrument
+// UpdateHandler returns a handler that updates a required preparation instrument.
 func (s *Service) UpdateHandler() http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
-		ctx, span := trace.StartSpan(req.Context(), "UpdateHandler")
+		ctx, span := tracing.StartSpan(req.Context(), "UpdateHandler")
 		defer span.End()
 
-		// check for parsed input attached to request context
+		logger := s.logger.WithRequest(req)
+
+		// check for parsed input attached to request context.
 		input, ok := ctx.Value(UpdateMiddlewareCtxKey).(*models.RequiredPreparationInstrumentUpdateInput)
 		if !ok {
-			s.logger.Info("no input attached to request")
+			logger.Info("no input attached to request")
 			res.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
-		// determine relevant information
-		userID := s.userIDFetcher(req)
-		requiredPreparationInstrumentID := s.requiredPreparationInstrumentIDFetcher(req)
-		logger := s.logger.WithValues(map[string]interface{}{
-			"user_id":                            userID,
-			"required_preparation_instrument_id": requiredPreparationInstrumentID,
-		})
-		attachRequiredPreparationInstrumentIDToSpan(span, requiredPreparationInstrumentID)
-		attachUserIDToSpan(span, userID)
+		// determine valid preparation ID.
+		validPreparationID := s.validPreparationIDFetcher(req)
+		logger = logger.WithValue("valid_preparation_id", validPreparationID)
+		tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
 
-		// fetch required preparation instrument from database
-		x, err := s.requiredPreparationInstrumentDatabase.GetRequiredPreparationInstrument(ctx, requiredPreparationInstrumentID)
+		input.BelongsToValidPreparation = validPreparationID
+
+		// determine required preparation instrument ID.
+		requiredPreparationInstrumentID := s.requiredPreparationInstrumentIDFetcher(req)
+		logger = logger.WithValue("required_preparation_instrument_id", requiredPreparationInstrumentID)
+		tracing.AttachRequiredPreparationInstrumentIDToSpan(span, requiredPreparationInstrumentID)
+
+		// fetch required preparation instrument from database.
+		x, err := s.requiredPreparationInstrumentDataManager.GetRequiredPreparationInstrument(ctx, validPreparationID, requiredPreparationInstrumentID)
 		if err == sql.ErrNoRows {
 			res.WriteHeader(http.StatusNotFound)
 			return
@@ -176,48 +220,61 @@ func (s *Service) UpdateHandler() http.HandlerFunc {
 			return
 		}
 
-		// update the data structure
+		// update the data structure.
 		x.Update(input)
 
-		// update required preparation instrument in database
-		if err = s.requiredPreparationInstrumentDatabase.UpdateRequiredPreparationInstrument(ctx, x); err != nil {
+		// update required preparation instrument in database.
+		if err = s.requiredPreparationInstrumentDataManager.UpdateRequiredPreparationInstrument(ctx, x); err != nil {
 			logger.Error(err, "error encountered updating required preparation instrument")
 			res.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		// notify relevant parties
+		// notify relevant parties.
 		s.reporter.Report(newsman.Event{
 			Data:      x,
 			Topics:    []string{topicName},
 			EventType: string(models.Update),
 		})
 
-		// encode our response and peace
+		// encode our response and peace.
 		if err = s.encoderDecoder.EncodeResponse(res, x); err != nil {
-			s.logger.Error(err, "encoding response")
+			logger.Error(err, "encoding response")
 		}
 	}
 }
 
-// ArchiveHandler returns a handler that archives a required preparation instrument
+// ArchiveHandler returns a handler that archives a required preparation instrument.
 func (s *Service) ArchiveHandler() http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
-		ctx, span := trace.StartSpan(req.Context(), "ArchiveHandler")
+		var err error
+		ctx, span := tracing.StartSpan(req.Context(), "ArchiveHandler")
 		defer span.End()
 
-		// determine relevant information
-		userID := s.userIDFetcher(req)
-		requiredPreparationInstrumentID := s.requiredPreparationInstrumentIDFetcher(req)
-		logger := s.logger.WithValues(map[string]interface{}{
-			"required_preparation_instrument_id": requiredPreparationInstrumentID,
-			"user_id":                            userID,
-		})
-		attachRequiredPreparationInstrumentIDToSpan(span, requiredPreparationInstrumentID)
-		attachUserIDToSpan(span, userID)
+		logger := s.logger.WithRequest(req)
 
-		// archive the required preparation instrument in the database
-		err := s.requiredPreparationInstrumentDatabase.ArchiveRequiredPreparationInstrument(ctx, requiredPreparationInstrumentID)
+		// determine valid preparation ID.
+		validPreparationID := s.validPreparationIDFetcher(req)
+		logger = logger.WithValue("valid_preparation_id", validPreparationID)
+		tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+
+		validPreparationExists, err := s.validPreparationDataManager.ValidPreparationExists(ctx, validPreparationID)
+		if err != nil && err != sql.ErrNoRows {
+			logger.Error(err, "error checking valid preparation existence")
+			res.WriteHeader(http.StatusInternalServerError)
+			return
+		} else if !validPreparationExists {
+			res.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		// determine required preparation instrument ID.
+		requiredPreparationInstrumentID := s.requiredPreparationInstrumentIDFetcher(req)
+		logger = logger.WithValue("required_preparation_instrument_id", requiredPreparationInstrumentID)
+		tracing.AttachRequiredPreparationInstrumentIDToSpan(span, requiredPreparationInstrumentID)
+
+		// archive the required preparation instrument in the database.
+		err = s.requiredPreparationInstrumentDataManager.ArchiveRequiredPreparationInstrument(ctx, validPreparationID, requiredPreparationInstrumentID)
 		if err == sql.ErrNoRows {
 			res.WriteHeader(http.StatusNotFound)
 			return
@@ -227,7 +284,7 @@ func (s *Service) ArchiveHandler() http.HandlerFunc {
 			return
 		}
 
-		// notify relevant parties
+		// notify relevant parties.
 		s.requiredPreparationInstrumentCounter.Decrement(ctx)
 		s.reporter.Report(newsman.Event{
 			EventType: string(models.Archive),
@@ -235,7 +292,7 @@ func (s *Service) ArchiveHandler() http.HandlerFunc {
 			Topics:    []string{topicName},
 		})
 
-		// encode our response and peace
+		// encode our response and peace.
 		res.WriteHeader(http.StatusNoContent)
 	}
 }

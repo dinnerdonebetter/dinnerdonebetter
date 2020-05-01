@@ -14,6 +14,7 @@ import (
 	database "gitlab.com/prixfixe/prixfixe/database/v1"
 	mockencoding "gitlab.com/prixfixe/prixfixe/internal/v1/encoding/mock"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 	mockmodels "gitlab.com/prixfixe/prixfixe/models/v1/mock"
 
 	"github.com/stretchr/testify/assert"
@@ -26,11 +27,14 @@ func TestService_CookieAuthenticationMiddleware(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService(t)
-		exampleUser := &models.User{Username: "username"}
+		exampleUser := fakemodels.BuildFakeUser()
 
 		md := &mockmodels.UserDataManager{}
 		md.On("GetUser", mock.Anything, mock.Anything).Return(exampleUser, nil)
 		s.userDB = md
+
+		ms := &MockHTTPHandler{}
+		ms.On("ServeHTTP", mock.Anything, mock.Anything).Return()
 
 		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
 		require.NoError(t, err)
@@ -42,17 +46,16 @@ func TestService_CookieAuthenticationMiddleware(T *testing.T) {
 		require.NoError(t, err)
 		req.AddCookie(cookie)
 
-		ms := &MockHTTPHandler{}
-		ms.On("ServeHTTP", mock.Anything, mock.Anything).Return()
-
 		h := s.CookieAuthenticationMiddleware(ms)
 		h.ServeHTTP(res, req)
+
+		mock.AssertExpectationsForObjects(t, md, ms)
 	})
 
 	T.Run("with nil user", func(t *testing.T) {
 		s := buildTestService(t)
+		exampleUser := fakemodels.BuildFakeUser()
 
-		exampleUser := &models.User{Username: "username"}
 		md := &mockmodels.UserDataManager{}
 		md.On("GetUser", mock.Anything, mock.Anything).Return((*models.User)(nil), nil)
 		s.userDB = md
@@ -68,12 +71,12 @@ func TestService_CookieAuthenticationMiddleware(T *testing.T) {
 		req.AddCookie(cookie)
 
 		ms := &MockHTTPHandler{}
-		ms.On("ServeHTTP", mock.Anything, mock.Anything).Return()
-
 		h := s.CookieAuthenticationMiddleware(ms)
 		h.ServeHTTP(res, req)
 
-		assert.Equal(t, res.Code, http.StatusUnauthorized)
+		assert.Equal(t, http.StatusUnauthorized, res.Code)
+
+		mock.AssertExpectationsForObjects(t, md, ms)
 	})
 
 	T.Run("without user attached", func(t *testing.T) {
@@ -85,10 +88,10 @@ func TestService_CookieAuthenticationMiddleware(T *testing.T) {
 		res := httptest.NewRecorder()
 
 		ms := &MockHTTPHandler{}
-		ms.On("ServeHTTP", mock.Anything, mock.Anything).Return()
-
 		h := s.CookieAuthenticationMiddleware(ms)
 		h.ServeHTTP(res, req)
+
+		mock.AssertExpectationsForObjects(t, ms)
 	})
 }
 
@@ -98,117 +101,77 @@ func TestService_AuthenticationMiddleware(T *testing.T) {
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService(t)
 
-		exampleUser := &models.User{ID: 123}
-		exampleClient := &models.OAuth2Client{
-			ClientID:     "PRETEND_THIS_IS_A_REAL_CLIENT_ID",
-			ClientSecret: "PRETEND_THIS_IS_A_REAL_CLIENT_SECRET",
-			BelongsTo:    exampleUser.ID,
-		}
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleOAuth2Client := fakemodels.BuildFakeOAuth2Client()
 
 		ocv := &mockOAuth2ClientValidator{}
-		ocv.On("ExtractOAuth2ClientFromRequest", mock.Anything).Return(exampleClient, nil)
+		ocv.On("ExtractOAuth2ClientFromRequest", mock.Anything, mock.Anything).Return(exampleOAuth2Client, nil)
 		s.oauth2ClientsService = ocv
 
 		mockDB := database.BuildMockDatabase().UserDataManager
-		mockDB.On("GetUser", mock.Anything, exampleClient.BelongsTo).Return(exampleUser, nil)
+		mockDB.On("GetUser", mock.Anything, exampleOAuth2Client.BelongsToUser).Return(exampleUser, nil)
 		s.userDB = mockDB
 
 		h := &MockHTTPHandler{}
 		h.On("ServeHTTP", mock.Anything, mock.Anything).Return()
 
+		res := httptest.NewRecorder()
 		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
-		res := httptest.NewRecorder()
 
 		s.AuthenticationMiddleware(true)(h).ServeHTTP(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, ocv, mockDB, h)
 	})
 
 	T.Run("happy path without allowing cookies", func(t *testing.T) {
 		s := buildTestService(t)
 
-		exampleUser := &models.User{ID: 123}
-		exampleClient := &models.OAuth2Client{
-			ClientID:     "PRETEND_THIS_IS_A_REAL_CLIENT_ID",
-			ClientSecret: "PRETEND_THIS_IS_A_REAL_CLIENT_SECRET",
-			BelongsTo:    exampleUser.ID,
-		}
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleOAuth2Client := fakemodels.BuildFakeOAuth2Client()
 
 		ocv := &mockOAuth2ClientValidator{}
-		ocv.On("ExtractOAuth2ClientFromRequest", mock.Anything).Return(exampleClient, nil)
+		ocv.On("ExtractOAuth2ClientFromRequest", mock.Anything, mock.Anything).Return(exampleOAuth2Client, nil)
 		s.oauth2ClientsService = ocv
 
 		mockDB := database.BuildMockDatabase().UserDataManager
-		mockDB.On("GetUser", mock.Anything, exampleClient.BelongsTo).Return(exampleUser, nil)
+		mockDB.On("GetUser", mock.Anything, exampleOAuth2Client.BelongsToUser).Return(exampleUser, nil)
 		s.userDB = mockDB
 
 		h := &MockHTTPHandler{}
 		h.On("ServeHTTP", mock.Anything, mock.Anything).Return()
 
+		res := httptest.NewRecorder()
 		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
-		res := httptest.NewRecorder()
 
 		s.AuthenticationMiddleware(false)(h).ServeHTTP(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, ocv, mockDB, h)
 	})
 
 	T.Run("with error fetching client but able to use cookie", func(t *testing.T) {
 		s := buildTestService(t)
 
-		exampleUser := &models.User{ID: 1, Username: "username"}
-		ocv := &mockOAuth2ClientValidator{}
-		ocv.On("ExtractOAuth2ClientFromRequest", mock.Anything).Return((*models.OAuth2Client)(nil), errors.New("blah"))
-		s.oauth2ClientsService = ocv
-
-		h := &MockHTTPHandler{}
-		h.On("ServeHTTP", mock.Anything, mock.Anything).Return()
-
-		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
-		require.NoError(t, err)
-		require.NotNil(t, req)
-		res := httptest.NewRecorder()
-
-		c, err := s.buildAuthCookie(exampleUser)
-		require.NoError(t, err)
-		req.AddCookie(c)
+		exampleUser := fakemodels.BuildFakeUser()
 
 		mockDB := database.BuildMockDatabase().UserDataManager
 		mockDB.On("GetUser", mock.Anything, exampleUser.ID).Return(exampleUser, nil)
 		s.userDB = mockDB
 
-		s.AuthenticationMiddleware(true)(h).ServeHTTP(res, req)
-	})
-
-	T.Run("able to use cookies but error fetching user info", func(t *testing.T) {
-		s := buildTestService(t)
-
-		exampleUser := &models.User{ID: 1, Username: "username"}
-		exampleClient := &models.OAuth2Client{
-			ClientID:     "PRETEND_THIS_IS_A_REAL_CLIENT_ID",
-			ClientSecret: "PRETEND_THIS_IS_A_REAL_CLIENT_SECRET",
-			BelongsTo:    exampleUser.ID,
-		}
-
-		ocv := &mockOAuth2ClientValidator{}
-		ocv.On("ExtractOAuth2ClientFromRequest", mock.Anything).Return(exampleClient, nil)
-		s.oauth2ClientsService = ocv
-
-		mockDB := database.BuildMockDatabase().UserDataManager
-		mockDB.On("GetUser", mock.Anything, exampleClient.BelongsTo).Return((*models.User)(nil), errors.New("blah"))
-		s.userDB = mockDB
-
 		h := &MockHTTPHandler{}
 		h.On("ServeHTTP", mock.Anything, mock.Anything).Return()
 
+		res := httptest.NewRecorder()
 		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
-		res := httptest.NewRecorder()
 
 		c, err := s.buildAuthCookie(exampleUser)
 		require.NoError(t, err)
@@ -216,115 +179,133 @@ func TestService_AuthenticationMiddleware(T *testing.T) {
 
 		s.AuthenticationMiddleware(true)(h).ServeHTTP(res, req)
 
+		mock.AssertExpectationsForObjects(t, mockDB, h)
+	})
+
+	T.Run("able to use cookies but error fetching user info", func(t *testing.T) {
+		s := buildTestService(t)
+
+		exampleUser := fakemodels.BuildFakeUser()
+		c, err := s.buildAuthCookie(exampleUser)
+		require.NoError(t, err)
+
+		mockDB := database.BuildMockDatabase().UserDataManager
+		mockDB.On("GetUser", mock.Anything, exampleUser.ID).Return((*models.User)(nil), errors.New("blah"))
+		s.userDB = mockDB
+
+		res := httptest.NewRecorder()
+		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
+		require.NoError(t, err)
+		require.NotNil(t, req)
+		req.AddCookie(c)
+
+		h := &MockHTTPHandler{}
+		s.AuthenticationMiddleware(true)(h).ServeHTTP(res, req)
+
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, h)
 	})
 
 	T.Run("no cookies allowed, with error fetching user info", func(t *testing.T) {
 		s := buildTestService(t)
 
-		exampleUser := &models.User{ID: 123}
-		exampleClient := &models.OAuth2Client{
-			ClientID:     "PRETEND_THIS_IS_A_REAL_CLIENT_ID",
-			ClientSecret: "PRETEND_THIS_IS_A_REAL_CLIENT_SECRET",
-			BelongsTo:    exampleUser.ID,
-		}
+		exampleOAuth2Client := fakemodels.BuildFakeOAuth2Client()
 
 		ocv := &mockOAuth2ClientValidator{}
-		ocv.On("ExtractOAuth2ClientFromRequest", mock.Anything).Return(exampleClient, nil)
+		ocv.On("ExtractOAuth2ClientFromRequest", mock.Anything, mock.Anything).Return(exampleOAuth2Client, nil)
 		s.oauth2ClientsService = ocv
 
 		mockDB := database.BuildMockDatabase().UserDataManager
-		mockDB.On("GetUser", mock.Anything, exampleClient.BelongsTo).Return((*models.User)(nil), errors.New("blah"))
+		mockDB.On("GetUser", mock.Anything, exampleOAuth2Client.BelongsToUser).Return((*models.User)(nil), errors.New("blah"))
 		s.userDB = mockDB
 
-		h := &MockHTTPHandler{}
-		h.On("ServeHTTP", mock.Anything, mock.Anything).Return()
-
+		res := httptest.NewRecorder()
 		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
-		res := httptest.NewRecorder()
 
+		h := &MockHTTPHandler{}
 		s.AuthenticationMiddleware(false)(h).ServeHTTP(res, req)
 
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, ocv, mockDB, h)
 	})
 
 	T.Run("with error fetching client but able to use cookie but unable to decode cookie", func(t *testing.T) {
 		s := buildTestService(t)
 
+		exampleUser := fakemodels.BuildFakeUser()
+
 		ocv := &mockOAuth2ClientValidator{}
-		ocv.On("ExtractOAuth2ClientFromRequest", mock.Anything).Return((*models.OAuth2Client)(nil), errors.New("blah"))
+		ocv.On("ExtractOAuth2ClientFromRequest", mock.Anything, mock.Anything).Return((*models.OAuth2Client)(nil), errors.New("blah"))
 		s.oauth2ClientsService = ocv
-
-		h := &MockHTTPHandler{}
-		h.On("ServeHTTP", mock.Anything, mock.Anything).Return()
-
-		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
-		require.NoError(t, err)
-		require.NotNil(t, req)
-		res := httptest.NewRecorder()
-
-		c, err := s.buildAuthCookie(&models.User{ID: 1, Username: "username"})
-		require.NoError(t, err)
-		req.AddCookie(c)
 
 		cb := &mockCookieEncoderDecoder{}
 		cb.On("Decode", CookieName, mock.Anything, mock.Anything).Return(errors.New("blah"))
+		cb.On("Encode", CookieName, mock.Anything).Return("", nil)
 		s.cookieManager = cb
 
+		res := httptest.NewRecorder()
+		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
+		require.NoError(t, err)
+		require.NotNil(t, req)
+
+		c, err := s.buildAuthCookie(exampleUser)
+		require.NoError(t, err)
+		req.AddCookie(c)
+
+		h := &MockHTTPHandler{}
 		s.AuthenticationMiddleware(true)(h).ServeHTTP(res, req)
+
+		mock.AssertExpectationsForObjects(t, ocv, cb, h)
 	})
 
 	T.Run("with invalid authentication", func(t *testing.T) {
 		s := buildTestService(t)
 
 		ocv := &mockOAuth2ClientValidator{}
-		ocv.On("ExtractOAuth2ClientFromRequest", mock.Anything).Return((*models.OAuth2Client)(nil), nil)
+		ocv.On("ExtractOAuth2ClientFromRequest", mock.Anything, mock.Anything).Return((*models.OAuth2Client)(nil), nil)
 		s.oauth2ClientsService = ocv
 
-		h := &MockHTTPHandler{}
-		h.On("ServeHTTP", mock.Anything, mock.Anything).Return()
-
+		res := httptest.NewRecorder()
 		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
-		res := httptest.NewRecorder()
+		h := &MockHTTPHandler{}
 		s.AuthenticationMiddleware(false)(h).ServeHTTP(res, req)
 
-		assert.Equal(t, res.Code, http.StatusUnauthorized)
+		assert.Equal(t, http.StatusUnauthorized, res.Code)
+
+		mock.AssertExpectationsForObjects(t, ocv, h)
 	})
 
 	T.Run("nightmare path", func(t *testing.T) {
 		s := buildTestService(t)
 
-		exampleUser := &models.User{ID: 123}
-		exampleClient := &models.OAuth2Client{
-			ClientID:     "PRETEND_THIS_IS_A_REAL_CLIENT_ID",
-			ClientSecret: "PRETEND_THIS_IS_A_REAL_CLIENT_SECRET",
-			BelongsTo:    exampleUser.ID,
-		}
+		exampleOAuth2Client := fakemodels.BuildFakeOAuth2Client()
 
 		ocv := &mockOAuth2ClientValidator{}
-		ocv.On("ExtractOAuth2ClientFromRequest", mock.Anything).Return(exampleClient, nil)
+		ocv.On("ExtractOAuth2ClientFromRequest", mock.Anything, mock.Anything).Return(exampleOAuth2Client, nil)
 		s.oauth2ClientsService = ocv
 
 		mockDB := database.BuildMockDatabase().UserDataManager
-		mockDB.On("GetUser", mock.Anything, exampleClient.BelongsTo).Return((*models.User)(nil), nil)
+		mockDB.On("GetUser", mock.Anything, exampleOAuth2Client.BelongsToUser).Return((*models.User)(nil), nil)
 		s.userDB = mockDB
 
-		h := &MockHTTPHandler{}
-		h.On("ServeHTTP", mock.Anything, mock.Anything).Return()
-
+		res := httptest.NewRecorder()
 		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
-		res := httptest.NewRecorder()
+		h := &MockHTTPHandler{}
 		s.AuthenticationMiddleware(false)(h).ServeHTTP(res, req)
 
 		assert.Equal(t, http.StatusUnauthorized, res.Code)
+
+		mock.AssertExpectationsForObjects(t, ocv, mockDB, h)
 	})
 }
 
@@ -336,11 +317,8 @@ func Test_parseLoginInputFromForm(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
-		expected := &models.UserLoginInput{
-			Username:  "username",
-			Password:  "password",
-			TOTPToken: "123456",
-		}
+		exampleUser := fakemodels.BuildFakeUser()
+		expected := fakemodels.BuildFakeUserLoginInputFromUser(exampleUser)
 
 		req.Form = map[string][]string{
 			UsernameFormKey:  {expected.Username},
@@ -370,19 +348,16 @@ func TestService_UserLoginInputMiddleware(T *testing.T) {
 	T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
-		exampleInput := &models.UserLoginInput{
-			Username:  "username",
-			Password:  "password",
-			TOTPToken: "1233456",
-		}
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleInput := fakemodels.BuildFakeUserLoginInputFromUser(exampleUser)
 
 		var b bytes.Buffer
 		require.NoError(t, json.NewEncoder(&b).Encode(exampleInput))
 
+		res := httptest.NewRecorder()
 		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", &b)
 		require.NoError(t, err)
 		require.NotNil(t, req)
-		res := httptest.NewRecorder()
 
 		s := buildTestService(t)
 		ms := &MockHTTPHandler{}
@@ -391,23 +366,20 @@ func TestService_UserLoginInputMiddleware(T *testing.T) {
 		h := s.UserLoginInputMiddleware(ms)
 		h.ServeHTTP(res, req)
 
-		ms.AssertExpectations(t)
+		mock.AssertExpectationsForObjects(t, ms)
 	})
 
 	T.Run("with error decoding request", func(t *testing.T) {
-		exampleInput := &models.UserLoginInput{
-			Username:  "username",
-			Password:  "password",
-			TOTPToken: "1233456",
-		}
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleInput := fakemodels.BuildFakeUserLoginInputFromUser(exampleUser)
 
 		var b bytes.Buffer
 		require.NoError(t, json.NewEncoder(&b).Encode(exampleInput))
 
+		res := httptest.NewRecorder()
 		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", &b)
 		require.NoError(t, err)
 		require.NotNil(t, req)
-		res := httptest.NewRecorder()
 
 		s := buildTestService(t)
 		ed := &mockencoding.EncoderDecoder{}
@@ -418,15 +390,13 @@ func TestService_UserLoginInputMiddleware(T *testing.T) {
 		h := s.UserLoginInputMiddleware(ms)
 		h.ServeHTTP(res, req)
 
-		ms.AssertExpectations(t)
+		mock.AssertExpectationsForObjects(t, ed, ms)
 	})
 
 	T.Run("with error decoding request but valid value attached to form", func(t *testing.T) {
-		exampleInput := &models.UserLoginInput{
-			Username:  "username",
-			Password:  "password",
-			TOTPToken: "1233456",
-		}
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleInput := fakemodels.BuildFakeUserLoginInputFromUser(exampleUser)
+
 		form := url.Values{
 			UsernameFormKey:  {exampleInput.Username},
 			PasswordFormKey:  {exampleInput.Password},
@@ -455,7 +425,7 @@ func TestService_UserLoginInputMiddleware(T *testing.T) {
 		h := s.UserLoginInputMiddleware(ms)
 		h.ServeHTTP(res, req)
 
-		ms.AssertExpectations(t)
+		mock.AssertExpectationsForObjects(t, ed, ms)
 	})
 }
 
@@ -467,12 +437,15 @@ func TestService_AdminMiddleware(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleUser.IsAdmin = true
+
 		res := httptest.NewRecorder()
 		req = req.WithContext(
 			context.WithValue(
 				req.Context(),
 				models.UserKey,
-				&models.User{IsAdmin: true},
+				exampleUser,
 			),
 		)
 
@@ -483,15 +456,16 @@ func TestService_AdminMiddleware(T *testing.T) {
 		h := s.AdminMiddleware(ms)
 		h.ServeHTTP(res, req)
 
-		ms.AssertExpectations(t)
 		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, ms)
 	})
 
 	T.Run("without user attached", func(t *testing.T) {
+		res := httptest.NewRecorder()
 		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
-		res := httptest.NewRecorder()
 
 		s := buildTestService(t)
 		ms := &MockHTTPHandler{}
@@ -499,21 +473,25 @@ func TestService_AdminMiddleware(T *testing.T) {
 		h := s.AdminMiddleware(ms)
 		h.ServeHTTP(res, req)
 
-		ms.AssertExpectations(t)
 		assert.Equal(t, http.StatusUnauthorized, res.Code)
+
+		mock.AssertExpectationsForObjects(t, ms)
 	})
 
 	T.Run("with non-admin user", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
-		res := httptest.NewRecorder()
 
+		exampleUser := fakemodels.BuildFakeUser()
+		exampleUser.IsAdmin = false
+
+		res := httptest.NewRecorder()
 		req = req.WithContext(
 			context.WithValue(
 				req.Context(),
 				models.UserKey,
-				&models.User{IsAdmin: false},
+				exampleUser,
 			),
 		)
 
@@ -523,7 +501,8 @@ func TestService_AdminMiddleware(T *testing.T) {
 		h := s.AdminMiddleware(ms)
 		h.ServeHTTP(res, req)
 
-		ms.AssertExpectations(t)
 		assert.Equal(t, http.StatusUnauthorized, res.Code)
+
+		mock.AssertExpectationsForObjects(t, ms)
 	})
 }

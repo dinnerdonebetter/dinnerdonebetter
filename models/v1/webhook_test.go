@@ -13,17 +13,8 @@ func TestWebhook_Update(T *testing.T) {
 	T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
-		actual := &Webhook{
-			Name:        "name",
-			ContentType: "application/json",
-			URL:         "https://verygoodsoftwarenotvirus.ru",
-			Method:      http.MethodPost,
-			Events:      []string{"things"},
-			DataTypes:   []string{"stuff"},
-			Topics:      []string{"blah"},
-		}
-		expected := &Webhook{
-			Name:        "new name",
+		exampleInput := &WebhookUpdateInput{
+			Name:        "whatever",
 			ContentType: "application/xml",
 			URL:         "https://blah.verygoodsoftwarenotvirus.ru",
 			Method:      http.MethodPatch,
@@ -32,8 +23,17 @@ func TestWebhook_Update(T *testing.T) {
 			Topics:      []string{"blah-blah"},
 		}
 
-		exampleInput := &WebhookUpdateInput{
-			Name:        "new name",
+		actual := &Webhook{
+			Name:        "something_else",
+			ContentType: "application/json",
+			URL:         "https://verygoodsoftwarenotvirus.ru",
+			Method:      http.MethodPost,
+			Events:      []string{"things"},
+			DataTypes:   []string{"stuff"},
+			Topics:      []string{"blah"},
+		}
+		expected := &Webhook{
+			Name:        exampleInput.Name,
 			ContentType: "application/xml",
 			URL:         "https://blah.verygoodsoftwarenotvirus.ru",
 			Method:      http.MethodPatch,

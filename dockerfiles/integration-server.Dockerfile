@@ -7,7 +7,7 @@ RUN apt-get update -y && apt-get install -y make git gcc musl-dev
 
 ADD . .
 
-RUN go build -o /prixfixe -v gitlab.com/prixfixe/prixfixe/cmd/server/v1
+RUN go build -trimpath -o /prixfixe -v gitlab.com/prixfixe/prixfixe/cmd/server/v1
 
 # frontend-build-stage
 FROM node:latest AS frontend-build-stage

@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	// Providers is our collection of what we provide to other services
+	// Providers is our collection of what we provide to other services.
 	Providers = wire.NewSet(
 		ProvideReportsService,
 		ProvideReportDataManager,
@@ -16,12 +16,12 @@ var (
 	)
 )
 
-// ProvideReportDataManager turns a database into an ReportDataManager
+// ProvideReportDataManager turns a database into an ReportDataManager.
 func ProvideReportDataManager(db database.Database) models.ReportDataManager {
 	return db
 }
 
-// ProvideReportDataServer is an arbitrary function for dependency injection's sake
+// ProvideReportDataServer is an arbitrary function for dependency injection's sake.
 func ProvideReportDataServer(s *Service) models.ReportDataServer {
 	return s
 }

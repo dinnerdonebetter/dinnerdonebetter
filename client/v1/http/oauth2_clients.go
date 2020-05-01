@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
 )
 
@@ -14,15 +15,21 @@ const (
 	oauth2ClientsBasePath = "oauth2/clients"
 )
 
-// BuildGetOAuth2ClientRequest builds an HTTP request for fetching an OAuth2 client
+// BuildGetOAuth2ClientRequest builds an HTTP request for fetching an OAuth2 client.
 func (c *V1Client) BuildGetOAuth2ClientRequest(ctx context.Context, id uint64) (*http.Request, error) {
+	ctx, span := tracing.StartSpan(ctx, "BuildGetOAuth2ClientRequest")
+	defer span.End()
+
 	uri := c.BuildURL(nil, oauth2ClientsBasePath, strconv.FormatUint(id, 10))
 
-	return http.NewRequest(http.MethodGet, uri, nil)
+	return http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 }
 
-// GetOAuth2Client gets an OAuth2 client
+// GetOAuth2Client gets an OAuth2 client.
 func (c *V1Client) GetOAuth2Client(ctx context.Context, id uint64) (oauth2Client *models.OAuth2Client, err error) {
+	ctx, span := tracing.StartSpan(ctx, "GetOAuth2Client")
+	defer span.End()
+
 	req, err := c.BuildGetOAuth2ClientRequest(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("building request: %w", err)
@@ -32,15 +39,21 @@ func (c *V1Client) GetOAuth2Client(ctx context.Context, id uint64) (oauth2Client
 	return oauth2Client, err
 }
 
-// BuildGetOAuth2ClientsRequest builds an HTTP request for fetching a list of OAuth2 clients
+// BuildGetOAuth2ClientsRequest builds an HTTP request for fetching a list of OAuth2 clients.
 func (c *V1Client) BuildGetOAuth2ClientsRequest(ctx context.Context, filter *models.QueryFilter) (*http.Request, error) {
+	ctx, span := tracing.StartSpan(ctx, "BuildGetOAuth2ClientsRequest")
+	defer span.End()
+
 	uri := c.BuildURL(filter.ToValues(), oauth2ClientsBasePath)
 
-	return http.NewRequest(http.MethodGet, uri, nil)
+	return http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 }
 
-// GetOAuth2Clients gets a list of OAuth2 clients
+// GetOAuth2Clients gets a list of OAuth2 clients.
 func (c *V1Client) GetOAuth2Clients(ctx context.Context, filter *models.QueryFilter) (*models.OAuth2ClientList, error) {
+	ctx, span := tracing.StartSpan(ctx, "GetOAuth2Clients")
+	defer span.End()
+
 	req, err := c.BuildGetOAuth2ClientsRequest(ctx, filter)
 	if err != nil {
 		return nil, fmt.Errorf("building request: %w", err)
@@ -51,15 +64,18 @@ func (c *V1Client) GetOAuth2Clients(ctx context.Context, filter *models.QueryFil
 	return oauth2Clients, err
 }
 
-// BuildCreateOAuth2ClientRequest builds an HTTP request for creating OAuth2 clients
+// BuildCreateOAuth2ClientRequest builds an HTTP request for creating OAuth2 clients.
 func (c *V1Client) BuildCreateOAuth2ClientRequest(
 	ctx context.Context,
 	cookie *http.Cookie,
 	body *models.OAuth2ClientCreationInput,
 ) (*http.Request, error) {
+	ctx, span := tracing.StartSpan(ctx, "BuildCreateOAuth2ClientRequest")
+	defer span.End()
+
 	uri := c.buildVersionlessURL(nil, "oauth2", "client")
 
-	req, err := c.buildDataRequest(http.MethodPost, uri, body)
+	req, err := c.buildDataRequest(ctx, http.MethodPost, uri, body)
 	if err != nil {
 		return nil, err
 	}
@@ -69,12 +85,15 @@ func (c *V1Client) BuildCreateOAuth2ClientRequest(
 }
 
 // CreateOAuth2Client creates an OAuth2 client. Note that cookie must not be nil
-// in order to receive a valid response
+// in order to receive a valid response.
 func (c *V1Client) CreateOAuth2Client(
 	ctx context.Context,
 	cookie *http.Cookie,
 	input *models.OAuth2ClientCreationInput,
 ) (*models.OAuth2Client, error) {
+	ctx, span := tracing.StartSpan(ctx, "CreateOAuth2Client")
+	defer span.End()
+
 	var oauth2Client *models.OAuth2Client
 	if cookie == nil {
 		return nil, errors.New("cookie required for request")
@@ -85,31 +104,28 @@ func (c *V1Client) CreateOAuth2Client(
 		return nil, err
 	}
 
-	res, err := c.executeRawRequest(ctx, c.plainClient, req)
-	if err != nil {
-		return nil, fmt.Errorf("executing request: %w", err)
-	}
-
-	if res.StatusCode == http.StatusNotFound {
-		return nil, ErrNotFound
-	}
-
-	if resErr := unmarshalBody(res, &oauth2Client); resErr != nil {
+	if resErr := c.executeUnauthenticatedDataRequest(ctx, req, &oauth2Client); resErr != nil {
 		return nil, fmt.Errorf("loading response from server: %w", resErr)
 	}
 
 	return oauth2Client, nil
 }
 
-// BuildArchiveOAuth2ClientRequest builds an HTTP request for archiving an oauth2 client
+// BuildArchiveOAuth2ClientRequest builds an HTTP request for archiving an oauth2 client.
 func (c *V1Client) BuildArchiveOAuth2ClientRequest(ctx context.Context, id uint64) (*http.Request, error) {
+	ctx, span := tracing.StartSpan(ctx, "BuildArchiveOAuth2ClientRequest")
+	defer span.End()
+
 	uri := c.BuildURL(nil, oauth2ClientsBasePath, strconv.FormatUint(id, 10))
 
-	return http.NewRequest(http.MethodDelete, uri, nil)
+	return http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
 }
 
-// ArchiveOAuth2Client archives an OAuth2 client
+// ArchiveOAuth2Client archives an OAuth2 client.
 func (c *V1Client) ArchiveOAuth2Client(ctx context.Context, id uint64) error {
+	ctx, span := tracing.StartSpan(ctx, "ArchiveOAuth2Client")
+	defer span.End()
+
 	req, err := c.BuildArchiveOAuth2ClientRequest(ctx, id)
 	if err != nil {
 		return fmt.Errorf("building request: %w", err)

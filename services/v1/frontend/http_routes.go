@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/afero"
 )
 
-// Routes returns a map of route to HandlerFunc for the parent router to set
+// Routes returns a map of route to HandlerFunc for the parent router to set.
 // this keeps routing logic in the frontend service and not in the server itself.
 func (s *Service) Routes() map[string]http.HandlerFunc {
 	return map[string]http.HandlerFunc{
@@ -62,41 +62,47 @@ func (s *Service) buildStaticFileServer(fileDir string) (*afero.HttpFs, error) {
 
 var (
 	// Here is where you should put route regexes that need to be ignored by the static file server.
-	// For instance, if you allow someone to see an event in the frontend via a URL that contains dynamic
+	// For instance, if you allow someone to see an event in the frontend via a URL that contains dynamic.
 	// information, such as `/event/123`, you would want to put something like this below:
 	// 		eventsFrontendPathRegex = regexp.MustCompile(`/event/\d+`)
 
-	// instrumentsFrontendPathRegex matches URLs against our frontend router's specification for specific instrument routes
-	instrumentsFrontendPathRegex = regexp.MustCompile(`/instruments/\d+`)
-	// ingredientsFrontendPathRegex matches URLs against our frontend router's specification for specific ingredient routes
-	ingredientsFrontendPathRegex = regexp.MustCompile(`/ingredients/\d+`)
-	// preparationsFrontendPathRegex matches URLs against our frontend router's specification for specific preparation routes
-	preparationsFrontendPathRegex = regexp.MustCompile(`/preparations/\d+`)
-	// requiredPreparationInstrumentsFrontendPathRegex matches URLs against our frontend router's specification for specific required preparation instrument routes
+	// validInstrumentsFrontendPathRegex matches URLs against our frontend router's specification for specific valid instrument routes.
+	validInstrumentsFrontendPathRegex = regexp.MustCompile(`/valid_instruments/\d+`)
+	// validIngredientsFrontendPathRegex matches URLs against our frontend router's specification for specific valid ingredient routes.
+	validIngredientsFrontendPathRegex = regexp.MustCompile(`/valid_ingredients/\d+`)
+	// validIngredientTagsFrontendPathRegex matches URLs against our frontend router's specification for specific valid ingredient tag routes.
+	validIngredientTagsFrontendPathRegex = regexp.MustCompile(`/valid_ingredient_tags/\d+`)
+	// ingredientTagMappingsFrontendPathRegex matches URLs against our frontend router's specification for specific ingredient tag mapping routes.
+	ingredientTagMappingsFrontendPathRegex = regexp.MustCompile(`/ingredient_tag_mappings/\d+`)
+	// validPreparationsFrontendPathRegex matches URLs against our frontend router's specification for specific valid preparation routes.
+	validPreparationsFrontendPathRegex = regexp.MustCompile(`/valid_preparations/\d+`)
+	// requiredPreparationInstrumentsFrontendPathRegex matches URLs against our frontend router's specification for specific required preparation instrument routes.
 	requiredPreparationInstrumentsFrontendPathRegex = regexp.MustCompile(`/required_preparation_instruments/\d+`)
-	// recipesFrontendPathRegex matches URLs against our frontend router's specification for specific recipe routes
+	// validIngredientPreparationsFrontendPathRegex matches URLs against our frontend router's specification for specific valid ingredient preparation routes.
+	validIngredientPreparationsFrontendPathRegex = regexp.MustCompile(`/valid_ingredient_preparations/\d+`)
+	// recipesFrontendPathRegex matches URLs against our frontend router's specification for specific recipe routes.
 	recipesFrontendPathRegex = regexp.MustCompile(`/recipes/\d+`)
-	// recipeStepsFrontendPathRegex matches URLs against our frontend router's specification for specific recipe step routes
+	// recipeTagsFrontendPathRegex matches URLs against our frontend router's specification for specific recipe tag routes.
+	recipeTagsFrontendPathRegex = regexp.MustCompile(`/recipe_tags/\d+`)
+	// recipeStepsFrontendPathRegex matches URLs against our frontend router's specification for specific recipe step routes.
 	recipeStepsFrontendPathRegex = regexp.MustCompile(`/recipe_steps/\d+`)
-	// recipeStepInstrumentsFrontendPathRegex matches URLs against our frontend router's specification for specific recipe step instrument routes
-	recipeStepInstrumentsFrontendPathRegex = regexp.MustCompile(`/recipe_step_instruments/\d+`)
-	// recipeStepIngredientsFrontendPathRegex matches URLs against our frontend router's specification for specific recipe step ingredient routes
+	// recipeStepPreparationsFrontendPathRegex matches URLs against our frontend router's specification for specific recipe step preparation routes.
+	recipeStepPreparationsFrontendPathRegex = regexp.MustCompile(`/recipe_step_preparations/\d+`)
+	// recipeStepIngredientsFrontendPathRegex matches URLs against our frontend router's specification for specific recipe step ingredient routes.
 	recipeStepIngredientsFrontendPathRegex = regexp.MustCompile(`/recipe_step_ingredients/\d+`)
-	// recipeStepProductsFrontendPathRegex matches URLs against our frontend router's specification for specific recipe step product routes
-	recipeStepProductsFrontendPathRegex = regexp.MustCompile(`/recipe_step_products/\d+`)
-	// recipeIterationsFrontendPathRegex matches URLs against our frontend router's specification for specific recipe iteration routes
+	// recipeIterationsFrontendPathRegex matches URLs against our frontend router's specification for specific recipe iteration routes.
 	recipeIterationsFrontendPathRegex = regexp.MustCompile(`/recipe_iterations/\d+`)
-	// recipeStepEventsFrontendPathRegex matches URLs against our frontend router's specification for specific recipe step event routes
-	recipeStepEventsFrontendPathRegex = regexp.MustCompile(`/recipe_step_events/\d+`)
-	// iterationMediasFrontendPathRegex matches URLs against our frontend router's specification for specific iteration media routes
+	// recipeIterationStepsFrontendPathRegex matches URLs against our frontend router's specification for specific recipe iteration step routes.
+	recipeIterationStepsFrontendPathRegex = regexp.MustCompile(`/recipe_iteration_steps/\d+`)
+	// iterationMediasFrontendPathRegex matches URLs against our frontend router's specification for specific iteration media routes.
 	iterationMediasFrontendPathRegex = regexp.MustCompile(`/iteration_medias/\d+`)
-	// invitationsFrontendPathRegex matches URLs against our frontend router's specification for specific invitation routes
+	// invitationsFrontendPathRegex matches URLs against our frontend router's specification for specific invitation routes.
 	invitationsFrontendPathRegex = regexp.MustCompile(`/invitations/\d+`)
-	// reportsFrontendPathRegex matches URLs against our frontend router's specification for specific report routes
+	// reportsFrontendPathRegex matches URLs against our frontend router's specification for specific report routes.
 	reportsFrontendPathRegex = regexp.MustCompile(`/reports/\d+`)
 )
 
-// StaticDir builds a static directory handler
+// StaticDir builds a static directory handler.
 func (s *Service) StaticDir(staticFilesDirectory string) (http.HandlerFunc, error) {
 	fileDir, err := filepath.Abs(staticFilesDirectory)
 	if err != nil {
@@ -115,31 +121,37 @@ func (s *Service) StaticDir(staticFilesDirectory string) (http.HandlerFunc, erro
 		rl := s.logger.WithRequest(req)
 		rl.Debug("static file requested")
 		switch req.URL.Path {
-		// list your frontend history routes here
+		// list your frontend history routes here.
 		case "/register",
 			"/login",
-			"/instruments",
-			"/instruments/new",
-			"/ingredients",
-			"/ingredients/new",
-			"/preparations",
-			"/preparations/new",
+			"/valid_instruments",
+			"/valid_instruments/new",
+			"/valid_ingredients",
+			"/valid_ingredients/new",
+			"/valid_ingredient_tags",
+			"/valid_ingredient_tags/new",
+			"/ingredient_tag_mappings",
+			"/ingredient_tag_mappings/new",
+			"/valid_preparations",
+			"/valid_preparations/new",
 			"/required_preparation_instruments",
 			"/required_preparation_instruments/new",
+			"/valid_ingredient_preparations",
+			"/valid_ingredient_preparations/new",
 			"/recipes",
 			"/recipes/new",
+			"/recipe_tags",
+			"/recipe_tags/new",
 			"/recipe_steps",
 			"/recipe_steps/new",
-			"/recipe_step_instruments",
-			"/recipe_step_instruments/new",
+			"/recipe_step_preparations",
+			"/recipe_step_preparations/new",
 			"/recipe_step_ingredients",
 			"/recipe_step_ingredients/new",
-			"/recipe_step_products",
-			"/recipe_step_products/new",
 			"/recipe_iterations",
 			"/recipe_iterations/new",
-			"/recipe_step_events",
-			"/recipe_step_events/new",
+			"/recipe_iteration_steps",
+			"/recipe_iteration_steps/new",
 			"/iteration_medias",
 			"/iteration_medias/new",
 			"/invitations",
@@ -150,60 +162,72 @@ func (s *Service) StaticDir(staticFilesDirectory string) (http.HandlerFunc, erro
 			rl.Debug("rerouting")
 			req.URL.Path = "/"
 		}
-		if instrumentsFrontendPathRegex.MatchString(req.URL.Path) {
-			rl.Debug("rerouting request")
+		if validInstrumentsFrontendPathRegex.MatchString(req.URL.Path) {
+			rl.Debug("rerouting valid instrument request")
 			req.URL.Path = "/"
 		}
-		if ingredientsFrontendPathRegex.MatchString(req.URL.Path) {
-			rl.Debug("rerouting request")
+		if validIngredientsFrontendPathRegex.MatchString(req.URL.Path) {
+			rl.Debug("rerouting valid ingredient request")
 			req.URL.Path = "/"
 		}
-		if preparationsFrontendPathRegex.MatchString(req.URL.Path) {
-			rl.Debug("rerouting request")
+		if validIngredientTagsFrontendPathRegex.MatchString(req.URL.Path) {
+			rl.Debug("rerouting valid ingredient tag request")
+			req.URL.Path = "/"
+		}
+		if ingredientTagMappingsFrontendPathRegex.MatchString(req.URL.Path) {
+			rl.Debug("rerouting ingredient tag mapping request")
+			req.URL.Path = "/"
+		}
+		if validPreparationsFrontendPathRegex.MatchString(req.URL.Path) {
+			rl.Debug("rerouting valid preparation request")
 			req.URL.Path = "/"
 		}
 		if requiredPreparationInstrumentsFrontendPathRegex.MatchString(req.URL.Path) {
-			rl.Debug("rerouting request")
+			rl.Debug("rerouting required preparation instrument request")
+			req.URL.Path = "/"
+		}
+		if validIngredientPreparationsFrontendPathRegex.MatchString(req.URL.Path) {
+			rl.Debug("rerouting valid ingredient preparation request")
 			req.URL.Path = "/"
 		}
 		if recipesFrontendPathRegex.MatchString(req.URL.Path) {
-			rl.Debug("rerouting request")
+			rl.Debug("rerouting recipe request")
+			req.URL.Path = "/"
+		}
+		if recipeTagsFrontendPathRegex.MatchString(req.URL.Path) {
+			rl.Debug("rerouting recipe tag request")
 			req.URL.Path = "/"
 		}
 		if recipeStepsFrontendPathRegex.MatchString(req.URL.Path) {
-			rl.Debug("rerouting request")
+			rl.Debug("rerouting recipe step request")
 			req.URL.Path = "/"
 		}
-		if recipeStepInstrumentsFrontendPathRegex.MatchString(req.URL.Path) {
-			rl.Debug("rerouting request")
+		if recipeStepPreparationsFrontendPathRegex.MatchString(req.URL.Path) {
+			rl.Debug("rerouting recipe step preparation request")
 			req.URL.Path = "/"
 		}
 		if recipeStepIngredientsFrontendPathRegex.MatchString(req.URL.Path) {
-			rl.Debug("rerouting request")
-			req.URL.Path = "/"
-		}
-		if recipeStepProductsFrontendPathRegex.MatchString(req.URL.Path) {
-			rl.Debug("rerouting request")
+			rl.Debug("rerouting recipe step ingredient request")
 			req.URL.Path = "/"
 		}
 		if recipeIterationsFrontendPathRegex.MatchString(req.URL.Path) {
-			rl.Debug("rerouting request")
+			rl.Debug("rerouting recipe iteration request")
 			req.URL.Path = "/"
 		}
-		if recipeStepEventsFrontendPathRegex.MatchString(req.URL.Path) {
-			rl.Debug("rerouting request")
+		if recipeIterationStepsFrontendPathRegex.MatchString(req.URL.Path) {
+			rl.Debug("rerouting recipe iteration step request")
 			req.URL.Path = "/"
 		}
 		if iterationMediasFrontendPathRegex.MatchString(req.URL.Path) {
-			rl.Debug("rerouting request")
+			rl.Debug("rerouting iteration media request")
 			req.URL.Path = "/"
 		}
 		if invitationsFrontendPathRegex.MatchString(req.URL.Path) {
-			rl.Debug("rerouting request")
+			rl.Debug("rerouting invitation request")
 			req.URL.Path = "/"
 		}
 		if reportsFrontendPathRegex.MatchString(req.URL.Path) {
-			rl.Debug("rerouting request")
+			rl.Debug("rerouting report request")
 			req.URL.Path = "/"
 		}
 

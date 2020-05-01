@@ -13,21 +13,22 @@ import (
 	"github.com/emicklei/hazana"
 )
 
-// ServiceAttacker implements hazana's Attacker interface
+// ServiceAttacker implements hazana's Attacker interface.
 type ServiceAttacker struct {
 	todoClient *client.V1Client
 }
 
-// Setup implement's hazana's Attacker interface
-func (a *ServiceAttacker) Setup(c hazana.Config) error {
+// Setup implement's hazana's Attacker interface.
+func (a *ServiceAttacker) Setup(_ hazana.Config) error {
 	return nil
 }
 
-// Do implement's hazana's Attacker interface
-func (a *ServiceAttacker) Do(ctx context.Context) hazana.DoResult {
+// Do implement's hazana's Attacker interface.
+func (a *ServiceAttacker) Do(_ context.Context) hazana.DoResult {
 	// Do performs one request and is executed in a separate goroutine.
 	// The context is used to cancel the request on timeout.
 	act := RandomAction(a.todoClient)
+
 	req, err := act.Action()
 	if err != nil || req == nil {
 		if err == ErrUnavailableYet {
@@ -71,12 +72,12 @@ func (a *ServiceAttacker) Do(ctx context.Context) hazana.DoResult {
 	return dr
 }
 
-// Teardown implements hazana's Attacker interface
+// Teardown implements hazana's Attacker interface.
 func (a *ServiceAttacker) Teardown() error {
 	return nil
 }
 
-// Clone implements hazana's Attacker interface
+// Clone implements hazana's Attacker interface.
 func (a *ServiceAttacker) Clone() hazana.Attack {
 	return a
 }

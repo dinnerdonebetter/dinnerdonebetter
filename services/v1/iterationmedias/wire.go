@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	// Providers is our collection of what we provide to other services
+	// Providers is our collection of what we provide to other services.
 	Providers = wire.NewSet(
 		ProvideIterationMediasService,
 		ProvideIterationMediaDataManager,
@@ -16,12 +16,12 @@ var (
 	)
 )
 
-// ProvideIterationMediaDataManager turns a database into an IterationMediaDataManager
+// ProvideIterationMediaDataManager turns a database into an IterationMediaDataManager.
 func ProvideIterationMediaDataManager(db database.Database) models.IterationMediaDataManager {
 	return db
 }
 
-// ProvideIterationMediaDataServer is an arbitrary function for dependency injection's sake
+// ProvideIterationMediaDataServer is an arbitrary function for dependency injection's sake.
 func ProvideIterationMediaDataServer(s *Service) models.IterationMediaDataServer {
 	return s
 }

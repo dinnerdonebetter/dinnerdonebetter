@@ -15,8 +15,8 @@ import (
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
 
 	"gitlab.com/verygoodsoftwarenotvirus/logging/v1"
-	"gopkg.in/oauth2.v3"
-	manage "gopkg.in/oauth2.v3/manage"
+	oauth2 "gopkg.in/oauth2.v3"
+	"gopkg.in/oauth2.v3/manage"
 	oauth2server "gopkg.in/oauth2.v3/server"
 	oauth2store "gopkg.in/oauth2.v3/store"
 )
@@ -29,7 +29,7 @@ func init() {
 }
 
 const (
-	// CreationMiddlewareCtxKey is a string alias for referring to OAuth2 client creation data
+	// CreationMiddlewareCtxKey is a string alias for referring to OAuth2 client creation data.
 	CreationMiddlewareCtxKey models.ContextKey = "create_oauth2_client"
 
 	counterName        metrics.CounterName = "oauth2_clients"
@@ -57,20 +57,18 @@ type (
 		HandleTokenRequest(res http.ResponseWriter, req *http.Request) error
 	}
 
-	// ClientIDFetcher is a function for fetching client IDs out of requests
+	// ClientIDFetcher is a function for fetching client IDs out of requests.
 	ClientIDFetcher func(req *http.Request) uint64
 
-	// Service manages our OAuth2 clients via HTTP
+	// Service manages our OAuth2 clients via HTTP.
 	Service struct {
 		logger               logging.Logger
 		database             database.Database
 		authenticator        auth.Authenticator
 		encoderDecoder       encoding.EncoderDecoder
 		urlClientIDExtractor func(req *http.Request) uint64
-
-		tokenStore          oauth2.TokenStore
-		oauth2Handler       oauth2Handler
-		oauth2ClientCounter metrics.UnitCounter
+		oauth2Handler        oauth2Handler
+		oauth2ClientCounter  metrics.UnitCounter
 	}
 
 	clientStore struct {
@@ -98,9 +96,8 @@ func (s *clientStore) GetByID(id string) (oauth2.ClientInfo, error) {
 	return client, nil
 }
 
-// ProvideOAuth2ClientsService builds a new OAuth2ClientsService
+// ProvideOAuth2ClientsService builds a new OAuth2ClientsService.
 func ProvideOAuth2ClientsService(
-	ctx context.Context,
 	logger logging.Logger,
 	db database.Database,
 	authenticator auth.Authenticator,
@@ -108,56 +105,48 @@ func ProvideOAuth2ClientsService(
 	encoderDecoder encoding.EncoderDecoder,
 	counterProvider metrics.UnitCounterProvider,
 ) (*Service, error) {
-	counter, err := counterProvider(counterName, counterDescription)
-	if err != nil {
-		return nil, fmt.Errorf("error initializing counter: %w", err)
-	}
-
 	manager := manage.NewDefaultManager()
 	clientStore := newClientStore(db)
-	tokenStore, err := oauth2store.NewMemoryTokenStore()
 	manager.MapClientStorage(clientStore)
-	manager.MustTokenStorage(tokenStore, err)
+	tokenStore, tokenStoreErr := oauth2store.NewMemoryTokenStore()
+	manager.MustTokenStorage(tokenStore, tokenStoreErr)
 	manager.SetAuthorizeCodeTokenCfg(manage.DefaultAuthorizeCodeTokenCfg)
 	manager.SetRefreshTokenCfg(manage.DefaultRefreshTokenCfg)
 	oHandler := oauth2server.NewDefaultServer(manager)
 	oHandler.SetAllowGetAccessRequest(true)
 
-	s := &Service{
+	svc := &Service{
 		database:             db,
 		logger:               logger.WithName(serviceName),
 		encoderDecoder:       encoderDecoder,
 		authenticator:        authenticator,
 		urlClientIDExtractor: clientIDFetcher,
-		oauth2ClientCounter:  counter,
-		tokenStore:           tokenStore,
 		oauth2Handler:        oHandler,
 	}
+	initializeOAuth2Handler(svc)
 
-	initializeOAuth2Handler(s.oauth2Handler, s)
-	count, err := s.database.GetAllOAuth2ClientCount(ctx)
-	if err != nil && err != sql.ErrNoRows {
-		return nil, fmt.Errorf("fetching oauth2 clients: %w", err)
+	var err error
+	if svc.oauth2ClientCounter, err = counterProvider(counterName, counterDescription); err != nil {
+		return nil, fmt.Errorf("error initializing counter: %w", err)
 	}
-	counter.IncrementBy(ctx, count)
 
-	return s, nil
+	return svc, nil
 }
 
-// initializeOAuth2Handler
-func initializeOAuth2Handler(handler oauth2Handler, s *Service) {
-	handler.SetAllowGetAccessRequest(true)
-	handler.SetClientAuthorizedHandler(s.ClientAuthorizedHandler)
-	handler.SetClientScopeHandler(s.ClientScopeHandler)
-	handler.SetClientInfoHandler(oauth2server.ClientFormHandler)
-	handler.SetAuthorizeScopeHandler(s.AuthorizeScopeHandler)
-	handler.SetResponseErrorHandler(s.OAuth2ResponseErrorHandler)
-	handler.SetInternalErrorHandler(s.OAuth2InternalErrorHandler)
-	handler.SetUserAuthorizationHandler(s.UserAuthorizationHandler)
+// initializeOAuth2Handler.
+func initializeOAuth2Handler(svc *Service) {
+	svc.oauth2Handler.SetAllowGetAccessRequest(true)
+	svc.oauth2Handler.SetClientAuthorizedHandler(svc.ClientAuthorizedHandler)
+	svc.oauth2Handler.SetClientScopeHandler(svc.ClientScopeHandler)
+	svc.oauth2Handler.SetClientInfoHandler(oauth2server.ClientFormHandler)
+	svc.oauth2Handler.SetAuthorizeScopeHandler(svc.AuthorizeScopeHandler)
+	svc.oauth2Handler.SetResponseErrorHandler(svc.OAuth2ResponseErrorHandler)
+	svc.oauth2Handler.SetInternalErrorHandler(svc.OAuth2InternalErrorHandler)
+	svc.oauth2Handler.SetUserAuthorizationHandler(svc.UserAuthorizationHandler)
 
-	// this sad type cast is here because I have an arbitrary
+	// this sad type cast is here because I have an arbitrary.
 	// test-only interface for OAuth2 interactions.
-	if x, ok := handler.(*oauth2server.Server); ok {
+	if x, ok := svc.oauth2Handler.(*oauth2server.Server); ok {
 		x.Config.AllowedGrantTypes = []oauth2.GrantType{
 			oauth2.ClientCredentials,
 			// oauth2.AuthorizationCode,
@@ -167,12 +156,12 @@ func initializeOAuth2Handler(handler oauth2Handler, s *Service) {
 	}
 }
 
-// HandleAuthorizeRequest is a simple wrapper around the internal server's HandleAuthorizeRequest
+// HandleAuthorizeRequest is a simple wrapper around the internal server's HandleAuthorizeRequest.
 func (s *Service) HandleAuthorizeRequest(res http.ResponseWriter, req *http.Request) error {
 	return s.oauth2Handler.HandleAuthorizeRequest(res, req)
 }
 
-// HandleTokenRequest is a simple wrapper around the internal server's HandleTokenRequest
+// HandleTokenRequest is a simple wrapper around the internal server's HandleTokenRequest.
 func (s *Service) HandleTokenRequest(res http.ResponseWriter, req *http.Request) error {
 	return s.oauth2Handler.HandleTokenRequest(res, req)
 }

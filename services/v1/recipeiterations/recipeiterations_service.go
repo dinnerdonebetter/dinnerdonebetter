@@ -1,7 +1,6 @@
 package recipeiterations
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
@@ -14,13 +13,13 @@ import (
 )
 
 const (
-	// CreateMiddlewareCtxKey is a string alias we can use for referring to recipe iteration input data in contexts
+	// CreateMiddlewareCtxKey is a string alias we can use for referring to recipe iteration input data in contexts.
 	CreateMiddlewareCtxKey models.ContextKey = "recipe_iteration_create_input"
-	// UpdateMiddlewareCtxKey is a string alias we can use for referring to recipe iteration update data in contexts
+	// UpdateMiddlewareCtxKey is a string alias we can use for referring to recipe iteration update data in contexts.
 	UpdateMiddlewareCtxKey models.ContextKey = "recipe_iteration_update_input"
 
 	counterName        metrics.CounterName = "recipeIterations"
-	counterDescription                     = "the number of recipeIterations managed by the recipeIterations service"
+	counterDescription string              = "the number of recipeIterations managed by the recipeIterations service"
 	topicName          string              = "recipe_iterations"
 	serviceName        string              = "recipe_iterations_service"
 )
@@ -32,29 +31,35 @@ var (
 type (
 	// Service handles to-do list recipe iterations
 	Service struct {
-		logger                   logging.Logger
-		recipeIterationCounter   metrics.UnitCounter
-		recipeIterationDatabase  models.RecipeIterationDataManager
-		userIDFetcher            UserIDFetcher
-		recipeIterationIDFetcher RecipeIterationIDFetcher
-		encoderDecoder           encoding.EncoderDecoder
-		reporter                 newsman.Reporter
+		logger                     logging.Logger
+		recipeDataManager          models.RecipeDataManager
+		recipeIterationDataManager models.RecipeIterationDataManager
+		recipeIDFetcher            RecipeIDFetcher
+		recipeIterationIDFetcher   RecipeIterationIDFetcher
+		userIDFetcher              UserIDFetcher
+		recipeIterationCounter     metrics.UnitCounter
+		encoderDecoder             encoding.EncoderDecoder
+		reporter                   newsman.Reporter
 	}
 
-	// UserIDFetcher is a function that fetches user IDs
+	// UserIDFetcher is a function that fetches user IDs.
 	UserIDFetcher func(*http.Request) uint64
 
-	// RecipeIterationIDFetcher is a function that fetches recipe iteration IDs
+	// RecipeIDFetcher is a function that fetches recipe IDs.
+	RecipeIDFetcher func(*http.Request) uint64
+
+	// RecipeIterationIDFetcher is a function that fetches recipe iteration IDs.
 	RecipeIterationIDFetcher func(*http.Request) uint64
 )
 
-// ProvideRecipeIterationsService builds a new RecipeIterationsService
+// ProvideRecipeIterationsService builds a new RecipeIterationsService.
 func ProvideRecipeIterationsService(
-	ctx context.Context,
 	logger logging.Logger,
-	db models.RecipeIterationDataManager,
-	userIDFetcher UserIDFetcher,
+	recipeDataManager models.RecipeDataManager,
+	recipeIterationDataManager models.RecipeIterationDataManager,
+	recipeIDFetcher RecipeIDFetcher,
 	recipeIterationIDFetcher RecipeIterationIDFetcher,
+	userIDFetcher UserIDFetcher,
 	encoder encoding.EncoderDecoder,
 	recipeIterationCounterProvider metrics.UnitCounterProvider,
 	reporter newsman.Reporter,
@@ -65,20 +70,16 @@ func ProvideRecipeIterationsService(
 	}
 
 	svc := &Service{
-		logger:                   logger.WithName(serviceName),
-		recipeIterationDatabase:  db,
-		encoderDecoder:           encoder,
-		recipeIterationCounter:   recipeIterationCounter,
-		userIDFetcher:            userIDFetcher,
-		recipeIterationIDFetcher: recipeIterationIDFetcher,
-		reporter:                 reporter,
+		logger:                     logger.WithName(serviceName),
+		recipeIDFetcher:            recipeIDFetcher,
+		recipeIterationIDFetcher:   recipeIterationIDFetcher,
+		userIDFetcher:              userIDFetcher,
+		recipeDataManager:          recipeDataManager,
+		recipeIterationDataManager: recipeIterationDataManager,
+		encoderDecoder:             encoder,
+		recipeIterationCounter:     recipeIterationCounter,
+		reporter:                   reporter,
 	}
-
-	recipeIterationCount, err := svc.recipeIterationDatabase.GetAllRecipeIterationsCount(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("setting current recipe iteration count: %w", err)
-	}
-	svc.recipeIterationCounter.IncrementBy(ctx, recipeIterationCount)
 
 	return svc, nil
 }
