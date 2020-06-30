@@ -63,8 +63,8 @@ type MockDatabase struct {
 }
 
 // Migrate satisfies the Database interface.
-func (m *MockDatabase) Migrate(ctx context.Context) error {
-	return m.Called(ctx).Error(0)
+func (m *MockDatabase) Migrate(ctx context.Context, createUser bool) error {
+	return m.Called(ctx, createUser).Error(0)
 }
 
 // IsReady satisfies the Database interface.

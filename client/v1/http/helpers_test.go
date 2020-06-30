@@ -10,6 +10,7 @@ import (
 	"strings"
 	"testing"
 
+	"gitlab.com/prixfixe/prixfixe/internal/v1/panicking"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
 
 	"github.com/stretchr/testify/assert"
@@ -205,5 +206,36 @@ func TestCreateBodyFromStruct(T *testing.T) {
 		_, err := createBodyFromStruct(x)
 
 		assert.Error(t, err, "expected no error creating JSON from valid struct")
+	})
+}
+
+func TestV1Client_MustCreateBodyFromStruct(T *testing.T) {
+	T.Parallel()
+
+	T.Run("expected use", func(t *testing.T) {
+		c := buildTestClient(t, nil)
+
+		name := "whatever"
+		expected := fmt.Sprintf(`{"name":%q}`, name)
+		x := &testingType{Name: name}
+
+		actual := c.mustCreateBodyFromStruct(x)
+
+		bs, err := ioutil.ReadAll(actual)
+		assert.NoError(t, err, "expected no error reading JSON from valid struct")
+		assert.Equal(t, expected, string(bs), "expected and actual JSON bodies don't match")
+	})
+
+	T.Run("with unmarshallable struct", func(t *testing.T) {
+		c := buildTestClient(t, nil)
+
+		p := &panicking.MockPanicker{}
+		p.On("Panic", "error building struct: %v", mock.Anything).Return()
+		c.panicker = p
+
+		x := &testBreakableStruct{Thing: "stuff"}
+		c.mustCreateBodyFromStruct(x)
+
+		mock.AssertExpectationsForObjects(t, p)
 	})
 }

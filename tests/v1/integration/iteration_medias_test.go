@@ -140,14 +140,14 @@ func TestIterationMedias(test *testing.T) {
 			checkValueAndError(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.IterationMedias),
+				len(expected) <= len(actual.IterationMedia),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.IterationMedias),
+				len(actual.IterationMedia),
 			)
 
 			// Clean up.
-			for _, createdIterationMedia := range actual.IterationMedias {
+			for _, createdIterationMedia := range actual.IterationMedia {
 				err = prixfixeClient.ArchiveIterationMedia(ctx, createdRecipe.ID, createdRecipeIteration.ID, createdIterationMedia.ID)
 				assert.NoError(t, err)
 			}

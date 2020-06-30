@@ -282,7 +282,7 @@ func TestPostgres_buildGetIngredientTagMappingsQuery(T *testing.T) {
 		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 		filter := fakemodels.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT ingredient_tag_mappings.id, ingredient_tag_mappings.valid_ingredient_tag_id, ingredient_tag_mappings.created_on, ingredient_tag_mappings.updated_on, ingredient_tag_mappings.archived_on, ingredient_tag_mappings.belongs_to_valid_ingredient, COUNT(ingredient_tag_mappings.id) FROM ingredient_tag_mappings JOIN valid_ingredients ON ingredient_tag_mappings.belongs_to_valid_ingredient=valid_ingredients.id WHERE ingredient_tag_mappings.archived_on IS NULL AND ingredient_tag_mappings.belongs_to_valid_ingredient = $1 AND valid_ingredients.id = $2 AND ingredient_tag_mappings.created_on > $3 AND ingredient_tag_mappings.created_on < $4 AND ingredient_tag_mappings.updated_on > $5 AND ingredient_tag_mappings.updated_on < $6 GROUP BY ingredient_tag_mappings.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT ingredient_tag_mappings.id, ingredient_tag_mappings.valid_ingredient_tag_id, ingredient_tag_mappings.created_on, ingredient_tag_mappings.updated_on, ingredient_tag_mappings.archived_on, ingredient_tag_mappings.belongs_to_valid_ingredient, (SELECT COUNT(ingredient_tag_mappings.id) FROM ingredient_tag_mappings WHERE ingredient_tag_mappings.archived_on IS NULL) FROM ingredient_tag_mappings JOIN valid_ingredients ON ingredient_tag_mappings.belongs_to_valid_ingredient=valid_ingredients.id WHERE ingredient_tag_mappings.archived_on IS NULL AND ingredient_tag_mappings.belongs_to_valid_ingredient = $1 AND valid_ingredients.id = $2 AND ingredient_tag_mappings.created_on > $3 AND ingredient_tag_mappings.created_on < $4 AND ingredient_tag_mappings.updated_on > $5 AND ingredient_tag_mappings.updated_on < $6 ORDER BY ingredient_tag_mappings.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			exampleValidIngredient.ID,
 			exampleValidIngredient.ID,
@@ -302,7 +302,7 @@ func TestPostgres_buildGetIngredientTagMappingsQuery(T *testing.T) {
 func TestPostgres_GetIngredientTagMappings(T *testing.T) {
 	T.Parallel()
 
-	expectedListQuery := "SELECT ingredient_tag_mappings.id, ingredient_tag_mappings.valid_ingredient_tag_id, ingredient_tag_mappings.created_on, ingredient_tag_mappings.updated_on, ingredient_tag_mappings.archived_on, ingredient_tag_mappings.belongs_to_valid_ingredient, COUNT(ingredient_tag_mappings.id) FROM ingredient_tag_mappings JOIN valid_ingredients ON ingredient_tag_mappings.belongs_to_valid_ingredient=valid_ingredients.id WHERE ingredient_tag_mappings.archived_on IS NULL AND ingredient_tag_mappings.belongs_to_valid_ingredient = $1 AND valid_ingredients.id = $2 GROUP BY ingredient_tag_mappings.id LIMIT 20"
+	expectedListQuery := "SELECT ingredient_tag_mappings.id, ingredient_tag_mappings.valid_ingredient_tag_id, ingredient_tag_mappings.created_on, ingredient_tag_mappings.updated_on, ingredient_tag_mappings.archived_on, ingredient_tag_mappings.belongs_to_valid_ingredient, (SELECT COUNT(ingredient_tag_mappings.id) FROM ingredient_tag_mappings WHERE ingredient_tag_mappings.archived_on IS NULL) FROM ingredient_tag_mappings JOIN valid_ingredients ON ingredient_tag_mappings.belongs_to_valid_ingredient=valid_ingredients.id WHERE ingredient_tag_mappings.archived_on IS NULL AND ingredient_tag_mappings.belongs_to_valid_ingredient = $1 AND valid_ingredients.id = $2 ORDER BY ingredient_tag_mappings.id LIMIT 20"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()

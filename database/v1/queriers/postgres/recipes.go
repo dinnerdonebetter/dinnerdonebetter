@@ -189,12 +189,12 @@ func (p *Postgres) buildGetRecipesQuery(filter *models.QueryFilter) (query strin
 	var err error
 
 	builder := p.sqlBuilder.
-		Select(append(recipesTableColumns, fmt.Sprintf(countQuery, recipesTableName))...).
+		Select(append(recipesTableColumns, fmt.Sprintf("(%s)", p.buildGetAllRecipesCountQuery()))...).
 		From(recipesTableName).
 		Where(squirrel.Eq{
 			fmt.Sprintf("%s.archived_on", recipesTableName): nil,
 		}).
-		GroupBy(fmt.Sprintf("%s.id", recipesTableName))
+		OrderBy(fmt.Sprintf("%s.id", recipesTableName))
 
 	if filter != nil {
 		builder = filter.ApplyToQueryBuilder(builder, recipesTableName)

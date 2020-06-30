@@ -53,7 +53,7 @@ func TestRecipeIterationsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -83,7 +83,7 @@ func TestRecipeIterationsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -109,7 +109,7 @@ func TestRecipeIterationsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -141,7 +141,7 @@ func TestRecipeIterationsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -202,7 +202,7 @@ func TestRecipeIterationsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -234,7 +234,7 @@ func TestRecipeIterationsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -266,7 +266,7 @@ func TestRecipeIterationsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -290,7 +290,7 @@ func TestRecipeIterationsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -322,7 +322,7 @@ func TestRecipeIterationsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -370,7 +370,7 @@ func TestRecipeIterationsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -419,7 +419,7 @@ func TestRecipeIterationsService_ExistenceHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -451,7 +451,7 @@ func TestRecipeIterationsService_ExistenceHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -483,7 +483,7 @@ func TestRecipeIterationsService_ExistenceHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -534,7 +534,7 @@ func TestRecipeIterationsService_ReadHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -566,7 +566,7 @@ func TestRecipeIterationsService_ReadHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -598,7 +598,7 @@ func TestRecipeIterationsService_ReadHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -634,7 +634,7 @@ func TestRecipeIterationsService_ReadHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -692,7 +692,7 @@ func TestRecipeIterationsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -716,7 +716,7 @@ func TestRecipeIterationsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -748,7 +748,7 @@ func TestRecipeIterationsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -784,7 +784,7 @@ func TestRecipeIterationsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -821,7 +821,7 @@ func TestRecipeIterationsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -866,7 +866,7 @@ func TestRecipeIterationsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -927,7 +927,7 @@ func TestRecipeIterationsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -953,7 +953,7 @@ func TestRecipeIterationsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -979,7 +979,7 @@ func TestRecipeIterationsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -1015,7 +1015,7 @@ func TestRecipeIterationsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -1051,7 +1051,7 @@ func TestRecipeIterationsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)

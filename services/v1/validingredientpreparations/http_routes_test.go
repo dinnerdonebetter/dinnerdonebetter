@@ -46,7 +46,7 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -75,7 +75,7 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -100,7 +100,7 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -131,7 +131,7 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -185,7 +185,7 @@ func TestValidIngredientPreparationsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -216,7 +216,7 @@ func TestValidIngredientPreparationsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -247,7 +247,7 @@ func TestValidIngredientPreparationsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -270,7 +270,7 @@ func TestValidIngredientPreparationsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -301,7 +301,7 @@ func TestValidIngredientPreparationsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -348,7 +348,7 @@ func TestValidIngredientPreparationsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -390,7 +390,7 @@ func TestValidIngredientPreparationsService_ExistenceHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -421,7 +421,7 @@ func TestValidIngredientPreparationsService_ExistenceHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -452,7 +452,7 @@ func TestValidIngredientPreparationsService_ExistenceHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -496,7 +496,7 @@ func TestValidIngredientPreparationsService_ReadHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -527,7 +527,7 @@ func TestValidIngredientPreparationsService_ReadHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -558,7 +558,7 @@ func TestValidIngredientPreparationsService_ReadHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -593,7 +593,7 @@ func TestValidIngredientPreparationsService_ReadHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -644,7 +644,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -667,7 +667,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -698,7 +698,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -733,7 +733,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -769,7 +769,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -813,7 +813,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -867,7 +867,7 @@ func TestValidIngredientPreparationsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -892,7 +892,7 @@ func TestValidIngredientPreparationsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -917,7 +917,7 @@ func TestValidIngredientPreparationsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -952,7 +952,7 @@ func TestValidIngredientPreparationsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -987,7 +987,7 @@ func TestValidIngredientPreparationsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)

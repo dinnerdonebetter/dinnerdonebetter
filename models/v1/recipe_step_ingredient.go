@@ -9,44 +9,44 @@ type (
 	// RecipeStepIngredient represents a recipe step ingredient.
 	RecipeStepIngredient struct {
 		ID                    uint64  `json:"id"`
-		ValidIngredientID     uint64  `json:"valid_ingredient_id"`
-		IngredientNotes       string  `json:"ingredient_notes"`
-		QuantityType          string  `json:"quantity_type"`
-		QuantityValue         float32 `json:"quantity_value"`
-		QuantityNotes         string  `json:"quantity_notes"`
-		ProductOfRecipeStepID *uint64 `json:"product_of_recipe_step_id"`
-		CreatedOn             uint64  `json:"created_on"`
-		UpdatedOn             *uint64 `json:"updated_on"`
-		ArchivedOn            *uint64 `json:"archived_on"`
-		BelongsToRecipeStep   uint64  `json:"belongs_to_recipe_step"`
+		ValidIngredientID     uint64  `json:"validIngredientID"`
+		IngredientNotes       string  `json:"ingredientNotes"`
+		QuantityType          string  `json:"quantityType"`
+		QuantityValue         float32 `json:"quantityValue"`
+		QuantityNotes         string  `json:"quantityNotes"`
+		ProductOfRecipeStepID *uint64 `json:"productOfRecipeStepID"`
+		CreatedOn             uint64  `json:"createdOn"`
+		UpdatedOn             *uint64 `json:"updatedOn"`
+		ArchivedOn            *uint64 `json:"archivedOn"`
+		BelongsToRecipeStep   uint64  `json:"belongsToRecipeStep"`
 	}
 
 	// RecipeStepIngredientList represents a list of recipe step ingredients.
 	RecipeStepIngredientList struct {
 		Pagination
-		RecipeStepIngredients []RecipeStepIngredient `json:"recipe_step_ingredients"`
+		RecipeStepIngredients []RecipeStepIngredient `json:"recipeStepIngredients"`
 	}
 
 	// RecipeStepIngredientCreationInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientCreationInput struct {
-		ValidIngredientID     uint64  `json:"valid_ingredient_id"`
-		IngredientNotes       string  `json:"ingredient_notes"`
-		QuantityType          string  `json:"quantity_type"`
-		QuantityValue         float32 `json:"quantity_value"`
-		QuantityNotes         string  `json:"quantity_notes"`
-		ProductOfRecipeStepID *uint64 `json:"product_of_recipe_step_id"`
+		ValidIngredientID     uint64  `json:"validIngredientID"`
+		IngredientNotes       string  `json:"ingredientNotes"`
+		QuantityType          string  `json:"quantityType"`
+		QuantityValue         float32 `json:"quantityValue"`
+		QuantityNotes         string  `json:"quantityNotes"`
+		ProductOfRecipeStepID *uint64 `json:"productOfRecipeStepID"`
 		BelongsToRecipeStep   uint64  `json:"-"`
 	}
 
 	// RecipeStepIngredientUpdateInput represents what a user could set as input for updating recipe step ingredients.
 	RecipeStepIngredientUpdateInput struct {
-		ValidIngredientID     uint64  `json:"valid_ingredient_id"`
-		IngredientNotes       string  `json:"ingredient_notes"`
-		QuantityType          string  `json:"quantity_type"`
-		QuantityValue         float32 `json:"quantity_value"`
-		QuantityNotes         string  `json:"quantity_notes"`
-		ProductOfRecipeStepID *uint64 `json:"product_of_recipe_step_id"`
-		BelongsToRecipeStep   uint64  `json:"belongs_to_recipe_step"`
+		ValidIngredientID     uint64  `json:"validIngredientID"`
+		IngredientNotes       string  `json:"ingredientNotes"`
+		QuantityType          string  `json:"quantityType"`
+		QuantityValue         float32 `json:"quantityValue"`
+		QuantityNotes         string  `json:"quantityNotes"`
+		ProductOfRecipeStepID *uint64 `json:"productOfRecipeStepID"`
+		BelongsToRecipeStep   uint64  `json:"belongsToRecipeStep"`
 	}
 
 	// RecipeStepIngredientDataManager describes a structure capable of storing recipe step ingredients permanently.

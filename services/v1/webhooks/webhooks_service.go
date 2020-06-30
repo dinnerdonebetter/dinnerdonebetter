@@ -35,7 +35,7 @@ type (
 		TuneIn(newsman.Listener)
 	}
 
-	// Service handles TODO ListHandler webhooks.
+	// Service handles webhooks.
 	Service struct {
 		logger             logging.Logger
 		webhookCounter     metrics.UnitCounter

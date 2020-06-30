@@ -18,6 +18,9 @@ const (
 
 func init() {
 	urlToUse = testutil.DetermineServiceURL()
+	if urlToUse == "" {
+		panic("no URL set!")
+	}
 
 	logger := zerolog.NewZeroLogger()
 	logger.WithValue("url", urlToUse).Info("checking server")

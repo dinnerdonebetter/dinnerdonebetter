@@ -261,7 +261,7 @@ func TestPostgres_buildGetValidInstrumentsQuery(T *testing.T) {
 
 		filter := fakemodels.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT valid_instruments.id, valid_instruments.name, valid_instruments.variant, valid_instruments.description, valid_instruments.icon, valid_instruments.created_on, valid_instruments.updated_on, valid_instruments.archived_on, COUNT(valid_instruments.id) FROM valid_instruments WHERE valid_instruments.archived_on IS NULL AND valid_instruments.created_on > $1 AND valid_instruments.created_on < $2 AND valid_instruments.updated_on > $3 AND valid_instruments.updated_on < $4 GROUP BY valid_instruments.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT valid_instruments.id, valid_instruments.name, valid_instruments.variant, valid_instruments.description, valid_instruments.icon, valid_instruments.created_on, valid_instruments.updated_on, valid_instruments.archived_on, (SELECT COUNT(valid_instruments.id) FROM valid_instruments WHERE valid_instruments.archived_on IS NULL) FROM valid_instruments WHERE valid_instruments.archived_on IS NULL AND valid_instruments.created_on > $1 AND valid_instruments.created_on < $2 AND valid_instruments.updated_on > $3 AND valid_instruments.updated_on < $4 ORDER BY valid_instruments.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			filter.CreatedAfter,
 			filter.CreatedBefore,
@@ -279,7 +279,7 @@ func TestPostgres_buildGetValidInstrumentsQuery(T *testing.T) {
 func TestPostgres_GetValidInstruments(T *testing.T) {
 	T.Parallel()
 
-	expectedListQuery := "SELECT valid_instruments.id, valid_instruments.name, valid_instruments.variant, valid_instruments.description, valid_instruments.icon, valid_instruments.created_on, valid_instruments.updated_on, valid_instruments.archived_on, COUNT(valid_instruments.id) FROM valid_instruments WHERE valid_instruments.archived_on IS NULL GROUP BY valid_instruments.id LIMIT 20"
+	expectedListQuery := "SELECT valid_instruments.id, valid_instruments.name, valid_instruments.variant, valid_instruments.description, valid_instruments.icon, valid_instruments.created_on, valid_instruments.updated_on, valid_instruments.archived_on, (SELECT COUNT(valid_instruments.id) FROM valid_instruments WHERE valid_instruments.archived_on IS NULL) FROM valid_instruments WHERE valid_instruments.archived_on IS NULL ORDER BY valid_instruments.id LIMIT 20"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()

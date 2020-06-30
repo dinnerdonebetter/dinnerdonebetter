@@ -255,7 +255,7 @@ func TestPostgres_buildGetValidIngredientTagsQuery(T *testing.T) {
 
 		filter := fakemodels.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT valid_ingredient_tags.id, valid_ingredient_tags.name, valid_ingredient_tags.created_on, valid_ingredient_tags.updated_on, valid_ingredient_tags.archived_on, COUNT(valid_ingredient_tags.id) FROM valid_ingredient_tags WHERE valid_ingredient_tags.archived_on IS NULL AND valid_ingredient_tags.created_on > $1 AND valid_ingredient_tags.created_on < $2 AND valid_ingredient_tags.updated_on > $3 AND valid_ingredient_tags.updated_on < $4 GROUP BY valid_ingredient_tags.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT valid_ingredient_tags.id, valid_ingredient_tags.name, valid_ingredient_tags.created_on, valid_ingredient_tags.updated_on, valid_ingredient_tags.archived_on, (SELECT COUNT(valid_ingredient_tags.id) FROM valid_ingredient_tags WHERE valid_ingredient_tags.archived_on IS NULL) FROM valid_ingredient_tags WHERE valid_ingredient_tags.archived_on IS NULL AND valid_ingredient_tags.created_on > $1 AND valid_ingredient_tags.created_on < $2 AND valid_ingredient_tags.updated_on > $3 AND valid_ingredient_tags.updated_on < $4 ORDER BY valid_ingredient_tags.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			filter.CreatedAfter,
 			filter.CreatedBefore,
@@ -273,7 +273,7 @@ func TestPostgres_buildGetValidIngredientTagsQuery(T *testing.T) {
 func TestPostgres_GetValidIngredientTags(T *testing.T) {
 	T.Parallel()
 
-	expectedListQuery := "SELECT valid_ingredient_tags.id, valid_ingredient_tags.name, valid_ingredient_tags.created_on, valid_ingredient_tags.updated_on, valid_ingredient_tags.archived_on, COUNT(valid_ingredient_tags.id) FROM valid_ingredient_tags WHERE valid_ingredient_tags.archived_on IS NULL GROUP BY valid_ingredient_tags.id LIMIT 20"
+	expectedListQuery := "SELECT valid_ingredient_tags.id, valid_ingredient_tags.name, valid_ingredient_tags.created_on, valid_ingredient_tags.updated_on, valid_ingredient_tags.archived_on, (SELECT COUNT(valid_ingredient_tags.id) FROM valid_ingredient_tags WHERE valid_ingredient_tags.archived_on IS NULL) FROM valid_ingredient_tags WHERE valid_ingredient_tags.archived_on IS NULL ORDER BY valid_ingredient_tags.id LIMIT 20"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()

@@ -307,7 +307,7 @@ func TestPostgres_buildGetRecipeStepsQuery(T *testing.T) {
 		exampleRecipe := fakemodels.BuildFakeRecipe()
 		filter := fakemodels.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT recipe_steps.id, recipe_steps.index, recipe_steps.valid_preparation_id, recipe_steps.prerequisite_step_id, recipe_steps.min_estimated_time_in_seconds, recipe_steps.max_estimated_time_in_seconds, recipe_steps.yields_product_name, recipe_steps.yields_quantity, recipe_steps.notes, recipe_steps.created_on, recipe_steps.updated_on, recipe_steps.archived_on, recipe_steps.belongs_to_recipe, COUNT(recipe_steps.id) FROM recipe_steps JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $1 AND recipes.id = $2 AND recipe_steps.created_on > $3 AND recipe_steps.created_on < $4 AND recipe_steps.updated_on > $5 AND recipe_steps.updated_on < $6 GROUP BY recipe_steps.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT recipe_steps.id, recipe_steps.index, recipe_steps.valid_preparation_id, recipe_steps.prerequisite_step_id, recipe_steps.min_estimated_time_in_seconds, recipe_steps.max_estimated_time_in_seconds, recipe_steps.yields_product_name, recipe_steps.yields_quantity, recipe_steps.notes, recipe_steps.created_on, recipe_steps.updated_on, recipe_steps.archived_on, recipe_steps.belongs_to_recipe, (SELECT COUNT(recipe_steps.id) FROM recipe_steps WHERE recipe_steps.archived_on IS NULL) FROM recipe_steps JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $1 AND recipes.id = $2 AND recipe_steps.created_on > $3 AND recipe_steps.created_on < $4 AND recipe_steps.updated_on > $5 AND recipe_steps.updated_on < $6 ORDER BY recipe_steps.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			exampleRecipe.ID,
 			exampleRecipe.ID,
@@ -327,7 +327,7 @@ func TestPostgres_buildGetRecipeStepsQuery(T *testing.T) {
 func TestPostgres_GetRecipeSteps(T *testing.T) {
 	T.Parallel()
 
-	expectedListQuery := "SELECT recipe_steps.id, recipe_steps.index, recipe_steps.valid_preparation_id, recipe_steps.prerequisite_step_id, recipe_steps.min_estimated_time_in_seconds, recipe_steps.max_estimated_time_in_seconds, recipe_steps.yields_product_name, recipe_steps.yields_quantity, recipe_steps.notes, recipe_steps.created_on, recipe_steps.updated_on, recipe_steps.archived_on, recipe_steps.belongs_to_recipe, COUNT(recipe_steps.id) FROM recipe_steps JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $1 AND recipes.id = $2 GROUP BY recipe_steps.id LIMIT 20"
+	expectedListQuery := "SELECT recipe_steps.id, recipe_steps.index, recipe_steps.valid_preparation_id, recipe_steps.prerequisite_step_id, recipe_steps.min_estimated_time_in_seconds, recipe_steps.max_estimated_time_in_seconds, recipe_steps.yields_product_name, recipe_steps.yields_quantity, recipe_steps.notes, recipe_steps.created_on, recipe_steps.updated_on, recipe_steps.archived_on, recipe_steps.belongs_to_recipe, (SELECT COUNT(recipe_steps.id) FROM recipe_steps WHERE recipe_steps.archived_on IS NULL) FROM recipe_steps JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $1 AND recipes.id = $2 ORDER BY recipe_steps.id LIMIT 20"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()

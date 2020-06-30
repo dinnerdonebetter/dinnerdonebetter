@@ -44,7 +44,7 @@ func buildMockRowsFromValidIngredient(validIngredients ...*models.ValidIngredien
 			x.ContainsGluten,
 			x.AnimalFlesh,
 			x.AnimalDerived,
-			x.ConsideredStaple,
+			x.MeasurableByVolume,
 			x.Icon,
 			x.CreatedOn,
 			x.UpdatedOn,
@@ -80,7 +80,7 @@ func buildErroneousMockRowFromValidIngredient(x *models.ValidIngredient) *sqlmoc
 		x.ContainsGluten,
 		x.AnimalFlesh,
 		x.AnimalDerived,
-		x.ConsideredStaple,
+		x.MeasurableByVolume,
 		x.Icon,
 		x.CreatedOn,
 		x.UpdatedOn,
@@ -189,7 +189,7 @@ func TestPostgres_buildGetValidIngredientQuery(T *testing.T) {
 
 		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 
-		expectedQuery := "SELECT valid_ingredients.id, valid_ingredients.name, valid_ingredients.variant, valid_ingredients.description, valid_ingredients.warning, valid_ingredients.contains_egg, valid_ingredients.contains_dairy, valid_ingredients.contains_peanut, valid_ingredients.contains_tree_nut, valid_ingredients.contains_soy, valid_ingredients.contains_wheat, valid_ingredients.contains_shellfish, valid_ingredients.contains_sesame, valid_ingredients.contains_fish, valid_ingredients.contains_gluten, valid_ingredients.animal_flesh, valid_ingredients.animal_derived, valid_ingredients.considered_staple, valid_ingredients.icon, valid_ingredients.created_on, valid_ingredients.updated_on, valid_ingredients.archived_on FROM valid_ingredients WHERE valid_ingredients.id = $1"
+		expectedQuery := "SELECT valid_ingredients.id, valid_ingredients.name, valid_ingredients.variant, valid_ingredients.description, valid_ingredients.warning, valid_ingredients.contains_egg, valid_ingredients.contains_dairy, valid_ingredients.contains_peanut, valid_ingredients.contains_tree_nut, valid_ingredients.contains_soy, valid_ingredients.contains_wheat, valid_ingredients.contains_shellfish, valid_ingredients.contains_sesame, valid_ingredients.contains_fish, valid_ingredients.contains_gluten, valid_ingredients.animal_flesh, valid_ingredients.animal_derived, valid_ingredients.measurable_by_volume, valid_ingredients.icon, valid_ingredients.created_on, valid_ingredients.updated_on, valid_ingredients.archived_on FROM valid_ingredients WHERE valid_ingredients.id = $1"
 		expectedArgs := []interface{}{
 			exampleValidIngredient.ID,
 		}
@@ -204,7 +204,7 @@ func TestPostgres_buildGetValidIngredientQuery(T *testing.T) {
 func TestPostgres_GetValidIngredient(T *testing.T) {
 	T.Parallel()
 
-	expectedQuery := "SELECT valid_ingredients.id, valid_ingredients.name, valid_ingredients.variant, valid_ingredients.description, valid_ingredients.warning, valid_ingredients.contains_egg, valid_ingredients.contains_dairy, valid_ingredients.contains_peanut, valid_ingredients.contains_tree_nut, valid_ingredients.contains_soy, valid_ingredients.contains_wheat, valid_ingredients.contains_shellfish, valid_ingredients.contains_sesame, valid_ingredients.contains_fish, valid_ingredients.contains_gluten, valid_ingredients.animal_flesh, valid_ingredients.animal_derived, valid_ingredients.considered_staple, valid_ingredients.icon, valid_ingredients.created_on, valid_ingredients.updated_on, valid_ingredients.archived_on FROM valid_ingredients WHERE valid_ingredients.id = $1"
+	expectedQuery := "SELECT valid_ingredients.id, valid_ingredients.name, valid_ingredients.variant, valid_ingredients.description, valid_ingredients.warning, valid_ingredients.contains_egg, valid_ingredients.contains_dairy, valid_ingredients.contains_peanut, valid_ingredients.contains_tree_nut, valid_ingredients.contains_soy, valid_ingredients.contains_wheat, valid_ingredients.contains_shellfish, valid_ingredients.contains_sesame, valid_ingredients.contains_fish, valid_ingredients.contains_gluten, valid_ingredients.animal_flesh, valid_ingredients.animal_derived, valid_ingredients.measurable_by_volume, valid_ingredients.icon, valid_ingredients.created_on, valid_ingredients.updated_on, valid_ingredients.archived_on FROM valid_ingredients WHERE valid_ingredients.id = $1"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
@@ -289,7 +289,7 @@ func TestPostgres_buildGetValidIngredientsQuery(T *testing.T) {
 
 		filter := fakemodels.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT valid_ingredients.id, valid_ingredients.name, valid_ingredients.variant, valid_ingredients.description, valid_ingredients.warning, valid_ingredients.contains_egg, valid_ingredients.contains_dairy, valid_ingredients.contains_peanut, valid_ingredients.contains_tree_nut, valid_ingredients.contains_soy, valid_ingredients.contains_wheat, valid_ingredients.contains_shellfish, valid_ingredients.contains_sesame, valid_ingredients.contains_fish, valid_ingredients.contains_gluten, valid_ingredients.animal_flesh, valid_ingredients.animal_derived, valid_ingredients.considered_staple, valid_ingredients.icon, valid_ingredients.created_on, valid_ingredients.updated_on, valid_ingredients.archived_on, COUNT(valid_ingredients.id) FROM valid_ingredients WHERE valid_ingredients.archived_on IS NULL AND valid_ingredients.created_on > $1 AND valid_ingredients.created_on < $2 AND valid_ingredients.updated_on > $3 AND valid_ingredients.updated_on < $4 GROUP BY valid_ingredients.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT valid_ingredients.id, valid_ingredients.name, valid_ingredients.variant, valid_ingredients.description, valid_ingredients.warning, valid_ingredients.contains_egg, valid_ingredients.contains_dairy, valid_ingredients.contains_peanut, valid_ingredients.contains_tree_nut, valid_ingredients.contains_soy, valid_ingredients.contains_wheat, valid_ingredients.contains_shellfish, valid_ingredients.contains_sesame, valid_ingredients.contains_fish, valid_ingredients.contains_gluten, valid_ingredients.animal_flesh, valid_ingredients.animal_derived, valid_ingredients.measurable_by_volume, valid_ingredients.icon, valid_ingredients.created_on, valid_ingredients.updated_on, valid_ingredients.archived_on, (SELECT COUNT(valid_ingredients.id) FROM valid_ingredients WHERE valid_ingredients.archived_on IS NULL) FROM valid_ingredients WHERE valid_ingredients.archived_on IS NULL AND valid_ingredients.created_on > $1 AND valid_ingredients.created_on < $2 AND valid_ingredients.updated_on > $3 AND valid_ingredients.updated_on < $4 ORDER BY valid_ingredients.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			filter.CreatedAfter,
 			filter.CreatedBefore,
@@ -307,7 +307,7 @@ func TestPostgres_buildGetValidIngredientsQuery(T *testing.T) {
 func TestPostgres_GetValidIngredients(T *testing.T) {
 	T.Parallel()
 
-	expectedListQuery := "SELECT valid_ingredients.id, valid_ingredients.name, valid_ingredients.variant, valid_ingredients.description, valid_ingredients.warning, valid_ingredients.contains_egg, valid_ingredients.contains_dairy, valid_ingredients.contains_peanut, valid_ingredients.contains_tree_nut, valid_ingredients.contains_soy, valid_ingredients.contains_wheat, valid_ingredients.contains_shellfish, valid_ingredients.contains_sesame, valid_ingredients.contains_fish, valid_ingredients.contains_gluten, valid_ingredients.animal_flesh, valid_ingredients.animal_derived, valid_ingredients.considered_staple, valid_ingredients.icon, valid_ingredients.created_on, valid_ingredients.updated_on, valid_ingredients.archived_on, COUNT(valid_ingredients.id) FROM valid_ingredients WHERE valid_ingredients.archived_on IS NULL GROUP BY valid_ingredients.id LIMIT 20"
+	expectedListQuery := "SELECT valid_ingredients.id, valid_ingredients.name, valid_ingredients.variant, valid_ingredients.description, valid_ingredients.warning, valid_ingredients.contains_egg, valid_ingredients.contains_dairy, valid_ingredients.contains_peanut, valid_ingredients.contains_tree_nut, valid_ingredients.contains_soy, valid_ingredients.contains_wheat, valid_ingredients.contains_shellfish, valid_ingredients.contains_sesame, valid_ingredients.contains_fish, valid_ingredients.contains_gluten, valid_ingredients.animal_flesh, valid_ingredients.animal_derived, valid_ingredients.measurable_by_volume, valid_ingredients.icon, valid_ingredients.created_on, valid_ingredients.updated_on, valid_ingredients.archived_on, (SELECT COUNT(valid_ingredients.id) FROM valid_ingredients WHERE valid_ingredients.archived_on IS NULL) FROM valid_ingredients WHERE valid_ingredients.archived_on IS NULL ORDER BY valid_ingredients.id LIMIT 20"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
@@ -394,7 +394,7 @@ func TestPostgres_buildCreateValidIngredientQuery(T *testing.T) {
 
 		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 
-		expectedQuery := "INSERT INTO valid_ingredients (name,variant,description,warning,contains_egg,contains_dairy,contains_peanut,contains_tree_nut,contains_soy,contains_wheat,contains_shellfish,contains_sesame,contains_fish,contains_gluten,animal_flesh,animal_derived,considered_staple,icon) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18) RETURNING id, created_on"
+		expectedQuery := "INSERT INTO valid_ingredients (name,variant,description,warning,contains_egg,contains_dairy,contains_peanut,contains_tree_nut,contains_soy,contains_wheat,contains_shellfish,contains_sesame,contains_fish,contains_gluten,animal_flesh,animal_derived,measurable_by_volume,icon) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18) RETURNING id, created_on"
 		expectedArgs := []interface{}{
 			exampleValidIngredient.Name,
 			exampleValidIngredient.Variant,
@@ -412,7 +412,7 @@ func TestPostgres_buildCreateValidIngredientQuery(T *testing.T) {
 			exampleValidIngredient.ContainsGluten,
 			exampleValidIngredient.AnimalFlesh,
 			exampleValidIngredient.AnimalDerived,
-			exampleValidIngredient.ConsideredStaple,
+			exampleValidIngredient.MeasurableByVolume,
 			exampleValidIngredient.Icon,
 		}
 		actualQuery, actualArgs := p.buildCreateValidIngredientQuery(exampleValidIngredient)
@@ -426,7 +426,7 @@ func TestPostgres_buildCreateValidIngredientQuery(T *testing.T) {
 func TestPostgres_CreateValidIngredient(T *testing.T) {
 	T.Parallel()
 
-	expectedCreationQuery := "INSERT INTO valid_ingredients (name,variant,description,warning,contains_egg,contains_dairy,contains_peanut,contains_tree_nut,contains_soy,contains_wheat,contains_shellfish,contains_sesame,contains_fish,contains_gluten,animal_flesh,animal_derived,considered_staple,icon) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18) RETURNING id, created_on"
+	expectedCreationQuery := "INSERT INTO valid_ingredients (name,variant,description,warning,contains_egg,contains_dairy,contains_peanut,contains_tree_nut,contains_soy,contains_wheat,contains_shellfish,contains_sesame,contains_fish,contains_gluten,animal_flesh,animal_derived,measurable_by_volume,icon) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18) RETURNING id, created_on"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
@@ -455,7 +455,7 @@ func TestPostgres_CreateValidIngredient(T *testing.T) {
 				exampleValidIngredient.ContainsGluten,
 				exampleValidIngredient.AnimalFlesh,
 				exampleValidIngredient.AnimalDerived,
-				exampleValidIngredient.ConsideredStaple,
+				exampleValidIngredient.MeasurableByVolume,
 				exampleValidIngredient.Icon,
 			).WillReturnRows(exampleRows)
 
@@ -492,7 +492,7 @@ func TestPostgres_CreateValidIngredient(T *testing.T) {
 				exampleValidIngredient.ContainsGluten,
 				exampleValidIngredient.AnimalFlesh,
 				exampleValidIngredient.AnimalDerived,
-				exampleValidIngredient.ConsideredStaple,
+				exampleValidIngredient.MeasurableByVolume,
 				exampleValidIngredient.Icon,
 			).WillReturnError(errors.New("blah"))
 
@@ -512,7 +512,7 @@ func TestPostgres_buildUpdateValidIngredientQuery(T *testing.T) {
 
 		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 
-		expectedQuery := "UPDATE valid_ingredients SET name = $1, variant = $2, description = $3, warning = $4, contains_egg = $5, contains_dairy = $6, contains_peanut = $7, contains_tree_nut = $8, contains_soy = $9, contains_wheat = $10, contains_shellfish = $11, contains_sesame = $12, contains_fish = $13, contains_gluten = $14, animal_flesh = $15, animal_derived = $16, considered_staple = $17, icon = $18, updated_on = extract(epoch FROM NOW()) WHERE id = $19 RETURNING updated_on"
+		expectedQuery := "UPDATE valid_ingredients SET name = $1, variant = $2, description = $3, warning = $4, contains_egg = $5, contains_dairy = $6, contains_peanut = $7, contains_tree_nut = $8, contains_soy = $9, contains_wheat = $10, contains_shellfish = $11, contains_sesame = $12, contains_fish = $13, contains_gluten = $14, animal_flesh = $15, animal_derived = $16, measurable_by_volume = $17, icon = $18, updated_on = extract(epoch FROM NOW()) WHERE id = $19 RETURNING updated_on"
 		expectedArgs := []interface{}{
 			exampleValidIngredient.Name,
 			exampleValidIngredient.Variant,
@@ -530,7 +530,7 @@ func TestPostgres_buildUpdateValidIngredientQuery(T *testing.T) {
 			exampleValidIngredient.ContainsGluten,
 			exampleValidIngredient.AnimalFlesh,
 			exampleValidIngredient.AnimalDerived,
-			exampleValidIngredient.ConsideredStaple,
+			exampleValidIngredient.MeasurableByVolume,
 			exampleValidIngredient.Icon,
 			exampleValidIngredient.ID,
 		}
@@ -545,7 +545,7 @@ func TestPostgres_buildUpdateValidIngredientQuery(T *testing.T) {
 func TestPostgres_UpdateValidIngredient(T *testing.T) {
 	T.Parallel()
 
-	expectedQuery := "UPDATE valid_ingredients SET name = $1, variant = $2, description = $3, warning = $4, contains_egg = $5, contains_dairy = $6, contains_peanut = $7, contains_tree_nut = $8, contains_soy = $9, contains_wheat = $10, contains_shellfish = $11, contains_sesame = $12, contains_fish = $13, contains_gluten = $14, animal_flesh = $15, animal_derived = $16, considered_staple = $17, icon = $18, updated_on = extract(epoch FROM NOW()) WHERE id = $19 RETURNING updated_on"
+	expectedQuery := "UPDATE valid_ingredients SET name = $1, variant = $2, description = $3, warning = $4, contains_egg = $5, contains_dairy = $6, contains_peanut = $7, contains_tree_nut = $8, contains_soy = $9, contains_wheat = $10, contains_shellfish = $11, contains_sesame = $12, contains_fish = $13, contains_gluten = $14, animal_flesh = $15, animal_derived = $16, measurable_by_volume = $17, icon = $18, updated_on = extract(epoch FROM NOW()) WHERE id = $19 RETURNING updated_on"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
@@ -573,7 +573,7 @@ func TestPostgres_UpdateValidIngredient(T *testing.T) {
 				exampleValidIngredient.ContainsGluten,
 				exampleValidIngredient.AnimalFlesh,
 				exampleValidIngredient.AnimalDerived,
-				exampleValidIngredient.ConsideredStaple,
+				exampleValidIngredient.MeasurableByVolume,
 				exampleValidIngredient.Icon,
 				exampleValidIngredient.ID,
 			).WillReturnRows(exampleRows)
@@ -609,7 +609,7 @@ func TestPostgres_UpdateValidIngredient(T *testing.T) {
 				exampleValidIngredient.ContainsGluten,
 				exampleValidIngredient.AnimalFlesh,
 				exampleValidIngredient.AnimalDerived,
-				exampleValidIngredient.ConsideredStaple,
+				exampleValidIngredient.MeasurableByVolume,
 				exampleValidIngredient.Icon,
 				exampleValidIngredient.ID,
 			).WillReturnError(errors.New("blah"))

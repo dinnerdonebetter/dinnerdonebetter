@@ -46,7 +46,7 @@ func (s *Service) ListHandler() http.HandlerFunc {
 		if err == sql.ErrNoRows {
 			// in the event no rows exist return an empty list.
 			iterationMedias = &models.IterationMediaList{
-				IterationMedias: []models.IterationMedia{},
+				IterationMedia: []models.IterationMedia{},
 			}
 		} else if err != nil {
 			logger.Error(err, "error encountered fetching iteration medias")

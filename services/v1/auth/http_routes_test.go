@@ -20,23 +20,41 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func attachCookieToRequestForTest(t *testing.T, s *Service, req *http.Request, user *models.User) (context.Context, *http.Request) {
+	t.Helper()
+
+	ctx, sessionErr := s.sessionManager.Load(req.Context(), "")
+	require.NoError(t, sessionErr)
+	require.NoError(t, s.sessionManager.RenewToken(ctx))
+
+	// Then make the privilege-level change.
+	s.sessionManager.Put(ctx, sessionInfoKey, user.ToSessionInfo())
+
+	token, _, err := s.sessionManager.Commit(ctx)
+	assert.NotEmpty(t, token)
+	assert.NoError(t, err)
+
+	c := s.buildCookie(token)
+	req.AddCookie(c)
+
+	return ctx, req.WithContext(ctx)
+}
+
 func TestService_DecodeCookieFromRequest(T *testing.T) {
-	T.Parallel()
+	// T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService(t)
 
 		exampleUser := fakemodels.BuildFakeUser()
 
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru/api/v1/something", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app/api/v1/something", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		c, err := s.buildAuthCookie(exampleUser)
-		require.NoError(t, err)
-		req.AddCookie(c)
+		ctx, req := attachCookieToRequestForTest(t, s, req, exampleUser)
 
-		cookie, err := s.DecodeCookieFromRequest(req.Context(), req)
+		cookie, err := s.DecodeCookieFromRequest(ctx, req)
 		assert.NoError(t, err)
 		assert.NotNil(t, cookie)
 	})
@@ -44,7 +62,7 @@ func TestService_DecodeCookieFromRequest(T *testing.T) {
 	T.Run("with invalid cookie", func(t *testing.T) {
 		s := buildTestService(t)
 
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru/api/v1/something", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app/api/v1/something", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -68,7 +86,7 @@ func TestService_DecodeCookieFromRequest(T *testing.T) {
 	T.Run("without cookie", func(t *testing.T) {
 		s := buildTestService(t)
 
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru/api/v1/something", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app/api/v1/something", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -80,7 +98,7 @@ func TestService_DecodeCookieFromRequest(T *testing.T) {
 }
 
 func TestService_WebsocketAuthFunction(T *testing.T) {
-	T.Parallel()
+	// T.Parallel()
 
 	T.Run("with valid oauth2 client", func(t *testing.T) {
 		s := buildTestService(t)
@@ -95,7 +113,7 @@ func TestService_WebsocketAuthFunction(T *testing.T) {
 		).Return(exampleOAuth2Client, nil)
 		s.oauth2ClientsService = oacv
 
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru/testing", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app/testing", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -119,13 +137,11 @@ func TestService_WebsocketAuthFunction(T *testing.T) {
 		).Return(exampleOAuth2Client, errors.New("blah"))
 		s.oauth2ClientsService = oacv
 
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru/testing", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app/testing", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		c, err := s.buildAuthCookie(exampleUser)
-		require.NoError(t, err)
-		req.AddCookie(c)
+		_, req = attachCookieToRequestForTest(t, s, req, exampleUser)
 
 		actual := s.WebsocketAuthFunction(req)
 		assert.True(t, actual)
@@ -146,7 +162,7 @@ func TestService_WebsocketAuthFunction(T *testing.T) {
 		).Return(exampleOAuth2Client, errors.New("blah"))
 		s.oauth2ClientsService = oacv
 
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru/testing", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app/testing", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -157,21 +173,19 @@ func TestService_WebsocketAuthFunction(T *testing.T) {
 	})
 }
 
-func TestService_FetchUserFromRequest(T *testing.T) {
-	T.Parallel()
+func TestService_fetchUserFromCookie(T *testing.T) {
+	// T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService(t)
 
 		exampleUser := fakemodels.BuildFakeUser()
 
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru/testing", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app/testing", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		c, err := s.buildAuthCookie(exampleUser)
-		require.NoError(t, err)
-		req.AddCookie(c)
+		ctx, req := attachCookieToRequestForTest(t, s, req, exampleUser)
 
 		udb := &mockmodels.UserDataManager{}
 		udb.On(
@@ -181,7 +195,7 @@ func TestService_FetchUserFromRequest(T *testing.T) {
 		).Return(exampleUser, nil)
 		s.userDB = udb
 
-		actualUser, err := s.FetchUserFromRequest(req.Context(), req)
+		actualUser, err := s.fetchUserFromCookie(ctx, req)
 		assert.Equal(t, exampleUser, actualUser)
 		assert.NoError(t, err)
 
@@ -191,11 +205,11 @@ func TestService_FetchUserFromRequest(T *testing.T) {
 	T.Run("without cookie", func(t *testing.T) {
 		s := buildTestService(t)
 
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru/testing", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app/testing", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		actualUser, err := s.FetchUserFromRequest(req.Context(), req)
+		actualUser, err := s.fetchUserFromCookie(req.Context(), req)
 		assert.Nil(t, actualUser)
 		assert.Error(t, err)
 	})
@@ -205,13 +219,11 @@ func TestService_FetchUserFromRequest(T *testing.T) {
 
 		exampleUser := fakemodels.BuildFakeUser()
 
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru/testing", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app/testing", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		c, err := s.buildAuthCookie(exampleUser)
-		require.NoError(t, err)
-		req.AddCookie(c)
+		_, req = attachCookieToRequestForTest(t, s, req, exampleUser)
 
 		expectedError := errors.New("blah")
 		udb := &mockmodels.UserDataManager{}
@@ -222,7 +234,7 @@ func TestService_FetchUserFromRequest(T *testing.T) {
 		).Return((*models.User)(nil), expectedError)
 		s.userDB = udb
 
-		actualUser, err := s.FetchUserFromRequest(req.Context(), req)
+		actualUser, err := s.fetchUserFromCookie(req.Context(), req)
 		assert.Nil(t, actualUser)
 		assert.Error(t, err)
 
@@ -231,7 +243,7 @@ func TestService_FetchUserFromRequest(T *testing.T) {
 }
 
 func TestService_LoginHandler(T *testing.T) {
-	T.Parallel()
+	// T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService(t)
@@ -259,7 +271,7 @@ func TestService_LoginHandler(T *testing.T) {
 		).Return(true, nil)
 		s.authenticator = authr
 
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru/testing", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app/testing", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -288,7 +300,7 @@ func TestService_LoginHandler(T *testing.T) {
 		).Return(exampleUser, errors.New("arbitrary"))
 		s.userDB = udb
 
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru/testing", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app/testing", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -312,7 +324,7 @@ func TestService_LoginHandler(T *testing.T) {
 		ed := &mockencoding.EncoderDecoder{}
 		ed.On(
 			"EncodeResponse",
-			mock.Anything,
+			mock.AnythingOfType("*httptest.ResponseRecorder"),
 			mock.AnythingOfType("*models.ErrorResponse"),
 		).Return(errors.New("blah"))
 		s.encoderDecoder = ed
@@ -325,7 +337,7 @@ func TestService_LoginHandler(T *testing.T) {
 		).Return(exampleUser, errors.New("arbitrary"))
 		s.userDB = udb
 
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru/testing", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app/testing", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -366,7 +378,7 @@ func TestService_LoginHandler(T *testing.T) {
 		).Return(false, nil)
 		s.authenticator = authr
 
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru/testing", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app/testing", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -407,7 +419,7 @@ func TestService_LoginHandler(T *testing.T) {
 		).Return(true, errors.New("blah"))
 		s.authenticator = authr
 
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru/testing", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app/testing", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -431,15 +443,15 @@ func TestService_LoginHandler(T *testing.T) {
 		cb := &mockCookieEncoderDecoder{}
 		cb.On(
 			"Encode",
-			mock.Anything,
-			mock.Anything,
+			CookieName,
+			mock.AnythingOfType("string"),
 		).Return("", errors.New("blah"))
 		s.cookieManager = cb
 
 		udb := &mockmodels.UserDataManager{}
 		udb.On(
 			"GetUserByUsername",
-			mock.Anything,
+			mock.AnythingOfType("*context.valueCtx"),
 			exampleUser.Username,
 		).Return(exampleUser, nil)
 		s.userDB = udb
@@ -447,7 +459,7 @@ func TestService_LoginHandler(T *testing.T) {
 		authr := &mockauth.Authenticator{}
 		authr.On(
 			"ValidateLogin",
-			mock.Anything,
+			mock.AnythingOfType("*context.valueCtx"),
 			exampleUser.HashedPassword,
 			exampleLoginData.Password,
 			exampleUser.TwoFactorSecret,
@@ -456,7 +468,7 @@ func TestService_LoginHandler(T *testing.T) {
 		).Return(true, nil)
 		s.authenticator = authr
 
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru/testing", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app/testing", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -480,23 +492,15 @@ func TestService_LoginHandler(T *testing.T) {
 		cb := &mockCookieEncoderDecoder{}
 		cb.On(
 			"Encode",
-			mock.Anything,
-			mock.AnythingOfType("models.CookieAuth"),
+			CookieName,
+			mock.AnythingOfType("string"),
 		).Return("", errors.New("blah"))
 		s.cookieManager = cb
-
-		ed := &mockencoding.EncoderDecoder{}
-		ed.On(
-			"EncodeResponse",
-			mock.Anything,
-			mock.AnythingOfType("*models.ErrorResponse"),
-		).Return(errors.New("blah"))
-		s.encoderDecoder = ed
 
 		udb := &mockmodels.UserDataManager{}
 		udb.On(
 			"GetUserByUsername",
-			mock.Anything,
+			mock.AnythingOfType("*context.valueCtx"),
 			exampleUser.Username,
 		).Return(exampleUser, nil)
 		s.userDB = udb
@@ -504,7 +508,7 @@ func TestService_LoginHandler(T *testing.T) {
 		authr := &mockauth.Authenticator{}
 		authr.On(
 			"ValidateLogin",
-			mock.Anything,
+			mock.AnythingOfType("*context.valueCtx"),
 			exampleUser.HashedPassword,
 			exampleLoginData.Password,
 			exampleUser.TwoFactorSecret,
@@ -513,7 +517,7 @@ func TestService_LoginHandler(T *testing.T) {
 		).Return(true, nil)
 		s.authenticator = authr
 
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru/testing", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app/testing", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -525,26 +529,24 @@ func TestService_LoginHandler(T *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 		assert.Empty(t, res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, cb, ed, udb, authr)
+		mock.AssertExpectationsForObjects(t, cb, udb, authr)
 	})
 }
 
-func TestService_Logout(T *testing.T) {
-	T.Parallel()
+func TestService_LogoutHandler(T *testing.T) {
+	// T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService(t)
 
 		exampleUser := fakemodels.BuildFakeUser()
 
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru/testing", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app/testing", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		c, err := s.buildAuthCookie(exampleUser)
-		require.NoError(t, err)
+		_, req = attachCookieToRequestForTest(t, s, req, exampleUser)
 
-		req.AddCookie(c)
 		res := httptest.NewRecorder()
 
 		s.LogoutHandler()(res, req)
@@ -556,7 +558,7 @@ func TestService_Logout(T *testing.T) {
 	T.Run("without cookie", func(t *testing.T) {
 		s := buildTestService(t)
 
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru/testing", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app/testing", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -566,7 +568,7 @@ func TestService_Logout(T *testing.T) {
 }
 
 func TestService_fetchLoginDataFromRequest(T *testing.T) {
-	T.Parallel()
+	// T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService(t)
@@ -577,12 +579,12 @@ func TestService_fetchLoginDataFromRequest(T *testing.T) {
 		udb := &mockmodels.UserDataManager{}
 		udb.On(
 			"GetUserByUsername",
-			mock.Anything,
+			mock.AnythingOfType("*context.valueCtx"),
 			exampleUser.Username,
 		).Return(exampleUser, nil)
 		s.userDB = udb
 
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru/testing", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app/testing", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -599,7 +601,7 @@ func TestService_fetchLoginDataFromRequest(T *testing.T) {
 	T.Run("without login data attached to request", func(t *testing.T) {
 		s := buildTestService(t)
 
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru/testing", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app/testing", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -616,12 +618,12 @@ func TestService_fetchLoginDataFromRequest(T *testing.T) {
 		udb := &mockmodels.UserDataManager{}
 		udb.On(
 			"GetUserByUsername",
-			mock.Anything,
+			mock.AnythingOfType("*context.valueCtx"),
 			exampleUser.Username,
 		).Return((*models.User)(nil), sql.ErrNoRows)
 		s.userDB = udb
 
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru/testing", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app/testing", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -641,12 +643,12 @@ func TestService_fetchLoginDataFromRequest(T *testing.T) {
 		udb := &mockmodels.UserDataManager{}
 		udb.On(
 			"GetUserByUsername",
-			mock.Anything,
+			mock.AnythingOfType("*context.valueCtx"),
 			exampleUser.Username,
 		).Return((*models.User)(nil), errors.New("blah"))
 		s.userDB = udb
 
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru/testing", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app/testing", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -659,7 +661,7 @@ func TestService_fetchLoginDataFromRequest(T *testing.T) {
 }
 
 func TestService_validateLogin(T *testing.T) {
-	T.Parallel()
+	// T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
@@ -676,7 +678,7 @@ func TestService_validateLogin(T *testing.T) {
 		authr := &mockauth.Authenticator{}
 		authr.On(
 			"ValidateLogin",
-			mock.Anything,
+			mock.AnythingOfType("*context.valueCtx"),
 			exampleUser.HashedPassword,
 			exampleLoginData.Password,
 			exampleUser.TwoFactorSecret,
@@ -707,25 +709,25 @@ func TestService_validateLogin(T *testing.T) {
 		authr := &mockauth.Authenticator{}
 		authr.On(
 			"ValidateLogin",
-			mock.Anything,
+			mock.AnythingOfType("*context.valueCtx"),
 			exampleUser.HashedPassword,
 			exampleLoginData.Password,
 			exampleUser.TwoFactorSecret,
 			exampleLoginData.TOTPToken,
 			exampleUser.Salt,
-		).Return(true, auth.ErrPasswordHashTooWeak)
+		).Return(true, auth.ErrCostTooLow)
 		s.authenticator = authr
 
 		authr.On(
 			"HashPassword",
-			mock.Anything,
+			mock.AnythingOfType("*context.valueCtx"),
 			exampleLoginData.Password,
 		).Return("blah", nil)
 
 		udb := &mockmodels.UserDataManager{}
 		udb.On(
 			"UpdateUser",
-			mock.Anything,
+			mock.AnythingOfType("*context.valueCtx"),
 			mock.AnythingOfType("*models.User"),
 		).Return(nil)
 		s.userDB = udb
@@ -754,17 +756,17 @@ func TestService_validateLogin(T *testing.T) {
 		authr := &mockauth.Authenticator{}
 		authr.On(
 			"ValidateLogin",
-			mock.Anything,
+			mock.AnythingOfType("*context.valueCtx"),
 			exampleUser.HashedPassword,
 			exampleLoginData.Password,
 			exampleUser.TwoFactorSecret,
 			exampleLoginData.TOTPToken,
 			exampleUser.Salt,
-		).Return(true, auth.ErrPasswordHashTooWeak)
+		).Return(true, auth.ErrCostTooLow)
 
 		authr.On(
 			"HashPassword",
-			mock.Anything,
+			mock.AnythingOfType("*context.valueCtx"),
 			exampleLoginData.Password,
 		).Return("", expectedErr)
 		s.authenticator = authr
@@ -792,17 +794,17 @@ func TestService_validateLogin(T *testing.T) {
 		authr := &mockauth.Authenticator{}
 		authr.On(
 			"ValidateLogin",
-			mock.Anything,
+			mock.AnythingOfType("*context.valueCtx"),
 			exampleUser.HashedPassword,
 			exampleLoginData.Password,
 			exampleUser.TwoFactorSecret,
 			exampleLoginData.TOTPToken,
 			exampleUser.Salt,
-		).Return(true, auth.ErrPasswordHashTooWeak)
+		).Return(true, auth.ErrCostTooLow)
 
 		authr.On(
 			"HashPassword",
-			mock.Anything,
+			mock.AnythingOfType("*context.valueCtx"),
 			exampleLoginData.Password,
 		).Return("blah", nil)
 		s.authenticator = authr
@@ -810,7 +812,7 @@ func TestService_validateLogin(T *testing.T) {
 		udb := &mockmodels.UserDataManager{}
 		udb.On(
 			"UpdateUser",
-			mock.Anything,
+			mock.AnythingOfType("*context.valueCtx"),
 			mock.AnythingOfType("*models.User"),
 		).Return(expectedErr)
 		s.userDB = udb
@@ -838,7 +840,7 @@ func TestService_validateLogin(T *testing.T) {
 		authr := &mockauth.Authenticator{}
 		authr.On(
 			"ValidateLogin",
-			mock.Anything,
+			mock.AnythingOfType("*context.valueCtx"),
 			exampleUser.HashedPassword,
 			exampleLoginData.Password,
 			exampleUser.TwoFactorSecret,
@@ -869,7 +871,7 @@ func TestService_validateLogin(T *testing.T) {
 		authr := &mockauth.Authenticator{}
 		authr.On(
 			"ValidateLogin",
-			mock.Anything,
+			mock.AnythingOfType("*context.valueCtx"),
 			exampleUser.HashedPassword,
 			exampleLoginData.Password,
 			exampleUser.TwoFactorSecret,
@@ -886,64 +888,117 @@ func TestService_validateLogin(T *testing.T) {
 	})
 }
 
-func TestService_buildCookie(T *testing.T) {
-	T.Parallel()
-
-	T.Run("happy path", func(t *testing.T) {
-		s := buildTestService(t)
-
-		exampleUser := fakemodels.BuildFakeUser()
-
-		cookie, err := s.buildAuthCookie(exampleUser)
-		assert.NotNil(t, cookie)
-		assert.NoError(t, err)
-	})
-
-	T.Run("with error encoding", func(t *testing.T) {
-		s := buildTestService(t)
-
-		exampleUser := fakemodels.BuildFakeUser()
-
-		cb := &mockCookieEncoderDecoder{}
-		cb.On(
-			"Encode",
-			mock.Anything,
-			mock.AnythingOfType("models.CookieAuth"),
-		).Return("", errors.New("blah"))
-		s.cookieManager = cb
-
-		cookie, err := s.buildAuthCookie(exampleUser)
-		assert.Nil(t, cookie)
-		assert.Error(t, err)
-
-		mock.AssertExpectationsForObjects(t, cb)
-	})
-}
-
-func TestService_CycleSecret(T *testing.T) {
-	T.Parallel()
+func TestService_StatusHandler(T *testing.T) {
+	// T.Parallel()
 
 	T.Run("normal operation", func(t *testing.T) {
 		s := buildTestService(t)
 
 		exampleUser := fakemodels.BuildFakeUser()
 
-		c, err := s.buildAuthCookie(exampleUser)
-		assert.NotNil(t, c)
-		assert.NoError(t, err)
+		res := httptest.NewRecorder()
+		req, err := http.NewRequest(http.MethodPost, "https://blah.com", nil)
+		require.NotNil(t, req)
+		require.NoError(t, err)
 
-		var ca models.CookieAuth
-		decodeErr := s.cookieManager.Decode(CookieName, c.Value, &ca)
-		assert.NoError(t, decodeErr)
+		_, req = attachCookieToRequestForTest(t, s, req, exampleUser)
+
+		udb := &mockmodels.UserDataManager{}
+		udb.On(
+			"GetUser",
+			mock.AnythingOfType("*context.valueCtx"),
+			exampleUser.ID,
+		).Return(exampleUser, nil)
+		s.userDB = udb
+
+		s.StatusHandler()(res, req)
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, udb)
+	})
+
+	T.Run("with error fetching user", func(t *testing.T) {
+		s := buildTestService(t)
+
+		exampleUser := fakemodels.BuildFakeUser()
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(http.MethodPost, "https://blah.com", nil)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
+		_, req = attachCookieToRequestForTest(t, s, req, exampleUser)
+
+		udb := &mockmodels.UserDataManager{}
+		udb.On(
+			"GetUser",
+			mock.AnythingOfType("*context.valueCtx"),
+			exampleUser.ID,
+		).Return((*models.User)(nil), errors.New("blah"))
+		s.userDB = udb
+
+		s.StatusHandler()(res, req)
+		assert.Equal(t, http.StatusUnauthorized, res.Code)
+
+		mock.AssertExpectationsForObjects(t, udb)
+	})
+
+	T.Run("with error encoding response", func(t *testing.T) {
+		s := buildTestService(t)
+
+		exampleUser := fakemodels.BuildFakeUser()
+
+		res := httptest.NewRecorder()
+		req, err := http.NewRequest(http.MethodPost, "https://blah.com", nil)
+		require.NotNil(t, req)
+		require.NoError(t, err)
+
+		_, req = attachCookieToRequestForTest(t, s, req, exampleUser)
+
+		udb := &mockmodels.UserDataManager{}
+		udb.On(
+			"GetUser",
+			mock.AnythingOfType("*context.valueCtx"),
+			exampleUser.ID,
+		).Return(exampleUser, nil)
+		s.userDB = udb
+
+		ed := &mockencoding.EncoderDecoder{}
+		ed.On(
+			"EncodeResponse",
+			mock.AnythingOfType("*httptest.ResponseRecorder"),
+			mock.AnythingOfType("*models.StatusResponse"),
+		).Return(errors.New("blah"))
+		s.encoderDecoder = ed
+
+		s.StatusHandler()(res, req)
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, udb, ed)
+	})
+}
+
+func TestService_CycleSecretHandler(T *testing.T) {
+	// T.Parallel()
+
+	T.Run("normal operation", func(t *testing.T) {
+		s := buildTestService(t)
+
+		exampleUser := fakemodels.BuildFakeUser()
+
+		res := httptest.NewRecorder()
+		req, err := http.NewRequest(http.MethodPost, "https://blah.com", nil)
+		require.NotNil(t, req)
+		require.NoError(t, err)
+
+		_, req = attachCookieToRequestForTest(t, s, req, exampleUser)
+		c := req.Cookies()[0]
+
+		var token string
+		assert.NoError(t, s.cookieManager.Decode(CookieName, c.Value, &token))
+
 		s.CycleSecretHandler()(res, req)
 
-		decodeErr2 := s.cookieManager.Decode(CookieName, c.Value, &ca)
-		assert.Error(t, decodeErr2)
+		assert.Error(t, s.cookieManager.Decode(CookieName, c.Value, &token))
 	})
 }

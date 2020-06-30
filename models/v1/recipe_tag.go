@@ -10,16 +10,16 @@ type (
 	RecipeTag struct {
 		ID              uint64  `json:"id"`
 		Name            string  `json:"name"`
-		CreatedOn       uint64  `json:"created_on"`
-		UpdatedOn       *uint64 `json:"updated_on"`
-		ArchivedOn      *uint64 `json:"archived_on"`
-		BelongsToRecipe uint64  `json:"belongs_to_recipe"`
+		CreatedOn       uint64  `json:"createdOn"`
+		UpdatedOn       *uint64 `json:"updatedOn"`
+		ArchivedOn      *uint64 `json:"archivedOn"`
+		BelongsToRecipe uint64  `json:"belongsToRecipe"`
 	}
 
 	// RecipeTagList represents a list of recipe tags.
 	RecipeTagList struct {
 		Pagination
-		RecipeTags []RecipeTag `json:"recipe_tags"`
+		RecipeTags []RecipeTag `json:"recipeTags"`
 	}
 
 	// RecipeTagCreationInput represents what a user could set as input for creating recipe tags.
@@ -31,7 +31,7 @@ type (
 	// RecipeTagUpdateInput represents what a user could set as input for updating recipe tags.
 	RecipeTagUpdateInput struct {
 		Name            string `json:"name"`
-		BelongsToRecipe uint64 `json:"belongs_to_recipe"`
+		BelongsToRecipe uint64 `json:"belongsToRecipe"`
 	}
 
 	// RecipeTagDataManager describes a structure capable of storing recipe tags permanently.

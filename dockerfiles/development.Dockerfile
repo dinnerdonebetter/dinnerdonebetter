@@ -1,11 +1,5 @@
-# frontend-build-stage
-FROM node:latest AS frontend-build-stage
-
-WORKDIR /app
-
-ADD frontend/v1 .
-
-RUN npm install && npm run build
+## NOTE: This dockerfile doesn't contain a build phase for the frontend.
+##       The reason for this is so you run the frontend build phase in a different process
 
 # build stage
 FROM golang:stretch AS build-stage
@@ -13,7 +7,6 @@ FROM golang:stretch AS build-stage
 WORKDIR /go/src/gitlab.com/prixfixe/prixfixe
 
 COPY . .
-COPY --from=frontend-build-stage /app/public /frontend
 
 RUN go build -trimpath -o /prixfixe gitlab.com/prixfixe/prixfixe/cmd/server/v1
 

@@ -23,7 +23,7 @@ import (
 )
 
 func TestService_CookieAuthenticationMiddleware(T *testing.T) {
-	T.Parallel()
+	// T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService(t)
@@ -36,15 +36,12 @@ func TestService_CookieAuthenticationMiddleware(T *testing.T) {
 		ms := &MockHTTPHandler{}
 		ms.On("ServeHTTP", mock.Anything, mock.Anything).Return()
 
-		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
+		req, err := http.NewRequest(http.MethodPost, "https://prixfixe.app", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 		res := httptest.NewRecorder()
 
-		cookie, err := s.buildAuthCookie(exampleUser)
-		require.NotNil(t, cookie)
-		require.NoError(t, err)
-		req.AddCookie(cookie)
+		_, req = attachCookieToRequestForTest(t, s, req, exampleUser)
 
 		h := s.CookieAuthenticationMiddleware(ms)
 		h.ServeHTTP(res, req)
@@ -60,15 +57,12 @@ func TestService_CookieAuthenticationMiddleware(T *testing.T) {
 		md.On("GetUser", mock.Anything, mock.Anything).Return((*models.User)(nil), nil)
 		s.userDB = md
 
-		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
+		req, err := http.NewRequest(http.MethodPost, "https://prixfixe.app", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 		res := httptest.NewRecorder()
 
-		cookie, err := s.buildAuthCookie(exampleUser)
-		require.NotNil(t, cookie)
-		require.NoError(t, err)
-		req.AddCookie(cookie)
+		_, req = attachCookieToRequestForTest(t, s, req, exampleUser)
 
 		ms := &MockHTTPHandler{}
 		h := s.CookieAuthenticationMiddleware(ms)
@@ -82,7 +76,7 @@ func TestService_CookieAuthenticationMiddleware(T *testing.T) {
 	T.Run("without user attached", func(t *testing.T) {
 		s := buildTestService(t)
 
-		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
+		req, err := http.NewRequest(http.MethodPost, "https://prixfixe.app", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 		res := httptest.NewRecorder()
@@ -96,7 +90,7 @@ func TestService_CookieAuthenticationMiddleware(T *testing.T) {
 }
 
 func TestService_AuthenticationMiddleware(T *testing.T) {
-	T.Parallel()
+	// T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService(t)
@@ -116,7 +110,7 @@ func TestService_AuthenticationMiddleware(T *testing.T) {
 		h.On("ServeHTTP", mock.Anything, mock.Anything).Return()
 
 		res := httptest.NewRecorder()
-		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
+		req, err := http.NewRequest(http.MethodPost, "https://prixfixe.app", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
@@ -145,7 +139,7 @@ func TestService_AuthenticationMiddleware(T *testing.T) {
 		h.On("ServeHTTP", mock.Anything, mock.Anything).Return()
 
 		res := httptest.NewRecorder()
-		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
+		req, err := http.NewRequest(http.MethodPost, "https://prixfixe.app", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
@@ -169,13 +163,11 @@ func TestService_AuthenticationMiddleware(T *testing.T) {
 		h.On("ServeHTTP", mock.Anything, mock.Anything).Return()
 
 		res := httptest.NewRecorder()
-		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
+		req, err := http.NewRequest(http.MethodPost, "https://prixfixe.app", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
-		c, err := s.buildAuthCookie(exampleUser)
-		require.NoError(t, err)
-		req.AddCookie(c)
+		_, req = attachCookieToRequestForTest(t, s, req, exampleUser)
 
 		s.AuthenticationMiddleware(true)(h).ServeHTTP(res, req)
 
@@ -186,18 +178,17 @@ func TestService_AuthenticationMiddleware(T *testing.T) {
 		s := buildTestService(t)
 
 		exampleUser := fakemodels.BuildFakeUser()
-		c, err := s.buildAuthCookie(exampleUser)
-		require.NoError(t, err)
 
 		mockDB := database.BuildMockDatabase().UserDataManager
 		mockDB.On("GetUser", mock.Anything, exampleUser.ID).Return((*models.User)(nil), errors.New("blah"))
 		s.userDB = mockDB
 
 		res := httptest.NewRecorder()
-		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
+		req, err := http.NewRequest(http.MethodPost, "https://prixfixe.app", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
-		req.AddCookie(c)
+
+		_, req = attachCookieToRequestForTest(t, s, req, exampleUser)
 
 		h := &MockHTTPHandler{}
 		s.AuthenticationMiddleware(true)(h).ServeHTTP(res, req)
@@ -221,7 +212,7 @@ func TestService_AuthenticationMiddleware(T *testing.T) {
 		s.userDB = mockDB
 
 		res := httptest.NewRecorder()
-		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
+		req, err := http.NewRequest(http.MethodPost, "https://prixfixe.app", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
@@ -248,13 +239,11 @@ func TestService_AuthenticationMiddleware(T *testing.T) {
 		s.cookieManager = cb
 
 		res := httptest.NewRecorder()
-		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
+		req, err := http.NewRequest(http.MethodPost, "https://prixfixe.app", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
-		c, err := s.buildAuthCookie(exampleUser)
-		require.NoError(t, err)
-		req.AddCookie(c)
+		_, req = attachCookieToRequestForTest(t, s, req, exampleUser)
 
 		h := &MockHTTPHandler{}
 		s.AuthenticationMiddleware(true)(h).ServeHTTP(res, req)
@@ -270,7 +259,7 @@ func TestService_AuthenticationMiddleware(T *testing.T) {
 		s.oauth2ClientsService = ocv
 
 		res := httptest.NewRecorder()
-		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
+		req, err := http.NewRequest(http.MethodPost, "https://prixfixe.app", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
@@ -296,7 +285,7 @@ func TestService_AuthenticationMiddleware(T *testing.T) {
 		s.userDB = mockDB
 
 		res := httptest.NewRecorder()
-		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
+		req, err := http.NewRequest(http.MethodPost, "https://prixfixe.app", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
@@ -310,10 +299,10 @@ func TestService_AuthenticationMiddleware(T *testing.T) {
 }
 
 func Test_parseLoginInputFromForm(T *testing.T) {
-	T.Parallel()
+	// T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
@@ -332,7 +321,7 @@ func Test_parseLoginInputFromForm(T *testing.T) {
 	})
 
 	T.Run("returns nil with error parsing form", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru", nil)
+		req, err := http.NewRequest(http.MethodGet, "https://prixfixe.app", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
@@ -345,7 +334,7 @@ func Test_parseLoginInputFromForm(T *testing.T) {
 }
 
 func TestService_UserLoginInputMiddleware(T *testing.T) {
-	T.Parallel()
+	// T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
 		exampleUser := fakemodels.BuildFakeUser()
@@ -355,7 +344,7 @@ func TestService_UserLoginInputMiddleware(T *testing.T) {
 		require.NoError(t, json.NewEncoder(&b).Encode(exampleInput))
 
 		res := httptest.NewRecorder()
-		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", &b)
+		req, err := http.NewRequest(http.MethodPost, "https://prixfixe.app", &b)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
@@ -377,7 +366,7 @@ func TestService_UserLoginInputMiddleware(T *testing.T) {
 		require.NoError(t, json.NewEncoder(&b).Encode(exampleInput))
 
 		res := httptest.NewRecorder()
-		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", &b)
+		req, err := http.NewRequest(http.MethodPost, "https://prixfixe.app", &b)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
@@ -405,7 +394,7 @@ func TestService_UserLoginInputMiddleware(T *testing.T) {
 
 		req, err := http.NewRequest(
 			http.MethodPost,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"https://prixfixe.app",
 			strings.NewReader(form.Encode()),
 		)
 		require.NoError(t, err)
@@ -430,10 +419,10 @@ func TestService_UserLoginInputMiddleware(T *testing.T) {
 }
 
 func TestService_AdminMiddleware(T *testing.T) {
-	T.Parallel()
+	// T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
+		req, err := http.NewRequest(http.MethodPost, "https://prixfixe.app", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
@@ -444,8 +433,8 @@ func TestService_AdminMiddleware(T *testing.T) {
 		req = req.WithContext(
 			context.WithValue(
 				req.Context(),
-				models.UserKey,
-				exampleUser,
+				models.SessionInfoKey,
+				exampleUser.ToSessionInfo(),
 			),
 		)
 
@@ -463,7 +452,7 @@ func TestService_AdminMiddleware(T *testing.T) {
 
 	T.Run("without user attached", func(t *testing.T) {
 		res := httptest.NewRecorder()
-		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
+		req, err := http.NewRequest(http.MethodPost, "https://prixfixe.app", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
@@ -479,7 +468,7 @@ func TestService_AdminMiddleware(T *testing.T) {
 	})
 
 	T.Run("with non-admin user", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
+		req, err := http.NewRequest(http.MethodPost, "https://prixfixe.app", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
@@ -490,8 +479,8 @@ func TestService_AdminMiddleware(T *testing.T) {
 		req = req.WithContext(
 			context.WithValue(
 				req.Context(),
-				models.UserKey,
-				exampleUser,
+				models.SessionInfoKey,
+				exampleUser.ToSessionInfo(),
 			),
 		)
 

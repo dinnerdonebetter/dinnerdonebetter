@@ -31,6 +31,7 @@ func buildMockRowsFromValidPreparation(validPreparations ...*models.ValidPrepara
 			x.Name,
 			x.Description,
 			x.Icon,
+			x.ApplicableToAllIngredients,
 			x.CreatedOn,
 			x.UpdatedOn,
 			x.ArchivedOn,
@@ -52,6 +53,7 @@ func buildErroneousMockRowFromValidPreparation(x *models.ValidPreparation) *sqlm
 		x.Name,
 		x.Description,
 		x.Icon,
+		x.ApplicableToAllIngredients,
 		x.CreatedOn,
 		x.UpdatedOn,
 		x.ID,
@@ -159,7 +161,7 @@ func TestPostgres_buildGetValidPreparationQuery(T *testing.T) {
 
 		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 
-		expectedQuery := "SELECT valid_preparations.id, valid_preparations.name, valid_preparations.description, valid_preparations.icon, valid_preparations.created_on, valid_preparations.updated_on, valid_preparations.archived_on FROM valid_preparations WHERE valid_preparations.id = $1"
+		expectedQuery := "SELECT valid_preparations.id, valid_preparations.name, valid_preparations.description, valid_preparations.icon, valid_preparations.applicable_to_all_ingredients, valid_preparations.created_on, valid_preparations.updated_on, valid_preparations.archived_on FROM valid_preparations WHERE valid_preparations.id = $1"
 		expectedArgs := []interface{}{
 			exampleValidPreparation.ID,
 		}
@@ -174,7 +176,7 @@ func TestPostgres_buildGetValidPreparationQuery(T *testing.T) {
 func TestPostgres_GetValidPreparation(T *testing.T) {
 	T.Parallel()
 
-	expectedQuery := "SELECT valid_preparations.id, valid_preparations.name, valid_preparations.description, valid_preparations.icon, valid_preparations.created_on, valid_preparations.updated_on, valid_preparations.archived_on FROM valid_preparations WHERE valid_preparations.id = $1"
+	expectedQuery := "SELECT valid_preparations.id, valid_preparations.name, valid_preparations.description, valid_preparations.icon, valid_preparations.applicable_to_all_ingredients, valid_preparations.created_on, valid_preparations.updated_on, valid_preparations.archived_on FROM valid_preparations WHERE valid_preparations.id = $1"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
@@ -259,7 +261,7 @@ func TestPostgres_buildGetValidPreparationsQuery(T *testing.T) {
 
 		filter := fakemodels.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT valid_preparations.id, valid_preparations.name, valid_preparations.description, valid_preparations.icon, valid_preparations.created_on, valid_preparations.updated_on, valid_preparations.archived_on, COUNT(valid_preparations.id) FROM valid_preparations WHERE valid_preparations.archived_on IS NULL AND valid_preparations.created_on > $1 AND valid_preparations.created_on < $2 AND valid_preparations.updated_on > $3 AND valid_preparations.updated_on < $4 GROUP BY valid_preparations.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT valid_preparations.id, valid_preparations.name, valid_preparations.description, valid_preparations.icon, valid_preparations.applicable_to_all_ingredients, valid_preparations.created_on, valid_preparations.updated_on, valid_preparations.archived_on, (SELECT COUNT(valid_preparations.id) FROM valid_preparations WHERE valid_preparations.archived_on IS NULL) FROM valid_preparations WHERE valid_preparations.archived_on IS NULL AND valid_preparations.created_on > $1 AND valid_preparations.created_on < $2 AND valid_preparations.updated_on > $3 AND valid_preparations.updated_on < $4 ORDER BY valid_preparations.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			filter.CreatedAfter,
 			filter.CreatedBefore,
@@ -277,7 +279,7 @@ func TestPostgres_buildGetValidPreparationsQuery(T *testing.T) {
 func TestPostgres_GetValidPreparations(T *testing.T) {
 	T.Parallel()
 
-	expectedListQuery := "SELECT valid_preparations.id, valid_preparations.name, valid_preparations.description, valid_preparations.icon, valid_preparations.created_on, valid_preparations.updated_on, valid_preparations.archived_on, COUNT(valid_preparations.id) FROM valid_preparations WHERE valid_preparations.archived_on IS NULL GROUP BY valid_preparations.id LIMIT 20"
+	expectedListQuery := "SELECT valid_preparations.id, valid_preparations.name, valid_preparations.description, valid_preparations.icon, valid_preparations.applicable_to_all_ingredients, valid_preparations.created_on, valid_preparations.updated_on, valid_preparations.archived_on, (SELECT COUNT(valid_preparations.id) FROM valid_preparations WHERE valid_preparations.archived_on IS NULL) FROM valid_preparations WHERE valid_preparations.archived_on IS NULL ORDER BY valid_preparations.id LIMIT 20"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()

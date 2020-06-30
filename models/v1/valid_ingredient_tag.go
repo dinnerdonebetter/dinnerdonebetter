@@ -10,9 +10,9 @@ type (
 	ValidIngredientTag struct {
 		ID         uint64  `json:"id"`
 		Name       string  `json:"name"`
-		CreatedOn  uint64  `json:"created_on"`
-		UpdatedOn  *uint64 `json:"updated_on"`
-		ArchivedOn *uint64 `json:"archived_on"`
+		CreatedOn  uint64  `json:"createdOn"`
+		UpdatedOn  *uint64 `json:"updatedOn"`
+		ArchivedOn *uint64 `json:"archivedOn"`
 	}
 
 	// ValidIngredientTagList represents a list of valid ingredient tags.

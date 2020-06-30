@@ -39,7 +39,7 @@ func TestValidIngredientTagsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -66,7 +66,7 @@ func TestValidIngredientTagsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -89,7 +89,7 @@ func TestValidIngredientTagsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -118,7 +118,7 @@ func TestValidIngredientTagsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -160,7 +160,7 @@ func TestValidIngredientTagsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -181,7 +181,7 @@ func TestValidIngredientTagsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -205,7 +205,7 @@ func TestValidIngredientTagsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -245,7 +245,7 @@ func TestValidIngredientTagsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -279,7 +279,7 @@ func TestValidIngredientTagsService_ExistenceHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -307,7 +307,7 @@ func TestValidIngredientTagsService_ExistenceHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -335,7 +335,7 @@ func TestValidIngredientTagsService_ExistenceHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -371,7 +371,7 @@ func TestValidIngredientTagsService_ReadHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -399,7 +399,7 @@ func TestValidIngredientTagsService_ReadHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -427,7 +427,7 @@ func TestValidIngredientTagsService_ReadHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -459,7 +459,7 @@ func TestValidIngredientTagsService_ReadHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -502,7 +502,7 @@ func TestValidIngredientTagsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -523,7 +523,7 @@ func TestValidIngredientTagsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -551,7 +551,7 @@ func TestValidIngredientTagsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -583,7 +583,7 @@ func TestValidIngredientTagsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -616,7 +616,7 @@ func TestValidIngredientTagsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -657,7 +657,7 @@ func TestValidIngredientTagsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -699,7 +699,7 @@ func TestValidIngredientTagsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -727,7 +727,7 @@ func TestValidIngredientTagsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -755,7 +755,7 @@ func TestValidIngredientTagsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)

@@ -276,7 +276,7 @@ func TestPostgres_buildGetRecipesQuery(T *testing.T) {
 
 		filter := fakemodels.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT recipes.id, recipes.name, recipes.source, recipes.description, recipes.inspired_by_recipe_id, recipes.private, recipes.created_on, recipes.updated_on, recipes.archived_on, recipes.belongs_to_user, COUNT(recipes.id) FROM recipes WHERE recipes.archived_on IS NULL AND recipes.created_on > $1 AND recipes.created_on < $2 AND recipes.updated_on > $3 AND recipes.updated_on < $4 GROUP BY recipes.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT recipes.id, recipes.name, recipes.source, recipes.description, recipes.inspired_by_recipe_id, recipes.private, recipes.created_on, recipes.updated_on, recipes.archived_on, recipes.belongs_to_user, (SELECT COUNT(recipes.id) FROM recipes WHERE recipes.archived_on IS NULL) FROM recipes WHERE recipes.archived_on IS NULL AND recipes.created_on > $1 AND recipes.created_on < $2 AND recipes.updated_on > $3 AND recipes.updated_on < $4 ORDER BY recipes.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			filter.CreatedAfter,
 			filter.CreatedBefore,
@@ -294,7 +294,7 @@ func TestPostgres_buildGetRecipesQuery(T *testing.T) {
 func TestPostgres_GetRecipes(T *testing.T) {
 	T.Parallel()
 
-	expectedListQuery := "SELECT recipes.id, recipes.name, recipes.source, recipes.description, recipes.inspired_by_recipe_id, recipes.private, recipes.created_on, recipes.updated_on, recipes.archived_on, recipes.belongs_to_user, COUNT(recipes.id) FROM recipes WHERE recipes.archived_on IS NULL GROUP BY recipes.id LIMIT 20"
+	expectedListQuery := "SELECT recipes.id, recipes.name, recipes.source, recipes.description, recipes.inspired_by_recipe_id, recipes.private, recipes.created_on, recipes.updated_on, recipes.archived_on, recipes.belongs_to_user, (SELECT COUNT(recipes.id) FROM recipes WHERE recipes.archived_on IS NULL) FROM recipes WHERE recipes.archived_on IS NULL ORDER BY recipes.id LIMIT 20"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()

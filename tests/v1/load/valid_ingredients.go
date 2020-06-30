@@ -81,7 +81,7 @@ func buildValidIngredientActions(c *client.V1Client) map[string]*Action {
 					randomValidIngredient.ContainsGluten = newValidIngredient.ContainsGluten
 					randomValidIngredient.AnimalFlesh = newValidIngredient.AnimalFlesh
 					randomValidIngredient.AnimalDerived = newValidIngredient.AnimalDerived
-					randomValidIngredient.ConsideredStaple = newValidIngredient.ConsideredStaple
+					randomValidIngredient.MeasurableByVolume = newValidIngredient.MeasurableByVolume
 					randomValidIngredient.Icon = newValidIngredient.Icon
 					return c.BuildUpdateValidIngredientRequest(ctx, randomValidIngredient)
 				}

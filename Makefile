@@ -53,10 +53,17 @@ wire: ensure-wire
 .PHONY: rewire
 rewire: ensure-wire wire-clean wire
 
+.PHONY: npmagain
+npmagain:
+	(cd frontend/v1 && rm -rf node_modules && npm install && npm audit fix)
+
 ## Config
 
-clean-configs:
+clean_$(CONFIG_DIR):
 	rm -rf $(CONFIG_DIR)
+
+.PHONY: configs
+configs: clean_$(CONFIG_DIR) $(CONFIG_DIR)
 
 $(CONFIG_DIR):
 	@mkdir -p $(CONFIG_DIR)
@@ -102,7 +109,7 @@ check_formatting:
 
 .PHONY: frontend-tests
 frontend-tests:
-	docker-compose --file $(DOCKER_COMPOSE_FILES_DIR)/frontend-tests.json up \
+	docker-compose --file $(DOCKER_COMPOSE_FILES_DIR)/frontend-tests.yaml up \
 	--build \
 	--force-recreate \
 	--remove-orphans \
@@ -125,7 +132,7 @@ integration-tests: integration-tests-postgres
 
 .PHONY: integration-tests-
 integration-tests-%:
-	docker-compose --file $(DOCKER_COMPOSE_FILES_DIR)/integration-tests-$*.json up \
+	docker-compose --file $(DOCKER_COMPOSE_FILES_DIR)/integration-tests-$*.yaml up \
 	--build \
 	--force-recreate \
 	--remove-orphans \
@@ -138,7 +145,7 @@ integration-coverage: $(ARTIFACTS_DIR)
 	@# big thanks to https://blog.cloudflare.com/go-coverage-with-external-tests/
 	rm -f $(ARTIFACTS_DIR)/integration-coverage.out
 	@mkdir -p $(ARTIFACTS_DIR)
-	docker-compose --file $(DOCKER_COMPOSE_FILES_DIR)/integration-coverage.json up \
+	docker-compose --file $(DOCKER_COMPOSE_FILES_DIR)/integration-coverage.yaml up \
 	--build \
 	--force-recreate \
 	--remove-orphans \
@@ -154,7 +161,7 @@ load-tests: load-tests-postgres
 
 .PHONY: load-tests-
 load-tests-%:
-	docker-compose --file $(DOCKER_COMPOSE_FILES_DIR)/load-tests-$*.json up \
+	docker-compose --file $(DOCKER_COMPOSE_FILES_DIR)/load-tests-$*.yaml up \
 	--build \
 	--force-recreate \
 	--remove-orphans \
@@ -176,7 +183,7 @@ push-server-to-docker: server-docker-image
 
 .PHONY: dev
 dev:
-	docker-compose --file $(DOCKER_COMPOSE_FILES_DIR)/development.json up \
+	docker-compose --file $(DOCKER_COMPOSE_FILES_DIR)/development.yaml up \
 	--build \
 	--force-recreate \
 	--remove-orphans \
@@ -186,7 +193,7 @@ dev:
 
 .PHONY: run
 run:
-	docker-compose --file $(DOCKER_COMPOSE_FILES_DIR)/production.json up \
+	docker-compose --file $(DOCKER_COMPOSE_FILES_DIR)/production.yaml up \
 	--build \
 	--force-recreate \
 	--remove-orphans \

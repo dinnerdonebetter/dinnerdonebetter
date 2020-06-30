@@ -178,12 +178,12 @@ func (p *Postgres) buildGetReportsQuery(filter *models.QueryFilter) (query strin
 	var err error
 
 	builder := p.sqlBuilder.
-		Select(append(reportsTableColumns, fmt.Sprintf(countQuery, reportsTableName))...).
+		Select(append(reportsTableColumns, fmt.Sprintf("(%s)", p.buildGetAllReportsCountQuery()))...).
 		From(reportsTableName).
 		Where(squirrel.Eq{
 			fmt.Sprintf("%s.archived_on", reportsTableName): nil,
 		}).
-		GroupBy(fmt.Sprintf("%s.id", reportsTableName))
+		OrderBy(fmt.Sprintf("%s.id", reportsTableName))
 
 	if filter != nil {
 		builder = filter.ApplyToQueryBuilder(builder, reportsTableName)

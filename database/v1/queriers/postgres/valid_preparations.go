@@ -22,6 +22,7 @@ var (
 		fmt.Sprintf("%s.%s", validPreparationsTableName, "name"),
 		fmt.Sprintf("%s.%s", validPreparationsTableName, "description"),
 		fmt.Sprintf("%s.%s", validPreparationsTableName, "icon"),
+		fmt.Sprintf("%s.%s", validPreparationsTableName, "applicable_to_all_ingredients"),
 		fmt.Sprintf("%s.%s", validPreparationsTableName, "created_on"),
 		fmt.Sprintf("%s.%s", validPreparationsTableName, "updated_on"),
 		fmt.Sprintf("%s.%s", validPreparationsTableName, "archived_on"),
@@ -40,6 +41,7 @@ func (p *Postgres) scanValidPreparation(scan database.Scanner, includeCount bool
 		&x.Name,
 		&x.Description,
 		&x.Icon,
+		&x.ApplicableToAllIngredients,
 		&x.CreatedOn,
 		&x.UpdatedOn,
 		&x.ArchivedOn,
@@ -179,12 +181,12 @@ func (p *Postgres) buildGetValidPreparationsQuery(filter *models.QueryFilter) (q
 	var err error
 
 	builder := p.sqlBuilder.
-		Select(append(validPreparationsTableColumns, fmt.Sprintf(countQuery, validPreparationsTableName))...).
+		Select(append(validPreparationsTableColumns, fmt.Sprintf("(%s)", p.buildGetAllValidPreparationsCountQuery()))...).
 		From(validPreparationsTableName).
 		Where(squirrel.Eq{
 			fmt.Sprintf("%s.archived_on", validPreparationsTableName): nil,
 		}).
-		GroupBy(fmt.Sprintf("%s.id", validPreparationsTableName))
+		OrderBy(fmt.Sprintf("%s.id", validPreparationsTableName))
 
 	if filter != nil {
 		builder = filter.ApplyToQueryBuilder(builder, validPreparationsTableName)

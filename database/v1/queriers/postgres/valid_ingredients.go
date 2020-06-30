@@ -35,7 +35,7 @@ var (
 		fmt.Sprintf("%s.%s", validIngredientsTableName, "contains_gluten"),
 		fmt.Sprintf("%s.%s", validIngredientsTableName, "animal_flesh"),
 		fmt.Sprintf("%s.%s", validIngredientsTableName, "animal_derived"),
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "considered_staple"),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, "measurable_by_volume"),
 		fmt.Sprintf("%s.%s", validIngredientsTableName, "icon"),
 		fmt.Sprintf("%s.%s", validIngredientsTableName, "created_on"),
 		fmt.Sprintf("%s.%s", validIngredientsTableName, "updated_on"),
@@ -69,7 +69,7 @@ func (p *Postgres) scanValidIngredient(scan database.Scanner, includeCount bool)
 		&x.ContainsGluten,
 		&x.AnimalFlesh,
 		&x.AnimalDerived,
-		&x.ConsideredStaple,
+		&x.MeasurableByVolume,
 		&x.Icon,
 		&x.CreatedOn,
 		&x.UpdatedOn,
@@ -209,13 +209,15 @@ func (p *Postgres) GetAllValidIngredientsCount(ctx context.Context) (count uint6
 func (p *Postgres) buildGetValidIngredientsQuery(filter *models.QueryFilter) (query string, args []interface{}) {
 	var err error
 
+	columnsToSelect := append(validIngredientsTableColumns, fmt.Sprintf("(%s)", p.buildGetAllValidIngredientsCountQuery()))
+
 	builder := p.sqlBuilder.
-		Select(append(validIngredientsTableColumns, fmt.Sprintf(countQuery, validIngredientsTableName))...).
+		Select(columnsToSelect...).
 		From(validIngredientsTableName).
 		Where(squirrel.Eq{
 			fmt.Sprintf("%s.archived_on", validIngredientsTableName): nil,
 		}).
-		GroupBy(fmt.Sprintf("%s.id", validIngredientsTableName))
+		OrderBy(fmt.Sprintf("%s.id", validIngredientsTableName))
 
 	if filter != nil {
 		builder = filter.ApplyToQueryBuilder(builder, validIngredientsTableName)
@@ -276,7 +278,7 @@ func (p *Postgres) buildCreateValidIngredientQuery(input *models.ValidIngredient
 			"contains_gluten",
 			"animal_flesh",
 			"animal_derived",
-			"considered_staple",
+			"measurable_by_volume",
 			"icon",
 		).
 		Values(
@@ -296,7 +298,7 @@ func (p *Postgres) buildCreateValidIngredientQuery(input *models.ValidIngredient
 			input.ContainsGluten,
 			input.AnimalFlesh,
 			input.AnimalDerived,
-			input.ConsideredStaple,
+			input.MeasurableByVolume,
 			input.Icon,
 		).
 		Suffix("RETURNING id, created_on").
@@ -310,24 +312,24 @@ func (p *Postgres) buildCreateValidIngredientQuery(input *models.ValidIngredient
 // CreateValidIngredient creates a valid ingredient in the database.
 func (p *Postgres) CreateValidIngredient(ctx context.Context, input *models.ValidIngredientCreationInput) (*models.ValidIngredient, error) {
 	x := &models.ValidIngredient{
-		Name:              input.Name,
-		Variant:           input.Variant,
-		Description:       input.Description,
-		Warning:           input.Warning,
-		ContainsEgg:       input.ContainsEgg,
-		ContainsDairy:     input.ContainsDairy,
-		ContainsPeanut:    input.ContainsPeanut,
-		ContainsTreeNut:   input.ContainsTreeNut,
-		ContainsSoy:       input.ContainsSoy,
-		ContainsWheat:     input.ContainsWheat,
-		ContainsShellfish: input.ContainsShellfish,
-		ContainsSesame:    input.ContainsSesame,
-		ContainsFish:      input.ContainsFish,
-		ContainsGluten:    input.ContainsGluten,
-		AnimalFlesh:       input.AnimalFlesh,
-		AnimalDerived:     input.AnimalDerived,
-		ConsideredStaple:  input.ConsideredStaple,
-		Icon:              input.Icon,
+		Name:               input.Name,
+		Variant:            input.Variant,
+		Description:        input.Description,
+		Warning:            input.Warning,
+		ContainsEgg:        input.ContainsEgg,
+		ContainsDairy:      input.ContainsDairy,
+		ContainsPeanut:     input.ContainsPeanut,
+		ContainsTreeNut:    input.ContainsTreeNut,
+		ContainsSoy:        input.ContainsSoy,
+		ContainsWheat:      input.ContainsWheat,
+		ContainsShellfish:  input.ContainsShellfish,
+		ContainsSesame:     input.ContainsSesame,
+		ContainsFish:       input.ContainsFish,
+		ContainsGluten:     input.ContainsGluten,
+		AnimalFlesh:        input.AnimalFlesh,
+		AnimalDerived:      input.AnimalDerived,
+		MeasurableByVolume: input.MeasurableByVolume,
+		Icon:               input.Icon,
 	}
 
 	query, args := p.buildCreateValidIngredientQuery(x)
@@ -363,7 +365,7 @@ func (p *Postgres) buildUpdateValidIngredientQuery(input *models.ValidIngredient
 		Set("contains_gluten", input.ContainsGluten).
 		Set("animal_flesh", input.AnimalFlesh).
 		Set("animal_derived", input.AnimalDerived).
-		Set("considered_staple", input.ConsideredStaple).
+		Set("measurable_by_volume", input.MeasurableByVolume).
 		Set("icon", input.Icon).
 		Set("updated_on", squirrel.Expr(currentUnixTimeQuery)).
 		Where(squirrel.Eq{

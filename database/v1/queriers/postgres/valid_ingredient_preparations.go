@@ -182,7 +182,7 @@ func (p *Postgres) buildGetValidIngredientPreparationsQuery(validIngredientID ui
 	var err error
 
 	builder := p.sqlBuilder.
-		Select(append(validIngredientPreparationsTableColumns, fmt.Sprintf(countQuery, validIngredientPreparationsTableName))...).
+		Select(append(validIngredientPreparationsTableColumns, fmt.Sprintf("(%s)", p.buildGetAllValidIngredientPreparationsCountQuery()))...).
 		From(validIngredientPreparationsTableName).
 		Join(validIngredientsOnValidIngredientPreparationsJoinClause).
 		Where(squirrel.Eq{
@@ -190,7 +190,7 @@ func (p *Postgres) buildGetValidIngredientPreparationsQuery(validIngredientID ui
 			fmt.Sprintf("%s.id", validIngredientsTableName):                                                             validIngredientID,
 			fmt.Sprintf("%s.%s", validIngredientPreparationsTableName, validIngredientPreparationsTableOwnershipColumn): validIngredientID,
 		}).
-		GroupBy(fmt.Sprintf("%s.id", validIngredientPreparationsTableName))
+		OrderBy(fmt.Sprintf("%s.id", validIngredientPreparationsTableName))
 
 	if filter != nil {
 		builder = filter.ApplyToQueryBuilder(builder, validIngredientPreparationsTableName)

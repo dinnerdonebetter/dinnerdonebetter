@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"gitlab.com/prixfixe/prixfixe/internal/v1/panicking"
 	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
 
 	"github.com/moul/http2curl"
@@ -32,6 +33,9 @@ var (
 
 	// ErrUnauthorized is a handy error to return when we receive a 404 response.
 	ErrUnauthorized = errors.New("401: not authorized")
+
+	// ErrInvalidTOTPToken is an error for when our TOTP validation request goes awry
+	ErrInvalidTOTPToken = errors.New("invalid TOTP token")
 )
 
 // V1Client is a client for interacting with v1 of our HTTP API.
@@ -43,6 +47,7 @@ type V1Client struct {
 	URL          *url.URL
 	Scopes       []string
 	tokenSource  oauth2.TokenSource
+	panicker     panicking.Panicker
 }
 
 // AuthenticatedClient returns the authenticated *http.Client that we use to make most requests.
@@ -106,6 +111,7 @@ func NewClient(
 		Debug:        debug,
 		authedClient: ac,
 		tokenSource:  ts,
+		panicker:     &panicking.StandardPanicker{},
 	}
 
 	logger.WithValue("url", address.String()).Debug("returning client")

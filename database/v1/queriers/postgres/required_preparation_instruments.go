@@ -184,7 +184,7 @@ func (p *Postgres) buildGetRequiredPreparationInstrumentsQuery(validPreparationI
 	var err error
 
 	builder := p.sqlBuilder.
-		Select(append(requiredPreparationInstrumentsTableColumns, fmt.Sprintf(countQuery, requiredPreparationInstrumentsTableName))...).
+		Select(append(requiredPreparationInstrumentsTableColumns, fmt.Sprintf("(%s)", p.buildGetAllRequiredPreparationInstrumentsCountQuery()))...).
 		From(requiredPreparationInstrumentsTableName).
 		Join(validPreparationsOnRequiredPreparationInstrumentsJoinClause).
 		Where(squirrel.Eq{
@@ -192,7 +192,7 @@ func (p *Postgres) buildGetRequiredPreparationInstrumentsQuery(validPreparationI
 			fmt.Sprintf("%s.id", validPreparationsTableName):                                                                  validPreparationID,
 			fmt.Sprintf("%s.%s", requiredPreparationInstrumentsTableName, requiredPreparationInstrumentsTableOwnershipColumn): validPreparationID,
 		}).
-		GroupBy(fmt.Sprintf("%s.id", requiredPreparationInstrumentsTableName))
+		OrderBy(fmt.Sprintf("%s.id", requiredPreparationInstrumentsTableName))
 
 	if filter != nil {
 		builder = filter.ApplyToQueryBuilder(builder, requiredPreparationInstrumentsTableName)

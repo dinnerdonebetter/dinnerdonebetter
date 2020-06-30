@@ -190,7 +190,7 @@ func (p *Postgres) buildGetRecipeStepPreparationsQuery(recipeID, recipeStepID ui
 	var err error
 
 	builder := p.sqlBuilder.
-		Select(append(recipeStepPreparationsTableColumns, fmt.Sprintf(countQuery, recipeStepPreparationsTableName))...).
+		Select(append(recipeStepPreparationsTableColumns, fmt.Sprintf("(%s)", p.buildGetAllRecipeStepPreparationsCountQuery()))...).
 		From(recipeStepPreparationsTableName).
 		Join(recipeStepsOnRecipeStepPreparationsJoinClause).
 		Join(recipesOnRecipeStepsJoinClause).
@@ -201,7 +201,7 @@ func (p *Postgres) buildGetRecipeStepPreparationsQuery(recipeID, recipeStepID ui
 			fmt.Sprintf("%s.%s", recipeStepsTableName, recipeStepsTableOwnershipColumn):                       recipeID,
 			fmt.Sprintf("%s.%s", recipeStepPreparationsTableName, recipeStepPreparationsTableOwnershipColumn): recipeStepID,
 		}).
-		GroupBy(fmt.Sprintf("%s.id", recipeStepPreparationsTableName))
+		OrderBy(fmt.Sprintf("%s.id", recipeStepPreparationsTableName))
 
 	if filter != nil {
 		builder = filter.ApplyToQueryBuilder(builder, recipeStepPreparationsTableName)

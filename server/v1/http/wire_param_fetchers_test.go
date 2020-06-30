@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
+	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 	ingredienttagmappingsservice "gitlab.com/prixfixe/prixfixe/services/v1/ingredienttagmappings"
 	invitationsservice "gitlab.com/prixfixe/prixfixe/services/v1/invitations"
 	iterationmediasservice "gitlab.com/prixfixe/prixfixe/services/v1/iterationmedias"
@@ -360,14 +361,6 @@ func TestProvideUsersServiceUserIDFetcher(T *testing.T) {
 	})
 }
 
-func TestProvideAuthServiceUserIDFetcher(T *testing.T) {
-	T.Parallel()
-
-	T.Run("obligatory", func(t *testing.T) {
-		_ = ProvideAuthServiceUserIDFetcher()
-	})
-}
-
 func TestProvideWebhooksServiceUserIDFetcher(T *testing.T) {
 	T.Parallel()
 
@@ -396,19 +389,16 @@ func Test_userIDFetcherFromRequestContext(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		expected := uint64(123)
+		exampleUser := fakemodels.BuildFakeUser()
+		expected := exampleUser.ToSessionInfo()
 
 		req := buildRequest(t)
 		req = req.WithContext(
-			context.WithValue(
-				req.Context(),
-				models.UserIDKey,
-				expected,
-			),
+			context.WithValue(req.Context(), models.SessionInfoKey, expected),
 		)
 
 		actual := userIDFetcherFromRequestContext(req)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, expected.UserID, actual)
 	})
 
 	T.Run("without attached value", func(t *testing.T) {

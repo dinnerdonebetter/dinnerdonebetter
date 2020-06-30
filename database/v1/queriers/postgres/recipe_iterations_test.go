@@ -299,7 +299,7 @@ func TestPostgres_buildGetRecipeIterationsQuery(T *testing.T) {
 		exampleRecipe := fakemodels.BuildFakeRecipe()
 		filter := fakemodels.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT recipe_iterations.id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe, COUNT(recipe_iterations.id) FROM recipe_iterations JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id WHERE recipe_iterations.archived_on IS NULL AND recipe_iterations.belongs_to_recipe = $1 AND recipes.id = $2 AND recipe_iterations.created_on > $3 AND recipe_iterations.created_on < $4 AND recipe_iterations.updated_on > $5 AND recipe_iterations.updated_on < $6 GROUP BY recipe_iterations.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT recipe_iterations.id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe, (SELECT COUNT(recipe_iterations.id) FROM recipe_iterations WHERE recipe_iterations.archived_on IS NULL) FROM recipe_iterations JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id WHERE recipe_iterations.archived_on IS NULL AND recipe_iterations.belongs_to_recipe = $1 AND recipes.id = $2 AND recipe_iterations.created_on > $3 AND recipe_iterations.created_on < $4 AND recipe_iterations.updated_on > $5 AND recipe_iterations.updated_on < $6 ORDER BY recipe_iterations.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			exampleRecipe.ID,
 			exampleRecipe.ID,
@@ -319,7 +319,7 @@ func TestPostgres_buildGetRecipeIterationsQuery(T *testing.T) {
 func TestPostgres_GetRecipeIterations(T *testing.T) {
 	T.Parallel()
 
-	expectedListQuery := "SELECT recipe_iterations.id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe, COUNT(recipe_iterations.id) FROM recipe_iterations JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id WHERE recipe_iterations.archived_on IS NULL AND recipe_iterations.belongs_to_recipe = $1 AND recipes.id = $2 GROUP BY recipe_iterations.id LIMIT 20"
+	expectedListQuery := "SELECT recipe_iterations.id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe, (SELECT COUNT(recipe_iterations.id) FROM recipe_iterations WHERE recipe_iterations.archived_on IS NULL) FROM recipe_iterations JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id WHERE recipe_iterations.archived_on IS NULL AND recipe_iterations.belongs_to_recipe = $1 AND recipes.id = $2 ORDER BY recipe_iterations.id LIMIT 20"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()

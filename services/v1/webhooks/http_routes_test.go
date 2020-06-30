@@ -49,7 +49,7 @@ func TestWebhooksService_List(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -84,7 +84,7 @@ func TestWebhooksService_List(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -115,7 +115,7 @@ func TestWebhooksService_List(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -152,7 +152,7 @@ func TestWebhooksService_List(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -232,7 +232,7 @@ func TestWebhooksService_Create(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -261,7 +261,7 @@ func TestWebhooksService_Create(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -283,7 +283,7 @@ func TestWebhooksService_Create(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -315,7 +315,7 @@ func TestWebhooksService_Create(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -359,7 +359,7 @@ func TestWebhooksService_Create(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -409,7 +409,7 @@ func TestWebhooksService_Read(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -447,7 +447,7 @@ func TestWebhooksService_Read(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -485,7 +485,7 @@ func TestWebhooksService_Read(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -527,7 +527,7 @@ func TestWebhooksService_Read(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -582,7 +582,7 @@ func TestWebhooksService_Update(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -602,7 +602,7 @@ func TestWebhooksService_Update(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -639,7 +639,7 @@ func TestWebhooksService_Update(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -680,7 +680,7 @@ func TestWebhooksService_Update(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -727,7 +727,7 @@ func TestWebhooksService_Update(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -778,7 +778,7 @@ func TestWebhooksService_Update(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -828,7 +828,7 @@ func TestWebhooksService_Archive(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -866,7 +866,7 @@ func TestWebhooksService_Archive(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)
@@ -904,7 +904,7 @@ func TestWebhooksService_Archive(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://todo.verygoodsoftwarenotvirus.ru",
+			"http://prixfixe.app",
 			nil,
 		)
 		require.NotNil(t, req)

@@ -270,7 +270,7 @@ func TestPostgres_buildGetReportsQuery(T *testing.T) {
 
 		filter := fakemodels.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.updated_on, reports.archived_on, reports.belongs_to_user, COUNT(reports.id) FROM reports WHERE reports.archived_on IS NULL AND reports.created_on > $1 AND reports.created_on < $2 AND reports.updated_on > $3 AND reports.updated_on < $4 GROUP BY reports.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.updated_on, reports.archived_on, reports.belongs_to_user, (SELECT COUNT(reports.id) FROM reports WHERE reports.archived_on IS NULL) FROM reports WHERE reports.archived_on IS NULL AND reports.created_on > $1 AND reports.created_on < $2 AND reports.updated_on > $3 AND reports.updated_on < $4 ORDER BY reports.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			filter.CreatedAfter,
 			filter.CreatedBefore,
@@ -288,7 +288,7 @@ func TestPostgres_buildGetReportsQuery(T *testing.T) {
 func TestPostgres_GetReports(T *testing.T) {
 	T.Parallel()
 
-	expectedListQuery := "SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.updated_on, reports.archived_on, reports.belongs_to_user, COUNT(reports.id) FROM reports WHERE reports.archived_on IS NULL GROUP BY reports.id LIMIT 20"
+	expectedListQuery := "SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.updated_on, reports.archived_on, reports.belongs_to_user, (SELECT COUNT(reports.id) FROM reports WHERE reports.archived_on IS NULL) FROM reports WHERE reports.archived_on IS NULL ORDER BY reports.id LIMIT 20"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()

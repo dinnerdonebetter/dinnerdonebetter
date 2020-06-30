@@ -14,12 +14,12 @@ import (
 // fetchRandomIterationMedia retrieves a random iteration media from the list of available iteration medias.
 func fetchRandomIterationMedia(ctx context.Context, c *client.V1Client, recipeID, recipeIterationID uint64) *models.IterationMedia {
 	iterationMediasRes, err := c.GetIterationMedias(ctx, recipeID, recipeIterationID, nil)
-	if err != nil || iterationMediasRes == nil || len(iterationMediasRes.IterationMedias) == 0 {
+	if err != nil || iterationMediasRes == nil || len(iterationMediasRes.IterationMedia) == 0 {
 		return nil
 	}
 
-	randIndex := rand.Intn(len(iterationMediasRes.IterationMedias))
-	return &iterationMediasRes.IterationMedias[randIndex]
+	randIndex := rand.Intn(len(iterationMediasRes.IterationMedia))
+	return &iterationMediasRes.IterationMedia[randIndex]
 }
 
 func buildIterationMediaActions(c *client.V1Client) map[string]*Action {

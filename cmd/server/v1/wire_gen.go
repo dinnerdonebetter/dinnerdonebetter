@@ -54,8 +54,14 @@ func BuildServer(ctx context.Context, cfg *config.ServerConfig, logger logging.L
 		return nil, err
 	}
 	oAuth2ClientValidator := auth2.ProvideOAuth2ClientValidator(service)
-	userIDFetcher := httpserver.ProvideAuthServiceUserIDFetcher()
-	authService, err := auth2.ProvideAuthService(logger, cfg, authenticator, userDataManager, oAuth2ClientValidator, userIDFetcher, encoderDecoder)
+	authSettings := config.ProvideConfigAuthSettings(cfg)
+	databaseSettings := config.ProvideConfigDatabaseSettings(cfg)
+	db, err := config.ProvideDatabaseConnection(logger, databaseSettings)
+	if err != nil {
+		return nil, err
+	}
+	sessionManager := config.ProvideSessionManager(authSettings, db)
+	authService, err := auth2.ProvideAuthService(logger, cfg, authenticator, userDataManager, oAuth2ClientValidator, sessionManager, encoderDecoder)
 	if err != nil {
 		return nil, err
 	}
@@ -119,8 +125,8 @@ func BuildServer(ctx context.Context, cfg *config.ServerConfig, logger logging.L
 	validIngredientPreparationDataServer := validingredientpreparations.ProvideValidIngredientPreparationDataServer(validingredientpreparationsService)
 	recipeDataManager := recipes.ProvideRecipeDataManager(database2)
 	recipeIDFetcher := httpserver.ProvideRecipesServiceRecipeIDFetcher(logger)
-	recipesUserIDFetcher := httpserver.ProvideRecipesServiceUserIDFetcher()
-	recipesService, err := recipes.ProvideRecipesService(logger, recipeDataManager, recipeIDFetcher, recipesUserIDFetcher, encoderDecoder, unitCounterProvider, reporter)
+	userIDFetcher := httpserver.ProvideRecipesServiceUserIDFetcher()
+	recipesService, err := recipes.ProvideRecipesService(logger, recipeDataManager, recipeIDFetcher, userIDFetcher, encoderDecoder, unitCounterProvider, reporter)
 	if err != nil {
 		return nil, err
 	}
@@ -207,7 +213,6 @@ func BuildServer(ctx context.Context, cfg *config.ServerConfig, logger logging.L
 		return nil, err
 	}
 	reportDataServer := reports.ProvideReportDataServer(reportsService)
-	authSettings := config.ProvideConfigAuthSettings(cfg)
 	usersUserIDFetcher := httpserver.ProvideUsersServiceUserIDFetcher(logger)
 	usersService, err := users.ProvideUsersService(authSettings, logger, userDataManager, authenticator, usersUserIDFetcher, encoderDecoder, unitCounterProvider, reporter)
 	if err != nil {

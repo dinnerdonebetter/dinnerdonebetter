@@ -9,29 +9,29 @@ type (
 	// IngredientTagMapping represents an ingredient tag mapping.
 	IngredientTagMapping struct {
 		ID                       uint64  `json:"id"`
-		ValidIngredientTagID     uint64  `json:"valid_ingredient_tag_id"`
-		CreatedOn                uint64  `json:"created_on"`
-		UpdatedOn                *uint64 `json:"updated_on"`
-		ArchivedOn               *uint64 `json:"archived_on"`
-		BelongsToValidIngredient uint64  `json:"belongs_to_valid_ingredient"`
+		ValidIngredientTagID     uint64  `json:"validIngredientTagID"`
+		CreatedOn                uint64  `json:"createdOn"`
+		UpdatedOn                *uint64 `json:"updatedOn"`
+		ArchivedOn               *uint64 `json:"archivedOn"`
+		BelongsToValidIngredient uint64  `json:"belongsToValidIngredient"`
 	}
 
 	// IngredientTagMappingList represents a list of ingredient tag mappings.
 	IngredientTagMappingList struct {
 		Pagination
-		IngredientTagMappings []IngredientTagMapping `json:"ingredient_tag_mappings"`
+		IngredientTagMappings []IngredientTagMapping `json:"ingredientTagMappings"`
 	}
 
 	// IngredientTagMappingCreationInput represents what a user could set as input for creating ingredient tag mappings.
 	IngredientTagMappingCreationInput struct {
-		ValidIngredientTagID     uint64 `json:"valid_ingredient_tag_id"`
+		ValidIngredientTagID     uint64 `json:"validIngredientTagId"`
 		BelongsToValidIngredient uint64 `json:"-"`
 	}
 
 	// IngredientTagMappingUpdateInput represents what a user could set as input for updating ingredient tag mappings.
 	IngredientTagMappingUpdateInput struct {
-		ValidIngredientTagID     uint64 `json:"valid_ingredient_tag_id"`
-		BelongsToValidIngredient uint64 `json:"belongs_to_valid_ingredient"`
+		ValidIngredientTagID     uint64 `json:"validIngredientTagId"`
+		BelongsToValidIngredient uint64 `json:"belongsToValidIngredient"`
 	}
 
 	// IngredientTagMappingDataManager describes a structure capable of storing ingredient tag mappings permanently.

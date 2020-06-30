@@ -3,9 +3,7 @@ package users
 import (
 	"bytes"
 	"context"
-	"crypto/rand"
 	"database/sql"
-	"encoding/base32"
 	"encoding/base64"
 	"fmt"
 	"image/png"
@@ -17,33 +15,16 @@ import (
 
 	"github.com/boombuler/barcode"
 	"github.com/boombuler/barcode/qr"
+	"github.com/pquerna/otp/totp"
 	"gitlab.com/verygoodsoftwarenotvirus/newsman"
 )
 
 const (
 	// URIParamKey is used to refer to user IDs in router params.
 	URIParamKey = "userID"
+
+	totpIssuer = "prixfixe"
 )
-
-// this function tests that we have appropriate access to crypto/rand
-func init() {
-	b := make([]byte, 64)
-	if _, err := rand.Read(b); err != nil {
-		panic(err)
-	}
-}
-
-// randString produces a random string.
-// https://blog.questionable.services/article/generating-secure-random-numbers-crypto-rand/
-func randString() (string, error) {
-	b := make([]byte, 64)
-	// Note that err == nil only if we read len(b) bytes.
-	if _, err := rand.Read(b); err != nil {
-		return "", err
-	}
-
-	return base32.StdEncoding.EncodeToString(b), nil
-}
 
 // validateCredentialChangeRequest takes a user's credentials and determines
 // if they match what is on record.
@@ -159,10 +140,10 @@ func (s *Service) CreateHandler() http.HandlerFunc {
 		}
 
 		// generate a two factor secret.
-		input.TwoFactorSecret, err = randString()
+		input.TwoFactorSecret, err = s.secretGenerator.GenerateTwoFactorSecret()
 		if err != nil {
 			logger.Error(err, "error generating TOTP secret")
-			res.WriteHeader(http.StatusBadRequest)
+			res.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
@@ -220,13 +201,13 @@ func (s *Service) buildQRCode(ctx context.Context, username, twoFactorSecret str
 		// "otpauth://totp/{{ .Issuer }}:{{ .Username }}?secret={{ .Secret }}&issuer={{ .Issuer }}",
 		fmt.Sprintf(
 			"otpauth://totp/%s:%s?secret=%s&issuer=%s",
-			"todoservice",
+			totpIssuer,
 			username,
 			twoFactorSecret,
-			"todoService",
+			totpIssuer,
 		),
 		qr.L,
-		qr.Auto,
+		qr.Unicode,
 	)
 	if err != nil {
 		s.logger.Error(err, "trying to encode secret to qr code")
@@ -248,7 +229,7 @@ func (s *Service) buildQRCode(ctx context.Context, username, twoFactorSecret str
 	}
 
 	// base64 encode the image for easy HTML use.
-	return fmt.Sprintf("data:image/jpeg;base64,%s", base64.StdEncoding.EncodeToString(b.Bytes()))
+	return fmt.Sprintf("data:image/png;base64,%s", base64.StdEncoding.EncodeToString(b.Bytes()))
 }
 
 // ReadHandler is our read route.
@@ -285,6 +266,52 @@ func (s *Service) ReadHandler() http.HandlerFunc {
 	}
 }
 
+// TOTPSecretVerificationHandler accepts a TOTP token as input and returns 200 if the TOTP token
+// is validated by the user's TOTP secret.
+func (s *Service) TOTPSecretVerificationHandler() http.HandlerFunc {
+	return func(res http.ResponseWriter, req *http.Request) {
+		ctx, span := tracing.StartSpan(req.Context(), "TOTPSecretVerificationHandler")
+		defer span.End()
+
+		logger := s.logger.WithRequest(req)
+
+		// check request context for parsed input.
+		input, ok := req.Context().Value(TOTPSecretVerificationMiddlewareCtxKey).(*models.TOTPSecretVerificationInput)
+		if !ok || input == nil {
+			logger.Debug("no input found on TOTP secret refresh request")
+			res.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		user, err := s.userDataManager.GetUserWithUnverifiedTwoFactorSecret(ctx, input.UserID)
+		if err != nil {
+			logger.Error(err, "fetching user")
+			res.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		tracing.AttachUserIDToSpan(span, user.ID)
+		tracing.AttachUsernameToSpan(span, user.Username)
+
+		if user.TwoFactorSecretVerifiedOn != nil {
+			// I suppose if this happens too many times, we'll want to keep track of that
+			res.WriteHeader(http.StatusAlreadyReported)
+			return
+		}
+
+		if totp.Validate(input.TOTPToken, user.TwoFactorSecret) {
+			user.TwoFactorSecretVerifiedOn = nil
+			if updateUserErr := s.userDataManager.VerifyUserTwoFactorSecret(ctx, user.ID); updateUserErr != nil {
+				logger.Error(updateUserErr, "updating user to indicate their 2FA secret is validated")
+				res.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			res.WriteHeader(http.StatusAccepted)
+		} else {
+			res.WriteHeader(http.StatusBadRequest)
+		}
+	}
+}
+
 // NewTOTPSecretHandler fetches a user, and issues them a new TOTP secret, after validating
 // that information received from TOTPSecretRefreshInputContextMiddleware is valid.
 func (s *Service) NewTOTPSecretHandler() http.HandlerFunc {
@@ -303,40 +330,41 @@ func (s *Service) NewTOTPSecretHandler() http.HandlerFunc {
 		}
 
 		// also check for the user's ID.
-		userID, ok := ctx.Value(models.UserIDKey).(uint64)
-		if !ok {
+		si, ok := ctx.Value(models.SessionInfoKey).(*models.SessionInfo)
+		if !ok || si == nil {
 			logger.Debug("no user ID attached to TOTP secret refresh request")
 			res.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
 		// make sure this is all on the up-and-up
-		user, sc := s.validateCredentialChangeRequest(
+		user, httpStatus := s.validateCredentialChangeRequest(
 			ctx,
-			userID,
+			si.UserID,
 			input.CurrentPassword,
 			input.TOTPToken,
 		)
 
 		// if the above function returns something other than 200, it means some error occurred.
-		if sc != http.StatusOK {
-			res.WriteHeader(sc)
+		if httpStatus != http.StatusOK {
+			res.WriteHeader(httpStatus)
 			return
 		}
 
 		// document who this is for.
-		tracing.AttachUserIDToSpan(span, userID)
+		tracing.AttachUserIDToSpan(span, si.UserID)
 		tracing.AttachUsernameToSpan(span, user.Username)
 		logger = logger.WithValue("user", user.ID)
 
 		// set the two factor secret.
-		tfs, err := randString()
+		tfs, err := s.secretGenerator.GenerateTwoFactorSecret()
 		if err != nil {
 			logger.Error(err, "error encountered generating random TOTP string")
 			res.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 		user.TwoFactorSecret = tfs
+		user.TwoFactorSecretVerifiedOn = nil
 
 		// update the user in the database.
 		if err := s.userDataManager.UpdateUser(ctx, user); err != nil {
@@ -371,36 +399,35 @@ func (s *Service) UpdatePasswordHandler() http.HandlerFunc {
 		}
 
 		// check request context for user ID.
-		userID, ok := ctx.Value(models.UserIDKey).(uint64)
-		if !ok {
+		si, ok := ctx.Value(models.SessionInfoKey).(*models.SessionInfo)
+		if !ok || si == nil {
 			logger.Debug("no user ID attached to UpdatePasswordHandler request")
 			res.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
 		// determine relevant user ID.
-		tracing.AttachUserIDToSpan(span, userID)
-		logger = logger.WithValue("user_id", userID)
+		tracing.AttachUserIDToSpan(span, si.UserID)
+		logger = logger.WithValue("user_id", si.UserID)
 
 		// make sure everything's on the up-and-up
-		user, sc := s.validateCredentialChangeRequest(
+		user, httpStatus := s.validateCredentialChangeRequest(
 			ctx,
-			userID,
+			si.UserID,
 			input.CurrentPassword,
 			input.TOTPToken,
 		)
 
 		// if the above function returns something other than 200, it means some error occurred.
-		if sc != http.StatusOK {
-			res.WriteHeader(sc)
+		if httpStatus != http.StatusOK {
+			res.WriteHeader(httpStatus)
 			return
 		}
 
 		tracing.AttachUsernameToSpan(span, user.Username)
 
 		// hash the new password.
-		var err error
-		user.HashedPassword, err = s.authenticator.HashPassword(ctx, input.NewPassword)
+		newPasswordHash, err := s.authenticator.HashPassword(ctx, input.NewPassword)
 		if err != nil {
 			logger.Error(err, "error hashing password")
 			res.WriteHeader(http.StatusInternalServerError)
@@ -408,7 +435,7 @@ func (s *Service) UpdatePasswordHandler() http.HandlerFunc {
 		}
 
 		// update the user.
-		if err = s.userDataManager.UpdateUser(ctx, user); err != nil {
+		if err = s.userDataManager.UpdateUserPassword(ctx, user.ID, newPasswordHash); err != nil {
 			logger.Error(err, "error encountered updating user")
 			res.WriteHeader(http.StatusInternalServerError)
 			return
