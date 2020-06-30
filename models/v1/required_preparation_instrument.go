@@ -11,9 +11,9 @@ type (
 		ID                        uint64  `json:"id"`
 		ValidInstrumentID         uint64  `json:"valid_instrument_id"`
 		Notes                     string  `json:"notes"`
-		CreatedOn                 uint64  `json:"created_on"`
-		UpdatedOn                 *uint64 `json:"updated_on"`
-		ArchivedOn                *uint64 `json:"archived_on"`
+		CreatedOn                 uint64  `json:"createdOn"`
+		UpdatedOn                 *uint64 `json:"updatedOn"`
+		ArchivedOn                *uint64 `json:"archivedOn"`
 		BelongsToValidPreparation uint64  `json:"belongs_to_valid_preparation"`
 	}
 

@@ -37,7 +37,7 @@ func TestService_CreationInputMiddleware(T *testing.T) {
 		mh.On("ServeHTTP", mock.Anything, mock.Anything).Return()
 
 		res := httptest.NewRecorder()
-		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
+		req, err := http.NewRequest(http.MethodPost, "http://prixfixe.app", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
@@ -57,7 +57,7 @@ func TestService_CreationInputMiddleware(T *testing.T) {
 		s.encoderDecoder = ed
 
 		res := httptest.NewRecorder()
-		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
+		req, err := http.NewRequest(http.MethodPost, "http://prixfixe.app", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
@@ -85,7 +85,7 @@ func TestService_UpdateInputMiddleware(T *testing.T) {
 		mh.On("ServeHTTP", mock.Anything, mock.Anything).Return()
 
 		res := httptest.NewRecorder()
-		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
+		req, err := http.NewRequest(http.MethodPost, "http://prixfixe.app", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
@@ -105,7 +105,7 @@ func TestService_UpdateInputMiddleware(T *testing.T) {
 		s.encoderDecoder = ed
 
 		res := httptest.NewRecorder()
-		req, err := http.NewRequest(http.MethodPost, "http://todo.verygoodsoftwarenotvirus.ru", nil)
+		req, err := http.NewRequest(http.MethodPost, "http://prixfixe.app", nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 

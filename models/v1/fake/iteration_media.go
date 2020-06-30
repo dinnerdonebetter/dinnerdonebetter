@@ -29,7 +29,7 @@ func BuildFakeIterationMediaList() *models.IterationMediaList {
 			Limit:      20,
 			TotalCount: 3,
 		},
-		IterationMedias: []models.IterationMedia{
+		IterationMedia: []models.IterationMedia{
 			*exampleIterationMedia1,
 			*exampleIterationMedia2,
 			*exampleIterationMedia3,

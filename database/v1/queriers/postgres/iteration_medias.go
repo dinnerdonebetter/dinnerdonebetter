@@ -190,7 +190,7 @@ func (p *Postgres) buildGetIterationMediasQuery(recipeID, recipeIterationID uint
 	var err error
 
 	builder := p.sqlBuilder.
-		Select(append(iterationMediasTableColumns, fmt.Sprintf(countQuery, iterationMediasTableName))...).
+		Select(append(iterationMediasTableColumns, fmt.Sprintf("(%s)", p.buildGetAllIterationMediasCountQuery()))...).
 		From(iterationMediasTableName).
 		Join(recipeIterationsOnIterationMediasJoinClause).
 		Join(recipesOnRecipeIterationsJoinClause).
@@ -201,7 +201,7 @@ func (p *Postgres) buildGetIterationMediasQuery(recipeID, recipeIterationID uint
 			fmt.Sprintf("%s.%s", recipeIterationsTableName, recipeIterationsTableOwnershipColumn): recipeID,
 			fmt.Sprintf("%s.%s", iterationMediasTableName, iterationMediasTableOwnershipColumn):   recipeIterationID,
 		}).
-		GroupBy(fmt.Sprintf("%s.id", iterationMediasTableName))
+		OrderBy(fmt.Sprintf("%s.id", iterationMediasTableName))
 
 	if filter != nil {
 		builder = filter.ApplyToQueryBuilder(builder, iterationMediasTableName)
@@ -233,7 +233,7 @@ func (p *Postgres) GetIterationMedias(ctx context.Context, recipeID, recipeItera
 			Limit:      filter.Limit,
 			TotalCount: count,
 		},
-		IterationMedias: iterationMedias,
+		IterationMedia: iterationMedias,
 	}
 
 	return list, nil

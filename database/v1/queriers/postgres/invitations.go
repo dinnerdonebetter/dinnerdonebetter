@@ -178,12 +178,12 @@ func (p *Postgres) buildGetInvitationsQuery(filter *models.QueryFilter) (query s
 	var err error
 
 	builder := p.sqlBuilder.
-		Select(append(invitationsTableColumns, fmt.Sprintf(countQuery, invitationsTableName))...).
+		Select(append(invitationsTableColumns, fmt.Sprintf("(%s)", p.buildGetAllInvitationsCountQuery()))...).
 		From(invitationsTableName).
 		Where(squirrel.Eq{
 			fmt.Sprintf("%s.archived_on", invitationsTableName): nil,
 		}).
-		GroupBy(fmt.Sprintf("%s.id", invitationsTableName))
+		OrderBy(fmt.Sprintf("%s.id", invitationsTableName))
 
 	if filter != nil {
 		builder = filter.ApplyToQueryBuilder(builder, invitationsTableName)

@@ -6,11 +6,13 @@ import (
 	"encoding/base32"
 	"net/http"
 	"testing"
+	"time"
 
 	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
 	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 
+	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -34,20 +36,23 @@ func randString() (string, error) {
 	return base32.StdEncoding.EncodeToString(b), nil
 }
 
-func buildDummyUser(t *testing.T) (*models.UserCreationResponse, *models.UserCreationInput, *http.Cookie) {
+func buildDummyUser(ctx context.Context, t *testing.T) (*models.UserCreationResponse, *models.UserCreationInput, *http.Cookie) {
 	t.Helper()
-	ctx := context.Background()
 
 	// build user creation route input.
 	userInput := fakemodels.BuildFakeUserCreationInput()
 	user, err := prixfixeClient.CreateUser(ctx, userInput)
-	assert.NotNil(t, user)
+	require.NotNil(t, user)
 	require.NoError(t, err)
 
-	if user == nil || err != nil {
+	token, err := totp.GenerateCode(user.TwoFactorSecret, time.Now().UTC())
+	require.NoError(t, err)
+	require.NoError(t, prixfixeClient.VerifyTOTPSecret(ctx, user.ID, token))
+
+	if err != nil {
 		t.FailNow()
 	}
-	cookie := loginUser(t, userInput.Username, userInput.Password, user.TwoFactorSecret)
+	cookie := loginUser(ctx, t, userInput.Username, userInput.Password, user.TwoFactorSecret)
 
 	require.NoError(t, err)
 	require.NotNil(t, cookie)
@@ -116,6 +121,11 @@ func TestUsers(test *testing.T) {
 			checkValueAndError(t, premade, err)
 			assert.NotEmpty(t, premade.TwoFactorSecret)
 
+			secretVerificationToken, err := totp.GenerateCode(premade.TwoFactorSecret, time.Now().UTC())
+			checkValueAndError(t, secretVerificationToken, err)
+
+			assert.NoError(t, prixfixeClient.VerifyTOTPSecret(ctx, premade.ID, secretVerificationToken))
+
 			// Fetch user.
 			actual, err := prixfixeClient.GetUser(ctx, premade.ID)
 			if err != nil {
@@ -161,7 +171,7 @@ func TestUsers(test *testing.T) {
 			// Create users.
 			var expected []*models.UserCreationResponse
 			for i := 0; i < 5; i++ {
-				user, _, c := buildDummyUser(t)
+				user, _, c := buildDummyUser(ctx, t)
 				assert.NotNil(t, c)
 				expected = append(expected, user)
 			}

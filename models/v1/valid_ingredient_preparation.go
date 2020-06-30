@@ -10,16 +10,16 @@ type (
 	ValidIngredientPreparation struct {
 		ID                       uint64  `json:"id"`
 		Notes                    string  `json:"notes"`
-		CreatedOn                uint64  `json:"created_on"`
-		UpdatedOn                *uint64 `json:"updated_on"`
-		ArchivedOn               *uint64 `json:"archived_on"`
-		BelongsToValidIngredient uint64  `json:"belongs_to_valid_ingredient"`
+		CreatedOn                uint64  `json:"createdOn"`
+		UpdatedOn                *uint64 `json:"updatedOn"`
+		ArchivedOn               *uint64 `json:"archivedOn"`
+		BelongsToValidIngredient uint64  `json:"belongsToValidIngredient"`
 	}
 
 	// ValidIngredientPreparationList represents a list of valid ingredient preparations.
 	ValidIngredientPreparationList struct {
 		Pagination
-		ValidIngredientPreparations []ValidIngredientPreparation `json:"valid_ingredient_preparations"`
+		ValidIngredientPreparations []ValidIngredientPreparation `json:"validIngredientPreparations"`
 	}
 
 	// ValidIngredientPreparationCreationInput represents what a user could set as input for creating valid ingredient preparations.
@@ -31,7 +31,7 @@ type (
 	// ValidIngredientPreparationUpdateInput represents what a user could set as input for updating valid ingredient preparations.
 	ValidIngredientPreparationUpdateInput struct {
 		Notes                    string `json:"notes"`
-		BelongsToValidIngredient uint64 `json:"belongs_to_valid_ingredient"`
+		BelongsToValidIngredient uint64 `json:"belongsToValidIngredient"`
 	}
 
 	// ValidIngredientPreparationDataManager describes a structure capable of storing valid ingredient preparations permanently.

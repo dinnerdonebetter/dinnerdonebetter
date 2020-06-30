@@ -21,14 +21,26 @@ func (m *UserDataManager) GetUser(ctx context.Context, userID uint64) (*models.U
 	return args.Get(0).(*models.User), args.Error(1)
 }
 
+// GetUserWithUnverifiedTwoFactorSecret is a mock function.
+func (m *UserDataManager) GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, userID uint64) (*models.User, error) {
+	args := m.Called(ctx, userID)
+	return args.Get(0).(*models.User), args.Error(1)
+}
+
+// VerifyUserTwoFactorSecret is a mock function.
+func (m *UserDataManager) VerifyUserTwoFactorSecret(ctx context.Context, userID uint64) error {
+	args := m.Called(ctx, userID)
+	return args.Error(0)
+}
+
 // GetUserByUsername is a mock function.
 func (m *UserDataManager) GetUserByUsername(ctx context.Context, username string) (*models.User, error) {
 	args := m.Called(ctx, username)
 	return args.Get(0).(*models.User), args.Error(1)
 }
 
-// GetAllUserCount is a mock function.
-func (m *UserDataManager) GetAllUserCount(ctx context.Context) (uint64, error) {
+// GetAllUsersCount is a mock function.
+func (m *UserDataManager) GetAllUsersCount(ctx context.Context) (uint64, error) {
 	args := m.Called(ctx)
 	return args.Get(0).(uint64), args.Error(1)
 }
@@ -48,6 +60,11 @@ func (m *UserDataManager) CreateUser(ctx context.Context, input models.UserDatab
 // UpdateUser is a mock function.
 func (m *UserDataManager) UpdateUser(ctx context.Context, updated *models.User) error {
 	return m.Called(ctx, updated).Error(0)
+}
+
+// UpdateUserPassword is a mock function.
+func (m *UserDataManager) UpdateUserPassword(ctx context.Context, userID uint64, newHash string) error {
+	return m.Called(ctx, userID, newHash).Error(0)
 }
 
 // ArchiveUser is a mock function.

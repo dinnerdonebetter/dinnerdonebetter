@@ -13,15 +13,15 @@ type (
 		Variant     string  `json:"variant"`
 		Description string  `json:"description"`
 		Icon        string  `json:"icon"`
-		CreatedOn   uint64  `json:"created_on"`
-		UpdatedOn   *uint64 `json:"updated_on"`
-		ArchivedOn  *uint64 `json:"archived_on"`
+		CreatedOn   uint64  `json:"createdOn"`
+		UpdatedOn   *uint64 `json:"updatedOn"`
+		ArchivedOn  *uint64 `json:"archivedOn"`
 	}
 
 	// ValidInstrumentList represents a list of valid instruments.
 	ValidInstrumentList struct {
 		Pagination
-		ValidInstruments []ValidInstrument `json:"valid_instruments"`
+		ValidInstruments []ValidInstrument `json:"validInstruments"`
 	}
 
 	// ValidInstrumentCreationInput represents what a user could set as input for creating valid instruments.

@@ -186,7 +186,7 @@ func (p *Postgres) buildGetRecipeIterationStepsQuery(recipeID uint64, filter *mo
 	var err error
 
 	builder := p.sqlBuilder.
-		Select(append(recipeIterationStepsTableColumns, fmt.Sprintf(countQuery, recipeIterationStepsTableName))...).
+		Select(append(recipeIterationStepsTableColumns, fmt.Sprintf("(%s)", p.buildGetAllRecipeIterationStepsCountQuery()))...).
 		From(recipeIterationStepsTableName).
 		Join(recipesOnRecipeIterationStepsJoinClause).
 		Where(squirrel.Eq{
@@ -194,7 +194,7 @@ func (p *Postgres) buildGetRecipeIterationStepsQuery(recipeID uint64, filter *mo
 			fmt.Sprintf("%s.id", recipesTableName):                                                        recipeID,
 			fmt.Sprintf("%s.%s", recipeIterationStepsTableName, recipeIterationStepsTableOwnershipColumn): recipeID,
 		}).
-		GroupBy(fmt.Sprintf("%s.id", recipeIterationStepsTableName))
+		OrderBy(fmt.Sprintf("%s.id", recipeIterationStepsTableName))
 
 	if filter != nil {
 		builder = filter.ApplyToQueryBuilder(builder, recipeIterationStepsTableName)

@@ -31,7 +31,7 @@ func checkValidIngredientEquality(t *testing.T, expected, actual *models.ValidIn
 	assert.Equal(t, expected.ContainsGluten, actual.ContainsGluten, "expected ContainsGluten for ID %d to be %v, but it was %v ", expected.ID, expected.ContainsGluten, actual.ContainsGluten)
 	assert.Equal(t, expected.AnimalFlesh, actual.AnimalFlesh, "expected AnimalFlesh for ID %d to be %v, but it was %v ", expected.ID, expected.AnimalFlesh, actual.AnimalFlesh)
 	assert.Equal(t, expected.AnimalDerived, actual.AnimalDerived, "expected AnimalDerived for ID %d to be %v, but it was %v ", expected.ID, expected.AnimalDerived, actual.AnimalDerived)
-	assert.Equal(t, expected.ConsideredStaple, actual.ConsideredStaple, "expected ConsideredStaple for ID %d to be %v, but it was %v ", expected.ID, expected.ConsideredStaple, actual.ConsideredStaple)
+	assert.Equal(t, expected.MeasurableByVolume, actual.MeasurableByVolume, "expected MeasurableByVolume for ID %d to be %v, but it was %v ", expected.ID, expected.MeasurableByVolume, actual.MeasurableByVolume)
 	assert.Equal(t, expected.Icon, actual.Icon, "expected Icon for ID %d to be %v, but it was %v ", expected.ID, expected.Icon, actual.Icon)
 	assert.NotZero(t, actual.CreatedOn)
 }

@@ -22,9 +22,11 @@ var (
 		fmt.Sprintf("%s.id", usersTableName),
 		fmt.Sprintf("%s.username", usersTableName),
 		fmt.Sprintf("%s.hashed_password", usersTableName),
+		fmt.Sprintf("%s.requires_password_change", usersTableName),
 		fmt.Sprintf("%s.password_last_changed_on", usersTableName),
 		fmt.Sprintf("%s.two_factor_secret", usersTableName),
 		fmt.Sprintf("%s.is_admin", usersTableName),
+		fmt.Sprintf("%s.two_factor_secret_verified_on", usersTableName),
 		fmt.Sprintf("%s.created_on", usersTableName),
 		fmt.Sprintf("%s.updated_on", usersTableName),
 		fmt.Sprintf("%s.archived_on", usersTableName),
@@ -42,9 +44,11 @@ func (p *Postgres) scanUser(scan database.Scanner, includeCount bool) (*models.U
 		&x.ID,
 		&x.Username,
 		&x.HashedPassword,
+		&x.RequiresPasswordChange,
 		&x.PasswordLastChangedOn,
 		&x.TwoFactorSecret,
 		&x.IsAdmin,
+		&x.TwoFactorSecretVerifiedOn,
 		&x.CreatedOn,
 		&x.UpdatedOn,
 		&x.ArchivedOn,
@@ -102,6 +106,9 @@ func (p *Postgres) buildGetUserQuery(userID uint64) (query string, args []interf
 		Where(squirrel.Eq{
 			fmt.Sprintf("%s.id", usersTableName): userID,
 		}).
+		Where(squirrel.NotEq{
+			fmt.Sprintf("%s.two_factor_secret_verified_on", usersTableName): nil,
+		}).
 		ToSql()
 
 	p.logQueryBuildingError(err)
@@ -122,6 +129,38 @@ func (p *Postgres) GetUser(ctx context.Context, userID uint64) (*models.User, er
 	return u, err
 }
 
+// buildGetUserWithUnverifiedTwoFactorSecretQuery returns a SQL query (and argument) for retrieving a user
+// by their database ID, who has an unverified two factor secret
+func (p *Postgres) buildGetUserWithUnverifiedTwoFactorSecretQuery(userID uint64) (query string, args []interface{}) {
+	var err error
+
+	query, args, err = p.sqlBuilder.
+		Select(usersTableColumns...).
+		From(usersTableName).
+		Where(squirrel.Eq{
+			fmt.Sprintf("%s.id", usersTableName):                            userID,
+			fmt.Sprintf("%s.two_factor_secret_verified_on", usersTableName): nil,
+		}).
+		ToSql()
+
+	p.logQueryBuildingError(err)
+
+	return query, args
+}
+
+// GetUserWithUnverifiedTwoFactorSecret fetches a user with an unverified two factor secret
+func (p *Postgres) GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, userID uint64) (*models.User, error) {
+	query, args := p.buildGetUserWithUnverifiedTwoFactorSecretQuery(userID)
+	row := p.db.QueryRowContext(ctx, query, args...)
+
+	u, _, err := p.scanUser(row, false)
+	if err != nil {
+		return nil, buildError(err, "fetching user from database")
+	}
+
+	return u, err
+}
+
 // buildGetUserByUsernameQuery returns a SQL query (and argument) for retrieving a user by their username
 func (p *Postgres) buildGetUserByUsernameQuery(username string) (query string, args []interface{}) {
 	var err error
@@ -131,6 +170,9 @@ func (p *Postgres) buildGetUserByUsernameQuery(username string) (query string, a
 		From(usersTableName).
 		Where(squirrel.Eq{
 			fmt.Sprintf("%s.username", usersTableName): username,
+		}).
+		Where(squirrel.NotEq{
+			fmt.Sprintf("%s.two_factor_secret_verified_on", usersTableName): nil,
 		}).
 		ToSql()
 
@@ -155,9 +197,9 @@ func (p *Postgres) GetUserByUsername(ctx context.Context, username string) (*mod
 	return u, nil
 }
 
-// buildGetAllUserCountQuery returns a SQL query (and arguments) for retrieving the number of users who adhere
+// buildGetAllUsersCountQuery returns a SQL query (and arguments) for retrieving the number of users who adhere
 // to a given filter's criteria.
-func (p *Postgres) buildGetAllUserCountQuery() (query string) {
+func (p *Postgres) buildGetAllUsersCountQuery() (query string) {
 	var err error
 
 	builder := p.sqlBuilder.
@@ -174,9 +216,9 @@ func (p *Postgres) buildGetAllUserCountQuery() (query string) {
 	return query
 }
 
-// GetAllUserCount fetches a count of users from the database.
-func (p *Postgres) GetAllUserCount(ctx context.Context) (count uint64, err error) {
-	query := p.buildGetAllUserCountQuery()
+// GetAllUsersCount fetches a count of users from the database.
+func (p *Postgres) GetAllUsersCount(ctx context.Context) (count uint64, err error) {
+	query := p.buildGetAllUsersCountQuery()
 	err = p.db.QueryRowContext(ctx, query).Scan(&count)
 	return
 }
@@ -187,12 +229,12 @@ func (p *Postgres) buildGetUsersQuery(filter *models.QueryFilter) (query string,
 	var err error
 
 	builder := p.sqlBuilder.
-		Select(append(usersTableColumns, fmt.Sprintf(countQuery, usersTableName))...).
+		Select(append(usersTableColumns, fmt.Sprintf("(%s)", p.buildGetAllUsersCountQuery()))...).
 		From(usersTableName).
 		Where(squirrel.Eq{
 			fmt.Sprintf("%s.archived_on", usersTableName): nil,
 		}).
-		GroupBy(fmt.Sprintf("%s.id", usersTableName))
+		OrderBy(fmt.Sprintf("%s.id", usersTableName))
 
 	if filter != nil {
 		builder = filter.ApplyToQueryBuilder(builder, usersTableName)
@@ -293,6 +335,7 @@ func (p *Postgres) buildUpdateUserQuery(input *models.User) (query string, args 
 		Set("username", input.Username).
 		Set("hashed_password", input.HashedPassword).
 		Set("two_factor_secret", input.TwoFactorSecret).
+		Set("two_factor_secret_verified_on", input.TwoFactorSecretVerifiedOn).
 		Set("updated_on", squirrel.Expr(currentUnixTimeQuery)).
 		Where(squirrel.Eq{
 			"id": input.ID,
@@ -311,6 +354,59 @@ func (p *Postgres) buildUpdateUserQuery(input *models.User) (query string, args 
 func (p *Postgres) UpdateUser(ctx context.Context, input *models.User) error {
 	query, args := p.buildUpdateUserQuery(input)
 	return p.db.QueryRowContext(ctx, query, args...).Scan(&input.UpdatedOn)
+}
+
+// buildUpdateUserPasswordQuery returns a SQL query (and arguments) that would update the given user's password
+func (p *Postgres) buildUpdateUserPasswordQuery(userID uint64, newHash string) (query string, args []interface{}) {
+	var err error
+
+	query, args, err = p.sqlBuilder.
+		Update(usersTableName).
+		Set("hashed_password", newHash).
+		Set("requires_password_change", false).
+		Set("password_last_changed_on", squirrel.Expr(currentUnixTimeQuery)).
+		Set("updated_on", squirrel.Expr(currentUnixTimeQuery)).
+		Where(squirrel.Eq{
+			"id": userID,
+		}).
+		ToSql()
+
+	p.logQueryBuildingError(err)
+
+	return query, args
+}
+
+// UpdateUserPassword updates a user's password
+func (p *Postgres) UpdateUserPassword(ctx context.Context, userID uint64, newHash string) error {
+	query, args := p.buildUpdateUserPasswordQuery(userID, newHash)
+
+	_, err := p.db.ExecContext(ctx, query, args...)
+
+	return err
+}
+
+// buildUpdateUserQuery returns a SQL query (and arguments) that would update the given user's row
+func (p *Postgres) buildVerifyUserTwoFactorSecretQuery(userID uint64) (query string, args []interface{}) {
+	var err error
+
+	query, args, err = p.sqlBuilder.
+		Update(usersTableName).
+		Set("two_factor_secret_verified_on", squirrel.Expr(currentUnixTimeQuery)).
+		Where(squirrel.Eq{
+			"id": userID,
+		}).
+		ToSql()
+
+	p.logQueryBuildingError(err)
+
+	return query, args
+}
+
+// VerifyUserTwoFactorSecret marks a user's two factor secret as validated.
+func (p *Postgres) VerifyUserTwoFactorSecret(ctx context.Context, userID uint64) error {
+	query, args := p.buildVerifyUserTwoFactorSecretQuery(userID)
+	_, err := p.db.ExecContext(ctx, query, args...)
+	return err
 }
 
 func (p *Postgres) buildArchiveUserQuery(userID uint64) (query string, args []interface{}) {

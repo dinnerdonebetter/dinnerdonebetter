@@ -27,6 +27,7 @@ RUN npm install && npm run build
 FROM debian:stable
 
 COPY config_files config_files
+COPY --from=frontend-build-stage /app/dist /frontend
 COPY --from=build-stage /integration-server /integration-server
 
 EXPOSE 80

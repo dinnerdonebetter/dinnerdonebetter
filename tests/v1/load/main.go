@@ -15,7 +15,7 @@ import (
 
 // ServiceAttacker implements hazana's Attacker interface.
 type ServiceAttacker struct {
-	todoClient *client.V1Client
+	client *client.V1Client
 }
 
 // Setup implement's hazana's Attacker interface.
@@ -27,7 +27,7 @@ func (a *ServiceAttacker) Setup(_ hazana.Config) error {
 func (a *ServiceAttacker) Do(_ context.Context) hazana.DoResult {
 	// Do performs one request and is executed in a separate goroutine.
 	// The context is used to cancel the request on timeout.
-	act := RandomAction(a.todoClient)
+	act := RandomAction(a.client)
 
 	req, err := act.Action()
 	if err != nil || req == nil {
@@ -56,7 +56,7 @@ func (a *ServiceAttacker) Do(_ context.Context) hazana.DoResult {
 		req.Body = rdr
 	}
 
-	res, err := a.todoClient.AuthenticatedClient().Do(req)
+	res, err := a.client.AuthenticatedClient().Do(req)
 	if res != nil {
 		sc = res.StatusCode
 		bo = res.ContentLength
@@ -83,7 +83,7 @@ func (a *ServiceAttacker) Clone() hazana.Attack {
 }
 
 func main() {
-	todoClient := initializeClient(oa2Client)
+	c := initializeClient(oa2Client)
 
 	var runTime = 10 * time.Minute
 	if rt := os.Getenv("LOADTEST_RUN_TIME"); rt != "" {
@@ -94,7 +94,7 @@ func main() {
 		runTime = _rt
 	}
 
-	attacker := &ServiceAttacker{todoClient: todoClient}
+	attacker := &ServiceAttacker{client: c}
 	cfg := hazana.Config{
 		RPS:           50,
 		AttackTimeSec: int(runTime.Seconds()),

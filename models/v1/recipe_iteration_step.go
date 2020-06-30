@@ -9,35 +9,35 @@ type (
 	// RecipeIterationStep represents a recipe iteration step.
 	RecipeIterationStep struct {
 		ID              uint64  `json:"id"`
-		StartedOn       *uint64 `json:"started_on"`
-		EndedOn         *uint64 `json:"ended_on"`
+		StartedOn       *uint64 `json:"startedOn"`
+		EndedOn         *uint64 `json:"endedOn"`
 		State           string  `json:"state"`
-		CreatedOn       uint64  `json:"created_on"`
-		UpdatedOn       *uint64 `json:"updated_on"`
-		ArchivedOn      *uint64 `json:"archived_on"`
-		BelongsToRecipe uint64  `json:"belongs_to_recipe"`
+		CreatedOn       uint64  `json:"createdOn"`
+		UpdatedOn       *uint64 `json:"updatedOn"`
+		ArchivedOn      *uint64 `json:"archivedOn"`
+		BelongsToRecipe uint64  `json:"belongsToRecipe"`
 	}
 
 	// RecipeIterationStepList represents a list of recipe iteration steps.
 	RecipeIterationStepList struct {
 		Pagination
-		RecipeIterationSteps []RecipeIterationStep `json:"recipe_iteration_steps"`
+		RecipeIterationSteps []RecipeIterationStep `json:"recipeIterationSteps"`
 	}
 
 	// RecipeIterationStepCreationInput represents what a user could set as input for creating recipe iteration steps.
 	RecipeIterationStepCreationInput struct {
-		StartedOn       *uint64 `json:"started_on"`
-		EndedOn         *uint64 `json:"ended_on"`
+		StartedOn       *uint64 `json:"startedOn"`
+		EndedOn         *uint64 `json:"endedOn"`
 		State           string  `json:"state"`
 		BelongsToRecipe uint64  `json:"-"`
 	}
 
 	// RecipeIterationStepUpdateInput represents what a user could set as input for updating recipe iteration steps.
 	RecipeIterationStepUpdateInput struct {
-		StartedOn       *uint64 `json:"started_on"`
-		EndedOn         *uint64 `json:"ended_on"`
+		StartedOn       *uint64 `json:"startedOn"`
+		EndedOn         *uint64 `json:"endedOn"`
 		State           string  `json:"state"`
-		BelongsToRecipe uint64  `json:"belongs_to_recipe"`
+		BelongsToRecipe uint64  `json:"belongsToRecipe"`
 	}
 
 	// RecipeIterationStepDataManager describes a structure capable of storing recipe iteration steps permanently.

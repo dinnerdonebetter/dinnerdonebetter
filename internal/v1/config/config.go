@@ -13,11 +13,27 @@ import (
 )
 
 const (
+	// DevelopmentRunMode is the run mode for a development environment
+	DevelopmentRunMode runMode = "development"
+	// TestingRunMode is the run mode for a testing environment
+	TestingRunMode runMode = "testing"
+	// ProductionRunMode is the run mode for a production environment
+	ProductionRunMode runMode = "production"
+
 	defaultStartupDeadline                   = time.Minute
+	defaultRunMode                           = DevelopmentRunMode
 	defaultCookieLifetime                    = 24 * time.Hour
 	defaultMetricsCollectionInterval         = 2 * time.Second
 	defaultDatabaseMetricsCollectionInterval = 2 * time.Second
 	randStringSize                           = 32
+)
+
+var (
+	validModes = map[runMode]struct{}{
+		DevelopmentRunMode: {},
+		TestingRunMode:     {},
+		ProductionRunMode:  {},
+	}
 )
 
 func init() {
@@ -28,6 +44,8 @@ func init() {
 }
 
 type (
+	runMode string
+
 	// MetaSettings is primarily used for development.
 	MetaSettings struct {
 		// Debug enables debug mode service-wide
@@ -35,6 +53,8 @@ type (
 		Debug bool `json:"debug" mapstructure:"debug" toml:"debug,omitempty"`
 		// StartupDeadline indicates how long the service can take to spin up. This includes database migrations, configuring services, etc.
 		StartupDeadline time.Duration `json:"startup_deadline" mapstructure:"startup_deadline" toml:"startup_deadline,omitempty"`
+		// RunMode indicates the current run mode
+		RunMode runMode `json:"run_mode" mapstructure:"run_mode" toml:"run_mode,omitempty"`
 	}
 
 	// ServerSettings describes the settings pertinent to the HTTP serving portion of the service.
@@ -73,12 +93,14 @@ type (
 
 	// DatabaseSettings represents our database configuration.
 	DatabaseSettings struct {
-		// Debug determines if debug logging or other development conditions are active.
-		Debug bool `json:"debug" mapstructure:"debug" toml:"debug,omitempty"`
 		// Provider indicates what database we'll connect to (postgres, mysql, etc.)
 		Provider string `json:"provider" mapstructure:"provider" toml:"provider,omitempty"`
 		// ConnectionDetails indicates how our database driver should connect to the instance.
 		ConnectionDetails database.ConnectionDetails `json:"connection_details" mapstructure:"connection_details" toml:"connection_details,omitempty"`
+		// Debug determines if debug logging or other development conditions are active.
+		Debug bool `json:"debug" mapstructure:"debug" toml:"debug,omitempty"`
+		// CreateDummyUser determines if we create an example user in the database.
+		CreateDummyUser bool `json:"create_dummy_user" mapstructure:"create_dummy_user" toml:"create_dummy_user,omitempty"`
 	}
 
 	// MetricsSettings contains settings about how we report our metrics.
@@ -123,6 +145,7 @@ func BuildConfig() *viper.Viper {
 	cfg := viper.New()
 
 	// meta stuff.
+	cfg.SetDefault("meta.run_mode", defaultRunMode)
 	cfg.SetDefault("meta.startup_deadline", defaultStartupDeadline)
 
 	// auth stuff.
@@ -134,6 +157,9 @@ func BuildConfig() *viper.Viper {
 	// metrics stuff.
 	cfg.SetDefault("metrics.database_metrics_collection_interval", defaultMetricsCollectionInterval)
 	cfg.SetDefault("metrics.runtime_metrics_collection_interval", defaultDatabaseMetricsCollectionInterval)
+
+	// database stuff.
+	cfg.SetDefault("database.create_dummy_user", false)
 
 	// server stuff.
 	cfg.SetDefault("server.http_port", 80)
@@ -153,6 +179,15 @@ func ParseConfigFile(filename string) (*ServerConfig, error) {
 	var serverConfig *ServerConfig
 	if err := cfg.Unmarshal(&serverConfig); err != nil {
 		return nil, fmt.Errorf("trying to unmarshal the config: %w", err)
+	}
+
+	if _, ok := validModes[serverConfig.Meta.RunMode]; !ok {
+		return nil, fmt.Errorf("invalid run mode: %q", serverConfig.Meta.RunMode)
+	}
+
+	if (!serverConfig.Meta.Debug && serverConfig.Database.CreateDummyUser) || serverConfig.Meta.RunMode == ProductionRunMode {
+		// only set this setting if meta.debug is also true
+		serverConfig.Database.CreateDummyUser = false
 	}
 
 	return serverConfig, nil

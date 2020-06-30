@@ -321,7 +321,7 @@ func TestPostgres_buildGetIterationMediasQuery(T *testing.T) {
 		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
 		filter := fakemodels.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT iteration_medias.id, iteration_medias.source, iteration_medias.mimetype, iteration_medias.created_on, iteration_medias.updated_on, iteration_medias.archived_on, iteration_medias.belongs_to_recipe_iteration, COUNT(iteration_medias.id) FROM iteration_medias JOIN recipe_iterations ON iteration_medias.belongs_to_recipe_iteration=recipe_iterations.id JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id WHERE iteration_medias.archived_on IS NULL AND iteration_medias.belongs_to_recipe_iteration = $1 AND recipe_iterations.belongs_to_recipe = $2 AND recipe_iterations.id = $3 AND recipes.id = $4 AND iteration_medias.created_on > $5 AND iteration_medias.created_on < $6 AND iteration_medias.updated_on > $7 AND iteration_medias.updated_on < $8 GROUP BY iteration_medias.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT iteration_medias.id, iteration_medias.source, iteration_medias.mimetype, iteration_medias.created_on, iteration_medias.updated_on, iteration_medias.archived_on, iteration_medias.belongs_to_recipe_iteration, (SELECT COUNT(iteration_medias.id) FROM iteration_medias WHERE iteration_medias.archived_on IS NULL) FROM iteration_medias JOIN recipe_iterations ON iteration_medias.belongs_to_recipe_iteration=recipe_iterations.id JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id WHERE iteration_medias.archived_on IS NULL AND iteration_medias.belongs_to_recipe_iteration = $1 AND recipe_iterations.belongs_to_recipe = $2 AND recipe_iterations.id = $3 AND recipes.id = $4 AND iteration_medias.created_on > $5 AND iteration_medias.created_on < $6 AND iteration_medias.updated_on > $7 AND iteration_medias.updated_on < $8 ORDER BY iteration_medias.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			exampleRecipeIteration.ID,
 			exampleRecipe.ID,
@@ -343,7 +343,7 @@ func TestPostgres_buildGetIterationMediasQuery(T *testing.T) {
 func TestPostgres_GetIterationMedias(T *testing.T) {
 	T.Parallel()
 
-	expectedListQuery := "SELECT iteration_medias.id, iteration_medias.source, iteration_medias.mimetype, iteration_medias.created_on, iteration_medias.updated_on, iteration_medias.archived_on, iteration_medias.belongs_to_recipe_iteration, COUNT(iteration_medias.id) FROM iteration_medias JOIN recipe_iterations ON iteration_medias.belongs_to_recipe_iteration=recipe_iterations.id JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id WHERE iteration_medias.archived_on IS NULL AND iteration_medias.belongs_to_recipe_iteration = $1 AND recipe_iterations.belongs_to_recipe = $2 AND recipe_iterations.id = $3 AND recipes.id = $4 GROUP BY iteration_medias.id LIMIT 20"
+	expectedListQuery := "SELECT iteration_medias.id, iteration_medias.source, iteration_medias.mimetype, iteration_medias.created_on, iteration_medias.updated_on, iteration_medias.archived_on, iteration_medias.belongs_to_recipe_iteration, (SELECT COUNT(iteration_medias.id) FROM iteration_medias WHERE iteration_medias.archived_on IS NULL) FROM iteration_medias JOIN recipe_iterations ON iteration_medias.belongs_to_recipe_iteration=recipe_iterations.id JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id WHERE iteration_medias.archived_on IS NULL AND iteration_medias.belongs_to_recipe_iteration = $1 AND recipe_iterations.belongs_to_recipe = $2 AND recipe_iterations.id = $3 AND recipes.id = $4 ORDER BY iteration_medias.id LIMIT 20"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
@@ -366,9 +366,9 @@ func TestPostgres_GetIterationMedias(T *testing.T) {
 			).
 			WillReturnRows(
 				buildMockRowsFromIterationMedia(
-					&exampleIterationMediaList.IterationMedias[0],
-					&exampleIterationMediaList.IterationMedias[1],
-					&exampleIterationMediaList.IterationMedias[2],
+					&exampleIterationMediaList.IterationMedia[0],
+					&exampleIterationMediaList.IterationMedia[1],
+					&exampleIterationMediaList.IterationMedia[2],
 				),
 			)
 

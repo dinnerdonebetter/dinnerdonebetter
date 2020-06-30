@@ -5,7 +5,8 @@
   enable_user_signup = true
 
 [database]
-  connection_details = "postgres://dbuser:hunter2@database:5432/todo?sslmode=disable"
+  connection_details = "postgres://dbuser:hunter2@database:5432/prixfixe?sslmode=disable"
+  create_dummy_user = false
   debug = false
   provider = "postgres"
 
@@ -14,6 +15,7 @@
 
 [meta]
   debug = false
+  run_mode = "testing"
   startup_deadline = "1m0s"
 
 [metrics]

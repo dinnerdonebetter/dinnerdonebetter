@@ -11,16 +11,16 @@ type (
 		ID                       uint64  `json:"id"`
 		Source                   string  `json:"source"`
 		Mimetype                 string  `json:"mimetype"`
-		CreatedOn                uint64  `json:"created_on"`
-		UpdatedOn                *uint64 `json:"updated_on"`
-		ArchivedOn               *uint64 `json:"archived_on"`
-		BelongsToRecipeIteration uint64  `json:"belongs_to_recipe_iteration"`
+		CreatedOn                uint64  `json:"createdOn"`
+		UpdatedOn                *uint64 `json:"updatedOn"`
+		ArchivedOn               *uint64 `json:"archivedOn"`
+		BelongsToRecipeIteration uint64  `json:"belongsToRecipeIteration"`
 	}
 
 	// IterationMediaList represents a list of iteration medias.
 	IterationMediaList struct {
 		Pagination
-		IterationMedias []IterationMedia `json:"iteration_medias"`
+		IterationMedia []IterationMedia `json:"iterationMedia"`
 	}
 
 	// IterationMediaCreationInput represents what a user could set as input for creating iteration medias.
@@ -34,7 +34,7 @@ type (
 	IterationMediaUpdateInput struct {
 		Source                   string `json:"source"`
 		Mimetype                 string `json:"mimetype"`
-		BelongsToRecipeIteration uint64 `json:"belongs_to_recipe_iteration"`
+		BelongsToRecipeIteration uint64 `json:"belongsToRecipeIteration"`
 	}
 
 	// IterationMediaDataManager describes a structure capable of storing iteration medias permanently.

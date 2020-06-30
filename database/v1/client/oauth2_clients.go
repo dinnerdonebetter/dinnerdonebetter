@@ -80,8 +80,8 @@ func (c *Client) CreateOAuth2Client(ctx context.Context, input *models.OAuth2Cli
 	defer span.End()
 
 	logger := c.logger.WithValues(map[string]interface{}{
-		"client_id":       input.ClientID,
-		"belongs_to_user": input.BelongsToUser,
+		"oauth2client_client_id": input.ClientID,
+		"belongs_to_user":        input.BelongsToUser,
 	})
 
 	client, err := c.querier.CreateOAuth2Client(ctx, input)
@@ -90,7 +90,7 @@ func (c *Client) CreateOAuth2Client(ctx context.Context, input *models.OAuth2Cli
 		return nil, err
 	}
 
-	logger.Debug("new oauth2 client created successfully")
+	logger.WithValue("client_id", client.ID).Debug("new oauth2 client created successfully")
 
 	return client, nil
 }

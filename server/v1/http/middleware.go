@@ -23,6 +23,10 @@ func formatSpanNameForRequest(req *http.Request) string {
 
 func (s *Server) loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		if req.URL.Path == "/metrics" {
+			return
+		}
+
 		ww := middleware.NewWrapResponseWriter(res, req.ProtoMajor)
 
 		start := time.Now()

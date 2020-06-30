@@ -12,8 +12,9 @@ const (
 	oneDay                           = 24 * time.Hour
 	debugCookieSecret                = "HEREISA32CHARSECRETWHICHISMADEUP"
 	defaultFrontendFilepath          = "/frontend"
-	postgresDBConnDetails            = "postgres://dbuser:hunter2@database:5432/todo?sslmode=disable"
+	postgresDBConnDetails            = "postgres://dbuser:hunter2@database:5432/prixfixe?sslmode=disable"
 	metaDebug                        = "meta.debug"
+	metaRunMode                      = "meta.run_mode"
 	metaStartupDeadline              = "meta.startup_deadline"
 	serverHTTPPort                   = "server.http_port"
 	serverDebug                      = "server.debug"
@@ -31,6 +32,7 @@ const (
 	metricsDBCollectionInterval      = "metrics.database_metrics_collection_interval"
 	metricsRuntimeCollectionInterval = "metrics.runtime_metrics_collection_interval"
 	dbDebug                          = "database.debug"
+	dbCreateDummyUser                = "database.create_dummy_user"
 	dbProvider                       = "database.provider"
 	dbDeets                          = "database.connection_details"
 	postgres                         = "postgres"
@@ -50,15 +52,16 @@ var (
 func developmentConfig(filepath string) error {
 	cfg := config.BuildConfig()
 
+	cfg.Set(metaDebug, true)
+	cfg.Set(metaRunMode, "development")
 	cfg.Set(metaStartupDeadline, time.Minute)
+
 	cfg.Set(serverHTTPPort, defaultPort)
 	cfg.Set(serverDebug, true)
 
-	cfg.Set(frontendDebug, true)
 	cfg.Set(frontendStaticFilesDir, defaultFrontendFilepath)
 	cfg.Set(frontendCacheStatics, false)
 
-	cfg.Set(authDebug, true)
 	cfg.Set(authCookieDomain, "")
 	cfg.Set(authCookieSecret, debugCookieSecret)
 	cfg.Set(authCookieLifetime, oneDay)
@@ -70,8 +73,8 @@ func developmentConfig(filepath string) error {
 	cfg.Set(metricsDBCollectionInterval, time.Second)
 	cfg.Set(metricsRuntimeCollectionInterval, time.Second)
 
-	cfg.Set(dbDebug, true)
 	cfg.Set(dbProvider, "postgres")
+	cfg.Set(dbCreateDummyUser, true)
 	cfg.Set(dbDeets, postgresDBConnDetails)
 
 	return cfg.WriteConfigAs(filepath)
@@ -79,6 +82,8 @@ func developmentConfig(filepath string) error {
 
 func coverageConfig(filepath string) error {
 	cfg := config.BuildConfig()
+
+	cfg.Set(metaRunMode, "development")
 
 	cfg.Set(serverHTTPPort, defaultPort)
 	cfg.Set(serverDebug, true)
@@ -101,6 +106,7 @@ func productionConfig(filepath string) error {
 	cfg := config.BuildConfig()
 
 	cfg.Set(metaDebug, false)
+	cfg.Set(metaRunMode, "production")
 	cfg.Set(metaStartupDeadline, time.Minute)
 
 	cfg.Set(serverHTTPPort, defaultPort)
@@ -134,6 +140,7 @@ func buildIntegrationTestForDBImplementation(dbprov, dbDetails string) configFun
 		cfg := config.BuildConfig()
 
 		cfg.Set(metaDebug, false)
+		cfg.Set(metaRunMode, "testing")
 
 		sd := time.Minute
 		cfg.Set(metaStartupDeadline, sd)

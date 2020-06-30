@@ -8,10 +8,17 @@ import (
 	"github.com/GuiaBolso/darwin"
 )
 
+var currentMigration float64 = 0
+
+func incrementMigrationVersion() float64 {
+	currentMigration++
+	return currentMigration
+}
+
 var (
 	migrations = []darwin.Migration{
 		{
-			Version:     1,
+			Version:     incrementMigrationVersion(),
 			Description: "create users table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS users (
@@ -19,8 +26,10 @@ var (
 				"username" TEXT NOT NULL,
 				"hashed_password" TEXT NOT NULL,
 				"password_last_changed_on" integer,
+				"requires_password_change" boolean NOT NULL DEFAULT 'false',
 				"two_factor_secret" TEXT NOT NULL,
 				"is_admin" boolean NOT NULL DEFAULT 'false',
+				"two_factor_secret_verified_on" BIGINT DEFAULT NULL,
 				"created_on" BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 				"updated_on" BIGINT DEFAULT NULL,
 				"archived_on" BIGINT DEFAULT NULL,
@@ -28,7 +37,20 @@ var (
 			);`,
 		},
 		{
-			Version:     2,
+			Version:     incrementMigrationVersion(),
+			Description: "create sessions table for session manager",
+			Script: `
+			CREATE TABLE sessions (
+				token TEXT PRIMARY KEY,
+				data BYTEA NOT NULL,
+				expiry TIMESTAMPTZ NOT NULL
+			);
+
+			CREATE INDEX sessions_expiry_idx ON sessions (expiry);
+			`,
+		},
+		{
+			Version:     incrementMigrationVersion(),
 			Description: "create oauth2_clients table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS oauth2_clients (
@@ -47,7 +69,7 @@ var (
 			);`,
 		},
 		{
-			Version:     3,
+			Version:     incrementMigrationVersion(),
 			Description: "create webhooks table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS webhooks (
@@ -67,7 +89,7 @@ var (
 			);`,
 		},
 		{
-			Version:     4,
+			Version:     incrementMigrationVersion(),
 			Description: "create valid instruments table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS valid_instruments (
@@ -78,11 +100,12 @@ var (
 				"icon" CHARACTER VARYING NOT NULL,
 				"created_on" BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 				"updated_on" BIGINT DEFAULT NULL,
-				"archived_on" BIGINT DEFAULT NULL
+				"archived_on" BIGINT DEFAULT NULL,
+				UNIQUE ("name", "variant")
 			);`,
 		},
 		{
-			Version:     5,
+			Version:     incrementMigrationVersion(),
 			Description: "create valid ingredients table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS valid_ingredients (
@@ -103,15 +126,16 @@ var (
 				"contains_gluten" BOOLEAN NOT NULL,
 				"animal_flesh" BOOLEAN NOT NULL,
 				"animal_derived" BOOLEAN NOT NULL,
-				"considered_staple" BOOLEAN NOT NULL,
+				"measurable_by_volume" BOOLEAN NOT NULL,
 				"icon" CHARACTER VARYING NOT NULL,
 				"created_on" BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 				"updated_on" BIGINT DEFAULT NULL,
-				"archived_on" BIGINT DEFAULT NULL
+				"archived_on" BIGINT DEFAULT NULL,
+				UNIQUE ("name", "variant")
 			);`,
 		},
 		{
-			Version:     6,
+			Version:     incrementMigrationVersion(),
 			Description: "create valid ingredient tags table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS valid_ingredient_tags (
@@ -119,25 +143,27 @@ var (
 				"name" CHARACTER VARYING NOT NULL,
 				"created_on" BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 				"updated_on" BIGINT DEFAULT NULL,
-				"archived_on" BIGINT DEFAULT NULL
+				"archived_on" BIGINT DEFAULT NULL,
+				UNIQUE ("name")
 			);`,
 		},
 		{
-			Version:     7,
+			Version:     incrementMigrationVersion(),
 			Description: "create ingredient tag mappings table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS ingredient_tag_mappings (
 				"id" BIGSERIAL NOT NULL PRIMARY KEY,
 				"valid_ingredient_tag_id" BIGINT NOT NULL,
+				"belongs_to_valid_ingredient" BIGINT NOT NULL,
 				"created_on" BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 				"updated_on" BIGINT DEFAULT NULL,
 				"archived_on" BIGINT DEFAULT NULL,
-				"belongs_to_valid_ingredient" BIGINT NOT NULL,
+				UNIQUE ("valid_ingredient_tag_id", "belongs_to_valid_ingredient"),
 				FOREIGN KEY ("belongs_to_valid_ingredient") REFERENCES "valid_ingredients"("id")
 			);`,
 		},
 		{
-			Version:     8,
+			Version:     incrementMigrationVersion(),
 			Description: "create valid preparations table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS valid_preparations (
@@ -145,13 +171,14 @@ var (
 				"name" CHARACTER VARYING NOT NULL,
 				"description" CHARACTER VARYING NOT NULL,
 				"icon" CHARACTER VARYING NOT NULL,
+				"applicable_to_all_ingredients" BOOLEAN NOT NULL DEFAULT 'false',
 				"created_on" BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 				"updated_on" BIGINT DEFAULT NULL,
 				"archived_on" BIGINT DEFAULT NULL
 			);`,
 		},
 		{
-			Version:     9,
+			Version:     incrementMigrationVersion(),
 			Description: "create required preparation instruments table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS required_preparation_instruments (
@@ -162,11 +189,12 @@ var (
 				"updated_on" BIGINT DEFAULT NULL,
 				"archived_on" BIGINT DEFAULT NULL,
 				"belongs_to_valid_preparation" BIGINT NOT NULL,
+				UNIQUE ("valid_instrument_id", "belongs_to_valid_preparation"),
 				FOREIGN KEY ("belongs_to_valid_preparation") REFERENCES "valid_preparations"("id")
 			);`,
 		},
 		{
-			Version:     10,
+			Version:     incrementMigrationVersion(),
 			Description: "create valid ingredient preparations table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS valid_ingredient_preparations (
@@ -180,7 +208,7 @@ var (
 			);`,
 		},
 		{
-			Version:     11,
+			Version:     incrementMigrationVersion(),
 			Description: "create recipes table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS recipes (
@@ -198,7 +226,7 @@ var (
 			);`,
 		},
 		{
-			Version:     12,
+			Version:     incrementMigrationVersion(),
 			Description: "create recipe tags table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS recipe_tags (
@@ -212,7 +240,7 @@ var (
 			);`,
 		},
 		{
-			Version:     13,
+			Version:     incrementMigrationVersion(),
 			Description: "create recipe steps table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS recipe_steps (
@@ -233,7 +261,7 @@ var (
 			);`,
 		},
 		{
-			Version:     14,
+			Version:     incrementMigrationVersion(),
 			Description: "create recipe step preparations table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS recipe_step_preparations (
@@ -248,7 +276,7 @@ var (
 			);`,
 		},
 		{
-			Version:     15,
+			Version:     incrementMigrationVersion(),
 			Description: "create recipe step ingredients table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS recipe_step_ingredients (
@@ -267,7 +295,7 @@ var (
 			);`,
 		},
 		{
-			Version:     16,
+			Version:     incrementMigrationVersion(),
 			Description: "create recipe iterations table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS recipe_iterations (
@@ -284,7 +312,7 @@ var (
 			);`,
 		},
 		{
-			Version:     17,
+			Version:     incrementMigrationVersion(),
 			Description: "create recipe iteration steps table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS recipe_iteration_steps (
@@ -300,7 +328,7 @@ var (
 			);`,
 		},
 		{
-			Version:     18,
+			Version:     incrementMigrationVersion(),
 			Description: "create iteration medias table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS iteration_medias (
@@ -315,7 +343,7 @@ var (
 			);`,
 		},
 		{
-			Version:     19,
+			Version:     incrementMigrationVersion(),
 			Description: "create invitations table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS invitations (
@@ -330,7 +358,7 @@ var (
 			);`,
 		},
 		{
-			Version:     20,
+			Version:     incrementMigrationVersion(),
 			Description: "create reports table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS reports (
@@ -349,10 +377,10 @@ var (
 
 // buildMigrationFunc returns a sync.Once compatible function closure that will
 // migrate a postgres database.
-func buildMigrationFunc(db *sql.DB) func() {
+func buildMigrationFunc(db *sql.DB, infoChan chan darwin.MigrationInfo) func() {
 	return func() {
 		driver := darwin.NewGenericDriver(db, darwin.PostgresDialect{})
-		if err := darwin.New(driver, migrations, nil).Migrate(); err != nil {
+		if err := darwin.New(driver, migrations, infoChan).Migrate(); err != nil {
 			panic(err)
 		}
 	}
@@ -360,13 +388,55 @@ func buildMigrationFunc(db *sql.DB) func() {
 
 // Migrate migrates the database. It does so by invoking the migrateOnce function via sync.Once, so it should be
 // safe (as in idempotent, though not necessarily recommended) to call this function multiple times.
-func (p *Postgres) Migrate(ctx context.Context) error {
-	p.logger.Info("migrating db")
+func (p *Postgres) Migrate(ctx context.Context, createDevUser bool) error {
+	p.logger.WithValue("creating_dummy_user", createDevUser).Info("migrating db")
+
+	if createDevUser {
+		// this is gross as fuck and you should find a way to get rid of it.
+		migrations = append(migrations, darwin.Migration{
+			Version:     incrementMigrationVersion(),
+			Description: "create example dev user",
+			Script: `
+			INSERT INTO users (
+				"username",
+				"hashed_password",
+				"two_factor_secret",
+				"password_last_changed_on",
+				"is_admin",
+				"two_factor_secret_verified_on",
+				"created_on",
+				"updated_on",
+				"archived_on"
+			) 
+				VALUES 
+			(
+				'username', -- username
+				-- '$2a$13$UGQH6IAfUtPH2rCfBF6CJumwcr9Gnb3s.J3vOb/bmWPlx2pJ8.zOe', -- hashed_password
+				'$2a$10$JzD3CNBqPmwq.IidQuO7eu3zKdu8vEIi3HkLk8/qRjrzb7eNLKlKG', -- hashed_password
+				'TS2ZIIDTN6PBS3A6NTMU637VDHAFZR4BQTPDOBJDFY4JCY2A6OY4TQWJ3WN3VXZB45DDAUD4VJTX2JGHFPVJJDQYP6G3YYUQ2W6RYBA=', -- two_factor_secret
+				NULL, -- password_last_changed_on
+				'true', -- is_admin
+				extract(epoch FROM NOW()), -- two_factor_secret_verified_on
+				extract(epoch FROM NOW()), -- "created_on"
+				NULL, -- updated_on
+				NULL -- archived_on
+			);`,
+		},
+		)
+	}
+
 	if !p.IsReady(ctx) {
 		return errors.New("db is not ready yet")
 	}
 
-	p.migrateOnce.Do(buildMigrationFunc(p.db))
+	p.migrateOnce.Do(buildMigrationFunc(p.db, nil))
+
+	defer func() {
+		if r := recover(); r != nil {
+			p.logger.WithValue("recover", r).Info("recovered")
+			p.logger.Fatal(errors.New("blah"))
+		}
+	}()
 
 	return nil
 }

@@ -173,12 +173,12 @@ func (p *Postgres) buildGetValidIngredientTagsQuery(filter *models.QueryFilter) 
 	var err error
 
 	builder := p.sqlBuilder.
-		Select(append(validIngredientTagsTableColumns, fmt.Sprintf(countQuery, validIngredientTagsTableName))...).
+		Select(append(validIngredientTagsTableColumns, fmt.Sprintf("(%s)", p.buildGetAllValidIngredientTagsCountQuery()))...).
 		From(validIngredientTagsTableName).
 		Where(squirrel.Eq{
 			fmt.Sprintf("%s.archived_on", validIngredientTagsTableName): nil,
 		}).
-		GroupBy(fmt.Sprintf("%s.id", validIngredientTagsTableName))
+		OrderBy(fmt.Sprintf("%s.id", validIngredientTagsTableName))
 
 	if filter != nil {
 		builder = filter.ApplyToQueryBuilder(builder, validIngredientTagsTableName)

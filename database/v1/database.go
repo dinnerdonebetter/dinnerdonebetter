@@ -40,7 +40,7 @@ type (
 
 	// Database describes anything that stores data for our services.
 	Database interface {
-		Migrate(ctx context.Context) error
+		Migrate(ctx context.Context, createDummyUser bool) error
 		IsReady(ctx context.Context) (ready bool)
 
 		models.ValidInstrumentDataManager

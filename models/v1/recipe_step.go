@@ -10,34 +10,34 @@ type (
 	RecipeStep struct {
 		ID                        uint64  `json:"id"`
 		Index                     uint    `json:"index"`
-		ValidPreparationID        uint64  `json:"valid_preparation_id"`
-		PrerequisiteStepID        *uint64 `json:"prerequisite_step_id"`
-		MinEstimatedTimeInSeconds uint32  `json:"min_estimated_time_in_seconds"`
-		MaxEstimatedTimeInSeconds uint32  `json:"max_estimated_time_in_seconds"`
-		YieldsProductName         string  `json:"yields_product_name"`
-		YieldsQuantity            uint    `json:"yields_quantity"`
+		ValidPreparationID        uint64  `json:"validPreparationID"`
+		PrerequisiteStepID        *uint64 `json:"prerequisiteStepID"`
+		MinEstimatedTimeInSeconds uint32  `json:"minEstimatedTimeInSeconds"`
+		MaxEstimatedTimeInSeconds uint32  `json:"maxEstimatedTimeInSeconds"`
+		YieldsProductName         string  `json:"yieldsProductName"`
+		YieldsQuantity            uint    `json:"yieldsQuantity"`
 		Notes                     string  `json:"notes"`
-		CreatedOn                 uint64  `json:"created_on"`
-		UpdatedOn                 *uint64 `json:"updated_on"`
-		ArchivedOn                *uint64 `json:"archived_on"`
-		BelongsToRecipe           uint64  `json:"belongs_to_recipe"`
+		CreatedOn                 uint64  `json:"createdOn"`
+		UpdatedOn                 *uint64 `json:"updatedOn"`
+		ArchivedOn                *uint64 `json:"archivedOn"`
+		BelongsToRecipe           uint64  `json:"belongsToRecipe"`
 	}
 
 	// RecipeStepList represents a list of recipe steps.
 	RecipeStepList struct {
 		Pagination
-		RecipeSteps []RecipeStep `json:"recipe_steps"`
+		RecipeSteps []RecipeStep `json:"recipeSteps"`
 	}
 
 	// RecipeStepCreationInput represents what a user could set as input for creating recipe steps.
 	RecipeStepCreationInput struct {
 		Index                     uint    `json:"index"`
-		ValidPreparationID        uint64  `json:"valid_preparation_id"`
-		PrerequisiteStepID        *uint64 `json:"prerequisite_step_id"`
-		MinEstimatedTimeInSeconds uint32  `json:"min_estimated_time_in_seconds"`
-		MaxEstimatedTimeInSeconds uint32  `json:"max_estimated_time_in_seconds"`
-		YieldsProductName         string  `json:"yields_product_name"`
-		YieldsQuantity            uint    `json:"yields_quantity"`
+		ValidPreparationID        uint64  `json:"validPreparationID"`
+		PrerequisiteStepID        *uint64 `json:"prerequisiteStepID"`
+		MinEstimatedTimeInSeconds uint32  `json:"minEstimatedTimeInSeconds"`
+		MaxEstimatedTimeInSeconds uint32  `json:"maxEstimatedTimeInSeconds"`
+		YieldsProductName         string  `json:"yieldsProductName"`
+		YieldsQuantity            uint    `json:"yieldsQuantity"`
 		Notes                     string  `json:"notes"`
 		BelongsToRecipe           uint64  `json:"-"`
 	}
@@ -45,14 +45,14 @@ type (
 	// RecipeStepUpdateInput represents what a user could set as input for updating recipe steps.
 	RecipeStepUpdateInput struct {
 		Index                     uint    `json:"index"`
-		ValidPreparationID        uint64  `json:"valid_preparation_id"`
-		PrerequisiteStepID        *uint64 `json:"prerequisite_step_id"`
-		MinEstimatedTimeInSeconds uint32  `json:"min_estimated_time_in_seconds"`
-		MaxEstimatedTimeInSeconds uint32  `json:"max_estimated_time_in_seconds"`
-		YieldsProductName         string  `json:"yields_product_name"`
-		YieldsQuantity            uint    `json:"yields_quantity"`
+		ValidPreparationID        uint64  `json:"validPreparationID"`
+		PrerequisiteStepID        *uint64 `json:"prerequisiteStepID"`
+		MinEstimatedTimeInSeconds uint32  `json:"minEstimatedTimeInSeconds"`
+		MaxEstimatedTimeInSeconds uint32  `json:"maxEstimatedTimeInSeconds"`
+		YieldsProductName         string  `json:"yieldsProductName"`
+		YieldsQuantity            uint    `json:"yieldsQuantity"`
 		Notes                     string  `json:"notes"`
-		BelongsToRecipe           uint64  `json:"belongs_to_recipe"`
+		BelongsToRecipe           uint64  `json:"belongsToRecipe"`
 	}
 
 	// RecipeStepDataManager describes a structure capable of storing recipe steps permanently.

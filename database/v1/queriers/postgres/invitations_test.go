@@ -270,7 +270,7 @@ func TestPostgres_buildGetInvitationsQuery(T *testing.T) {
 
 		filter := fakemodels.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT invitations.id, invitations.code, invitations.consumed, invitations.created_on, invitations.updated_on, invitations.archived_on, invitations.belongs_to_user, COUNT(invitations.id) FROM invitations WHERE invitations.archived_on IS NULL AND invitations.created_on > $1 AND invitations.created_on < $2 AND invitations.updated_on > $3 AND invitations.updated_on < $4 GROUP BY invitations.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT invitations.id, invitations.code, invitations.consumed, invitations.created_on, invitations.updated_on, invitations.archived_on, invitations.belongs_to_user, (SELECT COUNT(invitations.id) FROM invitations WHERE invitations.archived_on IS NULL) FROM invitations WHERE invitations.archived_on IS NULL AND invitations.created_on > $1 AND invitations.created_on < $2 AND invitations.updated_on > $3 AND invitations.updated_on < $4 ORDER BY invitations.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			filter.CreatedAfter,
 			filter.CreatedBefore,
@@ -288,7 +288,7 @@ func TestPostgres_buildGetInvitationsQuery(T *testing.T) {
 func TestPostgres_GetInvitations(T *testing.T) {
 	T.Parallel()
 
-	expectedListQuery := "SELECT invitations.id, invitations.code, invitations.consumed, invitations.created_on, invitations.updated_on, invitations.archived_on, invitations.belongs_to_user, COUNT(invitations.id) FROM invitations WHERE invitations.archived_on IS NULL GROUP BY invitations.id LIMIT 20"
+	expectedListQuery := "SELECT invitations.id, invitations.code, invitations.consumed, invitations.created_on, invitations.updated_on, invitations.archived_on, invitations.belongs_to_user, (SELECT COUNT(invitations.id) FROM invitations WHERE invitations.archived_on IS NULL) FROM invitations WHERE invitations.archived_on IS NULL ORDER BY invitations.id LIMIT 20"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()

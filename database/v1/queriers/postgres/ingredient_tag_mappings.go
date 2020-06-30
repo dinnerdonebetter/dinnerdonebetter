@@ -182,7 +182,7 @@ func (p *Postgres) buildGetIngredientTagMappingsQuery(validIngredientID uint64, 
 	var err error
 
 	builder := p.sqlBuilder.
-		Select(append(ingredientTagMappingsTableColumns, fmt.Sprintf(countQuery, ingredientTagMappingsTableName))...).
+		Select(append(ingredientTagMappingsTableColumns, fmt.Sprintf("(%s)", p.buildGetAllIngredientTagMappingsCountQuery()))...).
 		From(ingredientTagMappingsTableName).
 		Join(validIngredientsOnIngredientTagMappingsJoinClause).
 		Where(squirrel.Eq{
@@ -190,7 +190,7 @@ func (p *Postgres) buildGetIngredientTagMappingsQuery(validIngredientID uint64, 
 			fmt.Sprintf("%s.id", validIngredientsTableName):                                                 validIngredientID,
 			fmt.Sprintf("%s.%s", ingredientTagMappingsTableName, ingredientTagMappingsTableOwnershipColumn): validIngredientID,
 		}).
-		GroupBy(fmt.Sprintf("%s.id", ingredientTagMappingsTableName))
+		OrderBy(fmt.Sprintf("%s.id", ingredientTagMappingsTableName))
 
 	if filter != nil {
 		builder = filter.ApplyToQueryBuilder(builder, ingredientTagMappingsTableName)

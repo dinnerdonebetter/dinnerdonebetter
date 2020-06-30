@@ -27,7 +27,7 @@ USER appuser
 
 COPY config_files config_files
 COPY --from=build-stage /prixfixe /prixfixe
-COPY --from=frontend-build-stage /app/public /frontend
+COPY --from=frontend-build-stage /app/dist /frontend
 
 ENV DOCKER=true
 

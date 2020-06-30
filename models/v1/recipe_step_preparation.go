@@ -9,32 +9,32 @@ type (
 	// RecipeStepPreparation represents a recipe step preparation.
 	RecipeStepPreparation struct {
 		ID                  uint64  `json:"id"`
-		ValidPreparationID  uint64  `json:"valid_preparation_id"`
+		ValidPreparationID  uint64  `json:"validPreparationID"`
 		Notes               string  `json:"notes"`
-		CreatedOn           uint64  `json:"created_on"`
-		UpdatedOn           *uint64 `json:"updated_on"`
-		ArchivedOn          *uint64 `json:"archived_on"`
-		BelongsToRecipeStep uint64  `json:"belongs_to_recipe_step"`
+		CreatedOn           uint64  `json:"createdOn"`
+		UpdatedOn           *uint64 `json:"updatedOn"`
+		ArchivedOn          *uint64 `json:"archivedOn"`
+		BelongsToRecipeStep uint64  `json:"belongsToRecipeStep"`
 	}
 
 	// RecipeStepPreparationList represents a list of recipe step preparations.
 	RecipeStepPreparationList struct {
 		Pagination
-		RecipeStepPreparations []RecipeStepPreparation `json:"recipe_step_preparations"`
+		RecipeStepPreparations []RecipeStepPreparation `json:"recipeStepPreparations"`
 	}
 
 	// RecipeStepPreparationCreationInput represents what a user could set as input for creating recipe step preparations.
 	RecipeStepPreparationCreationInput struct {
-		ValidPreparationID  uint64 `json:"valid_preparation_id"`
+		ValidPreparationID  uint64 `json:"validPreparationID"`
 		Notes               string `json:"notes"`
 		BelongsToRecipeStep uint64 `json:"-"`
 	}
 
 	// RecipeStepPreparationUpdateInput represents what a user could set as input for updating recipe step preparations.
 	RecipeStepPreparationUpdateInput struct {
-		ValidPreparationID  uint64 `json:"valid_preparation_id"`
+		ValidPreparationID  uint64 `json:"validPreparationID"`
 		Notes               string `json:"notes"`
-		BelongsToRecipeStep uint64 `json:"belongs_to_recipe_step"`
+		BelongsToRecipeStep uint64 `json:"belongsToRecipeStep"`
 	}
 
 	// RecipeStepPreparationDataManager describes a structure capable of storing recipe step preparations permanently.

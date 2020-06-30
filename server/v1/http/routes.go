@@ -106,7 +106,7 @@ func (s *Server) setupRouter(frontendConfig config.FrontendSettings, metricsHand
 	router.With(
 		s.authService.AuthenticationMiddleware(true),
 		s.authService.AdminMiddleware,
-	).Route("/admin", func(adminRouter chi.Router) {
+	).Route("/server_admin", func(adminRouter chi.Router) {
 		adminRouter.Post("/cycle_cookie_secret", s.authService.CycleSecretHandler())
 	})
 
@@ -117,6 +117,7 @@ func (s *Server) setupRouter(frontendConfig config.FrontendSettings, metricsHand
 		userIDPattern := fmt.Sprintf(oauth2IDPattern, usersservice.URIParamKey)
 
 		userRouter.Get(root, s.usersService.ListHandler())
+		userRouter.With(s.authService.CookieAuthenticationMiddleware).Get("/status", s.authService.StatusHandler())
 		userRouter.With(s.usersService.UserInputMiddleware).Post(root, s.usersService.CreateHandler())
 		userRouter.Get(userIDPattern, s.usersService.ReadHandler())
 		userRouter.Delete(userIDPattern, s.usersService.ArchiveHandler())
@@ -125,6 +126,10 @@ func (s *Server) setupRouter(frontendConfig config.FrontendSettings, metricsHand
 			s.authService.CookieAuthenticationMiddleware,
 			s.usersService.TOTPSecretRefreshInputMiddleware,
 		).Post("/totp_secret/new", s.usersService.NewTOTPSecretHandler())
+
+		userRouter.With(
+			s.usersService.TOTPSecretVerificationInputMiddleware,
+		).Post("/totp_secret/verify", s.usersService.TOTPSecretVerificationHandler())
 
 		userRouter.With(
 			s.authService.CookieAuthenticationMiddleware,
@@ -159,11 +164,17 @@ func (s *Server) setupRouter(frontendConfig config.FrontendSettings, metricsHand
 		validInstrumentRouteParam := fmt.Sprintf(numericIDPattern, validinstrumentsservice.URIParamKey)
 		validInstrumentsRouteWithPrefix := fmt.Sprintf("/%s", validInstrumentPath)
 		v1Router.Route(validInstrumentsRouteWithPrefix, func(validInstrumentsRouter chi.Router) {
-			validInstrumentsRouter.With(s.validInstrumentsService.CreationInputMiddleware).Post(root, s.validInstrumentsService.CreateHandler())
+			validInstrumentsRouter.With(
+				s.validInstrumentsService.CreationInputMiddleware,
+				s.authService.AdminMiddleware,
+			).Post(root, s.validInstrumentsService.CreateHandler())
 			validInstrumentsRouter.Get(validInstrumentRouteParam, s.validInstrumentsService.ReadHandler())
 			validInstrumentsRouter.Head(validInstrumentRouteParam, s.validInstrumentsService.ExistenceHandler())
-			validInstrumentsRouter.With(s.validInstrumentsService.UpdateInputMiddleware).Put(validInstrumentRouteParam, s.validInstrumentsService.UpdateHandler())
-			validInstrumentsRouter.Delete(validInstrumentRouteParam, s.validInstrumentsService.ArchiveHandler())
+			validInstrumentsRouter.With(
+				s.validInstrumentsService.UpdateInputMiddleware,
+				s.authService.AdminMiddleware,
+			).Put(validInstrumentRouteParam, s.validInstrumentsService.UpdateHandler())
+			validInstrumentsRouter.With(s.authService.AdminMiddleware).Delete(validInstrumentRouteParam, s.validInstrumentsService.ArchiveHandler())
 			validInstrumentsRouter.Get(root, s.validInstrumentsService.ListHandler())
 		})
 
@@ -172,11 +183,17 @@ func (s *Server) setupRouter(frontendConfig config.FrontendSettings, metricsHand
 		validIngredientRouteParam := fmt.Sprintf(numericIDPattern, validingredientsservice.URIParamKey)
 		validIngredientsRouteWithPrefix := fmt.Sprintf("/%s", validIngredientPath)
 		v1Router.Route(validIngredientsRouteWithPrefix, func(validIngredientsRouter chi.Router) {
-			validIngredientsRouter.With(s.validIngredientsService.CreationInputMiddleware).Post(root, s.validIngredientsService.CreateHandler())
+			validIngredientsRouter.With(
+				s.validIngredientsService.CreationInputMiddleware,
+				s.authService.AdminMiddleware,
+			).Post(root, s.validIngredientsService.CreateHandler())
 			validIngredientsRouter.Get(validIngredientRouteParam, s.validIngredientsService.ReadHandler())
 			validIngredientsRouter.Head(validIngredientRouteParam, s.validIngredientsService.ExistenceHandler())
-			validIngredientsRouter.With(s.validIngredientsService.UpdateInputMiddleware).Put(validIngredientRouteParam, s.validIngredientsService.UpdateHandler())
-			validIngredientsRouter.Delete(validIngredientRouteParam, s.validIngredientsService.ArchiveHandler())
+			validIngredientsRouter.With(
+				s.validIngredientsService.UpdateInputMiddleware,
+				s.authService.AdminMiddleware,
+			).Put(validIngredientRouteParam, s.validIngredientsService.UpdateHandler())
+			validIngredientsRouter.With(s.authService.AdminMiddleware).Delete(validIngredientRouteParam, s.validIngredientsService.ArchiveHandler())
 			validIngredientsRouter.Get(root, s.validIngredientsService.ListHandler())
 		})
 
@@ -185,12 +202,61 @@ func (s *Server) setupRouter(frontendConfig config.FrontendSettings, metricsHand
 		validIngredientTagRouteParam := fmt.Sprintf(numericIDPattern, validingredienttagsservice.URIParamKey)
 		validIngredientTagsRouteWithPrefix := fmt.Sprintf("/%s", validIngredientTagPath)
 		v1Router.Route(validIngredientTagsRouteWithPrefix, func(validIngredientTagsRouter chi.Router) {
-			validIngredientTagsRouter.With(s.validIngredientTagsService.CreationInputMiddleware).Post(root, s.validIngredientTagsService.CreateHandler())
+			validIngredientTagsRouter.With(
+				s.validIngredientTagsService.CreationInputMiddleware,
+				s.authService.AdminMiddleware,
+			).Post(root, s.validIngredientTagsService.CreateHandler())
 			validIngredientTagsRouter.Get(validIngredientTagRouteParam, s.validIngredientTagsService.ReadHandler())
 			validIngredientTagsRouter.Head(validIngredientTagRouteParam, s.validIngredientTagsService.ExistenceHandler())
-			validIngredientTagsRouter.With(s.validIngredientTagsService.UpdateInputMiddleware).Put(validIngredientTagRouteParam, s.validIngredientTagsService.UpdateHandler())
-			validIngredientTagsRouter.Delete(validIngredientTagRouteParam, s.validIngredientTagsService.ArchiveHandler())
+			validIngredientTagsRouter.With(
+				s.validIngredientTagsService.UpdateInputMiddleware,
+				s.authService.AdminMiddleware,
+			).Put(validIngredientTagRouteParam, s.validIngredientTagsService.UpdateHandler())
+			validIngredientTagsRouter.With(s.authService.AdminMiddleware).Delete(validIngredientTagRouteParam, s.validIngredientTagsService.ArchiveHandler())
 			validIngredientTagsRouter.Get(root, s.validIngredientTagsService.ListHandler())
+		})
+
+		// ValidPreparations
+		validPreparationPath := "valid_preparations"
+		validPreparationRouteParam := fmt.Sprintf(numericIDPattern, validpreparationsservice.URIParamKey)
+		validPreparationsRouteWithPrefix := fmt.Sprintf("/%s", validPreparationPath)
+		v1Router.Route(validPreparationsRouteWithPrefix, func(validPreparationsRouter chi.Router) {
+			validPreparationsRouter.With(
+				s.validPreparationsService.CreationInputMiddleware,
+				s.authService.AdminMiddleware,
+			).Post(root, s.validPreparationsService.CreateHandler())
+			validPreparationsRouter.Get(validPreparationRouteParam, s.validPreparationsService.ReadHandler())
+			validPreparationsRouter.Head(validPreparationRouteParam, s.validPreparationsService.ExistenceHandler())
+			validPreparationsRouter.With(
+				s.validPreparationsService.UpdateInputMiddleware,
+				s.authService.AdminMiddleware,
+			).Put(validPreparationRouteParam, s.validPreparationsService.UpdateHandler())
+			validPreparationsRouter.With(s.authService.AdminMiddleware).Delete(validPreparationRouteParam, s.validPreparationsService.ArchiveHandler())
+			validPreparationsRouter.Get(root, s.validPreparationsService.ListHandler())
+		})
+
+		// ValidIngredientPreparations
+		validIngredientPreparationPath := "valid_ingredient_preparations"
+		validIngredientPreparationRouteParam := fmt.Sprintf(numericIDPattern, validingredientpreparationsservice.URIParamKey)
+		validIngredientPreparationsRoute := filepath.Join(
+			validIngredientPath,
+			validIngredientRouteParam,
+			validIngredientPreparationPath,
+		)
+		validIngredientPreparationsRouteWithPrefix := fmt.Sprintf("/%s", validIngredientPreparationsRoute)
+		v1Router.Route(validIngredientPreparationsRouteWithPrefix, func(validIngredientPreparationsRouter chi.Router) {
+			validIngredientPreparationsRouter.With(
+				s.validIngredientPreparationsService.CreationInputMiddleware,
+				s.authService.AdminMiddleware,
+			).Post(root, s.validIngredientPreparationsService.CreateHandler())
+			validIngredientPreparationsRouter.Get(validIngredientPreparationRouteParam, s.validIngredientPreparationsService.ReadHandler())
+			validIngredientPreparationsRouter.Head(validIngredientPreparationRouteParam, s.validIngredientPreparationsService.ExistenceHandler())
+			validIngredientPreparationsRouter.With(
+				s.validIngredientPreparationsService.UpdateInputMiddleware,
+				s.authService.AdminMiddleware,
+			).Put(validIngredientPreparationRouteParam, s.validIngredientPreparationsService.UpdateHandler())
+			validIngredientPreparationsRouter.With(s.authService.AdminMiddleware).Delete(validIngredientPreparationRouteParam, s.validIngredientPreparationsService.ArchiveHandler())
+			validIngredientPreparationsRouter.Get(root, s.validIngredientPreparationsService.ListHandler())
 		})
 
 		// IngredientTagMappings
@@ -211,19 +277,6 @@ func (s *Server) setupRouter(frontendConfig config.FrontendSettings, metricsHand
 			ingredientTagMappingsRouter.Get(root, s.ingredientTagMappingsService.ListHandler())
 		})
 
-		// ValidPreparations
-		validPreparationPath := "valid_preparations"
-		validPreparationRouteParam := fmt.Sprintf(numericIDPattern, validpreparationsservice.URIParamKey)
-		validPreparationsRouteWithPrefix := fmt.Sprintf("/%s", validPreparationPath)
-		v1Router.Route(validPreparationsRouteWithPrefix, func(validPreparationsRouter chi.Router) {
-			validPreparationsRouter.With(s.validPreparationsService.CreationInputMiddleware).Post(root, s.validPreparationsService.CreateHandler())
-			validPreparationsRouter.Get(validPreparationRouteParam, s.validPreparationsService.ReadHandler())
-			validPreparationsRouter.Head(validPreparationRouteParam, s.validPreparationsService.ExistenceHandler())
-			validPreparationsRouter.With(s.validPreparationsService.UpdateInputMiddleware).Put(validPreparationRouteParam, s.validPreparationsService.UpdateHandler())
-			validPreparationsRouter.Delete(validPreparationRouteParam, s.validPreparationsService.ArchiveHandler())
-			validPreparationsRouter.Get(root, s.validPreparationsService.ListHandler())
-		})
-
 		// RequiredPreparationInstruments
 		requiredPreparationInstrumentPath := "required_preparation_instruments"
 		requiredPreparationInstrumentRouteParam := fmt.Sprintf(numericIDPattern, requiredpreparationinstrumentsservice.URIParamKey)
@@ -240,24 +293,6 @@ func (s *Server) setupRouter(frontendConfig config.FrontendSettings, metricsHand
 			requiredPreparationInstrumentsRouter.With(s.requiredPreparationInstrumentsService.UpdateInputMiddleware).Put(requiredPreparationInstrumentRouteParam, s.requiredPreparationInstrumentsService.UpdateHandler())
 			requiredPreparationInstrumentsRouter.Delete(requiredPreparationInstrumentRouteParam, s.requiredPreparationInstrumentsService.ArchiveHandler())
 			requiredPreparationInstrumentsRouter.Get(root, s.requiredPreparationInstrumentsService.ListHandler())
-		})
-
-		// ValidIngredientPreparations
-		validIngredientPreparationPath := "valid_ingredient_preparations"
-		validIngredientPreparationRouteParam := fmt.Sprintf(numericIDPattern, validingredientpreparationsservice.URIParamKey)
-		validIngredientPreparationsRoute := filepath.Join(
-			validIngredientPath,
-			validIngredientRouteParam,
-			validIngredientPreparationPath,
-		)
-		validIngredientPreparationsRouteWithPrefix := fmt.Sprintf("/%s", validIngredientPreparationsRoute)
-		v1Router.Route(validIngredientPreparationsRouteWithPrefix, func(validIngredientPreparationsRouter chi.Router) {
-			validIngredientPreparationsRouter.With(s.validIngredientPreparationsService.CreationInputMiddleware).Post(root, s.validIngredientPreparationsService.CreateHandler())
-			validIngredientPreparationsRouter.Get(validIngredientPreparationRouteParam, s.validIngredientPreparationsService.ReadHandler())
-			validIngredientPreparationsRouter.Head(validIngredientPreparationRouteParam, s.validIngredientPreparationsService.ExistenceHandler())
-			validIngredientPreparationsRouter.With(s.validIngredientPreparationsService.UpdateInputMiddleware).Put(validIngredientPreparationRouteParam, s.validIngredientPreparationsService.UpdateHandler())
-			validIngredientPreparationsRouter.Delete(validIngredientPreparationRouteParam, s.validIngredientPreparationsService.ArchiveHandler())
-			validIngredientPreparationsRouter.Get(root, s.validIngredientPreparationsService.ListHandler())
 		})
 
 		// Recipes
@@ -385,7 +420,7 @@ func (s *Server) setupRouter(frontendConfig config.FrontendSettings, metricsHand
 			recipeIterationStepsRouter.Get(root, s.recipeIterationStepsService.ListHandler())
 		})
 
-		// IterationMedias
+		// IterationMedia
 		iterationMediaPath := "iteration_medias"
 		iterationMediaRouteParam := fmt.Sprintf(numericIDPattern, iterationmediasservice.URIParamKey)
 		iterationMediasRoute := filepath.Join(

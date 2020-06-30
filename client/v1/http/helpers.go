@@ -88,3 +88,13 @@ func createBodyFromStruct(in interface{}) (io.Reader, error) {
 	}
 	return bytes.NewReader(out), nil
 }
+
+// createBodyFromStruct takes any value in and returns an io.Reader
+// for placement within http.NewRequest's last argument.
+func (c *V1Client) mustCreateBodyFromStruct(in interface{}) io.Reader {
+	out, err := createBodyFromStruct(in)
+	if err != nil {
+		c.panicker.Panic("error building struct: %v", err)
+	}
+	return out
+}

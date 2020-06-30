@@ -12,12 +12,12 @@ type (
 		Name               string  `json:"name"`
 		Source             string  `json:"source"`
 		Description        string  `json:"description"`
-		InspiredByRecipeID *uint64 `json:"inspired_by_recipe_id"`
+		InspiredByRecipeID *uint64 `json:"inspiredByRecipeID"`
 		Private            bool    `json:"private"`
-		CreatedOn          uint64  `json:"created_on"`
-		UpdatedOn          *uint64 `json:"updated_on"`
-		ArchivedOn         *uint64 `json:"archived_on"`
-		BelongsToUser      uint64  `json:"belongs_to_user"`
+		CreatedOn          uint64  `json:"createdOn"`
+		UpdatedOn          *uint64 `json:"updatedOn"`
+		ArchivedOn         *uint64 `json:"archivedOn"`
+		BelongsToUser      uint64  `json:"belongsToUser"`
 	}
 
 	// RecipeList represents a list of recipes.
@@ -31,7 +31,7 @@ type (
 		Name               string  `json:"name"`
 		Source             string  `json:"source"`
 		Description        string  `json:"description"`
-		InspiredByRecipeID *uint64 `json:"inspired_by_recipe_id"`
+		InspiredByRecipeID *uint64 `json:"inspiredByRecipeID"`
 		Private            bool    `json:"private"`
 		BelongsToUser      uint64  `json:"-"`
 	}
@@ -41,7 +41,7 @@ type (
 		Name               string  `json:"name"`
 		Source             string  `json:"source"`
 		Description        string  `json:"description"`
-		InspiredByRecipeID *uint64 `json:"inspired_by_recipe_id"`
+		InspiredByRecipeID *uint64 `json:"inspiredByRecipeID"`
 		Private            bool    `json:"private"`
 		BelongsToUser      uint64  `json:"-"`
 	}

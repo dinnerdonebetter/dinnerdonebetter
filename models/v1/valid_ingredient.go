@@ -8,78 +8,79 @@ import (
 type (
 	// ValidIngredient represents a valid ingredient.
 	ValidIngredient struct {
-		ID                uint64  `json:"id"`
-		Name              string  `json:"name"`
-		Variant           string  `json:"variant"`
-		Description       string  `json:"description"`
-		Warning           string  `json:"warning"`
-		ContainsEgg       bool    `json:"contains_egg"`
-		ContainsDairy     bool    `json:"contains_dairy"`
-		ContainsPeanut    bool    `json:"contains_peanut"`
-		ContainsTreeNut   bool    `json:"contains_tree_nut"`
-		ContainsSoy       bool    `json:"contains_soy"`
-		ContainsWheat     bool    `json:"contains_wheat"`
-		ContainsShellfish bool    `json:"contains_shellfish"`
-		ContainsSesame    bool    `json:"contains_sesame"`
-		ContainsFish      bool    `json:"contains_fish"`
-		ContainsGluten    bool    `json:"contains_gluten"`
-		AnimalFlesh       bool    `json:"animal_flesh"`
-		AnimalDerived     bool    `json:"animal_derived"`
-		ConsideredStaple  bool    `json:"considered_staple"`
-		Icon              string  `json:"icon"`
-		CreatedOn         uint64  `json:"created_on"`
-		UpdatedOn         *uint64 `json:"updated_on"`
-		ArchivedOn        *uint64 `json:"archived_on"`
+		ID                 uint64  `json:"id"`
+		Name               string  `json:"name"`
+		Variant            string  `json:"variant"`
+		Description        string  `json:"description"`
+		Warning            string  `json:"warning"`
+		ContainsEgg        bool    `json:"containsEgg"`
+		ContainsDairy      bool    `json:"containsDairy"`
+		ContainsPeanut     bool    `json:"containsPeanut"`
+		ContainsTreeNut    bool    `json:"containsTreeNut"`
+		ContainsSoy        bool    `json:"containsSoy"`
+		ContainsWheat      bool    `json:"containsWheat"`
+		ContainsShellfish  bool    `json:"containsShellfish"`
+		ContainsSesame     bool    `json:"containsSesame"`
+		ContainsFish       bool    `json:"containsFish"`
+		ContainsGluten     bool    `json:"containsGluten"`
+		AnimalFlesh        bool    `json:"animalFlesh"`
+		AnimalDerived      bool    `json:"animalDerived"`
+		MeasurableByVolume bool    `json:"measurableByVolume"`
+		Consumable         bool    `json:"consumable"`
+		Icon               string  `json:"icon"`
+		CreatedOn          uint64  `json:"createdOn"`
+		UpdatedOn          *uint64 `json:"updatedOn"`
+		ArchivedOn         *uint64 `json:"archivedOn"`
 	}
 
 	// ValidIngredientList represents a list of valid ingredients.
 	ValidIngredientList struct {
 		Pagination
-		ValidIngredients []ValidIngredient `json:"valid_ingredients"`
+		ValidIngredients []ValidIngredient `json:"validIngredients"`
 	}
 
 	// ValidIngredientCreationInput represents what a user could set as input for creating valid ingredients.
 	ValidIngredientCreationInput struct {
-		Name              string `json:"name"`
-		Variant           string `json:"variant"`
-		Description       string `json:"description"`
-		Warning           string `json:"warning"`
-		ContainsEgg       bool   `json:"contains_egg"`
-		ContainsDairy     bool   `json:"contains_dairy"`
-		ContainsPeanut    bool   `json:"contains_peanut"`
-		ContainsTreeNut   bool   `json:"contains_tree_nut"`
-		ContainsSoy       bool   `json:"contains_soy"`
-		ContainsWheat     bool   `json:"contains_wheat"`
-		ContainsShellfish bool   `json:"contains_shellfish"`
-		ContainsSesame    bool   `json:"contains_sesame"`
-		ContainsFish      bool   `json:"contains_fish"`
-		ContainsGluten    bool   `json:"contains_gluten"`
-		AnimalFlesh       bool   `json:"animal_flesh"`
-		AnimalDerived     bool   `json:"animal_derived"`
-		ConsideredStaple  bool   `json:"considered_staple"`
-		Icon              string `json:"icon"`
+		Name               string `json:"name"`
+		Variant            string `json:"variant"`
+		Description        string `json:"description"`
+		Warning            string `json:"warning"`
+		ContainsEgg        bool   `json:"containsEgg"`
+		ContainsDairy      bool   `json:"containsDairy"`
+		ContainsPeanut     bool   `json:"containsPeanut"`
+		ContainsTreeNut    bool   `json:"containsTreeNut"`
+		ContainsSoy        bool   `json:"containsSoy"`
+		ContainsWheat      bool   `json:"containsWheat"`
+		ContainsShellfish  bool   `json:"containsShellfish"`
+		ContainsSesame     bool   `json:"containsSesame"`
+		ContainsFish       bool   `json:"containsFish"`
+		ContainsGluten     bool   `json:"containsGluten"`
+		AnimalFlesh        bool   `json:"animalFlesh"`
+		AnimalDerived      bool   `json:"animalDerived"`
+		MeasurableByVolume bool   `json:"measurableByVolume"`
+		Icon               string `json:"icon"`
 	}
 
 	// ValidIngredientUpdateInput represents what a user could set as input for updating valid ingredients.
 	ValidIngredientUpdateInput struct {
-		Name              string `json:"name"`
-		Variant           string `json:"variant"`
-		Description       string `json:"description"`
-		Warning           string `json:"warning"`
-		ContainsEgg       bool   `json:"contains_egg"`
-		ContainsDairy     bool   `json:"contains_dairy"`
-		ContainsPeanut    bool   `json:"contains_peanut"`
-		ContainsTreeNut   bool   `json:"contains_tree_nut"`
-		ContainsSoy       bool   `json:"contains_soy"`
-		ContainsWheat     bool   `json:"contains_wheat"`
-		ContainsShellfish bool   `json:"contains_shellfish"`
-		ContainsSesame    bool   `json:"contains_sesame"`
-		ContainsFish      bool   `json:"contains_fish"`
-		ContainsGluten    bool   `json:"contains_gluten"`
-		AnimalFlesh       bool   `json:"animal_flesh"`
-		AnimalDerived     bool   `json:"animal_derived"`
-		ConsideredStaple  bool   `json:"considered_staple"`
-		Icon              string `json:"icon"`
+		Name               string `json:"name"`
+		Variant            string `json:"variant"`
+		Description        string `json:"description"`
+		Warning            string `json:"warning"`
+		ContainsEgg        bool   `json:"containsEgg"`
+		ContainsDairy      bool   `json:"containsDairy"`
+		ContainsPeanut     bool   `json:"containsPeanut"`
+		ContainsTreeNut    bool   `json:"containsTreeNut"`
+		ContainsSoy        bool   `json:"containsSoy"`
+		ContainsWheat      bool   `json:"containsWheat"`
+		ContainsShellfish  bool   `json:"containsShellfish"`
+		ContainsSesame     bool   `json:"containsSesame"`
+		ContainsFish       bool   `json:"containsFish"`
+		ContainsGluten     bool   `json:"containsGluten"`
+		AnimalFlesh        bool   `json:"animalFlesh"`
+		AnimalDerived      bool   `json:"animalDerived"`
+		MeasurableByVolume bool   `json:"measurableByVolume"`
+		Icon               string `json:"icon"`
 	}
 
 	// ValidIngredientDataManager describes a structure capable of storing valid ingredients permanently.
@@ -173,8 +174,8 @@ func (x *ValidIngredient) Update(input *ValidIngredientUpdateInput) {
 		x.AnimalDerived = input.AnimalDerived
 	}
 
-	if input.ConsideredStaple != x.ConsideredStaple {
-		x.ConsideredStaple = input.ConsideredStaple
+	if input.MeasurableByVolume != x.MeasurableByVolume {
+		x.MeasurableByVolume = input.MeasurableByVolume
 	}
 
 	if input.Icon != "" && input.Icon != x.Icon {
@@ -185,23 +186,23 @@ func (x *ValidIngredient) Update(input *ValidIngredientUpdateInput) {
 // ToUpdateInput creates a ValidIngredientUpdateInput struct for a valid ingredient.
 func (x *ValidIngredient) ToUpdateInput() *ValidIngredientUpdateInput {
 	return &ValidIngredientUpdateInput{
-		Name:              x.Name,
-		Variant:           x.Variant,
-		Description:       x.Description,
-		Warning:           x.Warning,
-		ContainsEgg:       x.ContainsEgg,
-		ContainsDairy:     x.ContainsDairy,
-		ContainsPeanut:    x.ContainsPeanut,
-		ContainsTreeNut:   x.ContainsTreeNut,
-		ContainsSoy:       x.ContainsSoy,
-		ContainsWheat:     x.ContainsWheat,
-		ContainsShellfish: x.ContainsShellfish,
-		ContainsSesame:    x.ContainsSesame,
-		ContainsFish:      x.ContainsFish,
-		ContainsGluten:    x.ContainsGluten,
-		AnimalFlesh:       x.AnimalFlesh,
-		AnimalDerived:     x.AnimalDerived,
-		ConsideredStaple:  x.ConsideredStaple,
-		Icon:              x.Icon,
+		Name:               x.Name,
+		Variant:            x.Variant,
+		Description:        x.Description,
+		Warning:            x.Warning,
+		ContainsEgg:        x.ContainsEgg,
+		ContainsDairy:      x.ContainsDairy,
+		ContainsPeanut:     x.ContainsPeanut,
+		ContainsTreeNut:    x.ContainsTreeNut,
+		ContainsSoy:        x.ContainsSoy,
+		ContainsWheat:      x.ContainsWheat,
+		ContainsShellfish:  x.ContainsShellfish,
+		ContainsSesame:     x.ContainsSesame,
+		ContainsFish:       x.ContainsFish,
+		ContainsGluten:     x.ContainsGluten,
+		AnimalFlesh:        x.AnimalFlesh,
+		AnimalDerived:      x.AnimalDerived,
+		MeasurableByVolume: x.MeasurableByVolume,
+		Icon:               x.Icon,
 	}
 }

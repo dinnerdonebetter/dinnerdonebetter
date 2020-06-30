@@ -293,7 +293,7 @@ func TestPostgres_buildGetRecipeTagsQuery(T *testing.T) {
 		exampleRecipe := fakemodels.BuildFakeRecipe()
 		filter := fakemodels.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT recipe_tags.id, recipe_tags.name, recipe_tags.created_on, recipe_tags.updated_on, recipe_tags.archived_on, recipe_tags.belongs_to_recipe, COUNT(recipe_tags.id) FROM recipe_tags JOIN recipes ON recipe_tags.belongs_to_recipe=recipes.id WHERE recipe_tags.archived_on IS NULL AND recipe_tags.belongs_to_recipe = $1 AND recipes.id = $2 AND recipe_tags.created_on > $3 AND recipe_tags.created_on < $4 AND recipe_tags.updated_on > $5 AND recipe_tags.updated_on < $6 GROUP BY recipe_tags.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT recipe_tags.id, recipe_tags.name, recipe_tags.created_on, recipe_tags.updated_on, recipe_tags.archived_on, recipe_tags.belongs_to_recipe, (SELECT COUNT(recipe_tags.id) FROM recipe_tags WHERE recipe_tags.archived_on IS NULL) FROM recipe_tags JOIN recipes ON recipe_tags.belongs_to_recipe=recipes.id WHERE recipe_tags.archived_on IS NULL AND recipe_tags.belongs_to_recipe = $1 AND recipes.id = $2 AND recipe_tags.created_on > $3 AND recipe_tags.created_on < $4 AND recipe_tags.updated_on > $5 AND recipe_tags.updated_on < $6 ORDER BY recipe_tags.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			exampleRecipe.ID,
 			exampleRecipe.ID,
@@ -313,7 +313,7 @@ func TestPostgres_buildGetRecipeTagsQuery(T *testing.T) {
 func TestPostgres_GetRecipeTags(T *testing.T) {
 	T.Parallel()
 
-	expectedListQuery := "SELECT recipe_tags.id, recipe_tags.name, recipe_tags.created_on, recipe_tags.updated_on, recipe_tags.archived_on, recipe_tags.belongs_to_recipe, COUNT(recipe_tags.id) FROM recipe_tags JOIN recipes ON recipe_tags.belongs_to_recipe=recipes.id WHERE recipe_tags.archived_on IS NULL AND recipe_tags.belongs_to_recipe = $1 AND recipes.id = $2 GROUP BY recipe_tags.id LIMIT 20"
+	expectedListQuery := "SELECT recipe_tags.id, recipe_tags.name, recipe_tags.created_on, recipe_tags.updated_on, recipe_tags.archived_on, recipe_tags.belongs_to_recipe, (SELECT COUNT(recipe_tags.id) FROM recipe_tags WHERE recipe_tags.archived_on IS NULL) FROM recipe_tags JOIN recipes ON recipe_tags.belongs_to_recipe=recipes.id WHERE recipe_tags.archived_on IS NULL AND recipe_tags.belongs_to_recipe = $1 AND recipes.id = $2 ORDER BY recipe_tags.id LIMIT 20"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()

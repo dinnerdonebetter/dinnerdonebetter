@@ -8,19 +8,20 @@ import (
 type (
 	// ValidPreparation represents a valid preparation.
 	ValidPreparation struct {
-		ID          uint64  `json:"id"`
-		Name        string  `json:"name"`
-		Description string  `json:"description"`
-		Icon        string  `json:"icon"`
-		CreatedOn   uint64  `json:"created_on"`
-		UpdatedOn   *uint64 `json:"updated_on"`
-		ArchivedOn  *uint64 `json:"archived_on"`
+		ID                         uint64  `json:"id"`
+		Name                       string  `json:"name"`
+		Description                string  `json:"description"`
+		Icon                       string  `json:"icon"`
+		ApplicableToAllIngredients bool    `json:"applicableToAllIngredients"`
+		CreatedOn                  uint64  `json:"createdOn"`
+		UpdatedOn                  *uint64 `json:"updatedOn"`
+		ArchivedOn                 *uint64 `json:"archivedOn"`
 	}
 
 	// ValidPreparationList represents a list of valid preparations.
 	ValidPreparationList struct {
 		Pagination
-		ValidPreparations []ValidPreparation `json:"valid_preparations"`
+		ValidPreparations []ValidPreparation `json:"validPreparations"`
 	}
 
 	// ValidPreparationCreationInput represents what a user could set as input for creating valid preparations.

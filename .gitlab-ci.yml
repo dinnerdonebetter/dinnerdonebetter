@@ -13,15 +13,12 @@ before_script:
 
 formatting:
   stage: quality
-  image: docker:latest
-  services:
-    - docker:dind
+  image: golang:stretch
   variables:
     GOPATH: "/go"
   script:
-    - apk add --update --no-cache py-pip openssl python-dev libffi-dev
-      openssl-dev gcc libc-dev make
-    - make check_formatting
+    - apt-get update -y && apt-get install -y make git gcc musl-dev
+    - if [ $(gofmt -l . | grep -Ev '^vendor\/' | head -c1 | wc -c) -ne 0 ]; then exit 1; fi
 
 coverage:
   stage: quality
@@ -69,7 +66,7 @@ integration-tests-postgres:
   variables:
     GOPATH: "/go"
   script:
-    - apk add --update --no-cache py-pip openssl python-dev libffi-dev
+    - apk add --update --no-cache py-pip openssl python3-dev libffi-dev
       openssl-dev gcc libc-dev make
     - pip install docker-compose
     - make integration-tests-postgres
@@ -82,7 +79,7 @@ frontend-selenium-tests:
   variables:
     GOPATH: "/go"
   script:
-    - apk add --update --no-cache py-pip openssl python-dev libffi-dev
+    - apk add --update --no-cache py-pip openssl python3-dev libffi-dev
       openssl-dev gcc libc-dev make
     - pip install docker-compose
     - make frontend-tests
@@ -97,7 +94,7 @@ load-tests-postgres:
     GOPATH: "/go"
     LOADTEST_RUN_TIME: "2m30s"
   script:
-    - apk add --update --no-cache py-pip openssl python-dev libffi-dev
+    - apk add --update --no-cache py-pip openssl python3-dev libffi-dev
       openssl-dev gcc libc-dev make
     - pip install docker-compose
     - make load-tests-postgres
@@ -116,7 +113,7 @@ daily-load-tests-postgres:on-schedule:
     GOPATH: "/go"
     LOADTEST_RUN_TIME: "10m"
   script:
-    - apk add --update --no-cache py-pip openssl python-dev libffi-dev
+    - apk add --update --no-cache py-pip openssl python3-dev libffi-dev
       openssl-dev gcc libc-dev make
     - pip install docker-compose
     - make load-tests-postgres

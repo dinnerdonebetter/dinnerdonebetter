@@ -179,12 +179,12 @@ func (p *Postgres) buildGetValidInstrumentsQuery(filter *models.QueryFilter) (qu
 	var err error
 
 	builder := p.sqlBuilder.
-		Select(append(validInstrumentsTableColumns, fmt.Sprintf(countQuery, validInstrumentsTableName))...).
+		Select(append(validInstrumentsTableColumns, fmt.Sprintf("(%s)", p.buildGetAllValidInstrumentsCountQuery()))...).
 		From(validInstrumentsTableName).
 		Where(squirrel.Eq{
 			fmt.Sprintf("%s.archived_on", validInstrumentsTableName): nil,
 		}).
-		GroupBy(fmt.Sprintf("%s.id", validInstrumentsTableName))
+		OrderBy(fmt.Sprintf("%s.id", validInstrumentsTableName))
 
 	if filter != nil {
 		builder = filter.ApplyToQueryBuilder(builder, validInstrumentsTableName)

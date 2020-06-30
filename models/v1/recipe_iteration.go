@@ -9,38 +9,38 @@ type (
 	// RecipeIteration represents a recipe iteration.
 	RecipeIteration struct {
 		ID                  uint64  `json:"id"`
-		EndDifficultyRating float32 `json:"end_difficulty_rating"`
-		EndComplexityRating float32 `json:"end_complexity_rating"`
-		EndTasteRating      float32 `json:"end_taste_rating"`
-		EndOverallRating    float32 `json:"end_overall_rating"`
-		CreatedOn           uint64  `json:"created_on"`
-		UpdatedOn           *uint64 `json:"updated_on"`
-		ArchivedOn          *uint64 `json:"archived_on"`
-		BelongsToRecipe     uint64  `json:"belongs_to_recipe"`
+		EndDifficultyRating float32 `json:"endDifficultyRating"`
+		EndComplexityRating float32 `json:"endComplexityRating"`
+		EndTasteRating      float32 `json:"endTasteRating"`
+		EndOverallRating    float32 `json:"endOverallRating"`
+		CreatedOn           uint64  `json:"createdOn"`
+		UpdatedOn           *uint64 `json:"updatedOn"`
+		ArchivedOn          *uint64 `json:"archivedOn"`
+		BelongsToRecipe     uint64  `json:"belongsToRecipe"`
 	}
 
 	// RecipeIterationList represents a list of recipe iterations.
 	RecipeIterationList struct {
 		Pagination
-		RecipeIterations []RecipeIteration `json:"recipe_iterations"`
+		RecipeIterations []RecipeIteration `json:"recipeIterations"`
 	}
 
 	// RecipeIterationCreationInput represents what a user could set as input for creating recipe iterations.
 	RecipeIterationCreationInput struct {
-		EndDifficultyRating float32 `json:"end_difficulty_rating"`
-		EndComplexityRating float32 `json:"end_complexity_rating"`
-		EndTasteRating      float32 `json:"end_taste_rating"`
-		EndOverallRating    float32 `json:"end_overall_rating"`
+		EndDifficultyRating float32 `json:"endDifficultyRating"`
+		EndComplexityRating float32 `json:"endComplexityRating"`
+		EndTasteRating      float32 `json:"endTasteRating"`
+		EndOverallRating    float32 `json:"endOverallRating"`
 		BelongsToRecipe     uint64  `json:"-"`
 	}
 
 	// RecipeIterationUpdateInput represents what a user could set as input for updating recipe iterations.
 	RecipeIterationUpdateInput struct {
-		EndDifficultyRating float32 `json:"end_difficulty_rating"`
-		EndComplexityRating float32 `json:"end_complexity_rating"`
-		EndTasteRating      float32 `json:"end_taste_rating"`
-		EndOverallRating    float32 `json:"end_overall_rating"`
-		BelongsToRecipe     uint64  `json:"belongs_to_recipe"`
+		EndDifficultyRating float32 `json:"endDifficultyRating"`
+		EndComplexityRating float32 `json:"endComplexityRating"`
+		EndTasteRating      float32 `json:"endTasteRating"`
+		EndOverallRating    float32 `json:"endOverallRating"`
+		BelongsToRecipe     uint64  `json:"belongsToRecipe"`
 	}
 
 	// RecipeIterationDataManager describes a structure capable of storing recipe iterations permanently.
