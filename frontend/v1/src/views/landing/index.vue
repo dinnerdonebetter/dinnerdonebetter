@@ -10,7 +10,7 @@
 
     <!-- Main element -->
     <main>
-      <h2 class="caption">Canard!</h2>
+      <h2 class="caption">Allons y!</h2>
 
       <p>The community behind your cooking.</p>
       <img src="@/assets/images/landing/splash.png" />
@@ -57,7 +57,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue } from 'vue-property-decorator';
 
 @Component({
   name: 'Landing',
