@@ -7,9 +7,7 @@ GO_FORMAT                := gofmt -s -w
 PACKAGE_LIST             := `go list gitlab.com/prixfixe/prixfixe/... | grep -Ev '(cmd|tests|mock|fake)'`
 DOCKER_FILES_DIR         := dockerfiles
 DOCKER_COMPOSE_FILES_DIR := compose_files
-SERVER_DOCKER_IMAGE_NAME := prixfixe-server
-CONTAINER_REGISTRY_NAME  := prixfixe-containers
-SERVER_CONTAINER_TAG     := registry.digitalocean.com/$(CONTAINER_REGISTRY_NAME)/$(SERVER_DOCKER_IMAGE_NAME)
+SERVER_CONTAINER_TAG     := registry.gitlab.com/prixfixe/prixfixe
 DEV_TERRAFORM_DIR        := deploy/dev/terraform
 
 $(ARTIFACTS_DIR):
@@ -173,13 +171,13 @@ load-tests-%:
 
 ## Docker things
 
-.PHONY: build-server-docker-image
-build-server-docker-image: wire
-	docker build --tag $(SERVER_CONTAINER_TAG):latest --file $(DOCKER_FILES_DIR)/server.Dockerfile .
+.PHONY: build-dev-docker-image
+build-dev-docker-image: wire
+	docker build --tag $(SERVER_CONTAINER_TAG):dev --file $(DOCKER_FILES_DIR)/dev-server.Dockerfile .
 
-.PHONY: publish-container-image
-publish-container-image: build-server-docker-image
-	docker push $(SERVER_CONTAINER_TAG):latest
+.PHONY: publish-dev-container-image
+publish-dev-container-image: build-dev-docker-image
+	docker push $(SERVER_CONTAINER_TAG):dev
 
 ## Running
 
@@ -204,11 +202,6 @@ run:
 	--abort-on-container-exit
 
 ## Deploy noise
-
-.PHONY: kube-infra
-kube-infra:
-	# kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "registry-$(CONTAINER_REGISTRY_NAME)"}]}'
-	kubectl apply -f deploy/kubernetes/defacto/external-dns.yaml
 
 .PHONY: dev-terraform
 dev-terraform:
