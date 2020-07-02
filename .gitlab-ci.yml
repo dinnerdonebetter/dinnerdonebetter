@@ -111,19 +111,7 @@ build-dev-container:
     - docker:dind
   script:
     - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
-    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev --file dockerfiles/server.Dockerfile .
+    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev --file dockerfiles/dev-server.Dockerfile .
     - docker push registry.gitlab.com/prixfixe/prixfixe:dev
   only:
     - dev
-
-build-prod-container:
-  stage: publish
-  image: docker:latest
-  services:
-    - docker:dind
-  script:
-    - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
-    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev --file dockerfiles/server.Dockerfile .
-    - docker push registry.gitlab.com/prixfixe/prixfixe:dev
-  only:
-    - prod
