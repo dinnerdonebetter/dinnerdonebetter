@@ -19,10 +19,10 @@ services:
     links:
       - prometheus
     volumes:
-      - source: "../deploy/grafana/local/provisioning"
+      - source: "../deploy/dev/grafana/provisioning"
         target: "/etc/grafana/provisioning"
         type: "bind"
-      - source: "../deploy/grafana/dashboards"
+      - source: "../deploy/dev/grafana/dashboards"
         target: "/etc/grafana/dashboards"
         type: "bind"
   prometheus:
@@ -32,7 +32,7 @@ services:
     ports:
       - 9090:9090
     volumes:
-      - source: "../deploy/prometheus/local/config.yaml"
+      - source: "../deploy/dev/prometheus/config.yaml"
         target: "/etc/prometheus/config.yaml"
         type: "bind"
     command: "--config.file=/etc/prometheus/config.yaml --storage.tsdb.path=/prometheus"

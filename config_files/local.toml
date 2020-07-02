@@ -1,15 +1,15 @@
 
 [auth]
-  cookie_domain = "prixfixe.dev"
+  cookie_domain = "localhost"
   cookie_lifetime = "24h0m0s"
-  cookie_secret = "EBY1rrJnCOF3fkaxppDkuAwGxCfUv2eN"
+  cookie_secret = "HEREISA32CHARSECRETWHICHISMADEUP"
   enable_user_signup = true
-  secure_cookies_only = true
+  secure_cookies_only = false
 
 [database]
-  connection_details = "postgresql://prixfixe_dev:vfhfFBwoCoDWTY86bVYa9znk1xcp19IO@database.prixfixe.dev:25060/dev_prixfixe?sslmode=require"
+  connection_details = "postgres://dbuser:hunter2@database:5432/prixfixe?sslmode=disable"
+  create_dummy_user = true
   provider = "postgres"
-  create_dummy_user = false
 
 [frontend]
   cache_static_files = false

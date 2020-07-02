@@ -8,7 +8,9 @@ PACKAGE_LIST             := `go list gitlab.com/prixfixe/prixfixe/... | grep -Ev
 DOCKER_FILES_DIR         := dockerfiles
 DOCKER_COMPOSE_FILES_DIR := compose_files
 SERVER_DOCKER_IMAGE_NAME := prixfixe-server
-SERVER_DOCKER_REPO_NAME  := docker.io/verygoodsoftwarenotvirus/$(SERVER_DOCKER_IMAGE_NAME)
+CONTAINER_REGISTRY_NAME  := prixfixe-containers
+SERVER_CONTAINER_TAG     := registry.digitalocean.com/$(CONTAINER_REGISTRY_NAME)/$(SERVER_DOCKER_IMAGE_NAME)
+DEV_TERRAFORM_DIR        := deploy/dev/terraform
 
 $(ARTIFACTS_DIR):
 	@mkdir -p $(ARTIFACTS_DIR)
@@ -171,19 +173,19 @@ load-tests-%:
 
 ## Docker things
 
-.PHONY: server-docker-image
-server-docker-image: wire
-	docker build --tag $(SERVER_DOCKER_IMAGE_NAME):latest --file $(DOCKER_FILES_DIR)/server.Dockerfile .
+.PHONY: build-server-docker-image
+build-server-docker-image: wire
+	docker build --tag $(SERVER_CONTAINER_TAG):latest --file $(DOCKER_FILES_DIR)/server.Dockerfile .
 
-.PHONY: push-server-to-docker
-push-server-to-docker: server-docker-image
-	docker push $(SERVER_DOCKER_REPO_NAME):latest
+.PHONY: publish-container-image
+publish-container-image: build-server-docker-image
+	docker push $(SERVER_CONTAINER_TAG):latest
 
 ## Running
 
 .PHONY: dev
 dev:
-	docker-compose --file $(DOCKER_COMPOSE_FILES_DIR)/development.yaml up \
+	docker-compose --file $(DOCKER_COMPOSE_FILES_DIR)/local.yaml up \
 	--build \
 	--force-recreate \
 	--remove-orphans \
@@ -200,3 +202,19 @@ run:
 	--renew-anon-volumes \
 	--always-recreate-deps \
 	--abort-on-container-exit
+
+## Deploy noise
+
+.PHONY: kube-infra
+kube-infra:
+	# kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "registry-$(CONTAINER_REGISTRY_NAME)"}]}'
+	kubectl apply -f deploy/kubernetes/defacto/external-dns.yaml
+
+.PHONY: dev-terraform
+dev-terraform:
+	terraform init $(DEV_TERRAFORM_DIR)
+	terraform apply \
+		-var "do_token=${PRIXFIXE_DIGITALOCEAN_TOKEN}" \
+		-var "cf_token=${PRIXFIXE_DEV_CLOUDFLARE_TOKEN}" \
+		-var "cf_zone_id=${PRIXFIXE_DEV_CLOUDFLARE_ZONE_ID}" \
+		$(DEV_TERRAFORM_DIR)

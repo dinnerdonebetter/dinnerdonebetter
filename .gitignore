@@ -40,7 +40,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-frontend/v1/public/bundle.*
+.terraform/
+*.tfstate*
 
 *.coverprofile
 *.profile
