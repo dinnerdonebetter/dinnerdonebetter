@@ -1,19 +1,9 @@
 function start_watchtower() {
-	docker run --detach \
-	--name watchtower \
-	--volume /var/run/docker.sock:/var/run/docker.sock \
-	containrrr/watchtower
+	0docker run --detach --name watchtower --volume /home/sysadmin/.docker/config.json:/config.json --volume /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower
 }
 
 function start_caddy() {
-	docker run --detach \
-	--name caddy \
-	--volume /home/sysadmin/Caddyfile:/etc/caddy/Caddyfile \
-	--volume /home/sysadmin/caddy_data:/data \
-	--publish 443:443 \
-	--network dev_network \
-	--network-alias caddy
-	caddy:2
+	docker run --detach --name caddy --volume /home/sysadmin/Caddyfile:/etc/caddy/Caddyfile --volume /home/sysadmin/caddy_data:/data --publish 443:443 --network dev_network --network-alias caddy caddy:2
 }
 
 function start_network(){
@@ -33,13 +23,5 @@ function edit_caddyfile() {
 }
 
 function start_prixfixe() {
-	docker run --detach \
-		--name prixfixe \
-		--volume /home/sysadmin/prixfixe.config.toml:/etc/prixfixe/config.toml \
-		--env CONFIGURATION_FILEPATH=/etc/prixfixe/config.toml \
-		--publish 8888:8888 \
-		--restart=always \
-		--network dev_network \
-		--network-alias prixfixe_server
-		registry.gitlab.com/prixfixe/prixfixe:dev
+	docker run --detach --name prixfixe --volume /home/sysadmin/prixfixe.config.toml:/etc/prixfixe/config.toml --env CONFIGURATION_FILEPATH=/etc/prixfixe/config.toml --publish 8888:8888 --restart=always --network dev_network --network-alias prixfixe_server registry.gitlab.com/prixfixe/prixfixe:dev
 }
