@@ -14,14 +14,12 @@ func TestServerConfig_ProvideInstrumentationHandler(T *testing.T) {
 	T.Run("happy path", func(t *testing.T) {
 		c := &ServerConfig{
 			Metrics: MetricsSettings{
-				RuntimeMetricsCollectionInterval: time.Second,
 				MetricsProvider:                  DefaultMetricsProvider,
+				RuntimeMetricsCollectionInterval: time.Second,
 			},
 		}
 
-		ih, err := c.ProvideInstrumentationHandler(noop.ProvideNoopLogger())
-		assert.NoError(t, err)
-		assert.NotNil(t, ih)
+		assert.NotNil(t, c.ProvideInstrumentationHandler(noop.ProvideNoopLogger()))
 	})
 }
 

@@ -29,17 +29,17 @@ coverage:
     - apt-get update -y && apt-get install -y make git gcc musl-dev
     - make coverage
 
-unit-tests:
-    stage: quality
-    image: golang:stretch
-    variables:
-      GOPATH: "/go"
-    script:
-      - apt-get update -y && apt-get install -y make git gcc musl-dev
-      - make gitlab-ci-junit-report
-    artifacts:
-      reports:
-        junit: test_artifacts/unit_test_report.xml
+# unit-tests:
+#   stage: quality
+#   image: golang:stretch
+#   variables:
+#     GOPATH: "/go"
+#   script:
+#     - apt-get update -y && apt-get install -y make git gcc musl-dev
+#     - make gitlab-ci-junit-report
+#   artifacts:
+#     reports:
+#       junit: test_artifacts/unit_test_report.xml
 
 linting:
   stage: quality
@@ -101,10 +101,9 @@ load-tests-postgres:
   except:
     - schedules
 
+# weekly load tests
 
-# daily load tests
-
-daily-load-tests-postgres:on-schedule:
+weekly-load-tests-postgres:on-schedule:
   stage: load-testing
   image: docker:latest
   services:
@@ -122,14 +121,26 @@ daily-load-tests-postgres:on-schedule:
 
 # miscellaneous
 
-gitlabcr:
+build-dev-container:
   stage: publish
   image: docker:latest
   services:
     - docker:dind
   script:
     - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
-    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:latest --file dockerfiles/server.Dockerfile .
-    - docker push registry.gitlab.com/prixfixe/prixfixe:latest
+    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev --file dockerfiles/server.Dockerfile .
+    - docker push registry.gitlab.com/prixfixe/prixfixe:dev
   only:
-    - master
+    - dev
+
+build-prod-container:
+  stage: publish
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
+    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev --file dockerfiles/server.Dockerfile .
+    - docker push registry.gitlab.com/prixfixe/prixfixe:dev
+  only:
+    - prod

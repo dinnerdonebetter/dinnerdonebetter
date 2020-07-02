@@ -31,7 +31,7 @@ Assuming you have go installed, you can install these by running `make dev-tools
 
 It's a good idea to run `make quicktest lintegration-tests` before commits. You won't catch every error, but you'll catch the simplest ones that waste CI (and consequently your) time.
 
-## repo organization overview
+## basic organization overview
 
 ```
 ├── artifacts              // gitignored, where coverage reports and such go
@@ -51,13 +51,15 @@ It's a good idea to run `make quicktest lintegration-tests` before commits. You 
 │   └── v1
 │       ├── client         // dbclient, wraps all querier calls in tracing and log statements
 │       └── queriers       // where all the supported databases actually get queried
-│           ├── mariadb
 │           ├── postgres
-│           └── sqlite
 ├── deploy
-│   ├── grafana            // grafana configuration files
-│   └── prometheus         // prometheus configuration files
-├── development            // metadevelopment files, right now just a documentation of what Gitlab badges are active
+│   └── <env>
+│       ├── caddy
+│       ├── grafana
+│       ├── prometheus
+│       ├── scripts
+│       └── terraform
+├── misc                   // metadevelopment files, right now just a documentation of what Gitlab badges are active
 ├── dockerfiles
 ├── frontend               // the lipstick on this pig
 │   └── v1
@@ -87,10 +89,26 @@ It's a good idea to run `make quicktest lintegration-tests` before commits. You 
 │   └── v1
 │       ├── auth
 │       ├── frontend
-│       ├── items
+│       ├── ingredienttagmappings
+│       ├── invitations
+│       ├── iterationmedias
 │       ├── oauth2clients
+│       ├── recipeiterations
+│       ├── recipeiterationsteps
+│       ├── recipes
+│       ├── recipestepingredients
+│       ├── recipesteppreparations
+│       ├── recipesteps
+│       ├── recipetags
+│       ├── reports
+│       ├── requiredpreparationinstruments
 │       ├── users
-│       └── webhooks
+│       ├── validingredientpreparations
+│       ├── validingredients
+│       ├── validingredienttags
+│       ├── validinstruments
+│       ├── validpreparations
+│       ├── webhooks
 └── tests
     └── v1
         ├── frontend       // selenium webdriver tests in go

@@ -42,6 +42,7 @@ import (
 
 // Injectors from wire.go:
 
+// BuildServer builds a server.
 func BuildServer(ctx context.Context, cfg *config.ServerConfig, logger logging.Logger, database2 database.Database) (*server.Server, error) {
 	bcryptHashCost := auth.ProvideBcryptHashCost()
 	authenticator := auth.ProvideBcryptAuthenticator(bcryptHashCost, logger)

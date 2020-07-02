@@ -1,0 +1,69 @@
+version: "3.3"
+services:
+    database:
+        image: "postgres:latest"
+        ports:
+            - "2345:5432"
+        environment:
+            POSTGRES_DB: "prixfixe"
+            POSTGRES_PASSWORD: "hunter2"
+            POSTGRES_USER: "dbuser"
+        logging:
+            driver: none
+    prixfixe-server:
+        build:
+            context: ../
+            dockerfile: dockerfiles/local.Dockerfile
+        # depends_on:
+        #     - prometheus
+        #     - grafana
+        environment:
+            CONFIGURATION_FILEPATH: "config_files/local.toml"
+            DOCKER: "true"
+            # JAEGER_AGENT_HOST: "tracing-server"
+            # JAEGER_AGENT_PORT: "6831"
+            # JAEGER_SAMPLER_MANAGER_HOST_PORT: "tracing-server:5778"
+            # JAEGER_SERVICE_NAME: "prixfixe-server"
+        links:
+            # - tracing-server
+            - database
+        ports:
+            - "80:8888"
+        volumes:
+            - source: ../frontend/v1/dist
+              target: /frontend
+              type: bind
+    # prometheus:
+    #     image: "quay.io/prometheus/prometheus:v2.0.0"
+    #     logging:
+    #         driver: none
+    #     ports:
+    #         - "9090:9090"
+    #     volumes:
+    #         - source: ../deploy/dev/prometheus/config.yaml
+    #           target: /etc/prometheus/config.yaml
+    #           type: bind
+    #     command: "--config.file=/etc/prometheus/config.yaml --storage.tsdb.path=/prometheus"
+    # tracing-server:
+    #     image: "jaegertracing/all-in-one:latest"
+    #     logging:
+    #         driver: none
+    #     ports:
+    #         - "6831:6831/udp"
+    #         - "5778:5778"
+    #         - "16686:16686"
+    # grafana:
+    #     image: grafana/grafana
+    #     logging:
+    #         driver: none
+    #     ports:
+    #         - "3000:3000"
+    #     links:
+    #         - prometheus
+    #     volumes:
+    #         - source: ../deploy/dev/grafana/provisioning
+    #           target: /etc/grafana/provisioning
+    #           type: bind
+    #         - source: ../deploy/dev/grafana/dashboards
+    #           target: /etc/grafana/dashboards
+    #           type: bind

@@ -47,7 +47,7 @@ var (
 )
 
 // ProvideInstrumentationHandler provides an instrumentation handler.
-func (cfg *ServerConfig) ProvideInstrumentationHandler(logger logging.Logger) (metrics.InstrumentationHandler, error) {
+func (cfg *ServerConfig) ProvideInstrumentationHandler(logger logging.Logger) metrics.InstrumentationHandler {
 	logger = logger.WithValue("metrics_provider", cfg.Metrics.MetricsProvider)
 	logger.Debug("setting metrics provider")
 
@@ -62,13 +62,13 @@ func (cfg *ServerConfig) ProvideInstrumentationHandler(logger logging.Logger) (m
 			},
 		)
 		if err != nil {
-			return nil, fmt.Errorf("failed to create Prometheus exporter: %w", err)
+			logger.Error(err, "failed to create Prometheus exporter")
 		}
 		view.RegisterExporter(p)
 		logger.Debug("metrics provider registered")
 
 		if err := metrics.RegisterDefaultViews(); err != nil {
-			return nil, fmt.Errorf("registering default metric views: %w", err)
+			logger.Error(err, "registering default metric views")
 		}
 		metrics.RecordRuntimeStats(time.Duration(
 			math.Max(
@@ -77,9 +77,9 @@ func (cfg *ServerConfig) ProvideInstrumentationHandler(logger logging.Logger) (m
 			),
 		))
 
-		return p, nil
+		return p
 	default:
-		return nil, ErrInvalidMetricsProvider
+		return nil
 	}
 }
 

@@ -142,17 +142,16 @@ func ProvideServer(
 		return nil, err
 	}
 
-	ih, err := cfg.ProvideInstrumentationHandler(logger)
-	if err != nil && err != config.ErrInvalidMetricsProvider {
-		return nil, err
-	}
-	if ih != nil {
-		srv.setupRouter(cfg.Frontend, ih)
-	}
+	ih := cfg.ProvideInstrumentationHandler(logger)
+	srv.setupRouter(cfg.Frontend, ih)
 
-	srv.httpServer.Handler = &ochttp.Handler{
-		Handler:        srv.router,
-		FormatSpanName: formatSpanNameForRequest,
+	if ih != nil {
+		srv.httpServer.Handler = &ochttp.Handler{
+			Handler:        srv.router,
+			FormatSpanName: formatSpanNameForRequest,
+		}
+	} else {
+		srv.httpServer.Handler = srv.router
 	}
 
 	allWebhooks, err := db.GetAllWebhooks(ctx)
