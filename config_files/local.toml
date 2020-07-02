@@ -20,6 +20,10 @@
   run_mode = "development"
   startup_deadline = "1m0s"
 
+[metrics]
+  database_metrics_collection_interval = "2s"
+  runtime_metrics_collection_interval = "2s"
+
 [server]
   debug = true
   http_port = 8888
