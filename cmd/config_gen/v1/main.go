@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"gitlab.com/prixfixe/prixfixe/internal/v1/config"
+
+	"github.com/spf13/viper"
 )
 
 const (
@@ -43,11 +45,19 @@ type configFunc func(filepath string) error
 var (
 	files = map[string]configFunc{
 		"config_files/coverage.toml":                   coverageConfig,
+		"config_files/local.toml":                      localConfig,
 		"config_files/development.toml":                developmentConfig,
 		"config_files/integration-tests-postgres.toml": buildIntegrationTestForDBImplementation(postgres, postgresDBConnDetails),
 		"config_files/production.toml":                 productionConfig,
 	}
 )
+
+func exampleMetricsConfiguration(cfg *viper.Viper) {
+	cfg.Set(metricsProvider, "prometheus")
+	cfg.Set(metricsTracer, "jaeger")
+	cfg.Set(metricsDBCollectionInterval, time.Second)
+	cfg.Set(metricsRuntimeCollectionInterval, time.Second)
+}
 
 func developmentConfig(filepath string) error {
 	cfg := config.BuildConfig()
@@ -62,16 +72,39 @@ func developmentConfig(filepath string) error {
 	cfg.Set(frontendStaticFilesDir, defaultFrontendFilepath)
 	cfg.Set(frontendCacheStatics, false)
 
-	cfg.Set(authCookieDomain, "")
+	cfg.Set(authCookieDomain, "prixfixe.dev")
+	cfg.Set(authCookieLifetime, oneDay)
+	cfg.Set(authSecureCookiesOnly, true)
+	cfg.Set(authEnableUserSignup, true)
+
+	// exampleMetricsConfiguration
+
+	cfg.Set(dbProvider, "postgres")
+	cfg.Set(dbDeets, "postgresql://prixfixe_dev:vfhfFBwoCoDWTY86bVYa9znk1xcp19IO@database.prixfixe.dev:25060/dev_prixfixe?sslmode=require")
+
+	return cfg.WriteConfigAs(filepath)
+}
+
+func localConfig(filepath string) error {
+	cfg := config.BuildConfig()
+
+	cfg.Set(metaDebug, true)
+	cfg.Set(metaRunMode, "development")
+	cfg.Set(metaStartupDeadline, time.Minute)
+
+	cfg.Set(serverHTTPPort, defaultPort)
+	cfg.Set(serverDebug, true)
+
+	cfg.Set(frontendStaticFilesDir, defaultFrontendFilepath)
+	cfg.Set(frontendCacheStatics, false)
+
+	cfg.Set(authCookieDomain, "localhost")
 	cfg.Set(authCookieSecret, debugCookieSecret)
 	cfg.Set(authCookieLifetime, oneDay)
 	cfg.Set(authSecureCookiesOnly, false)
 	cfg.Set(authEnableUserSignup, true)
 
-	cfg.Set(metricsProvider, "prometheus")
-	cfg.Set(metricsTracer, "jaeger")
-	cfg.Set(metricsDBCollectionInterval, time.Second)
-	cfg.Set(metricsRuntimeCollectionInterval, time.Second)
+	// exampleMetricsConfiguration
 
 	cfg.Set(dbProvider, "postgres")
 	cfg.Set(dbCreateDummyUser, true)
@@ -123,10 +156,7 @@ func productionConfig(filepath string) error {
 	cfg.Set(authSecureCookiesOnly, false)
 	cfg.Set(authEnableUserSignup, true)
 
-	cfg.Set(metricsProvider, "prometheus")
-	cfg.Set(metricsTracer, "jaeger")
-	cfg.Set(metricsDBCollectionInterval, time.Second)
-	cfg.Set(metricsRuntimeCollectionInterval, time.Second)
+	exampleMetricsConfiguration(cfg)
 
 	cfg.Set(dbDebug, false)
 	cfg.Set(dbProvider, "postgres")

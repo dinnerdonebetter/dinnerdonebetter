@@ -84,23 +84,6 @@ frontend-selenium-tests:
     - pip install docker-compose
     - make frontend-tests
 
-# load tests
-load-tests-postgres:
-  stage: load-testing
-  image: docker:latest
-  services:
-    - docker:dind
-  variables:
-    GOPATH: "/go"
-    LOADTEST_RUN_TIME: "2m30s"
-  script:
-    - apk add --update --no-cache py-pip openssl python3-dev libffi-dev
-      openssl-dev gcc libc-dev make
-    - pip install docker-compose
-    - make load-tests-postgres
-  except:
-    - schedules
-
 # weekly load tests
 
 weekly-load-tests-postgres:on-schedule:
