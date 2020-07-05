@@ -1,8 +1,8 @@
 import axios, { AxiosResponse } from 'axios';
 import { VuexModule, Module, Action, Mutation, getModule } from 'vuex-module-decorators';
 
-import { getUserInfo } from '@/api/users';
-import { backendRoutes, statusCodes } from '@/constants';
+import request from '@/utils/request';
+import { backendRoutes, statusCodes, methods } from '@/constants';
 import { AuthStatus, LoginRequest } from '@/models/state';
 import store from '@/store';
 
@@ -10,6 +10,13 @@ export interface UserState {
   isLoggedIn: boolean;
   isAdmin: boolean;
 }
+
+export const getUserInfo = () =>
+  request({
+    url: '/users/status',
+    method: methods.GET,
+    withCredentials: true,
+  });
 
 @Module({ dynamic: true, store, name: 'user', namespaced: true })
 class User extends VuexModule implements UserState {
