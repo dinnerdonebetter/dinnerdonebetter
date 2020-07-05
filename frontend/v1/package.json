@@ -1,8 +1,8 @@
 {
-  "name": "vue-typescript-admin-template",
+  "name": "prixfixe",
   "version": "0.1.0",
   "private": true,
-  "author": "Chong Guo <armourcy@gmail.com>",
+  "author": "",
   "scripts": {
     "serve": "vue-cli-service serve",
     "frontend-only": "NODE_ENV=frontend_dev vue-cli-service serve",
