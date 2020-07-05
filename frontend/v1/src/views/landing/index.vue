@@ -2,7 +2,7 @@
   <div class="landing-container">
     <!-- Header element -->
     <header>
-      <img src="@/assets/images/landing/header_logo.png" />
+      <img src="@/assets/images/landing/header_logo.png">
       <h1>
         <a href="https://sacarter.design">Our Story</a> What's New? Recipe Book Cooking Class Sign Up
       </h1>
@@ -10,18 +10,12 @@
 
     <!-- Main element -->
     <main>
-      <h2 class="caption">Allons y!</h2>
+      <h2 class="caption">Allons-y!</h2>
 
       <p>The community behind your cooking.</p>
-      <img src="@/assets/images/landing/splash.png" />
+      <img src="@/assets/images/landing/splash.png">
       <p class="caption">
-        The
-        <b>
-          <i>place</i>
-        </b>for your
-        <b>
-          <i>mise.</i>
-        </b>
+        The <strong><em>place</em>&nbsp;</strong>for your <strong><em>mise.</em></strong>
       </p>
 
       <!-- Features -->
@@ -48,9 +42,9 @@
     <!-- Footer Element -->
     <footer>
       <p>
-        Design and by
-        <a href="https://sacarter.design">Scott Carter</a> &
-        <a href="https://blog.verygoodsoftwarenotvirus.ru">Jeffrey</a>.
+        Design and Development by
+        <a href="https://sacarter.design">Scott</a> &
+        <a href="https://blog.verygoodsoftwarenotvirus.ru">Jeffrey</a>, respectively.
       </p>
     </footer>
   </div>
@@ -63,11 +57,18 @@ import { Component, Vue } from 'vue-property-decorator';
   name: 'Landing',
 })
 export default class extends Vue {
-  //
+  mounted() {
+    document.title = "PrixFixe - the place for your mise";
+  }
 }
 </script>
 
 <style lang="scss" scoped>
+@font-face {
+  font-family: 'MADE TOMMY';
+  src: url(~@/assets/fonts/MadeTommy/madetommy_regular_macroman/made_tommy_regular-webfont.woff2) format('woff2');
+}
+
 body {
   background-color: #f5f6ff;
   margin: auto;

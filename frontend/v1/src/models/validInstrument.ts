@@ -1,3 +1,7 @@
+import * as Factory from "factory.ts";
+import faker from "faker";
+import {defaultFactories} from "@/models/fakes";
+
 export class ValidInstrument {
   id: number;
   name: string;
@@ -33,3 +37,11 @@ export function validInstrumentsAreEqual(
     i1.archivedOn === i2.archivedOn
   );
 }
+
+export const fakeValidInstrumentFactory = Factory.Sync.makeFactory<ValidInstrument> ({
+  name: Factory.Sync.each(() => faker.lorem.word()),
+  variant: Factory.Sync.each(() => faker.lorem.words(3)),
+  description: Factory.Sync.each(() => faker.lorem.words(6)),
+  icon: Factory.Sync.each(() => ''),
+  ...defaultFactories,
+});

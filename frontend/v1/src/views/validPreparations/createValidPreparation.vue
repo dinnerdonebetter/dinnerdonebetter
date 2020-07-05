@@ -53,12 +53,14 @@
 </template>
 
 <script lang="ts">
+import faker from 'faker';
 import axios from 'axios';
 import { Component, Vue } from 'vue-property-decorator';
 
 import { backendRoutes, statusCodes } from '@/constants';
 import { ValidPreparation } from '@/models';
 import { renderUnixTime } from '@/utils/time';
+import {AppModule} from "@/store/modules/app";
 
 @Component({
   name: 'ValidPreparationCreationComponent',
@@ -72,18 +74,24 @@ export default class ValidPreparationCreationComponent extends Vue {
   private savePreparation(): void {
     this.editing = false;
 
-    axios.post(backendRoutes.VALID_PREPARATIONS, this.currentPreparation)
-      .then((response) => {
-      if (response.status === statusCodes.CREATED) {
-        const vp = response.data as ValidPreparation;
+    if (AppModule.frontendDevMode) {
+      this.$router.push({
+        path: `/admin/enumerations/valid_preparations/${faker.random.number()}`,
+      });
+    } else {
+      axios.post(backendRoutes.VALID_PREPARATIONS, this.currentPreparation)
+        .then((response) => {
+          if (response.status === statusCodes.CREATED) {
+            const vp = response.data as ValidPreparation;
 
-        this.$router.push({
-          path: `/admin/enumerations/valid_preparations/${vp.id}`,
+            this.$router.push({
+              path: `/admin/enumerations/valid_preparations/${vp.id}`,
+            });
+          } else if (response.status === statusCodes.UNAUTHORIZED) {
+            console.dir(response);
+          }
         });
-      } else if (response.status === statusCodes.UNAUTHORIZED) {
-        console.dir(response);
-      }
-    });
+    }
   }
 
   private toggleEditing(): void {

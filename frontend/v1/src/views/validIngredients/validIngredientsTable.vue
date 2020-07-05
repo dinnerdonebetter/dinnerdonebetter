@@ -227,8 +227,9 @@ import axios, { AxiosResponse } from 'axios';
 import { Component, Vue } from 'vue-property-decorator';
 
 import { backendRoutes, ContentType, statusCodes } from "@/constants";
-import { QueryFilter, ValidIngredient } from "@/models";
+import {fakeValidIngredientFactory, QueryFilter, ValidIngredient} from "@/models";
 import { renderUnixTime } from '@/utils/time';
+import {AppModule} from "@/store/modules/app";
 
 @Component({
   name: 'ValidIngredientsTable',
@@ -248,7 +249,8 @@ export default class extends Vue {
 
   // pagination vars
   private currentPage = 1;
-  private totalCount = 20;
+  private totalCount = 0;
+  private perPageCount = 20;
   private loading = false;
 
   private created(): void {
@@ -256,36 +258,43 @@ export default class extends Vue {
   }
 
   private fetchData(): void {
+    if (AppModule.frontendDevMode) {
+      this.validIngredients = fakeValidIngredientFactory.buildList(this.perPageCount);
+    } else {
+      const u = new URL(
+        `${location.protocol}//${location.host}${backendRoutes.VALID_INGREDIENTS}${location.search}`,
+      );
+      const qf = new QueryFilter(u.searchParams);
+      qf.page = this.currentPage;
+      qf.modifyURL(u);
+
+      axios.get(u.toString(), {
+        headers: {
+          "Content-Type": ContentType,
+        },
+      })
+        .then((response: AxiosResponse) => {
+          this.talkedToServer = true;
+          if (response.status === statusCodes.OK) {
+            return response.data;
+          } else {
+            throw "no response from server";
+          }
+        })
+        .then((data: {
+          validIngredients: ValidIngredient[];
+          totalCount: number;
+          page: number;
+        }) => {
+          this.validIngredients = data["validIngredients"];
+          this.totalCount = data["totalCount"];
+          this.currentPage = data["page"];
+        });
+      this.loading = false;
+    }
     const u = new URL(
       `${location.protocol}//${location.host}${backendRoutes.VALID_INGREDIENTS}${location.search}`,
     );
-    const qf = new QueryFilter(u.searchParams);
-    qf.page = this.currentPage;
-    qf.modifyURL(u);
-
-    axios.get(u.toString(), {
-      headers: {
-        "Content-Type": ContentType,
-      },
-    })
-      .then((response: AxiosResponse) => {
-        this.talkedToServer = true;
-        if (response.status === statusCodes.OK) {
-          return response.data;
-        } else {
-          throw "no response from server";
-        }
-      })
-      .then((data: {
-        'validIngredients': ValidIngredient[];
-        'totalCount': number;
-        'page': number;
-      }) => {
-        this.validIngredients = data["validIngredients"];
-        this.totalCount = data["totalCount"];
-        this.currentPage = data["page"];
-      });
-    this.loading = false;
   }
 
   private renderUnixTime = renderUnixTime;
@@ -297,7 +306,7 @@ export default class extends Vue {
   }
 
   private goBackOnePage(): void {
-    this.currentPage -= 1;
+    this.currentPage = Math.max(1, this.currentPage-1);
     this.fetchData();
   }
 

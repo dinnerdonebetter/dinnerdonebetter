@@ -431,12 +431,5 @@ func (p *Postgres) Migrate(ctx context.Context, createDevUser bool) error {
 
 	p.migrateOnce.Do(buildMigrationFunc(p.db, nil))
 
-	defer func() {
-		if r := recover(); r != nil {
-			p.logger.WithValue("recover", r).Info("recovered")
-			p.logger.Fatal(errors.New("blah"))
-		}
-	}()
-
 	return nil
 }

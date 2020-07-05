@@ -1,11 +1,10 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { UserModule } from '@/store/modules/user'
 
 const service = axios.create({
   timeout: 5000,
 });
 
-axios.defaults.validateStatus = (_: number) => { return true; };
+axios.defaults.validateStatus = () => { return true; };
 
 // Request interceptors
 service.interceptors.request.use(

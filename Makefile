@@ -13,6 +13,10 @@ DEV_TERRAFORM_DIR        := deploy/dev/terraform
 $(ARTIFACTS_DIR):
 	@mkdir -p $(ARTIFACTS_DIR)
 
+.PHONY: post-clone
+post-clone: vendor config_files wire
+	(cd frontend/v1 && npm install && npm audit fix)
+
 ## Go-specific prerequisite stuff
 
 ensure-wire:

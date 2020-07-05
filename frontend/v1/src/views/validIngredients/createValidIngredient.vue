@@ -189,11 +189,13 @@
 
 <script lang="ts">
 import axios from 'axios';
+import faker from 'faker';
 import { Component, Vue } from 'vue-property-decorator';
 
 import { backendRoutes, statusCodes } from '@/constants';
 import { ValidIngredient } from '@/models';
 import { renderUnixTime } from '@/utils/time';
+import {AppModule} from "@/store/modules/app";
 
 @Component({
   name: 'ValidIngredientCreationComponent',
@@ -207,18 +209,24 @@ export default class ValidIngredientCreationComponent extends Vue {
   private saveIngredient(): void {
     this.editing = false;
 
-    axios.post(backendRoutes.VALID_INGREDIENTS, this.currentIngredient)
-      .then((response) => {
-      if (response.status === statusCodes.CREATED) {
-        const vi = response.data as ValidIngredient;
+    if (AppModule.frontendDevMode) {
+      this.$router.push({
+        path: `/admin/enumerations/valid_ingredients/${faker.random.number()}`,
+      });
+    } else {
+      axios.post(backendRoutes.VALID_INGREDIENTS, this.currentIngredient)
+        .then((response) => {
+        if (response.status === statusCodes.CREATED) {
+          const vi = response.data as ValidIngredient;
 
-        this.$router.push({
-          path: `/admin/enumerations/valid_ingredients/${vi.id}`,
-        });
-      } else if (response.status === statusCodes.UNAUTHORIZED) {
-        console.dir(response);
-      }
-    });
+          this.$router.push({
+            path: `/admin/enumerations/valid_ingredients/${vi.id}`,
+          });
+        } else if (response.status === statusCodes.UNAUTHORIZED) {
+          console.dir(response);
+        }
+      });
+    }
   }
 
   private toggleEditing(): void {
