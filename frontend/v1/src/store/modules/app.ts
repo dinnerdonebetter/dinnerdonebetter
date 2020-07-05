@@ -13,6 +13,7 @@ export interface AppState {
     opened: boolean;
     withoutAnimation: boolean;
   };
+  frontendDevMode: boolean;
 }
 
 @Module({ dynamic: true, store, name: 'app' })
@@ -22,6 +23,12 @@ class App extends VuexModule implements AppState {
     withoutAnimation: false,
   };
   public device = DeviceType.Desktop;
+  public frontendDevMode = process.env.NODE_ENV === 'frontend_dev';
+
+  @Mutation
+  private TOGGLE_FRONTEND_DEV_MODE() {
+    this.frontendDevMode = !this.frontendDevMode;
+  };
 
   @Mutation
   private TOGGLE_SIDEBAR(withoutAnimation: boolean) {

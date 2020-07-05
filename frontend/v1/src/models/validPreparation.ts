@@ -1,3 +1,7 @@
+import * as Factory from "factory.ts";
+import faker from "faker";
+import {defaultFactories} from "@/models/fakes";
+
 export class ValidPreparation {
   id: number;
   name: string;
@@ -30,3 +34,11 @@ export function validPreparationsAreEqual(
     i1.archivedOn === i2.archivedOn
   );
 }
+
+
+export const fakeValidPreparationFactory = Factory.Sync.makeFactory<ValidPreparation> ({
+  name: Factory.Sync.each(() => faker.lorem.word()),
+  description: Factory.Sync.each(() => faker.lorem.words(6)),
+  icon: Factory.Sync.each(() => ''),
+  ...defaultFactories,
+});

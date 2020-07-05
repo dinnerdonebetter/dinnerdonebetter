@@ -205,8 +205,9 @@ import { Component, Vue } from 'vue-property-decorator';
 import format from 'string-format';
 
 import { backendRoutes, statusCodes } from '@/constants';
-import { ValidIngredient, validIngredientsAreEqual } from '@/models';
+import {fakeValidIngredientFactory, ValidIngredient} from '@/models';
 import { renderUnixTime } from '@/utils/time';
+import { AppModule } from "@/store/modules/app";
 
 @Component({
   name: 'ValidIngredientComponent',
@@ -221,25 +222,29 @@ export default class ValidIngredientComponent extends Vue {
   private originalIngredient: ValidIngredient | null = null;
 
   private mounted(): void {
-    axios.get(this.buildURL())
-      .then((response: AxiosResponse) => {
-        this.talkedToServer = true;
-        if (response.status === statusCodes.OK) {
-          return response.data;
-        } else {
-          throw "no response from server";
-        }
-      })
-      .then((data: ValidIngredient) => {
-        this.currentIngredient = data;
-        if (this.originalIngredient === null) {
-          this.originalIngredient = {
-            ...this.currentIngredient,
-          } as ValidIngredient;
+    if (AppModule.frontendDevMode) {
+      this.currentIngredient = fakeValidIngredientFactory.build();
+    } else {
+      axios.get(this.buildURL())
+        .then((response: AxiosResponse) => {
+          this.talkedToServer = true;
+          if (response.status === statusCodes.OK) {
+            return response.data;
+          } else {
+            throw "no response from server";
+          }
+        })
+        .then((data: ValidIngredient) => {
+          this.currentIngredient = data;
+          if (this.originalIngredient === null) {
+            this.originalIngredient = {
+              ...this.currentIngredient,
+            } as ValidIngredient;
 
-          document.title = `${this.currentIngredient.variant} - ${this.currentIngredient.name}`;
-        }
-      });
+            document.title = `${this.currentIngredient.variant} - ${this.currentIngredient.name}`;
+          }
+        });
+    }
   }
 
   private buildURL(): string {
@@ -250,34 +255,42 @@ export default class ValidIngredientComponent extends Vue {
   }
 
   private saveIngredient(): void {
-    axios.put(this.buildURL(), this.currentIngredient)
-      .then((response: AxiosResponse) => {
-        this.talkedToServer = true;
-        if (response.status === statusCodes.OK) {
-          return response.data;
-        } else {
-          throw "no response from server";
-        }
-      })
-      .then((data: ValidIngredient) => {
-        this.currentIngredient = data;
-        this.editing = false;
-    });
+    if (AppModule.frontendDevMode) {
+      this.editing = true;
+    } else {
+      axios.put(this.buildURL(), this.currentIngredient)
+        .then((response: AxiosResponse) => {
+          this.talkedToServer = true;
+          if (response.status === statusCodes.OK) {
+            return response.data;
+          } else {
+            throw "no response from server";
+          }
+        })
+        .then((data: ValidIngredient) => {
+          this.currentIngredient = data;
+          this.editing = false;
+        });
+    }
   }
 
   private deleteIngredient() {
-    const nameAndVariant = `${this.currentIngredient.name} - ${this.currentIngredient.variant}`;
-    const confirmationText = prompt(`please enter the full name to confirm deletion: ${nameAndVariant}`);
+    const expectedAnswer = `${this.currentIngredient.name} - ${this.currentIngredient.variant}`;
+    const actualAnswer  = prompt(`please enter the full name to confirm deletion: ${expectedAnswer}`);
 
-    if (nameAndVariant === confirmationText) {
-      axios.delete(this.buildURL())
-        .then((response: AxiosResponse) => {
-          if (response.status === statusCodes.NO_CONTENT) {
-            this.$router.push({path: "/admin/enumerations/valid_ingredients/"});
-          } else {
-            console.error("something has gone awry");
-          }
-        });
+    if (expectedAnswer === actualAnswer) {
+      if (AppModule.frontendDevMode) {
+        this.$router.push({path: "/admin/enumerations/valid_ingredients/"});
+      } else {
+        axios.delete(this.buildURL())
+          .then((response: AxiosResponse) => {
+            if (response.status === statusCodes.NO_CONTENT) {
+              this.$router.push({path: "/admin/enumerations/valid_ingredients/"});
+            } else {
+              console.error("something has gone awry");
+            }
+          });
+      }
     }
   }
 
@@ -288,8 +301,8 @@ export default class ValidIngredientComponent extends Vue {
   private renderUnixTime = renderUnixTime;
 
   private fieldChange(): void {
-    if (this.currentIngredient !== null && this.originalIngredient !== null) {
-      this.hasChanged = !validIngredientsAreEqual(
+    if (this.originalIngredient !== null) {
+      this.hasChanged = !ValidIngredient.areEqual(
         this.currentIngredient,
         this.originalIngredient,
       );

@@ -205,8 +205,9 @@ import { Component, Vue } from 'vue-property-decorator';
 import format from 'string-format';
 
 import { backendRoutes, statusCodes } from '@/constants';
-import { ValidInstrument, validInstrumentsAreEqual } from '@/models';
+import {fakeValidInstrumentFactory, ValidInstrument, validInstrumentsAreEqual} from '@/models';
 import { renderUnixTime } from '@/utils/time';
+import {AppModule} from "@/store/modules/app";
 
 @Component({
   name: 'ValidInstrumentComponent',
@@ -221,25 +222,29 @@ export default class ValidInstrumentComponent extends Vue {
   private originalInstrument: ValidInstrument | null = null;
 
   private mounted(): void {
-    axios.get(this.buildURL())
-      .then((response: AxiosResponse) => {
-        this.talkedToServer = true;
-        if (response.status === statusCodes.OK) {
-          return response.data;
-        } else {
-          throw "no response from server";
-        }
-      })
-      .then((data: ValidInstrument) => {
-        this.currentInstrument = data;
-        if (this.originalInstrument === null) {
-          this.originalInstrument = {
-            ...this.currentInstrument,
-          } as ValidInstrument;
+    if (AppModule.frontendDevMode) {
+      this.currentInstrument = fakeValidInstrumentFactory.build();
+    } else {
+      axios.get(this.buildURL())
+        .then((response: AxiosResponse) => {
+          this.talkedToServer = true;
+          if (response.status === statusCodes.OK) {
+            return response.data;
+          } else {
+            throw "no response from server";
+          }
+        })
+        .then((data: ValidInstrument) => {
+          this.currentInstrument = data;
+          if (this.originalInstrument === null) {
+            this.originalInstrument = {
+              ...this.currentInstrument,
+            } as ValidInstrument;
 
-          document.title = `${this.currentInstrument.variant} - ${this.currentInstrument.name}`;
-        }
-      });
+            document.title = `${this.currentInstrument.variant} - ${this.currentInstrument.name}`;
+          }
+        });
+    }
   }
 
   private buildURL(): string {
@@ -250,19 +255,23 @@ export default class ValidInstrumentComponent extends Vue {
   }
 
   private saveInstrument(): void {
-    axios.put(this.buildURL(), this.currentInstrument)
-      .then((response: AxiosResponse) => {
-        this.talkedToServer = true;
-        if (response.status === statusCodes.OK) {
-          return response.data;
-        } else {
-          throw "no response from server";
-        }
-      })
-      .then((data: ValidInstrument) => {
-        this.currentInstrument = data;
-        this.editing = false;
-    });
+    if (AppModule.frontendDevMode) {
+      this.editing = true;
+    } else {
+      axios.put(this.buildURL(), this.currentInstrument)
+        .then((response: AxiosResponse) => {
+          this.talkedToServer = true;
+          if (response.status === statusCodes.OK) {
+            return response.data;
+          } else {
+            throw "no response from server";
+          }
+        })
+        .then((data: ValidInstrument) => {
+          this.currentInstrument = data;
+          this.editing = false;
+        });
+    }
   }
 
   private deleteInstrument() {
@@ -270,14 +279,18 @@ export default class ValidInstrumentComponent extends Vue {
     const confirmationText = prompt(`please enter the full name to confirm deletion: ${nameAndVariant}`);
 
     if (nameAndVariant === confirmationText) {
-      axios.delete(this.buildURL())
-        .then((response: AxiosResponse) => {
-          if (response.status === statusCodes.NO_CONTENT) {
-            this.$router.push({path: "/admin/enumerations/valid_instruments/"});
-          } else {
-            console.error("something has gone awry");
-          }
-        });
+      if (AppModule.frontendDevMode) {
+        this.$router.push({path: "/admin/enumerations/valid_instruments/"});
+      } else {
+        axios.delete(this.buildURL())
+          .then((response: AxiosResponse) => {
+            if (response.status === statusCodes.NO_CONTENT) {
+              this.$router.push({path: "/admin/enumerations/valid_instruments/"});
+            } else {
+              console.error("something has gone awry");
+            }
+          });
+      }
     }
   }
 
@@ -288,7 +301,7 @@ export default class ValidInstrumentComponent extends Vue {
   private renderUnixTime = renderUnixTime;
 
   private fieldChange(): void {
-    if (this.currentInstrument !== null && this.originalInstrument !== null) {
+    if (this.originalInstrument !== null) {
       this.hasChanged = !validInstrumentsAreEqual(
         this.currentInstrument,
         this.originalInstrument,

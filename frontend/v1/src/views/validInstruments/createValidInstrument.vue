@@ -63,11 +63,13 @@
 
 <script lang="ts">
 import axios from 'axios';
+import faker from 'faker';
 import { Component, Vue } from 'vue-property-decorator';
 
 import { backendRoutes, statusCodes } from '@/constants';
 import { ValidInstrument } from '@/models';
 import { renderUnixTime } from '@/utils/time';
+import {AppModule} from "@/store/modules/app";
 
 @Component({
   name: 'ValidInstrumentCreationComponent',
@@ -81,18 +83,24 @@ export default class ValidInstrumentCreationComponent extends Vue {
   private saveInstrument(): void {
     this.editing = false;
 
-    axios.post(backendRoutes.VALID_INSTRUMENTS, this.currentInstrument)
-      .then((response) => {
-      if (response.status === statusCodes.CREATED) {
-        const vi = response.data as ValidInstrument;
+    if (AppModule.frontendDevMode) {
+      this.$router.push({
+        path: `/admin/enumerations/valid_instruments/${faker.random.number()}`,
+      });
+    } else {
+      axios.post(backendRoutes.VALID_INSTRUMENTS, this.currentInstrument)
+        .then((response) => {
+          if (response.status === statusCodes.CREATED) {
+            const vi = response.data as ValidInstrument;
 
-        this.$router.push({
-          path: `/admin/enumerations/valid_instruments/${vi.id}`,
+            this.$router.push({
+              path: `/admin/enumerations/valid_instruments/${vi.id}`,
+            });
+          } else if (response.status === statusCodes.UNAUTHORIZED) {
+            console.dir(response);
+          }
         });
-      } else if (response.status === statusCodes.UNAUTHORIZED) {
-        console.dir(response);
-      }
-    });
+    }
   }
 
   private toggleEditing(): void {

@@ -26,6 +26,8 @@ module.exports = {
     'vue/component-name-in-template-casing': 'error',
     'vue/eqeqeq': 'error',
     'vue/key-spacing': 'error',
+    'vue/max-attributes-per-line': 'off',
+    'vue/singleline-html-element-content-newline': 'off',
     'vue/match-component-file-name': 'error',
     'vue/object-curly-spacing': 'error',
     'max-len': [2, {'code': 256, 'tabWidth': 4, 'ignoreUrls': true}],

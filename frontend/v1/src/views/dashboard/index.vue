@@ -4,7 +4,7 @@
       <img
         alt="chef logo"
         class="chef"
-        src="@/assets/prixfixeheroiconschef.svg"
+        src="@/assets/images/icons/prixfixeheroiconschef.svg"
       >
     </div>
   </div>

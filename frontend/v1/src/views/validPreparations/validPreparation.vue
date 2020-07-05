@@ -71,8 +71,9 @@ import { Component, Vue } from 'vue-property-decorator';
 import format from 'string-format';
 
 import { backendRoutes, statusCodes } from '@/constants';
-import { ValidPreparation, validPreparationsAreEqual } from '@/models';
+import {fakeValidPreparationFactory, ValidPreparation, validPreparationsAreEqual} from '@/models';
 import { renderUnixTime } from '@/utils/time';
+import {AppModule} from "@/store/modules/app";
 
 @Component({
   name: 'ValidPreparationComponent',
@@ -87,25 +88,29 @@ export default class ValidPreparationComponent extends Vue {
   private originalPreparation: ValidPreparation | null = null;
 
   private mounted(): void {
-    axios.get(this.buildURL())
-      .then((response: AxiosResponse) => {
-        this.talkedToServer = true;
-        if (response.status === statusCodes.OK) {
-          return response.data;
-        } else {
-          throw "no response from server";
-        }
-      })
-      .then((data: ValidPreparation) => {
-        this.currentPreparation = data;
-        if (this.originalPreparation === null) {
-          this.originalPreparation = {
-            ...this.currentPreparation,
-          } as ValidPreparation;
+    if (AppModule.frontendDevMode) {
+      this.currentPreparation = fakeValidPreparationFactory.build();
+    } else {
+      axios.get(this.buildURL())
+        .then((response: AxiosResponse) => {
+          this.talkedToServer = true;
+          if (response.status === statusCodes.OK) {
+            return response.data;
+          } else {
+            throw "no response from server";
+          }
+        })
+        .then((data: ValidPreparation) => {
+          this.currentPreparation = data;
+          if (this.originalPreparation === null) {
+            this.originalPreparation = {
+              ...this.currentPreparation,
+            } as ValidPreparation;
 
-          document.title = `${this.currentPreparation.name}`;
-        }
-      });
+            document.title = `${this.currentPreparation.name}`;
+          }
+        });
+    }
   }
 
   private buildURL(): string {
@@ -116,19 +121,23 @@ export default class ValidPreparationComponent extends Vue {
   }
 
   private savePreparation(): void {
-    axios.put(this.buildURL(), this.currentPreparation)
-      .then((response: AxiosResponse) => {
-        this.talkedToServer = true;
-        if (response.status === statusCodes.OK) {
-          return response.data;
-        } else {
-          throw "no response from server";
-        }
-      })
-      .then((data: ValidPreparation) => {
-        this.currentPreparation = data;
-        this.editing = false;
-    });
+    if (AppModule.frontendDevMode) {
+      this.editing = false;
+    } else {
+      axios.put(this.buildURL(), this.currentPreparation)
+        .then((response: AxiosResponse) => {
+          this.talkedToServer = true;
+          if (response.status === statusCodes.OK) {
+            return response.data;
+          } else {
+            throw "no response from server";
+          }
+        })
+        .then((data: ValidPreparation) => {
+          this.currentPreparation = data;
+          this.editing = false;
+        });
+    }
   }
 
   private deletePreparation() {
@@ -136,14 +145,18 @@ export default class ValidPreparationComponent extends Vue {
     const confirmationText = prompt(`please enter the full name to confirm deletion: ${nameAndVariant}`);
 
     if (nameAndVariant === confirmationText) {
-      axios.delete(this.buildURL())
-        .then((response: AxiosResponse) => {
-          if (response.status === statusCodes.NO_CONTENT) {
-            this.$router.push({path: "/admin/enumerations/valid_preparations/"});
-          } else {
-            console.error("something has gone awry");
-          }
-        });
+      if (AppModule.frontendDevMode) {
+        this.$router.push({path: "/admin/enumerations/valid_preparations/"});
+      } else {
+        axios.delete(this.buildURL())
+          .then((response: AxiosResponse) => {
+            if (response.status === statusCodes.NO_CONTENT) {
+              this.$router.push({path: "/admin/enumerations/valid_preparations/"});
+            } else {
+              console.error("something has gone awry");
+            }
+          });
+      }
     }
   }
 
@@ -154,7 +167,7 @@ export default class ValidPreparationComponent extends Vue {
   private renderUnixTime = renderUnixTime;
 
   private fieldChange(): void {
-    if (this.currentPreparation !== null && this.originalPreparation !== null) {
+    if (this.originalPreparation !== null) {
       this.hasChanged = !validPreparationsAreEqual(
         this.currentPreparation,
         this.originalPreparation,

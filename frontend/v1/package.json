@@ -5,15 +5,19 @@
   "author": "Chong Guo <armourcy@gmail.com>",
   "scripts": {
     "serve": "vue-cli-service serve",
+    "frontend-only": "NODE_ENV=frontend_dev vue-cli-service serve",
     "build": "vue-cli-service build",
     "autobuild": "vue-cli-service build --watch",
     "lint": "vue-cli-service lint",
     "svg": "vsvg -s ./src/icons/svg -t ./src/icons/components --ext ts --es6"
   },
   "dependencies": {
+    "@types/faker": "^4.1.12",
     "@types/string-format": "^2.0.0",
     "axios": "^0.19.0",
     "element-ui": "^2.12.0",
+    "factory.ts": "^0.5.1",
+    "faker": "^4.1.0",
     "js-cookie": "^2.2.1",
     "moment": "^2.26.0",
     "normalize.css": "^8.0.1",
