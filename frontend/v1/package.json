@@ -5,7 +5,7 @@
   "author": "",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "frontend-only": "NODE_ENV=frontend_dev vue-cli-service serve",
+    "frontend-only": "cross-env NODE_ENV=frontend_dev vue-cli-service serve",
     "build": "vue-cli-service build",
     "autobuild": "vue-cli-service build --watch",
     "lint": "vue-cli-service lint",
@@ -52,6 +52,7 @@
     "@vue/test-utils": "^1.0.0-beta.29",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.3",
+    "cross-env": "^7.0.2",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.3",
