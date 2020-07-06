@@ -45,8 +45,6 @@ It's a good idea to run `make quicktest lintegration-tests` before commits. You 
 │   │   └── v1
 │   └── tools              // helper tool I built for debugging login stuff, displays a given TOTP token on a loop
 │       └── two_factor
-├── compose-files          // docker-compose configurations
-├── config_files           // service configuration files
 ├── database
 │   └── v1
 │       ├── client         // dbclient, wraps all querier calls in tracing and log statements
@@ -60,7 +58,6 @@ It's a good idea to run `make quicktest lintegration-tests` before commits. You 
 │       ├── scripts
 │       └── terraform
 ├── misc                   // metadevelopment files, right now just a documentation of what Gitlab badges are active
-├── dockerfiles
 ├── frontend               // the lipstick on this pig
 │   └── v1
 │       ├── node_modules   // the notorious, also gitignored

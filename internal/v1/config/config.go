@@ -2,7 +2,6 @@ package config
 
 import (
 	"crypto/rand"
-	"encoding/base32"
 	"fmt"
 	"io/ioutil"
 	"time"
@@ -79,8 +78,8 @@ type (
 	AuthSettings struct {
 		// CookieDomain indicates what domain the cookies will have set for them.
 		CookieDomain string `json:"cookie_domain" mapstructure:"cookie_domain" toml:"cookie_domain,omitempty"`
-		// CookieSecret indicates the secret the cookie builder should use.
-		CookieSecret string `json:"cookie_secret" mapstructure:"cookie_secret" toml:"cookie_secret,omitempty"`
+		// CookieSecret indicates the secret the cookie builder should use. Set to a random string if somehow empty.
+		CookieSecret string `json:"cookie_secret" mapstructure:",omitempty" toml:"cookie_secret,omitempty"`
 		// CookieLifetime indicates how long the cookies built should last.
 		CookieLifetime time.Duration `json:"cookie_lifetime" mapstructure:"cookie_lifetime" toml:"cookie_lifetime,omitempty"`
 		// Debug determines if debug logging or other development conditions are active.
@@ -150,7 +149,7 @@ func BuildConfig() *viper.Viper {
 
 	// auth stuff.
 	// NOTE: this will result in an ever-changing cookie secret per server instance running.
-	cfg.SetDefault("auth.cookie_secret", randString())
+	cfg.SetDefault("auth.cookie_secret", string(make([]byte, randStringSize)))
 	cfg.SetDefault("auth.cookie_lifetime", defaultCookieLifetime)
 	cfg.SetDefault("auth.enable_user_signup", true)
 
@@ -190,15 +189,9 @@ func ParseConfigFile(filename string) (*ServerConfig, error) {
 		serverConfig.Database.CreateDummyUser = false
 	}
 
-	return serverConfig, nil
-}
-
-// randString produces a random string.
-// https://blog.questionable.services/article/generating-secure-random-numbers-crypto-rand/
-func randString() string {
-	b := make([]byte, randStringSize)
-	if _, err := rand.Read(b); err != nil {
-		panic(err)
+	if serverConfig.Auth.CookieSecret == "" {
+		serverConfig.Auth.CookieSecret = string(make([]byte, randStringSize))
 	}
-	return base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(b)
+
+	return serverConfig, nil
 }

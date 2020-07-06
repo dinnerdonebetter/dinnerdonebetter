@@ -1,0 +1,73 @@
+version: "3.3"
+services:
+    database:
+        image: postgres:latest
+        environment:
+            POSTGRES_DB: "prixfixe"
+            POSTGRES_PASSWORD: "hunter2"
+            POSTGRES_USER: "dbuser"
+        logging:
+            driver: none
+        ports:
+            - 2345:5432
+    prixfixe_server:
+        environment:
+            CONFIGURATION_FILEPATH: "/etc/config.toml"
+            DOCKER: "true"
+        ports:
+            - 80:8888
+        links:
+            - database
+        build:
+            context: "../../"
+            dockerfile: "environments/testing/dockerfiles/frontend-tests-server.Dockerfile"
+    chrome:
+        image: selenium/node-chrome:3.141.59-oxygen
+        environment:
+            HUB_HOST: "selenium-hub"
+            HUB_PORT: "4444"
+        logging:
+            driver: none
+        links:
+            - selenium-hub
+        volumes:
+            - source: "/dev/shm"
+              target: "/dev/shm"
+              type: "bind"
+    firefox:
+        image: selenium/node-firefox:3.141.59-oxygen
+        environment:
+            HUB_HOST: "selenium-hub"
+            HUB_PORT: "4444"
+        logging:
+            driver: none
+        links:
+            - selenium-hub
+        volumes:
+            - source: "/dev/shm"
+              target: "/dev/shm"
+              type: "bind"
+    selenium-hub:
+        image: selenium/hub:3.141.59-oxygen
+        logging:
+            driver: none
+        ports:
+            - 4444:4444
+        container_name: selenium-hub
+    test:
+        environment:
+            DOCKER: "true"
+            TARGET_ADDRESS: "http://prixfixe_server:8888"
+        links:
+            - selenium-hub
+            - prixfixe_server
+        build:
+            context: "../../"
+            dockerfile: "environments/testing/dockerfiles/frontend-tests.Dockerfile"
+        #volumes:
+        #    - source: "../../artifacts/"
+        #      target: /artifacts
+        #      type: bind
+        depends_on:
+            - firefox
+            - chrome
