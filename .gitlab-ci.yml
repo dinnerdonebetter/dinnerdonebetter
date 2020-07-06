@@ -47,6 +47,7 @@ linting:
   variables:
     GO111MODULE: "on"
   script:
+    - go mod vendor
     - golangci-lint run --config=.golangci.yml --deadline=15m
 
 build-frontend:
