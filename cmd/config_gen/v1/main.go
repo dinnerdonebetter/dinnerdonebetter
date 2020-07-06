@@ -1,7 +1,10 @@
 package main
 
 import (
+	"io/ioutil"
 	"log"
+	"os"
+	"strings"
 	"time"
 
 	"gitlab.com/prixfixe/prixfixe/internal/v1/config"
@@ -45,10 +48,9 @@ type configFunc func(filepath string) error
 var (
 	files = map[string]configFunc{
 		"config_files/coverage.toml":                   coverageConfig,
-		"config_files/local.toml":                      localConfig,
-		"config_files/development.toml":                developmentConfig,
+		"deploy/local/config.toml":                     localConfig,
+		"deploy/dev/config.toml":                       developmentConfig,
 		"config_files/integration-tests-postgres.toml": buildIntegrationTestForDBImplementation(postgres, postgresDBConnDetails),
-		"config_files/production.toml":                 productionConfig,
 	}
 )
 
@@ -59,7 +61,18 @@ func exampleMetricsConfiguration(cfg *viper.Viper) {
 	cfg.Set(metricsRuntimeCollectionInterval, time.Second)
 }
 
-func developmentConfig(filepath string) error {
+func removeEmptyCookieSecretSettingFromFile(path string) error {
+	configAsBytes, err := ioutil.ReadFile(path)
+	if err != nil {
+		return err
+	}
+
+	configToWrite := strings.Replace(string(configAsBytes), "  cookie_secret = \"\"\n", "", 1)
+
+	return ioutil.WriteFile(path, []byte(configToWrite), os.FileMode(0644))
+}
+
+func developmentConfig(path string) error {
 	cfg := config.BuildConfig()
 
 	cfg.Set(metaDebug, true)
@@ -74,18 +87,23 @@ func developmentConfig(filepath string) error {
 
 	cfg.Set(authCookieDomain, "prixfixe.dev")
 	cfg.Set(authCookieLifetime, oneDay)
+	cfg.Set(authCookieSecret, "")
 	cfg.Set(authSecureCookiesOnly, true)
 	cfg.Set(authEnableUserSignup, true)
 
 	// exampleMetricsConfiguration
 
-	cfg.Set(dbProvider, "postgres")
+	cfg.Set(dbProvider, postgres)
 	cfg.Set(dbDeets, "postgresql://prixfixe_dev:vfhfFBwoCoDWTY86bVYa9znk1xcp19IO@database.prixfixe.dev:25060/dev_prixfixe?sslmode=require")
 
-	return cfg.WriteConfigAs(filepath)
+	if err := cfg.WriteConfigAs(path); err != nil {
+		return err
+	}
+
+	return removeEmptyCookieSecretSettingFromFile(path)
 }
 
-func localConfig(filepath string) error {
+func localConfig(path string) error {
 	cfg := config.BuildConfig()
 
 	cfg.Set(metaDebug, true)
@@ -104,13 +122,17 @@ func localConfig(filepath string) error {
 	cfg.Set(authSecureCookiesOnly, false)
 	cfg.Set(authEnableUserSignup, true)
 
-	// exampleMetricsConfiguration
+	exampleMetricsConfiguration(cfg)
 
-	cfg.Set(dbProvider, "postgres")
+	cfg.Set(dbProvider, postgres)
 	cfg.Set(dbCreateDummyUser, true)
 	cfg.Set(dbDeets, postgresDBConnDetails)
 
-	return cfg.WriteConfigAs(filepath)
+	if err := cfg.WriteConfigAs(path); err != nil {
+		return err
+	}
+
+	return removeEmptyCookieSecretSettingFromFile(path)
 }
 
 func coverageConfig(filepath string) error {
@@ -129,37 +151,7 @@ func coverageConfig(filepath string) error {
 	cfg.Set(authCookieSecret, debugCookieSecret)
 
 	cfg.Set(dbDebug, false)
-	cfg.Set(dbProvider, "postgres")
-	cfg.Set(dbDeets, postgresDBConnDetails)
-
-	return cfg.WriteConfigAs(filepath)
-}
-
-func productionConfig(filepath string) error {
-	cfg := config.BuildConfig()
-
-	cfg.Set(metaDebug, false)
-	cfg.Set(metaRunMode, "production")
-	cfg.Set(metaStartupDeadline, time.Minute)
-
-	cfg.Set(serverHTTPPort, defaultPort)
-	cfg.Set(serverDebug, false)
-
-	cfg.Set(frontendDebug, false)
-	cfg.Set(frontendStaticFilesDir, defaultFrontendFilepath)
-	cfg.Set(frontendCacheStatics, false)
-
-	cfg.Set(authDebug, false)
-	cfg.Set(authCookieDomain, "")
-	cfg.Set(authCookieSecret, debugCookieSecret)
-	cfg.Set(authCookieLifetime, oneDay)
-	cfg.Set(authSecureCookiesOnly, false)
-	cfg.Set(authEnableUserSignup, true)
-
-	exampleMetricsConfiguration(cfg)
-
-	cfg.Set(dbDebug, false)
-	cfg.Set(dbProvider, "postgres")
+	cfg.Set(dbProvider, postgres)
 	cfg.Set(dbDeets, postgresDBConnDetails)
 
 	return cfg.WriteConfigAs(filepath)

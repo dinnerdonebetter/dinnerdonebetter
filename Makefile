@@ -5,10 +5,11 @@ COVERAGE_OUT             := $(ARTIFACTS_DIR)/coverage.out
 CONFIG_DIR               := config_files
 GO_FORMAT                := gofmt -s -w
 PACKAGE_LIST             := `go list gitlab.com/prixfixe/prixfixe/... | grep -Ev '(cmd|tests|mock|fake)'`
-DOCKER_FILES_DIR         := dockerfiles
-DOCKER_COMPOSE_FILES_DIR := compose_files
 SERVER_CONTAINER_TAG     := registry.gitlab.com/prixfixe/prixfixe
-DEV_TERRAFORM_DIR        := deploy/dev/terraform
+TEST_ENV_DIR             := environments/testing
+TESTING_DOCKERFILES_DIR  := $(TEST_ENV_DIR)/dockerfiles
+DEV_ENV_DIR              := environments/dev
+DEV_TERRAFORM_DIR        := $(DEV_ENV_DIR)/terraform
 
 $(ARTIFACTS_DIR):
 	@mkdir -p $(ARTIFACTS_DIR)
@@ -108,23 +109,18 @@ format:
 
 .PHONY: check_formatting
 check_formatting:
-	docker build --tag check_formatting:latest --file $(DOCKER_FILES_DIR)/formatting.Dockerfile .
+	docker build --tag check_formatting:latest --file $(TESTING_DOCKERFILES_DIR)/formatting.Dockerfile .
 	docker run check_formatting:latest
 
 .PHONY: frontend-tests
 frontend-tests:
-	docker-compose --file $(DOCKER_COMPOSE_FILES_DIR)/frontend-tests.yaml up \
+	docker-compose --file $(TEST_ENV_DIR)/frontend-tests.yaml up \
 	--build \
 	--force-recreate \
 	--remove-orphans \
 	--renew-anon-volumes \
 	--always-recreate-deps \
 	--abort-on-container-exit
-
-## DELETE ME
-
-.PHONY: gamut
-gamut: revendor rewire config_files quicktest lint integration-tests-postgres integration-tests-sqlite integration-tests-mariadb frontend-tests
 
 ## Integration tests
 
@@ -134,9 +130,9 @@ lintegration-tests: integration-tests lint
 .PHONY: integration-tests
 integration-tests: integration-tests-postgres
 
-.PHONY: integration-tests-
-integration-tests-%:
-	docker-compose --file $(DOCKER_COMPOSE_FILES_DIR)/integration-tests-$*.yaml up \
+.PHONY: integration-tests-postgres
+integration-tests-postgres:
+	docker-compose --file $(TEST_ENV_DIR)/integration-tests-postgres.yaml up \
 	--build \
 	--force-recreate \
 	--remove-orphans \
@@ -149,7 +145,7 @@ integration-coverage: $(ARTIFACTS_DIR)
 	@# big thanks to https://blog.cloudflare.com/go-coverage-with-external-tests/
 	rm -f $(ARTIFACTS_DIR)/integration-coverage.out
 	@mkdir -p $(ARTIFACTS_DIR)
-	docker-compose --file $(DOCKER_COMPOSE_FILES_DIR)/integration-coverage.yaml up \
+	docker-compose --file $(TEST_ENV_DIR)/integration-coverage.yaml up \
 	--build \
 	--force-recreate \
 	--remove-orphans \
@@ -163,9 +159,9 @@ integration-coverage: $(ARTIFACTS_DIR)
 .PHONY: load-tests
 load-tests: load-tests-postgres
 
-.PHONY: load-tests-
-load-tests-%:
-	docker-compose --file $(DOCKER_COMPOSE_FILES_DIR)/load-tests-$*.yaml up \
+.PHONY: load-tests-postgres
+load-tests-postgres:
+	docker-compose --file $(TEST_ENV_DIR)/load-tests-postgres.yaml up \
 	--build \
 	--force-recreate \
 	--remove-orphans \
@@ -177,7 +173,7 @@ load-tests-%:
 
 .PHONY: build-dev-docker-image
 build-dev-docker-image: wire
-	docker build --tag $(SERVER_CONTAINER_TAG):dev --file $(DOCKER_FILES_DIR)/dev-server.Dockerfile .
+	docker build --tag $(SERVER_CONTAINER_TAG):dev --file $(DEV_ENV_DIR)/Dockerfile .
 
 .PHONY: publish-dev-container-image
 publish-dev-container-image: build-dev-docker-image
@@ -187,17 +183,7 @@ publish-dev-container-image: build-dev-docker-image
 
 .PHONY: dev
 dev:
-	docker-compose --file $(DOCKER_COMPOSE_FILES_DIR)/local.yaml up \
-	--build \
-	--force-recreate \
-	--remove-orphans \
-	--renew-anon-volumes \
-	--always-recreate-deps \
-	--abort-on-container-exit
-
-.PHONY: run
-run:
-	docker-compose --file $(DOCKER_COMPOSE_FILES_DIR)/production.yaml up \
+	docker-compose --file $(LOCAL_ENV_DIR)/docker-compose.yaml up \
 	--build \
 	--force-recreate \
 	--remove-orphans \
