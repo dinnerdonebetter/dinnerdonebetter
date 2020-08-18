@@ -8,10 +8,17 @@ import (
 	"github.com/GuiaBolso/darwin"
 )
 
+var currentMigration float64 = 0
+
+func incrementMigrationVersion() float64 {
+	currentMigration++
+	return currentMigration
+}
+
 var (
 	migrations = []darwin.Migration{
 		{
-			Version:     1,
+			Version:     incrementMigrationVersion(),
 			Description: "create users table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS users (
@@ -31,7 +38,7 @@ var (
 			);`,
 		},
 		{
-			Version:     2,
+			Version:     incrementMigrationVersion(),
 			Description: "create sessions table for session manager",
 			Script: `
 			CREATE TABLE sessions (
@@ -44,7 +51,7 @@ var (
 		`,
 		},
 		{
-			Version:     3,
+			Version:     incrementMigrationVersion(),
 			Description: "create oauth2_clients table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS oauth2_clients (
@@ -63,7 +70,7 @@ var (
 			);`,
 		},
 		{
-			Version:     4,
+			Version:     incrementMigrationVersion(),
 			Description: "create webhooks table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS webhooks (
@@ -83,7 +90,7 @@ var (
 			);`,
 		},
 		{
-			Version:     5,
+			Version:     incrementMigrationVersion(),
 			Description: "create valid instruments table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS valid_instruments (
@@ -98,7 +105,7 @@ var (
 			);`,
 		},
 		{
-			Version:     6,
+			Version:     incrementMigrationVersion(),
 			Description: "create valid ingredients table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS valid_ingredients (
@@ -127,7 +134,7 @@ var (
 			);`,
 		},
 		{
-			Version:     7,
+			Version:     incrementMigrationVersion(),
 			Description: "create valid preparations table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS valid_preparations (
@@ -142,7 +149,7 @@ var (
 			);`,
 		},
 		{
-			Version:     8,
+			Version:     incrementMigrationVersion(),
 			Description: "create valid ingredient preparations table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS valid_ingredient_preparations (
@@ -156,7 +163,7 @@ var (
 			);`,
 		},
 		{
-			Version:     9,
+			Version:     incrementMigrationVersion(),
 			Description: "create required preparation instruments table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS required_preparation_instruments (
@@ -170,7 +177,7 @@ var (
 			);`,
 		},
 		{
-			Version:     10,
+			Version:     incrementMigrationVersion(),
 			Description: "create recipes table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS recipes (
@@ -187,7 +194,7 @@ var (
 			);`,
 		},
 		{
-			Version:     11,
+			Version:     incrementMigrationVersion(),
 			Description: "create recipe steps table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS recipe_steps (
@@ -208,7 +215,7 @@ var (
 			);`,
 		},
 		{
-			Version:     12,
+			Version:     incrementMigrationVersion(),
 			Description: "create recipe step instruments table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS recipe_step_instruments (
@@ -224,7 +231,7 @@ var (
 			);`,
 		},
 		{
-			Version:     13,
+			Version:     incrementMigrationVersion(),
 			Description: "create recipe step ingredients table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS recipe_step_ingredients (
@@ -243,7 +250,7 @@ var (
 			);`,
 		},
 		{
-			Version:     14,
+			Version:     incrementMigrationVersion(),
 			Description: "create recipe step products table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS recipe_step_products (
@@ -258,7 +265,7 @@ var (
 			);`,
 		},
 		{
-			Version:     15,
+			Version:     incrementMigrationVersion(),
 			Description: "create recipe iterations table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS recipe_iterations (
@@ -276,7 +283,7 @@ var (
 			);`,
 		},
 		{
-			Version:     16,
+			Version:     incrementMigrationVersion(),
 			Description: "create recipe step events table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS recipe_step_events (
@@ -293,7 +300,7 @@ var (
 			);`,
 		},
 		{
-			Version:     17,
+			Version:     incrementMigrationVersion(),
 			Description: "create iteration medias table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS iteration_medias (
@@ -310,7 +317,7 @@ var (
 			);`,
 		},
 		{
-			Version:     18,
+			Version:     incrementMigrationVersion(),
 			Description: "create invitations table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS invitations (
@@ -325,7 +332,7 @@ var (
 			);`,
 		},
 		{
-			Version:     19,
+			Version:     incrementMigrationVersion(),
 			Description: "create reports table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS reports (
