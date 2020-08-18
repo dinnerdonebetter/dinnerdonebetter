@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 
@@ -16,13 +17,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func buildMockRowsFromReport(reports ...*models.Report) *sqlmock.Rows {
-	includeCount := len(reports) > 1
+func buildMockRowsFromReports(reports ...*models.Report) *sqlmock.Rows {
 	columns := reportsTableColumns
 
-	if includeCount {
-		columns = append(columns, "count")
-	}
 	exampleRows := sqlmock.NewRows(columns)
 
 	for _, x := range reports {
@@ -31,13 +28,9 @@ func buildMockRowsFromReport(reports ...*models.Report) *sqlmock.Rows {
 			x.ReportType,
 			x.Concern,
 			x.CreatedOn,
-			x.UpdatedOn,
+			x.LastUpdatedOn,
 			x.ArchivedOn,
 			x.BelongsToUser,
-		}
-
-		if includeCount {
-			rowValues = append(rowValues, len(reports))
 		}
 
 		exampleRows.AddRow(rowValues...)
@@ -52,7 +45,7 @@ func buildErroneousMockRowFromReport(x *models.Report) *sqlmock.Rows {
 		x.ReportType,
 		x.Concern,
 		x.CreatedOn,
-		x.UpdatedOn,
+		x.LastUpdatedOn,
 		x.BelongsToUser,
 		x.ID,
 	)
@@ -70,7 +63,7 @@ func TestPostgres_ScanReports(T *testing.T) {
 		mockRows.On("Next").Return(false)
 		mockRows.On("Err").Return(errors.New("blah"))
 
-		_, _, err := p.scanReports(mockRows)
+		_, err := p.scanReports(mockRows)
 		assert.Error(t, err)
 	})
 
@@ -82,7 +75,7 @@ func TestPostgres_ScanReports(T *testing.T) {
 		mockRows.On("Err").Return(nil)
 		mockRows.On("Close").Return(errors.New("blah"))
 
-		_, _, err := p.scanReports(mockRows)
+		_, err := p.scanReports(mockRows)
 		assert.NoError(t, err)
 	})
 }
@@ -167,7 +160,7 @@ func TestPostgres_buildGetReportQuery(T *testing.T) {
 		exampleReport := fakemodels.BuildFakeReport()
 		exampleReport.BelongsToUser = exampleUser.ID
 
-		expectedQuery := "SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.updated_on, reports.archived_on, reports.belongs_to_user FROM reports WHERE reports.id = $1"
+		expectedQuery := "SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_user FROM reports WHERE reports.id = $1"
 		expectedArgs := []interface{}{
 			exampleReport.ID,
 		}
@@ -183,7 +176,7 @@ func TestPostgres_GetReport(T *testing.T) {
 	T.Parallel()
 
 	exampleUser := fakemodels.BuildFakeUser()
-	expectedQuery := "SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.updated_on, reports.archived_on, reports.belongs_to_user FROM reports WHERE reports.id = $1"
+	expectedQuery := "SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_user FROM reports WHERE reports.id = $1"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
@@ -196,7 +189,7 @@ func TestPostgres_GetReport(T *testing.T) {
 			WithArgs(
 				exampleReport.ID,
 			).
-			WillReturnRows(buildMockRowsFromReport(exampleReport))
+			WillReturnRows(buildMockRowsFromReports(exampleReport))
 
 		actual, err := p.GetReport(ctx, exampleReport.ID)
 		assert.NoError(t, err)
@@ -262,6 +255,180 @@ func TestPostgres_GetAllReportsCount(T *testing.T) {
 	})
 }
 
+func TestPostgres_buildGetBatchOfReportsQuery(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		p, _ := buildTestService(t)
+
+		beginID, endID := uint64(1), uint64(1000)
+
+		expectedQuery := "SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_user FROM reports WHERE reports.id > $1 AND reports.id < $2"
+		expectedArgs := []interface{}{
+			beginID,
+			endID,
+		}
+		actualQuery, actualArgs := p.buildGetBatchOfReportsQuery(beginID, endID)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+}
+
+func TestPostgres_GetAllReports(T *testing.T) {
+	T.Parallel()
+
+	expectedCountQuery := "SELECT COUNT(reports.id) FROM reports WHERE reports.archived_on IS NULL"
+	expectedGetQuery := "SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_user FROM reports WHERE reports.id > $1 AND reports.id < $2"
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+		exampleReportList := fakemodels.BuildFakeReportList()
+		expectedCount := uint64(20)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
+			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedGetQuery)).
+			WithArgs(
+				uint64(1),
+				uint64(1001),
+			).
+			WillReturnRows(
+				buildMockRowsFromReports(
+					&exampleReportList.Reports[0],
+					&exampleReportList.Reports[1],
+					&exampleReportList.Reports[2],
+				),
+			)
+
+		out := make(chan []models.Report)
+		doneChan := make(chan bool, 1)
+
+		err := p.GetAllReports(ctx, out)
+		assert.NoError(t, err)
+
+		var stillQuerying = true
+		for stillQuerying {
+			select {
+			case batch := <-out:
+				assert.NotEmpty(t, batch)
+				doneChan <- true
+			case <-time.After(time.Second):
+				t.FailNow()
+			case <-doneChan:
+				stillQuerying = false
+			}
+		}
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with error fetching initial count", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
+			WillReturnError(errors.New("blah"))
+
+		out := make(chan []models.Report)
+
+		err := p.GetAllReports(ctx, out)
+		assert.Error(t, err)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with no rows returned", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+		expectedCount := uint64(20)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
+			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedGetQuery)).
+			WithArgs(
+				uint64(1),
+				uint64(1001),
+			).
+			WillReturnError(sql.ErrNoRows)
+
+		out := make(chan []models.Report)
+
+		err := p.GetAllReports(ctx, out)
+		assert.NoError(t, err)
+
+		time.Sleep(time.Second)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with error querying database", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+		expectedCount := uint64(20)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
+			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedGetQuery)).
+			WithArgs(
+				uint64(1),
+				uint64(1001),
+			).
+			WillReturnError(errors.New("blah"))
+
+		out := make(chan []models.Report)
+
+		err := p.GetAllReports(ctx, out)
+		assert.NoError(t, err)
+
+		time.Sleep(time.Second)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with invalid response from database", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+		exampleReport := fakemodels.BuildFakeReport()
+		expectedCount := uint64(20)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
+			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedGetQuery)).
+			WithArgs(
+				uint64(1),
+				uint64(1001),
+			).
+			WillReturnRows(buildErroneousMockRowFromReport(exampleReport))
+
+		out := make(chan []models.Report)
+
+		err := p.GetAllReports(ctx, out)
+		assert.NoError(t, err)
+
+		time.Sleep(time.Second)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+}
+
 func TestPostgres_buildGetReportsQuery(T *testing.T) {
 	T.Parallel()
 
@@ -270,7 +437,7 @@ func TestPostgres_buildGetReportsQuery(T *testing.T) {
 
 		filter := fakemodels.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.updated_on, reports.archived_on, reports.belongs_to_user, (SELECT COUNT(reports.id) FROM reports WHERE reports.archived_on IS NULL) FROM reports WHERE reports.archived_on IS NULL AND reports.created_on > $1 AND reports.created_on < $2 AND reports.updated_on > $3 AND reports.updated_on < $4 ORDER BY reports.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_user FROM reports WHERE reports.archived_on IS NULL AND reports.created_on > $1 AND reports.created_on < $2 AND reports.last_updated_on > $3 AND reports.last_updated_on < $4 ORDER BY reports.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			filter.CreatedAfter,
 			filter.CreatedBefore,
@@ -288,7 +455,7 @@ func TestPostgres_buildGetReportsQuery(T *testing.T) {
 func TestPostgres_GetReports(T *testing.T) {
 	T.Parallel()
 
-	expectedListQuery := "SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.updated_on, reports.archived_on, reports.belongs_to_user, (SELECT COUNT(reports.id) FROM reports WHERE reports.archived_on IS NULL) FROM reports WHERE reports.archived_on IS NULL ORDER BY reports.id LIMIT 20"
+	expectedQuery := "SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_user FROM reports WHERE reports.archived_on IS NULL ORDER BY reports.id LIMIT 20"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
@@ -298,9 +465,9 @@ func TestPostgres_GetReports(T *testing.T) {
 
 		exampleReportList := fakemodels.BuildFakeReportList()
 
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WillReturnRows(
-				buildMockRowsFromReport(
+				buildMockRowsFromReports(
 					&exampleReportList.Reports[0],
 					&exampleReportList.Reports[1],
 					&exampleReportList.Reports[2],
@@ -321,7 +488,7 @@ func TestPostgres_GetReports(T *testing.T) {
 		p, mockDB := buildTestService(t)
 		filter := models.DefaultQueryFilter()
 
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WillReturnError(sql.ErrNoRows)
 
 		actual, err := p.GetReports(ctx, filter)
@@ -353,12 +520,135 @@ func TestPostgres_GetReports(T *testing.T) {
 
 		exampleReport := fakemodels.BuildFakeReport()
 
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WillReturnRows(
 				buildErroneousMockRowFromReport(exampleReport),
 			)
 
 		actual, err := p.GetReports(ctx, filter)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+}
+
+func TestPostgres_buildGetReportsWithIDsQuery(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		p, _ := buildTestService(t)
+
+		exampleIDs := []uint64{
+			789,
+			123,
+			456,
+		}
+
+		expectedQuery := fmt.Sprintf("SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_user FROM (SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_user FROM reports JOIN unnest('{%s}'::int[]) WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d) AS reports WHERE reports.archived_on IS NULL", joinUint64s(exampleIDs), defaultLimit)
+		expectedArgs := []interface{}(nil)
+		actualQuery, actualArgs := p.buildGetReportsWithIDsQuery(defaultLimit, exampleIDs)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+}
+
+func TestPostgres_GetReportsWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+
+		exampleReportList := fakemodels.BuildFakeReportList()
+		var exampleIDs []uint64
+		for _, report := range exampleReportList.Reports {
+			exampleIDs = append(exampleIDs, report.ID)
+		}
+
+		expectedQuery := fmt.Sprintf("SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_user FROM (SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_user FROM reports JOIN unnest('{%s}'::int[]) WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d) AS reports WHERE reports.archived_on IS NULL", joinUint64s(exampleIDs), defaultLimit)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+			WithArgs().
+			WillReturnRows(
+				buildMockRowsFromReports(
+					&exampleReportList.Reports[0],
+					&exampleReportList.Reports[1],
+					&exampleReportList.Reports[2],
+				),
+			)
+
+		actual, err := p.GetReportsWithIDs(ctx, defaultLimit, exampleIDs)
+
+		assert.NoError(t, err)
+		assert.Equal(t, exampleReportList.Reports, actual)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("surfaces sql.ErrNoRows", func(t *testing.T) {
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+
+		exampleIDs := []uint64{123, 456, 789}
+
+		expectedQuery := fmt.Sprintf("SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_user FROM (SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_user FROM reports JOIN unnest('{%s}'::int[]) WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d) AS reports WHERE reports.archived_on IS NULL", joinUint64s(exampleIDs), defaultLimit)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+			WithArgs().
+			WillReturnError(sql.ErrNoRows)
+
+		actual, err := p.GetReportsWithIDs(ctx, defaultLimit, exampleIDs)
+
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+		assert.Equal(t, sql.ErrNoRows, err)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with error executing read query", func(t *testing.T) {
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+
+		exampleIDs := []uint64{123, 456, 789}
+
+		expectedQuery := fmt.Sprintf("SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_user FROM (SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_user FROM reports JOIN unnest('{%s}'::int[]) WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d) AS reports WHERE reports.archived_on IS NULL", joinUint64s(exampleIDs), defaultLimit)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+			WithArgs().
+			WillReturnError(errors.New("blah"))
+
+		actual, err := p.GetReportsWithIDs(ctx, defaultLimit, exampleIDs)
+
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with error scanning report", func(t *testing.T) {
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+
+		exampleIDs := []uint64{123, 456, 789}
+
+		expectedQuery := fmt.Sprintf("SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_user FROM (SELECT reports.id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_user FROM reports JOIN unnest('{%s}'::int[]) WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d) AS reports WHERE reports.archived_on IS NULL", joinUint64s(exampleIDs), defaultLimit)
+
+		exampleReport := fakemodels.BuildFakeReport()
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+			WithArgs().
+			WillReturnRows(buildErroneousMockRowFromReport(exampleReport))
+
+		actual, err := p.GetReportsWithIDs(ctx, defaultLimit, exampleIDs)
+
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -455,7 +745,7 @@ func TestPostgres_buildUpdateReportQuery(T *testing.T) {
 		exampleReport := fakemodels.BuildFakeReport()
 		exampleReport.BelongsToUser = exampleUser.ID
 
-		expectedQuery := "UPDATE reports SET report_type = $1, concern = $2, updated_on = extract(epoch FROM NOW()) WHERE belongs_to_user = $3 AND id = $4 RETURNING updated_on"
+		expectedQuery := "UPDATE reports SET report_type = $1, concern = $2, last_updated_on = extract(epoch FROM NOW()) WHERE belongs_to_user = $3 AND id = $4 RETURNING last_updated_on"
 		expectedArgs := []interface{}{
 			exampleReport.ReportType,
 			exampleReport.Concern,
@@ -473,7 +763,7 @@ func TestPostgres_buildUpdateReportQuery(T *testing.T) {
 func TestPostgres_UpdateReport(T *testing.T) {
 	T.Parallel()
 
-	expectedQuery := "UPDATE reports SET report_type = $1, concern = $2, updated_on = extract(epoch FROM NOW()) WHERE belongs_to_user = $3 AND id = $4 RETURNING updated_on"
+	expectedQuery := "UPDATE reports SET report_type = $1, concern = $2, last_updated_on = extract(epoch FROM NOW()) WHERE belongs_to_user = $3 AND id = $4 RETURNING last_updated_on"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
@@ -484,7 +774,7 @@ func TestPostgres_UpdateReport(T *testing.T) {
 		exampleReport := fakemodels.BuildFakeReport()
 		exampleReport.BelongsToUser = exampleUser.ID
 
-		exampleRows := sqlmock.NewRows([]string{"updated_on"}).AddRow(uint64(time.Now().Unix()))
+		exampleRows := sqlmock.NewRows([]string{"last_updated_on"}).AddRow(uint64(time.Now().Unix()))
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
 				exampleReport.ReportType,
@@ -533,7 +823,7 @@ func TestPostgres_buildArchiveReportQuery(T *testing.T) {
 		exampleReport := fakemodels.BuildFakeReport()
 		exampleReport.BelongsToUser = exampleUser.ID
 
-		expectedQuery := "UPDATE reports SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_user = $1 AND id = $2 RETURNING archived_on"
+		expectedQuery := "UPDATE reports SET last_updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_user = $1 AND id = $2 RETURNING archived_on"
 		expectedArgs := []interface{}{
 			exampleUser.ID,
 			exampleReport.ID,
@@ -549,7 +839,7 @@ func TestPostgres_buildArchiveReportQuery(T *testing.T) {
 func TestPostgres_ArchiveReport(T *testing.T) {
 	T.Parallel()
 
-	expectedQuery := "UPDATE reports SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_user = $1 AND id = $2 RETURNING archived_on"
+	expectedQuery := "UPDATE reports SET last_updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_user = $1 AND id = $2 RETURNING archived_on"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()

@@ -219,12 +219,14 @@ func TestV1Client_GetIterationMedias(T *testing.T) {
 		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
 		filter := (*models.QueryFilter)(nil)
 
+		expectedPath := fmt.Sprintf("/api/v1/recipes/%d/recipe_iterations/%d/iteration_medias", exampleRecipe.ID, exampleRecipeIteration.ID)
+
 		exampleIterationMediaList := fakemodels.BuildFakeIterationMediaList()
 
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/recipes/%d/recipe_iterations/%d/iteration_medias", exampleRecipe.ID, exampleRecipeIteration.ID), "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodGet)
 					require.NoError(t, json.NewEncoder(res).Encode(exampleIterationMediaList))
 				},
@@ -260,10 +262,12 @@ func TestV1Client_GetIterationMedias(T *testing.T) {
 		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
 		filter := (*models.QueryFilter)(nil)
 
+		expectedPath := fmt.Sprintf("/api/v1/recipes/%d/recipe_iterations/%d/iteration_medias", exampleRecipe.ID, exampleRecipeIteration.ID)
+
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/recipes/%d/recipe_iterations/%d/iteration_medias", exampleRecipe.ID, exampleRecipeIteration.ID), "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodGet)
 					require.NoError(t, json.NewEncoder(res).Encode("BLAH"))
 				},
@@ -317,10 +321,12 @@ func TestV1Client_CreateIterationMedia(T *testing.T) {
 		exampleIterationMedia.BelongsToRecipeIteration = exampleRecipeIteration.ID
 		exampleInput := fakemodels.BuildFakeIterationMediaCreationInputFromIterationMedia(exampleIterationMedia)
 
+		expectedPath := fmt.Sprintf("/api/v1/recipes/%d/recipe_iterations/%d/iteration_medias", exampleRecipe.ID, exampleRecipeIteration.ID)
+
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/recipes/%d/recipe_iterations/%d/iteration_medias", exampleRecipe.ID, exampleRecipeIteration.ID), "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodPost)
 
 					var x *models.IterationMediaCreationInput

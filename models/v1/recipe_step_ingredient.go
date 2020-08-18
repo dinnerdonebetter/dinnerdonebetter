@@ -8,45 +8,45 @@ import (
 type (
 	// RecipeStepIngredient represents a recipe step ingredient.
 	RecipeStepIngredient struct {
-		ID                    uint64  `json:"id"`
-		ValidIngredientID     uint64  `json:"validIngredientID"`
-		IngredientNotes       string  `json:"ingredientNotes"`
-		QuantityType          string  `json:"quantityType"`
-		QuantityValue         float32 `json:"quantityValue"`
-		QuantityNotes         string  `json:"quantityNotes"`
-		ProductOfRecipeStepID *uint64 `json:"productOfRecipeStepID"`
-		CreatedOn             uint64  `json:"createdOn"`
-		UpdatedOn             *uint64 `json:"updatedOn"`
-		ArchivedOn            *uint64 `json:"archivedOn"`
-		BelongsToRecipeStep   uint64  `json:"belongsToRecipeStep"`
+		QuantityType        string  `json:"quantityType"`
+		QuantityNotes       string  `json:"quantityNotes"`
+		IngredientNotes     string  `json:"ingredientNotes"`
+		ID                  uint64  `json:"id"`
+		IngredientID        *uint64 `json:"ingredientID"`
+		CreatedOn           uint64  `json:"createdOn"`
+		LastUpdatedOn       *uint64 `json:"lastUpdatedOn"`
+		ArchivedOn          *uint64 `json:"archivedOn"`
+		BelongsToRecipeStep uint64  `json:"belongsToRecipeStep"`
+		QuantityValue       float32 `json:"quantityValue"`
+		ProductOfRecipe     bool    `json:"productOfRecipe"`
 	}
 
 	// RecipeStepIngredientList represents a list of recipe step ingredients.
 	RecipeStepIngredientList struct {
 		Pagination
-		RecipeStepIngredients []RecipeStepIngredient `json:"recipeStepIngredients"`
+		RecipeStepIngredients []RecipeStepIngredient `json:"recipe_step_ingredients"`
 	}
 
 	// RecipeStepIngredientCreationInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientCreationInput struct {
-		ValidIngredientID     uint64  `json:"validIngredientID"`
-		IngredientNotes       string  `json:"ingredientNotes"`
-		QuantityType          string  `json:"quantityType"`
-		QuantityValue         float32 `json:"quantityValue"`
-		QuantityNotes         string  `json:"quantityNotes"`
-		ProductOfRecipeStepID *uint64 `json:"productOfRecipeStepID"`
-		BelongsToRecipeStep   uint64  `json:"-"`
+		QuantityType        string  `json:"quantityType"`
+		QuantityNotes       string  `json:"quantityNotes"`
+		IngredientNotes     string  `json:"ingredientNotes"`
+		IngredientID        *uint64 `json:"ingredientID"`
+		BelongsToRecipeStep uint64  `json:"-"`
+		QuantityValue       float32 `json:"quantityValue"`
+		ProductOfRecipe     bool    `json:"productOfRecipe"`
 	}
 
 	// RecipeStepIngredientUpdateInput represents what a user could set as input for updating recipe step ingredients.
 	RecipeStepIngredientUpdateInput struct {
-		ValidIngredientID     uint64  `json:"validIngredientID"`
-		IngredientNotes       string  `json:"ingredientNotes"`
-		QuantityType          string  `json:"quantityType"`
-		QuantityValue         float32 `json:"quantityValue"`
-		QuantityNotes         string  `json:"quantityNotes"`
-		ProductOfRecipeStepID *uint64 `json:"productOfRecipeStepID"`
-		BelongsToRecipeStep   uint64  `json:"belongsToRecipeStep"`
+		QuantityType        string  `json:"quantityType"`
+		QuantityNotes       string  `json:"quantityNotes"`
+		IngredientNotes     string  `json:"ingredientNotes"`
+		IngredientID        *uint64 `json:"ingredientID"`
+		BelongsToRecipeStep uint64  `json:"belongsToRecipeStep"`
+		QuantityValue       float32 `json:"quantityValue"`
+		ProductOfRecipe     bool    `json:"productOfRecipe"`
 	}
 
 	// RecipeStepIngredientDataManager describes a structure capable of storing recipe step ingredients permanently.
@@ -54,7 +54,9 @@ type (
 		RecipeStepIngredientExists(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID uint64) (bool, error)
 		GetRecipeStepIngredient(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID uint64) (*RecipeStepIngredient, error)
 		GetAllRecipeStepIngredientsCount(ctx context.Context) (uint64, error)
+		GetAllRecipeStepIngredients(ctx context.Context, resultChannel chan []RecipeStepIngredient) error
 		GetRecipeStepIngredients(ctx context.Context, recipeID, recipeStepID uint64, filter *QueryFilter) (*RecipeStepIngredientList, error)
+		GetRecipeStepIngredientsWithIDs(ctx context.Context, recipeID, recipeStepID uint64, limit uint8, ids []uint64) ([]RecipeStepIngredient, error)
 		CreateRecipeStepIngredient(ctx context.Context, input *RecipeStepIngredientCreationInput) (*RecipeStepIngredient, error)
 		UpdateRecipeStepIngredient(ctx context.Context, updated *RecipeStepIngredient) error
 		ArchiveRecipeStepIngredient(ctx context.Context, recipeStepID, recipeStepIngredientID uint64) error
@@ -65,23 +67,19 @@ type (
 		CreationInputMiddleware(next http.Handler) http.Handler
 		UpdateInputMiddleware(next http.Handler) http.Handler
 
-		ListHandler() http.HandlerFunc
-		CreateHandler() http.HandlerFunc
-		ExistenceHandler() http.HandlerFunc
-		ReadHandler() http.HandlerFunc
-		UpdateHandler() http.HandlerFunc
-		ArchiveHandler() http.HandlerFunc
+		ListHandler(res http.ResponseWriter, req *http.Request)
+		CreateHandler(res http.ResponseWriter, req *http.Request)
+		ExistenceHandler(res http.ResponseWriter, req *http.Request)
+		ReadHandler(res http.ResponseWriter, req *http.Request)
+		UpdateHandler(res http.ResponseWriter, req *http.Request)
+		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 
 // Update merges an RecipeStepIngredientInput with a recipe step ingredient.
 func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateInput) {
-	if input.ValidIngredientID != x.ValidIngredientID {
-		x.ValidIngredientID = input.ValidIngredientID
-	}
-
-	if input.IngredientNotes != "" && input.IngredientNotes != x.IngredientNotes {
-		x.IngredientNotes = input.IngredientNotes
+	if input.IngredientID != nil && input.IngredientID != x.IngredientID {
+		x.IngredientID = input.IngredientID
 	}
 
 	if input.QuantityType != "" && input.QuantityType != x.QuantityType {
@@ -96,19 +94,23 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateInput) {
 		x.QuantityNotes = input.QuantityNotes
 	}
 
-	if input.ProductOfRecipeStepID != nil && input.ProductOfRecipeStepID != x.ProductOfRecipeStepID {
-		x.ProductOfRecipeStepID = input.ProductOfRecipeStepID
+	if input.ProductOfRecipe != x.ProductOfRecipe {
+		x.ProductOfRecipe = input.ProductOfRecipe
+	}
+
+	if input.IngredientNotes != "" && input.IngredientNotes != x.IngredientNotes {
+		x.IngredientNotes = input.IngredientNotes
 	}
 }
 
 // ToUpdateInput creates a RecipeStepIngredientUpdateInput struct for a recipe step ingredient.
 func (x *RecipeStepIngredient) ToUpdateInput() *RecipeStepIngredientUpdateInput {
 	return &RecipeStepIngredientUpdateInput{
-		ValidIngredientID:     x.ValidIngredientID,
-		IngredientNotes:       x.IngredientNotes,
-		QuantityType:          x.QuantityType,
-		QuantityValue:         x.QuantityValue,
-		QuantityNotes:         x.QuantityNotes,
-		ProductOfRecipeStepID: x.ProductOfRecipeStepID,
+		IngredientID:    x.IngredientID,
+		QuantityType:    x.QuantityType,
+		QuantityValue:   x.QuantityValue,
+		QuantityNotes:   x.QuantityNotes,
+		ProductOfRecipe: x.ProductOfRecipe,
+		IngredientNotes: x.IngredientNotes,
 	}
 }

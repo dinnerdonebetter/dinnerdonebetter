@@ -1,22 +1,14 @@
-PWD                      := $(shell pwd)
-GOPATH                   := $(GOPATH)
-ARTIFACTS_DIR            := artifacts
-COVERAGE_OUT             := $(ARTIFACTS_DIR)/coverage.out
-CONFIG_DIR               := config_files
-GO_FORMAT                := gofmt -s -w
-PACKAGE_LIST             := `go list gitlab.com/prixfixe/prixfixe/... | grep -Ev '(cmd|tests|mock|fake)'`
-SERVER_CONTAINER_TAG     := registry.gitlab.com/prixfixe/prixfixe
-TEST_ENV_DIR             := environments/testing
-TESTING_DOCKERFILES_DIR  := $(TEST_ENV_DIR)/dockerfiles
-DEV_ENV_DIR              := environments/dev
-DEV_TERRAFORM_DIR        := $(DEV_ENV_DIR)/terraform
+PWD                           := $(shell pwd)
+GOPATH                        := $(GOPATH)
+ARTIFACTS_DIR                 := artifacts
+COVERAGE_OUT                  := $(ARTIFACTS_DIR)/coverage.out
+DOCKER_GO                     := docker run --interactive --tty --rm --volume $(PWD):$(PWD) --user `whoami`:`whoami` --workdir=$(PWD) golang:latest go
+GO_FORMAT                     := gofmt -s -w
+PACKAGE_LIST                  := `go list gitlab.com/prixfixe/prixfixe/... | grep -Ev '(cmd|tests|mock|fake)'`
+TEST_DOCKER_COMPOSE_FILES_DIR := environments/testing/compose_files
 
 $(ARTIFACTS_DIR):
 	@mkdir -p $(ARTIFACTS_DIR)
-
-.PHONY: post-clone
-post-clone: vendor config_files wire
-	(cd frontend/v1 && npm install && npm audit fix)
 
 ## Go-specific prerequisite stuff
 
@@ -37,7 +29,6 @@ dev-tools: ensure-wire ensure-go-junit-report
 vendor-clean:
 	rm -rf vendor go.sum
 
-.PHONY: vendor
 vendor:
 	if [ ! -f go.mod ]; then go mod init; fi
 	go mod vendor
@@ -52,26 +43,16 @@ wire-clean:
 	rm -f cmd/server/v1/wire_gen.go
 
 .PHONY: wire
-wire: ensure-wire
+wire: ensure-wire vendor
 	wire gen gitlab.com/prixfixe/prixfixe/cmd/server/v1
 
 .PHONY: rewire
 rewire: ensure-wire wire-clean wire
 
-.PHONY: npmagain
-npmagain:
-	(cd frontend/v1 && rm -rf node_modules && npm install && npm audit fix)
-
 ## Config
 
-clean_$(CONFIG_DIR):
-	rm -rf $(CONFIG_DIR)
-
-.PHONY: configs
-configs: clean_$(CONFIG_DIR) $(CONFIG_DIR)
-
-$(CONFIG_DIR):
-	@mkdir -p $(CONFIG_DIR)
+.PHONY: config_files
+config_files: vendor
 	go run cmd/config_gen/v1/main.go
 
 ## Testing things
@@ -99,28 +80,33 @@ gitlab-ci-junit-report: $(ARTIFACTS_DIR) ensure-go-junit-report
 	@mkdir $(CI_PROJECT_DIR)/test_artifacts
 	go test -v -race -count 5 $(PACKAGE_LIST) | go-junit-report > $(CI_PROJECT_DIR)/test_artifacts/unit_test_report.xml
 
-.PHONY: quicktest # basically the same as coverage.out, only running once instead of with `-count` set
-quicktest: $(ARTIFACTS_DIR)
+.PHONY: quicktest # basically only running once instead of with -count 5 or whatever
+quicktest: $(ARTIFACTS_DIR) vendor
 	go test -cover -race -failfast $(PACKAGE_LIST)
 
 .PHONY: format
-format:
+format: vendor
 	for file in `find $(PWD) -name '*.go'`; do $(GO_FORMAT) $$file; done
 
 .PHONY: check_formatting
-check_formatting:
-	docker build --tag check_formatting:latest --file $(TESTING_DOCKERFILES_DIR)/formatting.Dockerfile .
-	docker run check_formatting:latest
+check_formatting: vendor
+	docker build --tag check_formatting:latest --file environments/testing/dockerfiles/formatting.Dockerfile .
+	docker run --rm check_formatting:latest
 
 .PHONY: frontend-tests
 frontend-tests:
-	docker-compose --file $(TEST_ENV_DIR)/frontend-tests.yaml up \
+	docker-compose --file $(TEST_DOCKER_COMPOSE_FILES_DIR)/frontend-tests.yaml up \
 	--build \
 	--force-recreate \
 	--remove-orphans \
 	--renew-anon-volumes \
 	--always-recreate-deps \
 	--abort-on-container-exit
+
+## DELETE ME
+
+.PHONY: gamut
+gamut: revendor rewire config_files quicktest lint integration-tests-postgres integration-tests-sqlite integration-tests-mariadb frontend-tests
 
 ## Integration tests
 
@@ -130,9 +116,9 @@ lintegration-tests: integration-tests lint
 .PHONY: integration-tests
 integration-tests: integration-tests-postgres
 
-.PHONY: integration-tests-postgres
-integration-tests-postgres:
-	docker-compose --file $(TEST_ENV_DIR)/integration-tests-postgres.yaml up \
+.PHONY: integration-tests-
+integration-tests-%:
+	docker-compose --file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration_tests/integration-tests-$*.yaml up \
 	--build \
 	--force-recreate \
 	--remove-orphans \
@@ -141,11 +127,11 @@ integration-tests-postgres:
 	--abort-on-container-exit
 
 .PHONY: integration-coverage
-integration-coverage: $(ARTIFACTS_DIR)
+integration-coverage: $(ARTIFACTS_DIR) vendor
 	@# big thanks to https://blog.cloudflare.com/go-coverage-with-external-tests/
 	rm -f $(ARTIFACTS_DIR)/integration-coverage.out
 	@mkdir -p $(ARTIFACTS_DIR)
-	docker-compose --file $(TEST_ENV_DIR)/integration-coverage.yaml up \
+	docker-compose --file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration_tests/integration-coverage.yaml up \
 	--build \
 	--force-recreate \
 	--remove-orphans \
@@ -159,31 +145,21 @@ integration-coverage: $(ARTIFACTS_DIR)
 .PHONY: load-tests
 load-tests: load-tests-postgres
 
-.PHONY: load-tests-postgres
-load-tests-postgres:
-	docker-compose --file $(TEST_ENV_DIR)/load-tests-postgres.yaml up \
+.PHONY: load-tests-
+load-tests-%:
+	docker-compose --file $(TEST_DOCKER_COMPOSE_FILES_DIR)/load_tests/load-tests-$*.yaml up \
 	--build \
 	--force-recreate \
 	--remove-orphans \
 	--renew-anon-volumes \
 	--always-recreate-deps \
 	--abort-on-container-exit
-
-## Docker things
-
-.PHONY: build-dev-docker-image
-build-dev-docker-image: wire
-	docker build --tag $(SERVER_CONTAINER_TAG):dev --file $(DEV_ENV_DIR)/Dockerfile .
-
-.PHONY: publish-dev-container-image
-publish-dev-container-image: build-dev-docker-image
-	docker push $(SERVER_CONTAINER_TAG):dev
 
 ## Running
 
 .PHONY: dev
-dev:
-	docker-compose --file $(LOCAL_ENV_DIR)/docker-compose.yaml up \
+dev: vendor
+	docker-compose --file environments/local/docker-compose.yaml up \
 	--build \
 	--force-recreate \
 	--remove-orphans \
@@ -191,13 +167,8 @@ dev:
 	--always-recreate-deps \
 	--abort-on-container-exit
 
-## Deploy noise
+## housekeeping
 
-.PHONY: dev-terraform
-dev-terraform:
-	terraform init $(DEV_TERRAFORM_DIR)
-	terraform apply \
-		-var "do_token=${PRIXFIXE_DIGITALOCEAN_TOKEN}" \
-		-var "cf_token=${PRIXFIXE_DEV_CLOUDFLARE_TOKEN}" \
-		-var "cf_zone_id=${PRIXFIXE_DEV_CLOUDFLARE_ZONE_ID}" \
-		$(DEV_TERRAFORM_DIR)
+.PHONY: show_tree
+show_tree:
+	tree -d -I vendor

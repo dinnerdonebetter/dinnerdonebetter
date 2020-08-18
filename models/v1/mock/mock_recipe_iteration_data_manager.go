@@ -33,10 +33,22 @@ func (m *RecipeIterationDataManager) GetAllRecipeIterationsCount(ctx context.Con
 	return args.Get(0).(uint64), args.Error(1)
 }
 
+// GetAllRecipeIterations is a mock function.
+func (m *RecipeIterationDataManager) GetAllRecipeIterations(ctx context.Context, results chan []models.RecipeIteration) error {
+	args := m.Called(ctx, results)
+	return args.Error(0)
+}
+
 // GetRecipeIterations is a mock function.
 func (m *RecipeIterationDataManager) GetRecipeIterations(ctx context.Context, recipeID uint64, filter *models.QueryFilter) (*models.RecipeIterationList, error) {
 	args := m.Called(ctx, recipeID, filter)
 	return args.Get(0).(*models.RecipeIterationList), args.Error(1)
+}
+
+// GetRecipeIterationsWithIDs is a mock function.
+func (m *RecipeIterationDataManager) GetRecipeIterationsWithIDs(ctx context.Context, recipeID uint64, limit uint8, ids []uint64) ([]models.RecipeIteration, error) {
+	args := m.Called(ctx, recipeID, limit, ids)
+	return args.Get(0).([]models.RecipeIteration), args.Error(1)
 }
 
 // CreateRecipeIteration is a mock function.

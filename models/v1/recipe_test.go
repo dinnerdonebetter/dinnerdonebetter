@@ -18,7 +18,6 @@ func TestRecipe_Update(T *testing.T) {
 			Source:             fake.Word(),
 			Description:        fake.Word(),
 			InspiredByRecipeID: func(x uint64) *uint64 { return &x }(fake.Uint64()),
-			Private:            fake.Bool(),
 		}
 
 		i.Update(expected)
@@ -26,7 +25,6 @@ func TestRecipe_Update(T *testing.T) {
 		assert.Equal(t, expected.Source, i.Source)
 		assert.Equal(t, expected.Description, i.Description)
 		assert.Equal(t, expected.InspiredByRecipeID, i.InspiredByRecipeID)
-		assert.Equal(t, expected.Private, i.Private)
 	})
 }
 
@@ -39,7 +37,6 @@ func TestRecipe_ToUpdateInput(T *testing.T) {
 			Source:             fake.Word(),
 			Description:        fake.Word(),
 			InspiredByRecipeID: func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
-			Private:            fake.Bool(),
 		}
 
 		expected := &RecipeUpdateInput{
@@ -47,7 +44,6 @@ func TestRecipe_ToUpdateInput(T *testing.T) {
 			Source:             recipe.Source,
 			Description:        recipe.Description,
 			InspiredByRecipeID: recipe.InspiredByRecipeID,
-			Private:            recipe.Private,
 		}
 		actual := recipe.ToUpdateInput()
 

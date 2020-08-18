@@ -38,25 +38,23 @@ type (
 	// ConnectionDetails is a string alias for dependency injection.
 	ConnectionDetails string
 
-	// Database describes anything that stores data for our services.
-	Database interface {
-		Migrate(ctx context.Context, createDummyUser bool) error
+	// DataManager describes anything that stores data for our services.
+	DataManager interface {
+		Migrate(ctx context.Context) error
 		IsReady(ctx context.Context) (ready bool)
 
 		models.ValidInstrumentDataManager
 		models.ValidIngredientDataManager
-		models.ValidIngredientTagDataManager
-		models.IngredientTagMappingDataManager
 		models.ValidPreparationDataManager
-		models.RequiredPreparationInstrumentDataManager
 		models.ValidIngredientPreparationDataManager
+		models.RequiredPreparationInstrumentDataManager
 		models.RecipeDataManager
-		models.RecipeTagDataManager
 		models.RecipeStepDataManager
-		models.RecipeStepPreparationDataManager
+		models.RecipeStepInstrumentDataManager
 		models.RecipeStepIngredientDataManager
+		models.RecipeStepProductDataManager
 		models.RecipeIterationDataManager
-		models.RecipeIterationStepDataManager
+		models.RecipeStepEventDataManager
 		models.IterationMediaDataManager
 		models.InvitationDataManager
 		models.ReportDataManager

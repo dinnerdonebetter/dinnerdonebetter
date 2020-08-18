@@ -55,6 +55,16 @@ func (c *Client) GetAllIterationMediasCount(ctx context.Context) (count uint64, 
 	return c.querier.GetAllIterationMediasCount(ctx)
 }
 
+// GetAllIterationMedias fetches a list of all iteration medias in the database.
+func (c *Client) GetAllIterationMedias(ctx context.Context, results chan []models.IterationMedia) error {
+	ctx, span := tracing.StartSpan(ctx, "GetAllIterationMedias")
+	defer span.End()
+
+	c.logger.Debug("GetAllIterationMedias called")
+
+	return c.querier.GetAllIterationMedias(ctx, results)
+}
+
 // GetIterationMedias fetches a list of iteration medias from the database that meet a particular filter.
 func (c *Client) GetIterationMedias(ctx context.Context, recipeID, recipeIterationID uint64, filter *models.QueryFilter) (*models.IterationMediaList, error) {
 	ctx, span := tracing.StartSpan(ctx, "GetIterationMedias")
@@ -70,6 +80,20 @@ func (c *Client) GetIterationMedias(ctx context.Context, recipeID, recipeIterati
 	}).Debug("GetIterationMedias called")
 
 	iterationMediaList, err := c.querier.GetIterationMedias(ctx, recipeID, recipeIterationID, filter)
+
+	return iterationMediaList, err
+}
+
+// GetIterationMediasWithIDs fetches iteration medias from the database within a given set of IDs.
+func (c *Client) GetIterationMediasWithIDs(ctx context.Context, recipeID, recipeIterationID uint64, limit uint8, ids []uint64) ([]models.IterationMedia, error) {
+	ctx, span := tracing.StartSpan(ctx, "GetIterationMediasWithIDs")
+	defer span.End()
+
+	c.logger.WithValues(map[string]interface{}{
+		"id_count": len(ids),
+	}).Debug("GetIterationMediasWithIDs called")
+
+	iterationMediaList, err := c.querier.GetIterationMediasWithIDs(ctx, recipeID, recipeIterationID, limit, ids)
 
 	return iterationMediaList, err
 }

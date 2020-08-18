@@ -10,7 +10,7 @@ import (
 	"gitlab.com/verygoodsoftwarenotvirus/logging/v1"
 )
 
-var _ database.Database = (*Client)(nil)
+var _ database.DataManager = (*Client)(nil)
 
 /*
 	NOTE: the primary purpose of this client is to allow convenient
@@ -22,17 +22,17 @@ var _ database.Database = (*Client)(nil)
 // the actual database querying is performed.
 type Client struct {
 	db      *sql.DB
-	querier database.Database
+	querier database.DataManager
 	debug   bool
 	logger  logging.Logger
 }
 
 // Migrate is a simple wrapper around the core querier Migrate call.
-func (c *Client) Migrate(ctx context.Context, createDummyUser bool) error {
+func (c *Client) Migrate(ctx context.Context) error {
 	ctx, span := tracing.StartSpan(ctx, "Migrate")
 	defer span.End()
 
-	return c.querier.Migrate(ctx, createDummyUser)
+	return c.querier.Migrate(ctx)
 }
 
 // IsReady is a simple wrapper around the core querier IsReady call.
@@ -43,15 +43,14 @@ func (c *Client) IsReady(ctx context.Context) (ready bool) {
 	return c.querier.IsReady(ctx)
 }
 
-// ProvideDatabaseClient provides a new Database client.
+// ProvideDatabaseClient provides a new DataManager client.
 func ProvideDatabaseClient(
 	ctx context.Context,
-	logger logging.Logger,
 	db *sql.DB,
-	querier database.Database,
-	debug,
-	createDummyUser bool,
-) (database.Database, error) {
+	querier database.DataManager,
+	debug bool,
+	logger logging.Logger,
+) (database.DataManager, error) {
 	c := &Client{
 		db:      db,
 		querier: querier,
@@ -64,7 +63,7 @@ func ProvideDatabaseClient(
 	}
 
 	c.logger.Debug("migrating querier")
-	if err := c.querier.Migrate(ctx, createDummyUser); err != nil {
+	if err := c.querier.Migrate(ctx); err != nil {
 		return nil, err
 	}
 	c.logger.Debug("querier migrated!")

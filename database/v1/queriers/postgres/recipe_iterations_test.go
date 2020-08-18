@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 
@@ -16,30 +17,23 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func buildMockRowsFromRecipeIteration(recipeIterations ...*models.RecipeIteration) *sqlmock.Rows {
-	includeCount := len(recipeIterations) > 1
+func buildMockRowsFromRecipeIterations(recipeIterations ...*models.RecipeIteration) *sqlmock.Rows {
 	columns := recipeIterationsTableColumns
 
-	if includeCount {
-		columns = append(columns, "count")
-	}
 	exampleRows := sqlmock.NewRows(columns)
 
 	for _, x := range recipeIterations {
 		rowValues := []driver.Value{
 			x.ID,
+			x.RecipeID,
 			x.EndDifficultyRating,
 			x.EndComplexityRating,
 			x.EndTasteRating,
 			x.EndOverallRating,
 			x.CreatedOn,
-			x.UpdatedOn,
+			x.LastUpdatedOn,
 			x.ArchivedOn,
 			x.BelongsToRecipe,
-		}
-
-		if includeCount {
-			rowValues = append(rowValues, len(recipeIterations))
 		}
 
 		exampleRows.AddRow(rowValues...)
@@ -51,12 +45,13 @@ func buildMockRowsFromRecipeIteration(recipeIterations ...*models.RecipeIteratio
 func buildErroneousMockRowFromRecipeIteration(x *models.RecipeIteration) *sqlmock.Rows {
 	exampleRows := sqlmock.NewRows(recipeIterationsTableColumns).AddRow(
 		x.ArchivedOn,
+		x.RecipeID,
 		x.EndDifficultyRating,
 		x.EndComplexityRating,
 		x.EndTasteRating,
 		x.EndOverallRating,
 		x.CreatedOn,
-		x.UpdatedOn,
+		x.LastUpdatedOn,
 		x.BelongsToRecipe,
 		x.ID,
 	)
@@ -74,7 +69,7 @@ func TestPostgres_ScanRecipeIterations(T *testing.T) {
 		mockRows.On("Next").Return(false)
 		mockRows.On("Err").Return(errors.New("blah"))
 
-		_, _, err := p.scanRecipeIterations(mockRows)
+		_, err := p.scanRecipeIterations(mockRows)
 		assert.Error(t, err)
 	})
 
@@ -86,7 +81,7 @@ func TestPostgres_ScanRecipeIterations(T *testing.T) {
 		mockRows.On("Err").Return(nil)
 		mockRows.On("Close").Return(errors.New("blah"))
 
-		_, _, err := p.scanRecipeIterations(mockRows)
+		_, err := p.scanRecipeIterations(mockRows)
 		assert.NoError(t, err)
 	})
 }
@@ -185,7 +180,7 @@ func TestPostgres_buildGetRecipeIterationQuery(T *testing.T) {
 		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
 		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
 
-		expectedQuery := "SELECT recipe_iterations.id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe FROM recipe_iterations JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id WHERE recipe_iterations.belongs_to_recipe = $1 AND recipe_iterations.id = $2 AND recipes.id = $3"
+		expectedQuery := "SELECT recipe_iterations.id, recipe_iterations.recipe_id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.last_updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe FROM recipe_iterations JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id WHERE recipe_iterations.belongs_to_recipe = $1 AND recipe_iterations.id = $2 AND recipes.id = $3"
 		expectedArgs := []interface{}{
 			exampleRecipe.ID,
 			exampleRecipeIteration.ID,
@@ -203,7 +198,7 @@ func TestPostgres_GetRecipeIteration(T *testing.T) {
 	T.Parallel()
 
 	exampleUser := fakemodels.BuildFakeUser()
-	expectedQuery := "SELECT recipe_iterations.id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe FROM recipe_iterations JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id WHERE recipe_iterations.belongs_to_recipe = $1 AND recipe_iterations.id = $2 AND recipes.id = $3"
+	expectedQuery := "SELECT recipe_iterations.id, recipe_iterations.recipe_id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.last_updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe FROM recipe_iterations JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id WHERE recipe_iterations.belongs_to_recipe = $1 AND recipe_iterations.id = $2 AND recipes.id = $3"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
@@ -220,7 +215,7 @@ func TestPostgres_GetRecipeIteration(T *testing.T) {
 				exampleRecipeIteration.ID,
 				exampleRecipe.ID,
 			).
-			WillReturnRows(buildMockRowsFromRecipeIteration(exampleRecipeIteration))
+			WillReturnRows(buildMockRowsFromRecipeIterations(exampleRecipeIteration))
 
 		actual, err := p.GetRecipeIteration(ctx, exampleRecipe.ID, exampleRecipeIteration.ID)
 		assert.NoError(t, err)
@@ -290,6 +285,180 @@ func TestPostgres_GetAllRecipeIterationsCount(T *testing.T) {
 	})
 }
 
+func TestPostgres_buildGetBatchOfRecipeIterationsQuery(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		p, _ := buildTestService(t)
+
+		beginID, endID := uint64(1), uint64(1000)
+
+		expectedQuery := "SELECT recipe_iterations.id, recipe_iterations.recipe_id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.last_updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe FROM recipe_iterations WHERE recipe_iterations.id > $1 AND recipe_iterations.id < $2"
+		expectedArgs := []interface{}{
+			beginID,
+			endID,
+		}
+		actualQuery, actualArgs := p.buildGetBatchOfRecipeIterationsQuery(beginID, endID)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+}
+
+func TestPostgres_GetAllRecipeIterations(T *testing.T) {
+	T.Parallel()
+
+	expectedCountQuery := "SELECT COUNT(recipe_iterations.id) FROM recipe_iterations WHERE recipe_iterations.archived_on IS NULL"
+	expectedGetQuery := "SELECT recipe_iterations.id, recipe_iterations.recipe_id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.last_updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe FROM recipe_iterations WHERE recipe_iterations.id > $1 AND recipe_iterations.id < $2"
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+		exampleRecipeIterationList := fakemodels.BuildFakeRecipeIterationList()
+		expectedCount := uint64(20)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
+			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedGetQuery)).
+			WithArgs(
+				uint64(1),
+				uint64(1001),
+			).
+			WillReturnRows(
+				buildMockRowsFromRecipeIterations(
+					&exampleRecipeIterationList.RecipeIterations[0],
+					&exampleRecipeIterationList.RecipeIterations[1],
+					&exampleRecipeIterationList.RecipeIterations[2],
+				),
+			)
+
+		out := make(chan []models.RecipeIteration)
+		doneChan := make(chan bool, 1)
+
+		err := p.GetAllRecipeIterations(ctx, out)
+		assert.NoError(t, err)
+
+		var stillQuerying = true
+		for stillQuerying {
+			select {
+			case batch := <-out:
+				assert.NotEmpty(t, batch)
+				doneChan <- true
+			case <-time.After(time.Second):
+				t.FailNow()
+			case <-doneChan:
+				stillQuerying = false
+			}
+		}
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with error fetching initial count", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
+			WillReturnError(errors.New("blah"))
+
+		out := make(chan []models.RecipeIteration)
+
+		err := p.GetAllRecipeIterations(ctx, out)
+		assert.Error(t, err)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with no rows returned", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+		expectedCount := uint64(20)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
+			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedGetQuery)).
+			WithArgs(
+				uint64(1),
+				uint64(1001),
+			).
+			WillReturnError(sql.ErrNoRows)
+
+		out := make(chan []models.RecipeIteration)
+
+		err := p.GetAllRecipeIterations(ctx, out)
+		assert.NoError(t, err)
+
+		time.Sleep(time.Second)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with error querying database", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+		expectedCount := uint64(20)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
+			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedGetQuery)).
+			WithArgs(
+				uint64(1),
+				uint64(1001),
+			).
+			WillReturnError(errors.New("blah"))
+
+		out := make(chan []models.RecipeIteration)
+
+		err := p.GetAllRecipeIterations(ctx, out)
+		assert.NoError(t, err)
+
+		time.Sleep(time.Second)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with invalid response from database", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		expectedCount := uint64(20)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
+			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedGetQuery)).
+			WithArgs(
+				uint64(1),
+				uint64(1001),
+			).
+			WillReturnRows(buildErroneousMockRowFromRecipeIteration(exampleRecipeIteration))
+
+		out := make(chan []models.RecipeIteration)
+
+		err := p.GetAllRecipeIterations(ctx, out)
+		assert.NoError(t, err)
+
+		time.Sleep(time.Second)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+}
+
 func TestPostgres_buildGetRecipeIterationsQuery(T *testing.T) {
 	T.Parallel()
 
@@ -299,7 +468,7 @@ func TestPostgres_buildGetRecipeIterationsQuery(T *testing.T) {
 		exampleRecipe := fakemodels.BuildFakeRecipe()
 		filter := fakemodels.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT recipe_iterations.id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe, (SELECT COUNT(recipe_iterations.id) FROM recipe_iterations WHERE recipe_iterations.archived_on IS NULL) FROM recipe_iterations JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id WHERE recipe_iterations.archived_on IS NULL AND recipe_iterations.belongs_to_recipe = $1 AND recipes.id = $2 AND recipe_iterations.created_on > $3 AND recipe_iterations.created_on < $4 AND recipe_iterations.updated_on > $5 AND recipe_iterations.updated_on < $6 ORDER BY recipe_iterations.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT recipe_iterations.id, recipe_iterations.recipe_id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.last_updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe FROM recipe_iterations JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id WHERE recipe_iterations.archived_on IS NULL AND recipe_iterations.belongs_to_recipe = $1 AND recipes.id = $2 AND recipe_iterations.created_on > $3 AND recipe_iterations.created_on < $4 AND recipe_iterations.last_updated_on > $5 AND recipe_iterations.last_updated_on < $6 ORDER BY recipe_iterations.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			exampleRecipe.ID,
 			exampleRecipe.ID,
@@ -319,7 +488,7 @@ func TestPostgres_buildGetRecipeIterationsQuery(T *testing.T) {
 func TestPostgres_GetRecipeIterations(T *testing.T) {
 	T.Parallel()
 
-	expectedListQuery := "SELECT recipe_iterations.id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe, (SELECT COUNT(recipe_iterations.id) FROM recipe_iterations WHERE recipe_iterations.archived_on IS NULL) FROM recipe_iterations JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id WHERE recipe_iterations.archived_on IS NULL AND recipe_iterations.belongs_to_recipe = $1 AND recipes.id = $2 ORDER BY recipe_iterations.id LIMIT 20"
+	expectedQuery := "SELECT recipe_iterations.id, recipe_iterations.recipe_id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.last_updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe FROM recipe_iterations JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id WHERE recipe_iterations.archived_on IS NULL AND recipe_iterations.belongs_to_recipe = $1 AND recipes.id = $2 ORDER BY recipe_iterations.id LIMIT 20"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
@@ -331,13 +500,13 @@ func TestPostgres_GetRecipeIterations(T *testing.T) {
 
 		exampleRecipeIterationList := fakemodels.BuildFakeRecipeIterationList()
 
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
 				exampleRecipe.ID,
 				exampleRecipe.ID,
 			).
 			WillReturnRows(
-				buildMockRowsFromRecipeIteration(
+				buildMockRowsFromRecipeIterations(
 					&exampleRecipeIterationList.RecipeIterations[0],
 					&exampleRecipeIterationList.RecipeIterations[1],
 					&exampleRecipeIterationList.RecipeIterations[2],
@@ -360,7 +529,7 @@ func TestPostgres_GetRecipeIterations(T *testing.T) {
 		p, mockDB := buildTestService(t)
 		filter := models.DefaultQueryFilter()
 
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
 				exampleRecipe.ID,
 				exampleRecipe.ID,
@@ -383,7 +552,7 @@ func TestPostgres_GetRecipeIterations(T *testing.T) {
 		p, mockDB := buildTestService(t)
 		filter := models.DefaultQueryFilter()
 
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
 				exampleRecipe.ID,
 				exampleRecipe.ID,
@@ -407,7 +576,7 @@ func TestPostgres_GetRecipeIterations(T *testing.T) {
 
 		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
 
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
 				exampleRecipe.ID,
 				exampleRecipe.ID,
@@ -415,6 +584,150 @@ func TestPostgres_GetRecipeIterations(T *testing.T) {
 			WillReturnRows(buildErroneousMockRowFromRecipeIteration(exampleRecipeIteration))
 
 		actual, err := p.GetRecipeIterations(ctx, exampleRecipe.ID, filter)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+}
+
+func TestPostgres_buildGetRecipeIterationsWithIDsQuery(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		p, _ := buildTestService(t)
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleIDs := []uint64{
+			789,
+			123,
+			456,
+		}
+
+		expectedQuery := fmt.Sprintf("SELECT recipe_iterations.id, recipe_iterations.recipe_id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.last_updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe FROM (SELECT recipe_iterations.id, recipe_iterations.recipe_id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.last_updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe FROM recipe_iterations JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id JOIN unnest('{%s}'::int[]) WHERE recipe_iterations.archived_on IS NULL AND recipe_iterations.belongs_to_recipe = $1 AND recipes.id = $2 WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d) AS recipe_iterations WHERE recipe_iterations.archived_on IS NULL", joinUint64s(exampleIDs), defaultLimit)
+		expectedArgs := []interface{}{
+			exampleRecipe.ID,
+			exampleRecipe.ID,
+		}
+		actualQuery, actualArgs := p.buildGetRecipeIterationsWithIDsQuery(exampleRecipe.ID, defaultLimit, exampleIDs)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+}
+
+func TestPostgres_GetRecipeIterationsWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+
+		p, mockDB := buildTestService(t)
+
+		exampleRecipeIterationList := fakemodels.BuildFakeRecipeIterationList()
+		var exampleIDs []uint64
+		for _, recipeIteration := range exampleRecipeIterationList.RecipeIterations {
+			exampleIDs = append(exampleIDs, recipeIteration.ID)
+		}
+
+		expectedQuery := fmt.Sprintf("SELECT recipe_iterations.id, recipe_iterations.recipe_id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.last_updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe FROM (SELECT recipe_iterations.id, recipe_iterations.recipe_id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.last_updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe FROM recipe_iterations JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id JOIN unnest('{%s}'::int[]) WHERE recipe_iterations.archived_on IS NULL AND recipe_iterations.belongs_to_recipe = $1 AND recipes.id = $2 WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d) AS recipe_iterations WHERE recipe_iterations.archived_on IS NULL", joinUint64s(exampleIDs), defaultLimit)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+			WithArgs(
+				exampleRecipe.ID,
+				exampleRecipe.ID,
+			).
+			WillReturnRows(
+				buildMockRowsFromRecipeIterations(
+					&exampleRecipeIterationList.RecipeIterations[0],
+					&exampleRecipeIterationList.RecipeIterations[1],
+					&exampleRecipeIterationList.RecipeIterations[2],
+				),
+			)
+
+		actual, err := p.GetRecipeIterationsWithIDs(ctx, exampleRecipe.ID, defaultLimit, exampleIDs)
+
+		assert.NoError(t, err)
+		assert.Equal(t, exampleRecipeIterationList.RecipeIterations, actual)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("surfaces sql.ErrNoRows", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+
+		p, mockDB := buildTestService(t)
+
+		exampleIDs := []uint64{123, 456, 789}
+		expectedQuery := fmt.Sprintf("SELECT recipe_iterations.id, recipe_iterations.recipe_id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.last_updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe FROM (SELECT recipe_iterations.id, recipe_iterations.recipe_id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.last_updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe FROM recipe_iterations JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id JOIN unnest('{%s}'::int[]) WHERE recipe_iterations.archived_on IS NULL AND recipe_iterations.belongs_to_recipe = $1 AND recipes.id = $2 WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d) AS recipe_iterations WHERE recipe_iterations.archived_on IS NULL", joinUint64s(exampleIDs), defaultLimit)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+			WithArgs(
+				exampleRecipe.ID,
+				exampleRecipe.ID,
+			).
+			WillReturnError(sql.ErrNoRows)
+
+		actual, err := p.GetRecipeIterationsWithIDs(ctx, exampleRecipe.ID, defaultLimit, exampleIDs)
+
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+		assert.Equal(t, sql.ErrNoRows, err)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with error executing read query", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+
+		p, mockDB := buildTestService(t)
+
+		exampleIDs := []uint64{123, 456, 789}
+		expectedQuery := fmt.Sprintf("SELECT recipe_iterations.id, recipe_iterations.recipe_id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.last_updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe FROM (SELECT recipe_iterations.id, recipe_iterations.recipe_id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.last_updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe FROM recipe_iterations JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id JOIN unnest('{%s}'::int[]) WHERE recipe_iterations.archived_on IS NULL AND recipe_iterations.belongs_to_recipe = $1 AND recipes.id = $2 WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d) AS recipe_iterations WHERE recipe_iterations.archived_on IS NULL", joinUint64s(exampleIDs), defaultLimit)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+			WithArgs(
+				exampleRecipe.ID,
+				exampleRecipe.ID,
+			).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := p.GetRecipeIterationsWithIDs(ctx, exampleRecipe.ID, defaultLimit, exampleIDs)
+
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with error scanning recipe iteration", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+
+		p, mockDB := buildTestService(t)
+
+		exampleIDs := []uint64{123, 456, 789}
+		expectedQuery := fmt.Sprintf("SELECT recipe_iterations.id, recipe_iterations.recipe_id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.last_updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe FROM (SELECT recipe_iterations.id, recipe_iterations.recipe_id, recipe_iterations.end_difficulty_rating, recipe_iterations.end_complexity_rating, recipe_iterations.end_taste_rating, recipe_iterations.end_overall_rating, recipe_iterations.created_on, recipe_iterations.last_updated_on, recipe_iterations.archived_on, recipe_iterations.belongs_to_recipe FROM recipe_iterations JOIN recipes ON recipe_iterations.belongs_to_recipe=recipes.id JOIN unnest('{%s}'::int[]) WHERE recipe_iterations.archived_on IS NULL AND recipe_iterations.belongs_to_recipe = $1 AND recipes.id = $2 WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d) AS recipe_iterations WHERE recipe_iterations.archived_on IS NULL", joinUint64s(exampleIDs), defaultLimit)
+
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+			WithArgs(
+				exampleRecipe.ID,
+				exampleRecipe.ID,
+			).
+			WillReturnRows(buildErroneousMockRowFromRecipeIteration(exampleRecipeIteration))
+
+		actual, err := p.GetRecipeIterationsWithIDs(ctx, exampleRecipe.ID, defaultLimit, exampleIDs)
+
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -434,8 +747,9 @@ func TestPostgres_buildCreateRecipeIterationQuery(T *testing.T) {
 		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
 		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
 
-		expectedQuery := "INSERT INTO recipe_iterations (end_difficulty_rating,end_complexity_rating,end_taste_rating,end_overall_rating,belongs_to_recipe) VALUES ($1,$2,$3,$4,$5) RETURNING id, created_on"
+		expectedQuery := "INSERT INTO recipe_iterations (recipe_id,end_difficulty_rating,end_complexity_rating,end_taste_rating,end_overall_rating,belongs_to_recipe) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id, created_on"
 		expectedArgs := []interface{}{
+			exampleRecipeIteration.RecipeID,
 			exampleRecipeIteration.EndDifficultyRating,
 			exampleRecipeIteration.EndComplexityRating,
 			exampleRecipeIteration.EndTasteRating,
@@ -453,7 +767,7 @@ func TestPostgres_buildCreateRecipeIterationQuery(T *testing.T) {
 func TestPostgres_CreateRecipeIteration(T *testing.T) {
 	T.Parallel()
 
-	expectedCreationQuery := "INSERT INTO recipe_iterations (end_difficulty_rating,end_complexity_rating,end_taste_rating,end_overall_rating,belongs_to_recipe) VALUES ($1,$2,$3,$4,$5) RETURNING id, created_on"
+	expectedCreationQuery := "INSERT INTO recipe_iterations (recipe_id,end_difficulty_rating,end_complexity_rating,end_taste_rating,end_overall_rating,belongs_to_recipe) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id, created_on"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
@@ -470,6 +784,7 @@ func TestPostgres_CreateRecipeIteration(T *testing.T) {
 		exampleRows := sqlmock.NewRows([]string{"id", "created_on"}).AddRow(exampleRecipeIteration.ID, exampleRecipeIteration.CreatedOn)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCreationQuery)).
 			WithArgs(
+				exampleRecipeIteration.RecipeID,
 				exampleRecipeIteration.EndDifficultyRating,
 				exampleRecipeIteration.EndComplexityRating,
 				exampleRecipeIteration.EndTasteRating,
@@ -498,6 +813,7 @@ func TestPostgres_CreateRecipeIteration(T *testing.T) {
 
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCreationQuery)).
 			WithArgs(
+				exampleRecipeIteration.RecipeID,
 				exampleRecipeIteration.EndDifficultyRating,
 				exampleRecipeIteration.EndComplexityRating,
 				exampleRecipeIteration.EndTasteRating,
@@ -525,8 +841,9 @@ func TestPostgres_buildUpdateRecipeIterationQuery(T *testing.T) {
 		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
 		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
 
-		expectedQuery := "UPDATE recipe_iterations SET end_difficulty_rating = $1, end_complexity_rating = $2, end_taste_rating = $3, end_overall_rating = $4, updated_on = extract(epoch FROM NOW()) WHERE belongs_to_recipe = $5 AND id = $6 RETURNING updated_on"
+		expectedQuery := "UPDATE recipe_iterations SET recipe_id = $1, end_difficulty_rating = $2, end_complexity_rating = $3, end_taste_rating = $4, end_overall_rating = $5, last_updated_on = extract(epoch FROM NOW()) WHERE belongs_to_recipe = $6 AND id = $7 RETURNING last_updated_on"
 		expectedArgs := []interface{}{
+			exampleRecipeIteration.RecipeID,
 			exampleRecipeIteration.EndDifficultyRating,
 			exampleRecipeIteration.EndComplexityRating,
 			exampleRecipeIteration.EndTasteRating,
@@ -545,7 +862,7 @@ func TestPostgres_buildUpdateRecipeIterationQuery(T *testing.T) {
 func TestPostgres_UpdateRecipeIteration(T *testing.T) {
 	T.Parallel()
 
-	expectedQuery := "UPDATE recipe_iterations SET end_difficulty_rating = $1, end_complexity_rating = $2, end_taste_rating = $3, end_overall_rating = $4, updated_on = extract(epoch FROM NOW()) WHERE belongs_to_recipe = $5 AND id = $6 RETURNING updated_on"
+	expectedQuery := "UPDATE recipe_iterations SET recipe_id = $1, end_difficulty_rating = $2, end_complexity_rating = $3, end_taste_rating = $4, end_overall_rating = $5, last_updated_on = extract(epoch FROM NOW()) WHERE belongs_to_recipe = $6 AND id = $7 RETURNING last_updated_on"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
@@ -558,9 +875,10 @@ func TestPostgres_UpdateRecipeIteration(T *testing.T) {
 		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
 		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
 
-		exampleRows := sqlmock.NewRows([]string{"updated_on"}).AddRow(uint64(time.Now().Unix()))
+		exampleRows := sqlmock.NewRows([]string{"last_updated_on"}).AddRow(uint64(time.Now().Unix()))
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
+				exampleRecipeIteration.RecipeID,
 				exampleRecipeIteration.EndDifficultyRating,
 				exampleRecipeIteration.EndComplexityRating,
 				exampleRecipeIteration.EndTasteRating,
@@ -588,6 +906,7 @@ func TestPostgres_UpdateRecipeIteration(T *testing.T) {
 
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
+				exampleRecipeIteration.RecipeID,
 				exampleRecipeIteration.EndDifficultyRating,
 				exampleRecipeIteration.EndComplexityRating,
 				exampleRecipeIteration.EndTasteRating,
@@ -615,7 +934,7 @@ func TestPostgres_buildArchiveRecipeIterationQuery(T *testing.T) {
 		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
 		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
 
-		expectedQuery := "UPDATE recipe_iterations SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe = $1 AND id = $2 RETURNING archived_on"
+		expectedQuery := "UPDATE recipe_iterations SET last_updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe = $1 AND id = $2 RETURNING archived_on"
 		expectedArgs := []interface{}{
 			exampleRecipe.ID,
 			exampleRecipeIteration.ID,
@@ -631,7 +950,7 @@ func TestPostgres_buildArchiveRecipeIterationQuery(T *testing.T) {
 func TestPostgres_ArchiveRecipeIteration(T *testing.T) {
 	T.Parallel()
 
-	expectedQuery := "UPDATE recipe_iterations SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe = $1 AND id = $2 RETURNING archived_on"
+	expectedQuery := "UPDATE recipe_iterations SET last_updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe = $1 AND id = $2 RETURNING archived_on"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()

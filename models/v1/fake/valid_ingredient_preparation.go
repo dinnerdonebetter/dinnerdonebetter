@@ -9,10 +9,11 @@ import (
 // BuildFakeValidIngredientPreparation builds a faked valid ingredient preparation.
 func BuildFakeValidIngredientPreparation() *models.ValidIngredientPreparation {
 	return &models.ValidIngredientPreparation{
-		ID:                       fake.Uint64(),
-		Notes:                    fake.Word(),
-		CreatedOn:                uint64(uint32(fake.Date().Unix())),
-		BelongsToValidIngredient: fake.Uint64(),
+		ID:                 fake.Uint64(),
+		Notes:              fake.Word(),
+		ValidPreparationID: uint64(fake.Uint32()),
+		ValidIngredientID:  uint64(fake.Uint32()),
+		CreatedOn:          uint64(uint32(fake.Date().Unix())),
 	}
 }
 
@@ -39,8 +40,9 @@ func BuildFakeValidIngredientPreparationList() *models.ValidIngredientPreparatio
 // BuildFakeValidIngredientPreparationUpdateInputFromValidIngredientPreparation builds a faked ValidIngredientPreparationUpdateInput from a valid ingredient preparation.
 func BuildFakeValidIngredientPreparationUpdateInputFromValidIngredientPreparation(validIngredientPreparation *models.ValidIngredientPreparation) *models.ValidIngredientPreparationUpdateInput {
 	return &models.ValidIngredientPreparationUpdateInput{
-		Notes:                    validIngredientPreparation.Notes,
-		BelongsToValidIngredient: validIngredientPreparation.BelongsToValidIngredient,
+		Notes:              validIngredientPreparation.Notes,
+		ValidPreparationID: validIngredientPreparation.ValidPreparationID,
+		ValidIngredientID:  validIngredientPreparation.ValidIngredientID,
 	}
 }
 
@@ -53,7 +55,8 @@ func BuildFakeValidIngredientPreparationCreationInput() *models.ValidIngredientP
 // BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation builds a faked ValidIngredientPreparationCreationInput from a valid ingredient preparation.
 func BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(validIngredientPreparation *models.ValidIngredientPreparation) *models.ValidIngredientPreparationCreationInput {
 	return &models.ValidIngredientPreparationCreationInput{
-		Notes:                    validIngredientPreparation.Notes,
-		BelongsToValidIngredient: validIngredientPreparation.BelongsToValidIngredient,
+		Notes:              validIngredientPreparation.Notes,
+		ValidPreparationID: validIngredientPreparation.ValidPreparationID,
+		ValidIngredientID:  validIngredientPreparation.ValidIngredientID,
 	}
 }

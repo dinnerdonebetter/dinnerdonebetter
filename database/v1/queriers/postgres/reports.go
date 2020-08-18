@@ -13,77 +13,69 @@ import (
 )
 
 const (
-	reportsTableName           = "reports"
-	reportsUserOwnershipColumn = "belongs_to_user"
+	reportsTableName             = "reports"
+	reportsTableReportTypeColumn = "report_type"
+	reportsTableConcernColumn    = "concern"
+	reportsUserOwnershipColumn   = "belongs_to_user"
 )
 
 var (
 	reportsTableColumns = []string{
-		fmt.Sprintf("%s.%s", reportsTableName, "id"),
-		fmt.Sprintf("%s.%s", reportsTableName, "report_type"),
-		fmt.Sprintf("%s.%s", reportsTableName, "concern"),
-		fmt.Sprintf("%s.%s", reportsTableName, "created_on"),
-		fmt.Sprintf("%s.%s", reportsTableName, "updated_on"),
-		fmt.Sprintf("%s.%s", reportsTableName, "archived_on"),
+		fmt.Sprintf("%s.%s", reportsTableName, idColumn),
+		fmt.Sprintf("%s.%s", reportsTableName, reportsTableReportTypeColumn),
+		fmt.Sprintf("%s.%s", reportsTableName, reportsTableConcernColumn),
+		fmt.Sprintf("%s.%s", reportsTableName, createdOnColumn),
+		fmt.Sprintf("%s.%s", reportsTableName, lastUpdatedOnColumn),
+		fmt.Sprintf("%s.%s", reportsTableName, archivedOnColumn),
 		fmt.Sprintf("%s.%s", reportsTableName, reportsUserOwnershipColumn),
 	}
 )
 
 // scanReport takes a database Scanner (i.e. *sql.Row) and scans the result into a Report struct
-func (p *Postgres) scanReport(scan database.Scanner, includeCount bool) (*models.Report, uint64, error) {
+func (p *Postgres) scanReport(scan database.Scanner) (*models.Report, error) {
 	x := &models.Report{}
-	var count uint64
 
 	targetVars := []interface{}{
 		&x.ID,
 		&x.ReportType,
 		&x.Concern,
 		&x.CreatedOn,
-		&x.UpdatedOn,
+		&x.LastUpdatedOn,
 		&x.ArchivedOn,
 		&x.BelongsToUser,
 	}
 
-	if includeCount {
-		targetVars = append(targetVars, &count)
-	}
-
 	if err := scan.Scan(targetVars...); err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
-	return x, count, nil
+	return x, nil
 }
 
 // scanReports takes a logger and some database rows and turns them into a slice of reports.
-func (p *Postgres) scanReports(rows database.ResultIterator) ([]models.Report, uint64, error) {
+func (p *Postgres) scanReports(rows database.ResultIterator) ([]models.Report, error) {
 	var (
-		list  []models.Report
-		count uint64
+		list []models.Report
 	)
 
 	for rows.Next() {
-		x, c, err := p.scanReport(rows, true)
+		x, err := p.scanReport(rows)
 		if err != nil {
-			return nil, 0, err
-		}
-
-		if count == 0 {
-			count = c
+			return nil, err
 		}
 
 		list = append(list, *x)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
 	if closeErr := rows.Close(); closeErr != nil {
 		p.logger.Error(closeErr, "closing database rows")
 	}
 
-	return list, count, nil
+	return list, nil
 }
 
 //
@@ -91,12 +83,12 @@ func (p *Postgres) buildReportExistsQuery(reportID uint64) (query string, args [
 	var err error
 
 	query, args, err = p.sqlBuilder.
-		Select(fmt.Sprintf("%s.id", reportsTableName)).
+		Select(fmt.Sprintf("%s.%s", reportsTableName, idColumn)).
 		Prefix(existencePrefix).
 		From(reportsTableName).
 		Suffix(existenceSuffix).
 		Where(squirrel.Eq{
-			fmt.Sprintf("%s.id", reportsTableName): reportID,
+			fmt.Sprintf("%s.%s", reportsTableName, idColumn): reportID,
 		}).ToSql()
 
 	p.logQueryBuildingError(err)
@@ -124,7 +116,7 @@ func (p *Postgres) buildGetReportQuery(reportID uint64) (query string, args []in
 		Select(reportsTableColumns...).
 		From(reportsTableName).
 		Where(squirrel.Eq{
-			fmt.Sprintf("%s.id", reportsTableName): reportID,
+			fmt.Sprintf("%s.%s", reportsTableName, idColumn): reportID,
 		}).
 		ToSql()
 
@@ -137,9 +129,7 @@ func (p *Postgres) buildGetReportQuery(reportID uint64) (query string, args []in
 func (p *Postgres) GetReport(ctx context.Context, reportID uint64) (*models.Report, error) {
 	query, args := p.buildGetReportQuery(reportID)
 	row := p.db.QueryRowContext(ctx, query, args...)
-
-	report, _, err := p.scanReport(row, false)
-	return report, err
+	return p.scanReport(row)
 }
 
 var (
@@ -157,7 +147,7 @@ func (p *Postgres) buildGetAllReportsCountQuery() string {
 			Select(fmt.Sprintf(countQuery, reportsTableName)).
 			From(reportsTableName).
 			Where(squirrel.Eq{
-				fmt.Sprintf("%s.archived_on", reportsTableName): nil,
+				fmt.Sprintf("%s.%s", reportsTableName, archivedOnColumn): nil,
 			}).
 			ToSql()
 		p.logQueryBuildingError(err)
@@ -172,18 +162,75 @@ func (p *Postgres) GetAllReportsCount(ctx context.Context) (count uint64, err er
 	return count, err
 }
 
+// buildGetBatchOfReportsQuery returns a query that fetches every report in the database within a bucketed range.
+func (p *Postgres) buildGetBatchOfReportsQuery(beginID, endID uint64) (query string, args []interface{}) {
+	query, args, err := p.sqlBuilder.
+		Select(reportsTableColumns...).
+		From(reportsTableName).
+		Where(squirrel.Gt{
+			fmt.Sprintf("%s.%s", reportsTableName, idColumn): beginID,
+		}).
+		Where(squirrel.Lt{
+			fmt.Sprintf("%s.%s", reportsTableName, idColumn): endID,
+		}).
+		ToSql()
+
+	p.logQueryBuildingError(err)
+
+	return query, args
+}
+
+// GetAllReports fetches every report from the database and writes them to a channel. This method primarily exists
+// to aid in administrative data tasks.
+func (p *Postgres) GetAllReports(ctx context.Context, resultChannel chan []models.Report) error {
+	count, err := p.GetAllReportsCount(ctx)
+	if err != nil {
+		return err
+	}
+
+	for beginID := uint64(1); beginID <= count; beginID += defaultBucketSize {
+		endID := beginID + defaultBucketSize
+		go func(begin, end uint64) {
+			query, args := p.buildGetBatchOfReportsQuery(begin, end)
+			logger := p.logger.WithValues(map[string]interface{}{
+				"query": query,
+				"begin": begin,
+				"end":   end,
+			})
+
+			rows, err := p.db.Query(query, args...)
+			if err == sql.ErrNoRows {
+				return
+			} else if err != nil {
+				logger.Error(err, "querying for database rows")
+				return
+			}
+
+			reports, err := p.scanReports(rows)
+			if err != nil {
+				logger.Error(err, "scanning database rows")
+				return
+			}
+
+			resultChannel <- reports
+		}(beginID, endID)
+	}
+
+	return nil
+}
+
 // buildGetReportsQuery builds a SQL query selecting reports that adhere to a given QueryFilter,
 // and returns both the query and the relevant args to pass to the query executor.
 func (p *Postgres) buildGetReportsQuery(filter *models.QueryFilter) (query string, args []interface{}) {
 	var err error
 
 	builder := p.sqlBuilder.
-		Select(append(reportsTableColumns, fmt.Sprintf("(%s)", p.buildGetAllReportsCountQuery()))...).
+		Select(reportsTableColumns...).
 		From(reportsTableName).
 		Where(squirrel.Eq{
-			fmt.Sprintf("%s.archived_on", reportsTableName): nil,
+			fmt.Sprintf("%s.%s", reportsTableName, archivedOnColumn): nil,
 		}).
-		OrderBy(fmt.Sprintf("%s.id", reportsTableName))
+		OrderBy(fmt.Sprintf("%s.%s", reportsTableName, idColumn))
 
 	if filter != nil {
 		builder = filter.ApplyToQueryBuilder(builder, reportsTableName)
@@ -204,21 +251,68 @@ func (p *Postgres) GetReports(ctx context.Context, filter *models.QueryFilter) (
 		return nil, buildError(err, "querying database for reports")
 	}
 
-	reports, count, err := p.scanReports(rows)
+	reports, err := p.scanReports(rows)
 	if err != nil {
 		return nil, fmt.Errorf("scanning response from database: %w", err)
 	}
 
 	list := &models.ReportList{
 		Pagination: models.Pagination{
-			Page:       filter.Page,
-			Limit:      filter.Limit,
-			TotalCount: count,
+			Page:  filter.Page,
+			Limit: filter.Limit,
 		},
 		Reports: reports,
 	}
 
 	return list, nil
+}
+
+// buildGetReportsWithIDsQuery builds a SQL query selecting reports
+// and have IDs that exist within a given set of IDs. Returns both the query and the relevant
+// args to pass to the query executor. This function is primarily intended for use with a search
+// index, which would provide a slice of string IDs to query against. This function accepts a
+// slice of uint64s instead of a slice of strings in order to ensure all the provided strings
+// are valid database IDs, because there's no way in squirrel to escape them in the unnest join,
+// and if we accept strings we could leave ourselves vulnerable to SQL injection attacks.
+func (p *Postgres) buildGetReportsWithIDsQuery(limit uint8, ids []uint64) (query string, args []interface{}) {
+	var err error
+
+	subqueryBuilder := p.sqlBuilder.Select(reportsTableColumns...).
+		From(reportsTableName).
+		Join(fmt.Sprintf("unnest('{%s}'::int[])", joinUint64s(ids))).
+		Suffix(fmt.Sprintf("WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d", limit))
+	builder := p.sqlBuilder.
+		Select(reportsTableColumns...).
+		FromSelect(subqueryBuilder, reportsTableName).
+		Where(squirrel.Eq{
+			fmt.Sprintf("%s.%s", reportsTableName, archivedOnColumn): nil,
+		})
+
+	query, args, err = builder.ToSql()
+	p.logQueryBuildingError(err)
+
+	return query, args
+}
+
+// GetReportsWithIDs fetches a list of reports from the database that exist within a given set of IDs.
+func (p *Postgres) GetReportsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]models.Report, error) {
+	if limit == 0 {
+		limit = uint8(models.DefaultLimit)
+	}
+
+	query, args := p.buildGetReportsWithIDsQuery(limit, ids)
+
+	rows, err := p.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, buildError(err, "querying database for reports")
+	}
+
+	reports, err := p.scanReports(rows)
+	if err != nil {
+		return nil, fmt.Errorf("scanning response from database: %w", err)
+	}
+
+	return reports, nil
 }
 
 // buildCreateReportQuery takes a report and returns a creation query for that report and the relevant arguments.
@@ -228,8 +322,8 @@ func (p *Postgres) buildCreateReportQuery(input *models.Report) (query string, a
 	query, args, err = p.sqlBuilder.
 		Insert(reportsTableName).
 		Columns(
-			"report_type",
-			"concern",
+			reportsTableReportTypeColumn,
+			reportsTableConcernColumn,
 			reportsUserOwnershipColumn,
 		).
 		Values(
@@ -237,7 +331,7 @@ func (p *Postgres) buildCreateReportQuery(input *models.Report) (query string, a
 			input.Concern,
 			input.BelongsToUser,
 		).
-		Suffix("RETURNING id, created_on").
+		Suffix(fmt.Sprintf("RETURNING %s, %s", idColumn, createdOnColumn)).
 		ToSql()
 
 	p.logQueryBuildingError(err)
@@ -270,14 +364,14 @@ func (p *Postgres) buildUpdateReportQuery(input *models.Report) (query string, a
 
 	query, args, err = p.sqlBuilder.
 		Update(reportsTableName).
-		Set("report_type", input.ReportType).
-		Set("concern", input.Concern).
-		Set("updated_on", squirrel.Expr(currentUnixTimeQuery)).
+		Set(reportsTableReportTypeColumn, input.ReportType).
+		Set(reportsTableConcernColumn, input.Concern).
+		Set(lastUpdatedOnColumn, squirrel.Expr(currentUnixTimeQuery)).
 		Where(squirrel.Eq{
-			"id":                       input.ID,
+			idColumn:                   input.ID,
 			reportsUserOwnershipColumn: input.BelongsToUser,
 		}).
-		Suffix("RETURNING updated_on").
+		Suffix(fmt.Sprintf("RETURNING %s", lastUpdatedOnColumn)).
 		ToSql()
 
 	p.logQueryBuildingError(err)
@@ -288,7 +382,7 @@ func (p *Postgres) buildUpdateReportQuery(input *models.Report) (query string, a
 // UpdateReport updates a particular report. Note that UpdateReport expects the provided input to have a valid ID.
 func (p *Postgres) UpdateReport(ctx context.Context, input *models.Report) error {
 	query, args := p.buildUpdateReportQuery(input)
-	return p.db.QueryRowContext(ctx, query, args...).Scan(&input.UpdatedOn)
+	return p.db.QueryRowContext(ctx, query, args...).Scan(&input.LastUpdatedOn)
 }
 
 // buildArchiveReportQuery returns a SQL query which marks a given report belonging to a given user as archived.
@@ -297,14 +391,14 @@ func (p *Postgres) buildArchiveReportQuery(reportID, userID uint64) (query strin
 
 	query, args, err = p.sqlBuilder.
 		Update(reportsTableName).
-		Set("updated_on", squirrel.Expr(currentUnixTimeQuery)).
-		Set("archived_on", squirrel.Expr(currentUnixTimeQuery)).
+		Set(lastUpdatedOnColumn, squirrel.Expr(currentUnixTimeQuery)).
+		Set(archivedOnColumn, squirrel.Expr(currentUnixTimeQuery)).
 		Where(squirrel.Eq{
-			"id":                       reportID,
-			"archived_on":              nil,
+			idColumn:                   reportID,
+			archivedOnColumn:           nil,
 			reportsUserOwnershipColumn: userID,
 		}).
-		Suffix("RETURNING archived_on").
+		Suffix(fmt.Sprintf("RETURNING %s", archivedOnColumn)).
 		ToSql()
 
 	p.logQueryBuildingError(err)

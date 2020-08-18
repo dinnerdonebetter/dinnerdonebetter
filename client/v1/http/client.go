@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"gitlab.com/prixfixe/prixfixe/internal/v1/panicking"
 	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
 
 	"github.com/moul/http2curl"
@@ -29,12 +28,12 @@ const (
 
 var (
 	// ErrNotFound is a handy error to return when we receive a 404 response.
-	ErrNotFound = errors.New("404: not found")
+	ErrNotFound = fmt.Errorf("%d: not found", http.StatusNotFound)
 
-	// ErrUnauthorized is a handy error to return when we receive a 404 response.
-	ErrUnauthorized = errors.New("401: not authorized")
+	// ErrUnauthorized is a handy error to return when we receive a 401 response.
+	ErrUnauthorized = fmt.Errorf("%d: not authorized", http.StatusUnauthorized)
 
-	// ErrInvalidTOTPToken is an error for when our TOTP validation request goes awry
+	// ErrInvalidTOTPToken is an error for when our TOTP validation request goes awry.
 	ErrInvalidTOTPToken = errors.New("invalid TOTP token")
 )
 
@@ -47,7 +46,6 @@ type V1Client struct {
 	URL          *url.URL
 	Scopes       []string
 	tokenSource  oauth2.TokenSource
-	panicker     panicking.Panicker
 }
 
 // AuthenticatedClient returns the authenticated *http.Client that we use to make most requests.
@@ -102,7 +100,7 @@ func NewClient(
 		logger.Debug("log level set to debug!")
 	}
 
-	ac, ts := buildOAuthClient(ctx, address, clientID, clientSecret, scopes)
+	ac, ts := buildOAuthClient(ctx, address, clientID, clientSecret, scopes, client.Timeout)
 
 	c := &V1Client{
 		URL:          address,
@@ -111,7 +109,6 @@ func NewClient(
 		Debug:        debug,
 		authedClient: ac,
 		tokenSource:  ts,
-		panicker:     &panicking.StandardPanicker{},
 	}
 
 	logger.WithValue("url", address.String()).Debug("returning client")
@@ -142,6 +139,7 @@ func buildOAuthClient(
 	clientID,
 	clientSecret string,
 	scopes []string,
+	timeout time.Duration,
 ) (*http.Client, oauth2.TokenSource) {
 	conf := clientcredentials.Config{
 		ClientID:     clientID,
@@ -162,7 +160,7 @@ func buildOAuthClient(
 			},
 			Source: ts,
 		},
-		Timeout: 5 * time.Second,
+		Timeout: timeout,
 	}
 
 	return client, ts

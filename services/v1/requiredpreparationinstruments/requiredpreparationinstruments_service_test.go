@@ -18,9 +18,7 @@ func buildTestService() *Service {
 	return &Service{
 		logger:                                   noop.ProvideNoopLogger(),
 		requiredPreparationInstrumentCounter:     &mockmetrics.UnitCounter{},
-		validPreparationDataManager:              &mockmodels.ValidPreparationDataManager{},
 		requiredPreparationInstrumentDataManager: &mockmodels.RequiredPreparationInstrumentDataManager{},
-		validPreparationIDFetcher:                func(req *http.Request) uint64 { return 0 },
 		requiredPreparationInstrumentIDFetcher:   func(req *http.Request) uint64 { return 0 },
 		encoderDecoder:                           &mockencoding.EncoderDecoder{},
 		reporter:                                 nil,
@@ -37,9 +35,7 @@ func TestProvideRequiredPreparationInstrumentsService(T *testing.T) {
 
 		s, err := ProvideRequiredPreparationInstrumentsService(
 			noop.ProvideNoopLogger(),
-			&mockmodels.ValidPreparationDataManager{},
 			&mockmodels.RequiredPreparationInstrumentDataManager{},
-			func(req *http.Request) uint64 { return 0 },
 			func(req *http.Request) uint64 { return 0 },
 			&mockencoding.EncoderDecoder{},
 			ucp,
@@ -57,9 +53,7 @@ func TestProvideRequiredPreparationInstrumentsService(T *testing.T) {
 
 		s, err := ProvideRequiredPreparationInstrumentsService(
 			noop.ProvideNoopLogger(),
-			&mockmodels.ValidPreparationDataManager{},
 			&mockmodels.RequiredPreparationInstrumentDataManager{},
-			func(req *http.Request) uint64 { return 0 },
 			func(req *http.Request) uint64 { return 0 },
 			&mockencoding.EncoderDecoder{},
 			ucp,

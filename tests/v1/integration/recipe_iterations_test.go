@@ -15,6 +15,7 @@ func checkRecipeIterationEquality(t *testing.T, expected, actual *models.RecipeI
 	t.Helper()
 
 	assert.NotZero(t, actual.ID)
+	assert.Equal(t, expected.RecipeID, actual.RecipeID, "expected RecipeID for ID %d to be %v, but it was %v ", expected.ID, expected.RecipeID, actual.RecipeID)
 	assert.Equal(t, expected.EndDifficultyRating, actual.EndDifficultyRating, "expected EndDifficultyRating for ID %d to be %v, but it was %v ", expected.ID, expected.EndDifficultyRating, actual.EndDifficultyRating)
 	assert.Equal(t, expected.EndComplexityRating, actual.EndComplexityRating, "expected EndComplexityRating for ID %d to be %v, but it was %v ", expected.ID, expected.EndComplexityRating, actual.EndComplexityRating)
 	assert.Equal(t, expected.EndTasteRating, actual.EndTasteRating, "expected EndTasteRating for ID %d to be %v, but it was %v ", expected.ID, expected.EndTasteRating, actual.EndTasteRating)
@@ -269,7 +270,7 @@ func TestRecipeIterations(test *testing.T) {
 
 			// Assert recipe iteration equality.
 			checkRecipeIterationEquality(t, exampleRecipeIteration, actual)
-			assert.NotNil(t, actual.UpdatedOn)
+			assert.NotNil(t, actual.LastUpdatedOn)
 
 			// Clean up recipe iteration.
 			assert.NoError(t, prixfixeClient.ArchiveRecipeIteration(ctx, createdRecipe.ID, createdRecipeIteration.ID))

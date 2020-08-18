@@ -8,20 +8,20 @@ import (
 type (
 	// ValidInstrument represents a valid instrument.
 	ValidInstrument struct {
-		ID          uint64  `json:"id"`
-		Name        string  `json:"name"`
-		Variant     string  `json:"variant"`
-		Description string  `json:"description"`
-		Icon        string  `json:"icon"`
-		CreatedOn   uint64  `json:"createdOn"`
-		UpdatedOn   *uint64 `json:"updatedOn"`
-		ArchivedOn  *uint64 `json:"archivedOn"`
+		ID            uint64  `json:"id"`
+		Name          string  `json:"name"`
+		Variant       string  `json:"variant"`
+		Description   string  `json:"description"`
+		Icon          string  `json:"icon"`
+		CreatedOn     uint64  `json:"createdOn"`
+		LastUpdatedOn *uint64 `json:"lastUpdatedOn"`
+		ArchivedOn    *uint64 `json:"archivedOn"`
 	}
 
 	// ValidInstrumentList represents a list of valid instruments.
 	ValidInstrumentList struct {
 		Pagination
-		ValidInstruments []ValidInstrument `json:"validInstruments"`
+		ValidInstruments []ValidInstrument `json:"valid_instruments"`
 	}
 
 	// ValidInstrumentCreationInput represents what a user could set as input for creating valid instruments.
@@ -45,7 +45,9 @@ type (
 		ValidInstrumentExists(ctx context.Context, validInstrumentID uint64) (bool, error)
 		GetValidInstrument(ctx context.Context, validInstrumentID uint64) (*ValidInstrument, error)
 		GetAllValidInstrumentsCount(ctx context.Context) (uint64, error)
+		GetAllValidInstruments(ctx context.Context, resultChannel chan []ValidInstrument) error
 		GetValidInstruments(ctx context.Context, filter *QueryFilter) (*ValidInstrumentList, error)
+		GetValidInstrumentsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]ValidInstrument, error)
 		CreateValidInstrument(ctx context.Context, input *ValidInstrumentCreationInput) (*ValidInstrument, error)
 		UpdateValidInstrument(ctx context.Context, updated *ValidInstrument) error
 		ArchiveValidInstrument(ctx context.Context, validInstrumentID uint64) error
@@ -56,12 +58,12 @@ type (
 		CreationInputMiddleware(next http.Handler) http.Handler
 		UpdateInputMiddleware(next http.Handler) http.Handler
 
-		ListHandler() http.HandlerFunc
-		CreateHandler() http.HandlerFunc
-		ExistenceHandler() http.HandlerFunc
-		ReadHandler() http.HandlerFunc
-		UpdateHandler() http.HandlerFunc
-		ArchiveHandler() http.HandlerFunc
+		ListHandler(res http.ResponseWriter, req *http.Request)
+		CreateHandler(res http.ResponseWriter, req *http.Request)
+		ExistenceHandler(res http.ResponseWriter, req *http.Request)
+		ReadHandler(res http.ResponseWriter, req *http.Request)
+		UpdateHandler(res http.ResponseWriter, req *http.Request)
+		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 

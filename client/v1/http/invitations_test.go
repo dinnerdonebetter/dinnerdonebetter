@@ -187,12 +187,14 @@ func TestV1Client_GetInvitations(T *testing.T) {
 
 		filter := (*models.QueryFilter)(nil)
 
+		expectedPath := "/api/v1/invitations"
+
 		exampleInvitationList := fakemodels.BuildFakeInvitationList()
 
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, "/api/v1/invitations", "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodGet)
 					require.NoError(t, json.NewEncoder(res).Encode(exampleInvitationList))
 				},
@@ -224,10 +226,12 @@ func TestV1Client_GetInvitations(T *testing.T) {
 
 		filter := (*models.QueryFilter)(nil)
 
+		expectedPath := "/api/v1/invitations"
+
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, "/api/v1/invitations", "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodGet)
 					require.NoError(t, json.NewEncoder(res).Encode("BLAH"))
 				},
@@ -274,10 +278,12 @@ func TestV1Client_CreateInvitation(T *testing.T) {
 		exampleInvitation := fakemodels.BuildFakeInvitation()
 		exampleInput := fakemodels.BuildFakeInvitationCreationInputFromInvitation(exampleInvitation)
 
+		expectedPath := "/api/v1/invitations"
+
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, "/api/v1/invitations", "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodPost)
 
 					var x *models.InvitationCreationInput

@@ -17,7 +17,7 @@ var (
 )
 
 // ProvideRecipeIterationDataManager turns a database into an RecipeIterationDataManager.
-func ProvideRecipeIterationDataManager(db database.Database) models.RecipeIterationDataManager {
+func ProvideRecipeIterationDataManager(db database.DataManager) models.RecipeIterationDataManager {
 	return db
 }
 

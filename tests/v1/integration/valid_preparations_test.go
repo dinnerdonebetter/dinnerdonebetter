@@ -18,6 +18,7 @@ func checkValidPreparationEquality(t *testing.T, expected, actual *models.ValidP
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for ID %d to be %v, but it was %v ", expected.ID, expected.Name, actual.Name)
 	assert.Equal(t, expected.Description, actual.Description, "expected Description for ID %d to be %v, but it was %v ", expected.ID, expected.Description, actual.Description)
 	assert.Equal(t, expected.Icon, actual.Icon, "expected Icon for ID %d to be %v, but it was %v ", expected.ID, expected.Icon, actual.Icon)
+	assert.Equal(t, expected.ApplicableToAllIngredients, actual.ApplicableToAllIngredients, "expected ApplicableToAllIngredients for ID %d to be %v, but it was %v ", expected.ID, expected.ApplicableToAllIngredients, actual.ApplicableToAllIngredients)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
@@ -179,7 +180,7 @@ func TestValidPreparations(test *testing.T) {
 
 			// Assert valid preparation equality.
 			checkValidPreparationEquality(t, exampleValidPreparation, actual)
-			assert.NotNil(t, actual.UpdatedOn)
+			assert.NotNil(t, actual.LastUpdatedOn)
 
 			// Clean up valid preparation.
 			assert.NoError(t, prixfixeClient.ArchiveValidPreparation(ctx, createdValidPreparation.ID))

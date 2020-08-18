@@ -68,6 +68,24 @@ func TestClient_GetAllValidInstrumentsCount(T *testing.T) {
 	})
 }
 
+func TestClient_GetAllValidInstruments(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		results := make(chan []models.ValidInstrument)
+
+		c, mockDB := buildTestClient()
+		mockDB.ValidInstrumentDataManager.On("GetAllValidInstruments", mock.Anything, results).Return(nil)
+
+		err := c.GetAllValidInstruments(ctx, results)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
 func TestClient_GetValidInstruments(T *testing.T) {
 	T.Parallel()
 
@@ -97,6 +115,29 @@ func TestClient_GetValidInstruments(T *testing.T) {
 		mockDB.ValidInstrumentDataManager.On("GetValidInstruments", mock.Anything, filter).Return(exampleValidInstrumentList, nil)
 
 		actual, err := c.GetValidInstruments(ctx, filter)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidInstrumentList, actual)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
+func TestClient_GetValidInstrumentsWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleValidInstrumentList := fakemodels.BuildFakeValidInstrumentList().ValidInstruments
+		var exampleIDs []uint64
+		for _, x := range exampleValidInstrumentList {
+			exampleIDs = append(exampleIDs, x.ID)
+		}
+
+		c, mockDB := buildTestClient()
+		mockDB.ValidInstrumentDataManager.On("GetValidInstrumentsWithIDs", mock.Anything, defaultLimit, exampleIDs).Return(exampleValidInstrumentList, nil)
+
+		actual, err := c.GetValidInstrumentsWithIDs(ctx, defaultLimit, exampleIDs)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidInstrumentList, actual)
 

@@ -8,25 +8,23 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-var _ Database = (*MockDatabase)(nil)
+var _ DataManager = (*MockDatabase)(nil)
 
 // BuildMockDatabase builds a mock database.
 func BuildMockDatabase() *MockDatabase {
 	return &MockDatabase{
 		ValidInstrumentDataManager:               &mockmodels.ValidInstrumentDataManager{},
 		ValidIngredientDataManager:               &mockmodels.ValidIngredientDataManager{},
-		ValidIngredientTagDataManager:            &mockmodels.ValidIngredientTagDataManager{},
-		IngredientTagMappingDataManager:          &mockmodels.IngredientTagMappingDataManager{},
 		ValidPreparationDataManager:              &mockmodels.ValidPreparationDataManager{},
-		RequiredPreparationInstrumentDataManager: &mockmodels.RequiredPreparationInstrumentDataManager{},
 		ValidIngredientPreparationDataManager:    &mockmodels.ValidIngredientPreparationDataManager{},
+		RequiredPreparationInstrumentDataManager: &mockmodels.RequiredPreparationInstrumentDataManager{},
 		RecipeDataManager:                        &mockmodels.RecipeDataManager{},
-		RecipeTagDataManager:                     &mockmodels.RecipeTagDataManager{},
 		RecipeStepDataManager:                    &mockmodels.RecipeStepDataManager{},
-		RecipeStepPreparationDataManager:         &mockmodels.RecipeStepPreparationDataManager{},
+		RecipeStepInstrumentDataManager:          &mockmodels.RecipeStepInstrumentDataManager{},
 		RecipeStepIngredientDataManager:          &mockmodels.RecipeStepIngredientDataManager{},
+		RecipeStepProductDataManager:             &mockmodels.RecipeStepProductDataManager{},
 		RecipeIterationDataManager:               &mockmodels.RecipeIterationDataManager{},
-		RecipeIterationStepDataManager:           &mockmodels.RecipeIterationStepDataManager{},
+		RecipeStepEventDataManager:               &mockmodels.RecipeStepEventDataManager{},
 		IterationMediaDataManager:                &mockmodels.IterationMediaDataManager{},
 		InvitationDataManager:                    &mockmodels.InvitationDataManager{},
 		ReportDataManager:                        &mockmodels.ReportDataManager{},
@@ -42,18 +40,16 @@ type MockDatabase struct {
 
 	*mockmodels.ValidInstrumentDataManager
 	*mockmodels.ValidIngredientDataManager
-	*mockmodels.ValidIngredientTagDataManager
-	*mockmodels.IngredientTagMappingDataManager
 	*mockmodels.ValidPreparationDataManager
-	*mockmodels.RequiredPreparationInstrumentDataManager
 	*mockmodels.ValidIngredientPreparationDataManager
+	*mockmodels.RequiredPreparationInstrumentDataManager
 	*mockmodels.RecipeDataManager
-	*mockmodels.RecipeTagDataManager
 	*mockmodels.RecipeStepDataManager
-	*mockmodels.RecipeStepPreparationDataManager
+	*mockmodels.RecipeStepInstrumentDataManager
 	*mockmodels.RecipeStepIngredientDataManager
+	*mockmodels.RecipeStepProductDataManager
 	*mockmodels.RecipeIterationDataManager
-	*mockmodels.RecipeIterationStepDataManager
+	*mockmodels.RecipeStepEventDataManager
 	*mockmodels.IterationMediaDataManager
 	*mockmodels.InvitationDataManager
 	*mockmodels.ReportDataManager
@@ -62,12 +58,12 @@ type MockDatabase struct {
 	*mockmodels.WebhookDataManager
 }
 
-// Migrate satisfies the Database interface.
-func (m *MockDatabase) Migrate(ctx context.Context, createUser bool) error {
-	return m.Called(ctx, createUser).Error(0)
+// Migrate satisfies the DataManager interface.
+func (m *MockDatabase) Migrate(ctx context.Context) error {
+	return m.Called(ctx).Error(0)
 }
 
-// IsReady satisfies the Database interface.
+// IsReady satisfies the DataManager interface.
 func (m *MockDatabase) IsReady(ctx context.Context) (ready bool) {
 	return m.Called(ctx).Bool(0)
 }

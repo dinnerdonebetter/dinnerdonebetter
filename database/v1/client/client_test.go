@@ -12,6 +12,10 @@ import (
 	"gitlab.com/verygoodsoftwarenotvirus/logging/v1/noop"
 )
 
+const (
+	defaultLimit = uint8(20)
+)
+
 func buildTestClient() (*Client, *database.MockDatabase) {
 	db := database.BuildMockDatabase()
 	c := &Client{
@@ -28,10 +32,10 @@ func TestMigrate(T *testing.T) {
 		ctx := context.Background()
 
 		mockDB := database.BuildMockDatabase()
-		mockDB.On("Migrate", mock.Anything, true).Return(nil)
+		mockDB.On("Migrate", mock.Anything).Return(nil)
 
 		c := &Client{querier: mockDB}
-		actual := c.Migrate(ctx, true)
+		actual := c.Migrate(ctx)
 		assert.NoError(t, actual)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
@@ -41,10 +45,10 @@ func TestMigrate(T *testing.T) {
 		ctx := context.Background()
 
 		mockDB := database.BuildMockDatabase()
-		mockDB.On("Migrate", mock.Anything, true).Return(errors.New("blah"))
+		mockDB.On("Migrate", mock.Anything).Return(errors.New("blah"))
 
 		c := &Client{querier: mockDB}
-		actual := c.Migrate(ctx, true)
+		actual := c.Migrate(ctx)
 		assert.Error(t, actual)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
@@ -74,16 +78,9 @@ func TestProvideDatabaseClient(T *testing.T) {
 		ctx := context.Background()
 
 		mockDB := database.BuildMockDatabase()
-		mockDB.On("Migrate", mock.Anything, false).Return(nil)
+		mockDB.On("Migrate", mock.Anything).Return(nil)
 
-		actual, err := ProvideDatabaseClient(
-			ctx,
-			noop.ProvideNoopLogger(),
-			nil,
-			mockDB,
-			true,
-			false,
-		)
+		actual, err := ProvideDatabaseClient(ctx, nil, mockDB, true, noop.ProvideNoopLogger())
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 
@@ -95,16 +92,9 @@ func TestProvideDatabaseClient(T *testing.T) {
 
 		expected := errors.New("blah")
 		mockDB := database.BuildMockDatabase()
-		mockDB.On("Migrate", mock.Anything, false).Return(expected)
+		mockDB.On("Migrate", mock.Anything).Return(expected)
 
-		x, actual := ProvideDatabaseClient(
-			ctx,
-			noop.ProvideNoopLogger(),
-			nil,
-			mockDB,
-			true,
-			false,
-		)
+		x, actual := ProvideDatabaseClient(ctx, nil, mockDB, true, noop.ProvideNoopLogger())
 		assert.Nil(t, x)
 		assert.Error(t, actual)
 		assert.Equal(t, expected, actual)

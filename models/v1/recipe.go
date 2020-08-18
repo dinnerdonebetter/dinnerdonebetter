@@ -13,9 +13,8 @@ type (
 		Source             string  `json:"source"`
 		Description        string  `json:"description"`
 		InspiredByRecipeID *uint64 `json:"inspiredByRecipeID"`
-		Private            bool    `json:"private"`
 		CreatedOn          uint64  `json:"createdOn"`
-		UpdatedOn          *uint64 `json:"updatedOn"`
+		LastUpdatedOn      *uint64 `json:"lastUpdatedOn"`
 		ArchivedOn         *uint64 `json:"archivedOn"`
 		BelongsToUser      uint64  `json:"belongsToUser"`
 	}
@@ -32,7 +31,6 @@ type (
 		Source             string  `json:"source"`
 		Description        string  `json:"description"`
 		InspiredByRecipeID *uint64 `json:"inspiredByRecipeID"`
-		Private            bool    `json:"private"`
 		BelongsToUser      uint64  `json:"-"`
 	}
 
@@ -42,7 +40,6 @@ type (
 		Source             string  `json:"source"`
 		Description        string  `json:"description"`
 		InspiredByRecipeID *uint64 `json:"inspiredByRecipeID"`
-		Private            bool    `json:"private"`
 		BelongsToUser      uint64  `json:"-"`
 	}
 
@@ -51,7 +48,9 @@ type (
 		RecipeExists(ctx context.Context, recipeID uint64) (bool, error)
 		GetRecipe(ctx context.Context, recipeID uint64) (*Recipe, error)
 		GetAllRecipesCount(ctx context.Context) (uint64, error)
+		GetAllRecipes(ctx context.Context, resultChannel chan []Recipe) error
 		GetRecipes(ctx context.Context, filter *QueryFilter) (*RecipeList, error)
+		GetRecipesWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]Recipe, error)
 		CreateRecipe(ctx context.Context, input *RecipeCreationInput) (*Recipe, error)
 		UpdateRecipe(ctx context.Context, updated *Recipe) error
 		ArchiveRecipe(ctx context.Context, recipeID, userID uint64) error
@@ -62,12 +61,12 @@ type (
 		CreationInputMiddleware(next http.Handler) http.Handler
 		UpdateInputMiddleware(next http.Handler) http.Handler
 
-		ListHandler() http.HandlerFunc
-		CreateHandler() http.HandlerFunc
-		ExistenceHandler() http.HandlerFunc
-		ReadHandler() http.HandlerFunc
-		UpdateHandler() http.HandlerFunc
-		ArchiveHandler() http.HandlerFunc
+		ListHandler(res http.ResponseWriter, req *http.Request)
+		CreateHandler(res http.ResponseWriter, req *http.Request)
+		ExistenceHandler(res http.ResponseWriter, req *http.Request)
+		ReadHandler(res http.ResponseWriter, req *http.Request)
+		UpdateHandler(res http.ResponseWriter, req *http.Request)
+		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 
@@ -88,10 +87,6 @@ func (x *Recipe) Update(input *RecipeUpdateInput) {
 	if input.InspiredByRecipeID != nil && input.InspiredByRecipeID != x.InspiredByRecipeID {
 		x.InspiredByRecipeID = input.InspiredByRecipeID
 	}
-
-	if input.Private != x.Private {
-		x.Private = input.Private
-	}
 }
 
 // ToUpdateInput creates a RecipeUpdateInput struct for a recipe.
@@ -101,6 +96,5 @@ func (x *Recipe) ToUpdateInput() *RecipeUpdateInput {
 		Source:             x.Source,
 		Description:        x.Description,
 		InspiredByRecipeID: x.InspiredByRecipeID,
-		Private:            x.Private,
 	}
 }

@@ -72,6 +72,24 @@ func TestClient_GetAllInvitationsCount(T *testing.T) {
 	})
 }
 
+func TestClient_GetAllInvitations(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		results := make(chan []models.Invitation)
+
+		c, mockDB := buildTestClient()
+		mockDB.InvitationDataManager.On("GetAllInvitations", mock.Anything, results).Return(nil)
+
+		err := c.GetAllInvitations(ctx, results)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
 func TestClient_GetInvitations(T *testing.T) {
 	T.Parallel()
 
@@ -101,6 +119,29 @@ func TestClient_GetInvitations(T *testing.T) {
 		mockDB.InvitationDataManager.On("GetInvitations", mock.Anything, filter).Return(exampleInvitationList, nil)
 
 		actual, err := c.GetInvitations(ctx, filter)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleInvitationList, actual)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
+func TestClient_GetInvitationsWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleInvitationList := fakemodels.BuildFakeInvitationList().Invitations
+		var exampleIDs []uint64
+		for _, x := range exampleInvitationList {
+			exampleIDs = append(exampleIDs, x.ID)
+		}
+
+		c, mockDB := buildTestClient()
+		mockDB.InvitationDataManager.On("GetInvitationsWithIDs", mock.Anything, defaultLimit, exampleIDs).Return(exampleInvitationList, nil)
+
+		actual, err := c.GetInvitationsWithIDs(ctx, defaultLimit, exampleIDs)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleInvitationList, actual)
 

@@ -80,6 +80,24 @@ func TestClient_GetAllIterationMediasCount(T *testing.T) {
 	})
 }
 
+func TestClient_GetAllIterationMedias(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		results := make(chan []models.IterationMedia)
+
+		c, mockDB := buildTestClient()
+		mockDB.IterationMediaDataManager.On("GetAllIterationMedias", mock.Anything, results).Return(nil)
+
+		err := c.GetAllIterationMedias(ctx, results)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
 func TestClient_GetIterationMedias(T *testing.T) {
 	T.Parallel()
 
@@ -113,6 +131,32 @@ func TestClient_GetIterationMedias(T *testing.T) {
 		mockDB.IterationMediaDataManager.On("GetIterationMedias", mock.Anything, exampleRecipe.ID, exampleRecipeIteration.ID, filter).Return(exampleIterationMediaList, nil)
 
 		actual, err := c.GetIterationMedias(ctx, exampleRecipe.ID, exampleRecipeIteration.ID, filter)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleIterationMediaList, actual)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
+func TestClient_GetIterationMediasWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeIteration := fakemodels.BuildFakeRecipeIteration()
+		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
+		exampleIterationMediaList := fakemodels.BuildFakeIterationMediaList().IterationMedias
+		var exampleIDs []uint64
+		for _, x := range exampleIterationMediaList {
+			exampleIDs = append(exampleIDs, x.ID)
+		}
+
+		c, mockDB := buildTestClient()
+		mockDB.IterationMediaDataManager.On("GetIterationMediasWithIDs", mock.Anything, exampleRecipe.ID, exampleRecipeIteration.ID, defaultLimit, exampleIDs).Return(exampleIterationMediaList, nil)
+
+		actual, err := c.GetIterationMediasWithIDs(ctx, exampleRecipe.ID, exampleRecipeIteration.ID, defaultLimit, exampleIDs)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleIterationMediaList, actual)
 

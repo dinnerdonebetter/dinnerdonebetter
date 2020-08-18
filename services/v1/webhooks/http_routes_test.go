@@ -49,13 +49,13 @@ func TestWebhooksService_List(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ListHandler()(res, req)
+		s.ListHandler(res, req)
 		assert.Equal(t, http.StatusOK, res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd, ed)
@@ -84,13 +84,13 @@ func TestWebhooksService_List(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ListHandler()(res, req)
+		s.ListHandler(res, req)
 		assert.Equal(t, http.StatusOK, res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd, ed)
@@ -115,13 +115,13 @@ func TestWebhooksService_List(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ListHandler()(res, req)
+		s.ListHandler(res, req)
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd)
@@ -152,13 +152,13 @@ func TestWebhooksService_List(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ListHandler()(res, req)
+		s.ListHandler(res, req)
 		assert.Equal(t, http.StatusOK, res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd, ed)
@@ -232,15 +232,15 @@ func TestWebhooksService_Create(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), createMiddlewareCtxKey, exampleInput))
 
-		s.CreateHandler()(res, req)
+		s.CreateHandler(res, req)
 		assert.Equal(t, http.StatusCreated, res.Code)
 
 		mock.AssertExpectationsForObjects(t, mc, wd, ed)
@@ -261,15 +261,15 @@ func TestWebhooksService_Create(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), createMiddlewareCtxKey, exampleInput))
 
-		s.CreateHandler()(res, req)
+		s.CreateHandler(res, req)
 		assert.Equal(t, http.StatusBadRequest, res.Code)
 	})
 
@@ -283,13 +283,13 @@ func TestWebhooksService_Create(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.CreateHandler()(res, req)
+		s.CreateHandler(res, req)
 		assert.Equal(t, http.StatusBadRequest, res.Code)
 	})
 
@@ -315,15 +315,15 @@ func TestWebhooksService_Create(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), createMiddlewareCtxKey, exampleInput))
 
-		s.CreateHandler()(res, req)
+		s.CreateHandler(res, req)
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd)
@@ -359,15 +359,15 @@ func TestWebhooksService_Create(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), createMiddlewareCtxKey, exampleInput))
 
-		s.CreateHandler()(res, req)
+		s.CreateHandler(res, req)
 		assert.Equal(t, http.StatusCreated, res.Code)
 
 		mock.AssertExpectationsForObjects(t, mc, wd, ed)
@@ -409,13 +409,13 @@ func TestWebhooksService_Read(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ReadHandler()(res, req)
+		s.ReadHandler(res, req)
 		assert.Equal(t, http.StatusOK, res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd, ed)
@@ -447,13 +447,13 @@ func TestWebhooksService_Read(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ReadHandler()(res, req)
+		s.ReadHandler(res, req)
 		assert.Equal(t, http.StatusNotFound, res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd)
@@ -485,13 +485,13 @@ func TestWebhooksService_Read(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ReadHandler()(res, req)
+		s.ReadHandler(res, req)
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd)
@@ -527,13 +527,13 @@ func TestWebhooksService_Read(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ReadHandler()(res, req)
+		s.ReadHandler(res, req)
 		assert.Equal(t, http.StatusOK, res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd, ed)
@@ -582,15 +582,15 @@ func TestWebhooksService_Update(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), updateMiddlewareCtxKey, exampleInput))
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 		assert.Equal(t, http.StatusOK, res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd, ed)
@@ -602,13 +602,13 @@ func TestWebhooksService_Update(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 		assert.Equal(t, http.StatusBadRequest, res.Code)
 	})
 
@@ -639,15 +639,15 @@ func TestWebhooksService_Update(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), updateMiddlewareCtxKey, exampleInput))
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 		assert.Equal(t, http.StatusNotFound, res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd)
@@ -680,15 +680,15 @@ func TestWebhooksService_Update(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), updateMiddlewareCtxKey, exampleInput))
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd)
@@ -727,15 +727,15 @@ func TestWebhooksService_Update(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), updateMiddlewareCtxKey, exampleInput))
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd)
@@ -778,15 +778,15 @@ func TestWebhooksService_Update(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), updateMiddlewareCtxKey, exampleInput))
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 		assert.Equal(t, http.StatusOK, res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd, ed)
@@ -828,13 +828,13 @@ func TestWebhooksService_Archive(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ArchiveHandler()(res, req)
+		s.ArchiveHandler(res, req)
 		assert.Equal(t, http.StatusNoContent, res.Code)
 
 		mock.AssertExpectationsForObjects(t, mc, wd)
@@ -866,13 +866,13 @@ func TestWebhooksService_Archive(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ArchiveHandler()(res, req)
+		s.ArchiveHandler(res, req)
 		assert.Equal(t, http.StatusNotFound, res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd)
@@ -904,13 +904,13 @@ func TestWebhooksService_Archive(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ArchiveHandler()(res, req)
+		s.ArchiveHandler(res, req)
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd)

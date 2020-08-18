@@ -47,6 +47,16 @@ func (c *Client) GetAllValidInstrumentsCount(ctx context.Context) (count uint64,
 	return c.querier.GetAllValidInstrumentsCount(ctx)
 }
 
+// GetAllValidInstruments fetches a list of all valid instruments in the database.
+func (c *Client) GetAllValidInstruments(ctx context.Context, results chan []models.ValidInstrument) error {
+	ctx, span := tracing.StartSpan(ctx, "GetAllValidInstruments")
+	defer span.End()
+
+	c.logger.Debug("GetAllValidInstruments called")
+
+	return c.querier.GetAllValidInstruments(ctx, results)
+}
+
 // GetValidInstruments fetches a list of valid instruments from the database that meet a particular filter.
 func (c *Client) GetValidInstruments(ctx context.Context, filter *models.QueryFilter) (*models.ValidInstrumentList, error) {
 	ctx, span := tracing.StartSpan(ctx, "GetValidInstruments")
@@ -57,6 +67,20 @@ func (c *Client) GetValidInstruments(ctx context.Context, filter *models.QueryFi
 	c.logger.Debug("GetValidInstruments called")
 
 	validInstrumentList, err := c.querier.GetValidInstruments(ctx, filter)
+
+	return validInstrumentList, err
+}
+
+// GetValidInstrumentsWithIDs fetches valid instruments from the database within a given set of IDs.
+func (c *Client) GetValidInstrumentsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]models.ValidInstrument, error) {
+	ctx, span := tracing.StartSpan(ctx, "GetValidInstrumentsWithIDs")
+	defer span.End()
+
+	c.logger.WithValues(map[string]interface{}{
+		"id_count": len(ids),
+	}).Debug("GetValidInstrumentsWithIDs called")
+
+	validInstrumentList, err := c.querier.GetValidInstrumentsWithIDs(ctx, limit, ids)
 
 	return validInstrumentList, err
 }

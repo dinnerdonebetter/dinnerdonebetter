@@ -39,13 +39,13 @@ func TestValidIngredientsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ListHandler()(res, req)
+		s.ListHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -66,13 +66,13 @@ func TestValidIngredientsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ListHandler()(res, req)
+		s.ListHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -89,13 +89,13 @@ func TestValidIngredientsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ListHandler()(res, req)
+		s.ListHandler(res, req)
 
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
@@ -118,13 +118,13 @@ func TestValidIngredientsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ListHandler()(res, req)
+		s.ListHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -160,15 +160,15 @@ func TestValidIngredientsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), createMiddlewareCtxKey, exampleInput))
 
-		s.CreateHandler()(res, req)
+		s.CreateHandler(res, req)
 
 		assert.Equal(t, http.StatusCreated, res.Code)
 
@@ -181,13 +181,13 @@ func TestValidIngredientsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.CreateHandler()(res, req)
+		s.CreateHandler(res, req)
 
 		assert.Equal(t, http.StatusBadRequest, res.Code)
 	})
@@ -199,21 +199,21 @@ func TestValidIngredientsService_CreateHandler(T *testing.T) {
 		exampleInput := fakemodels.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
 
 		validIngredientDataManager := &mockmodels.ValidIngredientDataManager{}
-		validIngredientDataManager.On("CreateValidIngredient", mock.Anything, mock.AnythingOfType("*models.ValidIngredientCreationInput")).Return(exampleValidIngredient, errors.New("blah"))
+		validIngredientDataManager.On("CreateValidIngredient", mock.Anything, mock.AnythingOfType("*models.ValidIngredientCreationInput")).Return((*models.ValidIngredient)(nil), errors.New("blah"))
 		s.validIngredientDataManager = validIngredientDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), createMiddlewareCtxKey, exampleInput))
 
-		s.CreateHandler()(res, req)
+		s.CreateHandler(res, req)
 
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
@@ -245,15 +245,15 @@ func TestValidIngredientsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), createMiddlewareCtxKey, exampleInput))
 
-		s.CreateHandler()(res, req)
+		s.CreateHandler(res, req)
 
 		assert.Equal(t, http.StatusCreated, res.Code)
 
@@ -279,13 +279,13 @@ func TestValidIngredientsService_ExistenceHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ExistenceHandler()(res, req)
+		s.ExistenceHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -307,13 +307,13 @@ func TestValidIngredientsService_ExistenceHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ExistenceHandler()(res, req)
+		s.ExistenceHandler(res, req)
 
 		assert.Equal(t, http.StatusNotFound, res.Code)
 
@@ -335,13 +335,13 @@ func TestValidIngredientsService_ExistenceHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ExistenceHandler()(res, req)
+		s.ExistenceHandler(res, req)
 
 		assert.Equal(t, http.StatusNotFound, res.Code)
 
@@ -371,13 +371,13 @@ func TestValidIngredientsService_ReadHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ReadHandler()(res, req)
+		s.ReadHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -399,13 +399,13 @@ func TestValidIngredientsService_ReadHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ReadHandler()(res, req)
+		s.ReadHandler(res, req)
 
 		assert.Equal(t, http.StatusNotFound, res.Code)
 
@@ -427,13 +427,13 @@ func TestValidIngredientsService_ReadHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ReadHandler()(res, req)
+		s.ReadHandler(res, req)
 
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
@@ -459,13 +459,13 @@ func TestValidIngredientsService_ReadHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ReadHandler()(res, req)
+		s.ReadHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -502,15 +502,15 @@ func TestValidIngredientsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), updateMiddlewareCtxKey, exampleInput))
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -523,13 +523,13 @@ func TestValidIngredientsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 
 		assert.Equal(t, http.StatusBadRequest, res.Code)
 	})
@@ -551,15 +551,15 @@ func TestValidIngredientsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), updateMiddlewareCtxKey, exampleInput))
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 
 		assert.Equal(t, http.StatusNotFound, res.Code)
 
@@ -583,15 +583,15 @@ func TestValidIngredientsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), updateMiddlewareCtxKey, exampleInput))
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
@@ -616,15 +616,15 @@ func TestValidIngredientsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), updateMiddlewareCtxKey, exampleInput))
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
@@ -657,15 +657,15 @@ func TestValidIngredientsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), updateMiddlewareCtxKey, exampleInput))
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -699,13 +699,13 @@ func TestValidIngredientsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ArchiveHandler()(res, req)
+		s.ArchiveHandler(res, req)
 
 		assert.Equal(t, http.StatusNoContent, res.Code)
 
@@ -727,13 +727,13 @@ func TestValidIngredientsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ArchiveHandler()(res, req)
+		s.ArchiveHandler(res, req)
 
 		assert.Equal(t, http.StatusNotFound, res.Code)
 
@@ -755,13 +755,13 @@ func TestValidIngredientsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ArchiveHandler()(res, req)
+		s.ArchiveHandler(res, req)
 
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 

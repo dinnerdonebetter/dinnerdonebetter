@@ -89,6 +89,7 @@ func buildRecipeIterationActions(c *client.V1Client) map[string]*Action {
 
 				if randomRecipeIteration := fetchRandomRecipeIteration(ctx, c, randomRecipe.ID); randomRecipeIteration != nil {
 					newRecipeIteration := fakemodels.BuildFakeRecipeIterationCreationInput()
+					randomRecipeIteration.RecipeID = newRecipeIteration.RecipeID
 					randomRecipeIteration.EndDifficultyRating = newRecipeIteration.EndDifficultyRating
 					randomRecipeIteration.EndComplexityRating = newRecipeIteration.EndComplexityRating
 					randomRecipeIteration.EndTasteRating = newRecipeIteration.EndTasteRating

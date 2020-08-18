@@ -25,9 +25,8 @@ func BuildFakeReportList() *models.ReportList {
 
 	return &models.ReportList{
 		Pagination: models.Pagination{
-			Page:       1,
-			Limit:      20,
-			TotalCount: 3,
+			Page:  1,
+			Limit: 20,
 		},
 		Reports: []models.Report{
 			*exampleReport1,

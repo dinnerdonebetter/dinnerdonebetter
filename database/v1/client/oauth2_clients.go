@@ -61,17 +61,17 @@ func (c *Client) GetAllOAuth2ClientCount(ctx context.Context) (uint64, error) {
 	return c.querier.GetAllOAuth2ClientCount(ctx)
 }
 
-// GetOAuth2Clients gets a list of OAuth2 clients.
-func (c *Client) GetOAuth2Clients(ctx context.Context, userID uint64, filter *models.QueryFilter) (*models.OAuth2ClientList, error) {
-	ctx, span := tracing.StartSpan(ctx, "GetOAuth2Clients")
+// GetOAuth2ClientsForUser gets a list of OAuth2 clients.
+func (c *Client) GetOAuth2ClientsForUser(ctx context.Context, userID uint64, filter *models.QueryFilter) (*models.OAuth2ClientList, error) {
+	ctx, span := tracing.StartSpan(ctx, "GetOAuth2ClientsForUser")
 	defer span.End()
 
 	tracing.AttachUserIDToSpan(span, userID)
 	tracing.AttachFilterToSpan(span, filter)
 
-	c.logger.WithValue("user_id", userID).Debug("GetOAuth2Clients called")
+	c.logger.WithValue("user_id", userID).Debug("GetOAuth2ClientsForUser called")
 
-	return c.querier.GetOAuth2Clients(ctx, userID, filter)
+	return c.querier.GetOAuth2ClientsForUser(ctx, userID, filter)
 }
 
 // CreateOAuth2Client creates an OAuth2 client.

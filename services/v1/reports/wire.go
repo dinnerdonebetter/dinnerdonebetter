@@ -17,7 +17,7 @@ var (
 )
 
 // ProvideReportDataManager turns a database into an ReportDataManager.
-func ProvideReportDataManager(db database.Database) models.ReportDataManager {
+func ProvideReportDataManager(db database.DataManager) models.ReportDataManager {
 	return db
 }
 

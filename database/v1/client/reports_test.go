@@ -72,6 +72,24 @@ func TestClient_GetAllReportsCount(T *testing.T) {
 	})
 }
 
+func TestClient_GetAllReports(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		results := make(chan []models.Report)
+
+		c, mockDB := buildTestClient()
+		mockDB.ReportDataManager.On("GetAllReports", mock.Anything, results).Return(nil)
+
+		err := c.GetAllReports(ctx, results)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
 func TestClient_GetReports(T *testing.T) {
 	T.Parallel()
 
@@ -101,6 +119,29 @@ func TestClient_GetReports(T *testing.T) {
 		mockDB.ReportDataManager.On("GetReports", mock.Anything, filter).Return(exampleReportList, nil)
 
 		actual, err := c.GetReports(ctx, filter)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleReportList, actual)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
+func TestClient_GetReportsWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleReportList := fakemodels.BuildFakeReportList().Reports
+		var exampleIDs []uint64
+		for _, x := range exampleReportList {
+			exampleIDs = append(exampleIDs, x.ID)
+		}
+
+		c, mockDB := buildTestClient()
+		mockDB.ReportDataManager.On("GetReportsWithIDs", mock.Anything, defaultLimit, exampleIDs).Return(exampleReportList, nil)
+
+		actual, err := c.GetReportsWithIDs(ctx, defaultLimit, exampleIDs)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleReportList, actual)
 

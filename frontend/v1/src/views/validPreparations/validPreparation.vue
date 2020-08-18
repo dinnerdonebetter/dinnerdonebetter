@@ -71,7 +71,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import format from 'string-format';
 
 import { backendRoutes, statusCodes } from '@/constants';
-import {fakeValidPreparationFactory, ValidPreparation, validPreparationsAreEqual} from '@/models';
+import {fakeValidPreparationFactory, ValidPreparation} from '@/models';
 import { renderUnixTime } from '@/utils/time';
 import {AppModule} from "@/store/modules/app";
 
@@ -168,7 +168,7 @@ export default class ValidPreparationComponent extends Vue {
 
   private fieldChange(): void {
     if (this.originalPreparation !== null) {
-      this.hasChanged = !validPreparationsAreEqual(
+      this.hasChanged = !ValidPreparation.areEqual(
         this.currentPreparation,
         this.originalPreparation,
       );

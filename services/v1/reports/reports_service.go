@@ -13,10 +13,10 @@ import (
 )
 
 const (
-	// CreateMiddlewareCtxKey is a string alias we can use for referring to report input data in contexts.
-	CreateMiddlewareCtxKey models.ContextKey = "report_create_input"
-	// UpdateMiddlewareCtxKey is a string alias we can use for referring to report update data in contexts.
-	UpdateMiddlewareCtxKey models.ContextKey = "report_update_input"
+	// createMiddlewareCtxKey is a string alias we can use for referring to report input data in contexts.
+	createMiddlewareCtxKey models.ContextKey = "report_create_input"
+	// updateMiddlewareCtxKey is a string alias we can use for referring to report update data in contexts.
+	updateMiddlewareCtxKey models.ContextKey = "report_update_input"
 
 	counterName        metrics.CounterName = "reports"
 	counterDescription string              = "the number of reports managed by the reports service"

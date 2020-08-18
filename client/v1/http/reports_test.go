@@ -187,12 +187,14 @@ func TestV1Client_GetReports(T *testing.T) {
 
 		filter := (*models.QueryFilter)(nil)
 
+		expectedPath := "/api/v1/reports"
+
 		exampleReportList := fakemodels.BuildFakeReportList()
 
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, "/api/v1/reports", "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodGet)
 					require.NoError(t, json.NewEncoder(res).Encode(exampleReportList))
 				},
@@ -224,10 +226,12 @@ func TestV1Client_GetReports(T *testing.T) {
 
 		filter := (*models.QueryFilter)(nil)
 
+		expectedPath := "/api/v1/reports"
+
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, "/api/v1/reports", "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodGet)
 					require.NoError(t, json.NewEncoder(res).Encode("BLAH"))
 				},
@@ -274,10 +278,12 @@ func TestV1Client_CreateReport(T *testing.T) {
 		exampleReport := fakemodels.BuildFakeReport()
 		exampleInput := fakemodels.BuildFakeReportCreationInputFromReport(exampleReport)
 
+		expectedPath := "/api/v1/reports"
+
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, "/api/v1/reports", "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodPost)
 
 					var x *models.ReportCreationInput

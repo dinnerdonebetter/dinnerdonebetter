@@ -4,6 +4,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 
 	database "gitlab.com/prixfixe/prixfixe/database/v1"
 	"gitlab.com/prixfixe/prixfixe/internal/v1/auth"
@@ -14,23 +15,21 @@ import (
 	httpserver "gitlab.com/prixfixe/prixfixe/server/v1/http"
 	authservice "gitlab.com/prixfixe/prixfixe/services/v1/auth"
 	frontendservice "gitlab.com/prixfixe/prixfixe/services/v1/frontend"
-	ingredienttagmappingsservice "gitlab.com/prixfixe/prixfixe/services/v1/ingredienttagmappings"
 	invitationsservice "gitlab.com/prixfixe/prixfixe/services/v1/invitations"
 	iterationmediasservice "gitlab.com/prixfixe/prixfixe/services/v1/iterationmedias"
 	oauth2clientsservice "gitlab.com/prixfixe/prixfixe/services/v1/oauth2clients"
 	recipeiterationsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipeiterations"
-	recipeiterationstepsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipeiterationsteps"
 	recipesservice "gitlab.com/prixfixe/prixfixe/services/v1/recipes"
+	recipestepeventsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipestepevents"
 	recipestepingredientsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipestepingredients"
-	recipesteppreparationsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipesteppreparations"
+	recipestepinstrumentsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipestepinstruments"
+	recipestepproductsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipestepproducts"
 	recipestepsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipesteps"
-	recipetagsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipetags"
 	reportsservice "gitlab.com/prixfixe/prixfixe/services/v1/reports"
 	requiredpreparationinstrumentsservice "gitlab.com/prixfixe/prixfixe/services/v1/requiredpreparationinstruments"
 	usersservice "gitlab.com/prixfixe/prixfixe/services/v1/users"
 	validingredientpreparationsservice "gitlab.com/prixfixe/prixfixe/services/v1/validingredientpreparations"
 	validingredientsservice "gitlab.com/prixfixe/prixfixe/services/v1/validingredients"
-	validingredienttagsservice "gitlab.com/prixfixe/prixfixe/services/v1/validingredienttags"
 	validinstrumentsservice "gitlab.com/prixfixe/prixfixe/services/v1/validinstruments"
 	validpreparationsservice "gitlab.com/prixfixe/prixfixe/services/v1/validpreparations"
 	webhooksservice "gitlab.com/prixfixe/prixfixe/services/v1/webhooks"
@@ -50,7 +49,8 @@ func BuildServer(
 	ctx context.Context,
 	cfg *config.ServerConfig,
 	logger logging.Logger,
-	database database.Database,
+	database database.DataManager,
+	db *sql.DB,
 ) (*server.Server, error) {
 	wire.Build(
 		config.Providers,
@@ -69,18 +69,16 @@ func BuildServer(
 		usersservice.Providers,
 		validinstrumentsservice.Providers,
 		validingredientsservice.Providers,
-		validingredienttagsservice.Providers,
-		ingredienttagmappingsservice.Providers,
 		validpreparationsservice.Providers,
-		requiredpreparationinstrumentsservice.Providers,
 		validingredientpreparationsservice.Providers,
+		requiredpreparationinstrumentsservice.Providers,
 		recipesservice.Providers,
-		recipetagsservice.Providers,
 		recipestepsservice.Providers,
-		recipesteppreparationsservice.Providers,
+		recipestepinstrumentsservice.Providers,
 		recipestepingredientsservice.Providers,
+		recipestepproductsservice.Providers,
 		recipeiterationsservice.Providers,
-		recipeiterationstepsservice.Providers,
+		recipestepeventsservice.Providers,
 		iterationmediasservice.Providers,
 		invitationsservice.Providers,
 		reportsservice.Providers,

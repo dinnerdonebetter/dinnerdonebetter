@@ -11,6 +11,8 @@ import (
 var (
 	// ErrInvalidTwoFactorCode indicates that a provided two factor code is invalid.
 	ErrInvalidTwoFactorCode = errors.New("invalid two factor code")
+	// ErrPasswordHashTooWeak indicates that a provided password hash is too weak.
+	ErrPasswordHashTooWeak = errors.New("password's hash is too weak")
 
 	// Providers represents what this package offers to external libraries in the way of constructors.
 	Providers = wire.NewSet(

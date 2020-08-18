@@ -11,18 +11,16 @@ import (
 const (
 	validInstrumentIDSpanAttachmentKey               = "valid_instrument_id"
 	validIngredientIDSpanAttachmentKey               = "valid_ingredient_id"
-	validIngredientTagIDSpanAttachmentKey            = "valid_ingredient_tag_id"
-	ingredientTagMappingIDSpanAttachmentKey          = "ingredient_tag_mapping_id"
 	validPreparationIDSpanAttachmentKey              = "valid_preparation_id"
-	requiredPreparationInstrumentIDSpanAttachmentKey = "required_preparation_instrument_id"
 	validIngredientPreparationIDSpanAttachmentKey    = "valid_ingredient_preparation_id"
+	requiredPreparationInstrumentIDSpanAttachmentKey = "required_preparation_instrument_id"
 	recipeIDSpanAttachmentKey                        = "recipe_id"
-	recipeTagIDSpanAttachmentKey                     = "recipe_tag_id"
 	recipeStepIDSpanAttachmentKey                    = "recipe_step_id"
-	recipeStepPreparationIDSpanAttachmentKey         = "recipe_step_preparation_id"
+	recipeStepInstrumentIDSpanAttachmentKey          = "recipe_step_instrument_id"
 	recipeStepIngredientIDSpanAttachmentKey          = "recipe_step_ingredient_id"
+	recipeStepProductIDSpanAttachmentKey             = "recipe_step_product_id"
 	recipeIterationIDSpanAttachmentKey               = "recipe_iteration_id"
-	recipeIterationStepIDSpanAttachmentKey           = "recipe_iteration_step_id"
+	recipeStepEventIDSpanAttachmentKey               = "recipe_step_event_id"
 	iterationMediaIDSpanAttachmentKey                = "iteration_media_id"
 	invitationIDSpanAttachmentKey                    = "invitation_id"
 	reportIDSpanAttachmentKey                        = "report_id"
@@ -53,7 +51,7 @@ func AttachFilterToSpan(span *trace.Span, filter *models.QueryFilter) {
 	if filter != nil && span != nil {
 		span.AddAttributes(
 			trace.StringAttribute(filterPageSpanAttachmentKey, strconv.FormatUint(filter.QueryPage(), 10)),
-			trace.StringAttribute(filterLimitSpanAttachmentKey, strconv.FormatUint(filter.Limit, 10)),
+			trace.StringAttribute(filterLimitSpanAttachmentKey, strconv.FormatUint(uint64(filter.Limit), 10)),
 		)
 	}
 }
@@ -68,24 +66,9 @@ func AttachValidIngredientIDToSpan(span *trace.Span, validIngredientID uint64) {
 	attachUint64ToSpan(span, validIngredientIDSpanAttachmentKey, validIngredientID)
 }
 
-// AttachValidIngredientTagIDToSpan attaches a valid ingredient tag ID to a given span.
-func AttachValidIngredientTagIDToSpan(span *trace.Span, validIngredientTagID uint64) {
-	attachUint64ToSpan(span, validIngredientTagIDSpanAttachmentKey, validIngredientTagID)
-}
-
-// AttachIngredientTagMappingIDToSpan attaches an ingredient tag mapping ID to a given span.
-func AttachIngredientTagMappingIDToSpan(span *trace.Span, ingredientTagMappingID uint64) {
-	attachUint64ToSpan(span, ingredientTagMappingIDSpanAttachmentKey, ingredientTagMappingID)
-}
-
 // AttachValidPreparationIDToSpan attaches a valid preparation ID to a given span.
 func AttachValidPreparationIDToSpan(span *trace.Span, validPreparationID uint64) {
 	attachUint64ToSpan(span, validPreparationIDSpanAttachmentKey, validPreparationID)
-}
-
-// AttachRequiredPreparationInstrumentIDToSpan attaches a required preparation instrument ID to a given span.
-func AttachRequiredPreparationInstrumentIDToSpan(span *trace.Span, requiredPreparationInstrumentID uint64) {
-	attachUint64ToSpan(span, requiredPreparationInstrumentIDSpanAttachmentKey, requiredPreparationInstrumentID)
 }
 
 // AttachValidIngredientPreparationIDToSpan attaches a valid ingredient preparation ID to a given span.
@@ -93,14 +76,14 @@ func AttachValidIngredientPreparationIDToSpan(span *trace.Span, validIngredientP
 	attachUint64ToSpan(span, validIngredientPreparationIDSpanAttachmentKey, validIngredientPreparationID)
 }
 
+// AttachRequiredPreparationInstrumentIDToSpan attaches a required preparation instrument ID to a given span.
+func AttachRequiredPreparationInstrumentIDToSpan(span *trace.Span, requiredPreparationInstrumentID uint64) {
+	attachUint64ToSpan(span, requiredPreparationInstrumentIDSpanAttachmentKey, requiredPreparationInstrumentID)
+}
+
 // AttachRecipeIDToSpan attaches a recipe ID to a given span.
 func AttachRecipeIDToSpan(span *trace.Span, recipeID uint64) {
 	attachUint64ToSpan(span, recipeIDSpanAttachmentKey, recipeID)
-}
-
-// AttachRecipeTagIDToSpan attaches a recipe tag ID to a given span.
-func AttachRecipeTagIDToSpan(span *trace.Span, recipeTagID uint64) {
-	attachUint64ToSpan(span, recipeTagIDSpanAttachmentKey, recipeTagID)
 }
 
 // AttachRecipeStepIDToSpan attaches a recipe step ID to a given span.
@@ -108,9 +91,9 @@ func AttachRecipeStepIDToSpan(span *trace.Span, recipeStepID uint64) {
 	attachUint64ToSpan(span, recipeStepIDSpanAttachmentKey, recipeStepID)
 }
 
-// AttachRecipeStepPreparationIDToSpan attaches a recipe step preparation ID to a given span.
-func AttachRecipeStepPreparationIDToSpan(span *trace.Span, recipeStepPreparationID uint64) {
-	attachUint64ToSpan(span, recipeStepPreparationIDSpanAttachmentKey, recipeStepPreparationID)
+// AttachRecipeStepInstrumentIDToSpan attaches a recipe step instrument ID to a given span.
+func AttachRecipeStepInstrumentIDToSpan(span *trace.Span, recipeStepInstrumentID uint64) {
+	attachUint64ToSpan(span, recipeStepInstrumentIDSpanAttachmentKey, recipeStepInstrumentID)
 }
 
 // AttachRecipeStepIngredientIDToSpan attaches a recipe step ingredient ID to a given span.
@@ -118,14 +101,19 @@ func AttachRecipeStepIngredientIDToSpan(span *trace.Span, recipeStepIngredientID
 	attachUint64ToSpan(span, recipeStepIngredientIDSpanAttachmentKey, recipeStepIngredientID)
 }
 
+// AttachRecipeStepProductIDToSpan attaches a recipe step product ID to a given span.
+func AttachRecipeStepProductIDToSpan(span *trace.Span, recipeStepProductID uint64) {
+	attachUint64ToSpan(span, recipeStepProductIDSpanAttachmentKey, recipeStepProductID)
+}
+
 // AttachRecipeIterationIDToSpan attaches a recipe iteration ID to a given span.
 func AttachRecipeIterationIDToSpan(span *trace.Span, recipeIterationID uint64) {
 	attachUint64ToSpan(span, recipeIterationIDSpanAttachmentKey, recipeIterationID)
 }
 
-// AttachRecipeIterationStepIDToSpan attaches a recipe iteration step ID to a given span.
-func AttachRecipeIterationStepIDToSpan(span *trace.Span, recipeIterationStepID uint64) {
-	attachUint64ToSpan(span, recipeIterationStepIDSpanAttachmentKey, recipeIterationStepID)
+// AttachRecipeStepEventIDToSpan attaches a recipe step event ID to a given span.
+func AttachRecipeStepEventIDToSpan(span *trace.Span, recipeStepEventID uint64) {
+	attachUint64ToSpan(span, recipeStepEventIDSpanAttachmentKey, recipeStepEventID)
 }
 
 // AttachIterationMediaIDToSpan attaches an iteration media ID to a given span.

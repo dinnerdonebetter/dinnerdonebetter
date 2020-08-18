@@ -14,8 +14,8 @@ func TestServerConfig_ProvideInstrumentationHandler(T *testing.T) {
 	T.Run("happy path", func(t *testing.T) {
 		c := &ServerConfig{
 			Metrics: MetricsSettings{
-				MetricsProvider:                  DefaultMetricsProvider,
 				RuntimeMetricsCollectionInterval: time.Second,
+				MetricsProvider:                  DefaultMetricsProvider,
 			},
 		}
 

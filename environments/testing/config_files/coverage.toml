@@ -7,7 +7,6 @@
 
 [database]
   connection_details = "postgres://dbuser:hunter2@database:5432/prixfixe?sslmode=disable"
-  create_dummy_user = false
   debug = false
   provider = "postgres"
 
@@ -17,7 +16,8 @@
   static_files_directory = "/frontend"
 
 [meta]
-  run_mode = "development"
+  debug = true
+  run_mode = "testing"
   startup_deadline = "1m0s"
 
 [metrics]

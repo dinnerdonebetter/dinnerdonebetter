@@ -16,6 +16,8 @@ func checkValidIngredientPreparationEquality(t *testing.T, expected, actual *mod
 
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for ID %d to be %v, but it was %v ", expected.ID, expected.Notes, actual.Notes)
+	assert.Equal(t, expected.ValidPreparationID, actual.ValidPreparationID, "expected ValidPreparationID for ID %d to be %v, but it was %v ", expected.ID, expected.ValidPreparationID, actual.ValidPreparationID)
+	assert.Equal(t, expected.ValidIngredientID, actual.ValidIngredientID, "expected ValidIngredientID for ID %d to be %v, but it was %v ", expected.ID, expected.ValidIngredientID, actual.ValidIngredientID)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
@@ -25,15 +27,8 @@ func TestValidIngredientPreparations(test *testing.T) {
 			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create valid ingredient.
-			exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakemodels.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := prixfixeClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			checkValueAndError(t, createdValidIngredient, err)
-
 			// Create valid ingredient preparation.
 			exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-			exampleValidIngredientPreparation.BelongsToValidIngredient = createdValidIngredient.ID
 			exampleValidIngredientPreparationInput := fakemodels.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
 			createdValidIngredientPreparation, err := prixfixeClient.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
 			checkValueAndError(t, createdValidIngredientPreparation, err)
@@ -42,31 +37,14 @@ func TestValidIngredientPreparations(test *testing.T) {
 			checkValidIngredientPreparationEquality(t, exampleValidIngredientPreparation, createdValidIngredientPreparation)
 
 			// Clean up.
-			err = prixfixeClient.ArchiveValidIngredientPreparation(ctx, createdValidIngredient.ID, createdValidIngredientPreparation.ID)
+			err = prixfixeClient.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID)
 			assert.NoError(t, err)
 
-			actual, err := prixfixeClient.GetValidIngredientPreparation(ctx, createdValidIngredient.ID, createdValidIngredientPreparation.ID)
+			actual, err := prixfixeClient.GetValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID)
 			checkValueAndError(t, actual, err)
 			checkValidIngredientPreparationEquality(t, exampleValidIngredientPreparation, actual)
 			assert.NotNil(t, actual.ArchivedOn)
 			assert.NotZero(t, actual.ArchivedOn)
-
-			// Clean up valid ingredient.
-			assert.NoError(t, prixfixeClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
-		})
-
-		T.Run("should fail to create for nonexistent valid ingredient", func(t *testing.T) {
-			ctx, span := tracing.StartSpan(context.Background(), t.Name())
-			defer span.End()
-
-			// Create valid ingredient preparation.
-			exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-			exampleValidIngredientPreparation.BelongsToValidIngredient = nonexistentID
-			exampleValidIngredientPreparationInput := fakemodels.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
-			createdValidIngredientPreparation, err := prixfixeClient.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
-
-			assert.Nil(t, createdValidIngredientPreparation)
-			assert.Error(t, err)
 		})
 	})
 
@@ -75,18 +53,11 @@ func TestValidIngredientPreparations(test *testing.T) {
 			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create valid ingredient.
-			exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakemodels.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := prixfixeClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			checkValueAndError(t, createdValidIngredient, err)
-
 			// Create valid ingredient preparations.
 			var expected []*models.ValidIngredientPreparation
 			for i := 0; i < 5; i++ {
 				// Create valid ingredient preparation.
 				exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-				exampleValidIngredientPreparation.BelongsToValidIngredient = createdValidIngredient.ID
 				exampleValidIngredientPreparationInput := fakemodels.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
 				createdValidIngredientPreparation, validIngredientPreparationCreationErr := prixfixeClient.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
 				checkValueAndError(t, createdValidIngredientPreparation, validIngredientPreparationCreationErr)
@@ -95,7 +66,7 @@ func TestValidIngredientPreparations(test *testing.T) {
 			}
 
 			// Assert valid ingredient preparation list equality.
-			actual, err := prixfixeClient.GetValidIngredientPreparations(ctx, createdValidIngredient.ID, nil)
+			actual, err := prixfixeClient.GetValidIngredientPreparations(ctx, nil)
 			checkValueAndError(t, actual, err)
 			assert.True(
 				t,
@@ -107,12 +78,9 @@ func TestValidIngredientPreparations(test *testing.T) {
 
 			// Clean up.
 			for _, createdValidIngredientPreparation := range actual.ValidIngredientPreparations {
-				err = prixfixeClient.ArchiveValidIngredientPreparation(ctx, createdValidIngredient.ID, createdValidIngredientPreparation.ID)
+				err = prixfixeClient.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID)
 				assert.NoError(t, err)
 			}
-
-			// Clean up valid ingredient.
-			assert.NoError(t, prixfixeClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
 		})
 	})
 
@@ -121,48 +89,29 @@ func TestValidIngredientPreparations(test *testing.T) {
 			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create valid ingredient.
-			exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakemodels.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := prixfixeClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			checkValueAndError(t, createdValidIngredient, err)
-
 			// Attempt to fetch nonexistent valid ingredient preparation.
-			actual, err := prixfixeClient.ValidIngredientPreparationExists(ctx, createdValidIngredient.ID, nonexistentID)
+			actual, err := prixfixeClient.ValidIngredientPreparationExists(ctx, nonexistentID)
 			assert.NoError(t, err)
 			assert.False(t, actual)
-
-			// Clean up valid ingredient.
-			assert.NoError(t, prixfixeClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
 		})
 
 		T.Run("it should return true with no error when the relevant valid ingredient preparation exists", func(t *testing.T) {
 			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create valid ingredient.
-			exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakemodels.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := prixfixeClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			checkValueAndError(t, createdValidIngredient, err)
-
 			// Create valid ingredient preparation.
 			exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-			exampleValidIngredientPreparation.BelongsToValidIngredient = createdValidIngredient.ID
 			exampleValidIngredientPreparationInput := fakemodels.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
 			createdValidIngredientPreparation, err := prixfixeClient.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
 			checkValueAndError(t, createdValidIngredientPreparation, err)
 
 			// Fetch valid ingredient preparation.
-			actual, err := prixfixeClient.ValidIngredientPreparationExists(ctx, createdValidIngredient.ID, createdValidIngredientPreparation.ID)
+			actual, err := prixfixeClient.ValidIngredientPreparationExists(ctx, createdValidIngredientPreparation.ID)
 			assert.NoError(t, err)
 			assert.True(t, actual)
 
 			// Clean up valid ingredient preparation.
-			assert.NoError(t, prixfixeClient.ArchiveValidIngredientPreparation(ctx, createdValidIngredient.ID, createdValidIngredientPreparation.ID))
-
-			// Clean up valid ingredient.
-			assert.NoError(t, prixfixeClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
+			assert.NoError(t, prixfixeClient.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID))
 		})
 	})
 
@@ -171,49 +120,30 @@ func TestValidIngredientPreparations(test *testing.T) {
 			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create valid ingredient.
-			exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakemodels.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := prixfixeClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			checkValueAndError(t, createdValidIngredient, err)
-
 			// Attempt to fetch nonexistent valid ingredient preparation.
-			_, err = prixfixeClient.GetValidIngredientPreparation(ctx, createdValidIngredient.ID, nonexistentID)
+			_, err := prixfixeClient.GetValidIngredientPreparation(ctx, nonexistentID)
 			assert.Error(t, err)
-
-			// Clean up valid ingredient.
-			assert.NoError(t, prixfixeClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
 		})
 
 		T.Run("it should be readable", func(t *testing.T) {
 			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create valid ingredient.
-			exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakemodels.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := prixfixeClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			checkValueAndError(t, createdValidIngredient, err)
-
 			// Create valid ingredient preparation.
 			exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-			exampleValidIngredientPreparation.BelongsToValidIngredient = createdValidIngredient.ID
 			exampleValidIngredientPreparationInput := fakemodels.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
 			createdValidIngredientPreparation, err := prixfixeClient.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
 			checkValueAndError(t, createdValidIngredientPreparation, err)
 
 			// Fetch valid ingredient preparation.
-			actual, err := prixfixeClient.GetValidIngredientPreparation(ctx, createdValidIngredient.ID, createdValidIngredientPreparation.ID)
+			actual, err := prixfixeClient.GetValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID)
 			checkValueAndError(t, actual, err)
 
 			// Assert valid ingredient preparation equality.
 			checkValidIngredientPreparationEquality(t, exampleValidIngredientPreparation, actual)
 
 			// Clean up valid ingredient preparation.
-			assert.NoError(t, prixfixeClient.ArchiveValidIngredientPreparation(ctx, createdValidIngredient.ID, createdValidIngredientPreparation.ID))
-
-			// Clean up valid ingredient.
-			assert.NoError(t, prixfixeClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
+			assert.NoError(t, prixfixeClient.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID))
 		})
 	})
 
@@ -222,35 +152,18 @@ func TestValidIngredientPreparations(test *testing.T) {
 			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create valid ingredient.
-			exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakemodels.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := prixfixeClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			checkValueAndError(t, createdValidIngredient, err)
-
 			exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-			exampleValidIngredientPreparation.BelongsToValidIngredient = createdValidIngredient.ID
 			exampleValidIngredientPreparation.ID = nonexistentID
 
 			assert.Error(t, prixfixeClient.UpdateValidIngredientPreparation(ctx, exampleValidIngredientPreparation))
-
-			// Clean up valid ingredient.
-			assert.NoError(t, prixfixeClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
 		})
 
 		T.Run("it should be updatable", func(t *testing.T) {
 			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create valid ingredient.
-			exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakemodels.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := prixfixeClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			checkValueAndError(t, createdValidIngredient, err)
-
 			// Create valid ingredient preparation.
 			exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-			exampleValidIngredientPreparation.BelongsToValidIngredient = createdValidIngredient.ID
 			exampleValidIngredientPreparationInput := fakemodels.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
 			createdValidIngredientPreparation, err := prixfixeClient.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
 			checkValueAndError(t, createdValidIngredientPreparation, err)
@@ -261,48 +174,15 @@ func TestValidIngredientPreparations(test *testing.T) {
 			assert.NoError(t, err)
 
 			// Fetch valid ingredient preparation.
-			actual, err := prixfixeClient.GetValidIngredientPreparation(ctx, createdValidIngredient.ID, createdValidIngredientPreparation.ID)
+			actual, err := prixfixeClient.GetValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID)
 			checkValueAndError(t, actual, err)
 
 			// Assert valid ingredient preparation equality.
 			checkValidIngredientPreparationEquality(t, exampleValidIngredientPreparation, actual)
-			assert.NotNil(t, actual.UpdatedOn)
+			assert.NotNil(t, actual.LastUpdatedOn)
 
 			// Clean up valid ingredient preparation.
-			assert.NoError(t, prixfixeClient.ArchiveValidIngredientPreparation(ctx, createdValidIngredient.ID, createdValidIngredientPreparation.ID))
-
-			// Clean up valid ingredient.
-			assert.NoError(t, prixfixeClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
-		})
-
-		T.Run("it should return an error when trying to update something that belongs to a valid ingredient that does not exist", func(t *testing.T) {
-			ctx, span := tracing.StartSpan(context.Background(), t.Name())
-			defer span.End()
-
-			// Create valid ingredient.
-			exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakemodels.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := prixfixeClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			checkValueAndError(t, createdValidIngredient, err)
-
-			// Create valid ingredient preparation.
-			exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-			exampleValidIngredientPreparation.BelongsToValidIngredient = createdValidIngredient.ID
-			exampleValidIngredientPreparationInput := fakemodels.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
-			createdValidIngredientPreparation, err := prixfixeClient.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
-			checkValueAndError(t, createdValidIngredientPreparation, err)
-
-			// Change valid ingredient preparation.
-			createdValidIngredientPreparation.Update(exampleValidIngredientPreparation.ToUpdateInput())
-			createdValidIngredientPreparation.BelongsToValidIngredient = nonexistentID
-			err = prixfixeClient.UpdateValidIngredientPreparation(ctx, createdValidIngredientPreparation)
-			assert.Error(t, err)
-
-			// Clean up valid ingredient preparation.
-			assert.NoError(t, prixfixeClient.ArchiveValidIngredientPreparation(ctx, createdValidIngredient.ID, createdValidIngredientPreparation.ID))
-
-			// Clean up valid ingredient.
-			assert.NoError(t, prixfixeClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
+			assert.NoError(t, prixfixeClient.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID))
 		})
 	})
 
@@ -311,66 +191,21 @@ func TestValidIngredientPreparations(test *testing.T) {
 			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create valid ingredient.
-			exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakemodels.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := prixfixeClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			checkValueAndError(t, createdValidIngredient, err)
-
-			assert.Error(t, prixfixeClient.ArchiveValidIngredientPreparation(ctx, createdValidIngredient.ID, nonexistentID))
-
-			// Clean up valid ingredient.
-			assert.NoError(t, prixfixeClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
+			assert.Error(t, prixfixeClient.ArchiveValidIngredientPreparation(ctx, nonexistentID))
 		})
 
 		T.Run("should be able to be deleted", func(t *testing.T) {
 			ctx, span := tracing.StartSpan(context.Background(), t.Name())
 			defer span.End()
 
-			// Create valid ingredient.
-			exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakemodels.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := prixfixeClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			checkValueAndError(t, createdValidIngredient, err)
-
 			// Create valid ingredient preparation.
 			exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-			exampleValidIngredientPreparation.BelongsToValidIngredient = createdValidIngredient.ID
 			exampleValidIngredientPreparationInput := fakemodels.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
 			createdValidIngredientPreparation, err := prixfixeClient.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
 			checkValueAndError(t, createdValidIngredientPreparation, err)
 
 			// Clean up valid ingredient preparation.
-			assert.NoError(t, prixfixeClient.ArchiveValidIngredientPreparation(ctx, createdValidIngredient.ID, createdValidIngredientPreparation.ID))
-
-			// Clean up valid ingredient.
-			assert.NoError(t, prixfixeClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
-		})
-
-		T.Run("returns error when trying to archive post belonging to nonexistent valid ingredient", func(t *testing.T) {
-			ctx, span := tracing.StartSpan(context.Background(), t.Name())
-			defer span.End()
-
-			// Create valid ingredient.
-			exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakemodels.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := prixfixeClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			checkValueAndError(t, createdValidIngredient, err)
-
-			// Create valid ingredient preparation.
-			exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-			exampleValidIngredientPreparation.BelongsToValidIngredient = createdValidIngredient.ID
-			exampleValidIngredientPreparationInput := fakemodels.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
-			createdValidIngredientPreparation, err := prixfixeClient.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
-			checkValueAndError(t, createdValidIngredientPreparation, err)
-
-			assert.Error(t, prixfixeClient.ArchiveValidIngredientPreparation(ctx, nonexistentID, createdValidIngredientPreparation.ID))
-
-			// Clean up valid ingredient preparation.
-			assert.NoError(t, prixfixeClient.ArchiveValidIngredientPreparation(ctx, createdValidIngredient.ID, createdValidIngredientPreparation.ID))
-
-			// Clean up valid ingredient.
-			assert.NoError(t, prixfixeClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
+			assert.NoError(t, prixfixeClient.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID))
 		})
 	})
 }

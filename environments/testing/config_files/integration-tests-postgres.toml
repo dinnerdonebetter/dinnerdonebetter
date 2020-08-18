@@ -6,7 +6,6 @@
 
 [database]
   connection_details = "postgres://dbuser:hunter2@database:5432/prixfixe?sslmode=disable"
-  create_dummy_user = false
   debug = false
   provider = "postgres"
 

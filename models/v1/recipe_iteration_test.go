@@ -14,6 +14,7 @@ func TestRecipeIteration_Update(T *testing.T) {
 		i := &RecipeIteration{}
 
 		expected := &RecipeIterationUpdateInput{
+			RecipeID:            fake.Uint64(),
 			EndDifficultyRating: fake.Float32(),
 			EndComplexityRating: fake.Float32(),
 			EndTasteRating:      fake.Float32(),
@@ -21,6 +22,7 @@ func TestRecipeIteration_Update(T *testing.T) {
 		}
 
 		i.Update(expected)
+		assert.Equal(t, expected.RecipeID, i.RecipeID)
 		assert.Equal(t, expected.EndDifficultyRating, i.EndDifficultyRating)
 		assert.Equal(t, expected.EndComplexityRating, i.EndComplexityRating)
 		assert.Equal(t, expected.EndTasteRating, i.EndTasteRating)
@@ -33,6 +35,7 @@ func TestRecipeIteration_ToUpdateInput(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		recipeIteration := &RecipeIteration{
+			RecipeID:            uint64(fake.Uint32()),
 			EndDifficultyRating: fake.Float32(),
 			EndComplexityRating: fake.Float32(),
 			EndTasteRating:      fake.Float32(),
@@ -40,6 +43,7 @@ func TestRecipeIteration_ToUpdateInput(T *testing.T) {
 		}
 
 		expected := &RecipeIterationUpdateInput{
+			RecipeID:            recipeIteration.RecipeID,
 			EndDifficultyRating: recipeIteration.EndDifficultyRating,
 			EndComplexityRating: recipeIteration.EndComplexityRating,
 			EndTasteRating:      recipeIteration.EndTasteRating,

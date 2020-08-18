@@ -72,6 +72,24 @@ func TestClient_GetAllRecipesCount(T *testing.T) {
 	})
 }
 
+func TestClient_GetAllRecipes(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		results := make(chan []models.Recipe)
+
+		c, mockDB := buildTestClient()
+		mockDB.RecipeDataManager.On("GetAllRecipes", mock.Anything, results).Return(nil)
+
+		err := c.GetAllRecipes(ctx, results)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
 func TestClient_GetRecipes(T *testing.T) {
 	T.Parallel()
 
@@ -101,6 +119,29 @@ func TestClient_GetRecipes(T *testing.T) {
 		mockDB.RecipeDataManager.On("GetRecipes", mock.Anything, filter).Return(exampleRecipeList, nil)
 
 		actual, err := c.GetRecipes(ctx, filter)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleRecipeList, actual)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
+func TestClient_GetRecipesWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleRecipeList := fakemodels.BuildFakeRecipeList().Recipes
+		var exampleIDs []uint64
+		for _, x := range exampleRecipeList {
+			exampleIDs = append(exampleIDs, x.ID)
+		}
+
+		c, mockDB := buildTestClient()
+		mockDB.RecipeDataManager.On("GetRecipesWithIDs", mock.Anything, defaultLimit, exampleIDs).Return(exampleRecipeList, nil)
+
+		actual, err := c.GetRecipesWithIDs(ctx, defaultLimit, exampleIDs)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleRecipeList, actual)
 

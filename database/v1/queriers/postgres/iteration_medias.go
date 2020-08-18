@@ -13,77 +13,75 @@ import (
 )
 
 const (
-	iterationMediasTableName            = "iteration_medias"
-	iterationMediasTableOwnershipColumn = "belongs_to_recipe_iteration"
+	iterationMediasTableName                    = "iteration_medias"
+	iterationMediasTablePathColumn              = "path"
+	iterationMediasTableMimetypeColumn          = "mimetype"
+	iterationMediasTableRecipeIterationIDColumn = "recipe_iteration_id"
+	iterationMediasTableRecipeStepIDColumn      = "recipe_step_id"
+	iterationMediasTableOwnershipColumn         = "belongs_to_recipe_iteration"
 )
 
 var (
 	iterationMediasTableColumns = []string{
-		fmt.Sprintf("%s.%s", iterationMediasTableName, "id"),
-		fmt.Sprintf("%s.%s", iterationMediasTableName, "source"),
-		fmt.Sprintf("%s.%s", iterationMediasTableName, "mimetype"),
-		fmt.Sprintf("%s.%s", iterationMediasTableName, "created_on"),
-		fmt.Sprintf("%s.%s", iterationMediasTableName, "updated_on"),
-		fmt.Sprintf("%s.%s", iterationMediasTableName, "archived_on"),
+		fmt.Sprintf("%s.%s", iterationMediasTableName, idColumn),
+		fmt.Sprintf("%s.%s", iterationMediasTableName, iterationMediasTablePathColumn),
+		fmt.Sprintf("%s.%s", iterationMediasTableName, iterationMediasTableMimetypeColumn),
+		fmt.Sprintf("%s.%s", iterationMediasTableName, iterationMediasTableRecipeIterationIDColumn),
+		fmt.Sprintf("%s.%s", iterationMediasTableName, iterationMediasTableRecipeStepIDColumn),
+		fmt.Sprintf("%s.%s", iterationMediasTableName, createdOnColumn),
+		fmt.Sprintf("%s.%s", iterationMediasTableName, lastUpdatedOnColumn),
+		fmt.Sprintf("%s.%s", iterationMediasTableName, archivedOnColumn),
 		fmt.Sprintf("%s.%s", iterationMediasTableName, iterationMediasTableOwnershipColumn),
 	}
 )
 
 // scanIterationMedia takes a database Scanner (i.e. *sql.Row) and scans the result into an Iteration Media struct
-func (p *Postgres) scanIterationMedia(scan database.Scanner, includeCount bool) (*models.IterationMedia, uint64, error) {
+func (p *Postgres) scanIterationMedia(scan database.Scanner) (*models.IterationMedia, error) {
 	x := &models.IterationMedia{}
-	var count uint64
 
 	targetVars := []interface{}{
 		&x.ID,
-		&x.Source,
+		&x.Path,
 		&x.Mimetype,
+		&x.RecipeIterationID,
+		&x.RecipeStepID,
 		&x.CreatedOn,
-		&x.UpdatedOn,
+		&x.LastUpdatedOn,
 		&x.ArchivedOn,
 		&x.BelongsToRecipeIteration,
 	}
 
-	if includeCount {
-		targetVars = append(targetVars, &count)
-	}
-
 	if err := scan.Scan(targetVars...); err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
-	return x, count, nil
+	return x, nil
 }
 
 // scanIterationMedias takes a logger and some database rows and turns them into a slice of iteration medias.
-func (p *Postgres) scanIterationMedias(rows database.ResultIterator) ([]models.IterationMedia, uint64, error) {
+func (p *Postgres) scanIterationMedias(rows database.ResultIterator) ([]models.IterationMedia, error) {
 	var (
-		list  []models.IterationMedia
-		count uint64
+		list []models.IterationMedia
 	)
 
 	for rows.Next() {
-		x, c, err := p.scanIterationMedia(rows, true)
+		x, err := p.scanIterationMedia(rows)
 		if err != nil {
-			return nil, 0, err
-		}
-
-		if count == 0 {
-			count = c
+			return nil, err
 		}
 
 		list = append(list, *x)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
 	if closeErr := rows.Close(); closeErr != nil {
 		p.logger.Error(closeErr, "closing database rows")
 	}
 
-	return list, count, nil
+	return list, nil
 }
 
 // buildIterationMediaExistsQuery constructs a SQL query for checking if an iteration media with a given ID belong to a a recipe iteration with a given ID exists
@@ -91,16 +89,16 @@ func (p *Postgres) buildIterationMediaExistsQuery(recipeID, recipeIterationID, i
 	var err error
 
 	query, args, err = p.sqlBuilder.
-		Select(fmt.Sprintf("%s.id", iterationMediasTableName)).
+		Select(fmt.Sprintf("%s.%s", iterationMediasTableName, idColumn)).
 		Prefix(existencePrefix).
 		From(iterationMediasTableName).
 		Join(recipeIterationsOnIterationMediasJoinClause).
 		Join(recipesOnRecipeIterationsJoinClause).
 		Suffix(existenceSuffix).
 		Where(squirrel.Eq{
-			fmt.Sprintf("%s.id", iterationMediasTableName):                                        iterationMediaID,
-			fmt.Sprintf("%s.id", recipesTableName):                                                recipeID,
-			fmt.Sprintf("%s.id", recipeIterationsTableName):                                       recipeIterationID,
+			fmt.Sprintf("%s.%s", iterationMediasTableName, idColumn):                              iterationMediaID,
+			fmt.Sprintf("%s.%s", recipesTableName, idColumn):                                      recipeID,
+			fmt.Sprintf("%s.%s", recipeIterationsTableName, idColumn):                             recipeIterationID,
 			fmt.Sprintf("%s.%s", recipeIterationsTableName, recipeIterationsTableOwnershipColumn): recipeID,
 			fmt.Sprintf("%s.%s", iterationMediasTableName, iterationMediasTableOwnershipColumn):   recipeIterationID,
 		}).ToSql()
@@ -132,9 +130,9 @@ func (p *Postgres) buildGetIterationMediaQuery(recipeID, recipeIterationID, iter
 		Join(recipeIterationsOnIterationMediasJoinClause).
 		Join(recipesOnRecipeIterationsJoinClause).
 		Where(squirrel.Eq{
-			fmt.Sprintf("%s.id", iterationMediasTableName):                                        iterationMediaID,
-			fmt.Sprintf("%s.id", recipesTableName):                                                recipeID,
-			fmt.Sprintf("%s.id", recipeIterationsTableName):                                       recipeIterationID,
+			fmt.Sprintf("%s.%s", iterationMediasTableName, idColumn):                              iterationMediaID,
+			fmt.Sprintf("%s.%s", recipesTableName, idColumn):                                      recipeID,
+			fmt.Sprintf("%s.%s", recipeIterationsTableName, idColumn):                             recipeIterationID,
 			fmt.Sprintf("%s.%s", recipeIterationsTableName, recipeIterationsTableOwnershipColumn): recipeID,
 			fmt.Sprintf("%s.%s", iterationMediasTableName, iterationMediasTableOwnershipColumn):   recipeIterationID,
 		}).
@@ -149,9 +147,7 @@ func (p *Postgres) buildGetIterationMediaQuery(recipeID, recipeIterationID, iter
 func (p *Postgres) GetIterationMedia(ctx context.Context, recipeID, recipeIterationID, iterationMediaID uint64) (*models.IterationMedia, error) {
 	query, args := p.buildGetIterationMediaQuery(recipeID, recipeIterationID, iterationMediaID)
 	row := p.db.QueryRowContext(ctx, query, args...)
-
-	iterationMedia, _, err := p.scanIterationMedia(row, false)
-	return iterationMedia, err
+	return p.scanIterationMedia(row)
 }
 
 var (
@@ -169,7 +165,7 @@ func (p *Postgres) buildGetAllIterationMediasCountQuery() string {
 			Select(fmt.Sprintf(countQuery, iterationMediasTableName)).
 			From(iterationMediasTableName).
 			Where(squirrel.Eq{
-				fmt.Sprintf("%s.archived_on", iterationMediasTableName): nil,
+				fmt.Sprintf("%s.%s", iterationMediasTableName, archivedOnColumn): nil,
 			}).
 			ToSql()
 		p.logQueryBuildingError(err)
@@ -184,24 +180,81 @@ func (p *Postgres) GetAllIterationMediasCount(ctx context.Context) (count uint64
 	return count, err
 }
 
+// buildGetBatchOfIterationMediasQuery returns a query that fetches every iteration media in the database within a bucketed range.
+func (p *Postgres) buildGetBatchOfIterationMediasQuery(beginID, endID uint64) (query string, args []interface{}) {
+	query, args, err := p.sqlBuilder.
+		Select(iterationMediasTableColumns...).
+		From(iterationMediasTableName).
+		Where(squirrel.Gt{
+			fmt.Sprintf("%s.%s", iterationMediasTableName, idColumn): beginID,
+		}).
+		Where(squirrel.Lt{
+			fmt.Sprintf("%s.%s", iterationMediasTableName, idColumn): endID,
+		}).
+		ToSql()
+
+	p.logQueryBuildingError(err)
+
+	return query, args
+}
+
+// GetAllIterationMedias fetches every iteration media from the database and writes them to a channel. This method primarily exists
+// to aid in administrative data tasks.
+func (p *Postgres) GetAllIterationMedias(ctx context.Context, resultChannel chan []models.IterationMedia) error {
+	count, err := p.GetAllIterationMediasCount(ctx)
+	if err != nil {
+		return err
+	}
+
+	for beginID := uint64(1); beginID <= count; beginID += defaultBucketSize {
+		endID := beginID + defaultBucketSize
+		go func(begin, end uint64) {
+			query, args := p.buildGetBatchOfIterationMediasQuery(begin, end)
+			logger := p.logger.WithValues(map[string]interface{}{
+				"query": query,
+				"begin": begin,
+				"end":   end,
+			})
+
+			rows, err := p.db.Query(query, args...)
+			if err == sql.ErrNoRows {
+				return
+			} else if err != nil {
+				logger.Error(err, "querying for database rows")
+				return
+			}
+
+			iterationMedias, err := p.scanIterationMedias(rows)
+			if err != nil {
+				logger.Error(err, "scanning database rows")
+				return
+			}
+
+			resultChannel <- iterationMedias
+		}(beginID, endID)
+	}
+
+	return nil
+}
+
 // buildGetIterationMediasQuery builds a SQL query selecting iteration medias that adhere to a given QueryFilter and belong to a given recipe iteration,
 // and returns both the query and the relevant args to pass to the query executor.
 func (p *Postgres) buildGetIterationMediasQuery(recipeID, recipeIterationID uint64, filter *models.QueryFilter) (query string, args []interface{}) {
 	var err error
 
 	builder := p.sqlBuilder.
-		Select(append(iterationMediasTableColumns, fmt.Sprintf("(%s)", p.buildGetAllIterationMediasCountQuery()))...).
+		Select(iterationMediasTableColumns...).
 		From(iterationMediasTableName).
 		Join(recipeIterationsOnIterationMediasJoinClause).
 		Join(recipesOnRecipeIterationsJoinClause).
 		Where(squirrel.Eq{
-			fmt.Sprintf("%s.archived_on", iterationMediasTableName):                               nil,
-			fmt.Sprintf("%s.id", recipesTableName):                                                recipeID,
-			fmt.Sprintf("%s.id", recipeIterationsTableName):                                       recipeIterationID,
+			fmt.Sprintf("%s.%s", iterationMediasTableName, archivedOnColumn):                      nil,
+			fmt.Sprintf("%s.%s", recipesTableName, idColumn):                                      recipeID,
+			fmt.Sprintf("%s.%s", recipeIterationsTableName, idColumn):                             recipeIterationID,
 			fmt.Sprintf("%s.%s", recipeIterationsTableName, recipeIterationsTableOwnershipColumn): recipeID,
 			fmt.Sprintf("%s.%s", iterationMediasTableName, iterationMediasTableOwnershipColumn):   recipeIterationID,
 		}).
-		OrderBy(fmt.Sprintf("%s.id", iterationMediasTableName))
+		OrderBy(fmt.Sprintf("%s.%s", iterationMediasTableName, idColumn))
 
 	if filter != nil {
 		builder = filter.ApplyToQueryBuilder(builder, iterationMediasTableName)
@@ -222,21 +275,77 @@ func (p *Postgres) GetIterationMedias(ctx context.Context, recipeID, recipeItera
 		return nil, buildError(err, "querying database for iteration medias")
 	}
 
-	iterationMedias, count, err := p.scanIterationMedias(rows)
+	iterationMedias, err := p.scanIterationMedias(rows)
 	if err != nil {
 		return nil, fmt.Errorf("scanning response from database: %w", err)
 	}
 
 	list := &models.IterationMediaList{
 		Pagination: models.Pagination{
-			Page:       filter.Page,
-			Limit:      filter.Limit,
-			TotalCount: count,
+			Page:  filter.Page,
+			Limit: filter.Limit,
 		},
-		IterationMedia: iterationMedias,
+		IterationMedias: iterationMedias,
 	}
 
 	return list, nil
+}
+
+// buildGetIterationMediasWithIDsQuery builds a SQL query selecting iterationMedias that belong to a given recipe iteration,
+// and have IDs that exist within a given set of IDs. Returns both the query and the relevant
+// args to pass to the query executor. This function is primarily intended for use with a search
+// index, which would provide a slice of string IDs to query against. This function accepts a
+// slice of uint64s instead of a slice of strings in order to ensure all the provided strings
+// are valid database IDs, because there's no way in squirrel to escape them in the unnest join,
+// and if we accept strings we could leave ourselves vulnerable to SQL injection attacks.
+func (p *Postgres) buildGetIterationMediasWithIDsQuery(recipeID, recipeIterationID uint64, limit uint8, ids []uint64) (query string, args []interface{}) {
+	var err error
+
+	subqueryBuilder := p.sqlBuilder.Select(iterationMediasTableColumns...).
+		From(iterationMediasTableName).
+		Join(recipeIterationsOnIterationMediasJoinClause).
+		Join(recipesOnRecipeIterationsJoinClause).
+		Join(fmt.Sprintf("unnest('{%s}'::int[])", joinUint64s(ids))).
+		Where(squirrel.Eq{
+			fmt.Sprintf("%s.%s", iterationMediasTableName, archivedOnColumn):                      nil,
+			fmt.Sprintf("%s.%s", recipesTableName, idColumn):                                      recipeID,
+			fmt.Sprintf("%s.%s", recipeIterationsTableName, idColumn):                             recipeIterationID,
+			fmt.Sprintf("%s.%s", recipeIterationsTableName, recipeIterationsTableOwnershipColumn): recipeID,
+			fmt.Sprintf("%s.%s", iterationMediasTableName, iterationMediasTableOwnershipColumn):   recipeIterationID,
+		}).
+		Suffix(fmt.Sprintf("WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d", limit))
+	builder := p.sqlBuilder.
+		Select(iterationMediasTableColumns...).
+		FromSelect(subqueryBuilder, iterationMediasTableName).
+		Where(squirrel.Eq{
+			fmt.Sprintf("%s.%s", iterationMediasTableName, archivedOnColumn): nil,
+		})
+
+	query, args, err = builder.ToSql()
+	p.logQueryBuildingError(err)
+
+	return query, args
+}
+
+// GetIterationMediasWithIDs fetches a list of iteration medias from the database that exist within a given set of IDs.
+func (p *Postgres) GetIterationMediasWithIDs(ctx context.Context, recipeID, recipeIterationID uint64, limit uint8, ids []uint64) ([]models.IterationMedia, error) {
+	if limit == 0 {
+		limit = uint8(models.DefaultLimit)
+	}
+
+	query, args := p.buildGetIterationMediasWithIDsQuery(recipeID, recipeIterationID, limit, ids)
+
+	rows, err := p.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, buildError(err, "querying database for iteration medias")
+	}
+
+	iterationMedias, err := p.scanIterationMedias(rows)
+	if err != nil {
+		return nil, fmt.Errorf("scanning response from database: %w", err)
+	}
+
+	return iterationMedias, nil
 }
 
 // buildCreateIterationMediaQuery takes an iteration media and returns a creation query for that iteration media and the relevant arguments.
@@ -246,16 +355,20 @@ func (p *Postgres) buildCreateIterationMediaQuery(input *models.IterationMedia) 
 	query, args, err = p.sqlBuilder.
 		Insert(iterationMediasTableName).
 		Columns(
-			"source",
-			"mimetype",
+			iterationMediasTablePathColumn,
+			iterationMediasTableMimetypeColumn,
+			iterationMediasTableRecipeIterationIDColumn,
+			iterationMediasTableRecipeStepIDColumn,
 			iterationMediasTableOwnershipColumn,
 		).
 		Values(
-			input.Source,
+			input.Path,
 			input.Mimetype,
+			input.RecipeIterationID,
+			input.RecipeStepID,
 			input.BelongsToRecipeIteration,
 		).
-		Suffix("RETURNING id, created_on").
+		Suffix(fmt.Sprintf("RETURNING %s, %s", idColumn, createdOnColumn)).
 		ToSql()
 
 	p.logQueryBuildingError(err)
@@ -266,8 +379,10 @@ func (p *Postgres) buildCreateIterationMediaQuery(input *models.IterationMedia) 
 // CreateIterationMedia creates an iteration media in the database.
 func (p *Postgres) CreateIterationMedia(ctx context.Context, input *models.IterationMediaCreationInput) (*models.IterationMedia, error) {
 	x := &models.IterationMedia{
-		Source:                   input.Source,
+		Path:                     input.Path,
 		Mimetype:                 input.Mimetype,
+		RecipeIterationID:        input.RecipeIterationID,
+		RecipeStepID:             input.RecipeStepID,
 		BelongsToRecipeIteration: input.BelongsToRecipeIteration,
 	}
 
@@ -288,14 +403,16 @@ func (p *Postgres) buildUpdateIterationMediaQuery(input *models.IterationMedia) 
 
 	query, args, err = p.sqlBuilder.
 		Update(iterationMediasTableName).
-		Set("source", input.Source).
-		Set("mimetype", input.Mimetype).
-		Set("updated_on", squirrel.Expr(currentUnixTimeQuery)).
+		Set(iterationMediasTablePathColumn, input.Path).
+		Set(iterationMediasTableMimetypeColumn, input.Mimetype).
+		Set(iterationMediasTableRecipeIterationIDColumn, input.RecipeIterationID).
+		Set(iterationMediasTableRecipeStepIDColumn, input.RecipeStepID).
+		Set(lastUpdatedOnColumn, squirrel.Expr(currentUnixTimeQuery)).
 		Where(squirrel.Eq{
-			"id":                                input.ID,
+			idColumn:                            input.ID,
 			iterationMediasTableOwnershipColumn: input.BelongsToRecipeIteration,
 		}).
-		Suffix("RETURNING updated_on").
+		Suffix(fmt.Sprintf("RETURNING %s", lastUpdatedOnColumn)).
 		ToSql()
 
 	p.logQueryBuildingError(err)
@@ -306,7 +423,7 @@ func (p *Postgres) buildUpdateIterationMediaQuery(input *models.IterationMedia) 
 // UpdateIterationMedia updates a particular iteration media. Note that UpdateIterationMedia expects the provided input to have a valid ID.
 func (p *Postgres) UpdateIterationMedia(ctx context.Context, input *models.IterationMedia) error {
 	query, args := p.buildUpdateIterationMediaQuery(input)
-	return p.db.QueryRowContext(ctx, query, args...).Scan(&input.UpdatedOn)
+	return p.db.QueryRowContext(ctx, query, args...).Scan(&input.LastUpdatedOn)
 }
 
 // buildArchiveIterationMediaQuery returns a SQL query which marks a given iteration media belonging to a given recipe iteration as archived.
@@ -315,14 +432,14 @@ func (p *Postgres) buildArchiveIterationMediaQuery(recipeIterationID, iterationM
 
 	query, args, err = p.sqlBuilder.
 		Update(iterationMediasTableName).
-		Set("updated_on", squirrel.Expr(currentUnixTimeQuery)).
-		Set("archived_on", squirrel.Expr(currentUnixTimeQuery)).
+		Set(lastUpdatedOnColumn, squirrel.Expr(currentUnixTimeQuery)).
+		Set(archivedOnColumn, squirrel.Expr(currentUnixTimeQuery)).
 		Where(squirrel.Eq{
-			"id":                                iterationMediaID,
-			"archived_on":                       nil,
+			idColumn:                            iterationMediaID,
+			archivedOnColumn:                    nil,
 			iterationMediasTableOwnershipColumn: recipeIterationID,
 		}).
-		Suffix("RETURNING archived_on").
+		Suffix(fmt.Sprintf("RETURNING %s", archivedOnColumn)).
 		ToSql()
 
 	p.logQueryBuildingError(err)

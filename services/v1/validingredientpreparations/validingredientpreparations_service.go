@@ -13,10 +13,10 @@ import (
 )
 
 const (
-	// CreateMiddlewareCtxKey is a string alias we can use for referring to valid ingredient preparation input data in contexts.
-	CreateMiddlewareCtxKey models.ContextKey = "valid_ingredient_preparation_create_input"
-	// UpdateMiddlewareCtxKey is a string alias we can use for referring to valid ingredient preparation update data in contexts.
-	UpdateMiddlewareCtxKey models.ContextKey = "valid_ingredient_preparation_update_input"
+	// createMiddlewareCtxKey is a string alias we can use for referring to valid ingredient preparation input data in contexts.
+	createMiddlewareCtxKey models.ContextKey = "valid_ingredient_preparation_create_input"
+	// updateMiddlewareCtxKey is a string alias we can use for referring to valid ingredient preparation update data in contexts.
+	updateMiddlewareCtxKey models.ContextKey = "valid_ingredient_preparation_update_input"
 
 	counterName        metrics.CounterName = "validIngredientPreparations"
 	counterDescription string              = "the number of validIngredientPreparations managed by the validIngredientPreparations service"
@@ -32,17 +32,12 @@ type (
 	// Service handles to-do list valid ingredient preparations
 	Service struct {
 		logger                                logging.Logger
-		validIngredientDataManager            models.ValidIngredientDataManager
 		validIngredientPreparationDataManager models.ValidIngredientPreparationDataManager
-		validIngredientIDFetcher              ValidIngredientIDFetcher
 		validIngredientPreparationIDFetcher   ValidIngredientPreparationIDFetcher
 		validIngredientPreparationCounter     metrics.UnitCounter
 		encoderDecoder                        encoding.EncoderDecoder
 		reporter                              newsman.Reporter
 	}
-
-	// ValidIngredientIDFetcher is a function that fetches valid ingredient IDs.
-	ValidIngredientIDFetcher func(*http.Request) uint64
 
 	// ValidIngredientPreparationIDFetcher is a function that fetches valid ingredient preparation IDs.
 	ValidIngredientPreparationIDFetcher func(*http.Request) uint64
@@ -51,9 +46,7 @@ type (
 // ProvideValidIngredientPreparationsService builds a new ValidIngredientPreparationsService.
 func ProvideValidIngredientPreparationsService(
 	logger logging.Logger,
-	validIngredientDataManager models.ValidIngredientDataManager,
 	validIngredientPreparationDataManager models.ValidIngredientPreparationDataManager,
-	validIngredientIDFetcher ValidIngredientIDFetcher,
 	validIngredientPreparationIDFetcher ValidIngredientPreparationIDFetcher,
 	encoder encoding.EncoderDecoder,
 	validIngredientPreparationCounterProvider metrics.UnitCounterProvider,
@@ -66,9 +59,7 @@ func ProvideValidIngredientPreparationsService(
 
 	svc := &Service{
 		logger:                                logger.WithName(serviceName),
-		validIngredientIDFetcher:              validIngredientIDFetcher,
 		validIngredientPreparationIDFetcher:   validIngredientPreparationIDFetcher,
-		validIngredientDataManager:            validIngredientDataManager,
 		validIngredientPreparationDataManager: validIngredientPreparationDataManager,
 		encoderDecoder:                        encoder,
 		validIngredientPreparationCounter:     validIngredientPreparationCounter,

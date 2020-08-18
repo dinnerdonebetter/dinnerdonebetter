@@ -10,8 +10,10 @@ import (
 func BuildFakeIterationMedia() *models.IterationMedia {
 	return &models.IterationMedia{
 		ID:                       fake.Uint64(),
-		Source:                   fake.Word(),
+		Path:                     fake.Word(),
 		Mimetype:                 fake.Word(),
+		RecipeIterationID:        uint64(fake.Uint32()),
+		RecipeStepID:             func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
 		CreatedOn:                uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipeIteration: fake.Uint64(),
 	}
@@ -25,11 +27,10 @@ func BuildFakeIterationMediaList() *models.IterationMediaList {
 
 	return &models.IterationMediaList{
 		Pagination: models.Pagination{
-			Page:       1,
-			Limit:      20,
-			TotalCount: 3,
+			Page:  1,
+			Limit: 20,
 		},
-		IterationMedia: []models.IterationMedia{
+		IterationMedias: []models.IterationMedia{
 			*exampleIterationMedia1,
 			*exampleIterationMedia2,
 			*exampleIterationMedia3,
@@ -40,8 +41,10 @@ func BuildFakeIterationMediaList() *models.IterationMediaList {
 // BuildFakeIterationMediaUpdateInputFromIterationMedia builds a faked IterationMediaUpdateInput from an iteration media.
 func BuildFakeIterationMediaUpdateInputFromIterationMedia(iterationMedia *models.IterationMedia) *models.IterationMediaUpdateInput {
 	return &models.IterationMediaUpdateInput{
-		Source:                   iterationMedia.Source,
+		Path:                     iterationMedia.Path,
 		Mimetype:                 iterationMedia.Mimetype,
+		RecipeIterationID:        iterationMedia.RecipeIterationID,
+		RecipeStepID:             iterationMedia.RecipeStepID,
 		BelongsToRecipeIteration: iterationMedia.BelongsToRecipeIteration,
 	}
 }
@@ -55,8 +58,10 @@ func BuildFakeIterationMediaCreationInput() *models.IterationMediaCreationInput 
 // BuildFakeIterationMediaCreationInputFromIterationMedia builds a faked IterationMediaCreationInput from an iteration media.
 func BuildFakeIterationMediaCreationInputFromIterationMedia(iterationMedia *models.IterationMedia) *models.IterationMediaCreationInput {
 	return &models.IterationMediaCreationInput{
-		Source:                   iterationMedia.Source,
+		Path:                     iterationMedia.Path,
 		Mimetype:                 iterationMedia.Mimetype,
+		RecipeIterationID:        iterationMedia.RecipeIterationID,
+		RecipeStepID:             iterationMedia.RecipeStepID,
 		BelongsToRecipeIteration: iterationMedia.BelongsToRecipeIteration,
 	}
 }

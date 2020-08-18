@@ -8,7 +8,7 @@ import (
 
 const (
 	userAgentHeader = "User-Agent"
-	userAgent       = "PrixFixe Service Client"
+	userAgent       = "TODO Service Client"
 )
 
 type defaultRoundTripper struct {

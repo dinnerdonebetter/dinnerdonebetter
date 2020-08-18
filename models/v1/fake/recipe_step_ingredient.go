@@ -9,15 +9,15 @@ import (
 // BuildFakeRecipeStepIngredient builds a faked recipe step ingredient.
 func BuildFakeRecipeStepIngredient() *models.RecipeStepIngredient {
 	return &models.RecipeStepIngredient{
-		ID:                    fake.Uint64(),
-		ValidIngredientID:     uint64(fake.Uint32()),
-		IngredientNotes:       fake.Word(),
-		QuantityType:          fake.Word(),
-		QuantityValue:         fake.Float32(),
-		QuantityNotes:         fake.Word(),
-		ProductOfRecipeStepID: func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
-		CreatedOn:             uint64(uint32(fake.Date().Unix())),
-		BelongsToRecipeStep:   fake.Uint64(),
+		ID:                  fake.Uint64(),
+		IngredientID:        func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
+		QuantityType:        fake.Word(),
+		QuantityValue:       fake.Float32(),
+		QuantityNotes:       fake.Word(),
+		ProductOfRecipe:     fake.Bool(),
+		IngredientNotes:     fake.Word(),
+		CreatedOn:           uint64(uint32(fake.Date().Unix())),
+		BelongsToRecipeStep: fake.Uint64(),
 	}
 }
 
@@ -29,9 +29,8 @@ func BuildFakeRecipeStepIngredientList() *models.RecipeStepIngredientList {
 
 	return &models.RecipeStepIngredientList{
 		Pagination: models.Pagination{
-			Page:       1,
-			Limit:      20,
-			TotalCount: 3,
+			Page:  1,
+			Limit: 20,
 		},
 		RecipeStepIngredients: []models.RecipeStepIngredient{
 			*exampleRecipeStepIngredient1,
@@ -44,13 +43,13 @@ func BuildFakeRecipeStepIngredientList() *models.RecipeStepIngredientList {
 // BuildFakeRecipeStepIngredientUpdateInputFromRecipeStepIngredient builds a faked RecipeStepIngredientUpdateInput from a recipe step ingredient.
 func BuildFakeRecipeStepIngredientUpdateInputFromRecipeStepIngredient(recipeStepIngredient *models.RecipeStepIngredient) *models.RecipeStepIngredientUpdateInput {
 	return &models.RecipeStepIngredientUpdateInput{
-		ValidIngredientID:     recipeStepIngredient.ValidIngredientID,
-		IngredientNotes:       recipeStepIngredient.IngredientNotes,
-		QuantityType:          recipeStepIngredient.QuantityType,
-		QuantityValue:         recipeStepIngredient.QuantityValue,
-		QuantityNotes:         recipeStepIngredient.QuantityNotes,
-		ProductOfRecipeStepID: recipeStepIngredient.ProductOfRecipeStepID,
-		BelongsToRecipeStep:   recipeStepIngredient.BelongsToRecipeStep,
+		IngredientID:        recipeStepIngredient.IngredientID,
+		QuantityType:        recipeStepIngredient.QuantityType,
+		QuantityValue:       recipeStepIngredient.QuantityValue,
+		QuantityNotes:       recipeStepIngredient.QuantityNotes,
+		ProductOfRecipe:     recipeStepIngredient.ProductOfRecipe,
+		IngredientNotes:     recipeStepIngredient.IngredientNotes,
+		BelongsToRecipeStep: recipeStepIngredient.BelongsToRecipeStep,
 	}
 }
 
@@ -63,12 +62,12 @@ func BuildFakeRecipeStepIngredientCreationInput() *models.RecipeStepIngredientCr
 // BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient builds a faked RecipeStepIngredientCreationInput from a recipe step ingredient.
 func BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(recipeStepIngredient *models.RecipeStepIngredient) *models.RecipeStepIngredientCreationInput {
 	return &models.RecipeStepIngredientCreationInput{
-		ValidIngredientID:     recipeStepIngredient.ValidIngredientID,
-		IngredientNotes:       recipeStepIngredient.IngredientNotes,
-		QuantityType:          recipeStepIngredient.QuantityType,
-		QuantityValue:         recipeStepIngredient.QuantityValue,
-		QuantityNotes:         recipeStepIngredient.QuantityNotes,
-		ProductOfRecipeStepID: recipeStepIngredient.ProductOfRecipeStepID,
-		BelongsToRecipeStep:   recipeStepIngredient.BelongsToRecipeStep,
+		IngredientID:        recipeStepIngredient.IngredientID,
+		QuantityType:        recipeStepIngredient.QuantityType,
+		QuantityValue:       recipeStepIngredient.QuantityValue,
+		QuantityNotes:       recipeStepIngredient.QuantityNotes,
+		ProductOfRecipe:     recipeStepIngredient.ProductOfRecipe,
+		IngredientNotes:     recipeStepIngredient.IngredientNotes,
+		BelongsToRecipeStep: recipeStepIngredient.BelongsToRecipeStep,
 	}
 }

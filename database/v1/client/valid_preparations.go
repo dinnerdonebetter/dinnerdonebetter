@@ -47,6 +47,16 @@ func (c *Client) GetAllValidPreparationsCount(ctx context.Context) (count uint64
 	return c.querier.GetAllValidPreparationsCount(ctx)
 }
 
+// GetAllValidPreparations fetches a list of all valid preparations in the database.
+func (c *Client) GetAllValidPreparations(ctx context.Context, results chan []models.ValidPreparation) error {
+	ctx, span := tracing.StartSpan(ctx, "GetAllValidPreparations")
+	defer span.End()
+
+	c.logger.Debug("GetAllValidPreparations called")
+
+	return c.querier.GetAllValidPreparations(ctx, results)
+}
+
 // GetValidPreparations fetches a list of valid preparations from the database that meet a particular filter.
 func (c *Client) GetValidPreparations(ctx context.Context, filter *models.QueryFilter) (*models.ValidPreparationList, error) {
 	ctx, span := tracing.StartSpan(ctx, "GetValidPreparations")
@@ -57,6 +67,20 @@ func (c *Client) GetValidPreparations(ctx context.Context, filter *models.QueryF
 	c.logger.Debug("GetValidPreparations called")
 
 	validPreparationList, err := c.querier.GetValidPreparations(ctx, filter)
+
+	return validPreparationList, err
+}
+
+// GetValidPreparationsWithIDs fetches valid preparations from the database within a given set of IDs.
+func (c *Client) GetValidPreparationsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]models.ValidPreparation, error) {
+	ctx, span := tracing.StartSpan(ctx, "GetValidPreparationsWithIDs")
+	defer span.End()
+
+	c.logger.WithValues(map[string]interface{}{
+		"id_count": len(ids),
+	}).Debug("GetValidPreparationsWithIDs called")
+
+	validPreparationList, err := c.querier.GetValidPreparationsWithIDs(ctx, limit, ids)
 
 	return validPreparationList, err
 }

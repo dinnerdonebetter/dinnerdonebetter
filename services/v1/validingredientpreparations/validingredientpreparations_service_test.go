@@ -18,9 +18,7 @@ func buildTestService() *Service {
 	return &Service{
 		logger:                                noop.ProvideNoopLogger(),
 		validIngredientPreparationCounter:     &mockmetrics.UnitCounter{},
-		validIngredientDataManager:            &mockmodels.ValidIngredientDataManager{},
 		validIngredientPreparationDataManager: &mockmodels.ValidIngredientPreparationDataManager{},
-		validIngredientIDFetcher:              func(req *http.Request) uint64 { return 0 },
 		validIngredientPreparationIDFetcher:   func(req *http.Request) uint64 { return 0 },
 		encoderDecoder:                        &mockencoding.EncoderDecoder{},
 		reporter:                              nil,
@@ -37,9 +35,7 @@ func TestProvideValidIngredientPreparationsService(T *testing.T) {
 
 		s, err := ProvideValidIngredientPreparationsService(
 			noop.ProvideNoopLogger(),
-			&mockmodels.ValidIngredientDataManager{},
 			&mockmodels.ValidIngredientPreparationDataManager{},
-			func(req *http.Request) uint64 { return 0 },
 			func(req *http.Request) uint64 { return 0 },
 			&mockencoding.EncoderDecoder{},
 			ucp,
@@ -57,9 +53,7 @@ func TestProvideValidIngredientPreparationsService(T *testing.T) {
 
 		s, err := ProvideValidIngredientPreparationsService(
 			noop.ProvideNoopLogger(),
-			&mockmodels.ValidIngredientDataManager{},
 			&mockmodels.ValidIngredientPreparationDataManager{},
-			func(req *http.Request) uint64 { return 0 },
 			func(req *http.Request) uint64 { return 0 },
 			&mockencoding.EncoderDecoder{},
 			ucp,

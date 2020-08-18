@@ -24,7 +24,7 @@ import (
 
 const (
 	maxTimeout      = 120 * time.Second
-	serverNamespace = "prixfixe-http-server"
+	serverNamespace = "todo-service"
 )
 
 type (
@@ -40,24 +40,22 @@ type (
 		webhooksService                       models.WebhookDataServer
 		validInstrumentsService               models.ValidInstrumentDataServer
 		validIngredientsService               models.ValidIngredientDataServer
-		validIngredientTagsService            models.ValidIngredientTagDataServer
-		ingredientTagMappingsService          models.IngredientTagMappingDataServer
 		validPreparationsService              models.ValidPreparationDataServer
-		requiredPreparationInstrumentsService models.RequiredPreparationInstrumentDataServer
 		validIngredientPreparationsService    models.ValidIngredientPreparationDataServer
+		requiredPreparationInstrumentsService models.RequiredPreparationInstrumentDataServer
 		recipesService                        models.RecipeDataServer
-		recipeTagsService                     models.RecipeTagDataServer
 		recipeStepsService                    models.RecipeStepDataServer
-		recipeStepPreparationsService         models.RecipeStepPreparationDataServer
+		recipeStepInstrumentsService          models.RecipeStepInstrumentDataServer
 		recipeStepIngredientsService          models.RecipeStepIngredientDataServer
+		recipeStepProductsService             models.RecipeStepProductDataServer
 		recipeIterationsService               models.RecipeIterationDataServer
-		recipeIterationStepsService           models.RecipeIterationStepDataServer
+		recipeStepEventsService               models.RecipeStepEventDataServer
 		iterationMediasService                models.IterationMediaDataServer
 		invitationsService                    models.InvitationDataServer
 		reportsService                        models.ReportDataServer
 
 		// infra things.
-		db          database.Database
+		db          database.DataManager
 		config      *config.ServerConfig
 		router      *chi.Mux
 		httpServer  *http.Server
@@ -75,25 +73,23 @@ func ProvideServer(
 	frontendService *frontendservice.Service,
 	validInstrumentsService models.ValidInstrumentDataServer,
 	validIngredientsService models.ValidIngredientDataServer,
-	validIngredientTagsService models.ValidIngredientTagDataServer,
-	ingredientTagMappingsService models.IngredientTagMappingDataServer,
 	validPreparationsService models.ValidPreparationDataServer,
-	requiredPreparationInstrumentsService models.RequiredPreparationInstrumentDataServer,
 	validIngredientPreparationsService models.ValidIngredientPreparationDataServer,
+	requiredPreparationInstrumentsService models.RequiredPreparationInstrumentDataServer,
 	recipesService models.RecipeDataServer,
-	recipeTagsService models.RecipeTagDataServer,
 	recipeStepsService models.RecipeStepDataServer,
-	recipeStepPreparationsService models.RecipeStepPreparationDataServer,
+	recipeStepInstrumentsService models.RecipeStepInstrumentDataServer,
 	recipeStepIngredientsService models.RecipeStepIngredientDataServer,
+	recipeStepProductsService models.RecipeStepProductDataServer,
 	recipeIterationsService models.RecipeIterationDataServer,
-	recipeIterationStepsService models.RecipeIterationStepDataServer,
+	recipeStepEventsService models.RecipeStepEventDataServer,
 	iterationMediasService models.IterationMediaDataServer,
 	invitationsService models.InvitationDataServer,
 	reportsService models.ReportDataServer,
 	usersService models.UserDataServer,
 	oauth2Service models.OAuth2ClientDataServer,
 	webhooksService models.WebhookDataServer,
-	db database.Database,
+	db database.DataManager,
 	logger logging.Logger,
 	encoder encoding.EncoderDecoder,
 	newsManager *newsman.Newsman,
@@ -120,18 +116,16 @@ func ProvideServer(
 		authService:                           authService,
 		validInstrumentsService:               validInstrumentsService,
 		validIngredientsService:               validIngredientsService,
-		validIngredientTagsService:            validIngredientTagsService,
-		ingredientTagMappingsService:          ingredientTagMappingsService,
 		validPreparationsService:              validPreparationsService,
-		requiredPreparationInstrumentsService: requiredPreparationInstrumentsService,
 		validIngredientPreparationsService:    validIngredientPreparationsService,
+		requiredPreparationInstrumentsService: requiredPreparationInstrumentsService,
 		recipesService:                        recipesService,
-		recipeTagsService:                     recipeTagsService,
 		recipeStepsService:                    recipeStepsService,
-		recipeStepPreparationsService:         recipeStepPreparationsService,
+		recipeStepInstrumentsService:          recipeStepInstrumentsService,
 		recipeStepIngredientsService:          recipeStepIngredientsService,
+		recipeStepProductsService:             recipeStepProductsService,
 		recipeIterationsService:               recipeIterationsService,
-		recipeIterationStepsService:           recipeIterationStepsService,
+		recipeStepEventsService:               recipeStepEventsService,
 		iterationMediasService:                iterationMediasService,
 		invitationsService:                    invitationsService,
 		reportsService:                        reportsService,
@@ -142,16 +136,12 @@ func ProvideServer(
 		return nil, err
 	}
 
-	ih := cfg.ProvideInstrumentationHandler(logger)
-	srv.setupRouter(cfg.Frontend, ih)
+	metricsHandler := cfg.ProvideInstrumentationHandler(logger)
+	srv.setupRouter(cfg.Frontend, metricsHandler)
 
-	if ih != nil {
-		srv.httpServer.Handler = &ochttp.Handler{
-			Handler:        srv.router,
-			FormatSpanName: formatSpanNameForRequest,
-		}
-	} else {
-		srv.httpServer.Handler = srv.router
+	srv.httpServer.Handler = &ochttp.Handler{
+		Handler:        srv.router,
+		FormatSpanName: formatSpanNameForRequest,
 	}
 
 	allWebhooks, err := db.GetAllWebhooks(ctx)

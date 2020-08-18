@@ -178,7 +178,7 @@ func TestInvitations(test *testing.T) {
 
 			// Assert invitation equality.
 			checkInvitationEquality(t, exampleInvitation, actual)
-			assert.NotNil(t, actual.UpdatedOn)
+			assert.NotNil(t, actual.LastUpdatedOn)
 
 			// Clean up invitation.
 			assert.NoError(t, prixfixeClient.ArchiveInvitation(ctx, createdInvitation.ID))

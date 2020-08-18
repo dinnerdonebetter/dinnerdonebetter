@@ -9,10 +9,10 @@ type (
 	// Report represents a report.
 	Report struct {
 		ID            uint64  `json:"id"`
-		ReportType    string  `json:"report_type"`
+		ReportType    string  `json:"reportType"`
 		Concern       string  `json:"concern"`
 		CreatedOn     uint64  `json:"createdOn"`
-		UpdatedOn     *uint64 `json:"updatedOn"`
+		LastUpdatedOn *uint64 `json:"lastUpdatedOn"`
 		ArchivedOn    *uint64 `json:"archivedOn"`
 		BelongsToUser uint64  `json:"belongsToUser"`
 	}
@@ -25,14 +25,14 @@ type (
 
 	// ReportCreationInput represents what a user could set as input for creating reports.
 	ReportCreationInput struct {
-		ReportType    string `json:"report_type"`
+		ReportType    string `json:"reportType"`
 		Concern       string `json:"concern"`
 		BelongsToUser uint64 `json:"-"`
 	}
 
 	// ReportUpdateInput represents what a user could set as input for updating reports.
 	ReportUpdateInput struct {
-		ReportType    string `json:"report_type"`
+		ReportType    string `json:"reportType"`
 		Concern       string `json:"concern"`
 		BelongsToUser uint64 `json:"-"`
 	}
@@ -42,7 +42,9 @@ type (
 		ReportExists(ctx context.Context, reportID uint64) (bool, error)
 		GetReport(ctx context.Context, reportID uint64) (*Report, error)
 		GetAllReportsCount(ctx context.Context) (uint64, error)
+		GetAllReports(ctx context.Context, resultChannel chan []Report) error
 		GetReports(ctx context.Context, filter *QueryFilter) (*ReportList, error)
+		GetReportsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]Report, error)
 		CreateReport(ctx context.Context, input *ReportCreationInput) (*Report, error)
 		UpdateReport(ctx context.Context, updated *Report) error
 		ArchiveReport(ctx context.Context, reportID, userID uint64) error
@@ -53,12 +55,12 @@ type (
 		CreationInputMiddleware(next http.Handler) http.Handler
 		UpdateInputMiddleware(next http.Handler) http.Handler
 
-		ListHandler() http.HandlerFunc
-		CreateHandler() http.HandlerFunc
-		ExistenceHandler() http.HandlerFunc
-		ReadHandler() http.HandlerFunc
-		UpdateHandler() http.HandlerFunc
-		ArchiveHandler() http.HandlerFunc
+		ListHandler(res http.ResponseWriter, req *http.Request)
+		CreateHandler(res http.ResponseWriter, req *http.Request)
+		ExistenceHandler(res http.ResponseWriter, req *http.Request)
+		ReadHandler(res http.ResponseWriter, req *http.Request)
+		UpdateHandler(res http.ResponseWriter, req *http.Request)
+		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 

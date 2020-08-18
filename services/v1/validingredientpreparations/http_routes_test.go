@@ -23,20 +23,13 @@ import (
 func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 	T.Parallel()
 
-	exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
-	validIngredientIDFetcher := func(_ *http.Request) uint64 {
-		return exampleValidIngredient.ID
-	}
-
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService()
-
-		s.validIngredientIDFetcher = validIngredientIDFetcher
 
 		exampleValidIngredientPreparationList := fakemodels.BuildFakeValidIngredientPreparationList()
 
 		validIngredientPreparationDataManager := &mockmodels.ValidIngredientPreparationDataManager{}
-		validIngredientPreparationDataManager.On("GetValidIngredientPreparations", mock.Anything, exampleValidIngredient.ID, mock.AnythingOfType("*models.QueryFilter")).Return(exampleValidIngredientPreparationList, nil)
+		validIngredientPreparationDataManager.On("GetValidIngredientPreparations", mock.Anything, mock.AnythingOfType("*models.QueryFilter")).Return(exampleValidIngredientPreparationList, nil)
 		s.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -46,13 +39,13 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ListHandler()(res, req)
+		s.ListHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -62,10 +55,8 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 	T.Run("with no rows returned", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		validIngredientPreparationDataManager := &mockmodels.ValidIngredientPreparationDataManager{}
-		validIngredientPreparationDataManager.On("GetValidIngredientPreparations", mock.Anything, exampleValidIngredient.ID, mock.AnythingOfType("*models.QueryFilter")).Return((*models.ValidIngredientPreparationList)(nil), sql.ErrNoRows)
+		validIngredientPreparationDataManager.On("GetValidIngredientPreparations", mock.Anything, mock.AnythingOfType("*models.QueryFilter")).Return((*models.ValidIngredientPreparationList)(nil), sql.ErrNoRows)
 		s.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -75,13 +66,13 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ListHandler()(res, req)
+		s.ListHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -91,22 +82,20 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 	T.Run("with error fetching valid ingredient preparations from database", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		validIngredientPreparationDataManager := &mockmodels.ValidIngredientPreparationDataManager{}
-		validIngredientPreparationDataManager.On("GetValidIngredientPreparations", mock.Anything, exampleValidIngredient.ID, mock.AnythingOfType("*models.QueryFilter")).Return((*models.ValidIngredientPreparationList)(nil), errors.New("blah"))
+		validIngredientPreparationDataManager.On("GetValidIngredientPreparations", mock.Anything, mock.AnythingOfType("*models.QueryFilter")).Return((*models.ValidIngredientPreparationList)(nil), errors.New("blah"))
 		s.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ListHandler()(res, req)
+		s.ListHandler(res, req)
 
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
@@ -116,12 +105,10 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 	T.Run("with error encoding response", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		exampleValidIngredientPreparationList := fakemodels.BuildFakeValidIngredientPreparationList()
 
 		validIngredientPreparationDataManager := &mockmodels.ValidIngredientPreparationDataManager{}
-		validIngredientPreparationDataManager.On("GetValidIngredientPreparations", mock.Anything, exampleValidIngredient.ID, mock.AnythingOfType("*models.QueryFilter")).Return(exampleValidIngredientPreparationList, nil)
+		validIngredientPreparationDataManager.On("GetValidIngredientPreparations", mock.Anything, mock.AnythingOfType("*models.QueryFilter")).Return(exampleValidIngredientPreparationList, nil)
 		s.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -131,13 +118,13 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ListHandler()(res, req)
+		s.ListHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -148,23 +135,11 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 func TestValidIngredientPreparationsService_CreateHandler(T *testing.T) {
 	T.Parallel()
 
-	exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
-	validIngredientIDFetcher := func(_ *http.Request) uint64 {
-		return exampleValidIngredient.ID
-	}
-
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 		exampleInput := fakemodels.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
-
-		validIngredientDataManager := &mockmodels.ValidIngredientDataManager{}
-		validIngredientDataManager.On("ValidIngredientExists", mock.Anything, exampleValidIngredient.ID).Return(true, nil)
-		s.validIngredientDataManager = validIngredientDataManager
 
 		validIngredientPreparationDataManager := &mockmodels.ValidIngredientPreparationDataManager{}
 		validIngredientPreparationDataManager.On("CreateValidIngredientPreparation", mock.Anything, mock.AnythingOfType("*models.ValidIngredientPreparationCreationInput")).Return(exampleValidIngredientPreparation, nil)
@@ -185,98 +160,34 @@ func TestValidIngredientPreparationsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), createMiddlewareCtxKey, exampleInput))
 
-		s.CreateHandler()(res, req)
+		s.CreateHandler(res, req)
 
 		assert.Equal(t, http.StatusCreated, res.Code)
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager, validIngredientPreparationDataManager, mc, r, ed)
-	})
-
-	T.Run("with nonexistent valid ingredient", func(t *testing.T) {
-		s := buildTestService()
-
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
-		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
-		exampleInput := fakemodels.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
-
-		validIngredientDataManager := &mockmodels.ValidIngredientDataManager{}
-		validIngredientDataManager.On("ValidIngredientExists", mock.Anything, exampleValidIngredient.ID).Return(false, nil)
-		s.validIngredientDataManager = validIngredientDataManager
-
-		res := httptest.NewRecorder()
-		req, err := http.NewRequest(
-			http.MethodGet,
-			"http://prixfixe.app",
-			nil,
-		)
-		require.NotNil(t, req)
-		require.NoError(t, err)
-
-		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
-
-		s.CreateHandler()(res, req)
-
-		assert.Equal(t, http.StatusNotFound, res.Code)
-
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
-	})
-
-	T.Run("with error checking valid ingredient existence", func(t *testing.T) {
-		s := buildTestService()
-
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
-		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
-		exampleInput := fakemodels.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
-
-		validIngredientDataManager := &mockmodels.ValidIngredientDataManager{}
-		validIngredientDataManager.On("ValidIngredientExists", mock.Anything, exampleValidIngredient.ID).Return(true, errors.New("blah"))
-		s.validIngredientDataManager = validIngredientDataManager
-
-		res := httptest.NewRecorder()
-		req, err := http.NewRequest(
-			http.MethodGet,
-			"http://prixfixe.app",
-			nil,
-		)
-		require.NotNil(t, req)
-		require.NoError(t, err)
-
-		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
-
-		s.CreateHandler()(res, req)
-
-		assert.Equal(t, http.StatusInternalServerError, res.Code)
-
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
+		mock.AssertExpectationsForObjects(t, validIngredientPreparationDataManager, mc, r, ed)
 	})
 
 	T.Run("without input attached", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.CreateHandler()(res, req)
+		s.CreateHandler(res, req)
 
 		assert.Equal(t, http.StatusBadRequest, res.Code)
 	})
@@ -284,50 +195,36 @@ func TestValidIngredientPreparationsService_CreateHandler(T *testing.T) {
 	T.Run("with error creating valid ingredient preparation", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 		exampleInput := fakemodels.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
 
-		validIngredientDataManager := &mockmodels.ValidIngredientDataManager{}
-		validIngredientDataManager.On("ValidIngredientExists", mock.Anything, exampleValidIngredient.ID).Return(true, nil)
-		s.validIngredientDataManager = validIngredientDataManager
-
 		validIngredientPreparationDataManager := &mockmodels.ValidIngredientPreparationDataManager{}
-		validIngredientPreparationDataManager.On("CreateValidIngredientPreparation", mock.Anything, mock.AnythingOfType("*models.ValidIngredientPreparationCreationInput")).Return(exampleValidIngredientPreparation, errors.New("blah"))
+		validIngredientPreparationDataManager.On("CreateValidIngredientPreparation", mock.Anything, mock.AnythingOfType("*models.ValidIngredientPreparationCreationInput")).Return((*models.ValidIngredientPreparation)(nil), errors.New("blah"))
 		s.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), createMiddlewareCtxKey, exampleInput))
 
-		s.CreateHandler()(res, req)
+		s.CreateHandler(res, req)
 
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager, validIngredientPreparationDataManager)
+		mock.AssertExpectationsForObjects(t, validIngredientPreparationDataManager)
 	})
 
 	T.Run("with error encoding response", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 		exampleInput := fakemodels.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
-
-		validIngredientDataManager := &mockmodels.ValidIngredientDataManager{}
-		validIngredientDataManager.On("ValidIngredientExists", mock.Anything, exampleValidIngredient.ID).Return(true, nil)
-		s.validIngredientDataManager = validIngredientDataManager
 
 		validIngredientPreparationDataManager := &mockmodels.ValidIngredientPreparationDataManager{}
 		validIngredientPreparationDataManager.On("CreateValidIngredientPreparation", mock.Anything, mock.AnythingOfType("*models.ValidIngredientPreparationCreationInput")).Return(exampleValidIngredientPreparation, nil)
@@ -348,55 +245,47 @@ func TestValidIngredientPreparationsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), createMiddlewareCtxKey, exampleInput))
 
-		s.CreateHandler()(res, req)
+		s.CreateHandler(res, req)
 
 		assert.Equal(t, http.StatusCreated, res.Code)
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager, validIngredientPreparationDataManager, mc, r, ed)
+		mock.AssertExpectationsForObjects(t, validIngredientPreparationDataManager, mc, r, ed)
 	})
 }
 
 func TestValidIngredientPreparationsService_ExistenceHandler(T *testing.T) {
 	T.Parallel()
 
-	exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
-	validIngredientIDFetcher := func(_ *http.Request) uint64 {
-		return exampleValidIngredient.ID
-	}
-
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 		s.validIngredientPreparationIDFetcher = func(req *http.Request) uint64 {
 			return exampleValidIngredientPreparation.ID
 		}
 
 		validIngredientPreparationDataManager := &mockmodels.ValidIngredientPreparationDataManager{}
-		validIngredientPreparationDataManager.On("ValidIngredientPreparationExists", mock.Anything, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID).Return(true, nil)
+		validIngredientPreparationDataManager.On("ValidIngredientPreparationExists", mock.Anything, exampleValidIngredientPreparation.ID).Return(true, nil)
 		s.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ExistenceHandler()(res, req)
+		s.ExistenceHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -406,28 +295,25 @@ func TestValidIngredientPreparationsService_ExistenceHandler(T *testing.T) {
 	T.Run("with no such valid ingredient preparation in database", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 		s.validIngredientPreparationIDFetcher = func(req *http.Request) uint64 {
 			return exampleValidIngredientPreparation.ID
 		}
 
 		validIngredientPreparationDataManager := &mockmodels.ValidIngredientPreparationDataManager{}
-		validIngredientPreparationDataManager.On("ValidIngredientPreparationExists", mock.Anything, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID).Return(false, sql.ErrNoRows)
+		validIngredientPreparationDataManager.On("ValidIngredientPreparationExists", mock.Anything, exampleValidIngredientPreparation.ID).Return(false, sql.ErrNoRows)
 		s.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ExistenceHandler()(res, req)
+		s.ExistenceHandler(res, req)
 
 		assert.Equal(t, http.StatusNotFound, res.Code)
 
@@ -437,28 +323,25 @@ func TestValidIngredientPreparationsService_ExistenceHandler(T *testing.T) {
 	T.Run("with error fetching valid ingredient preparation from database", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 		s.validIngredientPreparationIDFetcher = func(req *http.Request) uint64 {
 			return exampleValidIngredientPreparation.ID
 		}
 
 		validIngredientPreparationDataManager := &mockmodels.ValidIngredientPreparationDataManager{}
-		validIngredientPreparationDataManager.On("ValidIngredientPreparationExists", mock.Anything, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID).Return(false, errors.New("blah"))
+		validIngredientPreparationDataManager.On("ValidIngredientPreparationExists", mock.Anything, exampleValidIngredientPreparation.ID).Return(false, errors.New("blah"))
 		s.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ExistenceHandler()(res, req)
+		s.ExistenceHandler(res, req)
 
 		assert.Equal(t, http.StatusNotFound, res.Code)
 
@@ -469,24 +352,16 @@ func TestValidIngredientPreparationsService_ExistenceHandler(T *testing.T) {
 func TestValidIngredientPreparationsService_ReadHandler(T *testing.T) {
 	T.Parallel()
 
-	exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
-	validIngredientIDFetcher := func(_ *http.Request) uint64 {
-		return exampleValidIngredient.ID
-	}
-
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 		s.validIngredientPreparationIDFetcher = func(req *http.Request) uint64 {
 			return exampleValidIngredientPreparation.ID
 		}
 
 		validIngredientPreparationDataManager := &mockmodels.ValidIngredientPreparationDataManager{}
-		validIngredientPreparationDataManager.On("GetValidIngredientPreparation", mock.Anything, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID).Return(exampleValidIngredientPreparation, nil)
+		validIngredientPreparationDataManager.On("GetValidIngredientPreparation", mock.Anything, exampleValidIngredientPreparation.ID).Return(exampleValidIngredientPreparation, nil)
 		s.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -496,13 +371,13 @@ func TestValidIngredientPreparationsService_ReadHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ReadHandler()(res, req)
+		s.ReadHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -512,28 +387,25 @@ func TestValidIngredientPreparationsService_ReadHandler(T *testing.T) {
 	T.Run("with no such valid ingredient preparation in database", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 		s.validIngredientPreparationIDFetcher = func(req *http.Request) uint64 {
 			return exampleValidIngredientPreparation.ID
 		}
 
 		validIngredientPreparationDataManager := &mockmodels.ValidIngredientPreparationDataManager{}
-		validIngredientPreparationDataManager.On("GetValidIngredientPreparation", mock.Anything, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID).Return((*models.ValidIngredientPreparation)(nil), sql.ErrNoRows)
+		validIngredientPreparationDataManager.On("GetValidIngredientPreparation", mock.Anything, exampleValidIngredientPreparation.ID).Return((*models.ValidIngredientPreparation)(nil), sql.ErrNoRows)
 		s.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ReadHandler()(res, req)
+		s.ReadHandler(res, req)
 
 		assert.Equal(t, http.StatusNotFound, res.Code)
 
@@ -543,28 +415,25 @@ func TestValidIngredientPreparationsService_ReadHandler(T *testing.T) {
 	T.Run("with error fetching valid ingredient preparation from database", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 		s.validIngredientPreparationIDFetcher = func(req *http.Request) uint64 {
 			return exampleValidIngredientPreparation.ID
 		}
 
 		validIngredientPreparationDataManager := &mockmodels.ValidIngredientPreparationDataManager{}
-		validIngredientPreparationDataManager.On("GetValidIngredientPreparation", mock.Anything, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID).Return((*models.ValidIngredientPreparation)(nil), errors.New("blah"))
+		validIngredientPreparationDataManager.On("GetValidIngredientPreparation", mock.Anything, exampleValidIngredientPreparation.ID).Return((*models.ValidIngredientPreparation)(nil), errors.New("blah"))
 		s.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ReadHandler()(res, req)
+		s.ReadHandler(res, req)
 
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
@@ -574,16 +443,13 @@ func TestValidIngredientPreparationsService_ReadHandler(T *testing.T) {
 	T.Run("with error encoding response", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 		s.validIngredientPreparationIDFetcher = func(req *http.Request) uint64 {
 			return exampleValidIngredientPreparation.ID
 		}
 
 		validIngredientPreparationDataManager := &mockmodels.ValidIngredientPreparationDataManager{}
-		validIngredientPreparationDataManager.On("GetValidIngredientPreparation", mock.Anything, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID).Return(exampleValidIngredientPreparation, nil)
+		validIngredientPreparationDataManager.On("GetValidIngredientPreparation", mock.Anything, exampleValidIngredientPreparation.ID).Return(exampleValidIngredientPreparation, nil)
 		s.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
 		ed := &mockencoding.EncoderDecoder{}
@@ -593,13 +459,13 @@ func TestValidIngredientPreparationsService_ReadHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ReadHandler()(res, req)
+		s.ReadHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -610,18 +476,10 @@ func TestValidIngredientPreparationsService_ReadHandler(T *testing.T) {
 func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 	T.Parallel()
 
-	exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
-	validIngredientIDFetcher := func(_ *http.Request) uint64 {
-		return exampleValidIngredient.ID
-	}
-
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 		exampleInput := fakemodels.BuildFakeValidIngredientPreparationUpdateInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
 
 		s.validIngredientPreparationIDFetcher = func(req *http.Request) uint64 {
@@ -629,7 +487,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		}
 
 		validIngredientPreparationDataManager := &mockmodels.ValidIngredientPreparationDataManager{}
-		validIngredientPreparationDataManager.On("GetValidIngredientPreparation", mock.Anything, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID).Return(exampleValidIngredientPreparation, nil)
+		validIngredientPreparationDataManager.On("GetValidIngredientPreparation", mock.Anything, exampleValidIngredientPreparation.ID).Return(exampleValidIngredientPreparation, nil)
 		validIngredientPreparationDataManager.On("UpdateValidIngredientPreparation", mock.Anything, mock.AnythingOfType("*models.ValidIngredientPreparation")).Return(nil)
 		s.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
@@ -644,15 +502,15 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), updateMiddlewareCtxKey, exampleInput))
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -662,18 +520,16 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 	T.Run("without update input", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 
 		assert.Equal(t, http.StatusBadRequest, res.Code)
 	})
@@ -681,10 +537,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 	T.Run("with no rows fetching valid ingredient preparation", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 		exampleInput := fakemodels.BuildFakeValidIngredientPreparationUpdateInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
 
 		s.validIngredientPreparationIDFetcher = func(req *http.Request) uint64 {
@@ -692,21 +545,21 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		}
 
 		validIngredientPreparationDataManager := &mockmodels.ValidIngredientPreparationDataManager{}
-		validIngredientPreparationDataManager.On("GetValidIngredientPreparation", mock.Anything, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID).Return((*models.ValidIngredientPreparation)(nil), sql.ErrNoRows)
+		validIngredientPreparationDataManager.On("GetValidIngredientPreparation", mock.Anything, exampleValidIngredientPreparation.ID).Return((*models.ValidIngredientPreparation)(nil), sql.ErrNoRows)
 		s.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), updateMiddlewareCtxKey, exampleInput))
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 
 		assert.Equal(t, http.StatusNotFound, res.Code)
 
@@ -716,10 +569,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 	T.Run("with error fetching valid ingredient preparation", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 		exampleInput := fakemodels.BuildFakeValidIngredientPreparationUpdateInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
 
 		s.validIngredientPreparationIDFetcher = func(req *http.Request) uint64 {
@@ -727,21 +577,21 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		}
 
 		validIngredientPreparationDataManager := &mockmodels.ValidIngredientPreparationDataManager{}
-		validIngredientPreparationDataManager.On("GetValidIngredientPreparation", mock.Anything, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID).Return((*models.ValidIngredientPreparation)(nil), errors.New("blah"))
+		validIngredientPreparationDataManager.On("GetValidIngredientPreparation", mock.Anything, exampleValidIngredientPreparation.ID).Return((*models.ValidIngredientPreparation)(nil), errors.New("blah"))
 		s.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), updateMiddlewareCtxKey, exampleInput))
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
@@ -751,10 +601,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 	T.Run("with error updating valid ingredient preparation", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 		exampleInput := fakemodels.BuildFakeValidIngredientPreparationUpdateInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
 
 		s.validIngredientPreparationIDFetcher = func(req *http.Request) uint64 {
@@ -762,22 +609,22 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		}
 
 		validIngredientPreparationDataManager := &mockmodels.ValidIngredientPreparationDataManager{}
-		validIngredientPreparationDataManager.On("GetValidIngredientPreparation", mock.Anything, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID).Return(exampleValidIngredientPreparation, nil)
+		validIngredientPreparationDataManager.On("GetValidIngredientPreparation", mock.Anything, exampleValidIngredientPreparation.ID).Return(exampleValidIngredientPreparation, nil)
 		validIngredientPreparationDataManager.On("UpdateValidIngredientPreparation", mock.Anything, mock.AnythingOfType("*models.ValidIngredientPreparation")).Return(errors.New("blah"))
 		s.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), updateMiddlewareCtxKey, exampleInput))
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
@@ -787,10 +634,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 	T.Run("with error encoding response", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 		exampleInput := fakemodels.BuildFakeValidIngredientPreparationUpdateInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
 
 		s.validIngredientPreparationIDFetcher = func(req *http.Request) uint64 {
@@ -798,7 +642,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		}
 
 		validIngredientPreparationDataManager := &mockmodels.ValidIngredientPreparationDataManager{}
-		validIngredientPreparationDataManager.On("GetValidIngredientPreparation", mock.Anything, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID).Return(exampleValidIngredientPreparation, nil)
+		validIngredientPreparationDataManager.On("GetValidIngredientPreparation", mock.Anything, exampleValidIngredientPreparation.ID).Return(exampleValidIngredientPreparation, nil)
 		validIngredientPreparationDataManager.On("UpdateValidIngredientPreparation", mock.Anything, mock.AnythingOfType("*models.ValidIngredientPreparation")).Return(nil)
 		s.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
@@ -813,15 +657,15 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), updateMiddlewareCtxKey, exampleInput))
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -832,28 +676,16 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 func TestValidIngredientPreparationsService_ArchiveHandler(T *testing.T) {
 	T.Parallel()
 
-	exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
-	validIngredientIDFetcher := func(_ *http.Request) uint64 {
-		return exampleValidIngredient.ID
-	}
-
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 		s.validIngredientPreparationIDFetcher = func(req *http.Request) uint64 {
 			return exampleValidIngredientPreparation.ID
 		}
 
-		validIngredientDataManager := &mockmodels.ValidIngredientDataManager{}
-		validIngredientDataManager.On("ValidIngredientExists", mock.Anything, exampleValidIngredient.ID).Return(true, nil)
-		s.validIngredientDataManager = validIngredientDataManager
-
 		validIngredientPreparationDataManager := &mockmodels.ValidIngredientPreparationDataManager{}
-		validIngredientPreparationDataManager.On("ArchiveValidIngredientPreparation", mock.Anything, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID).Return(nil)
+		validIngredientPreparationDataManager.On("ArchiveValidIngredientPreparation", mock.Anything, exampleValidIngredientPreparation.ID).Return(nil)
 		s.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
 		r := &mocknewsman.Reporter{}
@@ -867,136 +699,72 @@ func TestValidIngredientPreparationsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ArchiveHandler()(res, req)
+		s.ArchiveHandler(res, req)
 
 		assert.Equal(t, http.StatusNoContent, res.Code)
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager, validIngredientPreparationDataManager, mc, r)
-	})
-
-	T.Run("with nonexistent valid ingredient", func(t *testing.T) {
-		s := buildTestService()
-
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
-		validIngredientDataManager := &mockmodels.ValidIngredientDataManager{}
-		validIngredientDataManager.On("ValidIngredientExists", mock.Anything, exampleValidIngredient.ID).Return(false, nil)
-		s.validIngredientDataManager = validIngredientDataManager
-
-		res := httptest.NewRecorder()
-		req, err := http.NewRequest(
-			http.MethodGet,
-			"http://prixfixe.app",
-			nil,
-		)
-		require.NotNil(t, req)
-		require.NoError(t, err)
-
-		s.ArchiveHandler()(res, req)
-
-		assert.Equal(t, http.StatusNotFound, res.Code)
-
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
-	})
-
-	T.Run("with error checking valid ingredient existence", func(t *testing.T) {
-		s := buildTestService()
-
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
-		validIngredientDataManager := &mockmodels.ValidIngredientDataManager{}
-		validIngredientDataManager.On("ValidIngredientExists", mock.Anything, exampleValidIngredient.ID).Return(true, errors.New("blah"))
-		s.validIngredientDataManager = validIngredientDataManager
-
-		res := httptest.NewRecorder()
-		req, err := http.NewRequest(
-			http.MethodGet,
-			"http://prixfixe.app",
-			nil,
-		)
-		require.NotNil(t, req)
-		require.NoError(t, err)
-
-		s.ArchiveHandler()(res, req)
-
-		assert.Equal(t, http.StatusInternalServerError, res.Code)
-
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
+		mock.AssertExpectationsForObjects(t, validIngredientPreparationDataManager, mc, r)
 	})
 
 	T.Run("with no valid ingredient preparation in database", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 		s.validIngredientPreparationIDFetcher = func(req *http.Request) uint64 {
 			return exampleValidIngredientPreparation.ID
 		}
 
-		validIngredientDataManager := &mockmodels.ValidIngredientDataManager{}
-		validIngredientDataManager.On("ValidIngredientExists", mock.Anything, exampleValidIngredient.ID).Return(true, nil)
-		s.validIngredientDataManager = validIngredientDataManager
-
 		validIngredientPreparationDataManager := &mockmodels.ValidIngredientPreparationDataManager{}
-		validIngredientPreparationDataManager.On("ArchiveValidIngredientPreparation", mock.Anything, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID).Return(sql.ErrNoRows)
+		validIngredientPreparationDataManager.On("ArchiveValidIngredientPreparation", mock.Anything, exampleValidIngredientPreparation.ID).Return(sql.ErrNoRows)
 		s.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ArchiveHandler()(res, req)
+		s.ArchiveHandler(res, req)
 
 		assert.Equal(t, http.StatusNotFound, res.Code)
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager, validIngredientPreparationDataManager)
+		mock.AssertExpectationsForObjects(t, validIngredientPreparationDataManager)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
 		s := buildTestService()
 
-		s.validIngredientIDFetcher = validIngredientIDFetcher
-
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 		s.validIngredientPreparationIDFetcher = func(req *http.Request) uint64 {
 			return exampleValidIngredientPreparation.ID
 		}
 
-		validIngredientDataManager := &mockmodels.ValidIngredientDataManager{}
-		validIngredientDataManager.On("ValidIngredientExists", mock.Anything, exampleValidIngredient.ID).Return(true, nil)
-		s.validIngredientDataManager = validIngredientDataManager
-
 		validIngredientPreparationDataManager := &mockmodels.ValidIngredientPreparationDataManager{}
-		validIngredientPreparationDataManager.On("ArchiveValidIngredientPreparation", mock.Anything, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID).Return(errors.New("blah"))
+		validIngredientPreparationDataManager.On("ArchiveValidIngredientPreparation", mock.Anything, exampleValidIngredientPreparation.ID).Return(errors.New("blah"))
 		s.validIngredientPreparationDataManager = validIngredientPreparationDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ArchiveHandler()(res, req)
+		s.ArchiveHandler(res, req)
 
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager, validIngredientPreparationDataManager)
+		mock.AssertExpectationsForObjects(t, validIngredientPreparationDataManager)
 	})
 }

@@ -13,92 +13,92 @@ import (
 )
 
 const (
-	recipeStepsTableName            = "recipe_steps"
-	recipeStepsTableOwnershipColumn = "belongs_to_recipe"
+	recipeStepsTableName                            = "recipe_steps"
+	recipeStepsTableIndexColumn                     = "index"
+	recipeStepsTablePreparationIDColumn             = "preparation_id"
+	recipeStepsTablePrerequisiteStepColumn          = "prerequisite_step"
+	recipeStepsTableMinEstimatedTimeInSecondsColumn = "min_estimated_time_in_seconds"
+	recipeStepsTableMaxEstimatedTimeInSecondsColumn = "max_estimated_time_in_seconds"
+	recipeStepsTableTemperatureInCelsiusColumn      = "temperature_in_celsius"
+	recipeStepsTableNotesColumn                     = "notes"
+	recipeStepsTableRecipeIDColumn                  = "recipe_id"
+	recipeStepsTableOwnershipColumn                 = "belongs_to_recipe"
 )
 
 var (
 	recipeStepsTableColumns = []string{
-		fmt.Sprintf("%s.%s", recipeStepsTableName, "id"),
-		fmt.Sprintf("%s.%s", recipeStepsTableName, "index"),
-		fmt.Sprintf("%s.%s", recipeStepsTableName, "valid_preparation_id"),
-		fmt.Sprintf("%s.%s", recipeStepsTableName, "prerequisite_step_id"),
-		fmt.Sprintf("%s.%s", recipeStepsTableName, "min_estimated_time_in_seconds"),
-		fmt.Sprintf("%s.%s", recipeStepsTableName, "max_estimated_time_in_seconds"),
-		fmt.Sprintf("%s.%s", recipeStepsTableName, "yields_product_name"),
-		fmt.Sprintf("%s.%s", recipeStepsTableName, "yields_quantity"),
-		fmt.Sprintf("%s.%s", recipeStepsTableName, "notes"),
-		fmt.Sprintf("%s.%s", recipeStepsTableName, "created_on"),
-		fmt.Sprintf("%s.%s", recipeStepsTableName, "updated_on"),
-		fmt.Sprintf("%s.%s", recipeStepsTableName, "archived_on"),
+		fmt.Sprintf("%s.%s", recipeStepsTableName, idColumn),
+		fmt.Sprintf("%s.%s", recipeStepsTableName, recipeStepsTableIndexColumn),
+		fmt.Sprintf("%s.%s", recipeStepsTableName, recipeStepsTablePreparationIDColumn),
+		fmt.Sprintf("%s.%s", recipeStepsTableName, recipeStepsTablePrerequisiteStepColumn),
+		fmt.Sprintf("%s.%s", recipeStepsTableName, recipeStepsTableMinEstimatedTimeInSecondsColumn),
+		fmt.Sprintf("%s.%s", recipeStepsTableName, recipeStepsTableMaxEstimatedTimeInSecondsColumn),
+		fmt.Sprintf("%s.%s", recipeStepsTableName, recipeStepsTableTemperatureInCelsiusColumn),
+		fmt.Sprintf("%s.%s", recipeStepsTableName, recipeStepsTableNotesColumn),
+		fmt.Sprintf("%s.%s", recipeStepsTableName, recipeStepsTableRecipeIDColumn),
+		fmt.Sprintf("%s.%s", recipeStepsTableName, createdOnColumn),
+		fmt.Sprintf("%s.%s", recipeStepsTableName, lastUpdatedOnColumn),
+		fmt.Sprintf("%s.%s", recipeStepsTableName, archivedOnColumn),
 		fmt.Sprintf("%s.%s", recipeStepsTableName, recipeStepsTableOwnershipColumn),
 	}
 
-	recipeStepsOnRecipeStepPreparationsJoinClause = fmt.Sprintf("%s ON %s.%s=%s.id", recipeStepsTableName, recipeStepPreparationsTableName, recipeStepPreparationsTableOwnershipColumn, recipeStepsTableName)
-	recipeStepsOnRecipeStepIngredientsJoinClause  = fmt.Sprintf("%s ON %s.%s=%s.id", recipeStepsTableName, recipeStepIngredientsTableName, recipeStepIngredientsTableOwnershipColumn, recipeStepsTableName)
+	recipeStepsOnRecipeStepInstrumentsJoinClause = fmt.Sprintf("%s ON %s.%s=%s.%s", recipeStepsTableName, recipeStepInstrumentsTableName, recipeStepInstrumentsTableOwnershipColumn, recipeStepsTableName, idColumn)
+	recipeStepsOnRecipeStepIngredientsJoinClause = fmt.Sprintf("%s ON %s.%s=%s.%s", recipeStepsTableName, recipeStepIngredientsTableName, recipeStepIngredientsTableOwnershipColumn, recipeStepsTableName, idColumn)
+	recipeStepsOnRecipeStepProductsJoinClause    = fmt.Sprintf("%s ON %s.%s=%s.%s", recipeStepsTableName, recipeStepProductsTableName, recipeStepProductsTableOwnershipColumn, recipeStepsTableName, idColumn)
+	recipeStepsOnRecipeStepEventsJoinClause      = fmt.Sprintf("%s ON %s.%s=%s.%s", recipeStepsTableName, recipeStepEventsTableName, recipeStepEventsTableOwnershipColumn, recipeStepsTableName, idColumn)
 )
 
 // scanRecipeStep takes a database Scanner (i.e. *sql.Row) and scans the result into a Recipe Step struct
-func (p *Postgres) scanRecipeStep(scan database.Scanner, includeCount bool) (*models.RecipeStep, uint64, error) {
+func (p *Postgres) scanRecipeStep(scan database.Scanner) (*models.RecipeStep, error) {
 	x := &models.RecipeStep{}
-	var count uint64
 
 	targetVars := []interface{}{
 		&x.ID,
 		&x.Index,
-		&x.ValidPreparationID,
-		&x.PrerequisiteStepID,
+		&x.PreparationID,
+		&x.PrerequisiteStep,
 		&x.MinEstimatedTimeInSeconds,
 		&x.MaxEstimatedTimeInSeconds,
-		&x.YieldsProductName,
-		&x.YieldsQuantity,
+		&x.TemperatureInCelsius,
 		&x.Notes,
+		&x.RecipeID,
 		&x.CreatedOn,
-		&x.UpdatedOn,
+		&x.LastUpdatedOn,
 		&x.ArchivedOn,
 		&x.BelongsToRecipe,
 	}
 
-	if includeCount {
-		targetVars = append(targetVars, &count)
-	}
-
 	if err := scan.Scan(targetVars...); err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
-	return x, count, nil
+	return x, nil
 }
 
 // scanRecipeSteps takes a logger and some database rows and turns them into a slice of recipe steps.
-func (p *Postgres) scanRecipeSteps(rows database.ResultIterator) ([]models.RecipeStep, uint64, error) {
+func (p *Postgres) scanRecipeSteps(rows database.ResultIterator) ([]models.RecipeStep, error) {
 	var (
-		list  []models.RecipeStep
-		count uint64
+		list []models.RecipeStep
 	)
 
 	for rows.Next() {
-		x, c, err := p.scanRecipeStep(rows, true)
+		x, err := p.scanRecipeStep(rows)
 		if err != nil {
-			return nil, 0, err
-		}
-
-		if count == 0 {
-			count = c
+			return nil, err
 		}
 
 		list = append(list, *x)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
 	if closeErr := rows.Close(); closeErr != nil {
 		p.logger.Error(closeErr, "closing database rows")
 	}
 
-	return list, count, nil
+	return list, nil
 }
 
 // buildRecipeStepExistsQuery constructs a SQL query for checking if a recipe step with a given ID belong to a a recipe with a given ID exists
@@ -106,14 +106,14 @@ func (p *Postgres) buildRecipeStepExistsQuery(recipeID, recipeStepID uint64) (qu
 	var err error
 
 	query, args, err = p.sqlBuilder.
-		Select(fmt.Sprintf("%s.id", recipeStepsTableName)).
+		Select(fmt.Sprintf("%s.%s", recipeStepsTableName, idColumn)).
 		Prefix(existencePrefix).
 		From(recipeStepsTableName).
 		Join(recipesOnRecipeStepsJoinClause).
 		Suffix(existenceSuffix).
 		Where(squirrel.Eq{
-			fmt.Sprintf("%s.id", recipeStepsTableName):                                  recipeStepID,
-			fmt.Sprintf("%s.id", recipesTableName):                                      recipeID,
+			fmt.Sprintf("%s.%s", recipeStepsTableName, idColumn):                        recipeStepID,
+			fmt.Sprintf("%s.%s", recipesTableName, idColumn):                            recipeID,
 			fmt.Sprintf("%s.%s", recipeStepsTableName, recipeStepsTableOwnershipColumn): recipeID,
 		}).ToSql()
 
@@ -143,8 +143,8 @@ func (p *Postgres) buildGetRecipeStepQuery(recipeID, recipeStepID uint64) (query
 		From(recipeStepsTableName).
 		Join(recipesOnRecipeStepsJoinClause).
 		Where(squirrel.Eq{
-			fmt.Sprintf("%s.id", recipeStepsTableName):                                  recipeStepID,
-			fmt.Sprintf("%s.id", recipesTableName):                                      recipeID,
+			fmt.Sprintf("%s.%s", recipeStepsTableName, idColumn):                        recipeStepID,
+			fmt.Sprintf("%s.%s", recipesTableName, idColumn):                            recipeID,
 			fmt.Sprintf("%s.%s", recipeStepsTableName, recipeStepsTableOwnershipColumn): recipeID,
 		}).
 		ToSql()
@@ -158,9 +158,7 @@ func (p *Postgres) buildGetRecipeStepQuery(recipeID, recipeStepID uint64) (query
 func (p *Postgres) GetRecipeStep(ctx context.Context, recipeID, recipeStepID uint64) (*models.RecipeStep, error) {
 	query, args := p.buildGetRecipeStepQuery(recipeID, recipeStepID)
 	row := p.db.QueryRowContext(ctx, query, args...)
-
-	recipeStep, _, err := p.scanRecipeStep(row, false)
-	return recipeStep, err
+	return p.scanRecipeStep(row)
 }
 
 var (
@@ -178,7 +176,7 @@ func (p *Postgres) buildGetAllRecipeStepsCountQuery() string {
 			Select(fmt.Sprintf(countQuery, recipeStepsTableName)).
 			From(recipeStepsTableName).
 			Where(squirrel.Eq{
-				fmt.Sprintf("%s.archived_on", recipeStepsTableName): nil,
+				fmt.Sprintf("%s.%s", recipeStepsTableName, archivedOnColumn): nil,
 			}).
 			ToSql()
 		p.logQueryBuildingError(err)
@@ -193,21 +191,78 @@ func (p *Postgres) GetAllRecipeStepsCount(ctx context.Context) (count uint64, er
 	return count, err
 }
 
+// buildGetBatchOfRecipeStepsQuery returns a query that fetches every recipe step in the database within a bucketed range.
+func (p *Postgres) buildGetBatchOfRecipeStepsQuery(beginID, endID uint64) (query string, args []interface{}) {
+	query, args, err := p.sqlBuilder.
+		Select(recipeStepsTableColumns...).
+		From(recipeStepsTableName).
+		Where(squirrel.Gt{
+			fmt.Sprintf("%s.%s", recipeStepsTableName, idColumn): beginID,
+		}).
+		Where(squirrel.Lt{
+			fmt.Sprintf("%s.%s", recipeStepsTableName, idColumn): endID,
+		}).
+		ToSql()
+
+	p.logQueryBuildingError(err)
+
+	return query, args
+}
+
+// GetAllRecipeSteps fetches every recipe step from the database and writes them to a channel. This method primarily exists
+// to aid in administrative data tasks.
+func (p *Postgres) GetAllRecipeSteps(ctx context.Context, resultChannel chan []models.RecipeStep) error {
+	count, err := p.GetAllRecipeStepsCount(ctx)
+	if err != nil {
+		return err
+	}
+
+	for beginID := uint64(1); beginID <= count; beginID += defaultBucketSize {
+		endID := beginID + defaultBucketSize
+		go func(begin, end uint64) {
+			query, args := p.buildGetBatchOfRecipeStepsQuery(begin, end)
+			logger := p.logger.WithValues(map[string]interface{}{
+				"query": query,
+				"begin": begin,
+				"end":   end,
+			})
+
+			rows, err := p.db.Query(query, args...)
+			if err == sql.ErrNoRows {
+				return
+			} else if err != nil {
+				logger.Error(err, "querying for database rows")
+				return
+			}
+
+			recipeSteps, err := p.scanRecipeSteps(rows)
+			if err != nil {
+				logger.Error(err, "scanning database rows")
+				return
+			}
+
+			resultChannel <- recipeSteps
+		}(beginID, endID)
+	}
+
+	return nil
+}
+
 // buildGetRecipeStepsQuery builds a SQL query selecting recipe steps that adhere to a given QueryFilter and belong to a given recipe,
 // and returns both the query and the relevant args to pass to the query executor.
 func (p *Postgres) buildGetRecipeStepsQuery(recipeID uint64, filter *models.QueryFilter) (query string, args []interface{}) {
 	var err error
 
 	builder := p.sqlBuilder.
-		Select(append(recipeStepsTableColumns, fmt.Sprintf("(%s)", p.buildGetAllRecipeStepsCountQuery()))...).
+		Select(recipeStepsTableColumns...).
 		From(recipeStepsTableName).
 		Join(recipesOnRecipeStepsJoinClause).
 		Where(squirrel.Eq{
-			fmt.Sprintf("%s.archived_on", recipeStepsTableName):                         nil,
-			fmt.Sprintf("%s.id", recipesTableName):                                      recipeID,
+			fmt.Sprintf("%s.%s", recipeStepsTableName, archivedOnColumn):                nil,
+			fmt.Sprintf("%s.%s", recipesTableName, idColumn):                            recipeID,
 			fmt.Sprintf("%s.%s", recipeStepsTableName, recipeStepsTableOwnershipColumn): recipeID,
 		}).
-		OrderBy(fmt.Sprintf("%s.id", recipeStepsTableName))
+		OrderBy(fmt.Sprintf("%s.%s", recipeStepsTableName, idColumn))
 
 	if filter != nil {
 		builder = filter.ApplyToQueryBuilder(builder, recipeStepsTableName)
@@ -228,21 +283,74 @@ func (p *Postgres) GetRecipeSteps(ctx context.Context, recipeID uint64, filter *
 		return nil, buildError(err, "querying database for recipe steps")
 	}
 
-	recipeSteps, count, err := p.scanRecipeSteps(rows)
+	recipeSteps, err := p.scanRecipeSteps(rows)
 	if err != nil {
 		return nil, fmt.Errorf("scanning response from database: %w", err)
 	}
 
 	list := &models.RecipeStepList{
 		Pagination: models.Pagination{
-			Page:       filter.Page,
-			Limit:      filter.Limit,
-			TotalCount: count,
+			Page:  filter.Page,
+			Limit: filter.Limit,
 		},
 		RecipeSteps: recipeSteps,
 	}
 
 	return list, nil
+}
+
+// buildGetRecipeStepsWithIDsQuery builds a SQL query selecting recipeSteps that belong to a given recipe,
+// and have IDs that exist within a given set of IDs. Returns both the query and the relevant
+// args to pass to the query executor. This function is primarily intended for use with a search
+// index, which would provide a slice of string IDs to query against. This function accepts a
+// slice of uint64s instead of a slice of strings in order to ensure all the provided strings
+// are valid database IDs, because there's no way in squirrel to escape them in the unnest join,
+// and if we accept strings we could leave ourselves vulnerable to SQL injection attacks.
+func (p *Postgres) buildGetRecipeStepsWithIDsQuery(recipeID uint64, limit uint8, ids []uint64) (query string, args []interface{}) {
+	var err error
+
+	subqueryBuilder := p.sqlBuilder.Select(recipeStepsTableColumns...).
+		From(recipeStepsTableName).
+		Join(recipesOnRecipeStepsJoinClause).
+		Join(fmt.Sprintf("unnest('{%s}'::int[])", joinUint64s(ids))).
+		Where(squirrel.Eq{
+			fmt.Sprintf("%s.%s", recipeStepsTableName, archivedOnColumn):                nil,
+			fmt.Sprintf("%s.%s", recipesTableName, idColumn):                            recipeID,
+			fmt.Sprintf("%s.%s", recipeStepsTableName, recipeStepsTableOwnershipColumn): recipeID,
+		}).
+		Suffix(fmt.Sprintf("WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d", limit))
+	builder := p.sqlBuilder.
+		Select(recipeStepsTableColumns...).
+		FromSelect(subqueryBuilder, recipeStepsTableName).
+		Where(squirrel.Eq{
+			fmt.Sprintf("%s.%s", recipeStepsTableName, archivedOnColumn): nil,
+		})
+
+	query, args, err = builder.ToSql()
+	p.logQueryBuildingError(err)
+
+	return query, args
+}
+
+// GetRecipeStepsWithIDs fetches a list of recipe steps from the database that exist within a given set of IDs.
+func (p *Postgres) GetRecipeStepsWithIDs(ctx context.Context, recipeID uint64, limit uint8, ids []uint64) ([]models.RecipeStep, error) {
+	if limit == 0 {
+		limit = uint8(models.DefaultLimit)
+	}
+
+	query, args := p.buildGetRecipeStepsWithIDsQuery(recipeID, limit, ids)
+
+	rows, err := p.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, buildError(err, "querying database for recipe steps")
+	}
+
+	recipeSteps, err := p.scanRecipeSteps(rows)
+	if err != nil {
+		return nil, fmt.Errorf("scanning response from database: %w", err)
+	}
+
+	return recipeSteps, nil
 }
 
 // buildCreateRecipeStepQuery takes a recipe step and returns a creation query for that recipe step and the relevant arguments.
@@ -252,28 +360,28 @@ func (p *Postgres) buildCreateRecipeStepQuery(input *models.RecipeStep) (query s
 	query, args, err = p.sqlBuilder.
 		Insert(recipeStepsTableName).
 		Columns(
-			"index",
-			"valid_preparation_id",
-			"prerequisite_step_id",
-			"min_estimated_time_in_seconds",
-			"max_estimated_time_in_seconds",
-			"yields_product_name",
-			"yields_quantity",
-			"notes",
+			recipeStepsTableIndexColumn,
+			recipeStepsTablePreparationIDColumn,
+			recipeStepsTablePrerequisiteStepColumn,
+			recipeStepsTableMinEstimatedTimeInSecondsColumn,
+			recipeStepsTableMaxEstimatedTimeInSecondsColumn,
+			recipeStepsTableTemperatureInCelsiusColumn,
+			recipeStepsTableNotesColumn,
+			recipeStepsTableRecipeIDColumn,
 			recipeStepsTableOwnershipColumn,
 		).
 		Values(
 			input.Index,
-			input.ValidPreparationID,
-			input.PrerequisiteStepID,
+			input.PreparationID,
+			input.PrerequisiteStep,
 			input.MinEstimatedTimeInSeconds,
 			input.MaxEstimatedTimeInSeconds,
-			input.YieldsProductName,
-			input.YieldsQuantity,
+			input.TemperatureInCelsius,
 			input.Notes,
+			input.RecipeID,
 			input.BelongsToRecipe,
 		).
-		Suffix("RETURNING id, created_on").
+		Suffix(fmt.Sprintf("RETURNING %s, %s", idColumn, createdOnColumn)).
 		ToSql()
 
 	p.logQueryBuildingError(err)
@@ -285,13 +393,13 @@ func (p *Postgres) buildCreateRecipeStepQuery(input *models.RecipeStep) (query s
 func (p *Postgres) CreateRecipeStep(ctx context.Context, input *models.RecipeStepCreationInput) (*models.RecipeStep, error) {
 	x := &models.RecipeStep{
 		Index:                     input.Index,
-		ValidPreparationID:        input.ValidPreparationID,
-		PrerequisiteStepID:        input.PrerequisiteStepID,
+		PreparationID:             input.PreparationID,
+		PrerequisiteStep:          input.PrerequisiteStep,
 		MinEstimatedTimeInSeconds: input.MinEstimatedTimeInSeconds,
 		MaxEstimatedTimeInSeconds: input.MaxEstimatedTimeInSeconds,
-		YieldsProductName:         input.YieldsProductName,
-		YieldsQuantity:            input.YieldsQuantity,
+		TemperatureInCelsius:      input.TemperatureInCelsius,
 		Notes:                     input.Notes,
+		RecipeID:                  input.RecipeID,
 		BelongsToRecipe:           input.BelongsToRecipe,
 	}
 
@@ -312,20 +420,20 @@ func (p *Postgres) buildUpdateRecipeStepQuery(input *models.RecipeStep) (query s
 
 	query, args, err = p.sqlBuilder.
 		Update(recipeStepsTableName).
-		Set("index", input.Index).
-		Set("valid_preparation_id", input.ValidPreparationID).
-		Set("prerequisite_step_id", input.PrerequisiteStepID).
-		Set("min_estimated_time_in_seconds", input.MinEstimatedTimeInSeconds).
-		Set("max_estimated_time_in_seconds", input.MaxEstimatedTimeInSeconds).
-		Set("yields_product_name", input.YieldsProductName).
-		Set("yields_quantity", input.YieldsQuantity).
-		Set("notes", input.Notes).
-		Set("updated_on", squirrel.Expr(currentUnixTimeQuery)).
+		Set(recipeStepsTableIndexColumn, input.Index).
+		Set(recipeStepsTablePreparationIDColumn, input.PreparationID).
+		Set(recipeStepsTablePrerequisiteStepColumn, input.PrerequisiteStep).
+		Set(recipeStepsTableMinEstimatedTimeInSecondsColumn, input.MinEstimatedTimeInSeconds).
+		Set(recipeStepsTableMaxEstimatedTimeInSecondsColumn, input.MaxEstimatedTimeInSeconds).
+		Set(recipeStepsTableTemperatureInCelsiusColumn, input.TemperatureInCelsius).
+		Set(recipeStepsTableNotesColumn, input.Notes).
+		Set(recipeStepsTableRecipeIDColumn, input.RecipeID).
+		Set(lastUpdatedOnColumn, squirrel.Expr(currentUnixTimeQuery)).
 		Where(squirrel.Eq{
-			"id":                            input.ID,
+			idColumn:                        input.ID,
 			recipeStepsTableOwnershipColumn: input.BelongsToRecipe,
 		}).
-		Suffix("RETURNING updated_on").
+		Suffix(fmt.Sprintf("RETURNING %s", lastUpdatedOnColumn)).
 		ToSql()
 
 	p.logQueryBuildingError(err)
@@ -336,7 +444,7 @@ func (p *Postgres) buildUpdateRecipeStepQuery(input *models.RecipeStep) (query s
 // UpdateRecipeStep updates a particular recipe step. Note that UpdateRecipeStep expects the provided input to have a valid ID.
 func (p *Postgres) UpdateRecipeStep(ctx context.Context, input *models.RecipeStep) error {
 	query, args := p.buildUpdateRecipeStepQuery(input)
-	return p.db.QueryRowContext(ctx, query, args...).Scan(&input.UpdatedOn)
+	return p.db.QueryRowContext(ctx, query, args...).Scan(&input.LastUpdatedOn)
 }
 
 // buildArchiveRecipeStepQuery returns a SQL query which marks a given recipe step belonging to a given recipe as archived.
@@ -345,14 +453,14 @@ func (p *Postgres) buildArchiveRecipeStepQuery(recipeID, recipeStepID uint64) (q
 
 	query, args, err = p.sqlBuilder.
 		Update(recipeStepsTableName).
-		Set("updated_on", squirrel.Expr(currentUnixTimeQuery)).
-		Set("archived_on", squirrel.Expr(currentUnixTimeQuery)).
+		Set(lastUpdatedOnColumn, squirrel.Expr(currentUnixTimeQuery)).
+		Set(archivedOnColumn, squirrel.Expr(currentUnixTimeQuery)).
 		Where(squirrel.Eq{
-			"id":                            recipeStepID,
-			"archived_on":                   nil,
+			idColumn:                        recipeStepID,
+			archivedOnColumn:                nil,
 			recipeStepsTableOwnershipColumn: recipeID,
 		}).
-		Suffix("RETURNING archived_on").
+		Suffix(fmt.Sprintf("RETURNING %s", archivedOnColumn)).
 		ToSql()
 
 	p.logQueryBuildingError(err)

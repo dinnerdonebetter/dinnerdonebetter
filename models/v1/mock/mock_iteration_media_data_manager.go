@@ -33,10 +33,22 @@ func (m *IterationMediaDataManager) GetAllIterationMediasCount(ctx context.Conte
 	return args.Get(0).(uint64), args.Error(1)
 }
 
+// GetAllIterationMedias is a mock function.
+func (m *IterationMediaDataManager) GetAllIterationMedias(ctx context.Context, results chan []models.IterationMedia) error {
+	args := m.Called(ctx, results)
+	return args.Error(0)
+}
+
 // GetIterationMedias is a mock function.
 func (m *IterationMediaDataManager) GetIterationMedias(ctx context.Context, recipeID, recipeIterationID uint64, filter *models.QueryFilter) (*models.IterationMediaList, error) {
 	args := m.Called(ctx, recipeID, recipeIterationID, filter)
 	return args.Get(0).(*models.IterationMediaList), args.Error(1)
+}
+
+// GetIterationMediasWithIDs is a mock function.
+func (m *IterationMediaDataManager) GetIterationMediasWithIDs(ctx context.Context, recipeID, recipeIterationID uint64, limit uint8, ids []uint64) ([]models.IterationMedia, error) {
+	args := m.Called(ctx, recipeID, recipeIterationID, limit, ids)
+	return args.Get(0).([]models.IterationMedia), args.Error(1)
 }
 
 // CreateIterationMedia is a mock function.

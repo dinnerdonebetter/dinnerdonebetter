@@ -180,7 +180,7 @@ func TestValidInstruments(test *testing.T) {
 
 			// Assert valid instrument equality.
 			checkValidInstrumentEquality(t, exampleValidInstrument, actual)
-			assert.NotNil(t, actual.UpdatedOn)
+			assert.NotNil(t, actual.LastUpdatedOn)
 
 			// Clean up valid instrument.
 			assert.NoError(t, prixfixeClient.ArchiveValidInstrument(ctx, createdValidInstrument.ID))

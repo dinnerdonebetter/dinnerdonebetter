@@ -90,13 +90,13 @@ func buildRecipeStepActions(c *client.V1Client) map[string]*Action {
 				if randomRecipeStep := fetchRandomRecipeStep(ctx, c, randomRecipe.ID); randomRecipeStep != nil {
 					newRecipeStep := fakemodels.BuildFakeRecipeStepCreationInput()
 					randomRecipeStep.Index = newRecipeStep.Index
-					randomRecipeStep.ValidPreparationID = newRecipeStep.ValidPreparationID
-					randomRecipeStep.PrerequisiteStepID = newRecipeStep.PrerequisiteStepID
+					randomRecipeStep.PreparationID = newRecipeStep.PreparationID
+					randomRecipeStep.PrerequisiteStep = newRecipeStep.PrerequisiteStep
 					randomRecipeStep.MinEstimatedTimeInSeconds = newRecipeStep.MinEstimatedTimeInSeconds
 					randomRecipeStep.MaxEstimatedTimeInSeconds = newRecipeStep.MaxEstimatedTimeInSeconds
-					randomRecipeStep.YieldsProductName = newRecipeStep.YieldsProductName
-					randomRecipeStep.YieldsQuantity = newRecipeStep.YieldsQuantity
+					randomRecipeStep.TemperatureInCelsius = newRecipeStep.TemperatureInCelsius
 					randomRecipeStep.Notes = newRecipeStep.Notes
+					randomRecipeStep.RecipeID = newRecipeStep.RecipeID
 					return c.BuildUpdateRecipeStepRequest(ctx, randomRecipeStep)
 				}
 

@@ -13,23 +13,21 @@ import (
 	mockmodels "gitlab.com/prixfixe/prixfixe/models/v1/mock"
 	authservice "gitlab.com/prixfixe/prixfixe/services/v1/auth"
 	frontendservice "gitlab.com/prixfixe/prixfixe/services/v1/frontend"
-	ingredienttagmappingsservice "gitlab.com/prixfixe/prixfixe/services/v1/ingredienttagmappings"
 	invitationsservice "gitlab.com/prixfixe/prixfixe/services/v1/invitations"
 	iterationmediasservice "gitlab.com/prixfixe/prixfixe/services/v1/iterationmedias"
 	oauth2clientsservice "gitlab.com/prixfixe/prixfixe/services/v1/oauth2clients"
 	recipeiterationsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipeiterations"
-	recipeiterationstepsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipeiterationsteps"
 	recipesservice "gitlab.com/prixfixe/prixfixe/services/v1/recipes"
+	recipestepeventsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipestepevents"
 	recipestepingredientsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipestepingredients"
-	recipesteppreparationsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipesteppreparations"
+	recipestepinstrumentsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipestepinstruments"
+	recipestepproductsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipestepproducts"
 	recipestepsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipesteps"
-	recipetagsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipetags"
 	reportsservice "gitlab.com/prixfixe/prixfixe/services/v1/reports"
 	requiredpreparationinstrumentsservice "gitlab.com/prixfixe/prixfixe/services/v1/requiredpreparationinstruments"
 	usersservice "gitlab.com/prixfixe/prixfixe/services/v1/users"
 	validingredientpreparationsservice "gitlab.com/prixfixe/prixfixe/services/v1/validingredientpreparations"
 	validingredientsservice "gitlab.com/prixfixe/prixfixe/services/v1/validingredients"
-	validingredienttagsservice "gitlab.com/prixfixe/prixfixe/services/v1/validingredienttags"
 	validinstrumentsservice "gitlab.com/prixfixe/prixfixe/services/v1/validinstruments"
 	validpreparationsservice "gitlab.com/prixfixe/prixfixe/services/v1/validpreparations"
 	webhooksservice "gitlab.com/prixfixe/prixfixe/services/v1/webhooks"
@@ -57,18 +55,16 @@ func buildTestServer() *Server {
 		authService:                           &authservice.Service{},
 		validInstrumentsService:               &mockmodels.ValidInstrumentDataServer{},
 		validIngredientsService:               &mockmodels.ValidIngredientDataServer{},
-		validIngredientTagsService:            &mockmodels.ValidIngredientTagDataServer{},
-		ingredientTagMappingsService:          &mockmodels.IngredientTagMappingDataServer{},
 		validPreparationsService:              &mockmodels.ValidPreparationDataServer{},
-		requiredPreparationInstrumentsService: &mockmodels.RequiredPreparationInstrumentDataServer{},
 		validIngredientPreparationsService:    &mockmodels.ValidIngredientPreparationDataServer{},
+		requiredPreparationInstrumentsService: &mockmodels.RequiredPreparationInstrumentDataServer{},
 		recipesService:                        &mockmodels.RecipeDataServer{},
-		recipeTagsService:                     &mockmodels.RecipeTagDataServer{},
 		recipeStepsService:                    &mockmodels.RecipeStepDataServer{},
-		recipeStepPreparationsService:         &mockmodels.RecipeStepPreparationDataServer{},
+		recipeStepInstrumentsService:          &mockmodels.RecipeStepInstrumentDataServer{},
 		recipeStepIngredientsService:          &mockmodels.RecipeStepIngredientDataServer{},
+		recipeStepProductsService:             &mockmodels.RecipeStepProductDataServer{},
 		recipeIterationsService:               &mockmodels.RecipeIterationDataServer{},
-		recipeIterationStepsService:           &mockmodels.RecipeIterationStepDataServer{},
+		recipeStepEventsService:               &mockmodels.RecipeStepEventDataServer{},
 		iterationMediasService:                &mockmodels.IterationMediaDataServer{},
 		invitationsService:                    &mockmodels.InvitationDataServer{},
 		reportsService:                        &mockmodels.ReportDataServer{},
@@ -100,18 +96,16 @@ func TestProvideServer(T *testing.T) {
 			&frontendservice.Service{},
 			&validinstrumentsservice.Service{},
 			&validingredientsservice.Service{},
-			&validingredienttagsservice.Service{},
-			&ingredienttagmappingsservice.Service{},
 			&validpreparationsservice.Service{},
-			&requiredpreparationinstrumentsservice.Service{},
 			&validingredientpreparationsservice.Service{},
+			&requiredpreparationinstrumentsservice.Service{},
 			&recipesservice.Service{},
-			&recipetagsservice.Service{},
 			&recipestepsservice.Service{},
-			&recipesteppreparationsservice.Service{},
+			&recipestepinstrumentsservice.Service{},
 			&recipestepingredientsservice.Service{},
+			&recipestepproductsservice.Service{},
 			&recipeiterationsservice.Service{},
-			&recipeiterationstepsservice.Service{},
+			&recipestepeventsservice.Service{},
 			&iterationmediasservice.Service{},
 			&invitationsservice.Service{},
 			&reportsservice.Service{},
@@ -149,18 +143,16 @@ func TestProvideServer(T *testing.T) {
 			&frontendservice.Service{},
 			&validinstrumentsservice.Service{},
 			&validingredientsservice.Service{},
-			&validingredienttagsservice.Service{},
-			&ingredienttagmappingsservice.Service{},
 			&validpreparationsservice.Service{},
-			&requiredpreparationinstrumentsservice.Service{},
 			&validingredientpreparationsservice.Service{},
+			&requiredpreparationinstrumentsservice.Service{},
 			&recipesservice.Service{},
-			&recipetagsservice.Service{},
 			&recipestepsservice.Service{},
-			&recipesteppreparationsservice.Service{},
+			&recipestepinstrumentsservice.Service{},
 			&recipestepingredientsservice.Service{},
+			&recipestepproductsservice.Service{},
 			&recipeiterationsservice.Service{},
-			&recipeiterationstepsservice.Service{},
+			&recipestepeventsservice.Service{},
 			&iterationmediasservice.Service{},
 			&invitationsservice.Service{},
 			&reportsservice.Service{},
@@ -196,18 +188,16 @@ func TestProvideServer(T *testing.T) {
 			&frontendservice.Service{},
 			&validinstrumentsservice.Service{},
 			&validingredientsservice.Service{},
-			&validingredienttagsservice.Service{},
-			&ingredienttagmappingsservice.Service{},
 			&validpreparationsservice.Service{},
-			&requiredpreparationinstrumentsservice.Service{},
 			&validingredientpreparationsservice.Service{},
+			&requiredpreparationinstrumentsservice.Service{},
 			&recipesservice.Service{},
-			&recipetagsservice.Service{},
 			&recipestepsservice.Service{},
-			&recipesteppreparationsservice.Service{},
+			&recipestepinstrumentsservice.Service{},
 			&recipestepingredientsservice.Service{},
+			&recipestepproductsservice.Service{},
 			&recipeiterationsservice.Service{},
-			&recipeiterationstepsservice.Service{},
+			&recipestepeventsservice.Service{},
 			&iterationmediasservice.Service{},
 			&invitationsservice.Service{},
 			&reportsservice.Service{},

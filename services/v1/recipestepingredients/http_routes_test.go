@@ -60,13 +60,13 @@ func TestRecipeStepIngredientsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ListHandler()(res, req)
+		s.ListHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -91,13 +91,13 @@ func TestRecipeStepIngredientsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ListHandler()(res, req)
+		s.ListHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -118,13 +118,13 @@ func TestRecipeStepIngredientsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ListHandler()(res, req)
+		s.ListHandler(res, req)
 
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
@@ -151,13 +151,13 @@ func TestRecipeStepIngredientsService_ListHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ListHandler()(res, req)
+		s.ListHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -188,9 +188,9 @@ func TestRecipeStepIngredientsService_CreateHandler(T *testing.T) {
 	T.Run("happy path", func(t *testing.T) {
 		s := buildTestService()
 
-		s.userIDFetcher = userIDFetcher
 		s.recipeIDFetcher = recipeIDFetcher
 		s.recipeStepIDFetcher = recipeStepIDFetcher
+		s.userIDFetcher = userIDFetcher
 
 		exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
 		exampleRecipeStepIngredient.BelongsToRecipeStep = exampleRecipeStep.ID
@@ -223,178 +223,38 @@ func TestRecipeStepIngredientsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), createMiddlewareCtxKey, exampleInput))
 
-		s.CreateHandler()(res, req)
+		s.CreateHandler(res, req)
 
 		assert.Equal(t, http.StatusCreated, res.Code)
 
-		mock.AssertExpectationsForObjects(t, recipeDataManager, recipeStepDataManager, recipeStepIngredientDataManager, mc, r, ed)
-	})
-
-	T.Run("with nonexistent recipe", func(t *testing.T) {
-		s := buildTestService()
-
-		s.userIDFetcher = userIDFetcher
-		s.recipeIDFetcher = recipeIDFetcher
-		s.recipeStepIDFetcher = recipeStepIDFetcher
-
-		exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
-		exampleRecipeStepIngredient.BelongsToRecipeStep = exampleRecipeStep.ID
-		exampleInput := fakemodels.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
-
-		recipeDataManager := &mockmodels.RecipeDataManager{}
-		recipeDataManager.On("RecipeExists", mock.Anything, exampleRecipe.ID).Return(false, nil)
-		s.recipeDataManager = recipeDataManager
-
-		res := httptest.NewRecorder()
-		req, err := http.NewRequest(
-			http.MethodGet,
-			"http://prixfixe.app",
-			nil,
-		)
-		require.NotNil(t, req)
-		require.NoError(t, err)
-
-		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
-
-		s.CreateHandler()(res, req)
-
-		assert.Equal(t, http.StatusNotFound, res.Code)
-
-		mock.AssertExpectationsForObjects(t, recipeDataManager)
-	})
-
-	T.Run("with error checking recipe existence", func(t *testing.T) {
-		s := buildTestService()
-
-		s.userIDFetcher = userIDFetcher
-		s.recipeIDFetcher = recipeIDFetcher
-		s.recipeStepIDFetcher = recipeStepIDFetcher
-
-		exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
-		exampleRecipeStepIngredient.BelongsToRecipeStep = exampleRecipeStep.ID
-		exampleInput := fakemodels.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
-
-		recipeDataManager := &mockmodels.RecipeDataManager{}
-		recipeDataManager.On("RecipeExists", mock.Anything, exampleRecipe.ID).Return(true, errors.New("blah"))
-		s.recipeDataManager = recipeDataManager
-
-		res := httptest.NewRecorder()
-		req, err := http.NewRequest(
-			http.MethodGet,
-			"http://prixfixe.app",
-			nil,
-		)
-		require.NotNil(t, req)
-		require.NoError(t, err)
-
-		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
-
-		s.CreateHandler()(res, req)
-
-		assert.Equal(t, http.StatusInternalServerError, res.Code)
-
-		mock.AssertExpectationsForObjects(t, recipeDataManager)
-	})
-
-	T.Run("with nonexistent recipe step", func(t *testing.T) {
-		s := buildTestService()
-
-		s.userIDFetcher = userIDFetcher
-		s.recipeIDFetcher = recipeIDFetcher
-		s.recipeStepIDFetcher = recipeStepIDFetcher
-
-		exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
-		exampleRecipeStepIngredient.BelongsToRecipeStep = exampleRecipeStep.ID
-		exampleInput := fakemodels.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
-
-		recipeDataManager := &mockmodels.RecipeDataManager{}
-		recipeDataManager.On("RecipeExists", mock.Anything, exampleRecipe.ID).Return(true, nil)
-		s.recipeDataManager = recipeDataManager
-
-		recipeStepDataManager := &mockmodels.RecipeStepDataManager{}
-		recipeStepDataManager.On("RecipeStepExists", mock.Anything, exampleRecipe.ID, exampleRecipeStep.ID).Return(false, nil)
-		s.recipeStepDataManager = recipeStepDataManager
-
-		res := httptest.NewRecorder()
-		req, err := http.NewRequest(
-			http.MethodGet,
-			"http://prixfixe.app",
-			nil,
-		)
-		require.NotNil(t, req)
-		require.NoError(t, err)
-
-		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
-
-		s.CreateHandler()(res, req)
-
-		assert.Equal(t, http.StatusNotFound, res.Code)
-
-		mock.AssertExpectationsForObjects(t, recipeDataManager, recipeStepDataManager)
-	})
-
-	T.Run("with error checking recipe step existence", func(t *testing.T) {
-		s := buildTestService()
-
-		s.userIDFetcher = userIDFetcher
-		s.recipeIDFetcher = recipeIDFetcher
-		s.recipeStepIDFetcher = recipeStepIDFetcher
-
-		exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
-		exampleRecipeStepIngredient.BelongsToRecipeStep = exampleRecipeStep.ID
-		exampleInput := fakemodels.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
-
-		recipeDataManager := &mockmodels.RecipeDataManager{}
-		recipeDataManager.On("RecipeExists", mock.Anything, exampleRecipe.ID).Return(true, nil)
-		s.recipeDataManager = recipeDataManager
-
-		recipeStepDataManager := &mockmodels.RecipeStepDataManager{}
-		recipeStepDataManager.On("RecipeStepExists", mock.Anything, exampleRecipe.ID, exampleRecipeStep.ID).Return(true, errors.New("blah"))
-		s.recipeStepDataManager = recipeStepDataManager
-
-		res := httptest.NewRecorder()
-		req, err := http.NewRequest(
-			http.MethodGet,
-			"http://prixfixe.app",
-			nil,
-		)
-		require.NotNil(t, req)
-		require.NoError(t, err)
-
-		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
-
-		s.CreateHandler()(res, req)
-
-		assert.Equal(t, http.StatusInternalServerError, res.Code)
-
-		mock.AssertExpectationsForObjects(t, recipeDataManager, recipeStepDataManager)
+		mock.AssertExpectationsForObjects(t, recipeStepIngredientDataManager, mc, r, ed)
 	})
 
 	T.Run("without input attached", func(t *testing.T) {
 		s := buildTestService()
 
-		s.userIDFetcher = userIDFetcher
 		s.recipeIDFetcher = recipeIDFetcher
 		s.recipeStepIDFetcher = recipeStepIDFetcher
+		s.userIDFetcher = userIDFetcher
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.CreateHandler()(res, req)
+		s.CreateHandler(res, req)
 
 		assert.Equal(t, http.StatusBadRequest, res.Code)
 	})
@@ -402,9 +262,9 @@ func TestRecipeStepIngredientsService_CreateHandler(T *testing.T) {
 	T.Run("with error creating recipe step ingredient", func(t *testing.T) {
 		s := buildTestService()
 
-		s.userIDFetcher = userIDFetcher
 		s.recipeIDFetcher = recipeIDFetcher
 		s.recipeStepIDFetcher = recipeStepIDFetcher
+		s.userIDFetcher = userIDFetcher
 
 		exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
 		exampleRecipeStepIngredient.BelongsToRecipeStep = exampleRecipeStep.ID
@@ -419,33 +279,33 @@ func TestRecipeStepIngredientsService_CreateHandler(T *testing.T) {
 		s.recipeStepDataManager = recipeStepDataManager
 
 		recipeStepIngredientDataManager := &mockmodels.RecipeStepIngredientDataManager{}
-		recipeStepIngredientDataManager.On("CreateRecipeStepIngredient", mock.Anything, mock.AnythingOfType("*models.RecipeStepIngredientCreationInput")).Return(exampleRecipeStepIngredient, errors.New("blah"))
+		recipeStepIngredientDataManager.On("CreateRecipeStepIngredient", mock.Anything, mock.AnythingOfType("*models.RecipeStepIngredientCreationInput")).Return((*models.RecipeStepIngredient)(nil), errors.New("blah"))
 		s.recipeStepIngredientDataManager = recipeStepIngredientDataManager
 
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), createMiddlewareCtxKey, exampleInput))
 
-		s.CreateHandler()(res, req)
+		s.CreateHandler(res, req)
 
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
-		mock.AssertExpectationsForObjects(t, recipeDataManager, recipeStepDataManager, recipeStepIngredientDataManager)
+		mock.AssertExpectationsForObjects(t, recipeStepIngredientDataManager)
 	})
 
 	T.Run("with error encoding response", func(t *testing.T) {
 		s := buildTestService()
 
-		s.userIDFetcher = userIDFetcher
 		s.recipeIDFetcher = recipeIDFetcher
 		s.recipeStepIDFetcher = recipeStepIDFetcher
+		s.userIDFetcher = userIDFetcher
 
 		exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
 		exampleRecipeStepIngredient.BelongsToRecipeStep = exampleRecipeStep.ID
@@ -478,19 +338,19 @@ func TestRecipeStepIngredientsService_CreateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), CreateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), createMiddlewareCtxKey, exampleInput))
 
-		s.CreateHandler()(res, req)
+		s.CreateHandler(res, req)
 
 		assert.Equal(t, http.StatusCreated, res.Code)
 
-		mock.AssertExpectationsForObjects(t, recipeDataManager, recipeStepDataManager, recipeStepIngredientDataManager, mc, r, ed)
+		mock.AssertExpectationsForObjects(t, recipeStepIngredientDataManager, mc, r, ed)
 	})
 }
 
@@ -534,13 +394,13 @@ func TestRecipeStepIngredientsService_ExistenceHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ExistenceHandler()(res, req)
+		s.ExistenceHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -567,13 +427,13 @@ func TestRecipeStepIngredientsService_ExistenceHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ExistenceHandler()(res, req)
+		s.ExistenceHandler(res, req)
 
 		assert.Equal(t, http.StatusNotFound, res.Code)
 
@@ -600,13 +460,13 @@ func TestRecipeStepIngredientsService_ExistenceHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ExistenceHandler()(res, req)
+		s.ExistenceHandler(res, req)
 
 		assert.Equal(t, http.StatusNotFound, res.Code)
 
@@ -658,13 +518,13 @@ func TestRecipeStepIngredientsService_ReadHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ReadHandler()(res, req)
+		s.ReadHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -691,13 +551,13 @@ func TestRecipeStepIngredientsService_ReadHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ReadHandler()(res, req)
+		s.ReadHandler(res, req)
 
 		assert.Equal(t, http.StatusNotFound, res.Code)
 
@@ -724,13 +584,13 @@ func TestRecipeStepIngredientsService_ReadHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ReadHandler()(res, req)
+		s.ReadHandler(res, req)
 
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
@@ -761,13 +621,13 @@ func TestRecipeStepIngredientsService_ReadHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ReadHandler()(res, req)
+		s.ReadHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -826,15 +686,15 @@ func TestRecipeStepIngredientsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), updateMiddlewareCtxKey, exampleInput))
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -851,13 +711,13 @@ func TestRecipeStepIngredientsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 
 		assert.Equal(t, http.StatusBadRequest, res.Code)
 	})
@@ -884,15 +744,15 @@ func TestRecipeStepIngredientsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), updateMiddlewareCtxKey, exampleInput))
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 
 		assert.Equal(t, http.StatusNotFound, res.Code)
 
@@ -921,15 +781,15 @@ func TestRecipeStepIngredientsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), updateMiddlewareCtxKey, exampleInput))
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
@@ -959,15 +819,15 @@ func TestRecipeStepIngredientsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), updateMiddlewareCtxKey, exampleInput))
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
@@ -1005,15 +865,15 @@ func TestRecipeStepIngredientsService_UpdateHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		req = req.WithContext(context.WithValue(req.Context(), UpdateMiddlewareCtxKey, exampleInput))
+		req = req.WithContext(context.WithValue(req.Context(), updateMiddlewareCtxKey, exampleInput))
 
-		s.UpdateHandler()(res, req)
+		s.UpdateHandler(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 
@@ -1077,13 +937,13 @@ func TestRecipeStepIngredientsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ArchiveHandler()(res, req)
+		s.ArchiveHandler(res, req)
 
 		assert.Equal(t, http.StatusNoContent, res.Code)
 
@@ -1104,13 +964,13 @@ func TestRecipeStepIngredientsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ArchiveHandler()(res, req)
+		s.ArchiveHandler(res, req)
 
 		assert.Equal(t, http.StatusNotFound, res.Code)
 
@@ -1131,13 +991,13 @@ func TestRecipeStepIngredientsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ArchiveHandler()(res, req)
+		s.ArchiveHandler(res, req)
 
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
@@ -1162,13 +1022,13 @@ func TestRecipeStepIngredientsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ArchiveHandler()(res, req)
+		s.ArchiveHandler(res, req)
 
 		assert.Equal(t, http.StatusNotFound, res.Code)
 
@@ -1193,13 +1053,13 @@ func TestRecipeStepIngredientsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ArchiveHandler()(res, req)
+		s.ArchiveHandler(res, req)
 
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 
@@ -1234,13 +1094,13 @@ func TestRecipeStepIngredientsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ArchiveHandler()(res, req)
+		s.ArchiveHandler(res, req)
 
 		assert.Equal(t, http.StatusNotFound, res.Code)
 
@@ -1275,13 +1135,13 @@ func TestRecipeStepIngredientsService_ArchiveHandler(T *testing.T) {
 		res := httptest.NewRecorder()
 		req, err := http.NewRequest(
 			http.MethodGet,
-			"http://prixfixe.app",
+			"http://todo.verygoodsoftwarenotvirus.ru",
 			nil,
 		)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
-		s.ArchiveHandler()(res, req)
+		s.ArchiveHandler(res, req)
 
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 

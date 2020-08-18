@@ -69,7 +69,6 @@ func buildRecipeActions(c *client.V1Client) map[string]*Action {
 					randomRecipe.Source = newRecipe.Source
 					randomRecipe.Description = newRecipe.Description
 					randomRecipe.InspiredByRecipeID = newRecipe.InspiredByRecipeID
-					randomRecipe.Private = newRecipe.Private
 					return c.BuildUpdateRecipeRequest(ctx, randomRecipe)
 				}
 

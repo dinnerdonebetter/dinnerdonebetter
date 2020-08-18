@@ -12,6 +12,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func Test_randString(t *testing.T) {
+	t.Parallel()
+
+	actual := randString(randStringSize)
+	assert.NotEmpty(t, actual)
+	assert.Len(t, actual, 52)
+}
+
 func TestBuildConfig(t *testing.T) {
 	t.Parallel()
 
@@ -54,7 +62,6 @@ connection_details = "%s"
 		cfg, err := ParseConfigFile(tf.Name())
 		assert.NoError(t, err)
 
-		assert.NotEmpty(t, cfg.Auth.CookieSecret)
 		assert.Equal(t, expectedConfig.Server.HTTPPort, cfg.Server.HTTPPort)
 		assert.Equal(t, expectedConfig.Server.Debug, cfg.Server.Debug)
 		assert.Equal(t, expectedConfig.Database.Provider, cfg.Database.Provider)

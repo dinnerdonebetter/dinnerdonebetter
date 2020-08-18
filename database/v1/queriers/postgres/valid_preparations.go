@@ -13,22 +13,24 @@ import (
 )
 
 const (
-	validPreparationsTableName = "valid_preparations"
+	validPreparationsTableName                             = "valid_preparations"
+	validPreparationsTableNameColumn                       = "name"
+	validPreparationsTableDescriptionColumn                = "description"
+	validPreparationsTableIconColumn                       = "icon"
+	validPreparationsTableApplicableToAllIngredientsColumn = "applicable_to_all_ingredients"
 )
 
 var (
 	validPreparationsTableColumns = []string{
-		fmt.Sprintf("%s.%s", validPreparationsTableName, "id"),
-		fmt.Sprintf("%s.%s", validPreparationsTableName, "name"),
-		fmt.Sprintf("%s.%s", validPreparationsTableName, "description"),
-		fmt.Sprintf("%s.%s", validPreparationsTableName, "icon"),
-		fmt.Sprintf("%s.%s", validPreparationsTableName, "applicable_to_all_ingredients"),
-		fmt.Sprintf("%s.%s", validPreparationsTableName, "created_on"),
-		fmt.Sprintf("%s.%s", validPreparationsTableName, "updated_on"),
-		fmt.Sprintf("%s.%s", validPreparationsTableName, "archived_on"),
+		fmt.Sprintf("%s.%s", validPreparationsTableName, idColumn),
+		fmt.Sprintf("%s.%s", validPreparationsTableName, validPreparationsTableNameColumn),
+		fmt.Sprintf("%s.%s", validPreparationsTableName, validPreparationsTableDescriptionColumn),
+		fmt.Sprintf("%s.%s", validPreparationsTableName, validPreparationsTableIconColumn),
+		fmt.Sprintf("%s.%s", validPreparationsTableName, validPreparationsTableApplicableToAllIngredientsColumn),
+		fmt.Sprintf("%s.%s", validPreparationsTableName, createdOnColumn),
+		fmt.Sprintf("%s.%s", validPreparationsTableName, lastUpdatedOnColumn),
+		fmt.Sprintf("%s.%s", validPreparationsTableName, archivedOnColumn),
 	}
-
-	validPreparationsOnRequiredPreparationInstrumentsJoinClause = fmt.Sprintf("%s ON %s.%s=%s.id", validPreparationsTableName, requiredPreparationInstrumentsTableName, requiredPreparationInstrumentsTableOwnershipColumn, validPreparationsTableName)
 )
 
 // scanValidPreparation takes a database Scanner (i.e. *sql.Row) and scans the result into a Valid Preparation struct
@@ -43,7 +45,7 @@ func (p *Postgres) scanValidPreparation(scan database.Scanner, includeCount bool
 		&x.Icon,
 		&x.ApplicableToAllIngredients,
 		&x.CreatedOn,
-		&x.UpdatedOn,
+		&x.LastUpdatedOn,
 		&x.ArchivedOn,
 	}
 
@@ -94,12 +96,12 @@ func (p *Postgres) buildValidPreparationExistsQuery(validPreparationID uint64) (
 	var err error
 
 	query, args, err = p.sqlBuilder.
-		Select(fmt.Sprintf("%s.id", validPreparationsTableName)).
+		Select(fmt.Sprintf("%s.%s", validPreparationsTableName, idColumn)).
 		Prefix(existencePrefix).
 		From(validPreparationsTableName).
 		Suffix(existenceSuffix).
 		Where(squirrel.Eq{
-			fmt.Sprintf("%s.id", validPreparationsTableName): validPreparationID,
+			fmt.Sprintf("%s.%s", validPreparationsTableName, idColumn): validPreparationID,
 		}).ToSql()
 
 	p.logQueryBuildingError(err)
@@ -127,7 +129,7 @@ func (p *Postgres) buildGetValidPreparationQuery(validPreparationID uint64) (que
 		Select(validPreparationsTableColumns...).
 		From(validPreparationsTableName).
 		Where(squirrel.Eq{
-			fmt.Sprintf("%s.id", validPreparationsTableName): validPreparationID,
+			fmt.Sprintf("%s.%s", validPreparationsTableName, idColumn): validPreparationID,
 		}).
 		ToSql()
 
@@ -140,9 +142,8 @@ func (p *Postgres) buildGetValidPreparationQuery(validPreparationID uint64) (que
 func (p *Postgres) GetValidPreparation(ctx context.Context, validPreparationID uint64) (*models.ValidPreparation, error) {
 	query, args := p.buildGetValidPreparationQuery(validPreparationID)
 	row := p.db.QueryRowContext(ctx, query, args...)
-
-	validPreparation, _, err := p.scanValidPreparation(row, false)
-	return validPreparation, err
+	vp, _, err := p.scanValidPreparation(row, false)
+	return vp, err
 }
 
 var (
@@ -160,7 +161,7 @@ func (p *Postgres) buildGetAllValidPreparationsCountQuery() string {
 			Select(fmt.Sprintf(countQuery, validPreparationsTableName)).
 			From(validPreparationsTableName).
 			Where(squirrel.Eq{
-				fmt.Sprintf("%s.archived_on", validPreparationsTableName): nil,
+				fmt.Sprintf("%s.%s", validPreparationsTableName, archivedOnColumn): nil,
 			}).
 			ToSql()
 		p.logQueryBuildingError(err)
@@ -175,6 +176,63 @@ func (p *Postgres) GetAllValidPreparationsCount(ctx context.Context) (count uint
 	return count, err
 }
 
+// buildGetBatchOfValidPreparationsQuery returns a query that fetches every valid preparation in the database within a bucketed range.
+func (p *Postgres) buildGetBatchOfValidPreparationsQuery(beginID, endID uint64) (query string, args []interface{}) {
+	query, args, err := p.sqlBuilder.
+		Select(validPreparationsTableColumns...).
+		From(validPreparationsTableName).
+		Where(squirrel.Gt{
+			fmt.Sprintf("%s.%s", validPreparationsTableName, idColumn): beginID,
+		}).
+		Where(squirrel.Lt{
+			fmt.Sprintf("%s.%s", validPreparationsTableName, idColumn): endID,
+		}).
+		ToSql()
+
+	p.logQueryBuildingError(err)
+
+	return query, args
+}
+
+// GetAllValidPreparations fetches every valid preparation from the database and writes them to a channel. This method primarily exists
+// to aid in administrative data tasks.
+func (p *Postgres) GetAllValidPreparations(ctx context.Context, resultChannel chan []models.ValidPreparation) error {
+	count, err := p.GetAllValidPreparationsCount(ctx)
+	if err != nil {
+		return err
+	}
+
+	for beginID := uint64(1); beginID <= count; beginID += defaultBucketSize {
+		endID := beginID + defaultBucketSize
+		go func(begin, end uint64) {
+			query, args := p.buildGetBatchOfValidPreparationsQuery(begin, end)
+			logger := p.logger.WithValues(map[string]interface{}{
+				"query": query,
+				"begin": begin,
+				"end":   end,
+			})
+
+			rows, err := p.db.Query(query, args...)
+			if err == sql.ErrNoRows {
+				return
+			} else if err != nil {
+				logger.Error(err, "querying for database rows")
+				return
+			}
+
+			validPreparations, _, err := p.scanValidPreparations(rows)
+			if err != nil {
+				logger.Error(err, "scanning database rows")
+				return
+			}
+
+			resultChannel <- validPreparations
+		}(beginID, endID)
+	}
+
+	return nil
+}
+
 // buildGetValidPreparationsQuery builds a SQL query selecting valid preparations that adhere to a given QueryFilter,
 // and returns both the query and the relevant args to pass to the query executor.
 func (p *Postgres) buildGetValidPreparationsQuery(filter *models.QueryFilter) (query string, args []interface{}) {
@@ -184,9 +242,9 @@ func (p *Postgres) buildGetValidPreparationsQuery(filter *models.QueryFilter) (q
 		Select(append(validPreparationsTableColumns, fmt.Sprintf("(%s)", p.buildGetAllValidPreparationsCountQuery()))...).
 		From(validPreparationsTableName).
 		Where(squirrel.Eq{
-			fmt.Sprintf("%s.archived_on", validPreparationsTableName): nil,
+			fmt.Sprintf("%s.%s", validPreparationsTableName, archivedOnColumn): nil,
 		}).
-		OrderBy(fmt.Sprintf("%s.id", validPreparationsTableName))
+		OrderBy(fmt.Sprintf("%s.%s", validPreparationsTableName, idColumn))
 
 	if filter != nil {
 		builder = filter.ApplyToQueryBuilder(builder, validPreparationsTableName)
@@ -224,6 +282,54 @@ func (p *Postgres) GetValidPreparations(ctx context.Context, filter *models.Quer
 	return list, nil
 }
 
+// buildGetValidPreparationsWithIDsQuery builds a SQL query selecting validPreparations
+// and have IDs that exist within a given set of IDs. Returns both the query and the relevant
+// args to pass to the query executor. This function is primarily intended for use with a search
+// index, which would provide a slice of string IDs to query against. This function accepts a
+// slice of uint64s instead of a slice of strings in order to ensure all the provided strings
+// are valid database IDs, because there's no way in squirrel to escape them in the unnest join,
+// and if we accept strings we could leave ourselves vulnerable to SQL injection attacks.
+func (p *Postgres) buildGetValidPreparationsWithIDsQuery(limit uint8, ids []uint64) (query string, args []interface{}) {
+	var err error
+
+	subqueryBuilder := p.sqlBuilder.Select(validPreparationsTableColumns...).
+		From(validPreparationsTableName).
+		Join(fmt.Sprintf("unnest('{%s}'::int[])", joinUint64s(ids))).
+		Suffix(fmt.Sprintf("WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d", limit))
+	builder := p.sqlBuilder.
+		Select(validPreparationsTableColumns...).
+		FromSelect(subqueryBuilder, validPreparationsTableName).
+		Where(squirrel.Eq{
+			fmt.Sprintf("%s.%s", validPreparationsTableName, archivedOnColumn): nil,
+		})
+
+	query, args, err = builder.ToSql()
+	p.logQueryBuildingError(err)
+
+	return query, args
+}
+
+// GetValidPreparationsWithIDs fetches a list of valid preparations from the database that exist within a given set of IDs.
+func (p *Postgres) GetValidPreparationsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]models.ValidPreparation, error) {
+	if limit == 0 {
+		limit = uint8(models.DefaultLimit)
+	}
+
+	query, args := p.buildGetValidPreparationsWithIDsQuery(limit, ids)
+
+	rows, err := p.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, buildError(err, "querying database for valid preparations")
+	}
+
+	validPreparations, _, err := p.scanValidPreparations(rows)
+	if err != nil {
+		return nil, fmt.Errorf("scanning response from database: %w", err)
+	}
+
+	return validPreparations, nil
+}
+
 // buildCreateValidPreparationQuery takes a valid preparation and returns a creation query for that valid preparation and the relevant arguments.
 func (p *Postgres) buildCreateValidPreparationQuery(input *models.ValidPreparation) (query string, args []interface{}) {
 	var err error
@@ -231,16 +337,18 @@ func (p *Postgres) buildCreateValidPreparationQuery(input *models.ValidPreparati
 	query, args, err = p.sqlBuilder.
 		Insert(validPreparationsTableName).
 		Columns(
-			"name",
-			"description",
-			"icon",
+			validPreparationsTableNameColumn,
+			validPreparationsTableDescriptionColumn,
+			validPreparationsTableIconColumn,
+			validPreparationsTableApplicableToAllIngredientsColumn,
 		).
 		Values(
 			input.Name,
 			input.Description,
 			input.Icon,
+			input.ApplicableToAllIngredients,
 		).
-		Suffix("RETURNING id, created_on").
+		Suffix(fmt.Sprintf("RETURNING %s, %s", idColumn, createdOnColumn)).
 		ToSql()
 
 	p.logQueryBuildingError(err)
@@ -251,9 +359,10 @@ func (p *Postgres) buildCreateValidPreparationQuery(input *models.ValidPreparati
 // CreateValidPreparation creates a valid preparation in the database.
 func (p *Postgres) CreateValidPreparation(ctx context.Context, input *models.ValidPreparationCreationInput) (*models.ValidPreparation, error) {
 	x := &models.ValidPreparation{
-		Name:        input.Name,
-		Description: input.Description,
-		Icon:        input.Icon,
+		Name:                       input.Name,
+		Description:                input.Description,
+		Icon:                       input.Icon,
+		ApplicableToAllIngredients: input.ApplicableToAllIngredients,
 	}
 
 	query, args := p.buildCreateValidPreparationQuery(x)
@@ -273,14 +382,15 @@ func (p *Postgres) buildUpdateValidPreparationQuery(input *models.ValidPreparati
 
 	query, args, err = p.sqlBuilder.
 		Update(validPreparationsTableName).
-		Set("name", input.Name).
-		Set("description", input.Description).
-		Set("icon", input.Icon).
-		Set("updated_on", squirrel.Expr(currentUnixTimeQuery)).
+		Set(validPreparationsTableNameColumn, input.Name).
+		Set(validPreparationsTableDescriptionColumn, input.Description).
+		Set(validPreparationsTableIconColumn, input.Icon).
+		Set(validPreparationsTableApplicableToAllIngredientsColumn, input.ApplicableToAllIngredients).
+		Set(lastUpdatedOnColumn, squirrel.Expr(currentUnixTimeQuery)).
 		Where(squirrel.Eq{
-			"id": input.ID,
+			idColumn: input.ID,
 		}).
-		Suffix("RETURNING updated_on").
+		Suffix(fmt.Sprintf("RETURNING %s", lastUpdatedOnColumn)).
 		ToSql()
 
 	p.logQueryBuildingError(err)
@@ -291,7 +401,7 @@ func (p *Postgres) buildUpdateValidPreparationQuery(input *models.ValidPreparati
 // UpdateValidPreparation updates a particular valid preparation. Note that UpdateValidPreparation expects the provided input to have a valid ID.
 func (p *Postgres) UpdateValidPreparation(ctx context.Context, input *models.ValidPreparation) error {
 	query, args := p.buildUpdateValidPreparationQuery(input)
-	return p.db.QueryRowContext(ctx, query, args...).Scan(&input.UpdatedOn)
+	return p.db.QueryRowContext(ctx, query, args...).Scan(&input.LastUpdatedOn)
 }
 
 // buildArchiveValidPreparationQuery returns a SQL query which marks a given valid preparation as archived.
@@ -300,13 +410,13 @@ func (p *Postgres) buildArchiveValidPreparationQuery(validPreparationID uint64) 
 
 	query, args, err = p.sqlBuilder.
 		Update(validPreparationsTableName).
-		Set("updated_on", squirrel.Expr(currentUnixTimeQuery)).
-		Set("archived_on", squirrel.Expr(currentUnixTimeQuery)).
+		Set(lastUpdatedOnColumn, squirrel.Expr(currentUnixTimeQuery)).
+		Set(archivedOnColumn, squirrel.Expr(currentUnixTimeQuery)).
 		Where(squirrel.Eq{
-			"id":          validPreparationID,
-			"archived_on": nil,
+			idColumn:         validPreparationID,
+			archivedOnColumn: nil,
 		}).
-		Suffix("RETURNING archived_on").
+		Suffix(fmt.Sprintf("RETURNING %s", archivedOnColumn)).
 		ToSql()
 
 	p.logQueryBuildingError(err)

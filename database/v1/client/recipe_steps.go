@@ -51,6 +51,16 @@ func (c *Client) GetAllRecipeStepsCount(ctx context.Context) (count uint64, err 
 	return c.querier.GetAllRecipeStepsCount(ctx)
 }
 
+// GetAllRecipeSteps fetches a list of all recipe steps in the database.
+func (c *Client) GetAllRecipeSteps(ctx context.Context, results chan []models.RecipeStep) error {
+	ctx, span := tracing.StartSpan(ctx, "GetAllRecipeSteps")
+	defer span.End()
+
+	c.logger.Debug("GetAllRecipeSteps called")
+
+	return c.querier.GetAllRecipeSteps(ctx, results)
+}
+
 // GetRecipeSteps fetches a list of recipe steps from the database that meet a particular filter.
 func (c *Client) GetRecipeSteps(ctx context.Context, recipeID uint64, filter *models.QueryFilter) (*models.RecipeStepList, error) {
 	ctx, span := tracing.StartSpan(ctx, "GetRecipeSteps")
@@ -64,6 +74,20 @@ func (c *Client) GetRecipeSteps(ctx context.Context, recipeID uint64, filter *mo
 	}).Debug("GetRecipeSteps called")
 
 	recipeStepList, err := c.querier.GetRecipeSteps(ctx, recipeID, filter)
+
+	return recipeStepList, err
+}
+
+// GetRecipeStepsWithIDs fetches recipe steps from the database within a given set of IDs.
+func (c *Client) GetRecipeStepsWithIDs(ctx context.Context, recipeID uint64, limit uint8, ids []uint64) ([]models.RecipeStep, error) {
+	ctx, span := tracing.StartSpan(ctx, "GetRecipeStepsWithIDs")
+	defer span.End()
+
+	c.logger.WithValues(map[string]interface{}{
+		"id_count": len(ids),
+	}).Debug("GetRecipeStepsWithIDs called")
+
+	recipeStepList, err := c.querier.GetRecipeStepsWithIDs(ctx, recipeID, limit, ids)
 
 	return recipeStepList, err
 }

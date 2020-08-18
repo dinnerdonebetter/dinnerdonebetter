@@ -205,7 +205,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import format from 'string-format';
 
 import { backendRoutes, statusCodes } from '@/constants';
-import {fakeValidInstrumentFactory, ValidInstrument, validInstrumentsAreEqual} from '@/models';
+import {fakeValidInstrumentFactory, ValidInstrument} from '@/models';
 import { renderUnixTime } from '@/utils/time';
 import {AppModule} from "@/store/modules/app";
 
@@ -302,7 +302,7 @@ export default class ValidInstrumentComponent extends Vue {
 
   private fieldChange(): void {
     if (this.originalInstrument !== null) {
-      this.hasChanged = !validInstrumentsAreEqual(
+      this.hasChanged = !ValidInstrument.areEqual(
         this.currentInstrument,
         this.originalInstrument,
       );

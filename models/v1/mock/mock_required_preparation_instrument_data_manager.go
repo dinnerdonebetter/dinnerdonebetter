@@ -16,14 +16,14 @@ type RequiredPreparationInstrumentDataManager struct {
 }
 
 // RequiredPreparationInstrumentExists is a mock function.
-func (m *RequiredPreparationInstrumentDataManager) RequiredPreparationInstrumentExists(ctx context.Context, validPreparationID, requiredPreparationInstrumentID uint64) (bool, error) {
-	args := m.Called(ctx, validPreparationID, requiredPreparationInstrumentID)
+func (m *RequiredPreparationInstrumentDataManager) RequiredPreparationInstrumentExists(ctx context.Context, requiredPreparationInstrumentID uint64) (bool, error) {
+	args := m.Called(ctx, requiredPreparationInstrumentID)
 	return args.Bool(0), args.Error(1)
 }
 
 // GetRequiredPreparationInstrument is a mock function.
-func (m *RequiredPreparationInstrumentDataManager) GetRequiredPreparationInstrument(ctx context.Context, validPreparationID, requiredPreparationInstrumentID uint64) (*models.RequiredPreparationInstrument, error) {
-	args := m.Called(ctx, validPreparationID, requiredPreparationInstrumentID)
+func (m *RequiredPreparationInstrumentDataManager) GetRequiredPreparationInstrument(ctx context.Context, requiredPreparationInstrumentID uint64) (*models.RequiredPreparationInstrument, error) {
+	args := m.Called(ctx, requiredPreparationInstrumentID)
 	return args.Get(0).(*models.RequiredPreparationInstrument), args.Error(1)
 }
 
@@ -33,10 +33,22 @@ func (m *RequiredPreparationInstrumentDataManager) GetAllRequiredPreparationInst
 	return args.Get(0).(uint64), args.Error(1)
 }
 
+// GetAllRequiredPreparationInstruments is a mock function.
+func (m *RequiredPreparationInstrumentDataManager) GetAllRequiredPreparationInstruments(ctx context.Context, results chan []models.RequiredPreparationInstrument) error {
+	args := m.Called(ctx, results)
+	return args.Error(0)
+}
+
 // GetRequiredPreparationInstruments is a mock function.
-func (m *RequiredPreparationInstrumentDataManager) GetRequiredPreparationInstruments(ctx context.Context, validPreparationID uint64, filter *models.QueryFilter) (*models.RequiredPreparationInstrumentList, error) {
-	args := m.Called(ctx, validPreparationID, filter)
+func (m *RequiredPreparationInstrumentDataManager) GetRequiredPreparationInstruments(ctx context.Context, filter *models.QueryFilter) (*models.RequiredPreparationInstrumentList, error) {
+	args := m.Called(ctx, filter)
 	return args.Get(0).(*models.RequiredPreparationInstrumentList), args.Error(1)
+}
+
+// GetRequiredPreparationInstrumentsWithIDs is a mock function.
+func (m *RequiredPreparationInstrumentDataManager) GetRequiredPreparationInstrumentsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]models.RequiredPreparationInstrument, error) {
+	args := m.Called(ctx, limit, ids)
+	return args.Get(0).([]models.RequiredPreparationInstrument), args.Error(1)
 }
 
 // CreateRequiredPreparationInstrument is a mock function.
@@ -51,6 +63,6 @@ func (m *RequiredPreparationInstrumentDataManager) UpdateRequiredPreparationInst
 }
 
 // ArchiveRequiredPreparationInstrument is a mock function.
-func (m *RequiredPreparationInstrumentDataManager) ArchiveRequiredPreparationInstrument(ctx context.Context, validPreparationID, requiredPreparationInstrumentID uint64) error {
-	return m.Called(ctx, validPreparationID, requiredPreparationInstrumentID).Error(0)
+func (m *RequiredPreparationInstrumentDataManager) ArchiveRequiredPreparationInstrument(ctx context.Context, requiredPreparationInstrumentID uint64) error {
+	return m.Called(ctx, requiredPreparationInstrumentID).Error(0)
 }

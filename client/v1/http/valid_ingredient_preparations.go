@@ -15,14 +15,12 @@ const (
 )
 
 // BuildValidIngredientPreparationExistsRequest builds an HTTP request for checking the existence of a valid ingredient preparation.
-func (c *V1Client) BuildValidIngredientPreparationExistsRequest(ctx context.Context, validIngredientID, validIngredientPreparationID uint64) (*http.Request, error) {
+func (c *V1Client) BuildValidIngredientPreparationExistsRequest(ctx context.Context, validIngredientPreparationID uint64) (*http.Request, error) {
 	ctx, span := tracing.StartSpan(ctx, "BuildValidIngredientPreparationExistsRequest")
 	defer span.End()
 
 	uri := c.BuildURL(
 		nil,
-		validIngredientsBasePath,
-		strconv.FormatUint(validIngredientID, 10),
 		validIngredientPreparationsBasePath,
 		strconv.FormatUint(validIngredientPreparationID, 10),
 	)
@@ -32,11 +30,11 @@ func (c *V1Client) BuildValidIngredientPreparationExistsRequest(ctx context.Cont
 }
 
 // ValidIngredientPreparationExists retrieves whether or not a valid ingredient preparation exists.
-func (c *V1Client) ValidIngredientPreparationExists(ctx context.Context, validIngredientID, validIngredientPreparationID uint64) (exists bool, err error) {
+func (c *V1Client) ValidIngredientPreparationExists(ctx context.Context, validIngredientPreparationID uint64) (exists bool, err error) {
 	ctx, span := tracing.StartSpan(ctx, "ValidIngredientPreparationExists")
 	defer span.End()
 
-	req, err := c.BuildValidIngredientPreparationExistsRequest(ctx, validIngredientID, validIngredientPreparationID)
+	req, err := c.BuildValidIngredientPreparationExistsRequest(ctx, validIngredientPreparationID)
 	if err != nil {
 		return false, fmt.Errorf("building request: %w", err)
 	}
@@ -45,14 +43,12 @@ func (c *V1Client) ValidIngredientPreparationExists(ctx context.Context, validIn
 }
 
 // BuildGetValidIngredientPreparationRequest builds an HTTP request for fetching a valid ingredient preparation.
-func (c *V1Client) BuildGetValidIngredientPreparationRequest(ctx context.Context, validIngredientID, validIngredientPreparationID uint64) (*http.Request, error) {
+func (c *V1Client) BuildGetValidIngredientPreparationRequest(ctx context.Context, validIngredientPreparationID uint64) (*http.Request, error) {
 	ctx, span := tracing.StartSpan(ctx, "BuildGetValidIngredientPreparationRequest")
 	defer span.End()
 
 	uri := c.BuildURL(
 		nil,
-		validIngredientsBasePath,
-		strconv.FormatUint(validIngredientID, 10),
 		validIngredientPreparationsBasePath,
 		strconv.FormatUint(validIngredientPreparationID, 10),
 	)
@@ -62,11 +58,11 @@ func (c *V1Client) BuildGetValidIngredientPreparationRequest(ctx context.Context
 }
 
 // GetValidIngredientPreparation retrieves a valid ingredient preparation.
-func (c *V1Client) GetValidIngredientPreparation(ctx context.Context, validIngredientID, validIngredientPreparationID uint64) (validIngredientPreparation *models.ValidIngredientPreparation, err error) {
+func (c *V1Client) GetValidIngredientPreparation(ctx context.Context, validIngredientPreparationID uint64) (validIngredientPreparation *models.ValidIngredientPreparation, err error) {
 	ctx, span := tracing.StartSpan(ctx, "GetValidIngredientPreparation")
 	defer span.End()
 
-	req, err := c.BuildGetValidIngredientPreparationRequest(ctx, validIngredientID, validIngredientPreparationID)
+	req, err := c.BuildGetValidIngredientPreparationRequest(ctx, validIngredientPreparationID)
 	if err != nil {
 		return nil, fmt.Errorf("building request: %w", err)
 	}
@@ -79,14 +75,12 @@ func (c *V1Client) GetValidIngredientPreparation(ctx context.Context, validIngre
 }
 
 // BuildGetValidIngredientPreparationsRequest builds an HTTP request for fetching valid ingredient preparations.
-func (c *V1Client) BuildGetValidIngredientPreparationsRequest(ctx context.Context, validIngredientID uint64, filter *models.QueryFilter) (*http.Request, error) {
+func (c *V1Client) BuildGetValidIngredientPreparationsRequest(ctx context.Context, filter *models.QueryFilter) (*http.Request, error) {
 	ctx, span := tracing.StartSpan(ctx, "BuildGetValidIngredientPreparationsRequest")
 	defer span.End()
 
 	uri := c.BuildURL(
 		filter.ToValues(),
-		validIngredientsBasePath,
-		strconv.FormatUint(validIngredientID, 10),
 		validIngredientPreparationsBasePath,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
@@ -95,11 +89,11 @@ func (c *V1Client) BuildGetValidIngredientPreparationsRequest(ctx context.Contex
 }
 
 // GetValidIngredientPreparations retrieves a list of valid ingredient preparations.
-func (c *V1Client) GetValidIngredientPreparations(ctx context.Context, validIngredientID uint64, filter *models.QueryFilter) (validIngredientPreparations *models.ValidIngredientPreparationList, err error) {
+func (c *V1Client) GetValidIngredientPreparations(ctx context.Context, filter *models.QueryFilter) (validIngredientPreparations *models.ValidIngredientPreparationList, err error) {
 	ctx, span := tracing.StartSpan(ctx, "GetValidIngredientPreparations")
 	defer span.End()
 
-	req, err := c.BuildGetValidIngredientPreparationsRequest(ctx, validIngredientID, filter)
+	req, err := c.BuildGetValidIngredientPreparationsRequest(ctx, filter)
 	if err != nil {
 		return nil, fmt.Errorf("building request: %w", err)
 	}
@@ -118,8 +112,6 @@ func (c *V1Client) BuildCreateValidIngredientPreparationRequest(ctx context.Cont
 
 	uri := c.BuildURL(
 		nil,
-		validIngredientsBasePath,
-		strconv.FormatUint(input.BelongsToValidIngredient, 10),
 		validIngredientPreparationsBasePath,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
@@ -148,8 +140,6 @@ func (c *V1Client) BuildUpdateValidIngredientPreparationRequest(ctx context.Cont
 
 	uri := c.BuildURL(
 		nil,
-		validIngredientsBasePath,
-		strconv.FormatUint(validIngredientPreparation.BelongsToValidIngredient, 10),
 		validIngredientPreparationsBasePath,
 		strconv.FormatUint(validIngredientPreparation.ID, 10),
 	)
@@ -172,14 +162,12 @@ func (c *V1Client) UpdateValidIngredientPreparation(ctx context.Context, validIn
 }
 
 // BuildArchiveValidIngredientPreparationRequest builds an HTTP request for updating a valid ingredient preparation.
-func (c *V1Client) BuildArchiveValidIngredientPreparationRequest(ctx context.Context, validIngredientID, validIngredientPreparationID uint64) (*http.Request, error) {
+func (c *V1Client) BuildArchiveValidIngredientPreparationRequest(ctx context.Context, validIngredientPreparationID uint64) (*http.Request, error) {
 	ctx, span := tracing.StartSpan(ctx, "BuildArchiveValidIngredientPreparationRequest")
 	defer span.End()
 
 	uri := c.BuildURL(
 		nil,
-		validIngredientsBasePath,
-		strconv.FormatUint(validIngredientID, 10),
 		validIngredientPreparationsBasePath,
 		strconv.FormatUint(validIngredientPreparationID, 10),
 	)
@@ -189,11 +177,11 @@ func (c *V1Client) BuildArchiveValidIngredientPreparationRequest(ctx context.Con
 }
 
 // ArchiveValidIngredientPreparation archives a valid ingredient preparation.
-func (c *V1Client) ArchiveValidIngredientPreparation(ctx context.Context, validIngredientID, validIngredientPreparationID uint64) error {
+func (c *V1Client) ArchiveValidIngredientPreparation(ctx context.Context, validIngredientPreparationID uint64) error {
 	ctx, span := tracing.StartSpan(ctx, "ArchiveValidIngredientPreparation")
 	defer span.End()
 
-	req, err := c.BuildArchiveValidIngredientPreparationRequest(ctx, validIngredientID, validIngredientPreparationID)
+	req, err := c.BuildArchiveValidIngredientPreparationRequest(ctx, validIngredientPreparationID)
 	if err != nil {
 		return fmt.Errorf("building request: %w", err)
 	}

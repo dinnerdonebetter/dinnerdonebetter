@@ -113,12 +113,12 @@ func buildRecipeStepIngredientActions(c *client.V1Client) map[string]*Action {
 
 				if randomRecipeStepIngredient := fetchRandomRecipeStepIngredient(ctx, c, randomRecipe.ID, randomRecipeStep.ID); randomRecipeStepIngredient != nil {
 					newRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredientCreationInput()
-					randomRecipeStepIngredient.ValidIngredientID = newRecipeStepIngredient.ValidIngredientID
-					randomRecipeStepIngredient.IngredientNotes = newRecipeStepIngredient.IngredientNotes
+					randomRecipeStepIngredient.IngredientID = newRecipeStepIngredient.IngredientID
 					randomRecipeStepIngredient.QuantityType = newRecipeStepIngredient.QuantityType
 					randomRecipeStepIngredient.QuantityValue = newRecipeStepIngredient.QuantityValue
 					randomRecipeStepIngredient.QuantityNotes = newRecipeStepIngredient.QuantityNotes
-					randomRecipeStepIngredient.ProductOfRecipeStepID = newRecipeStepIngredient.ProductOfRecipeStepID
+					randomRecipeStepIngredient.ProductOfRecipe = newRecipeStepIngredient.ProductOfRecipe
+					randomRecipeStepIngredient.IngredientNotes = newRecipeStepIngredient.IngredientNotes
 					return c.BuildUpdateRecipeStepIngredientRequest(ctx, randomRecipe.ID, randomRecipeStepIngredient)
 				}
 
