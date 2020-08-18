@@ -43,19 +43,57 @@ const (
 	// database providers
 	postgres = "postgres"
 
-// search index paths
+	// search index paths
 )
 
 type configFunc func(filePath string) error
 
 var (
 	files = map[string]configFunc{
+		"environments/dev/config.toml":                                      developmentEnvConfig,
 		"environments/local/config.toml":                                    developmentConfig,
 		"environments/testing/config_files/frontend-tests.toml":             frontendTestsConfig,
 		"environments/testing/config_files/coverage.toml":                   coverageConfig,
 		"environments/testing/config_files/integration-tests-postgres.toml": buildIntegrationTestForDBImplementation(postgres, postgresDBConnDetails),
 	}
 )
+
+func developmentEnvConfig(filePath string) error {
+	cfg := config.BuildConfig()
+
+	cfg.Set(metaRunMode, developmentEnv)
+	cfg.Set(metaDebug, true)
+	cfg.Set(metaStartupDeadline, time.Minute)
+
+	cfg.Set(serverHTTPPort, defaultPort)
+	cfg.Set(serverDebug, true)
+
+	cfg.Set(frontendDebug, true)
+	cfg.Set(frontendStaticFilesDir, defaultFrontendFilepath)
+	cfg.Set(frontendCacheStatics, false)
+
+	cfg.Set(authDebug, true)
+	cfg.Set(authCookieDomain, "localhost")
+	cfg.Set(authCookieSecret, debugCookieSecret)
+	cfg.Set(authCookieLifetime, oneDay)
+	cfg.Set(authSecureCookiesOnly, false)
+	cfg.Set(authEnableUserSignup, true)
+
+	cfg.Set(metricsProvider, "prometheus")
+	cfg.Set(metricsTracer, "jaeger")
+	cfg.Set(metricsDBCollectionInterval, time.Second)
+	cfg.Set(metricsRuntimeCollectionInterval, time.Second)
+
+	cfg.Set(dbDebug, true)
+	cfg.Set(dbProvider, postgres)
+	cfg.Set(dbDeets, postgresDBConnDetails)
+
+	if writeErr := cfg.WriteConfigAs(filePath); writeErr != nil {
+		return fmt.Errorf("error writing developmentEnv config: %w", writeErr)
+	}
+
+	return nil
+}
 
 func developmentConfig(filePath string) error {
 	cfg := config.BuildConfig()

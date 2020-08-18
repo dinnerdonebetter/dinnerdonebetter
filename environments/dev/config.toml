@@ -1,0 +1,28 @@
+
+[auth]
+  cookie_domain = "prixfixe.dev"
+  cookie_lifetime = "24h0m0s"
+  enable_user_signup = true
+  secure_cookies_only = true
+
+[database]
+  connection_details = "postgresql://prixfixe_dev:vfhfFBwoCoDWTY86bVYa9znk1xcp19IO@database.prixfixe.dev:25060/dev_prixfixe?sslmode=require"
+  create_dummy_user = false
+  provider = "postgres"
+
+[frontend]
+  cache_static_files = false
+  static_files_directory = "/frontend"
+
+[meta]
+  debug = true
+  run_mode = "development"
+  startup_deadline = "1m0s"
+
+[metrics]
+  database_metrics_collection_interval = "2s"
+  runtime_metrics_collection_interval = "2s"
+
+[server]
+  debug = true
+  http_port = 8888

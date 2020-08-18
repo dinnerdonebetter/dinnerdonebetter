@@ -1,0 +1,3 @@
+prixfixe.dev
+
+reverse_proxy prixfixe_server:8888
