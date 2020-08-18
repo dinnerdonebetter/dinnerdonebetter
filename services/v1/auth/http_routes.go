@@ -17,7 +17,7 @@ import (
 
 const (
 	// CookieName is the name of the cookie we attach to requests.
-	CookieName         = "todocookie"
+	CookieName         = "pfcookie"
 	cookieErrorLogName = "_COOKIE_CONSTRUCTION_ERROR_"
 
 	sessionInfoKey = "session_info"
