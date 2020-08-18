@@ -17,14 +17,12 @@ func TestClient_ValidIngredientPreparationExists(T *testing.T) {
 	T.Run("obligatory", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 
 		c, mockDB := buildTestClient()
-		mockDB.ValidIngredientPreparationDataManager.On("ValidIngredientPreparationExists", mock.Anything, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID).Return(true, nil)
+		mockDB.ValidIngredientPreparationDataManager.On("ValidIngredientPreparationExists", mock.Anything, exampleValidIngredientPreparation.ID).Return(true, nil)
 
-		actual, err := c.ValidIngredientPreparationExists(ctx, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID)
+		actual, err := c.ValidIngredientPreparationExists(ctx, exampleValidIngredientPreparation.ID)
 		assert.NoError(t, err)
 		assert.True(t, actual)
 
@@ -38,14 +36,12 @@ func TestClient_GetValidIngredientPreparation(T *testing.T) {
 	T.Run("obligatory", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 
 		c, mockDB := buildTestClient()
-		mockDB.ValidIngredientPreparationDataManager.On("GetValidIngredientPreparation", mock.Anything, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID).Return(exampleValidIngredientPreparation, nil)
+		mockDB.ValidIngredientPreparationDataManager.On("GetValidIngredientPreparation", mock.Anything, exampleValidIngredientPreparation.ID).Return(exampleValidIngredientPreparation, nil)
 
-		actual, err := c.GetValidIngredientPreparation(ctx, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID)
+		actual, err := c.GetValidIngredientPreparation(ctx, exampleValidIngredientPreparation.ID)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidIngredientPreparation, actual)
 
@@ -72,20 +68,37 @@ func TestClient_GetAllValidIngredientPreparationsCount(T *testing.T) {
 	})
 }
 
+func TestClient_GetAllValidIngredientPreparations(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		results := make(chan []models.ValidIngredientPreparation)
+
+		c, mockDB := buildTestClient()
+		mockDB.ValidIngredientPreparationDataManager.On("GetAllValidIngredientPreparations", mock.Anything, results).Return(nil)
+
+		err := c.GetAllValidIngredientPreparations(ctx, results)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
 func TestClient_GetValidIngredientPreparations(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 		filter := models.DefaultQueryFilter()
 		exampleValidIngredientPreparationList := fakemodels.BuildFakeValidIngredientPreparationList()
 
 		c, mockDB := buildTestClient()
-		mockDB.ValidIngredientPreparationDataManager.On("GetValidIngredientPreparations", mock.Anything, exampleValidIngredient.ID, filter).Return(exampleValidIngredientPreparationList, nil)
+		mockDB.ValidIngredientPreparationDataManager.On("GetValidIngredientPreparations", mock.Anything, filter).Return(exampleValidIngredientPreparationList, nil)
 
-		actual, err := c.GetValidIngredientPreparations(ctx, exampleValidIngredient.ID, filter)
+		actual, err := c.GetValidIngredientPreparations(ctx, filter)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidIngredientPreparationList, actual)
 
@@ -95,14 +108,36 @@ func TestClient_GetValidIngredientPreparations(T *testing.T) {
 	T.Run("with nil filter", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 		filter := (*models.QueryFilter)(nil)
 		exampleValidIngredientPreparationList := fakemodels.BuildFakeValidIngredientPreparationList()
 
 		c, mockDB := buildTestClient()
-		mockDB.ValidIngredientPreparationDataManager.On("GetValidIngredientPreparations", mock.Anything, exampleValidIngredient.ID, filter).Return(exampleValidIngredientPreparationList, nil)
+		mockDB.ValidIngredientPreparationDataManager.On("GetValidIngredientPreparations", mock.Anything, filter).Return(exampleValidIngredientPreparationList, nil)
 
-		actual, err := c.GetValidIngredientPreparations(ctx, exampleValidIngredient.ID, filter)
+		actual, err := c.GetValidIngredientPreparations(ctx, filter)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidIngredientPreparationList, actual)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
+func TestClient_GetValidIngredientPreparationsWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleValidIngredientPreparationList := fakemodels.BuildFakeValidIngredientPreparationList().ValidIngredientPreparations
+		var exampleIDs []uint64
+		for _, x := range exampleValidIngredientPreparationList {
+			exampleIDs = append(exampleIDs, x.ID)
+		}
+
+		c, mockDB := buildTestClient()
+		mockDB.ValidIngredientPreparationDataManager.On("GetValidIngredientPreparationsWithIDs", mock.Anything, defaultLimit, exampleIDs).Return(exampleValidIngredientPreparationList, nil)
+
+		actual, err := c.GetValidIngredientPreparationsWithIDs(ctx, defaultLimit, exampleIDs)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidIngredientPreparationList, actual)
 
@@ -161,9 +196,9 @@ func TestClient_ArchiveValidIngredientPreparation(T *testing.T) {
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
 
 		c, mockDB := buildTestClient()
-		mockDB.ValidIngredientPreparationDataManager.On("ArchiveValidIngredientPreparation", mock.Anything, exampleValidIngredientPreparation.BelongsToValidIngredient, exampleValidIngredientPreparation.ID).Return(expected)
+		mockDB.ValidIngredientPreparationDataManager.On("ArchiveValidIngredientPreparation", mock.Anything, exampleValidIngredientPreparation.ID).Return(expected)
 
-		err := c.ArchiveValidIngredientPreparation(ctx, exampleValidIngredientPreparation.BelongsToValidIngredient, exampleValidIngredientPreparation.ID)
+		err := c.ArchiveValidIngredientPreparation(ctx, exampleValidIngredientPreparation.ID)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mockDB)

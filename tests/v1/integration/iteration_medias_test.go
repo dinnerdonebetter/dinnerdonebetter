@@ -15,8 +15,10 @@ func checkIterationMediaEquality(t *testing.T, expected, actual *models.Iteratio
 	t.Helper()
 
 	assert.NotZero(t, actual.ID)
-	assert.Equal(t, expected.Source, actual.Source, "expected Source for ID %d to be %v, but it was %v ", expected.ID, expected.Source, actual.Source)
+	assert.Equal(t, expected.Path, actual.Path, "expected Path for ID %d to be %v, but it was %v ", expected.ID, expected.Path, actual.Path)
 	assert.Equal(t, expected.Mimetype, actual.Mimetype, "expected Mimetype for ID %d to be %v, but it was %v ", expected.ID, expected.Mimetype, actual.Mimetype)
+	assert.Equal(t, expected.RecipeIterationID, actual.RecipeIterationID, "expected RecipeIterationID for ID %d to be %v, but it was %v ", expected.ID, expected.RecipeIterationID, actual.RecipeIterationID)
+	assert.Equal(t, *expected.RecipeStepID, *actual.RecipeStepID, "expected RecipeStepID to be %v, but it was %v ", expected.RecipeStepID, actual.RecipeStepID)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
@@ -140,14 +142,14 @@ func TestIterationMedias(test *testing.T) {
 			checkValueAndError(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.IterationMedia),
+				len(expected) <= len(actual.IterationMedias),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.IterationMedia),
+				len(actual.IterationMedias),
 			)
 
 			// Clean up.
-			for _, createdIterationMedia := range actual.IterationMedia {
+			for _, createdIterationMedia := range actual.IterationMedias {
 				err = prixfixeClient.ArchiveIterationMedia(ctx, createdRecipe.ID, createdRecipeIteration.ID, createdIterationMedia.ID)
 				assert.NoError(t, err)
 			}
@@ -367,7 +369,7 @@ func TestIterationMedias(test *testing.T) {
 
 			// Assert iteration media equality.
 			checkIterationMediaEquality(t, exampleIterationMedia, actual)
-			assert.NotNil(t, actual.UpdatedOn)
+			assert.NotNil(t, actual.LastUpdatedOn)
 
 			// Clean up iteration media.
 			assert.NoError(t, prixfixeClient.ArchiveIterationMedia(ctx, createdRecipe.ID, createdRecipeIteration.ID, createdIterationMedia.ID))

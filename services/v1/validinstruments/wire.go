@@ -17,7 +17,7 @@ var (
 )
 
 // ProvideValidInstrumentDataManager turns a database into an ValidInstrumentDataManager.
-func ProvideValidInstrumentDataManager(db database.Database) models.ValidInstrumentDataManager {
+func ProvideValidInstrumentDataManager(db database.DataManager) models.ValidInstrumentDataManager {
 	return db
 }
 

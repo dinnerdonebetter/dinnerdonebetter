@@ -17,7 +17,7 @@ var (
 )
 
 // ProvideRequiredPreparationInstrumentDataManager turns a database into an RequiredPreparationInstrumentDataManager.
-func ProvideRequiredPreparationInstrumentDataManager(db database.Database) models.RequiredPreparationInstrumentDataManager {
+func ProvideRequiredPreparationInstrumentDataManager(db database.DataManager) models.RequiredPreparationInstrumentDataManager {
 	return db
 }
 

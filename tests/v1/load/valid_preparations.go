@@ -68,6 +68,7 @@ func buildValidPreparationActions(c *client.V1Client) map[string]*Action {
 					randomValidPreparation.Name = newValidPreparation.Name
 					randomValidPreparation.Description = newValidPreparation.Description
 					randomValidPreparation.Icon = newValidPreparation.Icon
+					randomValidPreparation.ApplicableToAllIngredients = newValidPreparation.ApplicableToAllIngredients
 					return c.BuildUpdateValidPreparationRequest(ctx, randomValidPreparation)
 				}
 

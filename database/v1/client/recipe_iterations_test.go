@@ -76,6 +76,24 @@ func TestClient_GetAllRecipeIterationsCount(T *testing.T) {
 	})
 }
 
+func TestClient_GetAllRecipeIterations(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		results := make(chan []models.RecipeIteration)
+
+		c, mockDB := buildTestClient()
+		mockDB.RecipeIterationDataManager.On("GetAllRecipeIterations", mock.Anything, results).Return(nil)
+
+		err := c.GetAllRecipeIterations(ctx, results)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
 func TestClient_GetRecipeIterations(T *testing.T) {
 	T.Parallel()
 
@@ -107,6 +125,30 @@ func TestClient_GetRecipeIterations(T *testing.T) {
 		mockDB.RecipeIterationDataManager.On("GetRecipeIterations", mock.Anything, exampleRecipe.ID, filter).Return(exampleRecipeIterationList, nil)
 
 		actual, err := c.GetRecipeIterations(ctx, exampleRecipe.ID, filter)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleRecipeIterationList, actual)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
+func TestClient_GetRecipeIterationsWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeIterationList := fakemodels.BuildFakeRecipeIterationList().RecipeIterations
+		var exampleIDs []uint64
+		for _, x := range exampleRecipeIterationList {
+			exampleIDs = append(exampleIDs, x.ID)
+		}
+
+		c, mockDB := buildTestClient()
+		mockDB.RecipeIterationDataManager.On("GetRecipeIterationsWithIDs", mock.Anything, exampleRecipe.ID, defaultLimit, exampleIDs).Return(exampleRecipeIterationList, nil)
+
+		actual, err := c.GetRecipeIterationsWithIDs(ctx, exampleRecipe.ID, defaultLimit, exampleIDs)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleRecipeIterationList, actual)
 

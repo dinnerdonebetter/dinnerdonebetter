@@ -17,7 +17,7 @@ var (
 )
 
 // ProvideValidPreparationDataManager turns a database into an ValidPreparationDataManager.
-func ProvideValidPreparationDataManager(db database.Database) models.ValidPreparationDataManager {
+func ProvideValidPreparationDataManager(db database.DataManager) models.ValidPreparationDataManager {
 	return db
 }
 

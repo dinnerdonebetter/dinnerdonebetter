@@ -17,7 +17,7 @@ var (
 )
 
 // ProvideInvitationDataManager turns a database into an InvitationDataManager.
-func ProvideInvitationDataManager(db database.Database) models.InvitationDataManager {
+func ProvideInvitationDataManager(db database.DataManager) models.InvitationDataManager {
 	return db
 }
 

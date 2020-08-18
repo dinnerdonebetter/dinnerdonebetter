@@ -33,10 +33,22 @@ func (m *ValidIngredientDataManager) GetAllValidIngredientsCount(ctx context.Con
 	return args.Get(0).(uint64), args.Error(1)
 }
 
+// GetAllValidIngredients is a mock function.
+func (m *ValidIngredientDataManager) GetAllValidIngredients(ctx context.Context, results chan []models.ValidIngredient) error {
+	args := m.Called(ctx, results)
+	return args.Error(0)
+}
+
 // GetValidIngredients is a mock function.
 func (m *ValidIngredientDataManager) GetValidIngredients(ctx context.Context, filter *models.QueryFilter) (*models.ValidIngredientList, error) {
 	args := m.Called(ctx, filter)
 	return args.Get(0).(*models.ValidIngredientList), args.Error(1)
+}
+
+// GetValidIngredientsWithIDs is a mock function.
+func (m *ValidIngredientDataManager) GetValidIngredientsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]models.ValidIngredient, error) {
+	args := m.Called(ctx, limit, ids)
+	return args.Get(0).([]models.ValidIngredient), args.Error(1)
 }
 
 // CreateValidIngredient is a mock function.

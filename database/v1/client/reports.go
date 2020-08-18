@@ -47,6 +47,16 @@ func (c *Client) GetAllReportsCount(ctx context.Context) (count uint64, err erro
 	return c.querier.GetAllReportsCount(ctx)
 }
 
+// GetAllReports fetches a list of all reports in the database.
+func (c *Client) GetAllReports(ctx context.Context, results chan []models.Report) error {
+	ctx, span := tracing.StartSpan(ctx, "GetAllReports")
+	defer span.End()
+
+	c.logger.Debug("GetAllReports called")
+
+	return c.querier.GetAllReports(ctx, results)
+}
+
 // GetReports fetches a list of reports from the database that meet a particular filter.
 func (c *Client) GetReports(ctx context.Context, filter *models.QueryFilter) (*models.ReportList, error) {
 	ctx, span := tracing.StartSpan(ctx, "GetReports")
@@ -57,6 +67,20 @@ func (c *Client) GetReports(ctx context.Context, filter *models.QueryFilter) (*m
 	c.logger.Debug("GetReports called")
 
 	reportList, err := c.querier.GetReports(ctx, filter)
+
+	return reportList, err
+}
+
+// GetReportsWithIDs fetches reports from the database within a given set of IDs.
+func (c *Client) GetReportsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]models.Report, error) {
+	ctx, span := tracing.StartSpan(ctx, "GetReportsWithIDs")
+	defer span.End()
+
+	c.logger.WithValues(map[string]interface{}{
+		"id_count": len(ids),
+	}).Debug("GetReportsWithIDs called")
+
+	reportList, err := c.querier.GetReportsWithIDs(ctx, limit, ids)
 
 	return reportList, err
 }

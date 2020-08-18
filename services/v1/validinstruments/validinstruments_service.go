@@ -13,10 +13,10 @@ import (
 )
 
 const (
-	// CreateMiddlewareCtxKey is a string alias we can use for referring to valid instrument input data in contexts.
-	CreateMiddlewareCtxKey models.ContextKey = "valid_instrument_create_input"
-	// UpdateMiddlewareCtxKey is a string alias we can use for referring to valid instrument update data in contexts.
-	UpdateMiddlewareCtxKey models.ContextKey = "valid_instrument_update_input"
+	// createMiddlewareCtxKey is a string alias we can use for referring to valid instrument input data in contexts.
+	createMiddlewareCtxKey models.ContextKey = "valid_instrument_create_input"
+	// updateMiddlewareCtxKey is a string alias we can use for referring to valid instrument update data in contexts.
+	updateMiddlewareCtxKey models.ContextKey = "valid_instrument_update_input"
 
 	counterName        metrics.CounterName = "validInstruments"
 	counterDescription string              = "the number of validInstruments managed by the validInstruments service"

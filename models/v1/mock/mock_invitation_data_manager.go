@@ -33,10 +33,22 @@ func (m *InvitationDataManager) GetAllInvitationsCount(ctx context.Context) (uin
 	return args.Get(0).(uint64), args.Error(1)
 }
 
+// GetAllInvitations is a mock function.
+func (m *InvitationDataManager) GetAllInvitations(ctx context.Context, results chan []models.Invitation) error {
+	args := m.Called(ctx, results)
+	return args.Error(0)
+}
+
 // GetInvitations is a mock function.
 func (m *InvitationDataManager) GetInvitations(ctx context.Context, filter *models.QueryFilter) (*models.InvitationList, error) {
 	args := m.Called(ctx, filter)
 	return args.Get(0).(*models.InvitationList), args.Error(1)
+}
+
+// GetInvitationsWithIDs is a mock function.
+func (m *InvitationDataManager) GetInvitationsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]models.Invitation, error) {
+	args := m.Called(ctx, limit, ids)
+	return args.Get(0).([]models.Invitation), args.Error(1)
 }
 
 // CreateInvitation is a mock function.

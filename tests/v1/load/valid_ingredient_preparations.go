@@ -12,8 +12,8 @@ import (
 )
 
 // fetchRandomValidIngredientPreparation retrieves a random valid ingredient preparation from the list of available valid ingredient preparations.
-func fetchRandomValidIngredientPreparation(ctx context.Context, c *client.V1Client, validIngredientID uint64) *models.ValidIngredientPreparation {
-	validIngredientPreparationsRes, err := c.GetValidIngredientPreparations(ctx, validIngredientID, nil)
+func fetchRandomValidIngredientPreparation(ctx context.Context, c *client.V1Client) *models.ValidIngredientPreparation {
+	validIngredientPreparationsRes, err := c.GetValidIngredientPreparations(ctx, nil)
 	if err != nil || validIngredientPreparationsRes == nil || len(validIngredientPreparationsRes.ValidIngredientPreparations) == 0 {
 		return nil
 	}
@@ -29,16 +29,7 @@ func buildValidIngredientPreparationActions(c *client.V1Client) map[string]*Acti
 			Action: func() (*http.Request, error) {
 				ctx := context.Background()
 
-				// Create valid ingredient.
-				exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
-				exampleValidIngredientInput := fakemodels.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-				createdValidIngredient, err := c.CreateValidIngredient(ctx, exampleValidIngredientInput)
-				if err != nil {
-					return nil, err
-				}
-
 				validIngredientPreparationInput := fakemodels.BuildFakeValidIngredientPreparationCreationInput()
-				validIngredientPreparationInput.BelongsToValidIngredient = createdValidIngredient.ID
 
 				return c.BuildCreateValidIngredientPreparationRequest(ctx, validIngredientPreparationInput)
 			},
@@ -49,17 +40,12 @@ func buildValidIngredientPreparationActions(c *client.V1Client) map[string]*Acti
 			Action: func() (*http.Request, error) {
 				ctx := context.Background()
 
-				randomValidIngredient := fetchRandomValidIngredient(ctx, c)
-				if randomValidIngredient == nil {
-					return nil, fmt.Errorf("retrieving random valid ingredient: %w", ErrUnavailableYet)
-				}
-
-				randomValidIngredientPreparation := fetchRandomValidIngredientPreparation(ctx, c, randomValidIngredient.ID)
+				randomValidIngredientPreparation := fetchRandomValidIngredientPreparation(ctx, c)
 				if randomValidIngredientPreparation == nil {
 					return nil, fmt.Errorf("retrieving random valid ingredient preparation: %w", ErrUnavailableYet)
 				}
 
-				return c.BuildGetValidIngredientPreparationRequest(ctx, randomValidIngredient.ID, randomValidIngredientPreparation.ID)
+				return c.BuildGetValidIngredientPreparationRequest(ctx, randomValidIngredientPreparation.ID)
 			},
 			Weight: 100,
 		},
@@ -68,12 +54,7 @@ func buildValidIngredientPreparationActions(c *client.V1Client) map[string]*Acti
 			Action: func() (*http.Request, error) {
 				ctx := context.Background()
 
-				randomValidIngredient := fetchRandomValidIngredient(ctx, c)
-				if randomValidIngredient == nil {
-					return nil, fmt.Errorf("retrieving random valid ingredient: %w", ErrUnavailableYet)
-				}
-
-				return c.BuildGetValidIngredientPreparationsRequest(ctx, randomValidIngredient.ID, nil)
+				return c.BuildGetValidIngredientPreparationsRequest(ctx, nil)
 			},
 			Weight: 100,
 		},
@@ -82,14 +63,11 @@ func buildValidIngredientPreparationActions(c *client.V1Client) map[string]*Acti
 			Action: func() (*http.Request, error) {
 				ctx := context.Background()
 
-				randomValidIngredient := fetchRandomValidIngredient(ctx, c)
-				if randomValidIngredient == nil {
-					return nil, fmt.Errorf("retrieving random valid ingredient: %w", ErrUnavailableYet)
-				}
-
-				if randomValidIngredientPreparation := fetchRandomValidIngredientPreparation(ctx, c, randomValidIngredient.ID); randomValidIngredientPreparation != nil {
+				if randomValidIngredientPreparation := fetchRandomValidIngredientPreparation(ctx, c); randomValidIngredientPreparation != nil {
 					newValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparationCreationInput()
 					randomValidIngredientPreparation.Notes = newValidIngredientPreparation.Notes
+					randomValidIngredientPreparation.ValidPreparationID = newValidIngredientPreparation.ValidPreparationID
+					randomValidIngredientPreparation.ValidIngredientID = newValidIngredientPreparation.ValidIngredientID
 					return c.BuildUpdateValidIngredientPreparationRequest(ctx, randomValidIngredientPreparation)
 				}
 
@@ -102,17 +80,12 @@ func buildValidIngredientPreparationActions(c *client.V1Client) map[string]*Acti
 			Action: func() (*http.Request, error) {
 				ctx := context.Background()
 
-				randomValidIngredient := fetchRandomValidIngredient(ctx, c)
-				if randomValidIngredient == nil {
-					return nil, fmt.Errorf("retrieving random valid ingredient: %w", ErrUnavailableYet)
-				}
-
-				randomValidIngredientPreparation := fetchRandomValidIngredientPreparation(ctx, c, randomValidIngredient.ID)
+				randomValidIngredientPreparation := fetchRandomValidIngredientPreparation(ctx, c)
 				if randomValidIngredientPreparation == nil {
 					return nil, fmt.Errorf("retrieving random valid ingredient preparation: %w", ErrUnavailableYet)
 				}
 
-				return c.BuildArchiveValidIngredientPreparationRequest(ctx, randomValidIngredient.ID, randomValidIngredientPreparation.ID)
+				return c.BuildArchiveValidIngredientPreparationRequest(ctx, randomValidIngredientPreparation.ID)
 			},
 			Weight: 85,
 		},

@@ -14,28 +14,30 @@ type (
 		Icon                       string  `json:"icon"`
 		ApplicableToAllIngredients bool    `json:"applicableToAllIngredients"`
 		CreatedOn                  uint64  `json:"createdOn"`
-		UpdatedOn                  *uint64 `json:"updatedOn"`
+		LastUpdatedOn              *uint64 `json:"lastUpdatedOn"`
 		ArchivedOn                 *uint64 `json:"archivedOn"`
 	}
 
 	// ValidPreparationList represents a list of valid preparations.
 	ValidPreparationList struct {
 		Pagination
-		ValidPreparations []ValidPreparation `json:"validPreparations"`
+		ValidPreparations []ValidPreparation `json:"valid_preparations"`
 	}
 
 	// ValidPreparationCreationInput represents what a user could set as input for creating valid preparations.
 	ValidPreparationCreationInput struct {
-		Name        string `json:"name"`
-		Description string `json:"description"`
-		Icon        string `json:"icon"`
+		Name                       string `json:"name"`
+		Description                string `json:"description"`
+		Icon                       string `json:"icon"`
+		ApplicableToAllIngredients bool   `json:"applicableToAllIngredients"`
 	}
 
 	// ValidPreparationUpdateInput represents what a user could set as input for updating valid preparations.
 	ValidPreparationUpdateInput struct {
-		Name        string `json:"name"`
-		Description string `json:"description"`
-		Icon        string `json:"icon"`
+		Name                       string `json:"name"`
+		Description                string `json:"description"`
+		Icon                       string `json:"icon"`
+		ApplicableToAllIngredients bool   `json:"applicableToAllIngredients"`
 	}
 
 	// ValidPreparationDataManager describes a structure capable of storing valid preparations permanently.
@@ -43,7 +45,9 @@ type (
 		ValidPreparationExists(ctx context.Context, validPreparationID uint64) (bool, error)
 		GetValidPreparation(ctx context.Context, validPreparationID uint64) (*ValidPreparation, error)
 		GetAllValidPreparationsCount(ctx context.Context) (uint64, error)
+		GetAllValidPreparations(ctx context.Context, resultChannel chan []ValidPreparation) error
 		GetValidPreparations(ctx context.Context, filter *QueryFilter) (*ValidPreparationList, error)
+		GetValidPreparationsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]ValidPreparation, error)
 		CreateValidPreparation(ctx context.Context, input *ValidPreparationCreationInput) (*ValidPreparation, error)
 		UpdateValidPreparation(ctx context.Context, updated *ValidPreparation) error
 		ArchiveValidPreparation(ctx context.Context, validPreparationID uint64) error
@@ -54,12 +58,12 @@ type (
 		CreationInputMiddleware(next http.Handler) http.Handler
 		UpdateInputMiddleware(next http.Handler) http.Handler
 
-		ListHandler() http.HandlerFunc
-		CreateHandler() http.HandlerFunc
-		ExistenceHandler() http.HandlerFunc
-		ReadHandler() http.HandlerFunc
-		UpdateHandler() http.HandlerFunc
-		ArchiveHandler() http.HandlerFunc
+		ListHandler(res http.ResponseWriter, req *http.Request)
+		CreateHandler(res http.ResponseWriter, req *http.Request)
+		ExistenceHandler(res http.ResponseWriter, req *http.Request)
+		ReadHandler(res http.ResponseWriter, req *http.Request)
+		UpdateHandler(res http.ResponseWriter, req *http.Request)
+		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 
@@ -76,13 +80,18 @@ func (x *ValidPreparation) Update(input *ValidPreparationUpdateInput) {
 	if input.Icon != "" && input.Icon != x.Icon {
 		x.Icon = input.Icon
 	}
+
+	if input.ApplicableToAllIngredients != x.ApplicableToAllIngredients {
+		x.ApplicableToAllIngredients = input.ApplicableToAllIngredients
+	}
 }
 
 // ToUpdateInput creates a ValidPreparationUpdateInput struct for a valid preparation.
 func (x *ValidPreparation) ToUpdateInput() *ValidPreparationUpdateInput {
 	return &ValidPreparationUpdateInput{
-		Name:        x.Name,
-		Description: x.Description,
-		Icon:        x.Icon,
+		Name:                       x.Name,
+		Description:                x.Description,
+		Icon:                       x.Icon,
+		ApplicableToAllIngredients: x.ApplicableToAllIngredients,
 	}
 }

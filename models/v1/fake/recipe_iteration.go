@@ -10,6 +10,7 @@ import (
 func BuildFakeRecipeIteration() *models.RecipeIteration {
 	return &models.RecipeIteration{
 		ID:                  fake.Uint64(),
+		RecipeID:            uint64(fake.Uint32()),
 		EndDifficultyRating: fake.Float32(),
 		EndComplexityRating: fake.Float32(),
 		EndTasteRating:      fake.Float32(),
@@ -27,9 +28,8 @@ func BuildFakeRecipeIterationList() *models.RecipeIterationList {
 
 	return &models.RecipeIterationList{
 		Pagination: models.Pagination{
-			Page:       1,
-			Limit:      20,
-			TotalCount: 3,
+			Page:  1,
+			Limit: 20,
 		},
 		RecipeIterations: []models.RecipeIteration{
 			*exampleRecipeIteration1,
@@ -42,6 +42,7 @@ func BuildFakeRecipeIterationList() *models.RecipeIterationList {
 // BuildFakeRecipeIterationUpdateInputFromRecipeIteration builds a faked RecipeIterationUpdateInput from a recipe iteration.
 func BuildFakeRecipeIterationUpdateInputFromRecipeIteration(recipeIteration *models.RecipeIteration) *models.RecipeIterationUpdateInput {
 	return &models.RecipeIterationUpdateInput{
+		RecipeID:            recipeIteration.RecipeID,
 		EndDifficultyRating: recipeIteration.EndDifficultyRating,
 		EndComplexityRating: recipeIteration.EndComplexityRating,
 		EndTasteRating:      recipeIteration.EndTasteRating,
@@ -59,6 +60,7 @@ func BuildFakeRecipeIterationCreationInput() *models.RecipeIterationCreationInpu
 // BuildFakeRecipeIterationCreationInputFromRecipeIteration builds a faked RecipeIterationCreationInput from a recipe iteration.
 func BuildFakeRecipeIterationCreationInputFromRecipeIteration(recipeIteration *models.RecipeIteration) *models.RecipeIterationCreationInput {
 	return &models.RecipeIterationCreationInput{
+		RecipeID:            recipeIteration.RecipeID,
 		EndDifficultyRating: recipeIteration.EndDifficultyRating,
 		EndComplexityRating: recipeIteration.EndComplexityRating,
 		EndTasteRating:      recipeIteration.EndTasteRating,

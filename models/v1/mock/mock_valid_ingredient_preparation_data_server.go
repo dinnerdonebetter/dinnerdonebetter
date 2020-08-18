@@ -28,37 +28,31 @@ func (m *ValidIngredientPreparationDataServer) UpdateInputMiddleware(next http.H
 }
 
 // ListHandler implements our interface requirements.
-func (m *ValidIngredientPreparationDataServer) ListHandler() http.HandlerFunc {
-	args := m.Called()
-	return args.Get(0).(http.HandlerFunc)
+func (m *ValidIngredientPreparationDataServer) ListHandler(res http.ResponseWriter, req *http.Request) {
+	m.Called(res, req)
 }
 
 // CreateHandler implements our interface requirements.
-func (m *ValidIngredientPreparationDataServer) CreateHandler() http.HandlerFunc {
-	args := m.Called()
-	return args.Get(0).(http.HandlerFunc)
+func (m *ValidIngredientPreparationDataServer) CreateHandler(res http.ResponseWriter, req *http.Request) {
+	m.Called(res, req)
 }
 
 // ExistenceHandler implements our interface requirements.
-func (m *ValidIngredientPreparationDataServer) ExistenceHandler() http.HandlerFunc {
-	args := m.Called()
-	return args.Get(0).(http.HandlerFunc)
+func (m *ValidIngredientPreparationDataServer) ExistenceHandler(res http.ResponseWriter, req *http.Request) {
+	m.Called(res, req)
 }
 
 // ReadHandler implements our interface requirements.
-func (m *ValidIngredientPreparationDataServer) ReadHandler() http.HandlerFunc {
-	args := m.Called()
-	return args.Get(0).(http.HandlerFunc)
+func (m *ValidIngredientPreparationDataServer) ReadHandler(res http.ResponseWriter, req *http.Request) {
+	m.Called(res, req)
 }
 
 // UpdateHandler implements our interface requirements.
-func (m *ValidIngredientPreparationDataServer) UpdateHandler() http.HandlerFunc {
-	args := m.Called()
-	return args.Get(0).(http.HandlerFunc)
+func (m *ValidIngredientPreparationDataServer) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+	m.Called(res, req)
 }
 
 // ArchiveHandler implements our interface requirements.
-func (m *ValidIngredientPreparationDataServer) ArchiveHandler() http.HandlerFunc {
-	args := m.Called()
-	return args.Get(0).(http.HandlerFunc)
+func (m *ValidIngredientPreparationDataServer) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+	m.Called(res, req)
 }

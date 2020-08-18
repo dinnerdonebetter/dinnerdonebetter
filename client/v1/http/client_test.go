@@ -11,8 +11,6 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/prixfixe/prixfixe/internal/v1/panicking"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -20,7 +18,7 @@ import (
 )
 
 const (
-	exampleURI       = "https://prixfixe.app"
+	exampleURI       = "https://todo.verygoodsoftwarenotvirus.ru"
 	asciiControlChar = string(byte(127))
 )
 
@@ -49,10 +47,6 @@ func mustParseURL(uri string) *url.URL {
 func buildTestClient(t *testing.T, ts *httptest.Server) *V1Client {
 	t.Helper()
 
-	if ts == nil {
-		ts = httptest.NewTLSServer(nil)
-	}
-
 	l := noop.ProvideNoopLogger()
 	u := mustParseURL(ts.URL)
 	c := ts.Client()
@@ -63,7 +57,6 @@ func buildTestClient(t *testing.T, ts *httptest.Server) *V1Client {
 		logger:       l,
 		Debug:        true,
 		authedClient: c,
-		panicker:     &panicking.MockPanicker{},
 	}
 }
 
@@ -80,7 +73,6 @@ func buildTestClientWithInvalidURL(t *testing.T) *V1Client {
 		logger:       l,
 		Debug:        true,
 		authedClient: http.DefaultClient,
-		panicker:     &panicking.MockPanicker{},
 	}
 }
 
@@ -104,7 +96,7 @@ func TestV1Client_PlainClient(T *testing.T) {
 
 	T.Run("obligatory", func(t *testing.T) {
 		ts := httptest.NewTLSServer(nil)
-		c := buildTestClient(t, nil)
+		c := buildTestClient(t, ts)
 
 		actual := c.PlainClient()
 
@@ -253,16 +245,16 @@ func TestBuildURL(T *testing.T) {
 			inputQuery  valuer
 		}{
 			{
-				expectation: "https://prixfixe.app/api/v1/things",
+				expectation: "https://todo.verygoodsoftwarenotvirus.ru/api/v1/things",
 				inputParts:  []string{"things"},
 			},
 			{
-				expectation: "https://prixfixe.app/api/v1/stuff?key=value",
+				expectation: "https://todo.verygoodsoftwarenotvirus.ru/api/v1/stuff?key=value",
 				inputQuery:  map[string][]string{"key": {"value"}},
 				inputParts:  []string{"stuff"},
 			},
 			{
-				expectation: "https://prixfixe.app/api/v1/things/and/stuff?key=value1&key=value2&yek=eulav",
+				expectation: "https://todo.verygoodsoftwarenotvirus.ru/api/v1/things/and/stuff?key=value1&key=value2&yek=eulav",
 				inputQuery: map[string][]string{
 					"key": {"value1", "value2"},
 					"yek": {"eulav"},
@@ -309,16 +301,16 @@ func TestBuildVersionlessURL(T *testing.T) {
 			inputQuery  valuer
 		}{
 			{
-				expectation: "https://prixfixe.app/things",
+				expectation: "https://todo.verygoodsoftwarenotvirus.ru/things",
 				inputParts:  []string{"things"},
 			},
 			{
-				expectation: "https://prixfixe.app/stuff?key=value",
+				expectation: "https://todo.verygoodsoftwarenotvirus.ru/stuff?key=value",
 				inputQuery:  map[string][]string{"key": {"value"}},
 				inputParts:  []string{"stuff"},
 			},
 			{
-				expectation: "https://prixfixe.app/things/and/stuff?key=value1&key=value2&yek=eulav",
+				expectation: "https://todo.verygoodsoftwarenotvirus.ru/things/and/stuff?key=value1&key=value2&yek=eulav",
 				inputQuery: map[string][]string{
 					"key": {"value1", "value2"},
 					"yek": {"eulav"},
@@ -359,7 +351,7 @@ func TestV1Client_BuildWebsocketURL(T *testing.T) {
 		)
 		require.NoError(t, err)
 
-		expected := "ws://prixfixe.app/api/v1/things/and/stuff"
+		expected := "ws://todo.verygoodsoftwarenotvirus.ru/api/v1/things/and/stuff"
 		actual := c.BuildWebsocketURL("things", "and", "stuff")
 
 		assert.Equal(t, expected, actual)

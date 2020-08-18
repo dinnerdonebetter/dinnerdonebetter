@@ -13,10 +13,10 @@ import (
 )
 
 const (
-	// CreateMiddlewareCtxKey is a string alias we can use for referring to invitation input data in contexts.
-	CreateMiddlewareCtxKey models.ContextKey = "invitation_create_input"
-	// UpdateMiddlewareCtxKey is a string alias we can use for referring to invitation update data in contexts.
-	UpdateMiddlewareCtxKey models.ContextKey = "invitation_update_input"
+	// createMiddlewareCtxKey is a string alias we can use for referring to invitation input data in contexts.
+	createMiddlewareCtxKey models.ContextKey = "invitation_create_input"
+	// updateMiddlewareCtxKey is a string alias we can use for referring to invitation update data in contexts.
+	updateMiddlewareCtxKey models.ContextKey = "invitation_update_input"
 
 	counterName        metrics.CounterName = "invitations"
 	counterDescription string              = "the number of invitations managed by the invitations service"

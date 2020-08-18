@@ -33,10 +33,22 @@ func (m *RecipeStepIngredientDataManager) GetAllRecipeStepIngredientsCount(ctx c
 	return args.Get(0).(uint64), args.Error(1)
 }
 
+// GetAllRecipeStepIngredients is a mock function.
+func (m *RecipeStepIngredientDataManager) GetAllRecipeStepIngredients(ctx context.Context, results chan []models.RecipeStepIngredient) error {
+	args := m.Called(ctx, results)
+	return args.Error(0)
+}
+
 // GetRecipeStepIngredients is a mock function.
 func (m *RecipeStepIngredientDataManager) GetRecipeStepIngredients(ctx context.Context, recipeID, recipeStepID uint64, filter *models.QueryFilter) (*models.RecipeStepIngredientList, error) {
 	args := m.Called(ctx, recipeID, recipeStepID, filter)
 	return args.Get(0).(*models.RecipeStepIngredientList), args.Error(1)
+}
+
+// GetRecipeStepIngredientsWithIDs is a mock function.
+func (m *RecipeStepIngredientDataManager) GetRecipeStepIngredientsWithIDs(ctx context.Context, recipeID, recipeStepID uint64, limit uint8, ids []uint64) ([]models.RecipeStepIngredient, error) {
+	args := m.Called(ctx, recipeID, recipeStepID, limit, ids)
+	return args.Get(0).([]models.RecipeStepIngredient), args.Error(1)
 }
 
 // CreateRecipeStepIngredient is a mock function.

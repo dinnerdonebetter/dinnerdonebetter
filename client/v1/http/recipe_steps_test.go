@@ -203,12 +203,14 @@ func TestV1Client_GetRecipeSteps(T *testing.T) {
 		exampleRecipe := fakemodels.BuildFakeRecipe()
 		filter := (*models.QueryFilter)(nil)
 
+		expectedPath := fmt.Sprintf("/api/v1/recipes/%d/recipe_steps", exampleRecipe.ID)
+
 		exampleRecipeStepList := fakemodels.BuildFakeRecipeStepList()
 
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/recipes/%d/recipe_steps", exampleRecipe.ID), "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodGet)
 					require.NoError(t, json.NewEncoder(res).Encode(exampleRecipeStepList))
 				},
@@ -242,10 +244,12 @@ func TestV1Client_GetRecipeSteps(T *testing.T) {
 		exampleRecipe := fakemodels.BuildFakeRecipe()
 		filter := (*models.QueryFilter)(nil)
 
+		expectedPath := fmt.Sprintf("/api/v1/recipes/%d/recipe_steps", exampleRecipe.ID)
+
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/recipes/%d/recipe_steps", exampleRecipe.ID), "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodGet)
 					require.NoError(t, json.NewEncoder(res).Encode("BLAH"))
 				},
@@ -296,10 +300,12 @@ func TestV1Client_CreateRecipeStep(T *testing.T) {
 		exampleRecipeStep.BelongsToRecipe = exampleRecipe.ID
 		exampleInput := fakemodels.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
 
+		expectedPath := fmt.Sprintf("/api/v1/recipes/%d/recipe_steps", exampleRecipe.ID)
+
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/recipes/%d/recipe_steps", exampleRecipe.ID), "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodPost)
 
 					var x *models.RecipeStepCreationInput

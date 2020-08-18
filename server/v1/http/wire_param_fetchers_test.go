@@ -7,23 +7,21 @@ import (
 
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
 	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
-	ingredienttagmappingsservice "gitlab.com/prixfixe/prixfixe/services/v1/ingredienttagmappings"
 	invitationsservice "gitlab.com/prixfixe/prixfixe/services/v1/invitations"
 	iterationmediasservice "gitlab.com/prixfixe/prixfixe/services/v1/iterationmedias"
 	oauth2clientsservice "gitlab.com/prixfixe/prixfixe/services/v1/oauth2clients"
 	recipeiterationsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipeiterations"
-	recipeiterationstepsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipeiterationsteps"
 	recipesservice "gitlab.com/prixfixe/prixfixe/services/v1/recipes"
+	recipestepeventsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipestepevents"
 	recipestepingredientsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipestepingredients"
-	recipesteppreparationsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipesteppreparations"
+	recipestepinstrumentsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipestepinstruments"
+	recipestepproductsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipestepproducts"
 	recipestepsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipesteps"
-	recipetagsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipetags"
 	reportsservice "gitlab.com/prixfixe/prixfixe/services/v1/reports"
 	requiredpreparationinstrumentsservice "gitlab.com/prixfixe/prixfixe/services/v1/requiredpreparationinstruments"
 	usersservice "gitlab.com/prixfixe/prixfixe/services/v1/users"
 	validingredientpreparationsservice "gitlab.com/prixfixe/prixfixe/services/v1/validingredientpreparations"
 	validingredientsservice "gitlab.com/prixfixe/prixfixe/services/v1/validingredients"
-	validingredienttagsservice "gitlab.com/prixfixe/prixfixe/services/v1/validingredienttags"
 	validinstrumentsservice "gitlab.com/prixfixe/prixfixe/services/v1/validinstruments"
 	validpreparationsservice "gitlab.com/prixfixe/prixfixe/services/v1/validpreparations"
 	webhooksservice "gitlab.com/prixfixe/prixfixe/services/v1/webhooks"
@@ -49,30 +47,6 @@ func TestProvideValidIngredientsServiceValidIngredientIDFetcher(T *testing.T) {
 	})
 }
 
-func TestProvideValidIngredientTagsServiceValidIngredientTagIDFetcher(T *testing.T) {
-	T.Parallel()
-
-	T.Run("obligatory", func(t *testing.T) {
-		_ = ProvideValidIngredientTagsServiceValidIngredientTagIDFetcher(noop.ProvideNoopLogger())
-	})
-}
-
-func TestProvideIngredientTagMappingsServiceValidIngredientIDFetcher(T *testing.T) {
-	T.Parallel()
-
-	T.Run("obligatory", func(t *testing.T) {
-		_ = ProvideIngredientTagMappingsServiceValidIngredientIDFetcher(noop.ProvideNoopLogger())
-	})
-}
-
-func TestProvideIngredientTagMappingsServiceIngredientTagMappingIDFetcher(T *testing.T) {
-	T.Parallel()
-
-	T.Run("obligatory", func(t *testing.T) {
-		_ = ProvideIngredientTagMappingsServiceIngredientTagMappingIDFetcher(noop.ProvideNoopLogger())
-	})
-}
-
 func TestProvideValidPreparationsServiceValidPreparationIDFetcher(T *testing.T) {
 	T.Parallel()
 
@@ -81,11 +55,11 @@ func TestProvideValidPreparationsServiceValidPreparationIDFetcher(T *testing.T) 
 	})
 }
 
-func TestProvideRequiredPreparationInstrumentsServiceValidPreparationIDFetcher(T *testing.T) {
+func TestProvideValidIngredientPreparationsServiceValidIngredientPreparationIDFetcher(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		_ = ProvideRequiredPreparationInstrumentsServiceValidPreparationIDFetcher(noop.ProvideNoopLogger())
+		_ = ProvideValidIngredientPreparationsServiceValidIngredientPreparationIDFetcher(noop.ProvideNoopLogger())
 	})
 }
 
@@ -94,22 +68,6 @@ func TestProvideRequiredPreparationInstrumentsServiceRequiredPreparationInstrume
 
 	T.Run("obligatory", func(t *testing.T) {
 		_ = ProvideRequiredPreparationInstrumentsServiceRequiredPreparationInstrumentIDFetcher(noop.ProvideNoopLogger())
-	})
-}
-
-func TestProvideValidIngredientPreparationsServiceValidIngredientIDFetcher(T *testing.T) {
-	T.Parallel()
-
-	T.Run("obligatory", func(t *testing.T) {
-		_ = ProvideValidIngredientPreparationsServiceValidIngredientIDFetcher(noop.ProvideNoopLogger())
-	})
-}
-
-func TestProvideValidIngredientPreparationsServiceValidIngredientPreparationIDFetcher(T *testing.T) {
-	T.Parallel()
-
-	T.Run("obligatory", func(t *testing.T) {
-		_ = ProvideValidIngredientPreparationsServiceValidIngredientPreparationIDFetcher(noop.ProvideNoopLogger())
 	})
 }
 
@@ -126,30 +84,6 @@ func TestProvideRecipesServiceRecipeIDFetcher(T *testing.T) {
 
 	T.Run("obligatory", func(t *testing.T) {
 		_ = ProvideRecipesServiceRecipeIDFetcher(noop.ProvideNoopLogger())
-	})
-}
-
-func TestProvideRecipeTagsServiceUserIDFetcher(T *testing.T) {
-	T.Parallel()
-
-	T.Run("obligatory", func(t *testing.T) {
-		_ = ProvideRecipeTagsServiceUserIDFetcher()
-	})
-}
-
-func TestProvideRecipeTagsServiceRecipeIDFetcher(T *testing.T) {
-	T.Parallel()
-
-	T.Run("obligatory", func(t *testing.T) {
-		_ = ProvideRecipeTagsServiceRecipeIDFetcher(noop.ProvideNoopLogger())
-	})
-}
-
-func TestProvideRecipeTagsServiceRecipeTagIDFetcher(T *testing.T) {
-	T.Parallel()
-
-	T.Run("obligatory", func(t *testing.T) {
-		_ = ProvideRecipeTagsServiceRecipeTagIDFetcher(noop.ProvideNoopLogger())
 	})
 }
 
@@ -177,35 +111,35 @@ func TestProvideRecipeStepsServiceRecipeStepIDFetcher(T *testing.T) {
 	})
 }
 
-func TestProvideRecipeStepPreparationsServiceUserIDFetcher(T *testing.T) {
+func TestProvideRecipeStepInstrumentsServiceUserIDFetcher(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		_ = ProvideRecipeStepPreparationsServiceUserIDFetcher()
+		_ = ProvideRecipeStepInstrumentsServiceUserIDFetcher()
 	})
 }
 
-func TestProvideRecipeStepPreparationsServiceRecipeIDFetcher(T *testing.T) {
+func TestProvideRecipeStepInstrumentsServiceRecipeIDFetcher(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		_ = ProvideRecipeStepPreparationsServiceRecipeIDFetcher(noop.ProvideNoopLogger())
+		_ = ProvideRecipeStepInstrumentsServiceRecipeIDFetcher(noop.ProvideNoopLogger())
 	})
 }
 
-func TestProvideRecipeStepPreparationsServiceRecipeStepIDFetcher(T *testing.T) {
+func TestProvideRecipeStepInstrumentsServiceRecipeStepIDFetcher(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		_ = ProvideRecipeStepPreparationsServiceRecipeStepIDFetcher(noop.ProvideNoopLogger())
+		_ = ProvideRecipeStepInstrumentsServiceRecipeStepIDFetcher(noop.ProvideNoopLogger())
 	})
 }
 
-func TestProvideRecipeStepPreparationsServiceRecipeStepPreparationIDFetcher(T *testing.T) {
+func TestProvideRecipeStepInstrumentsServiceRecipeStepInstrumentIDFetcher(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		_ = ProvideRecipeStepPreparationsServiceRecipeStepPreparationIDFetcher(noop.ProvideNoopLogger())
+		_ = ProvideRecipeStepInstrumentsServiceRecipeStepInstrumentIDFetcher(noop.ProvideNoopLogger())
 	})
 }
 
@@ -241,6 +175,38 @@ func TestProvideRecipeStepIngredientsServiceRecipeStepIngredientIDFetcher(T *tes
 	})
 }
 
+func TestProvideRecipeStepProductsServiceUserIDFetcher(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		_ = ProvideRecipeStepProductsServiceUserIDFetcher()
+	})
+}
+
+func TestProvideRecipeStepProductsServiceRecipeIDFetcher(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		_ = ProvideRecipeStepProductsServiceRecipeIDFetcher(noop.ProvideNoopLogger())
+	})
+}
+
+func TestProvideRecipeStepProductsServiceRecipeStepIDFetcher(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		_ = ProvideRecipeStepProductsServiceRecipeStepIDFetcher(noop.ProvideNoopLogger())
+	})
+}
+
+func TestProvideRecipeStepProductsServiceRecipeStepProductIDFetcher(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		_ = ProvideRecipeStepProductsServiceRecipeStepProductIDFetcher(noop.ProvideNoopLogger())
+	})
+}
+
 func TestProvideRecipeIterationsServiceUserIDFetcher(T *testing.T) {
 	T.Parallel()
 
@@ -265,27 +231,35 @@ func TestProvideRecipeIterationsServiceRecipeIterationIDFetcher(T *testing.T) {
 	})
 }
 
-func TestProvideRecipeIterationStepsServiceUserIDFetcher(T *testing.T) {
+func TestProvideRecipeStepEventsServiceUserIDFetcher(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		_ = ProvideRecipeIterationStepsServiceUserIDFetcher()
+		_ = ProvideRecipeStepEventsServiceUserIDFetcher()
 	})
 }
 
-func TestProvideRecipeIterationStepsServiceRecipeIDFetcher(T *testing.T) {
+func TestProvideRecipeStepEventsServiceRecipeIDFetcher(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		_ = ProvideRecipeIterationStepsServiceRecipeIDFetcher(noop.ProvideNoopLogger())
+		_ = ProvideRecipeStepEventsServiceRecipeIDFetcher(noop.ProvideNoopLogger())
 	})
 }
 
-func TestProvideRecipeIterationStepsServiceRecipeIterationStepIDFetcher(T *testing.T) {
+func TestProvideRecipeStepEventsServiceRecipeStepIDFetcher(T *testing.T) {
 	T.Parallel()
 
 	T.Run("obligatory", func(t *testing.T) {
-		_ = ProvideRecipeIterationStepsServiceRecipeIterationStepIDFetcher(noop.ProvideNoopLogger())
+		_ = ProvideRecipeStepEventsServiceRecipeStepIDFetcher(noop.ProvideNoopLogger())
+	})
+}
+
+func TestProvideRecipeStepEventsServiceRecipeStepEventIDFetcher(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		_ = ProvideRecipeStepEventsServiceRecipeStepEventIDFetcher(noop.ProvideNoopLogger())
 	})
 }
 
@@ -556,104 +530,6 @@ func Test_buildRouteParamValidIngredientIDFetcher(T *testing.T) {
 	})
 }
 
-func Test_buildRouteParamValidIngredientTagIDFetcher(T *testing.T) {
-	T.Parallel()
-
-	T.Run("happy path", func(t *testing.T) {
-		fn := buildRouteParamValidIngredientTagIDFetcher(noop.ProvideNoopLogger())
-		expected := uint64(123)
-
-		req := buildRequest(t)
-		req = req.WithContext(
-			context.WithValue(
-				req.Context(),
-				chi.RouteCtxKey,
-				&chi.Context{
-					URLParams: chi.RouteParams{
-						Keys:   []string{validingredienttagsservice.URIParamKey},
-						Values: []string{fmt.Sprintf("%d", expected)},
-					},
-				},
-			),
-		)
-
-		actual := fn(req)
-		assert.Equal(t, expected, actual)
-	})
-
-	T.Run("with invalid value somehow", func(t *testing.T) {
-		// NOTE: This will probably never happen in dev or production
-		fn := buildRouteParamValidIngredientTagIDFetcher(noop.ProvideNoopLogger())
-		expected := uint64(0)
-
-		req := buildRequest(t)
-		req = req.WithContext(
-			context.WithValue(
-				req.Context(),
-				chi.RouteCtxKey,
-				&chi.Context{
-					URLParams: chi.RouteParams{
-						Keys:   []string{validingredienttagsservice.URIParamKey},
-						Values: []string{"expected"},
-					},
-				},
-			),
-		)
-
-		actual := fn(req)
-		assert.Equal(t, expected, actual)
-	})
-}
-
-func Test_buildRouteParamIngredientTagMappingIDFetcher(T *testing.T) {
-	T.Parallel()
-
-	T.Run("happy path", func(t *testing.T) {
-		fn := buildRouteParamIngredientTagMappingIDFetcher(noop.ProvideNoopLogger())
-		expected := uint64(123)
-
-		req := buildRequest(t)
-		req = req.WithContext(
-			context.WithValue(
-				req.Context(),
-				chi.RouteCtxKey,
-				&chi.Context{
-					URLParams: chi.RouteParams{
-						Keys:   []string{ingredienttagmappingsservice.URIParamKey},
-						Values: []string{fmt.Sprintf("%d", expected)},
-					},
-				},
-			),
-		)
-
-		actual := fn(req)
-		assert.Equal(t, expected, actual)
-	})
-
-	T.Run("with invalid value somehow", func(t *testing.T) {
-		// NOTE: This will probably never happen in dev or production
-		fn := buildRouteParamIngredientTagMappingIDFetcher(noop.ProvideNoopLogger())
-		expected := uint64(0)
-
-		req := buildRequest(t)
-		req = req.WithContext(
-			context.WithValue(
-				req.Context(),
-				chi.RouteCtxKey,
-				&chi.Context{
-					URLParams: chi.RouteParams{
-						Keys:   []string{ingredienttagmappingsservice.URIParamKey},
-						Values: []string{"expected"},
-					},
-				},
-			),
-		)
-
-		actual := fn(req)
-		assert.Equal(t, expected, actual)
-	})
-}
-
 func Test_buildRouteParamValidPreparationIDFetcher(T *testing.T) {
 	T.Parallel()
 
@@ -692,55 +568,6 @@ func Test_buildRouteParamValidPreparationIDFetcher(T *testing.T) {
 				&chi.Context{
 					URLParams: chi.RouteParams{
 						Keys:   []string{validpreparationsservice.URIParamKey},
-						Values: []string{"expected"},
-					},
-				},
-			),
-		)
-
-		actual := fn(req)
-		assert.Equal(t, expected, actual)
-	})
-}
-
-func Test_buildRouteParamRequiredPreparationInstrumentIDFetcher(T *testing.T) {
-	T.Parallel()
-
-	T.Run("happy path", func(t *testing.T) {
-		fn := buildRouteParamRequiredPreparationInstrumentIDFetcher(noop.ProvideNoopLogger())
-		expected := uint64(123)
-
-		req := buildRequest(t)
-		req = req.WithContext(
-			context.WithValue(
-				req.Context(),
-				chi.RouteCtxKey,
-				&chi.Context{
-					URLParams: chi.RouteParams{
-						Keys:   []string{requiredpreparationinstrumentsservice.URIParamKey},
-						Values: []string{fmt.Sprintf("%d", expected)},
-					},
-				},
-			),
-		)
-
-		actual := fn(req)
-		assert.Equal(t, expected, actual)
-	})
-
-	T.Run("with invalid value somehow", func(t *testing.T) {
-		// NOTE: This will probably never happen in dev or production
-		fn := buildRouteParamRequiredPreparationInstrumentIDFetcher(noop.ProvideNoopLogger())
-		expected := uint64(0)
-
-		req := buildRequest(t)
-		req = req.WithContext(
-			context.WithValue(
-				req.Context(),
-				chi.RouteCtxKey,
-				&chi.Context{
-					URLParams: chi.RouteParams{
-						Keys:   []string{requiredpreparationinstrumentsservice.URIParamKey},
 						Values: []string{"expected"},
 					},
 				},
@@ -801,6 +628,55 @@ func Test_buildRouteParamValidIngredientPreparationIDFetcher(T *testing.T) {
 	})
 }
 
+func Test_buildRouteParamRequiredPreparationInstrumentIDFetcher(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		fn := buildRouteParamRequiredPreparationInstrumentIDFetcher(noop.ProvideNoopLogger())
+		expected := uint64(123)
+
+		req := buildRequest(t)
+		req = req.WithContext(
+			context.WithValue(
+				req.Context(),
+				chi.RouteCtxKey,
+				&chi.Context{
+					URLParams: chi.RouteParams{
+						Keys:   []string{requiredpreparationinstrumentsservice.URIParamKey},
+						Values: []string{fmt.Sprintf("%d", expected)},
+					},
+				},
+			),
+		)
+
+		actual := fn(req)
+		assert.Equal(t, expected, actual)
+	})
+
+	T.Run("with invalid value somehow", func(t *testing.T) {
+		// NOTE: This will probably never happen in dev or production
+		fn := buildRouteParamRequiredPreparationInstrumentIDFetcher(noop.ProvideNoopLogger())
+		expected := uint64(0)
+
+		req := buildRequest(t)
+		req = req.WithContext(
+			context.WithValue(
+				req.Context(),
+				chi.RouteCtxKey,
+				&chi.Context{
+					URLParams: chi.RouteParams{
+						Keys:   []string{requiredpreparationinstrumentsservice.URIParamKey},
+						Values: []string{"expected"},
+					},
+				},
+			),
+		)
+
+		actual := fn(req)
+		assert.Equal(t, expected, actual)
+	})
+}
+
 func Test_buildRouteParamRecipeIDFetcher(T *testing.T) {
 	T.Parallel()
 
@@ -839,55 +715,6 @@ func Test_buildRouteParamRecipeIDFetcher(T *testing.T) {
 				&chi.Context{
 					URLParams: chi.RouteParams{
 						Keys:   []string{recipesservice.URIParamKey},
-						Values: []string{"expected"},
-					},
-				},
-			),
-		)
-
-		actual := fn(req)
-		assert.Equal(t, expected, actual)
-	})
-}
-
-func Test_buildRouteParamRecipeTagIDFetcher(T *testing.T) {
-	T.Parallel()
-
-	T.Run("happy path", func(t *testing.T) {
-		fn := buildRouteParamRecipeTagIDFetcher(noop.ProvideNoopLogger())
-		expected := uint64(123)
-
-		req := buildRequest(t)
-		req = req.WithContext(
-			context.WithValue(
-				req.Context(),
-				chi.RouteCtxKey,
-				&chi.Context{
-					URLParams: chi.RouteParams{
-						Keys:   []string{recipetagsservice.URIParamKey},
-						Values: []string{fmt.Sprintf("%d", expected)},
-					},
-				},
-			),
-		)
-
-		actual := fn(req)
-		assert.Equal(t, expected, actual)
-	})
-
-	T.Run("with invalid value somehow", func(t *testing.T) {
-		// NOTE: This will probably never happen in dev or production
-		fn := buildRouteParamRecipeTagIDFetcher(noop.ProvideNoopLogger())
-		expected := uint64(0)
-
-		req := buildRequest(t)
-		req = req.WithContext(
-			context.WithValue(
-				req.Context(),
-				chi.RouteCtxKey,
-				&chi.Context{
-					URLParams: chi.RouteParams{
-						Keys:   []string{recipetagsservice.URIParamKey},
 						Values: []string{"expected"},
 					},
 				},
@@ -948,11 +775,11 @@ func Test_buildRouteParamRecipeStepIDFetcher(T *testing.T) {
 	})
 }
 
-func Test_buildRouteParamRecipeStepPreparationIDFetcher(T *testing.T) {
+func Test_buildRouteParamRecipeStepInstrumentIDFetcher(T *testing.T) {
 	T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
-		fn := buildRouteParamRecipeStepPreparationIDFetcher(noop.ProvideNoopLogger())
+		fn := buildRouteParamRecipeStepInstrumentIDFetcher(noop.ProvideNoopLogger())
 		expected := uint64(123)
 
 		req := buildRequest(t)
@@ -962,7 +789,7 @@ func Test_buildRouteParamRecipeStepPreparationIDFetcher(T *testing.T) {
 				chi.RouteCtxKey,
 				&chi.Context{
 					URLParams: chi.RouteParams{
-						Keys:   []string{recipesteppreparationsservice.URIParamKey},
+						Keys:   []string{recipestepinstrumentsservice.URIParamKey},
 						Values: []string{fmt.Sprintf("%d", expected)},
 					},
 				},
@@ -975,7 +802,7 @@ func Test_buildRouteParamRecipeStepPreparationIDFetcher(T *testing.T) {
 
 	T.Run("with invalid value somehow", func(t *testing.T) {
 		// NOTE: This will probably never happen in dev or production
-		fn := buildRouteParamRecipeStepPreparationIDFetcher(noop.ProvideNoopLogger())
+		fn := buildRouteParamRecipeStepInstrumentIDFetcher(noop.ProvideNoopLogger())
 		expected := uint64(0)
 
 		req := buildRequest(t)
@@ -985,7 +812,7 @@ func Test_buildRouteParamRecipeStepPreparationIDFetcher(T *testing.T) {
 				chi.RouteCtxKey,
 				&chi.Context{
 					URLParams: chi.RouteParams{
-						Keys:   []string{recipesteppreparationsservice.URIParamKey},
+						Keys:   []string{recipestepinstrumentsservice.URIParamKey},
 						Values: []string{"expected"},
 					},
 				},
@@ -1046,6 +873,55 @@ func Test_buildRouteParamRecipeStepIngredientIDFetcher(T *testing.T) {
 	})
 }
 
+func Test_buildRouteParamRecipeStepProductIDFetcher(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		fn := buildRouteParamRecipeStepProductIDFetcher(noop.ProvideNoopLogger())
+		expected := uint64(123)
+
+		req := buildRequest(t)
+		req = req.WithContext(
+			context.WithValue(
+				req.Context(),
+				chi.RouteCtxKey,
+				&chi.Context{
+					URLParams: chi.RouteParams{
+						Keys:   []string{recipestepproductsservice.URIParamKey},
+						Values: []string{fmt.Sprintf("%d", expected)},
+					},
+				},
+			),
+		)
+
+		actual := fn(req)
+		assert.Equal(t, expected, actual)
+	})
+
+	T.Run("with invalid value somehow", func(t *testing.T) {
+		// NOTE: This will probably never happen in dev or production
+		fn := buildRouteParamRecipeStepProductIDFetcher(noop.ProvideNoopLogger())
+		expected := uint64(0)
+
+		req := buildRequest(t)
+		req = req.WithContext(
+			context.WithValue(
+				req.Context(),
+				chi.RouteCtxKey,
+				&chi.Context{
+					URLParams: chi.RouteParams{
+						Keys:   []string{recipestepproductsservice.URIParamKey},
+						Values: []string{"expected"},
+					},
+				},
+			),
+		)
+
+		actual := fn(req)
+		assert.Equal(t, expected, actual)
+	})
+}
+
 func Test_buildRouteParamRecipeIterationIDFetcher(T *testing.T) {
 	T.Parallel()
 
@@ -1095,11 +971,11 @@ func Test_buildRouteParamRecipeIterationIDFetcher(T *testing.T) {
 	})
 }
 
-func Test_buildRouteParamRecipeIterationStepIDFetcher(T *testing.T) {
+func Test_buildRouteParamRecipeStepEventIDFetcher(T *testing.T) {
 	T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
-		fn := buildRouteParamRecipeIterationStepIDFetcher(noop.ProvideNoopLogger())
+		fn := buildRouteParamRecipeStepEventIDFetcher(noop.ProvideNoopLogger())
 		expected := uint64(123)
 
 		req := buildRequest(t)
@@ -1109,7 +985,7 @@ func Test_buildRouteParamRecipeIterationStepIDFetcher(T *testing.T) {
 				chi.RouteCtxKey,
 				&chi.Context{
 					URLParams: chi.RouteParams{
-						Keys:   []string{recipeiterationstepsservice.URIParamKey},
+						Keys:   []string{recipestepeventsservice.URIParamKey},
 						Values: []string{fmt.Sprintf("%d", expected)},
 					},
 				},
@@ -1122,7 +998,7 @@ func Test_buildRouteParamRecipeIterationStepIDFetcher(T *testing.T) {
 
 	T.Run("with invalid value somehow", func(t *testing.T) {
 		// NOTE: This will probably never happen in dev or production
-		fn := buildRouteParamRecipeIterationStepIDFetcher(noop.ProvideNoopLogger())
+		fn := buildRouteParamRecipeStepEventIDFetcher(noop.ProvideNoopLogger())
 		expected := uint64(0)
 
 		req := buildRequest(t)
@@ -1132,7 +1008,7 @@ func Test_buildRouteParamRecipeIterationStepIDFetcher(T *testing.T) {
 				chi.RouteCtxKey,
 				&chi.Context{
 					URLParams: chi.RouteParams{
-						Keys:   []string{recipeiterationstepsservice.URIParamKey},
+						Keys:   []string{recipestepeventsservice.URIParamKey},
 						Values: []string{"expected"},
 					},
 				},

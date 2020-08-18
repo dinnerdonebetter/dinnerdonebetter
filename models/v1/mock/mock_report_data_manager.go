@@ -33,10 +33,22 @@ func (m *ReportDataManager) GetAllReportsCount(ctx context.Context) (uint64, err
 	return args.Get(0).(uint64), args.Error(1)
 }
 
+// GetAllReports is a mock function.
+func (m *ReportDataManager) GetAllReports(ctx context.Context, results chan []models.Report) error {
+	args := m.Called(ctx, results)
+	return args.Error(0)
+}
+
 // GetReports is a mock function.
 func (m *ReportDataManager) GetReports(ctx context.Context, filter *models.QueryFilter) (*models.ReportList, error) {
 	args := m.Called(ctx, filter)
 	return args.Get(0).(*models.ReportList), args.Error(1)
+}
+
+// GetReportsWithIDs is a mock function.
+func (m *ReportDataManager) GetReportsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]models.Report, error) {
+	args := m.Called(ctx, limit, ids)
+	return args.Get(0).([]models.Report), args.Error(1)
 }
 
 // CreateReport is a mock function.

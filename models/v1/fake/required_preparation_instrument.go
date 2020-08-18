@@ -9,11 +9,11 @@ import (
 // BuildFakeRequiredPreparationInstrument builds a faked required preparation instrument.
 func BuildFakeRequiredPreparationInstrument() *models.RequiredPreparationInstrument {
 	return &models.RequiredPreparationInstrument{
-		ID:                        fake.Uint64(),
-		ValidInstrumentID:         uint64(fake.Uint32()),
-		Notes:                     fake.Word(),
-		CreatedOn:                 uint64(uint32(fake.Date().Unix())),
-		BelongsToValidPreparation: fake.Uint64(),
+		ID:            fake.Uint64(),
+		InstrumentID:  uint64(fake.Uint32()),
+		PreparationID: uint64(fake.Uint32()),
+		Notes:         fake.Word(),
+		CreatedOn:     uint64(uint32(fake.Date().Unix())),
 	}
 }
 
@@ -40,9 +40,9 @@ func BuildFakeRequiredPreparationInstrumentList() *models.RequiredPreparationIns
 // BuildFakeRequiredPreparationInstrumentUpdateInputFromRequiredPreparationInstrument builds a faked RequiredPreparationInstrumentUpdateInput from a required preparation instrument.
 func BuildFakeRequiredPreparationInstrumentUpdateInputFromRequiredPreparationInstrument(requiredPreparationInstrument *models.RequiredPreparationInstrument) *models.RequiredPreparationInstrumentUpdateInput {
 	return &models.RequiredPreparationInstrumentUpdateInput{
-		ValidInstrumentID:         requiredPreparationInstrument.ValidInstrumentID,
-		Notes:                     requiredPreparationInstrument.Notes,
-		BelongsToValidPreparation: requiredPreparationInstrument.BelongsToValidPreparation,
+		InstrumentID:  requiredPreparationInstrument.InstrumentID,
+		PreparationID: requiredPreparationInstrument.PreparationID,
+		Notes:         requiredPreparationInstrument.Notes,
 	}
 }
 
@@ -55,8 +55,8 @@ func BuildFakeRequiredPreparationInstrumentCreationInput() *models.RequiredPrepa
 // BuildFakeRequiredPreparationInstrumentCreationInputFromRequiredPreparationInstrument builds a faked RequiredPreparationInstrumentCreationInput from a required preparation instrument.
 func BuildFakeRequiredPreparationInstrumentCreationInputFromRequiredPreparationInstrument(requiredPreparationInstrument *models.RequiredPreparationInstrument) *models.RequiredPreparationInstrumentCreationInput {
 	return &models.RequiredPreparationInstrumentCreationInput{
-		ValidInstrumentID:         requiredPreparationInstrument.ValidInstrumentID,
-		Notes:                     requiredPreparationInstrument.Notes,
-		BelongsToValidPreparation: requiredPreparationInstrument.BelongsToValidPreparation,
+		InstrumentID:  requiredPreparationInstrument.InstrumentID,
+		PreparationID: requiredPreparationInstrument.PreparationID,
+		Notes:         requiredPreparationInstrument.Notes,
 	}
 }

@@ -13,37 +13,52 @@ import (
 )
 
 const (
-	validIngredientsTableName = "valid_ingredients"
+	validIngredientsTableName                     = "valid_ingredients"
+	validIngredientsTableNameColumn               = "name"
+	validIngredientsTableVariantColumn            = "variant"
+	validIngredientsTableDescriptionColumn        = "description"
+	validIngredientsTableWarningColumn            = "warning"
+	validIngredientsTableContainsEggColumn        = "contains_egg"
+	validIngredientsTableContainsDairyColumn      = "contains_dairy"
+	validIngredientsTableContainsPeanutColumn     = "contains_peanut"
+	validIngredientsTableContainsTreeNutColumn    = "contains_tree_nut"
+	validIngredientsTableContainsSoyColumn        = "contains_soy"
+	validIngredientsTableContainsWheatColumn      = "contains_wheat"
+	validIngredientsTableContainsShellfishColumn  = "contains_shellfish"
+	validIngredientsTableContainsSesameColumn     = "contains_sesame"
+	validIngredientsTableContainsFishColumn       = "contains_fish"
+	validIngredientsTableContainsGlutenColumn     = "contains_gluten"
+	validIngredientsTableAnimalFleshColumn        = "animal_flesh"
+	validIngredientsTableAnimalDerivedColumn      = "animal_derived"
+	validIngredientsTableMeasurableByVolumeColumn = "measurable_by_volume"
+	validIngredientsTableIconColumn               = "icon"
 )
 
 var (
 	validIngredientsTableColumns = []string{
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "id"),
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "name"),
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "variant"),
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "description"),
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "warning"),
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "contains_egg"),
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "contains_dairy"),
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "contains_peanut"),
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "contains_tree_nut"),
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "contains_soy"),
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "contains_wheat"),
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "contains_shellfish"),
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "contains_sesame"),
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "contains_fish"),
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "contains_gluten"),
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "animal_flesh"),
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "animal_derived"),
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "measurable_by_volume"),
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "icon"),
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "created_on"),
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "updated_on"),
-		fmt.Sprintf("%s.%s", validIngredientsTableName, "archived_on"),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, idColumn),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, validIngredientsTableNameColumn),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, validIngredientsTableVariantColumn),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, validIngredientsTableDescriptionColumn),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, validIngredientsTableWarningColumn),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, validIngredientsTableContainsEggColumn),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, validIngredientsTableContainsDairyColumn),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, validIngredientsTableContainsPeanutColumn),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, validIngredientsTableContainsTreeNutColumn),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, validIngredientsTableContainsSoyColumn),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, validIngredientsTableContainsWheatColumn),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, validIngredientsTableContainsShellfishColumn),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, validIngredientsTableContainsSesameColumn),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, validIngredientsTableContainsFishColumn),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, validIngredientsTableContainsGlutenColumn),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, validIngredientsTableAnimalFleshColumn),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, validIngredientsTableAnimalDerivedColumn),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, validIngredientsTableMeasurableByVolumeColumn),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, validIngredientsTableIconColumn),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, createdOnColumn),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, lastUpdatedOnColumn),
+		fmt.Sprintf("%s.%s", validIngredientsTableName, archivedOnColumn),
 	}
-
-	validIngredientsOnIngredientTagMappingsJoinClause       = fmt.Sprintf("%s ON %s.%s=%s.id", validIngredientsTableName, ingredientTagMappingsTableName, ingredientTagMappingsTableOwnershipColumn, validIngredientsTableName)
-	validIngredientsOnValidIngredientPreparationsJoinClause = fmt.Sprintf("%s ON %s.%s=%s.id", validIngredientsTableName, validIngredientPreparationsTableName, validIngredientPreparationsTableOwnershipColumn, validIngredientsTableName)
 )
 
 // scanValidIngredient takes a database Scanner (i.e. *sql.Row) and scans the result into a Valid Ingredient struct
@@ -72,7 +87,7 @@ func (p *Postgres) scanValidIngredient(scan database.Scanner, includeCount bool)
 		&x.MeasurableByVolume,
 		&x.Icon,
 		&x.CreatedOn,
-		&x.UpdatedOn,
+		&x.LastUpdatedOn,
 		&x.ArchivedOn,
 	}
 
@@ -123,12 +138,12 @@ func (p *Postgres) buildValidIngredientExistsQuery(validIngredientID uint64) (qu
 	var err error
 
 	query, args, err = p.sqlBuilder.
-		Select(fmt.Sprintf("%s.id", validIngredientsTableName)).
+		Select(fmt.Sprintf("%s.%s", validIngredientsTableName, idColumn)).
 		Prefix(existencePrefix).
 		From(validIngredientsTableName).
 		Suffix(existenceSuffix).
 		Where(squirrel.Eq{
-			fmt.Sprintf("%s.id", validIngredientsTableName): validIngredientID,
+			fmt.Sprintf("%s.%s", validIngredientsTableName, idColumn): validIngredientID,
 		}).ToSql()
 
 	p.logQueryBuildingError(err)
@@ -156,7 +171,7 @@ func (p *Postgres) buildGetValidIngredientQuery(validIngredientID uint64) (query
 		Select(validIngredientsTableColumns...).
 		From(validIngredientsTableName).
 		Where(squirrel.Eq{
-			fmt.Sprintf("%s.id", validIngredientsTableName): validIngredientID,
+			fmt.Sprintf("%s.%s", validIngredientsTableName, idColumn): validIngredientID,
 		}).
 		ToSql()
 
@@ -169,9 +184,8 @@ func (p *Postgres) buildGetValidIngredientQuery(validIngredientID uint64) (query
 func (p *Postgres) GetValidIngredient(ctx context.Context, validIngredientID uint64) (*models.ValidIngredient, error) {
 	query, args := p.buildGetValidIngredientQuery(validIngredientID)
 	row := p.db.QueryRowContext(ctx, query, args...)
-
-	validIngredient, _, err := p.scanValidIngredient(row, false)
-	return validIngredient, err
+	vi, _, err := p.scanValidIngredient(row, false)
+	return vi, err
 }
 
 var (
@@ -189,7 +203,7 @@ func (p *Postgres) buildGetAllValidIngredientsCountQuery() string {
 			Select(fmt.Sprintf(countQuery, validIngredientsTableName)).
 			From(validIngredientsTableName).
 			Where(squirrel.Eq{
-				fmt.Sprintf("%s.archived_on", validIngredientsTableName): nil,
+				fmt.Sprintf("%s.%s", validIngredientsTableName, archivedOnColumn): nil,
 			}).
 			ToSql()
 		p.logQueryBuildingError(err)
@@ -204,20 +218,75 @@ func (p *Postgres) GetAllValidIngredientsCount(ctx context.Context) (count uint6
 	return count, err
 }
 
+// buildGetBatchOfValidIngredientsQuery returns a query that fetches every valid ingredient in the database within a bucketed range.
+func (p *Postgres) buildGetBatchOfValidIngredientsQuery(beginID, endID uint64) (query string, args []interface{}) {
+	query, args, err := p.sqlBuilder.
+		Select(validIngredientsTableColumns...).
+		From(validIngredientsTableName).
+		Where(squirrel.Gt{
+			fmt.Sprintf("%s.%s", validIngredientsTableName, idColumn): beginID,
+		}).
+		Where(squirrel.Lt{
+			fmt.Sprintf("%s.%s", validIngredientsTableName, idColumn): endID,
+		}).
+		ToSql()
+
+	p.logQueryBuildingError(err)
+
+	return query, args
+}
+
+// GetAllValidIngredients fetches every valid ingredient from the database and writes them to a channel. This method primarily exists
+// to aid in administrative data tasks.
+func (p *Postgres) GetAllValidIngredients(ctx context.Context, resultChannel chan []models.ValidIngredient) error {
+	count, err := p.GetAllValidIngredientsCount(ctx)
+	if err != nil {
+		return err
+	}
+
+	for beginID := uint64(1); beginID <= count; beginID += defaultBucketSize {
+		endID := beginID + defaultBucketSize
+		go func(begin, end uint64) {
+			query, args := p.buildGetBatchOfValidIngredientsQuery(begin, end)
+			logger := p.logger.WithValues(map[string]interface{}{
+				"query": query,
+				"begin": begin,
+				"end":   end,
+			})
+
+			rows, err := p.db.Query(query, args...)
+			if err == sql.ErrNoRows {
+				return
+			} else if err != nil {
+				logger.Error(err, "querying for database rows")
+				return
+			}
+
+			validIngredients, _, err := p.scanValidIngredients(rows)
+			if err != nil {
+				logger.Error(err, "scanning database rows")
+				return
+			}
+
+			resultChannel <- validIngredients
+		}(beginID, endID)
+	}
+
+	return nil
+}
+
 // buildGetValidIngredientsQuery builds a SQL query selecting valid ingredients that adhere to a given QueryFilter,
 // and returns both the query and the relevant args to pass to the query executor.
 func (p *Postgres) buildGetValidIngredientsQuery(filter *models.QueryFilter) (query string, args []interface{}) {
 	var err error
 
-	columnsToSelect := append(validIngredientsTableColumns, fmt.Sprintf("(%s)", p.buildGetAllValidIngredientsCountQuery()))
-
 	builder := p.sqlBuilder.
-		Select(columnsToSelect...).
+		Select(append(validIngredientsTableColumns, fmt.Sprintf("(%s)", p.buildGetAllValidIngredientsCountQuery()))...).
 		From(validIngredientsTableName).
 		Where(squirrel.Eq{
-			fmt.Sprintf("%s.archived_on", validIngredientsTableName): nil,
+			fmt.Sprintf("%s.%s", validIngredientsTableName, archivedOnColumn): nil,
 		}).
-		OrderBy(fmt.Sprintf("%s.id", validIngredientsTableName))
+		OrderBy(fmt.Sprintf("%s.%s", validIngredientsTableName, idColumn))
 
 	if filter != nil {
 		builder = filter.ApplyToQueryBuilder(builder, validIngredientsTableName)
@@ -255,6 +324,54 @@ func (p *Postgres) GetValidIngredients(ctx context.Context, filter *models.Query
 	return list, nil
 }
 
+// buildGetValidIngredientsWithIDsQuery builds a SQL query selecting validIngredients
+// and have IDs that exist within a given set of IDs. Returns both the query and the relevant
+// args to pass to the query executor. This function is primarily intended for use with a search
+// index, which would provide a slice of string IDs to query against. This function accepts a
+// slice of uint64s instead of a slice of strings in order to ensure all the provided strings
+// are valid database IDs, because there's no way in squirrel to escape them in the unnest join,
+// and if we accept strings we could leave ourselves vulnerable to SQL injection attacks.
+func (p *Postgres) buildGetValidIngredientsWithIDsQuery(limit uint8, ids []uint64) (query string, args []interface{}) {
+	var err error
+
+	subqueryBuilder := p.sqlBuilder.Select(validIngredientsTableColumns...).
+		From(validIngredientsTableName).
+		Join(fmt.Sprintf("unnest('{%s}'::int[])", joinUint64s(ids))).
+		Suffix(fmt.Sprintf("WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d", limit))
+	builder := p.sqlBuilder.
+		Select(validIngredientsTableColumns...).
+		FromSelect(subqueryBuilder, validIngredientsTableName).
+		Where(squirrel.Eq{
+			fmt.Sprintf("%s.%s", validIngredientsTableName, archivedOnColumn): nil,
+		})
+
+	query, args, err = builder.ToSql()
+	p.logQueryBuildingError(err)
+
+	return query, args
+}
+
+// GetValidIngredientsWithIDs fetches a list of valid ingredients from the database that exist within a given set of IDs.
+func (p *Postgres) GetValidIngredientsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]models.ValidIngredient, error) {
+	if limit == 0 {
+		limit = uint8(models.DefaultLimit)
+	}
+
+	query, args := p.buildGetValidIngredientsWithIDsQuery(limit, ids)
+
+	rows, err := p.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, buildError(err, "querying database for valid ingredients")
+	}
+
+	validIngredients, _, err := p.scanValidIngredients(rows)
+	if err != nil {
+		return nil, fmt.Errorf("scanning response from database: %w", err)
+	}
+
+	return validIngredients, nil
+}
+
 // buildCreateValidIngredientQuery takes a valid ingredient and returns a creation query for that valid ingredient and the relevant arguments.
 func (p *Postgres) buildCreateValidIngredientQuery(input *models.ValidIngredient) (query string, args []interface{}) {
 	var err error
@@ -262,24 +379,24 @@ func (p *Postgres) buildCreateValidIngredientQuery(input *models.ValidIngredient
 	query, args, err = p.sqlBuilder.
 		Insert(validIngredientsTableName).
 		Columns(
-			"name",
-			"variant",
-			"description",
-			"warning",
-			"contains_egg",
-			"contains_dairy",
-			"contains_peanut",
-			"contains_tree_nut",
-			"contains_soy",
-			"contains_wheat",
-			"contains_shellfish",
-			"contains_sesame",
-			"contains_fish",
-			"contains_gluten",
-			"animal_flesh",
-			"animal_derived",
-			"measurable_by_volume",
-			"icon",
+			validIngredientsTableNameColumn,
+			validIngredientsTableVariantColumn,
+			validIngredientsTableDescriptionColumn,
+			validIngredientsTableWarningColumn,
+			validIngredientsTableContainsEggColumn,
+			validIngredientsTableContainsDairyColumn,
+			validIngredientsTableContainsPeanutColumn,
+			validIngredientsTableContainsTreeNutColumn,
+			validIngredientsTableContainsSoyColumn,
+			validIngredientsTableContainsWheatColumn,
+			validIngredientsTableContainsShellfishColumn,
+			validIngredientsTableContainsSesameColumn,
+			validIngredientsTableContainsFishColumn,
+			validIngredientsTableContainsGlutenColumn,
+			validIngredientsTableAnimalFleshColumn,
+			validIngredientsTableAnimalDerivedColumn,
+			validIngredientsTableMeasurableByVolumeColumn,
+			validIngredientsTableIconColumn,
 		).
 		Values(
 			input.Name,
@@ -301,7 +418,7 @@ func (p *Postgres) buildCreateValidIngredientQuery(input *models.ValidIngredient
 			input.MeasurableByVolume,
 			input.Icon,
 		).
-		Suffix("RETURNING id, created_on").
+		Suffix(fmt.Sprintf("RETURNING %s, %s", idColumn, createdOnColumn)).
 		ToSql()
 
 	p.logQueryBuildingError(err)
@@ -349,29 +466,29 @@ func (p *Postgres) buildUpdateValidIngredientQuery(input *models.ValidIngredient
 
 	query, args, err = p.sqlBuilder.
 		Update(validIngredientsTableName).
-		Set("name", input.Name).
-		Set("variant", input.Variant).
-		Set("description", input.Description).
-		Set("warning", input.Warning).
-		Set("contains_egg", input.ContainsEgg).
-		Set("contains_dairy", input.ContainsDairy).
-		Set("contains_peanut", input.ContainsPeanut).
-		Set("contains_tree_nut", input.ContainsTreeNut).
-		Set("contains_soy", input.ContainsSoy).
-		Set("contains_wheat", input.ContainsWheat).
-		Set("contains_shellfish", input.ContainsShellfish).
-		Set("contains_sesame", input.ContainsSesame).
-		Set("contains_fish", input.ContainsFish).
-		Set("contains_gluten", input.ContainsGluten).
-		Set("animal_flesh", input.AnimalFlesh).
-		Set("animal_derived", input.AnimalDerived).
-		Set("measurable_by_volume", input.MeasurableByVolume).
-		Set("icon", input.Icon).
-		Set("updated_on", squirrel.Expr(currentUnixTimeQuery)).
+		Set(validIngredientsTableNameColumn, input.Name).
+		Set(validIngredientsTableVariantColumn, input.Variant).
+		Set(validIngredientsTableDescriptionColumn, input.Description).
+		Set(validIngredientsTableWarningColumn, input.Warning).
+		Set(validIngredientsTableContainsEggColumn, input.ContainsEgg).
+		Set(validIngredientsTableContainsDairyColumn, input.ContainsDairy).
+		Set(validIngredientsTableContainsPeanutColumn, input.ContainsPeanut).
+		Set(validIngredientsTableContainsTreeNutColumn, input.ContainsTreeNut).
+		Set(validIngredientsTableContainsSoyColumn, input.ContainsSoy).
+		Set(validIngredientsTableContainsWheatColumn, input.ContainsWheat).
+		Set(validIngredientsTableContainsShellfishColumn, input.ContainsShellfish).
+		Set(validIngredientsTableContainsSesameColumn, input.ContainsSesame).
+		Set(validIngredientsTableContainsFishColumn, input.ContainsFish).
+		Set(validIngredientsTableContainsGlutenColumn, input.ContainsGluten).
+		Set(validIngredientsTableAnimalFleshColumn, input.AnimalFlesh).
+		Set(validIngredientsTableAnimalDerivedColumn, input.AnimalDerived).
+		Set(validIngredientsTableMeasurableByVolumeColumn, input.MeasurableByVolume).
+		Set(validIngredientsTableIconColumn, input.Icon).
+		Set(lastUpdatedOnColumn, squirrel.Expr(currentUnixTimeQuery)).
 		Where(squirrel.Eq{
-			"id": input.ID,
+			idColumn: input.ID,
 		}).
-		Suffix("RETURNING updated_on").
+		Suffix(fmt.Sprintf("RETURNING %s", lastUpdatedOnColumn)).
 		ToSql()
 
 	p.logQueryBuildingError(err)
@@ -382,7 +499,7 @@ func (p *Postgres) buildUpdateValidIngredientQuery(input *models.ValidIngredient
 // UpdateValidIngredient updates a particular valid ingredient. Note that UpdateValidIngredient expects the provided input to have a valid ID.
 func (p *Postgres) UpdateValidIngredient(ctx context.Context, input *models.ValidIngredient) error {
 	query, args := p.buildUpdateValidIngredientQuery(input)
-	return p.db.QueryRowContext(ctx, query, args...).Scan(&input.UpdatedOn)
+	return p.db.QueryRowContext(ctx, query, args...).Scan(&input.LastUpdatedOn)
 }
 
 // buildArchiveValidIngredientQuery returns a SQL query which marks a given valid ingredient as archived.
@@ -391,13 +508,13 @@ func (p *Postgres) buildArchiveValidIngredientQuery(validIngredientID uint64) (q
 
 	query, args, err = p.sqlBuilder.
 		Update(validIngredientsTableName).
-		Set("updated_on", squirrel.Expr(currentUnixTimeQuery)).
-		Set("archived_on", squirrel.Expr(currentUnixTimeQuery)).
+		Set(lastUpdatedOnColumn, squirrel.Expr(currentUnixTimeQuery)).
+		Set(archivedOnColumn, squirrel.Expr(currentUnixTimeQuery)).
 		Where(squirrel.Eq{
-			"id":          validIngredientID,
-			"archived_on": nil,
+			idColumn:         validIngredientID,
+			archivedOnColumn: nil,
 		}).
-		Suffix("RETURNING archived_on").
+		Suffix(fmt.Sprintf("RETURNING %s", archivedOnColumn)).
 		ToSql()
 
 	p.logQueryBuildingError(err)

@@ -18,7 +18,7 @@ import (
 
 const (
 	// MetricsNamespace is the namespace under which we register metrics.
-	MetricsNamespace = "prixfixe_server"
+	MetricsNamespace = "todo_server"
 
 	// MinimumRuntimeCollectionInterval is the smallest interval we can collect metrics at
 	// this value is used to guard against zero values.
@@ -63,12 +63,14 @@ func (cfg *ServerConfig) ProvideInstrumentationHandler(logger logging.Logger) me
 		)
 		if err != nil {
 			logger.Error(err, "failed to create Prometheus exporter")
+			return nil
 		}
 		view.RegisterExporter(p)
 		logger.Debug("metrics provider registered")
 
 		if err := metrics.RegisterDefaultViews(); err != nil {
 			logger.Error(err, "registering default metric views")
+			return nil
 		}
 		metrics.RecordRuntimeStats(time.Duration(
 			math.Max(

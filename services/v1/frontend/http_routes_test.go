@@ -92,36 +92,6 @@ func TestService_StaticDir(T *testing.T) {
 		assert.Equal(t, http.StatusOK, res.Code)
 	})
 
-	T.Run("with frontend valid ingredient tags routing path", func(t *testing.T) {
-		s := &Service{logger: noop.ProvideNoopLogger()}
-		exampleDir := "."
-
-		hf, err := s.StaticDir(exampleDir)
-		assert.NoError(t, err)
-		assert.NotNil(t, hf)
-
-		req, res := buildRequest(t), httptest.NewRecorder()
-		req.URL.Path = "/valid_ingredient_tags/123"
-		hf(res, req)
-
-		assert.Equal(t, http.StatusOK, res.Code)
-	})
-
-	T.Run("with frontend ingredient tag mappings routing path", func(t *testing.T) {
-		s := &Service{logger: noop.ProvideNoopLogger()}
-		exampleDir := "."
-
-		hf, err := s.StaticDir(exampleDir)
-		assert.NoError(t, err)
-		assert.NotNil(t, hf)
-
-		req, res := buildRequest(t), httptest.NewRecorder()
-		req.URL.Path = "/ingredient_tag_mappings/123"
-		hf(res, req)
-
-		assert.Equal(t, http.StatusOK, res.Code)
-	})
-
 	T.Run("with frontend valid preparations routing path", func(t *testing.T) {
 		s := &Service{logger: noop.ProvideNoopLogger()}
 		exampleDir := "."
@@ -132,21 +102,6 @@ func TestService_StaticDir(T *testing.T) {
 
 		req, res := buildRequest(t), httptest.NewRecorder()
 		req.URL.Path = "/valid_preparations/123"
-		hf(res, req)
-
-		assert.Equal(t, http.StatusOK, res.Code)
-	})
-
-	T.Run("with frontend required preparation instruments routing path", func(t *testing.T) {
-		s := &Service{logger: noop.ProvideNoopLogger()}
-		exampleDir := "."
-
-		hf, err := s.StaticDir(exampleDir)
-		assert.NoError(t, err)
-		assert.NotNil(t, hf)
-
-		req, res := buildRequest(t), httptest.NewRecorder()
-		req.URL.Path = "/required_preparation_instruments/123"
 		hf(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
@@ -167,6 +122,21 @@ func TestService_StaticDir(T *testing.T) {
 		assert.Equal(t, http.StatusOK, res.Code)
 	})
 
+	T.Run("with frontend required preparation instruments routing path", func(t *testing.T) {
+		s := &Service{logger: noop.ProvideNoopLogger()}
+		exampleDir := "."
+
+		hf, err := s.StaticDir(exampleDir)
+		assert.NoError(t, err)
+		assert.NotNil(t, hf)
+
+		req, res := buildRequest(t), httptest.NewRecorder()
+		req.URL.Path = "/required_preparation_instruments/123"
+		hf(res, req)
+
+		assert.Equal(t, http.StatusOK, res.Code)
+	})
+
 	T.Run("with frontend recipes routing path", func(t *testing.T) {
 		s := &Service{logger: noop.ProvideNoopLogger()}
 		exampleDir := "."
@@ -177,21 +147,6 @@ func TestService_StaticDir(T *testing.T) {
 
 		req, res := buildRequest(t), httptest.NewRecorder()
 		req.URL.Path = "/recipes/123"
-		hf(res, req)
-
-		assert.Equal(t, http.StatusOK, res.Code)
-	})
-
-	T.Run("with frontend recipe tags routing path", func(t *testing.T) {
-		s := &Service{logger: noop.ProvideNoopLogger()}
-		exampleDir := "."
-
-		hf, err := s.StaticDir(exampleDir)
-		assert.NoError(t, err)
-		assert.NotNil(t, hf)
-
-		req, res := buildRequest(t), httptest.NewRecorder()
-		req.URL.Path = "/recipe_tags/123"
 		hf(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
@@ -212,7 +167,7 @@ func TestService_StaticDir(T *testing.T) {
 		assert.Equal(t, http.StatusOK, res.Code)
 	})
 
-	T.Run("with frontend recipe step preparations routing path", func(t *testing.T) {
+	T.Run("with frontend recipe step instruments routing path", func(t *testing.T) {
 		s := &Service{logger: noop.ProvideNoopLogger()}
 		exampleDir := "."
 
@@ -221,7 +176,7 @@ func TestService_StaticDir(T *testing.T) {
 		assert.NotNil(t, hf)
 
 		req, res := buildRequest(t), httptest.NewRecorder()
-		req.URL.Path = "/recipe_step_preparations/123"
+		req.URL.Path = "/recipe_step_instruments/123"
 		hf(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
@@ -242,6 +197,21 @@ func TestService_StaticDir(T *testing.T) {
 		assert.Equal(t, http.StatusOK, res.Code)
 	})
 
+	T.Run("with frontend recipe step products routing path", func(t *testing.T) {
+		s := &Service{logger: noop.ProvideNoopLogger()}
+		exampleDir := "."
+
+		hf, err := s.StaticDir(exampleDir)
+		assert.NoError(t, err)
+		assert.NotNil(t, hf)
+
+		req, res := buildRequest(t), httptest.NewRecorder()
+		req.URL.Path = "/recipe_step_products/123"
+		hf(res, req)
+
+		assert.Equal(t, http.StatusOK, res.Code)
+	})
+
 	T.Run("with frontend recipe iterations routing path", func(t *testing.T) {
 		s := &Service{logger: noop.ProvideNoopLogger()}
 		exampleDir := "."
@@ -257,7 +227,7 @@ func TestService_StaticDir(T *testing.T) {
 		assert.Equal(t, http.StatusOK, res.Code)
 	})
 
-	T.Run("with frontend recipe iteration steps routing path", func(t *testing.T) {
+	T.Run("with frontend recipe step events routing path", func(t *testing.T) {
 		s := &Service{logger: noop.ProvideNoopLogger()}
 		exampleDir := "."
 
@@ -266,7 +236,7 @@ func TestService_StaticDir(T *testing.T) {
 		assert.NotNil(t, hf)
 
 		req, res := buildRequest(t), httptest.NewRecorder()
-		req.URL.Path = "/recipe_iteration_steps/123"
+		req.URL.Path = "/recipe_step_events/123"
 		hf(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
@@ -315,14 +285,6 @@ func TestService_StaticDir(T *testing.T) {
 		hf(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
-	})
-}
-
-func TestService_Routes(T *testing.T) {
-	T.Parallel()
-
-	T.Run("obligatory", func(t *testing.T) {
-		assert.NotNil(t, (&Service{}).Routes())
 	})
 }
 

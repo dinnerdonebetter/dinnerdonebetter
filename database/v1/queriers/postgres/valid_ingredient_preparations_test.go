@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 
@@ -16,23 +17,25 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func buildMockRowsFromValidIngredientPreparation(validIngredientPreparations ...*models.ValidIngredientPreparation) *sqlmock.Rows {
+func buildMockRowsFromValidIngredientPreparations(validIngredientPreparations ...*models.ValidIngredientPreparation) *sqlmock.Rows {
 	includeCount := len(validIngredientPreparations) > 1
 	columns := validIngredientPreparationsTableColumns
 
 	if includeCount {
 		columns = append(columns, "count")
 	}
+
 	exampleRows := sqlmock.NewRows(columns)
 
 	for _, x := range validIngredientPreparations {
 		rowValues := []driver.Value{
 			x.ID,
 			x.Notes,
+			x.ValidPreparationID,
+			x.ValidIngredientID,
 			x.CreatedOn,
-			x.UpdatedOn,
+			x.LastUpdatedOn,
 			x.ArchivedOn,
-			x.BelongsToValidIngredient,
 		}
 
 		if includeCount {
@@ -49,9 +52,10 @@ func buildErroneousMockRowFromValidIngredientPreparation(x *models.ValidIngredie
 	exampleRows := sqlmock.NewRows(validIngredientPreparationsTableColumns).AddRow(
 		x.ArchivedOn,
 		x.Notes,
+		x.ValidPreparationID,
+		x.ValidIngredientID,
 		x.CreatedOn,
-		x.UpdatedOn,
-		x.BelongsToValidIngredient,
+		x.LastUpdatedOn,
 		x.ID,
 	)
 
@@ -91,17 +95,13 @@ func TestPostgres_buildValidIngredientPreparationExistsQuery(T *testing.T) {
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 
-		expectedQuery := "SELECT EXISTS ( SELECT valid_ingredient_preparations.id FROM valid_ingredient_preparations JOIN valid_ingredients ON valid_ingredient_preparations.belongs_to_valid_ingredient=valid_ingredients.id WHERE valid_ingredient_preparations.belongs_to_valid_ingredient = $1 AND valid_ingredient_preparations.id = $2 AND valid_ingredients.id = $3 )"
+		expectedQuery := "SELECT EXISTS ( SELECT valid_ingredient_preparations.id FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.id = $1 )"
 		expectedArgs := []interface{}{
-			exampleValidIngredient.ID,
 			exampleValidIngredientPreparation.ID,
-			exampleValidIngredient.ID,
 		}
-		actualQuery, actualArgs := p.buildValidIngredientPreparationExistsQuery(exampleValidIngredient.ID, exampleValidIngredientPreparation.ID)
+		actualQuery, actualArgs := p.buildValidIngredientPreparationExistsQuery(exampleValidIngredientPreparation.ID)
 
 		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
@@ -112,25 +112,21 @@ func TestPostgres_buildValidIngredientPreparationExistsQuery(T *testing.T) {
 func TestPostgres_ValidIngredientPreparationExists(T *testing.T) {
 	T.Parallel()
 
-	expectedQuery := "SELECT EXISTS ( SELECT valid_ingredient_preparations.id FROM valid_ingredient_preparations JOIN valid_ingredients ON valid_ingredient_preparations.belongs_to_valid_ingredient=valid_ingredients.id WHERE valid_ingredient_preparations.belongs_to_valid_ingredient = $1 AND valid_ingredient_preparations.id = $2 AND valid_ingredients.id = $3 )"
+	expectedQuery := "SELECT EXISTS ( SELECT valid_ingredient_preparations.id FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.id = $1 )"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				exampleValidIngredient.ID,
 				exampleValidIngredientPreparation.ID,
-				exampleValidIngredient.ID,
 			).
 			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
 
-		actual, err := p.ValidIngredientPreparationExists(ctx, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID)
+		actual, err := p.ValidIngredientPreparationExists(ctx, exampleValidIngredientPreparation.ID)
 		assert.NoError(t, err)
 		assert.True(t, actual)
 
@@ -140,20 +136,16 @@ func TestPostgres_ValidIngredientPreparationExists(T *testing.T) {
 	T.Run("with no rows", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				exampleValidIngredient.ID,
 				exampleValidIngredientPreparation.ID,
-				exampleValidIngredient.ID,
 			).
 			WillReturnError(sql.ErrNoRows)
 
-		actual, err := p.ValidIngredientPreparationExists(ctx, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID)
+		actual, err := p.ValidIngredientPreparationExists(ctx, exampleValidIngredientPreparation.ID)
 		assert.NoError(t, err)
 		assert.False(t, actual)
 
@@ -167,17 +159,13 @@ func TestPostgres_buildGetValidIngredientPreparationQuery(T *testing.T) {
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 
-		expectedQuery := "SELECT valid_ingredient_preparations.id, valid_ingredient_preparations.notes, valid_ingredient_preparations.created_on, valid_ingredient_preparations.updated_on, valid_ingredient_preparations.archived_on, valid_ingredient_preparations.belongs_to_valid_ingredient FROM valid_ingredient_preparations JOIN valid_ingredients ON valid_ingredient_preparations.belongs_to_valid_ingredient=valid_ingredients.id WHERE valid_ingredient_preparations.belongs_to_valid_ingredient = $1 AND valid_ingredient_preparations.id = $2 AND valid_ingredients.id = $3"
+		expectedQuery := "SELECT valid_ingredient_preparations.id, valid_ingredient_preparations.notes, valid_ingredient_preparations.valid_preparation_id, valid_ingredient_preparations.valid_ingredient_id, valid_ingredient_preparations.created_on, valid_ingredient_preparations.last_updated_on, valid_ingredient_preparations.archived_on FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.id = $1"
 		expectedArgs := []interface{}{
-			exampleValidIngredient.ID,
 			exampleValidIngredientPreparation.ID,
-			exampleValidIngredient.ID,
 		}
-		actualQuery, actualArgs := p.buildGetValidIngredientPreparationQuery(exampleValidIngredient.ID, exampleValidIngredientPreparation.ID)
+		actualQuery, actualArgs := p.buildGetValidIngredientPreparationQuery(exampleValidIngredientPreparation.ID)
 
 		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
@@ -188,25 +176,21 @@ func TestPostgres_buildGetValidIngredientPreparationQuery(T *testing.T) {
 func TestPostgres_GetValidIngredientPreparation(T *testing.T) {
 	T.Parallel()
 
-	expectedQuery := "SELECT valid_ingredient_preparations.id, valid_ingredient_preparations.notes, valid_ingredient_preparations.created_on, valid_ingredient_preparations.updated_on, valid_ingredient_preparations.archived_on, valid_ingredient_preparations.belongs_to_valid_ingredient FROM valid_ingredient_preparations JOIN valid_ingredients ON valid_ingredient_preparations.belongs_to_valid_ingredient=valid_ingredients.id WHERE valid_ingredient_preparations.belongs_to_valid_ingredient = $1 AND valid_ingredient_preparations.id = $2 AND valid_ingredients.id = $3"
+	expectedQuery := "SELECT valid_ingredient_preparations.id, valid_ingredient_preparations.notes, valid_ingredient_preparations.valid_preparation_id, valid_ingredient_preparations.valid_ingredient_id, valid_ingredient_preparations.created_on, valid_ingredient_preparations.last_updated_on, valid_ingredient_preparations.archived_on FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.id = $1"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				exampleValidIngredient.ID,
 				exampleValidIngredientPreparation.ID,
-				exampleValidIngredient.ID,
 			).
-			WillReturnRows(buildMockRowsFromValidIngredientPreparation(exampleValidIngredientPreparation))
+			WillReturnRows(buildMockRowsFromValidIngredientPreparations(exampleValidIngredientPreparation))
 
-		actual, err := p.GetValidIngredientPreparation(ctx, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID)
+		actual, err := p.GetValidIngredientPreparation(ctx, exampleValidIngredientPreparation.ID)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidIngredientPreparation, actual)
 
@@ -216,20 +200,16 @@ func TestPostgres_GetValidIngredientPreparation(T *testing.T) {
 	T.Run("surfaces sql.ErrNoRows", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 
 		p, mockDB := buildTestService(t)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				exampleValidIngredient.ID,
 				exampleValidIngredientPreparation.ID,
-				exampleValidIngredient.ID,
 			).
 			WillReturnError(sql.ErrNoRows)
 
-		actual, err := p.GetValidIngredientPreparation(ctx, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID)
+		actual, err := p.GetValidIngredientPreparation(ctx, exampleValidIngredientPreparation.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 		assert.Equal(t, sql.ErrNoRows, err)
@@ -273,25 +253,196 @@ func TestPostgres_GetAllValidIngredientPreparationsCount(T *testing.T) {
 	})
 }
 
+func TestPostgres_buildGetBatchOfValidIngredientPreparationsQuery(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		p, _ := buildTestService(t)
+
+		beginID, endID := uint64(1), uint64(1000)
+
+		expectedQuery := "SELECT valid_ingredient_preparations.id, valid_ingredient_preparations.notes, valid_ingredient_preparations.valid_preparation_id, valid_ingredient_preparations.valid_ingredient_id, valid_ingredient_preparations.created_on, valid_ingredient_preparations.last_updated_on, valid_ingredient_preparations.archived_on FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.id > $1 AND valid_ingredient_preparations.id < $2"
+		expectedArgs := []interface{}{
+			beginID,
+			endID,
+		}
+		actualQuery, actualArgs := p.buildGetBatchOfValidIngredientPreparationsQuery(beginID, endID)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+}
+
+func TestPostgres_GetAllValidIngredientPreparations(T *testing.T) {
+	T.Parallel()
+
+	expectedCountQuery := "SELECT COUNT(valid_ingredient_preparations.id) FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.archived_on IS NULL"
+	expectedGetQuery := "SELECT valid_ingredient_preparations.id, valid_ingredient_preparations.notes, valid_ingredient_preparations.valid_preparation_id, valid_ingredient_preparations.valid_ingredient_id, valid_ingredient_preparations.created_on, valid_ingredient_preparations.last_updated_on, valid_ingredient_preparations.archived_on FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.id > $1 AND valid_ingredient_preparations.id < $2"
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+		exampleValidIngredientPreparationList := fakemodels.BuildFakeValidIngredientPreparationList()
+		expectedCount := uint64(20)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
+			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedGetQuery)).
+			WithArgs(
+				uint64(1),
+				uint64(1001),
+			).
+			WillReturnRows(
+				buildMockRowsFromValidIngredientPreparations(
+					&exampleValidIngredientPreparationList.ValidIngredientPreparations[0],
+					&exampleValidIngredientPreparationList.ValidIngredientPreparations[1],
+					&exampleValidIngredientPreparationList.ValidIngredientPreparations[2],
+				),
+			)
+
+		out := make(chan []models.ValidIngredientPreparation)
+		doneChan := make(chan bool, 1)
+
+		err := p.GetAllValidIngredientPreparations(ctx, out)
+		assert.NoError(t, err)
+
+		var stillQuerying = true
+		for stillQuerying {
+			select {
+			case batch := <-out:
+				assert.NotEmpty(t, batch)
+				doneChan <- true
+			case <-time.After(time.Second):
+				t.FailNow()
+			case <-doneChan:
+				stillQuerying = false
+			}
+		}
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with error fetching initial count", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
+			WillReturnError(errors.New("blah"))
+
+		out := make(chan []models.ValidIngredientPreparation)
+
+		err := p.GetAllValidIngredientPreparations(ctx, out)
+		assert.Error(t, err)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with no rows returned", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+		expectedCount := uint64(20)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
+			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedGetQuery)).
+			WithArgs(
+				uint64(1),
+				uint64(1001),
+			).
+			WillReturnError(sql.ErrNoRows)
+
+		out := make(chan []models.ValidIngredientPreparation)
+
+		err := p.GetAllValidIngredientPreparations(ctx, out)
+		assert.NoError(t, err)
+
+		time.Sleep(time.Second)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with error querying database", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+		expectedCount := uint64(20)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
+			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedGetQuery)).
+			WithArgs(
+				uint64(1),
+				uint64(1001),
+			).
+			WillReturnError(errors.New("blah"))
+
+		out := make(chan []models.ValidIngredientPreparation)
+
+		err := p.GetAllValidIngredientPreparations(ctx, out)
+		assert.NoError(t, err)
+
+		time.Sleep(time.Second)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with invalid response from database", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
+		expectedCount := uint64(20)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
+			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedGetQuery)).
+			WithArgs(
+				uint64(1),
+				uint64(1001),
+			).
+			WillReturnRows(buildErroneousMockRowFromValidIngredientPreparation(exampleValidIngredientPreparation))
+
+		out := make(chan []models.ValidIngredientPreparation)
+
+		err := p.GetAllValidIngredientPreparations(ctx, out)
+		assert.NoError(t, err)
+
+		time.Sleep(time.Second)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+}
+
 func TestPostgres_buildGetValidIngredientPreparationsQuery(T *testing.T) {
 	T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 		filter := fakemodels.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT valid_ingredient_preparations.id, valid_ingredient_preparations.notes, valid_ingredient_preparations.created_on, valid_ingredient_preparations.updated_on, valid_ingredient_preparations.archived_on, valid_ingredient_preparations.belongs_to_valid_ingredient, (SELECT COUNT(valid_ingredient_preparations.id) FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.archived_on IS NULL) FROM valid_ingredient_preparations JOIN valid_ingredients ON valid_ingredient_preparations.belongs_to_valid_ingredient=valid_ingredients.id WHERE valid_ingredient_preparations.archived_on IS NULL AND valid_ingredient_preparations.belongs_to_valid_ingredient = $1 AND valid_ingredients.id = $2 AND valid_ingredient_preparations.created_on > $3 AND valid_ingredient_preparations.created_on < $4 AND valid_ingredient_preparations.updated_on > $5 AND valid_ingredient_preparations.updated_on < $6 ORDER BY valid_ingredient_preparations.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT valid_ingredient_preparations.id, valid_ingredient_preparations.notes, valid_ingredient_preparations.valid_preparation_id, valid_ingredient_preparations.valid_ingredient_id, valid_ingredient_preparations.created_on, valid_ingredient_preparations.last_updated_on, valid_ingredient_preparations.archived_on, (SELECT COUNT(valid_ingredient_preparations.id) FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.archived_on IS NULL) FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.archived_on IS NULL AND valid_ingredient_preparations.created_on > $1 AND valid_ingredient_preparations.created_on < $2 AND valid_ingredient_preparations.last_updated_on > $3 AND valid_ingredient_preparations.last_updated_on < $4 ORDER BY valid_ingredient_preparations.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
-			exampleValidIngredient.ID,
-			exampleValidIngredient.ID,
 			filter.CreatedAfter,
 			filter.CreatedBefore,
 			filter.UpdatedAfter,
 			filter.UpdatedBefore,
 		}
-		actualQuery, actualArgs := p.buildGetValidIngredientPreparationsQuery(exampleValidIngredient.ID, filter)
+		actualQuery, actualArgs := p.buildGetValidIngredientPreparationsQuery(filter)
 
 		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
@@ -302,32 +453,26 @@ func TestPostgres_buildGetValidIngredientPreparationsQuery(T *testing.T) {
 func TestPostgres_GetValidIngredientPreparations(T *testing.T) {
 	T.Parallel()
 
-	expectedListQuery := "SELECT valid_ingredient_preparations.id, valid_ingredient_preparations.notes, valid_ingredient_preparations.created_on, valid_ingredient_preparations.updated_on, valid_ingredient_preparations.archived_on, valid_ingredient_preparations.belongs_to_valid_ingredient, (SELECT COUNT(valid_ingredient_preparations.id) FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.archived_on IS NULL) FROM valid_ingredient_preparations JOIN valid_ingredients ON valid_ingredient_preparations.belongs_to_valid_ingredient=valid_ingredients.id WHERE valid_ingredient_preparations.archived_on IS NULL AND valid_ingredient_preparations.belongs_to_valid_ingredient = $1 AND valid_ingredients.id = $2 ORDER BY valid_ingredient_preparations.id LIMIT 20"
+	expectedQuery := "SELECT valid_ingredient_preparations.id, valid_ingredient_preparations.notes, valid_ingredient_preparations.valid_preparation_id, valid_ingredient_preparations.valid_ingredient_id, valid_ingredient_preparations.created_on, valid_ingredient_preparations.last_updated_on, valid_ingredient_preparations.archived_on, (SELECT COUNT(valid_ingredient_preparations.id) FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.archived_on IS NULL) FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.archived_on IS NULL ORDER BY valid_ingredient_preparations.id LIMIT 20"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
-
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 
 		p, mockDB := buildTestService(t)
 		filter := models.DefaultQueryFilter()
 
 		exampleValidIngredientPreparationList := fakemodels.BuildFakeValidIngredientPreparationList()
 
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(
-				exampleValidIngredient.ID,
-				exampleValidIngredient.ID,
-			).
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WillReturnRows(
-				buildMockRowsFromValidIngredientPreparation(
+				buildMockRowsFromValidIngredientPreparations(
 					&exampleValidIngredientPreparationList.ValidIngredientPreparations[0],
 					&exampleValidIngredientPreparationList.ValidIngredientPreparations[1],
 					&exampleValidIngredientPreparationList.ValidIngredientPreparations[2],
 				),
 			)
 
-		actual, err := p.GetValidIngredientPreparations(ctx, exampleValidIngredient.ID, filter)
+		actual, err := p.GetValidIngredientPreparations(ctx, filter)
 
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidIngredientPreparationList, actual)
@@ -338,19 +483,13 @@ func TestPostgres_GetValidIngredientPreparations(T *testing.T) {
 	T.Run("surfaces sql.ErrNoRows", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
-
 		p, mockDB := buildTestService(t)
 		filter := models.DefaultQueryFilter()
 
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(
-				exampleValidIngredient.ID,
-				exampleValidIngredient.ID,
-			).
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WillReturnError(sql.ErrNoRows)
 
-		actual, err := p.GetValidIngredientPreparations(ctx, exampleValidIngredient.ID, filter)
+		actual, err := p.GetValidIngredientPreparations(ctx, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 		assert.Equal(t, sql.ErrNoRows, err)
@@ -361,19 +500,13 @@ func TestPostgres_GetValidIngredientPreparations(T *testing.T) {
 	T.Run("with error executing read query", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
-
 		p, mockDB := buildTestService(t)
 		filter := models.DefaultQueryFilter()
 
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(
-				exampleValidIngredient.ID,
-				exampleValidIngredient.ID,
-			).
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := p.GetValidIngredientPreparations(ctx, exampleValidIngredient.ID, filter)
+		actual, err := p.GetValidIngredientPreparations(ctx, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -383,21 +516,138 @@ func TestPostgres_GetValidIngredientPreparations(T *testing.T) {
 	T.Run("with error scanning valid ingredient preparation", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
-
 		p, mockDB := buildTestService(t)
 		filter := models.DefaultQueryFilter()
 
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
 
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
-			WithArgs(
-				exampleValidIngredient.ID,
-				exampleValidIngredient.ID,
-			).
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WillReturnRows(buildErroneousMockRowFromValidIngredientPreparation(exampleValidIngredientPreparation))
 
-		actual, err := p.GetValidIngredientPreparations(ctx, exampleValidIngredient.ID, filter)
+		actual, err := p.GetValidIngredientPreparations(ctx, filter)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+}
+
+func TestPostgres_buildGetValidIngredientPreparationsWithIDsQuery(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		p, _ := buildTestService(t)
+
+		exampleIDs := []uint64{
+			789,
+			123,
+			456,
+		}
+
+		expectedQuery := fmt.Sprintf("SELECT valid_ingredient_preparations.id, valid_ingredient_preparations.notes, valid_ingredient_preparations.valid_preparation_id, valid_ingredient_preparations.valid_ingredient_id, valid_ingredient_preparations.created_on, valid_ingredient_preparations.last_updated_on, valid_ingredient_preparations.archived_on FROM (SELECT valid_ingredient_preparations.id, valid_ingredient_preparations.notes, valid_ingredient_preparations.valid_preparation_id, valid_ingredient_preparations.valid_ingredient_id, valid_ingredient_preparations.created_on, valid_ingredient_preparations.last_updated_on, valid_ingredient_preparations.archived_on FROM valid_ingredient_preparations JOIN unnest('{%s}'::int[]) WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d) AS valid_ingredient_preparations WHERE valid_ingredient_preparations.archived_on IS NULL", joinUint64s(exampleIDs), defaultLimit)
+		expectedArgs := []interface{}(nil)
+		actualQuery, actualArgs := p.buildGetValidIngredientPreparationsWithIDsQuery(defaultLimit, exampleIDs)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+}
+
+func TestPostgres_GetValidIngredientPreparationsWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+
+		exampleValidIngredientPreparationList := fakemodels.BuildFakeValidIngredientPreparationList()
+		var exampleIDs []uint64
+		for _, validIngredientPreparation := range exampleValidIngredientPreparationList.ValidIngredientPreparations {
+			exampleIDs = append(exampleIDs, validIngredientPreparation.ID)
+		}
+
+		expectedQuery := fmt.Sprintf("SELECT valid_ingredient_preparations.id, valid_ingredient_preparations.notes, valid_ingredient_preparations.valid_preparation_id, valid_ingredient_preparations.valid_ingredient_id, valid_ingredient_preparations.created_on, valid_ingredient_preparations.last_updated_on, valid_ingredient_preparations.archived_on FROM (SELECT valid_ingredient_preparations.id, valid_ingredient_preparations.notes, valid_ingredient_preparations.valid_preparation_id, valid_ingredient_preparations.valid_ingredient_id, valid_ingredient_preparations.created_on, valid_ingredient_preparations.last_updated_on, valid_ingredient_preparations.archived_on FROM valid_ingredient_preparations JOIN unnest('{%s}'::int[]) WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d) AS valid_ingredient_preparations WHERE valid_ingredient_preparations.archived_on IS NULL", joinUint64s(exampleIDs), defaultLimit)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+			WithArgs().
+			WillReturnRows(
+				buildMockRowsFromValidIngredientPreparations(
+					&exampleValidIngredientPreparationList.ValidIngredientPreparations[0],
+					&exampleValidIngredientPreparationList.ValidIngredientPreparations[1],
+					&exampleValidIngredientPreparationList.ValidIngredientPreparations[2],
+				),
+			)
+
+		actual, err := p.GetValidIngredientPreparationsWithIDs(ctx, defaultLimit, exampleIDs)
+
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidIngredientPreparationList.ValidIngredientPreparations, actual)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("surfaces sql.ErrNoRows", func(t *testing.T) {
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+
+		exampleIDs := []uint64{123, 456, 789}
+
+		expectedQuery := fmt.Sprintf("SELECT valid_ingredient_preparations.id, valid_ingredient_preparations.notes, valid_ingredient_preparations.valid_preparation_id, valid_ingredient_preparations.valid_ingredient_id, valid_ingredient_preparations.created_on, valid_ingredient_preparations.last_updated_on, valid_ingredient_preparations.archived_on FROM (SELECT valid_ingredient_preparations.id, valid_ingredient_preparations.notes, valid_ingredient_preparations.valid_preparation_id, valid_ingredient_preparations.valid_ingredient_id, valid_ingredient_preparations.created_on, valid_ingredient_preparations.last_updated_on, valid_ingredient_preparations.archived_on FROM valid_ingredient_preparations JOIN unnest('{%s}'::int[]) WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d) AS valid_ingredient_preparations WHERE valid_ingredient_preparations.archived_on IS NULL", joinUint64s(exampleIDs), defaultLimit)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+			WithArgs().
+			WillReturnError(sql.ErrNoRows)
+
+		actual, err := p.GetValidIngredientPreparationsWithIDs(ctx, defaultLimit, exampleIDs)
+
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+		assert.Equal(t, sql.ErrNoRows, err)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with error executing read query", func(t *testing.T) {
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+
+		exampleIDs := []uint64{123, 456, 789}
+
+		expectedQuery := fmt.Sprintf("SELECT valid_ingredient_preparations.id, valid_ingredient_preparations.notes, valid_ingredient_preparations.valid_preparation_id, valid_ingredient_preparations.valid_ingredient_id, valid_ingredient_preparations.created_on, valid_ingredient_preparations.last_updated_on, valid_ingredient_preparations.archived_on FROM (SELECT valid_ingredient_preparations.id, valid_ingredient_preparations.notes, valid_ingredient_preparations.valid_preparation_id, valid_ingredient_preparations.valid_ingredient_id, valid_ingredient_preparations.created_on, valid_ingredient_preparations.last_updated_on, valid_ingredient_preparations.archived_on FROM valid_ingredient_preparations JOIN unnest('{%s}'::int[]) WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d) AS valid_ingredient_preparations WHERE valid_ingredient_preparations.archived_on IS NULL", joinUint64s(exampleIDs), defaultLimit)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+			WithArgs().
+			WillReturnError(errors.New("blah"))
+
+		actual, err := p.GetValidIngredientPreparationsWithIDs(ctx, defaultLimit, exampleIDs)
+
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with error scanning valid ingredient preparation", func(t *testing.T) {
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+
+		exampleIDs := []uint64{123, 456, 789}
+
+		expectedQuery := fmt.Sprintf("SELECT valid_ingredient_preparations.id, valid_ingredient_preparations.notes, valid_ingredient_preparations.valid_preparation_id, valid_ingredient_preparations.valid_ingredient_id, valid_ingredient_preparations.created_on, valid_ingredient_preparations.last_updated_on, valid_ingredient_preparations.archived_on FROM (SELECT valid_ingredient_preparations.id, valid_ingredient_preparations.notes, valid_ingredient_preparations.valid_preparation_id, valid_ingredient_preparations.valid_ingredient_id, valid_ingredient_preparations.created_on, valid_ingredient_preparations.last_updated_on, valid_ingredient_preparations.archived_on FROM valid_ingredient_preparations JOIN unnest('{%s}'::int[]) WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d) AS valid_ingredient_preparations WHERE valid_ingredient_preparations.archived_on IS NULL", joinUint64s(exampleIDs), defaultLimit)
+
+		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+			WithArgs().
+			WillReturnRows(buildErroneousMockRowFromValidIngredientPreparation(exampleValidIngredientPreparation))
+
+		actual, err := p.GetValidIngredientPreparationsWithIDs(ctx, defaultLimit, exampleIDs)
+
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -411,14 +661,13 @@ func TestPostgres_buildCreateValidIngredientPreparationQuery(T *testing.T) {
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 
-		expectedQuery := "INSERT INTO valid_ingredient_preparations (notes,belongs_to_valid_ingredient) VALUES ($1,$2) RETURNING id, created_on"
+		expectedQuery := "INSERT INTO valid_ingredient_preparations (notes,valid_preparation_id,valid_ingredient_id) VALUES ($1,$2,$3) RETURNING id, created_on"
 		expectedArgs := []interface{}{
 			exampleValidIngredientPreparation.Notes,
-			exampleValidIngredientPreparation.BelongsToValidIngredient,
+			exampleValidIngredientPreparation.ValidPreparationID,
+			exampleValidIngredientPreparation.ValidIngredientID,
 		}
 		actualQuery, actualArgs := p.buildCreateValidIngredientPreparationQuery(exampleValidIngredientPreparation)
 
@@ -431,23 +680,22 @@ func TestPostgres_buildCreateValidIngredientPreparationQuery(T *testing.T) {
 func TestPostgres_CreateValidIngredientPreparation(T *testing.T) {
 	T.Parallel()
 
-	expectedCreationQuery := "INSERT INTO valid_ingredient_preparations (notes,belongs_to_valid_ingredient) VALUES ($1,$2) RETURNING id, created_on"
+	expectedCreationQuery := "INSERT INTO valid_ingredient_preparations (notes,valid_preparation_id,valid_ingredient_id) VALUES ($1,$2,$3) RETURNING id, created_on"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 		exampleInput := fakemodels.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
 
 		exampleRows := sqlmock.NewRows([]string{"id", "created_on"}).AddRow(exampleValidIngredientPreparation.ID, exampleValidIngredientPreparation.CreatedOn)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCreationQuery)).
 			WithArgs(
 				exampleValidIngredientPreparation.Notes,
-				exampleValidIngredientPreparation.BelongsToValidIngredient,
+				exampleValidIngredientPreparation.ValidPreparationID,
+				exampleValidIngredientPreparation.ValidIngredientID,
 			).WillReturnRows(exampleRows)
 
 		actual, err := p.CreateValidIngredientPreparation(ctx, exampleInput)
@@ -462,15 +710,14 @@ func TestPostgres_CreateValidIngredientPreparation(T *testing.T) {
 
 		p, mockDB := buildTestService(t)
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 		exampleInput := fakemodels.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
 
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCreationQuery)).
 			WithArgs(
 				exampleValidIngredientPreparation.Notes,
-				exampleValidIngredientPreparation.BelongsToValidIngredient,
+				exampleValidIngredientPreparation.ValidPreparationID,
+				exampleValidIngredientPreparation.ValidIngredientID,
 			).WillReturnError(errors.New("blah"))
 
 		actual, err := p.CreateValidIngredientPreparation(ctx, exampleInput)
@@ -487,14 +734,13 @@ func TestPostgres_buildUpdateValidIngredientPreparationQuery(T *testing.T) {
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 
-		expectedQuery := "UPDATE valid_ingredient_preparations SET notes = $1, updated_on = extract(epoch FROM NOW()) WHERE belongs_to_valid_ingredient = $2 AND id = $3 RETURNING updated_on"
+		expectedQuery := "UPDATE valid_ingredient_preparations SET notes = $1, valid_preparation_id = $2, valid_ingredient_id = $3, last_updated_on = extract(epoch FROM NOW()) WHERE id = $4 RETURNING last_updated_on"
 		expectedArgs := []interface{}{
 			exampleValidIngredientPreparation.Notes,
-			exampleValidIngredientPreparation.BelongsToValidIngredient,
+			exampleValidIngredientPreparation.ValidPreparationID,
+			exampleValidIngredientPreparation.ValidIngredientID,
 			exampleValidIngredientPreparation.ID,
 		}
 		actualQuery, actualArgs := p.buildUpdateValidIngredientPreparationQuery(exampleValidIngredientPreparation)
@@ -508,22 +754,21 @@ func TestPostgres_buildUpdateValidIngredientPreparationQuery(T *testing.T) {
 func TestPostgres_UpdateValidIngredientPreparation(T *testing.T) {
 	T.Parallel()
 
-	expectedQuery := "UPDATE valid_ingredient_preparations SET notes = $1, updated_on = extract(epoch FROM NOW()) WHERE belongs_to_valid_ingredient = $2 AND id = $3 RETURNING updated_on"
+	expectedQuery := "UPDATE valid_ingredient_preparations SET notes = $1, valid_preparation_id = $2, valid_ingredient_id = $3, last_updated_on = extract(epoch FROM NOW()) WHERE id = $4 RETURNING last_updated_on"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 
-		exampleRows := sqlmock.NewRows([]string{"updated_on"}).AddRow(uint64(time.Now().Unix()))
+		exampleRows := sqlmock.NewRows([]string{"last_updated_on"}).AddRow(uint64(time.Now().Unix()))
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
 				exampleValidIngredientPreparation.Notes,
-				exampleValidIngredientPreparation.BelongsToValidIngredient,
+				exampleValidIngredientPreparation.ValidPreparationID,
+				exampleValidIngredientPreparation.ValidIngredientID,
 				exampleValidIngredientPreparation.ID,
 			).WillReturnRows(exampleRows)
 
@@ -538,14 +783,13 @@ func TestPostgres_UpdateValidIngredientPreparation(T *testing.T) {
 
 		p, mockDB := buildTestService(t)
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
 				exampleValidIngredientPreparation.Notes,
-				exampleValidIngredientPreparation.BelongsToValidIngredient,
+				exampleValidIngredientPreparation.ValidPreparationID,
+				exampleValidIngredientPreparation.ValidIngredientID,
 				exampleValidIngredientPreparation.ID,
 			).WillReturnError(errors.New("blah"))
 
@@ -562,16 +806,13 @@ func TestPostgres_buildArchiveValidIngredientPreparationQuery(T *testing.T) {
 	T.Run("happy path", func(t *testing.T) {
 		p, _ := buildTestService(t)
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 
-		expectedQuery := "UPDATE valid_ingredient_preparations SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_valid_ingredient = $1 AND id = $2 RETURNING archived_on"
+		expectedQuery := "UPDATE valid_ingredient_preparations SET last_updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $1 RETURNING archived_on"
 		expectedArgs := []interface{}{
-			exampleValidIngredient.ID,
 			exampleValidIngredientPreparation.ID,
 		}
-		actualQuery, actualArgs := p.buildArchiveValidIngredientPreparationQuery(exampleValidIngredient.ID, exampleValidIngredientPreparation.ID)
+		actualQuery, actualArgs := p.buildArchiveValidIngredientPreparationQuery(exampleValidIngredientPreparation.ID)
 
 		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
@@ -582,24 +823,21 @@ func TestPostgres_buildArchiveValidIngredientPreparationQuery(T *testing.T) {
 func TestPostgres_ArchiveValidIngredientPreparation(T *testing.T) {
 	T.Parallel()
 
-	expectedQuery := "UPDATE valid_ingredient_preparations SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_valid_ingredient = $1 AND id = $2 RETURNING archived_on"
+	expectedQuery := "UPDATE valid_ingredient_preparations SET last_updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $1 RETURNING archived_on"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
 
 		p, mockDB := buildTestService(t)
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 
 		mockDB.ExpectExec(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				exampleValidIngredient.ID,
 				exampleValidIngredientPreparation.ID,
 			).WillReturnResult(sqlmock.NewResult(1, 1))
 
-		err := p.ArchiveValidIngredientPreparation(ctx, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID)
+		err := p.ArchiveValidIngredientPreparation(ctx, exampleValidIngredientPreparation.ID)
 		assert.NoError(t, err)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
@@ -610,17 +848,14 @@ func TestPostgres_ArchiveValidIngredientPreparation(T *testing.T) {
 
 		p, mockDB := buildTestService(t)
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 
 		mockDB.ExpectExec(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				exampleValidIngredient.ID,
 				exampleValidIngredientPreparation.ID,
 			).WillReturnResult(sqlmock.NewResult(0, 0))
 
-		err := p.ArchiveValidIngredientPreparation(ctx, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID)
+		err := p.ArchiveValidIngredientPreparation(ctx, exampleValidIngredientPreparation.ID)
 		assert.Error(t, err)
 		assert.Equal(t, sql.ErrNoRows, err)
 
@@ -632,17 +867,14 @@ func TestPostgres_ArchiveValidIngredientPreparation(T *testing.T) {
 
 		p, mockDB := buildTestService(t)
 
-		exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
 		exampleValidIngredientPreparation := fakemodels.BuildFakeValidIngredientPreparation()
-		exampleValidIngredientPreparation.BelongsToValidIngredient = exampleValidIngredient.ID
 
 		mockDB.ExpectExec(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				exampleValidIngredient.ID,
 				exampleValidIngredientPreparation.ID,
 			).WillReturnError(errors.New("blah"))
 
-		err := p.ArchiveValidIngredientPreparation(ctx, exampleValidIngredient.ID, exampleValidIngredientPreparation.ID)
+		err := p.ArchiveValidIngredientPreparation(ctx, exampleValidIngredientPreparation.ID)
 		assert.Error(t, err)
 
 		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")

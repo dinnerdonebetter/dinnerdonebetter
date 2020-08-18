@@ -15,14 +15,12 @@ const (
 )
 
 // BuildRequiredPreparationInstrumentExistsRequest builds an HTTP request for checking the existence of a required preparation instrument.
-func (c *V1Client) BuildRequiredPreparationInstrumentExistsRequest(ctx context.Context, validPreparationID, requiredPreparationInstrumentID uint64) (*http.Request, error) {
+func (c *V1Client) BuildRequiredPreparationInstrumentExistsRequest(ctx context.Context, requiredPreparationInstrumentID uint64) (*http.Request, error) {
 	ctx, span := tracing.StartSpan(ctx, "BuildRequiredPreparationInstrumentExistsRequest")
 	defer span.End()
 
 	uri := c.BuildURL(
 		nil,
-		validPreparationsBasePath,
-		strconv.FormatUint(validPreparationID, 10),
 		requiredPreparationInstrumentsBasePath,
 		strconv.FormatUint(requiredPreparationInstrumentID, 10),
 	)
@@ -32,11 +30,11 @@ func (c *V1Client) BuildRequiredPreparationInstrumentExistsRequest(ctx context.C
 }
 
 // RequiredPreparationInstrumentExists retrieves whether or not a required preparation instrument exists.
-func (c *V1Client) RequiredPreparationInstrumentExists(ctx context.Context, validPreparationID, requiredPreparationInstrumentID uint64) (exists bool, err error) {
+func (c *V1Client) RequiredPreparationInstrumentExists(ctx context.Context, requiredPreparationInstrumentID uint64) (exists bool, err error) {
 	ctx, span := tracing.StartSpan(ctx, "RequiredPreparationInstrumentExists")
 	defer span.End()
 
-	req, err := c.BuildRequiredPreparationInstrumentExistsRequest(ctx, validPreparationID, requiredPreparationInstrumentID)
+	req, err := c.BuildRequiredPreparationInstrumentExistsRequest(ctx, requiredPreparationInstrumentID)
 	if err != nil {
 		return false, fmt.Errorf("building request: %w", err)
 	}
@@ -45,14 +43,12 @@ func (c *V1Client) RequiredPreparationInstrumentExists(ctx context.Context, vali
 }
 
 // BuildGetRequiredPreparationInstrumentRequest builds an HTTP request for fetching a required preparation instrument.
-func (c *V1Client) BuildGetRequiredPreparationInstrumentRequest(ctx context.Context, validPreparationID, requiredPreparationInstrumentID uint64) (*http.Request, error) {
+func (c *V1Client) BuildGetRequiredPreparationInstrumentRequest(ctx context.Context, requiredPreparationInstrumentID uint64) (*http.Request, error) {
 	ctx, span := tracing.StartSpan(ctx, "BuildGetRequiredPreparationInstrumentRequest")
 	defer span.End()
 
 	uri := c.BuildURL(
 		nil,
-		validPreparationsBasePath,
-		strconv.FormatUint(validPreparationID, 10),
 		requiredPreparationInstrumentsBasePath,
 		strconv.FormatUint(requiredPreparationInstrumentID, 10),
 	)
@@ -62,11 +58,11 @@ func (c *V1Client) BuildGetRequiredPreparationInstrumentRequest(ctx context.Cont
 }
 
 // GetRequiredPreparationInstrument retrieves a required preparation instrument.
-func (c *V1Client) GetRequiredPreparationInstrument(ctx context.Context, validPreparationID, requiredPreparationInstrumentID uint64) (requiredPreparationInstrument *models.RequiredPreparationInstrument, err error) {
+func (c *V1Client) GetRequiredPreparationInstrument(ctx context.Context, requiredPreparationInstrumentID uint64) (requiredPreparationInstrument *models.RequiredPreparationInstrument, err error) {
 	ctx, span := tracing.StartSpan(ctx, "GetRequiredPreparationInstrument")
 	defer span.End()
 
-	req, err := c.BuildGetRequiredPreparationInstrumentRequest(ctx, validPreparationID, requiredPreparationInstrumentID)
+	req, err := c.BuildGetRequiredPreparationInstrumentRequest(ctx, requiredPreparationInstrumentID)
 	if err != nil {
 		return nil, fmt.Errorf("building request: %w", err)
 	}
@@ -79,14 +75,12 @@ func (c *V1Client) GetRequiredPreparationInstrument(ctx context.Context, validPr
 }
 
 // BuildGetRequiredPreparationInstrumentsRequest builds an HTTP request for fetching required preparation instruments.
-func (c *V1Client) BuildGetRequiredPreparationInstrumentsRequest(ctx context.Context, validPreparationID uint64, filter *models.QueryFilter) (*http.Request, error) {
+func (c *V1Client) BuildGetRequiredPreparationInstrumentsRequest(ctx context.Context, filter *models.QueryFilter) (*http.Request, error) {
 	ctx, span := tracing.StartSpan(ctx, "BuildGetRequiredPreparationInstrumentsRequest")
 	defer span.End()
 
 	uri := c.BuildURL(
 		filter.ToValues(),
-		validPreparationsBasePath,
-		strconv.FormatUint(validPreparationID, 10),
 		requiredPreparationInstrumentsBasePath,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
@@ -95,11 +89,11 @@ func (c *V1Client) BuildGetRequiredPreparationInstrumentsRequest(ctx context.Con
 }
 
 // GetRequiredPreparationInstruments retrieves a list of required preparation instruments.
-func (c *V1Client) GetRequiredPreparationInstruments(ctx context.Context, validPreparationID uint64, filter *models.QueryFilter) (requiredPreparationInstruments *models.RequiredPreparationInstrumentList, err error) {
+func (c *V1Client) GetRequiredPreparationInstruments(ctx context.Context, filter *models.QueryFilter) (requiredPreparationInstruments *models.RequiredPreparationInstrumentList, err error) {
 	ctx, span := tracing.StartSpan(ctx, "GetRequiredPreparationInstruments")
 	defer span.End()
 
-	req, err := c.BuildGetRequiredPreparationInstrumentsRequest(ctx, validPreparationID, filter)
+	req, err := c.BuildGetRequiredPreparationInstrumentsRequest(ctx, filter)
 	if err != nil {
 		return nil, fmt.Errorf("building request: %w", err)
 	}
@@ -118,8 +112,6 @@ func (c *V1Client) BuildCreateRequiredPreparationInstrumentRequest(ctx context.C
 
 	uri := c.BuildURL(
 		nil,
-		validPreparationsBasePath,
-		strconv.FormatUint(input.BelongsToValidPreparation, 10),
 		requiredPreparationInstrumentsBasePath,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
@@ -148,8 +140,6 @@ func (c *V1Client) BuildUpdateRequiredPreparationInstrumentRequest(ctx context.C
 
 	uri := c.BuildURL(
 		nil,
-		validPreparationsBasePath,
-		strconv.FormatUint(requiredPreparationInstrument.BelongsToValidPreparation, 10),
 		requiredPreparationInstrumentsBasePath,
 		strconv.FormatUint(requiredPreparationInstrument.ID, 10),
 	)
@@ -172,14 +162,12 @@ func (c *V1Client) UpdateRequiredPreparationInstrument(ctx context.Context, requ
 }
 
 // BuildArchiveRequiredPreparationInstrumentRequest builds an HTTP request for updating a required preparation instrument.
-func (c *V1Client) BuildArchiveRequiredPreparationInstrumentRequest(ctx context.Context, validPreparationID, requiredPreparationInstrumentID uint64) (*http.Request, error) {
+func (c *V1Client) BuildArchiveRequiredPreparationInstrumentRequest(ctx context.Context, requiredPreparationInstrumentID uint64) (*http.Request, error) {
 	ctx, span := tracing.StartSpan(ctx, "BuildArchiveRequiredPreparationInstrumentRequest")
 	defer span.End()
 
 	uri := c.BuildURL(
 		nil,
-		validPreparationsBasePath,
-		strconv.FormatUint(validPreparationID, 10),
 		requiredPreparationInstrumentsBasePath,
 		strconv.FormatUint(requiredPreparationInstrumentID, 10),
 	)
@@ -189,11 +177,11 @@ func (c *V1Client) BuildArchiveRequiredPreparationInstrumentRequest(ctx context.
 }
 
 // ArchiveRequiredPreparationInstrument archives a required preparation instrument.
-func (c *V1Client) ArchiveRequiredPreparationInstrument(ctx context.Context, validPreparationID, requiredPreparationInstrumentID uint64) error {
+func (c *V1Client) ArchiveRequiredPreparationInstrument(ctx context.Context, requiredPreparationInstrumentID uint64) error {
 	ctx, span := tracing.StartSpan(ctx, "ArchiveRequiredPreparationInstrument")
 	defer span.End()
 
-	req, err := c.BuildArchiveRequiredPreparationInstrumentRequest(ctx, validPreparationID, requiredPreparationInstrumentID)
+	req, err := c.BuildArchiveRequiredPreparationInstrumentRequest(ctx, requiredPreparationInstrumentID)
 	if err != nil {
 		return fmt.Errorf("building request: %w", err)
 	}

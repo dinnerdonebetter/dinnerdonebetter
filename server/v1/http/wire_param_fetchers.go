@@ -5,23 +5,21 @@ import (
 	"strconv"
 
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
-	ingredienttagmappingsservice "gitlab.com/prixfixe/prixfixe/services/v1/ingredienttagmappings"
 	invitationsservice "gitlab.com/prixfixe/prixfixe/services/v1/invitations"
 	iterationmediasservice "gitlab.com/prixfixe/prixfixe/services/v1/iterationmedias"
 	oauth2clientsservice "gitlab.com/prixfixe/prixfixe/services/v1/oauth2clients"
 	recipeiterationsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipeiterations"
-	recipeiterationstepsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipeiterationsteps"
 	recipesservice "gitlab.com/prixfixe/prixfixe/services/v1/recipes"
+	recipestepeventsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipestepevents"
 	recipestepingredientsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipestepingredients"
-	recipesteppreparationsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipesteppreparations"
+	recipestepinstrumentsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipestepinstruments"
+	recipestepproductsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipestepproducts"
 	recipestepsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipesteps"
-	recipetagsservice "gitlab.com/prixfixe/prixfixe/services/v1/recipetags"
 	reportsservice "gitlab.com/prixfixe/prixfixe/services/v1/reports"
 	requiredpreparationinstrumentsservice "gitlab.com/prixfixe/prixfixe/services/v1/requiredpreparationinstruments"
 	usersservice "gitlab.com/prixfixe/prixfixe/services/v1/users"
 	validingredientpreparationsservice "gitlab.com/prixfixe/prixfixe/services/v1/validingredientpreparations"
 	validingredientsservice "gitlab.com/prixfixe/prixfixe/services/v1/validingredients"
-	validingredienttagsservice "gitlab.com/prixfixe/prixfixe/services/v1/validingredienttags"
 	validinstrumentsservice "gitlab.com/prixfixe/prixfixe/services/v1/validinstruments"
 	validpreparationsservice "gitlab.com/prixfixe/prixfixe/services/v1/validpreparations"
 	webhooksservice "gitlab.com/prixfixe/prixfixe/services/v1/webhooks"
@@ -35,50 +33,67 @@ var (
 	paramFetcherProviders = wire.NewSet(
 		ProvideUsersServiceUserIDFetcher,
 		ProvideOAuth2ClientsServiceClientIDFetcher,
+		ProvideWebhooksServiceWebhookIDFetcher,
+		ProvideWebhooksServiceUserIDFetcher,
 		ProvideValidInstrumentsServiceValidInstrumentIDFetcher,
 		ProvideValidIngredientsServiceValidIngredientIDFetcher,
-		ProvideValidIngredientTagsServiceValidIngredientTagIDFetcher,
-		ProvideIngredientTagMappingsServiceValidIngredientIDFetcher,
-		ProvideIngredientTagMappingsServiceIngredientTagMappingIDFetcher,
 		ProvideValidPreparationsServiceValidPreparationIDFetcher,
-		ProvideRequiredPreparationInstrumentsServiceValidPreparationIDFetcher,
-		ProvideRequiredPreparationInstrumentsServiceRequiredPreparationInstrumentIDFetcher,
-		ProvideValidIngredientPreparationsServiceValidIngredientIDFetcher,
 		ProvideValidIngredientPreparationsServiceValidIngredientPreparationIDFetcher,
-		ProvideRecipesServiceUserIDFetcher,
+		ProvideRequiredPreparationInstrumentsServiceRequiredPreparationInstrumentIDFetcher,
 		ProvideRecipesServiceRecipeIDFetcher,
-		ProvideRecipeTagsServiceUserIDFetcher,
-		ProvideRecipeTagsServiceRecipeIDFetcher,
-		ProvideRecipeTagsServiceRecipeTagIDFetcher,
-		ProvideRecipeStepsServiceUserIDFetcher,
+		ProvideRecipesServiceUserIDFetcher,
 		ProvideRecipeStepsServiceRecipeIDFetcher,
 		ProvideRecipeStepsServiceRecipeStepIDFetcher,
-		ProvideRecipeStepPreparationsServiceUserIDFetcher,
-		ProvideRecipeStepPreparationsServiceRecipeIDFetcher,
-		ProvideRecipeStepPreparationsServiceRecipeStepIDFetcher,
-		ProvideRecipeStepPreparationsServiceRecipeStepPreparationIDFetcher,
-		ProvideRecipeStepIngredientsServiceUserIDFetcher,
+		ProvideRecipeStepsServiceUserIDFetcher,
+		ProvideRecipeStepInstrumentsServiceRecipeIDFetcher,
+		ProvideRecipeStepInstrumentsServiceRecipeStepIDFetcher,
+		ProvideRecipeStepInstrumentsServiceRecipeStepInstrumentIDFetcher,
+		ProvideRecipeStepInstrumentsServiceUserIDFetcher,
 		ProvideRecipeStepIngredientsServiceRecipeIDFetcher,
 		ProvideRecipeStepIngredientsServiceRecipeStepIDFetcher,
 		ProvideRecipeStepIngredientsServiceRecipeStepIngredientIDFetcher,
-		ProvideRecipeIterationsServiceUserIDFetcher,
+		ProvideRecipeStepIngredientsServiceUserIDFetcher,
+		ProvideRecipeStepProductsServiceRecipeIDFetcher,
+		ProvideRecipeStepProductsServiceRecipeStepIDFetcher,
+		ProvideRecipeStepProductsServiceRecipeStepProductIDFetcher,
+		ProvideRecipeStepProductsServiceUserIDFetcher,
 		ProvideRecipeIterationsServiceRecipeIDFetcher,
 		ProvideRecipeIterationsServiceRecipeIterationIDFetcher,
-		ProvideRecipeIterationStepsServiceUserIDFetcher,
-		ProvideRecipeIterationStepsServiceRecipeIDFetcher,
-		ProvideRecipeIterationStepsServiceRecipeIterationStepIDFetcher,
-		ProvideIterationMediasServiceUserIDFetcher,
+		ProvideRecipeIterationsServiceUserIDFetcher,
+		ProvideRecipeStepEventsServiceRecipeIDFetcher,
+		ProvideRecipeStepEventsServiceRecipeStepIDFetcher,
+		ProvideRecipeStepEventsServiceRecipeStepEventIDFetcher,
+		ProvideRecipeStepEventsServiceUserIDFetcher,
 		ProvideIterationMediasServiceRecipeIDFetcher,
 		ProvideIterationMediasServiceRecipeIterationIDFetcher,
 		ProvideIterationMediasServiceIterationMediaIDFetcher,
-		ProvideInvitationsServiceUserIDFetcher,
+		ProvideIterationMediasServiceUserIDFetcher,
 		ProvideInvitationsServiceInvitationIDFetcher,
-		ProvideReportsServiceUserIDFetcher,
+		ProvideInvitationsServiceUserIDFetcher,
 		ProvideReportsServiceReportIDFetcher,
-		ProvideWebhooksServiceUserIDFetcher,
-		ProvideWebhooksServiceWebhookIDFetcher,
+		ProvideReportsServiceUserIDFetcher,
 	)
 )
+
+// ProvideUsersServiceUserIDFetcher provides a UsernameFetcher.
+func ProvideUsersServiceUserIDFetcher(logger logging.Logger) usersservice.UserIDFetcher {
+	return buildRouteParamUserIDFetcher(logger)
+}
+
+// ProvideOAuth2ClientsServiceClientIDFetcher provides a ClientIDFetcher.
+func ProvideOAuth2ClientsServiceClientIDFetcher(logger logging.Logger) oauth2clientsservice.ClientIDFetcher {
+	return buildRouteParamOAuth2ClientIDFetcher(logger)
+}
+
+// ProvideWebhooksServiceWebhookIDFetcher provides an WebhookIDFetcher.
+func ProvideWebhooksServiceWebhookIDFetcher(logger logging.Logger) webhooksservice.WebhookIDFetcher {
+	return buildRouteParamWebhookIDFetcher(logger)
+}
+
+// ProvideWebhooksServiceUserIDFetcher provides a UserIDFetcher.
+func ProvideWebhooksServiceUserIDFetcher() webhooksservice.UserIDFetcher {
+	return userIDFetcherFromRequestContext
+}
 
 // ProvideValidInstrumentsServiceValidInstrumentIDFetcher provides a ValidInstrumentIDFetcher.
 func ProvideValidInstrumentsServiceValidInstrumentIDFetcher(logger logging.Logger) validinstrumentsservice.ValidInstrumentIDFetcher {
@@ -90,39 +105,9 @@ func ProvideValidIngredientsServiceValidIngredientIDFetcher(logger logging.Logge
 	return buildRouteParamValidIngredientIDFetcher(logger)
 }
 
-// ProvideValidIngredientTagsServiceValidIngredientTagIDFetcher provides a ValidIngredientTagIDFetcher.
-func ProvideValidIngredientTagsServiceValidIngredientTagIDFetcher(logger logging.Logger) validingredienttagsservice.ValidIngredientTagIDFetcher {
-	return buildRouteParamValidIngredientTagIDFetcher(logger)
-}
-
-// ProvideIngredientTagMappingsServiceValidIngredientIDFetcher provides a ValidIngredientIDFetcher.
-func ProvideIngredientTagMappingsServiceValidIngredientIDFetcher(logger logging.Logger) ingredienttagmappingsservice.ValidIngredientIDFetcher {
-	return buildRouteParamValidIngredientIDFetcher(logger)
-}
-
-// ProvideIngredientTagMappingsServiceIngredientTagMappingIDFetcher provides an IngredientTagMappingIDFetcher.
-func ProvideIngredientTagMappingsServiceIngredientTagMappingIDFetcher(logger logging.Logger) ingredienttagmappingsservice.IngredientTagMappingIDFetcher {
-	return buildRouteParamIngredientTagMappingIDFetcher(logger)
-}
-
 // ProvideValidPreparationsServiceValidPreparationIDFetcher provides a ValidPreparationIDFetcher.
 func ProvideValidPreparationsServiceValidPreparationIDFetcher(logger logging.Logger) validpreparationsservice.ValidPreparationIDFetcher {
 	return buildRouteParamValidPreparationIDFetcher(logger)
-}
-
-// ProvideRequiredPreparationInstrumentsServiceValidPreparationIDFetcher provides a ValidPreparationIDFetcher.
-func ProvideRequiredPreparationInstrumentsServiceValidPreparationIDFetcher(logger logging.Logger) requiredpreparationinstrumentsservice.ValidPreparationIDFetcher {
-	return buildRouteParamValidPreparationIDFetcher(logger)
-}
-
-// ProvideRequiredPreparationInstrumentsServiceRequiredPreparationInstrumentIDFetcher provides a RequiredPreparationInstrumentIDFetcher.
-func ProvideRequiredPreparationInstrumentsServiceRequiredPreparationInstrumentIDFetcher(logger logging.Logger) requiredpreparationinstrumentsservice.RequiredPreparationInstrumentIDFetcher {
-	return buildRouteParamRequiredPreparationInstrumentIDFetcher(logger)
-}
-
-// ProvideValidIngredientPreparationsServiceValidIngredientIDFetcher provides a ValidIngredientIDFetcher.
-func ProvideValidIngredientPreparationsServiceValidIngredientIDFetcher(logger logging.Logger) validingredientpreparationsservice.ValidIngredientIDFetcher {
-	return buildRouteParamValidIngredientIDFetcher(logger)
 }
 
 // ProvideValidIngredientPreparationsServiceValidIngredientPreparationIDFetcher provides a ValidIngredientPreparationIDFetcher.
@@ -130,9 +115,9 @@ func ProvideValidIngredientPreparationsServiceValidIngredientPreparationIDFetche
 	return buildRouteParamValidIngredientPreparationIDFetcher(logger)
 }
 
-// ProvideRecipesServiceUserIDFetcher provides a UserIDFetcher.
-func ProvideRecipesServiceUserIDFetcher() recipesservice.UserIDFetcher {
-	return userIDFetcherFromRequestContext
+// ProvideRequiredPreparationInstrumentsServiceRequiredPreparationInstrumentIDFetcher provides a RequiredPreparationInstrumentIDFetcher.
+func ProvideRequiredPreparationInstrumentsServiceRequiredPreparationInstrumentIDFetcher(logger logging.Logger) requiredpreparationinstrumentsservice.RequiredPreparationInstrumentIDFetcher {
+	return buildRouteParamRequiredPreparationInstrumentIDFetcher(logger)
 }
 
 // ProvideRecipesServiceRecipeIDFetcher provides a RecipeIDFetcher.
@@ -140,23 +125,8 @@ func ProvideRecipesServiceRecipeIDFetcher(logger logging.Logger) recipesservice.
 	return buildRouteParamRecipeIDFetcher(logger)
 }
 
-// ProvideRecipeTagsServiceUserIDFetcher provides a UserIDFetcher.
-func ProvideRecipeTagsServiceUserIDFetcher() recipetagsservice.UserIDFetcher {
-	return userIDFetcherFromRequestContext
-}
-
-// ProvideRecipeTagsServiceRecipeIDFetcher provides a RecipeIDFetcher.
-func ProvideRecipeTagsServiceRecipeIDFetcher(logger logging.Logger) recipetagsservice.RecipeIDFetcher {
-	return buildRouteParamRecipeIDFetcher(logger)
-}
-
-// ProvideRecipeTagsServiceRecipeTagIDFetcher provides a RecipeTagIDFetcher.
-func ProvideRecipeTagsServiceRecipeTagIDFetcher(logger logging.Logger) recipetagsservice.RecipeTagIDFetcher {
-	return buildRouteParamRecipeTagIDFetcher(logger)
-}
-
-// ProvideRecipeStepsServiceUserIDFetcher provides a UserIDFetcher.
-func ProvideRecipeStepsServiceUserIDFetcher() recipestepsservice.UserIDFetcher {
+// ProvideRecipesServiceUserIDFetcher provides a UserIDFetcher.
+func ProvideRecipesServiceUserIDFetcher() recipesservice.UserIDFetcher {
 	return userIDFetcherFromRequestContext
 }
 
@@ -170,28 +140,28 @@ func ProvideRecipeStepsServiceRecipeStepIDFetcher(logger logging.Logger) recipes
 	return buildRouteParamRecipeStepIDFetcher(logger)
 }
 
-// ProvideRecipeStepPreparationsServiceUserIDFetcher provides a UserIDFetcher.
-func ProvideRecipeStepPreparationsServiceUserIDFetcher() recipesteppreparationsservice.UserIDFetcher {
+// ProvideRecipeStepsServiceUserIDFetcher provides a UserIDFetcher.
+func ProvideRecipeStepsServiceUserIDFetcher() recipestepsservice.UserIDFetcher {
 	return userIDFetcherFromRequestContext
 }
 
-// ProvideRecipeStepPreparationsServiceRecipeIDFetcher provides a RecipeIDFetcher.
-func ProvideRecipeStepPreparationsServiceRecipeIDFetcher(logger logging.Logger) recipesteppreparationsservice.RecipeIDFetcher {
+// ProvideRecipeStepInstrumentsServiceRecipeIDFetcher provides a RecipeIDFetcher.
+func ProvideRecipeStepInstrumentsServiceRecipeIDFetcher(logger logging.Logger) recipestepinstrumentsservice.RecipeIDFetcher {
 	return buildRouteParamRecipeIDFetcher(logger)
 }
 
-// ProvideRecipeStepPreparationsServiceRecipeStepIDFetcher provides a RecipeStepIDFetcher.
-func ProvideRecipeStepPreparationsServiceRecipeStepIDFetcher(logger logging.Logger) recipesteppreparationsservice.RecipeStepIDFetcher {
+// ProvideRecipeStepInstrumentsServiceRecipeStepIDFetcher provides a RecipeStepIDFetcher.
+func ProvideRecipeStepInstrumentsServiceRecipeStepIDFetcher(logger logging.Logger) recipestepinstrumentsservice.RecipeStepIDFetcher {
 	return buildRouteParamRecipeStepIDFetcher(logger)
 }
 
-// ProvideRecipeStepPreparationsServiceRecipeStepPreparationIDFetcher provides a RecipeStepPreparationIDFetcher.
-func ProvideRecipeStepPreparationsServiceRecipeStepPreparationIDFetcher(logger logging.Logger) recipesteppreparationsservice.RecipeStepPreparationIDFetcher {
-	return buildRouteParamRecipeStepPreparationIDFetcher(logger)
+// ProvideRecipeStepInstrumentsServiceRecipeStepInstrumentIDFetcher provides a RecipeStepInstrumentIDFetcher.
+func ProvideRecipeStepInstrumentsServiceRecipeStepInstrumentIDFetcher(logger logging.Logger) recipestepinstrumentsservice.RecipeStepInstrumentIDFetcher {
+	return buildRouteParamRecipeStepInstrumentIDFetcher(logger)
 }
 
-// ProvideRecipeStepIngredientsServiceUserIDFetcher provides a UserIDFetcher.
-func ProvideRecipeStepIngredientsServiceUserIDFetcher() recipestepingredientsservice.UserIDFetcher {
+// ProvideRecipeStepInstrumentsServiceUserIDFetcher provides a UserIDFetcher.
+func ProvideRecipeStepInstrumentsServiceUserIDFetcher() recipestepinstrumentsservice.UserIDFetcher {
 	return userIDFetcherFromRequestContext
 }
 
@@ -210,8 +180,28 @@ func ProvideRecipeStepIngredientsServiceRecipeStepIngredientIDFetcher(logger log
 	return buildRouteParamRecipeStepIngredientIDFetcher(logger)
 }
 
-// ProvideRecipeIterationsServiceUserIDFetcher provides a UserIDFetcher.
-func ProvideRecipeIterationsServiceUserIDFetcher() recipeiterationsservice.UserIDFetcher {
+// ProvideRecipeStepIngredientsServiceUserIDFetcher provides a UserIDFetcher.
+func ProvideRecipeStepIngredientsServiceUserIDFetcher() recipestepingredientsservice.UserIDFetcher {
+	return userIDFetcherFromRequestContext
+}
+
+// ProvideRecipeStepProductsServiceRecipeIDFetcher provides a RecipeIDFetcher.
+func ProvideRecipeStepProductsServiceRecipeIDFetcher(logger logging.Logger) recipestepproductsservice.RecipeIDFetcher {
+	return buildRouteParamRecipeIDFetcher(logger)
+}
+
+// ProvideRecipeStepProductsServiceRecipeStepIDFetcher provides a RecipeStepIDFetcher.
+func ProvideRecipeStepProductsServiceRecipeStepIDFetcher(logger logging.Logger) recipestepproductsservice.RecipeStepIDFetcher {
+	return buildRouteParamRecipeStepIDFetcher(logger)
+}
+
+// ProvideRecipeStepProductsServiceRecipeStepProductIDFetcher provides a RecipeStepProductIDFetcher.
+func ProvideRecipeStepProductsServiceRecipeStepProductIDFetcher(logger logging.Logger) recipestepproductsservice.RecipeStepProductIDFetcher {
+	return buildRouteParamRecipeStepProductIDFetcher(logger)
+}
+
+// ProvideRecipeStepProductsServiceUserIDFetcher provides a UserIDFetcher.
+func ProvideRecipeStepProductsServiceUserIDFetcher() recipestepproductsservice.UserIDFetcher {
 	return userIDFetcherFromRequestContext
 }
 
@@ -225,23 +215,28 @@ func ProvideRecipeIterationsServiceRecipeIterationIDFetcher(logger logging.Logge
 	return buildRouteParamRecipeIterationIDFetcher(logger)
 }
 
-// ProvideRecipeIterationStepsServiceUserIDFetcher provides a UserIDFetcher.
-func ProvideRecipeIterationStepsServiceUserIDFetcher() recipeiterationstepsservice.UserIDFetcher {
+// ProvideRecipeIterationsServiceUserIDFetcher provides a UserIDFetcher.
+func ProvideRecipeIterationsServiceUserIDFetcher() recipeiterationsservice.UserIDFetcher {
 	return userIDFetcherFromRequestContext
 }
 
-// ProvideRecipeIterationStepsServiceRecipeIDFetcher provides a RecipeIDFetcher.
-func ProvideRecipeIterationStepsServiceRecipeIDFetcher(logger logging.Logger) recipeiterationstepsservice.RecipeIDFetcher {
+// ProvideRecipeStepEventsServiceRecipeIDFetcher provides a RecipeIDFetcher.
+func ProvideRecipeStepEventsServiceRecipeIDFetcher(logger logging.Logger) recipestepeventsservice.RecipeIDFetcher {
 	return buildRouteParamRecipeIDFetcher(logger)
 }
 
-// ProvideRecipeIterationStepsServiceRecipeIterationStepIDFetcher provides a RecipeIterationStepIDFetcher.
-func ProvideRecipeIterationStepsServiceRecipeIterationStepIDFetcher(logger logging.Logger) recipeiterationstepsservice.RecipeIterationStepIDFetcher {
-	return buildRouteParamRecipeIterationStepIDFetcher(logger)
+// ProvideRecipeStepEventsServiceRecipeStepIDFetcher provides a RecipeStepIDFetcher.
+func ProvideRecipeStepEventsServiceRecipeStepIDFetcher(logger logging.Logger) recipestepeventsservice.RecipeStepIDFetcher {
+	return buildRouteParamRecipeStepIDFetcher(logger)
 }
 
-// ProvideIterationMediasServiceUserIDFetcher provides a UserIDFetcher.
-func ProvideIterationMediasServiceUserIDFetcher() iterationmediasservice.UserIDFetcher {
+// ProvideRecipeStepEventsServiceRecipeStepEventIDFetcher provides a RecipeStepEventIDFetcher.
+func ProvideRecipeStepEventsServiceRecipeStepEventIDFetcher(logger logging.Logger) recipestepeventsservice.RecipeStepEventIDFetcher {
+	return buildRouteParamRecipeStepEventIDFetcher(logger)
+}
+
+// ProvideRecipeStepEventsServiceUserIDFetcher provides a UserIDFetcher.
+func ProvideRecipeStepEventsServiceUserIDFetcher() recipestepeventsservice.UserIDFetcher {
 	return userIDFetcherFromRequestContext
 }
 
@@ -260,8 +255,8 @@ func ProvideIterationMediasServiceIterationMediaIDFetcher(logger logging.Logger)
 	return buildRouteParamIterationMediaIDFetcher(logger)
 }
 
-// ProvideInvitationsServiceUserIDFetcher provides a UserIDFetcher.
-func ProvideInvitationsServiceUserIDFetcher() invitationsservice.UserIDFetcher {
+// ProvideIterationMediasServiceUserIDFetcher provides a UserIDFetcher.
+func ProvideIterationMediasServiceUserIDFetcher() iterationmediasservice.UserIDFetcher {
 	return userIDFetcherFromRequestContext
 }
 
@@ -270,8 +265,8 @@ func ProvideInvitationsServiceInvitationIDFetcher(logger logging.Logger) invitat
 	return buildRouteParamInvitationIDFetcher(logger)
 }
 
-// ProvideReportsServiceUserIDFetcher provides a UserIDFetcher.
-func ProvideReportsServiceUserIDFetcher() reportsservice.UserIDFetcher {
+// ProvideInvitationsServiceUserIDFetcher provides a UserIDFetcher.
+func ProvideInvitationsServiceUserIDFetcher() invitationsservice.UserIDFetcher {
 	return userIDFetcherFromRequestContext
 }
 
@@ -280,24 +275,9 @@ func ProvideReportsServiceReportIDFetcher(logger logging.Logger) reportsservice.
 	return buildRouteParamReportIDFetcher(logger)
 }
 
-// ProvideUsersServiceUserIDFetcher provides a UsernameFetcher.
-func ProvideUsersServiceUserIDFetcher(logger logging.Logger) usersservice.UserIDFetcher {
-	return buildRouteParamUserIDFetcher(logger)
-}
-
-// ProvideWebhooksServiceUserIDFetcher provides a UserIDFetcher.
-func ProvideWebhooksServiceUserIDFetcher() webhooksservice.UserIDFetcher {
+// ProvideReportsServiceUserIDFetcher provides a UserIDFetcher.
+func ProvideReportsServiceUserIDFetcher() reportsservice.UserIDFetcher {
 	return userIDFetcherFromRequestContext
-}
-
-// ProvideWebhooksServiceWebhookIDFetcher provides an WebhookIDFetcher.
-func ProvideWebhooksServiceWebhookIDFetcher(logger logging.Logger) webhooksservice.WebhookIDFetcher {
-	return buildRouteParamWebhookIDFetcher(logger)
-}
-
-// ProvideOAuth2ClientsServiceClientIDFetcher provides a ClientIDFetcher.
-func ProvideOAuth2ClientsServiceClientIDFetcher(logger logging.Logger) oauth2clientsservice.ClientIDFetcher {
-	return buildRouteParamOAuth2ClientIDFetcher(logger)
 }
 
 // userIDFetcherFromRequestContext fetches a user ID from a request routed by chi.
@@ -345,32 +325,6 @@ func buildRouteParamValidIngredientIDFetcher(logger logging.Logger) func(req *ht
 	}
 }
 
-// buildRouteParamValidIngredientTagIDFetcher builds a function that fetches a ValidIngredientTagID from a request routed by chi.
-func buildRouteParamValidIngredientTagIDFetcher(logger logging.Logger) func(req *http.Request) uint64 {
-	return func(req *http.Request) uint64 {
-		// we can generally disregard this error only because we should be able to validate.
-		// that the string only contains numbers via chi's regex url param feature.
-		u, err := strconv.ParseUint(chi.URLParam(req, validingredienttagsservice.URIParamKey), 10, 64)
-		if err != nil {
-			logger.Error(err, "fetching ValidIngredientTagID from request")
-		}
-		return u
-	}
-}
-
-// buildRouteParamIngredientTagMappingIDFetcher builds a function that fetches a IngredientTagMappingID from a request routed by chi.
-func buildRouteParamIngredientTagMappingIDFetcher(logger logging.Logger) func(req *http.Request) uint64 {
-	return func(req *http.Request) uint64 {
-		// we can generally disregard this error only because we should be able to validate.
-		// that the string only contains numbers via chi's regex url param feature.
-		u, err := strconv.ParseUint(chi.URLParam(req, ingredienttagmappingsservice.URIParamKey), 10, 64)
-		if err != nil {
-			logger.Error(err, "fetching IngredientTagMappingID from request")
-		}
-		return u
-	}
-}
-
 // buildRouteParamValidPreparationIDFetcher builds a function that fetches a ValidPreparationID from a request routed by chi.
 func buildRouteParamValidPreparationIDFetcher(logger logging.Logger) func(req *http.Request) uint64 {
 	return func(req *http.Request) uint64 {
@@ -379,19 +333,6 @@ func buildRouteParamValidPreparationIDFetcher(logger logging.Logger) func(req *h
 		u, err := strconv.ParseUint(chi.URLParam(req, validpreparationsservice.URIParamKey), 10, 64)
 		if err != nil {
 			logger.Error(err, "fetching ValidPreparationID from request")
-		}
-		return u
-	}
-}
-
-// buildRouteParamRequiredPreparationInstrumentIDFetcher builds a function that fetches a RequiredPreparationInstrumentID from a request routed by chi.
-func buildRouteParamRequiredPreparationInstrumentIDFetcher(logger logging.Logger) func(req *http.Request) uint64 {
-	return func(req *http.Request) uint64 {
-		// we can generally disregard this error only because we should be able to validate.
-		// that the string only contains numbers via chi's regex url param feature.
-		u, err := strconv.ParseUint(chi.URLParam(req, requiredpreparationinstrumentsservice.URIParamKey), 10, 64)
-		if err != nil {
-			logger.Error(err, "fetching RequiredPreparationInstrumentID from request")
 		}
 		return u
 	}
@@ -410,6 +351,19 @@ func buildRouteParamValidIngredientPreparationIDFetcher(logger logging.Logger) f
 	}
 }
 
+// buildRouteParamRequiredPreparationInstrumentIDFetcher builds a function that fetches a RequiredPreparationInstrumentID from a request routed by chi.
+func buildRouteParamRequiredPreparationInstrumentIDFetcher(logger logging.Logger) func(req *http.Request) uint64 {
+	return func(req *http.Request) uint64 {
+		// we can generally disregard this error only because we should be able to validate.
+		// that the string only contains numbers via chi's regex url param feature.
+		u, err := strconv.ParseUint(chi.URLParam(req, requiredpreparationinstrumentsservice.URIParamKey), 10, 64)
+		if err != nil {
+			logger.Error(err, "fetching RequiredPreparationInstrumentID from request")
+		}
+		return u
+	}
+}
+
 // buildRouteParamRecipeIDFetcher builds a function that fetches a RecipeID from a request routed by chi.
 func buildRouteParamRecipeIDFetcher(logger logging.Logger) func(req *http.Request) uint64 {
 	return func(req *http.Request) uint64 {
@@ -418,19 +372,6 @@ func buildRouteParamRecipeIDFetcher(logger logging.Logger) func(req *http.Reques
 		u, err := strconv.ParseUint(chi.URLParam(req, recipesservice.URIParamKey), 10, 64)
 		if err != nil {
 			logger.Error(err, "fetching RecipeID from request")
-		}
-		return u
-	}
-}
-
-// buildRouteParamRecipeTagIDFetcher builds a function that fetches a RecipeTagID from a request routed by chi.
-func buildRouteParamRecipeTagIDFetcher(logger logging.Logger) func(req *http.Request) uint64 {
-	return func(req *http.Request) uint64 {
-		// we can generally disregard this error only because we should be able to validate.
-		// that the string only contains numbers via chi's regex url param feature.
-		u, err := strconv.ParseUint(chi.URLParam(req, recipetagsservice.URIParamKey), 10, 64)
-		if err != nil {
-			logger.Error(err, "fetching RecipeTagID from request")
 		}
 		return u
 	}
@@ -449,14 +390,14 @@ func buildRouteParamRecipeStepIDFetcher(logger logging.Logger) func(req *http.Re
 	}
 }
 
-// buildRouteParamRecipeStepPreparationIDFetcher builds a function that fetches a RecipeStepPreparationID from a request routed by chi.
-func buildRouteParamRecipeStepPreparationIDFetcher(logger logging.Logger) func(req *http.Request) uint64 {
+// buildRouteParamRecipeStepInstrumentIDFetcher builds a function that fetches a RecipeStepInstrumentID from a request routed by chi.
+func buildRouteParamRecipeStepInstrumentIDFetcher(logger logging.Logger) func(req *http.Request) uint64 {
 	return func(req *http.Request) uint64 {
 		// we can generally disregard this error only because we should be able to validate.
 		// that the string only contains numbers via chi's regex url param feature.
-		u, err := strconv.ParseUint(chi.URLParam(req, recipesteppreparationsservice.URIParamKey), 10, 64)
+		u, err := strconv.ParseUint(chi.URLParam(req, recipestepinstrumentsservice.URIParamKey), 10, 64)
 		if err != nil {
-			logger.Error(err, "fetching RecipeStepPreparationID from request")
+			logger.Error(err, "fetching RecipeStepInstrumentID from request")
 		}
 		return u
 	}
@@ -475,6 +416,19 @@ func buildRouteParamRecipeStepIngredientIDFetcher(logger logging.Logger) func(re
 	}
 }
 
+// buildRouteParamRecipeStepProductIDFetcher builds a function that fetches a RecipeStepProductID from a request routed by chi.
+func buildRouteParamRecipeStepProductIDFetcher(logger logging.Logger) func(req *http.Request) uint64 {
+	return func(req *http.Request) uint64 {
+		// we can generally disregard this error only because we should be able to validate.
+		// that the string only contains numbers via chi's regex url param feature.
+		u, err := strconv.ParseUint(chi.URLParam(req, recipestepproductsservice.URIParamKey), 10, 64)
+		if err != nil {
+			logger.Error(err, "fetching RecipeStepProductID from request")
+		}
+		return u
+	}
+}
+
 // buildRouteParamRecipeIterationIDFetcher builds a function that fetches a RecipeIterationID from a request routed by chi.
 func buildRouteParamRecipeIterationIDFetcher(logger logging.Logger) func(req *http.Request) uint64 {
 	return func(req *http.Request) uint64 {
@@ -488,14 +442,14 @@ func buildRouteParamRecipeIterationIDFetcher(logger logging.Logger) func(req *ht
 	}
 }
 
-// buildRouteParamRecipeIterationStepIDFetcher builds a function that fetches a RecipeIterationStepID from a request routed by chi.
-func buildRouteParamRecipeIterationStepIDFetcher(logger logging.Logger) func(req *http.Request) uint64 {
+// buildRouteParamRecipeStepEventIDFetcher builds a function that fetches a RecipeStepEventID from a request routed by chi.
+func buildRouteParamRecipeStepEventIDFetcher(logger logging.Logger) func(req *http.Request) uint64 {
 	return func(req *http.Request) uint64 {
 		// we can generally disregard this error only because we should be able to validate.
 		// that the string only contains numbers via chi's regex url param feature.
-		u, err := strconv.ParseUint(chi.URLParam(req, recipeiterationstepsservice.URIParamKey), 10, 64)
+		u, err := strconv.ParseUint(chi.URLParam(req, recipestepeventsservice.URIParamKey), 10, 64)
 		if err != nil {
-			logger.Error(err, "fetching RecipeIterationStepID from request")
+			logger.Error(err, "fetching RecipeStepEventID from request")
 		}
 		return u
 	}

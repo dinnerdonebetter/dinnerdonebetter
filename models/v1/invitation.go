@@ -12,7 +12,7 @@ type (
 		Code          string  `json:"code"`
 		Consumed      bool    `json:"consumed"`
 		CreatedOn     uint64  `json:"createdOn"`
-		UpdatedOn     *uint64 `json:"updatedOn"`
+		LastUpdatedOn *uint64 `json:"lastUpdatedOn"`
 		ArchivedOn    *uint64 `json:"archivedOn"`
 		BelongsToUser uint64  `json:"belongsToUser"`
 	}
@@ -42,7 +42,9 @@ type (
 		InvitationExists(ctx context.Context, invitationID uint64) (bool, error)
 		GetInvitation(ctx context.Context, invitationID uint64) (*Invitation, error)
 		GetAllInvitationsCount(ctx context.Context) (uint64, error)
+		GetAllInvitations(ctx context.Context, resultChannel chan []Invitation) error
 		GetInvitations(ctx context.Context, filter *QueryFilter) (*InvitationList, error)
+		GetInvitationsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]Invitation, error)
 		CreateInvitation(ctx context.Context, input *InvitationCreationInput) (*Invitation, error)
 		UpdateInvitation(ctx context.Context, updated *Invitation) error
 		ArchiveInvitation(ctx context.Context, invitationID, userID uint64) error
@@ -53,12 +55,12 @@ type (
 		CreationInputMiddleware(next http.Handler) http.Handler
 		UpdateInputMiddleware(next http.Handler) http.Handler
 
-		ListHandler() http.HandlerFunc
-		CreateHandler() http.HandlerFunc
-		ExistenceHandler() http.HandlerFunc
-		ReadHandler() http.HandlerFunc
-		UpdateHandler() http.HandlerFunc
-		ArchiveHandler() http.HandlerFunc
+		ListHandler(res http.ResponseWriter, req *http.Request)
+		CreateHandler(res http.ResponseWriter, req *http.Request)
+		ExistenceHandler(res http.ResponseWriter, req *http.Request)
+		ReadHandler(res http.ResponseWriter, req *http.Request)
+		UpdateHandler(res http.ResponseWriter, req *http.Request)
+		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 

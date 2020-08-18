@@ -68,6 +68,24 @@ func TestClient_GetAllValidIngredientsCount(T *testing.T) {
 	})
 }
 
+func TestClient_GetAllValidIngredients(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		results := make(chan []models.ValidIngredient)
+
+		c, mockDB := buildTestClient()
+		mockDB.ValidIngredientDataManager.On("GetAllValidIngredients", mock.Anything, results).Return(nil)
+
+		err := c.GetAllValidIngredients(ctx, results)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
 func TestClient_GetValidIngredients(T *testing.T) {
 	T.Parallel()
 
@@ -97,6 +115,29 @@ func TestClient_GetValidIngredients(T *testing.T) {
 		mockDB.ValidIngredientDataManager.On("GetValidIngredients", mock.Anything, filter).Return(exampleValidIngredientList, nil)
 
 		actual, err := c.GetValidIngredients(ctx, filter)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidIngredientList, actual)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
+func TestClient_GetValidIngredientsWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleValidIngredientList := fakemodels.BuildFakeValidIngredientList().ValidIngredients
+		var exampleIDs []uint64
+		for _, x := range exampleValidIngredientList {
+			exampleIDs = append(exampleIDs, x.ID)
+		}
+
+		c, mockDB := buildTestClient()
+		mockDB.ValidIngredientDataManager.On("GetValidIngredientsWithIDs", mock.Anything, defaultLimit, exampleIDs).Return(exampleValidIngredientList, nil)
+
+		actual, err := c.GetValidIngredientsWithIDs(ctx, defaultLimit, exampleIDs)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidIngredientList, actual)
 

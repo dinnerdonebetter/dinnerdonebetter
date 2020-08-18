@@ -55,6 +55,16 @@ func (c *Client) GetAllRecipeStepIngredientsCount(ctx context.Context) (count ui
 	return c.querier.GetAllRecipeStepIngredientsCount(ctx)
 }
 
+// GetAllRecipeStepIngredients fetches a list of all recipe step ingredients in the database.
+func (c *Client) GetAllRecipeStepIngredients(ctx context.Context, results chan []models.RecipeStepIngredient) error {
+	ctx, span := tracing.StartSpan(ctx, "GetAllRecipeStepIngredients")
+	defer span.End()
+
+	c.logger.Debug("GetAllRecipeStepIngredients called")
+
+	return c.querier.GetAllRecipeStepIngredients(ctx, results)
+}
+
 // GetRecipeStepIngredients fetches a list of recipe step ingredients from the database that meet a particular filter.
 func (c *Client) GetRecipeStepIngredients(ctx context.Context, recipeID, recipeStepID uint64, filter *models.QueryFilter) (*models.RecipeStepIngredientList, error) {
 	ctx, span := tracing.StartSpan(ctx, "GetRecipeStepIngredients")
@@ -70,6 +80,20 @@ func (c *Client) GetRecipeStepIngredients(ctx context.Context, recipeID, recipeS
 	}).Debug("GetRecipeStepIngredients called")
 
 	recipeStepIngredientList, err := c.querier.GetRecipeStepIngredients(ctx, recipeID, recipeStepID, filter)
+
+	return recipeStepIngredientList, err
+}
+
+// GetRecipeStepIngredientsWithIDs fetches recipe step ingredients from the database within a given set of IDs.
+func (c *Client) GetRecipeStepIngredientsWithIDs(ctx context.Context, recipeID, recipeStepID uint64, limit uint8, ids []uint64) ([]models.RecipeStepIngredient, error) {
+	ctx, span := tracing.StartSpan(ctx, "GetRecipeStepIngredientsWithIDs")
+	defer span.End()
+
+	c.logger.WithValues(map[string]interface{}{
+		"id_count": len(ids),
+	}).Debug("GetRecipeStepIngredientsWithIDs called")
+
+	recipeStepIngredientList, err := c.querier.GetRecipeStepIngredientsWithIDs(ctx, recipeID, recipeStepID, limit, ids)
 
 	return recipeStepIngredientList, err
 }

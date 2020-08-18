@@ -11,13 +11,13 @@ func BuildFakeRecipeStep() *models.RecipeStep {
 	return &models.RecipeStep{
 		ID:                        fake.Uint64(),
 		Index:                     uint(fake.Uint32()),
-		ValidPreparationID:        uint64(fake.Uint32()),
-		PrerequisiteStepID:        func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
+		PreparationID:             uint64(fake.Uint32()),
+		PrerequisiteStep:          uint64(fake.Uint32()),
 		MinEstimatedTimeInSeconds: fake.Uint32(),
 		MaxEstimatedTimeInSeconds: fake.Uint32(),
-		YieldsProductName:         fake.Word(),
-		YieldsQuantity:            uint(fake.Uint32()),
+		TemperatureInCelsius:      func(x uint16) *uint16 { return &x }(fake.Uint16()),
 		Notes:                     fake.Word(),
+		RecipeID:                  uint64(fake.Uint32()),
 		CreatedOn:                 uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipe:           fake.Uint64(),
 	}
@@ -31,9 +31,8 @@ func BuildFakeRecipeStepList() *models.RecipeStepList {
 
 	return &models.RecipeStepList{
 		Pagination: models.Pagination{
-			Page:       1,
-			Limit:      20,
-			TotalCount: 3,
+			Page:  1,
+			Limit: 20,
 		},
 		RecipeSteps: []models.RecipeStep{
 			*exampleRecipeStep1,
@@ -47,13 +46,13 @@ func BuildFakeRecipeStepList() *models.RecipeStepList {
 func BuildFakeRecipeStepUpdateInputFromRecipeStep(recipeStep *models.RecipeStep) *models.RecipeStepUpdateInput {
 	return &models.RecipeStepUpdateInput{
 		Index:                     recipeStep.Index,
-		ValidPreparationID:        recipeStep.ValidPreparationID,
-		PrerequisiteStepID:        recipeStep.PrerequisiteStepID,
+		PreparationID:             recipeStep.PreparationID,
+		PrerequisiteStep:          recipeStep.PrerequisiteStep,
 		MinEstimatedTimeInSeconds: recipeStep.MinEstimatedTimeInSeconds,
 		MaxEstimatedTimeInSeconds: recipeStep.MaxEstimatedTimeInSeconds,
-		YieldsProductName:         recipeStep.YieldsProductName,
-		YieldsQuantity:            recipeStep.YieldsQuantity,
+		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,
 		Notes:                     recipeStep.Notes,
+		RecipeID:                  recipeStep.RecipeID,
 		BelongsToRecipe:           recipeStep.BelongsToRecipe,
 	}
 }
@@ -68,13 +67,13 @@ func BuildFakeRecipeStepCreationInput() *models.RecipeStepCreationInput {
 func BuildFakeRecipeStepCreationInputFromRecipeStep(recipeStep *models.RecipeStep) *models.RecipeStepCreationInput {
 	return &models.RecipeStepCreationInput{
 		Index:                     recipeStep.Index,
-		ValidPreparationID:        recipeStep.ValidPreparationID,
-		PrerequisiteStepID:        recipeStep.PrerequisiteStepID,
+		PreparationID:             recipeStep.PreparationID,
+		PrerequisiteStep:          recipeStep.PrerequisiteStep,
 		MinEstimatedTimeInSeconds: recipeStep.MinEstimatedTimeInSeconds,
 		MaxEstimatedTimeInSeconds: recipeStep.MaxEstimatedTimeInSeconds,
-		YieldsProductName:         recipeStep.YieldsProductName,
-		YieldsQuantity:            recipeStep.YieldsQuantity,
+		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,
 		Notes:                     recipeStep.Notes,
+		RecipeID:                  recipeStep.RecipeID,
 		BelongsToRecipe:           recipeStep.BelongsToRecipe,
 	}
 }

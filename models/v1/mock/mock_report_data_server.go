@@ -28,37 +28,31 @@ func (m *ReportDataServer) UpdateInputMiddleware(next http.Handler) http.Handler
 }
 
 // ListHandler implements our interface requirements.
-func (m *ReportDataServer) ListHandler() http.HandlerFunc {
-	args := m.Called()
-	return args.Get(0).(http.HandlerFunc)
+func (m *ReportDataServer) ListHandler(res http.ResponseWriter, req *http.Request) {
+	m.Called(res, req)
 }
 
 // CreateHandler implements our interface requirements.
-func (m *ReportDataServer) CreateHandler() http.HandlerFunc {
-	args := m.Called()
-	return args.Get(0).(http.HandlerFunc)
+func (m *ReportDataServer) CreateHandler(res http.ResponseWriter, req *http.Request) {
+	m.Called(res, req)
 }
 
 // ExistenceHandler implements our interface requirements.
-func (m *ReportDataServer) ExistenceHandler() http.HandlerFunc {
-	args := m.Called()
-	return args.Get(0).(http.HandlerFunc)
+func (m *ReportDataServer) ExistenceHandler(res http.ResponseWriter, req *http.Request) {
+	m.Called(res, req)
 }
 
 // ReadHandler implements our interface requirements.
-func (m *ReportDataServer) ReadHandler() http.HandlerFunc {
-	args := m.Called()
-	return args.Get(0).(http.HandlerFunc)
+func (m *ReportDataServer) ReadHandler(res http.ResponseWriter, req *http.Request) {
+	m.Called(res, req)
 }
 
 // UpdateHandler implements our interface requirements.
-func (m *ReportDataServer) UpdateHandler() http.HandlerFunc {
-	args := m.Called()
-	return args.Get(0).(http.HandlerFunc)
+func (m *ReportDataServer) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+	m.Called(res, req)
 }
 
 // ArchiveHandler implements our interface requirements.
-func (m *ReportDataServer) ArchiveHandler() http.HandlerFunc {
-	args := m.Called()
-	return args.Get(0).(http.HandlerFunc)
+func (m *ReportDataServer) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+	m.Called(res, req)
 }

@@ -9,11 +9,12 @@ import (
 // BuildFakeValidPreparation builds a faked valid preparation.
 func BuildFakeValidPreparation() *models.ValidPreparation {
 	return &models.ValidPreparation{
-		ID:          fake.Uint64(),
-		Name:        fake.Word(),
-		Description: fake.Word(),
-		Icon:        fake.Word(),
-		CreatedOn:   uint64(uint32(fake.Date().Unix())),
+		ID:                         fake.Uint64(),
+		Name:                       fake.Word(),
+		Description:                fake.Word(),
+		Icon:                       fake.Word(),
+		ApplicableToAllIngredients: fake.Bool(),
+		CreatedOn:                  uint64(uint32(fake.Date().Unix())),
 	}
 }
 
@@ -40,9 +41,10 @@ func BuildFakeValidPreparationList() *models.ValidPreparationList {
 // BuildFakeValidPreparationUpdateInputFromValidPreparation builds a faked ValidPreparationUpdateInput from a valid preparation.
 func BuildFakeValidPreparationUpdateInputFromValidPreparation(validPreparation *models.ValidPreparation) *models.ValidPreparationUpdateInput {
 	return &models.ValidPreparationUpdateInput{
-		Name:        validPreparation.Name,
-		Description: validPreparation.Description,
-		Icon:        validPreparation.Icon,
+		Name:                       validPreparation.Name,
+		Description:                validPreparation.Description,
+		Icon:                       validPreparation.Icon,
+		ApplicableToAllIngredients: validPreparation.ApplicableToAllIngredients,
 	}
 }
 
@@ -55,8 +57,9 @@ func BuildFakeValidPreparationCreationInput() *models.ValidPreparationCreationIn
 // BuildFakeValidPreparationCreationInputFromValidPreparation builds a faked ValidPreparationCreationInput from a valid preparation.
 func BuildFakeValidPreparationCreationInputFromValidPreparation(validPreparation *models.ValidPreparation) *models.ValidPreparationCreationInput {
 	return &models.ValidPreparationCreationInput{
-		Name:        validPreparation.Name,
-		Description: validPreparation.Description,
-		Icon:        validPreparation.Icon,
+		Name:                       validPreparation.Name,
+		Description:                validPreparation.Description,
+		Icon:                       validPreparation.Icon,
+		ApplicableToAllIngredients: validPreparation.ApplicableToAllIngredients,
 	}
 }

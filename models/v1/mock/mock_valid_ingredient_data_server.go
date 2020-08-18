@@ -28,37 +28,31 @@ func (m *ValidIngredientDataServer) UpdateInputMiddleware(next http.Handler) htt
 }
 
 // ListHandler implements our interface requirements.
-func (m *ValidIngredientDataServer) ListHandler() http.HandlerFunc {
-	args := m.Called()
-	return args.Get(0).(http.HandlerFunc)
+func (m *ValidIngredientDataServer) ListHandler(res http.ResponseWriter, req *http.Request) {
+	m.Called(res, req)
 }
 
 // CreateHandler implements our interface requirements.
-func (m *ValidIngredientDataServer) CreateHandler() http.HandlerFunc {
-	args := m.Called()
-	return args.Get(0).(http.HandlerFunc)
+func (m *ValidIngredientDataServer) CreateHandler(res http.ResponseWriter, req *http.Request) {
+	m.Called(res, req)
 }
 
 // ExistenceHandler implements our interface requirements.
-func (m *ValidIngredientDataServer) ExistenceHandler() http.HandlerFunc {
-	args := m.Called()
-	return args.Get(0).(http.HandlerFunc)
+func (m *ValidIngredientDataServer) ExistenceHandler(res http.ResponseWriter, req *http.Request) {
+	m.Called(res, req)
 }
 
 // ReadHandler implements our interface requirements.
-func (m *ValidIngredientDataServer) ReadHandler() http.HandlerFunc {
-	args := m.Called()
-	return args.Get(0).(http.HandlerFunc)
+func (m *ValidIngredientDataServer) ReadHandler(res http.ResponseWriter, req *http.Request) {
+	m.Called(res, req)
 }
 
 // UpdateHandler implements our interface requirements.
-func (m *ValidIngredientDataServer) UpdateHandler() http.HandlerFunc {
-	args := m.Called()
-	return args.Get(0).(http.HandlerFunc)
+func (m *ValidIngredientDataServer) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+	m.Called(res, req)
 }
 
 // ArchiveHandler implements our interface requirements.
-func (m *ValidIngredientDataServer) ArchiveHandler() http.HandlerFunc {
-	args := m.Called()
-	return args.Get(0).(http.HandlerFunc)
+func (m *ValidIngredientDataServer) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+	m.Called(res, req)
 }

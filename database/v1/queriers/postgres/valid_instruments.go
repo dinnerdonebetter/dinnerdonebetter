@@ -13,19 +13,23 @@ import (
 )
 
 const (
-	validInstrumentsTableName = "valid_instruments"
+	validInstrumentsTableName              = "valid_instruments"
+	validInstrumentsTableNameColumn        = "name"
+	validInstrumentsTableVariantColumn     = "variant"
+	validInstrumentsTableDescriptionColumn = "description"
+	validInstrumentsTableIconColumn        = "icon"
 )
 
 var (
 	validInstrumentsTableColumns = []string{
-		fmt.Sprintf("%s.%s", validInstrumentsTableName, "id"),
-		fmt.Sprintf("%s.%s", validInstrumentsTableName, "name"),
-		fmt.Sprintf("%s.%s", validInstrumentsTableName, "variant"),
-		fmt.Sprintf("%s.%s", validInstrumentsTableName, "description"),
-		fmt.Sprintf("%s.%s", validInstrumentsTableName, "icon"),
-		fmt.Sprintf("%s.%s", validInstrumentsTableName, "created_on"),
-		fmt.Sprintf("%s.%s", validInstrumentsTableName, "updated_on"),
-		fmt.Sprintf("%s.%s", validInstrumentsTableName, "archived_on"),
+		fmt.Sprintf("%s.%s", validInstrumentsTableName, idColumn),
+		fmt.Sprintf("%s.%s", validInstrumentsTableName, validInstrumentsTableNameColumn),
+		fmt.Sprintf("%s.%s", validInstrumentsTableName, validInstrumentsTableVariantColumn),
+		fmt.Sprintf("%s.%s", validInstrumentsTableName, validInstrumentsTableDescriptionColumn),
+		fmt.Sprintf("%s.%s", validInstrumentsTableName, validInstrumentsTableIconColumn),
+		fmt.Sprintf("%s.%s", validInstrumentsTableName, createdOnColumn),
+		fmt.Sprintf("%s.%s", validInstrumentsTableName, lastUpdatedOnColumn),
+		fmt.Sprintf("%s.%s", validInstrumentsTableName, archivedOnColumn),
 	}
 )
 
@@ -41,7 +45,7 @@ func (p *Postgres) scanValidInstrument(scan database.Scanner, includeCount bool)
 		&x.Description,
 		&x.Icon,
 		&x.CreatedOn,
-		&x.UpdatedOn,
+		&x.LastUpdatedOn,
 		&x.ArchivedOn,
 	}
 
@@ -92,12 +96,12 @@ func (p *Postgres) buildValidInstrumentExistsQuery(validInstrumentID uint64) (qu
 	var err error
 
 	query, args, err = p.sqlBuilder.
-		Select(fmt.Sprintf("%s.id", validInstrumentsTableName)).
+		Select(fmt.Sprintf("%s.%s", validInstrumentsTableName, idColumn)).
 		Prefix(existencePrefix).
 		From(validInstrumentsTableName).
 		Suffix(existenceSuffix).
 		Where(squirrel.Eq{
-			fmt.Sprintf("%s.id", validInstrumentsTableName): validInstrumentID,
+			fmt.Sprintf("%s.%s", validInstrumentsTableName, idColumn): validInstrumentID,
 		}).ToSql()
 
 	p.logQueryBuildingError(err)
@@ -125,7 +129,7 @@ func (p *Postgres) buildGetValidInstrumentQuery(validInstrumentID uint64) (query
 		Select(validInstrumentsTableColumns...).
 		From(validInstrumentsTableName).
 		Where(squirrel.Eq{
-			fmt.Sprintf("%s.id", validInstrumentsTableName): validInstrumentID,
+			fmt.Sprintf("%s.%s", validInstrumentsTableName, idColumn): validInstrumentID,
 		}).
 		ToSql()
 
@@ -138,9 +142,8 @@ func (p *Postgres) buildGetValidInstrumentQuery(validInstrumentID uint64) (query
 func (p *Postgres) GetValidInstrument(ctx context.Context, validInstrumentID uint64) (*models.ValidInstrument, error) {
 	query, args := p.buildGetValidInstrumentQuery(validInstrumentID)
 	row := p.db.QueryRowContext(ctx, query, args...)
-
-	validInstrument, _, err := p.scanValidInstrument(row, false)
-	return validInstrument, err
+	vi, _, err := p.scanValidInstrument(row, false)
+	return vi, err
 }
 
 var (
@@ -158,7 +161,7 @@ func (p *Postgres) buildGetAllValidInstrumentsCountQuery() string {
 			Select(fmt.Sprintf(countQuery, validInstrumentsTableName)).
 			From(validInstrumentsTableName).
 			Where(squirrel.Eq{
-				fmt.Sprintf("%s.archived_on", validInstrumentsTableName): nil,
+				fmt.Sprintf("%s.%s", validInstrumentsTableName, archivedOnColumn): nil,
 			}).
 			ToSql()
 		p.logQueryBuildingError(err)
@@ -173,6 +176,63 @@ func (p *Postgres) GetAllValidInstrumentsCount(ctx context.Context) (count uint6
 	return count, err
 }
 
+// buildGetBatchOfValidInstrumentsQuery returns a query that fetches every valid instrument in the database within a bucketed range.
+func (p *Postgres) buildGetBatchOfValidInstrumentsQuery(beginID, endID uint64) (query string, args []interface{}) {
+	query, args, err := p.sqlBuilder.
+		Select(validInstrumentsTableColumns...).
+		From(validInstrumentsTableName).
+		Where(squirrel.Gt{
+			fmt.Sprintf("%s.%s", validInstrumentsTableName, idColumn): beginID,
+		}).
+		Where(squirrel.Lt{
+			fmt.Sprintf("%s.%s", validInstrumentsTableName, idColumn): endID,
+		}).
+		ToSql()
+
+	p.logQueryBuildingError(err)
+
+	return query, args
+}
+
+// GetAllValidInstruments fetches every valid instrument from the database and writes them to a channel. This method primarily exists
+// to aid in administrative data tasks.
+func (p *Postgres) GetAllValidInstruments(ctx context.Context, resultChannel chan []models.ValidInstrument) error {
+	count, err := p.GetAllValidInstrumentsCount(ctx)
+	if err != nil {
+		return err
+	}
+
+	for beginID := uint64(1); beginID <= count; beginID += defaultBucketSize {
+		endID := beginID + defaultBucketSize
+		go func(begin, end uint64) {
+			query, args := p.buildGetBatchOfValidInstrumentsQuery(begin, end)
+			logger := p.logger.WithValues(map[string]interface{}{
+				"query": query,
+				"begin": begin,
+				"end":   end,
+			})
+
+			rows, err := p.db.Query(query, args...)
+			if err == sql.ErrNoRows {
+				return
+			} else if err != nil {
+				logger.Error(err, "querying for database rows")
+				return
+			}
+
+			validInstruments, _, err := p.scanValidInstruments(rows)
+			if err != nil {
+				logger.Error(err, "scanning database rows")
+				return
+			}
+
+			resultChannel <- validInstruments
+		}(beginID, endID)
+	}
+
+	return nil
+}
+
 // buildGetValidInstrumentsQuery builds a SQL query selecting valid instruments that adhere to a given QueryFilter,
 // and returns both the query and the relevant args to pass to the query executor.
 func (p *Postgres) buildGetValidInstrumentsQuery(filter *models.QueryFilter) (query string, args []interface{}) {
@@ -182,9 +242,9 @@ func (p *Postgres) buildGetValidInstrumentsQuery(filter *models.QueryFilter) (qu
 		Select(append(validInstrumentsTableColumns, fmt.Sprintf("(%s)", p.buildGetAllValidInstrumentsCountQuery()))...).
 		From(validInstrumentsTableName).
 		Where(squirrel.Eq{
-			fmt.Sprintf("%s.archived_on", validInstrumentsTableName): nil,
+			fmt.Sprintf("%s.%s", validInstrumentsTableName, archivedOnColumn): nil,
 		}).
-		OrderBy(fmt.Sprintf("%s.id", validInstrumentsTableName))
+		OrderBy(fmt.Sprintf("%s.%s", validInstrumentsTableName, idColumn))
 
 	if filter != nil {
 		builder = filter.ApplyToQueryBuilder(builder, validInstrumentsTableName)
@@ -222,6 +282,54 @@ func (p *Postgres) GetValidInstruments(ctx context.Context, filter *models.Query
 	return list, nil
 }
 
+// buildGetValidInstrumentsWithIDsQuery builds a SQL query selecting validInstruments
+// and have IDs that exist within a given set of IDs. Returns both the query and the relevant
+// args to pass to the query executor. This function is primarily intended for use with a search
+// index, which would provide a slice of string IDs to query against. This function accepts a
+// slice of uint64s instead of a slice of strings in order to ensure all the provided strings
+// are valid database IDs, because there's no way in squirrel to escape them in the unnest join,
+// and if we accept strings we could leave ourselves vulnerable to SQL injection attacks.
+func (p *Postgres) buildGetValidInstrumentsWithIDsQuery(limit uint8, ids []uint64) (query string, args []interface{}) {
+	var err error
+
+	subqueryBuilder := p.sqlBuilder.Select(validInstrumentsTableColumns...).
+		From(validInstrumentsTableName).
+		Join(fmt.Sprintf("unnest('{%s}'::int[])", joinUint64s(ids))).
+		Suffix(fmt.Sprintf("WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d", limit))
+	builder := p.sqlBuilder.
+		Select(validInstrumentsTableColumns...).
+		FromSelect(subqueryBuilder, validInstrumentsTableName).
+		Where(squirrel.Eq{
+			fmt.Sprintf("%s.%s", validInstrumentsTableName, archivedOnColumn): nil,
+		})
+
+	query, args, err = builder.ToSql()
+	p.logQueryBuildingError(err)
+
+	return query, args
+}
+
+// GetValidInstrumentsWithIDs fetches a list of valid instruments from the database that exist within a given set of IDs.
+func (p *Postgres) GetValidInstrumentsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]models.ValidInstrument, error) {
+	if limit == 0 {
+		limit = uint8(models.DefaultLimit)
+	}
+
+	query, args := p.buildGetValidInstrumentsWithIDsQuery(limit, ids)
+
+	rows, err := p.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, buildError(err, "querying database for valid instruments")
+	}
+
+	validInstruments, _, err := p.scanValidInstruments(rows)
+	if err != nil {
+		return nil, fmt.Errorf("scanning response from database: %w", err)
+	}
+
+	return validInstruments, nil
+}
+
 // buildCreateValidInstrumentQuery takes a valid instrument and returns a creation query for that valid instrument and the relevant arguments.
 func (p *Postgres) buildCreateValidInstrumentQuery(input *models.ValidInstrument) (query string, args []interface{}) {
 	var err error
@@ -229,10 +337,10 @@ func (p *Postgres) buildCreateValidInstrumentQuery(input *models.ValidInstrument
 	query, args, err = p.sqlBuilder.
 		Insert(validInstrumentsTableName).
 		Columns(
-			"name",
-			"variant",
-			"description",
-			"icon",
+			validInstrumentsTableNameColumn,
+			validInstrumentsTableVariantColumn,
+			validInstrumentsTableDescriptionColumn,
+			validInstrumentsTableIconColumn,
 		).
 		Values(
 			input.Name,
@@ -240,7 +348,7 @@ func (p *Postgres) buildCreateValidInstrumentQuery(input *models.ValidInstrument
 			input.Description,
 			input.Icon,
 		).
-		Suffix("RETURNING id, created_on").
+		Suffix(fmt.Sprintf("RETURNING %s, %s", idColumn, createdOnColumn)).
 		ToSql()
 
 	p.logQueryBuildingError(err)
@@ -274,15 +382,15 @@ func (p *Postgres) buildUpdateValidInstrumentQuery(input *models.ValidInstrument
 
 	query, args, err = p.sqlBuilder.
 		Update(validInstrumentsTableName).
-		Set("name", input.Name).
-		Set("variant", input.Variant).
-		Set("description", input.Description).
-		Set("icon", input.Icon).
-		Set("updated_on", squirrel.Expr(currentUnixTimeQuery)).
+		Set(validInstrumentsTableNameColumn, input.Name).
+		Set(validInstrumentsTableVariantColumn, input.Variant).
+		Set(validInstrumentsTableDescriptionColumn, input.Description).
+		Set(validInstrumentsTableIconColumn, input.Icon).
+		Set(lastUpdatedOnColumn, squirrel.Expr(currentUnixTimeQuery)).
 		Where(squirrel.Eq{
-			"id": input.ID,
+			idColumn: input.ID,
 		}).
-		Suffix("RETURNING updated_on").
+		Suffix(fmt.Sprintf("RETURNING %s", lastUpdatedOnColumn)).
 		ToSql()
 
 	p.logQueryBuildingError(err)
@@ -293,7 +401,7 @@ func (p *Postgres) buildUpdateValidInstrumentQuery(input *models.ValidInstrument
 // UpdateValidInstrument updates a particular valid instrument. Note that UpdateValidInstrument expects the provided input to have a valid ID.
 func (p *Postgres) UpdateValidInstrument(ctx context.Context, input *models.ValidInstrument) error {
 	query, args := p.buildUpdateValidInstrumentQuery(input)
-	return p.db.QueryRowContext(ctx, query, args...).Scan(&input.UpdatedOn)
+	return p.db.QueryRowContext(ctx, query, args...).Scan(&input.LastUpdatedOn)
 }
 
 // buildArchiveValidInstrumentQuery returns a SQL query which marks a given valid instrument as archived.
@@ -302,13 +410,13 @@ func (p *Postgres) buildArchiveValidInstrumentQuery(validInstrumentID uint64) (q
 
 	query, args, err = p.sqlBuilder.
 		Update(validInstrumentsTableName).
-		Set("updated_on", squirrel.Expr(currentUnixTimeQuery)).
-		Set("archived_on", squirrel.Expr(currentUnixTimeQuery)).
+		Set(lastUpdatedOnColumn, squirrel.Expr(currentUnixTimeQuery)).
+		Set(archivedOnColumn, squirrel.Expr(currentUnixTimeQuery)).
 		Where(squirrel.Eq{
-			"id":          validInstrumentID,
-			"archived_on": nil,
+			idColumn:         validInstrumentID,
+			archivedOnColumn: nil,
 		}).
-		Suffix("RETURNING archived_on").
+		Suffix(fmt.Sprintf("RETURNING %s", archivedOnColumn)).
 		ToSql()
 
 	p.logQueryBuildingError(err)

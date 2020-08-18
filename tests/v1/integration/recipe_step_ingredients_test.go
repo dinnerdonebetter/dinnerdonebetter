@@ -15,12 +15,12 @@ func checkRecipeStepIngredientEquality(t *testing.T, expected, actual *models.Re
 	t.Helper()
 
 	assert.NotZero(t, actual.ID)
-	assert.Equal(t, expected.ValidIngredientID, actual.ValidIngredientID, "expected ValidIngredientID for ID %d to be %v, but it was %v ", expected.ID, expected.ValidIngredientID, actual.ValidIngredientID)
-	assert.Equal(t, expected.IngredientNotes, actual.IngredientNotes, "expected IngredientNotes for ID %d to be %v, but it was %v ", expected.ID, expected.IngredientNotes, actual.IngredientNotes)
+	assert.Equal(t, *expected.IngredientID, *actual.IngredientID, "expected IngredientID to be %v, but it was %v ", expected.IngredientID, actual.IngredientID)
 	assert.Equal(t, expected.QuantityType, actual.QuantityType, "expected QuantityType for ID %d to be %v, but it was %v ", expected.ID, expected.QuantityType, actual.QuantityType)
 	assert.Equal(t, expected.QuantityValue, actual.QuantityValue, "expected QuantityValue for ID %d to be %v, but it was %v ", expected.ID, expected.QuantityValue, actual.QuantityValue)
 	assert.Equal(t, expected.QuantityNotes, actual.QuantityNotes, "expected QuantityNotes for ID %d to be %v, but it was %v ", expected.ID, expected.QuantityNotes, actual.QuantityNotes)
-	assert.Equal(t, *expected.ProductOfRecipeStepID, *actual.ProductOfRecipeStepID, "expected ProductOfRecipeStepID to be %v, but it was %v ", expected.ProductOfRecipeStepID, actual.ProductOfRecipeStepID)
+	assert.Equal(t, expected.ProductOfRecipe, actual.ProductOfRecipe, "expected ProductOfRecipe for ID %d to be %v, but it was %v ", expected.ID, expected.ProductOfRecipe, actual.ProductOfRecipe)
+	assert.Equal(t, expected.IngredientNotes, actual.IngredientNotes, "expected IngredientNotes for ID %d to be %v, but it was %v ", expected.ID, expected.IngredientNotes, actual.IngredientNotes)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
@@ -371,7 +371,7 @@ func TestRecipeStepIngredients(test *testing.T) {
 
 			// Assert recipe step ingredient equality.
 			checkRecipeStepIngredientEquality(t, exampleRecipeStepIngredient, actual)
-			assert.NotNil(t, actual.UpdatedOn)
+			assert.NotNil(t, actual.LastUpdatedOn)
 
 			// Clean up recipe step ingredient.
 			assert.NoError(t, prixfixeClient.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID))

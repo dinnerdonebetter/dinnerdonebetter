@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 
@@ -16,32 +17,24 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func buildMockRowsFromRecipeStepIngredient(recipeStepIngredients ...*models.RecipeStepIngredient) *sqlmock.Rows {
-	includeCount := len(recipeStepIngredients) > 1
+func buildMockRowsFromRecipeStepIngredients(recipeStepIngredients ...*models.RecipeStepIngredient) *sqlmock.Rows {
 	columns := recipeStepIngredientsTableColumns
 
-	if includeCount {
-		columns = append(columns, "count")
-	}
 	exampleRows := sqlmock.NewRows(columns)
 
 	for _, x := range recipeStepIngredients {
 		rowValues := []driver.Value{
 			x.ID,
-			x.ValidIngredientID,
-			x.IngredientNotes,
+			x.IngredientID,
 			x.QuantityType,
 			x.QuantityValue,
 			x.QuantityNotes,
-			x.ProductOfRecipeStepID,
+			x.ProductOfRecipe,
+			x.IngredientNotes,
 			x.CreatedOn,
-			x.UpdatedOn,
+			x.LastUpdatedOn,
 			x.ArchivedOn,
 			x.BelongsToRecipeStep,
-		}
-
-		if includeCount {
-			rowValues = append(rowValues, len(recipeStepIngredients))
 		}
 
 		exampleRows.AddRow(rowValues...)
@@ -53,14 +46,14 @@ func buildMockRowsFromRecipeStepIngredient(recipeStepIngredients ...*models.Reci
 func buildErroneousMockRowFromRecipeStepIngredient(x *models.RecipeStepIngredient) *sqlmock.Rows {
 	exampleRows := sqlmock.NewRows(recipeStepIngredientsTableColumns).AddRow(
 		x.ArchivedOn,
-		x.ValidIngredientID,
-		x.IngredientNotes,
+		x.IngredientID,
 		x.QuantityType,
 		x.QuantityValue,
 		x.QuantityNotes,
-		x.ProductOfRecipeStepID,
+		x.ProductOfRecipe,
+		x.IngredientNotes,
 		x.CreatedOn,
-		x.UpdatedOn,
+		x.LastUpdatedOn,
 		x.BelongsToRecipeStep,
 		x.ID,
 	)
@@ -78,7 +71,7 @@ func TestPostgres_ScanRecipeStepIngredients(T *testing.T) {
 		mockRows.On("Next").Return(false)
 		mockRows.On("Err").Return(errors.New("blah"))
 
-		_, _, err := p.scanRecipeStepIngredients(mockRows)
+		_, err := p.scanRecipeStepIngredients(mockRows)
 		assert.Error(t, err)
 	})
 
@@ -90,7 +83,7 @@ func TestPostgres_ScanRecipeStepIngredients(T *testing.T) {
 		mockRows.On("Err").Return(nil)
 		mockRows.On("Close").Return(errors.New("blah"))
 
-		_, _, err := p.scanRecipeStepIngredients(mockRows)
+		_, err := p.scanRecipeStepIngredients(mockRows)
 		assert.NoError(t, err)
 	})
 }
@@ -203,7 +196,7 @@ func TestPostgres_buildGetRecipeStepIngredientQuery(T *testing.T) {
 		exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
 		exampleRecipeStepIngredient.BelongsToRecipeStep = exampleRecipeStep.ID
 
-		expectedQuery := "SELECT recipe_step_ingredients.id, recipe_step_ingredients.valid_ingredient_id, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe_step_id, recipe_step_ingredients.created_on, recipe_step_ingredients.updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_ingredients.belongs_to_recipe_step = $1 AND recipe_step_ingredients.id = $2 AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.id = $5"
+		expectedQuery := "SELECT recipe_step_ingredients.id, recipe_step_ingredients.ingredient_id, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.created_on, recipe_step_ingredients.last_updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_ingredients.belongs_to_recipe_step = $1 AND recipe_step_ingredients.id = $2 AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.id = $5"
 		expectedArgs := []interface{}{
 			exampleRecipeStep.ID,
 			exampleRecipeStepIngredient.ID,
@@ -223,7 +216,7 @@ func TestPostgres_GetRecipeStepIngredient(T *testing.T) {
 	T.Parallel()
 
 	exampleUser := fakemodels.BuildFakeUser()
-	expectedQuery := "SELECT recipe_step_ingredients.id, recipe_step_ingredients.valid_ingredient_id, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe_step_id, recipe_step_ingredients.created_on, recipe_step_ingredients.updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_ingredients.belongs_to_recipe_step = $1 AND recipe_step_ingredients.id = $2 AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.id = $5"
+	expectedQuery := "SELECT recipe_step_ingredients.id, recipe_step_ingredients.ingredient_id, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.created_on, recipe_step_ingredients.last_updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_ingredients.belongs_to_recipe_step = $1 AND recipe_step_ingredients.id = $2 AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.id = $5"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
@@ -244,7 +237,7 @@ func TestPostgres_GetRecipeStepIngredient(T *testing.T) {
 				exampleRecipeStep.ID,
 				exampleRecipe.ID,
 			).
-			WillReturnRows(buildMockRowsFromRecipeStepIngredient(exampleRecipeStepIngredient))
+			WillReturnRows(buildMockRowsFromRecipeStepIngredients(exampleRecipeStepIngredient))
 
 		actual, err := p.GetRecipeStepIngredient(ctx, exampleRecipe.ID, exampleRecipeStep.ID, exampleRecipeStepIngredient.ID)
 		assert.NoError(t, err)
@@ -318,6 +311,180 @@ func TestPostgres_GetAllRecipeStepIngredientsCount(T *testing.T) {
 	})
 }
 
+func TestPostgres_buildGetBatchOfRecipeStepIngredientsQuery(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		p, _ := buildTestService(t)
+
+		beginID, endID := uint64(1), uint64(1000)
+
+		expectedQuery := "SELECT recipe_step_ingredients.id, recipe_step_ingredients.ingredient_id, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.created_on, recipe_step_ingredients.last_updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step FROM recipe_step_ingredients WHERE recipe_step_ingredients.id > $1 AND recipe_step_ingredients.id < $2"
+		expectedArgs := []interface{}{
+			beginID,
+			endID,
+		}
+		actualQuery, actualArgs := p.buildGetBatchOfRecipeStepIngredientsQuery(beginID, endID)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+}
+
+func TestPostgres_GetAllRecipeStepIngredients(T *testing.T) {
+	T.Parallel()
+
+	expectedCountQuery := "SELECT COUNT(recipe_step_ingredients.id) FROM recipe_step_ingredients WHERE recipe_step_ingredients.archived_on IS NULL"
+	expectedGetQuery := "SELECT recipe_step_ingredients.id, recipe_step_ingredients.ingredient_id, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.created_on, recipe_step_ingredients.last_updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step FROM recipe_step_ingredients WHERE recipe_step_ingredients.id > $1 AND recipe_step_ingredients.id < $2"
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+		exampleRecipeStepIngredientList := fakemodels.BuildFakeRecipeStepIngredientList()
+		expectedCount := uint64(20)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
+			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedGetQuery)).
+			WithArgs(
+				uint64(1),
+				uint64(1001),
+			).
+			WillReturnRows(
+				buildMockRowsFromRecipeStepIngredients(
+					&exampleRecipeStepIngredientList.RecipeStepIngredients[0],
+					&exampleRecipeStepIngredientList.RecipeStepIngredients[1],
+					&exampleRecipeStepIngredientList.RecipeStepIngredients[2],
+				),
+			)
+
+		out := make(chan []models.RecipeStepIngredient)
+		doneChan := make(chan bool, 1)
+
+		err := p.GetAllRecipeStepIngredients(ctx, out)
+		assert.NoError(t, err)
+
+		var stillQuerying = true
+		for stillQuerying {
+			select {
+			case batch := <-out:
+				assert.NotEmpty(t, batch)
+				doneChan <- true
+			case <-time.After(time.Second):
+				t.FailNow()
+			case <-doneChan:
+				stillQuerying = false
+			}
+		}
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with error fetching initial count", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
+			WillReturnError(errors.New("blah"))
+
+		out := make(chan []models.RecipeStepIngredient)
+
+		err := p.GetAllRecipeStepIngredients(ctx, out)
+		assert.Error(t, err)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with no rows returned", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+		expectedCount := uint64(20)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
+			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedGetQuery)).
+			WithArgs(
+				uint64(1),
+				uint64(1001),
+			).
+			WillReturnError(sql.ErrNoRows)
+
+		out := make(chan []models.RecipeStepIngredient)
+
+		err := p.GetAllRecipeStepIngredients(ctx, out)
+		assert.NoError(t, err)
+
+		time.Sleep(time.Second)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with error querying database", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+		expectedCount := uint64(20)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
+			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedGetQuery)).
+			WithArgs(
+				uint64(1),
+				uint64(1001),
+			).
+			WillReturnError(errors.New("blah"))
+
+		out := make(chan []models.RecipeStepIngredient)
+
+		err := p.GetAllRecipeStepIngredients(ctx, out)
+		assert.NoError(t, err)
+
+		time.Sleep(time.Second)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with invalid response from database", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		p, mockDB := buildTestService(t)
+		exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
+		expectedCount := uint64(20)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCountQuery)).
+			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(expectedCount))
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedGetQuery)).
+			WithArgs(
+				uint64(1),
+				uint64(1001),
+			).
+			WillReturnRows(buildErroneousMockRowFromRecipeStepIngredient(exampleRecipeStepIngredient))
+
+		out := make(chan []models.RecipeStepIngredient)
+
+		err := p.GetAllRecipeStepIngredients(ctx, out)
+		assert.NoError(t, err)
+
+		time.Sleep(time.Second)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+}
+
 func TestPostgres_buildGetRecipeStepIngredientsQuery(T *testing.T) {
 	T.Parallel()
 
@@ -329,7 +496,7 @@ func TestPostgres_buildGetRecipeStepIngredientsQuery(T *testing.T) {
 		exampleRecipeStep.BelongsToRecipe = exampleRecipe.ID
 		filter := fakemodels.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT recipe_step_ingredients.id, recipe_step_ingredients.valid_ingredient_id, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe_step_id, recipe_step_ingredients.created_on, recipe_step_ingredients.updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step, (SELECT COUNT(recipe_step_ingredients.id) FROM recipe_step_ingredients WHERE recipe_step_ingredients.archived_on IS NULL) FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_ingredients.archived_on IS NULL AND recipe_step_ingredients.belongs_to_recipe_step = $1 AND recipe_steps.belongs_to_recipe = $2 AND recipe_steps.id = $3 AND recipes.id = $4 AND recipe_step_ingredients.created_on > $5 AND recipe_step_ingredients.created_on < $6 AND recipe_step_ingredients.updated_on > $7 AND recipe_step_ingredients.updated_on < $8 ORDER BY recipe_step_ingredients.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT recipe_step_ingredients.id, recipe_step_ingredients.ingredient_id, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.created_on, recipe_step_ingredients.last_updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_ingredients.archived_on IS NULL AND recipe_step_ingredients.belongs_to_recipe_step = $1 AND recipe_steps.belongs_to_recipe = $2 AND recipe_steps.id = $3 AND recipes.id = $4 AND recipe_step_ingredients.created_on > $5 AND recipe_step_ingredients.created_on < $6 AND recipe_step_ingredients.last_updated_on > $7 AND recipe_step_ingredients.last_updated_on < $8 ORDER BY recipe_step_ingredients.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			exampleRecipeStep.ID,
 			exampleRecipe.ID,
@@ -351,7 +518,7 @@ func TestPostgres_buildGetRecipeStepIngredientsQuery(T *testing.T) {
 func TestPostgres_GetRecipeStepIngredients(T *testing.T) {
 	T.Parallel()
 
-	expectedListQuery := "SELECT recipe_step_ingredients.id, recipe_step_ingredients.valid_ingredient_id, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe_step_id, recipe_step_ingredients.created_on, recipe_step_ingredients.updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step, (SELECT COUNT(recipe_step_ingredients.id) FROM recipe_step_ingredients WHERE recipe_step_ingredients.archived_on IS NULL) FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_ingredients.archived_on IS NULL AND recipe_step_ingredients.belongs_to_recipe_step = $1 AND recipe_steps.belongs_to_recipe = $2 AND recipe_steps.id = $3 AND recipes.id = $4 ORDER BY recipe_step_ingredients.id LIMIT 20"
+	expectedQuery := "SELECT recipe_step_ingredients.id, recipe_step_ingredients.ingredient_id, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.created_on, recipe_step_ingredients.last_updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_ingredients.archived_on IS NULL AND recipe_step_ingredients.belongs_to_recipe_step = $1 AND recipe_steps.belongs_to_recipe = $2 AND recipe_steps.id = $3 AND recipes.id = $4 ORDER BY recipe_step_ingredients.id LIMIT 20"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
@@ -365,7 +532,7 @@ func TestPostgres_GetRecipeStepIngredients(T *testing.T) {
 
 		exampleRecipeStepIngredientList := fakemodels.BuildFakeRecipeStepIngredientList()
 
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
 				exampleRecipeStep.ID,
 				exampleRecipe.ID,
@@ -373,7 +540,7 @@ func TestPostgres_GetRecipeStepIngredients(T *testing.T) {
 				exampleRecipe.ID,
 			).
 			WillReturnRows(
-				buildMockRowsFromRecipeStepIngredient(
+				buildMockRowsFromRecipeStepIngredients(
 					&exampleRecipeStepIngredientList.RecipeStepIngredients[0],
 					&exampleRecipeStepIngredientList.RecipeStepIngredients[1],
 					&exampleRecipeStepIngredientList.RecipeStepIngredients[2],
@@ -398,7 +565,7 @@ func TestPostgres_GetRecipeStepIngredients(T *testing.T) {
 		p, mockDB := buildTestService(t)
 		filter := models.DefaultQueryFilter()
 
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
 				exampleRecipeStep.ID,
 				exampleRecipe.ID,
@@ -425,7 +592,7 @@ func TestPostgres_GetRecipeStepIngredients(T *testing.T) {
 		p, mockDB := buildTestService(t)
 		filter := models.DefaultQueryFilter()
 
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
 				exampleRecipeStep.ID,
 				exampleRecipe.ID,
@@ -453,7 +620,7 @@ func TestPostgres_GetRecipeStepIngredients(T *testing.T) {
 
 		exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
 
-		mockDB.ExpectQuery(formatQueryForSQLMock(expectedListQuery)).
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
 				exampleRecipeStep.ID,
 				exampleRecipe.ID,
@@ -463,6 +630,170 @@ func TestPostgres_GetRecipeStepIngredients(T *testing.T) {
 			WillReturnRows(buildErroneousMockRowFromRecipeStepIngredient(exampleRecipeStepIngredient))
 
 		actual, err := p.GetRecipeStepIngredients(ctx, exampleRecipe.ID, exampleRecipeStep.ID, filter)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+}
+
+func TestPostgres_buildGetRecipeStepIngredientsWithIDsQuery(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		p, _ := buildTestService(t)
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		exampleRecipeStep.BelongsToRecipe = exampleRecipe.ID
+		exampleIDs := []uint64{
+			789,
+			123,
+			456,
+		}
+
+		expectedQuery := fmt.Sprintf("SELECT recipe_step_ingredients.id, recipe_step_ingredients.ingredient_id, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.created_on, recipe_step_ingredients.last_updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step FROM (SELECT recipe_step_ingredients.id, recipe_step_ingredients.ingredient_id, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.created_on, recipe_step_ingredients.last_updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id JOIN unnest('{%s}'::int[]) WHERE recipe_step_ingredients.archived_on IS NULL AND recipe_step_ingredients.belongs_to_recipe_step = $1 AND recipe_steps.belongs_to_recipe = $2 AND recipe_steps.id = $3 AND recipes.id = $4 WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d) AS recipe_step_ingredients WHERE recipe_step_ingredients.archived_on IS NULL", joinUint64s(exampleIDs), defaultLimit)
+		expectedArgs := []interface{}{
+			exampleRecipeStep.ID,
+			exampleRecipe.ID,
+			exampleRecipeStep.ID,
+			exampleRecipe.ID,
+		}
+		actualQuery, actualArgs := p.buildGetRecipeStepIngredientsWithIDsQuery(exampleRecipe.ID, exampleRecipeStep.ID, defaultLimit, exampleIDs)
+
+		ensureArgCountMatchesQuery(t, actualQuery, actualArgs)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+}
+
+func TestPostgres_GetRecipeStepIngredientsWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		exampleRecipeStep.BelongsToRecipe = exampleRecipe.ID
+
+		p, mockDB := buildTestService(t)
+
+		exampleRecipeStepIngredientList := fakemodels.BuildFakeRecipeStepIngredientList()
+		var exampleIDs []uint64
+		for _, recipeStepIngredient := range exampleRecipeStepIngredientList.RecipeStepIngredients {
+			exampleIDs = append(exampleIDs, recipeStepIngredient.ID)
+		}
+
+		expectedQuery := fmt.Sprintf("SELECT recipe_step_ingredients.id, recipe_step_ingredients.ingredient_id, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.created_on, recipe_step_ingredients.last_updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step FROM (SELECT recipe_step_ingredients.id, recipe_step_ingredients.ingredient_id, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.created_on, recipe_step_ingredients.last_updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id JOIN unnest('{%s}'::int[]) WHERE recipe_step_ingredients.archived_on IS NULL AND recipe_step_ingredients.belongs_to_recipe_step = $1 AND recipe_steps.belongs_to_recipe = $2 AND recipe_steps.id = $3 AND recipes.id = $4 WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d) AS recipe_step_ingredients WHERE recipe_step_ingredients.archived_on IS NULL", joinUint64s(exampleIDs), defaultLimit)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+			WithArgs(
+				exampleRecipeStep.ID,
+				exampleRecipe.ID,
+				exampleRecipeStep.ID,
+				exampleRecipe.ID,
+			).
+			WillReturnRows(
+				buildMockRowsFromRecipeStepIngredients(
+					&exampleRecipeStepIngredientList.RecipeStepIngredients[0],
+					&exampleRecipeStepIngredientList.RecipeStepIngredients[1],
+					&exampleRecipeStepIngredientList.RecipeStepIngredients[2],
+				),
+			)
+
+		actual, err := p.GetRecipeStepIngredientsWithIDs(ctx, exampleRecipe.ID, exampleRecipeStep.ID, defaultLimit, exampleIDs)
+
+		assert.NoError(t, err)
+		assert.Equal(t, exampleRecipeStepIngredientList.RecipeStepIngredients, actual)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("surfaces sql.ErrNoRows", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		exampleRecipeStep.BelongsToRecipe = exampleRecipe.ID
+
+		p, mockDB := buildTestService(t)
+
+		exampleIDs := []uint64{123, 456, 789}
+		expectedQuery := fmt.Sprintf("SELECT recipe_step_ingredients.id, recipe_step_ingredients.ingredient_id, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.created_on, recipe_step_ingredients.last_updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step FROM (SELECT recipe_step_ingredients.id, recipe_step_ingredients.ingredient_id, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.created_on, recipe_step_ingredients.last_updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id JOIN unnest('{%s}'::int[]) WHERE recipe_step_ingredients.archived_on IS NULL AND recipe_step_ingredients.belongs_to_recipe_step = $1 AND recipe_steps.belongs_to_recipe = $2 AND recipe_steps.id = $3 AND recipes.id = $4 WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d) AS recipe_step_ingredients WHERE recipe_step_ingredients.archived_on IS NULL", joinUint64s(exampleIDs), defaultLimit)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+			WithArgs(
+				exampleRecipeStep.ID,
+				exampleRecipe.ID,
+				exampleRecipeStep.ID,
+				exampleRecipe.ID,
+			).
+			WillReturnError(sql.ErrNoRows)
+
+		actual, err := p.GetRecipeStepIngredientsWithIDs(ctx, exampleRecipe.ID, exampleRecipeStep.ID, defaultLimit, exampleIDs)
+
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+		assert.Equal(t, sql.ErrNoRows, err)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with error executing read query", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		exampleRecipeStep.BelongsToRecipe = exampleRecipe.ID
+
+		p, mockDB := buildTestService(t)
+
+		exampleIDs := []uint64{123, 456, 789}
+		expectedQuery := fmt.Sprintf("SELECT recipe_step_ingredients.id, recipe_step_ingredients.ingredient_id, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.created_on, recipe_step_ingredients.last_updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step FROM (SELECT recipe_step_ingredients.id, recipe_step_ingredients.ingredient_id, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.created_on, recipe_step_ingredients.last_updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id JOIN unnest('{%s}'::int[]) WHERE recipe_step_ingredients.archived_on IS NULL AND recipe_step_ingredients.belongs_to_recipe_step = $1 AND recipe_steps.belongs_to_recipe = $2 AND recipe_steps.id = $3 AND recipes.id = $4 WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d) AS recipe_step_ingredients WHERE recipe_step_ingredients.archived_on IS NULL", joinUint64s(exampleIDs), defaultLimit)
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+			WithArgs(
+				exampleRecipeStep.ID,
+				exampleRecipe.ID,
+				exampleRecipeStep.ID,
+				exampleRecipe.ID,
+			).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := p.GetRecipeStepIngredientsWithIDs(ctx, exampleRecipe.ID, exampleRecipeStep.ID, defaultLimit, exampleIDs)
+
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		assert.NoError(t, mockDB.ExpectationsWereMet(), "not all database expectations were met")
+	})
+
+	T.Run("with error scanning recipe step ingredient", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		exampleRecipeStep.BelongsToRecipe = exampleRecipe.ID
+
+		p, mockDB := buildTestService(t)
+
+		exampleIDs := []uint64{123, 456, 789}
+		expectedQuery := fmt.Sprintf("SELECT recipe_step_ingredients.id, recipe_step_ingredients.ingredient_id, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.created_on, recipe_step_ingredients.last_updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step FROM (SELECT recipe_step_ingredients.id, recipe_step_ingredients.ingredient_id, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.created_on, recipe_step_ingredients.last_updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id JOIN unnest('{%s}'::int[]) WHERE recipe_step_ingredients.archived_on IS NULL AND recipe_step_ingredients.belongs_to_recipe_step = $1 AND recipe_steps.belongs_to_recipe = $2 AND recipe_steps.id = $3 AND recipes.id = $4 WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d) AS recipe_step_ingredients WHERE recipe_step_ingredients.archived_on IS NULL", joinUint64s(exampleIDs), defaultLimit)
+
+		exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
+
+		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
+			WithArgs(
+				exampleRecipeStep.ID,
+				exampleRecipe.ID,
+				exampleRecipeStep.ID,
+				exampleRecipe.ID,
+			).
+			WillReturnRows(buildErroneousMockRowFromRecipeStepIngredient(exampleRecipeStepIngredient))
+
+		actual, err := p.GetRecipeStepIngredientsWithIDs(ctx, exampleRecipe.ID, exampleRecipeStep.ID, defaultLimit, exampleIDs)
+
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -484,14 +815,14 @@ func TestPostgres_buildCreateRecipeStepIngredientQuery(T *testing.T) {
 		exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
 		exampleRecipeStepIngredient.BelongsToRecipeStep = exampleRecipeStep.ID
 
-		expectedQuery := "INSERT INTO recipe_step_ingredients (valid_ingredient_id,ingredient_notes,quantity_type,quantity_value,quantity_notes,product_of_recipe_step_id,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id, created_on"
+		expectedQuery := "INSERT INTO recipe_step_ingredients (ingredient_id,quantity_type,quantity_value,quantity_notes,product_of_recipe,ingredient_notes,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id, created_on"
 		expectedArgs := []interface{}{
-			exampleRecipeStepIngredient.ValidIngredientID,
-			exampleRecipeStepIngredient.IngredientNotes,
+			exampleRecipeStepIngredient.IngredientID,
 			exampleRecipeStepIngredient.QuantityType,
 			exampleRecipeStepIngredient.QuantityValue,
 			exampleRecipeStepIngredient.QuantityNotes,
-			exampleRecipeStepIngredient.ProductOfRecipeStepID,
+			exampleRecipeStepIngredient.ProductOfRecipe,
+			exampleRecipeStepIngredient.IngredientNotes,
 			exampleRecipeStepIngredient.BelongsToRecipeStep,
 		}
 		actualQuery, actualArgs := p.buildCreateRecipeStepIngredientQuery(exampleRecipeStepIngredient)
@@ -505,7 +836,7 @@ func TestPostgres_buildCreateRecipeStepIngredientQuery(T *testing.T) {
 func TestPostgres_CreateRecipeStepIngredient(T *testing.T) {
 	T.Parallel()
 
-	expectedCreationQuery := "INSERT INTO recipe_step_ingredients (valid_ingredient_id,ingredient_notes,quantity_type,quantity_value,quantity_notes,product_of_recipe_step_id,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id, created_on"
+	expectedCreationQuery := "INSERT INTO recipe_step_ingredients (ingredient_id,quantity_type,quantity_value,quantity_notes,product_of_recipe,ingredient_notes,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id, created_on"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
@@ -524,12 +855,12 @@ func TestPostgres_CreateRecipeStepIngredient(T *testing.T) {
 		exampleRows := sqlmock.NewRows([]string{"id", "created_on"}).AddRow(exampleRecipeStepIngredient.ID, exampleRecipeStepIngredient.CreatedOn)
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCreationQuery)).
 			WithArgs(
-				exampleRecipeStepIngredient.ValidIngredientID,
-				exampleRecipeStepIngredient.IngredientNotes,
+				exampleRecipeStepIngredient.IngredientID,
 				exampleRecipeStepIngredient.QuantityType,
 				exampleRecipeStepIngredient.QuantityValue,
 				exampleRecipeStepIngredient.QuantityNotes,
-				exampleRecipeStepIngredient.ProductOfRecipeStepID,
+				exampleRecipeStepIngredient.ProductOfRecipe,
+				exampleRecipeStepIngredient.IngredientNotes,
 				exampleRecipeStepIngredient.BelongsToRecipeStep,
 			).WillReturnRows(exampleRows)
 
@@ -556,12 +887,12 @@ func TestPostgres_CreateRecipeStepIngredient(T *testing.T) {
 
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedCreationQuery)).
 			WithArgs(
-				exampleRecipeStepIngredient.ValidIngredientID,
-				exampleRecipeStepIngredient.IngredientNotes,
+				exampleRecipeStepIngredient.IngredientID,
 				exampleRecipeStepIngredient.QuantityType,
 				exampleRecipeStepIngredient.QuantityValue,
 				exampleRecipeStepIngredient.QuantityNotes,
-				exampleRecipeStepIngredient.ProductOfRecipeStepID,
+				exampleRecipeStepIngredient.ProductOfRecipe,
+				exampleRecipeStepIngredient.IngredientNotes,
 				exampleRecipeStepIngredient.BelongsToRecipeStep,
 			).WillReturnError(errors.New("blah"))
 
@@ -587,14 +918,14 @@ func TestPostgres_buildUpdateRecipeStepIngredientQuery(T *testing.T) {
 		exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
 		exampleRecipeStepIngredient.BelongsToRecipeStep = exampleRecipeStep.ID
 
-		expectedQuery := "UPDATE recipe_step_ingredients SET valid_ingredient_id = $1, ingredient_notes = $2, quantity_type = $3, quantity_value = $4, quantity_notes = $5, product_of_recipe_step_id = $6, updated_on = extract(epoch FROM NOW()) WHERE belongs_to_recipe_step = $7 AND id = $8 RETURNING updated_on"
+		expectedQuery := "UPDATE recipe_step_ingredients SET ingredient_id = $1, quantity_type = $2, quantity_value = $3, quantity_notes = $4, product_of_recipe = $5, ingredient_notes = $6, last_updated_on = extract(epoch FROM NOW()) WHERE belongs_to_recipe_step = $7 AND id = $8 RETURNING last_updated_on"
 		expectedArgs := []interface{}{
-			exampleRecipeStepIngredient.ValidIngredientID,
-			exampleRecipeStepIngredient.IngredientNotes,
+			exampleRecipeStepIngredient.IngredientID,
 			exampleRecipeStepIngredient.QuantityType,
 			exampleRecipeStepIngredient.QuantityValue,
 			exampleRecipeStepIngredient.QuantityNotes,
-			exampleRecipeStepIngredient.ProductOfRecipeStepID,
+			exampleRecipeStepIngredient.ProductOfRecipe,
+			exampleRecipeStepIngredient.IngredientNotes,
 			exampleRecipeStepIngredient.BelongsToRecipeStep,
 			exampleRecipeStepIngredient.ID,
 		}
@@ -609,7 +940,7 @@ func TestPostgres_buildUpdateRecipeStepIngredientQuery(T *testing.T) {
 func TestPostgres_UpdateRecipeStepIngredient(T *testing.T) {
 	T.Parallel()
 
-	expectedQuery := "UPDATE recipe_step_ingredients SET valid_ingredient_id = $1, ingredient_notes = $2, quantity_type = $3, quantity_value = $4, quantity_notes = $5, product_of_recipe_step_id = $6, updated_on = extract(epoch FROM NOW()) WHERE belongs_to_recipe_step = $7 AND id = $8 RETURNING updated_on"
+	expectedQuery := "UPDATE recipe_step_ingredients SET ingredient_id = $1, quantity_type = $2, quantity_value = $3, quantity_notes = $4, product_of_recipe = $5, ingredient_notes = $6, last_updated_on = extract(epoch FROM NOW()) WHERE belongs_to_recipe_step = $7 AND id = $8 RETURNING last_updated_on"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
@@ -624,15 +955,15 @@ func TestPostgres_UpdateRecipeStepIngredient(T *testing.T) {
 		exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
 		exampleRecipeStepIngredient.BelongsToRecipeStep = exampleRecipeStep.ID
 
-		exampleRows := sqlmock.NewRows([]string{"updated_on"}).AddRow(uint64(time.Now().Unix()))
+		exampleRows := sqlmock.NewRows([]string{"last_updated_on"}).AddRow(uint64(time.Now().Unix()))
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				exampleRecipeStepIngredient.ValidIngredientID,
-				exampleRecipeStepIngredient.IngredientNotes,
+				exampleRecipeStepIngredient.IngredientID,
 				exampleRecipeStepIngredient.QuantityType,
 				exampleRecipeStepIngredient.QuantityValue,
 				exampleRecipeStepIngredient.QuantityNotes,
-				exampleRecipeStepIngredient.ProductOfRecipeStepID,
+				exampleRecipeStepIngredient.ProductOfRecipe,
+				exampleRecipeStepIngredient.IngredientNotes,
 				exampleRecipeStepIngredient.BelongsToRecipeStep,
 				exampleRecipeStepIngredient.ID,
 			).WillReturnRows(exampleRows)
@@ -658,12 +989,12 @@ func TestPostgres_UpdateRecipeStepIngredient(T *testing.T) {
 
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WithArgs(
-				exampleRecipeStepIngredient.ValidIngredientID,
-				exampleRecipeStepIngredient.IngredientNotes,
+				exampleRecipeStepIngredient.IngredientID,
 				exampleRecipeStepIngredient.QuantityType,
 				exampleRecipeStepIngredient.QuantityValue,
 				exampleRecipeStepIngredient.QuantityNotes,
-				exampleRecipeStepIngredient.ProductOfRecipeStepID,
+				exampleRecipeStepIngredient.ProductOfRecipe,
+				exampleRecipeStepIngredient.IngredientNotes,
 				exampleRecipeStepIngredient.BelongsToRecipeStep,
 				exampleRecipeStepIngredient.ID,
 			).WillReturnError(errors.New("blah"))
@@ -689,7 +1020,7 @@ func TestPostgres_buildArchiveRecipeStepIngredientQuery(T *testing.T) {
 		exampleRecipeStepIngredient := fakemodels.BuildFakeRecipeStepIngredient()
 		exampleRecipeStepIngredient.BelongsToRecipeStep = exampleRecipeStep.ID
 
-		expectedQuery := "UPDATE recipe_step_ingredients SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $1 AND id = $2 RETURNING archived_on"
+		expectedQuery := "UPDATE recipe_step_ingredients SET last_updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $1 AND id = $2 RETURNING archived_on"
 		expectedArgs := []interface{}{
 			exampleRecipeStep.ID,
 			exampleRecipeStepIngredient.ID,
@@ -705,7 +1036,7 @@ func TestPostgres_buildArchiveRecipeStepIngredientQuery(T *testing.T) {
 func TestPostgres_ArchiveRecipeStepIngredient(T *testing.T) {
 	T.Parallel()
 
-	expectedQuery := "UPDATE recipe_step_ingredients SET updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $1 AND id = $2 RETURNING archived_on"
+	expectedQuery := "UPDATE recipe_step_ingredients SET last_updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $1 AND id = $2 RETURNING archived_on"
 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()

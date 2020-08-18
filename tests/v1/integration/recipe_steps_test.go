@@ -16,13 +16,13 @@ func checkRecipeStepEquality(t *testing.T, expected, actual *models.RecipeStep) 
 
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Index, actual.Index, "expected Index for ID %d to be %v, but it was %v ", expected.ID, expected.Index, actual.Index)
-	assert.Equal(t, expected.ValidPreparationID, actual.ValidPreparationID, "expected ValidPreparationID for ID %d to be %v, but it was %v ", expected.ID, expected.ValidPreparationID, actual.ValidPreparationID)
-	assert.Equal(t, *expected.PrerequisiteStepID, *actual.PrerequisiteStepID, "expected PrerequisiteStepID to be %v, but it was %v ", expected.PrerequisiteStepID, actual.PrerequisiteStepID)
+	assert.Equal(t, expected.PreparationID, actual.PreparationID, "expected PreparationID for ID %d to be %v, but it was %v ", expected.ID, expected.PreparationID, actual.PreparationID)
+	assert.Equal(t, expected.PrerequisiteStep, actual.PrerequisiteStep, "expected PrerequisiteStep for ID %d to be %v, but it was %v ", expected.ID, expected.PrerequisiteStep, actual.PrerequisiteStep)
 	assert.Equal(t, expected.MinEstimatedTimeInSeconds, actual.MinEstimatedTimeInSeconds, "expected MinEstimatedTimeInSeconds for ID %d to be %v, but it was %v ", expected.ID, expected.MinEstimatedTimeInSeconds, actual.MinEstimatedTimeInSeconds)
 	assert.Equal(t, expected.MaxEstimatedTimeInSeconds, actual.MaxEstimatedTimeInSeconds, "expected MaxEstimatedTimeInSeconds for ID %d to be %v, but it was %v ", expected.ID, expected.MaxEstimatedTimeInSeconds, actual.MaxEstimatedTimeInSeconds)
-	assert.Equal(t, expected.YieldsProductName, actual.YieldsProductName, "expected YieldsProductName for ID %d to be %v, but it was %v ", expected.ID, expected.YieldsProductName, actual.YieldsProductName)
-	assert.Equal(t, expected.YieldsQuantity, actual.YieldsQuantity, "expected YieldsQuantity for ID %d to be %v, but it was %v ", expected.ID, expected.YieldsQuantity, actual.YieldsQuantity)
+	assert.Equal(t, *expected.TemperatureInCelsius, *actual.TemperatureInCelsius, "expected TemperatureInCelsius to be %v, but it was %v ", expected.TemperatureInCelsius, actual.TemperatureInCelsius)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for ID %d to be %v, but it was %v ", expected.ID, expected.Notes, actual.Notes)
+	assert.Equal(t, expected.RecipeID, actual.RecipeID, "expected RecipeID for ID %d to be %v, but it was %v ", expected.ID, expected.RecipeID, actual.RecipeID)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
@@ -273,7 +273,7 @@ func TestRecipeSteps(test *testing.T) {
 
 			// Assert recipe step equality.
 			checkRecipeStepEquality(t, exampleRecipeStep, actual)
-			assert.NotNil(t, actual.UpdatedOn)
+			assert.NotNil(t, actual.LastUpdatedOn)
 
 			// Clean up recipe step.
 			assert.NoError(t, prixfixeClient.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))

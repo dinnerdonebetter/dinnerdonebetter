@@ -203,12 +203,14 @@ func TestV1Client_GetRecipeIterations(T *testing.T) {
 		exampleRecipe := fakemodels.BuildFakeRecipe()
 		filter := (*models.QueryFilter)(nil)
 
+		expectedPath := fmt.Sprintf("/api/v1/recipes/%d/recipe_iterations", exampleRecipe.ID)
+
 		exampleRecipeIterationList := fakemodels.BuildFakeRecipeIterationList()
 
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/recipes/%d/recipe_iterations", exampleRecipe.ID), "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodGet)
 					require.NoError(t, json.NewEncoder(res).Encode(exampleRecipeIterationList))
 				},
@@ -242,10 +244,12 @@ func TestV1Client_GetRecipeIterations(T *testing.T) {
 		exampleRecipe := fakemodels.BuildFakeRecipe()
 		filter := (*models.QueryFilter)(nil)
 
+		expectedPath := fmt.Sprintf("/api/v1/recipes/%d/recipe_iterations", exampleRecipe.ID)
+
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/recipes/%d/recipe_iterations", exampleRecipe.ID), "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodGet)
 					require.NoError(t, json.NewEncoder(res).Encode("BLAH"))
 				},
@@ -296,10 +300,12 @@ func TestV1Client_CreateRecipeIteration(T *testing.T) {
 		exampleRecipeIteration.BelongsToRecipe = exampleRecipe.ID
 		exampleInput := fakemodels.BuildFakeRecipeIterationCreationInputFromRecipeIteration(exampleRecipeIteration)
 
+		expectedPath := fmt.Sprintf("/api/v1/recipes/%d/recipe_iterations", exampleRecipe.ID)
+
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/recipes/%d/recipe_iterations", exampleRecipe.ID), "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodPost)
 
 					var x *models.RecipeIterationCreationInput

@@ -2,6 +2,7 @@ package config
 
 import (
 	"crypto/rand"
+	"encoding/base32"
 	"fmt"
 	"io/ioutil"
 	"time"
@@ -78,8 +79,8 @@ type (
 	AuthSettings struct {
 		// CookieDomain indicates what domain the cookies will have set for them.
 		CookieDomain string `json:"cookie_domain" mapstructure:"cookie_domain" toml:"cookie_domain,omitempty"`
-		// CookieSecret indicates the secret the cookie builder should use. Set to a random string if somehow empty.
-		CookieSecret string `json:"cookie_secret" mapstructure:",omitempty" toml:"cookie_secret,omitempty"`
+		// CookieSecret indicates the secret the cookie builder should use.
+		CookieSecret string `json:"cookie_secret" mapstructure:"cookie_secret" toml:"cookie_secret,omitempty"`
 		// CookieLifetime indicates how long the cookies built should last.
 		CookieLifetime time.Duration `json:"cookie_lifetime" mapstructure:"cookie_lifetime" toml:"cookie_lifetime,omitempty"`
 		// Debug determines if debug logging or other development conditions are active.
@@ -92,14 +93,12 @@ type (
 
 	// DatabaseSettings represents our database configuration.
 	DatabaseSettings struct {
+		// Debug determines if debug logging or other development conditions are active.
+		Debug bool `json:"debug" mapstructure:"debug" toml:"debug,omitempty"`
 		// Provider indicates what database we'll connect to (postgres, mysql, etc.)
 		Provider string `json:"provider" mapstructure:"provider" toml:"provider,omitempty"`
 		// ConnectionDetails indicates how our database driver should connect to the instance.
 		ConnectionDetails database.ConnectionDetails `json:"connection_details" mapstructure:"connection_details" toml:"connection_details,omitempty"`
-		// Debug determines if debug logging or other development conditions are active.
-		Debug bool `json:"debug" mapstructure:"debug" toml:"debug,omitempty"`
-		// CreateDummyUser determines if we create an example user in the database.
-		CreateDummyUser bool `json:"create_dummy_user" mapstructure:"create_dummy_user" toml:"create_dummy_user,omitempty"`
 	}
 
 	// MetricsSettings contains settings about how we report our metrics.
@@ -124,13 +123,10 @@ type (
 		Database DatabaseSettings `json:"database" mapstructure:"database" toml:"database,omitempty"`
 		Metrics  MetricsSettings  `json:"metrics" mapstructure:"metrics" toml:"metrics,omitempty"`
 	}
-
-	// MarshalFunc is a function that can marshal a config.
-	MarshalFunc func(v interface{}) ([]byte, error)
 )
 
 // EncodeToFile renders your config to a file given your favorite encoder.
-func (cfg *ServerConfig) EncodeToFile(path string, marshaler MarshalFunc) error {
+func (cfg *ServerConfig) EncodeToFile(path string, marshaler func(v interface{}) ([]byte, error)) error {
 	byteSlice, err := marshaler(*cfg)
 	if err != nil {
 		return err
@@ -148,17 +144,12 @@ func BuildConfig() *viper.Viper {
 	cfg.SetDefault("meta.startup_deadline", defaultStartupDeadline)
 
 	// auth stuff.
-	// NOTE: this will result in an ever-changing cookie secret per server instance running.
-	cfg.SetDefault("auth.cookie_secret", string(make([]byte, randStringSize)))
 	cfg.SetDefault("auth.cookie_lifetime", defaultCookieLifetime)
 	cfg.SetDefault("auth.enable_user_signup", true)
 
 	// metrics stuff.
 	cfg.SetDefault("metrics.database_metrics_collection_interval", defaultMetricsCollectionInterval)
 	cfg.SetDefault("metrics.runtime_metrics_collection_interval", defaultDatabaseMetricsCollectionInterval)
-
-	// database stuff.
-	cfg.SetDefault("database.create_dummy_user", false)
 
 	// server stuff.
 	cfg.SetDefault("server.http_port", 80)
@@ -184,14 +175,20 @@ func ParseConfigFile(filename string) (*ServerConfig, error) {
 		return nil, fmt.Errorf("invalid run mode: %q", serverConfig.Meta.RunMode)
 	}
 
-	if (!serverConfig.Meta.Debug && serverConfig.Database.CreateDummyUser) || serverConfig.Meta.RunMode == ProductionRunMode {
-		// only set this setting if meta.debug is also true
-		serverConfig.Database.CreateDummyUser = false
-	}
-
+	// set the cookie secret to something (relatively) secure if not provided
 	if serverConfig.Auth.CookieSecret == "" {
-		serverConfig.Auth.CookieSecret = string(make([]byte, randStringSize))
+		serverConfig.Auth.CookieSecret = randString(randStringSize)
 	}
 
 	return serverConfig, nil
+}
+
+// randString produces a random string.
+// https://blog.questionable.services/article/generating-secure-random-numbers-crypto-rand/
+func randString(size uint) string {
+	b := make([]byte, size)
+	if _, err := rand.Read(b); err != nil {
+		panic(err)
+	}
+	return base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(b)
 }

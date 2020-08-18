@@ -17,7 +17,7 @@ var (
 )
 
 // ProvideRecipeStepIngredientDataManager turns a database into an RecipeStepIngredientDataManager.
-func ProvideRecipeStepIngredientDataManager(db database.Database) models.RecipeStepIngredientDataManager {
+func ProvideRecipeStepIngredientDataManager(db database.DataManager) models.RecipeStepIngredientDataManager {
 	return db
 }
 

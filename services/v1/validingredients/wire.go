@@ -17,7 +17,7 @@ var (
 )
 
 // ProvideValidIngredientDataManager turns a database into an ValidIngredientDataManager.
-func ProvideValidIngredientDataManager(db database.Database) models.ValidIngredientDataManager {
+func ProvideValidIngredientDataManager(db database.DataManager) models.ValidIngredientDataManager {
 	return db
 }
 

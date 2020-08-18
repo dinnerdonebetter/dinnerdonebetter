@@ -80,6 +80,24 @@ func TestClient_GetAllRecipeStepIngredientsCount(T *testing.T) {
 	})
 }
 
+func TestClient_GetAllRecipeStepIngredients(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		results := make(chan []models.RecipeStepIngredient)
+
+		c, mockDB := buildTestClient()
+		mockDB.RecipeStepIngredientDataManager.On("GetAllRecipeStepIngredients", mock.Anything, results).Return(nil)
+
+		err := c.GetAllRecipeStepIngredients(ctx, results)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
 func TestClient_GetRecipeStepIngredients(T *testing.T) {
 	T.Parallel()
 
@@ -113,6 +131,32 @@ func TestClient_GetRecipeStepIngredients(T *testing.T) {
 		mockDB.RecipeStepIngredientDataManager.On("GetRecipeStepIngredients", mock.Anything, exampleRecipe.ID, exampleRecipeStep.ID, filter).Return(exampleRecipeStepIngredientList, nil)
 
 		actual, err := c.GetRecipeStepIngredients(ctx, exampleRecipe.ID, exampleRecipeStep.ID, filter)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleRecipeStepIngredientList, actual)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
+func TestClient_GetRecipeStepIngredientsWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleRecipe := fakemodels.BuildFakeRecipe()
+		exampleRecipeStep := fakemodels.BuildFakeRecipeStep()
+		exampleRecipeStep.BelongsToRecipe = exampleRecipe.ID
+		exampleRecipeStepIngredientList := fakemodels.BuildFakeRecipeStepIngredientList().RecipeStepIngredients
+		var exampleIDs []uint64
+		for _, x := range exampleRecipeStepIngredientList {
+			exampleIDs = append(exampleIDs, x.ID)
+		}
+
+		c, mockDB := buildTestClient()
+		mockDB.RecipeStepIngredientDataManager.On("GetRecipeStepIngredientsWithIDs", mock.Anything, exampleRecipe.ID, exampleRecipeStep.ID, defaultLimit, exampleIDs).Return(exampleRecipeStepIngredientList, nil)
+
+		actual, err := c.GetRecipeStepIngredientsWithIDs(ctx, exampleRecipe.ID, exampleRecipeStep.ID, defaultLimit, exampleIDs)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleRecipeStepIngredientList, actual)
 

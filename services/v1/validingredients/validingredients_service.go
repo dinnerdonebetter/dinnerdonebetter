@@ -13,10 +13,10 @@ import (
 )
 
 const (
-	// CreateMiddlewareCtxKey is a string alias we can use for referring to valid ingredient input data in contexts.
-	CreateMiddlewareCtxKey models.ContextKey = "valid_ingredient_create_input"
-	// UpdateMiddlewareCtxKey is a string alias we can use for referring to valid ingredient update data in contexts.
-	UpdateMiddlewareCtxKey models.ContextKey = "valid_ingredient_update_input"
+	// createMiddlewareCtxKey is a string alias we can use for referring to valid ingredient input data in contexts.
+	createMiddlewareCtxKey models.ContextKey = "valid_ingredient_create_input"
+	// updateMiddlewareCtxKey is a string alias we can use for referring to valid ingredient update data in contexts.
+	updateMiddlewareCtxKey models.ContextKey = "valid_ingredient_update_input"
 
 	counterName        metrics.CounterName = "validIngredients"
 	counterDescription string              = "the number of validIngredients managed by the validIngredients service"

@@ -7,38 +7,39 @@ export class ValidPreparation {
   name: string;
   description: string;
   icon: string;
+  applicableToAllIngredients: boolean;
   createdOn: number;
   updatedOn?: number;
   archivedOn?: number;
 
   constructor() {
     this.id = 0;
-    this.name = '';
-    this.description = '';
+    this.name = "";
+    this.description = "";
+    this.icon = "";
+    this.applicableToAllIngredients = false;
     this.createdOn = 0;
-    this.icon = '';
+  }
+
+static areEqual = function(
+  vp1: ValidPreparation,
+  vp2: ValidPreparation,
+): boolean {
+    return (
+      vp1.id === vp2.id &&
+      vp1.name === vp2.name &&
+      vp1.description === vp2.description &&
+      vp1.icon === vp2.icon &&
+      vp1.applicableToAllIngredients === vp2.applicableToAllIngredients &&
+      vp1.archivedOn === vp2.archivedOn
+    );
   }
 }
 
-export function validPreparationsAreEqual(
-  i1: ValidPreparation,
-  i2: ValidPreparation,
-): boolean {
-  return (
-    i1.id === i2.id &&
-    i1.name === i2.name &&
-    i1.description === i2.description &&
-    i1.icon === i2.icon &&
-    i1.createdOn === i2.createdOn &&
-    i1.updatedOn === i2.updatedOn &&
-    i1.archivedOn === i2.archivedOn
-  );
-}
-
-
 export const fakeValidPreparationFactory = Factory.Sync.makeFactory<ValidPreparation> ({
-  name: Factory.Sync.each(() => faker.lorem.word()),
-  description: Factory.Sync.each(() => faker.lorem.words(6)),
-  icon: Factory.Sync.each(() => ''),
+  name: Factory.Sync.each(() =>  faker.random.word()),
+  description: Factory.Sync.each(() =>  faker.random.word()),
+  icon: Factory.Sync.each(() =>  faker.random.word()),
+  applicableToAllIngredients: Factory.Sync.each(() =>  faker.random.boolean()),
   ...defaultFactories,
 });

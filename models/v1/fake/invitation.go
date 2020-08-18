@@ -25,9 +25,8 @@ func BuildFakeInvitationList() *models.InvitationList {
 
 	return &models.InvitationList{
 		Pagination: models.Pagination{
-			Page:       1,
-			Limit:      20,
-			TotalCount: 3,
+			Page:  1,
+			Limit: 20,
 		},
 		Invitations: []models.Invitation{
 			*exampleInvitation1,

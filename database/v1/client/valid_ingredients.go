@@ -47,6 +47,16 @@ func (c *Client) GetAllValidIngredientsCount(ctx context.Context) (count uint64,
 	return c.querier.GetAllValidIngredientsCount(ctx)
 }
 
+// GetAllValidIngredients fetches a list of all valid ingredients in the database.
+func (c *Client) GetAllValidIngredients(ctx context.Context, results chan []models.ValidIngredient) error {
+	ctx, span := tracing.StartSpan(ctx, "GetAllValidIngredients")
+	defer span.End()
+
+	c.logger.Debug("GetAllValidIngredients called")
+
+	return c.querier.GetAllValidIngredients(ctx, results)
+}
+
 // GetValidIngredients fetches a list of valid ingredients from the database that meet a particular filter.
 func (c *Client) GetValidIngredients(ctx context.Context, filter *models.QueryFilter) (*models.ValidIngredientList, error) {
 	ctx, span := tracing.StartSpan(ctx, "GetValidIngredients")
@@ -57,6 +67,20 @@ func (c *Client) GetValidIngredients(ctx context.Context, filter *models.QueryFi
 	c.logger.Debug("GetValidIngredients called")
 
 	validIngredientList, err := c.querier.GetValidIngredients(ctx, filter)
+
+	return validIngredientList, err
+}
+
+// GetValidIngredientsWithIDs fetches valid ingredients from the database within a given set of IDs.
+func (c *Client) GetValidIngredientsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]models.ValidIngredient, error) {
+	ctx, span := tracing.StartSpan(ctx, "GetValidIngredientsWithIDs")
+	defer span.End()
+
+	c.logger.WithValues(map[string]interface{}{
+		"id_count": len(ids),
+	}).Debug("GetValidIngredientsWithIDs called")
+
+	validIngredientList, err := c.querier.GetValidIngredientsWithIDs(ctx, limit, ids)
 
 	return validIngredientList, err
 }

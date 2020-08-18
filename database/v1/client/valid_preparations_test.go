@@ -68,6 +68,24 @@ func TestClient_GetAllValidPreparationsCount(T *testing.T) {
 	})
 }
 
+func TestClient_GetAllValidPreparations(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		results := make(chan []models.ValidPreparation)
+
+		c, mockDB := buildTestClient()
+		mockDB.ValidPreparationDataManager.On("GetAllValidPreparations", mock.Anything, results).Return(nil)
+
+		err := c.GetAllValidPreparations(ctx, results)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
 func TestClient_GetValidPreparations(T *testing.T) {
 	T.Parallel()
 
@@ -97,6 +115,29 @@ func TestClient_GetValidPreparations(T *testing.T) {
 		mockDB.ValidPreparationDataManager.On("GetValidPreparations", mock.Anything, filter).Return(exampleValidPreparationList, nil)
 
 		actual, err := c.GetValidPreparations(ctx, filter)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidPreparationList, actual)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+}
+
+func TestClient_GetValidPreparationsWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("obligatory", func(t *testing.T) {
+		ctx := context.Background()
+
+		exampleValidPreparationList := fakemodels.BuildFakeValidPreparationList().ValidPreparations
+		var exampleIDs []uint64
+		for _, x := range exampleValidPreparationList {
+			exampleIDs = append(exampleIDs, x.ID)
+		}
+
+		c, mockDB := buildTestClient()
+		mockDB.ValidPreparationDataManager.On("GetValidPreparationsWithIDs", mock.Anything, defaultLimit, exampleIDs).Return(exampleValidPreparationList, nil)
+
+		actual, err := c.GetValidPreparationsWithIDs(ctx, defaultLimit, exampleIDs)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidPreparationList, actual)
 

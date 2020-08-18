@@ -12,51 +12,60 @@ import (
 
 	"contrib.go.opencensus.io/integrations/ocsql"
 	"github.com/alexedwards/scs/postgresstore"
-	"github.com/alexedwards/scs/v2"
+	scs "github.com/alexedwards/scs/v2"
 	"gitlab.com/verygoodsoftwarenotvirus/logging/v1"
 )
 
 const (
-	postgresProviderKey = "postgres"
+	// PostgresProviderKey is the string we use to refer to postgres
+	PostgresProviderKey = "postgres"
 )
 
-// ProvideDatabase provides a database implementation dependent on the configuration.
-func (cfg *ServerConfig) ProvideDatabase(ctx context.Context, logger logging.Logger) (database.Database, error) {
-	var (
-		debug             = cfg.Database.Debug || cfg.Meta.Debug
-		connectionDetails = cfg.Database.ConnectionDetails
-	)
-
+// ProvideDatabaseConnection provides a database implementation dependent on the configuration.
+func (cfg *ServerConfig) ProvideDatabaseConnection(logger logging.Logger) (*sql.DB, error) {
 	switch cfg.Database.Provider {
-	case postgresProviderKey:
-		rawDB, err := postgres.ProvidePostgresDB(logger, connectionDetails)
-		if err != nil {
-			return nil, fmt.Errorf("establish postgres database connection: %w", err)
-		}
-		ocsql.RegisterAllViews()
-		ocsql.RecordStats(rawDB, cfg.Metrics.DBMetricsCollectionInterval)
-
-		pgdb := postgres.ProvidePostgres(debug, rawDB, logger)
-
-		return dbclient.ProvideDatabaseClient(ctx, logger, rawDB, pgdb, debug, cfg.Database.CreateDummyUser)
+	case PostgresProviderKey:
+		return postgres.ProvidePostgresDB(logger, cfg.Database.ConnectionDetails)
 	default:
-		return nil, errors.New("invalid database type selected")
+		return nil, fmt.Errorf("invalid database type selected: %q", cfg.Database.Provider)
 	}
 }
 
-// ProvideDatabaseConnection provides a database implementation dependent on the configuration.
-func ProvideDatabaseConnection(logger logging.Logger, dbSettings DatabaseSettings) (*sql.DB, error) {
-	return postgres.ProvidePostgresDB(logger, dbSettings.ConnectionDetails)
+// ProvideDatabaseClient provides a database implementation dependent on the configuration.
+func (cfg *ServerConfig) ProvideDatabaseClient(ctx context.Context, logger logging.Logger, rawDB *sql.DB) (database.DataManager, error) {
+	if rawDB == nil {
+		return nil, errors.New("nil DB connection provided")
+	}
+
+	debug := cfg.Database.Debug || cfg.Meta.Debug
+
+	ocsql.RegisterAllViews()
+	ocsql.RecordStats(rawDB, cfg.Metrics.DBMetricsCollectionInterval)
+
+	var dbc database.DataManager
+	switch cfg.Database.Provider {
+	case PostgresProviderKey:
+		dbc = postgres.ProvidePostgres(debug, rawDB, logger)
+	default:
+		return nil, fmt.Errorf("invalid database type selected: %q", cfg.Database.Provider)
+	}
+
+	return dbclient.ProvideDatabaseClient(ctx, rawDB, dbc, debug, logger)
 }
 
 // ProvideSessionManager provides a session manager based on some settings.
 // There's not a great place to put this function. I don't think it belongs in Auth because it accepts a DB connection,
 // but it obviously doesn't belong in the database package, or maybe it does
-func ProvideSessionManager(authConf AuthSettings, db *sql.DB) *scs.SessionManager {
+func ProvideSessionManager(authConf AuthSettings, dbConf DatabaseSettings, db *sql.DB) *scs.SessionManager {
 	sessionManager := scs.New()
 
-	sessionManager.Store = postgresstore.New(db)
+	switch dbConf.Provider {
+	case PostgresProviderKey:
+		sessionManager.Store = postgresstore.New(db)
+	}
+
 	sessionManager.Lifetime = authConf.CookieLifetime
+	// elaborate further here later if you so choose
 
 	return sessionManager
 }

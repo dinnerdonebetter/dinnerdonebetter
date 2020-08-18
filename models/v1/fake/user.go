@@ -35,7 +35,7 @@ func BuildDatabaseCreationResponse(user *models.User) *models.UserCreationRespon
 		PasswordLastChangedOn: user.PasswordLastChangedOn,
 		IsAdmin:               user.IsAdmin,
 		CreatedOn:             user.CreatedOn,
-		UpdatedOn:             user.UpdatedOn,
+		LastUpdatedOn:         user.LastUpdatedOn,
 		ArchivedOn:            user.ArchivedOn,
 	}
 }
@@ -48,9 +48,8 @@ func BuildFakeUserList() *models.UserList {
 
 	return &models.UserList{
 		Pagination: models.Pagination{
-			Page:       1,
-			Limit:      20,
-			TotalCount: 3,
+			Page:  1,
+			Limit: 20,
 		},
 		Users: []models.User{
 			*exampleUser1,

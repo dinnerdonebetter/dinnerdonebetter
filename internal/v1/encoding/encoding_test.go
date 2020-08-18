@@ -57,7 +57,7 @@ func TestServerEncoderDecoder_DecodeRequest(T *testing.T) {
 		bs, err := json.Marshal(e)
 		require.NoError(t, err)
 
-		req, err := http.NewRequest(http.MethodGet, "http://prixfixe.app", bytes.NewReader(bs))
+		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(bs))
 		require.NoError(t, err)
 
 		var x example
@@ -73,7 +73,7 @@ func TestServerEncoderDecoder_DecodeRequest(T *testing.T) {
 		bs, err := xml.Marshal(e)
 		require.NoError(t, err)
 
-		req, err := http.NewRequest(http.MethodGet, "http://prixfixe.app", bytes.NewReader(bs))
+		req, err := http.NewRequest(http.MethodGet, "http://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(bs))
 		require.NoError(t, err)
 		req.Header.Set(ContentTypeHeader, XMLContentType)
 

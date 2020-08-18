@@ -58,19 +58,7 @@ func RandomAction(c *client.V1Client) *Action {
 		allActions[k] = v
 	}
 
-	for k, v := range buildValidIngredientTagActions(c) {
-		allActions[k] = v
-	}
-
-	for k, v := range buildIngredientTagMappingActions(c) {
-		allActions[k] = v
-	}
-
 	for k, v := range buildValidPreparationActions(c) {
-		allActions[k] = v
-	}
-
-	for k, v := range buildRequiredPreparationInstrumentActions(c) {
 		allActions[k] = v
 	}
 
@@ -78,11 +66,11 @@ func RandomAction(c *client.V1Client) *Action {
 		allActions[k] = v
 	}
 
-	for k, v := range buildRecipeActions(c) {
+	for k, v := range buildRequiredPreparationInstrumentActions(c) {
 		allActions[k] = v
 	}
 
-	for k, v := range buildRecipeTagActions(c) {
+	for k, v := range buildRecipeActions(c) {
 		allActions[k] = v
 	}
 
@@ -90,7 +78,7 @@ func RandomAction(c *client.V1Client) *Action {
 		allActions[k] = v
 	}
 
-	for k, v := range buildRecipeStepPreparationActions(c) {
+	for k, v := range buildRecipeStepInstrumentActions(c) {
 		allActions[k] = v
 	}
 
@@ -98,11 +86,15 @@ func RandomAction(c *client.V1Client) *Action {
 		allActions[k] = v
 	}
 
+	for k, v := range buildRecipeStepProductActions(c) {
+		allActions[k] = v
+	}
+
 	for k, v := range buildRecipeIterationActions(c) {
 		allActions[k] = v
 	}
 
-	for k, v := range buildRecipeIterationStepActions(c) {
+	for k, v := range buildRecipeStepEventActions(c) {
 		allActions[k] = v
 	}
 

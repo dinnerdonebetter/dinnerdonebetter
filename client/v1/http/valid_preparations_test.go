@@ -187,12 +187,14 @@ func TestV1Client_GetValidPreparations(T *testing.T) {
 
 		filter := (*models.QueryFilter)(nil)
 
+		expectedPath := "/api/v1/valid_preparations"
+
 		exampleValidPreparationList := fakemodels.BuildFakeValidPreparationList()
 
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, "/api/v1/valid_preparations", "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodGet)
 					require.NoError(t, json.NewEncoder(res).Encode(exampleValidPreparationList))
 				},
@@ -224,10 +226,12 @@ func TestV1Client_GetValidPreparations(T *testing.T) {
 
 		filter := (*models.QueryFilter)(nil)
 
+		expectedPath := "/api/v1/valid_preparations"
+
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, "/api/v1/valid_preparations", "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodGet)
 					require.NoError(t, json.NewEncoder(res).Encode("BLAH"))
 				},
@@ -272,10 +276,12 @@ func TestV1Client_CreateValidPreparation(T *testing.T) {
 		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 		exampleInput := fakemodels.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
 
+		expectedPath := "/api/v1/valid_preparations"
+
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, "/api/v1/valid_preparations", "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodPost)
 
 					var x *models.ValidPreparationCreationInput

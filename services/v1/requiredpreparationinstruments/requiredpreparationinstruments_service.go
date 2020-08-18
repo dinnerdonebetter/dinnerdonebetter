@@ -13,10 +13,10 @@ import (
 )
 
 const (
-	// CreateMiddlewareCtxKey is a string alias we can use for referring to required preparation instrument input data in contexts.
-	CreateMiddlewareCtxKey models.ContextKey = "required_preparation_instrument_create_input"
-	// UpdateMiddlewareCtxKey is a string alias we can use for referring to required preparation instrument update data in contexts.
-	UpdateMiddlewareCtxKey models.ContextKey = "required_preparation_instrument_update_input"
+	// createMiddlewareCtxKey is a string alias we can use for referring to required preparation instrument input data in contexts.
+	createMiddlewareCtxKey models.ContextKey = "required_preparation_instrument_create_input"
+	// updateMiddlewareCtxKey is a string alias we can use for referring to required preparation instrument update data in contexts.
+	updateMiddlewareCtxKey models.ContextKey = "required_preparation_instrument_update_input"
 
 	counterName        metrics.CounterName = "requiredPreparationInstruments"
 	counterDescription string              = "the number of requiredPreparationInstruments managed by the requiredPreparationInstruments service"
@@ -32,17 +32,12 @@ type (
 	// Service handles to-do list required preparation instruments
 	Service struct {
 		logger                                   logging.Logger
-		validPreparationDataManager              models.ValidPreparationDataManager
 		requiredPreparationInstrumentDataManager models.RequiredPreparationInstrumentDataManager
-		validPreparationIDFetcher                ValidPreparationIDFetcher
 		requiredPreparationInstrumentIDFetcher   RequiredPreparationInstrumentIDFetcher
 		requiredPreparationInstrumentCounter     metrics.UnitCounter
 		encoderDecoder                           encoding.EncoderDecoder
 		reporter                                 newsman.Reporter
 	}
-
-	// ValidPreparationIDFetcher is a function that fetches valid preparation IDs.
-	ValidPreparationIDFetcher func(*http.Request) uint64
 
 	// RequiredPreparationInstrumentIDFetcher is a function that fetches required preparation instrument IDs.
 	RequiredPreparationInstrumentIDFetcher func(*http.Request) uint64
@@ -51,9 +46,7 @@ type (
 // ProvideRequiredPreparationInstrumentsService builds a new RequiredPreparationInstrumentsService.
 func ProvideRequiredPreparationInstrumentsService(
 	logger logging.Logger,
-	validPreparationDataManager models.ValidPreparationDataManager,
 	requiredPreparationInstrumentDataManager models.RequiredPreparationInstrumentDataManager,
-	validPreparationIDFetcher ValidPreparationIDFetcher,
 	requiredPreparationInstrumentIDFetcher RequiredPreparationInstrumentIDFetcher,
 	encoder encoding.EncoderDecoder,
 	requiredPreparationInstrumentCounterProvider metrics.UnitCounterProvider,
@@ -66,9 +59,7 @@ func ProvideRequiredPreparationInstrumentsService(
 
 	svc := &Service{
 		logger:                                   logger.WithName(serviceName),
-		validPreparationIDFetcher:                validPreparationIDFetcher,
 		requiredPreparationInstrumentIDFetcher:   requiredPreparationInstrumentIDFetcher,
-		validPreparationDataManager:              validPreparationDataManager,
 		requiredPreparationInstrumentDataManager: requiredPreparationInstrumentDataManager,
 		encoderDecoder:                           encoder,
 		requiredPreparationInstrumentCounter:     requiredPreparationInstrumentCounter,

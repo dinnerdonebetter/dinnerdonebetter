@@ -10,7 +10,7 @@ require (
 	github.com/GuiaBolso/darwin v0.0.0-20191218124601-fd6d2aa3d244
 	github.com/Masterminds/squirrel v1.3.0
 	github.com/alexedwards/scs/postgresstore v0.0.0-20200528164450-40c2a5f7eae8
-	github.com/alexedwards/scs/v2 v2.3.1
+	github.com/alexedwards/scs/v2 v2.4.0
 	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc
 	github.com/brianvoe/gofakeit/v5 v5.4.3
 	github.com/emicklei/hazana v1.6.2

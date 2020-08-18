@@ -194,7 +194,7 @@ func TestValidIngredients(test *testing.T) {
 
 			// Assert valid ingredient equality.
 			checkValidIngredientEquality(t, exampleValidIngredient, actual)
-			assert.NotNil(t, actual.UpdatedOn)
+			assert.NotNil(t, actual.LastUpdatedOn)
 
 			// Clean up valid ingredient.
 			assert.NoError(t, prixfixeClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))

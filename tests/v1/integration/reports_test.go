@@ -178,7 +178,7 @@ func TestReports(test *testing.T) {
 
 			// Assert report equality.
 			checkReportEquality(t, exampleReport, actual)
-			assert.NotNil(t, actual.UpdatedOn)
+			assert.NotNil(t, actual.LastUpdatedOn)
 
 			// Clean up report.
 			assert.NoError(t, prixfixeClient.ArchiveReport(ctx, createdReport.ID))

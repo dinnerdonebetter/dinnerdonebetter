@@ -17,7 +17,7 @@ var (
 )
 
 // ProvideIterationMediaDataManager turns a database into an IterationMediaDataManager.
-func ProvideIterationMediaDataManager(db database.Database) models.IterationMediaDataManager {
+func ProvideIterationMediaDataManager(db database.DataManager) models.IterationMediaDataManager {
 	return db
 }
 

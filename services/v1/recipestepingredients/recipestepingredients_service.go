@@ -13,10 +13,10 @@ import (
 )
 
 const (
-	// CreateMiddlewareCtxKey is a string alias we can use for referring to recipe step ingredient input data in contexts.
-	CreateMiddlewareCtxKey models.ContextKey = "recipe_step_ingredient_create_input"
-	// UpdateMiddlewareCtxKey is a string alias we can use for referring to recipe step ingredient update data in contexts.
-	UpdateMiddlewareCtxKey models.ContextKey = "recipe_step_ingredient_update_input"
+	// createMiddlewareCtxKey is a string alias we can use for referring to recipe step ingredient input data in contexts.
+	createMiddlewareCtxKey models.ContextKey = "recipe_step_ingredient_create_input"
+	// updateMiddlewareCtxKey is a string alias we can use for referring to recipe step ingredient update data in contexts.
+	updateMiddlewareCtxKey models.ContextKey = "recipe_step_ingredient_update_input"
 
 	counterName        metrics.CounterName = "recipeStepIngredients"
 	counterDescription string              = "the number of recipeStepIngredients managed by the recipeStepIngredients service"

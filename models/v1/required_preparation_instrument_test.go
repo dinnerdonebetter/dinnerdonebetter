@@ -14,12 +14,14 @@ func TestRequiredPreparationInstrument_Update(T *testing.T) {
 		i := &RequiredPreparationInstrument{}
 
 		expected := &RequiredPreparationInstrumentUpdateInput{
-			ValidInstrumentID: fake.Uint64(),
-			Notes:             fake.Word(),
+			InstrumentID:  fake.Uint64(),
+			PreparationID: fake.Uint64(),
+			Notes:         fake.Word(),
 		}
 
 		i.Update(expected)
-		assert.Equal(t, expected.ValidInstrumentID, i.ValidInstrumentID)
+		assert.Equal(t, expected.InstrumentID, i.InstrumentID)
+		assert.Equal(t, expected.PreparationID, i.PreparationID)
 		assert.Equal(t, expected.Notes, i.Notes)
 	})
 }
@@ -29,13 +31,15 @@ func TestRequiredPreparationInstrument_ToUpdateInput(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		requiredPreparationInstrument := &RequiredPreparationInstrument{
-			ValidInstrumentID: uint64(fake.Uint32()),
-			Notes:             fake.Word(),
+			InstrumentID:  uint64(fake.Uint32()),
+			PreparationID: uint64(fake.Uint32()),
+			Notes:         fake.Word(),
 		}
 
 		expected := &RequiredPreparationInstrumentUpdateInput{
-			ValidInstrumentID: requiredPreparationInstrument.ValidInstrumentID,
-			Notes:             requiredPreparationInstrument.Notes,
+			InstrumentID:  requiredPreparationInstrument.InstrumentID,
+			PreparationID: requiredPreparationInstrument.PreparationID,
+			Notes:         requiredPreparationInstrument.Notes,
 		}
 		actual := requiredPreparationInstrument.ToUpdateInput()
 

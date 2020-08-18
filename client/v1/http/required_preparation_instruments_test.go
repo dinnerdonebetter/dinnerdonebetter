@@ -27,10 +27,8 @@ func TestV1Client_BuildRequiredPreparationInstrumentExistsRequest(T *testing.T) 
 		ts := httptest.NewTLSServer(nil)
 
 		c := buildTestClient(t, ts)
-		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
-		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
-		actual, err := c.BuildRequiredPreparationInstrumentExistsRequest(ctx, exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID)
+		actual, err := c.BuildRequiredPreparationInstrumentExistsRequest(ctx, exampleRequiredPreparationInstrument.ID)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err, "no error should be returned")
@@ -45,15 +43,13 @@ func TestV1Client_RequiredPreparationInstrumentExists(T *testing.T) {
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
-		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
 
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
 					assert.True(t, strings.HasSuffix(req.URL.String(), strconv.Itoa(int(exampleRequiredPreparationInstrument.ID))))
-					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/valid_preparations/%d/required_preparation_instruments/%d", exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID), "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/required_preparation_instruments/%d", exampleRequiredPreparationInstrument.ID), "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodHead)
 					res.WriteHeader(http.StatusOK)
 				},
@@ -61,7 +57,7 @@ func TestV1Client_RequiredPreparationInstrumentExists(T *testing.T) {
 		)
 
 		c := buildTestClient(t, ts)
-		actual, err := c.RequiredPreparationInstrumentExists(ctx, exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID)
+		actual, err := c.RequiredPreparationInstrumentExists(ctx, exampleRequiredPreparationInstrument.ID)
 
 		assert.NoError(t, err, "no error should be returned")
 		assert.True(t, actual)
@@ -70,12 +66,10 @@ func TestV1Client_RequiredPreparationInstrumentExists(T *testing.T) {
 	T.Run("with erroneous response", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
-		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
 
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.RequiredPreparationInstrumentExists(ctx, exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID)
+		actual, err := c.RequiredPreparationInstrumentExists(ctx, exampleRequiredPreparationInstrument.ID)
 
 		assert.Error(t, err, "error should be returned")
 		assert.False(t, actual)
@@ -91,12 +85,10 @@ func TestV1Client_BuildGetRequiredPreparationInstrumentRequest(T *testing.T) {
 		expectedMethod := http.MethodGet
 		ts := httptest.NewTLSServer(nil)
 
-		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
-		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
 
 		c := buildTestClient(t, ts)
-		actual, err := c.BuildGetRequiredPreparationInstrumentRequest(ctx, exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID)
+		actual, err := c.BuildGetRequiredPreparationInstrumentRequest(ctx, exampleRequiredPreparationInstrument.ID)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err, "no error should be returned")
@@ -111,15 +103,13 @@ func TestV1Client_GetRequiredPreparationInstrument(T *testing.T) {
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
-		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
 
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
 					assert.True(t, strings.HasSuffix(req.URL.String(), strconv.Itoa(int(exampleRequiredPreparationInstrument.ID))))
-					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/valid_preparations/%d/required_preparation_instruments/%d", exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID), "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/required_preparation_instruments/%d", exampleRequiredPreparationInstrument.ID), "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodGet)
 					require.NoError(t, json.NewEncoder(res).Encode(exampleRequiredPreparationInstrument))
 				},
@@ -127,7 +117,7 @@ func TestV1Client_GetRequiredPreparationInstrument(T *testing.T) {
 		)
 
 		c := buildTestClient(t, ts)
-		actual, err := c.GetRequiredPreparationInstrument(ctx, exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID)
+		actual, err := c.GetRequiredPreparationInstrument(ctx, exampleRequiredPreparationInstrument.ID)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err, "no error should be returned")
@@ -137,12 +127,10 @@ func TestV1Client_GetRequiredPreparationInstrument(T *testing.T) {
 	T.Run("with invalid client URL", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
-		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
 
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.GetRequiredPreparationInstrument(ctx, exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID)
+		actual, err := c.GetRequiredPreparationInstrument(ctx, exampleRequiredPreparationInstrument.ID)
 
 		assert.Nil(t, actual)
 		assert.Error(t, err, "error should be returned")
@@ -151,15 +139,13 @@ func TestV1Client_GetRequiredPreparationInstrument(T *testing.T) {
 	T.Run("with invalid response", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
-		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
 
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
 					assert.True(t, strings.HasSuffix(req.URL.String(), strconv.Itoa(int(exampleRequiredPreparationInstrument.ID))))
-					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/valid_preparations/%d/required_preparation_instruments/%d", exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID), "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/required_preparation_instruments/%d", exampleRequiredPreparationInstrument.ID), "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodGet)
 					require.NoError(t, json.NewEncoder(res).Encode("BLAH"))
 				},
@@ -167,7 +153,7 @@ func TestV1Client_GetRequiredPreparationInstrument(T *testing.T) {
 		)
 
 		c := buildTestClient(t, ts)
-		actual, err := c.GetRequiredPreparationInstrument(ctx, exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID)
+		actual, err := c.GetRequiredPreparationInstrument(ctx, exampleRequiredPreparationInstrument.ID)
 
 		assert.Nil(t, actual)
 		assert.Error(t, err, "error should be returned")
@@ -180,13 +166,12 @@ func TestV1Client_BuildGetRequiredPreparationInstrumentsRequest(T *testing.T) {
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 		filter := (*models.QueryFilter)(nil)
 		expectedMethod := http.MethodGet
 		ts := httptest.NewTLSServer(nil)
 
 		c := buildTestClient(t, ts)
-		actual, err := c.BuildGetRequiredPreparationInstrumentsRequest(ctx, exampleValidPreparation.ID, filter)
+		actual, err := c.BuildGetRequiredPreparationInstrumentsRequest(ctx, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err, "no error should be returned")
@@ -200,15 +185,16 @@ func TestV1Client_GetRequiredPreparationInstruments(T *testing.T) {
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 		filter := (*models.QueryFilter)(nil)
+
+		expectedPath := "/api/v1/required_preparation_instruments"
 
 		exampleRequiredPreparationInstrumentList := fakemodels.BuildFakeRequiredPreparationInstrumentList()
 
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/valid_preparations/%d/required_preparation_instruments", exampleValidPreparation.ID), "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodGet)
 					require.NoError(t, json.NewEncoder(res).Encode(exampleRequiredPreparationInstrumentList))
 				},
@@ -216,7 +202,7 @@ func TestV1Client_GetRequiredPreparationInstruments(T *testing.T) {
 		)
 
 		c := buildTestClient(t, ts)
-		actual, err := c.GetRequiredPreparationInstruments(ctx, exampleValidPreparation.ID, filter)
+		actual, err := c.GetRequiredPreparationInstruments(ctx, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err, "no error should be returned")
@@ -226,11 +212,10 @@ func TestV1Client_GetRequiredPreparationInstruments(T *testing.T) {
 	T.Run("with invalid client URL", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 		filter := (*models.QueryFilter)(nil)
 
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.GetRequiredPreparationInstruments(ctx, exampleValidPreparation.ID, filter)
+		actual, err := c.GetRequiredPreparationInstruments(ctx, filter)
 
 		assert.Nil(t, actual)
 		assert.Error(t, err, "error should be returned")
@@ -239,13 +224,14 @@ func TestV1Client_GetRequiredPreparationInstruments(T *testing.T) {
 	T.Run("with invalid response", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 		filter := (*models.QueryFilter)(nil)
+
+		expectedPath := "/api/v1/required_preparation_instruments"
 
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/valid_preparations/%d/required_preparation_instruments", exampleValidPreparation.ID), "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodGet)
 					require.NoError(t, json.NewEncoder(res).Encode("BLAH"))
 				},
@@ -253,7 +239,7 @@ func TestV1Client_GetRequiredPreparationInstruments(T *testing.T) {
 		)
 
 		c := buildTestClient(t, ts)
-		actual, err := c.GetRequiredPreparationInstruments(ctx, exampleValidPreparation.ID, filter)
+		actual, err := c.GetRequiredPreparationInstruments(ctx, filter)
 
 		assert.Nil(t, actual)
 		assert.Error(t, err, "error should be returned")
@@ -266,9 +252,7 @@ func TestV1Client_BuildCreateRequiredPreparationInstrumentRequest(T *testing.T) 
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
-		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
 		exampleInput := fakemodels.BuildFakeRequiredPreparationInstrumentCreationInputFromRequiredPreparationInstrument(exampleRequiredPreparationInstrument)
 
 		expectedMethod := http.MethodPost
@@ -289,21 +273,20 @@ func TestV1Client_CreateRequiredPreparationInstrument(T *testing.T) {
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
-		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
 		exampleInput := fakemodels.BuildFakeRequiredPreparationInstrumentCreationInputFromRequiredPreparationInstrument(exampleRequiredPreparationInstrument)
+
+		expectedPath := "/api/v1/required_preparation_instruments"
 
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/valid_preparations/%d/required_preparation_instruments", exampleValidPreparation.ID), "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodPost)
 
 					var x *models.RequiredPreparationInstrumentCreationInput
 					require.NoError(t, json.NewDecoder(req.Body).Decode(&x))
 
-					exampleInput.BelongsToValidPreparation = 0
 					assert.Equal(t, exampleInput, x)
 
 					require.NoError(t, json.NewEncoder(res).Encode(exampleRequiredPreparationInstrument))
@@ -322,9 +305,7 @@ func TestV1Client_CreateRequiredPreparationInstrument(T *testing.T) {
 	T.Run("with invalid client URL", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
-		exampleRequiredPreparationInstrument.BelongsToValidPreparation = exampleValidPreparation.ID
 		exampleInput := fakemodels.BuildFakeRequiredPreparationInstrumentCreationInputFromRequiredPreparationInstrument(exampleRequiredPreparationInstrument)
 
 		c := buildTestClientWithInvalidURL(t)
@@ -365,7 +346,7 @@ func TestV1Client_UpdateRequiredPreparationInstrument(T *testing.T) {
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/valid_preparations/%d/required_preparation_instruments/%d", exampleRequiredPreparationInstrument.BelongsToValidPreparation, exampleRequiredPreparationInstrument.ID), "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/required_preparation_instruments/%d", exampleRequiredPreparationInstrument.ID), "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodPut)
 					assert.NoError(t, json.NewEncoder(res).Encode(exampleRequiredPreparationInstrument))
 				},
@@ -395,11 +376,10 @@ func TestV1Client_BuildArchiveRequiredPreparationInstrumentRequest(T *testing.T)
 		expectedMethod := http.MethodDelete
 		ts := httptest.NewTLSServer(nil)
 
-		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
 
 		c := buildTestClient(t, ts)
-		actual, err := c.BuildArchiveRequiredPreparationInstrumentRequest(ctx, exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID)
+		actual, err := c.BuildArchiveRequiredPreparationInstrumentRequest(ctx, exampleRequiredPreparationInstrument.ID)
 
 		require.NotNil(t, actual)
 		require.NotNil(t, actual.URL)
@@ -415,30 +395,28 @@ func TestV1Client_ArchiveRequiredPreparationInstrument(T *testing.T) {
 	T.Run("happy path", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
 
 		ts := httptest.NewTLSServer(
 			http.HandlerFunc(
 				func(res http.ResponseWriter, req *http.Request) {
-					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/valid_preparations/%d/required_preparation_instruments/%d", exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID), "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Path, fmt.Sprintf("/api/v1/required_preparation_instruments/%d", exampleRequiredPreparationInstrument.ID), "expected and actual paths do not match")
 					assert.Equal(t, req.Method, http.MethodDelete)
 					res.WriteHeader(http.StatusOK)
 				},
 			),
 		)
 
-		err := buildTestClient(t, ts).ArchiveRequiredPreparationInstrument(ctx, exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID)
+		err := buildTestClient(t, ts).ArchiveRequiredPreparationInstrument(ctx, exampleRequiredPreparationInstrument.ID)
 		assert.NoError(t, err, "no error should be returned")
 	})
 
 	T.Run("with invalid client URL", func(t *testing.T) {
 		ctx := context.Background()
 
-		exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
 		exampleRequiredPreparationInstrument := fakemodels.BuildFakeRequiredPreparationInstrument()
 
-		err := buildTestClientWithInvalidURL(t).ArchiveRequiredPreparationInstrument(ctx, exampleValidPreparation.ID, exampleRequiredPreparationInstrument.ID)
+		err := buildTestClientWithInvalidURL(t).ArchiveRequiredPreparationInstrument(ctx, exampleRequiredPreparationInstrument.ID)
 		assert.Error(t, err, "error should be returned")
 	})
 }

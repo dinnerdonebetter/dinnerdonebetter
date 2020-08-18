@@ -13,10 +13,10 @@ import (
 )
 
 const (
-	// CreateMiddlewareCtxKey is a string alias we can use for referring to iteration media input data in contexts.
-	CreateMiddlewareCtxKey models.ContextKey = "iteration_media_create_input"
-	// UpdateMiddlewareCtxKey is a string alias we can use for referring to iteration media update data in contexts.
-	UpdateMiddlewareCtxKey models.ContextKey = "iteration_media_update_input"
+	// createMiddlewareCtxKey is a string alias we can use for referring to iteration media input data in contexts.
+	createMiddlewareCtxKey models.ContextKey = "iteration_media_create_input"
+	// updateMiddlewareCtxKey is a string alias we can use for referring to iteration media update data in contexts.
+	updateMiddlewareCtxKey models.ContextKey = "iteration_media_update_input"
 
 	counterName        metrics.CounterName = "iterationMedias"
 	counterDescription string              = "the number of iterationMedias managed by the iterationMedias service"

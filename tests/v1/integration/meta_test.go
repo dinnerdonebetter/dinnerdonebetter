@@ -14,8 +14,6 @@ func TestHoldOnForever(T *testing.T) {
 	if os.Getenv("WAIT_FOR_COVERAGE") == "yes" {
 		// snooze for a year.
 		time.Sleep(time.Hour * 24 * 365)
-	} else {
-		T.SkipNow()
 	}
 }
 

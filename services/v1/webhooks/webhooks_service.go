@@ -13,10 +13,10 @@ import (
 )
 
 const (
-	// CreateMiddlewareCtxKey is a string alias we can use for referring to webhook input data in contexts.
-	CreateMiddlewareCtxKey models.ContextKey = "webhook_create_input"
-	// UpdateMiddlewareCtxKey is a string alias we can use for referring to webhook input data in contexts.
-	UpdateMiddlewareCtxKey models.ContextKey = "webhook_update_input"
+	// createMiddlewareCtxKey is a string alias we can use for referring to webhook input data in contexts.
+	createMiddlewareCtxKey models.ContextKey = "webhook_create_input"
+	// updateMiddlewareCtxKey is a string alias we can use for referring to webhook input data in contexts.
+	updateMiddlewareCtxKey models.ContextKey = "webhook_update_input"
 
 	counterName        metrics.CounterName = "webhooks"
 	counterDescription string              = "the number of webhooks managed by the webhooks service"
@@ -35,7 +35,7 @@ type (
 		TuneIn(newsman.Listener)
 	}
 
-	// Service handles webhooks.
+	// Service handles TODO ListHandler webhooks.
 	Service struct {
 		logger             logging.Logger
 		webhookCounter     metrics.UnitCounter

@@ -26,17 +26,16 @@ type (
 		AnimalFlesh        bool    `json:"animalFlesh"`
 		AnimalDerived      bool    `json:"animalDerived"`
 		MeasurableByVolume bool    `json:"measurableByVolume"`
-		Consumable         bool    `json:"consumable"`
 		Icon               string  `json:"icon"`
 		CreatedOn          uint64  `json:"createdOn"`
-		UpdatedOn          *uint64 `json:"updatedOn"`
+		LastUpdatedOn      *uint64 `json:"lastUpdatedOn"`
 		ArchivedOn         *uint64 `json:"archivedOn"`
 	}
 
 	// ValidIngredientList represents a list of valid ingredients.
 	ValidIngredientList struct {
 		Pagination
-		ValidIngredients []ValidIngredient `json:"validIngredients"`
+		ValidIngredients []ValidIngredient `json:"valid_ingredients"`
 	}
 
 	// ValidIngredientCreationInput represents what a user could set as input for creating valid ingredients.
@@ -88,7 +87,9 @@ type (
 		ValidIngredientExists(ctx context.Context, validIngredientID uint64) (bool, error)
 		GetValidIngredient(ctx context.Context, validIngredientID uint64) (*ValidIngredient, error)
 		GetAllValidIngredientsCount(ctx context.Context) (uint64, error)
+		GetAllValidIngredients(ctx context.Context, resultChannel chan []ValidIngredient) error
 		GetValidIngredients(ctx context.Context, filter *QueryFilter) (*ValidIngredientList, error)
+		GetValidIngredientsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]ValidIngredient, error)
 		CreateValidIngredient(ctx context.Context, input *ValidIngredientCreationInput) (*ValidIngredient, error)
 		UpdateValidIngredient(ctx context.Context, updated *ValidIngredient) error
 		ArchiveValidIngredient(ctx context.Context, validIngredientID uint64) error
@@ -99,12 +100,12 @@ type (
 		CreationInputMiddleware(next http.Handler) http.Handler
 		UpdateInputMiddleware(next http.Handler) http.Handler
 
-		ListHandler() http.HandlerFunc
-		CreateHandler() http.HandlerFunc
-		ExistenceHandler() http.HandlerFunc
-		ReadHandler() http.HandlerFunc
-		UpdateHandler() http.HandlerFunc
-		ArchiveHandler() http.HandlerFunc
+		ListHandler(res http.ResponseWriter, req *http.Request)
+		CreateHandler(res http.ResponseWriter, req *http.Request)
+		ExistenceHandler(res http.ResponseWriter, req *http.Request)
+		ReadHandler(res http.ResponseWriter, req *http.Request)
+		UpdateHandler(res http.ResponseWriter, req *http.Request)
+		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 

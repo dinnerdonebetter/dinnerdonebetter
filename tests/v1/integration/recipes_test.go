@@ -19,7 +19,6 @@ func checkRecipeEquality(t *testing.T, expected, actual *models.Recipe) {
 	assert.Equal(t, expected.Source, actual.Source, "expected Source for ID %d to be %v, but it was %v ", expected.ID, expected.Source, actual.Source)
 	assert.Equal(t, expected.Description, actual.Description, "expected Description for ID %d to be %v, but it was %v ", expected.ID, expected.Description, actual.Description)
 	assert.Equal(t, *expected.InspiredByRecipeID, *actual.InspiredByRecipeID, "expected InspiredByRecipeID to be %v, but it was %v ", expected.InspiredByRecipeID, actual.InspiredByRecipeID)
-	assert.Equal(t, expected.Private, actual.Private, "expected Private for ID %d to be %v, but it was %v ", expected.ID, expected.Private, actual.Private)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
@@ -181,7 +180,7 @@ func TestRecipes(test *testing.T) {
 
 			// Assert recipe equality.
 			checkRecipeEquality(t, exampleRecipe, actual)
-			assert.NotNil(t, actual.UpdatedOn)
+			assert.NotNil(t, actual.LastUpdatedOn)
 
 			// Clean up recipe.
 			assert.NoError(t, prixfixeClient.ArchiveRecipe(ctx, createdRecipe.ID))

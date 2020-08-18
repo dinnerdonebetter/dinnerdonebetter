@@ -14,7 +14,6 @@ func BuildFakeRecipe() *models.Recipe {
 		Source:             fake.Word(),
 		Description:        fake.Word(),
 		InspiredByRecipeID: func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
-		Private:            fake.Bool(),
 		CreatedOn:          uint64(uint32(fake.Date().Unix())),
 		BelongsToUser:      fake.Uint64(),
 	}
@@ -28,9 +27,8 @@ func BuildFakeRecipeList() *models.RecipeList {
 
 	return &models.RecipeList{
 		Pagination: models.Pagination{
-			Page:       1,
-			Limit:      20,
-			TotalCount: 3,
+			Page:  1,
+			Limit: 20,
 		},
 		Recipes: []models.Recipe{
 			*exampleRecipe1,
@@ -47,7 +45,6 @@ func BuildFakeRecipeUpdateInputFromRecipe(recipe *models.Recipe) *models.RecipeU
 		Source:             recipe.Source,
 		Description:        recipe.Description,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
-		Private:            recipe.Private,
 		BelongsToUser:      recipe.BelongsToUser,
 	}
 }
@@ -65,7 +62,6 @@ func BuildFakeRecipeCreationInputFromRecipe(recipe *models.Recipe) *models.Recip
 		Source:             recipe.Source,
 		Description:        recipe.Description,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
-		Private:            recipe.Private,
 		BelongsToUser:      recipe.BelongsToUser,
 	}
 }

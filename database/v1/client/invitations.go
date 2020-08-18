@@ -47,6 +47,16 @@ func (c *Client) GetAllInvitationsCount(ctx context.Context) (count uint64, err 
 	return c.querier.GetAllInvitationsCount(ctx)
 }
 
+// GetAllInvitations fetches a list of all invitations in the database.
+func (c *Client) GetAllInvitations(ctx context.Context, results chan []models.Invitation) error {
+	ctx, span := tracing.StartSpan(ctx, "GetAllInvitations")
+	defer span.End()
+
+	c.logger.Debug("GetAllInvitations called")
+
+	return c.querier.GetAllInvitations(ctx, results)
+}
+
 // GetInvitations fetches a list of invitations from the database that meet a particular filter.
 func (c *Client) GetInvitations(ctx context.Context, filter *models.QueryFilter) (*models.InvitationList, error) {
 	ctx, span := tracing.StartSpan(ctx, "GetInvitations")
@@ -57,6 +67,20 @@ func (c *Client) GetInvitations(ctx context.Context, filter *models.QueryFilter)
 	c.logger.Debug("GetInvitations called")
 
 	invitationList, err := c.querier.GetInvitations(ctx, filter)
+
+	return invitationList, err
+}
+
+// GetInvitationsWithIDs fetches invitations from the database within a given set of IDs.
+func (c *Client) GetInvitationsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]models.Invitation, error) {
+	ctx, span := tracing.StartSpan(ctx, "GetInvitationsWithIDs")
+	defer span.End()
+
+	c.logger.WithValues(map[string]interface{}{
+		"id_count": len(ids),
+	}).Debug("GetInvitationsWithIDs called")
+
+	invitationList, err := c.querier.GetInvitationsWithIDs(ctx, limit, ids)
 
 	return invitationList, err
 }
