@@ -23,7 +23,7 @@ type (
 	// RecipeIterationList represents a list of recipe iterations.
 	RecipeIterationList struct {
 		Pagination
-		RecipeIterations []RecipeIteration `json:"recipe_iterations"`
+		RecipeIterations []RecipeIteration `json:"recipeIterations"`
 	}
 
 	// RecipeIterationCreationInput represents what a user could set as input for creating recipe iterations.

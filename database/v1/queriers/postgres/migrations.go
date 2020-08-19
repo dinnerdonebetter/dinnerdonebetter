@@ -362,8 +362,45 @@ func buildMigrationFunc(db *sql.DB) func() {
 
 // Migrate migrates the database. It does so by invoking the migrateOnce function via sync.Once, so it should be
 // safe (as in idempotent, though not necessarily recommended) to call this function multiple times.
-func (p *Postgres) Migrate(ctx context.Context) error {
+func (p *Postgres) Migrate(ctx context.Context, createDevUser bool) error {
 	p.logger.Info("migrating db")
+
+	if createDevUser {
+		// this is gross as fuck and you should find a way to get rid of it.
+		migrations = append(migrations, darwin.Migration{
+			Version:     incrementMigrationVersion(),
+			Description: "create example dev user",
+			Script: `
+			INSERT INTO users (
+				"username",
+				"hashed_password",
+				"two_factor_secret",
+				"password_last_changed_on",
+				"is_admin",
+				"salt",
+				"two_factor_secret_verified_on",
+				"created_on",
+				"last_updated_on",
+				"archived_on"
+			) 
+				VALUES 
+			(
+				'username', -- username
+				-- '$2a$13$UGQH6IAfUtPH2rCfBF6CJumwcr9Gnb3s.J3vOb/bmWPlx2pJ8.zOe', -- hashed_password
+				'$2a$10$JzD3CNBqPmwq.IidQuO7eu3zKdu8vEIi3HkLk8/qRjrzb7eNLKlKG', -- hashed_password
+				'TS2ZIIDTN6PBS3A6NTMU637VDHAFZR4BQTPDOBJDFY4JCY2A6OY4TQWJ3WN3VXZB45DDAUD4VJTX2JGHFPVJJDQYP6G3YYUQ2W6RYBA=', -- two_factor_secret
+				NULL, -- password_last_changed_on
+				'true', -- is_admin
+				E'\\x56c066aa6cf769f391594a615aad26cb', --salt
+				extract(epoch FROM NOW()), -- two_factor_secret_verified_on
+				extract(epoch FROM NOW()), -- created_on
+				NULL, -- updated_on
+				NULL -- archived_on
+			);`,
+		},
+		)
+	}
+
 	if !p.IsReady(ctx) {
 		return errors.New("db is not ready yet")
 	}

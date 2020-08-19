@@ -29,6 +29,17 @@ coverage:
     - apt-get update -y && apt-get install -y make git gcc musl-dev
     - make coverage
 
+build-dev-container:
+  stage: quality
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
+    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev --file environments/dev/Dockerfile .
+  except:
+    - dev
+
 # unit-tests:
 #   stage: quality
 #   image: golang:stretch
@@ -50,14 +61,14 @@ linting:
     - go mod vendor
     - golangci-lint run --config=.golangci.yml --deadline=15m
 
-build-frontend:
-  stage: quality
-  image: node:10
-  before_script:
-    - cd frontend/v1
-    - npm install
-  script:
-    - npm run build
+#build-frontend:
+#  stage: quality
+#  image: node:10
+#  before_script:
+#    - cd frontend/v1
+#    - npm install
+#  script:
+#    - npm run build
 
 integration-tests-postgres:
   stage: integration-testing
@@ -104,17 +115,6 @@ weekly-load-tests-postgres:on-schedule:
     - schedules
 
 # miscellaneous
-
-build-dev-container:
-  stage: quality
-  image: docker:latest
-  services:
-    - docker:dind
-  script:
-    - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
-    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev --file environments/dev/Dockerfile .
-  except:
-    - dev
 
 build-and-publish-dev-container:
   stage: publish

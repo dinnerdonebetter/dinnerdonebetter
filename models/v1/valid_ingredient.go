@@ -35,7 +35,7 @@ type (
 	// ValidIngredientList represents a list of valid ingredients.
 	ValidIngredientList struct {
 		Pagination
-		ValidIngredients []ValidIngredient `json:"valid_ingredients"`
+		ValidIngredients []ValidIngredient `json:"validIngredients"`
 	}
 
 	// ValidIngredientCreationInput represents what a user could set as input for creating valid ingredients.

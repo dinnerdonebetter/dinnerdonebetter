@@ -22,7 +22,7 @@ type (
 	// IterationMediaList represents a list of iteration medias.
 	IterationMediaList struct {
 		Pagination
-		IterationMedias []IterationMedia `json:"iteration_medias"`
+		IterationMedias []IterationMedia `json:"iterationMedias"`
 	}
 
 	// IterationMediaCreationInput represents what a user could set as input for creating iteration medias.

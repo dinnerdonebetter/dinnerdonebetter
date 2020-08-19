@@ -23,6 +23,7 @@ services:
     test:
         environment:
             TARGET_ADDRESS: 'http://prixfixe_server:8888'
+            DB_ADDRESS: 'postgres://dbuser:hunter2@database:5432/prixfixe?sslmode=disable'
         links:
             - prixfixe_server
         build:

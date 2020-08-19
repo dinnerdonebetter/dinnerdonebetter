@@ -71,7 +71,7 @@ func TestService_StaticDir(T *testing.T) {
 		assert.NotNil(t, hf)
 
 		req, res := buildRequest(t), httptest.NewRecorder()
-		req.URL.Path = "/valid_instruments/123"
+		req.URL.Path = "/admin/enumerations/valid_instruments/123"
 		hf(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
@@ -86,7 +86,7 @@ func TestService_StaticDir(T *testing.T) {
 		assert.NotNil(t, hf)
 
 		req, res := buildRequest(t), httptest.NewRecorder()
-		req.URL.Path = "/valid_ingredients/123"
+		req.URL.Path = "/admin/enumerations/valid_ingredients/123"
 		hf(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
@@ -101,7 +101,7 @@ func TestService_StaticDir(T *testing.T) {
 		assert.NotNil(t, hf)
 
 		req, res := buildRequest(t), httptest.NewRecorder()
-		req.URL.Path = "/valid_preparations/123"
+		req.URL.Path = "/admin/enumerations/valid_preparations/123"
 		hf(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
@@ -116,7 +116,7 @@ func TestService_StaticDir(T *testing.T) {
 		assert.NotNil(t, hf)
 
 		req, res := buildRequest(t), httptest.NewRecorder()
-		req.URL.Path = "/valid_ingredient_preparations/123"
+		req.URL.Path = "/admin/enumerations/valid_ingredient_preparations/123"
 		hf(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
@@ -131,7 +131,7 @@ func TestService_StaticDir(T *testing.T) {
 		assert.NotNil(t, hf)
 
 		req, res := buildRequest(t), httptest.NewRecorder()
-		req.URL.Path = "/required_preparation_instruments/123"
+		req.URL.Path = "/admin/enumerations/required_preparation_instruments/123"
 		hf(res, req)
 
 		assert.Equal(t, http.StatusOK, res.Code)
