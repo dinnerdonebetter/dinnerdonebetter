@@ -24,7 +24,7 @@ type (
 	// RecipeStepIngredientList represents a list of recipe step ingredients.
 	RecipeStepIngredientList struct {
 		Pagination
-		RecipeStepIngredients []RecipeStepIngredient `json:"recipe_step_ingredients"`
+		RecipeStepIngredients []RecipeStepIngredient `json:"recipeStepIngredients"`
 	}
 
 	// RecipeStepIngredientCreationInput represents what a user could set as input for creating recipe step ingredients.

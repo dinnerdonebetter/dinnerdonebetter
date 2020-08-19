@@ -18,7 +18,7 @@
   static_files_directory = "/frontend"
 
 [meta]
-  run_mode = "development"
+  run_mode = "testing"
   startup_deadline = "1m0s"
 
 [metrics]

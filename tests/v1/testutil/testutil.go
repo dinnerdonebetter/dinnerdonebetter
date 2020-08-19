@@ -43,6 +43,24 @@ func DetermineServiceURL() string {
 	return svcAddr
 }
 
+// DetermineDatabaseURL returns the DB connection URL, if properly configured.
+func DetermineDatabaseURL() string {
+	ta := os.Getenv("DB_ADDRESS")
+	if ta == "" {
+		panic("must provide target address!")
+	}
+
+	u, err := url.Parse(ta)
+	if err != nil {
+		panic(err)
+	}
+
+	svcAddr := u.String()
+
+	log.Printf("using target address: %q\n", svcAddr)
+	return svcAddr
+}
+
 // EnsureServerIsUp checks that a server is up and doesn't return until it's certain one way or the other.
 func EnsureServerIsUp(address string) {
 	var (

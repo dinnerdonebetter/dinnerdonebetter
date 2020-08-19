@@ -21,7 +21,7 @@ type (
 	// RecipeStepInstrumentList represents a list of recipe step instruments.
 	RecipeStepInstrumentList struct {
 		Pagination
-		RecipeStepInstruments []RecipeStepInstrument `json:"recipe_step_instruments"`
+		RecipeStepInstruments []RecipeStepInstrument `json:"recipeStepInstruments"`
 	}
 
 	// RecipeStepInstrumentCreationInput represents what a user could set as input for creating recipe step instruments.

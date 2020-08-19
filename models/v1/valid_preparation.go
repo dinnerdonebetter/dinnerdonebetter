@@ -21,7 +21,7 @@ type (
 	// ValidPreparationList represents a list of valid preparations.
 	ValidPreparationList struct {
 		Pagination
-		ValidPreparations []ValidPreparation `json:"valid_preparations"`
+		ValidPreparations []ValidPreparation `json:"validPreparations"`
 	}
 
 	// ValidPreparationCreationInput represents what a user could set as input for creating valid preparations.

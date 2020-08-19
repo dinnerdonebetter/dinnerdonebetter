@@ -22,7 +22,7 @@ type (
 	// RecipeStepEventList represents a list of recipe step events.
 	RecipeStepEventList struct {
 		Pagination
-		RecipeStepEvents []RecipeStepEvent `json:"recipe_step_events"`
+		RecipeStepEvents []RecipeStepEvent `json:"recipeStepEvents"`
 	}
 
 	// RecipeStepEventCreationInput represents what a user could set as input for creating recipe step events.

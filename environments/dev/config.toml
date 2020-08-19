@@ -7,7 +7,6 @@
 
 [database]
   connection_details = "postgresql://prixfixe_dev:vfhfFBwoCoDWTY86bVYa9znk1xcp19IO@database.prixfixe.dev:25060/dev_prixfixe?sslmode=require"
-  create_dummy_user = false
   provider = "postgres"
 
 [frontend]

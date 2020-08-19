@@ -21,7 +21,7 @@ type (
 	// ValidInstrumentList represents a list of valid instruments.
 	ValidInstrumentList struct {
 		Pagination
-		ValidInstruments []ValidInstrument `json:"valid_instruments"`
+		ValidInstruments []ValidInstrument `json:"validInstruments"`
 	}
 
 	// ValidInstrumentCreationInput represents what a user could set as input for creating valid instruments.

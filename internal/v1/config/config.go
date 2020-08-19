@@ -93,12 +93,14 @@ type (
 
 	// DatabaseSettings represents our database configuration.
 	DatabaseSettings struct {
-		// Debug determines if debug logging or other development conditions are active.
-		Debug bool `json:"debug" mapstructure:"debug" toml:"debug,omitempty"`
 		// Provider indicates what database we'll connect to (postgres, mysql, etc.)
 		Provider string `json:"provider" mapstructure:"provider" toml:"provider,omitempty"`
 		// ConnectionDetails indicates how our database driver should connect to the instance.
 		ConnectionDetails database.ConnectionDetails `json:"connection_details" mapstructure:"connection_details" toml:"connection_details,omitempty"`
+		// Debug determines if debug logging or other development conditions are active.
+		Debug bool `json:"debug" mapstructure:"debug" toml:"debug,omitempty"`
+		// CreateDummyUser indicates whether or not we should pre-populate a a user in our database.
+		CreateDummyUser bool `json:"create_dummy_user" mapstructure:"create_dummy_user" toml:"create_dummy_user,omitempty"`
 	}
 
 	// MetricsSettings contains settings about how we report our metrics.

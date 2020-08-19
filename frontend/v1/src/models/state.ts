@@ -9,9 +9,9 @@ export class AuthStatus {
 }
 
 export interface LoginRequest {
-    username: string,
-    password: string,
-    totpToken: string,
+    username: string;
+    password: string;
+    totpToken: string;
 }
 
 export interface UserState {

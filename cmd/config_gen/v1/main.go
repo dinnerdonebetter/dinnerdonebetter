@@ -2,10 +2,15 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
+	"strings"
 	"time"
 
 	"gitlab.com/prixfixe/prixfixe/internal/v1/config"
+
+	"github.com/spf13/viper"
 )
 
 const (
@@ -13,7 +18,7 @@ const (
 	oneDay                           = 24 * time.Hour
 	debugCookieSecret                = "HEREISA32CHARSECRETWHICHISMADEUP"
 	defaultFrontendFilepath          = "/frontend"
-	postgresDBConnDetails            = "postgres://dbuser:hunter2@database:5432/todo?sslmode=disable"
+	postgresDBConnDetails            = "postgres://dbuser:hunter2@database:5432/prixfixe?sslmode=disable"
 	metaDebug                        = "meta.debug"
 	metaRunMode                      = "meta.run_mode"
 	metaStartupDeadline              = "meta.startup_deadline"
@@ -33,146 +38,113 @@ const (
 	metricsDBCollectionInterval      = "metrics.database_metrics_collection_interval"
 	metricsRuntimeCollectionInterval = "metrics.runtime_metrics_collection_interval"
 	dbDebug                          = "database.debug"
+	dbCreateDummyUser                = "database.create_dummy_user"
 	dbProvider                       = "database.provider"
 	dbDeets                          = "database.connection_details"
+	postgres                         = "postgres"
 
 	// run modes
 	developmentEnv = "development"
 	testingEnv     = "testing"
-
-	// database providers
-	postgres = "postgres"
-
-	// search index paths
 )
 
-type configFunc func(filePath string) error
+type configFunc func(filepath string) error
 
 var (
 	files = map[string]configFunc{
-		"environments/dev/config.toml":                                      developmentEnvConfig,
-		"environments/local/config.toml":                                    developmentConfig,
-		"environments/testing/config_files/frontend-tests.toml":             frontendTestsConfig,
+		"environments/dev/config.toml":                                      developmentConfig,
+		"environments/local/config.toml":                                    localConfig,
 		"environments/testing/config_files/coverage.toml":                   coverageConfig,
+		"environments/testing/config_files/frontend-tests.toml":             frontendTestsConfig,
 		"environments/testing/config_files/integration-tests-postgres.toml": buildIntegrationTestForDBImplementation(postgres, postgresDBConnDetails),
 	}
 )
 
-func developmentEnvConfig(filePath string) error {
+func exampleMetricsConfiguration(cfg *viper.Viper) {
+	cfg.Set(metricsProvider, "prometheus")
+	cfg.Set(metricsTracer, "jaeger")
+	cfg.Set(metricsDBCollectionInterval, time.Second)
+	cfg.Set(metricsRuntimeCollectionInterval, time.Second)
+}
+
+func removeEmptyCookieSecretSettingFromFile(path string) error {
+	configAsBytes, err := ioutil.ReadFile(path)
+	if err != nil {
+		return err
+	}
+
+	configToWrite := strings.Replace(string(configAsBytes), "  cookie_secret = \"\"\n", "", 1)
+
+	return ioutil.WriteFile(path, []byte(configToWrite), os.FileMode(0644))
+}
+
+func developmentConfig(path string) error {
 	cfg := config.BuildConfig()
 
-	cfg.Set(metaRunMode, developmentEnv)
 	cfg.Set(metaDebug, true)
+	cfg.Set(metaRunMode, developmentEnv)
 	cfg.Set(metaStartupDeadline, time.Minute)
 
 	cfg.Set(serverHTTPPort, defaultPort)
 	cfg.Set(serverDebug, true)
 
-	cfg.Set(frontendDebug, true)
 	cfg.Set(frontendStaticFilesDir, defaultFrontendFilepath)
 	cfg.Set(frontendCacheStatics, false)
 
-	cfg.Set(authDebug, true)
-	cfg.Set(authCookieDomain, "localhost")
-	cfg.Set(authCookieSecret, debugCookieSecret)
+	cfg.Set(authCookieDomain, "prixfixe.dev")
 	cfg.Set(authCookieLifetime, oneDay)
-	cfg.Set(authSecureCookiesOnly, false)
+	cfg.Set(authCookieSecret, "")
+	cfg.Set(authSecureCookiesOnly, true)
 	cfg.Set(authEnableUserSignup, true)
 
-	cfg.Set(metricsProvider, "prometheus")
-	cfg.Set(metricsTracer, "jaeger")
-	cfg.Set(metricsDBCollectionInterval, time.Second)
-	cfg.Set(metricsRuntimeCollectionInterval, time.Second)
+	// exampleMetricsConfiguration
 
-	cfg.Set(dbDebug, true)
 	cfg.Set(dbProvider, postgres)
-	cfg.Set(dbDeets, postgresDBConnDetails)
+	cfg.Set(dbDeets, "postgresql://prixfixe_dev:vfhfFBwoCoDWTY86bVYa9znk1xcp19IO@database.prixfixe.dev:25060/dev_prixfixe?sslmode=require")
 
-	if writeErr := cfg.WriteConfigAs(filePath); writeErr != nil {
-		return fmt.Errorf("error writing developmentEnv config: %w", writeErr)
+	if err := cfg.WriteConfigAs(path); err != nil {
+		return err
 	}
 
-	return nil
+	return removeEmptyCookieSecretSettingFromFile(path)
 }
 
-func developmentConfig(filePath string) error {
+func localConfig(path string) error {
 	cfg := config.BuildConfig()
 
-	cfg.Set(metaRunMode, developmentEnv)
 	cfg.Set(metaDebug, true)
-	cfg.Set(metaStartupDeadline, time.Minute)
-
-	cfg.Set(serverHTTPPort, defaultPort)
-	cfg.Set(serverDebug, true)
-
-	cfg.Set(frontendDebug, true)
-	cfg.Set(frontendStaticFilesDir, defaultFrontendFilepath)
-	cfg.Set(frontendCacheStatics, false)
-
-	cfg.Set(authDebug, true)
-	cfg.Set(authCookieDomain, "localhost")
-	cfg.Set(authCookieSecret, debugCookieSecret)
-	cfg.Set(authCookieLifetime, oneDay)
-	cfg.Set(authSecureCookiesOnly, false)
-	cfg.Set(authEnableUserSignup, true)
-
-	cfg.Set(metricsProvider, "prometheus")
-	cfg.Set(metricsTracer, "jaeger")
-	cfg.Set(metricsDBCollectionInterval, time.Second)
-	cfg.Set(metricsRuntimeCollectionInterval, time.Second)
-
-	cfg.Set(dbDebug, true)
-	cfg.Set(dbProvider, postgres)
-	cfg.Set(dbDeets, postgresDBConnDetails)
-
-	if writeErr := cfg.WriteConfigAs(filePath); writeErr != nil {
-		return fmt.Errorf("error writing developmentEnv config: %w", writeErr)
-	}
-
-	return nil
-}
-
-func frontendTestsConfig(filePath string) error {
-	cfg := config.BuildConfig()
-
 	cfg.Set(metaRunMode, developmentEnv)
 	cfg.Set(metaStartupDeadline, time.Minute)
 
 	cfg.Set(serverHTTPPort, defaultPort)
 	cfg.Set(serverDebug, true)
 
-	cfg.Set(frontendDebug, true)
 	cfg.Set(frontendStaticFilesDir, defaultFrontendFilepath)
 	cfg.Set(frontendCacheStatics, false)
 
-	cfg.Set(authDebug, true)
 	cfg.Set(authCookieDomain, "localhost")
 	cfg.Set(authCookieSecret, debugCookieSecret)
 	cfg.Set(authCookieLifetime, oneDay)
 	cfg.Set(authSecureCookiesOnly, false)
 	cfg.Set(authEnableUserSignup, true)
 
-	cfg.Set(metricsProvider, "prometheus")
-	cfg.Set(metricsTracer, "jaeger")
-	cfg.Set(metricsDBCollectionInterval, time.Second)
-	cfg.Set(metricsRuntimeCollectionInterval, time.Second)
+	exampleMetricsConfiguration(cfg)
 
-	cfg.Set(dbDebug, true)
 	cfg.Set(dbProvider, postgres)
+	cfg.Set(dbCreateDummyUser, true)
 	cfg.Set(dbDeets, postgresDBConnDetails)
 
-	if writeErr := cfg.WriteConfigAs(filePath); writeErr != nil {
-		return fmt.Errorf("error writing developmentEnv config: %w", writeErr)
+	if err := cfg.WriteConfigAs(path); err != nil {
+		return err
 	}
 
-	return nil
+	return removeEmptyCookieSecretSettingFromFile(path)
 }
 
-func coverageConfig(filePath string) error {
+func coverageConfig(filepath string) error {
 	cfg := config.BuildConfig()
 
 	cfg.Set(metaRunMode, testingEnv)
-	cfg.Set(metaDebug, true)
 
 	cfg.Set(serverHTTPPort, defaultPort)
 	cfg.Set(serverDebug, true)
@@ -188,15 +160,11 @@ func coverageConfig(filePath string) error {
 	cfg.Set(dbProvider, postgres)
 	cfg.Set(dbDeets, postgresDBConnDetails)
 
-	if writeErr := cfg.WriteConfigAs(filePath); writeErr != nil {
-		return fmt.Errorf("error writing coverage config: %w", writeErr)
-	}
-
-	return nil
+	return cfg.WriteConfigAs(filepath)
 }
 
-func buildIntegrationTestForDBImplementation(dbVendor, dbDetails string) configFunc {
-	return func(filePath string) error {
+func buildIntegrationTestForDBImplementation(dbprov, dbDetails string) configFunc {
+	return func(filepath string) error {
 		cfg := config.BuildConfig()
 
 		cfg.Set(metaRunMode, testingEnv)
@@ -215,21 +183,53 @@ func buildIntegrationTestForDBImplementation(dbVendor, dbDetails string) configF
 		cfg.Set(metricsTracer, "jaeger")
 
 		cfg.Set(dbDebug, false)
-		cfg.Set(dbProvider, dbVendor)
+		cfg.Set(dbProvider, dbprov)
 		cfg.Set(dbDeets, dbDetails)
 
-		if writeErr := cfg.WriteConfigAs(filePath); writeErr != nil {
-			return fmt.Errorf("error writing integration test config for %s: %w", dbVendor, writeErr)
-		}
-
-		return nil
+		return cfg.WriteConfigAs(filepath)
 	}
 }
 
+func frontendTestsConfig(filePath string) error {
+	cfg := config.BuildConfig()
+
+	cfg.Set(metaRunMode, testingEnv)
+	cfg.Set(metaStartupDeadline, time.Minute)
+
+	cfg.Set(serverHTTPPort, defaultPort)
+	cfg.Set(serverDebug, true)
+
+	cfg.Set(frontendDebug, true)
+	cfg.Set(frontendStaticFilesDir, defaultFrontendFilepath)
+	cfg.Set(frontendCacheStatics, false)
+
+	cfg.Set(authDebug, true)
+	cfg.Set(authCookieDomain, "localhost")
+	cfg.Set(authCookieSecret, debugCookieSecret)
+	cfg.Set(authCookieLifetime, oneDay)
+	cfg.Set(authSecureCookiesOnly, false)
+	cfg.Set(authEnableUserSignup, true)
+
+	cfg.Set(metricsProvider, "prometheus")
+	cfg.Set(metricsTracer, "jaeger")
+	cfg.Set(metricsDBCollectionInterval, time.Second)
+	cfg.Set(metricsRuntimeCollectionInterval, time.Second)
+
+	cfg.Set(dbDebug, true)
+	cfg.Set(dbProvider, postgres)
+	cfg.Set(dbDeets, postgresDBConnDetails)
+
+	if writeErr := cfg.WriteConfigAs(filePath); writeErr != nil {
+		return fmt.Errorf("error writing developmentEnv config: %w", writeErr)
+	}
+
+	return nil
+}
+
 func main() {
-	for filePath, fun := range files {
-		if err := fun(filePath); err != nil {
-			log.Fatalf("error rendering %s: %v", filePath, err)
+	for filepath, fun := range files {
+		if err := fun(filepath); err != nil {
+			log.Fatal(err)
 		}
 	}
 }

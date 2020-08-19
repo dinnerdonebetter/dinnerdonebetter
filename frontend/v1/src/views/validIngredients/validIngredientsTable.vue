@@ -292,9 +292,6 @@ export default class extends Vue {
         });
       this.loading = false;
     }
-    const u = new URL(
-      `${location.protocol}//${location.host}${backendRoutes.VALID_INGREDIENTS}${location.search}`,
-    );
   }
 
   private renderUnixTime = renderUnixTime;

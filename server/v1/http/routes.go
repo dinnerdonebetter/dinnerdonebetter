@@ -100,7 +100,7 @@ func (s *Server) setupRouter(frontendConfig config.FrontendSettings, metricsHand
 	router.With(
 		s.authService.AuthenticationMiddleware(true),
 		s.authService.AdminMiddleware,
-	).Route("/admin", func(adminRouter chi.Router) {
+	).Route("/server_admin", func(adminRouter chi.Router) {
 		adminRouter.Post("/cycle_cookie_secret", s.authService.CycleSecretHandler)
 	})
 

@@ -20,7 +20,7 @@ type (
 	// RequiredPreparationInstrumentList represents a list of required preparation instruments.
 	RequiredPreparationInstrumentList struct {
 		Pagination
-		RequiredPreparationInstruments []RequiredPreparationInstrument `json:"required_preparation_instruments"`
+		RequiredPreparationInstruments []RequiredPreparationInstrument `json:"requiredPreparationInstruments"`
 	}
 
 	// RequiredPreparationInstrumentCreationInput represents what a user could set as input for creating required preparation instruments.
