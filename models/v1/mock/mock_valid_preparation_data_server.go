@@ -27,6 +27,11 @@ func (m *ValidPreparationDataServer) UpdateInputMiddleware(next http.Handler) ht
 	return args.Get(0).(http.Handler)
 }
 
+// SearchHandler implements our interface requirements.
+func (m *ValidPreparationDataServer) SearchHandler(res http.ResponseWriter, req *http.Request) {
+	m.Called(res, req)
+}
+
 // ListHandler implements our interface requirements.
 func (m *ValidPreparationDataServer) ListHandler(res http.ResponseWriter, req *http.Request) {
 	m.Called(res, req)

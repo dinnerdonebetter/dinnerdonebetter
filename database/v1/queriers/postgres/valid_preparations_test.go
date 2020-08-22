@@ -17,8 +17,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func buildMockRowsFromValidPreparations(validPreparations ...*models.ValidPreparation) *sqlmock.Rows {
-	includeCount := len(validPreparations) > 1
+func buildMockRowsFromValidPreparations(excludeCount bool, validPreparations ...*models.ValidPreparation) *sqlmock.Rows {
+	includeCount := len(validPreparations) > 1 && !excludeCount
 	columns := validPreparationsTableColumns
 
 	if includeCount {
@@ -74,7 +74,7 @@ func TestPostgres_ScanValidPreparations(T *testing.T) {
 		mockRows.On("Next").Return(false)
 		mockRows.On("Err").Return(errors.New("blah"))
 
-		_, _, err := p.scanValidPreparations(mockRows)
+		_, _, err := p.scanValidPreparations(mockRows, true)
 		assert.Error(t, err)
 	})
 
@@ -86,7 +86,7 @@ func TestPostgres_ScanValidPreparations(T *testing.T) {
 		mockRows.On("Err").Return(nil)
 		mockRows.On("Close").Return(errors.New("blah"))
 
-		_, _, err := p.scanValidPreparations(mockRows)
+		_, _, err := p.scanValidPreparations(mockRows, true)
 		assert.NoError(t, err)
 	})
 }
@@ -190,7 +190,7 @@ func TestPostgres_GetValidPreparation(T *testing.T) {
 			WithArgs(
 				exampleValidPreparation.ID,
 			).
-			WillReturnRows(buildMockRowsFromValidPreparations(exampleValidPreparation))
+			WillReturnRows(buildMockRowsFromValidPreparations(false, exampleValidPreparation))
 
 		actual, err := p.GetValidPreparation(ctx, exampleValidPreparation.ID)
 		assert.NoError(t, err)
@@ -300,6 +300,7 @@ func TestPostgres_GetAllValidPreparations(T *testing.T) {
 			).
 			WillReturnRows(
 				buildMockRowsFromValidPreparations(
+					true,
 					&exampleValidPreparationList.ValidPreparations[0],
 					&exampleValidPreparationList.ValidPreparations[1],
 					&exampleValidPreparationList.ValidPreparations[2],
@@ -468,6 +469,7 @@ func TestPostgres_GetValidPreparations(T *testing.T) {
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WillReturnRows(
 				buildMockRowsFromValidPreparations(
+					false,
 					&exampleValidPreparationList.ValidPreparations[0],
 					&exampleValidPreparationList.ValidPreparations[1],
 					&exampleValidPreparationList.ValidPreparations[2],
@@ -576,6 +578,7 @@ func TestPostgres_GetValidPreparationsWithIDs(T *testing.T) {
 			WithArgs().
 			WillReturnRows(
 				buildMockRowsFromValidPreparations(
+					true,
 					&exampleValidPreparationList.ValidPreparations[0],
 					&exampleValidPreparationList.ValidPreparations[1],
 					&exampleValidPreparationList.ValidPreparations[2],

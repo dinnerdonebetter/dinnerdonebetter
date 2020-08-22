@@ -4,12 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	mockencoding "gitlab.com/prixfixe/prixfixe/internal/v1/encoding/mock"
 	mockmetrics "gitlab.com/prixfixe/prixfixe/internal/v1/metrics/mock"
+	mocksearch "gitlab.com/prixfixe/prixfixe/internal/v1/search/mock"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
 	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 	mockmodels "gitlab.com/prixfixe/prixfixe/models/v1/mock"
@@ -132,6 +134,188 @@ func TestValidPreparationsService_ListHandler(T *testing.T) {
 	})
 }
 
+func TestValidPreparationsService_SearchHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		s := buildTestService()
+
+		exampleQuery := "whatever"
+		exampleLimit := uint8(123)
+		exampleValidPreparationList := fakemodels.BuildFakeValidPreparationList().ValidPreparations
+		var exampleValidPreparationIDs []uint64
+		for _, x := range exampleValidPreparationList {
+			exampleValidPreparationIDs = append(exampleValidPreparationIDs, x.ID)
+		}
+
+		si := &mocksearch.IndexManager{}
+		si.On("Search", mock.Anything, exampleQuery).Return(exampleValidPreparationIDs, nil)
+		s.search = si
+
+		validPreparationDataManager := &mockmodels.ValidPreparationDataManager{}
+		validPreparationDataManager.On("GetValidPreparationsWithIDs", mock.Anything, exampleLimit, exampleValidPreparationIDs).Return(exampleValidPreparationList, nil)
+		s.validPreparationDataManager = validPreparationDataManager
+
+		ed := &mockencoding.EncoderDecoder{}
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("[]models.ValidPreparation")).Return(nil)
+		s.encoderDecoder = ed
+
+		res := httptest.NewRecorder()
+		req, err := http.NewRequest(
+			http.MethodGet,
+			fmt.Sprintf("http://todo.verygoodsoftwarenotvirus.ru?q=%s&limit=%d", exampleQuery, exampleLimit),
+			nil,
+		)
+		require.NotNil(t, req)
+		require.NoError(t, err)
+
+		s.SearchHandler(res, req)
+
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, si, validPreparationDataManager, ed)
+	})
+
+	T.Run("with error conducting search", func(t *testing.T) {
+		s := buildTestService()
+
+		exampleQuery := "whatever"
+		exampleLimit := uint8(123)
+
+		si := &mocksearch.IndexManager{}
+		si.On("Search", mock.Anything, exampleQuery).Return([]uint64{}, errors.New("blah"))
+		s.search = si
+
+		res := httptest.NewRecorder()
+		req, err := http.NewRequest(
+			http.MethodGet,
+			fmt.Sprintf("http://todo.verygoodsoftwarenotvirus.ru?q=%s&limit=%d", exampleQuery, exampleLimit),
+			nil,
+		)
+		require.NotNil(t, req)
+		require.NoError(t, err)
+
+		s.SearchHandler(res, req)
+
+		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, si)
+	})
+
+	T.Run("with now rows returned", func(t *testing.T) {
+		s := buildTestService()
+
+		exampleQuery := "whatever"
+		exampleLimit := uint8(123)
+		exampleValidPreparationList := fakemodels.BuildFakeValidPreparationList().ValidPreparations
+		var exampleValidPreparationIDs []uint64
+		for _, x := range exampleValidPreparationList {
+			exampleValidPreparationIDs = append(exampleValidPreparationIDs, x.ID)
+		}
+
+		si := &mocksearch.IndexManager{}
+		si.On("Search", mock.Anything, exampleQuery).Return(exampleValidPreparationIDs, nil)
+		s.search = si
+
+		validPreparationDataManager := &mockmodels.ValidPreparationDataManager{}
+		validPreparationDataManager.On("GetValidPreparationsWithIDs", mock.Anything, exampleLimit, exampleValidPreparationIDs).Return([]models.ValidPreparation{}, sql.ErrNoRows)
+		s.validPreparationDataManager = validPreparationDataManager
+
+		ed := &mockencoding.EncoderDecoder{}
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("[]models.ValidPreparation")).Return(nil)
+		s.encoderDecoder = ed
+
+		res := httptest.NewRecorder()
+		req, err := http.NewRequest(
+			http.MethodGet,
+			fmt.Sprintf("http://todo.verygoodsoftwarenotvirus.ru?q=%s&limit=%d", exampleQuery, exampleLimit),
+			nil,
+		)
+		require.NotNil(t, req)
+		require.NoError(t, err)
+
+		s.SearchHandler(res, req)
+
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, si, validPreparationDataManager, ed)
+	})
+
+	T.Run("with error fetching from database", func(t *testing.T) {
+		s := buildTestService()
+
+		exampleQuery := "whatever"
+		exampleLimit := uint8(123)
+		exampleValidPreparationList := fakemodels.BuildFakeValidPreparationList().ValidPreparations
+		var exampleValidPreparationIDs []uint64
+		for _, x := range exampleValidPreparationList {
+			exampleValidPreparationIDs = append(exampleValidPreparationIDs, x.ID)
+		}
+
+		si := &mocksearch.IndexManager{}
+		si.On("Search", mock.Anything, exampleQuery).Return(exampleValidPreparationIDs, nil)
+		s.search = si
+
+		validPreparationDataManager := &mockmodels.ValidPreparationDataManager{}
+		validPreparationDataManager.On("GetValidPreparationsWithIDs", mock.Anything, exampleLimit, exampleValidPreparationIDs).Return([]models.ValidPreparation{}, errors.New("blah"))
+		s.validPreparationDataManager = validPreparationDataManager
+
+		res := httptest.NewRecorder()
+		req, err := http.NewRequest(
+			http.MethodGet,
+			fmt.Sprintf("http://todo.verygoodsoftwarenotvirus.ru?q=%s&limit=%d", exampleQuery, exampleLimit),
+			nil,
+		)
+		require.NotNil(t, req)
+		require.NoError(t, err)
+
+		s.SearchHandler(res, req)
+
+		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, si, validPreparationDataManager)
+	})
+
+	T.Run("with error encoding response", func(t *testing.T) {
+		s := buildTestService()
+
+		exampleQuery := "whatever"
+		exampleLimit := uint8(123)
+		exampleValidPreparationList := fakemodels.BuildFakeValidPreparationList().ValidPreparations
+		var exampleValidPreparationIDs []uint64
+		for _, x := range exampleValidPreparationList {
+			exampleValidPreparationIDs = append(exampleValidPreparationIDs, x.ID)
+		}
+
+		si := &mocksearch.IndexManager{}
+		si.On("Search", mock.Anything, exampleQuery).Return(exampleValidPreparationIDs, nil)
+		s.search = si
+
+		validPreparationDataManager := &mockmodels.ValidPreparationDataManager{}
+		validPreparationDataManager.On("GetValidPreparationsWithIDs", mock.Anything, exampleLimit, exampleValidPreparationIDs).Return(exampleValidPreparationList, nil)
+		s.validPreparationDataManager = validPreparationDataManager
+
+		ed := &mockencoding.EncoderDecoder{}
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("[]models.ValidPreparation")).Return(errors.New("blah"))
+		s.encoderDecoder = ed
+
+		res := httptest.NewRecorder()
+		req, err := http.NewRequest(
+			http.MethodGet,
+			fmt.Sprintf("http://todo.verygoodsoftwarenotvirus.ru?q=%s&limit=%d", exampleQuery, exampleLimit),
+			nil,
+		)
+		require.NotNil(t, req)
+		require.NoError(t, err)
+
+		s.SearchHandler(res, req)
+
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, si, validPreparationDataManager, ed)
+	})
+}
+
 func TestValidPreparationsService_CreateHandler(T *testing.T) {
 	T.Parallel()
 
@@ -153,6 +337,10 @@ func TestValidPreparationsService_CreateHandler(T *testing.T) {
 		r.On("Report", mock.AnythingOfType("newsman.Event")).Return()
 		s.reporter = r
 
+		si := &mocksearch.IndexManager{}
+		si.On("Index", mock.Anything, exampleValidPreparation.ID, exampleValidPreparation).Return(nil)
+		s.search = si
+
 		ed := &mockencoding.EncoderDecoder{}
 		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.ValidPreparation")).Return(nil)
 		s.encoderDecoder = ed
@@ -172,7 +360,7 @@ func TestValidPreparationsService_CreateHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusCreated, res.Code)
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager, mc, r, ed)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager, mc, r, si, ed)
 	})
 
 	T.Run("without input attached", func(t *testing.T) {
@@ -238,6 +426,10 @@ func TestValidPreparationsService_CreateHandler(T *testing.T) {
 		r.On("Report", mock.AnythingOfType("newsman.Event")).Return()
 		s.reporter = r
 
+		si := &mocksearch.IndexManager{}
+		si.On("Index", mock.Anything, exampleValidPreparation.ID, exampleValidPreparation).Return(nil)
+		s.search = si
+
 		ed := &mockencoding.EncoderDecoder{}
 		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.ValidPreparation")).Return(errors.New("blah"))
 		s.encoderDecoder = ed
@@ -257,7 +449,7 @@ func TestValidPreparationsService_CreateHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusCreated, res.Code)
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager, mc, r, ed)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager, mc, r, si, ed)
 	})
 }
 
@@ -495,6 +687,10 @@ func TestValidPreparationsService_UpdateHandler(T *testing.T) {
 		r.On("Report", mock.AnythingOfType("newsman.Event")).Return()
 		s.reporter = r
 
+		si := &mocksearch.IndexManager{}
+		si.On("Index", mock.Anything, exampleValidPreparation.ID, exampleValidPreparation).Return(nil)
+		s.search = si
+
 		ed := &mockencoding.EncoderDecoder{}
 		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.ValidPreparation")).Return(nil)
 		s.encoderDecoder = ed
@@ -650,6 +846,10 @@ func TestValidPreparationsService_UpdateHandler(T *testing.T) {
 		r.On("Report", mock.AnythingOfType("newsman.Event")).Return()
 		s.reporter = r
 
+		si := &mocksearch.IndexManager{}
+		si.On("Index", mock.Anything, exampleValidPreparation.ID, exampleValidPreparation).Return(nil)
+		s.search = si
+
 		ed := &mockencoding.EncoderDecoder{}
 		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.ValidPreparation")).Return(errors.New("blah"))
 		s.encoderDecoder = ed
@@ -691,6 +891,10 @@ func TestValidPreparationsService_ArchiveHandler(T *testing.T) {
 		r := &mocknewsman.Reporter{}
 		r.On("Report", mock.AnythingOfType("newsman.Event")).Return()
 		s.reporter = r
+
+		si := &mocksearch.IndexManager{}
+		si.On("Delete", mock.Anything, exampleValidPreparation.ID).Return(nil)
+		s.search = si
 
 		mc := &mockmetrics.UnitCounter{}
 		mc.On("Decrement", mock.Anything).Return()

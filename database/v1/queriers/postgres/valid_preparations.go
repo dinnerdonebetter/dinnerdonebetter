@@ -61,14 +61,14 @@ func (p *Postgres) scanValidPreparation(scan database.Scanner, includeCount bool
 }
 
 // scanValidPreparations takes a logger and some database rows and turns them into a slice of valid preparations.
-func (p *Postgres) scanValidPreparations(rows database.ResultIterator) ([]models.ValidPreparation, uint64, error) {
+func (p *Postgres) scanValidPreparations(rows database.ResultIterator, includeCount bool) ([]models.ValidPreparation, uint64, error) {
 	var (
 		list  []models.ValidPreparation
 		count uint64
 	)
 
 	for rows.Next() {
-		x, c, err := p.scanValidPreparation(rows, true)
+		x, c, err := p.scanValidPreparation(rows, includeCount)
 		if err != nil {
 			return nil, 0, err
 		}
@@ -220,7 +220,7 @@ func (p *Postgres) GetAllValidPreparations(ctx context.Context, resultChannel ch
 				return
 			}
 
-			validPreparations, _, err := p.scanValidPreparations(rows)
+			validPreparations, _, err := p.scanValidPreparations(rows, false)
 			if err != nil {
 				logger.Error(err, "scanning database rows")
 				return
@@ -265,7 +265,7 @@ func (p *Postgres) GetValidPreparations(ctx context.Context, filter *models.Quer
 		return nil, buildError(err, "querying database for valid preparations")
 	}
 
-	validPreparations, count, err := p.scanValidPreparations(rows)
+	validPreparations, count, err := p.scanValidPreparations(rows, true)
 	if err != nil {
 		return nil, fmt.Errorf("scanning response from database: %w", err)
 	}
@@ -322,7 +322,7 @@ func (p *Postgres) GetValidPreparationsWithIDs(ctx context.Context, limit uint8,
 		return nil, buildError(err, "querying database for valid preparations")
 	}
 
-	validPreparations, _, err := p.scanValidPreparations(rows)
+	validPreparations, _, err := p.scanValidPreparations(rows, false)
 	if err != nil {
 		return nil, fmt.Errorf("scanning response from database: %w", err)
 	}

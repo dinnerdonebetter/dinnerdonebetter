@@ -64,6 +64,15 @@ services:
             - source: '../../frontend/v1/dist'
               target: '/frontend'
               type: 'bind'
+            - source: '../../artifacts/search/valid_ingredients.bleve'
+              target: '/search_indices/valid_ingredients.bleve'
+              type: 'bind'
+            - source: '../../artifacts/search/valid_instruments.bleve'
+              target: '/search_indices/valid_instruments.bleve'
+              type: 'bind'
+            - source: '../../artifacts/search/valid_preparations.bleve'
+              target: '/search_indices/valid_preparations.bleve'
+              type: 'bind'
     tracing-server:
         image: "jaegertracing/all-in-one:latest"
         logging:

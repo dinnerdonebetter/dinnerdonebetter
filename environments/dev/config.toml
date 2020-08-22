@@ -22,6 +22,11 @@
   database_metrics_collection_interval = "2s"
   runtime_metrics_collection_interval = "2s"
 
+[search]
+  valid_ingredients_index_path = "/etc/prixfixe_search_indices/valid_ingredients.bleve"
+  valid_instruments_index_path = "/etc/prixfixe_search_indices/valid_instruments.bleve"
+  valid_preparations_index_path = "/etc/prixfixe_search_indices/valid_preparations.bleve"
+
 [server]
   debug = true
   http_port = 8888

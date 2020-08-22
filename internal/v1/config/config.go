@@ -8,6 +8,7 @@ import (
 	"time"
 
 	database "gitlab.com/prixfixe/prixfixe/database/v1"
+	"gitlab.com/prixfixe/prixfixe/internal/v1/search"
 
 	"github.com/spf13/viper"
 )
@@ -115,6 +116,16 @@ type (
 		RuntimeMetricsCollectionInterval time.Duration `json:"runtime_metrics_collection_interval" mapstructure:"runtime_metrics_collection_interval" toml:"runtime_metrics_collection_interval,omitempty"`
 	}
 
+	// SearchSettings contains settings regarding search indices.
+	SearchSettings struct {
+		// ValidInstrumentsIndexPath indicates where our valid instruments search index files should go.
+		ValidInstrumentsIndexPath search.IndexPath `json:"valid_instruments_index_path" mapstructure:"valid_instruments_index_path" toml:"valid_instruments_index_path,omitempty"`
+		// ValidIngredientsIndexPath indicates where our valid ingredients search index files should go.
+		ValidIngredientsIndexPath search.IndexPath `json:"valid_ingredients_index_path" mapstructure:"valid_ingredients_index_path" toml:"valid_ingredients_index_path,omitempty"`
+		// ValidPreparationsIndexPath indicates where our valid preparations search index files should go.
+		ValidPreparationsIndexPath search.IndexPath `json:"valid_preparations_index_path" mapstructure:"valid_preparations_index_path" toml:"valid_preparations_index_path,omitempty"`
+	}
+
 	// ServerConfig is our server configuration struct. It is comprised of all the other setting structs
 	// For information on this structs fields, refer to their definitions.
 	ServerConfig struct {
@@ -124,6 +135,7 @@ type (
 		Server   ServerSettings   `json:"server" mapstructure:"server" toml:"server,omitempty"`
 		Database DatabaseSettings `json:"database" mapstructure:"database" toml:"database,omitempty"`
 		Metrics  MetricsSettings  `json:"metrics" mapstructure:"metrics" toml:"metrics,omitempty"`
+		Search   SearchSettings   `json:"search" mapstructure:"search" toml:"search,omitempty"`
 	}
 )
 

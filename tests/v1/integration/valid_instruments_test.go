@@ -2,13 +2,18 @@ package integration
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
+	client "gitlab.com/prixfixe/prixfixe/client/v1/http"
 	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
 	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
+	"gitlab.com/prixfixe/prixfixe/tests/v1/testutil"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"gitlab.com/verygoodsoftwarenotvirus/logging/v1/noop"
 )
 
 func checkValidInstrumentEquality(t *testing.T, expected, actual *models.ValidInstrument) {
@@ -80,6 +85,144 @@ func TestValidInstruments(test *testing.T) {
 			// Clean up.
 			for _, createdValidInstrument := range actual.ValidInstruments {
 				err = prixfixeClient.ArchiveValidInstrument(ctx, createdValidInstrument.ID)
+				assert.NoError(t, err)
+			}
+		})
+	})
+
+	test.Run("Searching", func(T *testing.T) {
+		T.Run("should be able to be search for valid instruments", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create valid instruments.
+			exampleValidInstrument := fakemodels.BuildFakeValidInstrument()
+			var expected []*models.ValidInstrument
+			for i := 0; i < 5; i++ {
+				// Create valid instrument.
+				exampleValidInstrumentInput := fakemodels.BuildFakeValidInstrumentCreationInputFromValidInstrument(exampleValidInstrument)
+				exampleValidInstrumentInput.Name = fmt.Sprintf("%s %d", exampleValidInstrumentInput.Name, i)
+				createdValidInstrument, validInstrumentCreationErr := prixfixeClient.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+				checkValueAndError(t, createdValidInstrument, validInstrumentCreationErr)
+
+				expected = append(expected, createdValidInstrument)
+			}
+
+			exampleLimit := uint8(20)
+
+			// Assert valid instrument list equality.
+			actual, err := prixfixeClient.SearchValidInstruments(ctx, exampleValidInstrument.Name, exampleLimit)
+			checkValueAndError(t, actual, err)
+			assert.True(
+				t,
+				len(expected) <= len(actual),
+				"expected results length %d to be <= %d",
+				len(expected),
+				len(actual),
+			)
+
+			// Clean up.
+			for _, createdValidInstrument := range expected {
+				err = prixfixeClient.ArchiveValidInstrument(ctx, createdValidInstrument.ID)
+				assert.NoError(t, err)
+			}
+		})
+
+		T.Run("should only receive your own valid instruments", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// create user and oauth2 client A.
+			userA, err := testutil.CreateObligatoryUser(urlToUse, debug)
+			require.NoError(t, err)
+
+			ca, err := testutil.CreateObligatoryClient(urlToUse, userA)
+			require.NoError(t, err)
+
+			clientA, err := client.NewClient(
+				ctx,
+				ca.ClientID,
+				ca.ClientSecret,
+				prixfixeClient.URL,
+				noop.ProvideNoopLogger(),
+				buildHTTPClient(),
+				ca.Scopes,
+				true,
+			)
+			checkValueAndError(test, clientA, err)
+
+			// Create valid instruments for user A.
+			exampleValidInstrumentA := fakemodels.BuildFakeValidInstrument()
+			var createdForA []*models.ValidInstrument
+			for i := 0; i < 5; i++ {
+				// Create valid instrument.
+				exampleValidInstrumentInputA := fakemodels.BuildFakeValidInstrumentCreationInputFromValidInstrument(exampleValidInstrumentA)
+				exampleValidInstrumentInputA.Name = fmt.Sprintf("%s %d", exampleValidInstrumentInputA.Name, i)
+
+				createdValidInstrument, validInstrumentCreationErr := clientA.CreateValidInstrument(ctx, exampleValidInstrumentInputA)
+				checkValueAndError(t, createdValidInstrument, validInstrumentCreationErr)
+
+				createdForA = append(createdForA, createdValidInstrument)
+			}
+
+			exampleLimit := uint8(20)
+			query := exampleValidInstrumentA.Name
+
+			// create user and oauth2 client B.
+			userB, err := testutil.CreateObligatoryUser(urlToUse, debug)
+			require.NoError(t, err)
+
+			cb, err := testutil.CreateObligatoryClient(urlToUse, userB)
+			require.NoError(t, err)
+
+			clientB, err := client.NewClient(
+				ctx,
+				cb.ClientID,
+				cb.ClientSecret,
+				prixfixeClient.URL,
+				noop.ProvideNoopLogger(),
+				buildHTTPClient(),
+				cb.Scopes,
+				true,
+			)
+			checkValueAndError(test, clientB, err)
+
+			// Create valid instruments for user B.
+			exampleValidInstrumentB := fakemodels.BuildFakeValidInstrument()
+			exampleValidInstrumentB.Name = reverse(exampleValidInstrumentA.Name)
+			var createdForB []*models.ValidInstrument
+			for i := 0; i < 5; i++ {
+				// Create valid instrument.
+				exampleValidInstrumentInputB := fakemodels.BuildFakeValidInstrumentCreationInputFromValidInstrument(exampleValidInstrumentB)
+				exampleValidInstrumentInputB.Name = fmt.Sprintf("%s %d", exampleValidInstrumentInputB.Name, i)
+
+				createdValidInstrument, validInstrumentCreationErr := clientB.CreateValidInstrument(ctx, exampleValidInstrumentInputB)
+				checkValueAndError(t, createdValidInstrument, validInstrumentCreationErr)
+
+				createdForB = append(createdForB, createdValidInstrument)
+			}
+
+			expected := createdForA
+
+			// Assert valid instrument list equality.
+			actual, err := clientA.SearchValidInstruments(ctx, query, exampleLimit)
+			checkValueAndError(t, actual, err)
+			assert.True(
+				t,
+				len(expected) <= len(actual),
+				"expected results length %d to be <= %d",
+				len(expected),
+				len(actual),
+			)
+
+			// Clean up.
+			for _, createdValidInstrument := range createdForA {
+				err = clientA.ArchiveValidInstrument(ctx, createdValidInstrument.ID)
+				assert.NoError(t, err)
+			}
+
+			for _, createdValidInstrument := range createdForB {
+				err = clientB.ArchiveValidInstrument(ctx, createdValidInstrument.ID)
 				assert.NoError(t, err)
 			}
 		})

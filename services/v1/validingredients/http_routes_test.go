@@ -4,12 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	mockencoding "gitlab.com/prixfixe/prixfixe/internal/v1/encoding/mock"
 	mockmetrics "gitlab.com/prixfixe/prixfixe/internal/v1/metrics/mock"
+	mocksearch "gitlab.com/prixfixe/prixfixe/internal/v1/search/mock"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
 	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
 	mockmodels "gitlab.com/prixfixe/prixfixe/models/v1/mock"
@@ -132,6 +134,188 @@ func TestValidIngredientsService_ListHandler(T *testing.T) {
 	})
 }
 
+func TestValidIngredientsService_SearchHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		s := buildTestService()
+
+		exampleQuery := "whatever"
+		exampleLimit := uint8(123)
+		exampleValidIngredientList := fakemodels.BuildFakeValidIngredientList().ValidIngredients
+		var exampleValidIngredientIDs []uint64
+		for _, x := range exampleValidIngredientList {
+			exampleValidIngredientIDs = append(exampleValidIngredientIDs, x.ID)
+		}
+
+		si := &mocksearch.IndexManager{}
+		si.On("Search", mock.Anything, exampleQuery).Return(exampleValidIngredientIDs, nil)
+		s.search = si
+
+		validIngredientDataManager := &mockmodels.ValidIngredientDataManager{}
+		validIngredientDataManager.On("GetValidIngredientsWithIDs", mock.Anything, exampleLimit, exampleValidIngredientIDs).Return(exampleValidIngredientList, nil)
+		s.validIngredientDataManager = validIngredientDataManager
+
+		ed := &mockencoding.EncoderDecoder{}
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("[]models.ValidIngredient")).Return(nil)
+		s.encoderDecoder = ed
+
+		res := httptest.NewRecorder()
+		req, err := http.NewRequest(
+			http.MethodGet,
+			fmt.Sprintf("http://todo.verygoodsoftwarenotvirus.ru?q=%s&limit=%d", exampleQuery, exampleLimit),
+			nil,
+		)
+		require.NotNil(t, req)
+		require.NoError(t, err)
+
+		s.SearchHandler(res, req)
+
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, si, validIngredientDataManager, ed)
+	})
+
+	T.Run("with error conducting search", func(t *testing.T) {
+		s := buildTestService()
+
+		exampleQuery := "whatever"
+		exampleLimit := uint8(123)
+
+		si := &mocksearch.IndexManager{}
+		si.On("Search", mock.Anything, exampleQuery).Return([]uint64{}, errors.New("blah"))
+		s.search = si
+
+		res := httptest.NewRecorder()
+		req, err := http.NewRequest(
+			http.MethodGet,
+			fmt.Sprintf("http://todo.verygoodsoftwarenotvirus.ru?q=%s&limit=%d", exampleQuery, exampleLimit),
+			nil,
+		)
+		require.NotNil(t, req)
+		require.NoError(t, err)
+
+		s.SearchHandler(res, req)
+
+		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, si)
+	})
+
+	T.Run("with now rows returned", func(t *testing.T) {
+		s := buildTestService()
+
+		exampleQuery := "whatever"
+		exampleLimit := uint8(123)
+		exampleValidIngredientList := fakemodels.BuildFakeValidIngredientList().ValidIngredients
+		var exampleValidIngredientIDs []uint64
+		for _, x := range exampleValidIngredientList {
+			exampleValidIngredientIDs = append(exampleValidIngredientIDs, x.ID)
+		}
+
+		si := &mocksearch.IndexManager{}
+		si.On("Search", mock.Anything, exampleQuery).Return(exampleValidIngredientIDs, nil)
+		s.search = si
+
+		validIngredientDataManager := &mockmodels.ValidIngredientDataManager{}
+		validIngredientDataManager.On("GetValidIngredientsWithIDs", mock.Anything, exampleLimit, exampleValidIngredientIDs).Return([]models.ValidIngredient{}, sql.ErrNoRows)
+		s.validIngredientDataManager = validIngredientDataManager
+
+		ed := &mockencoding.EncoderDecoder{}
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("[]models.ValidIngredient")).Return(nil)
+		s.encoderDecoder = ed
+
+		res := httptest.NewRecorder()
+		req, err := http.NewRequest(
+			http.MethodGet,
+			fmt.Sprintf("http://todo.verygoodsoftwarenotvirus.ru?q=%s&limit=%d", exampleQuery, exampleLimit),
+			nil,
+		)
+		require.NotNil(t, req)
+		require.NoError(t, err)
+
+		s.SearchHandler(res, req)
+
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, si, validIngredientDataManager, ed)
+	})
+
+	T.Run("with error fetching from database", func(t *testing.T) {
+		s := buildTestService()
+
+		exampleQuery := "whatever"
+		exampleLimit := uint8(123)
+		exampleValidIngredientList := fakemodels.BuildFakeValidIngredientList().ValidIngredients
+		var exampleValidIngredientIDs []uint64
+		for _, x := range exampleValidIngredientList {
+			exampleValidIngredientIDs = append(exampleValidIngredientIDs, x.ID)
+		}
+
+		si := &mocksearch.IndexManager{}
+		si.On("Search", mock.Anything, exampleQuery).Return(exampleValidIngredientIDs, nil)
+		s.search = si
+
+		validIngredientDataManager := &mockmodels.ValidIngredientDataManager{}
+		validIngredientDataManager.On("GetValidIngredientsWithIDs", mock.Anything, exampleLimit, exampleValidIngredientIDs).Return([]models.ValidIngredient{}, errors.New("blah"))
+		s.validIngredientDataManager = validIngredientDataManager
+
+		res := httptest.NewRecorder()
+		req, err := http.NewRequest(
+			http.MethodGet,
+			fmt.Sprintf("http://todo.verygoodsoftwarenotvirus.ru?q=%s&limit=%d", exampleQuery, exampleLimit),
+			nil,
+		)
+		require.NotNil(t, req)
+		require.NoError(t, err)
+
+		s.SearchHandler(res, req)
+
+		assert.Equal(t, http.StatusInternalServerError, res.Code)
+
+		mock.AssertExpectationsForObjects(t, si, validIngredientDataManager)
+	})
+
+	T.Run("with error encoding response", func(t *testing.T) {
+		s := buildTestService()
+
+		exampleQuery := "whatever"
+		exampleLimit := uint8(123)
+		exampleValidIngredientList := fakemodels.BuildFakeValidIngredientList().ValidIngredients
+		var exampleValidIngredientIDs []uint64
+		for _, x := range exampleValidIngredientList {
+			exampleValidIngredientIDs = append(exampleValidIngredientIDs, x.ID)
+		}
+
+		si := &mocksearch.IndexManager{}
+		si.On("Search", mock.Anything, exampleQuery).Return(exampleValidIngredientIDs, nil)
+		s.search = si
+
+		validIngredientDataManager := &mockmodels.ValidIngredientDataManager{}
+		validIngredientDataManager.On("GetValidIngredientsWithIDs", mock.Anything, exampleLimit, exampleValidIngredientIDs).Return(exampleValidIngredientList, nil)
+		s.validIngredientDataManager = validIngredientDataManager
+
+		ed := &mockencoding.EncoderDecoder{}
+		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("[]models.ValidIngredient")).Return(errors.New("blah"))
+		s.encoderDecoder = ed
+
+		res := httptest.NewRecorder()
+		req, err := http.NewRequest(
+			http.MethodGet,
+			fmt.Sprintf("http://todo.verygoodsoftwarenotvirus.ru?q=%s&limit=%d", exampleQuery, exampleLimit),
+			nil,
+		)
+		require.NotNil(t, req)
+		require.NoError(t, err)
+
+		s.SearchHandler(res, req)
+
+		assert.Equal(t, http.StatusOK, res.Code)
+
+		mock.AssertExpectationsForObjects(t, si, validIngredientDataManager, ed)
+	})
+}
+
 func TestValidIngredientsService_CreateHandler(T *testing.T) {
 	T.Parallel()
 
@@ -153,6 +337,10 @@ func TestValidIngredientsService_CreateHandler(T *testing.T) {
 		r.On("Report", mock.AnythingOfType("newsman.Event")).Return()
 		s.reporter = r
 
+		si := &mocksearch.IndexManager{}
+		si.On("Index", mock.Anything, exampleValidIngredient.ID, exampleValidIngredient).Return(nil)
+		s.search = si
+
 		ed := &mockencoding.EncoderDecoder{}
 		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.ValidIngredient")).Return(nil)
 		s.encoderDecoder = ed
@@ -172,7 +360,7 @@ func TestValidIngredientsService_CreateHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusCreated, res.Code)
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager, mc, r, ed)
+		mock.AssertExpectationsForObjects(t, validIngredientDataManager, mc, r, si, ed)
 	})
 
 	T.Run("without input attached", func(t *testing.T) {
@@ -238,6 +426,10 @@ func TestValidIngredientsService_CreateHandler(T *testing.T) {
 		r.On("Report", mock.AnythingOfType("newsman.Event")).Return()
 		s.reporter = r
 
+		si := &mocksearch.IndexManager{}
+		si.On("Index", mock.Anything, exampleValidIngredient.ID, exampleValidIngredient).Return(nil)
+		s.search = si
+
 		ed := &mockencoding.EncoderDecoder{}
 		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.ValidIngredient")).Return(errors.New("blah"))
 		s.encoderDecoder = ed
@@ -257,7 +449,7 @@ func TestValidIngredientsService_CreateHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusCreated, res.Code)
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager, mc, r, ed)
+		mock.AssertExpectationsForObjects(t, validIngredientDataManager, mc, r, si, ed)
 	})
 }
 
@@ -495,6 +687,10 @@ func TestValidIngredientsService_UpdateHandler(T *testing.T) {
 		r.On("Report", mock.AnythingOfType("newsman.Event")).Return()
 		s.reporter = r
 
+		si := &mocksearch.IndexManager{}
+		si.On("Index", mock.Anything, exampleValidIngredient.ID, exampleValidIngredient).Return(nil)
+		s.search = si
+
 		ed := &mockencoding.EncoderDecoder{}
 		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.ValidIngredient")).Return(nil)
 		s.encoderDecoder = ed
@@ -650,6 +846,10 @@ func TestValidIngredientsService_UpdateHandler(T *testing.T) {
 		r.On("Report", mock.AnythingOfType("newsman.Event")).Return()
 		s.reporter = r
 
+		si := &mocksearch.IndexManager{}
+		si.On("Index", mock.Anything, exampleValidIngredient.ID, exampleValidIngredient).Return(nil)
+		s.search = si
+
 		ed := &mockencoding.EncoderDecoder{}
 		ed.On("EncodeResponse", mock.Anything, mock.AnythingOfType("*models.ValidIngredient")).Return(errors.New("blah"))
 		s.encoderDecoder = ed
@@ -691,6 +891,10 @@ func TestValidIngredientsService_ArchiveHandler(T *testing.T) {
 		r := &mocknewsman.Reporter{}
 		r.On("Report", mock.AnythingOfType("newsman.Event")).Return()
 		s.reporter = r
+
+		si := &mocksearch.IndexManager{}
+		si.On("Delete", mock.Anything, exampleValidIngredient.ID).Return(nil)
+		s.search = si
 
 		mc := &mockmetrics.UnitCounter{}
 		mc.On("Decrement", mock.Anything).Return()

@@ -17,8 +17,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func buildMockRowsFromValidInstruments(validInstruments ...*models.ValidInstrument) *sqlmock.Rows {
-	includeCount := len(validInstruments) > 1
+func buildMockRowsFromValidInstruments(excludeCount bool, validInstruments ...*models.ValidInstrument) *sqlmock.Rows {
+	includeCount := len(validInstruments) > 1 && !excludeCount
 	columns := validInstrumentsTableColumns
 
 	if includeCount {
@@ -74,7 +74,7 @@ func TestPostgres_ScanValidInstruments(T *testing.T) {
 		mockRows.On("Next").Return(false)
 		mockRows.On("Err").Return(errors.New("blah"))
 
-		_, _, err := p.scanValidInstruments(mockRows)
+		_, _, err := p.scanValidInstruments(mockRows, true)
 		assert.Error(t, err)
 	})
 
@@ -86,7 +86,7 @@ func TestPostgres_ScanValidInstruments(T *testing.T) {
 		mockRows.On("Err").Return(nil)
 		mockRows.On("Close").Return(errors.New("blah"))
 
-		_, _, err := p.scanValidInstruments(mockRows)
+		_, _, err := p.scanValidInstruments(mockRows, true)
 		assert.NoError(t, err)
 	})
 }
@@ -190,7 +190,7 @@ func TestPostgres_GetValidInstrument(T *testing.T) {
 			WithArgs(
 				exampleValidInstrument.ID,
 			).
-			WillReturnRows(buildMockRowsFromValidInstruments(exampleValidInstrument))
+			WillReturnRows(buildMockRowsFromValidInstruments(false, exampleValidInstrument))
 
 		actual, err := p.GetValidInstrument(ctx, exampleValidInstrument.ID)
 		assert.NoError(t, err)
@@ -300,6 +300,7 @@ func TestPostgres_GetAllValidInstruments(T *testing.T) {
 			).
 			WillReturnRows(
 				buildMockRowsFromValidInstruments(
+					true,
 					&exampleValidInstrumentList.ValidInstruments[0],
 					&exampleValidInstrumentList.ValidInstruments[1],
 					&exampleValidInstrumentList.ValidInstruments[2],
@@ -468,6 +469,7 @@ func TestPostgres_GetValidInstruments(T *testing.T) {
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WillReturnRows(
 				buildMockRowsFromValidInstruments(
+					false,
 					&exampleValidInstrumentList.ValidInstruments[0],
 					&exampleValidInstrumentList.ValidInstruments[1],
 					&exampleValidInstrumentList.ValidInstruments[2],
@@ -576,6 +578,7 @@ func TestPostgres_GetValidInstrumentsWithIDs(T *testing.T) {
 			WithArgs().
 			WillReturnRows(
 				buildMockRowsFromValidInstruments(
+					true,
 					&exampleValidInstrumentList.ValidInstruments[0],
 					&exampleValidInstrumentList.ValidInstruments[1],
 					&exampleValidInstrumentList.ValidInstruments[2],

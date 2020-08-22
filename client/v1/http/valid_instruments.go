@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
@@ -72,6 +73,42 @@ func (c *V1Client) GetValidInstrument(ctx context.Context, validInstrumentID uin
 	}
 
 	return validInstrument, nil
+}
+
+// BuildSearchValidInstrumentsRequest builds an HTTP request for querying valid instruments.
+func (c *V1Client) BuildSearchValidInstrumentsRequest(ctx context.Context, query string, limit uint8) (*http.Request, error) {
+	ctx, span := tracing.StartSpan(ctx, "BuildSearchValidInstrumentsRequest")
+	defer span.End()
+
+	params := url.Values{}
+	params.Set(models.SearchQueryKey, query)
+	params.Set(models.LimitQueryKey, strconv.FormatUint(uint64(limit), 10))
+
+	uri := c.BuildURL(
+		params,
+		validInstrumentsBasePath,
+		"search",
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+}
+
+// SearchValidInstruments searches for a list of valid instruments.
+func (c *V1Client) SearchValidInstruments(ctx context.Context, query string, limit uint8) (validInstruments []models.ValidInstrument, err error) {
+	ctx, span := tracing.StartSpan(ctx, "SearchValidInstruments")
+	defer span.End()
+
+	req, err := c.BuildSearchValidInstrumentsRequest(ctx, query, limit)
+	if err != nil {
+		return nil, fmt.Errorf("building request: %w", err)
+	}
+
+	if retrieveErr := c.retrieve(ctx, req, &validInstruments); retrieveErr != nil {
+		return nil, retrieveErr
+	}
+
+	return validInstruments, nil
 }
 
 // BuildGetValidInstrumentsRequest builds an HTTP request for fetching valid instruments.

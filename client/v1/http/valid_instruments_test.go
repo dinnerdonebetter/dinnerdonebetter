@@ -246,6 +246,99 @@ func TestV1Client_GetValidInstruments(T *testing.T) {
 	})
 }
 
+func TestV1Client_BuildSearchValidInstrumentsRequest(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		ctx := context.Background()
+
+		limit := models.DefaultQueryFilter().Limit
+		exampleQuery := "whatever"
+
+		expectedMethod := http.MethodGet
+		ts := httptest.NewTLSServer(nil)
+
+		c := buildTestClient(t, ts)
+		actual, err := c.BuildSearchValidInstrumentsRequest(ctx, exampleQuery, limit)
+
+		require.NotNil(t, actual)
+		assert.NoError(t, err, "no error should be returned")
+		assert.Equal(t, actual.Method, expectedMethod, "request should be a %s request", expectedMethod)
+	})
+}
+
+func TestV1Client_SearchValidInstruments(T *testing.T) {
+	T.Parallel()
+
+	const expectedPath = "/api/v1/valid_instruments/search"
+
+	T.Run("happy path", func(t *testing.T) {
+		ctx := context.Background()
+
+		limit := models.DefaultQueryFilter().Limit
+		exampleQuery := "whatever"
+
+		exampleValidInstrumentList := fakemodels.BuildFakeValidInstrumentList().ValidInstruments
+
+		ts := httptest.NewTLSServer(
+			http.HandlerFunc(
+				func(res http.ResponseWriter, req *http.Request) {
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Query().Get(models.SearchQueryKey), exampleQuery, "expected and actual search query param do not match")
+					assert.Equal(t, req.URL.Query().Get(models.LimitQueryKey), strconv.FormatUint(uint64(limit), 10), "expected and actual limit query param do not match")
+					assert.Equal(t, req.Method, http.MethodGet)
+					require.NoError(t, json.NewEncoder(res).Encode(exampleValidInstrumentList))
+				},
+			),
+		)
+
+		c := buildTestClient(t, ts)
+		actual, err := c.SearchValidInstruments(ctx, exampleQuery, limit)
+
+		require.NotNil(t, actual)
+		assert.NoError(t, err, "no error should be returned")
+		assert.Equal(t, exampleValidInstrumentList, actual)
+	})
+
+	T.Run("with invalid client URL", func(t *testing.T) {
+		ctx := context.Background()
+
+		limit := models.DefaultQueryFilter().Limit
+		exampleQuery := "whatever"
+
+		c := buildTestClientWithInvalidURL(t)
+		actual, err := c.SearchValidInstruments(ctx, exampleQuery, limit)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err, "error should be returned")
+	})
+
+	T.Run("with invalid response", func(t *testing.T) {
+		ctx := context.Background()
+
+		limit := models.DefaultQueryFilter().Limit
+		exampleQuery := "whatever"
+
+		ts := httptest.NewTLSServer(
+			http.HandlerFunc(
+				func(res http.ResponseWriter, req *http.Request) {
+					assert.Equal(t, req.URL.Path, expectedPath, "expected and actual paths do not match")
+					assert.Equal(t, req.URL.Query().Get(models.SearchQueryKey), exampleQuery, "expected and actual search query param do not match")
+					assert.Equal(t, req.URL.Query().Get(models.LimitQueryKey), strconv.FormatUint(uint64(limit), 10), "expected and actual limit query param do not match")
+					assert.Equal(t, req.Method, http.MethodGet)
+					require.NoError(t, json.NewEncoder(res).Encode("BLAH"))
+				},
+			),
+		)
+
+		c := buildTestClient(t, ts)
+		actual, err := c.SearchValidInstruments(ctx, exampleQuery, limit)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err, "error should be returned")
+	})
+}
+
 func TestV1Client_BuildCreateValidInstrumentRequest(T *testing.T) {
 	T.Parallel()
 

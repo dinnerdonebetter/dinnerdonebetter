@@ -13,6 +13,7 @@ var (
 		ProvideValidInstrumentsService,
 		ProvideValidInstrumentDataManager,
 		ProvideValidInstrumentDataServer,
+		ProvideValidInstrumentsServiceSearchIndex,
 	)
 )
 

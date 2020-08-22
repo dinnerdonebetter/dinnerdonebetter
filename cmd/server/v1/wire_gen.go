@@ -13,6 +13,7 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/v1/config"
 	"gitlab.com/prixfixe/prixfixe/internal/v1/encoding"
 	"gitlab.com/prixfixe/prixfixe/internal/v1/metrics"
+	"gitlab.com/prixfixe/prixfixe/internal/v1/search/bleve"
 	"gitlab.com/prixfixe/prixfixe/server/v1"
 	"gitlab.com/prixfixe/prixfixe/server/v1/http"
 	auth2 "gitlab.com/prixfixe/prixfixe/services/v1/auth"
@@ -69,21 +70,35 @@ func BuildServer(ctx context.Context, cfg *config.ServerConfig, logger logging.L
 	typeNameManipulationFunc := httpserver.ProvideNewsmanTypeNameManipulationFunc()
 	newsmanNewsman := newsman.NewNewsman(websocketAuthFunc, typeNameManipulationFunc)
 	reporter := ProvideReporter(newsmanNewsman)
-	validinstrumentsService, err := validinstruments.ProvideValidInstrumentsService(logger, validInstrumentDataManager, validInstrumentIDFetcher, encoderDecoder, unitCounterProvider, reporter)
+	searchSettings := config.ProvideSearchSettings(cfg)
+	indexManagerProvider := bleve.ProvideBleveIndexManagerProvider()
+	searchIndex, err := validinstruments.ProvideValidInstrumentsServiceSearchIndex(searchSettings, indexManagerProvider, logger)
+	if err != nil {
+		return nil, err
+	}
+	validinstrumentsService, err := validinstruments.ProvideValidInstrumentsService(logger, validInstrumentDataManager, validInstrumentIDFetcher, encoderDecoder, unitCounterProvider, reporter, searchIndex)
 	if err != nil {
 		return nil, err
 	}
 	validInstrumentDataServer := validinstruments.ProvideValidInstrumentDataServer(validinstrumentsService)
 	validIngredientDataManager := validingredients.ProvideValidIngredientDataManager(database2)
 	validIngredientIDFetcher := httpserver.ProvideValidIngredientsServiceValidIngredientIDFetcher(logger)
-	validingredientsService, err := validingredients.ProvideValidIngredientsService(logger, validIngredientDataManager, validIngredientIDFetcher, encoderDecoder, unitCounterProvider, reporter)
+	validingredientsSearchIndex, err := validingredients.ProvideValidIngredientsServiceSearchIndex(searchSettings, indexManagerProvider, logger)
+	if err != nil {
+		return nil, err
+	}
+	validingredientsService, err := validingredients.ProvideValidIngredientsService(logger, validIngredientDataManager, validIngredientIDFetcher, encoderDecoder, unitCounterProvider, reporter, validingredientsSearchIndex)
 	if err != nil {
 		return nil, err
 	}
 	validIngredientDataServer := validingredients.ProvideValidIngredientDataServer(validingredientsService)
 	validPreparationDataManager := validpreparations.ProvideValidPreparationDataManager(database2)
 	validPreparationIDFetcher := httpserver.ProvideValidPreparationsServiceValidPreparationIDFetcher(logger)
-	validpreparationsService, err := validpreparations.ProvideValidPreparationsService(logger, validPreparationDataManager, validPreparationIDFetcher, encoderDecoder, unitCounterProvider, reporter)
+	validpreparationsSearchIndex, err := validpreparations.ProvideValidPreparationsServiceSearchIndex(searchSettings, indexManagerProvider, logger)
+	if err != nil {
+		return nil, err
+	}
+	validpreparationsService, err := validpreparations.ProvideValidPreparationsService(logger, validPreparationDataManager, validPreparationIDFetcher, encoderDecoder, unitCounterProvider, reporter, validpreparationsSearchIndex)
 	if err != nil {
 		return nil, err
 	}

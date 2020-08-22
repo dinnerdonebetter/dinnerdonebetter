@@ -11,6 +11,7 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/v1/config"
 	"gitlab.com/prixfixe/prixfixe/internal/v1/encoding"
 	"gitlab.com/prixfixe/prixfixe/internal/v1/metrics"
+	blevesearch "gitlab.com/prixfixe/prixfixe/internal/v1/search/bleve"
 	server "gitlab.com/prixfixe/prixfixe/server/v1"
 	httpserver "gitlab.com/prixfixe/prixfixe/server/v1/http"
 	authservice "gitlab.com/prixfixe/prixfixe/services/v1/auth"
@@ -56,6 +57,7 @@ func BuildServer(
 		config.Providers,
 		auth.Providers,
 		// server things,
+		blevesearch.Providers,
 		server.Providers,
 		encoding.Providers,
 		httpserver.Providers,

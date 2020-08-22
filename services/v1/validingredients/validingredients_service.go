@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"gitlab.com/prixfixe/prixfixe/internal/v1/config"
 	"gitlab.com/prixfixe/prixfixe/internal/v1/encoding"
 	"gitlab.com/prixfixe/prixfixe/internal/v1/metrics"
+	"gitlab.com/prixfixe/prixfixe/internal/v1/search"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
 
 	"gitlab.com/verygoodsoftwarenotvirus/logging/v1"
@@ -29,6 +31,9 @@ var (
 )
 
 type (
+	// SearchIndex is a type alias for dependency injection's sake
+	SearchIndex search.IndexManager
+
 	// Service handles to-do list valid ingredients
 	Service struct {
 		logger                     logging.Logger
@@ -37,6 +42,7 @@ type (
 		validIngredientCounter     metrics.UnitCounter
 		encoderDecoder             encoding.EncoderDecoder
 		reporter                   newsman.Reporter
+		search                     SearchIndex
 	}
 
 	// ValidIngredientIDFetcher is a function that fetches valid ingredient IDs.
@@ -51,6 +57,7 @@ func ProvideValidIngredientsService(
 	encoder encoding.EncoderDecoder,
 	validIngredientCounterProvider metrics.UnitCounterProvider,
 	reporter newsman.Reporter,
+	searchIndexManager SearchIndex,
 ) (*Service, error) {
 	validIngredientCounter, err := validIngredientCounterProvider(counterName, counterDescription)
 	if err != nil {
@@ -64,7 +71,25 @@ func ProvideValidIngredientsService(
 		encoderDecoder:             encoder,
 		validIngredientCounter:     validIngredientCounter,
 		reporter:                   reporter,
+		search:                     searchIndexManager,
 	}
 
 	return svc, nil
+}
+
+// ProvideValidIngredientsServiceSearchIndex provides a search index for the service
+func ProvideValidIngredientsServiceSearchIndex(
+	searchSettings config.SearchSettings,
+	indexProvider search.IndexManagerProvider,
+	logger logging.Logger,
+) (SearchIndex, error) {
+	logger.WithValue("index_path", searchSettings.ValidIngredientsIndexPath).Debug("setting up valid ingredients search index")
+
+	searchIndex, indexInitErr := indexProvider(searchSettings.ValidIngredientsIndexPath, models.ValidIngredientsSearchIndexName, logger)
+	if indexInitErr != nil {
+		logger.Error(indexInitErr, "setting up valid ingredients search index")
+		return nil, indexInitErr
+	}
+
+	return searchIndex, nil
 }

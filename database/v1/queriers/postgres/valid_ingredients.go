@@ -103,14 +103,14 @@ func (p *Postgres) scanValidIngredient(scan database.Scanner, includeCount bool)
 }
 
 // scanValidIngredients takes a logger and some database rows and turns them into a slice of valid ingredients.
-func (p *Postgres) scanValidIngredients(rows database.ResultIterator) ([]models.ValidIngredient, uint64, error) {
+func (p *Postgres) scanValidIngredients(rows database.ResultIterator, includeCount bool) ([]models.ValidIngredient, uint64, error) {
 	var (
 		list  []models.ValidIngredient
 		count uint64
 	)
 
 	for rows.Next() {
-		x, c, err := p.scanValidIngredient(rows, true)
+		x, c, err := p.scanValidIngredient(rows, includeCount)
 		if err != nil {
 			return nil, 0, err
 		}
@@ -262,7 +262,7 @@ func (p *Postgres) GetAllValidIngredients(ctx context.Context, resultChannel cha
 				return
 			}
 
-			validIngredients, _, err := p.scanValidIngredients(rows)
+			validIngredients, _, err := p.scanValidIngredients(rows, false)
 			if err != nil {
 				logger.Error(err, "scanning database rows")
 				return
@@ -307,7 +307,7 @@ func (p *Postgres) GetValidIngredients(ctx context.Context, filter *models.Query
 		return nil, buildError(err, "querying database for valid ingredients")
 	}
 
-	validIngredients, count, err := p.scanValidIngredients(rows)
+	validIngredients, count, err := p.scanValidIngredients(rows, true)
 	if err != nil {
 		return nil, fmt.Errorf("scanning response from database: %w", err)
 	}
@@ -364,7 +364,7 @@ func (p *Postgres) GetValidIngredientsWithIDs(ctx context.Context, limit uint8, 
 		return nil, buildError(err, "querying database for valid ingredients")
 	}
 
-	validIngredients, _, err := p.scanValidIngredients(rows)
+	validIngredients, _, err := p.scanValidIngredients(rows, false)
 	if err != nil {
 		return nil, fmt.Errorf("scanning response from database: %w", err)
 	}

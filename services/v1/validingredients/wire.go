@@ -13,6 +13,7 @@ var (
 		ProvideValidIngredientsService,
 		ProvideValidIngredientDataManager,
 		ProvideValidIngredientDataServer,
+		ProvideValidIngredientsServiceSearchIndex,
 	)
 )
 

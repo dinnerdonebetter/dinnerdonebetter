@@ -17,8 +17,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func buildMockRowsFromValidIngredients(validIngredients ...*models.ValidIngredient) *sqlmock.Rows {
-	includeCount := len(validIngredients) > 1
+func buildMockRowsFromValidIngredients(excludeCount bool, validIngredients ...*models.ValidIngredient) *sqlmock.Rows {
+	includeCount := len(validIngredients) > 1 && !excludeCount
 	columns := validIngredientsTableColumns
 
 	if includeCount {
@@ -102,7 +102,7 @@ func TestPostgres_ScanValidIngredients(T *testing.T) {
 		mockRows.On("Next").Return(false)
 		mockRows.On("Err").Return(errors.New("blah"))
 
-		_, _, err := p.scanValidIngredients(mockRows)
+		_, _, err := p.scanValidIngredients(mockRows, true)
 		assert.Error(t, err)
 	})
 
@@ -114,7 +114,7 @@ func TestPostgres_ScanValidIngredients(T *testing.T) {
 		mockRows.On("Err").Return(nil)
 		mockRows.On("Close").Return(errors.New("blah"))
 
-		_, _, err := p.scanValidIngredients(mockRows)
+		_, _, err := p.scanValidIngredients(mockRows, true)
 		assert.NoError(t, err)
 	})
 }
@@ -218,7 +218,8 @@ func TestPostgres_GetValidIngredient(T *testing.T) {
 			WithArgs(
 				exampleValidIngredient.ID,
 			).
-			WillReturnRows(buildMockRowsFromValidIngredients(exampleValidIngredient))
+			WillReturnRows(buildMockRowsFromValidIngredients(
+				false, exampleValidIngredient))
 
 		actual, err := p.GetValidIngredient(ctx, exampleValidIngredient.ID)
 		assert.NoError(t, err)
@@ -328,6 +329,7 @@ func TestPostgres_GetAllValidIngredients(T *testing.T) {
 			).
 			WillReturnRows(
 				buildMockRowsFromValidIngredients(
+					true,
 					&exampleValidIngredientList.ValidIngredients[0],
 					&exampleValidIngredientList.ValidIngredients[1],
 					&exampleValidIngredientList.ValidIngredients[2],
@@ -496,6 +498,7 @@ func TestPostgres_GetValidIngredients(T *testing.T) {
 		mockDB.ExpectQuery(formatQueryForSQLMock(expectedQuery)).
 			WillReturnRows(
 				buildMockRowsFromValidIngredients(
+					false,
 					&exampleValidIngredientList.ValidIngredients[0],
 					&exampleValidIngredientList.ValidIngredients[1],
 					&exampleValidIngredientList.ValidIngredients[2],
@@ -604,6 +607,7 @@ func TestPostgres_GetValidIngredientsWithIDs(T *testing.T) {
 			WithArgs().
 			WillReturnRows(
 				buildMockRowsFromValidIngredients(
+					true,
 					&exampleValidIngredientList.ValidIngredients[0],
 					&exampleValidIngredientList.ValidIngredients[1],
 					&exampleValidIngredientList.ValidIngredients[2],

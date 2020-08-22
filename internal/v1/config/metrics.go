@@ -18,7 +18,7 @@ import (
 
 const (
 	// MetricsNamespace is the namespace under which we register metrics.
-	MetricsNamespace = "todo_server"
+	MetricsNamespace = "prixfixe_server"
 
 	// MinimumRuntimeCollectionInterval is the smallest interval we can collect metrics at
 	// this value is used to guard against zero values.

@@ -11,6 +11,7 @@ require (
 	github.com/Masterminds/squirrel v1.3.0
 	github.com/alexedwards/scs/postgresstore v0.0.0-20200528164450-40c2a5f7eae8
 	github.com/alexedwards/scs/v2 v2.4.0
+	github.com/blevesearch/bleve v1.0.9
 	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc
 	github.com/brianvoe/gofakeit/v5 v5.4.3
 	github.com/emicklei/hazana v1.6.2
@@ -24,6 +25,7 @@ require (
 	github.com/moul/http2curl v1.0.0
 	github.com/pquerna/otp v1.2.0
 	github.com/spf13/afero v1.2.2
+	github.com/spf13/pflag v1.0.3
 	github.com/spf13/viper v1.6.3
 	github.com/stretchr/testify v1.5.1
 	github.com/tebeka/selenium v0.9.9

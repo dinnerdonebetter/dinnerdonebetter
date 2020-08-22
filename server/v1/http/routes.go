@@ -34,6 +34,7 @@ import (
 
 const (
 	root             = "/"
+	searchRoot       = "/search"
 	numericIDPattern = "/{%s:[0-9]+}"
 	oauth2IDPattern  = "/{%s:[0-9_\\-]+}"
 )
@@ -166,6 +167,7 @@ func (s *Server) setupRouter(frontendConfig config.FrontendSettings, metricsHand
 					singleValidInstrumentRouter.Head(root, s.validInstrumentsService.ExistenceHandler)
 				})
 				validInstrumentsRouter.Get(root, s.validInstrumentsService.ListHandler)
+				validInstrumentsRouter.Get(searchRoot, s.validInstrumentsService.SearchHandler)
 			})
 
 			// ValidIngredients
@@ -181,6 +183,7 @@ func (s *Server) setupRouter(frontendConfig config.FrontendSettings, metricsHand
 					singleValidIngredientRouter.Head(root, s.validIngredientsService.ExistenceHandler)
 				})
 				validIngredientsRouter.Get(root, s.validIngredientsService.ListHandler)
+				validIngredientsRouter.Get(searchRoot, s.validIngredientsService.SearchHandler)
 			})
 
 			// ValidPreparations
@@ -196,6 +199,7 @@ func (s *Server) setupRouter(frontendConfig config.FrontendSettings, metricsHand
 					singleValidPreparationRouter.Head(root, s.validPreparationsService.ExistenceHandler)
 				})
 				validPreparationsRouter.Get(root, s.validPreparationsService.ListHandler)
+				validPreparationsRouter.Get(searchRoot, s.validPreparationsService.SearchHandler)
 			})
 
 			// ValidIngredientPreparations

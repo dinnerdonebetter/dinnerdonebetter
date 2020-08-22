@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
@@ -72,6 +73,42 @@ func (c *V1Client) GetValidIngredient(ctx context.Context, validIngredientID uin
 	}
 
 	return validIngredient, nil
+}
+
+// BuildSearchValidIngredientsRequest builds an HTTP request for querying valid ingredients.
+func (c *V1Client) BuildSearchValidIngredientsRequest(ctx context.Context, query string, limit uint8) (*http.Request, error) {
+	ctx, span := tracing.StartSpan(ctx, "BuildSearchValidIngredientsRequest")
+	defer span.End()
+
+	params := url.Values{}
+	params.Set(models.SearchQueryKey, query)
+	params.Set(models.LimitQueryKey, strconv.FormatUint(uint64(limit), 10))
+
+	uri := c.BuildURL(
+		params,
+		validIngredientsBasePath,
+		"search",
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+}
+
+// SearchValidIngredients searches for a list of valid ingredients.
+func (c *V1Client) SearchValidIngredients(ctx context.Context, query string, limit uint8) (validIngredients []models.ValidIngredient, err error) {
+	ctx, span := tracing.StartSpan(ctx, "SearchValidIngredients")
+	defer span.End()
+
+	req, err := c.BuildSearchValidIngredientsRequest(ctx, query, limit)
+	if err != nil {
+		return nil, fmt.Errorf("building request: %w", err)
+	}
+
+	if retrieveErr := c.retrieve(ctx, req, &validIngredients); retrieveErr != nil {
+		return nil, retrieveErr
+	}
+
+	return validIngredients, nil
 }
 
 // BuildGetValidIngredientsRequest builds an HTTP request for fetching valid ingredients.
