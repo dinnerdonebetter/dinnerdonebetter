@@ -112,9 +112,9 @@ func developmentConfig(path string) error {
 	cfg.Set(dbProvider, postgres)
 	cfg.Set(dbDeets, "postgresql://prixfixe_dev:vfhfFBwoCoDWTY86bVYa9znk1xcp19IO@database.prixfixe.dev:25060/dev_prixfixe?sslmode=require")
 
-	cfg.Set(validInstrumentSearchIndexPath, "/etc/prixfixe_search_indices/valid_instruments.bleve")
-	cfg.Set(validIngredientSearchIndexPath, "/etc/prixfixe_search_indices/valid_ingredients.bleve")
-	cfg.Set(validPreparationSearchIndexPath, "/etc/prixfixe_search_indices/valid_preparations.bleve")
+	cfg.Set(validInstrumentSearchIndexPath, "/prixfixe/valid_instruments_index.bleve")
+	cfg.Set(validIngredientSearchIndexPath, "/prixfixe/valid_ingredients_index.bleve")
+	cfg.Set(validPreparationSearchIndexPath, "/prixfixe/valid_preparations_index.bleve")
 
 	if err := cfg.WriteConfigAs(path); err != nil {
 		return err
