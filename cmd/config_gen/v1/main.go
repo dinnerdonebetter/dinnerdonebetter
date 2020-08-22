@@ -38,14 +38,24 @@ const (
 	metricsDBCollectionInterval      = "metrics.database_metrics_collection_interval"
 	metricsRuntimeCollectionInterval = "metrics.runtime_metrics_collection_interval"
 	dbDebug                          = "database.debug"
-	dbCreateDummyUser                = "database.create_dummy_user"
 	dbProvider                       = "database.provider"
 	dbDeets                          = "database.connection_details"
-	postgres                         = "postgres"
+	dbCreateDummyUser                = "database.create_dummy_user"
+	validInstrumentSearchIndexPath   = "search.valid_instruments_index_path"
+	validIngredientSearchIndexPath   = "search.valid_ingredients_index_path"
+	validPreparationSearchIndexPath  = "search.valid_preparations_index_path"
 
 	// run modes
 	developmentEnv = "development"
 	testingEnv     = "testing"
+
+	// database providers
+	postgres = "postgres"
+
+	// search index paths
+	defaultValidInstrumentsSearchIndexPath  = "valid_instruments.bleve"
+	defaultValidIngredientsSearchIndexPath  = "valid_ingredients.bleve"
+	defaultValidPreparationsSearchIndexPath = "valid_preparations.bleve"
 )
 
 type configFunc func(filepath string) error
@@ -102,6 +112,10 @@ func developmentConfig(path string) error {
 	cfg.Set(dbProvider, postgres)
 	cfg.Set(dbDeets, "postgresql://prixfixe_dev:vfhfFBwoCoDWTY86bVYa9znk1xcp19IO@database.prixfixe.dev:25060/dev_prixfixe?sslmode=require")
 
+	cfg.Set(validInstrumentSearchIndexPath, "/prixfixe/valid_instruments_index.bleve")
+	cfg.Set(validIngredientSearchIndexPath, "/prixfixe/valid_ingredients_index.bleve")
+	cfg.Set(validPreparationSearchIndexPath, "/prixfixe/valid_preparations_index.bleve")
+
 	if err := cfg.WriteConfigAs(path); err != nil {
 		return err
 	}
@@ -134,6 +148,10 @@ func localConfig(path string) error {
 	cfg.Set(dbCreateDummyUser, true)
 	cfg.Set(dbDeets, postgresDBConnDetails)
 
+	cfg.Set(validInstrumentSearchIndexPath, defaultValidInstrumentsSearchIndexPath)
+	cfg.Set(validIngredientSearchIndexPath, defaultValidIngredientsSearchIndexPath)
+	cfg.Set(validPreparationSearchIndexPath, defaultValidPreparationsSearchIndexPath)
+
 	if err := cfg.WriteConfigAs(path); err != nil {
 		return err
 	}
@@ -160,6 +178,10 @@ func coverageConfig(filepath string) error {
 	cfg.Set(dbProvider, postgres)
 	cfg.Set(dbDeets, postgresDBConnDetails)
 
+	cfg.Set(validInstrumentSearchIndexPath, defaultValidInstrumentsSearchIndexPath)
+	cfg.Set(validIngredientSearchIndexPath, defaultValidIngredientsSearchIndexPath)
+	cfg.Set(validPreparationSearchIndexPath, defaultValidPreparationsSearchIndexPath)
+
 	return cfg.WriteConfigAs(filepath)
 }
 
@@ -185,6 +207,10 @@ func buildIntegrationTestForDBImplementation(dbprov, dbDetails string) configFun
 		cfg.Set(dbDebug, false)
 		cfg.Set(dbProvider, dbprov)
 		cfg.Set(dbDeets, dbDetails)
+
+		cfg.Set(validInstrumentSearchIndexPath, defaultValidInstrumentsSearchIndexPath)
+		cfg.Set(validIngredientSearchIndexPath, defaultValidIngredientsSearchIndexPath)
+		cfg.Set(validPreparationSearchIndexPath, defaultValidPreparationsSearchIndexPath)
 
 		return cfg.WriteConfigAs(filepath)
 	}
@@ -218,6 +244,10 @@ func frontendTestsConfig(filePath string) error {
 	cfg.Set(dbDebug, true)
 	cfg.Set(dbProvider, postgres)
 	cfg.Set(dbDeets, postgresDBConnDetails)
+
+	cfg.Set(validInstrumentSearchIndexPath, defaultValidInstrumentsSearchIndexPath)
+	cfg.Set(validIngredientSearchIndexPath, defaultValidIngredientsSearchIndexPath)
+	cfg.Set(validPreparationSearchIndexPath, defaultValidPreparationsSearchIndexPath)
 
 	if writeErr := cfg.WriteConfigAs(filePath); writeErr != nil {
 		return fmt.Errorf("error writing developmentEnv config: %w", writeErr)

@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"gitlab.com/prixfixe/prixfixe/internal/v1/config"
 	"gitlab.com/prixfixe/prixfixe/internal/v1/encoding"
 	"gitlab.com/prixfixe/prixfixe/internal/v1/metrics"
+	"gitlab.com/prixfixe/prixfixe/internal/v1/search"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
 
 	"gitlab.com/verygoodsoftwarenotvirus/logging/v1"
@@ -29,6 +31,9 @@ var (
 )
 
 type (
+	// SearchIndex is a type alias for dependency injection's sake
+	SearchIndex search.IndexManager
+
 	// Service handles to-do list valid instruments
 	Service struct {
 		logger                     logging.Logger
@@ -37,6 +42,7 @@ type (
 		validInstrumentCounter     metrics.UnitCounter
 		encoderDecoder             encoding.EncoderDecoder
 		reporter                   newsman.Reporter
+		search                     SearchIndex
 	}
 
 	// ValidInstrumentIDFetcher is a function that fetches valid instrument IDs.
@@ -51,6 +57,7 @@ func ProvideValidInstrumentsService(
 	encoder encoding.EncoderDecoder,
 	validInstrumentCounterProvider metrics.UnitCounterProvider,
 	reporter newsman.Reporter,
+	searchIndexManager SearchIndex,
 ) (*Service, error) {
 	validInstrumentCounter, err := validInstrumentCounterProvider(counterName, counterDescription)
 	if err != nil {
@@ -64,7 +71,25 @@ func ProvideValidInstrumentsService(
 		encoderDecoder:             encoder,
 		validInstrumentCounter:     validInstrumentCounter,
 		reporter:                   reporter,
+		search:                     searchIndexManager,
 	}
 
 	return svc, nil
+}
+
+// ProvideValidInstrumentsServiceSearchIndex provides a search index for the service
+func ProvideValidInstrumentsServiceSearchIndex(
+	searchSettings config.SearchSettings,
+	indexProvider search.IndexManagerProvider,
+	logger logging.Logger,
+) (SearchIndex, error) {
+	logger.WithValue("index_path", searchSettings.ValidInstrumentsIndexPath).Debug("setting up valid instruments search index")
+
+	searchIndex, indexInitErr := indexProvider(searchSettings.ValidInstrumentsIndexPath, models.ValidInstrumentsSearchIndexName, logger)
+	if indexInitErr != nil {
+		logger.Error(indexInitErr, "setting up valid instruments search index")
+		return nil, indexInitErr
+	}
+
+	return searchIndex, nil
 }

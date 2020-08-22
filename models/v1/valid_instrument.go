@@ -3,6 +3,13 @@ package models
 import (
 	"context"
 	"net/http"
+
+	"gitlab.com/prixfixe/prixfixe/internal/v1/search"
+)
+
+const (
+	// ValidInstrumentsSearchIndexName is the name of the index used to search through valid instruments.
+	ValidInstrumentsSearchIndexName search.IndexName = "valid_instruments"
 )
 
 type (
@@ -58,6 +65,7 @@ type (
 		CreationInputMiddleware(next http.Handler) http.Handler
 		UpdateInputMiddleware(next http.Handler) http.Handler
 
+		SearchHandler(res http.ResponseWriter, req *http.Request)
 		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
 		ExistenceHandler(res http.ResponseWriter, req *http.Request)

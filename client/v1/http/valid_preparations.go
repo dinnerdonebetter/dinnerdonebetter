@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
@@ -72,6 +73,42 @@ func (c *V1Client) GetValidPreparation(ctx context.Context, validPreparationID u
 	}
 
 	return validPreparation, nil
+}
+
+// BuildSearchValidPreparationsRequest builds an HTTP request for querying valid preparations.
+func (c *V1Client) BuildSearchValidPreparationsRequest(ctx context.Context, query string, limit uint8) (*http.Request, error) {
+	ctx, span := tracing.StartSpan(ctx, "BuildSearchValidPreparationsRequest")
+	defer span.End()
+
+	params := url.Values{}
+	params.Set(models.SearchQueryKey, query)
+	params.Set(models.LimitQueryKey, strconv.FormatUint(uint64(limit), 10))
+
+	uri := c.BuildURL(
+		params,
+		validPreparationsBasePath,
+		"search",
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+}
+
+// SearchValidPreparations searches for a list of valid preparations.
+func (c *V1Client) SearchValidPreparations(ctx context.Context, query string, limit uint8) (validPreparations []models.ValidPreparation, err error) {
+	ctx, span := tracing.StartSpan(ctx, "SearchValidPreparations")
+	defer span.End()
+
+	req, err := c.BuildSearchValidPreparationsRequest(ctx, query, limit)
+	if err != nil {
+		return nil, fmt.Errorf("building request: %w", err)
+	}
+
+	if retrieveErr := c.retrieve(ctx, req, &validPreparations); retrieveErr != nil {
+		return nil, retrieveErr
+	}
+
+	return validPreparations, nil
 }
 
 // BuildGetValidPreparationsRequest builds an HTTP request for fetching valid preparations.

@@ -2,13 +2,18 @@ package integration
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
+	client "gitlab.com/prixfixe/prixfixe/client/v1/http"
 	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
 	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
+	"gitlab.com/prixfixe/prixfixe/tests/v1/testutil"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"gitlab.com/verygoodsoftwarenotvirus/logging/v1/noop"
 )
 
 func checkValidPreparationEquality(t *testing.T, expected, actual *models.ValidPreparation) {
@@ -80,6 +85,144 @@ func TestValidPreparations(test *testing.T) {
 			// Clean up.
 			for _, createdValidPreparation := range actual.ValidPreparations {
 				err = prixfixeClient.ArchiveValidPreparation(ctx, createdValidPreparation.ID)
+				assert.NoError(t, err)
+			}
+		})
+	})
+
+	test.Run("Searching", func(T *testing.T) {
+		T.Run("should be able to be search for valid preparations", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create valid preparations.
+			exampleValidPreparation := fakemodels.BuildFakeValidPreparation()
+			var expected []*models.ValidPreparation
+			for i := 0; i < 5; i++ {
+				// Create valid preparation.
+				exampleValidPreparationInput := fakemodels.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+				exampleValidPreparationInput.Name = fmt.Sprintf("%s %d", exampleValidPreparationInput.Name, i)
+				createdValidPreparation, validPreparationCreationErr := prixfixeClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
+				checkValueAndError(t, createdValidPreparation, validPreparationCreationErr)
+
+				expected = append(expected, createdValidPreparation)
+			}
+
+			exampleLimit := uint8(20)
+
+			// Assert valid preparation list equality.
+			actual, err := prixfixeClient.SearchValidPreparations(ctx, exampleValidPreparation.Name, exampleLimit)
+			checkValueAndError(t, actual, err)
+			assert.True(
+				t,
+				len(expected) <= len(actual),
+				"expected results length %d to be <= %d",
+				len(expected),
+				len(actual),
+			)
+
+			// Clean up.
+			for _, createdValidPreparation := range expected {
+				err = prixfixeClient.ArchiveValidPreparation(ctx, createdValidPreparation.ID)
+				assert.NoError(t, err)
+			}
+		})
+
+		T.Run("should only receive your own valid preparations", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// create user and oauth2 client A.
+			userA, err := testutil.CreateObligatoryUser(urlToUse, debug)
+			require.NoError(t, err)
+
+			ca, err := testutil.CreateObligatoryClient(urlToUse, userA)
+			require.NoError(t, err)
+
+			clientA, err := client.NewClient(
+				ctx,
+				ca.ClientID,
+				ca.ClientSecret,
+				prixfixeClient.URL,
+				noop.ProvideNoopLogger(),
+				buildHTTPClient(),
+				ca.Scopes,
+				true,
+			)
+			checkValueAndError(test, clientA, err)
+
+			// Create valid preparations for user A.
+			exampleValidPreparationA := fakemodels.BuildFakeValidPreparation()
+			var createdForA []*models.ValidPreparation
+			for i := 0; i < 5; i++ {
+				// Create valid preparation.
+				exampleValidPreparationInputA := fakemodels.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparationA)
+				exampleValidPreparationInputA.Name = fmt.Sprintf("%s %d", exampleValidPreparationInputA.Name, i)
+
+				createdValidPreparation, validPreparationCreationErr := clientA.CreateValidPreparation(ctx, exampleValidPreparationInputA)
+				checkValueAndError(t, createdValidPreparation, validPreparationCreationErr)
+
+				createdForA = append(createdForA, createdValidPreparation)
+			}
+
+			exampleLimit := uint8(20)
+			query := exampleValidPreparationA.Name
+
+			// create user and oauth2 client B.
+			userB, err := testutil.CreateObligatoryUser(urlToUse, debug)
+			require.NoError(t, err)
+
+			cb, err := testutil.CreateObligatoryClient(urlToUse, userB)
+			require.NoError(t, err)
+
+			clientB, err := client.NewClient(
+				ctx,
+				cb.ClientID,
+				cb.ClientSecret,
+				prixfixeClient.URL,
+				noop.ProvideNoopLogger(),
+				buildHTTPClient(),
+				cb.Scopes,
+				true,
+			)
+			checkValueAndError(test, clientB, err)
+
+			// Create valid preparations for user B.
+			exampleValidPreparationB := fakemodels.BuildFakeValidPreparation()
+			exampleValidPreparationB.Name = reverse(exampleValidPreparationA.Name)
+			var createdForB []*models.ValidPreparation
+			for i := 0; i < 5; i++ {
+				// Create valid preparation.
+				exampleValidPreparationInputB := fakemodels.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparationB)
+				exampleValidPreparationInputB.Name = fmt.Sprintf("%s %d", exampleValidPreparationInputB.Name, i)
+
+				createdValidPreparation, validPreparationCreationErr := clientB.CreateValidPreparation(ctx, exampleValidPreparationInputB)
+				checkValueAndError(t, createdValidPreparation, validPreparationCreationErr)
+
+				createdForB = append(createdForB, createdValidPreparation)
+			}
+
+			expected := createdForA
+
+			// Assert valid preparation list equality.
+			actual, err := clientA.SearchValidPreparations(ctx, query, exampleLimit)
+			checkValueAndError(t, actual, err)
+			assert.True(
+				t,
+				len(expected) <= len(actual),
+				"expected results length %d to be <= %d",
+				len(expected),
+				len(actual),
+			)
+
+			// Clean up.
+			for _, createdValidPreparation := range createdForA {
+				err = clientA.ArchiveValidPreparation(ctx, createdValidPreparation.ID)
+				assert.NoError(t, err)
+			}
+
+			for _, createdValidPreparation := range createdForB {
+				err = clientB.ArchiveValidPreparation(ctx, createdValidPreparation.ID)
 				assert.NoError(t, err)
 			}
 		})

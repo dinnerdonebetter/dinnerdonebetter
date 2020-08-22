@@ -23,6 +23,11 @@
   runtime_metrics_collection_interval = "2s"
   tracing_provider = "jaeger"
 
+[search]
+  valid_ingredients_index_path = "valid_ingredients.bleve"
+  valid_instruments_index_path = "valid_instruments.bleve"
+  valid_preparations_index_path = "valid_preparations.bleve"
+
 [server]
   debug = true
   http_port = 8888

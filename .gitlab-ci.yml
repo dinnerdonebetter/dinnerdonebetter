@@ -1,7 +1,7 @@
 stages:
   - quality
   - frontend-testing
-  - integration-testing
+  - involved-testing
   - load-testing
   - publish
 
@@ -28,17 +28,6 @@ coverage:
   script:
     - apt-get update -y && apt-get install -y make git gcc musl-dev
     - make coverage
-
-build-dev-container:
-  stage: quality
-  image: docker:latest
-  services:
-    - docker:dind
-  script:
-    - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
-    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev --file environments/dev/Dockerfile .
-  except:
-    - dev
 
 # unit-tests:
 #   stage: quality
@@ -70,8 +59,19 @@ linting:
 #  script:
 #    - npm run build
 
+build-dev-container:
+  stage: involved-testing
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
+    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev --file environments/dev/Dockerfile .
+  except:
+    - dev
+
 integration-tests-postgres:
-  stage: integration-testing
+  stage: involved-testing
   image: docker:latest
   services:
     - docker:dind
@@ -84,7 +84,7 @@ integration-tests-postgres:
     - make integration-tests-postgres
 
 frontend-selenium-tests:
-  stage: integration-testing
+  stage: involved-testing
   image: docker:latest
   services:
     - docker:dind

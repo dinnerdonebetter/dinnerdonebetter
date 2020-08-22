@@ -2,13 +2,18 @@ package integration
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
+	client "gitlab.com/prixfixe/prixfixe/client/v1/http"
 	"gitlab.com/prixfixe/prixfixe/internal/v1/tracing"
 	models "gitlab.com/prixfixe/prixfixe/models/v1"
 	fakemodels "gitlab.com/prixfixe/prixfixe/models/v1/fake"
+	"gitlab.com/prixfixe/prixfixe/tests/v1/testutil"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"gitlab.com/verygoodsoftwarenotvirus/logging/v1/noop"
 )
 
 func checkValidIngredientEquality(t *testing.T, expected, actual *models.ValidIngredient) {
@@ -94,6 +99,144 @@ func TestValidIngredients(test *testing.T) {
 			// Clean up.
 			for _, createdValidIngredient := range actual.ValidIngredients {
 				err = prixfixeClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID)
+				assert.NoError(t, err)
+			}
+		})
+	})
+
+	test.Run("Searching", func(T *testing.T) {
+		T.Run("should be able to be search for valid ingredients", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// Create valid ingredients.
+			exampleValidIngredient := fakemodels.BuildFakeValidIngredient()
+			var expected []*models.ValidIngredient
+			for i := 0; i < 5; i++ {
+				// Create valid ingredient.
+				exampleValidIngredientInput := fakemodels.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
+				exampleValidIngredientInput.Name = fmt.Sprintf("%s %d", exampleValidIngredientInput.Name, i)
+				createdValidIngredient, validIngredientCreationErr := prixfixeClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
+				checkValueAndError(t, createdValidIngredient, validIngredientCreationErr)
+
+				expected = append(expected, createdValidIngredient)
+			}
+
+			exampleLimit := uint8(20)
+
+			// Assert valid ingredient list equality.
+			actual, err := prixfixeClient.SearchValidIngredients(ctx, exampleValidIngredient.Name, exampleLimit)
+			checkValueAndError(t, actual, err)
+			assert.True(
+				t,
+				len(expected) <= len(actual),
+				"expected results length %d to be <= %d",
+				len(expected),
+				len(actual),
+			)
+
+			// Clean up.
+			for _, createdValidIngredient := range expected {
+				err = prixfixeClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID)
+				assert.NoError(t, err)
+			}
+		})
+
+		T.Run("should only receive your own valid ingredients", func(t *testing.T) {
+			ctx, span := tracing.StartSpan(context.Background(), t.Name())
+			defer span.End()
+
+			// create user and oauth2 client A.
+			userA, err := testutil.CreateObligatoryUser(urlToUse, debug)
+			require.NoError(t, err)
+
+			ca, err := testutil.CreateObligatoryClient(urlToUse, userA)
+			require.NoError(t, err)
+
+			clientA, err := client.NewClient(
+				ctx,
+				ca.ClientID,
+				ca.ClientSecret,
+				prixfixeClient.URL,
+				noop.ProvideNoopLogger(),
+				buildHTTPClient(),
+				ca.Scopes,
+				true,
+			)
+			checkValueAndError(test, clientA, err)
+
+			// Create valid ingredients for user A.
+			exampleValidIngredientA := fakemodels.BuildFakeValidIngredient()
+			var createdForA []*models.ValidIngredient
+			for i := 0; i < 5; i++ {
+				// Create valid ingredient.
+				exampleValidIngredientInputA := fakemodels.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredientA)
+				exampleValidIngredientInputA.Name = fmt.Sprintf("%s %d", exampleValidIngredientInputA.Name, i)
+
+				createdValidIngredient, validIngredientCreationErr := clientA.CreateValidIngredient(ctx, exampleValidIngredientInputA)
+				checkValueAndError(t, createdValidIngredient, validIngredientCreationErr)
+
+				createdForA = append(createdForA, createdValidIngredient)
+			}
+
+			exampleLimit := uint8(20)
+			query := exampleValidIngredientA.Name
+
+			// create user and oauth2 client B.
+			userB, err := testutil.CreateObligatoryUser(urlToUse, debug)
+			require.NoError(t, err)
+
+			cb, err := testutil.CreateObligatoryClient(urlToUse, userB)
+			require.NoError(t, err)
+
+			clientB, err := client.NewClient(
+				ctx,
+				cb.ClientID,
+				cb.ClientSecret,
+				prixfixeClient.URL,
+				noop.ProvideNoopLogger(),
+				buildHTTPClient(),
+				cb.Scopes,
+				true,
+			)
+			checkValueAndError(test, clientB, err)
+
+			// Create valid ingredients for user B.
+			exampleValidIngredientB := fakemodels.BuildFakeValidIngredient()
+			exampleValidIngredientB.Name = reverse(exampleValidIngredientA.Name)
+			var createdForB []*models.ValidIngredient
+			for i := 0; i < 5; i++ {
+				// Create valid ingredient.
+				exampleValidIngredientInputB := fakemodels.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredientB)
+				exampleValidIngredientInputB.Name = fmt.Sprintf("%s %d", exampleValidIngredientInputB.Name, i)
+
+				createdValidIngredient, validIngredientCreationErr := clientB.CreateValidIngredient(ctx, exampleValidIngredientInputB)
+				checkValueAndError(t, createdValidIngredient, validIngredientCreationErr)
+
+				createdForB = append(createdForB, createdValidIngredient)
+			}
+
+			expected := createdForA
+
+			// Assert valid ingredient list equality.
+			actual, err := clientA.SearchValidIngredients(ctx, query, exampleLimit)
+			checkValueAndError(t, actual, err)
+			assert.True(
+				t,
+				len(expected) <= len(actual),
+				"expected results length %d to be <= %d",
+				len(expected),
+				len(actual),
+			)
+
+			// Clean up.
+			for _, createdValidIngredient := range createdForA {
+				err = clientA.ArchiveValidIngredient(ctx, createdValidIngredient.ID)
+				assert.NoError(t, err)
+			}
+
+			for _, createdValidIngredient := range createdForB {
+				err = clientB.ArchiveValidIngredient(ctx, createdValidIngredient.ID)
 				assert.NoError(t, err)
 			}
 		})

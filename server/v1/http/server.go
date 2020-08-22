@@ -24,7 +24,7 @@ import (
 
 const (
 	maxTimeout      = 120 * time.Second
-	serverNamespace = "todo-service"
+	serverNamespace = "prixfixe-service"
 )
 
 type (

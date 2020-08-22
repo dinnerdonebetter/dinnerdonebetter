@@ -27,9 +27,10 @@ USER appuser
 
 ENV CONFIGURATION_FILEPATH=/etc/prixfixe/config.toml
 
+WORKDIR /prixfixe
+
 COPY environments/dev/config.toml /etc/prixfixe/config.toml
 COPY --from=build-stage /prixfixe /prixfixe
 COPY --from=frontend-build-stage /app/dist /frontend
-
 
 ENTRYPOINT ["/prixfixe"]

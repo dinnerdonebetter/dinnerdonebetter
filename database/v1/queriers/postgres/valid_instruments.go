@@ -61,14 +61,14 @@ func (p *Postgres) scanValidInstrument(scan database.Scanner, includeCount bool)
 }
 
 // scanValidInstruments takes a logger and some database rows and turns them into a slice of valid instruments.
-func (p *Postgres) scanValidInstruments(rows database.ResultIterator) ([]models.ValidInstrument, uint64, error) {
+func (p *Postgres) scanValidInstruments(rows database.ResultIterator, includeCount bool) ([]models.ValidInstrument, uint64, error) {
 	var (
 		list  []models.ValidInstrument
 		count uint64
 	)
 
 	for rows.Next() {
-		x, c, err := p.scanValidInstrument(rows, true)
+		x, c, err := p.scanValidInstrument(rows, includeCount)
 		if err != nil {
 			return nil, 0, err
 		}
@@ -220,7 +220,7 @@ func (p *Postgres) GetAllValidInstruments(ctx context.Context, resultChannel cha
 				return
 			}
 
-			validInstruments, _, err := p.scanValidInstruments(rows)
+			validInstruments, _, err := p.scanValidInstruments(rows, false)
 			if err != nil {
 				logger.Error(err, "scanning database rows")
 				return
@@ -265,7 +265,7 @@ func (p *Postgres) GetValidInstruments(ctx context.Context, filter *models.Query
 		return nil, buildError(err, "querying database for valid instruments")
 	}
 
-	validInstruments, count, err := p.scanValidInstruments(rows)
+	validInstruments, count, err := p.scanValidInstruments(rows, true)
 	if err != nil {
 		return nil, fmt.Errorf("scanning response from database: %w", err)
 	}
@@ -322,7 +322,7 @@ func (p *Postgres) GetValidInstrumentsWithIDs(ctx context.Context, limit uint8, 
 		return nil, buildError(err, "querying database for valid instruments")
 	}
 
-	validInstruments, _, err := p.scanValidInstruments(rows)
+	validInstruments, _, err := p.scanValidInstruments(rows, false)
 	if err != nil {
 		return nil, fmt.Errorf("scanning response from database: %w", err)
 	}

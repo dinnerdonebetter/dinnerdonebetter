@@ -13,6 +13,7 @@ var (
 		ProvideValidPreparationsService,
 		ProvideValidPreparationDataManager,
 		ProvideValidPreparationDataServer,
+		ProvideValidPreparationsServiceSearchIndex,
 	)
 )
 

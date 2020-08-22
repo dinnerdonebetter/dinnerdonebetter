@@ -44,6 +44,42 @@ func (s *Service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
+// SearchHandler is our search route.
+func (s *Service) SearchHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := tracing.StartSpan(req.Context(), "SearchHandler")
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+
+	// we only parse the filter here because it will contain the limit
+	filter := models.ExtractQueryFilter(req)
+	query := req.URL.Query().Get(models.SearchQueryKey)
+	logger = logger.WithValue("search_query", query)
+
+	relevantIDs, searchErr := s.search.Search(ctx, query)
+	if searchErr != nil {
+		logger.Error(searchErr, "error encountered executing search query")
+		res.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	// fetch valid instruments from database.
+	validInstruments, err := s.validInstrumentDataManager.GetValidInstrumentsWithIDs(ctx, filter.Limit, relevantIDs)
+	if err == sql.ErrNoRows {
+		// in the event no rows exist return an empty list.
+		validInstruments = []models.ValidInstrument{}
+	} else if err != nil {
+		logger.Error(err, "error encountered fetching valid instruments")
+		res.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	// encode our response and peace.
+	if err = s.encoderDecoder.EncodeResponse(res, validInstruments); err != nil {
+		logger.Error(err, "encoding response")
+	}
+}
+
 // CreateHandler is our valid instrument creation route.
 func (s *Service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := tracing.StartSpan(req.Context(), "CreateHandler")
@@ -77,6 +113,9 @@ func (s *Service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		Topics:    []string{topicName},
 		EventType: string(models.Create),
 	})
+	if searchIndexErr := s.search.Index(ctx, x.ID, x); searchIndexErr != nil {
+		logger.Error(searchIndexErr, "adding valid instrument to search index")
+	}
 
 	// encode our response and peace.
 	res.WriteHeader(http.StatusCreated)
@@ -188,6 +227,9 @@ func (s *Service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		Topics:    []string{topicName},
 		EventType: string(models.Update),
 	})
+	if searchIndexErr := s.search.Index(ctx, x.ID, x); searchIndexErr != nil {
+		logger.Error(searchIndexErr, "updating valid instrument in search index")
+	}
 
 	// encode our response and peace.
 	if err = s.encoderDecoder.EncodeResponse(res, x); err != nil {
@@ -226,6 +268,9 @@ func (s *Service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		Data:      &models.ValidInstrument{ID: validInstrumentID},
 		Topics:    []string{topicName},
 	})
+	if indexDeleteErr := s.search.Delete(ctx, validInstrumentID); indexDeleteErr != nil {
+		logger.Error(indexDeleteErr, "error removing valid instrument from search index")
+	}
 
 	// encode our response and peace.
 	res.WriteHeader(http.StatusNoContent)

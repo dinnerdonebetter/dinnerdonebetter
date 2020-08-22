@@ -27,6 +27,11 @@ func (m *ValidInstrumentDataServer) UpdateInputMiddleware(next http.Handler) htt
 	return args.Get(0).(http.Handler)
 }
 
+// SearchHandler implements our interface requirements.
+func (m *ValidInstrumentDataServer) SearchHandler(res http.ResponseWriter, req *http.Request) {
+	m.Called(res, req)
+}
+
 // ListHandler implements our interface requirements.
 func (m *ValidInstrumentDataServer) ListHandler(res http.ResponseWriter, req *http.Request) {
 	m.Called(res, req)

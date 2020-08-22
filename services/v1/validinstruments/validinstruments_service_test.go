@@ -8,6 +8,7 @@ import (
 	mockencoding "gitlab.com/prixfixe/prixfixe/internal/v1/encoding/mock"
 	"gitlab.com/prixfixe/prixfixe/internal/v1/metrics"
 	mockmetrics "gitlab.com/prixfixe/prixfixe/internal/v1/metrics/mock"
+	mocksearch "gitlab.com/prixfixe/prixfixe/internal/v1/search/mock"
 	mockmodels "gitlab.com/prixfixe/prixfixe/models/v1/mock"
 
 	"github.com/stretchr/testify/assert"
@@ -22,6 +23,7 @@ func buildTestService() *Service {
 		validInstrumentIDFetcher:   func(req *http.Request) uint64 { return 0 },
 		encoderDecoder:             &mockencoding.EncoderDecoder{},
 		reporter:                   nil,
+		search:                     &mocksearch.IndexManager{},
 	}
 }
 
@@ -40,6 +42,7 @@ func TestProvideValidInstrumentsService(T *testing.T) {
 			&mockencoding.EncoderDecoder{},
 			ucp,
 			nil,
+			&mocksearch.IndexManager{},
 		)
 
 		assert.NotNil(t, s)
@@ -58,6 +61,7 @@ func TestProvideValidInstrumentsService(T *testing.T) {
 			&mockencoding.EncoderDecoder{},
 			ucp,
 			nil,
+			&mocksearch.IndexManager{},
 		)
 
 		assert.Nil(t, s)

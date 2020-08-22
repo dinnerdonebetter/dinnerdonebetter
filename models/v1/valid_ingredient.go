@@ -3,6 +3,13 @@ package models
 import (
 	"context"
 	"net/http"
+
+	"gitlab.com/prixfixe/prixfixe/internal/v1/search"
+)
+
+const (
+	// ValidIngredientsSearchIndexName is the name of the index used to search through valid ingredients.
+	ValidIngredientsSearchIndexName search.IndexName = "valid_ingredients"
 )
 
 type (
@@ -100,6 +107,7 @@ type (
 		CreationInputMiddleware(next http.Handler) http.Handler
 		UpdateInputMiddleware(next http.Handler) http.Handler
 
+		SearchHandler(res http.ResponseWriter, req *http.Request)
 		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
 		ExistenceHandler(res http.ResponseWriter, req *http.Request)

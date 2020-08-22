@@ -35,3 +35,12 @@ services:
       - source: /home/sysadmin/prixfixe.config.toml
         target: /etc/prixfixe.config.toml
         type: bind
+      - source: home/sysadmin/search/valid_ingredients.bleve
+        target: /etc/prixfixe_search_indices/valid_ingredients.bleve
+        type: bind
+      - source: home/sysadmin/search/valid_instruments.bleve
+        target: /etc/prixfixe_search_indices/valid_instruments.bleve
+        type: bind
+      - source: home/sysadmin/search/valid_preparations.bleve
+        target: /etc/prixfixe_search_indices/valid_preparations.bleve
+        type: bind
