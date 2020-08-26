@@ -23,9 +23,9 @@
   runtime_metrics_collection_interval = "2s"
 
 [search]
-  valid_ingredients_index_path = "/prixfixe/valid_ingredients_index.bleve"
-  valid_instruments_index_path = "/prixfixe/valid_instruments_index.bleve"
-  valid_preparations_index_path = "/prixfixe/valid_preparations_index.bleve"
+  valid_ingredients_index_path = "/etc/prixfixe_search_indices/valid_ingredients_index.bleve"
+  valid_instruments_index_path = "/etc/prixfixe_search_indices/valid_instruments_index.bleve"
+  valid_preparations_index_path = "/etc/prixfixe_search_indices/valid_preparations_index.bleve"
 
 [server]
   debug = true

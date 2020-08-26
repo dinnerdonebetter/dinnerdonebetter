@@ -59,17 +59,6 @@ linting:
 #  script:
 #    - npm run build
 
-build-dev-container:
-  stage: involved-testing
-  image: docker:latest
-  services:
-    - docker:dind
-  script:
-    - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
-    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev_ci_check --file environments/dev/Dockerfile .
-  except:
-    - dev
-
 integration-tests-postgres:
   stage: involved-testing
   image: docker:latest
@@ -114,7 +103,18 @@ weekly-load-tests-postgres:on-schedule:
   only:
     - schedules
 
-# miscellaneous
+# containers
+
+build-dev-container:
+  stage: involved-testing
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
+    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev_ci_check --file environments/dev/index_init.Dockerfile .
+  except:
+    - dev
 
 build-and-publish-dev-container:
   stage: publish
@@ -123,7 +123,19 @@ build-and-publish-dev-container:
     - docker:dind
   script:
     - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
-    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev --file environments/dev/Dockerfile .
+    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev --file environments/dev/index_init.Dockerfile .
     - docker push registry.gitlab.com/prixfixe/prixfixe:dev
   only:
     - dev
+
+build-and-publish-index-initializer:
+  stage: publish
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
+    - docker build --tag registry.gitlab.com/prixfixe/index_init:latest --file environments/tooling/index_init.Dockerfile .
+    - docker push registry.gitlab.com/prixfixe/prixfixe:dev
+#  only:
+#    - dev
