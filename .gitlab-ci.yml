@@ -112,7 +112,7 @@ build-dev-container:
     - docker:dind
   script:
     - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
-    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev_ci_check --file environments/dev/index_init.Dockerfile .
+    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev_ci_check --file environments/dev/Dockerfile .
   except:
     - dev
 
@@ -123,7 +123,7 @@ build-and-publish-dev-container:
     - docker:dind
   script:
     - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
-    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev --file environments/dev/index_init.Dockerfile .
+    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev --file environments/dev/Dockerfile .
     - docker push registry.gitlab.com/prixfixe/prixfixe:dev
   only:
     - dev
