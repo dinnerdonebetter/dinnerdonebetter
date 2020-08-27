@@ -136,6 +136,6 @@ build-and-publish-index-initializer:
   script:
     - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
     - docker build --tag registry.gitlab.com/prixfixe/index_init:latest --file environments/tooling/index_init.Dockerfile .
-    - docker push registry.gitlab.com/prixfixe/prixfixe:dev
+    - docker push registry.gitlab.com/prixfixe/prixfixe/index_init:dev
 #  only:
 #    - dev
