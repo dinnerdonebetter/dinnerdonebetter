@@ -21,16 +21,12 @@ RUN npm install && npm audit fix && npm run build
 # final stage
 FROM debian:stable
 
-RUN groupadd -g 999 appuser && \
-    useradd -r -u 999 -g appuser appuser
-USER appuser
-
 ENV CONFIGURATION_FILEPATH=/etc/prixfixe/config.toml
-
-WORKDIR /prixfixe
 
 COPY environments/dev/config.toml /etc/prixfixe/config.toml
 COPY --from=build-stage /prixfixe /prixfixe
 COPY --from=frontend-build-stage /app/dist /frontend
+
+RUN mkdir -p /etc/prixfixe_search_indices
 
 ENTRYPOINT ["/prixfixe"]
