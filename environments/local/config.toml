@@ -27,9 +27,9 @@
   tracing_provider = "jaeger"
 
 [search]
-  valid_ingredients_index_path = "valid_ingredients.bleve"
-  valid_instruments_index_path = "valid_instruments.bleve"
-  valid_preparations_index_path = "valid_preparations.bleve"
+  valid_ingredients_index_path = "/search_indices/valid_ingredients.bleve"
+  valid_instruments_index_path = "/search_indices/valid_instruments.bleve"
+  valid_preparations_index_path = "/search_indices/valid_preparations.bleve"
 
 [server]
   debug = true

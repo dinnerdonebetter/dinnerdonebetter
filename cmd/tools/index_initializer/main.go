@@ -31,9 +31,9 @@ var (
 	deadline time.Duration
 
 	validTypeNames = map[string]struct{}{
-		"valid_instrument":  {},
-		"valid_ingredient":  {},
-		"valid_preparation": {},
+		"valid_instruments":  {},
+		"valid_ingredients":  {},
+		"valid_preparations": {},
 	}
 
 	validDatabaseTypes = map[string]struct{}{
@@ -64,16 +64,12 @@ func main() {
 
 	if indexOutputPath == "" {
 		log.Fatalf("No output path specified, please provide one via the --%s flag", outputPathVerboseFlagName)
-		return
-	} else if _, ok := validTypeNames[typeName]; !ok {
-		log.Fatalf("Invalid type name %q specified, one of [ 'valid_instrument', 'valid_ingredient', 'valid_preparation' ] expected", typeName)
-		return
 	} else if dbConnectionDetails == "" {
 		log.Fatalf("No database connection details %q specified, please provide one via the --%s flag", dbConnectionDetails, dbConnectionVerboseFlagName)
-		return
+	} else if _, ok := validTypeNames[typeName]; !ok {
+		log.Fatalf("Invalid type name %q specified, one of [ 'valid_instrument', 'valid_ingredient', 'valid_preparation' ] expected", typeName)
 	} else if _, ok := validDatabaseTypes[databaseType]; !ok {
 		log.Fatalf("Invalid database type %q specified, please provide one via the --%s flag", databaseType, dbTypeVerboseFlagName)
-		return
 	}
 
 	im, err := bleve.NewBleveIndexManager(search.IndexPath(indexOutputPath), search.IndexName(typeName), logger)
@@ -100,13 +96,13 @@ func main() {
 
 	// establish the database client.
 	logger.Debug("setting up database client")
-	dbClient, err := cfg.ProvideDatabaseClient(ctx, logger, rawDB)
+	dbClient, err := cfg.ProvideDatabaseClient(ctx, logger, rawDB, false)
 	if err != nil {
 		log.Fatalf("error initializing database client: %v", err)
 	}
 
 	switch typeName {
-	case "valid_instrument":
+	case "valid_instruments":
 		outputChan := make(chan []models.ValidInstrument)
 		if queryErr := dbClient.GetAllValidInstruments(ctx, outputChan); queryErr != nil {
 			log.Fatalf("error fetching valid instruments from database: %v", err)
@@ -125,7 +121,7 @@ func main() {
 				return
 			}
 		}
-	case "valid_ingredient":
+	case "valid_ingredients":
 		outputChan := make(chan []models.ValidIngredient)
 		if queryErr := dbClient.GetAllValidIngredients(ctx, outputChan); queryErr != nil {
 			log.Fatalf("error fetching valid ingredients from database: %v", err)
@@ -144,7 +140,7 @@ func main() {
 				return
 			}
 		}
-	case "valid_preparation":
+	case "valid_preparations":
 		outputChan := make(chan []models.ValidPreparation)
 		if queryErr := dbClient.GetAllValidPreparations(ctx, outputChan); queryErr != nil {
 			log.Fatalf("error fetching valid preparations from database: %v", err)

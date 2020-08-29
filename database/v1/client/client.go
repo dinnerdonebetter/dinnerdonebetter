@@ -50,7 +50,8 @@ func ProvideDatabaseClient(
 	db *sql.DB,
 	querier database.DataManager,
 	debug,
-	createDummyUser bool,
+	createDummyUser,
+	migrate bool,
 ) (database.DataManager, error) {
 	c := &Client{
 		db:      db,
@@ -63,11 +64,13 @@ func ProvideDatabaseClient(
 		c.logger.SetLevel(logging.DebugLevel)
 	}
 
-	c.logger.Debug("migrating querier")
-	if err := c.querier.Migrate(ctx, createDummyUser); err != nil {
-		return nil, err
+	if migrate {
+		c.logger.Debug("migrating querier")
+		if err := c.querier.Migrate(ctx, createDummyUser); err != nil {
+			return nil, err
+		}
+		c.logger.Debug("querier migrated!")
 	}
-	c.logger.Debug("querier migrated!")
 
 	return c, nil
 }

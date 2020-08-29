@@ -110,6 +110,7 @@ func developmentConfig(path string) error {
 	// exampleMetricsConfiguration
 
 	cfg.Set(dbProvider, postgres)
+	cfg.Set(dbCreateDummyUser, false)
 	cfg.Set(dbDeets, "postgresql://prixfixe_dev:vfhfFBwoCoDWTY86bVYa9znk1xcp19IO@database.prixfixe.dev:25060/dev_prixfixe?sslmode=require")
 
 	cfg.Set(validInstrumentSearchIndexPath, "/etc/prixfixe/valid_instruments_index.bleve")
