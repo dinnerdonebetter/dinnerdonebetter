@@ -32,7 +32,7 @@ func (cfg *ServerConfig) ProvideDatabaseConnection(logger logging.Logger) (*sql.
 }
 
 // ProvideDatabaseClient provides a database implementation dependent on the configuration.
-func (cfg *ServerConfig) ProvideDatabaseClient(ctx context.Context, logger logging.Logger, rawDB *sql.DB) (database.DataManager, error) {
+func (cfg *ServerConfig) ProvideDatabaseClient(ctx context.Context, logger logging.Logger, rawDB *sql.DB, migrate bool) (database.DataManager, error) {
 	if rawDB == nil {
 		return nil, errors.New("nil DB connection provided")
 	}
@@ -50,7 +50,7 @@ func (cfg *ServerConfig) ProvideDatabaseClient(ctx context.Context, logger loggi
 		return nil, fmt.Errorf("invalid database type selected: %q", cfg.Database.Provider)
 	}
 
-	return dbclient.ProvideDatabaseClient(ctx, logger, rawDB, dbc, debug, cfg.Database.CreateDummyUser)
+	return dbclient.ProvideDatabaseClient(ctx, logger, rawDB, dbc, debug, cfg.Database.CreateDummyUser, migrate)
 }
 
 // ProvideSessionManager provides a session manager based on some settings.

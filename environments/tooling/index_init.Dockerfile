@@ -12,4 +12,4 @@ FROM debian:stable
 
 COPY --from=build-stage /index_initializer /index_initializer
 
-CMD ["/index_initializer"]
+ENTRYPOINT ["/index_initializer"]

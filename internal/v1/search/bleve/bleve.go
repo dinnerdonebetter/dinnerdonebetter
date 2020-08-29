@@ -37,6 +37,7 @@ func NewBleveIndexManager(path search.IndexPath, name search.IndexName, logger l
 	preexistingIndex, openIndexErr := bleve.Open(string(path))
 	switch openIndexErr {
 	case nil:
+		logger.Info("using existing index")
 		index = preexistingIndex
 	case bleve.ErrorIndexPathDoesNotExist:
 		logger.WithValue("path", path).Debug("tried to open existing index, but didn't find it")
@@ -52,19 +53,19 @@ func NewBleveIndexManager(path search.IndexPath, name search.IndexName, logger l
 		case models.ValidInstrumentsSearchIndexName:
 			index, newIndexErr = bleve.New(string(path), buildValidInstrumentMapping())
 			if newIndexErr != nil {
-				logger.Error(newIndexErr, "failed to create new index")
+				logger.Error(newIndexErr, "failed to create new valid instruments index")
 				return nil, newIndexErr
 			}
 		case models.ValidIngredientsSearchIndexName:
 			index, newIndexErr = bleve.New(string(path), buildValidIngredientMapping())
 			if newIndexErr != nil {
-				logger.Error(newIndexErr, "failed to create new index")
+				logger.Error(newIndexErr, "failed to create new valid ingredients index")
 				return nil, newIndexErr
 			}
 		case models.ValidPreparationsSearchIndexName:
 			index, newIndexErr = bleve.New(string(path), buildValidPreparationMapping())
 			if newIndexErr != nil {
-				logger.Error(newIndexErr, "failed to create new index")
+				logger.Error(newIndexErr, "failed to create new valid preparations index")
 				return nil, newIndexErr
 			}
 		default:

@@ -87,6 +87,7 @@ func TestProvideDatabaseClient(T *testing.T) {
 			mockDB,
 			true,
 			false,
+			true,
 		)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
@@ -108,6 +109,7 @@ func TestProvideDatabaseClient(T *testing.T) {
 			mockDB,
 			true,
 			false,
+			true,
 		)
 		assert.Nil(t, x)
 		assert.Error(t, actual)

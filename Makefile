@@ -103,11 +103,6 @@ frontend-tests:
 	--always-recreate-deps \
 	--abort-on-container-exit
 
-## DELETE ME
-
-.PHONY: gamut
-gamut: revendor rewire config_files quicktest lint integration-tests-postgres integration-tests-sqlite integration-tests-mariadb frontend-tests
-
 ## Integration tests
 
 .PHONY: lintegration-tests # this is just a handy lil' helper I use sometimes
@@ -172,3 +167,12 @@ dev: vendor
 .PHONY: show_tree
 show_tree:
 	tree -d -I vendor
+
+## containers
+
+.PHONY: test_index_init_container
+test_index_init_container:
+	docker build --tag registry.gitlab.com/prixfixe/prixfixe:index_init --file environments/tooling/index_init.Dockerfile .
+	docker push registry.gitlab.com/prixfixe/prixfixe:index_init
+	# docker run --volume /home/sysadmin/search_indices:/output registry.gitlab.com/prixfixe/prixfixe:index_init /index_initializer --output /output/$1.bleve --type=$1 --db_connection="postgresql://prixfixe_dev:vfhfFBwoCoDWTY86bVYa9znk1xcp19IO@database.prixfixe.dev:25060/dev_prixfixe?sslmode=require" --db_type=postgres --deadline=30s
+
