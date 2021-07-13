@@ -107,7 +107,7 @@ func (s *TestSuite) checkTestRunsForPositiveResultsThatOccurredTooQuickly(stats 
 var _ suite.WithStats = (*TestSuite)(nil)
 
 func (s *TestSuite) HandleStats(_ string, stats *suite.SuiteInformation) {
-	const totalExpectedTestCount = 1 // figure this number out if you so wish
+	const totalExpectedTestCount = 180 // figure this number out if you so wish
 
 	s.checkTestRunsForPositiveResultsThatOccurredTooQuickly(stats)
 	testutils.AssertAppropriateNumberOfTestsRan(s.T(), totalExpectedTestCount, stats)

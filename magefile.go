@@ -139,7 +139,7 @@ func freshArtifactsDir() error {
 
 func validateDBProvider(dbProvider string) error {
 	switch strings.TrimSpace(strings.ToLower(dbProvider)) {
-	case sqlite, mariadb, postgres:
+	case postgres:
 		return nil
 	default:
 		return fmt.Errorf("invalid database provider: %q", dbProvider)
@@ -702,9 +702,7 @@ func Quicktest() error {
 }
 
 const (
-	mariadb  = "mariadb"
 	postgres = "postgres"
-	sqlite   = "sqlite"
 )
 
 // Run a specific integration test.
@@ -728,13 +726,7 @@ func IntegrationTest(dbProvider string) error {
 
 // Run integration tests.
 func IntegrationTests() error {
-	if err := IntegrationTest(sqlite); err != nil {
-		return err
-	}
 	if err := IntegrationTest(postgres); err != nil {
-		return err
-	}
-	if err := IntegrationTest(mariadb); err != nil {
 		return err
 	}
 
@@ -764,23 +756,6 @@ func LoadTest(dbProvider string) error {
 	}
 
 	if err := runCompose("environments/testing/compose_files/load_tests/load-tests-base.yaml", fmt.Sprintf("environments/testing/compose_files/load_tests/load-tests-%s.yaml", dbProvider)); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// Run load tests.
-func LoadTests() error {
-	if err := LoadTest(sqlite); err != nil {
-		return err
-	}
-
-	if err := LoadTest(postgres); err != nil {
-		return err
-	}
-
-	if err := LoadTest(mariadb); err != nil {
 		return err
 	}
 

@@ -327,7 +327,7 @@ issues:
         - lll
         - mnd
 
-    - path: pkg/types/*.go # the update funcs can have very high cyclomatic complexities
+    - path: pkg/types/.*.go # the update funcs can have very high cyclomatic complexities
       linters:
         - gocognit
         - cyclop
