@@ -1,0 +1,47 @@
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with "go test -c"
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# pretty good IDEs
+.idea
+.vscode/
+
+# Vim
+*.swp
+
+# Sqlite databases
+*.db
+
+# OSX
+.DS_Store
+
+# Go
+vendor
+mage_output_file.go
+
+# Python
+.env
+.mypy_cache
+__pycache__
+artifacts
+
+# frontend things
+internal/services/frontend/_vendor_/*
+
+# Log files
+*.log
+
+# go test profiles
+*.coverprofile
+*.profile
+
+# bleve indices
+*.bleve

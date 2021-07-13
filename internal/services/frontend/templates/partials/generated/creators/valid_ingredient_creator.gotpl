@@ -1,0 +1,137 @@
+<div id="content" class="">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">New ValidIngredient</h1>
+    </div>
+    <div class="col-md-8 order-md-1">
+        <form class="needs-validation" novalidate="" hx-target="#content" hx-post="/valid_ingredients/new/submit">
+                <div class="mb3">
+                    <label for="name">Name</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="name" placeholder="" required="" value="{{ .Name }}" />
+                        <div class="invalid-feedback" style="width: 100%;">name is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="variant">Variant</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="variant" placeholder="" required="" value="{{ .Variant }}" />
+                        <div class="invalid-feedback" style="width: 100%;">variant is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="description">Description</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="description" placeholder="" required="" value="{{ .Description }}" />
+                        <div class="invalid-feedback" style="width: 100%;">description is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="warning">Warning</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="warning" placeholder="" required="" value="{{ .Warning }}" />
+                        <div class="invalid-feedback" style="width: 100%;">warning is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="containsEgg">ContainsEgg</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="containsEgg" placeholder="" required="" value="{{ .ContainsEgg }}" />
+                        <div class="invalid-feedback" style="width: 100%;">containsEgg is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="containsDairy">ContainsDairy</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="containsDairy" placeholder="" required="" value="{{ .ContainsDairy }}" />
+                        <div class="invalid-feedback" style="width: 100%;">containsDairy is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="containsPeanut">ContainsPeanut</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="containsPeanut" placeholder="" required="" value="{{ .ContainsPeanut }}" />
+                        <div class="invalid-feedback" style="width: 100%;">containsPeanut is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="containsTreeNut">ContainsTreeNut</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="containsTreeNut" placeholder="" required="" value="{{ .ContainsTreeNut }}" />
+                        <div class="invalid-feedback" style="width: 100%;">containsTreeNut is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="containsSoy">ContainsSoy</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="containsSoy" placeholder="" required="" value="{{ .ContainsSoy }}" />
+                        <div class="invalid-feedback" style="width: 100%;">containsSoy is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="containsWheat">ContainsWheat</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="containsWheat" placeholder="" required="" value="{{ .ContainsWheat }}" />
+                        <div class="invalid-feedback" style="width: 100%;">containsWheat is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="containsShellfish">ContainsShellfish</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="containsShellfish" placeholder="" required="" value="{{ .ContainsShellfish }}" />
+                        <div class="invalid-feedback" style="width: 100%;">containsShellfish is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="containsSesame">ContainsSesame</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="containsSesame" placeholder="" required="" value="{{ .ContainsSesame }}" />
+                        <div class="invalid-feedback" style="width: 100%;">containsSesame is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="containsFish">ContainsFish</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="containsFish" placeholder="" required="" value="{{ .ContainsFish }}" />
+                        <div class="invalid-feedback" style="width: 100%;">containsFish is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="containsGluten">ContainsGluten</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="containsGluten" placeholder="" required="" value="{{ .ContainsGluten }}" />
+                        <div class="invalid-feedback" style="width: 100%;">containsGluten is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="animalFlesh">AnimalFlesh</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="animalFlesh" placeholder="" required="" value="{{ .AnimalFlesh }}" />
+                        <div class="invalid-feedback" style="width: 100%;">animalFlesh is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="animalDerived">AnimalDerived</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="animalDerived" placeholder="" required="" value="{{ .AnimalDerived }}" />
+                        <div class="invalid-feedback" style="width: 100%;">animalDerived is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="volumetric">Volumetric</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="volumetric" placeholder="" required="" value="{{ .Volumetric }}" />
+                        <div class="invalid-feedback" style="width: 100%;">volumetric is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="iconPath">IconPath</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="iconPath" placeholder="" required="" value="{{ .IconPath }}" />
+                        <div class="invalid-feedback" style="width: 100%;">iconPath is required.</div>
+                    </div>
+                </div>
+            <hr class="mb-4" />
+            <button class="btn btn-primary btn-lg btn-block" type="submit">Save</button>
+        </form>
+    </div>
+</div>

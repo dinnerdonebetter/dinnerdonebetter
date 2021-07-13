@@ -1,0 +1,74 @@
+<div id="content" class="">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">New RecipeStep</h1>
+    </div>
+    <div class="col-md-8 order-md-1">
+        <form class="needs-validation" novalidate="" hx-target="#content" hx-post="/recipe_steps/new/submit">
+                <div class="mb3">
+                    <label for="index">Index</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="index" placeholder="" required="" value="{{ .Index }}" />
+                        <div class="invalid-feedback" style="width: 100%;">index is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="preparationID">PreparationID</label>
+                    <div class="input-group">
+                        <input class="form-control" type="number" id="" name="preparationID" placeholder="" required="" value="{{ .PreparationID }}" />
+                        <div class="invalid-feedback" style="width: 100%;">preparationID is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="prerequisiteStep">PrerequisiteStep</label>
+                    <div class="input-group">
+                        <input class="form-control" type="number" id="" name="prerequisiteStep" placeholder="" required="" value="{{ .PrerequisiteStep }}" />
+                        <div class="invalid-feedback" style="width: 100%;">prerequisiteStep is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="minEstimatedTimeInSeconds">MinEstimatedTimeInSeconds</label>
+                    <div class="input-group">
+                        <input class="form-control" type="number" id="" name="minEstimatedTimeInSeconds" placeholder="" required="" value="{{ .MinEstimatedTimeInSeconds }}" />
+                        <div class="invalid-feedback" style="width: 100%;">minEstimatedTimeInSeconds is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="maxEstimatedTimeInSeconds">MaxEstimatedTimeInSeconds</label>
+                    <div class="input-group">
+                        <input class="form-control" type="number" id="" name="maxEstimatedTimeInSeconds" placeholder="" required="" value="{{ .MaxEstimatedTimeInSeconds }}" />
+                        <div class="invalid-feedback" style="width: 100%;">maxEstimatedTimeInSeconds is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="temperatureInCelsius">TemperatureInCelsius</label>
+                    <div class="input-group">
+                        <input class="form-control" type="number" id="" name="temperatureInCelsius" placeholder="" required="" value="{{ .TemperatureInCelsius }}" />
+                        <div class="invalid-feedback" style="width: 100%;">temperatureInCelsius is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="notes">Notes</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="notes" placeholder="" required="" value="{{ .Notes }}" />
+                        <div class="invalid-feedback" style="width: 100%;">notes is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="why">Why</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="why" placeholder="" required="" value="{{ .Why }}" />
+                        <div class="invalid-feedback" style="width: 100%;">why is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="recipeID">RecipeID</label>
+                    <div class="input-group">
+                        <input class="form-control" type="number" id="" name="recipeID" placeholder="" required="" value="{{ .RecipeID }}" />
+                        <div class="invalid-feedback" style="width: 100%;">recipeID is required.</div>
+                    </div>
+                </div>
+            <hr class="mb-4" />
+            <button class="btn btn-primary btn-lg btn-block" type="submit">Save</button>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,46 @@
+<div id="content" class="">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">New RecipeStepProduct</h1>
+    </div>
+    <div class="col-md-8 order-md-1">
+        <form class="needs-validation" novalidate="" hx-target="#content" hx-post="/recipe_step_products/new/submit">
+                <div class="mb3">
+                    <label for="name">Name</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="name" placeholder="" required="" value="{{ .Name }}" />
+                        <div class="invalid-feedback" style="width: 100%;">name is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="quantityType">QuantityType</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="quantityType" placeholder="" required="" value="{{ .QuantityType }}" />
+                        <div class="invalid-feedback" style="width: 100%;">quantityType is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="quantityValue">QuantityValue</label>
+                    <div class="input-group">
+                        <input class="form-control" type="number" id="" name="quantityValue" placeholder="" required="" value="{{ .QuantityValue }}" />
+                        <div class="invalid-feedback" style="width: 100%;">quantityValue is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="quantityNotes">QuantityNotes</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="quantityNotes" placeholder="" required="" value="{{ .QuantityNotes }}" />
+                        <div class="invalid-feedback" style="width: 100%;">quantityNotes is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="recipeStepID">RecipeStepID</label>
+                    <div class="input-group">
+                        <input class="form-control" type="number" id="" name="recipeStepID" placeholder="" required="" value="{{ .RecipeStepID }}" />
+                        <div class="invalid-feedback" style="width: 100%;">recipeStepID is required.</div>
+                    </div>
+                </div>
+            <hr class="mb-4" />
+            <button class="btn btn-primary btn-lg btn-block" type="submit">Save</button>
+        </form>
+    </div>
+</div>

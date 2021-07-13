@@ -1,0 +1,143 @@
+stages:
+  - quality
+  - frontend-testing
+  - integration-testing
+  - load-testing
+  - publish
+
+before_script:
+  - mkdir -p /go/src/gitlab.com/prixfixe/
+  - cp -rf /builds/prixfixe/prixfixe /go/src/gitlab.com/prixfixe/
+  - cd /go/src/gitlab.com/prixfixe/prixfixe
+
+coverage:
+  stage: quality
+  image: golang:stretch
+  variables:
+    GOPATH: "/go"
+  script:
+    - apt-get update -y && apt-get install -y make git gcc musl-dev
+    - go run mage.go ensureMage
+    - mage vendor coverage
+
+dependency-injection-check:
+  stage: quality
+  image: golang:stretch
+  variables:
+    GOPATH: "/go"
+  script:
+    - apt-get update -y && apt-get install -y make git gcc musl-dev
+    - go run mage.go ensureMage
+    - mage rewire
+
+golang-format-check:
+  stage: quality
+  image: golang:stretch
+  variables:
+    GOPATH: "/go"
+  script:
+    - apt-get update -y && apt-get install -y make git gcc musl-dev
+    - if [ $(gofmt -l . | grep -Ev '^vendor\/' | head -c1 | wc -c) -ne 0 ]; then exit 1; fi
+
+golang-lint:
+  stage: quality
+  image: golangci/golangci-lint:latest # v1.18
+  variables:
+    GO111MODULE: "on"
+  script:
+    - go mod vendor
+    - golangci-lint run --config=.golangci.yml --deadline=15m
+
+#integration_tests_sqlite:
+#  stage: integration-testing
+#  image: docker/compose:latest
+#  services:
+#    - docker:dind
+#  variables:
+#    GOPATH: "/go"
+#  script:
+#    - ls -Al environments/testing/config_files/integration-tests-sqlite.toml
+#    - ls -Al /go/src/gitlab.com/prixfixe/prixfixe/environments/testing/config_files/integration-tests-sqlite.toml
+#    - whoami
+#    - cat /go/src/gitlab.com/prixfixe/prixfixe/environments/testing/config_files/integration-tests-sqlite.toml
+#    - apk add --no-cache git make musl-dev go
+#    - go version
+#    - docker-compose --file environments/testing/compose_files/integration_tests/integration-tests-base.yaml --file environments/testing/compose_files/integration_tests/integration-tests-sqlite.yaml up --build --force-recreate --remove-orphans --renew-anon-volumes --always-recreate-deps --abort-on-container-exit
+
+#integration_tests_postgres:
+#  stage: integration-testing
+#  image: docker/compose:latest
+#  services:
+#    - docker:dind
+#  variables:
+#    GOPATH: "/go"
+#  script:
+#    - apk add --update make
+#    - docker-compose --file environments/testing/compose_files/integration_tests/integration-tests-base.yaml --file environments/testing/compose_files/integration_tests/integration-tests-postgres.yaml up --build --force-recreate --remove-orphans --renew-anon-volumes --always-recreate-deps --abort-on-container-exit
+
+#integration_tests_mariadb:
+#  stage: integration-testing
+#  image: docker/compose:latest
+#  services:
+#    - docker:dind
+#  variables:
+#    GOPATH: "/go"
+#  script:
+#    - apk add --update make
+#    - docker-compose --file environments/testing/compose_files/integration_tests/integration-tests-base.yaml --file environments/testing/compose_files/integration_tests/integration-tests-mariadb.yaml up --build --force-recreate --remove-orphans --renew-anon-volumes --always-recreate-deps --abort-on-container-exit
+
+#frontend-selenium-tests:
+#  stage: integration-testing
+#  image: docker/compose:latest
+#  services:
+#    - docker:dind
+#  script:
+#    - apk add --update make
+#    - docker-compose --file environments/testing/compose_files/frontend-tests.yaml up --build --force-recreate --remove-orphans --renew-anon-volumes --always-recreate-deps --abort-on-container-exit
+
+# daily load tests
+
+daily-load_tests_postgres:on-schedule:
+  stage: load-testing
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    GOPATH: "/go"
+    LOADTEST_RUN_TIME: "10m"
+  script:
+    - apk add --update --no-cache py-pip openssl python3-dev libffi-dev openssl-dev gcc libc-dev make
+    - pip install docker-compose
+    - make load_tests_postgres
+  only:
+    - schedules
+
+daily-load_tests_mariadb:on-schedule:
+  stage: load-testing
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    GOPATH: "/go"
+    LOADTEST_RUN_TIME: "10m"
+  script:
+    - apk add --update --no-cache py-pip openssl python3-dev libffi-dev openssl-dev gcc libc-dev make
+    - pip install docker-compose
+    - make load_tests_mariadb
+  only:
+    - schedules
+
+daily-load_tests_sqlite:on-schedule:
+  stage: load-testing
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    GOPATH: "/go"
+    LOADTEST_RUN_TIME: "10m"
+  script:
+    - apk add --update --no-cache py-pip openssl python3-dev libffi-dev openssl-dev gcc libc-dev make
+    - pip install docker-compose
+    - make load_tests_sqlite
+  only:
+    - schedules

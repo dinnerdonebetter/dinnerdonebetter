@@ -1,0 +1,24 @@
+version: "3.3"
+services:
+    database:
+        image: postgres:latest
+        environment:
+            POSTGRES_DB: 'prixfixe'
+            POSTGRES_PASSWORD: 'hunter2'
+            POSTGRES_USER: 'dbuser'
+        logging:
+            driver: none
+        ports:
+            - 2345:5432
+    prixfixe-server:
+        environment:
+            PRIXFIXE_SERVICE_LOCAL_SECRET_STORE_KEY: 'SUFNQVdBUkVUSEFUVEhJU1NFQ1JFVElTVU5TRUNVUkU='
+            USE_NOOP_LOGGER: 'nope'
+        links:
+            - database
+        volumes:
+            - source: '../../../../environments/testing/config_files/integration-tests-postgres.config'
+              target: '/etc/config.toml'
+              type: 'bind'
+    test:
+        container_name: 'postgres_integration_tests'
