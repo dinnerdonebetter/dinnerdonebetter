@@ -2,6 +2,7 @@ version: "3.3"
 services:
     prixfixe-server:
         environment:
+            PRIXFIXE_SERVICE_LOCAL_SECRET_STORE_KEY: 'SUFNQVdBUkVUSEFUVEhJU1NFQ1JFVElTVU5TRUNVUkU='
             CONFIGURATION_FILEPATH: '/etc/config.toml'
             JAEGER_DISABLED: 'true'
         ports:
