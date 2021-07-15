@@ -81,7 +81,7 @@ func (s *service) buildAPIClientEditorView(includeBaseTemplate bool) func(http.R
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       fmt.Sprintf("APIClient #%d", apiClient.ID),
+				Title:       fmt.Sprintf("API Client #%d", apiClient.ID),
 				ContentData: apiClient,
 			}
 			if sessionCtxData != nil {
@@ -154,7 +154,7 @@ func (s *service) buildAPIClientsTableView(includeBaseTemplate bool) func(http.R
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       "APIClients",
+				Title:       "API Clients",
 				ContentData: apiClients,
 			}
 			if sessionCtxData != nil {

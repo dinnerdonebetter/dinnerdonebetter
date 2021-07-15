@@ -1,0 +1,40 @@
+version: "3.3"
+services:
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower
+    volumes:
+      - source: /home/sysadmin/.docker/config.json
+        target: /config.json
+        type: bind
+      - source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        type: bind
+  caddy:
+    container_name: caddy
+    image: caddy:2
+    ports:
+      - "443:443"
+    links:
+      - prixfixe_server
+    volumes:
+      - source: /home/sysadmin/Caddyfile
+        target: /etc/caddy/Caddyfile
+        type: bind
+      - source: /home/sysadmin/caddy_data
+        target: /data
+        type: bind
+  prixfixe_server:
+    container_name: prixfixe
+    image: registry.gitlab.com/prixfixe/prixfixe:dev
+    environment:
+      CONFIGURATION_FILEPATH: "/etc/prixfixe.config.toml"
+    ports:
+      - "8888:8888"
+    volumes:
+      - source: /home/sysadmin/prixfixe.config.toml
+        target: /etc/prixfixe.config.toml
+        type: bind
+      - source: /home/sysadmin/prixfixe_search_indices
+        target: /etc/prixfixe_search_indices
+        type: bind

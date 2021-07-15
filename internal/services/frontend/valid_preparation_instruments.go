@@ -66,7 +66,7 @@ func (s *service) buildValidPreparationInstrumentCreatorView(includeBaseTemplate
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       "New ValidPreparationInstrument",
+				Title:       "New Valid Preparation Instrument",
 				ContentData: validPreparationInstrument,
 			}
 			if sessionCtxData != nil {
@@ -200,7 +200,7 @@ func (s *service) buildValidPreparationInstrumentEditorView(includeBaseTemplate 
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       fmt.Sprintf("ValidPreparationInstrument #%d", validPreparationInstrument.ID),
+				Title:       fmt.Sprintf("Valid Preparation Instrument #%d", validPreparationInstrument.ID),
 				ContentData: validPreparationInstrument,
 			}
 			if sessionCtxData != nil {
@@ -279,7 +279,7 @@ func (s *service) buildValidPreparationInstrumentsTableView(includeBaseTemplate 
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       "ValidPreparationInstruments",
+				Title:       "Valid Preparation Instruments",
 				ContentData: validPreparationInstruments,
 			}
 			if sessionCtxData != nil {

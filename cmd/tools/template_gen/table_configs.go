@@ -124,7 +124,7 @@ var tableConfigs = map[string]*basicTableTemplateConfig{
 		IncludeCreatedOn:     true,
 	},
 	"internal/services/frontend/templates/partials/generated/tables/valid_instruments_table.gotpl": {
-		Title:              "ValidInstruments",
+		Title:              "Valid Instruments",
 		CreatorPagePushURL: "/valid_instruments/new",
 		CreatorPageURL:     "/dashboard_pages/valid_instruments/new",
 		Columns: []string{
@@ -148,7 +148,7 @@ var tableConfigs = map[string]*basicTableTemplateConfig{
 		IncludeDeleteRow:     true,
 	},
 	"internal/services/frontend/templates/partials/generated/tables/valid_preparations_table.gotpl": {
-		Title:              "ValidPreparations",
+		Title:              "Valid Preparations",
 		CreatorPagePushURL: "/valid_preparations/new",
 		CreatorPageURL:     "/dashboard_pages/valid_preparations/new",
 		Columns: []string{
@@ -170,7 +170,7 @@ var tableConfigs = map[string]*basicTableTemplateConfig{
 		IncludeDeleteRow:     true,
 	},
 	"internal/services/frontend/templates/partials/generated/tables/valid_ingredients_table.gotpl": {
-		Title:              "ValidIngredients",
+		Title:              "Valid Ingredients",
 		CreatorPagePushURL: "/valid_ingredients/new",
 		CreatorPageURL:     "/dashboard_pages/valid_ingredients/new",
 		Columns: []string{
@@ -222,7 +222,7 @@ var tableConfigs = map[string]*basicTableTemplateConfig{
 		IncludeDeleteRow:     true,
 	},
 	"internal/services/frontend/templates/partials/generated/tables/valid_ingredient_preparations_table.gotpl": {
-		Title:              "ValidIngredientPreparations",
+		Title:              "Valid Ingredient Preparations",
 		CreatorPagePushURL: "/valid_ingredient_preparations/new",
 		CreatorPageURL:     "/dashboard_pages/valid_ingredient_preparations/new",
 		Columns: []string{
@@ -244,7 +244,7 @@ var tableConfigs = map[string]*basicTableTemplateConfig{
 		IncludeDeleteRow:     true,
 	},
 	"internal/services/frontend/templates/partials/generated/tables/valid_preparation_instruments_table.gotpl": {
-		Title:              "ValidPreparationInstruments",
+		Title:              "Valid Preparation Instruments",
 		CreatorPagePushURL: "/valid_preparation_instruments/new",
 		CreatorPageURL:     "/dashboard_pages/valid_preparation_instruments/new",
 		Columns: []string{
@@ -290,7 +290,7 @@ var tableConfigs = map[string]*basicTableTemplateConfig{
 		IncludeDeleteRow:     true,
 	},
 	"internal/services/frontend/templates/partials/generated/tables/recipe_steps_table.gotpl": {
-		Title:              "RecipeSteps",
+		Title:              "Recipe Steps",
 		CreatorPagePushURL: "/recipe_steps/new",
 		CreatorPageURL:     "/dashboard_pages/recipe_steps/new",
 		Columns: []string{
@@ -324,7 +324,7 @@ var tableConfigs = map[string]*basicTableTemplateConfig{
 		IncludeDeleteRow:     true,
 	},
 	"internal/services/frontend/templates/partials/generated/tables/recipe_step_ingredients_table.gotpl": {
-		Title:              "RecipeStepIngredients",
+		Title:              "Recipe Step Ingredients",
 		CreatorPagePushURL: "/recipe_step_ingredients/new",
 		CreatorPageURL:     "/dashboard_pages/recipe_step_ingredients/new",
 		Columns: []string{
@@ -354,7 +354,7 @@ var tableConfigs = map[string]*basicTableTemplateConfig{
 		IncludeDeleteRow:     true,
 	},
 	"internal/services/frontend/templates/partials/generated/tables/recipe_step_products_table.gotpl": {
-		Title:              "RecipeStepProducts",
+		Title:              "Recipe Step Products",
 		CreatorPagePushURL: "/recipe_step_products/new",
 		CreatorPageURL:     "/dashboard_pages/recipe_step_products/new",
 		Columns: []string{

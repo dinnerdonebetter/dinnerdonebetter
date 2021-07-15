@@ -71,7 +71,7 @@ func (s *service) buildRecipeStepCreatorView(includeBaseTemplate bool) func(http
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       "New RecipeStep",
+				Title:       "New Recipe Step",
 				ContentData: recipeStep,
 			}
 			if sessionCtxData != nil {

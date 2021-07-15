@@ -66,7 +66,7 @@ func (s *service) buildValidPreparationCreatorView(includeBaseTemplate bool) fun
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       "New ValidPreparation",
+				Title:       "New Valid Preparation",
 				ContentData: validPreparation,
 			}
 			if sessionCtxData != nil {
@@ -200,7 +200,7 @@ func (s *service) buildValidPreparationEditorView(includeBaseTemplate bool) func
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       fmt.Sprintf("ValidPreparation #%d", validPreparation.ID),
+				Title:       fmt.Sprintf("Valid Preparation #%d", validPreparation.ID),
 				ContentData: validPreparation,
 			}
 			if sessionCtxData != nil {
@@ -279,7 +279,7 @@ func (s *service) buildValidPreparationsTableView(includeBaseTemplate bool) func
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       "ValidPreparations",
+				Title:       "Valid Preparations",
 				ContentData: validPreparations,
 			}
 			if sessionCtxData != nil {

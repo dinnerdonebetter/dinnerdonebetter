@@ -76,7 +76,7 @@ func (s *service) buildRecipeStepIngredientCreatorView(includeBaseTemplate bool)
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       "New RecipeStepIngredient",
+				Title:       "New Recipe Step Ingredient",
 				ContentData: recipeStepIngredient,
 			}
 			if sessionCtxData != nil {
@@ -233,7 +233,7 @@ func (s *service) buildRecipeStepIngredientEditorView(includeBaseTemplate bool) 
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       fmt.Sprintf("RecipeStepIngredient #%d", recipeStepIngredient.ID),
+				Title:       fmt.Sprintf("Recipe Step Ingredient #%d", recipeStepIngredient.ID),
 				ContentData: recipeStepIngredient,
 			}
 			if sessionCtxData != nil {
@@ -322,7 +322,7 @@ func (s *service) buildRecipeStepIngredientsTableView(includeBaseTemplate bool) 
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       "RecipeStepIngredients",
+				Title:       "Recipe Step Ingredients",
 				ContentData: recipeStepIngredients,
 			}
 			if sessionCtxData != nil {

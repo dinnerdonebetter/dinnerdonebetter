@@ -66,7 +66,7 @@ func (s *service) buildValidIngredientPreparationCreatorView(includeBaseTemplate
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       "New ValidIngredientPreparation",
+				Title:       "New Valid Ingredient Preparation",
 				ContentData: validIngredientPreparation,
 			}
 			if sessionCtxData != nil {
@@ -200,7 +200,7 @@ func (s *service) buildValidIngredientPreparationEditorView(includeBaseTemplate 
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       fmt.Sprintf("ValidIngredientPreparation #%d", validIngredientPreparation.ID),
+				Title:       fmt.Sprintf("Valid Ingredient Preparation #%d", validIngredientPreparation.ID),
 				ContentData: validIngredientPreparation,
 			}
 			if sessionCtxData != nil {
@@ -279,7 +279,7 @@ func (s *service) buildValidIngredientPreparationsTableView(includeBaseTemplate 
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       "ValidIngredientPreparations",
+				Title:       "Valid Ingredient Preparations",
 				ContentData: validIngredientPreparations,
 			}
 			if sessionCtxData != nil {

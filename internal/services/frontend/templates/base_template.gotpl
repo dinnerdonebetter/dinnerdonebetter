@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width">
     <link href="https://unpkg.com/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
 
-    <title>TODO{{ if ne .PageDescription "" }} - {{ .PageDescription }}{{ end }}</title>
+    <title>PrixFixe{{ if ne .PageDescription "" }} - {{ .PageDescription }}{{ end }}</title>
 
     <!-- <meta name="description" content="{{ .PageDescription }}">                 -->
     <!-- <meta property="og:title" content="{{ .PageTitle }}">                      -->
@@ -28,7 +28,7 @@
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" href="/">TODO</a>
+                <a class="navbar-brand" href="/">PrixFixe</a>
                 {{ if not .IsLoggedIn }}
                 <div class="d-flex">
                     <div class="collapse navbar-collapse" id="navbarNav">
@@ -65,8 +65,23 @@
                         </h6>
                         <ul class="nav flex-column">
                             <li class="nav-item">
-                                <a class="nav-link" hx-target="#content" hx-push-url="/items" hx-params="*" hx-get="/dashboard_pages/items">
-                                    📃 Items
+                                <a class="nav-link" hx-target="#content" hx-push-url="/valid_ingredients" hx-params="*" hx-get="/dashboard_pages/valid_ingredients">
+                                    📃 Valid Ingredients
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" hx-target="#content" hx-push-url="/valid_instruments" hx-params="*" hx-get="/dashboard_pages/valid_instruments">
+                                    📃 Valid Instruments
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" hx-target="#content" hx-push-url="/valid_preparations" hx-params="*" hx-get="/dashboard_pages/valid_preparations">
+                                    📃 Valid Preparations
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" hx-target="#content" hx-push-url="/recipes" hx-params="*" hx-get="/dashboard_pages/recipes">
+                                    📃 Recipes
                                 </a>
                             </li>
                             <li class="nav-item">

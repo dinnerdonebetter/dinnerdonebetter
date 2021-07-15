@@ -66,7 +66,7 @@ func (s *service) buildValidIngredientCreatorView(includeBaseTemplate bool) func
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       "New ValidIngredient",
+				Title:       "New Valid Ingredient",
 				ContentData: validIngredient,
 			}
 			if sessionCtxData != nil {
@@ -260,7 +260,7 @@ func (s *service) buildValidIngredientEditorView(includeBaseTemplate bool) func(
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       fmt.Sprintf("ValidIngredient #%d", validIngredient.ID),
+				Title:       fmt.Sprintf("Valid Ingredient #%d", validIngredient.ID),
 				ContentData: validIngredient,
 			}
 			if sessionCtxData != nil {
@@ -339,7 +339,7 @@ func (s *service) buildValidIngredientsTableView(includeBaseTemplate bool) func(
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       "ValidIngredients",
+				Title:       "Valid Ingredients",
 				ContentData: validIngredients,
 			}
 			if sessionCtxData != nil {

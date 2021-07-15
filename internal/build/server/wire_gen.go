@@ -12,7 +12,7 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/capitalism/stripe"
 	"gitlab.com/prixfixe/prixfixe/internal/config"
 	"gitlab.com/prixfixe/prixfixe/internal/database"
-	config2 "gitlab.com/prixfixe/prixfixe/internal/database/config"
+	dbconfig "gitlab.com/prixfixe/prixfixe/internal/database/config"
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
@@ -23,7 +23,7 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/services/admin"
 	"gitlab.com/prixfixe/prixfixe/internal/services/apiclients"
 	"gitlab.com/prixfixe/prixfixe/internal/services/audit"
-	authentication2 "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
+	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
 	"gitlab.com/prixfixe/prixfixe/internal/services/frontend"
 	"gitlab.com/prixfixe/prixfixe/internal/services/invitations"
 	"gitlab.com/prixfixe/prixfixe/internal/services/recipes"
@@ -58,7 +58,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig, logger logging.Logge
 	authenticationConfig := &servicesConfigurations.Auth
 	authenticator := authentication.ProvideArgon2Authenticator(logger)
 	configConfig := &cfg.Database
-	db, err := config2.ProvideDatabaseConnection(logger, configConfig)
+	db, err := dbconfig.ProvideDatabaseConnection(logger, configConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig, logger logging.Logge
 	accountUserMembershipDataManager := database.ProvideAccountUserMembershipDataManager(dataManager)
 	cookieConfig := authenticationConfig.Cookies
 	config3 := cfg.Database
-	sessionManager, err := config2.ProvideSessionManager(cookieConfig, config3, db)
+	sessionManager, err := dbconfig.ProvideSessionManager(cookieConfig, config3, db)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig, logger logging.Logge
 	contentType := encoding.ProvideContentType(encodingConfig)
 	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, contentType)
 	routeParamManager := chi.NewRouteParamManager()
-	authService, err := authentication2.ProvideService(logger, authenticationConfig, authenticator, userDataManager, authAuditManager, apiClientDataManager, accountUserMembershipDataManager, sessionManager, serverEncoderDecoder, routeParamManager)
+	authService, err := authservice.ProvideService(logger, authenticationConfig, authenticator, userDataManager, authAuditManager, apiClientDataManager, accountUserMembershipDataManager, sessionManager, serverEncoderDecoder, routeParamManager)
 	if err != nil {
 		return nil, err
 	}

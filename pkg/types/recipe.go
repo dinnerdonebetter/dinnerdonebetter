@@ -127,9 +127,6 @@ func (x *RecipeCreationInput) ValidateWithContext(ctx context.Context) error {
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Source, validation.Required),
-		validation.Field(&x.Description, validation.Required),
-		validation.Field(&x.InspiredByRecipeID, validation.Required),
 	)
 }
 

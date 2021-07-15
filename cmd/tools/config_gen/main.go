@@ -143,6 +143,7 @@ func encryptAndSaveConfig(ctx context.Context, outputPath string, cfg *config.In
 type configFunc func(ctx context.Context, filePath string) error
 
 var files = map[string]configFunc{
+	"environments/dev/service.config":                                     localDevelopmentConfig,
 	"environments/local/service.config":                                   localDevelopmentConfig,
 	"environments/testing/config_files/frontend-tests.config":             frontendTestsConfig,
 	"environments/testing/config_files/integration-tests-postgres.config": buildIntegrationTestForDBImplementation(postgres, devPostgresDBConnDetails),
@@ -172,6 +173,165 @@ func generatePASETOKey() []byte {
 	}
 
 	return b
+}
+
+func developmentConfig(ctx context.Context, filePath string) error {
+	cfg := &config.InstanceConfig{
+		Meta: config.MetaSettings{
+			Debug:   true,
+			RunMode: developmentEnv,
+		},
+		Encoding: encoding.Config{
+			ContentType: contentTypeJSON,
+		},
+		Server: localServer,
+		Database: dbconfig.Config{
+			Debug:                     true,
+			RunMigrations:             true,
+			MaxPingAttempts:           maxAttempts,
+			Provider:                  postgres,
+			ConnectionDetails:         "postgresql://prixfixe_dev:vfhfFBwoCoDWTY86bVYa9znk1xcp19IO@database.prixfixe.dev:25060/dev_prixfixe?sslmode=require",
+			MetricsCollectionInterval: time.Second,
+			CreateTestUser:            nil,
+		},
+		Observability: observability.Config{
+			Metrics: metrics.Config{
+				Provider:                         "prometheus",
+				RouteToken:                       "",
+				RuntimeMetricsCollectionInterval: time.Second,
+			},
+			Tracing: localTracingConfig,
+		},
+		Uploads: uploads.Config{
+			Debug: true,
+			Storage: storage.Config{
+				UploadFilenameKey: "avatar",
+				Provider:          "filesystem",
+				BucketName:        "avatars",
+				AzureConfig:       nil,
+				GCSConfig:         nil,
+				S3Config:          nil,
+				FilesystemConfig: &storage.FilesystemConfig{
+					RootDirectory: "/avatars",
+				},
+			},
+		},
+		Search: search.Config{
+			Provider: "bleve",
+		},
+		Services: config.ServicesConfigurations{
+			AuditLog: auditservice.Config{
+				Debug:   true,
+				Enabled: true,
+			},
+			Auth: authservice.Config{
+				PASETO: authservice.PASETOConfig{
+					Issuer:       "prixfixe_service",
+					Lifetime:     defaultPASETOLifetime,
+					LocalModeKey: examplePASETOKey,
+				},
+				Cookies: authservice.CookieConfig{
+					Name:       "",
+					Domain:     "prixfixe.dev",
+					HashKey:    debugCookieSecret,
+					SigningKey: debugCookieSecret,
+					Lifetime:   24 * time.Hour,
+					SecureOnly: true,
+				},
+				Debug:                 true,
+				EnableUserSignup:      true,
+				MinimumUsernameLength: 4,
+				MinimumPasswordLength: 8,
+			},
+			Frontend: buildLocalFrontendServiceConfig(),
+			Webhooks: webhooksservice.Config{
+				Debug:   true,
+				Enabled: false,
+			},
+			ValidInstruments: validinstrumentsservice.Config{
+				SearchIndexPath: fmt.Sprintf("/search_indices/%s", defaultValidInstrumentsSearchIndexPath),
+				Logging: logging.Config{
+					Name:     "valid_instruments",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			ValidPreparations: validpreparationsservice.Config{
+				SearchIndexPath: fmt.Sprintf("/search_indices/%s", defaultValidPreparationsSearchIndexPath),
+				Logging: logging.Config{
+					Name:     "valid_preparations",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			ValidIngredients: validingredientsservice.Config{
+				SearchIndexPath: fmt.Sprintf("/search_indices/%s", defaultValidIngredientsSearchIndexPath),
+				Logging: logging.Config{
+					Name:     "valid_ingredients",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			ValidIngredientPreparations: validingredientpreparationsservice.Config{
+				Logging: logging.Config{
+					Name:     "valid_ingredient_preparations",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			ValidPreparationInstruments: validpreparationinstrumentsservice.Config{
+				Logging: logging.Config{
+					Name:     "valid_preparation_instruments",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			Recipes: recipesservice.Config{
+				Logging: logging.Config{
+					Name:     "recipes",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			RecipeSteps: recipestepsservice.Config{
+				Logging: logging.Config{
+					Name:     "recipe_steps",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			RecipeStepIngredients: recipestepingredientsservice.Config{
+				Logging: logging.Config{
+					Name:     "recipe_step_ingredients",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			RecipeStepProducts: recipestepproductsservice.Config{
+				Logging: logging.Config{
+					Name:     "recipe_step_products",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			Invitations: invitationsservice.Config{
+				Logging: logging.Config{
+					Name:     "invitations",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			Reports: reportsservice.Config{
+				Logging: logging.Config{
+					Name:     "reports",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+		},
+	}
+
+	return encryptAndSaveConfig(ctx, filePath, cfg)
 }
 
 func localDevelopmentConfig(ctx context.Context, filePath string) error {

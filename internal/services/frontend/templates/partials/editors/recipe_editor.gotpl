@@ -25,13 +25,6 @@
                     <div class="invalid-feedback" style="width: 100%;">description is required.</div>
                 </div>
             </div>
-            <div class="mb3">
-                <label for="inspiredByRecipeID">InspiredByRecipeID</label>
-                <div class="input-group">
-                    <input class="form-control" type="number" id="" name="inspiredByRecipeID" placeholder="" required="" value="{{ .InspiredByRecipeID }}" />
-                    <div class="invalid-feedback" style="width: 100%;">inspiredByRecipeID is required.</div>
-                </div>
-            </div>
             <hr class="mb-4" />
             <button class="btn btn-primary btn-lg btn-block" type="submit">Save</button>
         </form>

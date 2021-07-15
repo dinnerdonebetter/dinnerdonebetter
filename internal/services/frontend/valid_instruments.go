@@ -66,7 +66,7 @@ func (s *service) buildValidInstrumentCreatorView(includeBaseTemplate bool) func
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       "New ValidInstrument",
+				Title:       "New Valid Instrument",
 				ContentData: validInstrument,
 			}
 			if sessionCtxData != nil {
@@ -204,7 +204,7 @@ func (s *service) buildValidInstrumentEditorView(includeBaseTemplate bool) func(
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       fmt.Sprintf("ValidInstrument #%d", validInstrument.ID),
+				Title:       fmt.Sprintf("Valid Instrument #%d", validInstrument.ID),
 				ContentData: validInstrument,
 			}
 			if sessionCtxData != nil {
@@ -283,7 +283,7 @@ func (s *service) buildValidInstrumentsTableView(includeBaseTemplate bool) func(
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       "ValidInstruments",
+				Title:       "Valid Instruments",
 				ContentData: validInstruments,
 			}
 			if sessionCtxData != nil {

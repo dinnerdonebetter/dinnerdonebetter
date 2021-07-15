@@ -1,6 +1,6 @@
 <div id="content" class="">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">New RecipeStepProduct</h1>
+        <h1 class="h2">New Recipe Step Product</h1>
     </div>
     <div class="col-md-8 order-md-1">
         <form class="needs-validation" novalidate="" hx-target="#content" hx-post="/recipe_step_products/new/submit">

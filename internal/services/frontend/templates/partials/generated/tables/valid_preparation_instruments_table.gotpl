@@ -1,5 +1,5 @@
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">ValidPreparationInstruments</h1>
+    <h1 class="h2">Valid Preparation Instruments</h1>
     
     <button class="btn btn-primary" hx-target="#content" hx-push-url="/valid_preparation_instruments/new" hx-get="/dashboard_pages/valid_preparation_instruments/new">New</button>
     

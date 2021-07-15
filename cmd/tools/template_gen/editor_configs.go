@@ -343,38 +343,6 @@ var editorConfigs = map[string]*basicEditorTemplateConfig{
 			},
 		},
 	},
-	"internal/services/frontend/templates/partials/generated/editors/recipe_editor.gotpl": {
-		Fields: []formField{
-			{
-				LabelName:       "name",
-				FormName:        "name",
-				StructFieldName: "Name",
-				InputType:       "text",
-				Required:        true,
-			},
-			{
-				LabelName:       "source",
-				FormName:        "source",
-				StructFieldName: "Source",
-				InputType:       "text",
-				Required:        true,
-			},
-			{
-				LabelName:       "description",
-				FormName:        "description",
-				StructFieldName: "Description",
-				InputType:       "text",
-				Required:        true,
-			},
-			{
-				LabelName:       "inspiredByRecipeID",
-				FormName:        "inspiredByRecipeID",
-				StructFieldName: "InspiredByRecipeID",
-				InputType:       "number",
-				Required:        true,
-			},
-		},
-	},
 	"internal/services/frontend/templates/partials/generated/editors/recipe_step_editor.gotpl": {
 		Fields: []formField{
 			{

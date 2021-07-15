@@ -204,66 +204,6 @@ func (s *service) SetupRoutes(router routing.Router) {
 	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipesPermission)).
 		Get(fmt.Sprintf("/dashboard_pages/recipes/%s", singleRecipePattern), s.buildRecipeEditorView(false))
 
-	singleRecipeStepPattern := fmt.Sprintf(numericIDPattern, recipeStepIDURLParamKey)
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepsPermission)).
-		Get("/recipe_steps", s.buildRecipeStepsTableView(true))
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepsPermission)).
-		Get("/dashboard_pages/recipe_steps", s.buildRecipeStepsTableView(false))
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipeStepsPermission)).
-		Get("/recipe_steps/new", s.buildRecipeStepCreatorView(true))
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipeStepsPermission)).
-		Post("/recipe_steps/new/submit", s.handleRecipeStepCreationRequest)
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepsPermission)).
-		Delete(fmt.Sprintf("/dashboard_pages/recipe_steps/%s", singleRecipeStepPattern), s.handleRecipeStepArchiveRequest)
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepsPermission)).
-		Get("/dashboard_pages/recipe_steps/new", s.buildRecipeStepCreatorView(false))
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepsPermission)).
-		Get(fmt.Sprintf("/recipe_steps/%s", singleRecipeStepPattern), s.buildRecipeStepEditorView(true))
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepsPermission)).
-		Put(fmt.Sprintf("/dashboard_pages/recipe_steps/%s", singleRecipeStepPattern), s.handleRecipeStepUpdateRequest)
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepsPermission)).
-		Get(fmt.Sprintf("/dashboard_pages/recipe_steps/%s", singleRecipeStepPattern), s.buildRecipeStepEditorView(false))
-
-	singleRecipeStepIngredientPattern := fmt.Sprintf(numericIDPattern, recipeStepIngredientIDURLParamKey)
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepIngredientsPermission)).
-		Get("/recipe_step_ingredients", s.buildRecipeStepIngredientsTableView(true))
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepIngredientsPermission)).
-		Get("/dashboard_pages/recipe_step_ingredients", s.buildRecipeStepIngredientsTableView(false))
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipeStepIngredientsPermission)).
-		Get("/recipe_step_ingredients/new", s.buildRecipeStepIngredientCreatorView(true))
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipeStepIngredientsPermission)).
-		Post("/recipe_step_ingredients/new/submit", s.handleRecipeStepIngredientCreationRequest)
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepIngredientsPermission)).
-		Delete(fmt.Sprintf("/dashboard_pages/recipe_step_ingredients/%s", singleRecipeStepIngredientPattern), s.handleRecipeStepIngredientArchiveRequest)
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepIngredientsPermission)).
-		Get("/dashboard_pages/recipe_step_ingredients/new", s.buildRecipeStepIngredientCreatorView(false))
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepIngredientsPermission)).
-		Get(fmt.Sprintf("/recipe_step_ingredients/%s", singleRecipeStepIngredientPattern), s.buildRecipeStepIngredientEditorView(true))
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepIngredientsPermission)).
-		Put(fmt.Sprintf("/dashboard_pages/recipe_step_ingredients/%s", singleRecipeStepIngredientPattern), s.handleRecipeStepIngredientUpdateRequest)
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepIngredientsPermission)).
-		Get(fmt.Sprintf("/dashboard_pages/recipe_step_ingredients/%s", singleRecipeStepIngredientPattern), s.buildRecipeStepIngredientEditorView(false))
-
-	singleRecipeStepProductPattern := fmt.Sprintf(numericIDPattern, recipeStepProductIDURLParamKey)
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepProductsPermission)).
-		Get("/recipe_step_products", s.buildRecipeStepProductsTableView(true))
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepProductsPermission)).
-		Get("/dashboard_pages/recipe_step_products", s.buildRecipeStepProductsTableView(false))
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipeStepProductsPermission)).
-		Get("/recipe_step_products/new", s.buildRecipeStepProductCreatorView(true))
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipeStepProductsPermission)).
-		Post("/recipe_step_products/new/submit", s.handleRecipeStepProductCreationRequest)
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepProductsPermission)).
-		Delete(fmt.Sprintf("/dashboard_pages/recipe_step_products/%s", singleRecipeStepProductPattern), s.handleRecipeStepProductArchiveRequest)
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepProductsPermission)).
-		Get("/dashboard_pages/recipe_step_products/new", s.buildRecipeStepProductCreatorView(false))
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepProductsPermission)).
-		Get(fmt.Sprintf("/recipe_step_products/%s", singleRecipeStepProductPattern), s.buildRecipeStepProductEditorView(true))
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepProductsPermission)).
-		Put(fmt.Sprintf("/dashboard_pages/recipe_step_products/%s", singleRecipeStepProductPattern), s.handleRecipeStepProductUpdateRequest)
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepProductsPermission)).
-		Get(fmt.Sprintf("/dashboard_pages/recipe_step_products/%s", singleRecipeStepProductPattern), s.buildRecipeStepProductEditorView(false))
-
 	singleInvitationPattern := fmt.Sprintf(numericIDPattern, invitationIDURLParamKey)
 	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadInvitationsPermission)).
 		Get("/invitations", s.buildInvitationsTableView(true))

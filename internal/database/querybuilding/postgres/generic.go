@@ -161,6 +161,7 @@ func (b *Postgres) buildListQuery(ctx context.Context, tableName string, joins [
 	}
 
 	builder = builder.GroupBy(fmt.Sprintf("%s.%s", tableName, querybuilding.IDColumn))
+	builder = builder.OrderBy(fmt.Sprintf("%s.%s", tableName, querybuilding.IDColumn))
 
 	if filter != nil {
 		builder = querybuilding.ApplyFilterToQueryBuilder(filter, tableName, builder)

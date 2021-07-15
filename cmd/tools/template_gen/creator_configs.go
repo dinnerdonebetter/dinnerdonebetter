@@ -96,7 +96,7 @@ var creatorConfigs = map[string]*basicCreatorTemplateConfig{
 		},
 	},
 	"internal/services/frontend/templates/partials/generated/creators/valid_instrument_creator.gotpl": {
-		Title:         "New ValidInstrument",
+		Title:         "New Valid Instrument",
 		SubmissionURL: "/valid_instruments/new/submit",
 		Fields: []formField{
 			{
@@ -130,7 +130,7 @@ var creatorConfigs = map[string]*basicCreatorTemplateConfig{
 		},
 	},
 	"internal/services/frontend/templates/partials/generated/creators/valid_preparation_creator.gotpl": {
-		Title:         "New ValidPreparation",
+		Title:         "New Valid Preparation",
 		SubmissionURL: "/valid_preparations/new/submit",
 		Fields: []formField{
 			{
@@ -157,7 +157,7 @@ var creatorConfigs = map[string]*basicCreatorTemplateConfig{
 		},
 	},
 	"internal/services/frontend/templates/partials/generated/creators/valid_ingredient_creator.gotpl": {
-		Title:         "New ValidIngredient",
+		Title:         "New Valid Ingredient",
 		SubmissionURL: "/valid_ingredients/new/submit",
 		Fields: []formField{
 			{
@@ -289,7 +289,7 @@ var creatorConfigs = map[string]*basicCreatorTemplateConfig{
 		},
 	},
 	"internal/services/frontend/templates/partials/generated/creators/valid_ingredient_preparation_creator.gotpl": {
-		Title:         "New ValidIngredientPreparation",
+		Title:         "New Valid Ingredient Preparation",
 		SubmissionURL: "/valid_ingredient_preparations/new/submit",
 		Fields: []formField{
 			{
@@ -316,7 +316,7 @@ var creatorConfigs = map[string]*basicCreatorTemplateConfig{
 		},
 	},
 	"internal/services/frontend/templates/partials/generated/creators/valid_preparation_instrument_creator.gotpl": {
-		Title:         "New ValidPreparationInstrument",
+		Title:         "New Valid Preparation Instrument",
 		SubmissionURL: "/valid_preparation_instruments/new/submit",
 		Fields: []formField{
 			{
@@ -342,42 +342,8 @@ var creatorConfigs = map[string]*basicCreatorTemplateConfig{
 			},
 		},
 	},
-	"internal/services/frontend/templates/partials/generated/creators/recipe_creator.gotpl": {
-		Title:         "New Recipe",
-		SubmissionURL: "/recipes/new/submit",
-		Fields: []formField{
-			{
-				LabelName:       "name",
-				FormName:        "name",
-				StructFieldName: "Name",
-				InputType:       "text",
-				Required:        true,
-			},
-			{
-				LabelName:       "source",
-				FormName:        "source",
-				StructFieldName: "Source",
-				InputType:       "text",
-				Required:        true,
-			},
-			{
-				LabelName:       "description",
-				FormName:        "description",
-				StructFieldName: "Description",
-				InputType:       "text",
-				Required:        true,
-			},
-			{
-				LabelName:       "inspiredByRecipeID",
-				FormName:        "inspiredByRecipeID",
-				StructFieldName: "InspiredByRecipeID",
-				InputType:       "number",
-				Required:        true,
-			},
-		},
-	},
 	"internal/services/frontend/templates/partials/generated/creators/recipe_step_creator.gotpl": {
-		Title:         "New RecipeStep",
+		Title:         "New Recipe Step",
 		SubmissionURL: "/recipe_steps/new/submit",
 		Fields: []formField{
 			{
@@ -446,7 +412,7 @@ var creatorConfigs = map[string]*basicCreatorTemplateConfig{
 		},
 	},
 	"internal/services/frontend/templates/partials/generated/creators/recipe_step_ingredient_creator.gotpl": {
-		Title:         "New RecipeStepIngredient",
+		Title:         "New Recipe Step Ingredient",
 		SubmissionURL: "/recipe_step_ingredients/new/submit",
 		Fields: []formField{
 			{
@@ -501,7 +467,7 @@ var creatorConfigs = map[string]*basicCreatorTemplateConfig{
 		},
 	},
 	"internal/services/frontend/templates/partials/generated/creators/recipe_step_product_creator.gotpl": {
-		Title:         "New RecipeStepProduct",
+		Title:         "New Recipe Step Product",
 		SubmissionURL: "/recipe_step_products/new/submit",
 		Fields: []formField{
 			{

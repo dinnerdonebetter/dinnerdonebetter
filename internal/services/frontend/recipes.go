@@ -42,7 +42,7 @@ func (s *service) fetchRecipe(ctx context.Context, req *http.Request) (recipe *t
 	return recipe, nil
 }
 
-//go:embed templates/partials/generated/creators/recipe_creator.gotpl
+//go:embed templates/partials/creators/recipe_creator.gotpl
 var recipeCreatorTemplate string
 
 func (s *service) buildRecipeCreatorView(includeBaseTemplate bool) func(http.ResponseWriter, *http.Request) {
@@ -169,7 +169,7 @@ func (s *service) handleRecipeCreationRequest(res http.ResponseWriter, req *http
 	res.WriteHeader(http.StatusCreated)
 }
 
-//go:embed templates/partials/generated/editors/recipe_editor.gotpl
+//go:embed templates/partials/editors/recipe_editor.gotpl
 var recipeEditorTemplate string
 
 func (s *service) buildRecipeEditorView(includeBaseTemplate bool) func(http.ResponseWriter, *http.Request) {

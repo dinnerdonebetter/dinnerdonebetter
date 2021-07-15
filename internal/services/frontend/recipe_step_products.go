@@ -76,7 +76,7 @@ func (s *service) buildRecipeStepProductCreatorView(includeBaseTemplate bool) fu
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       "New RecipeStepProduct",
+				Title:       "New Recipe Step Product",
 				ContentData: recipeStepProduct,
 			}
 			if sessionCtxData != nil {
@@ -314,7 +314,7 @@ func (s *service) buildRecipeStepProductsTableView(includeBaseTemplate bool) fun
 
 			page := &pageData{
 				IsLoggedIn:  sessionCtxData != nil,
-				Title:       "RecipeStepProducts",
+				Title:       "Recipe Step Products",
 				ContentData: recipeStepProducts,
 			}
 			if sessionCtxData != nil {
