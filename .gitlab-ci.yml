@@ -25,7 +25,6 @@ dependency-injection-check:
   image: golang:stretch
   variables:
     GOPATH: "/go"
-    GO111MODULE: "off"
   script:
     - apt-get update -y && apt-get install -y make git gcc musl-dev
     - GO111MODULE=off go get github.com/google/wire/cmd/wire
