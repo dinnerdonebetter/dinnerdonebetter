@@ -28,6 +28,7 @@ dependency-injection-check:
     GO111MODULE: "off"
   script:
     - apt-get update -y && apt-get install -y make git gcc musl-dev
+    - GO111MODULE=off go get github.com/google/wire/cmd/wire
     - go run mage.go ensureMage
     - mage rewire
 
