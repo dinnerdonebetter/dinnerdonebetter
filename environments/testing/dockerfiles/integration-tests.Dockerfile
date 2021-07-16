@@ -4,9 +4,9 @@ RUN apt-get update -y && apt-get install -y make git gcc musl-dev
 
 WORKDIR /go/src/gitlab.com/prixfixe/prixfixe
 
-ADD . .
+COPY . .
 
-ENTRYPOINT [ "go", "test", "-v", "-failfast", "gitlab.com/prixfixe/prixfixe/tests/v1/integration" ]
+ENTRYPOINT [ "go", "test", "-v", "-failfast", "gitlab.com/prixfixe/prixfixe/tests/integration" ]
 
-# for a more specific test:
-# ENTRYPOINT [ "go", "test", "-v", "gitlab.com/prixfixe/prixfixe/tests/v1/integration", "-run", "InsertTestNameHere" ]
+# to debug a specific test:
+# ENTRYPOINT [ "go", "test", "-parallel", "1", "-v", "-failfast", "gitlab.com/prixfixe/prixfixe/tests/integration", "-run", "InsertTestNameHere" ]

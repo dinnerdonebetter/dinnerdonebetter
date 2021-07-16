@@ -1,0 +1,39 @@
+<div id="content" class="">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">New Recipe</h1>
+    </div>
+    <div class="col-md-8 order-md-1">
+        <form class="needs-validation" novalidate="" hx-target="#content" hx-post="/recipes/new/submit">
+                <div class="mb3">
+                    <label for="name">Name</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="name" placeholder="" required="" value="{{ .Name }}" />
+                        <div class="invalid-feedback" style="width: 100%;">name is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="source">Source</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="source" placeholder="" required="" value="{{ .Source }}" />
+                        <div class="invalid-feedback" style="width: 100%;">source is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="description">Description</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="description" placeholder="" required="" value="{{ .Description }}" />
+                        <div class="invalid-feedback" style="width: 100%;">description is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="inspiredByRecipeID">InspiredByRecipeID</label>
+                    <div class="input-group">
+                        <input class="form-control" type="number" id="" name="inspiredByRecipeID" placeholder="" required="" value="{{ .InspiredByRecipeID }}" />
+                        <div class="invalid-feedback" style="width: 100%;">inspiredByRecipeID is required.</div>
+                    </div>
+                </div>
+            <hr class="mb-4" />
+            <button class="btn btn-primary btn-lg btn-block" type="submit">Save</button>
+        </form>
+    </div>
+</div>

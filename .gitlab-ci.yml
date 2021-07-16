@@ -1,7 +1,7 @@
 stages:
   - quality
   - frontend-testing
-  - involved-testing
+  - integration-testing
   - load-testing
   - publish
 
@@ -9,16 +9,6 @@ before_script:
   - mkdir -p /go/src/gitlab.com/prixfixe/
   - cp -rf /builds/prixfixe/prixfixe /go/src/gitlab.com/prixfixe/
   - cd /go/src/gitlab.com/prixfixe/prixfixe
-  - apt-get update -y && apt-get install -y make git gcc musl-dev
-
-formatting:
-  stage: quality
-  image: golang:stretch
-  variables:
-    GOPATH: "/go"
-  script:
-    - apt-get update -y && apt-get install -y make git gcc musl-dev
-    - if [ $(gofmt -l . | grep -Ev '^vendor\/' | head -c1 | wc -c) -ne 0 ]; then exit 1; fi
 
 coverage:
   stage: quality
@@ -27,21 +17,30 @@ coverage:
     GOPATH: "/go"
   script:
     - apt-get update -y && apt-get install -y make git gcc musl-dev
-    - make coverage
+    - go run mage.go ensureMage
+    - mage vendor coverage
 
-# unit-tests:
-#   stage: quality
-#   image: golang:stretch
-#   variables:
-#     GOPATH: "/go"
-#   script:
-#     - apt-get update -y && apt-get install -y make git gcc musl-dev
-#     - make gitlab-ci-junit-report
-#   artifacts:
-#     reports:
-#       junit: test_artifacts/unit_test_report.xml
+dependency-injection-check:
+  stage: quality
+  image: golang:stretch
+  variables:
+    GOPATH: "/go"
+  script:
+    - apt-get update -y && apt-get install -y make git gcc musl-dev
+    - GO111MODULE=off go get github.com/google/wire/cmd/wire
+    - go run mage.go ensureMage
+    - mage rewire
 
-linting:
+golang-format-check:
+  stage: quality
+  image: golang:stretch
+  variables:
+    GOPATH: "/go"
+  script:
+    - apt-get update -y && apt-get install -y make git gcc musl-dev
+    - if [ $(gofmt -l . | grep -Ev '^vendor\/' | head -c1 | wc -c) -ne 0 ]; then exit 1; fi
+
+golang-lint:
   stage: quality
   image: golangci/golangci-lint:latest # v1.18
   variables:
@@ -50,44 +49,56 @@ linting:
     - go mod vendor
     - golangci-lint run --config=.golangci.yml --deadline=15m
 
-#build-frontend:
-#  stage: quality
-#  image: node:10
-#  before_script:
-#    - cd frontend/v1
-#    - npm install
+#integration_tests_sqlite:
+#  stage: integration-testing
+#  image: docker/compose:latest
+#  services:
+#    - docker:dind
+#  variables:
+#    GOPATH: "/go"
 #  script:
-#    - npm run build
+#    - ls -Al environments/testing/config_files/integration-tests-sqlite.toml
+#    - ls -Al /go/src/gitlab.com/prixfixe/prixfixe/environments/testing/config_files/integration-tests-sqlite.toml
+#    - whoami
+#    - cat /go/src/gitlab.com/prixfixe/prixfixe/environments/testing/config_files/integration-tests-sqlite.toml
+#    - apk add --no-cache git make musl-dev go
+#    - go version
+#    - docker-compose --file environments/testing/compose_files/integration_tests/integration-tests-base.yaml --file environments/testing/compose_files/integration_tests/integration-tests-sqlite.yaml up --build --force-recreate --remove-orphans --renew-anon-volumes --always-recreate-deps --abort-on-container-exit
 
-integration-tests-postgres:
-  stage: involved-testing
-  image: docker:latest
-  services:
-    - docker:dind
-  variables:
-    GOPATH: "/go"
-  script:
-    - apk add --update --no-cache py-pip openssl python3-dev libffi-dev
-      openssl-dev gcc libc-dev make
-    - pip install docker-compose
-    - make integration-tests-postgres
+#integration_tests_postgres:
+#  stage: integration-testing
+#  image: docker/compose:latest
+#  services:
+#    - docker:dind
+#  variables:
+#    GOPATH: "/go"
+#  script:
+#    - apk add --update make
+#    - docker-compose --file environments/testing/compose_files/integration_tests/integration-tests-base.yaml --file environments/testing/compose_files/integration_tests/integration-tests-postgres.yaml up --build --force-recreate --remove-orphans --renew-anon-volumes --always-recreate-deps --abort-on-container-exit
 
-frontend-selenium-tests:
-  stage: involved-testing
-  image: docker:latest
-  services:
-    - docker:dind
-  variables:
-    GOPATH: "/go"
-  script:
-    - apk add --update --no-cache py-pip openssl python3-dev libffi-dev
-      openssl-dev gcc libc-dev make
-    - pip install docker-compose
-    - make frontend-tests
+#integration_tests_mariadb:
+#  stage: integration-testing
+#  image: docker/compose:latest
+#  services:
+#    - docker:dind
+#  variables:
+#    GOPATH: "/go"
+#  script:
+#    - apk add --update make
+#    - docker-compose --file environments/testing/compose_files/integration_tests/integration-tests-base.yaml --file environments/testing/compose_files/integration_tests/integration-tests-mariadb.yaml up --build --force-recreate --remove-orphans --renew-anon-volumes --always-recreate-deps --abort-on-container-exit
 
-# weekly load tests
+#frontend-selenium-tests:
+#  stage: integration-testing
+#  image: docker/compose:latest
+#  services:
+#    - docker:dind
+#  script:
+#    - apk add --update make
+#    - docker-compose --file environments/testing/compose_files/frontend-tests.yaml up --build --force-recreate --remove-orphans --renew-anon-volumes --always-recreate-deps --abort-on-container-exit
 
-weekly-load-tests-postgres:on-schedule:
+# daily load tests
+
+daily-load_tests_postgres:on-schedule:
   stage: load-testing
   image: docker:latest
   services:
@@ -96,46 +107,38 @@ weekly-load-tests-postgres:on-schedule:
     GOPATH: "/go"
     LOADTEST_RUN_TIME: "10m"
   script:
-    - apk add --update --no-cache py-pip openssl python3-dev libffi-dev
-      openssl-dev gcc libc-dev make
+    - apk add --update --no-cache py-pip openssl python3-dev libffi-dev openssl-dev gcc libc-dev make
     - pip install docker-compose
-    - make load-tests-postgres
+    - make load_tests_postgres
   only:
     - schedules
 
-# containers
-
-build-dev-container:
-  stage: involved-testing
+daily-load_tests_mariadb:on-schedule:
+  stage: load-testing
   image: docker:latest
   services:
     - docker:dind
+  variables:
+    GOPATH: "/go"
+    LOADTEST_RUN_TIME: "10m"
   script:
-    - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
-    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev_ci_check --file environments/dev/Dockerfile .
-  except:
-    - dev
-
-build-and-publish-dev-container:
-  stage: publish
-  image: docker:latest
-  services:
-    - docker:dind
-  script:
-    - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
-    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev --file environments/dev/Dockerfile .
-    - docker push registry.gitlab.com/prixfixe/prixfixe:dev
+    - apk add --update --no-cache py-pip openssl python3-dev libffi-dev openssl-dev gcc libc-dev make
+    - pip install docker-compose
+    - make load_tests_mariadb
   only:
-    - dev
+    - schedules
 
-build-and-publish-index-initializer:
-  stage: publish
+daily-load_tests_sqlite:on-schedule:
+  stage: load-testing
   image: docker:latest
   services:
     - docker:dind
+  variables:
+    GOPATH: "/go"
+    LOADTEST_RUN_TIME: "10m"
   script:
-    - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
-    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:index_init --file environments/tooling/index_init.Dockerfile .
-    - docker push registry.gitlab.com/prixfixe/prixfixe:index_init
+    - apk add --update --no-cache py-pip openssl python3-dev libffi-dev openssl-dev gcc libc-dev make
+    - pip install docker-compose
+    - make load_tests_sqlite
   only:
-    - dev
+    - schedules

@@ -1,0 +1,21 @@
+package frontend
+
+import (
+	_ "embed"
+	"net/http"
+
+	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
+)
+
+//go:embed assets/favicon.svg
+var svgFaviconSrc []byte
+
+func (s *service) favicon(res http.ResponseWriter, req *http.Request) {
+	_, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	tracing.AttachRequestToSpan(span, req)
+
+	res.Header().Set("Content-Type", "image/svg+xml")
+	s.renderBytesToResponse(svgFaviconSrc, res)
+}

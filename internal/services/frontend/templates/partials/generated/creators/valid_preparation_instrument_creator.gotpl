@@ -1,0 +1,32 @@
+<div id="content" class="">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">New Valid Preparation Instrument</h1>
+    </div>
+    <div class="col-md-8 order-md-1">
+        <form class="needs-validation" novalidate="" hx-target="#content" hx-post="/valid_preparation_instruments/new/submit">
+                <div class="mb3">
+                    <label for="instrumentID">InstrumentID</label>
+                    <div class="input-group">
+                        <input class="form-control" type="number" id="" name="instrumentID" placeholder="" required="" value="{{ .InstrumentID }}" />
+                        <div class="invalid-feedback" style="width: 100%;">instrumentID is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="preparationID">PreparationID</label>
+                    <div class="input-group">
+                        <input class="form-control" type="number" id="" name="preparationID" placeholder="" required="" value="{{ .PreparationID }}" />
+                        <div class="invalid-feedback" style="width: 100%;">preparationID is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="notes">Notes</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="notes" placeholder="" required="" value="{{ .Notes }}" />
+                        <div class="invalid-feedback" style="width: 100%;">notes is required.</div>
+                    </div>
+                </div>
+            <hr class="mb-4" />
+            <button class="btn btn-primary btn-lg btn-block" type="submit">Save</button>
+        </form>
+    </div>
+</div>

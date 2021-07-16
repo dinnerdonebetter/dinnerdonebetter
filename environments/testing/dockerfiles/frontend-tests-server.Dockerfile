@@ -3,23 +3,14 @@ FROM golang:stretch AS build-stage
 
 WORKDIR /go/src/gitlab.com/prixfixe/prixfixe
 
-RUN apt-get update -y && apt-get install -y make git gcc musl-dev
+COPY . .
 
-ADD . .
-
-RUN go build -trimpath -o /prixfixe -v gitlab.com/prixfixe/prixfixe/cmd/server/v1
-
-# frontend-build-stage
-FROM node:latest AS frontend-build-stage
-
-WORKDIR /app
-
-ADD frontend/v1 .
-
-RUN npm install && npm run build
+RUN go build -trimpath -o /prixfixe -v gitlab.com/prixfixe/prixfixe/cmd/server
 
 # final stage
 FROM debian:stretch
+
+COPY --from=build-stage /prixfixe /prixfixe
 
 RUN mkdir /home/appuser
 RUN groupadd --gid 999 appuser && \
@@ -29,7 +20,5 @@ WORKDIR /home/appuser
 USER appuser
 
 COPY environments/testing/config_files/frontend-tests.toml /etc/config.toml
-COPY --from=build-stage /prixfixe /prixfixe
-COPY --from=frontend-build-stage /app/dist /frontend
 
 ENTRYPOINT ["/prixfixe"]

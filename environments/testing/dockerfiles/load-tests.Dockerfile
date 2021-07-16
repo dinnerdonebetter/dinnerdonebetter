@@ -5,12 +5,12 @@ WORKDIR /go/src/gitlab.com/prixfixe/prixfixe
 
 RUN apt-get update -y && apt-get install -y make git gcc musl-dev
 
-ADD . .
+COPY . .
 
-RUN go build -o /loadtester gitlab.com/prixfixe/prixfixe/tests/v1/load
+RUN go build -o /loadtester gitlab.com/prixfixe/prixfixe/tests/load
 
 # final stage
-FROM debian:stable
+FROM debian:stretch
 
 COPY --from=build-stage /loadtester /loadtester
 

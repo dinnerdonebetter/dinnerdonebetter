@@ -1,0 +1,25 @@
+<div id="content" class="">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">New Report</h1>
+    </div>
+    <div class="col-md-8 order-md-1">
+        <form class="needs-validation" novalidate="" hx-target="#content" hx-post="/reports/new/submit">
+                <div class="mb3">
+                    <label for="reportType">ReportType</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="reportType" placeholder="" required="" value="{{ .ReportType }}" />
+                        <div class="invalid-feedback" style="width: 100%;">reportType is required.</div>
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="concern">Concern</label>
+                    <div class="input-group">
+                        <input class="form-control" type="text" id="" name="concern" placeholder="" required="" value="{{ .Concern }}" />
+                        <div class="invalid-feedback" style="width: 100%;">concern is required.</div>
+                    </div>
+                </div>
+            <hr class="mb-4" />
+            <button class="btn btn-primary btn-lg btn-block" type="submit">Save</button>
+        </form>
+    </div>
+</div>
