@@ -24,16 +24,18 @@ services:
       - source: /home/sysadmin/caddy_data
         target: /data
         type: bind
-  prixfixe_server:
+  prixfixe-server:
     container_name: prixfixe
     image: registry.gitlab.com/prixfixe/prixfixe:dev
     environment:
-      CONFIGURATION_FILEPATH: "/etc/prixfixe.config.toml"
+      PRIXFIXE_SERVICE_LOCAL_SECRET_STORE_KEY: 'SUFNQVdBUkVUSEFUVEhJU1NFQ1JFVElTVU5TRUNVUkU='
+      CONFIGURATION_FILEPATH: '/etc/prixfixe.config'
+      JAEGER_DISABLED: 'false'
     ports:
       - "8888:8888"
     volumes:
-      - source: /home/sysadmin/prixfixe.config.toml
-        target: /etc/prixfixe.config.toml
+      - source: /home/sysadmin/prixfixe.config
+        target: /etc/prixfixe.config
         type: bind
       - source: /home/sysadmin/prixfixe_search_indices
         target: /etc/prixfixe_search_indices

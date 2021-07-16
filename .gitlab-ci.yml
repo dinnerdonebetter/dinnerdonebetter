@@ -49,22 +49,6 @@ golang-lint:
     - go mod vendor
     - golangci-lint run --config=.golangci.yml --deadline=15m
 
-#integration_tests_sqlite:
-#  stage: integration-testing
-#  image: docker/compose:latest
-#  services:
-#    - docker:dind
-#  variables:
-#    GOPATH: "/go"
-#  script:
-#    - ls -Al environments/testing/config_files/integration-tests-sqlite.toml
-#    - ls -Al /go/src/gitlab.com/prixfixe/prixfixe/environments/testing/config_files/integration-tests-sqlite.toml
-#    - whoami
-#    - cat /go/src/gitlab.com/prixfixe/prixfixe/environments/testing/config_files/integration-tests-sqlite.toml
-#    - apk add --no-cache git make musl-dev go
-#    - go version
-#    - docker-compose --file environments/testing/compose_files/integration_tests/integration-tests-base.yaml --file environments/testing/compose_files/integration_tests/integration-tests-sqlite.yaml up --build --force-recreate --remove-orphans --renew-anon-volumes --always-recreate-deps --abort-on-container-exit
-
 #integration_tests_postgres:
 #  stage: integration-testing
 #  image: docker/compose:latest
@@ -75,17 +59,6 @@ golang-lint:
 #  script:
 #    - apk add --update make
 #    - docker-compose --file environments/testing/compose_files/integration_tests/integration-tests-base.yaml --file environments/testing/compose_files/integration_tests/integration-tests-postgres.yaml up --build --force-recreate --remove-orphans --renew-anon-volumes --always-recreate-deps --abort-on-container-exit
-
-#integration_tests_mariadb:
-#  stage: integration-testing
-#  image: docker/compose:latest
-#  services:
-#    - docker:dind
-#  variables:
-#    GOPATH: "/go"
-#  script:
-#    - apk add --update make
-#    - docker-compose --file environments/testing/compose_files/integration_tests/integration-tests-base.yaml --file environments/testing/compose_files/integration_tests/integration-tests-mariadb.yaml up --build --force-recreate --remove-orphans --renew-anon-volumes --always-recreate-deps --abort-on-container-exit
 
 #frontend-selenium-tests:
 #  stage: integration-testing
@@ -98,47 +71,37 @@ golang-lint:
 
 # daily load tests
 
-daily-load_tests_postgres:on-schedule:
-  stage: load-testing
+build-dev-container:
+  stage: quality
   image: docker:latest
   services:
     - docker:dind
-  variables:
-    GOPATH: "/go"
-    LOADTEST_RUN_TIME: "10m"
   script:
-    - apk add --update --no-cache py-pip openssl python3-dev libffi-dev openssl-dev gcc libc-dev make
-    - pip install docker-compose
-    - make load_tests_postgres
-  only:
-    - schedules
+    - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
+    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev_ci_check --file environments/dev/Dockerfile .
+  except:
+    - dev
 
-daily-load_tests_mariadb:on-schedule:
-  stage: load-testing
+build-and-publish-dev-container:
+  stage: publish
   image: docker:latest
   services:
     - docker:dind
-  variables:
-    GOPATH: "/go"
-    LOADTEST_RUN_TIME: "10m"
   script:
-    - apk add --update --no-cache py-pip openssl python3-dev libffi-dev openssl-dev gcc libc-dev make
-    - pip install docker-compose
-    - make load_tests_mariadb
+    - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
+    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev --file environments/dev/Dockerfile .
+    - docker push registry.gitlab.com/prixfixe/prixfixe:dev
   only:
-    - schedules
+    - dev
 
-daily-load_tests_sqlite:on-schedule:
-  stage: load-testing
+build-and-publish-index-initializer:
+  stage: publish
   image: docker:latest
   services:
     - docker:dind
-  variables:
-    GOPATH: "/go"
-    LOADTEST_RUN_TIME: "10m"
   script:
-    - apk add --update --no-cache py-pip openssl python3-dev libffi-dev openssl-dev gcc libc-dev make
-    - pip install docker-compose
-    - make load_tests_sqlite
+    - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
+    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:index_init --file environments/tooling/index_init.Dockerfile .
+    - docker push registry.gitlab.com/prixfixe/prixfixe:index_init
   only:
-    - schedules
+    - dev
