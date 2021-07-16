@@ -109,7 +109,7 @@ func TestPostgres_BuildGetRecipesQuery(T *testing.T) {
 
 		filter := fakes.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT recipes.id, recipes.external_id, recipes.name, recipes.source, recipes.description, recipes.inspired_by_recipe_id, recipes.created_on, recipes.last_updated_on, recipes.archived_on, recipes.belongs_to_account, (SELECT COUNT(recipes.id) FROM recipes WHERE recipes.archived_on IS NULL) as total_count, (SELECT COUNT(recipes.id) FROM recipes WHERE recipes.archived_on IS NULL AND recipes.created_on > $1 AND recipes.created_on < $2 AND recipes.last_updated_on > $3 AND recipes.last_updated_on < $4) as filtered_count FROM recipes WHERE recipes.archived_on IS NULL AND recipes.created_on > $5 AND recipes.created_on < $6 AND recipes.last_updated_on > $7 AND recipes.last_updated_on < $8 GROUP BY recipes.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT recipes.id, recipes.external_id, recipes.name, recipes.source, recipes.description, recipes.inspired_by_recipe_id, recipes.created_on, recipes.last_updated_on, recipes.archived_on, recipes.belongs_to_account, (SELECT COUNT(recipes.id) FROM recipes WHERE recipes.archived_on IS NULL) as total_count, (SELECT COUNT(recipes.id) FROM recipes WHERE recipes.archived_on IS NULL AND recipes.created_on > $1 AND recipes.created_on < $2 AND recipes.last_updated_on > $3 AND recipes.last_updated_on < $4) as filtered_count FROM recipes WHERE recipes.archived_on IS NULL AND recipes.created_on > $5 AND recipes.created_on < $6 AND recipes.last_updated_on > $7 AND recipes.last_updated_on < $8 GROUP BY recipes.id ORDER BY recipes.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			filter.CreatedAfter,
 			filter.CreatedBefore,

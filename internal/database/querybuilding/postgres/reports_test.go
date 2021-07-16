@@ -109,7 +109,7 @@ func TestPostgres_BuildGetReportsQuery(T *testing.T) {
 
 		filter := fakes.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT reports.id, reports.external_id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_account, (SELECT COUNT(reports.id) FROM reports WHERE reports.archived_on IS NULL) as total_count, (SELECT COUNT(reports.id) FROM reports WHERE reports.archived_on IS NULL AND reports.created_on > $1 AND reports.created_on < $2 AND reports.last_updated_on > $3 AND reports.last_updated_on < $4) as filtered_count FROM reports WHERE reports.archived_on IS NULL AND reports.created_on > $5 AND reports.created_on < $6 AND reports.last_updated_on > $7 AND reports.last_updated_on < $8 GROUP BY reports.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT reports.id, reports.external_id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_account, (SELECT COUNT(reports.id) FROM reports WHERE reports.archived_on IS NULL) as total_count, (SELECT COUNT(reports.id) FROM reports WHERE reports.archived_on IS NULL AND reports.created_on > $1 AND reports.created_on < $2 AND reports.last_updated_on > $3 AND reports.last_updated_on < $4) as filtered_count FROM reports WHERE reports.archived_on IS NULL AND reports.created_on > $5 AND reports.created_on < $6 AND reports.last_updated_on > $7 AND reports.last_updated_on < $8 GROUP BY reports.id ORDER BY reports.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			filter.CreatedAfter,
 			filter.CreatedBefore,
