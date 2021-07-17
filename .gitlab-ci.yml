@@ -49,7 +49,7 @@ golang-lint:
     - go mod vendor
     - golangci-lint run --config=.golangci.yml --deadline=15m
 
-#integration_tests_postgres:
+#integration_tests
 #  stage: integration-testing
 #  image: docker/compose:latest
 #  services:
@@ -68,8 +68,6 @@ golang-lint:
 #  script:
 #    - apk add --update make
 #    - docker-compose --file environments/testing/compose_files/frontend-tests.yaml up --build --force-recreate --remove-orphans --renew-anon-volumes --always-recreate-deps --abort-on-container-exit
-
-# daily load tests
 
 build-dev-container:
   stage: quality

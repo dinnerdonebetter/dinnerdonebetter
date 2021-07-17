@@ -28,7 +28,7 @@
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" href="/">PrixFixe</a>
+                <a class="navbar-brand" href="/">PrixFixe!</a>
                 {{ if not .IsLoggedIn }}
                 <div class="d-flex">
                     <div class="collapse navbar-collapse" id="navbarNav">
