@@ -143,7 +143,7 @@ func encryptAndSaveConfig(ctx context.Context, outputPath string, cfg *config.In
 type configFunc func(ctx context.Context, filePath string) error
 
 var files = map[string]configFunc{
-	"environments/dev/service.config":                                     localDevelopmentConfig,
+	"environments/dev/service.config":                                     developmentConfig,
 	"environments/local/service.config":                                   localDevelopmentConfig,
 	"environments/testing/config_files/frontend-tests.config":             frontendTestsConfig,
 	"environments/testing/config_files/integration-tests-postgres.config": buildIntegrationTestForDBImplementation(postgres, devPostgresDBConnDetails),

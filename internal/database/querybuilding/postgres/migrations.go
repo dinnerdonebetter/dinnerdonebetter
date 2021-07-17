@@ -10,7 +10,7 @@ import (
 var (
 	migrations = []darwin.Migration{
 		{
-			Version:     0.0,
+			Version:     1,
 			Description: "create sessions table for session manager",
 			Script: `
 			CREATE TABLE sessions (
@@ -21,12 +21,12 @@ var (
 			);`,
 		},
 		{
-			Version:     0.01,
+			Version:     2,
 			Description: "create sessions table for session manager",
 			Script:      `CREATE INDEX sessions_expiry_idx ON sessions (expiry);`,
 		},
 		{
-			Version:     0.02,
+			Version:     3,
 			Description: "create audit log table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS audit_log (
@@ -38,7 +38,7 @@ var (
 			);`,
 		},
 		{
-			Version:     0.03,
+			Version:     4,
 			Description: "create users table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS users (
@@ -61,7 +61,7 @@ var (
 			);`,
 		},
 		{
-			Version:     0.04,
+			Version:     5,
 			Description: "create accounts table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS accounts (
@@ -81,7 +81,7 @@ var (
 			);`,
 		},
 		{
-			Version:     0.05,
+			Version:     6,
 			Description: "create account user memberships table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS account_user_memberships (
@@ -97,7 +97,7 @@ var (
 			);`,
 		},
 		{
-			Version:     0.06,
+			Version:     7,
 			Description: "create API clients table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS api_clients (
@@ -115,7 +115,7 @@ var (
 			);`,
 		},
 		{
-			Version:     0.07,
+			Version:     8,
 			Description: "create webhooks table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS webhooks (
@@ -135,7 +135,7 @@ var (
 			);`,
 		},
 		{
-			Version:     0.08,
+			Version:     9,
 			Description: "create valid instruments table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS valid_instruments (
@@ -151,7 +151,7 @@ var (
 			);`,
 		},
 		{
-			Version:     0.09,
+			Version:     10,
 			Description: "create valid preparations table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS valid_preparations (
@@ -166,7 +166,7 @@ var (
 			);`,
 		},
 		{
-			Version:     0.1,
+			Version:     11,
 			Description: "create valid ingredients table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS valid_ingredients (
@@ -196,7 +196,7 @@ var (
 			);`,
 		},
 		{
-			Version:     0.11,
+			Version:     12,
 			Description: "create valid ingredient preparations table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS valid_ingredient_preparations (
@@ -211,7 +211,7 @@ var (
 			);`,
 		},
 		{
-			Version:     0.12,
+			Version:     13,
 			Description: "create valid preparation instruments table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS valid_preparation_instruments (
@@ -226,7 +226,7 @@ var (
 			);`,
 		},
 		{
-			Version:     0.13,
+			Version:     14,
 			Description: "create recipes table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS recipes (
@@ -243,7 +243,7 @@ var (
 			);`,
 		},
 		{
-			Version:     0.14,
+			Version:     15,
 			Description: "create recipe steps table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS recipe_steps (
@@ -265,7 +265,7 @@ var (
 			);`,
 		},
 		{
-			Version:     0.15,
+			Version:     16,
 			Description: "create recipe step ingredients table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS recipe_step_ingredients (
@@ -285,7 +285,7 @@ var (
 			);`,
 		},
 		{
-			Version:     0.16,
+			Version:     17,
 			Description: "create recipe step products table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS recipe_step_products (
@@ -303,7 +303,7 @@ var (
 			);`,
 		},
 		{
-			Version:     0.17,
+			Version:     18,
 			Description: "create invitations table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS invitations (
@@ -318,7 +318,7 @@ var (
 			);`,
 		},
 		{
-			Version:     0.18,
+			Version:     19,
 			Description: "create reports table",
 			Script: `
 			CREATE TABLE IF NOT EXISTS reports (
