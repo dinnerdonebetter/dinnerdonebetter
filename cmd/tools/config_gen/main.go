@@ -150,9 +150,7 @@ var files = map[string]configFunc{
 }
 
 func buildLocalFrontendServiceConfig() frontendservice.Config {
-	return frontendservice.Config{
-		UseFakeData: false,
-	}
+	return frontendservice.Config{}
 }
 
 func mustHashPass(password string) string {

@@ -44,19 +44,6 @@ func TestService_fetchWebhook(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 
-	T.Run("with fake mode", func(t *testing.T) {
-		t.Parallel()
-
-		s := buildTestHelper(t)
-		s.service.useFakeData = true
-
-		req := httptest.NewRequest(http.MethodGet, "/webhooks", nil)
-
-		actual, err := s.service.fetchWebhook(s.ctx, s.sessionCtxData, req)
-		assert.NotNil(t, actual)
-		assert.NoError(t, err)
-	})
-
 	T.Run("with error fetching webhook", func(t *testing.T) {
 		t.Parallel()
 
@@ -209,19 +196,6 @@ func TestService_fetchWebhooks(T *testing.T) {
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
-	})
-
-	T.Run("with fake mode", func(t *testing.T) {
-		t.Parallel()
-
-		s := buildTestHelper(t)
-		s.service.useFakeData = true
-
-		req := httptest.NewRequest(http.MethodGet, "/webhooks", nil)
-
-		actual, err := s.service.fetchWebhooks(s.ctx, s.sessionCtxData, req)
-		assert.NotNil(t, actual)
-		assert.NoError(t, err)
 	})
 
 	T.Run("with error fetching data", func(t *testing.T) {

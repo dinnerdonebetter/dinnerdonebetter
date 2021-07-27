@@ -100,16 +100,14 @@ func (s *service) handleLoginSubmission(res http.ResponseWriter, req *http.Reque
 		redirectTo = "/"
 	}
 
-	if !s.useFakeData {
-		_, cookie, err := s.authService.AuthenticateUser(ctx, loginInput)
-		if err != nil {
-			s.renderStringToResponse(loginPrompt, res)
-			return
-		}
-
-		http.SetCookie(res, cookie)
-		htmxRedirectTo(res, redirectTo)
+	_, cookie, err := s.authService.AuthenticateUser(ctx, loginInput)
+	if err != nil {
+		s.renderStringToResponse(loginPrompt, res)
+		return
 	}
+
+	http.SetCookie(res, cookie)
+	htmxRedirectTo(res, redirectTo)
 }
 
 func (s *service) handleLogoutSubmission(res http.ResponseWriter, req *http.Request) {
@@ -126,13 +124,11 @@ func (s *service) handleLogoutSubmission(res http.ResponseWriter, req *http.Requ
 		return
 	}
 
-	if !s.useFakeData {
-		if err = s.authService.LogoutUser(ctx, sessionCtxData, req, res); err != nil {
-			observability.AcknowledgeError(err, logger, span, "logging out user")
-			return
-		}
-		htmxRedirectTo(res, "/")
+	if err = s.authService.LogoutUser(ctx, sessionCtxData, req, res); err != nil {
+		observability.AcknowledgeError(err, logger, span, "logging out user")
+		return
 	}
+	htmxRedirectTo(res, "/")
 }
 
 //go:embed templates/partials/auth/register.gotpl
@@ -211,17 +207,11 @@ func (s *service) handleRegistrationSubmission(res http.ResponseWriter, req *htt
 		return
 	}
 
-	var ucr *types.UserCreationResponse
-	if !s.useFakeData {
-		var err error
-		ucr, err = s.usersService.RegisterUser(ctx, registrationInput)
-		if err != nil {
-			// return erroneous markup here
-			s.renderStringToResponse(registrationPrompt, res)
-			return
-		}
-	} else {
-		ucr = &types.UserCreationResponse{TwoFactorQRCode: ""}
+	ucr, err := s.usersService.RegisterUser(ctx, registrationInput)
+	if err != nil {
+		// return erroneous markup here
+		s.renderStringToResponse(registrationPrompt, res)
+		return
 	}
 
 	tmpl := s.parseTemplate(ctx, "", successfulRegistrationResponse, nil)

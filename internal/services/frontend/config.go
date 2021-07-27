@@ -3,12 +3,15 @@ package frontend
 import (
 	"context"
 
+	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 // Config configures the frontend service.
 type Config struct {
-	UseFakeData bool `json:"use_fake_data" mapstructure:"use_fake_data" toml:"use_fake_data"`
+	Logging logging.Config `json:"logging" mapstructure:"logging" toml:"logging"`
+	Debug   bool           `json:"debug" mapstructure:"debug" toml:"debug"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

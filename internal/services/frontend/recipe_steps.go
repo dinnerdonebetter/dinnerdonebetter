@@ -11,7 +11,6 @@ import (
 	keys "gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 const (
@@ -25,23 +24,19 @@ func (s *service) fetchRecipeStep(ctx context.Context, req *http.Request) (recip
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		recipeStep = fakes.BuildFakeRecipeStep()
-	} else {
-		// determine recipe ID.
-		recipeID := s.recipeIDFetcher(req)
-		tracing.AttachRecipeIDToSpan(span, recipeID)
-		logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	// determine recipe ID.
+	recipeID := s.recipeIDFetcher(req)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
-		// determine recipe step ID.
-		recipeStepID := s.recipeStepIDFetcher(req)
-		tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
-		logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
+	// determine recipe step ID.
+	recipeStepID := s.recipeStepIDFetcher(req)
+	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
-		recipeStep, err = s.dataStore.GetRecipeStep(ctx, recipeID, recipeStepID)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching recipe step data")
-		}
+	recipeStep, err = s.dataStore.GetRecipeStep(ctx, recipeID, recipeStepID)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching recipe step data")
 	}
 
 	return recipeStep, nil
@@ -126,21 +121,17 @@ func (s *service) fetchRecipeSteps(ctx context.Context, req *http.Request) (reci
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		recipeSteps = fakes.BuildFakeRecipeStepList()
-	} else {
-		// determine recipe ID.
-		recipeID := s.recipeIDFetcher(req)
-		tracing.AttachRecipeIDToSpan(span, recipeID)
-		logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	// determine recipe ID.
+	recipeID := s.recipeIDFetcher(req)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
-		filter := types.ExtractQueryFilter(req)
-		tracing.AttachQueryFilterToSpan(span, filter)
+	filter := types.ExtractQueryFilter(req)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-		recipeSteps, err = s.dataStore.GetRecipeSteps(ctx, recipeID, filter)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching recipe step data")
-		}
+	recipeSteps, err = s.dataStore.GetRecipeSteps(ctx, recipeID, filter)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching recipe step data")
 	}
 
 	return recipeSteps, nil

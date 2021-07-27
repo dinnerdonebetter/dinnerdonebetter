@@ -422,23 +422,6 @@ func TestService_handleRegistrationSubmission(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, mockUsersService)
 	})
-
-	T.Run("with fake data", func(t *testing.T) {
-		t.Parallel()
-
-		s := buildTestHelper(t)
-		s.service.useFakeData = true
-
-		expected := fakes.BuildFakeUserRegistrationInput()
-		form := buildFormFromRegistrationRequest(expected)
-
-		req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(form.Encode()))
-		res := httptest.NewRecorder()
-
-		s.service.handleRegistrationSubmission(res, req)
-
-		assert.Equal(t, http.StatusOK, res.Code)
-	})
 }
 
 func buildFormFromTOTPSecretVerificationRequest(input *types.TOTPSecretVerificationInput) url.Values {

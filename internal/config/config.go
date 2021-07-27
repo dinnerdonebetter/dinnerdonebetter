@@ -69,18 +69,18 @@ type (
 		ValidInstruments            validinstrumentsservice.Config            `json:"validInstruments" mapstructure:"valid_instruments" toml:"valid_instruments,omitempty"`
 		ValidPreparations           validpreparationsservice.Config           `json:"validPreparations" mapstructure:"valid_preparations" toml:"valid_preparations,omitempty"`
 		ValidIngredients            validingredientsservice.Config            `json:"validIngredients" mapstructure:"valid_ingredients" toml:"valid_ingredients,omitempty"`
-		ValidIngredientPreparations validingredientpreparationsservice.Config `json:"validIngredientPreparations" mapstructure:"valid_ingredient_preparations" toml:"valid_ingredient_preparations,omitempty"`
+		Frontend                    frontendservice.Config                    `json:"frontend" mapstructure:"frontend" toml:"frontend,omitempty"`
 		ValidPreparationInstruments validpreparationinstrumentsservice.Config `json:"validPreparationInstruments" mapstructure:"valid_preparation_instruments" toml:"valid_preparation_instruments,omitempty"`
 		Recipes                     recipesservice.Config                     `json:"recipes" mapstructure:"recipes" toml:"recipes,omitempty"`
 		RecipeSteps                 recipestepsservice.Config                 `json:"recipeSteps" mapstructure:"recipe_steps" toml:"recipe_steps,omitempty"`
-		RecipeStepIngredients       recipestepingredientsservice.Config       `json:"recipeStepIngredients" mapstructure:"recipe_step_ingredients" toml:"recipe_step_ingredients,omitempty"`
+		ValidIngredientPreparations validingredientpreparationsservice.Config `json:"validIngredientPreparations" mapstructure:"valid_ingredient_preparations" toml:"valid_ingredient_preparations,omitempty"`
 		RecipeStepProducts          recipestepproductsservice.Config          `json:"recipeStepProducts" mapstructure:"recipe_step_products" toml:"recipe_step_products,omitempty"`
 		Invitations                 invitationsservice.Config                 `json:"invitations" mapstructure:"invitations" toml:"invitations,omitempty"`
 		Reports                     reportsservice.Config                     `json:"reports" mapstructure:"reports" toml:"reports,omitempty"`
+		RecipeStepIngredients       recipestepingredientsservice.Config       `json:"recipeStepIngredients" mapstructure:"recipe_step_ingredients" toml:"recipe_step_ingredients,omitempty"`
 		Auth                        authservice.Config                        `json:"auth" mapstructure:"auth" toml:"auth,omitempty"`
 		Webhooks                    webhooksservice.Config                    `json:"webhooks" mapstructure:"webhooks" toml:"webhooks,omitempty"`
 		AuditLog                    auditservice.Config                       `json:"auditLog" mapstructure:"audit_log" toml:"audit_log,omitempty"`
-		Frontend                    frontendservice.Config                    `json:"frontend" mapstructure:"frontend" toml:"frontend,omitempty"`
 	}
 
 	// InstanceConfig configures an instance of the service. It is composed of all the other setting structs.

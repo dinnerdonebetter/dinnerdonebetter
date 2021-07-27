@@ -11,7 +11,6 @@ import (
 	keys "gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 const (
@@ -25,18 +24,14 @@ func (s *service) fetchInvitation(ctx context.Context, req *http.Request) (invit
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		invitation = fakes.BuildFakeInvitation()
-	} else {
-		// determine invitation ID.
-		invitationID := s.invitationIDFetcher(req)
-		tracing.AttachInvitationIDToSpan(span, invitationID)
-		logger = logger.WithValue(keys.InvitationIDKey, invitationID)
+	// determine invitation ID.
+	invitationID := s.invitationIDFetcher(req)
+	tracing.AttachInvitationIDToSpan(span, invitationID)
+	logger = logger.WithValue(keys.InvitationIDKey, invitationID)
 
-		invitation, err = s.dataStore.GetInvitation(ctx, invitationID)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching invitation data")
-		}
+	invitation, err = s.dataStore.GetInvitation(ctx, invitationID)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching invitation data")
 	}
 
 	return invitation, nil
@@ -220,16 +215,12 @@ func (s *service) fetchInvitations(ctx context.Context, req *http.Request) (invi
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		invitations = fakes.BuildFakeInvitationList()
-	} else {
-		filter := types.ExtractQueryFilter(req)
-		tracing.AttachQueryFilterToSpan(span, filter)
+	filter := types.ExtractQueryFilter(req)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-		invitations, err = s.dataStore.GetInvitations(ctx, filter)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching invitation data")
-		}
+	invitations, err = s.dataStore.GetInvitations(ctx, filter)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching invitation data")
 	}
 
 	return invitations, nil

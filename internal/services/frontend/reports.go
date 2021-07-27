@@ -11,7 +11,6 @@ import (
 	keys "gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 const (
@@ -25,18 +24,14 @@ func (s *service) fetchReport(ctx context.Context, req *http.Request) (report *t
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		report = fakes.BuildFakeReport()
-	} else {
-		// determine report ID.
-		reportID := s.reportIDFetcher(req)
-		tracing.AttachReportIDToSpan(span, reportID)
-		logger = logger.WithValue(keys.ReportIDKey, reportID)
+	// determine report ID.
+	reportID := s.reportIDFetcher(req)
+	tracing.AttachReportIDToSpan(span, reportID)
+	logger = logger.WithValue(keys.ReportIDKey, reportID)
 
-		report, err = s.dataStore.GetReport(ctx, reportID)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching report data")
-		}
+	report, err = s.dataStore.GetReport(ctx, reportID)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching report data")
 	}
 
 	return report, nil
@@ -220,16 +215,12 @@ func (s *service) fetchReports(ctx context.Context, req *http.Request) (reports 
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		reports = fakes.BuildFakeReportList()
-	} else {
-		filter := types.ExtractQueryFilter(req)
-		tracing.AttachQueryFilterToSpan(span, filter)
+	filter := types.ExtractQueryFilter(req)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-		reports, err = s.dataStore.GetReports(ctx, filter)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching report data")
-		}
+	reports, err = s.dataStore.GetReports(ctx, filter)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching report data")
 	}
 
 	return reports, nil

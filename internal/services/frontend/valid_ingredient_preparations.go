@@ -11,7 +11,6 @@ import (
 	keys "gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 const (
@@ -25,18 +24,14 @@ func (s *service) fetchValidIngredientPreparation(ctx context.Context, req *http
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		validIngredientPreparation = fakes.BuildFakeValidIngredientPreparation()
-	} else {
-		// determine valid ingredient preparation ID.
-		validIngredientPreparationID := s.validIngredientPreparationIDFetcher(req)
-		tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparationID)
-		logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
+	// determine valid ingredient preparation ID.
+	validIngredientPreparationID := s.validIngredientPreparationIDFetcher(req)
+	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparationID)
+	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 
-		validIngredientPreparation, err = s.dataStore.GetValidIngredientPreparation(ctx, validIngredientPreparationID)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching valid ingredient preparation data")
-		}
+	validIngredientPreparation, err = s.dataStore.GetValidIngredientPreparation(ctx, validIngredientPreparationID)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching valid ingredient preparation data")
 	}
 
 	return validIngredientPreparation, nil
@@ -223,16 +218,12 @@ func (s *service) fetchValidIngredientPreparations(ctx context.Context, req *htt
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		validIngredientPreparations = fakes.BuildFakeValidIngredientPreparationList()
-	} else {
-		filter := types.ExtractQueryFilter(req)
-		tracing.AttachQueryFilterToSpan(span, filter)
+	filter := types.ExtractQueryFilter(req)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-		validIngredientPreparations, err = s.dataStore.GetValidIngredientPreparations(ctx, filter)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching valid ingredient preparation data")
-		}
+	validIngredientPreparations, err = s.dataStore.GetValidIngredientPreparations(ctx, filter)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching valid ingredient preparation data")
 	}
 
 	return validIngredientPreparations, nil

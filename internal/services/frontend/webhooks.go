@@ -11,7 +11,6 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 const (
@@ -25,17 +24,13 @@ func (s *service) fetchWebhook(ctx context.Context, sessionCtxData *types.Sessio
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		webhook = fakes.BuildFakeWebhook()
-	} else {
-		webhookID := s.webhookIDFetcher(req)
-		tracing.AttachWebhookIDToSpan(span, webhookID)
-		logger = logger.WithValue(keys.WebhookIDKey, webhookID)
+	webhookID := s.webhookIDFetcher(req)
+	tracing.AttachWebhookIDToSpan(span, webhookID)
+	logger = logger.WithValue(keys.WebhookIDKey, webhookID)
 
-		webhook, err = s.dataStore.GetWebhook(ctx, webhookID, sessionCtxData.ActiveAccountID)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching webhook data")
-		}
+	webhook, err = s.dataStore.GetWebhook(ctx, webhookID, sessionCtxData.ActiveAccountID)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching webhook data")
 	}
 
 	return webhook, nil
@@ -100,14 +95,10 @@ func (s *service) fetchWebhooks(ctx context.Context, sessionCtxData *types.Sessi
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		webhooks = fakes.BuildFakeWebhookList()
-	} else {
-		filter := types.ExtractQueryFilter(req)
-		webhooks, err = s.dataStore.GetWebhooks(ctx, sessionCtxData.ActiveAccountID, filter)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching webhook data")
-		}
+	filter := types.ExtractQueryFilter(req)
+	webhooks, err = s.dataStore.GetWebhooks(ctx, sessionCtxData.ActiveAccountID, filter)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching webhook data")
 	}
 
 	return webhooks, nil

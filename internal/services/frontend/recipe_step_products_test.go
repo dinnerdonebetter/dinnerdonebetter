@@ -60,19 +60,6 @@ func TestService_fetchRecipeStepProduct(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 
-	T.Run("with fake mode", func(t *testing.T) {
-		t.Parallel()
-
-		s := buildTestHelper(t)
-		s.service.useFakeData = true
-
-		req := httptest.NewRequest(http.MethodGet, "/recipe_step_products", nil)
-
-		actual, err := s.service.fetchRecipeStepProduct(s.ctx, req)
-		assert.NotNil(t, actual)
-		assert.NoError(t, err)
-	})
-
 	T.Run("with error fetching recipe step product", func(t *testing.T) {
 		t.Parallel()
 
@@ -586,19 +573,6 @@ func TestService_fetchRecipeStepProducts(T *testing.T) {
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
-	})
-
-	T.Run("with fake mode", func(t *testing.T) {
-		t.Parallel()
-
-		s := buildTestHelper(t)
-		s.service.useFakeData = true
-
-		req := httptest.NewRequest(http.MethodGet, "/recipe_step_products", nil)
-
-		actual, err := s.service.fetchRecipeStepProducts(s.ctx, req)
-		assert.NotNil(t, actual)
-		assert.NoError(t, err)
 	})
 
 	T.Run("with error fetching data", func(t *testing.T) {

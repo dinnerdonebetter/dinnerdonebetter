@@ -87,7 +87,6 @@ type (
 		recipeStepIngredientIDFetcher       func(*http.Request) uint64
 		recipeStepProductIDFetcher          func(*http.Request) uint64
 		invitationIDFetcher                 func(*http.Request) uint64
-		useFakeData                         bool
 	}
 )
 
@@ -105,7 +104,6 @@ func ProvideService(
 	validPreparationsService ValidPreparationsService,
 ) Service {
 	svc := &service{
-		useFakeData:                         cfg.UseFakeData,
 		logger:                              logging.EnsureLogger(logger).WithName(serviceName),
 		tracer:                              tracing.NewTracer(serviceName),
 		panicker:                            panicking.NewProductionPanicker(),
@@ -136,6 +134,10 @@ func ProvideService(
 			"relativeTime":        relativeTime,
 			"relativeTimeFromPtr": relativeTimeFromPtr,
 		},
+	}
+
+	if cfg.Debug {
+		svc.logger.SetLevel(logging.DebugLevel)
 	}
 
 	svc.templateFuncMap["translate"] = svc.getSimpleLocalizedString
