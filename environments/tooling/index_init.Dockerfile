@@ -3,7 +3,7 @@ FROM golang:stretch as build-stage
 
 WORKDIR /go/src/gitlab.com/prixfixe/prixfixe
 
-ADD . .
+COPY . .
 
 RUN go build -trimpath -o /index_initializer gitlab.com/prixfixe/prixfixe/cmd/tools/index_initializer
 

@@ -23,6 +23,20 @@ func (m *ValidPreparationSQLQueryBuilder) BuildValidPreparationExistsQuery(ctx c
 	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
 }
 
+// BuildGetValidPreparationIDForNameQuery implements our interface.
+func (m *ValidPreparationSQLQueryBuilder) BuildGetValidPreparationIDForNameQuery(ctx context.Context, validPreparationName string) (query string, args []interface{}) {
+	returnArgs := m.Called(ctx, validPreparationName)
+
+	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
+}
+
+// BuildSearchForValidPreparationByNameQuery implements our interface.
+func (m *ValidPreparationSQLQueryBuilder) BuildSearchForValidPreparationByNameQuery(ctx context.Context, name string) (query string, args []interface{}) {
+	returnArgs := m.Called(ctx, name)
+
+	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
+}
+
 // BuildGetValidPreparationQuery implements our interface.
 func (m *ValidPreparationSQLQueryBuilder) BuildGetValidPreparationQuery(ctx context.Context, validPreparationID uint64) (query string, args []interface{}) {
 	returnArgs := m.Called(ctx, validPreparationID)

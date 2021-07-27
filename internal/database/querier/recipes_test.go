@@ -8,6 +8,8 @@ import (
 	"testing"
 	"time"
 
+	"gitlab.com/prixfixe/prixfixe/internal/audit"
+
 	database "gitlab.com/prixfixe/prixfixe/internal/database"
 	querybuilding "gitlab.com/prixfixe/prixfixe/internal/database/querybuilding"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
@@ -198,6 +200,7 @@ func TestQuerier_GetRecipe(T *testing.T) {
 		t.Parallel()
 
 		exampleRecipe := fakes.BuildFakeRecipe()
+		exampleRecipe.Steps = []*types.RecipeStep{}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -524,6 +527,10 @@ func TestQuerier_GetRecipes(T *testing.T) {
 		filter := types.DefaultQueryFilter()
 		exampleRecipeList := fakes.BuildFakeRecipeList()
 
+		for _, exampleRecipe := range exampleRecipeList.Recipes {
+			exampleRecipe.Steps = []*types.RecipeStep{}
+		}
+
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
@@ -555,6 +562,10 @@ func TestQuerier_GetRecipes(T *testing.T) {
 		exampleRecipeList := fakes.BuildFakeRecipeList()
 		exampleRecipeList.Page = 0
 		exampleRecipeList.Limit = 0
+
+		for _, exampleRecipe := range exampleRecipeList.Recipes {
+			exampleRecipe.Steps = []*types.RecipeStep{}
+		}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -651,6 +662,10 @@ func TestQuerier_GetRecipesWithIDs(T *testing.T) {
 		exampleAccountID := fakes.BuildFakeID()
 		exampleRecipeList := fakes.BuildFakeRecipeList()
 
+		for _, exampleRecipe := range exampleRecipeList.Recipes {
+			exampleRecipe.Steps = []*types.RecipeStep{}
+		}
+
 		var exampleIDs []uint64
 		for _, x := range exampleRecipeList.Recipes {
 			exampleIDs = append(exampleIDs, x.ID)
@@ -708,6 +723,7 @@ func TestQuerier_GetRecipesWithIDs(T *testing.T) {
 		var exampleIDs []uint64
 		for _, x := range exampleRecipeList.Recipes {
 			exampleIDs = append(exampleIDs, x.ID)
+			x.Steps = []*types.RecipeStep{}
 		}
 
 		ctx := context.Background()
@@ -841,7 +857,66 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeCreationArgs)...).
 			WillReturnResult(newSuccessfulDatabaseResult(exampleRecipe.ID))
 
-		expectAuditLogEntryInTransaction(mockQueryBuilder, db, nil)
+		// we aren't able to granularly expect audit log entries by anything other than their event type, so
+		// if we put this in the loop, it will only actually ever expect the "last" one.
+		fakeRecipeStepAuditLogEntryQuery, fakeRecipeStepAuditLogEntryArgs := fakes.BuildFakeSQLQuery()
+		fakeRecipeStepIngredientAuditLogEntryQuery, fakeRecipeStepIngredientAuditLogEntryArgs := fakes.BuildFakeSQLQuery()
+		for i, step := range exampleInput.Steps {
+			fakeRecipeStepCreationQuery, fakeRecipeStepCreationArgs := fakes.BuildFakeSQLQuery()
+			mockQueryBuilder.RecipeStepSQLQueryBuilder.On(
+				"BuildCreateRecipeStepQuery",
+				testutils.ContextMatcher,
+				step,
+			).Return(fakeRecipeStepCreationQuery, fakeRecipeStepCreationArgs)
+
+			db.ExpectExec(formatQueryForSQLMock(fakeRecipeStepCreationQuery)).
+				WithArgs(interfaceToDriverValue(fakeRecipeStepCreationArgs)...).
+				WillReturnResult(newSuccessfulDatabaseResult(exampleRecipe.Steps[i].ID))
+
+			for j, ingredient := range step.Ingredients {
+				fakeRecipeStepIngredientCreationQuery, fakeRecipeStepIngredientCreationArgs := fakes.BuildFakeSQLQuery()
+				mockQueryBuilder.RecipeStepIngredientSQLQueryBuilder.On(
+					"BuildCreateRecipeStepIngredientQuery",
+					testutils.ContextMatcher,
+					ingredient,
+				).Return(fakeRecipeStepIngredientCreationQuery, fakeRecipeStepIngredientCreationArgs)
+
+				db.ExpectExec(formatQueryForSQLMock(fakeRecipeStepIngredientCreationQuery)).
+					WithArgs(interfaceToDriverValue(fakeRecipeStepIngredientCreationArgs)...).
+					WillReturnResult(newSuccessfulDatabaseResult(exampleRecipe.Steps[i].Ingredients[j].ID))
+
+				mockQueryBuilder.AuditLogEntrySQLQueryBuilder.
+					On("BuildCreateAuditLogEntryQuery",
+						testutils.ContextMatcher,
+						mock.MatchedBy(testutils.BuildAuditLogEntryCreationInputEventTypeMatcher(audit.RecipeStepIngredientCreationEvent)),
+					).Return(fakeRecipeStepIngredientAuditLogEntryQuery, fakeRecipeStepIngredientAuditLogEntryArgs)
+
+				db.ExpectExec(formatQueryForSQLMock(fakeRecipeStepIngredientAuditLogEntryQuery)).
+					WithArgs(interfaceToDriverValue(fakeRecipeStepIngredientAuditLogEntryArgs)...).
+					WillReturnResult(sqlmock.NewResult(1, 1))
+			}
+
+			mockQueryBuilder.AuditLogEntrySQLQueryBuilder.
+				On("BuildCreateAuditLogEntryQuery",
+					testutils.ContextMatcher,
+					mock.MatchedBy(testutils.BuildAuditLogEntryCreationInputEventTypeMatcher(audit.RecipeStepCreationEvent)),
+				).Return(fakeRecipeStepAuditLogEntryQuery, fakeRecipeStepAuditLogEntryArgs)
+
+			db.ExpectExec(formatQueryForSQLMock(fakeRecipeStepAuditLogEntryQuery)).
+				WithArgs(interfaceToDriverValue(fakeRecipeStepAuditLogEntryArgs)...).
+				WillReturnResult(sqlmock.NewResult(1, 1))
+		}
+
+		fakeAuditLogEntryQuery, fakeAuditLogEntryArgs := fakes.BuildFakeSQLQuery()
+		mockQueryBuilder.AuditLogEntrySQLQueryBuilder.
+			On("BuildCreateAuditLogEntryQuery",
+				testutils.ContextMatcher,
+				mock.MatchedBy(testutils.BuildAuditLogEntryCreationInputEventTypeMatcher(audit.RecipeCreationEvent)),
+			).Return(fakeAuditLogEntryQuery, fakeAuditLogEntryArgs)
+
+		db.ExpectExec(formatQueryForSQLMock(fakeAuditLogEntryQuery)).
+			WithArgs(interfaceToDriverValue(fakeAuditLogEntryArgs)...).
+			WillReturnResult(sqlmock.NewResult(1, 1))
 
 		db.ExpectCommit()
 
@@ -852,6 +927,19 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		actual, err := c.CreateRecipe(ctx, exampleInput, exampleUser.ID)
 		assert.NoError(t, err)
+
+		for i, step := range exampleRecipe.Steps {
+			step.ExternalID = actual.ExternalID
+			step.BelongsToRecipe = actual.ID
+			step.CreatedOn = actual.Steps[i].CreatedOn
+
+			for j, ingredient := range step.Ingredients {
+				ingredient.ExternalID = actual.ExternalID
+				ingredient.BelongsToRecipeStep = step.ID
+				ingredient.CreatedOn = actual.Steps[i].Ingredients[j].CreatedOn
+			}
+		}
+
 		assert.Equal(t, exampleRecipe, actual)
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
@@ -951,6 +1039,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 		exampleRecipe := fakes.BuildFakeRecipe()
 		exampleRecipe.ExternalID = ""
+		exampleRecipe.Steps = []*types.RecipeStep{}
 		exampleInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
 
 		ctx := context.Background()
@@ -988,6 +1077,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 		exampleRecipe := fakes.BuildFakeRecipe()
 		exampleRecipe.ExternalID = ""
+		exampleRecipe.Steps = []*types.RecipeStep{}
 		exampleInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
 
 		ctx := context.Background()

@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	querybuilding "gitlab.com/prixfixe/prixfixe/internal/database/querybuilding"
@@ -27,6 +28,52 @@ func TestPostgres_BuildValidInstrumentExistsQuery(T *testing.T) {
 			exampleValidInstrument.ID,
 		}
 		actualQuery, actualArgs := q.BuildValidInstrumentExistsQuery(ctx, exampleValidInstrument.ID)
+
+		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+}
+
+func TestPostgres_BuildGetValidInstrumentIDForNameQuery(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		q, _ := buildTestService(t)
+		ctx := context.Background()
+
+		exampleValidInstrument := fakes.BuildFakeValidInstrument()
+
+		expectedQuery := "SELECT valid_instruments.id FROM valid_instruments WHERE valid_instruments.archived_on IS NULL AND valid_instruments.name = $1"
+		expectedArgs := []interface{}{
+			exampleValidInstrument.Name,
+		}
+		actualQuery, actualArgs := q.BuildGetValidInstrumentIDForNameQuery(ctx, exampleValidInstrument.Name)
+
+		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+}
+
+func TestPostgres_BuildSearchForValidInstrumentByNameQuery(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		q, _ := buildTestService(t)
+		ctx := context.Background()
+
+		exampleValidInstrument := fakes.BuildFakeValidInstrument()
+
+		expectedQuery := "SELECT valid_instruments.id, valid_instruments.external_id, valid_instruments.name, valid_instruments.variant, valid_instruments.description, valid_instruments.icon_path, valid_instruments.created_on, valid_instruments.last_updated_on, valid_instruments.archived_on FROM valid_instruments WHERE valid_instruments.name ILIKE $1 AND valid_instruments.archived_on IS NULL"
+		expectedArgs := []interface{}{
+			fmt.Sprintf("%s%%", exampleValidInstrument.Name),
+		}
+		actualQuery, actualArgs := q.BuildSearchForValidInstrumentByNameQuery(ctx, exampleValidInstrument.Name)
 
 		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)

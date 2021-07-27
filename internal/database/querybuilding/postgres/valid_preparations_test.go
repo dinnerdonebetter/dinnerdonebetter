@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	querybuilding "gitlab.com/prixfixe/prixfixe/internal/database/querybuilding"
@@ -27,6 +28,52 @@ func TestPostgres_BuildValidPreparationExistsQuery(T *testing.T) {
 			exampleValidPreparation.ID,
 		}
 		actualQuery, actualArgs := q.BuildValidPreparationExistsQuery(ctx, exampleValidPreparation.ID)
+
+		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+}
+
+func TestPostgres_BuildGetValidPreparationIDForNameQuery(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		q, _ := buildTestService(t)
+		ctx := context.Background()
+
+		exampleValidPreparation := fakes.BuildFakeValidPreparation()
+
+		expectedQuery := "SELECT valid_preparations.id FROM valid_preparations WHERE valid_preparations.archived_on IS NULL AND valid_preparations.name = $1"
+		expectedArgs := []interface{}{
+			exampleValidPreparation.Name,
+		}
+		actualQuery, actualArgs := q.BuildGetValidPreparationIDForNameQuery(ctx, exampleValidPreparation.Name)
+
+		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+}
+
+func TestPostgres_BuildSearchForValidPreparationByNameQuery(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		q, _ := buildTestService(t)
+		ctx := context.Background()
+
+		exampleValidPreparation := fakes.BuildFakeValidPreparation()
+
+		expectedQuery := "SELECT valid_preparations.id, valid_preparations.external_id, valid_preparations.name, valid_preparations.description, valid_preparations.icon_path, valid_preparations.created_on, valid_preparations.last_updated_on, valid_preparations.archived_on FROM valid_preparations WHERE valid_preparations.name ILIKE $1 AND valid_preparations.archived_on IS NULL"
+		expectedArgs := []interface{}{
+			fmt.Sprintf("%s%%", exampleValidPreparation.Name),
+		}
+		actualQuery, actualArgs := q.BuildSearchForValidPreparationByNameQuery(ctx, exampleValidPreparation.Name)
 
 		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)

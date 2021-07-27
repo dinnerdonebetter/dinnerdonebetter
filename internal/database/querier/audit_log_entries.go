@@ -185,7 +185,7 @@ func (q *SQLQuerier) GetAuditLogEntries(ctx context.Context, filter *types.Query
 }
 
 // createAuditLogEntryInTransaction creates an audit log entry in the database.
-func (q *SQLQuerier) createAuditLogEntryInTransaction(ctx context.Context, transaction *sql.Tx, input *types.AuditLogEntryCreationInput) error {
+func (q *SQLQuerier) createAuditLogEntryInTransaction(ctx context.Context, tx *sql.Tx, input *types.AuditLogEntryCreationInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -193,20 +193,21 @@ func (q *SQLQuerier) createAuditLogEntryInTransaction(ctx context.Context, trans
 		return ErrNilInputProvided
 	}
 
-	if transaction == nil {
+	if tx == nil {
 		return ErrNilTransactionProvided
 	}
 
 	logger := q.logger.WithValue(keys.AuditLogEntryEventTypeKey, input.EventType).
 		WithValue(keys.AuditLogEntryContextKey, input.Context)
+
 	query, args := q.sqlQueryBuilder.BuildCreateAuditLogEntryQuery(ctx, input)
 
 	tracing.AttachAuditLogEntryEventTypeToSpan(span, input.EventType)
 
 	// create the audit log entry.
-	if err := q.performWriteQueryIgnoringReturn(ctx, transaction, "audit log entry creation", query, args); err != nil {
+	if err := q.performWriteQueryIgnoringReturn(ctx, tx, "audit log entry creation", query, args); err != nil {
 		logger.Error(err, "executing audit log entry creation query")
-		q.rollbackTransaction(ctx, transaction)
+		q.rollbackTransaction(ctx, tx)
 
 		return err
 	}

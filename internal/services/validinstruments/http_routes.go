@@ -1,6 +1,7 @@
 package validinstruments
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"net/http"
@@ -193,6 +194,23 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, validInstruments)
 }
 
+// SearchForValidInstruments handles searching for and retrieving ValidInstruments.
+func (s *service) SearchForValidInstruments(ctx context.Context, sessionCtxData *types.SessionContextData, query string, filter *types.QueryFilter) ([]*types.ValidInstrument, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithValue(keys.SearchQueryKey, query)
+	tracing.AttachSearchQueryToSpan(span, query)
+
+	relevantIDs, err := s.search.Search(ctx, query, sessionCtxData.ActiveAccountID)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "executing valid ingredient search query")
+	}
+
+	// fetch valid ingredients from database.
+	return s.validInstrumentDataManager.GetValidInstrumentsWithIDs(ctx, filter.Limit, relevantIDs)
+}
+
 // SearchHandler is our search route.
 func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
@@ -220,15 +238,8 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	relevantIDs, err := s.search.Search(ctx, query, sessionCtxData.ActiveAccountID)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "executing valid instrument search query")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
-	}
-
 	// fetch valid instruments from database.
-	validInstruments, err := s.validInstrumentDataManager.GetValidInstrumentsWithIDs(ctx, filter.Limit, relevantIDs)
+	validInstruments, err := s.SearchForValidInstruments(ctx, sessionCtxData, query, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		validInstruments = []*types.ValidInstrument{}

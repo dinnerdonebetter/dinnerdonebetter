@@ -34,6 +34,41 @@ func (b *Postgres) BuildValidPreparationExistsQuery(ctx context.Context, validPr
 	)
 }
 
+// BuildGetValidPreparationIDForNameQuery constructs a SQL query for retrieving the ID of a given named valid preparation.
+func (b *Postgres) BuildGetValidPreparationIDForNameQuery(ctx context.Context, validPreparationName string) (query string, args []interface{}) {
+	_, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return b.buildQuery(
+		span,
+		b.sqlBuilder.Select(fmt.Sprintf("%s.%s", querybuilding.ValidPreparationsTableName, querybuilding.IDColumn)).
+			From(querybuilding.ValidPreparationsTableName).
+			Where(squirrel.Eq{
+				fmt.Sprintf("%s.%s", querybuilding.ValidPreparationsTableName, querybuilding.ValidPreparationsTableNameColumn): validPreparationName,
+				fmt.Sprintf("%s.%s", querybuilding.ValidPreparationsTableName, querybuilding.ArchivedOnColumn):                 nil,
+			}),
+	)
+}
+
+// BuildSearchForValidPreparationByNameQuery returns a SQL query (and argument) for retrieving a valid preparation by its name.
+func (b *Postgres) BuildSearchForValidPreparationByNameQuery(ctx context.Context, name string) (query string, args []interface{}) {
+	_, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return b.buildQuery(
+		span,
+		b.sqlBuilder.Select(querybuilding.ValidPreparationsTableColumns...).
+			From(querybuilding.ValidPreparationsTableName).
+			Where(squirrel.Expr(
+				fmt.Sprintf("%s.%s ILIKE ?", querybuilding.ValidPreparationsTableName, querybuilding.ValidPreparationsTableNameColumn),
+				fmt.Sprintf("%s%%", name),
+			)).
+			Where(squirrel.Eq{
+				fmt.Sprintf("%s.%s", querybuilding.ValidPreparationsTableName, querybuilding.ArchivedOnColumn): nil,
+			}),
+	)
+}
+
 // BuildGetValidPreparationQuery constructs a SQL query for fetching a valid preparation with a given ID belong to a user with a given ID.
 func (b *Postgres) BuildGetValidPreparationQuery(ctx context.Context, validPreparationID uint64) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)

@@ -176,7 +176,6 @@ func (b *Postgres) BuildCreateRecipeStepQuery(ctx context.Context, input *types.
 				querybuilding.RecipeStepsTableTemperatureInCelsiusColumn,
 				querybuilding.RecipeStepsTableNotesColumn,
 				querybuilding.RecipeStepsTableWhyColumn,
-				querybuilding.RecipeStepsTableRecipeIDColumn,
 				querybuilding.RecipeStepsTableBelongsToRecipeColumn,
 			).
 			Values(
@@ -189,7 +188,6 @@ func (b *Postgres) BuildCreateRecipeStepQuery(ctx context.Context, input *types.
 				input.TemperatureInCelsius,
 				input.Notes,
 				input.Why,
-				input.RecipeID,
 				input.BelongsToRecipe,
 			).
 			Suffix(fmt.Sprintf("RETURNING %s", querybuilding.IDColumn)),
@@ -215,7 +213,6 @@ func (b *Postgres) BuildUpdateRecipeStepQuery(ctx context.Context, input *types.
 			Set(querybuilding.RecipeStepsTableTemperatureInCelsiusColumn, input.TemperatureInCelsius).
 			Set(querybuilding.RecipeStepsTableNotesColumn, input.Notes).
 			Set(querybuilding.RecipeStepsTableWhyColumn, input.Why).
-			Set(querybuilding.RecipeStepsTableRecipeIDColumn, input.RecipeID).
 			Set(querybuilding.LastUpdatedOnColumn, currentUnixTimeQuery).
 			Where(squirrel.Eq{
 				querybuilding.IDColumn:                              input.ID,

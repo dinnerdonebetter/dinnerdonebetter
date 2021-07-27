@@ -49,7 +49,7 @@ func TestPostgres_BuildGetRecipeStepQuery(T *testing.T) {
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStep := fakes.BuildFakeRecipeStep()
 
-		expectedQuery := "SELECT recipe_steps.id, recipe_steps.external_id, recipe_steps.index, recipe_steps.preparation_id, recipe_steps.prerequisite_step, recipe_steps.min_estimated_time_in_seconds, recipe_steps.max_estimated_time_in_seconds, recipe_steps.temperature_in_celsius, recipe_steps.notes, recipe_steps.why, recipe_steps.recipe_id, recipe_steps.created_on, recipe_steps.last_updated_on, recipe_steps.archived_on, recipe_steps.belongs_to_recipe FROM recipe_steps JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $1 AND recipe_steps.id = $2 AND recipes.archived_on IS NULL AND recipes.id = $3"
+		expectedQuery := "SELECT recipe_steps.id, recipe_steps.external_id, recipe_steps.index, recipe_steps.preparation_id, recipe_steps.prerequisite_step, recipe_steps.min_estimated_time_in_seconds, recipe_steps.max_estimated_time_in_seconds, recipe_steps.temperature_in_celsius, recipe_steps.notes, recipe_steps.why, recipe_steps.created_on, recipe_steps.last_updated_on, recipe_steps.archived_on, recipe_steps.belongs_to_recipe FROM recipe_steps JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $1 AND recipe_steps.id = $2 AND recipes.archived_on IS NULL AND recipes.id = $3"
 		expectedArgs := []interface{}{
 			exampleRecipeID,
 			exampleRecipeStep.ID,
@@ -91,7 +91,7 @@ func TestPostgres_BuildGetBatchOfRecipeStepsQuery(T *testing.T) {
 
 		beginID, endID := uint64(1), uint64(1000)
 
-		expectedQuery := "SELECT recipe_steps.id, recipe_steps.external_id, recipe_steps.index, recipe_steps.preparation_id, recipe_steps.prerequisite_step, recipe_steps.min_estimated_time_in_seconds, recipe_steps.max_estimated_time_in_seconds, recipe_steps.temperature_in_celsius, recipe_steps.notes, recipe_steps.why, recipe_steps.recipe_id, recipe_steps.created_on, recipe_steps.last_updated_on, recipe_steps.archived_on, recipe_steps.belongs_to_recipe FROM recipe_steps WHERE recipe_steps.id > $1 AND recipe_steps.id < $2"
+		expectedQuery := "SELECT recipe_steps.id, recipe_steps.external_id, recipe_steps.index, recipe_steps.preparation_id, recipe_steps.prerequisite_step, recipe_steps.min_estimated_time_in_seconds, recipe_steps.max_estimated_time_in_seconds, recipe_steps.temperature_in_celsius, recipe_steps.notes, recipe_steps.why, recipe_steps.created_on, recipe_steps.last_updated_on, recipe_steps.archived_on, recipe_steps.belongs_to_recipe FROM recipe_steps WHERE recipe_steps.id > $1 AND recipe_steps.id < $2"
 		expectedArgs := []interface{}{
 			beginID,
 			endID,
@@ -116,7 +116,7 @@ func TestPostgres_BuildGetRecipeStepsQuery(T *testing.T) {
 		exampleRecipeID := fakes.BuildFakeID()
 		filter := fakes.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT recipe_steps.id, recipe_steps.external_id, recipe_steps.index, recipe_steps.preparation_id, recipe_steps.prerequisite_step, recipe_steps.min_estimated_time_in_seconds, recipe_steps.max_estimated_time_in_seconds, recipe_steps.temperature_in_celsius, recipe_steps.notes, recipe_steps.why, recipe_steps.recipe_id, recipe_steps.created_on, recipe_steps.last_updated_on, recipe_steps.archived_on, recipe_steps.belongs_to_recipe, (SELECT COUNT(recipe_steps.id) FROM recipe_steps JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $1 AND recipes.archived_on IS NULL AND recipes.id = $2) as total_count, (SELECT COUNT(recipe_steps.id) FROM recipe_steps JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipes.archived_on IS NULL AND recipes.id = $4 AND recipe_steps.created_on > $5 AND recipe_steps.created_on < $6 AND recipe_steps.last_updated_on > $7 AND recipe_steps.last_updated_on < $8) as filtered_count FROM recipe_steps JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $9 AND recipes.archived_on IS NULL AND recipes.id = $10 AND recipe_steps.created_on > $11 AND recipe_steps.created_on < $12 AND recipe_steps.last_updated_on > $13 AND recipe_steps.last_updated_on < $14 GROUP BY recipe_steps.id ORDER BY recipe_steps.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT recipe_steps.id, recipe_steps.external_id, recipe_steps.index, recipe_steps.preparation_id, recipe_steps.prerequisite_step, recipe_steps.min_estimated_time_in_seconds, recipe_steps.max_estimated_time_in_seconds, recipe_steps.temperature_in_celsius, recipe_steps.notes, recipe_steps.why, recipe_steps.created_on, recipe_steps.last_updated_on, recipe_steps.archived_on, recipe_steps.belongs_to_recipe, (SELECT COUNT(recipe_steps.id) FROM recipe_steps JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $1 AND recipes.archived_on IS NULL AND recipes.id = $2) as total_count, (SELECT COUNT(recipe_steps.id) FROM recipe_steps JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipes.archived_on IS NULL AND recipes.id = $4 AND recipe_steps.created_on > $5 AND recipe_steps.created_on < $6 AND recipe_steps.last_updated_on > $7 AND recipe_steps.last_updated_on < $8) as filtered_count FROM recipe_steps JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $9 AND recipes.archived_on IS NULL AND recipes.id = $10 AND recipe_steps.created_on > $11 AND recipe_steps.created_on < $12 AND recipe_steps.last_updated_on > $13 AND recipe_steps.last_updated_on < $14 GROUP BY recipe_steps.id ORDER BY recipe_steps.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			exampleRecipeID,
 			exampleRecipeID,
@@ -157,7 +157,7 @@ func TestPostgres_BuildGetRecipeStepsWithIDsQuery(T *testing.T) {
 			456,
 		}
 
-		expectedQuery := "SELECT recipe_steps.id, recipe_steps.external_id, recipe_steps.index, recipe_steps.preparation_id, recipe_steps.prerequisite_step, recipe_steps.min_estimated_time_in_seconds, recipe_steps.max_estimated_time_in_seconds, recipe_steps.temperature_in_celsius, recipe_steps.notes, recipe_steps.why, recipe_steps.recipe_id, recipe_steps.created_on, recipe_steps.last_updated_on, recipe_steps.archived_on, recipe_steps.belongs_to_recipe FROM (SELECT recipe_steps.id, recipe_steps.external_id, recipe_steps.index, recipe_steps.preparation_id, recipe_steps.prerequisite_step, recipe_steps.min_estimated_time_in_seconds, recipe_steps.max_estimated_time_in_seconds, recipe_steps.temperature_in_celsius, recipe_steps.notes, recipe_steps.why, recipe_steps.recipe_id, recipe_steps.created_on, recipe_steps.last_updated_on, recipe_steps.archived_on, recipe_steps.belongs_to_recipe FROM recipe_steps JOIN unnest('{789,123,456}'::int[]) WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT 20) AS recipe_steps WHERE recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $1 AND recipe_steps.id IN ($2,$3,$4)"
+		expectedQuery := "SELECT recipe_steps.id, recipe_steps.external_id, recipe_steps.index, recipe_steps.preparation_id, recipe_steps.prerequisite_step, recipe_steps.min_estimated_time_in_seconds, recipe_steps.max_estimated_time_in_seconds, recipe_steps.temperature_in_celsius, recipe_steps.notes, recipe_steps.why, recipe_steps.created_on, recipe_steps.last_updated_on, recipe_steps.archived_on, recipe_steps.belongs_to_recipe FROM (SELECT recipe_steps.id, recipe_steps.external_id, recipe_steps.index, recipe_steps.preparation_id, recipe_steps.prerequisite_step, recipe_steps.min_estimated_time_in_seconds, recipe_steps.max_estimated_time_in_seconds, recipe_steps.temperature_in_celsius, recipe_steps.notes, recipe_steps.why, recipe_steps.created_on, recipe_steps.last_updated_on, recipe_steps.archived_on, recipe_steps.belongs_to_recipe FROM recipe_steps JOIN unnest('{789,123,456}'::int[]) WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT 20) AS recipe_steps WHERE recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $1 AND recipe_steps.id IN ($2,$3,$4)"
 		expectedArgs := []interface{}{
 			exampleRecipeID,
 			exampleIDs[0],
@@ -188,7 +188,7 @@ func TestPostgres_BuildCreateRecipeStepQuery(T *testing.T) {
 		exIDGen.On("NewExternalID").Return(exampleRecipeStep.ExternalID)
 		q.externalIDGenerator = exIDGen
 
-		expectedQuery := "INSERT INTO recipe_steps (external_id,index,preparation_id,prerequisite_step,min_estimated_time_in_seconds,max_estimated_time_in_seconds,temperature_in_celsius,notes,why,recipe_id,belongs_to_recipe) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id"
+		expectedQuery := "INSERT INTO recipe_steps (external_id,index,preparation_id,prerequisite_step,min_estimated_time_in_seconds,max_estimated_time_in_seconds,temperature_in_celsius,notes,why,belongs_to_recipe) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id"
 		expectedArgs := []interface{}{
 			exampleRecipeStep.ExternalID,
 			exampleRecipeStep.Index,
@@ -199,7 +199,6 @@ func TestPostgres_BuildCreateRecipeStepQuery(T *testing.T) {
 			exampleRecipeStep.TemperatureInCelsius,
 			exampleRecipeStep.Notes,
 			exampleRecipeStep.Why,
-			exampleRecipeStep.RecipeID,
 			exampleRecipeStep.BelongsToRecipe,
 		}
 		actualQuery, actualArgs := q.BuildCreateRecipeStepQuery(ctx, exampleInput)
@@ -223,7 +222,7 @@ func TestPostgres_BuildUpdateRecipeStepQuery(T *testing.T) {
 
 		exampleRecipeStep := fakes.BuildFakeRecipeStep()
 
-		expectedQuery := "UPDATE recipe_steps SET index = $1, preparation_id = $2, prerequisite_step = $3, min_estimated_time_in_seconds = $4, max_estimated_time_in_seconds = $5, temperature_in_celsius = $6, notes = $7, why = $8, recipe_id = $9, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe = $10 AND id = $11"
+		expectedQuery := "UPDATE recipe_steps SET index = $1, preparation_id = $2, prerequisite_step = $3, min_estimated_time_in_seconds = $4, max_estimated_time_in_seconds = $5, temperature_in_celsius = $6, notes = $7, why = $8, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe = $9 AND id = $10"
 		expectedArgs := []interface{}{
 			exampleRecipeStep.Index,
 			exampleRecipeStep.PreparationID,
@@ -233,7 +232,6 @@ func TestPostgres_BuildUpdateRecipeStepQuery(T *testing.T) {
 			exampleRecipeStep.TemperatureInCelsius,
 			exampleRecipeStep.Notes,
 			exampleRecipeStep.Why,
-			exampleRecipeStep.RecipeID,
 			exampleRecipeStep.BelongsToRecipe,
 			exampleRecipeStep.ID,
 		}

@@ -24,7 +24,9 @@ func (q *SQLQuerier) scanRecipe(ctx context.Context, scan database.Scanner, incl
 
 	logger := q.logger.WithValue("include_counts", includeCounts)
 
-	x = &types.Recipe{}
+	x = &types.Recipe{
+		Steps: []*types.RecipeStep{},
+	}
 
 	targetVars := []interface{}{
 		&x.ID,
@@ -296,6 +298,16 @@ func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeCreati
 		InspiredByRecipeID: input.InspiredByRecipeID,
 		BelongsToAccount:   input.BelongsToAccount,
 		CreatedOn:          q.currentTime(),
+	}
+
+	for _, stepInput := range input.Steps {
+		stepInput.BelongsToRecipe = x.ID
+		s, createErr := q.createRecipeStep(ctx, tx, logger, stepInput, createdByUser)
+		if createErr != nil {
+			q.rollbackTransaction(ctx, tx)
+			return nil, observability.PrepareError(createErr, logger, span, "creating recipe step")
+		}
+		x.Steps = append(x.Steps, s)
 	}
 
 	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildRecipeCreationEventEntry(x, createdByUser)); err != nil {

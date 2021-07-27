@@ -1,6 +1,7 @@
 package validpreparations
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"net/http"
@@ -191,6 +192,23 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, validPreparations)
+}
+
+// SearchForValidPreparations handles searching for and retrieving ValidPreparations.
+func (s *service) SearchForValidPreparations(ctx context.Context, sessionCtxData *types.SessionContextData, query string, filter *types.QueryFilter) ([]*types.ValidPreparation, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithValue(keys.SearchQueryKey, query)
+	tracing.AttachSearchQueryToSpan(span, query)
+
+	relevantIDs, err := s.search.Search(ctx, query, sessionCtxData.ActiveAccountID)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "executing valid ingredient search query")
+	}
+
+	// fetch valid ingredients from database.
+	return s.validPreparationDataManager.GetValidPreparationsWithIDs(ctx, filter.Limit, relevantIDs)
 }
 
 // SearchHandler is our search route.

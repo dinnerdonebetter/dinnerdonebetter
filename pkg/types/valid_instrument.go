@@ -67,6 +67,7 @@ type (
 	// ValidInstrumentDataService describes a structure capable of serving traffic related to valid instruments.
 	ValidInstrumentDataService interface {
 		SearchHandler(res http.ResponseWriter, req *http.Request)
+		SearchForValidInstruments(ctx context.Context, sessionCtxData *SessionContextData, query string, filter *QueryFilter) ([]*ValidInstrument, error)
 		AuditEntryHandler(res http.ResponseWriter, req *http.Request)
 		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
@@ -132,9 +133,6 @@ func (x *ValidInstrumentCreationInput) ValidateWithContext(ctx context.Context) 
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Variant, validation.Required),
-		validation.Field(&x.Description, validation.Required),
-		validation.Field(&x.IconPath, validation.Required),
 	)
 }
 
@@ -146,8 +144,5 @@ func (x *ValidInstrumentUpdateInput) ValidateWithContext(ctx context.Context) er
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Variant, validation.Required),
-		validation.Field(&x.Description, validation.Required),
-		validation.Field(&x.IconPath, validation.Required),
 	)
 }

@@ -91,6 +91,8 @@ type (
 	// ValidInstrumentSQLQueryBuilder describes a structure capable of generating query/arg pairs for certain situations.
 	ValidInstrumentSQLQueryBuilder interface {
 		BuildValidInstrumentExistsQuery(ctx context.Context, validInstrumentID uint64) (query string, args []interface{})
+		BuildGetValidInstrumentIDForNameQuery(ctx context.Context, validInstrumentName string) (query string, args []interface{})
+		BuildSearchForValidInstrumentByNameQuery(ctx context.Context, name string) (query string, args []interface{})
 		BuildGetValidInstrumentQuery(ctx context.Context, validInstrumentID uint64) (query string, args []interface{})
 		BuildGetAllValidInstrumentsCountQuery(ctx context.Context) string
 		BuildGetBatchOfValidInstrumentsQuery(ctx context.Context, beginID, endID uint64) (query string, args []interface{})
@@ -105,6 +107,8 @@ type (
 	// ValidPreparationSQLQueryBuilder describes a structure capable of generating query/arg pairs for certain situations.
 	ValidPreparationSQLQueryBuilder interface {
 		BuildValidPreparationExistsQuery(ctx context.Context, validPreparationID uint64) (query string, args []interface{})
+		BuildGetValidPreparationIDForNameQuery(ctx context.Context, validPreparationName string) (query string, args []interface{})
+		BuildSearchForValidPreparationByNameQuery(ctx context.Context, name string) (query string, args []interface{})
 		BuildGetValidPreparationQuery(ctx context.Context, validPreparationID uint64) (query string, args []interface{})
 		BuildGetAllValidPreparationsCountQuery(ctx context.Context) string
 		BuildGetBatchOfValidPreparationsQuery(ctx context.Context, beginID, endID uint64) (query string, args []interface{})
@@ -119,6 +123,8 @@ type (
 	// ValidIngredientSQLQueryBuilder describes a structure capable of generating query/arg pairs for certain situations.
 	ValidIngredientSQLQueryBuilder interface {
 		BuildValidIngredientExistsQuery(ctx context.Context, validIngredientID uint64) (query string, args []interface{})
+		BuildGetValidIngredientIDForNameQuery(ctx context.Context, validIngredientName string) (query string, args []interface{})
+		BuildSearchForValidIngredientByNameQuery(ctx context.Context, name string) (query string, args []interface{})
 		BuildGetValidIngredientQuery(ctx context.Context, validIngredientID uint64) (query string, args []interface{})
 		BuildGetAllValidIngredientsCountQuery(ctx context.Context) string
 		BuildGetBatchOfValidIngredientsQuery(ctx context.Context, beginID, endID uint64) (query string, args []interface{})

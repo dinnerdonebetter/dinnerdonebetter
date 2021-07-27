@@ -7,6 +7,8 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/google/uuid"
+
 	observability "gitlab.com/prixfixe/prixfixe/internal/observability"
 	keys "gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
@@ -162,6 +164,53 @@ func (s *service) handleValidPreparationCreationRequest(res http.ResponseWriter,
 
 	htmxRedirectTo(res, "/valid_preparations")
 	res.WriteHeader(http.StatusCreated)
+}
+
+func (s *service) validPreparationsSearchResults(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	query := req.URL.Query().Get(types.SearchQueryKey)
+	tracing.AttachSearchQueryToSpan(span, query)
+
+	filter := types.ExtractQueryFilter(req)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "no session context data attached to request")
+		http.Redirect(res, req, "/login", unauthorizedRedirectResponseCode)
+		return
+	}
+
+	renderID := uuid.New().String()
+
+	_, err = s.validPreparationsService.SearchForValidPreparations(ctx, sessionCtxData, query, filter)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "error searching for valid preparations")
+		res.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	tmpl := template.Must(template.New("").Parse(`<input class="form-control" type="text" id="preparationSearch{{ .RenderID }}" list="preparationSuggestions{{ .RenderID }}" placeholder="" name="q" hx-target="#preparationSearch{{ .RenderID }}" hx-trigger="keyup changed" value={{ .Query }} hx-get="/elements/valid_preparations/search"/>
+<datalist id="preparationSuggestions{{ .RenderID }}">
+	{{ for $i, $preparation range .Preparations }}
+	
+	{{ end }}
+</datalist>
+	`))
+	x := &struct {
+		RenderID string
+		Query    string
+	}{
+		RenderID: renderID,
+		Query:    query,
+	}
+
+	s.renderTemplateToResponse(ctx, tmpl, x, res)
 }
 
 //go:embed templates/partials/generated/editors/valid_preparation_editor.gotpl

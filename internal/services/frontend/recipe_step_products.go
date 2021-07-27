@@ -97,19 +97,16 @@ const (
 	recipeStepProductQuantityTypeFormKey  = "quantityType"
 	recipeStepProductQuantityValueFormKey = "quantityValue"
 	recipeStepProductQuantityNotesFormKey = "quantityNotes"
-	recipeStepProductRecipeStepIDFormKey  = "recipeStepID"
 
 	recipeStepProductCreationInputNameFormKey          = recipeStepProductNameFormKey
 	recipeStepProductCreationInputQuantityTypeFormKey  = recipeStepProductQuantityTypeFormKey
 	recipeStepProductCreationInputQuantityValueFormKey = recipeStepProductQuantityValueFormKey
 	recipeStepProductCreationInputQuantityNotesFormKey = recipeStepProductQuantityNotesFormKey
-	recipeStepProductCreationInputRecipeStepIDFormKey  = recipeStepProductRecipeStepIDFormKey
 
 	recipeStepProductUpdateInputNameFormKey          = recipeStepProductNameFormKey
 	recipeStepProductUpdateInputQuantityTypeFormKey  = recipeStepProductQuantityTypeFormKey
 	recipeStepProductUpdateInputQuantityValueFormKey = recipeStepProductQuantityValueFormKey
 	recipeStepProductUpdateInputQuantityNotesFormKey = recipeStepProductQuantityNotesFormKey
-	recipeStepProductUpdateInputRecipeStepIDFormKey  = recipeStepProductRecipeStepIDFormKey
 )
 
 // parseFormEncodedRecipeStepProductCreationInput checks a request for an RecipeStepProductCreationInput.
@@ -131,7 +128,6 @@ func (s *service) parseFormEncodedRecipeStepProductCreationInput(ctx context.Con
 		QuantityType:  form.Get(recipeStepProductCreationInputQuantityTypeFormKey),
 		QuantityValue: s.stringToFloat32(form, recipeStepProductCreationInputQuantityValueFormKey),
 		QuantityNotes: form.Get(recipeStepProductCreationInputQuantityNotesFormKey),
-		RecipeStepID:  s.stringToUint64(form, recipeStepProductCreationInputRecipeStepIDFormKey),
 	}
 
 	if err = creationInput.ValidateWithContext(ctx); err != nil {
@@ -349,7 +345,6 @@ func (s *service) parseFormEncodedRecipeStepProductUpdateInput(ctx context.Conte
 		QuantityType:  form.Get(recipeStepProductUpdateInputQuantityTypeFormKey),
 		QuantityValue: s.stringToFloat32(form, recipeStepProductUpdateInputQuantityValueFormKey),
 		QuantityNotes: form.Get(recipeStepProductUpdateInputQuantityNotesFormKey),
-		RecipeStepID:  s.stringToUint64(form, recipeStepProductUpdateInputRecipeStepIDFormKey),
 	}
 
 	if err = updateInput.ValidateWithContext(ctx); err != nil {

@@ -39,6 +39,18 @@ func (m *ValidPreparationDataManager) GetAllValidPreparations(ctx context.Contex
 	return args.Error(0)
 }
 
+// GetValidPreparationsFromQuery is a mock function.
+func (m *ValidPreparationDataManager) GetValidPreparationsFromQuery(ctx context.Context, query string) (x *types.ValidPreparationList, err error) {
+	args := m.Called(ctx, query)
+	return args.Get(0).(*types.ValidPreparationList), args.Error(1)
+}
+
+// SearchForValidPreparations is a mock function.
+func (m *ValidPreparationDataManager) SearchForValidPreparations(ctx context.Context, sessionCtxData *types.SessionContextData, query string, filter *types.QueryFilter) ([]*types.ValidPreparation, error) {
+	args := m.Called(ctx, sessionCtxData, query, filter)
+	return args.Get(0).([]*types.ValidPreparation), args.Error(1)
+}
+
 // GetValidPreparations is a mock function.
 func (m *ValidPreparationDataManager) GetValidPreparations(ctx context.Context, filter *types.QueryFilter) (*types.ValidPreparationList, error) {
 	args := m.Called(ctx, filter)

@@ -109,6 +109,7 @@ type (
 	// ValidIngredientDataService describes a structure capable of serving traffic related to valid ingredients.
 	ValidIngredientDataService interface {
 		SearchHandler(res http.ResponseWriter, req *http.Request)
+		SearchForValidIngredients(ctx context.Context, sessionCtxData *SessionContextData, query string, filter *QueryFilter) ([]*ValidIngredient, error)
 		AuditEntryHandler(res http.ResponseWriter, req *http.Request)
 		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
@@ -314,10 +315,6 @@ func (x *ValidIngredientCreationInput) ValidateWithContext(ctx context.Context) 
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Variant, validation.Required),
-		validation.Field(&x.Description, validation.Required),
-		validation.Field(&x.Warning, validation.Required),
-		validation.Field(&x.IconPath, validation.Required),
 	)
 }
 
@@ -329,9 +326,5 @@ func (x *ValidIngredientUpdateInput) ValidateWithContext(ctx context.Context) er
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Variant, validation.Required),
-		validation.Field(&x.Description, validation.Required),
-		validation.Field(&x.Warning, validation.Required),
-		validation.Field(&x.IconPath, validation.Required),
 	)
 }

@@ -23,6 +23,20 @@ func (m *ValidInstrumentSQLQueryBuilder) BuildValidInstrumentExistsQuery(ctx con
 	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
 }
 
+// BuildGetValidInstrumentIDForNameQuery implements our interface.
+func (m *ValidInstrumentSQLQueryBuilder) BuildGetValidInstrumentIDForNameQuery(ctx context.Context, validInstrumentName string) (query string, args []interface{}) {
+	returnArgs := m.Called(ctx, validInstrumentName)
+
+	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
+}
+
+// BuildSearchForValidInstrumentByNameQuery implements our interface.
+func (m *ValidInstrumentSQLQueryBuilder) BuildSearchForValidInstrumentByNameQuery(ctx context.Context, name string) (query string, args []interface{}) {
+	returnArgs := m.Called(ctx, name)
+
+	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
+}
+
 // BuildGetValidInstrumentQuery implements our interface.
 func (m *ValidInstrumentSQLQueryBuilder) BuildGetValidInstrumentQuery(ctx context.Context, validInstrumentID uint64) (query string, args []interface{}) {
 	returnArgs := m.Called(ctx, validInstrumentID)

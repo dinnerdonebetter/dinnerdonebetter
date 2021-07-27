@@ -123,12 +123,15 @@ func (s *service) SetupRoutes(router routing.Router) {
 		Put(fmt.Sprintf("/dashboard_pages/valid_preparations/%s", singleValidPreparationPattern), s.handleValidPreparationUpdateRequest)
 	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidPreparationsPermission)).
 		Get(fmt.Sprintf("/dashboard_pages/valid_preparations/%s", singleValidPreparationPattern), s.buildValidPreparationEditorView(false))
+	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.SearchValidIngredientsPermission)).
+		Get("/elements/valid_preparations/search", s.validPreparationsSearchResults)
 
 	singleValidIngredientPattern := fmt.Sprintf(numericIDPattern, validIngredientIDURLParamKey)
 	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientsPermission)).
 		Get("/valid_ingredients", s.buildValidIngredientsTableView(true))
 	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientsPermission)).
 		Get("/dashboard_pages/valid_ingredients", s.buildValidIngredientsTableView(false))
+
 	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidIngredientsPermission)).
 		Get("/valid_ingredients/new", s.buildValidIngredientCreatorView(true))
 	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidIngredientsPermission)).
@@ -191,8 +194,6 @@ func (s *service) SetupRoutes(router routing.Router) {
 		Get("/dashboard_pages/recipes", s.buildRecipesTableView(false))
 	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipesPermission)).
 		Get("/recipes/new", s.buildRecipeCreatorView(true))
-	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipesPermission)).
-		Post("/recipes/new/submit", s.handleRecipeCreationRequest)
 	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipesPermission)).
 		Delete(fmt.Sprintf("/dashboard_pages/recipes/%s", singleRecipePattern), s.handleRecipeArchiveRequest)
 	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipesPermission)).
@@ -243,4 +244,6 @@ func (s *service) SetupRoutes(router routing.Router) {
 		Put(fmt.Sprintf("/dashboard_pages/reports/%s", singleReportPattern), s.handleReportUpdateRequest)
 	router.WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateReportsPermission)).
 		Get(fmt.Sprintf("/dashboard_pages/reports/%s", singleReportPattern), s.buildReportEditorView(false))
+
+	router.LogRoutes()
 }

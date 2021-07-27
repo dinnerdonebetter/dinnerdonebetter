@@ -15,7 +15,6 @@ func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 		QuantityType:        fake.Word(),
 		QuantityValue:       fake.Float32(),
 		QuantityNotes:       fake.Word(),
-		RecipeStepID:        uint64(fake.Uint32()),
 		CreatedOn:           uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipeStep: fake.Uint64(),
 	}
@@ -47,7 +46,6 @@ func BuildFakeRecipeStepProductUpdateInput() *types.RecipeStepProductUpdateInput
 		QuantityType:        recipeStepProduct.QuantityType,
 		QuantityValue:       recipeStepProduct.QuantityValue,
 		QuantityNotes:       recipeStepProduct.QuantityNotes,
-		RecipeStepID:        recipeStepProduct.RecipeStepID,
 		BelongsToRecipeStep: recipeStepProduct.BelongsToRecipeStep,
 	}
 }
@@ -59,7 +57,6 @@ func BuildFakeRecipeStepProductUpdateInputFromRecipeStepProduct(recipeStepProduc
 		QuantityType:        recipeStepProduct.QuantityType,
 		QuantityValue:       recipeStepProduct.QuantityValue,
 		QuantityNotes:       recipeStepProduct.QuantityNotes,
-		RecipeStepID:        recipeStepProduct.RecipeStepID,
 		BelongsToRecipeStep: recipeStepProduct.BelongsToRecipeStep,
 	}
 }
@@ -77,7 +74,6 @@ func BuildFakeRecipeStepProductCreationInputFromRecipeStepProduct(recipeStepProd
 		QuantityType:        recipeStepProduct.QuantityType,
 		QuantityValue:       recipeStepProduct.QuantityValue,
 		QuantityNotes:       recipeStepProduct.QuantityNotes,
-		RecipeStepID:        recipeStepProduct.RecipeStepID,
 		BelongsToRecipeStep: recipeStepProduct.BelongsToRecipeStep,
 	}
 }

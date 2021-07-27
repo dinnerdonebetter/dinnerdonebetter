@@ -33,7 +33,6 @@ func (q *SQLQuerier) scanRecipeStepProduct(ctx context.Context, scan database.Sc
 		&x.QuantityType,
 		&x.QuantityValue,
 		&x.QuantityNotes,
-		&x.RecipeStepID,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
@@ -331,7 +330,6 @@ func (q *SQLQuerier) CreateRecipeStepProduct(ctx context.Context, input *types.R
 		QuantityType:        input.QuantityType,
 		QuantityValue:       input.QuantityValue,
 		QuantityNotes:       input.QuantityNotes,
-		RecipeStepID:        input.RecipeStepID,
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		CreatedOn:           q.currentTime(),
 	}

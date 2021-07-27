@@ -26,24 +26,22 @@ func (s *service) buildLoginView(includeBaseTemplate bool) func(http.ResponseWri
 
 		tracing.AttachRequestToSpan(span, req)
 
-		contentData := &loginPromptData{
-			RedirectTo: pluckRedirectURL(req),
+		page := &pageData{
+			IsLoggedIn: false,
+			Title:      "Login",
+			ContentData: &loginPromptData{
+				RedirectTo: pluckRedirectURL(req),
+			},
 		}
 
 		if includeBaseTemplate {
-			tmpl := s.renderTemplateIntoBaseTemplate(loginPrompt, nil)
+			view := s.renderTemplateIntoBaseTemplate(loginPrompt, nil)
 
-			data := pageData{
-				IsLoggedIn:  false,
-				Title:       "Login",
-				ContentData: contentData,
-			}
-
-			s.renderTemplateToResponse(ctx, tmpl, data, res)
+			s.renderTemplateToResponse(ctx, view, page, res)
 		} else {
 			tmpl := s.parseTemplate(ctx, "", loginPrompt, nil)
 
-			s.renderTemplateToResponse(ctx, tmpl, contentData, res)
+			s.renderTemplateToResponse(ctx, tmpl, page.ContentData, res)
 		}
 	}
 }

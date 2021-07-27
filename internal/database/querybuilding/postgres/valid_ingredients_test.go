@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	querybuilding "gitlab.com/prixfixe/prixfixe/internal/database/querybuilding"
@@ -27,6 +28,52 @@ func TestPostgres_BuildValidIngredientExistsQuery(T *testing.T) {
 			exampleValidIngredient.ID,
 		}
 		actualQuery, actualArgs := q.BuildValidIngredientExistsQuery(ctx, exampleValidIngredient.ID)
+
+		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+}
+
+func TestPostgres_BuildGetValidIngredientIDForNameQuery(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		q, _ := buildTestService(t)
+		ctx := context.Background()
+
+		exampleValidIngredient := fakes.BuildFakeValidIngredient()
+
+		expectedQuery := "SELECT valid_ingredients.id FROM valid_ingredients WHERE valid_ingredients.archived_on IS NULL AND valid_ingredients.name = $1"
+		expectedArgs := []interface{}{
+			exampleValidIngredient.Name,
+		}
+		actualQuery, actualArgs := q.BuildGetValidIngredientIDForNameQuery(ctx, exampleValidIngredient.Name)
+
+		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+}
+
+func TestPostgres_BuildSearchForValidIngredientByNameQuery(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		q, _ := buildTestService(t)
+		ctx := context.Background()
+
+		exampleValidIngredient := fakes.BuildFakeValidIngredient()
+
+		expectedQuery := "SELECT valid_ingredients.id, valid_ingredients.external_id, valid_ingredients.name, valid_ingredients.variant, valid_ingredients.description, valid_ingredients.warning, valid_ingredients.contains_egg, valid_ingredients.contains_dairy, valid_ingredients.contains_peanut, valid_ingredients.contains_tree_nut, valid_ingredients.contains_soy, valid_ingredients.contains_wheat, valid_ingredients.contains_shellfish, valid_ingredients.contains_sesame, valid_ingredients.contains_fish, valid_ingredients.contains_gluten, valid_ingredients.animal_flesh, valid_ingredients.animal_derived, valid_ingredients.volumetric, valid_ingredients.icon_path, valid_ingredients.created_on, valid_ingredients.last_updated_on, valid_ingredients.archived_on FROM valid_ingredients WHERE valid_ingredients.name ILIKE $1 AND valid_ingredients.archived_on IS NULL"
+		expectedArgs := []interface{}{
+			fmt.Sprintf("%s%%", exampleValidIngredient.Name),
+		}
+		actualQuery, actualArgs := q.BuildSearchForValidIngredientByNameQuery(ctx, exampleValidIngredient.Name)
 
 		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)

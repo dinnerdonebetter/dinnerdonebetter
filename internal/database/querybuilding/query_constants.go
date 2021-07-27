@@ -294,8 +294,6 @@ const (
 	RecipeStepsTableNotesColumn = "notes"
 	// RecipeStepsTableWhyColumn is what the recipe steps table calls the why column.
 	RecipeStepsTableWhyColumn = "why"
-	// RecipeStepsTableRecipeIDColumn is what the recipe steps table calls the recipe_id column.
-	RecipeStepsTableRecipeIDColumn = "recipe_id"
 	// RecipeStepsTableBelongsToRecipeColumn is what the recipe steps table calls the recipe ownership column.
 	RecipeStepsTableBelongsToRecipeColumn = "belongs_to_recipe"
 	// RecipeStepsTableAccountOwnershipColumn is what the recipe steps table calls the ownership column.
@@ -340,8 +338,6 @@ const (
 	RecipeStepProductsTableQuantityValueColumn = "quantity_value"
 	// RecipeStepProductsTableQuantityNotesColumn is what the recipe step products table calls the quantity_notes column.
 	RecipeStepProductsTableQuantityNotesColumn = "quantity_notes"
-	// RecipeStepProductsTableRecipeStepIDColumn is what the recipe step products table calls the recipe_step_id column.
-	RecipeStepProductsTableRecipeStepIDColumn = "recipe_step_id"
 	// RecipeStepProductsTableBelongsToRecipeStepColumn is what the recipe step products table calls the recipe step ownership column.
 	RecipeStepProductsTableBelongsToRecipeStepColumn = "belongs_to_recipe_step"
 	// RecipeStepProductsTableAccountOwnershipColumn is what the recipe step products table calls the ownership column.

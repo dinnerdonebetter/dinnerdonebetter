@@ -1,6 +1,7 @@
 package validingredients
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"net/http"
@@ -193,6 +194,22 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, validIngredients)
 }
 
+func (s *service) SearchForValidIngredients(ctx context.Context, sessionCtxData *types.SessionContextData, query string, filter *types.QueryFilter) ([]*types.ValidIngredient, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithValue(keys.SearchQueryKey, query)
+	tracing.AttachSearchQueryToSpan(span, query)
+
+	relevantIDs, err := s.search.Search(ctx, query, sessionCtxData.ActiveAccountID)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "executing valid ingredient search query")
+	}
+
+	// fetch valid ingredients from database.
+	return s.validIngredientDataManager.GetValidIngredientsWithIDs(ctx, filter.Limit, relevantIDs)
+}
+
 // SearchHandler is our search route.
 func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
@@ -207,6 +224,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 		WithValue(keys.SearchQueryKey, query)
 
 	tracing.AttachRequestToSpan(span, req)
+	tracing.AttachSearchQueryToSpan(span, query)
 	tracing.AttachFilterToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
 
 	// determine user ID.
@@ -220,15 +238,8 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	relevantIDs, err := s.search.Search(ctx, query, sessionCtxData.ActiveAccountID)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "executing valid ingredient search query")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
-	}
-
 	// fetch valid ingredients from database.
-	validIngredients, err := s.validIngredientDataManager.GetValidIngredientsWithIDs(ctx, filter.Limit, relevantIDs)
+	validIngredients, err := s.SearchForValidIngredients(ctx, sessionCtxData, query, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		validIngredients = []*types.ValidIngredient{}

@@ -39,6 +39,21 @@ type (
 		VerifyUserTwoFactorSecret(ctx context.Context, input *types.TOTPSecretVerificationInput) error
 	}
 
+	// ValidInstrumentsService is a subset of the larger types.ValidInstrumentsService interface.
+	ValidInstrumentsService interface {
+		SearchForValidInstruments(ctx context.Context, sessionCtxData *types.SessionContextData, query string, filter *types.QueryFilter) ([]*types.ValidInstrument, error)
+	}
+
+	// ValidIngredientsService is a subset of the larger types.ValidIngredientsService interface.
+	ValidIngredientsService interface {
+		SearchForValidIngredients(ctx context.Context, sessionCtxData *types.SessionContextData, query string, filter *types.QueryFilter) ([]*types.ValidIngredient, error)
+	}
+
+	// ValidPreparationsService is a subset of the larger types.ValidPreparationsService interface.
+	ValidPreparationsService interface {
+		SearchForValidPreparations(ctx context.Context, sessionCtxData *types.SessionContextData, query string, filter *types.QueryFilter) ([]*types.ValidPreparation, error)
+	}
+
 	// Service serves HTML.
 	Service interface {
 		SetupRoutes(router routing.Router)
@@ -55,6 +70,9 @@ type (
 		reportIDFetcher                     func(*http.Request) uint64
 		localizer                           *i18n.Localizer
 		templateFuncMap                     template.FuncMap
+		validIngredientsService             ValidIngredientsService
+		validInstrumentsService             ValidInstrumentsService
+		validPreparationsService            ValidPreparationsService
 		sessionContextDataFetcher           func(*http.Request) (*types.SessionContextData, error)
 		accountIDFetcher                    func(*http.Request) uint64
 		apiClientIDFetcher                  func(*http.Request) uint64
@@ -82,6 +100,9 @@ func ProvideService(
 	dataStore database.DataManager,
 	routeParamManager routing.RouteParamManager,
 	paymentManager capitalism.PaymentManager,
+	validIngredientsService ValidIngredientsService,
+	validInstrumentsService ValidInstrumentsService,
+	validPreparationsService ValidPreparationsService,
 ) Service {
 	svc := &service{
 		useFakeData:                         cfg.UseFakeData,
@@ -94,6 +115,9 @@ func ProvideService(
 		usersService:                        usersService,
 		paymentManager:                      paymentManager,
 		dataStore:                           dataStore,
+		validIngredientsService:             validIngredientsService,
+		validInstrumentsService:             validInstrumentsService,
+		validPreparationsService:            validPreparationsService,
 		apiClientIDFetcher:                  routeParamManager.BuildRouteParamIDFetcher(logger, apiClientIDURLParamKey, "API client"),
 		accountIDFetcher:                    routeParamManager.BuildRouteParamIDFetcher(logger, accountIDURLParamKey, "account"),
 		webhookIDFetcher:                    routeParamManager.BuildRouteParamIDFetcher(logger, webhookIDURLParamKey, "webhook"),

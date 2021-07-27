@@ -64,6 +64,9 @@ func buildTestHelper(t *testing.T) *serviceHTTPRoutesTestHelper {
 		dataManager,
 		rpm,
 		capitalism.NewMockPaymentManager(),
+		nil,
+		nil,
+		nil,
 	).(*service)
 	require.True(t, ok)
 

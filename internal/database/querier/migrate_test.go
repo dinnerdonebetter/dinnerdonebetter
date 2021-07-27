@@ -98,7 +98,7 @@ func TestQuerier_Migrate(T *testing.T) {
 		mockQueryBuilder.AuditLogEntrySQLQueryBuilder.On(
 			"BuildCreateAuditLogEntryQuery",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.AuditLogEntryCreationInputMatcher(audit.UserCreationEvent))).
+			mock.MatchedBy(testutils.BuildAuditLogEntryCreationInputEventTypeMatcher(audit.UserCreationEvent))).
 			Return(firstFakeAuditLogEntryEventQuery, firstFakeAuditLogEntryEventArgs)
 
 		db.ExpectExec(formatQueryForSQLMock(firstFakeAuditLogEntryEventQuery)).
@@ -121,7 +121,7 @@ func TestQuerier_Migrate(T *testing.T) {
 		mockQueryBuilder.AuditLogEntrySQLQueryBuilder.On(
 			"BuildCreateAuditLogEntryQuery",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.AuditLogEntryCreationInputMatcher(audit.AccountCreationEvent))).
+			mock.MatchedBy(testutils.BuildAuditLogEntryCreationInputEventTypeMatcher(audit.AccountCreationEvent))).
 			Return(secondFakeAuditLogEntryEventQuery, secondFakeAuditLogEntryEventArgs)
 
 		db.ExpectExec(formatQueryForSQLMock(secondFakeAuditLogEntryEventQuery)).
@@ -144,7 +144,7 @@ func TestQuerier_Migrate(T *testing.T) {
 		mockQueryBuilder.AuditLogEntrySQLQueryBuilder.On(
 			"BuildCreateAuditLogEntryQuery",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.AuditLogEntryCreationInputMatcher(audit.UserAddedToAccountEvent))).
+			mock.MatchedBy(testutils.BuildAuditLogEntryCreationInputEventTypeMatcher(audit.UserAddedToAccountEvent))).
 			Return(thirdFakeAuditLogEntryEventQuery, thirdFakeAuditLogEntryEventArgs)
 
 		db.ExpectExec(formatQueryForSQLMock(thirdFakeAuditLogEntryEventQuery)).

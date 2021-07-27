@@ -52,46 +52,6 @@ func (s *service) fetchRecipeStepIngredient(ctx context.Context, req *http.Reque
 	return recipeStepIngredient, nil
 }
 
-//go:embed templates/partials/generated/creators/recipe_step_ingredient_creator.gotpl
-var recipeStepIngredientCreatorTemplate string
-
-func (s *service) buildRecipeStepIngredientCreatorView(includeBaseTemplate bool) func(http.ResponseWriter, *http.Request) {
-	return func(res http.ResponseWriter, req *http.Request) {
-		ctx, span := s.tracer.StartSpan(req.Context())
-		defer span.End()
-
-		logger := s.logger.WithRequest(req)
-		tracing.AttachRequestToSpan(span, req)
-
-		sessionCtxData, err := s.sessionContextDataFetcher(req)
-		if err != nil {
-			observability.AcknowledgeError(err, logger, span, "no session context data attached to request")
-			http.Redirect(res, req, "/login", unauthorizedRedirectResponseCode)
-			return
-		}
-
-		recipeStepIngredient := &types.RecipeStepIngredient{}
-		if includeBaseTemplate {
-			view := s.renderTemplateIntoBaseTemplate(recipeStepIngredientCreatorTemplate, nil)
-
-			page := &pageData{
-				IsLoggedIn:  sessionCtxData != nil,
-				Title:       "New Recipe Step Ingredient",
-				ContentData: recipeStepIngredient,
-			}
-			if sessionCtxData != nil {
-				page.IsServiceAdmin = sessionCtxData.Requester.ServicePermissions.IsServiceAdmin()
-			}
-
-			s.renderTemplateToResponse(ctx, view, page, res)
-		} else {
-			tmpl := s.parseTemplate(ctx, "", recipeStepIngredientCreatorTemplate, nil)
-
-			s.renderTemplateToResponse(ctx, tmpl, recipeStepIngredient, res)
-		}
-	}
-}
-
 const (
 	recipeStepIngredientIngredientIDFormKey        = "ingredientID"
 	recipeStepIngredientNameFormKey                = "name"
@@ -197,7 +157,7 @@ func (s *service) handleRecipeStepIngredientCreationRequest(res http.ResponseWri
 	res.WriteHeader(http.StatusCreated)
 }
 
-//go:embed templates/partials/generated/editors/recipe_step_ingredient_editor.gotpl
+//go:embed templates/partials/editors/recipe/recipe_step_ingredient.gotpl
 var recipeStepIngredientEditorTemplate string
 
 func (s *service) buildRecipeStepIngredientEditorView(includeBaseTemplate bool) func(http.ResponseWriter, *http.Request) {
