@@ -10,16 +10,17 @@ import (
 type (
 	// Recipe represents a recipe.
 	Recipe struct {
-		LastUpdatedOn      *uint64 `json:"lastUpdatedOn"`
-		ArchivedOn         *uint64 `json:"archivedOn"`
-		InspiredByRecipeID *uint64 `json:"inspiredByRecipeID"`
-		Source             string  `json:"source"`
-		Description        string  `json:"description"`
-		ExternalID         string  `json:"externalID"`
-		Name               string  `json:"name"`
-		ID                 uint64  `json:"id"`
-		CreatedOn          uint64  `json:"createdOn"`
-		BelongsToAccount   uint64  `json:"belongsToAccount"`
+		LastUpdatedOn      *uint64       `json:"lastUpdatedOn"`
+		ArchivedOn         *uint64       `json:"archivedOn"`
+		InspiredByRecipeID *uint64       `json:"inspiredByRecipeID"`
+		Source             string        `json:"source"`
+		Description        string        `json:"description"`
+		ExternalID         string        `json:"externalID"`
+		Name               string        `json:"name"`
+		Steps              []*RecipeStep `json:"steps"`
+		ID                 uint64        `json:"id"`
+		CreatedOn          uint64        `json:"createdOn"`
+		BelongsToAccount   uint64        `json:"belongsToAccount"`
 	}
 
 	// RecipeList represents a list of recipes.
@@ -30,11 +31,12 @@ type (
 
 	// RecipeCreationInput represents what a user could set as input for creating recipes.
 	RecipeCreationInput struct {
-		InspiredByRecipeID *uint64 `json:"inspiredByRecipeID"`
-		Name               string  `json:"name"`
-		Source             string  `json:"source"`
-		Description        string  `json:"description"`
-		BelongsToAccount   uint64  `json:"-"`
+		InspiredByRecipeID *uint64                    `json:"inspiredByRecipeID"`
+		Name               string                     `json:"name"`
+		Source             string                     `json:"source"`
+		Description        string                     `json:"description"`
+		Steps              []*RecipeStepCreationInput `json:"steps"`
+		BelongsToAccount   uint64                     `json:"-"`
 	}
 
 	// RecipeUpdateInput represents what a user could set as input for updating recipes.

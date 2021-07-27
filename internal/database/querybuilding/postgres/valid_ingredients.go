@@ -34,6 +34,41 @@ func (b *Postgres) BuildValidIngredientExistsQuery(ctx context.Context, validIng
 	)
 }
 
+// BuildGetValidIngredientIDForNameQuery constructs a SQL query for retrieving the ID of a given named valid preparation.
+func (b *Postgres) BuildGetValidIngredientIDForNameQuery(ctx context.Context, validIngredientName string) (query string, args []interface{}) {
+	_, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return b.buildQuery(
+		span,
+		b.sqlBuilder.Select(fmt.Sprintf("%s.%s", querybuilding.ValidIngredientsTableName, querybuilding.IDColumn)).
+			From(querybuilding.ValidIngredientsTableName).
+			Where(squirrel.Eq{
+				fmt.Sprintf("%s.%s", querybuilding.ValidIngredientsTableName, querybuilding.ValidIngredientsTableNameColumn): validIngredientName,
+				fmt.Sprintf("%s.%s", querybuilding.ValidIngredientsTableName, querybuilding.ArchivedOnColumn):                nil,
+			}),
+	)
+}
+
+// BuildSearchForValidIngredientByNameQuery returns a SQL query (and argument) for retrieving a valid ingredient by its name.
+func (b *Postgres) BuildSearchForValidIngredientByNameQuery(ctx context.Context, name string) (query string, args []interface{}) {
+	_, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return b.buildQuery(
+		span,
+		b.sqlBuilder.Select(querybuilding.ValidIngredientsTableColumns...).
+			From(querybuilding.ValidIngredientsTableName).
+			Where(squirrel.Expr(
+				fmt.Sprintf("%s.%s ILIKE ?", querybuilding.ValidIngredientsTableName, querybuilding.ValidIngredientsTableNameColumn),
+				fmt.Sprintf("%s%%", name),
+			)).
+			Where(squirrel.Eq{
+				fmt.Sprintf("%s.%s", querybuilding.ValidIngredientsTableName, querybuilding.ArchivedOnColumn): nil,
+			}),
+	)
+}
+
 // BuildGetValidIngredientQuery constructs a SQL query for fetching a valid ingredient with a given ID belong to a user with a given ID.
 func (b *Postgres) BuildGetValidIngredientQuery(ctx context.Context, validIngredientID uint64) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)

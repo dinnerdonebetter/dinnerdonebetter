@@ -8,8 +8,10 @@ import (
 	"testing"
 	"time"
 
-	database "gitlab.com/prixfixe/prixfixe/internal/database"
-	querybuilding "gitlab.com/prixfixe/prixfixe/internal/database/querybuilding"
+	"gitlab.com/prixfixe/prixfixe/internal/audit"
+
+	"gitlab.com/prixfixe/prixfixe/internal/database"
+	"gitlab.com/prixfixe/prixfixe/internal/database/querybuilding"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
@@ -40,7 +42,6 @@ func buildMockRowsFromRecipeSteps(includeCounts bool, filteredCount uint64, reci
 			x.TemperatureInCelsius,
 			x.Notes,
 			x.Why,
-			x.RecipeID,
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,
@@ -226,6 +227,7 @@ func TestQuerier_GetRecipeStep(T *testing.T) {
 
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStep := fakes.BuildFakeRecipeStep()
+		exampleRecipeStep.Ingredients = []*types.RecipeStepIngredient{}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -571,6 +573,10 @@ func TestQuerier_GetRecipeSteps(T *testing.T) {
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepList := fakes.BuildFakeRecipeStepList()
 
+		for _, step := range exampleRecipeStepList.RecipeSteps {
+			step.Ingredients = []*types.RecipeStepIngredient{}
+		}
+
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
@@ -617,6 +623,10 @@ func TestQuerier_GetRecipeSteps(T *testing.T) {
 		exampleRecipeStepList := fakes.BuildFakeRecipeStepList()
 		exampleRecipeStepList.Page = 0
 		exampleRecipeStepList.Limit = 0
+
+		for _, step := range exampleRecipeStepList.RecipeSteps {
+			step.Ingredients = []*types.RecipeStepIngredient{}
+		}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -718,6 +728,10 @@ func TestQuerier_GetRecipeStepsWithIDs(T *testing.T) {
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepList := fakes.BuildFakeRecipeStepList()
 
+		for _, step := range exampleRecipeStepList.RecipeSteps {
+			step.Ingredients = []*types.RecipeStepIngredient{}
+		}
+
 		var exampleIDs []uint64
 		for _, x := range exampleRecipeStepList.RecipeSteps {
 			exampleIDs = append(exampleIDs, x.ID)
@@ -773,8 +787,9 @@ func TestQuerier_GetRecipeStepsWithIDs(T *testing.T) {
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepList := fakes.BuildFakeRecipeStepList()
 		var exampleIDs []uint64
-		for _, x := range exampleRecipeStepList.RecipeSteps {
-			exampleIDs = append(exampleIDs, x.ID)
+		for _, step := range exampleRecipeStepList.RecipeSteps {
+			exampleIDs = append(exampleIDs, step.ID)
+			step.Ingredients = []*types.RecipeStepIngredient{}
 		}
 
 		ctx := context.Background()
@@ -845,8 +860,9 @@ func TestQuerier_GetRecipeStepsWithIDs(T *testing.T) {
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepList := fakes.BuildFakeRecipeStepList()
 		var exampleIDs []uint64
-		for _, x := range exampleRecipeStepList.RecipeSteps {
-			exampleIDs = append(exampleIDs, x.ID)
+		for _, step := range exampleRecipeStepList.RecipeSteps {
+			exampleIDs = append(exampleIDs, step.ID)
+			step.Ingredients = []*types.RecipeStepIngredient{}
 		}
 
 		ctx := context.Background()
@@ -905,7 +921,42 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeCreationArgs)...).
 			WillReturnResult(newSuccessfulDatabaseResult(exampleRecipeStep.ID))
 
-		expectAuditLogEntryInTransaction(mockQueryBuilder, db, nil)
+		// we aren't able to granularly expect audit log entries by anything other than their event type, so
+		// if we put this in the loop, it will only actually ever expect the "last" one.
+		fakeAuditLogEntryQuery, fakeAuditLogEntryArgs := fakes.BuildFakeSQLQuery()
+		for i, ingredient := range exampleInput.Ingredients {
+			fakeIngredientCreationQuery, fakeIngredientCreationArgs := fakes.BuildFakeSQLQuery()
+			mockQueryBuilder.RecipeStepIngredientSQLQueryBuilder.On(
+				"BuildCreateRecipeStepIngredientQuery",
+				testutils.ContextMatcher,
+				ingredient,
+			).Return(fakeIngredientCreationQuery, fakeIngredientCreationArgs)
+
+			db.ExpectExec(formatQueryForSQLMock(fakeIngredientCreationQuery)).
+				WithArgs(interfaceToDriverValue(fakeIngredientCreationArgs)...).
+				WillReturnResult(newSuccessfulDatabaseResult(exampleRecipeStep.Ingredients[i].ID))
+
+			mockQueryBuilder.AuditLogEntrySQLQueryBuilder.
+				On("BuildCreateAuditLogEntryQuery",
+					testutils.ContextMatcher,
+					mock.MatchedBy(testutils.BuildAuditLogEntryCreationInputEventTypeMatcher(audit.RecipeStepIngredientCreationEvent)),
+				).Return(fakeAuditLogEntryQuery, fakeAuditLogEntryArgs)
+
+			db.ExpectExec(formatQueryForSQLMock(fakeAuditLogEntryQuery)).
+				WithArgs(interfaceToDriverValue(fakeAuditLogEntryArgs)...).
+				WillReturnResult(sqlmock.NewResult(1, 1))
+		}
+
+		fakeAuditLogEntryQuery, fakeAuditLogEntryArgs = fakes.BuildFakeSQLQuery()
+		mockQueryBuilder.AuditLogEntrySQLQueryBuilder.
+			On("BuildCreateAuditLogEntryQuery",
+				testutils.ContextMatcher,
+				mock.IsType(&types.AuditLogEntryCreationInput{})).
+			Return(fakeAuditLogEntryQuery, fakeAuditLogEntryArgs)
+
+		db.ExpectExec(formatQueryForSQLMock(fakeAuditLogEntryQuery)).
+			WithArgs(interfaceToDriverValue(fakeAuditLogEntryArgs)...).
+			WillReturnResult(sqlmock.NewResult(1, 1))
 
 		db.ExpectCommit()
 
@@ -916,6 +967,13 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 
 		actual, err := c.CreateRecipeStep(ctx, exampleInput, exampleUser.ID)
 		assert.NoError(t, err)
+
+		for i, ingredient := range exampleRecipeStep.Ingredients {
+			ingredient.ExternalID = actual.ExternalID
+			ingredient.BelongsToRecipeStep = actual.ID
+			ingredient.CreatedOn = actual.Ingredients[i].CreatedOn
+		}
+
 		assert.Equal(t, exampleRecipeStep, actual)
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
@@ -1015,6 +1073,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 		exampleRecipeStep := fakes.BuildFakeRecipeStep()
 		exampleRecipeStep.ExternalID = ""
+		exampleRecipeStep.Ingredients = []*types.RecipeStepIngredient{}
 		exampleInput := fakes.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
 
 		ctx := context.Background()
@@ -1052,6 +1111,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 		exampleRecipeStep := fakes.BuildFakeRecipeStep()
 		exampleRecipeStep.ExternalID = ""
+		exampleRecipeStep.Ingredients = []*types.RecipeStepIngredient{}
 		exampleInput := fakes.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
 
 		ctx := context.Background()

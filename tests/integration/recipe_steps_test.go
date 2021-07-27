@@ -24,7 +24,6 @@ func checkRecipeStepEquality(t *testing.T, expected, actual *types.RecipeStep) {
 	assert.Equal(t, expected.TemperatureInCelsius, actual.TemperatureInCelsius, "expected TemperatureInCelsius for recipe step #%d to be %v, but it was %v ", expected.ID, expected.TemperatureInCelsius, actual.TemperatureInCelsius)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for recipe step #%d to be %v, but it was %v ", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.Why, actual.Why, "expected Why for recipe step #%d to be %v, but it was %v ", expected.ID, expected.Why, actual.Why)
-	assert.Equal(t, expected.RecipeID, actual.RecipeID, "expected RecipeID for recipe step #%d to be %v, but it was %v ", expected.ID, expected.RecipeID, actual.RecipeID)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
@@ -36,15 +35,24 @@ func (s *TestSuite) TestRecipeSteps_Creating() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			// Create valid preparation.
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+
 			// Create recipe.
 			exampleRecipe := fakes.BuildFakeRecipe()
+			exampleRecipe.Steps = []*types.RecipeStep{}
 			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
 			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			requireNotNilAndNoProblems(t, createdRecipe, err)
 
 			// Create recipe step.
 			exampleRecipeStep := fakes.BuildFakeRecipeStep()
+			exampleRecipeStep.Ingredients = []*types.RecipeStepIngredient{}
 			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
+			exampleRecipeStep.PreparationID = createdValidPreparation.ID
 			exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
 			createdRecipeStep, err := testClients.main.CreateRecipeStep(ctx, exampleRecipeStepInput)
 			requireNotNilAndNoProblems(t, createdRecipeStep, err)
@@ -77,8 +85,15 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			// Create valid preparation.
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+
 			// Create recipe.
 			exampleRecipe := fakes.BuildFakeRecipe()
+			exampleRecipe.Steps = []*types.RecipeStep{}
 			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
 			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			requireNotNilAndNoProblems(t, createdRecipe, err)
@@ -87,7 +102,9 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 			var expected []*types.RecipeStep
 			for i := 0; i < 5; i++ {
 				exampleRecipeStep := fakes.BuildFakeRecipeStep()
+				exampleRecipeStep.Ingredients = []*types.RecipeStepIngredient{}
 				exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
+				exampleRecipeStep.PreparationID = createdValidPreparation.ID
 				exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
 
 				createdRecipeStep, recipeStepCreationErr := testClients.main.CreateRecipeStep(ctx, exampleRecipeStepInput)
@@ -128,6 +145,7 @@ func (s *TestSuite) TestRecipeSteps_ExistenceChecking_ReturnsFalseForNonexistent
 
 			// Create recipe.
 			exampleRecipe := fakes.BuildFakeRecipe()
+			exampleRecipe.Steps = []*types.RecipeStep{}
 			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
 			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			requireNotNilAndNoProblems(t, createdRecipe, err)
@@ -150,15 +168,24 @@ func (s *TestSuite) TestRecipeSteps_ExistenceChecking_ReturnsTrueForValidRecipeS
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			// Create valid preparation.
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+
 			// Create recipe.
 			exampleRecipe := fakes.BuildFakeRecipe()
+			exampleRecipe.Steps = []*types.RecipeStep{}
 			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
 			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			requireNotNilAndNoProblems(t, createdRecipe, err)
 
 			// create recipe step
 			exampleRecipeStep := fakes.BuildFakeRecipeStep()
+			exampleRecipeStep.Ingredients = []*types.RecipeStepIngredient{}
 			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
+			exampleRecipeStep.PreparationID = createdValidPreparation.ID
 			exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
 			createdRecipeStep, err := testClients.main.CreateRecipeStep(ctx, exampleRecipeStepInput)
 			requireNotNilAndNoProblems(t, createdRecipeStep, err)
@@ -187,6 +214,7 @@ func (s *TestSuite) TestRecipeSteps_Reading_Returns404ForNonexistentRecipeStep()
 
 			// Create recipe.
 			exampleRecipe := fakes.BuildFakeRecipe()
+			exampleRecipe.Steps = []*types.RecipeStep{}
 			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
 			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			requireNotNilAndNoProblems(t, createdRecipe, err)
@@ -208,15 +236,24 @@ func (s *TestSuite) TestRecipeSteps_Reading() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			// Create valid preparation.
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+
 			// Create recipe.
 			exampleRecipe := fakes.BuildFakeRecipe()
+			exampleRecipe.Steps = []*types.RecipeStep{}
 			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
 			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			requireNotNilAndNoProblems(t, createdRecipe, err)
 
 			// create recipe step
 			exampleRecipeStep := fakes.BuildFakeRecipeStep()
+			exampleRecipeStep.Ingredients = []*types.RecipeStepIngredient{}
 			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
+			exampleRecipeStep.PreparationID = createdValidPreparation.ID
 			exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
 			createdRecipeStep, err := testClients.main.CreateRecipeStep(ctx, exampleRecipeStepInput)
 			requireNotNilAndNoProblems(t, createdRecipeStep, err)
@@ -247,11 +284,13 @@ func (s *TestSuite) TestRecipeSteps_Updating_Returns404ForNonexistentRecipeStep(
 
 			// Create recipe.
 			exampleRecipe := fakes.BuildFakeRecipe()
+			exampleRecipe.Steps = []*types.RecipeStep{}
 			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
 			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			requireNotNilAndNoProblems(t, createdRecipe, err)
 
 			exampleRecipeStep := fakes.BuildFakeRecipeStep()
+			exampleRecipeStep.Ingredients = []*types.RecipeStepIngredient{}
 			exampleRecipeStep.ID = nonexistentID
 
 			assert.Error(t, testClients.main.UpdateRecipeStep(ctx, exampleRecipeStep))
@@ -273,7 +312,6 @@ func convertRecipeStepToRecipeStepUpdateInput(x *types.RecipeStep) *types.Recipe
 		TemperatureInCelsius:      x.TemperatureInCelsius,
 		Notes:                     x.Notes,
 		Why:                       x.Why,
-		RecipeID:                  x.RecipeID,
 	}
 }
 
@@ -285,15 +323,24 @@ func (s *TestSuite) TestRecipeSteps_Updating() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			// Create valid preparation.
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+
 			// Create recipe.
 			exampleRecipe := fakes.BuildFakeRecipe()
+			exampleRecipe.Steps = []*types.RecipeStep{}
 			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
 			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			requireNotNilAndNoProblems(t, createdRecipe, err)
 
 			// create recipe step
 			exampleRecipeStep := fakes.BuildFakeRecipeStep()
+			exampleRecipeStep.Ingredients = []*types.RecipeStepIngredient{}
 			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
+			exampleRecipeStep.PreparationID = createdValidPreparation.ID
 			exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
 			createdRecipeStep, err := testClients.main.CreateRecipeStep(ctx, exampleRecipeStepInput)
 			requireNotNilAndNoProblems(t, createdRecipeStep, err)
@@ -338,6 +385,7 @@ func (s *TestSuite) TestRecipeSteps_Archiving_Returns404ForNonexistentRecipeStep
 
 			// Create recipe.
 			exampleRecipe := fakes.BuildFakeRecipe()
+			exampleRecipe.Steps = []*types.RecipeStep{}
 			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
 			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			requireNotNilAndNoProblems(t, createdRecipe, err)
@@ -358,15 +406,24 @@ func (s *TestSuite) TestRecipeSteps_Archiving() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			// Create valid preparation.
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+
 			// Create recipe.
 			exampleRecipe := fakes.BuildFakeRecipe()
+			exampleRecipe.Steps = []*types.RecipeStep{}
 			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
 			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			requireNotNilAndNoProblems(t, createdRecipe, err)
 
 			// create recipe step
 			exampleRecipeStep := fakes.BuildFakeRecipeStep()
+			exampleRecipeStep.Ingredients = []*types.RecipeStepIngredient{}
 			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
+			exampleRecipeStep.PreparationID = createdValidPreparation.ID
 			exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
 			createdRecipeStep, err := testClients.main.CreateRecipeStep(ctx, exampleRecipeStepInput)
 			requireNotNilAndNoProblems(t, createdRecipeStep, err)
@@ -399,6 +456,7 @@ func (s *TestSuite) TestRecipeSteps_Auditing_Returns404ForNonexistentRecipeStep(
 
 			// Create recipe.
 			exampleRecipe := fakes.BuildFakeRecipe()
+			exampleRecipe.Steps = []*types.RecipeStep{}
 			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
 			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			requireNotNilAndNoProblems(t, createdRecipe, err)

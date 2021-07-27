@@ -824,6 +824,24 @@ func ScaffoldUsers(count int) error {
 	return nil
 }
 
+// Create test users in a running instance of the service.
+func InitializeLocalDB() error {
+	fullArgs := []string{
+		run,
+		filepath.Join(thisRepo, "/cmd/tools/db_initializer"),
+		"--address=http://localhost:8888",
+		"--username=username",
+		"--password=password",
+		"--two-factor-secret=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+	}
+
+	if err := runGoCommand(true, fullArgs...); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Create a test user in a running instance of the service.
 func ScaffoldUser() error {
 	return ScaffoldUsers(1)

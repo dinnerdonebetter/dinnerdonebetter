@@ -163,7 +163,7 @@ func (q *SQLQuerier) rollbackTransaction(ctx context.Context, tx *sql.Tx) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if err := tx.Rollback(); err != nil {
+	if err := tx.Rollback(); !errors.Is(err, sql.ErrTxDone) {
 		observability.AcknowledgeError(err, q.logger, span, "rolling back transaction")
 	}
 }

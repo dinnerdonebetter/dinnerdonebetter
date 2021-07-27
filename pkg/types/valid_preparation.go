@@ -64,6 +64,7 @@ type (
 	// ValidPreparationDataService describes a structure capable of serving traffic related to valid preparations.
 	ValidPreparationDataService interface {
 		SearchHandler(res http.ResponseWriter, req *http.Request)
+		SearchForValidPreparations(ctx context.Context, sessionCtxData *SessionContextData, query string, filter *QueryFilter) ([]*ValidPreparation, error)
 		AuditEntryHandler(res http.ResponseWriter, req *http.Request)
 		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
@@ -119,8 +120,6 @@ func (x *ValidPreparationCreationInput) ValidateWithContext(ctx context.Context)
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Description, validation.Required),
-		validation.Field(&x.IconPath, validation.Required),
 	)
 }
 
@@ -132,7 +131,5 @@ func (x *ValidPreparationUpdateInput) ValidateWithContext(ctx context.Context) e
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Description, validation.Required),
-		validation.Field(&x.IconPath, validation.Required),
 	)
 }

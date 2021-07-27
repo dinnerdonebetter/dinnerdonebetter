@@ -18,7 +18,6 @@ type (
 		QuantityType        string  `json:"quantityType"`
 		ID                  uint64  `json:"id"`
 		BelongsToRecipeStep uint64  `json:"belongsToRecipeStep"`
-		RecipeStepID        uint64  `json:"recipeStepID"`
 		CreatedOn           uint64  `json:"createdOn"`
 		QuantityValue       float32 `json:"quantityValue"`
 	}
@@ -34,7 +33,6 @@ type (
 		Name                string  `json:"name"`
 		QuantityType        string  `json:"quantityType"`
 		QuantityNotes       string  `json:"quantityNotes"`
-		RecipeStepID        uint64  `json:"recipeStepID"`
 		BelongsToRecipeStep uint64  `json:"-"`
 		QuantityValue       float32 `json:"quantityValue"`
 	}
@@ -44,7 +42,6 @@ type (
 		Name                string  `json:"name"`
 		QuantityType        string  `json:"quantityType"`
 		QuantityNotes       string  `json:"quantityNotes"`
-		RecipeStepID        uint64  `json:"recipeStepID"`
 		BelongsToRecipeStep uint64  `json:"belongsToRecipeStep"`
 		QuantityValue       float32 `json:"quantityValue"`
 	}
@@ -119,16 +116,6 @@ func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateInput) []*Field
 		x.QuantityNotes = input.QuantityNotes
 	}
 
-	if input.RecipeStepID != 0 && input.RecipeStepID != x.RecipeStepID {
-		out = append(out, &FieldChangeSummary{
-			FieldName: "RecipeStepID",
-			OldValue:  x.RecipeStepID,
-			NewValue:  input.RecipeStepID,
-		})
-
-		x.RecipeStepID = input.RecipeStepID
-	}
-
 	return out
 }
 
@@ -143,7 +130,6 @@ func (x *RecipeStepProductCreationInput) ValidateWithContext(ctx context.Context
 		validation.Field(&x.QuantityType, validation.Required),
 		validation.Field(&x.QuantityValue, validation.Required),
 		validation.Field(&x.QuantityNotes, validation.Required),
-		validation.Field(&x.RecipeStepID, validation.Required),
 	)
 }
 
@@ -158,6 +144,5 @@ func (x *RecipeStepProductUpdateInput) ValidateWithContext(ctx context.Context) 
 		validation.Field(&x.QuantityType, validation.Required),
 		validation.Field(&x.QuantityValue, validation.Required),
 		validation.Field(&x.QuantityNotes, validation.Required),
-		validation.Field(&x.RecipeStepID, validation.Required),
 	)
 }

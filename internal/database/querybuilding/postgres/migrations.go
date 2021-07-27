@@ -203,8 +203,8 @@ var (
 				id BIGSERIAL NOT NULL PRIMARY KEY,
 				external_id TEXT NOT NULL,
 				notes TEXT NOT NULL,
-				valid_ingredient_id BIGINT NOT NULL,
-				valid_preparation_id BIGINT NOT NULL,
+				valid_ingredient_id BIGINT NOT NULL REFERENCES valid_ingredients(id),
+				valid_preparation_id BIGINT NOT NULL REFERENCES valid_preparations(id),
 				created_on BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 				last_updated_on BIGINT DEFAULT NULL,
 				archived_on BIGINT DEFAULT NULL
@@ -250,18 +250,17 @@ var (
 				id BIGSERIAL NOT NULL PRIMARY KEY,
 				external_id TEXT NOT NULL,
 				index INTEGER NOT NULL,
-				preparation_id BIGINT NOT NULL,
+				preparation_id BIGINT NOT NULL REFERENCES valid_preparations(id),
 				prerequisite_step BIGINT NOT NULL,
 				min_estimated_time_in_seconds BIGINT NOT NULL,
 				max_estimated_time_in_seconds BIGINT NOT NULL,
 				temperature_in_celsius INTEGER,
 				notes TEXT NOT NULL,
 				why TEXT NOT NULL,
-				recipe_id BIGINT NOT NULL,
 				created_on BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 				last_updated_on BIGINT DEFAULT NULL,
 				archived_on BIGINT DEFAULT NULL,
-				"belongs_to_recipe" BIGINT NOT NULL REFERENCES recipes(id) ON DELETE CASCADE
+				belongs_to_recipe BIGINT NOT NULL REFERENCES recipes(id) ON DELETE CASCADE
 			);`,
 		},
 		{
@@ -271,7 +270,7 @@ var (
 			CREATE TABLE IF NOT EXISTS recipe_step_ingredients (
 				id BIGSERIAL NOT NULL PRIMARY KEY,
 				external_id TEXT NOT NULL,
-				ingredient_id BIGINT,
+				ingredient_id BIGINT NOT NULL REFERENCES valid_ingredients(id),
 				name TEXT NOT NULL,
 				quantity_type TEXT NOT NULL,
 				quantity_value DOUBLE PRECISION NOT NULL,
@@ -281,7 +280,7 @@ var (
 				created_on BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 				last_updated_on BIGINT DEFAULT NULL,
 				archived_on BIGINT DEFAULT NULL,
-				"belongs_to_recipe_step" BIGINT NOT NULL REFERENCES recipe_steps(id) ON DELETE CASCADE
+				belongs_to_recipe_step BIGINT NOT NULL REFERENCES recipe_steps(id) ON DELETE CASCADE
 			);`,
 		},
 		{
@@ -295,11 +294,10 @@ var (
 				quantity_type TEXT NOT NULL,
 				quantity_value DOUBLE PRECISION NOT NULL,
 				quantity_notes TEXT NOT NULL,
-				recipe_step_id BIGINT NOT NULL,
 				created_on BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 				last_updated_on BIGINT DEFAULT NULL,
 				archived_on BIGINT DEFAULT NULL,
-				"belongs_to_recipe_step" BIGINT NOT NULL REFERENCES recipe_steps(id) ON DELETE CASCADE
+				belongs_to_recipe_step BIGINT NOT NULL REFERENCES recipe_steps(id) ON DELETE CASCADE
 			);`,
 		},
 		{

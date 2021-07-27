@@ -36,7 +36,6 @@ func buildMockRowsFromRecipeStepProducts(includeCounts bool, filteredCount uint6
 			x.QuantityType,
 			x.QuantityValue,
 			x.QuantityNotes,
-			x.RecipeStepID,
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,

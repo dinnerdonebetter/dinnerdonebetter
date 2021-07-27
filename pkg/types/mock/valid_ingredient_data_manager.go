@@ -33,6 +33,12 @@ func (m *ValidIngredientDataManager) GetAllValidIngredientsCount(ctx context.Con
 	return args.Get(0).(uint64), args.Error(1)
 }
 
+// SearchForValidIngredients is a mock function.
+func (m *ValidIngredientDataManager) SearchForValidIngredients(ctx context.Context, sessionCtxData *types.SessionContextData, query string, filter *types.QueryFilter) ([]*types.ValidIngredient, error) {
+	args := m.Called(ctx, sessionCtxData, query, filter)
+	return args.Get(0).([]*types.ValidIngredient), args.Error(1)
+}
+
 // GetAllValidIngredients is a mock function.
 func (m *ValidIngredientDataManager) GetAllValidIngredients(ctx context.Context, results chan []*types.ValidIngredient, bucketSize uint16) error {
 	args := m.Called(ctx, results, bucketSize)

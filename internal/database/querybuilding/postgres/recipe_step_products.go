@@ -186,7 +186,6 @@ func (b *Postgres) BuildCreateRecipeStepProductQuery(ctx context.Context, input 
 				querybuilding.RecipeStepProductsTableQuantityTypeColumn,
 				querybuilding.RecipeStepProductsTableQuantityValueColumn,
 				querybuilding.RecipeStepProductsTableQuantityNotesColumn,
-				querybuilding.RecipeStepProductsTableRecipeStepIDColumn,
 				querybuilding.RecipeStepProductsTableBelongsToRecipeStepColumn,
 			).
 			Values(
@@ -195,7 +194,6 @@ func (b *Postgres) BuildCreateRecipeStepProductQuery(ctx context.Context, input 
 				input.QuantityType,
 				input.QuantityValue,
 				input.QuantityNotes,
-				input.RecipeStepID,
 				input.BelongsToRecipeStep,
 			).
 			Suffix(fmt.Sprintf("RETURNING %s", querybuilding.IDColumn)),
@@ -217,7 +215,6 @@ func (b *Postgres) BuildUpdateRecipeStepProductQuery(ctx context.Context, input 
 			Set(querybuilding.RecipeStepProductsTableQuantityTypeColumn, input.QuantityType).
 			Set(querybuilding.RecipeStepProductsTableQuantityValueColumn, input.QuantityValue).
 			Set(querybuilding.RecipeStepProductsTableQuantityNotesColumn, input.QuantityNotes).
-			Set(querybuilding.RecipeStepProductsTableRecipeStepIDColumn, input.RecipeStepID).
 			Set(querybuilding.LastUpdatedOnColumn, currentUnixTimeQuery).
 			Where(squirrel.Eq{
 				querybuilding.IDColumn:                                         input.ID,

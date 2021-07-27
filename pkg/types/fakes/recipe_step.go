@@ -19,9 +19,9 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 		TemperatureInCelsius:      func(x uint16) *uint16 { return &x }(fake.Uint16()),
 		Notes:                     fake.Word(),
 		Why:                       fake.Word(),
-		RecipeID:                  uint64(fake.Uint32()),
 		CreatedOn:                 uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipe:           fake.Uint64(),
+		Ingredients:               BuildFakeRecipeStepIngredientList().RecipeStepIngredients,
 	}
 }
 
@@ -55,7 +55,6 @@ func BuildFakeRecipeStepUpdateInput() *types.RecipeStepUpdateInput {
 		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,
 		Notes:                     recipeStep.Notes,
 		Why:                       recipeStep.Why,
-		RecipeID:                  recipeStep.RecipeID,
 		BelongsToRecipe:           recipeStep.BelongsToRecipe,
 	}
 }
@@ -71,7 +70,6 @@ func BuildFakeRecipeStepUpdateInputFromRecipeStep(recipeStep *types.RecipeStep) 
 		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,
 		Notes:                     recipeStep.Notes,
 		Why:                       recipeStep.Why,
-		RecipeID:                  recipeStep.RecipeID,
 		BelongsToRecipe:           recipeStep.BelongsToRecipe,
 	}
 }
@@ -84,6 +82,11 @@ func BuildFakeRecipeStepCreationInput() *types.RecipeStepCreationInput {
 
 // BuildFakeRecipeStepCreationInputFromRecipeStep builds a faked RecipeStepCreationInput from a recipe step.
 func BuildFakeRecipeStepCreationInputFromRecipeStep(recipeStep *types.RecipeStep) *types.RecipeStepCreationInput {
+	ingredients := []*types.RecipeStepIngredientCreationInput{}
+	for _, i := range recipeStep.Ingredients {
+		ingredients = append(ingredients, BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(i))
+	}
+
 	return &types.RecipeStepCreationInput{
 		Index:                     recipeStep.Index,
 		PreparationID:             recipeStep.PreparationID,
@@ -93,7 +96,7 @@ func BuildFakeRecipeStepCreationInputFromRecipeStep(recipeStep *types.RecipeStep
 		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,
 		Notes:                     recipeStep.Notes,
 		Why:                       recipeStep.Why,
-		RecipeID:                  recipeStep.RecipeID,
 		BelongsToRecipe:           recipeStep.BelongsToRecipe,
+		Ingredients:               ingredients,
 	}
 }

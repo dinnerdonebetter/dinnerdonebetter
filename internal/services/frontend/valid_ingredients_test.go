@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	database "gitlab.com/prixfixe/prixfixe/internal/database"
+	"gitlab.com/prixfixe/prixfixe/internal/database"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"

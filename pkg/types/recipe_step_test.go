@@ -27,7 +27,6 @@ func TestRecipeStep_Update(T *testing.T) {
 			TemperatureInCelsius:      func(x uint16) *uint16 { return &x }(fake.Uint16()),
 			Notes:                     fake.Word(),
 			Why:                       fake.Word(),
-			RecipeID:                  uint64(fake.Uint32()),
 		}
 
 		expected := []*FieldChangeSummary{
@@ -71,11 +70,6 @@ func TestRecipeStep_Update(T *testing.T) {
 				OldValue:  x.Why,
 				NewValue:  updated.Why,
 			},
-			{
-				FieldName: "RecipeID",
-				OldValue:  x.RecipeID,
-				NewValue:  updated.RecipeID,
-			},
 		}
 		actual := x.Update(updated)
 
@@ -97,7 +91,6 @@ func TestRecipeStep_Update(T *testing.T) {
 		assert.Equal(t, updated.TemperatureInCelsius, x.TemperatureInCelsius)
 		assert.Equal(t, updated.Notes, x.Notes)
 		assert.Equal(t, updated.Why, x.Why)
-		assert.Equal(t, updated.RecipeID, x.RecipeID)
 	})
 }
 
@@ -116,7 +109,6 @@ func TestRecipeStepCreationInput_Validate(T *testing.T) {
 			TemperatureInCelsius:      func(x uint16) *uint16 { return &x }(fake.Uint16()),
 			Notes:                     fake.Word(),
 			Why:                       fake.Word(),
-			RecipeID:                  uint64(fake.Uint32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -148,7 +140,6 @@ func TestRecipeStepUpdateInput_Validate(T *testing.T) {
 			TemperatureInCelsius:      func(x uint16) *uint16 { return &x }(fake.Uint16()),
 			Notes:                     fake.Word(),
 			Why:                       fake.Word(),
-			RecipeID:                  uint64(fake.Uint32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

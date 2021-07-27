@@ -245,11 +245,6 @@ var (
 			IconPath:    "",
 		},
 		{
-			Name:        "lozenge",
-			Description: "diamond shape, 1⁄2 by 1⁄2 by 1⁄8 inch (10 mm × 10 mm × 3 mm)",
-			IconPath:    "",
-		},
-		{
 			Name:        "tourné",
 			Description: "2 inches (50 mm) long with seven faces usually with a bulge in the center portion",
 			IconPath:    "",

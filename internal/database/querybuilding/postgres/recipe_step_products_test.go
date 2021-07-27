@@ -53,7 +53,7 @@ func TestPostgres_BuildGetRecipeStepProductQuery(T *testing.T) {
 		exampleRecipeStepID := fakes.BuildFakeID()
 		exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
 
-		expectedQuery := "SELECT recipe_step_products.id, recipe_step_products.external_id, recipe_step_products.name, recipe_step_products.quantity_type, recipe_step_products.quantity_value, recipe_step_products.quantity_notes, recipe_step_products.recipe_step_id, recipe_step_products.created_on, recipe_step_products.last_updated_on, recipe_step_products.archived_on, recipe_step_products.belongs_to_recipe_step FROM recipe_step_products JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_products.archived_on IS NULL AND recipe_step_products.belongs_to_recipe_step = $1 AND recipe_step_products.id = $2 AND recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_on IS NULL AND recipes.id = $5"
+		expectedQuery := "SELECT recipe_step_products.id, recipe_step_products.external_id, recipe_step_products.name, recipe_step_products.quantity_type, recipe_step_products.quantity_value, recipe_step_products.quantity_notes, recipe_step_products.created_on, recipe_step_products.last_updated_on, recipe_step_products.archived_on, recipe_step_products.belongs_to_recipe_step FROM recipe_step_products JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_products.archived_on IS NULL AND recipe_step_products.belongs_to_recipe_step = $1 AND recipe_step_products.id = $2 AND recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_on IS NULL AND recipes.id = $5"
 		expectedArgs := []interface{}{
 			exampleRecipeStepID,
 			exampleRecipeStepProduct.ID,
@@ -97,7 +97,7 @@ func TestPostgres_BuildGetBatchOfRecipeStepProductsQuery(T *testing.T) {
 
 		beginID, endID := uint64(1), uint64(1000)
 
-		expectedQuery := "SELECT recipe_step_products.id, recipe_step_products.external_id, recipe_step_products.name, recipe_step_products.quantity_type, recipe_step_products.quantity_value, recipe_step_products.quantity_notes, recipe_step_products.recipe_step_id, recipe_step_products.created_on, recipe_step_products.last_updated_on, recipe_step_products.archived_on, recipe_step_products.belongs_to_recipe_step FROM recipe_step_products WHERE recipe_step_products.id > $1 AND recipe_step_products.id < $2"
+		expectedQuery := "SELECT recipe_step_products.id, recipe_step_products.external_id, recipe_step_products.name, recipe_step_products.quantity_type, recipe_step_products.quantity_value, recipe_step_products.quantity_notes, recipe_step_products.created_on, recipe_step_products.last_updated_on, recipe_step_products.archived_on, recipe_step_products.belongs_to_recipe_step FROM recipe_step_products WHERE recipe_step_products.id > $1 AND recipe_step_products.id < $2"
 		expectedArgs := []interface{}{
 			beginID,
 			endID,
@@ -123,7 +123,7 @@ func TestPostgres_BuildGetRecipeStepProductsQuery(T *testing.T) {
 		exampleRecipeStepID := fakes.BuildFakeID()
 		filter := fakes.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT recipe_step_products.id, recipe_step_products.external_id, recipe_step_products.name, recipe_step_products.quantity_type, recipe_step_products.quantity_value, recipe_step_products.quantity_notes, recipe_step_products.recipe_step_id, recipe_step_products.created_on, recipe_step_products.last_updated_on, recipe_step_products.archived_on, recipe_step_products.belongs_to_recipe_step, (SELECT COUNT(recipe_step_products.id) FROM recipe_step_products JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_products.archived_on IS NULL AND recipe_step_products.belongs_to_recipe_step = $1 AND recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $2 AND recipe_steps.id = $3 AND recipes.archived_on IS NULL AND recipes.id = $4) as total_count, (SELECT COUNT(recipe_step_products.id) FROM recipe_step_products JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_products.archived_on IS NULL AND recipe_step_products.belongs_to_recipe_step = $5 AND recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $6 AND recipe_steps.id = $7 AND recipes.archived_on IS NULL AND recipes.id = $8 AND recipe_step_products.created_on > $9 AND recipe_step_products.created_on < $10 AND recipe_step_products.last_updated_on > $11 AND recipe_step_products.last_updated_on < $12) as filtered_count FROM recipe_step_products JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_products.archived_on IS NULL AND recipe_step_products.belongs_to_recipe_step = $13 AND recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $14 AND recipe_steps.id = $15 AND recipes.archived_on IS NULL AND recipes.id = $16 AND recipe_step_products.created_on > $17 AND recipe_step_products.created_on < $18 AND recipe_step_products.last_updated_on > $19 AND recipe_step_products.last_updated_on < $20 GROUP BY recipe_step_products.id ORDER BY recipe_step_products.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT recipe_step_products.id, recipe_step_products.external_id, recipe_step_products.name, recipe_step_products.quantity_type, recipe_step_products.quantity_value, recipe_step_products.quantity_notes, recipe_step_products.created_on, recipe_step_products.last_updated_on, recipe_step_products.archived_on, recipe_step_products.belongs_to_recipe_step, (SELECT COUNT(recipe_step_products.id) FROM recipe_step_products JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_products.archived_on IS NULL AND recipe_step_products.belongs_to_recipe_step = $1 AND recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $2 AND recipe_steps.id = $3 AND recipes.archived_on IS NULL AND recipes.id = $4) as total_count, (SELECT COUNT(recipe_step_products.id) FROM recipe_step_products JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_products.archived_on IS NULL AND recipe_step_products.belongs_to_recipe_step = $5 AND recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $6 AND recipe_steps.id = $7 AND recipes.archived_on IS NULL AND recipes.id = $8 AND recipe_step_products.created_on > $9 AND recipe_step_products.created_on < $10 AND recipe_step_products.last_updated_on > $11 AND recipe_step_products.last_updated_on < $12) as filtered_count FROM recipe_step_products JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_products.archived_on IS NULL AND recipe_step_products.belongs_to_recipe_step = $13 AND recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $14 AND recipe_steps.id = $15 AND recipes.archived_on IS NULL AND recipes.id = $16 AND recipe_step_products.created_on > $17 AND recipe_step_products.created_on < $18 AND recipe_step_products.last_updated_on > $19 AND recipe_step_products.last_updated_on < $20 GROUP BY recipe_step_products.id ORDER BY recipe_step_products.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			exampleRecipeStepID,
 			exampleRecipeID,
@@ -170,7 +170,7 @@ func TestPostgres_BuildGetRecipeStepProductsWithIDsQuery(T *testing.T) {
 			456,
 		}
 
-		expectedQuery := "SELECT recipe_step_products.id, recipe_step_products.external_id, recipe_step_products.name, recipe_step_products.quantity_type, recipe_step_products.quantity_value, recipe_step_products.quantity_notes, recipe_step_products.recipe_step_id, recipe_step_products.created_on, recipe_step_products.last_updated_on, recipe_step_products.archived_on, recipe_step_products.belongs_to_recipe_step FROM (SELECT recipe_step_products.id, recipe_step_products.external_id, recipe_step_products.name, recipe_step_products.quantity_type, recipe_step_products.quantity_value, recipe_step_products.quantity_notes, recipe_step_products.recipe_step_id, recipe_step_products.created_on, recipe_step_products.last_updated_on, recipe_step_products.archived_on, recipe_step_products.belongs_to_recipe_step FROM recipe_step_products JOIN unnest('{789,123,456}'::int[]) WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT 20) AS recipe_step_products WHERE recipe_step_products.archived_on IS NULL AND recipe_step_products.belongs_to_recipe_step = $1 AND recipe_step_products.id IN ($2,$3,$4)"
+		expectedQuery := "SELECT recipe_step_products.id, recipe_step_products.external_id, recipe_step_products.name, recipe_step_products.quantity_type, recipe_step_products.quantity_value, recipe_step_products.quantity_notes, recipe_step_products.created_on, recipe_step_products.last_updated_on, recipe_step_products.archived_on, recipe_step_products.belongs_to_recipe_step FROM (SELECT recipe_step_products.id, recipe_step_products.external_id, recipe_step_products.name, recipe_step_products.quantity_type, recipe_step_products.quantity_value, recipe_step_products.quantity_notes, recipe_step_products.created_on, recipe_step_products.last_updated_on, recipe_step_products.archived_on, recipe_step_products.belongs_to_recipe_step FROM recipe_step_products JOIN unnest('{789,123,456}'::int[]) WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT 20) AS recipe_step_products WHERE recipe_step_products.archived_on IS NULL AND recipe_step_products.belongs_to_recipe_step = $1 AND recipe_step_products.id IN ($2,$3,$4)"
 		expectedArgs := []interface{}{
 			exampleRecipeStepID,
 			exampleIDs[0],
@@ -201,14 +201,13 @@ func TestPostgres_BuildCreateRecipeStepProductQuery(T *testing.T) {
 		exIDGen.On("NewExternalID").Return(exampleRecipeStepProduct.ExternalID)
 		q.externalIDGenerator = exIDGen
 
-		expectedQuery := "INSERT INTO recipe_step_products (external_id,name,quantity_type,quantity_value,quantity_notes,recipe_step_id,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id"
+		expectedQuery := "INSERT INTO recipe_step_products (external_id,name,quantity_type,quantity_value,quantity_notes,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id"
 		expectedArgs := []interface{}{
 			exampleRecipeStepProduct.ExternalID,
 			exampleRecipeStepProduct.Name,
 			exampleRecipeStepProduct.QuantityType,
 			exampleRecipeStepProduct.QuantityValue,
 			exampleRecipeStepProduct.QuantityNotes,
-			exampleRecipeStepProduct.RecipeStepID,
 			exampleRecipeStepProduct.BelongsToRecipeStep,
 		}
 		actualQuery, actualArgs := q.BuildCreateRecipeStepProductQuery(ctx, exampleInput)
@@ -232,13 +231,12 @@ func TestPostgres_BuildUpdateRecipeStepProductQuery(T *testing.T) {
 
 		exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
 
-		expectedQuery := "UPDATE recipe_step_products SET name = $1, quantity_type = $2, quantity_value = $3, quantity_notes = $4, recipe_step_id = $5, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $6 AND id = $7"
+		expectedQuery := "UPDATE recipe_step_products SET name = $1, quantity_type = $2, quantity_value = $3, quantity_notes = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $5 AND id = $6"
 		expectedArgs := []interface{}{
 			exampleRecipeStepProduct.Name,
 			exampleRecipeStepProduct.QuantityType,
 			exampleRecipeStepProduct.QuantityValue,
 			exampleRecipeStepProduct.QuantityNotes,
-			exampleRecipeStepProduct.RecipeStepID,
 			exampleRecipeStepProduct.BelongsToRecipeStep,
 			exampleRecipeStepProduct.ID,
 		}

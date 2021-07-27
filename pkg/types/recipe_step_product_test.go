@@ -23,7 +23,6 @@ func TestRecipeStepProduct_Update(T *testing.T) {
 			QuantityType:  fake.Word(),
 			QuantityValue: fake.Float32(),
 			QuantityNotes: fake.Word(),
-			RecipeStepID:  uint64(fake.Uint32()),
 		}
 
 		expected := []*FieldChangeSummary{
@@ -47,11 +46,6 @@ func TestRecipeStepProduct_Update(T *testing.T) {
 				OldValue:  x.QuantityNotes,
 				NewValue:  updated.QuantityNotes,
 			},
-			{
-				FieldName: "RecipeStepID",
-				OldValue:  x.RecipeStepID,
-				NewValue:  updated.RecipeStepID,
-			},
 		}
 		actual := x.Update(updated)
 
@@ -69,7 +63,6 @@ func TestRecipeStepProduct_Update(T *testing.T) {
 		assert.Equal(t, updated.QuantityType, x.QuantityType)
 		assert.Equal(t, updated.QuantityValue, x.QuantityValue)
 		assert.Equal(t, updated.QuantityNotes, x.QuantityNotes)
-		assert.Equal(t, updated.RecipeStepID, x.RecipeStepID)
 	})
 }
 
@@ -84,7 +77,6 @@ func TestRecipeStepProductCreationInput_Validate(T *testing.T) {
 			QuantityType:  fake.Word(),
 			QuantityValue: fake.Float32(),
 			QuantityNotes: fake.Word(),
-			RecipeStepID:  uint64(fake.Uint32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -112,7 +104,6 @@ func TestRecipeStepProductUpdateInput_Validate(T *testing.T) {
 			QuantityType:  fake.Word(),
 			QuantityValue: fake.Float32(),
 			QuantityNotes: fake.Word(),
-			RecipeStepID:  uint64(fake.Uint32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

@@ -32,13 +32,6 @@
                     <div class="invalid-feedback" style="width: 100%;">quantityNotes is required.</div>
                 </div>
             </div>
-            <div class="mb3">
-                <label for="recipeStepID">RecipeStepID</label>
-                <div class="input-group">
-                    <input class="form-control" type="number" id="" name="recipeStepID" placeholder="" required="" value="{{ .RecipeStepID }}" />
-                    <div class="invalid-feedback" style="width: 100%;">recipeStepID is required.</div>
-                </div>
-            </div>
             <hr class="mb-4" />
             <button class="btn btn-primary btn-lg btn-block" type="submit">Save</button>
         </form>

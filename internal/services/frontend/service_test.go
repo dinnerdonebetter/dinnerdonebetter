@@ -51,6 +51,9 @@ func TestProvideService(t *testing.T) {
 		dataManager,
 		rpm,
 		capitalism.NewMockPaymentManager(),
+		&mocktypes.ValidIngredientDataManager{},
+		&mocktypes.ValidInstrumentDataManager{},
+		&mocktypes.ValidPreparationDataManager{},
 	)
 
 	mock.AssertExpectationsForObjects(t, authService, usersService, dataManager, rpm)

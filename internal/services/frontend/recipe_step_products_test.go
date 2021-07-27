@@ -120,7 +120,6 @@ func attachRecipeStepProductCreationInputToRequest(input *types.RecipeStepProduc
 		recipeStepProductCreationInputQuantityTypeFormKey:  {anyToString(input.QuantityType)},
 		recipeStepProductCreationInputQuantityValueFormKey: {anyToString(input.QuantityValue)},
 		recipeStepProductCreationInputQuantityNotesFormKey: {anyToString(input.QuantityNotes)},
-		recipeStepProductCreationInputRecipeStepIDFormKey:  {anyToString(input.RecipeStepID)},
 	}
 
 	return httptest.NewRequest(http.MethodPost, "/recipe_step_products", strings.NewReader(form.Encode()))
@@ -775,7 +774,6 @@ func attachRecipeStepProductUpdateInputToRequest(input *types.RecipeStepProductU
 		recipeStepProductUpdateInputQuantityTypeFormKey:  {anyToString(input.QuantityType)},
 		recipeStepProductUpdateInputQuantityValueFormKey: {anyToString(input.QuantityValue)},
 		recipeStepProductUpdateInputQuantityNotesFormKey: {anyToString(input.QuantityNotes)},
-		recipeStepProductUpdateInputRecipeStepIDFormKey:  {anyToString(input.RecipeStepID)},
 	}
 
 	return httptest.NewRequest(http.MethodPost, "/recipe_step_products", strings.NewReader(form.Encode()))

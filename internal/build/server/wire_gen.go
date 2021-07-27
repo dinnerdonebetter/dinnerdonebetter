@@ -12,7 +12,7 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/capitalism/stripe"
 	"gitlab.com/prixfixe/prixfixe/internal/config"
 	"gitlab.com/prixfixe/prixfixe/internal/database"
-	dbconfig "gitlab.com/prixfixe/prixfixe/internal/database/config"
+	config2 "gitlab.com/prixfixe/prixfixe/internal/database/config"
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
@@ -23,7 +23,7 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/services/admin"
 	"gitlab.com/prixfixe/prixfixe/internal/services/apiclients"
 	"gitlab.com/prixfixe/prixfixe/internal/services/audit"
-	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
+	authentication2 "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
 	"gitlab.com/prixfixe/prixfixe/internal/services/frontend"
 	"gitlab.com/prixfixe/prixfixe/internal/services/invitations"
 	"gitlab.com/prixfixe/prixfixe/internal/services/recipes"
@@ -58,7 +58,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig, logger logging.Logge
 	authenticationConfig := &servicesConfigurations.Auth
 	authenticator := authentication.ProvideArgon2Authenticator(logger)
 	configConfig := &cfg.Database
-	db, err := dbconfig.ProvideDatabaseConnection(logger, configConfig)
+	db, err := config2.ProvideDatabaseConnection(logger, configConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig, logger logging.Logge
 	accountUserMembershipDataManager := database.ProvideAccountUserMembershipDataManager(dataManager)
 	cookieConfig := authenticationConfig.Cookies
 	config3 := cfg.Database
-	sessionManager, err := dbconfig.ProvideSessionManager(cookieConfig, config3, db)
+	sessionManager, err := config2.ProvideSessionManager(cookieConfig, config3, db)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig, logger logging.Logge
 	contentType := encoding.ProvideContentType(encodingConfig)
 	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, contentType)
 	routeParamManager := chi.NewRouteParamManager()
-	authService, err := authservice.ProvideService(logger, authenticationConfig, authenticator, userDataManager, authAuditManager, apiClientDataManager, accountUserMembershipDataManager, sessionManager, serverEncoderDecoder, routeParamManager)
+	authService, err := authentication2.ProvideService(logger, authenticationConfig, authenticator, userDataManager, authAuditManager, apiClientDataManager, accountUserMembershipDataManager, sessionManager, serverEncoderDecoder, routeParamManager)
 	if err != nil {
 		return nil, err
 	}
@@ -181,7 +181,10 @@ func Build(ctx context.Context, cfg *config.InstanceConfig, logger logging.Logge
 	capitalismConfig := &cfg.Capitalism
 	stripeConfig := capitalismConfig.Stripe
 	paymentManager := stripe.ProvideStripePaymentManager(logger, stripeConfig)
-	service := frontend.ProvideService(frontendConfig, logger, frontendAuthService, usersService, dataManager, routeParamManager, paymentManager)
+	validIngredientsService := frontend.ProvideValidIngredientsService(validIngredientDataService)
+	validInstrumentsService := frontend.ProvideValidInstrumentsService(validInstrumentDataService)
+	validPreparationsService := frontend.ProvideValidPreparationsService(validPreparationDataService)
+	service := frontend.ProvideService(frontendConfig, logger, frontendAuthService, usersService, dataManager, routeParamManager, paymentManager, validIngredientsService, validInstrumentsService, validPreparationsService)
 	router := chi.NewRouter(logger)
 	httpServer, err := server.ProvideHTTPServer(ctx, serverConfig, instrumentationHandler, authService, auditLogEntryDataService, userDataService, accountDataService, apiClientDataService, validInstrumentDataService, validPreparationDataService, validIngredientDataService, validIngredientPreparationDataService, validPreparationInstrumentDataService, recipeDataService, recipeStepDataService, recipeStepIngredientDataService, recipeStepProductDataService, invitationDataService, reportDataService, webhookDataService, adminService, service, logger, serverEncoderDecoder, router)
 	if err != nil {

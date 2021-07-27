@@ -34,6 +34,41 @@ func (b *Postgres) BuildValidInstrumentExistsQuery(ctx context.Context, validIns
 	)
 }
 
+// BuildGetValidInstrumentIDForNameQuery constructs a SQL query for retrieving the ID of a given named valid preparation.
+func (b *Postgres) BuildGetValidInstrumentIDForNameQuery(ctx context.Context, validInstrumentName string) (query string, args []interface{}) {
+	_, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return b.buildQuery(
+		span,
+		b.sqlBuilder.Select(fmt.Sprintf("%s.%s", querybuilding.ValidInstrumentsTableName, querybuilding.IDColumn)).
+			From(querybuilding.ValidInstrumentsTableName).
+			Where(squirrel.Eq{
+				fmt.Sprintf("%s.%s", querybuilding.ValidInstrumentsTableName, querybuilding.ValidInstrumentsTableNameColumn): validInstrumentName,
+				fmt.Sprintf("%s.%s", querybuilding.ValidInstrumentsTableName, querybuilding.ArchivedOnColumn):                nil,
+			}),
+	)
+}
+
+// BuildSearchForValidInstrumentByNameQuery returns a SQL query (and argument) for retrieving a valid instrument by its name.
+func (b *Postgres) BuildSearchForValidInstrumentByNameQuery(ctx context.Context, name string) (query string, args []interface{}) {
+	_, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return b.buildQuery(
+		span,
+		b.sqlBuilder.Select(querybuilding.ValidInstrumentsTableColumns...).
+			From(querybuilding.ValidInstrumentsTableName).
+			Where(squirrel.Expr(
+				fmt.Sprintf("%s.%s ILIKE ?", querybuilding.ValidInstrumentsTableName, querybuilding.ValidInstrumentsTableNameColumn),
+				fmt.Sprintf("%s%%", name),
+			)).
+			Where(squirrel.Eq{
+				fmt.Sprintf("%s.%s", querybuilding.ValidInstrumentsTableName, querybuilding.ArchivedOnColumn): nil,
+			}),
+	)
+}
+
 // BuildGetValidInstrumentQuery constructs a SQL query for fetching a valid instrument with a given ID belong to a user with a given ID.
 func (b *Postgres) BuildGetValidInstrumentQuery(ctx context.Context, validInstrumentID uint64) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)

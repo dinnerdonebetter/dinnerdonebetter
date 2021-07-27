@@ -12,7 +12,6 @@
         <th>QuantityType</th>
         <th>QuantityValue</th>
         <th>QuantityNotes</th>
-        <th>RecipeStepID</th>
         <th>Last Updated On</th>
         <th>Created On</th>
     </tr>
@@ -24,7 +23,6 @@
         <td>{{ $x.QuantityType }}</td>
         <td>{{ $x.QuantityValue }}</td>
         <td>{{ $x.QuantityNotes }}</td>
-        <td>{{ $x.RecipeStepID }}</td>
         <td>{{ relativeTimeFromPtr $x.LastUpdatedOn }}</td>
         <td>{{ relativeTime $x.CreatedOn }}</td>
         <td><button class="btn btn-sm btn-danger" hx-target="closest tr" hx-confirm="Are you sure you want to delete this?" hx-delete="{{ individualURL . }}">Delete</button></td>

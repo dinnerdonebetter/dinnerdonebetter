@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"errors"
 
+	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
+
 	audit "gitlab.com/prixfixe/prixfixe/internal/audit"
 	database "gitlab.com/prixfixe/prixfixe/internal/database"
 	observability "gitlab.com/prixfixe/prixfixe/internal/observability"
@@ -24,7 +26,9 @@ func (q *SQLQuerier) scanRecipeStep(ctx context.Context, scan database.Scanner, 
 
 	logger := q.logger.WithValue("include_counts", includeCounts)
 
-	x = &types.RecipeStep{}
+	x = &types.RecipeStep{
+		Ingredients: []*types.RecipeStepIngredient{},
+	}
 
 	targetVars := []interface{}{
 		&x.ID,
@@ -37,7 +41,6 @@ func (q *SQLQuerier) scanRecipeStep(ctx context.Context, scan database.Scanner, 
 		&x.TemperatureInCelsius,
 		&x.Notes,
 		&x.Why,
-		&x.RecipeID,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
@@ -281,6 +284,52 @@ func (q *SQLQuerier) GetRecipeStepsWithIDs(ctx context.Context, recipeID uint64,
 	return recipeSteps, nil
 }
 
+func (q *SQLQuerier) createRecipeStep(ctx context.Context, tx *sql.Tx, logger logging.Logger, input *types.RecipeStepCreationInput, createdByUser uint64) (*types.RecipeStep, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	query, args := q.sqlQueryBuilder.BuildCreateRecipeStepQuery(ctx, input)
+
+	// create the recipe step.
+	id, err := q.performWriteQuery(ctx, tx, false, "recipe step creation", query, args)
+	if err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return nil, observability.PrepareError(err, logger, span, "creating recipe step")
+	}
+
+	x := &types.RecipeStep{
+		ID:                        id,
+		Index:                     input.Index,
+		PreparationID:             input.PreparationID,
+		PrerequisiteStep:          input.PrerequisiteStep,
+		MinEstimatedTimeInSeconds: input.MinEstimatedTimeInSeconds,
+		MaxEstimatedTimeInSeconds: input.MaxEstimatedTimeInSeconds,
+		TemperatureInCelsius:      input.TemperatureInCelsius,
+		Notes:                     input.Notes,
+		Why:                       input.Why,
+		BelongsToRecipe:           input.BelongsToRecipe,
+		CreatedOn:                 q.currentTime(),
+	}
+
+	for _, ingredientInput := range input.Ingredients {
+		ingredientInput.BelongsToRecipeStep = x.ID
+		ingredient, createErr := q.createRecipeStepIngredient(ctx, tx, logger, ingredientInput, createdByUser)
+		if createErr != nil {
+			q.rollbackTransaction(ctx, tx)
+			return nil, observability.PrepareError(createErr, logger, span, "creating recipe step ingredient")
+		}
+
+		x.Ingredients = append(x.Ingredients, ingredient)
+	}
+
+	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildRecipeStepCreationEventEntry(x, createdByUser)); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return nil, observability.PrepareError(err, logger, span, "writing recipe step creation audit log entry")
+	}
+
+	return x, nil
+}
+
 // CreateRecipeStep creates a recipe step in the database.
 func (q *SQLQuerier) CreateRecipeStep(ctx context.Context, input *types.RecipeStepCreationInput, createdByUser uint64) (*types.RecipeStep, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -302,33 +351,10 @@ func (q *SQLQuerier) CreateRecipeStep(ctx context.Context, input *types.RecipeSt
 		return nil, observability.PrepareError(err, logger, span, "beginning transaction")
 	}
 
-	query, args := q.sqlQueryBuilder.BuildCreateRecipeStepQuery(ctx, input)
-
-	// create the recipe step.
-	id, err := q.performWriteQuery(ctx, tx, false, "recipe step creation", query, args)
-	if err != nil {
+	x, createErr := q.createRecipeStep(ctx, tx, logger, input, createdByUser)
+	if createErr != nil {
 		q.rollbackTransaction(ctx, tx)
-		return nil, observability.PrepareError(err, logger, span, "creating recipe step")
-	}
-
-	x := &types.RecipeStep{
-		ID:                        id,
-		Index:                     input.Index,
-		PreparationID:             input.PreparationID,
-		PrerequisiteStep:          input.PrerequisiteStep,
-		MinEstimatedTimeInSeconds: input.MinEstimatedTimeInSeconds,
-		MaxEstimatedTimeInSeconds: input.MaxEstimatedTimeInSeconds,
-		TemperatureInCelsius:      input.TemperatureInCelsius,
-		Notes:                     input.Notes,
-		Why:                       input.Why,
-		RecipeID:                  input.RecipeID,
-		BelongsToRecipe:           input.BelongsToRecipe,
-		CreatedOn:                 q.currentTime(),
-	}
-
-	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildRecipeStepCreationEventEntry(x, createdByUser)); err != nil {
-		q.rollbackTransaction(ctx, tx)
-		return nil, observability.PrepareError(err, logger, span, "writing recipe step creation audit log entry")
+		return nil, observability.PrepareError(createErr, logger, span, "creating recipe step")
 	}
 
 	if err = tx.Commit(); err != nil {

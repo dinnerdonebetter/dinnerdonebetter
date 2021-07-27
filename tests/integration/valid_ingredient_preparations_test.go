@@ -30,8 +30,22 @@ func (s *TestSuite) TestValidIngredientPreparations_Creating() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			// Create valid ingredient.
+			exampleValidIngredient := fakes.BuildFakeValidIngredient()
+			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
+			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			requireNotNilAndNoProblems(t, createdValidIngredient, err)
+
+			// Create valid preparation.
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+
 			// Create valid ingredient preparation.
 			exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
+			exampleValidIngredientPreparation.ValidPreparationID = createdValidPreparation.ID
+			exampleValidIngredientPreparation.ValidIngredientID = createdValidIngredient.ID
 			exampleValidIngredientPreparationInput := fakes.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
 			createdValidIngredientPreparation, err := testClients.main.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
 			requireNotNilAndNoProblems(t, createdValidIngredientPreparation, err)
@@ -61,10 +75,24 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			// Create valid ingredient.
+			exampleValidIngredient := fakes.BuildFakeValidIngredient()
+			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
+			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			requireNotNilAndNoProblems(t, createdValidIngredient, err)
+
+			// Create valid preparation.
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+
 			// create valid ingredient preparations
 			var expected []*types.ValidIngredientPreparation
 			for i := 0; i < 5; i++ {
 				exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
+				exampleValidIngredientPreparation.ValidPreparationID = createdValidPreparation.ID
+				exampleValidIngredientPreparation.ValidIngredientID = createdValidIngredient.ID
 				exampleValidIngredientPreparationInput := fakes.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
 
 				createdValidIngredientPreparation, validIngredientPreparationCreationErr := testClients.main.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
@@ -115,8 +143,22 @@ func (s *TestSuite) TestValidIngredientPreparations_ExistenceChecking_ReturnsTru
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			// Create valid ingredient.
+			exampleValidIngredient := fakes.BuildFakeValidIngredient()
+			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
+			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			requireNotNilAndNoProblems(t, createdValidIngredient, err)
+
+			// Create valid preparation.
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+
 			// create valid ingredient preparation
 			exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
+			exampleValidIngredientPreparation.ValidPreparationID = createdValidPreparation.ID
+			exampleValidIngredientPreparation.ValidIngredientID = createdValidIngredient.ID
 			exampleValidIngredientPreparationInput := fakes.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
 			createdValidIngredientPreparation, err := testClients.main.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
 			requireNotNilAndNoProblems(t, createdValidIngredientPreparation, err)
@@ -154,8 +196,22 @@ func (s *TestSuite) TestValidIngredientPreparations_Reading() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			// Create valid ingredient.
+			exampleValidIngredient := fakes.BuildFakeValidIngredient()
+			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
+			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			requireNotNilAndNoProblems(t, createdValidIngredient, err)
+
+			// Create valid preparation.
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+
 			// create valid ingredient preparation
 			exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
+			exampleValidIngredientPreparation.ValidPreparationID = createdValidPreparation.ID
+			exampleValidIngredientPreparation.ValidIngredientID = createdValidIngredient.ID
 			exampleValidIngredientPreparationInput := fakes.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
 			createdValidIngredientPreparation, err := testClients.main.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
 			requireNotNilAndNoProblems(t, createdValidIngredientPreparation, err)
@@ -206,8 +262,22 @@ func (s *TestSuite) TestValidIngredientPreparations_Updating() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			// Create valid ingredient.
+			exampleValidIngredient := fakes.BuildFakeValidIngredient()
+			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
+			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			requireNotNilAndNoProblems(t, createdValidIngredient, err)
+
+			// Create valid preparation.
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+
 			// create valid ingredient preparation
 			exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
+			exampleValidIngredientPreparation.ValidPreparationID = createdValidPreparation.ID
+			exampleValidIngredientPreparation.ValidIngredientID = createdValidIngredient.ID
 			exampleValidIngredientPreparationInput := fakes.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
 			createdValidIngredientPreparation, err := testClients.main.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
 			requireNotNilAndNoProblems(t, createdValidIngredientPreparation, err)
@@ -260,8 +330,22 @@ func (s *TestSuite) TestValidIngredientPreparations_Archiving() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			// Create valid ingredient.
+			exampleValidIngredient := fakes.BuildFakeValidIngredient()
+			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
+			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			requireNotNilAndNoProblems(t, createdValidIngredient, err)
+
+			// Create valid preparation.
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+
 			// create valid ingredient preparation
 			exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
+			exampleValidIngredientPreparation.ValidPreparationID = createdValidPreparation.ID
+			exampleValidIngredientPreparation.ValidIngredientID = createdValidIngredient.ID
 			exampleValidIngredientPreparationInput := fakes.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
 			createdValidIngredientPreparation, err := testClients.main.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
 			requireNotNilAndNoProblems(t, createdValidIngredientPreparation, err)

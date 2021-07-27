@@ -10,21 +10,21 @@ import (
 type (
 	// RecipeStep represents a recipe step.
 	RecipeStep struct {
-		LastUpdatedOn             *uint64 `json:"lastUpdatedOn"`
-		TemperatureInCelsius      *uint16 `json:"temperatureInCelsius"`
-		ArchivedOn                *uint64 `json:"archivedOn"`
-		ExternalID                string  `json:"externalID"`
-		Why                       string  `json:"why"`
-		Notes                     string  `json:"notes"`
-		ID                        uint64  `json:"id"`
-		PrerequisiteStep          uint64  `json:"prerequisiteStep"`
-		PreparationID             uint64  `json:"preparationID"`
-		Index                     uint    `json:"index"`
-		RecipeID                  uint64  `json:"recipeID"`
-		CreatedOn                 uint64  `json:"createdOn"`
-		BelongsToRecipe           uint64  `json:"belongsToRecipe"`
-		MaxEstimatedTimeInSeconds uint32  `json:"maxEstimatedTimeInSeconds"`
-		MinEstimatedTimeInSeconds uint32  `json:"minEstimatedTimeInSeconds"`
+		LastUpdatedOn             *uint64                 `json:"lastUpdatedOn"`
+		TemperatureInCelsius      *uint16                 `json:"temperatureInCelsius"`
+		ArchivedOn                *uint64                 `json:"archivedOn"`
+		ExternalID                string                  `json:"externalID"`
+		Why                       string                  `json:"why"`
+		Notes                     string                  `json:"notes"`
+		Ingredients               []*RecipeStepIngredient `json:"ingredients"`
+		PrerequisiteStep          uint64                  `json:"prerequisiteStep"`
+		ID                        uint64                  `json:"id"`
+		Index                     uint                    `json:"index"`
+		CreatedOn                 uint64                  `json:"createdOn"`
+		BelongsToRecipe           uint64                  `json:"belongsToRecipe"`
+		PreparationID             uint64                  `json:"preparationID"`
+		MaxEstimatedTimeInSeconds uint32                  `json:"maxEstimatedTimeInSeconds"`
+		MinEstimatedTimeInSeconds uint32                  `json:"minEstimatedTimeInSeconds"`
 	}
 
 	// RecipeStepList represents a list of recipe steps.
@@ -35,16 +35,16 @@ type (
 
 	// RecipeStepCreationInput represents what a user could set as input for creating recipe steps.
 	RecipeStepCreationInput struct {
-		TemperatureInCelsius      *uint16 `json:"temperatureInCelsius"`
-		Notes                     string  `json:"notes"`
-		Why                       string  `json:"why"`
-		PrerequisiteStep          uint64  `json:"prerequisiteStep"`
-		BelongsToRecipe           uint64  `json:"-"`
-		Index                     uint    `json:"index"`
-		PreparationID             uint64  `json:"preparationID"`
-		RecipeID                  uint64  `json:"recipeID"`
-		MaxEstimatedTimeInSeconds uint32  `json:"maxEstimatedTimeInSeconds"`
-		MinEstimatedTimeInSeconds uint32  `json:"minEstimatedTimeInSeconds"`
+		TemperatureInCelsius      *uint16                              `json:"temperatureInCelsius"`
+		Notes                     string                               `json:"notes"`
+		Why                       string                               `json:"why"`
+		Ingredients               []*RecipeStepIngredientCreationInput `json:"ingredients"`
+		PrerequisiteStep          uint64                               `json:"prerequisiteStep"`
+		Index                     uint                                 `json:"index"`
+		PreparationID             uint64                               `json:"preparationID"`
+		BelongsToRecipe           uint64                               `json:"-"`
+		MaxEstimatedTimeInSeconds uint32                               `json:"maxEstimatedTimeInSeconds"`
+		MinEstimatedTimeInSeconds uint32                               `json:"minEstimatedTimeInSeconds"`
 	}
 
 	// RecipeStepUpdateInput represents what a user could set as input for updating recipe steps.
@@ -56,7 +56,6 @@ type (
 		BelongsToRecipe           uint64  `json:"belongsToRecipe"`
 		Index                     uint    `json:"index"`
 		PreparationID             uint64  `json:"preparationID"`
-		RecipeID                  uint64  `json:"recipeID"`
 		MaxEstimatedTimeInSeconds uint32  `json:"maxEstimatedTimeInSeconds"`
 		MinEstimatedTimeInSeconds uint32  `json:"minEstimatedTimeInSeconds"`
 	}
@@ -171,16 +170,6 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateInput) []*FieldChangeSummary 
 		x.Why = input.Why
 	}
 
-	if input.RecipeID != 0 && input.RecipeID != x.RecipeID {
-		out = append(out, &FieldChangeSummary{
-			FieldName: "RecipeID",
-			OldValue:  x.RecipeID,
-			NewValue:  input.RecipeID,
-		})
-
-		x.RecipeID = input.RecipeID
-	}
-
 	return out
 }
 
@@ -199,7 +188,6 @@ func (x *RecipeStepCreationInput) ValidateWithContext(ctx context.Context) error
 		validation.Field(&x.TemperatureInCelsius, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
 		validation.Field(&x.Why, validation.Required),
-		validation.Field(&x.RecipeID, validation.Required),
 	)
 }
 
@@ -218,6 +206,5 @@ func (x *RecipeStepUpdateInput) ValidateWithContext(ctx context.Context) error {
 		validation.Field(&x.TemperatureInCelsius, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
 		validation.Field(&x.Why, validation.Required),
-		validation.Field(&x.RecipeID, validation.Required),
 	)
 }

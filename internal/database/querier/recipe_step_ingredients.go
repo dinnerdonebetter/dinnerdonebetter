@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"errors"
 
+	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
+
 	audit "gitlab.com/prixfixe/prixfixe/internal/audit"
 	database "gitlab.com/prixfixe/prixfixe/internal/database"
 	observability "gitlab.com/prixfixe/prixfixe/internal/observability"
@@ -297,26 +299,9 @@ func (q *SQLQuerier) GetRecipeStepIngredientsWithIDs(ctx context.Context, recipe
 	return recipeStepIngredients, nil
 }
 
-// CreateRecipeStepIngredient creates a recipe step ingredient in the database.
-func (q *SQLQuerier) CreateRecipeStepIngredient(ctx context.Context, input *types.RecipeStepIngredientCreationInput, createdByUser uint64) (*types.RecipeStepIngredient, error) {
+func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, tx *sql.Tx, logger logging.Logger, input *types.RecipeStepIngredientCreationInput, createdByUser uint64) (*types.RecipeStepIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
-
-	if input == nil {
-		return nil, ErrNilInputProvided
-	}
-
-	if createdByUser == 0 {
-		return nil, ErrInvalidIDProvided
-	}
-
-	logger := q.logger.WithValue(keys.RequesterIDKey, createdByUser)
-	tracing.AttachRequestingUserIDToSpan(span, createdByUser)
-
-	tx, err := q.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "beginning transaction")
-	}
 
 	query, args := q.sqlQueryBuilder.BuildCreateRecipeStepIngredientQuery(ctx, input)
 
@@ -343,6 +328,35 @@ func (q *SQLQuerier) CreateRecipeStepIngredient(ctx context.Context, input *type
 	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildRecipeStepIngredientCreationEventEntry(x, createdByUser)); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareError(err, logger, span, "writing recipe step ingredient creation audit log entry")
+	}
+
+	return x, nil
+}
+
+// CreateRecipeStepIngredient creates a recipe step ingredient in the database.
+func (q *SQLQuerier) CreateRecipeStepIngredient(ctx context.Context, input *types.RecipeStepIngredientCreationInput, createdByUser uint64) (*types.RecipeStepIngredient, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil {
+		return nil, ErrNilInputProvided
+	}
+
+	if createdByUser == 0 {
+		return nil, ErrInvalidIDProvided
+	}
+
+	logger := q.logger.WithValue(keys.RequesterIDKey, createdByUser)
+	tracing.AttachRequestingUserIDToSpan(span, createdByUser)
+
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "beginning transaction")
+	}
+
+	x, createErr := q.createRecipeStepIngredient(ctx, tx, logger, input, createdByUser)
+	if createErr != nil {
+		return nil, observability.PrepareError(createErr, logger, span, "creating recipe step ingredient")
 	}
 
 	if err = tx.Commit(); err != nil {

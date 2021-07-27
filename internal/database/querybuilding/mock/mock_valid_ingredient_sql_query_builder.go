@@ -23,6 +23,20 @@ func (m *ValidIngredientSQLQueryBuilder) BuildValidIngredientExistsQuery(ctx con
 	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
 }
 
+// BuildGetValidIngredientIDForNameQuery implements our interface.
+func (m *ValidIngredientSQLQueryBuilder) BuildGetValidIngredientIDForNameQuery(ctx context.Context, validIngredientName string) (query string, args []interface{}) {
+	returnArgs := m.Called(ctx, validIngredientName)
+
+	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
+}
+
+// BuildSearchForValidIngredientByNameQuery implements our interface.
+func (m *ValidIngredientSQLQueryBuilder) BuildSearchForValidIngredientByNameQuery(ctx context.Context, name string) (query string, args []interface{}) {
+	returnArgs := m.Called(ctx, name)
+
+	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
+}
+
 // BuildGetValidIngredientQuery implements our interface.
 func (m *ValidIngredientSQLQueryBuilder) BuildGetValidIngredientQuery(ctx context.Context, validIngredientID uint64) (query string, args []interface{}) {
 	returnArgs := m.Called(ctx, validIngredientID)

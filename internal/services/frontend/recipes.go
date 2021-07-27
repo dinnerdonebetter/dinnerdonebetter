@@ -42,7 +42,7 @@ func (s *service) fetchRecipe(ctx context.Context, req *http.Request) (recipe *t
 	return recipe, nil
 }
 
-//go:embed templates/partials/creators/recipe_creator.gotpl
+//go:embed templates/partials/creators/recipe/recipe.gotpl
 var recipeCreatorTemplate string
 
 func (s *service) buildRecipeCreatorView(includeBaseTemplate bool) func(http.ResponseWriter, *http.Request) {
@@ -88,88 +88,13 @@ const (
 	recipeDescriptionFormKey        = "description"
 	recipeInspiredByRecipeIDFormKey = "inspiredByRecipeID"
 
-	recipeCreationInputNameFormKey               = recipeNameFormKey
-	recipeCreationInputSourceFormKey             = recipeSourceFormKey
-	recipeCreationInputDescriptionFormKey        = recipeDescriptionFormKey
-	recipeCreationInputInspiredByRecipeIDFormKey = recipeInspiredByRecipeIDFormKey
-
 	recipeUpdateInputNameFormKey               = recipeNameFormKey
 	recipeUpdateInputSourceFormKey             = recipeSourceFormKey
 	recipeUpdateInputDescriptionFormKey        = recipeDescriptionFormKey
 	recipeUpdateInputInspiredByRecipeIDFormKey = recipeInspiredByRecipeIDFormKey
 )
 
-// parseFormEncodedRecipeCreationInput checks a request for an RecipeCreationInput.
-func (s *service) parseFormEncodedRecipeCreationInput(ctx context.Context, req *http.Request, sessionCtxData *types.SessionContextData) (creationInput *types.RecipeCreationInput) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-	tracing.AttachRequestToSpan(span, req)
-
-	form, err := s.extractFormFromRequest(ctx, req)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "parsing recipe creation input")
-		return nil
-	}
-
-	creationInput = &types.RecipeCreationInput{
-		Name:               form.Get(recipeCreationInputNameFormKey),
-		Source:             form.Get(recipeCreationInputSourceFormKey),
-		Description:        form.Get(recipeCreationInputDescriptionFormKey),
-		InspiredByRecipeID: s.stringToPointerToUint64(form, recipeCreationInputInspiredByRecipeIDFormKey),
-		BelongsToAccount:   sessionCtxData.ActiveAccountID,
-	}
-
-	if err = creationInput.ValidateWithContext(ctx); err != nil {
-		logger = logger.WithValue("input", creationInput)
-		observability.AcknowledgeError(err, logger, span, "invalid recipe creation input")
-		return nil
-	}
-
-	return creationInput
-}
-
-func (s *service) handleRecipeCreationRequest(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-	tracing.AttachRequestToSpan(span, req)
-
-	logger.Debug("recipe creation route called")
-
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "no session context data attached to request")
-		http.Redirect(res, req, "/login", unauthorizedRedirectResponseCode)
-		return
-	}
-
-	logger.Debug("session context data retrieved for recipe creation route")
-
-	creationInput := s.parseFormEncodedRecipeCreationInput(ctx, req, sessionCtxData)
-	if creationInput == nil {
-		observability.AcknowledgeError(err, logger, span, "parsing recipe creation input")
-		res.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	logger.Debug("recipe creation input parsed successfully")
-
-	if _, err = s.dataStore.CreateRecipe(ctx, creationInput, sessionCtxData.Requester.UserID); err != nil {
-		observability.AcknowledgeError(err, logger, span, "writing recipe to datastore")
-		res.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	logger.Debug("recipe created")
-
-	htmxRedirectTo(res, "/recipes")
-	res.WriteHeader(http.StatusCreated)
-}
-
-//go:embed templates/partials/editors/recipe_editor.gotpl
+//go:embed templates/partials/editors/recipe/recipe.gotpl
 var recipeEditorTemplate string
 
 func (s *service) buildRecipeEditorView(includeBaseTemplate bool) func(http.ResponseWriter, *http.Request) {
