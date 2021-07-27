@@ -28,8 +28,8 @@ const (
 	frontendKey = servicesKey + x + "frontend"
 	// ConfigKeyFrontendDebug is the key viper will use to refer to the FrontendSettings.debug setting.
 	ConfigKeyFrontendDebug = frontendKey + x + debugKey
-	// ConfigKeyFrontendUseFakeData is the key viper will use to refer to the frontend.Config.UseFakeData setting.
-	ConfigKeyFrontendUseFakeData = frontendKey + x + "use_fake_data"
+	// ConfigKeyFrontendLogging is the key viper will use to refer to the frontend.Config.UseFakeData setting.
+	ConfigKeyFrontendLogging = frontendKey + x + loggingKey
 
 	authKey = servicesKey + x + "auth"
 	// ConfigKeyAuthDebug is the key viper will use to refer to the AuthSettings.debug setting.

@@ -11,7 +11,6 @@ import (
 	keys "gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 const (
@@ -25,18 +24,14 @@ func (s *service) fetchRecipe(ctx context.Context, req *http.Request) (recipe *t
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		recipe = fakes.BuildFakeRecipe()
-	} else {
-		// determine recipe ID.
-		recipeID := s.recipeIDFetcher(req)
-		tracing.AttachRecipeIDToSpan(span, recipeID)
-		logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	// determine recipe ID.
+	recipeID := s.recipeIDFetcher(req)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
-		recipe, err = s.dataStore.GetRecipe(ctx, recipeID)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching recipe data")
-		}
+	recipe, err = s.dataStore.GetRecipe(ctx, recipeID)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching recipe data")
 	}
 
 	return recipe, nil
@@ -153,16 +148,12 @@ func (s *service) fetchRecipes(ctx context.Context, req *http.Request) (recipes 
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		recipes = fakes.BuildFakeRecipeList()
-	} else {
-		filter := types.ExtractQueryFilter(req)
-		tracing.AttachQueryFilterToSpan(span, filter)
+	filter := types.ExtractQueryFilter(req)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-		recipes, err = s.dataStore.GetRecipes(ctx, filter)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching recipe data")
-		}
+	recipes, err = s.dataStore.GetRecipes(ctx, filter)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching recipe data")
 	}
 
 	return recipes, nil

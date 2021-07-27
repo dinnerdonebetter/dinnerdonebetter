@@ -89,7 +89,8 @@ func FromConfig(input *config.InstanceConfig) (*viper.Viper, error) {
 
 	cfg.Set(ConfigKeyEncodingContentType, input.Encoding.ContentType)
 
-	cfg.Set(ConfigKeyFrontendUseFakeData, input.Services.Frontend.UseFakeData)
+	cfg.Set(ConfigKeyFrontendDebug, input.Services.Frontend.Debug)
+	cfg.Set(ConfigKeyFrontendLogging, input.Services.Frontend.Logging)
 
 	cfg.Set(ConfigKeyAuthDebug, input.Services.Auth.Debug)
 	cfg.Set(ConfigKeyAuthEnableUserSignup, input.Services.Auth.EnableUserSignup)

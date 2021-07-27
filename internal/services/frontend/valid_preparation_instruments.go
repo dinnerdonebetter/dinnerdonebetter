@@ -11,7 +11,6 @@ import (
 	keys "gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 const (
@@ -25,18 +24,14 @@ func (s *service) fetchValidPreparationInstrument(ctx context.Context, req *http
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		validPreparationInstrument = fakes.BuildFakeValidPreparationInstrument()
-	} else {
-		// determine valid preparation instrument ID.
-		validPreparationInstrumentID := s.validPreparationInstrumentIDFetcher(req)
-		tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
-		logger = logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
+	// determine valid preparation instrument ID.
+	validPreparationInstrumentID := s.validPreparationInstrumentIDFetcher(req)
+	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
+	logger = logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 
-		validPreparationInstrument, err = s.dataStore.GetValidPreparationInstrument(ctx, validPreparationInstrumentID)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching valid preparation instrument data")
-		}
+	validPreparationInstrument, err = s.dataStore.GetValidPreparationInstrument(ctx, validPreparationInstrumentID)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching valid preparation instrument data")
 	}
 
 	return validPreparationInstrument, nil
@@ -223,16 +218,12 @@ func (s *service) fetchValidPreparationInstruments(ctx context.Context, req *htt
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		validPreparationInstruments = fakes.BuildFakeValidPreparationInstrumentList()
-	} else {
-		filter := types.ExtractQueryFilter(req)
-		tracing.AttachQueryFilterToSpan(span, filter)
+	filter := types.ExtractQueryFilter(req)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-		validPreparationInstruments, err = s.dataStore.GetValidPreparationInstruments(ctx, filter)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching valid preparation instrument data")
-		}
+	validPreparationInstruments, err = s.dataStore.GetValidPreparationInstruments(ctx, filter)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching valid preparation instrument data")
 	}
 
 	return validPreparationInstruments, nil

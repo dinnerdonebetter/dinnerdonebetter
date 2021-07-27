@@ -11,7 +11,6 @@ import (
 	keys "gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 const (
@@ -25,18 +24,14 @@ func (s *service) fetchValidInstrument(ctx context.Context, req *http.Request) (
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		validInstrument = fakes.BuildFakeValidInstrument()
-	} else {
-		// determine valid instrument ID.
-		validInstrumentID := s.validInstrumentIDFetcher(req)
-		tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
-		logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
+	// determine valid instrument ID.
+	validInstrumentID := s.validInstrumentIDFetcher(req)
+	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
+	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
 
-		validInstrument, err = s.dataStore.GetValidInstrument(ctx, validInstrumentID)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching valid instrument data")
-		}
+	validInstrument, err = s.dataStore.GetValidInstrument(ctx, validInstrumentID)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching valid instrument data")
 	}
 
 	return validInstrument, nil
@@ -227,16 +222,12 @@ func (s *service) fetchValidInstruments(ctx context.Context, req *http.Request) 
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		validInstruments = fakes.BuildFakeValidInstrumentList()
-	} else {
-		filter := types.ExtractQueryFilter(req)
-		tracing.AttachQueryFilterToSpan(span, filter)
+	filter := types.ExtractQueryFilter(req)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-		validInstruments, err = s.dataStore.GetValidInstruments(ctx, filter)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching valid instrument data")
-		}
+	validInstruments, err = s.dataStore.GetValidInstruments(ctx, filter)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching valid instrument data")
 	}
 
 	return validInstruments, nil

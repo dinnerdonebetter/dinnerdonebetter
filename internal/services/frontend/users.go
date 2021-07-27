@@ -8,7 +8,6 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/observability"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 func (s *service) fetchUsers(ctx context.Context, req *http.Request) (users *types.UserList, err error) {
@@ -18,15 +17,11 @@ func (s *service) fetchUsers(ctx context.Context, req *http.Request) (users *typ
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		users = fakes.BuildFakeUserList()
-	} else {
-		filter := types.ExtractQueryFilter(req)
-		users, err = s.dataStore.GetUsers(ctx, filter)
+	filter := types.ExtractQueryFilter(req)
+	users, err = s.dataStore.GetUsers(ctx, filter)
 
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching user data")
-		}
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching user data")
 	}
 
 	return users, nil

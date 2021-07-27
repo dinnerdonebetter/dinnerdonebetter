@@ -11,7 +11,6 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 const (
@@ -25,17 +24,13 @@ func (s *service) fetchAPIClient(ctx context.Context, sessionCtxData *types.Sess
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		apiClient = fakes.BuildFakeAPIClient()
-	} else {
-		apiClientID := s.apiClientIDFetcher(req)
-		tracing.AttachAPIClientDatabaseIDToSpan(span, apiClientID)
-		logger = logger.WithValue(keys.APIClientDatabaseIDKey, apiClientID)
+	apiClientID := s.apiClientIDFetcher(req)
+	tracing.AttachAPIClientDatabaseIDToSpan(span, apiClientID)
+	logger = logger.WithValue(keys.APIClientDatabaseIDKey, apiClientID)
 
-		apiClient, err = s.dataStore.GetAPIClientByDatabaseID(ctx, apiClientID, sessionCtxData.Requester.UserID)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching API client data")
-		}
+	apiClient, err = s.dataStore.GetAPIClientByDatabaseID(ctx, apiClientID, sessionCtxData.Requester.UserID)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching API client data")
 	}
 
 	return apiClient, nil
@@ -100,14 +95,10 @@ func (s *service) fetchAPIClients(ctx context.Context, sessionCtxData *types.Ses
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		apiClients = fakes.BuildFakeAPIClientList()
-	} else {
-		filter := types.ExtractQueryFilter(req)
-		apiClients, err = s.dataStore.GetAPIClients(ctx, sessionCtxData.Requester.UserID, filter)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching API client data")
-		}
+	filter := types.ExtractQueryFilter(req)
+	apiClients, err = s.dataStore.GetAPIClients(ctx, sessionCtxData.Requester.UserID, filter)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching API client data")
 	}
 
 	return apiClients, nil

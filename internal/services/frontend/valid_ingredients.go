@@ -11,7 +11,6 @@ import (
 	keys "gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 const (
@@ -25,18 +24,14 @@ func (s *service) fetchValidIngredient(ctx context.Context, req *http.Request) (
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		validIngredient = fakes.BuildFakeValidIngredient()
-	} else {
-		// determine valid ingredient ID.
-		validIngredientID := s.validIngredientIDFetcher(req)
-		tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
-		logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
+	// determine valid ingredient ID.
+	validIngredientID := s.validIngredientIDFetcher(req)
+	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
+	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 
-		validIngredient, err = s.dataStore.GetValidIngredient(ctx, validIngredientID)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching valid ingredient data")
-		}
+	validIngredient, err = s.dataStore.GetValidIngredient(ctx, validIngredientID)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching valid ingredient data")
 	}
 
 	return validIngredient, nil
@@ -283,16 +278,12 @@ func (s *service) fetchValidIngredients(ctx context.Context, req *http.Request) 
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		validIngredients = fakes.BuildFakeValidIngredientList()
-	} else {
-		filter := types.ExtractQueryFilter(req)
-		tracing.AttachQueryFilterToSpan(span, filter)
+	filter := types.ExtractQueryFilter(req)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-		validIngredients, err = s.dataStore.GetValidIngredients(ctx, filter)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching valid ingredient data")
-		}
+	validIngredients, err = s.dataStore.GetValidIngredients(ctx, filter)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching valid ingredient data")
 	}
 
 	return validIngredients, nil

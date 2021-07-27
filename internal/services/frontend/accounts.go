@@ -10,7 +10,6 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/observability"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 const (
@@ -23,13 +22,9 @@ func (s *service) fetchAccount(ctx context.Context, sessionCtxData *types.Sessio
 
 	logger := s.logger
 
-	if s.useFakeData {
-		account = fakes.BuildFakeAccount()
-	} else {
-		account, err = s.dataStore.GetAccount(ctx, sessionCtxData.ActiveAccountID, sessionCtxData.Requester.UserID)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching account data")
-		}
+	account, err = s.dataStore.GetAccount(ctx, sessionCtxData.ActiveAccountID, sessionCtxData.Requester.UserID)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching account data")
 	}
 
 	return account, nil
@@ -97,14 +92,10 @@ func (s *service) fetchAccounts(ctx context.Context, sessionCtxData *types.Sessi
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		accounts = fakes.BuildFakeAccountList()
-	} else {
-		qf := types.ExtractQueryFilter(req)
-		accounts, err = s.dataStore.GetAccounts(ctx, sessionCtxData.Requester.UserID, qf)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching accounts data")
-		}
+	qf := types.ExtractQueryFilter(req)
+	accounts, err = s.dataStore.GetAccounts(ctx, sessionCtxData.Requester.UserID, qf)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching accounts data")
 	}
 
 	return accounts, nil

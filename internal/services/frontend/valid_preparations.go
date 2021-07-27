@@ -13,7 +13,6 @@ import (
 	keys "gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 const (
@@ -27,18 +26,14 @@ func (s *service) fetchValidPreparation(ctx context.Context, req *http.Request) 
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		validPreparation = fakes.BuildFakeValidPreparation()
-	} else {
-		// determine valid preparation ID.
-		validPreparationID := s.validPreparationIDFetcher(req)
-		tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
-		logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
+	// determine valid preparation ID.
+	validPreparationID := s.validPreparationIDFetcher(req)
+	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 
-		validPreparation, err = s.dataStore.GetValidPreparation(ctx, validPreparationID)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching valid preparation data")
-		}
+	validPreparation, err = s.dataStore.GetValidPreparation(ctx, validPreparationID)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching valid preparation data")
 	}
 
 	return validPreparation, nil
@@ -272,16 +267,12 @@ func (s *service) fetchValidPreparations(ctx context.Context, req *http.Request)
 	logger := s.logger
 	tracing.AttachRequestToSpan(span, req)
 
-	if s.useFakeData {
-		validPreparations = fakes.BuildFakeValidPreparationList()
-	} else {
-		filter := types.ExtractQueryFilter(req)
-		tracing.AttachQueryFilterToSpan(span, filter)
+	filter := types.ExtractQueryFilter(req)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-		validPreparations, err = s.dataStore.GetValidPreparations(ctx, filter)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching valid preparation data")
-		}
+	validPreparations, err = s.dataStore.GetValidPreparations(ctx, filter)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching valid preparation data")
 	}
 
 	return validPreparations, nil
