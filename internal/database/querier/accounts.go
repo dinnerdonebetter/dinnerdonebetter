@@ -75,7 +75,6 @@ func (q *SQLQuerier) scanAccounts(ctx context.Context, rows database.ResultItera
 	defer span.End()
 
 	logger := q.logger.WithValue("include_counts", includeCounts)
-
 	accounts = []*types.Account{}
 
 	var currentAccount *types.Account

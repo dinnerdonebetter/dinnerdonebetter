@@ -58,6 +58,7 @@ type (
 		UserReputation            accountStatus `json:"accountStatus,omitempty"`
 		UserReputationExplanation string        `json:"reputationExplanation"`
 		ActiveAccount             uint64        `json:"activeAccount,omitempty"`
+		UserIsServiceAdmin        bool          `json:"userIsServiceAdmin"`
 		UserIsAuthenticated       bool          `json:"isAuthenticated"`
 	}
 

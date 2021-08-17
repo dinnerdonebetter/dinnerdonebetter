@@ -222,6 +222,7 @@ var (
 		fmt.Sprintf("%s.%s", RecipesTableName, RecipesTableNameColumn),
 		fmt.Sprintf("%s.%s", RecipesTableName, RecipesTableSourceColumn),
 		fmt.Sprintf("%s.%s", RecipesTableName, RecipesTableDescriptionColumn),
+		// fmt.Sprintf("%s.%s", RecipesTableName, RecipesTableDisplayImageURLColumn),
 		fmt.Sprintf("%s.%s", RecipesTableName, RecipesTableInspiredByRecipeIDColumn),
 		fmt.Sprintf("%s.%s", RecipesTableName, CreatedOnColumn),
 		fmt.Sprintf("%s.%s", RecipesTableName, LastUpdatedOnColumn),

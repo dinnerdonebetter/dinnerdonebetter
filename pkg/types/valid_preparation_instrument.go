@@ -90,7 +90,7 @@ func (x *ValidPreparationInstrument) Update(input *ValidPreparationInstrumentUpd
 		x.PreparationID = input.PreparationID
 	}
 
-	if input.Notes != "" && input.Notes != x.Notes {
+	if input.Notes != x.Notes {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "Notes",
 			OldValue:  x.Notes,

@@ -70,7 +70,7 @@ type (
 func (x *ValidIngredientPreparation) Update(input *ValidIngredientPreparationUpdateInput) []*FieldChangeSummary {
 	var out []*FieldChangeSummary
 
-	if input.Notes != "" && input.Notes != x.Notes {
+	if input.Notes != x.Notes {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "Notes",
 			OldValue:  x.Notes,

@@ -124,7 +124,7 @@ type (
 func (x *ValidIngredient) Update(input *ValidIngredientUpdateInput) []*FieldChangeSummary {
 	var out []*FieldChangeSummary
 
-	if input.Name != "" && input.Name != x.Name {
+	if input.Name != x.Name {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "Name",
 			OldValue:  x.Name,
@@ -134,7 +134,7 @@ func (x *ValidIngredient) Update(input *ValidIngredientUpdateInput) []*FieldChan
 		x.Name = input.Name
 	}
 
-	if input.Variant != "" && input.Variant != x.Variant {
+	if input.Variant != x.Variant {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "Variant",
 			OldValue:  x.Variant,
@@ -144,7 +144,7 @@ func (x *ValidIngredient) Update(input *ValidIngredientUpdateInput) []*FieldChan
 		x.Variant = input.Variant
 	}
 
-	if input.Description != "" && input.Description != x.Description {
+	if input.Description != x.Description {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "Description",
 			OldValue:  x.Description,
@@ -154,7 +154,7 @@ func (x *ValidIngredient) Update(input *ValidIngredientUpdateInput) []*FieldChan
 		x.Description = input.Description
 	}
 
-	if input.Warning != "" && input.Warning != x.Warning {
+	if input.Warning != x.Warning {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "Warning",
 			OldValue:  x.Warning,
@@ -294,7 +294,7 @@ func (x *ValidIngredient) Update(input *ValidIngredientUpdateInput) []*FieldChan
 		x.Volumetric = input.Volumetric
 	}
 
-	if input.IconPath != "" && input.IconPath != x.IconPath {
+	if input.IconPath != x.IconPath {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "IconPath",
 			OldValue:  x.IconPath,

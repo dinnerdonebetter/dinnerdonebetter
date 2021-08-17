@@ -57,6 +57,8 @@ func (q *SQLQuerier) scanRecipes(ctx context.Context, rows database.ResultIterat
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	recipes = []*types.Recipe{}
+
 	logger := q.logger.WithValue("include_counts", includeCounts)
 
 	for rows.Next() {
@@ -295,6 +297,7 @@ func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeCreati
 		Name:               input.Name,
 		Source:             input.Source,
 		Description:        input.Description,
+		DisplayImageURL:    input.DisplayImageURL,
 		InspiredByRecipeID: input.InspiredByRecipeID,
 		BelongsToAccount:   input.BelongsToAccount,
 		CreatedOn:          q.currentTime(),

@@ -33,6 +33,7 @@ type (
 		EncodeResponseWithStatus(ctx context.Context, res http.ResponseWriter, val interface{}, statusCode int)
 		EncodeErrorResponse(ctx context.Context, res http.ResponseWriter, msg string, statusCode int)
 		EncodeInvalidInputResponse(ctx context.Context, res http.ResponseWriter)
+		EncodeRejectedDuplicateResponse(ctx context.Context, res http.ResponseWriter)
 		EncodeNotFoundResponse(ctx context.Context, res http.ResponseWriter)
 		EncodeUnspecifiedInternalServerErrorResponse(ctx context.Context, res http.ResponseWriter)
 		EncodeUnauthorizedResponse(ctx context.Context, res http.ResponseWriter)
@@ -136,6 +137,14 @@ func (e *serverEncoderDecoder) EncodeUnspecifiedInternalServerErrorResponse(ctx 
 	defer span.End()
 
 	e.EncodeErrorResponse(ctx, res, "something has gone awry", http.StatusInternalServerError)
+}
+
+// EncodeRejectedDuplicateResponse encodes a generic 409 error to a response.
+func (e *serverEncoderDecoder) EncodeRejectedDuplicateResponse(ctx context.Context, res http.ResponseWriter) {
+	ctx, span := e.tracer.StartSpan(ctx)
+	defer span.End()
+
+	e.EncodeErrorResponse(ctx, res, "duplicate entry creation rejected", http.StatusConflict)
 }
 
 // EncodeUnauthorizedResponse encodes a generic 401 error to a response.

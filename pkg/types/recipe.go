@@ -16,6 +16,7 @@ type (
 		Source             string        `json:"source"`
 		Description        string        `json:"description"`
 		ExternalID         string        `json:"externalID"`
+		DisplayImageURL    string        `json:"displayImageURL"`
 		Name               string        `json:"name"`
 		Steps              []*RecipeStep `json:"steps"`
 		ID                 uint64        `json:"id"`
@@ -34,6 +35,7 @@ type (
 		InspiredByRecipeID *uint64                    `json:"inspiredByRecipeID"`
 		Name               string                     `json:"name"`
 		Source             string                     `json:"source"`
+		DisplayImageURL    string                     `json:"displayImageURL"`
 		Description        string                     `json:"description"`
 		Steps              []*RecipeStepCreationInput `json:"steps"`
 		BelongsToAccount   uint64                     `json:"-"`
@@ -44,6 +46,7 @@ type (
 		InspiredByRecipeID *uint64 `json:"inspiredByRecipeID"`
 		Name               string  `json:"name"`
 		Source             string  `json:"source"`
+		DisplayImageURL    string  `json:"displayImageURL"`
 		Description        string  `json:"description"`
 		BelongsToAccount   uint64  `json:"-"`
 	}
@@ -78,7 +81,7 @@ type (
 func (x *Recipe) Update(input *RecipeUpdateInput) []*FieldChangeSummary {
 	var out []*FieldChangeSummary
 
-	if input.Name != "" && input.Name != x.Name {
+	if input.Name != x.Name {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "Name",
 			OldValue:  x.Name,
@@ -88,7 +91,7 @@ func (x *Recipe) Update(input *RecipeUpdateInput) []*FieldChangeSummary {
 		x.Name = input.Name
 	}
 
-	if input.Source != "" && input.Source != x.Source {
+	if input.Source != x.Source {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "Source",
 			OldValue:  x.Source,
@@ -98,7 +101,7 @@ func (x *Recipe) Update(input *RecipeUpdateInput) []*FieldChangeSummary {
 		x.Source = input.Source
 	}
 
-	if input.Description != "" && input.Description != x.Description {
+	if input.Description != x.Description {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "Description",
 			OldValue:  x.Description,

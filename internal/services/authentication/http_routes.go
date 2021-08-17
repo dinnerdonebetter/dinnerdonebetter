@@ -12,6 +12,8 @@ import (
 	"strconv"
 	"time"
 
+	"gitlab.com/prixfixe/prixfixe/internal/authorization"
+
 	"gitlab.com/prixfixe/prixfixe/internal/authentication"
 	"gitlab.com/prixfixe/prixfixe/internal/observability"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/keys"
@@ -170,12 +172,23 @@ func (s *service) BeginSessionHandler(res http.ResponseWriter, req *http.Request
 
 	statusResponse := &types.UserStatusResponse{
 		UserIsAuthenticated:       true,
+		UserIsServiceAdmin:        userIsServiceAdmin(user),
 		UserReputation:            user.ServiceAccountStatus,
 		UserReputationExplanation: user.ReputationExplanation,
 	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, statusResponse, http.StatusAccepted)
 	logger.Debug("user logged in")
+}
+
+func userIsServiceAdmin(user *types.User) bool {
+	for _, role := range user.ServiceRoles {
+		if role == authorization.ServiceAdminRole.String() {
+			return true
+		}
+	}
+
+	return false
 }
 
 // ChangeActiveAccountHandler is our login route.

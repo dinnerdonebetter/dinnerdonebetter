@@ -267,6 +267,8 @@ const (
 	RecipesTableSourceColumn = "source"
 	// RecipesTableDescriptionColumn is what the recipes table calls the description column.
 	RecipesTableDescriptionColumn = "description"
+	// RecipesTableDisplayImageURLColumn is what the recipes table calls the description column.
+	RecipesTableDisplayImageURLColumn = "display_image_url"
 	// RecipesTableInspiredByRecipeIDColumn is what the recipes table calls the inspired_by_recipe_id column.
 	RecipesTableInspiredByRecipeIDColumn = "inspired_by_recipe_id"
 	// RecipesTableAccountOwnershipColumn is what the recipes table calls the ownership column.

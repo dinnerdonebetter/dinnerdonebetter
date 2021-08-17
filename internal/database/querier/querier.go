@@ -18,19 +18,12 @@ import (
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
-type idRetrievalStrategy int
-
 const (
 	name        = "db_client"
 	loggerName  = name
 	tracingName = name
 
 	defaultBatchSize = 1000
-
-	// DefaultIDRetrievalStrategy uses the standard library .LastInsertId method to retrieve the ID.
-	DefaultIDRetrievalStrategy idRetrievalStrategy = iota
-	// ReturningStatementIDRetrievalStrategy scans IDs to results for database drivers that support queries with RETURNING statements.
-	ReturningStatementIDRetrievalStrategy
 )
 
 var _ database.DataManager = (*SQLQuerier)(nil)
@@ -44,7 +37,6 @@ type SQLQuerier struct {
 	logger          logging.Logger
 	tracer          tracing.Tracer
 	migrateOnce     sync.Once
-	idStrategy      idRetrievalStrategy
 }
 
 // ProvideDatabaseClient provides a new DataManager client.
@@ -68,11 +60,6 @@ func ProvideDatabaseClient(
 		timeFunc:        defaultTimeFunc,
 		logger:          logging.EnsureLogger(logger).WithName(loggerName),
 		sqlQueryBuilder: sqlQueryBuilder,
-		idStrategy:      DefaultIDRetrievalStrategy,
-	}
-
-	if cfg.Provider == dbconfig.PostgresProvider {
-		c.idStrategy = ReturningStatementIDRetrievalStrategy
 	}
 
 	if cfg.Debug {
@@ -256,53 +243,43 @@ func (q *SQLQuerier) performWriteQuery(ctx context.Context, querier database.Que
 	logger := q.logger.WithValue("query", query).WithValue("description", queryDescription).WithValue("args", args)
 	tracing.AttachDatabaseQueryToSpan(span, queryDescription, query, args)
 
-	if q.idStrategy == ReturningStatementIDRetrievalStrategy && !ignoreReturn {
+	if !ignoreReturn {
 		var id uint64
 
 		if err := querier.QueryRowContext(ctx, query, args...).Scan(&id); err != nil {
+			if q.isUniqueConstraintError(err) {
+				return 0, database.ErrUniqueConstraintViolation
+			}
+
 			return 0, observability.PrepareError(err, logger, span, "executing %s query", queryDescription)
 		}
 
 		logger.Debug("query executed successfully")
 
 		return id, nil
-	} else if q.idStrategy == ReturningStatementIDRetrievalStrategy {
-		res, err := querier.ExecContext(ctx, query, args...)
-		if err != nil {
-			return 0, observability.PrepareError(err, logger, span, "executing %s query", queryDescription)
-		}
-
-		var affectedRowCount int64
-		if affectedRowCount, err = res.RowsAffected(); affectedRowCount == 0 || err != nil {
-			// the only errors returned by the currently supported drivers are either
-			// always nil or simply indicate that no rows were affected by the query.
-
-			logger.Debug("no rows modified by query")
-			span.AddEvent("no_rows_modified")
-
-			return 0, sql.ErrNoRows
-		}
-
-		logger.Debug("query executed successfully")
-
-		return 0, nil
 	}
 
 	res, err := querier.ExecContext(ctx, query, args...)
 	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "executing query")
+		if q.isUniqueConstraintError(err) {
+			return 0, database.ErrUniqueConstraintViolation
+		}
+
+		return 0, observability.PrepareError(err, logger, span, "executing %s query", queryDescription)
 	}
 
-	if res != nil {
-		if rowCount, err := res.RowsAffected(); err == nil && rowCount == 0 {
-			logger.Debug("no rows modified by query")
-			span.AddEvent("no_rows_modified")
+	var affectedRowCount int64
+	if affectedRowCount, err = res.RowsAffected(); affectedRowCount == 0 || err != nil {
+		// the only errors returned by the currently supported drivers are either
+		// always nil or simply indicate that no rows were affected by the query.
 
-			return 0, sql.ErrNoRows
-		}
+		logger.Debug("no rows modified by query")
+		span.AddEvent("no_rows_modified")
+
+		return 0, sql.ErrNoRows
 	}
 
 	logger.Debug("query executed successfully")
 
-	return q.getIDFromResult(ctx, res), nil
+	return 0, nil
 }

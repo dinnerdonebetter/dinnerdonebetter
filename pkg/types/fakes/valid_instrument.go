@@ -11,7 +11,7 @@ func BuildFakeValidInstrument() *types.ValidInstrument {
 	return &types.ValidInstrument{
 		ID:          uint64(fake.Uint32()),
 		ExternalID:  fake.UUID(),
-		Name:        fake.Word(),
+		Name:        BuildUniqueName(),
 		Variant:     fake.Word(),
 		Description: fake.Word(),
 		IconPath:    fake.Word(),

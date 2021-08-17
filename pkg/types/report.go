@@ -70,7 +70,7 @@ type (
 func (x *Report) Update(input *ReportUpdateInput) []*FieldChangeSummary {
 	var out []*FieldChangeSummary
 
-	if input.ReportType != "" && input.ReportType != x.ReportType {
+	if input.ReportType != x.ReportType {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "ReportType",
 			OldValue:  x.ReportType,
@@ -80,7 +80,7 @@ func (x *Report) Update(input *ReportUpdateInput) []*FieldChangeSummary {
 		x.ReportType = input.ReportType
 	}
 
-	if input.Concern != "" && input.Concern != x.Concern {
+	if input.Concern != x.Concern {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "Concern",
 			OldValue:  x.Concern,

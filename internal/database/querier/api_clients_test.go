@@ -773,9 +773,9 @@ func TestQuerier_CreateAPIClient(T *testing.T) {
 			exampleInput,
 		).Return(fakeQuery, fakeArgs)
 
-		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleAPIClient.ID))
+			WillReturnRows(newDatabaseResultForID(exampleAPIClient.ID))
 
 		expectAuditLogEntryInTransaction(mockQueryBuilder, db, nil)
 
@@ -864,7 +864,7 @@ func TestQuerier_CreateAPIClient(T *testing.T) {
 			exampleInput,
 		).Return(fakeQuery, fakeArgs)
 
-		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnError(errors.New("blah"))
 
@@ -905,9 +905,9 @@ func TestQuerier_CreateAPIClient(T *testing.T) {
 			exampleInput,
 		).Return(fakeQuery, fakeArgs)
 
-		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleAPIClient.ID))
+			WillReturnRows(newDatabaseResultForID(exampleAPIClient.ID))
 
 		expectAuditLogEntryInTransaction(mockQueryBuilder, db, errors.New("blah"))
 
@@ -948,9 +948,9 @@ func TestQuerier_CreateAPIClient(T *testing.T) {
 			exampleInput,
 		).Return(fakeQuery, fakeArgs)
 
-		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleAPIClient.ID))
+			WillReturnRows(newDatabaseResultForID(exampleAPIClient.ID))
 
 		expectAuditLogEntryInTransaction(mockQueryBuilder, db, nil)
 

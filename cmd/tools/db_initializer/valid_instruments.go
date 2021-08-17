@@ -6,7 +6,7 @@ var (
 	validInstruments = []*types.ValidInstrumentCreationInput{
 		{
 			Name:        "knife",
-			Variant:     "generic",
+			Variant:     "",
 			Description: "",
 			IconPath:    "",
 		},

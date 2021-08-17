@@ -30,23 +30,20 @@ func TestRegistrationFlow(T *testing.T) {
 			page, err := browser.NewPage()
 			require.NoError(t, err, "could not create page")
 
-			_, err = page.Goto(urlToUse)
-			require.NoError(t, err, "could not navigate to root page")
+			_, err = page.Goto(urlToUse + "/register")
+			require.NoError(t, err, "could not navigate to registration page")
 
-			registerLinkClickErr := page.Click("#registerLink")
-			require.NoError(t, registerLinkClickErr, "could not find register link on homepage")
-
-			require.NoError(t, page.Type("#usernameInput", user.Username))
-			require.NoError(t, page.Type("#passwordInput", user.Password))
+			require.NoError(t, page.Type("[data-automation=registration_username_input]", user.Username))
+			require.NoError(t, page.Type("[data-automation=registration_password_input]", user.Password))
+			require.NoError(t, page.Type("[data-automation=registration_password_repeat_input]", user.Password))
 
 			time.Sleep(defaultBrowserWaitTime)
 
-			assert.Equal(t, urlToUse+"/register", page.URL())
-			require.NoError(t, page.Click("#registrationButton"))
+			require.NoError(t, page.Click("[data-automation=register_button]"))
 
 			time.Sleep(defaultBrowserWaitTime)
 
-			qrCodeElement, qrCodeElementErr := page.QuerySelector("#twoFactorSecretQRCode")
+			qrCodeElement, qrCodeElementErr := page.QuerySelector("[data-automation=two_factor_qr_code]")
 			require.NoError(t, qrCodeElementErr)
 
 			img, err := png.Decode(bytes.NewReader(getScreenshotBytes(t, qrCodeElement)))
@@ -70,10 +67,10 @@ func TestRegistrationFlow(T *testing.T) {
 			require.NoError(t, firstCodeGenerationErr)
 			require.NotEmpty(t, code)
 
-			totpInputFieldFindErr := page.Type("#totpTokenInput", code)
+			totpInputFieldFindErr := page.Type("[data-automation=totp_secret_verification_token_input]", code)
 			require.NoError(t, totpInputFieldFindErr, "unexpected error finding TOTP token input field: %v", totpInputFieldFindErr)
 
-			require.NoError(t, page.Click("#totpTokenSubmitButton"))
+			require.NoError(t, page.Click("[data-automation=totp_token_submit_button]"))
 
 			time.Sleep(defaultBrowserWaitTime)
 			assert.Equal(t, urlToUse+"/login", page.URL())
@@ -84,14 +81,14 @@ func TestRegistrationFlow(T *testing.T) {
 			require.NoError(t, secondCodeGenerationErr)
 			require.NotEmpty(t, code)
 
-			require.NoError(t, page.Type("#usernameInput", user.Username))
-			require.NoError(t, page.Type("#passwordInput", user.Password))
-			require.NoError(t, page.Type("#totpTokenInput", code))
+			require.NoError(t, page.Type("[data-automation=login_username_input]", user.Username))
+			require.NoError(t, page.Type("[data-automation=login_password_input]", user.Password))
+			require.NoError(t, page.Type("[data-automation=login_totp_token_input]", code))
 
-			require.NoError(t, page.Click("#loginButton"))
+			require.NoError(t, page.Click("[data-automation=login_button]"))
 			time.Sleep(defaultBrowserWaitTime)
 
-			assert.Equal(t, urlToUse+"/", page.URL())
+			assert.Equal(t, urlToUse+"/home", page.URL())
 		}
 	})
 }

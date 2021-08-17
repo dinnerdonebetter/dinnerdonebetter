@@ -11,7 +11,7 @@ func BuildFakeValidIngredient() *types.ValidIngredient {
 	return &types.ValidIngredient{
 		ID:                uint64(fake.Uint32()),
 		ExternalID:        fake.UUID(),
-		Name:              fake.Word(),
+		Name:              BuildUniqueName(),
 		Variant:           fake.Word(),
 		Description:       fake.Word(),
 		Warning:           fake.Word(),

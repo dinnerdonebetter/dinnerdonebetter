@@ -5,10 +5,10 @@ import (
 	"database/sql"
 	"errors"
 
-	audit "gitlab.com/prixfixe/prixfixe/internal/audit"
-	database "gitlab.com/prixfixe/prixfixe/internal/database"
-	observability "gitlab.com/prixfixe/prixfixe/internal/observability"
-	keys "gitlab.com/prixfixe/prixfixe/internal/observability/keys"
+	"gitlab.com/prixfixe/prixfixe/internal/audit"
+	"gitlab.com/prixfixe/prixfixe/internal/database"
+	"gitlab.com/prixfixe/prixfixe/internal/observability"
+	"gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
@@ -67,6 +67,8 @@ func (q *SQLQuerier) scanValidIngredient(ctx context.Context, scan database.Scan
 func (q *SQLQuerier) scanValidIngredients(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validIngredients []*types.ValidIngredient, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	validIngredients = []*types.ValidIngredient{}
 
 	logger := q.logger.WithValue("include_counts", includeCounts)
 

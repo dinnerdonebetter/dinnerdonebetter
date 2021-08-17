@@ -150,7 +150,7 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateInput) []*FieldChangeSummary 
 		x.TemperatureInCelsius = input.TemperatureInCelsius
 	}
 
-	if input.Notes != "" && input.Notes != x.Notes {
+	if input.Notes != x.Notes {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "Notes",
 			OldValue:  x.Notes,
@@ -160,7 +160,7 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateInput) []*FieldChangeSummary 
 		x.Notes = input.Notes
 	}
 
-	if input.Why != "" && input.Why != x.Why {
+	if input.Why != x.Why {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "Why",
 			OldValue:  x.Why,

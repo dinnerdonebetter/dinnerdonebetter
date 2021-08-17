@@ -2,6 +2,8 @@ package querier
 
 import (
 	"errors"
+
+	"github.com/lib/pq"
 )
 
 var (
@@ -17,3 +19,12 @@ var (
 	// ErrInvalidIDProvided indicates a required ID was passed in as zero.
 	ErrInvalidIDProvided = errors.New("required ID provided is zero")
 )
+
+func (q *SQLQuerier) isUniqueConstraintError(err error) bool {
+	var pqe *pq.Error
+	if errors.As(err, &pqe) {
+		return pqe.Code == "23505"
+	}
+
+	return false
+}

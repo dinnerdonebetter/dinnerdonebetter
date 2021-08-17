@@ -115,7 +115,7 @@ func (s *TestSuite) TestUsers_Searching_ReturnsEmptyWhenSearchingForUsernameThat
 			defer span.End()
 
 			actual, err := testClients.admin.SearchForUsersByUsername(ctx, "   this is a really long string that contains characters unlikely to yield any real results   ")
-			assert.Nil(t, actual)
+			assert.Empty(t, actual)
 			assert.NoError(t, err)
 		}
 	})

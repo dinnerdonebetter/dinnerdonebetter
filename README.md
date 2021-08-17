@@ -26,6 +26,7 @@ It's a good idea to run `mage quicktest lintegrationTests` before commits. You w
 
 ## working on the frontend
 
-2. run `mage run`
-2. in a different terminal, run `mage frontendAutoBuild`
-3. edit and have fun
+1. In two different shells:
+   1. run `mage run`
+   2. `cd` into `frontend` and run `pnpm run watch`
+2. edit and have fun

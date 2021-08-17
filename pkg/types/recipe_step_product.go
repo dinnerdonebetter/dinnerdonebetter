@@ -76,7 +76,7 @@ type (
 func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateInput) []*FieldChangeSummary {
 	var out []*FieldChangeSummary
 
-	if input.Name != "" && input.Name != x.Name {
+	if input.Name != x.Name {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "Name",
 			OldValue:  x.Name,
@@ -86,7 +86,7 @@ func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateInput) []*Field
 		x.Name = input.Name
 	}
 
-	if input.QuantityType != "" && input.QuantityType != x.QuantityType {
+	if input.QuantityType != x.QuantityType {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "QuantityType",
 			OldValue:  x.QuantityType,
@@ -106,7 +106,7 @@ func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateInput) []*Field
 		x.QuantityValue = input.QuantityValue
 	}
 
-	if input.QuantityNotes != "" && input.QuantityNotes != x.QuantityNotes {
+	if input.QuantityNotes != x.QuantityNotes {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "QuantityNotes",
 			OldValue:  x.QuantityNotes,

@@ -200,11 +200,6 @@ var (
 			IconPath:    "",
 		},
 		{
-			Name:        "pont-neuf",
-			Description: "measures from 1⁄3 by 1⁄3 by 2 1⁄2–3 inches (1 cm × 1 cm × 6 cm–8 cm) to 3⁄4 by 3⁄4 by 3 inches (2 cm × 2 cm × 8 cm).",
-			IconPath:    "",
-		},
-		{
 			Name:        "batonnet",
 			Description: "measures approximately 1⁄4 by 1⁄4 by 2–2 1⁄2 inches (0.6 cm × 0.6 cm × 5 cm–6 cm)",
 			IconPath:    "",
@@ -215,38 +210,8 @@ var (
 			IconPath:    "",
 		},
 		{
-			Name:        "large dice",
-			Description: "sides measuring approximately 3⁄4 inch (20 mm)",
-			IconPath:    "",
-		},
-		{
-			Name:        "medium dice",
-			Description: "sides measuring approximately 1⁄2 inch",
-			IconPath:    "",
-		},
-		{
-			Name:        "small dice",
-			Description: "sides measuring approximately 1⁄4 inch (5 mm)",
-			IconPath:    "",
-		},
-		{
-			Name:        "brunoise",
-			Description: "sides measuring approximately 1⁄8 inch (3 mm)",
-			IconPath:    "",
-		},
-		{
-			Name:        "fine brunoise",
-			Description: "sides measuring approximately 1⁄16 inch (2 mm)",
-			IconPath:    "",
-		},
-		{
-			Name:        "paysanne",
-			Description: "1⁄2 by 1⁄2 by 1⁄8 inch (10 mm × 10 mm × 3 mm)",
-			IconPath:    "",
-		},
-		{
-			Name:        "tourné",
-			Description: "2 inches (50 mm) long with seven faces usually with a bulge in the center portion",
+			Name:        "dice",
+			Description: "",
 			IconPath:    "",
 		},
 		{

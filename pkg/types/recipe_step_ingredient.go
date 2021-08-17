@@ -95,7 +95,7 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateInput) []
 		x.IngredientID = input.IngredientID
 	}
 
-	if input.Name != "" && input.Name != x.Name {
+	if input.Name != x.Name {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "Name",
 			OldValue:  x.Name,
@@ -105,7 +105,7 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateInput) []
 		x.Name = input.Name
 	}
 
-	if input.QuantityType != "" && input.QuantityType != x.QuantityType {
+	if input.QuantityType != x.QuantityType {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "QuantityType",
 			OldValue:  x.QuantityType,
@@ -125,7 +125,7 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateInput) []
 		x.QuantityValue = input.QuantityValue
 	}
 
-	if input.QuantityNotes != "" && input.QuantityNotes != x.QuantityNotes {
+	if input.QuantityNotes != x.QuantityNotes {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "QuantityNotes",
 			OldValue:  x.QuantityNotes,
@@ -145,7 +145,7 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateInput) []
 		x.ProductOfRecipeStep = input.ProductOfRecipeStep
 	}
 
-	if input.IngredientNotes != "" && input.IngredientNotes != x.IngredientNotes {
+	if input.IngredientNotes != x.IngredientNotes {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "IngredientNotes",
 			OldValue:  x.IngredientNotes,

@@ -775,11 +775,6 @@ func LocalBrowserTests() error {
 
 // Development
 
-// Generate frontend templates
-func FrontendTemplates() error {
-	return runGoCommand(false, "run", fmt.Sprintf("%s/cmd/tools/template_gen", thisRepo))
-}
-
 // Generate configuration files.
 func Configs() error {
 	return runGoCommand(true, run, "cmd/tools/config_gen/main.go")
@@ -788,10 +783,6 @@ func Configs() error {
 // Dev runs the service in dev mode locally.
 func Dev() error {
 	if err := freshArtifactsDir(); err != nil {
-		return err
-	}
-
-	if err := FrontendTemplates(); err != nil {
 		return err
 	}
 

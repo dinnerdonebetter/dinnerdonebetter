@@ -1,5 +1,5 @@
 # build stage
-FROM golang:stretch AS build-stage
+FROM golang:buster AS build-stage
 
 WORKDIR /go/src/gitlab.com/prixfixe/prixfixe
 
@@ -10,7 +10,7 @@ COPY . .
 RUN go build -o /loadtester gitlab.com/prixfixe/prixfixe/tests/load
 
 # final stage
-FROM debian:stretch
+FROM debian:bullseye-slim
 
 COPY --from=build-stage /loadtester /loadtester
 

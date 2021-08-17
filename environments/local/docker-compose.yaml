@@ -22,6 +22,9 @@ services:
             - database
 #            - prometheus
         volumes:
+            - source: '../../frontend/dist'
+              target: '/frontend'
+              type: 'bind'
             - source: '../../environments/local/service.config'
               target: '/etc/config.toml'
               type: 'bind'
