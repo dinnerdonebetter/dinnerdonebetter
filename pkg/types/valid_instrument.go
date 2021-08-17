@@ -82,7 +82,7 @@ type (
 func (x *ValidInstrument) Update(input *ValidInstrumentUpdateInput) []*FieldChangeSummary {
 	var out []*FieldChangeSummary
 
-	if input.Name != "" && input.Name != x.Name {
+	if input.Name != x.Name {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "Name",
 			OldValue:  x.Name,
@@ -92,7 +92,7 @@ func (x *ValidInstrument) Update(input *ValidInstrumentUpdateInput) []*FieldChan
 		x.Name = input.Name
 	}
 
-	if input.Variant != "" && input.Variant != x.Variant {
+	if input.Variant != x.Variant {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "Variant",
 			OldValue:  x.Variant,
@@ -102,7 +102,7 @@ func (x *ValidInstrument) Update(input *ValidInstrumentUpdateInput) []*FieldChan
 		x.Variant = input.Variant
 	}
 
-	if input.Description != "" && input.Description != x.Description {
+	if input.Description != x.Description {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "Description",
 			OldValue:  x.Description,
@@ -112,7 +112,7 @@ func (x *ValidInstrument) Update(input *ValidInstrumentUpdateInput) []*FieldChan
 		x.Description = input.Description
 	}
 
-	if input.IconPath != "" && input.IconPath != x.IconPath {
+	if input.IconPath != x.IconPath {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "IconPath",
 			OldValue:  x.IconPath,

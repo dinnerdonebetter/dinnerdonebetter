@@ -11,7 +11,7 @@ func BuildFakeAccount() *types.Account {
 	return &types.Account{
 		ID:                         uint64(fake.Uint32()),
 		ExternalID:                 fake.UUID(),
-		Name:                       fake.Word(),
+		Name:                       fake.Password(true, true, true, false, false, 32),
 		BillingStatus:              types.PaidAccountBillingStatus,
 		ContactEmail:               fake.Email(),
 		ContactPhone:               fake.PhoneFormatted(),

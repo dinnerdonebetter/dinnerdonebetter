@@ -1,5 +1,5 @@
 # build stage
-FROM golang:stretch
+FROM golang:buster
 
 WORKDIR /go/src/gitlab.com/prixfixe/prixfixe
 

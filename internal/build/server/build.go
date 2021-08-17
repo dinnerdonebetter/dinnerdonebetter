@@ -6,8 +6,6 @@ import (
 	"context"
 
 	"gitlab.com/prixfixe/prixfixe/internal/authentication"
-	capitalism "gitlab.com/prixfixe/prixfixe/internal/capitalism"
-	stripe "gitlab.com/prixfixe/prixfixe/internal/capitalism/stripe"
 	"gitlab.com/prixfixe/prixfixe/internal/config"
 	database "gitlab.com/prixfixe/prixfixe/internal/database"
 	dbconfig "gitlab.com/prixfixe/prixfixe/internal/database/config"
@@ -62,8 +60,6 @@ func Build(
 		uploads.Providers,
 		observability.Providers,
 		storage.Providers,
-		capitalism.Providers,
-		stripe.Providers,
 		chi.Providers,
 		authentication.Providers,
 		authservice.Providers,

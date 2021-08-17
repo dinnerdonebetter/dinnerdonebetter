@@ -70,7 +70,7 @@ type (
 func (x *Invitation) Update(input *InvitationUpdateInput) []*FieldChangeSummary {
 	var out []*FieldChangeSummary
 
-	if input.Code != "" && input.Code != x.Code {
+	if input.Code != x.Code {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "Code",
 			OldValue:  x.Code,

@@ -53,6 +53,8 @@ func (q *SQLQuerier) scanReports(ctx context.Context, rows database.ResultIterat
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	reports = []*types.Report{}
+
 	logger := q.logger.WithValue("include_counts", includeCounts)
 
 	for rows.Next() {

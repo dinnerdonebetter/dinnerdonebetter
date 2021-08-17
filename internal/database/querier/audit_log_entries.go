@@ -48,6 +48,8 @@ func (q *SQLQuerier) scanAuditLogEntries(ctx context.Context, rows database.Resu
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	entries = []*types.AuditLogEntry{}
+
 	logger := q.logger.WithValue("include_counts", includeCounts)
 
 	for rows.Next() {
@@ -208,7 +210,6 @@ func (q *SQLQuerier) createAuditLogEntryInTransaction(ctx context.Context, tx *s
 	if err := q.performWriteQueryIgnoringReturn(ctx, tx, "audit log entry creation", query, args); err != nil {
 		logger.Error(err, "executing audit log entry creation query")
 		q.rollbackTransaction(ctx, tx)
-
 		return err
 	}
 

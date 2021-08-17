@@ -55,6 +55,8 @@ func (q *SQLQuerier) scanRecipeStepProducts(ctx context.Context, rows database.R
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	recipeStepProducts = []*types.RecipeStepProduct{}
+
 	logger := q.logger.WithValue("include_counts", includeCounts)
 
 	for rows.Next() {

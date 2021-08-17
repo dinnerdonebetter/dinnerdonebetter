@@ -17,6 +17,9 @@ var (
 
 	// ErrDatabaseNotReady indicates the given database is not ready.
 	ErrDatabaseNotReady = errors.New("database is not ready yet")
+
+	// ErrUniqueConstraintViolation is what we return when you try to create a duplicate entry on a table with a unique constraint.
+	ErrUniqueConstraintViolation = errors.New("an entry like this already exists in the database")
 )
 
 type (

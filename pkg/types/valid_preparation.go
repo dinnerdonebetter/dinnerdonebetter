@@ -79,7 +79,7 @@ type (
 func (x *ValidPreparation) Update(input *ValidPreparationUpdateInput) []*FieldChangeSummary {
 	var out []*FieldChangeSummary
 
-	if input.Name != "" && input.Name != x.Name {
+	if input.Name != x.Name {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "Name",
 			OldValue:  x.Name,
@@ -89,7 +89,7 @@ func (x *ValidPreparation) Update(input *ValidPreparationUpdateInput) []*FieldCh
 		x.Name = input.Name
 	}
 
-	if input.Description != "" && input.Description != x.Description {
+	if input.Description != x.Description {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "Description",
 			OldValue:  x.Description,
@@ -99,7 +99,7 @@ func (x *ValidPreparation) Update(input *ValidPreparationUpdateInput) []*FieldCh
 		x.Description = input.Description
 	}
 
-	if input.IconPath != "" && input.IconPath != x.IconPath {
+	if input.IconPath != x.IconPath {
 		out = append(out, &FieldChangeSummary{
 			FieldName: "IconPath",
 			OldValue:  x.IconPath,

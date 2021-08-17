@@ -41,7 +41,7 @@ type (
 		ServiceAccountStatus      accountStatus `json:"reputation"`
 		TwoFactorSecret           string        `json:"-"`
 		HashedPassword            string        `json:"-"`
-		ServiceRoles              []string      `json:"serviceRole"`
+		ServiceRoles              []string      `json:"serviceRoles"`
 		ID                        uint64        `json:"id"`
 		CreatedOn                 uint64        `json:"createdOn"`
 		RequiresPasswordChange    bool          `json:"requiresPasswordChange"`
@@ -80,7 +80,7 @@ type (
 		AccountStatus   accountStatus `json:"accountStatus"`
 		TwoFactorSecret string        `json:"twoFactorSecret"`
 		TwoFactorQRCode string        `json:"qrCode"`
-		CreatedUserID   uint64        `json:"ID"`
+		CreatedUserID   uint64        `json:"createdUserID"`
 		CreatedOn       uint64        `json:"createdOn"`
 		IsAdmin         bool          `json:"isAdmin"`
 	}
@@ -161,15 +161,15 @@ type (
 
 // Update accepts a User as input and merges those values if they're set.
 func (u *User) Update(input *User) {
-	if input.Username != "" && input.Username != u.Username {
+	if input.Username != u.Username {
 		u.Username = input.Username
 	}
 
-	if input.HashedPassword != "" && input.HashedPassword != u.HashedPassword {
+	if input.HashedPassword != u.HashedPassword {
 		u.HashedPassword = input.HashedPassword
 	}
 
-	if input.TwoFactorSecret != "" && input.TwoFactorSecret != u.TwoFactorSecret {
+	if input.TwoFactorSecret != u.TwoFactorSecret {
 		u.TwoFactorSecret = input.TwoFactorSecret
 	}
 }

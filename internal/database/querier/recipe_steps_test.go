@@ -917,11 +917,11 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 			exampleInput,
 		).Return(fakeCreationQuery, fakeCreationArgs)
 
-		db.ExpectExec(formatQueryForSQLMock(fakeCreationQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeCreationArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleRecipeStep.ID))
+			WillReturnRows(newDatabaseResultForID(exampleRecipeStep.ID))
 
-		// we aren't able to granularly expect audit log entries by anything other than their event type, so
+		// we aren't able to expect audit log entries by anything other than their event type, so
 		// if we put this in the loop, it will only actually ever expect the "last" one.
 		fakeAuditLogEntryQuery, fakeAuditLogEntryArgs := fakes.BuildFakeSQLQuery()
 		for i, ingredient := range exampleInput.Ingredients {
@@ -932,9 +932,9 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 				ingredient,
 			).Return(fakeIngredientCreationQuery, fakeIngredientCreationArgs)
 
-			db.ExpectExec(formatQueryForSQLMock(fakeIngredientCreationQuery)).
+			db.ExpectQuery(formatQueryForSQLMock(fakeIngredientCreationQuery)).
 				WithArgs(interfaceToDriverValue(fakeIngredientCreationArgs)...).
-				WillReturnResult(newSuccessfulDatabaseResult(exampleRecipeStep.Ingredients[i].ID))
+				WillReturnRows(newDatabaseResultForID(exampleRecipeStep.Ingredients[i].ID))
 
 			mockQueryBuilder.AuditLogEntrySQLQueryBuilder.
 				On("BuildCreateAuditLogEntryQuery",
@@ -1051,7 +1051,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 		).Return(fakeQuery, fakeArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnError(expectedErr)
 
@@ -1090,9 +1090,9 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 		).Return(fakeCreationQuery, fakeCreationArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		db.ExpectExec(formatQueryForSQLMock(fakeCreationQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeCreationArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleRecipeStep.ID))
+			WillReturnRows(newDatabaseResultForID(exampleRecipeStep.ID))
 
 		expectAuditLogEntryInTransaction(mockQueryBuilder, db, errors.New("blah"))
 
@@ -1128,9 +1128,9 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 		).Return(fakeCreationQuery, fakeCreationArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		db.ExpectExec(formatQueryForSQLMock(fakeCreationQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeCreationArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleRecipeStep.ID))
+			WillReturnRows(newDatabaseResultForID(exampleRecipeStep.ID))
 
 		expectAuditLogEntryInTransaction(mockQueryBuilder, db, nil)
 

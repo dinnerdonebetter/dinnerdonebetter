@@ -54,6 +54,8 @@ func (q *SQLQuerier) scanAPIClients(ctx context.Context, rows database.ResultIte
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	clients = []*types.APIClient{}
+
 	logger := q.logger.WithValue("include_counts", includeCounts)
 
 	for rows.Next() {

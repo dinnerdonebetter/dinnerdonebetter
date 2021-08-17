@@ -13,7 +13,7 @@ func BuildFakeWebhook() *types.Webhook {
 	return &types.Webhook{
 		ID:               uint64(fake.Uint32()),
 		ExternalID:       fake.UUID(),
-		Name:             fake.Word(),
+		Name:             fake.UUID(),
 		ContentType:      "application/json",
 		URL:              fake.URL(),
 		Method:           http.MethodPost,

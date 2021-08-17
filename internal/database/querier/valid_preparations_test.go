@@ -806,9 +806,9 @@ func TestQuerier_CreateValidPreparation(T *testing.T) {
 			exampleInput,
 		).Return(fakeCreationQuery, fakeCreationArgs)
 
-		db.ExpectExec(formatQueryForSQLMock(fakeCreationQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeCreationArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleValidPreparation.ID))
+			WillReturnRows(newDatabaseResultForID(exampleValidPreparation.ID))
 
 		expectAuditLogEntryInTransaction(mockQueryBuilder, db, nil)
 
@@ -898,7 +898,7 @@ func TestQuerier_CreateValidPreparation(T *testing.T) {
 		).Return(fakeQuery, fakeArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnError(expectedErr)
 
@@ -936,9 +936,9 @@ func TestQuerier_CreateValidPreparation(T *testing.T) {
 		).Return(fakeCreationQuery, fakeCreationArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		db.ExpectExec(formatQueryForSQLMock(fakeCreationQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeCreationArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleValidPreparation.ID))
+			WillReturnRows(newDatabaseResultForID(exampleValidPreparation.ID))
 
 		expectAuditLogEntryInTransaction(mockQueryBuilder, db, errors.New("blah"))
 
@@ -973,9 +973,9 @@ func TestQuerier_CreateValidPreparation(T *testing.T) {
 		).Return(fakeCreationQuery, fakeCreationArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		db.ExpectExec(formatQueryForSQLMock(fakeCreationQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeCreationArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleValidPreparation.ID))
+			WillReturnRows(newDatabaseResultForID(exampleValidPreparation.ID))
 
 		expectAuditLogEntryInTransaction(mockQueryBuilder, db, nil)
 

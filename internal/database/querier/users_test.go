@@ -849,9 +849,9 @@ func TestQuerier_createUser(T *testing.T) {
 
 		fakeUserCreationQuery, fakeUserCreationArgs := fakes.BuildFakeSQLQuery()
 
-		db.ExpectExec(formatQueryForSQLMock(fakeUserCreationQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeUserCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeUserCreationArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleUser.ID))
+			WillReturnRows(newDatabaseResultForID(exampleUser.ID))
 
 		// create audit log entry for created user
 		firstFakeAuditLogEntryEventQuery, firstFakeAuditLogEntryEventArgs := fakes.BuildFakeSQLQuery()
@@ -873,9 +873,9 @@ func TestQuerier_createUser(T *testing.T) {
 			exampleAccountCreationInput,
 		).Return(fakeAccountCreationQuery, fakeAccountCreationArgs)
 
-		db.ExpectExec(formatQueryForSQLMock(fakeAccountCreationQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeAccountCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeAccountCreationArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleAccount.ID))
+			WillReturnRows(newDatabaseResultForID(exampleAccount.ID))
 
 		secondFakeAuditLogEntryEventQuery, secondFakeAuditLogEntryEventArgs := fakes.BuildFakeSQLQuery()
 		mockQueryBuilder.AuditLogEntrySQLQueryBuilder.On(
@@ -973,7 +973,7 @@ func TestQuerier_createUser(T *testing.T) {
 
 		fakeUserCreationQuery, fakeUserCreationArgs := fakes.BuildFakeSQLQuery()
 
-		db.ExpectExec(formatQueryForSQLMock(fakeUserCreationQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeUserCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeUserCreationArgs)...).
 			WillReturnError(errors.New("blah"))
 
@@ -1013,9 +1013,9 @@ func TestQuerier_createUser(T *testing.T) {
 
 		fakeUserCreationQuery, fakeUserCreationArgs := fakes.BuildFakeSQLQuery()
 
-		db.ExpectExec(formatQueryForSQLMock(fakeUserCreationQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeUserCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeUserCreationArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleUser.ID))
+			WillReturnRows(newDatabaseResultForID(exampleUser.ID))
 
 		// create audit log entry for created user
 		firstFakeAuditLogEntryEventQuery, firstFakeAuditLogEntryEventArgs := fakes.BuildFakeSQLQuery()
@@ -1066,9 +1066,9 @@ func TestQuerier_createUser(T *testing.T) {
 
 		fakeUserCreationQuery, fakeUserCreationArgs := fakes.BuildFakeSQLQuery()
 
-		db.ExpectExec(formatQueryForSQLMock(fakeUserCreationQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeUserCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeUserCreationArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleUser.ID))
+			WillReturnRows(newDatabaseResultForID(exampleUser.ID))
 
 		// create audit log entry for created user
 		firstFakeAuditLogEntryEventQuery, firstFakeAuditLogEntryEventArgs := fakes.BuildFakeSQLQuery()
@@ -1090,7 +1090,7 @@ func TestQuerier_createUser(T *testing.T) {
 			exampleAccountCreationInput,
 		).Return(fakeAccountCreationQuery, fakeAccountCreationArgs)
 
-		db.ExpectExec(formatQueryForSQLMock(fakeAccountCreationQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeAccountCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeAccountCreationArgs)...).
 			WillReturnError(errors.New("blah"))
 
@@ -1131,9 +1131,9 @@ func TestQuerier_createUser(T *testing.T) {
 
 		fakeUserCreationQuery, fakeUserCreationArgs := fakes.BuildFakeSQLQuery()
 
-		db.ExpectExec(formatQueryForSQLMock(fakeUserCreationQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeUserCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeUserCreationArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleUser.ID))
+			WillReturnRows(newDatabaseResultForID(exampleUser.ID))
 
 		// create audit log entry for created user
 		firstFakeAuditLogEntryEventQuery, firstFakeAuditLogEntryEventArgs := fakes.BuildFakeSQLQuery()
@@ -1155,9 +1155,9 @@ func TestQuerier_createUser(T *testing.T) {
 			exampleAccountCreationInput,
 		).Return(fakeAccountCreationQuery, fakeAccountCreationArgs)
 
-		db.ExpectExec(formatQueryForSQLMock(fakeAccountCreationQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeAccountCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeAccountCreationArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleAccount.ID))
+			WillReturnRows(newDatabaseResultForID(exampleAccount.ID))
 
 		secondFakeAuditLogEntryEventQuery, secondFakeAuditLogEntryEventArgs := fakes.BuildFakeSQLQuery()
 		mockQueryBuilder.AuditLogEntrySQLQueryBuilder.On(
@@ -1207,9 +1207,9 @@ func TestQuerier_createUser(T *testing.T) {
 
 		fakeUserCreationQuery, fakeUserCreationArgs := fakes.BuildFakeSQLQuery()
 
-		db.ExpectExec(formatQueryForSQLMock(fakeUserCreationQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeUserCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeUserCreationArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleUser.ID))
+			WillReturnRows(newDatabaseResultForID(exampleUser.ID))
 
 		// create audit log entry for created user
 		firstFakeAuditLogEntryEventQuery, firstFakeAuditLogEntryEventArgs := fakes.BuildFakeSQLQuery()
@@ -1231,9 +1231,9 @@ func TestQuerier_createUser(T *testing.T) {
 			exampleAccountCreationInput,
 		).Return(fakeAccountCreationQuery, fakeAccountCreationArgs)
 
-		db.ExpectExec(formatQueryForSQLMock(fakeAccountCreationQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeAccountCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeAccountCreationArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleAccount.ID))
+			WillReturnRows(newDatabaseResultForID(exampleAccount.ID))
 
 		secondFakeAuditLogEntryEventQuery, secondFakeAuditLogEntryEventArgs := fakes.BuildFakeSQLQuery()
 		mockQueryBuilder.AuditLogEntrySQLQueryBuilder.On(
@@ -1295,9 +1295,9 @@ func TestQuerier_createUser(T *testing.T) {
 
 		fakeUserCreationQuery, fakeUserCreationArgs := fakes.BuildFakeSQLQuery()
 
-		db.ExpectExec(formatQueryForSQLMock(fakeUserCreationQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeUserCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeUserCreationArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleUser.ID))
+			WillReturnRows(newDatabaseResultForID(exampleUser.ID))
 
 		// create audit log entry for created user
 		firstFakeAuditLogEntryEventQuery, firstFakeAuditLogEntryEventArgs := fakes.BuildFakeSQLQuery()
@@ -1319,9 +1319,9 @@ func TestQuerier_createUser(T *testing.T) {
 			exampleAccountCreationInput,
 		).Return(fakeAccountCreationQuery, fakeAccountCreationArgs)
 
-		db.ExpectExec(formatQueryForSQLMock(fakeAccountCreationQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeAccountCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeAccountCreationArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleAccount.ID))
+			WillReturnRows(newDatabaseResultForID(exampleAccount.ID))
 
 		secondFakeAuditLogEntryEventQuery, secondFakeAuditLogEntryEventArgs := fakes.BuildFakeSQLQuery()
 		mockQueryBuilder.AuditLogEntrySQLQueryBuilder.On(
@@ -1394,9 +1394,9 @@ func TestQuerier_createUser(T *testing.T) {
 
 		fakeUserCreationQuery, fakeUserCreationArgs := fakes.BuildFakeSQLQuery()
 
-		db.ExpectExec(formatQueryForSQLMock(fakeUserCreationQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeUserCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeUserCreationArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleUser.ID))
+			WillReturnRows(newDatabaseResultForID(exampleUser.ID))
 
 		// create audit log entry for created user
 		firstFakeAuditLogEntryEventQuery, firstFakeAuditLogEntryEventArgs := fakes.BuildFakeSQLQuery()
@@ -1418,9 +1418,9 @@ func TestQuerier_createUser(T *testing.T) {
 			exampleAccountCreationInput,
 		).Return(fakeAccountCreationQuery, fakeAccountCreationArgs)
 
-		db.ExpectExec(formatQueryForSQLMock(fakeAccountCreationQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeAccountCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeAccountCreationArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleAccount.ID))
+			WillReturnRows(newDatabaseResultForID(exampleAccount.ID))
 
 		secondFakeAuditLogEntryEventQuery, secondFakeAuditLogEntryEventArgs := fakes.BuildFakeSQLQuery()
 		mockQueryBuilder.AuditLogEntrySQLQueryBuilder.On(
@@ -1504,9 +1504,9 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleUserCreationInput,
 		).Return(fakeUserCreationQuery, fakeUserCreationArgs)
 
-		db.ExpectExec(formatQueryForSQLMock(fakeUserCreationQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeUserCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeUserCreationArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleUser.ID))
+			WillReturnRows(newDatabaseResultForID(exampleUser.ID))
 
 		// create audit log entry for created user
 		firstFakeAuditLogEntryEventQuery, firstFakeAuditLogEntryEventArgs := fakes.BuildFakeSQLQuery()
@@ -1528,9 +1528,9 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleAccountCreationInput,
 		).Return(fakeAccountCreationQuery, fakeAccountCreationArgs)
 
-		db.ExpectExec(formatQueryForSQLMock(fakeAccountCreationQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeAccountCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeAccountCreationArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleAccount.ID))
+			WillReturnRows(newDatabaseResultForID(exampleAccount.ID))
 
 		secondFakeAuditLogEntryEventQuery, secondFakeAuditLogEntryEventArgs := fakes.BuildFakeSQLQuery()
 		mockQueryBuilder.AuditLogEntrySQLQueryBuilder.On(

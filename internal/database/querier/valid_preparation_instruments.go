@@ -53,6 +53,8 @@ func (q *SQLQuerier) scanValidPreparationInstruments(ctx context.Context, rows d
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	validPreparationInstruments = []*types.ValidPreparationInstrument{}
+
 	logger := q.logger.WithValue("include_counts", includeCounts)
 
 	for rows.Next() {

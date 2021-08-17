@@ -54,6 +54,12 @@ func (m *EncoderDecoder) EncodeInvalidInputResponse(ctx context.Context, res htt
 	res.WriteHeader(http.StatusBadRequest)
 }
 
+// EncodeRejectedDuplicateResponse satisfies our EncoderDecoder interface.
+func (m *EncoderDecoder) EncodeRejectedDuplicateResponse(ctx context.Context, res http.ResponseWriter) {
+	m.Called(ctx, res)
+	res.WriteHeader(http.StatusConflict)
+}
+
 // EncodeNotFoundResponse satisfies our EncoderDecoder interface.
 func (m *EncoderDecoder) EncodeNotFoundResponse(ctx context.Context, res http.ResponseWriter) {
 	m.Called(ctx, res)

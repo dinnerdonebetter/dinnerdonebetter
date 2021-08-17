@@ -77,6 +77,8 @@ func (q *SQLQuerier) scanWebhooks(ctx context.Context, rows database.ResultItera
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	webhooks = []*types.Webhook{}
+
 	logger := q.logger.WithValue("include_counts", includeCounts)
 
 	for rows.Next() {

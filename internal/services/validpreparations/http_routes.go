@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"strings"
 
+	"gitlab.com/prixfixe/prixfixe/internal/database"
+
 	observability "gitlab.com/prixfixe/prixfixe/internal/observability"
 	keys "gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
@@ -65,7 +67,13 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	validPreparation, err := s.validPreparationDataManager.CreateValidPreparation(ctx, input, sessionCtxData.Requester.UserID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating valid preparation")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+
+		if errors.Is(err, database.ErrUniqueConstraintViolation) {
+			s.encoderDecoder.EncodeRejectedDuplicateResponse(ctx, res)
+		} else {
+			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		}
+
 		return
 	}
 

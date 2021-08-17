@@ -72,6 +72,8 @@ func (q *SQLQuerier) scanUsers(ctx context.Context, rows database.ResultIterator
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	users = []*types.User{}
+
 	logger := q.logger.WithValue("include_counts", includeCounts)
 
 	for rows.Next() {

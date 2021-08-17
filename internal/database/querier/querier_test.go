@@ -71,6 +71,10 @@ func newSuccessfulDatabaseResult(returnID uint64) driver.Result {
 	return sqlmock.NewResult(int64(returnID), 1)
 }
 
+func newDatabaseResultForID(returnID uint64) *sqlmock.Rows {
+	return sqlmock.NewRows([]string{"id"}).AddRow(returnID)
+}
+
 func formatQueryForSQLMock(query string) string {
 	return strings.NewReplacer(
 		"$", `\$`,
@@ -118,7 +122,6 @@ func buildTestClient(t *testing.T) (*SQLQuerier, *sqlmockExpecterWrapper) {
 		timeFunc:        defaultTimeFunc,
 		tracer:          tracing.NewTracer("test"),
 		sqlQueryBuilder: database.BuildMockSQLQueryBuilder(),
-		idStrategy:      DefaultIDRetrievalStrategy,
 	}
 
 	return c, &sqlmockExpecterWrapper{Sqlmock: sqlMock}
@@ -461,9 +464,9 @@ func TestQuerier_performCreateQuery(T *testing.T) {
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
 
-		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(1))
+			WillReturnRows(newDatabaseResultForID(1))
 
 		_, err := c.performWriteQuery(ctx, c.db, false, "example", fakeQuery, fakeArgs)
 
@@ -495,9 +498,9 @@ func TestQuerier_performCreateQuery(T *testing.T) {
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
 
-		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(sqlmock.NewResult(int64(1), 0))
+			WillReturnRows(sqlmock.NewRows([]string{"id"}))
 
 		_, err := c.performWriteQuery(ctx, c.db, false, "example", fakeQuery, fakeArgs)
 
@@ -505,49 +508,11 @@ func TestQuerier_performCreateQuery(T *testing.T) {
 		assert.True(t, errors.Is(err, sql.ErrNoRows))
 	})
 
-	T.Run("with ReturningStatementIDRetrievalStrategy", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-		c.idStrategy = ReturningStatementIDRetrievalStrategy
-
-		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-
-		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
-			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(uint64(123)))
-
-		_, err := c.performWriteQuery(ctx, c.db, false, "example", fakeQuery, fakeArgs)
-
-		assert.NoError(t, err)
-	})
-
-	T.Run("with ReturningStatementIDRetrievalStrategy and error", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-		c.idStrategy = ReturningStatementIDRetrievalStrategy
-
-		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-
-		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
-			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		id, err := c.performWriteQuery(ctx, c.db, false, "example", fakeQuery, fakeArgs)
-
-		assert.Zero(t, id)
-		assert.Error(t, err)
-	})
-
 	T.Run("ignoring return with return statement id strategy", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
-		c.idStrategy = ReturningStatementIDRetrievalStrategy
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
 
@@ -565,7 +530,6 @@ func TestQuerier_performCreateQuery(T *testing.T) {
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
-		c.idStrategy = ReturningStatementIDRetrievalStrategy
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
 
@@ -583,7 +547,6 @@ func TestQuerier_performCreateQuery(T *testing.T) {
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
-		c.idStrategy = ReturningStatementIDRetrievalStrategy
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
 

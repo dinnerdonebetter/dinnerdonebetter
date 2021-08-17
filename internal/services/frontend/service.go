@@ -2,20 +2,15 @@ package frontend
 
 import (
 	"context"
-	"html/template"
 	"net/http"
 
 	"gitlab.com/prixfixe/prixfixe/internal/authorization"
-	capitalism "gitlab.com/prixfixe/prixfixe/internal/capitalism"
-	database "gitlab.com/prixfixe/prixfixe/internal/database"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	panicking "gitlab.com/prixfixe/prixfixe/internal/panicking"
 	routing "gitlab.com/prixfixe/prixfixe/internal/routing"
 	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
-	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
 const (
@@ -60,33 +55,12 @@ type (
 	}
 
 	service struct {
-		paymentManager                      capitalism.PaymentManager
-		usersService                        UsersService
-		logger                              logging.Logger
-		tracer                              tracing.Tracer
-		panicker                            panicking.Panicker
-		authService                         AuthService
-		dataStore                           database.DataManager
-		reportIDFetcher                     func(*http.Request) uint64
-		localizer                           *i18n.Localizer
-		templateFuncMap                     template.FuncMap
-		validIngredientsService             ValidIngredientsService
-		validInstrumentsService             ValidInstrumentsService
-		validPreparationsService            ValidPreparationsService
-		sessionContextDataFetcher           func(*http.Request) (*types.SessionContextData, error)
-		accountIDFetcher                    func(*http.Request) uint64
-		apiClientIDFetcher                  func(*http.Request) uint64
-		webhookIDFetcher                    func(*http.Request) uint64
-		validInstrumentIDFetcher            func(*http.Request) uint64
-		validPreparationIDFetcher           func(*http.Request) uint64
-		validIngredientIDFetcher            func(*http.Request) uint64
-		validIngredientPreparationIDFetcher func(*http.Request) uint64
-		validPreparationInstrumentIDFetcher func(*http.Request) uint64
-		recipeIDFetcher                     func(*http.Request) uint64
-		recipeStepIDFetcher                 func(*http.Request) uint64
-		recipeStepIngredientIDFetcher       func(*http.Request) uint64
-		recipeStepProductIDFetcher          func(*http.Request) uint64
-		invitationIDFetcher                 func(*http.Request) uint64
+		logger                    logging.Logger
+		tracer                    tracing.Tracer
+		panicker                  panicking.Panicker
+		authService               AuthService
+		config                    *Config
+		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
 	}
 )
 
@@ -95,52 +69,19 @@ func ProvideService(
 	cfg *Config,
 	logger logging.Logger,
 	authService AuthService,
-	usersService UsersService,
-	dataStore database.DataManager,
-	routeParamManager routing.RouteParamManager,
-	paymentManager capitalism.PaymentManager,
-	validIngredientsService ValidIngredientsService,
-	validInstrumentsService ValidInstrumentsService,
-	validPreparationsService ValidPreparationsService,
 ) Service {
 	svc := &service{
-		logger:                              logging.EnsureLogger(logger).WithName(serviceName),
-		tracer:                              tracing.NewTracer(serviceName),
-		panicker:                            panicking.NewProductionPanicker(),
-		localizer:                           provideLocalizer(),
-		sessionContextDataFetcher:           authservice.FetchContextFromRequest,
-		authService:                         authService,
-		usersService:                        usersService,
-		paymentManager:                      paymentManager,
-		dataStore:                           dataStore,
-		validIngredientsService:             validIngredientsService,
-		validInstrumentsService:             validInstrumentsService,
-		validPreparationsService:            validPreparationsService,
-		apiClientIDFetcher:                  routeParamManager.BuildRouteParamIDFetcher(logger, apiClientIDURLParamKey, "API client"),
-		accountIDFetcher:                    routeParamManager.BuildRouteParamIDFetcher(logger, accountIDURLParamKey, "account"),
-		webhookIDFetcher:                    routeParamManager.BuildRouteParamIDFetcher(logger, webhookIDURLParamKey, "webhook"),
-		validInstrumentIDFetcher:            routeParamManager.BuildRouteParamIDFetcher(logger, validInstrumentIDURLParamKey, "valid instrument"),
-		validPreparationIDFetcher:           routeParamManager.BuildRouteParamIDFetcher(logger, validPreparationIDURLParamKey, "valid preparation"),
-		validIngredientIDFetcher:            routeParamManager.BuildRouteParamIDFetcher(logger, validIngredientIDURLParamKey, "valid ingredient"),
-		validIngredientPreparationIDFetcher: routeParamManager.BuildRouteParamIDFetcher(logger, validIngredientPreparationIDURLParamKey, "valid ingredient preparation"),
-		validPreparationInstrumentIDFetcher: routeParamManager.BuildRouteParamIDFetcher(logger, validPreparationInstrumentIDURLParamKey, "valid preparation instrument"),
-		recipeIDFetcher:                     routeParamManager.BuildRouteParamIDFetcher(logger, recipeIDURLParamKey, "recipe"),
-		recipeStepIDFetcher:                 routeParamManager.BuildRouteParamIDFetcher(logger, recipeStepIDURLParamKey, "recipe step"),
-		recipeStepIngredientIDFetcher:       routeParamManager.BuildRouteParamIDFetcher(logger, recipeStepIngredientIDURLParamKey, "recipe step ingredient"),
-		recipeStepProductIDFetcher:          routeParamManager.BuildRouteParamIDFetcher(logger, recipeStepProductIDURLParamKey, "recipe step product"),
-		invitationIDFetcher:                 routeParamManager.BuildRouteParamIDFetcher(logger, invitationIDURLParamKey, "invitation"),
-		reportIDFetcher:                     routeParamManager.BuildRouteParamIDFetcher(logger, reportIDURLParamKey, "report"),
-		templateFuncMap: map[string]interface{}{
-			"relativeTime":        relativeTime,
-			"relativeTimeFromPtr": relativeTimeFromPtr,
-		},
+		config:                    cfg,
+		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
+		tracer:                    tracing.NewTracer(serviceName),
+		panicker:                  panicking.NewProductionPanicker(),
+		sessionContextDataFetcher: authservice.FetchContextFromRequest,
+		authService:               authService,
 	}
 
 	if cfg.Debug {
 		svc.logger.SetLevel(logging.DebugLevel)
 	}
-
-	svc.templateFuncMap["translate"] = svc.getSimpleLocalizedString
 
 	return svc
 }

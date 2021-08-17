@@ -7,8 +7,6 @@ import (
 	"testing"
 
 	"gitlab.com/prixfixe/prixfixe/internal/authorization"
-	"gitlab.com/prixfixe/prixfixe/internal/capitalism"
-	"gitlab.com/prixfixe/prixfixe/internal/database"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	mockrouting "gitlab.com/prixfixe/prixfixe/internal/routing/mock"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
@@ -43,8 +41,6 @@ func buildTestHelper(t *testing.T) *serviceHTTPRoutesTestHelper {
 	cfg := &Config{}
 	logger := logging.NewNoopLogger()
 	authService := &mocktypes.AuthService{}
-	usersService := &mocktypes.UsersService{}
-	dataManager := database.BuildMockDatabase()
 
 	rpm := mockrouting.NewRouteParamManager()
 
@@ -60,13 +56,6 @@ func buildTestHelper(t *testing.T) *serviceHTTPRoutesTestHelper {
 		cfg,
 		logger,
 		authService,
-		usersService,
-		dataManager,
-		rpm,
-		capitalism.NewMockPaymentManager(),
-		nil,
-		nil,
-		nil,
 	).(*service)
 	require.True(t, ok)
 

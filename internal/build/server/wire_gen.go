@@ -9,7 +9,6 @@ import (
 	"context"
 
 	"gitlab.com/prixfixe/prixfixe/internal/authentication"
-	"gitlab.com/prixfixe/prixfixe/internal/capitalism/stripe"
 	"gitlab.com/prixfixe/prixfixe/internal/config"
 	"gitlab.com/prixfixe/prixfixe/internal/database"
 	config2 "gitlab.com/prixfixe/prixfixe/internal/database/config"
@@ -177,14 +176,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig, logger logging.Logge
 	adminService := admin.ProvideService(logger, authenticationConfig, authenticator, adminUserDataManager, adminAuditManager, sessionManager, serverEncoderDecoder, routeParamManager)
 	frontendConfig := &servicesConfigurations.Frontend
 	frontendAuthService := frontend.ProvideAuthService(authService)
-	usersService := frontend.ProvideUsersService(userDataService)
-	capitalismConfig := &cfg.Capitalism
-	stripeConfig := capitalismConfig.Stripe
-	paymentManager := stripe.ProvideStripePaymentManager(logger, stripeConfig)
-	validIngredientsService := frontend.ProvideValidIngredientsService(validIngredientDataService)
-	validInstrumentsService := frontend.ProvideValidInstrumentsService(validInstrumentDataService)
-	validPreparationsService := frontend.ProvideValidPreparationsService(validPreparationDataService)
-	service := frontend.ProvideService(frontendConfig, logger, frontendAuthService, usersService, dataManager, routeParamManager, paymentManager, validIngredientsService, validInstrumentsService, validPreparationsService)
+	service := frontend.ProvideService(frontendConfig, logger, frontendAuthService)
 	router := chi.NewRouter(logger)
 	httpServer, err := server.ProvideHTTPServer(ctx, serverConfig, instrumentationHandler, authService, auditLogEntryDataService, userDataService, accountDataService, apiClientDataService, validInstrumentDataService, validPreparationDataService, validIngredientDataService, validIngredientPreparationDataService, validPreparationInstrumentDataService, recipeDataService, recipeStepDataService, recipeStepIngredientDataService, recipeStepProductDataService, invitationDataService, reportDataService, webhookDataService, adminService, service, logger, serverEncoderDecoder, router)
 	if err != nil {

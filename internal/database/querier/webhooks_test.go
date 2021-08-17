@@ -626,9 +626,9 @@ func TestQuerier_CreateWebhook(T *testing.T) {
 			exampleInput,
 		).Return(fakeQuery, fakeArgs)
 
-		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleWebhook.ID))
+			WillReturnRows(newDatabaseResultForID(exampleWebhook.ID))
 
 		expectAuditLogEntryInTransaction(mockQueryBuilder, db, nil)
 
@@ -707,7 +707,7 @@ func TestQuerier_CreateWebhook(T *testing.T) {
 			exampleInput,
 		).Return(fakeQuery, fakeArgs)
 
-		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnError(errors.New("blah"))
 
@@ -747,9 +747,9 @@ func TestQuerier_CreateWebhook(T *testing.T) {
 			exampleInput,
 		).Return(fakeQuery, fakeArgs)
 
-		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleWebhook.ID))
+			WillReturnRows(newDatabaseResultForID(exampleWebhook.ID))
 
 		expectAuditLogEntryInTransaction(mockQueryBuilder, db, errors.New("blah"))
 
@@ -789,9 +789,9 @@ func TestQuerier_CreateWebhook(T *testing.T) {
 			exampleInput,
 		).Return(fakeQuery, fakeArgs)
 
-		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleWebhook.ID))
+			WillReturnRows(newDatabaseResultForID(exampleWebhook.ID))
 
 		expectAuditLogEntryInTransaction(mockQueryBuilder, db, nil)
 

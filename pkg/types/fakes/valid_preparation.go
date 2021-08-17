@@ -11,7 +11,7 @@ func BuildFakeValidPreparation() *types.ValidPreparation {
 	return &types.ValidPreparation{
 		ID:          uint64(fake.Uint32()),
 		ExternalID:  fake.UUID(),
-		Name:        fake.Word(),
+		Name:        BuildUniqueName(),
 		Description: fake.Word(),
 		IconPath:    fake.Word(),
 		CreatedOn:   uint64(uint32(fake.Date().Unix())),

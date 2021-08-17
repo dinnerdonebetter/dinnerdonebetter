@@ -147,7 +147,8 @@ var (
 				icon_path TEXT NOT NULL,
 				created_on BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 				last_updated_on BIGINT DEFAULT NULL,
-				archived_on BIGINT DEFAULT NULL
+				archived_on BIGINT DEFAULT NULL,
+				UNIQUE("name", "variant")
 			);`,
 		},
 		{
@@ -162,7 +163,8 @@ var (
 				icon_path TEXT NOT NULL,
 				created_on BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 				last_updated_on BIGINT DEFAULT NULL,
-				archived_on BIGINT DEFAULT NULL
+				archived_on BIGINT DEFAULT NULL,
+				UNIQUE("name")
 			);`,
 		},
 		{
@@ -192,7 +194,8 @@ var (
 				icon_path TEXT NOT NULL,
 				created_on BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 				last_updated_on BIGINT DEFAULT NULL,
-				archived_on BIGINT DEFAULT NULL
+				archived_on BIGINT DEFAULT NULL,
+				UNIQUE("name", "variant")
 			);`,
 		},
 		{
