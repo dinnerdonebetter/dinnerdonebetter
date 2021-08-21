@@ -185,19 +185,18 @@ import {backendRoutes} from "../../../constants";
             }
         },
         selectValidPreparationSuggestion(stepIndex: number, selection: SearchSuggestion) {
-            let step = this.recipe.steps[stepIndex];
-            step.preparationID = selection.id;
-            this.preparationQueries[stepIndex] = `${selection.name}${selection.variant ? ' - ' : ''}${selection.variant || ''}`;
-            this.preparationSuggestions[stepIndex] = [];
-        },
-        validIngredientSuggestionListID(stepIndex: number, ingredientIndex: number) {
-            return `recipeStep_${stepIndex}_ValidIngredient_${ingredientIndex}_Suggestions`;
+          let step = this.recipe.steps[stepIndex];
+          step.preparationID = selection.id;
+
+          this.preparationQueries[stepIndex] = `${selection.name}${selection.variant ? ' - ' : ''}${selection.variant || ''}`;
+          this.preparationSuggestions[stepIndex] = [];
         },
         queryForValidIngredient(stepIndex: number, ingredientIndex: number) {
-            let query = this.ingredientNameQueries[stepIndex][ingredientIndex].trim();
-            const searchURL = `${backendRoutes.VALID_INGREDIENTS_SEARCH}?q=${encodeURIComponent(query)}`;
+          let preparationID = this.recipe.steps[stepIndex].preparationID
+          let query = this.ingredientNameQueries[stepIndex][ingredientIndex].trim();
 
-          if (query.length > 1) {
+          if (query.length > 1 && preparationID !== 0) {
+            const searchURL = `${backendRoutes.VALID_INGREDIENTS_SEARCH}?q=${encodeURIComponent(query)}&pid=${preparationID}`;
             axios.get(searchURL)
                 .then((res: AxiosResponse<SearchSuggestion[]>) => {
                   this.validIngredientSuggestions[stepIndex][ingredientIndex] = res.data || [];

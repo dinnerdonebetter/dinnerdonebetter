@@ -1,6 +1,7 @@
 package requests
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -141,11 +142,12 @@ func TestBuilder_BuildSearchValidIngredientsRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
+		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 		limit := types.DefaultQueryFilter().Limit
 		exampleQuery := "whatever"
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&q=whatever", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, fmt.Sprintf("limit=20&pid=%d&q=whatever", exampleValidPreparation.ID), expectedPath)
 
-		actual, err := helper.builder.BuildSearchValidIngredientsRequest(helper.ctx, exampleQuery, limit)
+		actual, err := helper.builder.BuildSearchValidIngredientsRequest(helper.ctx, exampleValidPreparation.ID, exampleQuery, limit)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -157,10 +159,11 @@ func TestBuilder_BuildSearchValidIngredientsRequest(T *testing.T) {
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
+		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 		limit := types.DefaultQueryFilter().Limit
 		exampleQuery := "whatever"
 
-		actual, err := helper.builder.BuildSearchValidIngredientsRequest(helper.ctx, exampleQuery, limit)
+		actual, err := helper.builder.BuildSearchValidIngredientsRequest(helper.ctx, exampleValidPreparation.ID, exampleQuery, limit)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

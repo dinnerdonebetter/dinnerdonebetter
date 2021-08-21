@@ -34,8 +34,8 @@ func (m *ValidIngredientDataManager) GetAllValidIngredientsCount(ctx context.Con
 }
 
 // SearchForValidIngredients is a mock function.
-func (m *ValidIngredientDataManager) SearchForValidIngredients(ctx context.Context, sessionCtxData *types.SessionContextData, query string, filter *types.QueryFilter) ([]*types.ValidIngredient, error) {
-	args := m.Called(ctx, sessionCtxData, query, filter)
+func (m *ValidIngredientDataManager) SearchForValidIngredients(ctx context.Context, sessionCtxData *types.SessionContextData, validPreparationID uint64, query string, filter *types.QueryFilter) ([]*types.ValidIngredient, error) {
+	args := m.Called(ctx, sessionCtxData, validPreparationID, query, filter)
 	return args.Get(0).([]*types.ValidIngredient), args.Error(1)
 }
 
@@ -52,8 +52,8 @@ func (m *ValidIngredientDataManager) GetValidIngredients(ctx context.Context, fi
 }
 
 // GetValidIngredientsWithIDs is a mock function.
-func (m *ValidIngredientDataManager) GetValidIngredientsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]*types.ValidIngredient, error) {
-	args := m.Called(ctx, limit, ids)
+func (m *ValidIngredientDataManager) GetValidIngredientsWithIDs(ctx context.Context, limit uint8, validPreparationID uint64, ids []uint64) ([]*types.ValidIngredient, error) {
+	args := m.Called(ctx, limit, validPreparationID, ids)
 	return args.Get(0).([]*types.ValidIngredient), args.Error(1)
 }
 

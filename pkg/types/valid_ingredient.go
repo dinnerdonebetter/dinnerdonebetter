@@ -99,7 +99,7 @@ type (
 		GetAllValidIngredientsCount(ctx context.Context) (uint64, error)
 		GetAllValidIngredients(ctx context.Context, resultChannel chan []*ValidIngredient, bucketSize uint16) error
 		GetValidIngredients(ctx context.Context, filter *QueryFilter) (*ValidIngredientList, error)
-		GetValidIngredientsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]*ValidIngredient, error)
+		GetValidIngredientsWithIDs(ctx context.Context, limit uint8, validPreparationID uint64, ids []uint64) ([]*ValidIngredient, error)
 		CreateValidIngredient(ctx context.Context, input *ValidIngredientCreationInput, createdByUser uint64) (*ValidIngredient, error)
 		UpdateValidIngredient(ctx context.Context, updated *ValidIngredient, changedByUser uint64, changes []*FieldChangeSummary) error
 		ArchiveValidIngredient(ctx context.Context, validIngredientID, archivedBy uint64) error
@@ -109,7 +109,7 @@ type (
 	// ValidIngredientDataService describes a structure capable of serving traffic related to valid ingredients.
 	ValidIngredientDataService interface {
 		SearchHandler(res http.ResponseWriter, req *http.Request)
-		SearchForValidIngredients(ctx context.Context, sessionCtxData *SessionContextData, query string, filter *QueryFilter) ([]*ValidIngredient, error)
+		SearchForValidIngredients(ctx context.Context, sessionCtxData *SessionContextData, validPreparation uint64, query string, filter *QueryFilter) ([]*ValidIngredient, error)
 		AuditEntryHandler(res http.ResponseWriter, req *http.Request)
 		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)

@@ -34,21 +34,6 @@ type (
 		VerifyUserTwoFactorSecret(ctx context.Context, input *types.TOTPSecretVerificationInput) error
 	}
 
-	// ValidInstrumentsService is a subset of the larger types.ValidInstrumentsService interface.
-	ValidInstrumentsService interface {
-		SearchForValidInstruments(ctx context.Context, sessionCtxData *types.SessionContextData, query string, filter *types.QueryFilter) ([]*types.ValidInstrument, error)
-	}
-
-	// ValidIngredientsService is a subset of the larger types.ValidIngredientsService interface.
-	ValidIngredientsService interface {
-		SearchForValidIngredients(ctx context.Context, sessionCtxData *types.SessionContextData, query string, filter *types.QueryFilter) ([]*types.ValidIngredient, error)
-	}
-
-	// ValidPreparationsService is a subset of the larger types.ValidPreparationsService interface.
-	ValidPreparationsService interface {
-		SearchForValidPreparations(ctx context.Context, sessionCtxData *types.SessionContextData, query string, filter *types.QueryFilter) ([]*types.ValidPreparation, error)
-	}
-
 	// Service serves HTML.
 	Service interface {
 		SetupRoutes(router routing.Router)
