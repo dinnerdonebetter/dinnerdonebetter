@@ -86,7 +86,7 @@ func (b *Postgres) BuildGetBatchOfInvitationsQuery(ctx context.Context, beginID,
 	)
 }
 
-// BuildGetInvitationsQuery builds a SQL query selecting invitations that adhere to a given QueryFilter and belong to a given account,
+// BuildGetInvitationsQuery builds a SQL query selecting invitations that adhere to a given QueryFilter and belong to a given household,
 // and returns both the query and the relevant args to pass to the query executor.
 func (b *Postgres) BuildGetInvitationsQuery(ctx context.Context, includeArchived bool, filter *types.QueryFilter) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
@@ -113,14 +113,14 @@ func (b *Postgres) BuildGetInvitationsQuery(ctx context.Context, includeArchived
 	)
 }
 
-// BuildGetInvitationsWithIDsQuery builds a SQL query selecting invitations that belong to a given account,
+// BuildGetInvitationsWithIDsQuery builds a SQL query selecting invitations that belong to a given household,
 // and have IDs that exist within a given set of IDs. Returns both the query and the relevant
 // args to pass to the query executor. This function is primarily intended for use with a search
 // index, which would provide a slice of string IDs to query against. This function accepts a
 // slice of uint64s instead of a slice of strings in order to ensure all the provided strings
 // are valid database IDs, because there's no way in squirrel to escape them in the unnest join,
 // and if we accept strings we could leave ourselves vulnerable to SQL injection attacks.
-func (b *Postgres) BuildGetInvitationsWithIDsQuery(ctx context.Context, accountID uint64, limit uint8, ids []uint64, restrictToAccount bool) (query string, args []interface{}) {
+func (b *Postgres) BuildGetInvitationsWithIDsQuery(ctx context.Context, householdID uint64, limit uint8, ids []uint64, restrictToHousehold bool) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -129,8 +129,8 @@ func (b *Postgres) BuildGetInvitationsWithIDsQuery(ctx context.Context, accountI
 		fmt.Sprintf("%s.%s", querybuilding.InvitationsTableName, querybuilding.ArchivedOnColumn): nil,
 	}
 
-	if restrictToAccount {
-		where[fmt.Sprintf("%s.%s", querybuilding.InvitationsTableName, querybuilding.InvitationsTableAccountOwnershipColumn)] = accountID
+	if restrictToHousehold {
+		where[fmt.Sprintf("%s.%s", querybuilding.InvitationsTableName, querybuilding.InvitationsTableHouseholdOwnershipColumn)] = householdID
 	}
 
 	subqueryBuilder := b.sqlBuilder.Select(querybuilding.InvitationsTableColumns...).
@@ -158,13 +158,13 @@ func (b *Postgres) BuildCreateInvitationQuery(ctx context.Context, input *types.
 				querybuilding.ExternalIDColumn,
 				querybuilding.InvitationsTableCodeColumn,
 				querybuilding.InvitationsTableConsumedColumn,
-				querybuilding.InvitationsTableAccountOwnershipColumn,
+				querybuilding.InvitationsTableHouseholdOwnershipColumn,
 			).
 			Values(
 				b.externalIDGenerator.NewExternalID(),
 				input.Code,
 				input.Consumed,
-				input.BelongsToAccount,
+				input.BelongsToHousehold,
 			).
 			Suffix(fmt.Sprintf("RETURNING %s", querybuilding.IDColumn)),
 	)
@@ -176,7 +176,7 @@ func (b *Postgres) BuildUpdateInvitationQuery(ctx context.Context, input *types.
 	defer span.End()
 
 	tracing.AttachInvitationIDToSpan(span, input.ID)
-	tracing.AttachAccountIDToSpan(span, input.BelongsToAccount)
+	tracing.AttachHouseholdIDToSpan(span, input.BelongsToHousehold)
 
 	return b.buildQuery(
 		span,
@@ -185,14 +185,14 @@ func (b *Postgres) BuildUpdateInvitationQuery(ctx context.Context, input *types.
 			Set(querybuilding.InvitationsTableConsumedColumn, input.Consumed).
 			Set(querybuilding.LastUpdatedOnColumn, currentUnixTimeQuery).
 			Where(squirrel.Eq{
-				querybuilding.IDColumn:                               input.ID,
-				querybuilding.ArchivedOnColumn:                       nil,
-				querybuilding.InvitationsTableAccountOwnershipColumn: input.BelongsToAccount,
+				querybuilding.IDColumn:                                 input.ID,
+				querybuilding.ArchivedOnColumn:                         nil,
+				querybuilding.InvitationsTableHouseholdOwnershipColumn: input.BelongsToHousehold,
 			}),
 	)
 }
 
-// BuildArchiveInvitationQuery returns a SQL query which marks a given invitation belonging to a given account as archived.
+// BuildArchiveInvitationQuery returns a SQL query which marks a given invitation belonging to a given household as archived.
 func (b *Postgres) BuildArchiveInvitationQuery(ctx context.Context, invitationID uint64) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
 	defer span.End()

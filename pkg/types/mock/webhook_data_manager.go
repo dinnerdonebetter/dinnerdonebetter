@@ -50,8 +50,8 @@ func (m *WebhookDataManager) UpdateWebhook(ctx context.Context, updated *types.W
 }
 
 // ArchiveWebhook satisfies our WebhookDataManager interface.
-func (m *WebhookDataManager) ArchiveWebhook(ctx context.Context, webhookID, accountID, archivedByUserID uint64) error {
-	return m.Called(ctx, webhookID, accountID, archivedByUserID).Error(0)
+func (m *WebhookDataManager) ArchiveWebhook(ctx context.Context, webhookID, householdID, archivedByUserID uint64) error {
+	return m.Called(ctx, webhookID, householdID, archivedByUserID).Error(0)
 }
 
 // GetAuditLogEntriesForWebhook is a mock function.

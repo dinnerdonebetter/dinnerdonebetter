@@ -37,7 +37,7 @@ func buildMockRowsFromInvitations(includeCounts bool, filteredCount uint64, invi
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,
-			x.BelongsToAccount,
+			x.BelongsToHousehold,
 		}
 
 		if includeCounts {
@@ -646,7 +646,7 @@ func TestQuerier_GetInvitationsWithIDs(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleInvitationList := fakes.BuildFakeInvitationList()
 
 		var exampleIDs []uint64
@@ -663,7 +663,7 @@ func TestQuerier_GetInvitationsWithIDs(T *testing.T) {
 		mockQueryBuilder.InvitationSQLQueryBuilder.On(
 			"BuildGetInvitationsWithIDsQuery",
 			testutils.ContextMatcher,
-			exampleAccountID,
+			exampleHouseholdID,
 			defaultLimit,
 			exampleIDs,
 			false,
@@ -674,14 +674,14 @@ func TestQuerier_GetInvitationsWithIDs(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnRows(buildMockRowsFromInvitations(false, 0, exampleInvitationList.Invitations...))
 
-		actual, err := c.GetInvitationsWithIDs(ctx, exampleAccountID, defaultLimit, exampleIDs)
+		actual, err := c.GetInvitationsWithIDs(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleInvitationList.Invitations, actual)
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
 
-	T.Run("with invalid account ID", func(t *testing.T) {
+	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleInvitationList := fakes.BuildFakeInvitationList()
@@ -701,7 +701,7 @@ func TestQuerier_GetInvitationsWithIDs(T *testing.T) {
 	T.Run("sets limit if not present", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleInvitationList := fakes.BuildFakeInvitationList()
 		var exampleIDs []uint64
 		for _, x := range exampleInvitationList.Invitations {
@@ -717,7 +717,7 @@ func TestQuerier_GetInvitationsWithIDs(T *testing.T) {
 		mockQueryBuilder.InvitationSQLQueryBuilder.On(
 			"BuildGetInvitationsWithIDsQuery",
 			testutils.ContextMatcher,
-			exampleAccountID,
+			exampleHouseholdID,
 			defaultLimit,
 			exampleIDs,
 			false,
@@ -728,7 +728,7 @@ func TestQuerier_GetInvitationsWithIDs(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnRows(buildMockRowsFromInvitations(false, 0, exampleInvitationList.Invitations...))
 
-		actual, err := c.GetInvitationsWithIDs(ctx, exampleAccountID, 0, exampleIDs)
+		actual, err := c.GetInvitationsWithIDs(ctx, exampleHouseholdID, 0, exampleIDs)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleInvitationList.Invitations, actual)
 
@@ -738,7 +738,7 @@ func TestQuerier_GetInvitationsWithIDs(T *testing.T) {
 	T.Run("with error executing query", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleInvitationList := fakes.BuildFakeInvitationList()
 		var exampleIDs []uint64
 		for _, x := range exampleInvitationList.Invitations {
@@ -754,7 +754,7 @@ func TestQuerier_GetInvitationsWithIDs(T *testing.T) {
 		mockQueryBuilder.InvitationSQLQueryBuilder.On(
 			"BuildGetInvitationsWithIDsQuery",
 			testutils.ContextMatcher,
-			exampleAccountID,
+			exampleHouseholdID,
 			defaultLimit,
 			exampleIDs,
 			false,
@@ -765,7 +765,7 @@ func TestQuerier_GetInvitationsWithIDs(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.GetInvitationsWithIDs(ctx, exampleAccountID, defaultLimit, exampleIDs)
+		actual, err := c.GetInvitationsWithIDs(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -775,7 +775,7 @@ func TestQuerier_GetInvitationsWithIDs(T *testing.T) {
 	T.Run("with erroneous response from database", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleInvitationList := fakes.BuildFakeInvitationList()
 		var exampleIDs []uint64
 		for _, x := range exampleInvitationList.Invitations {
@@ -791,7 +791,7 @@ func TestQuerier_GetInvitationsWithIDs(T *testing.T) {
 		mockQueryBuilder.InvitationSQLQueryBuilder.On(
 			"BuildGetInvitationsWithIDsQuery",
 			testutils.ContextMatcher,
-			exampleAccountID,
+			exampleHouseholdID,
 			defaultLimit,
 			exampleIDs,
 			false,
@@ -802,7 +802,7 @@ func TestQuerier_GetInvitationsWithIDs(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnRows(buildErroneousMockRow())
 
-		actual, err := c.GetInvitationsWithIDs(ctx, exampleAccountID, defaultLimit, exampleIDs)
+		actual, err := c.GetInvitationsWithIDs(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -1202,7 +1202,7 @@ func TestQuerier_ArchiveInvitation(T *testing.T) {
 		t.Parallel()
 
 		exampleUserID := fakes.BuildFakeID()
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleInvitation := fakes.BuildFakeInvitation()
 
 		ctx := context.Background()
@@ -1229,7 +1229,7 @@ func TestQuerier_ArchiveInvitation(T *testing.T) {
 
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		assert.NoError(t, c.ArchiveInvitation(ctx, exampleInvitation.ID, exampleAccountID, exampleUserID))
+		assert.NoError(t, c.ArchiveInvitation(ctx, exampleInvitation.ID, exampleHouseholdID, exampleUserID))
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
@@ -1238,15 +1238,15 @@ func TestQuerier_ArchiveInvitation(T *testing.T) {
 		t.Parallel()
 
 		exampleUserID := fakes.BuildFakeID()
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveInvitation(ctx, 0, exampleAccountID, exampleUserID))
+		assert.Error(t, c.ArchiveInvitation(ctx, 0, exampleHouseholdID, exampleUserID))
 	})
 
-	T.Run("with invalid account ID", func(t *testing.T) {
+	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleUserID := fakes.BuildFakeID()
@@ -1261,20 +1261,20 @@ func TestQuerier_ArchiveInvitation(T *testing.T) {
 	T.Run("with invalid actor ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleInvitation := fakes.BuildFakeInvitation()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveInvitation(ctx, exampleInvitation.ID, exampleAccountID, 0))
+		assert.Error(t, c.ArchiveInvitation(ctx, exampleInvitation.ID, exampleHouseholdID, 0))
 	})
 
 	T.Run("with error beginning transaction", func(t *testing.T) {
 		t.Parallel()
 
 		exampleUserID := fakes.BuildFakeID()
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleInvitation := fakes.BuildFakeInvitation()
 
 		ctx := context.Background()
@@ -1282,14 +1282,14 @@ func TestQuerier_ArchiveInvitation(T *testing.T) {
 
 		db.ExpectBegin().WillReturnError(errors.New("blah"))
 
-		assert.Error(t, c.ArchiveInvitation(ctx, exampleInvitation.ID, exampleAccountID, exampleUserID))
+		assert.Error(t, c.ArchiveInvitation(ctx, exampleInvitation.ID, exampleHouseholdID, exampleUserID))
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
 		t.Parallel()
 
 		exampleUserID := fakes.BuildFakeID()
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleInvitation := fakes.BuildFakeInvitation()
 
 		ctx := context.Background()
@@ -1314,7 +1314,7 @@ func TestQuerier_ArchiveInvitation(T *testing.T) {
 
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		assert.Error(t, c.ArchiveInvitation(ctx, exampleInvitation.ID, exampleAccountID, exampleUserID))
+		assert.Error(t, c.ArchiveInvitation(ctx, exampleInvitation.ID, exampleHouseholdID, exampleUserID))
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
@@ -1323,7 +1323,7 @@ func TestQuerier_ArchiveInvitation(T *testing.T) {
 		t.Parallel()
 
 		exampleUserID := fakes.BuildFakeID()
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleInvitation := fakes.BuildFakeInvitation()
 
 		ctx := context.Background()
@@ -1350,7 +1350,7 @@ func TestQuerier_ArchiveInvitation(T *testing.T) {
 
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		assert.Error(t, c.ArchiveInvitation(ctx, exampleInvitation.ID, exampleAccountID, exampleUserID))
+		assert.Error(t, c.ArchiveInvitation(ctx, exampleInvitation.ID, exampleHouseholdID, exampleUserID))
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
@@ -1359,7 +1359,7 @@ func TestQuerier_ArchiveInvitation(T *testing.T) {
 		t.Parallel()
 
 		exampleUserID := fakes.BuildFakeID()
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleInvitation := fakes.BuildFakeInvitation()
 
 		ctx := context.Background()
@@ -1386,7 +1386,7 @@ func TestQuerier_ArchiveInvitation(T *testing.T) {
 
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		assert.Error(t, c.ArchiveInvitation(ctx, exampleInvitation.ID, exampleAccountID, exampleUserID))
+		assert.Error(t, c.ArchiveInvitation(ctx, exampleInvitation.ID, exampleHouseholdID, exampleUserID))
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})

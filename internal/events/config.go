@@ -60,7 +60,7 @@ type (
 
 	// GCPPubSub is a struct to segment the GCP-specific portions of configuration.
 	GCPPubSub struct {
-		ServiceAccountKeyFilepath string
+		ServiceHouseholdKeyFilepath string
 	}
 )
 
@@ -89,14 +89,14 @@ func ProvidePublishTopic(ctx context.Context, cfg *Config) (*pubsub.Topic, error
 	case ProviderGoogleCloudPubSub:
 		var creds *google.Credentials
 
-		if cfg.GCPPubSub.ServiceAccountKeyFilepath != "" {
-			serviceAccountKeyBytes, err := os.ReadFile(cfg.GCPPubSub.ServiceAccountKeyFilepath)
+		if cfg.GCPPubSub.ServiceHouseholdKeyFilepath != "" {
+			serviceHouseholdKeyBytes, err := os.ReadFile(cfg.GCPPubSub.ServiceHouseholdKeyFilepath)
 			if err != nil {
-				return nil, fmt.Errorf("reading service account key file: %w", err)
+				return nil, fmt.Errorf("reading service household key file: %w", err)
 			}
 
-			if creds, err = google.CredentialsFromJSON(ctx, serviceAccountKeyBytes); err != nil {
-				return nil, fmt.Errorf("using service account key credentials: %w", err)
+			if creds, err = google.CredentialsFromJSON(ctx, serviceHouseholdKeyBytes); err != nil {
+				return nil, fmt.Errorf("using service household key credentials: %w", err)
 			}
 		} else {
 			var err error
@@ -171,14 +171,14 @@ func ProvideSubscription(ctx context.Context, cfg *Config) (*pubsub.Subscription
 	case ProviderGoogleCloudPubSub:
 		var creds *google.Credentials
 
-		if cfg.GCPPubSub.ServiceAccountKeyFilepath != "" {
-			serviceAccountKeyBytes, err := os.ReadFile(cfg.GCPPubSub.ServiceAccountKeyFilepath)
+		if cfg.GCPPubSub.ServiceHouseholdKeyFilepath != "" {
+			serviceHouseholdKeyBytes, err := os.ReadFile(cfg.GCPPubSub.ServiceHouseholdKeyFilepath)
 			if err != nil {
-				return nil, fmt.Errorf("reading service account key file: %w", err)
+				return nil, fmt.Errorf("reading service household key file: %w", err)
 			}
 
-			if creds, err = google.CredentialsFromJSON(ctx, serviceAccountKeyBytes); err != nil {
-				return nil, fmt.Errorf("using service account key credentials: %w", err)
+			if creds, err = google.CredentialsFromJSON(ctx, serviceHouseholdKeyBytes); err != nil {
+				return nil, fmt.Errorf("using service household key credentials: %w", err)
 			}
 		} else {
 			var err error

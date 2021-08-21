@@ -11,47 +11,47 @@ import (
 
 // BuildFakeSessionContextData builds a faked SessionContextData.
 func BuildFakeSessionContextData() *types.SessionContextData {
-	fakeAccountID := fake.Uint64()
+	fakeHouseholdID := fake.Uint64()
 
 	return &types.SessionContextData{
-		AccountPermissions: map[uint64]authorization.AccountRolePermissionsChecker{
-			fakeAccountID: authorization.NewAccountRolePermissionChecker(authorization.AccountAdminRole.String()),
+		HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
+			fakeHouseholdID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdAdminRole.String()),
 		},
 		Requester: types.RequesterInfo{
-			Reputation:            types.GoodStandingAccountStatus,
+			Reputation:            types.GoodStandingHouseholdStatus,
 			ReputationExplanation: "",
 			UserID:                fake.Uint64(),
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
 		},
-		ActiveAccountID: fakeAccountID,
+		ActiveHouseholdID: fakeHouseholdID,
 	}
 }
 
-// BuildFakeSessionContextDataForAccount builds a faked SessionContextData.
-func BuildFakeSessionContextDataForAccount(account *types.Account) *types.SessionContextData {
-	fakeAccountID := fake.Uint64()
+// BuildFakeSessionContextDataForHousehold builds a faked SessionContextData.
+func BuildFakeSessionContextDataForHousehold(household *types.Household) *types.SessionContextData {
+	fakeHouseholdID := fake.Uint64()
 
 	return &types.SessionContextData{
-		AccountPermissions: map[uint64]authorization.AccountRolePermissionsChecker{
-			account.ID: authorization.NewAccountRolePermissionChecker(authorization.ServiceUserRole.String()),
+		HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
+			household.ID: authorization.NewHouseholdRolePermissionChecker(authorization.ServiceUserRole.String()),
 		},
 		Requester: types.RequesterInfo{
-			Reputation:            types.GoodStandingAccountStatus,
+			Reputation:            types.GoodStandingHouseholdStatus,
 			ReputationExplanation: "",
 			UserID:                fake.Uint64(),
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
 		},
-		ActiveAccountID: fakeAccountID,
+		ActiveHouseholdID: fakeHouseholdID,
 	}
 }
 
-// BuildFakeAddUserToAccountInput builds a faked AddUserToAccountInput.
-func BuildFakeAddUserToAccountInput() *types.AddUserToAccountInput {
-	return &types.AddUserToAccountInput{
-		Reason:       fake.Sentence(10),
-		UserID:       fake.Uint64(),
-		AccountID:    fake.Uint64(),
-		AccountRoles: []string{authorization.AccountMemberRole.String()},
+// BuildFakeAddUserToHouseholdInput builds a faked AddUserToHouseholdInput.
+func BuildFakeAddUserToHouseholdInput() *types.AddUserToHouseholdInput {
+	return &types.AddUserToHouseholdInput{
+		Reason:         fake.Sentence(10),
+		UserID:         fake.Uint64(),
+		HouseholdID:    fake.Uint64(),
+		HouseholdRoles: []string{authorization.HouseholdMemberRole.String()},
 	}
 }
 
@@ -59,23 +59,23 @@ func BuildFakeAddUserToAccountInput() *types.AddUserToAccountInput {
 func BuildFakeUserPermissionModificationInput() *types.ModifyUserPermissionsInput {
 	return &types.ModifyUserPermissionsInput{
 		Reason:   fake.Sentence(10),
-		NewRoles: []string{authorization.AccountMemberRole.String()},
+		NewRoles: []string{authorization.HouseholdMemberRole.String()},
 	}
 }
 
-// BuildFakeTransferAccountOwnershipInput builds a faked AccountOwnershipTransferInput.
-func BuildFakeTransferAccountOwnershipInput() *types.AccountOwnershipTransferInput {
-	return &types.AccountOwnershipTransferInput{
+// BuildFakeTransferHouseholdOwnershipInput builds a faked HouseholdOwnershipTransferInput.
+func BuildFakeTransferHouseholdOwnershipInput() *types.HouseholdOwnershipTransferInput {
+	return &types.HouseholdOwnershipTransferInput{
 		Reason:       fake.Sentence(10),
 		CurrentOwner: fake.Uint64(),
 		NewOwner:     fake.Uint64(),
 	}
 }
 
-// BuildFakeChangeActiveAccountInput builds a faked ChangeActiveAccountInput.
-func BuildFakeChangeActiveAccountInput() *types.ChangeActiveAccountInput {
-	return &types.ChangeActiveAccountInput{
-		AccountID: fake.Uint64(),
+// BuildFakeChangeActiveHouseholdInput builds a faked ChangeActiveHouseholdInput.
+func BuildFakeChangeActiveHouseholdInput() *types.ChangeActiveHouseholdInput {
+	return &types.ChangeActiveHouseholdInput{
+		HouseholdID: fake.Uint64(),
 	}
 }
 

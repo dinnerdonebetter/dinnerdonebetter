@@ -299,21 +299,21 @@ func (q *SQLQuerier) CreateAPIClient(ctx context.Context, input *types.APIClient
 }
 
 // ArchiveAPIClient archives an API client.
-func (q *SQLQuerier) ArchiveAPIClient(ctx context.Context, clientID, accountID, archivedByUser uint64) error {
+func (q *SQLQuerier) ArchiveAPIClient(ctx context.Context, clientID, householdID, archivedByUser uint64) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if clientID == 0 || accountID == 0 || archivedByUser == 0 {
+	if clientID == 0 || householdID == 0 || archivedByUser == 0 {
 		return ErrNilInputProvided
 	}
 
 	tracing.AttachUserIDToSpan(span, archivedByUser)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 	tracing.AttachAPIClientDatabaseIDToSpan(span, clientID)
 
 	logger := q.logger.WithValues(map[string]interface{}{
 		keys.APIClientDatabaseIDKey: clientID,
-		keys.AccountIDKey:           accountID,
+		keys.HouseholdIDKey:         householdID,
 		keys.UserIDKey:              archivedByUser,
 	})
 
@@ -322,14 +322,14 @@ func (q *SQLQuerier) ArchiveAPIClient(ctx context.Context, clientID, accountID, 
 		return observability.PrepareError(err, logger, span, "beginning transaction")
 	}
 
-	query, args := q.sqlQueryBuilder.BuildArchiveAPIClientQuery(ctx, clientID, accountID)
+	query, args := q.sqlQueryBuilder.BuildArchiveAPIClientQuery(ctx, clientID, householdID)
 
 	if err = q.performWriteQueryIgnoringReturn(ctx, tx, "API client archive", query, args); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, logger, span, "updating API client")
 	}
 
-	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildAPIClientArchiveEventEntry(accountID, clientID, archivedByUser)); err != nil {
+	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildAPIClientArchiveEventEntry(householdID, clientID, archivedByUser)); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, logger, span, "writing API client archive audit log entry")
 	}

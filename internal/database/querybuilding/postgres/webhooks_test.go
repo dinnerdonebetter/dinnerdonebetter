@@ -23,12 +23,12 @@ func TestPostgres_BuildGetWebhookQuery(T *testing.T) {
 
 		exampleWebhook := fakes.BuildFakeWebhook()
 
-		expectedQuery := "SELECT webhooks.id, webhooks.external_id, webhooks.name, webhooks.content_type, webhooks.url, webhooks.method, webhooks.events, webhooks.data_types, webhooks.topics, webhooks.created_on, webhooks.last_updated_on, webhooks.archived_on, webhooks.belongs_to_account FROM webhooks WHERE webhooks.archived_on IS NULL AND webhooks.belongs_to_account = $1 AND webhooks.id = $2"
+		expectedQuery := "SELECT webhooks.id, webhooks.external_id, webhooks.name, webhooks.content_type, webhooks.url, webhooks.method, webhooks.events, webhooks.data_types, webhooks.topics, webhooks.created_on, webhooks.last_updated_on, webhooks.archived_on, webhooks.belongs_to_household FROM webhooks WHERE webhooks.archived_on IS NULL AND webhooks.belongs_to_household = $1 AND webhooks.id = $2"
 		expectedArgs := []interface{}{
-			exampleWebhook.BelongsToAccount,
+			exampleWebhook.BelongsToHousehold,
 			exampleWebhook.ID,
 		}
-		actualQuery, actualArgs := q.BuildGetWebhookQuery(ctx, exampleWebhook.ID, exampleWebhook.BelongsToAccount)
+		actualQuery, actualArgs := q.BuildGetWebhookQuery(ctx, exampleWebhook.ID, exampleWebhook.BelongsToHousehold)
 
 		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
@@ -64,7 +64,7 @@ func TestPostgres_BuildGetBatchOfWebhooksQuery(T *testing.T) {
 
 		beginID, endID := uint64(1), uint64(1000)
 
-		expectedQuery := "SELECT webhooks.id, webhooks.external_id, webhooks.name, webhooks.content_type, webhooks.url, webhooks.method, webhooks.events, webhooks.data_types, webhooks.topics, webhooks.created_on, webhooks.last_updated_on, webhooks.archived_on, webhooks.belongs_to_account FROM webhooks WHERE webhooks.id > $1 AND webhooks.id < $2"
+		expectedQuery := "SELECT webhooks.id, webhooks.external_id, webhooks.name, webhooks.content_type, webhooks.url, webhooks.method, webhooks.events, webhooks.data_types, webhooks.topics, webhooks.created_on, webhooks.last_updated_on, webhooks.archived_on, webhooks.belongs_to_household FROM webhooks WHERE webhooks.id > $1 AND webhooks.id < $2"
 		expectedArgs := []interface{}{
 			beginID,
 			endID,
@@ -89,7 +89,7 @@ func TestPostgres_BuildGetWebhooksQuery(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 		filter := fakes.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT webhooks.id, webhooks.external_id, webhooks.name, webhooks.content_type, webhooks.url, webhooks.method, webhooks.events, webhooks.data_types, webhooks.topics, webhooks.created_on, webhooks.last_updated_on, webhooks.archived_on, webhooks.belongs_to_account, (SELECT COUNT(webhooks.id) FROM webhooks WHERE webhooks.archived_on IS NULL AND webhooks.belongs_to_account = $1) as total_count, (SELECT COUNT(webhooks.id) FROM webhooks WHERE webhooks.archived_on IS NULL AND webhooks.belongs_to_account = $2 AND webhooks.created_on > $3 AND webhooks.created_on < $4 AND webhooks.last_updated_on > $5 AND webhooks.last_updated_on < $6) as filtered_count FROM webhooks WHERE webhooks.archived_on IS NULL AND webhooks.belongs_to_account = $7 AND webhooks.created_on > $8 AND webhooks.created_on < $9 AND webhooks.last_updated_on > $10 AND webhooks.last_updated_on < $11 GROUP BY webhooks.id ORDER BY webhooks.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT webhooks.id, webhooks.external_id, webhooks.name, webhooks.content_type, webhooks.url, webhooks.method, webhooks.events, webhooks.data_types, webhooks.topics, webhooks.created_on, webhooks.last_updated_on, webhooks.archived_on, webhooks.belongs_to_household, (SELECT COUNT(webhooks.id) FROM webhooks WHERE webhooks.archived_on IS NULL AND webhooks.belongs_to_household = $1) as total_count, (SELECT COUNT(webhooks.id) FROM webhooks WHERE webhooks.archived_on IS NULL AND webhooks.belongs_to_household = $2 AND webhooks.created_on > $3 AND webhooks.created_on < $4 AND webhooks.last_updated_on > $5 AND webhooks.last_updated_on < $6) as filtered_count FROM webhooks WHERE webhooks.archived_on IS NULL AND webhooks.belongs_to_household = $7 AND webhooks.created_on > $8 AND webhooks.created_on < $9 AND webhooks.last_updated_on > $10 AND webhooks.last_updated_on < $11 GROUP BY webhooks.id ORDER BY webhooks.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			exampleUser.ID,
 			filter.CreatedAfter,
@@ -127,7 +127,7 @@ func TestPostgres_BuildCreateWebhookQuery(T *testing.T) {
 		exIDGen.On("NewExternalID").Return(exampleWebhook.ExternalID)
 		q.externalIDGenerator = exIDGen
 
-		expectedQuery := "INSERT INTO webhooks (external_id,name,content_type,url,method,events,data_types,topics,belongs_to_account) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id"
+		expectedQuery := "INSERT INTO webhooks (external_id,name,content_type,url,method,events,data_types,topics,belongs_to_household) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id"
 		expectedArgs := []interface{}{
 			exampleWebhook.ExternalID,
 			exampleWebhook.Name,
@@ -137,7 +137,7 @@ func TestPostgres_BuildCreateWebhookQuery(T *testing.T) {
 			strings.Join(exampleWebhook.Events, querybuilding.WebhooksTableEventsSeparator),
 			strings.Join(exampleWebhook.DataTypes, querybuilding.WebhooksTableDataTypesSeparator),
 			strings.Join(exampleWebhook.Topics, querybuilding.WebhooksTableTopicsSeparator),
-			exampleWebhook.BelongsToAccount,
+			exampleWebhook.BelongsToHousehold,
 		}
 		actualQuery, actualArgs := q.BuildCreateWebhookQuery(ctx, exampleInput)
 
@@ -160,7 +160,7 @@ func TestPostgres_BuildUpdateWebhookQuery(T *testing.T) {
 
 		exampleWebhook := fakes.BuildFakeWebhook()
 
-		expectedQuery := "UPDATE webhooks SET name = $1, content_type = $2, url = $3, method = $4, events = $5, data_types = $6, topics = $7, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_account = $8 AND id = $9"
+		expectedQuery := "UPDATE webhooks SET name = $1, content_type = $2, url = $3, method = $4, events = $5, data_types = $6, topics = $7, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_household = $8 AND id = $9"
 		expectedArgs := []interface{}{
 			exampleWebhook.Name,
 			exampleWebhook.ContentType,
@@ -169,7 +169,7 @@ func TestPostgres_BuildUpdateWebhookQuery(T *testing.T) {
 			strings.Join(exampleWebhook.Events, querybuilding.WebhooksTableEventsSeparator),
 			strings.Join(exampleWebhook.DataTypes, querybuilding.WebhooksTableDataTypesSeparator),
 			strings.Join(exampleWebhook.Topics, querybuilding.WebhooksTableTopicsSeparator),
-			exampleWebhook.BelongsToAccount,
+			exampleWebhook.BelongsToHousehold,
 			exampleWebhook.ID,
 		}
 		actualQuery, actualArgs := q.BuildUpdateWebhookQuery(ctx, exampleWebhook)
@@ -191,12 +191,12 @@ func TestPostgres_BuildArchiveWebhookQuery(T *testing.T) {
 
 		exampleWebhook := fakes.BuildFakeWebhook()
 
-		expectedQuery := "UPDATE webhooks SET last_updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_account = $1 AND id = $2"
+		expectedQuery := "UPDATE webhooks SET last_updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_household = $1 AND id = $2"
 		expectedArgs := []interface{}{
-			exampleWebhook.BelongsToAccount,
+			exampleWebhook.BelongsToHousehold,
 			exampleWebhook.ID,
 		}
-		actualQuery, actualArgs := q.BuildArchiveWebhookQuery(ctx, exampleWebhook.ID, exampleWebhook.BelongsToAccount)
+		actualQuery, actualArgs := q.BuildArchiveWebhookQuery(ctx, exampleWebhook.ID, exampleWebhook.BelongsToHousehold)
 
 		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)

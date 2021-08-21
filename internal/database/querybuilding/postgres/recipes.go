@@ -86,7 +86,7 @@ func (b *Postgres) BuildGetBatchOfRecipesQuery(ctx context.Context, beginID, end
 	)
 }
 
-// BuildGetRecipesQuery builds a SQL query selecting recipes that adhere to a given QueryFilter and belong to a given account,
+// BuildGetRecipesQuery builds a SQL query selecting recipes that adhere to a given QueryFilter and belong to a given household,
 // and returns both the query and the relevant args to pass to the query executor.
 func (b *Postgres) BuildGetRecipesQuery(ctx context.Context, includeArchived bool, filter *types.QueryFilter) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
@@ -113,14 +113,14 @@ func (b *Postgres) BuildGetRecipesQuery(ctx context.Context, includeArchived boo
 	)
 }
 
-// BuildGetRecipesWithIDsQuery builds a SQL query selecting recipes that belong to a given account,
+// BuildGetRecipesWithIDsQuery builds a SQL query selecting recipes that belong to a given household,
 // and have IDs that exist within a given set of IDs. Returns both the query and the relevant
 // args to pass to the query executor. This function is primarily intended for use with a search
 // index, which would provide a slice of string IDs to query against. This function accepts a
 // slice of uint64s instead of a slice of strings in order to ensure all the provided strings
 // are valid database IDs, because there's no way in squirrel to escape them in the unnest join,
 // and if we accept strings we could leave ourselves vulnerable to SQL injection attacks.
-func (b *Postgres) BuildGetRecipesWithIDsQuery(ctx context.Context, accountID uint64, limit uint8, ids []uint64, restrictToAccount bool) (query string, args []interface{}) {
+func (b *Postgres) BuildGetRecipesWithIDsQuery(ctx context.Context, householdID uint64, limit uint8, ids []uint64, restrictToHousehold bool) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -129,8 +129,8 @@ func (b *Postgres) BuildGetRecipesWithIDsQuery(ctx context.Context, accountID ui
 		fmt.Sprintf("%s.%s", querybuilding.RecipesTableName, querybuilding.ArchivedOnColumn): nil,
 	}
 
-	if restrictToAccount {
-		where[fmt.Sprintf("%s.%s", querybuilding.RecipesTableName, querybuilding.RecipesTableAccountOwnershipColumn)] = accountID
+	if restrictToHousehold {
+		where[fmt.Sprintf("%s.%s", querybuilding.RecipesTableName, querybuilding.RecipesTableHouseholdOwnershipColumn)] = householdID
 	}
 
 	subqueryBuilder := b.sqlBuilder.Select(querybuilding.RecipesTableColumns...).
@@ -160,7 +160,7 @@ func (b *Postgres) BuildCreateRecipeQuery(ctx context.Context, input *types.Reci
 				querybuilding.RecipesTableSourceColumn,
 				querybuilding.RecipesTableDescriptionColumn,
 				querybuilding.RecipesTableInspiredByRecipeIDColumn,
-				querybuilding.RecipesTableAccountOwnershipColumn,
+				querybuilding.RecipesTableHouseholdOwnershipColumn,
 			).
 			Values(
 				b.externalIDGenerator.NewExternalID(),
@@ -168,7 +168,7 @@ func (b *Postgres) BuildCreateRecipeQuery(ctx context.Context, input *types.Reci
 				input.Source,
 				input.Description,
 				input.InspiredByRecipeID,
-				input.BelongsToAccount,
+				input.BelongsToHousehold,
 			).
 			Suffix(fmt.Sprintf("RETURNING %s", querybuilding.IDColumn)),
 	)
@@ -180,7 +180,7 @@ func (b *Postgres) BuildUpdateRecipeQuery(ctx context.Context, input *types.Reci
 	defer span.End()
 
 	tracing.AttachRecipeIDToSpan(span, input.ID)
-	tracing.AttachAccountIDToSpan(span, input.BelongsToAccount)
+	tracing.AttachHouseholdIDToSpan(span, input.BelongsToHousehold)
 
 	return b.buildQuery(
 		span,
@@ -191,14 +191,14 @@ func (b *Postgres) BuildUpdateRecipeQuery(ctx context.Context, input *types.Reci
 			Set(querybuilding.RecipesTableInspiredByRecipeIDColumn, input.InspiredByRecipeID).
 			Set(querybuilding.LastUpdatedOnColumn, currentUnixTimeQuery).
 			Where(squirrel.Eq{
-				querybuilding.IDColumn:                           input.ID,
-				querybuilding.ArchivedOnColumn:                   nil,
-				querybuilding.RecipesTableAccountOwnershipColumn: input.BelongsToAccount,
+				querybuilding.IDColumn:                             input.ID,
+				querybuilding.ArchivedOnColumn:                     nil,
+				querybuilding.RecipesTableHouseholdOwnershipColumn: input.BelongsToHousehold,
 			}),
 	)
 }
 
-// BuildArchiveRecipeQuery returns a SQL query which marks a given recipe belonging to a given account as archived.
+// BuildArchiveRecipeQuery returns a SQL query which marks a given recipe belonging to a given household as archived.
 func (b *Postgres) BuildArchiveRecipeQuery(ctx context.Context, recipeID uint64) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
 	defer span.End()

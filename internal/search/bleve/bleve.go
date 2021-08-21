@@ -92,7 +92,7 @@ func (sm *bleveIndexManager) Index(ctx context.Context, id uint64, value interfa
 }
 
 // search executes search queries.
-func (sm *bleveIndexManager) search(ctx context.Context, query string, accountID uint64, forServiceAdmin bool) (ids []uint64, err error) {
+func (sm *bleveIndexManager) search(ctx context.Context, query string, householdID uint64, forServiceAdmin bool) (ids []uint64, err error) {
 	_, span := sm.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -103,8 +103,8 @@ func (sm *bleveIndexManager) search(ctx context.Context, query string, accountID
 		return nil, search.ErrEmptyQueryProvided
 	}
 
-	if !forServiceAdmin && accountID != 0 {
-		logger = logger.WithValue(keys.AccountIDKey, accountID)
+	if !forServiceAdmin && householdID != 0 {
+		logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 	}
 
 	q := bleve.NewFuzzyQuery(query)
@@ -129,8 +129,8 @@ func (sm *bleveIndexManager) search(ctx context.Context, query string, accountID
 }
 
 // Search implements our IndexManager interface.
-func (sm *bleveIndexManager) Search(ctx context.Context, query string, accountID uint64) (ids []uint64, err error) {
-	return sm.search(ctx, query, accountID, false)
+func (sm *bleveIndexManager) Search(ctx context.Context, query string, householdID uint64) (ids []uint64, err error) {
+	return sm.search(ctx, query, householdID, false)
 }
 
 // SearchForAdmin implements our IndexManager interface.

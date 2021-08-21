@@ -9,14 +9,14 @@ import (
 )
 
 const (
-	// GoodStandingAccountStatus indicates a User's account is in good standing.
-	GoodStandingAccountStatus accountStatus = "good"
-	// UnverifiedAccountStatus indicates a User's account requires two factor secret verification.
-	UnverifiedAccountStatus accountStatus = "unverified"
-	// BannedUserAccountStatus indicates a User's account is banned.
-	BannedUserAccountStatus accountStatus = "banned"
-	// TerminatedUserReputation indicates a User's account is banned.
-	TerminatedUserReputation accountStatus = "terminated"
+	// GoodStandingHouseholdStatus indicates a User's household is in good standing.
+	GoodStandingHouseholdStatus householdStatus = "good"
+	// UnverifiedHouseholdStatus indicates a User's household requires two factor secret verification.
+	UnverifiedHouseholdStatus householdStatus = "unverified"
+	// BannedUserHouseholdStatus indicates a User's household is banned.
+	BannedUserHouseholdStatus householdStatus = "banned"
+	// TerminatedUserReputation indicates a User's household is banned.
+	TerminatedUserReputation householdStatus = "terminated"
 
 	validTOTPTokenLength = 6
 )
@@ -26,25 +26,25 @@ var (
 )
 
 type (
-	accountStatus string
+	householdStatus string
 
 	// User represents a User.
 	User struct {
-		PasswordLastChangedOn     *uint64       `json:"passwordLastChangedOn"`
-		ArchivedOn                *uint64       `json:"archivedOn"`
-		LastUpdatedOn             *uint64       `json:"lastUpdatedOn"`
-		TwoFactorSecretVerifiedOn *uint64       `json:"-"`
-		AvatarSrc                 *string       `json:"avatar"`
-		ExternalID                string        `json:"externalID"`
-		Username                  string        `json:"username"`
-		ReputationExplanation     string        `json:"reputationExplanation"`
-		ServiceAccountStatus      accountStatus `json:"reputation"`
-		TwoFactorSecret           string        `json:"-"`
-		HashedPassword            string        `json:"-"`
-		ServiceRoles              []string      `json:"serviceRoles"`
-		ID                        uint64        `json:"id"`
-		CreatedOn                 uint64        `json:"createdOn"`
-		RequiresPasswordChange    bool          `json:"requiresPasswordChange"`
+		PasswordLastChangedOn     *uint64         `json:"passwordLastChangedOn"`
+		ArchivedOn                *uint64         `json:"archivedOn"`
+		LastUpdatedOn             *uint64         `json:"lastUpdatedOn"`
+		TwoFactorSecretVerifiedOn *uint64         `json:"-"`
+		AvatarSrc                 *string         `json:"avatar"`
+		ExternalID                string          `json:"externalID"`
+		Username                  string          `json:"username"`
+		ReputationExplanation     string          `json:"reputationExplanation"`
+		ServiceHouseholdStatus    householdStatus `json:"reputation"`
+		TwoFactorSecret           string          `json:"-"`
+		HashedPassword            string          `json:"-"`
+		ServiceRoles              []string        `json:"serviceRoles"`
+		ID                        uint64          `json:"id"`
+		CreatedOn                 uint64          `json:"createdOn"`
+		RequiresPasswordChange    bool            `json:"requiresPasswordChange"`
 	}
 
 	// TestUserCreationConfig is here because of cyclical imports.
@@ -61,7 +61,7 @@ type (
 		Pagination
 	}
 
-	// UserRegistrationInput represents the input required from users to register an account.
+	// UserRegistrationInput represents the input required from users to register an household.
 	UserRegistrationInput struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
@@ -76,13 +76,13 @@ type (
 
 	// UserCreationResponse is a response structure for Users that doesn't contain passwords fields, but does contain the two factor secret.
 	UserCreationResponse struct {
-		Username        string        `json:"username"`
-		AccountStatus   accountStatus `json:"accountStatus"`
-		TwoFactorSecret string        `json:"twoFactorSecret"`
-		TwoFactorQRCode string        `json:"qrCode"`
-		CreatedUserID   uint64        `json:"createdUserID"`
-		CreatedOn       uint64        `json:"createdOn"`
-		IsAdmin         bool          `json:"isAdmin"`
+		Username        string          `json:"username"`
+		HouseholdStatus householdStatus `json:"householdStatus"`
+		TwoFactorSecret string          `json:"twoFactorSecret"`
+		TwoFactorQRCode string          `json:"qrCode"`
+		CreatedUserID   uint64          `json:"createdUserID"`
+		CreatedOn       uint64          `json:"createdOn"`
+		IsAdmin         bool            `json:"isAdmin"`
 	}
 
 	// UserLoginInput represents the payload used to log in a User.
@@ -174,12 +174,12 @@ func (u *User) Update(input *User) {
 	}
 }
 
-// IsValidAccountStatus returns whether the provided string is a valid accountStatus.
-func IsValidAccountStatus(s string) bool {
+// IsValidHouseholdStatus returns whether the provided string is a valid householdStatus.
+func IsValidHouseholdStatus(s string) bool {
 	switch s {
-	case string(GoodStandingAccountStatus),
-		string(UnverifiedAccountStatus),
-		string(BannedUserAccountStatus),
+	case string(GoodStandingHouseholdStatus),
+		string(UnverifiedHouseholdStatus),
+		string(BannedUserHouseholdStatus),
 		string(TerminatedUserReputation):
 		return true
 	default:
@@ -189,7 +189,7 @@ func IsValidAccountStatus(s string) bool {
 
 // IsBanned is a handy helper function.
 func (u *User) IsBanned() bool {
-	return u.ServiceAccountStatus == BannedUserAccountStatus
+	return u.ServiceHouseholdStatus == BannedUserHouseholdStatus
 }
 
 // ValidateWithContext ensures our provided UserRegistrationInput meets expectations.

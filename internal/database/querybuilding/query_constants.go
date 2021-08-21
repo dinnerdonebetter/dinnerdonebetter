@@ -25,46 +25,46 @@ const (
 	// LastUpdatedOnColumn is a common column name for the latest row update column.
 	LastUpdatedOnColumn = "last_updated_on"
 	// ArchivedOnColumn is a common column name for the archive time column.
-	ArchivedOnColumn       = "archived_on"
-	commaSeparator         = ","
-	userOwnershipColumn    = "belongs_to_user"
-	accountOwnershipColumn = "belongs_to_account"
+	ArchivedOnColumn         = "archived_on"
+	commaSeparator           = ","
+	userOwnershipColumn      = "belongs_to_user"
+	householdOwnershipColumn = "belongs_to_household"
 
 	//
-	// Accounts Table.
+	// Households Table.
 	//
 
-	// AccountsTableName is what the accounts table calls itself.
-	AccountsTableName = "accounts"
-	// AccountsTableNameColumn is what the accounts table calls the Name column.
-	AccountsTableNameColumn = "name"
-	// AccountsTableBillingStatusColumn is what the accounts table calls the BillingStatus column.
-	AccountsTableBillingStatusColumn = "billing_status"
-	// AccountsTableContactEmailColumn is what the accounts table calls the ContactEmail column.
-	AccountsTableContactEmailColumn = "contact_email"
-	// AccountsTableContactPhoneColumn is what the accounts table calls the ContactPhone column.
-	AccountsTableContactPhoneColumn = "contact_phone"
-	// AccountsTablePaymentProcessorCustomerIDColumn is what the accounts table calls the PaymentProcessorCustomerID column.
-	AccountsTablePaymentProcessorCustomerIDColumn = "payment_processor_customer_id"
-	// AccountsTableSubscriptionPlanIDColumn is what the accounts table calls the SubscriptionPlanID column.
-	AccountsTableSubscriptionPlanIDColumn = "subscription_plan_id"
-	// AccountsTableUserOwnershipColumn is what the accounts table calls the user ownership column.
-	AccountsTableUserOwnershipColumn = userOwnershipColumn
+	// HouseholdsTableName is what the households table calls itself.
+	HouseholdsTableName = "households"
+	// HouseholdsTableNameColumn is what the households table calls the Name column.
+	HouseholdsTableNameColumn = "name"
+	// HouseholdsTableBillingStatusColumn is what the households table calls the BillingStatus column.
+	HouseholdsTableBillingStatusColumn = "billing_status"
+	// HouseholdsTableContactEmailColumn is what the households table calls the ContactEmail column.
+	HouseholdsTableContactEmailColumn = "contact_email"
+	// HouseholdsTableContactPhoneColumn is what the households table calls the ContactPhone column.
+	HouseholdsTableContactPhoneColumn = "contact_phone"
+	// HouseholdsTablePaymentProcessorCustomerIDColumn is what the households table calls the PaymentProcessorCustomerID column.
+	HouseholdsTablePaymentProcessorCustomerIDColumn = "payment_processor_customer_id"
+	// HouseholdsTableSubscriptionPlanIDColumn is what the households table calls the SubscriptionPlanID column.
+	HouseholdsTableSubscriptionPlanIDColumn = "subscription_plan_id"
+	// HouseholdsTableUserOwnershipColumn is what the households table calls the user ownership column.
+	HouseholdsTableUserOwnershipColumn = userOwnershipColumn
 
 	//
-	// Accounts Membership Table.
+	// Households Membership Table.
 	//
 
-	// AccountsUserMembershipTableName is what the accounts membership table calls itself.
-	AccountsUserMembershipTableName = "account_user_memberships"
-	// AccountsUserMembershipTableAccountRolesColumn is what the accounts membership table calls the column indicating account role.
-	AccountsUserMembershipTableAccountRolesColumn = "account_roles"
-	// AccountsUserMembershipTableAccountOwnershipColumn is what the accounts membership table calls the user ownership column.
-	AccountsUserMembershipTableAccountOwnershipColumn = accountOwnershipColumn
-	// AccountsUserMembershipTableUserOwnershipColumn is what the accounts membership table calls the user ownership column.
-	AccountsUserMembershipTableUserOwnershipColumn = userOwnershipColumn
-	// AccountsUserMembershipTableDefaultUserAccountColumn is what the accounts membership table calls the .
-	AccountsUserMembershipTableDefaultUserAccountColumn = "default_account"
+	// HouseholdsUserMembershipTableName is what the households membership table calls itself.
+	HouseholdsUserMembershipTableName = "household_user_memberships"
+	// HouseholdsUserMembershipTableHouseholdRolesColumn is what the households membership table calls the column indicating household role.
+	HouseholdsUserMembershipTableHouseholdRolesColumn = "household_roles"
+	// HouseholdsUserMembershipTableHouseholdOwnershipColumn is what the households membership table calls the user ownership column.
+	HouseholdsUserMembershipTableHouseholdOwnershipColumn = householdOwnershipColumn
+	// HouseholdsUserMembershipTableUserOwnershipColumn is what the households membership table calls the user ownership column.
+	HouseholdsUserMembershipTableUserOwnershipColumn = userOwnershipColumn
+	// HouseholdsUserMembershipTableDefaultUserHouseholdColumn is what the households membership table calls the .
+	HouseholdsUserMembershipTableDefaultUserHouseholdColumn = "default_household"
 
 	//
 	// Users Table.
@@ -146,7 +146,7 @@ const (
 	// WebhooksTableTopicsSeparator is what the webhooks table calls the <> column.
 	WebhooksTableTopicsSeparator = commaSeparator
 	// WebhooksTableOwnershipColumn is what the webhooks table calls the <> column.
-	WebhooksTableOwnershipColumn = accountOwnershipColumn
+	WebhooksTableOwnershipColumn = householdOwnershipColumn
 
 	//
 	// ValidInstruments Table.
@@ -162,8 +162,8 @@ const (
 	ValidInstrumentsTableDescriptionColumn = "description"
 	// ValidInstrumentsTableIconPathColumn is what the valid instruments table calls the icon_path column.
 	ValidInstrumentsTableIconPathColumn = "icon_path"
-	// ValidInstrumentsTableAccountOwnershipColumn is what the valid instruments table calls the ownership column.
-	ValidInstrumentsTableAccountOwnershipColumn = accountOwnershipColumn
+	// ValidInstrumentsTableHouseholdOwnershipColumn is what the valid instruments table calls the ownership column.
+	ValidInstrumentsTableHouseholdOwnershipColumn = householdOwnershipColumn
 
 	//
 	// ValidPreparations Table.
@@ -177,8 +177,8 @@ const (
 	ValidPreparationsTableDescriptionColumn = "description"
 	// ValidPreparationsTableIconPathColumn is what the valid preparations table calls the icon_path column.
 	ValidPreparationsTableIconPathColumn = "icon_path"
-	// ValidPreparationsTableAccountOwnershipColumn is what the valid preparations table calls the ownership column.
-	ValidPreparationsTableAccountOwnershipColumn = accountOwnershipColumn
+	// ValidPreparationsTableHouseholdOwnershipColumn is what the valid preparations table calls the ownership column.
+	ValidPreparationsTableHouseholdOwnershipColumn = householdOwnershipColumn
 
 	//
 	// ValidIngredients Table.
@@ -222,8 +222,8 @@ const (
 	ValidIngredientsTableVolumetricColumn = "volumetric"
 	// ValidIngredientsTableIconPathColumn is what the valid ingredients table calls the icon_path column.
 	ValidIngredientsTableIconPathColumn = "icon_path"
-	// ValidIngredientsTableAccountOwnershipColumn is what the valid ingredients table calls the ownership column.
-	ValidIngredientsTableAccountOwnershipColumn = accountOwnershipColumn
+	// ValidIngredientsTableHouseholdOwnershipColumn is what the valid ingredients table calls the ownership column.
+	ValidIngredientsTableHouseholdOwnershipColumn = householdOwnershipColumn
 
 	//
 	// ValidIngredientPreparations Table.
@@ -237,8 +237,8 @@ const (
 	ValidIngredientPreparationsTableValidIngredientIDColumn = "valid_ingredient_id"
 	// ValidIngredientPreparationsTableValidPreparationIDColumn is what the valid ingredient preparations table calls the valid_preparation_id column.
 	ValidIngredientPreparationsTableValidPreparationIDColumn = "valid_preparation_id"
-	// ValidIngredientPreparationsTableAccountOwnershipColumn is what the valid ingredient preparations table calls the ownership column.
-	ValidIngredientPreparationsTableAccountOwnershipColumn = accountOwnershipColumn
+	// ValidIngredientPreparationsTableHouseholdOwnershipColumn is what the valid ingredient preparations table calls the ownership column.
+	ValidIngredientPreparationsTableHouseholdOwnershipColumn = householdOwnershipColumn
 
 	//
 	// ValidPreparationInstruments Table.
@@ -252,8 +252,8 @@ const (
 	ValidPreparationInstrumentsTablePreparationIDColumn = "preparation_id"
 	// ValidPreparationInstrumentsTableNotesColumn is what the valid preparation instruments table calls the notes column.
 	ValidPreparationInstrumentsTableNotesColumn = "notes"
-	// ValidPreparationInstrumentsTableAccountOwnershipColumn is what the valid preparation instruments table calls the ownership column.
-	ValidPreparationInstrumentsTableAccountOwnershipColumn = accountOwnershipColumn
+	// ValidPreparationInstrumentsTableHouseholdOwnershipColumn is what the valid preparation instruments table calls the ownership column.
+	ValidPreparationInstrumentsTableHouseholdOwnershipColumn = householdOwnershipColumn
 
 	//
 	// Recipes Table.
@@ -271,8 +271,8 @@ const (
 	RecipesTableDisplayImageURLColumn = "display_image_url"
 	// RecipesTableInspiredByRecipeIDColumn is what the recipes table calls the inspired_by_recipe_id column.
 	RecipesTableInspiredByRecipeIDColumn = "inspired_by_recipe_id"
-	// RecipesTableAccountOwnershipColumn is what the recipes table calls the ownership column.
-	RecipesTableAccountOwnershipColumn = accountOwnershipColumn
+	// RecipesTableHouseholdOwnershipColumn is what the recipes table calls the ownership column.
+	RecipesTableHouseholdOwnershipColumn = householdOwnershipColumn
 
 	//
 	// RecipeSteps Table.
@@ -298,8 +298,8 @@ const (
 	RecipeStepsTableWhyColumn = "why"
 	// RecipeStepsTableBelongsToRecipeColumn is what the recipe steps table calls the recipe ownership column.
 	RecipeStepsTableBelongsToRecipeColumn = "belongs_to_recipe"
-	// RecipeStepsTableAccountOwnershipColumn is what the recipe steps table calls the ownership column.
-	RecipeStepsTableAccountOwnershipColumn = accountOwnershipColumn
+	// RecipeStepsTableHouseholdOwnershipColumn is what the recipe steps table calls the ownership column.
+	RecipeStepsTableHouseholdOwnershipColumn = householdOwnershipColumn
 
 	//
 	// RecipeStepIngredients Table.
@@ -323,8 +323,8 @@ const (
 	RecipeStepIngredientsTableIngredientNotesColumn = "ingredient_notes"
 	// RecipeStepIngredientsTableBelongsToRecipeStepColumn is what the recipe step ingredients table calls the recipe step ownership column.
 	RecipeStepIngredientsTableBelongsToRecipeStepColumn = "belongs_to_recipe_step"
-	// RecipeStepIngredientsTableAccountOwnershipColumn is what the recipe step ingredients table calls the ownership column.
-	RecipeStepIngredientsTableAccountOwnershipColumn = accountOwnershipColumn
+	// RecipeStepIngredientsTableHouseholdOwnershipColumn is what the recipe step ingredients table calls the ownership column.
+	RecipeStepIngredientsTableHouseholdOwnershipColumn = householdOwnershipColumn
 
 	//
 	// RecipeStepProducts Table.
@@ -342,8 +342,8 @@ const (
 	RecipeStepProductsTableQuantityNotesColumn = "quantity_notes"
 	// RecipeStepProductsTableBelongsToRecipeStepColumn is what the recipe step products table calls the recipe step ownership column.
 	RecipeStepProductsTableBelongsToRecipeStepColumn = "belongs_to_recipe_step"
-	// RecipeStepProductsTableAccountOwnershipColumn is what the recipe step products table calls the ownership column.
-	RecipeStepProductsTableAccountOwnershipColumn = accountOwnershipColumn
+	// RecipeStepProductsTableHouseholdOwnershipColumn is what the recipe step products table calls the ownership column.
+	RecipeStepProductsTableHouseholdOwnershipColumn = householdOwnershipColumn
 
 	//
 	// Invitations Table.
@@ -355,8 +355,8 @@ const (
 	InvitationsTableCodeColumn = "code"
 	// InvitationsTableConsumedColumn is what the invitations table calls the consumed column.
 	InvitationsTableConsumedColumn = "consumed"
-	// InvitationsTableAccountOwnershipColumn is what the invitations table calls the ownership column.
-	InvitationsTableAccountOwnershipColumn = accountOwnershipColumn
+	// InvitationsTableHouseholdOwnershipColumn is what the invitations table calls the ownership column.
+	InvitationsTableHouseholdOwnershipColumn = householdOwnershipColumn
 
 	//
 	// Reports Table.
@@ -368,8 +368,8 @@ const (
 	ReportsTableReportTypeColumn = "report_type"
 	// ReportsTableConcernColumn is what the reports table calls the concern column.
 	ReportsTableConcernColumn = "concern"
-	// ReportsTableAccountOwnershipColumn is what the reports table calls the ownership column.
-	ReportsTableAccountOwnershipColumn = accountOwnershipColumn
+	// ReportsTableHouseholdOwnershipColumn is what the reports table calls the ownership column.
+	ReportsTableHouseholdOwnershipColumn = householdOwnershipColumn
 )
 
 var (

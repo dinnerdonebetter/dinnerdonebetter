@@ -25,14 +25,14 @@ func TestPostgres_BuildUserIsBannedQuery(T *testing.T) {
 
 		exampleUser := fakes.BuildFakeUser()
 		exampleStatuses := []string{
-			string(types.BannedUserAccountStatus),
+			string(types.BannedUserHouseholdStatus),
 			string(types.TerminatedUserReputation),
 		}
 
 		expectedQuery := "SELECT EXISTS ( SELECT users.id FROM users WHERE users.archived_on IS NULL AND users.id = $1 AND (users.reputation = $2 OR users.reputation = $3) )"
 		expectedArgs := []interface{}{
 			exampleUser.ID,
-			string(types.BannedUserAccountStatus),
+			string(types.BannedUserHouseholdStatus),
 			string(types.TerminatedUserReputation),
 		}
 		actualQuery, actualArgs := q.BuildUserHasStatusQuery(ctx, exampleUser.ID, exampleStatuses...)
@@ -146,7 +146,7 @@ func TestPostgres_BuildTestUserCreationQuery(T *testing.T) {
 			exampleInput.Username,
 			exampleInput.HashedPassword,
 			querybuilding.DefaultTestUserTwoFactorSecret,
-			types.GoodStandingAccountStatus,
+			types.GoodStandingHouseholdStatus,
 			authorization.ServiceAdminRole.String(),
 		}
 		actualQuery, actualArgs := q.BuildTestUserCreationQuery(ctx, exampleInput)
@@ -244,7 +244,7 @@ func TestPostgres_BuildCreateUserQuery(T *testing.T) {
 			exampleUser.Username,
 			exampleUser.HashedPassword,
 			exampleUser.TwoFactorSecret,
-			types.UnverifiedAccountStatus,
+			types.UnverifiedHouseholdStatus,
 			authorization.ServiceUserRole.String(),
 		}
 		actualQuery, actualArgs := q.BuildCreateUserQuery(ctx, exampleInput)
@@ -374,7 +374,7 @@ func TestPostgres_BuildVerifyUserTwoFactorSecretQuery(T *testing.T) {
 
 		expectedQuery := "UPDATE users SET two_factor_secret_verified_on = extract(epoch FROM NOW()), reputation = $1 WHERE archived_on IS NULL AND id = $2"
 		expectedArgs := []interface{}{
-			types.GoodStandingAccountStatus,
+			types.GoodStandingHouseholdStatus,
 			exampleUser.ID,
 		}
 		actualQuery, actualArgs := q.BuildVerifyUserTwoFactorSecretQuery(ctx, exampleUser.ID)

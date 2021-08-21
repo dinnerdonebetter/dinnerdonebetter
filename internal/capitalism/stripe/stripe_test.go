@@ -239,7 +239,7 @@ func Test_stripePaymentManager_GetCustomerID(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleAccount := fakes.BuildFakeAccount()
+		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleAPIKey := fakeAPIKey
 		pm := buildTestPaymentManager(t)
 
@@ -255,7 +255,7 @@ func Test_stripePaymentManager_GetCustomerID(T *testing.T) {
 			http.MethodPost,
 			"/v1/customers",
 			exampleAPIKey,
-			buildGetCustomerParams(exampleAccount),
+			buildGetCustomerParams(exampleHousehold),
 			mock.IsType(&stripe.Customer{}),
 		).Return(nil)
 
@@ -266,7 +266,7 @@ func Test_stripePaymentManager_GetCustomerID(T *testing.T) {
 		}
 		pm.client = client.New(exampleAPIKey, mockedBackends)
 
-		actual, err := pm.CreateCustomerID(ctx, exampleAccount)
+		actual, err := pm.CreateCustomerID(ctx, exampleHousehold)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -277,7 +277,7 @@ func Test_stripePaymentManager_GetCustomerID(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleAccount := fakes.BuildFakeAccount()
+		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleAPIKey := fakeAPIKey
 		pm := buildTestPaymentManager(t)
 
@@ -293,7 +293,7 @@ func Test_stripePaymentManager_GetCustomerID(T *testing.T) {
 			http.MethodPost,
 			"/v1/customers",
 			exampleAPIKey,
-			buildGetCustomerParams(exampleAccount),
+			buildGetCustomerParams(exampleHousehold),
 			mock.IsType(&stripe.Customer{}),
 		).Return(errors.New("blah"))
 
@@ -304,7 +304,7 @@ func Test_stripePaymentManager_GetCustomerID(T *testing.T) {
 		}
 		pm.client = client.New(exampleAPIKey, mockedBackends)
 
-		actual, err := pm.CreateCustomerID(ctx, exampleAccount)
+		actual, err := pm.CreateCustomerID(ctx, exampleHousehold)
 		assert.Error(t, err)
 		assert.Empty(t, actual)
 

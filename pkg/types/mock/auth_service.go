@@ -47,8 +47,8 @@ func (m *AuthService) PASETOHandler(res http.ResponseWriter, req *http.Request) 
 	m.Called(req, res)
 }
 
-// ChangeActiveAccountHandler satisfies our interface contract.
-func (m *AuthService) ChangeActiveAccountHandler(res http.ResponseWriter, req *http.Request) {
+// ChangeActiveHouseholdHandler satisfies our interface contract.
+func (m *AuthService) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *http.Request) {
 	m.Called(req, res)
 }
 
@@ -82,8 +82,8 @@ func (m *AuthService) PASETOCreationInputMiddleware(next http.Handler) http.Hand
 	return m.Called(next).Get(0).(http.Handler)
 }
 
-// ChangeActiveAccountInputMiddleware satisfies our interface contract.
-func (m *AuthService) ChangeActiveAccountInputMiddleware(next http.Handler) http.Handler {
+// ChangeActiveHouseholdInputMiddleware satisfies our interface contract.
+func (m *AuthService) ChangeActiveHouseholdInputMiddleware(next http.Handler) http.Handler {
 	return m.Called(next).Get(0).(http.Handler)
 }
 

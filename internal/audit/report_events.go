@@ -20,35 +20,35 @@ func BuildReportCreationEventEntry(report *types.Report, createdByUser uint64) *
 	return &types.AuditLogEntryCreationInput{
 		EventType: ReportCreationEvent,
 		Context: map[string]interface{}{
-			ActorAssignmentKey:    createdByUser,
-			ReportAssignmentKey:   report.ID,
-			CreationAssignmentKey: report,
-			AccountAssignmentKey:  report.BelongsToAccount,
+			ActorAssignmentKey:     createdByUser,
+			ReportAssignmentKey:    report.ID,
+			CreationAssignmentKey:  report,
+			HouseholdAssignmentKey: report.BelongsToHousehold,
 		},
 	}
 }
 
 // BuildReportUpdateEventEntry builds an entry creation input for when a report is updated.
-func BuildReportUpdateEventEntry(changedByUser, reportID, accountID uint64, changes []*types.FieldChangeSummary) *types.AuditLogEntryCreationInput {
+func BuildReportUpdateEventEntry(changedByUser, reportID, householdID uint64, changes []*types.FieldChangeSummary) *types.AuditLogEntryCreationInput {
 	return &types.AuditLogEntryCreationInput{
 		EventType: ReportUpdateEvent,
 		Context: map[string]interface{}{
-			ActorAssignmentKey:   changedByUser,
-			AccountAssignmentKey: accountID,
-			ReportAssignmentKey:  reportID,
-			ChangesAssignmentKey: changes,
+			ActorAssignmentKey:     changedByUser,
+			HouseholdAssignmentKey: householdID,
+			ReportAssignmentKey:    reportID,
+			ChangesAssignmentKey:   changes,
 		},
 	}
 }
 
 // BuildReportArchiveEventEntry builds an entry creation input for when a report is archived.
-func BuildReportArchiveEventEntry(archivedByUser, accountID, reportID uint64) *types.AuditLogEntryCreationInput {
+func BuildReportArchiveEventEntry(archivedByUser, householdID, reportID uint64) *types.AuditLogEntryCreationInput {
 	return &types.AuditLogEntryCreationInput{
 		EventType: ReportArchiveEvent,
 		Context: map[string]interface{}{
-			ActorAssignmentKey:   archivedByUser,
-			AccountAssignmentKey: accountID,
-			ReportAssignmentKey:  reportID,
+			ActorAssignmentKey:     archivedByUser,
+			HouseholdAssignmentKey: householdID,
+			ReportAssignmentKey:    reportID,
 		},
 	}
 }

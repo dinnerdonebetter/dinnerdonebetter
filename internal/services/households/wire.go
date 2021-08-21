@@ -1,4 +1,4 @@
-package accounts
+package households
 
 import (
 	"github.com/google/wire"

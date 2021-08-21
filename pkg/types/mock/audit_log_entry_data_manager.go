@@ -20,9 +20,9 @@ func (m *AuditLogEntryDataManager) LogUserBanEvent(ctx context.Context, banGiver
 	m.Called(ctx, banGiver, banReceiver, reason)
 }
 
-// LogAccountTerminationEvent implements our interface.
-func (m *AuditLogEntryDataManager) LogAccountTerminationEvent(ctx context.Context, adminID, accountID uint64, reason string) {
-	m.Called(ctx, adminID, accountID, reason)
+// LogHouseholdTerminationEvent implements our interface.
+func (m *AuditLogEntryDataManager) LogHouseholdTerminationEvent(ctx context.Context, adminID, householdID uint64, reason string) {
+	m.Called(ctx, adminID, householdID, reason)
 }
 
 // GetAuditLogEntry is a mock function.

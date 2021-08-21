@@ -25,8 +25,8 @@ var (
 		ProvideReportDataManager,
 		ProvideUserDataManager,
 		ProvideAdminUserDataManager,
-		ProvideAccountDataManager,
-		ProvideAccountUserMembershipDataManager,
+		ProvideHouseholdDataManager,
+		ProvideHouseholdUserMembershipDataManager,
 		ProvideAPIClientDataManager,
 		ProvideWebhookDataManager,
 	)
@@ -47,13 +47,13 @@ func ProvideAuditLogEntryDataManager(db DataManager) types.AuditLogEntryDataMana
 	return db
 }
 
-// ProvideAccountDataManager is an arbitrary function for dependency injection's sake.
-func ProvideAccountDataManager(db DataManager) types.AccountDataManager {
+// ProvideHouseholdDataManager is an arbitrary function for dependency injection's sake.
+func ProvideHouseholdDataManager(db DataManager) types.HouseholdDataManager {
 	return db
 }
 
-// ProvideAccountUserMembershipDataManager is an arbitrary function for dependency injection's sake.
-func ProvideAccountUserMembershipDataManager(db DataManager) types.AccountUserMembershipDataManager {
+// ProvideHouseholdUserMembershipDataManager is an arbitrary function for dependency injection's sake.
+func ProvideHouseholdUserMembershipDataManager(db DataManager) types.HouseholdUserMembershipDataManager {
 	return db
 }
 

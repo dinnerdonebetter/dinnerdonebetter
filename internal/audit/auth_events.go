@@ -11,8 +11,8 @@ const (
 	ChangesAssignmentKey = "changes"
 	// CreationAssignmentKey is the key we use to indicate which object was created for creation events.
 	CreationAssignmentKey = "created"
-	// AccountRolesKey is the key we use to indicate which permissions were applicable to an event.
-	AccountRolesKey = "account_roles"
+	// HouseholdRolesKey is the key we use to indicate which permissions were applicable to an event.
+	HouseholdRolesKey = "household_roles"
 	// PermissionsKey is the key we use to indicate which permissions were applicable to an event.
 	PermissionsKey = "permissions"
 	// ReasonKey is the key we use to indicate the reason behind a given event.
@@ -20,8 +20,8 @@ const (
 
 	// UserBannedEvent events indicate an admin cycled the cookie secret.
 	UserBannedEvent = "user_banned"
-	// AccountTerminatedEvent events indicate an admin cycled the cookie secret.
-	AccountTerminatedEvent = "account_terminated"
+	// HouseholdTerminatedEvent events indicate an admin cycled the cookie secret.
+	HouseholdTerminatedEvent = "household_terminated"
 	// CycleCookieSecretEvent events indicate an admin cycled the cookie secret.
 	CycleCookieSecretEvent = "cookie_secret_cycled"
 	// SuccessfulLoginEvent events indicate a user successfully authenticated into the service via username + passwords + 2fa.

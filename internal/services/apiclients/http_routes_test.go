@@ -674,7 +674,7 @@ func TestAPIClientsService_ArchiveHandler(T *testing.T) {
 			"ArchiveAPIClient",
 			testutils.ContextMatcher,
 			helper.exampleAPIClient.ID,
-			helper.exampleAccount.ID,
+			helper.exampleHousehold.ID,
 			helper.exampleUser.ID,
 		).Return(nil)
 		helper.service.apiClientDataManager = apiClientDataManager
@@ -723,7 +723,7 @@ func TestAPIClientsService_ArchiveHandler(T *testing.T) {
 			"ArchiveAPIClient",
 			testutils.ContextMatcher,
 			helper.exampleAPIClient.ID,
-			helper.exampleAccount.ID,
+			helper.exampleHousehold.ID,
 			helper.exampleUser.ID,
 		).Return(sql.ErrNoRows)
 		helper.service.apiClientDataManager = apiClientDataManager
@@ -753,7 +753,7 @@ func TestAPIClientsService_ArchiveHandler(T *testing.T) {
 			"ArchiveAPIClient",
 			testutils.ContextMatcher,
 			helper.exampleAPIClient.ID,
-			helper.exampleAccount.ID,
+			helper.exampleHousehold.ID,
 			helper.exampleUser.ID,
 		).Return(errors.New("blah"))
 		helper.service.apiClientDataManager = apiClientDataManager

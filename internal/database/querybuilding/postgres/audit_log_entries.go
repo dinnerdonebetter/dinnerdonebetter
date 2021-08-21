@@ -61,7 +61,7 @@ func (b *Postgres) BuildGetBatchOfAuditLogEntriesQuery(ctx context.Context, begi
 	)
 }
 
-// BuildGetAuditLogEntriesQuery builds a SQL query selecting  that adhere to a given QueryFilter and belong to a given account,
+// BuildGetAuditLogEntriesQuery builds a SQL query selecting  that adhere to a given QueryFilter and belong to a given household,
 // and returns both the query and the relevant args to pass to the query executor.
 func (b *Postgres) BuildGetAuditLogEntriesQuery(ctx context.Context, filter *types.QueryFilter) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)

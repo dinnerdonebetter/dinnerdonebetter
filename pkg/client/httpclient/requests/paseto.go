@@ -47,7 +47,7 @@ func (b *Builder) BuildAPIClientAuthTokenRequest(ctx context.Context, input *typ
 	}
 
 	uri := b.buildUnversionedURL(ctx, nil, pasetoBasePath)
-	logger := b.logger.WithValue(keys.AccountIDKey, input.AccountID).
+	logger := b.logger.WithValue(keys.HouseholdIDKey, input.HouseholdID).
 		WithValue(keys.APIClientClientIDKey, input.ClientID)
 
 	tracing.AttachRequestURIToSpan(span, uri)

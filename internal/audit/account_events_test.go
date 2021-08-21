@@ -10,23 +10,23 @@ import (
 )
 
 const (
-	exampleAccountID uint64 = 123
+	exampleHouseholdID uint64 = 123
 )
 
-func TestBuildAccountCreationEventEntry(t *testing.T) {
+func TestBuildHouseholdCreationEventEntry(t *testing.T) {
 	t.Parallel()
 
-	assert.NotNil(t, audit.BuildAccountCreationEventEntry(&types.Account{}, exampleUserID))
+	assert.NotNil(t, audit.BuildHouseholdCreationEventEntry(&types.Household{}, exampleUserID))
 }
 
-func TestBuildAccountUpdateEventEntry(t *testing.T) {
+func TestBuildHouseholdUpdateEventEntry(t *testing.T) {
 	t.Parallel()
 
-	assert.NotNil(t, audit.BuildAccountUpdateEventEntry(exampleUserID, exampleAccountID, exampleUserID, nil))
+	assert.NotNil(t, audit.BuildHouseholdUpdateEventEntry(exampleUserID, exampleHouseholdID, exampleUserID, nil))
 }
 
-func TestBuildAccountArchiveEventEntry(t *testing.T) {
+func TestBuildHouseholdArchiveEventEntry(t *testing.T) {
 	t.Parallel()
 
-	assert.NotNil(t, audit.BuildAccountArchiveEventEntry(exampleUserID, exampleAccountID, exampleUserID))
+	assert.NotNil(t, audit.BuildHouseholdArchiveEventEntry(exampleUserID, exampleHouseholdID, exampleUserID))
 }

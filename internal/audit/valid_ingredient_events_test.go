@@ -16,7 +16,7 @@ const (
 func TestBuildValidIngredientCreationEventEntry(t *testing.T) {
 	t.Parallel()
 
-	assert.NotNil(t, audit.BuildValidIngredientCreationEventEntry(&types.ValidIngredient{}, exampleAccountID))
+	assert.NotNil(t, audit.BuildValidIngredientCreationEventEntry(&types.ValidIngredient{}, exampleHouseholdID))
 }
 
 func TestBuildValidIngredientUpdateEventEntry(t *testing.T) {

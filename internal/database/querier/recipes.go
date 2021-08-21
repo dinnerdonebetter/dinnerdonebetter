@@ -38,7 +38,7 @@ func (q *SQLQuerier) scanRecipe(ctx context.Context, scan database.Scanner, incl
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
-		&x.BelongsToAccount,
+		&x.BelongsToHousehold,
 	}
 
 	if includeCounts {
@@ -226,17 +226,17 @@ func (q *SQLQuerier) GetRecipes(ctx context.Context, filter *types.QueryFilter) 
 }
 
 // GetRecipesWithIDs fetches recipes from the database within a given set of IDs.
-func (q *SQLQuerier) GetRecipesWithIDs(ctx context.Context, accountID uint64, limit uint8, ids []uint64) ([]*types.Recipe, error) {
+func (q *SQLQuerier) GetRecipesWithIDs(ctx context.Context, householdID uint64, limit uint8, ids []uint64) ([]*types.Recipe, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger
 
-	if accountID == 0 {
+	if householdID == 0 {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	if limit == 0 {
 		limit = uint8(types.DefaultLimit)
@@ -247,7 +247,7 @@ func (q *SQLQuerier) GetRecipesWithIDs(ctx context.Context, accountID uint64, li
 		"id_count": len(ids),
 	})
 
-	query, args := q.sqlQueryBuilder.BuildGetRecipesWithIDsQuery(ctx, accountID, limit, ids, false)
+	query, args := q.sqlQueryBuilder.BuildGetRecipesWithIDsQuery(ctx, householdID, limit, ids, false)
 
 	rows, err := q.performReadQuery(ctx, q.db, "recipes with IDs", query, args...)
 	if err != nil {
@@ -299,7 +299,7 @@ func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeCreati
 		Description:        input.Description,
 		DisplayImageURL:    input.DisplayImageURL,
 		InspiredByRecipeID: input.InspiredByRecipeID,
-		BelongsToAccount:   input.BelongsToAccount,
+		BelongsToHousehold: input.BelongsToHousehold,
 		CreatedOn:          q.currentTime(),
 	}
 
@@ -343,7 +343,7 @@ func (q *SQLQuerier) UpdateRecipe(ctx context.Context, updated *types.Recipe, ch
 
 	logger := q.logger.WithValue(keys.RecipeIDKey, updated.ID)
 	tracing.AttachRecipeIDToSpan(span, updated.ID)
-	tracing.AttachAccountIDToSpan(span, updated.BelongsToAccount)
+	tracing.AttachHouseholdIDToSpan(span, updated.BelongsToHousehold)
 	tracing.AttachRequestingUserIDToSpan(span, changedByUser)
 
 	tx, err := q.db.BeginTx(ctx, nil)
@@ -357,7 +357,7 @@ func (q *SQLQuerier) UpdateRecipe(ctx context.Context, updated *types.Recipe, ch
 		return observability.PrepareError(err, logger, span, "updating recipe")
 	}
 
-	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildRecipeUpdateEventEntry(changedByUser, updated.ID, updated.BelongsToAccount, changes)); err != nil {
+	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildRecipeUpdateEventEntry(changedByUser, updated.ID, updated.BelongsToHousehold, changes)); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, logger, span, "writing recipe update audit log entry")
 	}
@@ -372,7 +372,7 @@ func (q *SQLQuerier) UpdateRecipe(ctx context.Context, updated *types.Recipe, ch
 }
 
 // ArchiveRecipe archives a recipe from the database by its ID.
-func (q *SQLQuerier) ArchiveRecipe(ctx context.Context, recipeID, accountID, archivedBy uint64) error {
+func (q *SQLQuerier) ArchiveRecipe(ctx context.Context, recipeID, householdID, archivedBy uint64) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -384,11 +384,11 @@ func (q *SQLQuerier) ArchiveRecipe(ctx context.Context, recipeID, accountID, arc
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	if accountID == 0 {
+	if householdID == 0 {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	if archivedBy == 0 {
 		return ErrInvalidIDProvided
@@ -408,7 +408,7 @@ func (q *SQLQuerier) ArchiveRecipe(ctx context.Context, recipeID, accountID, arc
 		return observability.PrepareError(err, logger, span, "updating recipe")
 	}
 
-	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildRecipeArchiveEventEntry(archivedBy, accountID, recipeID)); err != nil {
+	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildRecipeArchiveEventEntry(archivedBy, householdID, recipeID)); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, logger, span, "writing recipe archive audit log entry")
 	}

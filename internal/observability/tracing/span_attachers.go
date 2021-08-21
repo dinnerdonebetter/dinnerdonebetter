@@ -66,14 +66,14 @@ func AttachAuditLogEntryEventTypeToSpan(span trace.Span, eventType string) {
 	attachStringToSpan(span, keys.AuditLogEntryEventTypeKey, eventType)
 }
 
-// AttachAccountIDToSpan provides a consistent way to attach an account's ID to a span.
-func AttachAccountIDToSpan(span trace.Span, accountID uint64) {
-	attachUint64ToSpan(span, keys.AccountIDKey, accountID)
+// AttachHouseholdIDToSpan provides a consistent way to attach an household's ID to a span.
+func AttachHouseholdIDToSpan(span trace.Span, householdID uint64) {
+	attachUint64ToSpan(span, keys.HouseholdIDKey, householdID)
 }
 
-// AttachActiveAccountIDToSpan provides a consistent way to attach an account's ID to a span.
-func AttachActiveAccountIDToSpan(span trace.Span, accountID uint64) {
-	attachUint64ToSpan(span, keys.ActiveAccountIDKey, accountID)
+// AttachActiveHouseholdIDToSpan provides a consistent way to attach an household's ID to a span.
+func AttachActiveHouseholdIDToSpan(span trace.Span, householdID uint64) {
+	attachUint64ToSpan(span, keys.ActiveHouseholdIDKey, householdID)
 }
 
 // AttachRequestingUserIDToSpan provides a consistent way to attach a user's ID to a span.
@@ -92,7 +92,7 @@ func AttachChangeSummarySpan(span trace.Span, typeName string, changes []*types.
 func AttachSessionContextDataToSpan(span trace.Span, sessionCtxData *types.SessionContextData) {
 	if sessionCtxData != nil {
 		AttachRequestingUserIDToSpan(span, sessionCtxData.Requester.UserID)
-		AttachActiveAccountIDToSpan(span, sessionCtxData.ActiveAccountID)
+		AttachActiveHouseholdIDToSpan(span, sessionCtxData.ActiveHouseholdID)
 		if sessionCtxData.Requester.ServicePermissions != nil {
 			attachBooleanToSpan(span, keys.UserIsServiceAdminKey, sessionCtxData.Requester.ServicePermissions.IsServiceAdmin())
 		}

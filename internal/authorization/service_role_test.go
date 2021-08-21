@@ -16,7 +16,7 @@ func TestServiceRoles(T *testing.T) {
 
 		assert.False(t, r.IsServiceAdmin())
 		assert.False(t, r.CanCycleCookieSecrets())
-		assert.False(t, r.CanSeeAccountAuditLogEntries())
+		assert.False(t, r.CanSeeHouseholdAuditLogEntries())
 		assert.False(t, r.CanSeeAPIClientAuditLogEntries())
 		assert.False(t, r.CanSeeUserAuditLogEntries())
 		assert.False(t, r.CanSeeWebhookAuditLogEntries())
@@ -32,7 +32,7 @@ func TestServiceRoles(T *testing.T) {
 
 		assert.True(t, r.IsServiceAdmin())
 		assert.True(t, r.CanCycleCookieSecrets())
-		assert.True(t, r.CanSeeAccountAuditLogEntries())
+		assert.True(t, r.CanSeeHouseholdAuditLogEntries())
 		assert.True(t, r.CanSeeAPIClientAuditLogEntries())
 		assert.True(t, r.CanSeeUserAuditLogEntries())
 		assert.True(t, r.CanSeeWebhookAuditLogEntries())

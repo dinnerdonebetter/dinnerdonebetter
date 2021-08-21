@@ -52,8 +52,8 @@ func (m *ReportSQLQueryBuilder) BuildGetReportsQuery(ctx context.Context, includ
 }
 
 // BuildGetReportsWithIDsQuery implements our interface.
-func (m *ReportSQLQueryBuilder) BuildGetReportsWithIDsQuery(ctx context.Context, accountID uint64, limit uint8, ids []uint64, restrictToAccount bool) (query string, args []interface{}) {
-	returnArgs := m.Called(ctx, accountID, limit, ids, restrictToAccount)
+func (m *ReportSQLQueryBuilder) BuildGetReportsWithIDsQuery(ctx context.Context, householdID uint64, limit uint8, ids []uint64, restrictToHousehold bool) (query string, args []interface{}) {
+	returnArgs := m.Called(ctx, householdID, limit, ids, restrictToHousehold)
 
 	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
 }

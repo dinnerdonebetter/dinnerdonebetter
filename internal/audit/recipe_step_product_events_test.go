@@ -16,7 +16,7 @@ const (
 func TestBuildRecipeStepProductCreationEventEntry(t *testing.T) {
 	t.Parallel()
 
-	assert.NotNil(t, audit.BuildRecipeStepProductCreationEventEntry(&types.RecipeStepProduct{}, exampleAccountID))
+	assert.NotNil(t, audit.BuildRecipeStepProductCreationEventEntry(&types.RecipeStepProduct{}, exampleHouseholdID))
 }
 
 func TestBuildRecipeStepProductUpdateEventEntry(t *testing.T) {

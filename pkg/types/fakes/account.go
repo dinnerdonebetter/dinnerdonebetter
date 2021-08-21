@@ -6,25 +6,25 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 )
 
-// BuildFakeAccount builds a faked account.
-func BuildFakeAccount() *types.Account {
-	return &types.Account{
+// BuildFakeHousehold builds a faked household.
+func BuildFakeHousehold() *types.Household {
+	return &types.Household{
 		ID:                         uint64(fake.Uint32()),
 		ExternalID:                 fake.UUID(),
 		Name:                       fake.Password(true, true, true, false, false, 32),
-		BillingStatus:              types.PaidAccountBillingStatus,
+		BillingStatus:              types.PaidHouseholdBillingStatus,
 		ContactEmail:               fake.Email(),
 		ContactPhone:               fake.PhoneFormatted(),
 		PaymentProcessorCustomerID: fake.UUID(),
 		CreatedOn:                  uint64(uint32(fake.Date().Unix())),
 		BelongsToUser:              fake.Uint64(),
-		Members:                    BuildFakeAccountUserMembershipList().AccountUserMemberships,
+		Members:                    BuildFakeHouseholdUserMembershipList().HouseholdUserMemberships,
 	}
 }
 
-// BuildFakeAccountForUser builds a faked account.
-func BuildFakeAccountForUser(u *types.User) *types.Account {
-	return &types.Account{
+// BuildFakeHouseholdForUser builds a faked household.
+func BuildFakeHouseholdForUser(u *types.User) *types.Household {
+	return &types.Household{
 		ID:            uint64(fake.Uint32()),
 		ExternalID:    fake.UUID(),
 		Name:          u.Username,
@@ -33,53 +33,53 @@ func BuildFakeAccountForUser(u *types.User) *types.Account {
 	}
 }
 
-// BuildFakeAccountList builds a faked AccountList.
-func BuildFakeAccountList() *types.AccountList {
-	var examples []*types.Account
+// BuildFakeHouseholdList builds a faked HouseholdList.
+func BuildFakeHouseholdList() *types.HouseholdList {
+	var examples []*types.Household
 	for i := 0; i < exampleQuantity; i++ {
-		examples = append(examples, BuildFakeAccount())
+		examples = append(examples, BuildFakeHousehold())
 	}
 
-	return &types.AccountList{
+	return &types.HouseholdList{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},
-		Accounts: examples,
+		Households: examples,
 	}
 }
 
-// BuildFakeAccountUpdateInput builds a faked AccountUpdateInput from an account.
-func BuildFakeAccountUpdateInput() *types.AccountUpdateInput {
-	account := BuildFakeAccount()
-	return &types.AccountUpdateInput{
-		Name:          account.Name,
-		BelongsToUser: account.BelongsToUser,
+// BuildFakeHouseholdUpdateInput builds a faked HouseholdUpdateInput from an household.
+func BuildFakeHouseholdUpdateInput() *types.HouseholdUpdateInput {
+	household := BuildFakeHousehold()
+	return &types.HouseholdUpdateInput{
+		Name:          household.Name,
+		BelongsToUser: household.BelongsToUser,
 	}
 }
 
-// BuildFakeAccountUpdateInputFromAccount builds a faked AccountUpdateInput from an account.
-func BuildFakeAccountUpdateInputFromAccount(account *types.Account) *types.AccountUpdateInput {
-	return &types.AccountUpdateInput{
-		Name:          account.Name,
-		BelongsToUser: account.BelongsToUser,
+// BuildFakeHouseholdUpdateInputFromHousehold builds a faked HouseholdUpdateInput from an household.
+func BuildFakeHouseholdUpdateInputFromHousehold(household *types.Household) *types.HouseholdUpdateInput {
+	return &types.HouseholdUpdateInput{
+		Name:          household.Name,
+		BelongsToUser: household.BelongsToUser,
 	}
 }
 
-// BuildFakeAccountCreationInput builds a faked AccountCreationInput.
-func BuildFakeAccountCreationInput() *types.AccountCreationInput {
-	account := BuildFakeAccount()
-	return BuildFakeAccountCreationInputFromAccount(account)
+// BuildFakeHouseholdCreationInput builds a faked HouseholdCreationInput.
+func BuildFakeHouseholdCreationInput() *types.HouseholdCreationInput {
+	household := BuildFakeHousehold()
+	return BuildFakeHouseholdCreationInputFromHousehold(household)
 }
 
-// BuildFakeAccountCreationInputFromAccount builds a faked AccountCreationInput from an account.
-func BuildFakeAccountCreationInputFromAccount(account *types.Account) *types.AccountCreationInput {
-	return &types.AccountCreationInput{
-		Name:          account.Name,
-		ContactEmail:  account.ContactEmail,
-		ContactPhone:  account.ContactPhone,
-		BelongsToUser: account.BelongsToUser,
+// BuildFakeHouseholdCreationInputFromHousehold builds a faked HouseholdCreationInput from an household.
+func BuildFakeHouseholdCreationInputFromHousehold(household *types.Household) *types.HouseholdCreationInput {
+	return &types.HouseholdCreationInput{
+		Name:          household.Name,
+		ContactEmail:  household.ContactEmail,
+		ContactPhone:  household.ContactPhone,
+		BelongsToUser: household.BelongsToUser,
 	}
 }

@@ -19,13 +19,13 @@ import (
 )
 
 type serviceHTTPRoutesTestHelper struct {
-	ctx            context.Context
-	req            *http.Request
-	res            *httptest.ResponseRecorder
-	service        *service
-	sessionCtxData *types.SessionContextData
-	exampleUser    *types.User
-	exampleAccount *types.Account
+	ctx              context.Context
+	req              *http.Request
+	res              *httptest.ResponseRecorder
+	service          *service
+	sessionCtxData   *types.SessionContextData
+	exampleUser      *types.User
+	exampleHousehold *types.Household
 }
 
 func buildTestHelper(t *testing.T) *serviceHTTPRoutesTestHelper {
@@ -35,8 +35,8 @@ func buildTestHelper(t *testing.T) *serviceHTTPRoutesTestHelper {
 
 	helper.ctx = context.Background()
 	helper.exampleUser = fakes.BuildFakeUser()
-	helper.exampleAccount = fakes.BuildFakeAccount()
-	helper.exampleAccount.BelongsToUser = helper.exampleUser.ID
+	helper.exampleHousehold = fakes.BuildFakeHousehold()
+	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 
 	cfg := &Config{}
 	logger := logging.NewNoopLogger()
@@ -62,13 +62,13 @@ func buildTestHelper(t *testing.T) *serviceHTTPRoutesTestHelper {
 	helper.sessionCtxData = &types.SessionContextData{
 		Requester: types.RequesterInfo{
 			UserID:                helper.exampleUser.ID,
-			Reputation:            helper.exampleUser.ServiceAccountStatus,
+			Reputation:            helper.exampleUser.ServiceHouseholdStatus,
 			ReputationExplanation: helper.exampleUser.ReputationExplanation,
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 		},
-		ActiveAccountID: helper.exampleAccount.ID,
-		AccountPermissions: map[uint64]authorization.AccountRolePermissionsChecker{
-			helper.exampleAccount.ID: authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
+		ActiveHouseholdID: helper.exampleHousehold.ID,
+		HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
+			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
 		},
 	}
 

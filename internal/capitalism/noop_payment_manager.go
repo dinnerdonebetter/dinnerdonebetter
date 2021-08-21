@@ -13,7 +13,7 @@ var _ PaymentManager = (*NoopPaymentManager)(nil)
 type NoopPaymentManager struct{}
 
 // CreateCustomerID satisfies our interface.
-func (n *NoopPaymentManager) CreateCustomerID(_ context.Context, _ *types.Account) (string, error) {
+func (n *NoopPaymentManager) CreateCustomerID(_ context.Context, _ *types.Household) (string, error) {
 	return "", nil
 }
 

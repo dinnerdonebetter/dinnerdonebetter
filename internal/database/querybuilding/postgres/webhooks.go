@@ -18,12 +18,12 @@ var (
 )
 
 // BuildGetWebhookQuery returns a SQL query (and arguments) for retrieving a given webhook.
-func (b *Postgres) BuildGetWebhookQuery(ctx context.Context, webhookID, accountID uint64) (query string, args []interface{}) {
+func (b *Postgres) BuildGetWebhookQuery(ctx context.Context, webhookID, householdID uint64) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
 	tracing.AttachWebhookIDToSpan(span, webhookID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	return b.buildQuery(
 		span,
@@ -31,7 +31,7 @@ func (b *Postgres) BuildGetWebhookQuery(ctx context.Context, webhookID, accountI
 			From(querybuilding.WebhooksTableName).
 			Where(squirrel.Eq{
 				fmt.Sprintf("%s.%s", querybuilding.WebhooksTableName, querybuilding.IDColumn):                     webhookID,
-				fmt.Sprintf("%s.%s", querybuilding.WebhooksTableName, querybuilding.WebhooksTableOwnershipColumn): accountID,
+				fmt.Sprintf("%s.%s", querybuilding.WebhooksTableName, querybuilding.WebhooksTableOwnershipColumn): householdID,
 				fmt.Sprintf("%s.%s", querybuilding.WebhooksTableName, querybuilding.ArchivedOnColumn):             nil,
 			}),
 	)
@@ -68,7 +68,7 @@ func (b *Postgres) BuildGetBatchOfWebhooksQuery(ctx context.Context, beginID, en
 }
 
 // BuildGetWebhooksQuery returns a SQL query (and arguments) that would return a list of webhooks.
-func (b *Postgres) BuildGetWebhooksQuery(ctx context.Context, accountID uint64, filter *types.QueryFilter) (query string, args []interface{}) {
+func (b *Postgres) BuildGetWebhooksQuery(ctx context.Context, householdID uint64, filter *types.QueryFilter) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -82,7 +82,7 @@ func (b *Postgres) BuildGetWebhooksQuery(ctx context.Context, accountID uint64, 
 		nil,
 		querybuilding.WebhooksTableOwnershipColumn,
 		querybuilding.WebhooksTableColumns,
-		accountID,
+		householdID,
 		false,
 		filter,
 	)
@@ -116,7 +116,7 @@ func (b *Postgres) BuildCreateWebhookQuery(ctx context.Context, x *types.Webhook
 				strings.Join(x.Events, querybuilding.WebhooksTableEventsSeparator),
 				strings.Join(x.DataTypes, querybuilding.WebhooksTableDataTypesSeparator),
 				strings.Join(x.Topics, querybuilding.WebhooksTableTopicsSeparator),
-				x.BelongsToAccount,
+				x.BelongsToHousehold,
 			).
 			Suffix(fmt.Sprintf("RETURNING %s", querybuilding.IDColumn)),
 	)
@@ -128,7 +128,7 @@ func (b *Postgres) BuildUpdateWebhookQuery(ctx context.Context, input *types.Web
 	defer span.End()
 
 	tracing.AttachWebhookIDToSpan(span, input.ID)
-	tracing.AttachAccountIDToSpan(span, input.BelongsToAccount)
+	tracing.AttachHouseholdIDToSpan(span, input.BelongsToHousehold)
 
 	return b.buildQuery(
 		span,
@@ -143,19 +143,19 @@ func (b *Postgres) BuildUpdateWebhookQuery(ctx context.Context, input *types.Web
 			Set(querybuilding.LastUpdatedOnColumn, currentUnixTimeQuery).
 			Where(squirrel.Eq{
 				querybuilding.IDColumn:                     input.ID,
-				querybuilding.WebhooksTableOwnershipColumn: input.BelongsToAccount,
+				querybuilding.WebhooksTableOwnershipColumn: input.BelongsToHousehold,
 				querybuilding.ArchivedOnColumn:             nil,
 			}),
 	)
 }
 
 // BuildArchiveWebhookQuery returns a SQL query (and arguments) that will mark a webhook as archived.
-func (b *Postgres) BuildArchiveWebhookQuery(ctx context.Context, webhookID, accountID uint64) (query string, args []interface{}) {
+func (b *Postgres) BuildArchiveWebhookQuery(ctx context.Context, webhookID, householdID uint64) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
 	tracing.AttachWebhookIDToSpan(span, webhookID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	return b.buildQuery(
 		span,
@@ -164,7 +164,7 @@ func (b *Postgres) BuildArchiveWebhookQuery(ctx context.Context, webhookID, acco
 			Set(querybuilding.ArchivedOnColumn, currentUnixTimeQuery).
 			Where(squirrel.Eq{
 				querybuilding.IDColumn:                     webhookID,
-				querybuilding.WebhooksTableOwnershipColumn: accountID,
+				querybuilding.WebhooksTableOwnershipColumn: householdID,
 				querybuilding.ArchivedOnColumn:             nil,
 			}),
 	)

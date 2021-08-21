@@ -5,24 +5,24 @@ import (
 )
 
 const (
-	// UserAddedToAccountEvent events indicate a user created a membership.
-	UserAddedToAccountEvent = "user_added_to_account"
-	// UserAccountPermissionsModifiedEvent events indicate a user created a membership.
-	UserAccountPermissionsModifiedEvent = "user_account_permissions_modified"
-	// UserRemovedFromAccountEvent events indicate a user deleted a membership.
-	UserRemovedFromAccountEvent = "user_removed_from_account"
-	// AccountMarkedAsDefaultEvent events indicate a user deleted a membership.
-	AccountMarkedAsDefaultEvent = "account_marked_as_default"
-	// AccountTransferredEvent events indicate a user deleted a membership.
-	AccountTransferredEvent = "account_transferred"
+	// UserAddedToHouseholdEvent events indicate a user created a membership.
+	UserAddedToHouseholdEvent = "user_added_to_household"
+	// UserHouseholdPermissionsModifiedEvent events indicate a user created a membership.
+	UserHouseholdPermissionsModifiedEvent = "user_household_permissions_modified"
+	// UserRemovedFromHouseholdEvent events indicate a user deleted a membership.
+	UserRemovedFromHouseholdEvent = "user_removed_from_household"
+	// HouseholdMarkedAsDefaultEvent events indicate a user deleted a membership.
+	HouseholdMarkedAsDefaultEvent = "household_marked_as_default"
+	// HouseholdTransferredEvent events indicate a user deleted a membership.
+	HouseholdTransferredEvent = "household_transferred"
 )
 
-// BuildUserAddedToAccountEventEntry builds an entry creation input for when a membership is created.
-func BuildUserAddedToAccountEventEntry(addedBy uint64, input *types.AddUserToAccountInput) *types.AuditLogEntryCreationInput {
+// BuildUserAddedToHouseholdEventEntry builds an entry creation input for when a membership is created.
+func BuildUserAddedToHouseholdEventEntry(addedBy uint64, input *types.AddUserToHouseholdInput) *types.AuditLogEntryCreationInput {
 	contextMap := map[string]interface{}{
-		ActorAssignmentKey:   addedBy,
-		AccountAssignmentKey: input.AccountID,
-		UserAssignmentKey:    input.UserID,
+		ActorAssignmentKey:     addedBy,
+		HouseholdAssignmentKey: input.HouseholdID,
+		UserAssignmentKey:      input.UserID,
 	}
 
 	if input.Reason != "" {
@@ -30,17 +30,17 @@ func BuildUserAddedToAccountEventEntry(addedBy uint64, input *types.AddUserToAcc
 	}
 
 	return &types.AuditLogEntryCreationInput{
-		EventType: UserAddedToAccountEvent,
+		EventType: UserAddedToHouseholdEvent,
 		Context:   contextMap,
 	}
 }
 
-// BuildUserRemovedFromAccountEventEntry builds an entry creation input for when a membership is archived.
-func BuildUserRemovedFromAccountEventEntry(removedBy, removed, accountID uint64, reason string) *types.AuditLogEntryCreationInput {
+// BuildUserRemovedFromHouseholdEventEntry builds an entry creation input for when a membership is archived.
+func BuildUserRemovedFromHouseholdEventEntry(removedBy, removed, householdID uint64, reason string) *types.AuditLogEntryCreationInput {
 	contextMap := map[string]interface{}{
-		ActorAssignmentKey:   removedBy,
-		AccountAssignmentKey: accountID,
-		UserAssignmentKey:    removed,
+		ActorAssignmentKey:     removedBy,
+		HouseholdAssignmentKey: householdID,
+		UserAssignmentKey:      removed,
 	}
 
 	if reason != "" {
@@ -48,32 +48,32 @@ func BuildUserRemovedFromAccountEventEntry(removedBy, removed, accountID uint64,
 	}
 
 	return &types.AuditLogEntryCreationInput{
-		EventType: UserRemovedFromAccountEvent,
+		EventType: UserRemovedFromHouseholdEvent,
 		Context:   contextMap,
 	}
 }
 
-// BuildUserMarkedAccountAsDefaultEventEntry builds an entry creation input for when a membership is created.
-func BuildUserMarkedAccountAsDefaultEventEntry(performedBy, userID, accountID uint64) *types.AuditLogEntryCreationInput {
+// BuildUserMarkedHouseholdAsDefaultEventEntry builds an entry creation input for when a membership is created.
+func BuildUserMarkedHouseholdAsDefaultEventEntry(performedBy, userID, householdID uint64) *types.AuditLogEntryCreationInput {
 	contextMap := map[string]interface{}{
-		ActorAssignmentKey:   performedBy,
-		UserAssignmentKey:    userID,
-		AccountAssignmentKey: accountID,
+		ActorAssignmentKey:     performedBy,
+		UserAssignmentKey:      userID,
+		HouseholdAssignmentKey: householdID,
 	}
 
 	return &types.AuditLogEntryCreationInput{
-		EventType: AccountMarkedAsDefaultEvent,
+		EventType: HouseholdMarkedAsDefaultEvent,
 		Context:   contextMap,
 	}
 }
 
 // BuildModifyUserPermissionsEventEntry builds an entry creation input for when a membership is created.
-func BuildModifyUserPermissionsEventEntry(userID, accountID, modifiedBy uint64, newRoles []string, reason string) *types.AuditLogEntryCreationInput {
+func BuildModifyUserPermissionsEventEntry(userID, householdID, modifiedBy uint64, newRoles []string, reason string) *types.AuditLogEntryCreationInput {
 	contextMap := map[string]interface{}{
-		ActorAssignmentKey:   modifiedBy,
-		AccountAssignmentKey: accountID,
-		UserAssignmentKey:    userID,
-		AccountRolesKey:      newRoles,
+		ActorAssignmentKey:     modifiedBy,
+		HouseholdAssignmentKey: householdID,
+		UserAssignmentKey:      userID,
+		HouseholdRolesKey:      newRoles,
 	}
 
 	if reason != "" {
@@ -81,18 +81,18 @@ func BuildModifyUserPermissionsEventEntry(userID, accountID, modifiedBy uint64, 
 	}
 
 	return &types.AuditLogEntryCreationInput{
-		EventType: UserAccountPermissionsModifiedEvent,
+		EventType: UserHouseholdPermissionsModifiedEvent,
 		Context:   contextMap,
 	}
 }
 
-// BuildTransferAccountOwnershipEventEntry builds an entry creation input for when a membership is created.
-func BuildTransferAccountOwnershipEventEntry(accountID, changedBy uint64, input *types.AccountOwnershipTransferInput) *types.AuditLogEntryCreationInput {
+// BuildTransferHouseholdOwnershipEventEntry builds an entry creation input for when a membership is created.
+func BuildTransferHouseholdOwnershipEventEntry(householdID, changedBy uint64, input *types.HouseholdOwnershipTransferInput) *types.AuditLogEntryCreationInput {
 	contextMap := map[string]interface{}{
-		ActorAssignmentKey:   changedBy,
-		"old_owner":          input.CurrentOwner,
-		"new_owner":          input.NewOwner,
-		AccountAssignmentKey: accountID,
+		ActorAssignmentKey:     changedBy,
+		"old_owner":            input.CurrentOwner,
+		"new_owner":            input.NewOwner,
+		HouseholdAssignmentKey: householdID,
 	}
 
 	if input.Reason != "" {
@@ -100,7 +100,7 @@ func BuildTransferAccountOwnershipEventEntry(accountID, changedBy uint64, input 
 	}
 
 	return &types.AuditLogEntryCreationInput{
-		EventType: AccountTransferredEvent,
+		EventType: HouseholdTransferredEvent,
 		Context:   contextMap,
 	}
 }

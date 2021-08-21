@@ -62,9 +62,9 @@ var (
 		},
 		{
 			Version:     5,
-			Description: "create accounts table",
+			Description: "create households table",
 			Script: `
-			CREATE TABLE IF NOT EXISTS accounts (
+			CREATE TABLE IF NOT EXISTS households (
 				id BIGSERIAL NOT NULL PRIMARY KEY,
 				external_id TEXT NOT NULL,
 				name TEXT NOT NULL,
@@ -82,18 +82,18 @@ var (
 		},
 		{
 			Version:     6,
-			Description: "create account user memberships table",
+			Description: "create household user memberships table",
 			Script: `
-			CREATE TABLE IF NOT EXISTS account_user_memberships (
+			CREATE TABLE IF NOT EXISTS household_user_memberships (
 				id BIGSERIAL NOT NULL PRIMARY KEY,
-				belongs_to_account BIGINT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+				belongs_to_household BIGINT NOT NULL REFERENCES households(id) ON DELETE CASCADE,
 				belongs_to_user BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-				default_account BOOLEAN NOT NULL DEFAULT 'false',
-				account_roles TEXT NOT NULL DEFAULT 'account_user',
+				default_household BOOLEAN NOT NULL DEFAULT 'false',
+				household_roles TEXT NOT NULL DEFAULT 'household_user',
 				created_on BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 				last_updated_on BIGINT DEFAULT NULL,
 				archived_on BIGINT DEFAULT NULL,
-				UNIQUE("belongs_to_account", "belongs_to_user")
+				UNIQUE("belongs_to_household", "belongs_to_user")
 			);`,
 		},
 		{
@@ -131,7 +131,7 @@ var (
 				created_on BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 				last_updated_on BIGINT DEFAULT NULL,
 				archived_on BIGINT DEFAULT NULL,
-				belongs_to_account BIGINT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE
+				belongs_to_household BIGINT NOT NULL REFERENCES households(id) ON DELETE CASCADE
 			);`,
 		},
 		{
@@ -242,7 +242,7 @@ var (
 				created_on BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 				last_updated_on BIGINT DEFAULT NULL,
 				archived_on BIGINT DEFAULT NULL,
-				belongs_to_account BIGINT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE
+				belongs_to_household BIGINT NOT NULL REFERENCES households(id) ON DELETE CASCADE
 			);`,
 		},
 		{
@@ -315,7 +315,7 @@ var (
 				created_on BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 				last_updated_on BIGINT DEFAULT NULL,
 				archived_on BIGINT DEFAULT NULL,
-				belongs_to_account BIGINT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE
+				belongs_to_household BIGINT NOT NULL REFERENCES households(id) ON DELETE CASCADE
 			);`,
 		},
 		{
@@ -330,7 +330,7 @@ var (
 				created_on BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 				last_updated_on BIGINT DEFAULT NULL,
 				archived_on BIGINT DEFAULT NULL,
-				belongs_to_account BIGINT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE
+				belongs_to_household BIGINT NOT NULL REFERENCES households(id) ON DELETE CASCADE
 			);`,
 		},
 	}

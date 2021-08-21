@@ -21,7 +21,7 @@ type (
 		Steps              []*RecipeStep `json:"steps"`
 		ID                 uint64        `json:"id"`
 		CreatedOn          uint64        `json:"createdOn"`
-		BelongsToAccount   uint64        `json:"belongsToAccount"`
+		BelongsToHousehold uint64        `json:"belongsToHousehold"`
 	}
 
 	// RecipeList represents a list of recipes.
@@ -38,7 +38,7 @@ type (
 		DisplayImageURL    string                     `json:"displayImageURL"`
 		Description        string                     `json:"description"`
 		Steps              []*RecipeStepCreationInput `json:"steps"`
-		BelongsToAccount   uint64                     `json:"-"`
+		BelongsToHousehold uint64                     `json:"-"`
 	}
 
 	// RecipeUpdateInput represents what a user could set as input for updating recipes.
@@ -48,7 +48,7 @@ type (
 		Source             string  `json:"source"`
 		DisplayImageURL    string  `json:"displayImageURL"`
 		Description        string  `json:"description"`
-		BelongsToAccount   uint64  `json:"-"`
+		BelongsToHousehold uint64  `json:"-"`
 	}
 
 	// RecipeDataManager describes a structure capable of storing recipes permanently.
@@ -58,10 +58,10 @@ type (
 		GetAllRecipesCount(ctx context.Context) (uint64, error)
 		GetAllRecipes(ctx context.Context, resultChannel chan []*Recipe, bucketSize uint16) error
 		GetRecipes(ctx context.Context, filter *QueryFilter) (*RecipeList, error)
-		GetRecipesWithIDs(ctx context.Context, accountID uint64, limit uint8, ids []uint64) ([]*Recipe, error)
+		GetRecipesWithIDs(ctx context.Context, householdID uint64, limit uint8, ids []uint64) ([]*Recipe, error)
 		CreateRecipe(ctx context.Context, input *RecipeCreationInput, createdByUser uint64) (*Recipe, error)
 		UpdateRecipe(ctx context.Context, updated *Recipe, changedByUser uint64, changes []*FieldChangeSummary) error
-		ArchiveRecipe(ctx context.Context, recipeID, accountID, archivedBy uint64) error
+		ArchiveRecipe(ctx context.Context, recipeID, householdID, archivedBy uint64) error
 		GetAuditLogEntriesForRecipe(ctx context.Context, recipeID uint64) ([]*AuditLogEntry, error)
 	}
 

@@ -13,46 +13,46 @@ import (
 )
 
 const (
-	accountsBasePath = "accounts"
+	householdsBasePath = "households"
 )
 
-// BuildSwitchActiveAccountRequest builds an HTTP request for switching active accounts.
-func (b *Builder) BuildSwitchActiveAccountRequest(ctx context.Context, accountID uint64) (*http.Request, error) {
+// BuildSwitchActiveHouseholdRequest builds an HTTP request for switching active households.
+func (b *Builder) BuildSwitchActiveHouseholdRequest(ctx context.Context, householdID uint64) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if accountID == 0 {
+	if householdID == 0 {
 		return nil, ErrInvalidIDProvided
 	}
 
-	tracing.AttachAccountIDToSpan(span, accountID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	uri := b.buildUnversionedURL(ctx, nil, usersBasePath, "account", "select")
+	uri := b.buildUnversionedURL(ctx, nil, usersBasePath, "household", "select")
 
-	input := &types.ChangeActiveAccountInput{
-		AccountID: accountID,
+	input := &types.ChangeActiveHouseholdInput{
+		HouseholdID: householdID,
 	}
 
 	return b.buildDataRequest(ctx, http.MethodPost, uri, input)
 }
 
-// BuildGetAccountRequest builds an HTTP request for fetching an account.
-func (b *Builder) BuildGetAccountRequest(ctx context.Context, accountID uint64) (*http.Request, error) {
+// BuildGetHouseholdRequest builds an HTTP request for fetching an household.
+func (b *Builder) BuildGetHouseholdRequest(ctx context.Context, householdID uint64) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if accountID == 0 {
+	if householdID == 0 {
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := b.logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	logger := b.logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	uri := b.BuildURL(
 		ctx,
 		nil,
-		accountsBasePath,
-		id(accountID),
+		householdsBasePath,
+		id(householdID),
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
@@ -64,13 +64,13 @@ func (b *Builder) BuildGetAccountRequest(ctx context.Context, accountID uint64) 
 	return req, nil
 }
 
-// BuildGetAccountsRequest builds an HTTP request for fetching a list of accounts.
-func (b *Builder) BuildGetAccountsRequest(ctx context.Context, filter *types.QueryFilter) (*http.Request, error) {
+// BuildGetHouseholdsRequest builds an HTTP request for fetching a list of households.
+func (b *Builder) BuildGetHouseholdsRequest(ctx context.Context, filter *types.QueryFilter) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := filter.AttachToLogger(b.logger)
-	uri := b.BuildURL(ctx, filter.ToValues(), accountsBasePath)
+	uri := b.BuildURL(ctx, filter.ToValues(), householdsBasePath)
 
 	tracing.AttachRequestURIToSpan(span, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
@@ -83,8 +83,8 @@ func (b *Builder) BuildGetAccountsRequest(ctx context.Context, filter *types.Que
 	return req, nil
 }
 
-// BuildCreateAccountRequest builds an HTTP request for creating an account.
-func (b *Builder) BuildCreateAccountRequest(ctx context.Context, input *types.AccountCreationInput) (*http.Request, error) {
+// BuildCreateHouseholdRequest builds an HTTP request for creating an household.
+func (b *Builder) BuildCreateHouseholdRequest(ctx context.Context, input *types.HouseholdCreationInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -98,48 +98,48 @@ func (b *Builder) BuildCreateAccountRequest(ctx context.Context, input *types.Ac
 		return nil, observability.PrepareError(err, logger, span, "validating input")
 	}
 
-	uri := b.BuildURL(ctx, nil, accountsBasePath)
+	uri := b.BuildURL(ctx, nil, householdsBasePath)
 	tracing.AttachRequestURIToSpan(span, uri)
 
 	return b.buildDataRequest(ctx, http.MethodPost, uri, input)
 }
 
-// BuildUpdateAccountRequest builds an HTTP request for updating an account.
-func (b *Builder) BuildUpdateAccountRequest(ctx context.Context, account *types.Account) (*http.Request, error) {
+// BuildUpdateHouseholdRequest builds an HTTP request for updating an household.
+func (b *Builder) BuildUpdateHouseholdRequest(ctx context.Context, household *types.Household) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if account == nil {
+	if household == nil {
 		return nil, ErrNilInputProvided
 	}
 
 	uri := b.BuildURL(
 		ctx,
 		nil,
-		accountsBasePath,
-		strconv.FormatUint(account.ID, 10),
+		householdsBasePath,
+		strconv.FormatUint(household.ID, 10),
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	return b.buildDataRequest(ctx, http.MethodPut, uri, account)
+	return b.buildDataRequest(ctx, http.MethodPut, uri, household)
 }
 
-// BuildArchiveAccountRequest builds an HTTP request for archiving an account.
-func (b *Builder) BuildArchiveAccountRequest(ctx context.Context, accountID uint64) (*http.Request, error) {
+// BuildArchiveHouseholdRequest builds an HTTP request for archiving an household.
+func (b *Builder) BuildArchiveHouseholdRequest(ctx context.Context, householdID uint64) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if accountID == 0 {
+	if householdID == 0 {
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := b.logger.WithValue(keys.AccountIDKey, accountID)
+	logger := b.logger.WithValue(keys.HouseholdIDKey, householdID)
 
 	uri := b.BuildURL(
 		ctx,
 		nil,
-		accountsBasePath,
-		id(accountID),
+		householdsBasePath,
+		id(householdID),
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
@@ -151,8 +151,8 @@ func (b *Builder) BuildArchiveAccountRequest(ctx context.Context, accountID uint
 	return req, nil
 }
 
-// BuildAddUserRequest builds a request that adds a user to an account.
-func (b *Builder) BuildAddUserRequest(ctx context.Context, input *types.AddUserToAccountInput) (*http.Request, error) {
+// BuildAddUserRequest builds a request that adds a user to an household.
+func (b *Builder) BuildAddUserRequest(ctx context.Context, input *types.AddUserToHouseholdInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -166,24 +166,24 @@ func (b *Builder) BuildAddUserRequest(ctx context.Context, input *types.AddUserT
 		return nil, observability.PrepareError(err, logger, span, "validating input")
 	}
 
-	uri := b.BuildURL(ctx, nil, accountsBasePath, strconv.FormatUint(input.AccountID, 10), "member")
+	uri := b.BuildURL(ctx, nil, householdsBasePath, strconv.FormatUint(input.HouseholdID, 10), "member")
 	tracing.AttachRequestURIToSpan(span, uri)
 
 	return b.buildDataRequest(ctx, http.MethodPost, uri, input)
 }
 
-// BuildMarkAsDefaultRequest builds a request that marks a given account as the default for a given user.
-func (b *Builder) BuildMarkAsDefaultRequest(ctx context.Context, accountID uint64) (*http.Request, error) {
+// BuildMarkAsDefaultRequest builds a request that marks a given household as the default for a given user.
+func (b *Builder) BuildMarkAsDefaultRequest(ctx context.Context, householdID uint64) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if accountID == 0 {
+	if householdID == 0 {
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := b.logger.WithValue(keys.AccountIDKey, accountID)
+	logger := b.logger.WithValue(keys.HouseholdIDKey, householdID)
 
-	uri := b.BuildURL(ctx, nil, accountsBasePath, id(accountID), "default")
+	uri := b.BuildURL(ctx, nil, householdsBasePath, id(householdID), "default")
 	tracing.AttachRequestURIToSpan(span, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
@@ -194,20 +194,20 @@ func (b *Builder) BuildMarkAsDefaultRequest(ctx context.Context, accountID uint6
 	return req, nil
 }
 
-// BuildRemoveUserRequest builds a request that removes a user from an account.
-func (b *Builder) BuildRemoveUserRequest(ctx context.Context, accountID, userID uint64, reason string) (*http.Request, error) {
+// BuildRemoveUserRequest builds a request that removes a user from an household.
+func (b *Builder) BuildRemoveUserRequest(ctx context.Context, householdID, userID uint64, reason string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if accountID == 0 || userID == 0 {
+	if householdID == 0 || userID == 0 {
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := b.logger.WithValue(keys.AccountIDKey, accountID).
+	logger := b.logger.WithValue(keys.HouseholdIDKey, householdID).
 		WithValue(keys.UserIDKey, userID).
 		WithValue(keys.ReasonKey, reason)
 
-	u := b.buildAPIV1URL(ctx, nil, accountsBasePath, id(accountID), "members", id(userID))
+	u := b.buildAPIV1URL(ctx, nil, householdsBasePath, id(householdID), "members", id(userID))
 
 	if reason != "" {
 		q := u.Query()
@@ -225,12 +225,12 @@ func (b *Builder) BuildRemoveUserRequest(ctx context.Context, accountID, userID 
 	return req, nil
 }
 
-// BuildModifyMemberPermissionsRequest builds a request that modifies a given user's permissions for a given account.
-func (b *Builder) BuildModifyMemberPermissionsRequest(ctx context.Context, accountID, userID uint64, input *types.ModifyUserPermissionsInput) (*http.Request, error) {
+// BuildModifyMemberPermissionsRequest builds a request that modifies a given user's permissions for a given household.
+func (b *Builder) BuildModifyMemberPermissionsRequest(ctx context.Context, householdID, userID uint64, input *types.ModifyUserPermissionsInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if accountID == 0 || userID == 0 {
+	if householdID == 0 || userID == 0 {
 		return nil, ErrInvalidIDProvided
 	}
 
@@ -238,55 +238,55 @@ func (b *Builder) BuildModifyMemberPermissionsRequest(ctx context.Context, accou
 		return nil, ErrNilInputProvided
 	}
 
-	logger := b.logger.WithValue(keys.UserIDKey, userID).WithValue(keys.AccountIDKey, accountID)
+	logger := b.logger.WithValue(keys.UserIDKey, userID).WithValue(keys.HouseholdIDKey, householdID)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "validating input")
 	}
 
-	uri := b.BuildURL(ctx, nil, accountsBasePath, id(accountID), "members", id(userID), "permissions")
+	uri := b.BuildURL(ctx, nil, householdsBasePath, id(householdID), "members", id(userID), "permissions")
 	tracing.AttachRequestURIToSpan(span, uri)
 
 	return b.buildDataRequest(ctx, http.MethodPatch, uri, input)
 }
 
-// BuildTransferAccountOwnershipRequest builds a request that transfers ownership of an account to a given user.
-func (b *Builder) BuildTransferAccountOwnershipRequest(ctx context.Context, accountID uint64, input *types.AccountOwnershipTransferInput) (*http.Request, error) {
+// BuildTransferHouseholdOwnershipRequest builds a request that transfers ownership of an household to a given user.
+func (b *Builder) BuildTransferHouseholdOwnershipRequest(ctx context.Context, householdID uint64, input *types.HouseholdOwnershipTransferInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if accountID == 0 {
-		return nil, fmt.Errorf("accountID: %w", ErrInvalidIDProvided)
+	if householdID == 0 {
+		return nil, fmt.Errorf("householdID: %w", ErrInvalidIDProvided)
 	}
 
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
 
-	logger := b.logger.WithValue(keys.AccountIDKey, accountID)
+	logger := b.logger.WithValue(keys.HouseholdIDKey, householdID)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "validating input")
 	}
 
-	uri := b.BuildURL(ctx, nil, accountsBasePath, id(accountID), "transfer")
+	uri := b.BuildURL(ctx, nil, householdsBasePath, id(householdID), "transfer")
 	tracing.AttachRequestURIToSpan(span, uri)
 
 	return b.buildDataRequest(ctx, http.MethodPost, uri, input)
 }
 
-// BuildGetAuditLogForAccountRequest builds an HTTP request for fetching a list of audit log entries pertaining to an account.
-func (b *Builder) BuildGetAuditLogForAccountRequest(ctx context.Context, accountID uint64) (*http.Request, error) {
+// BuildGetAuditLogForHouseholdRequest builds an HTTP request for fetching a list of audit log entries pertaining to an household.
+func (b *Builder) BuildGetAuditLogForHouseholdRequest(ctx context.Context, householdID uint64) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if accountID == 0 {
+	if householdID == 0 {
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := b.logger.WithValue(keys.AccountIDKey, accountID)
+	logger := b.logger.WithValue(keys.HouseholdIDKey, householdID)
 
-	uri := b.BuildURL(ctx, nil, accountsBasePath, id(accountID), "audit")
+	uri := b.BuildURL(ctx, nil, householdsBasePath, id(householdID), "audit")
 	tracing.AttachRequestURIToSpan(span, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)

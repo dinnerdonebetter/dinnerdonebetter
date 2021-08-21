@@ -46,8 +46,8 @@ func (m *RecipeDataManager) GetRecipes(ctx context.Context, filter *types.QueryF
 }
 
 // GetRecipesWithIDs is a mock function.
-func (m *RecipeDataManager) GetRecipesWithIDs(ctx context.Context, accountID uint64, limit uint8, ids []uint64) ([]*types.Recipe, error) {
-	args := m.Called(ctx, accountID, limit, ids)
+func (m *RecipeDataManager) GetRecipesWithIDs(ctx context.Context, householdID uint64, limit uint8, ids []uint64) ([]*types.Recipe, error) {
+	args := m.Called(ctx, householdID, limit, ids)
 	return args.Get(0).([]*types.Recipe), args.Error(1)
 }
 
@@ -63,8 +63,8 @@ func (m *RecipeDataManager) UpdateRecipe(ctx context.Context, updated *types.Rec
 }
 
 // ArchiveRecipe is a mock function.
-func (m *RecipeDataManager) ArchiveRecipe(ctx context.Context, recipeID, accountID, archivedBy uint64) error {
-	return m.Called(ctx, recipeID, accountID, archivedBy).Error(0)
+func (m *RecipeDataManager) ArchiveRecipe(ctx context.Context, recipeID, householdID, archivedBy uint64) error {
+	return m.Called(ctx, recipeID, householdID, archivedBy).Error(0)
 }
 
 // GetAuditLogEntriesForRecipe is a mock function.

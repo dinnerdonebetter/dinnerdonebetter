@@ -96,7 +96,7 @@ func (b *Postgres) BuildGetBatchOfRecipeStepsQuery(ctx context.Context, beginID,
 	)
 }
 
-// BuildGetRecipeStepsQuery builds a SQL query selecting recipe steps that adhere to a given QueryFilter and belong to a given account,
+// BuildGetRecipeStepsQuery builds a SQL query selecting recipe steps that adhere to a given QueryFilter and belong to a given household,
 // and returns both the query and the relevant args to pass to the query executor.
 func (b *Postgres) BuildGetRecipeStepsQuery(ctx context.Context, recipeID uint64, includeArchived bool, filter *types.QueryFilter) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
@@ -128,7 +128,7 @@ func (b *Postgres) BuildGetRecipeStepsQuery(ctx context.Context, recipeID uint64
 	)
 }
 
-// BuildGetRecipeStepsWithIDsQuery builds a SQL query selecting recipe steps that belong to a given account,
+// BuildGetRecipeStepsWithIDsQuery builds a SQL query selecting recipe steps that belong to a given household,
 // and have IDs that exist within a given set of IDs. Returns both the query and the relevant
 // args to pass to the query executor. This function is primarily intended for use with a search
 // index, which would provide a slice of string IDs to query against. This function accepts a
@@ -222,7 +222,7 @@ func (b *Postgres) BuildUpdateRecipeStepQuery(ctx context.Context, input *types.
 	)
 }
 
-// BuildArchiveRecipeStepQuery returns a SQL query which marks a given recipe step belonging to a given account as archived.
+// BuildArchiveRecipeStepQuery returns a SQL query which marks a given recipe step belonging to a given household as archived.
 func (b *Postgres) BuildArchiveRecipeStepQuery(ctx context.Context, recipeID, recipeStepID uint64) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
 	defer span.End()

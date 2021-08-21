@@ -25,7 +25,7 @@ import (
 	"github.com/o1egl/paseto"
 )
 
-func (s *service) issueSessionManagedCookie(ctx context.Context, accountID, requesterID uint64) (cookie *http.Cookie, err error) {
+func (s *service) issueSessionManagedCookie(ctx context.Context, householdID, requesterID uint64) (cookie *http.Cookie, err error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -43,7 +43,7 @@ func (s *service) issueSessionManagedCookie(ctx context.Context, accountID, requ
 		return nil, err
 	}
 
-	s.sessionManager.Put(ctx, accountIDContextKey, accountID)
+	s.sessionManager.Put(ctx, householdIDContextKey, householdID)
 	s.sessionManager.Put(ctx, userIDContextKey, requesterID)
 
 	token, expiry, err := s.sessionManager.Commit(ctx)
@@ -114,12 +114,12 @@ func (s *service) AuthenticateUser(ctx context.Context, loginData *types.UserLog
 		return user, nil, ErrInvalidCredentials
 	}
 
-	defaultAccountID, err := s.accountMembershipManager.GetDefaultAccountIDForUser(ctx, user.ID)
+	defaultHouseholdID, err := s.householdMembershipManager.GetDefaultHouseholdIDForUser(ctx, user.ID)
 	if err != nil {
 		return user, nil, observability.PrepareError(err, logger, span, "fetching user memberships")
 	}
 
-	cookie, err := s.issueSessionManagedCookie(ctx, defaultAccountID, user.ID)
+	cookie, err := s.issueSessionManagedCookie(ctx, defaultHouseholdID, user.ID)
 	if err != nil {
 		return user, nil, observability.PrepareError(err, logger, span, "issuing cookie")
 	}
@@ -173,7 +173,7 @@ func (s *service) BeginSessionHandler(res http.ResponseWriter, req *http.Request
 	statusResponse := &types.UserStatusResponse{
 		UserIsAuthenticated:       true,
 		UserIsServiceAdmin:        userIsServiceAdmin(user),
-		UserReputation:            user.ServiceAccountStatus,
+		UserReputation:            user.ServiceHouseholdStatus,
 		UserReputationExplanation: user.ReputationExplanation,
 	}
 
@@ -191,8 +191,8 @@ func userIsServiceAdmin(user *types.User) bool {
 	return false
 }
 
-// ChangeActiveAccountHandler is our login route.
-func (s *service) ChangeActiveAccountHandler(res http.ResponseWriter, req *http.Request) {
+// ChangeActiveHouseholdHandler is our login route.
+func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -207,7 +207,7 @@ func (s *service) ChangeActiveAccountHandler(res http.ResponseWriter, req *http.
 		return
 	}
 
-	input := new(types.ChangeActiveAccountInput)
+	input := new(types.ChangeActiveHouseholdInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
@@ -220,33 +220,33 @@ func (s *service) ChangeActiveAccountHandler(res http.ResponseWriter, req *http.
 		return
 	}
 
-	accountID := input.AccountID
-	logger = logger.WithValue("new_session_account_id", accountID)
+	householdID := input.HouseholdID
+	logger = logger.WithValue("new_session_household_id", householdID)
 
 	requesterID := sessionCtxData.Requester.UserID
 	logger = logger.WithValue("user_id", requesterID)
 
-	authorizedForAccount, err := s.accountMembershipManager.UserIsMemberOfAccount(ctx, requesterID, accountID)
+	authorizedForHousehold, err := s.householdMembershipManager.UserIsMemberOfHousehold(ctx, requesterID, householdID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "checking permissions")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
 		return
 	}
 
-	if !authorizedForAccount {
-		logger.Debug("invalid account ID requested for activation")
+	if !authorizedForHousehold {
+		logger.Debug("invalid household ID requested for activation")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
 		return
 	}
 
-	cookie, err := s.issueSessionManagedCookie(ctx, accountID, requesterID)
+	cookie, err := s.issueSessionManagedCookie(ctx, householdID, requesterID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "issuing cookie")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
 		return
 	}
 
-	logger.Info("successfully changed active session account")
+	logger.Info("successfully changed active session household")
 	http.SetCookie(res, cookie)
 
 	res.WriteHeader(http.StatusAccepted)
@@ -326,7 +326,7 @@ func (s *service) StatusHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	statusResponse = &types.UserStatusResponse{
-		ActiveAccount:             sessionCtxData.ActiveAccountID,
+		ActiveHousehold:           sessionCtxData.ActiveHouseholdID,
 		UserReputation:            sessionCtxData.Requester.Reputation,
 		UserReputationExplanation: sessionCtxData.Requester.ReputationExplanation,
 		UserIsAuthenticated:       true,
@@ -360,11 +360,11 @@ func (s *service) PASETOHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	requestedAccount := input.AccountID
+	requestedHousehold := input.HouseholdID
 	logger = logger.WithValue(keys.APIClientClientIDKey, input.ClientID)
 
-	if requestedAccount != 0 {
-		logger = logger.WithValue("requested_account", requestedAccount)
+	if requestedHousehold != 0 {
+		logger = logger.WithValue("requested_household", requestedHousehold)
 	}
 
 	reqTime := time.Unix(0, input.RequestTime)
@@ -411,30 +411,30 @@ func (s *service) PASETOHandler(res http.ResponseWriter, req *http.Request) {
 
 	logger = logger.WithValue(keys.UserIDKey, user.ID)
 
-	sessionCtxData, err := s.accountMembershipManager.BuildSessionContextDataForUser(ctx, user.ID)
+	sessionCtxData, err := s.householdMembershipManager.BuildSessionContextDataForUser(ctx, user.ID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving perms for API client")
 		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
 		return
 	}
 
-	var requestedAccountID uint64
+	var requestedHouseholdID uint64
 
-	if requestedAccount != 0 {
-		if _, isMember := sessionCtxData.AccountPermissions[requestedAccount]; !isMember {
-			logger.Debug("invalid account ID requested for token")
+	if requestedHousehold != 0 {
+		if _, isMember := sessionCtxData.HouseholdPermissions[requestedHousehold]; !isMember {
+			logger.Debug("invalid household ID requested for token")
 			s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
 			return
 		}
 
-		logger.WithValue("requested_account", requestedAccount).Debug("setting token account ID to requested account")
-		requestedAccountID = requestedAccount
-		sessionCtxData.ActiveAccountID = requestedAccount
+		logger.WithValue("requested_household", requestedHousehold).Debug("setting token household ID to requested household")
+		requestedHouseholdID = requestedHousehold
+		sessionCtxData.ActiveHouseholdID = requestedHousehold
 	} else {
-		requestedAccountID = sessionCtxData.ActiveAccountID
+		requestedHouseholdID = sessionCtxData.ActiveHouseholdID
 	}
 
-	logger = logger.WithValue(keys.AccountIDKey, requestedAccountID)
+	logger = logger.WithValue(keys.HouseholdIDKey, requestedHouseholdID)
 
 	// Encrypt data
 	tokenRes, err := s.buildPASETOResponse(ctx, sessionCtxData, client)

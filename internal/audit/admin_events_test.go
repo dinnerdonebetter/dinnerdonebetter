@@ -14,8 +14,8 @@ func TestBuildUserBanEventEntry(t *testing.T) {
 	assert.NotNil(t, audit.BuildUserBanEventEntry(exampleUserID, exampleUserID, "reason"))
 }
 
-func TestBuildAccountTerminationEventEntry(t *testing.T) {
+func TestBuildHouseholdTerminationEventEntry(t *testing.T) {
 	t.Parallel()
 
-	assert.NotNil(t, audit.BuildAccountTerminationEventEntry(exampleUserID, exampleUserID, "reason"))
+	assert.NotNil(t, audit.BuildHouseholdTerminationEventEntry(exampleUserID, exampleUserID, "reason"))
 }

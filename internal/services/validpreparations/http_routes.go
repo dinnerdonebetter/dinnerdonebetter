@@ -210,7 +210,7 @@ func (s *service) SearchForValidPreparations(ctx context.Context, sessionCtxData
 	logger := s.logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachSearchQueryToSpan(span, query)
 
-	relevantIDs, err := s.search.Search(ctx, query, sessionCtxData.ActiveAccountID)
+	relevantIDs, err := s.search.Search(ctx, query, sessionCtxData.ActiveHouseholdID)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "executing valid ingredient search query")
 	}
@@ -246,7 +246,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	relevantIDs, err := s.search.Search(ctx, query, sessionCtxData.ActiveAccountID)
+	relevantIDs, err := s.search.Search(ctx, query, sessionCtxData.ActiveHouseholdID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "executing valid preparation search query")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)

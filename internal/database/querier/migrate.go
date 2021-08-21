@@ -34,13 +34,13 @@ func (q *SQLQuerier) Migrate(ctx context.Context, maxAttempts uint8, testUserCon
 
 			// these structs will be fleshed out by createUser
 			user := &types.User{Username: testUserConfig.Username}
-			account := &types.Account{}
+			household := &types.Household{}
 
-			if err = q.createUser(ctx, user, account, testUserCreationQuery, testUserCreationArgs); err != nil {
+			if err = q.createUser(ctx, user, household, testUserCreationQuery, testUserCreationArgs); err != nil {
 				observability.AcknowledgeError(err, q.logger, span, "creating test user")
 			}
 
-			q.logger.WithValue(keys.UsernameKey, testUserConfig.Username).Debug("created test user and account")
+			q.logger.WithValue(keys.UsernameKey, testUserConfig.Username).Debug("created test user and household")
 		}
 	}
 

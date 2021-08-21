@@ -184,7 +184,7 @@ func (s *recipesTestSuite) TestClient_CreateRecipe() {
 		t := s.T()
 
 		exampleInput := fakes.BuildFakeRecipeCreationInput()
-		exampleInput.BelongsToAccount = 0
+		exampleInput.BelongsToHousehold = 0
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipe)

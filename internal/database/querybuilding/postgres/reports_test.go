@@ -45,7 +45,7 @@ func TestPostgres_BuildGetReportQuery(T *testing.T) {
 
 		exampleReport := fakes.BuildFakeReport()
 
-		expectedQuery := "SELECT reports.id, reports.external_id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_account FROM reports WHERE reports.archived_on IS NULL AND reports.id = $1"
+		expectedQuery := "SELECT reports.id, reports.external_id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_household FROM reports WHERE reports.archived_on IS NULL AND reports.id = $1"
 		expectedArgs := []interface{}{
 			exampleReport.ID,
 		}
@@ -85,7 +85,7 @@ func TestPostgres_BuildGetBatchOfReportsQuery(T *testing.T) {
 
 		beginID, endID := uint64(1), uint64(1000)
 
-		expectedQuery := "SELECT reports.id, reports.external_id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_account FROM reports WHERE reports.id > $1 AND reports.id < $2"
+		expectedQuery := "SELECT reports.id, reports.external_id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_household FROM reports WHERE reports.id > $1 AND reports.id < $2"
 		expectedArgs := []interface{}{
 			beginID,
 			endID,
@@ -109,7 +109,7 @@ func TestPostgres_BuildGetReportsQuery(T *testing.T) {
 
 		filter := fakes.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT reports.id, reports.external_id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_account, (SELECT COUNT(reports.id) FROM reports WHERE reports.archived_on IS NULL) as total_count, (SELECT COUNT(reports.id) FROM reports WHERE reports.archived_on IS NULL AND reports.created_on > $1 AND reports.created_on < $2 AND reports.last_updated_on > $3 AND reports.last_updated_on < $4) as filtered_count FROM reports WHERE reports.archived_on IS NULL AND reports.created_on > $5 AND reports.created_on < $6 AND reports.last_updated_on > $7 AND reports.last_updated_on < $8 GROUP BY reports.id ORDER BY reports.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT reports.id, reports.external_id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_household, (SELECT COUNT(reports.id) FROM reports WHERE reports.archived_on IS NULL) as total_count, (SELECT COUNT(reports.id) FROM reports WHERE reports.archived_on IS NULL AND reports.created_on > $1 AND reports.created_on < $2 AND reports.last_updated_on > $3 AND reports.last_updated_on < $4) as filtered_count FROM reports WHERE reports.archived_on IS NULL AND reports.created_on > $5 AND reports.created_on < $6 AND reports.last_updated_on > $7 AND reports.last_updated_on < $8 GROUP BY reports.id ORDER BY reports.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			filter.CreatedAfter,
 			filter.CreatedBefore,
@@ -137,21 +137,21 @@ func TestPostgres_BuildGetReportsWithIDsQuery(T *testing.T) {
 		q, _ := buildTestService(t)
 		ctx := context.Background()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleIDs := []uint64{
 			789,
 			123,
 			456,
 		}
 
-		expectedQuery := "SELECT reports.id, reports.external_id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_account FROM (SELECT reports.id, reports.external_id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_account FROM reports JOIN unnest('{789,123,456}'::int[]) WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT 20) AS reports WHERE reports.archived_on IS NULL AND reports.belongs_to_account = $1 AND reports.id IN ($2,$3,$4)"
+		expectedQuery := "SELECT reports.id, reports.external_id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_household FROM (SELECT reports.id, reports.external_id, reports.report_type, reports.concern, reports.created_on, reports.last_updated_on, reports.archived_on, reports.belongs_to_household FROM reports JOIN unnest('{789,123,456}'::int[]) WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT 20) AS reports WHERE reports.archived_on IS NULL AND reports.belongs_to_household = $1 AND reports.id IN ($2,$3,$4)"
 		expectedArgs := []interface{}{
-			exampleAccountID,
+			exampleHouseholdID,
 			exampleIDs[0],
 			exampleIDs[1],
 			exampleIDs[2],
 		}
-		actualQuery, actualArgs := q.BuildGetReportsWithIDsQuery(ctx, exampleAccountID, defaultLimit, exampleIDs, true)
+		actualQuery, actualArgs := q.BuildGetReportsWithIDsQuery(ctx, exampleHouseholdID, defaultLimit, exampleIDs, true)
 
 		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
@@ -175,12 +175,12 @@ func TestPostgres_BuildCreateReportQuery(T *testing.T) {
 		exIDGen.On("NewExternalID").Return(exampleReport.ExternalID)
 		q.externalIDGenerator = exIDGen
 
-		expectedQuery := "INSERT INTO reports (external_id,report_type,concern,belongs_to_account) VALUES ($1,$2,$3,$4) RETURNING id"
+		expectedQuery := "INSERT INTO reports (external_id,report_type,concern,belongs_to_household) VALUES ($1,$2,$3,$4) RETURNING id"
 		expectedArgs := []interface{}{
 			exampleReport.ExternalID,
 			exampleReport.ReportType,
 			exampleReport.Concern,
-			exampleReport.BelongsToAccount,
+			exampleReport.BelongsToHousehold,
 		}
 		actualQuery, actualArgs := q.BuildCreateReportQuery(ctx, exampleInput)
 
@@ -203,11 +203,11 @@ func TestPostgres_BuildUpdateReportQuery(T *testing.T) {
 
 		exampleReport := fakes.BuildFakeReport()
 
-		expectedQuery := "UPDATE reports SET report_type = $1, concern = $2, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_account = $3 AND id = $4"
+		expectedQuery := "UPDATE reports SET report_type = $1, concern = $2, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_household = $3 AND id = $4"
 		expectedArgs := []interface{}{
 			exampleReport.ReportType,
 			exampleReport.Concern,
-			exampleReport.BelongsToAccount,
+			exampleReport.BelongsToHousehold,
 			exampleReport.ID,
 		}
 		actualQuery, actualArgs := q.BuildUpdateReportQuery(ctx, exampleReport)

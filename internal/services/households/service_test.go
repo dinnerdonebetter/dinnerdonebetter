@@ -1,4 +1,4 @@
-package accounts
+package households
 
 import (
 	"net/http"
@@ -18,17 +18,17 @@ import (
 
 func buildTestService() *service {
 	return &service{
-		logger:                       logging.NewNoopLogger(),
-		accountCounter:               &mockmetrics.UnitCounter{},
-		accountDataManager:           &mocktypes.AccountDataManager{},
-		accountMembershipDataManager: &mocktypes.AccountUserMembershipDataManager{},
-		accountIDFetcher:             func(req *http.Request) uint64 { return 0 },
-		encoderDecoder:               mockencoding.NewMockEncoderDecoder(),
-		tracer:                       tracing.NewTracer("test"),
+		logger:                         logging.NewNoopLogger(),
+		householdCounter:               &mockmetrics.UnitCounter{},
+		householdDataManager:           &mocktypes.HouseholdDataManager{},
+		householdMembershipDataManager: &mocktypes.HouseholdUserMembershipDataManager{},
+		householdIDFetcher:             func(req *http.Request) uint64 { return 0 },
+		encoderDecoder:                 mockencoding.NewMockEncoderDecoder(),
+		tracer:                         tracing.NewTracer("test"),
 	}
 }
 
-func TestProvideAccountsService(t *testing.T) {
+func TestProvideHouseholdsService(t *testing.T) {
 	t.Parallel()
 
 	var ucp metrics.UnitCounterProvider = func(counterName, description string) metrics.UnitCounter {
@@ -40,15 +40,15 @@ func TestProvideAccountsService(t *testing.T) {
 	rpm := mockrouting.NewRouteParamManager()
 	rpm.On(
 		"BuildRouteParamIDFetcher",
-		mock.IsType(l), AccountIDURIParamKey, "account").Return(func(*http.Request) uint64 { return 0 })
+		mock.IsType(l), HouseholdIDURIParamKey, "household").Return(func(*http.Request) uint64 { return 0 })
 	rpm.On(
 		"BuildRouteParamIDFetcher",
 		mock.IsType(l), UserIDURIParamKey, "user").Return(func(*http.Request) uint64 { return 0 })
 
 	s := ProvideService(
 		logging.NewNoopLogger(),
-		&mocktypes.AccountDataManager{},
-		&mocktypes.AccountUserMembershipDataManager{},
+		&mocktypes.HouseholdDataManager{},
+		&mocktypes.HouseholdUserMembershipDataManager{},
 		mockencoding.NewMockEncoderDecoder(),
 		ucp,
 		rpm,

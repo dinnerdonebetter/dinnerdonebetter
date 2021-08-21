@@ -55,8 +55,8 @@ type (
 		IsReady(ctx context.Context, maxAttempts uint8) (ready bool)
 
 		types.AdminUserDataManager
-		types.AccountDataManager
-		types.AccountUserMembershipDataManager
+		types.HouseholdDataManager
+		types.HouseholdUserMembershipDataManager
 		types.UserDataManager
 		types.AuditLogEntryDataManager
 		types.APIClientDataManager

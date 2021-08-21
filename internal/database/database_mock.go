@@ -18,8 +18,8 @@ var _ DataManager = (*MockDatabase)(nil)
 func BuildMockDatabase() *MockDatabase {
 	return &MockDatabase{
 		AuditLogEntryDataManager:              &mocktypes.AuditLogEntryDataManager{},
-		AccountDataManager:                    &mocktypes.AccountDataManager{},
-		AccountUserMembershipDataManager:      &mocktypes.AccountUserMembershipDataManager{},
+		HouseholdDataManager:                  &mocktypes.HouseholdDataManager{},
+		HouseholdUserMembershipDataManager:    &mocktypes.HouseholdUserMembershipDataManager{},
 		ValidInstrumentDataManager:            &mocktypes.ValidInstrumentDataManager{},
 		ValidPreparationDataManager:           &mocktypes.ValidPreparationDataManager{},
 		ValidIngredientDataManager:            &mocktypes.ValidIngredientDataManager{},
@@ -43,7 +43,7 @@ func BuildMockDatabase() *MockDatabase {
 type MockDatabase struct {
 	*mocktypes.AdminUserDataManager
 	*mocktypes.AuditLogEntryDataManager
-	*mocktypes.AccountUserMembershipDataManager
+	*mocktypes.HouseholdUserMembershipDataManager
 	*mocktypes.ValidInstrumentDataManager
 	*mocktypes.ValidPreparationDataManager
 	*mocktypes.ValidIngredientDataManager
@@ -58,7 +58,7 @@ type MockDatabase struct {
 	*mocktypes.UserDataManager
 	*mocktypes.APIClientDataManager
 	*mocktypes.WebhookDataManager
-	*mocktypes.AccountDataManager
+	*mocktypes.HouseholdDataManager
 	mock.Mock
 }
 
@@ -83,8 +83,8 @@ var _ querybuilding.SQLQueryBuilder = (*MockSQLQueryBuilder)(nil)
 // BuildMockSQLQueryBuilder builds a MockSQLQueryBuilder.
 func BuildMockSQLQueryBuilder() *MockSQLQueryBuilder {
 	return &MockSQLQueryBuilder{
-		AccountSQLQueryBuilder:                    &mockquerybuilding.AccountSQLQueryBuilder{},
-		AccountUserMembershipSQLQueryBuilder:      &mockquerybuilding.AccountUserMembershipSQLQueryBuilder{},
+		HouseholdSQLQueryBuilder:                  &mockquerybuilding.HouseholdSQLQueryBuilder{},
+		HouseholdUserMembershipSQLQueryBuilder:    &mockquerybuilding.HouseholdUserMembershipSQLQueryBuilder{},
 		AuditLogEntrySQLQueryBuilder:              &mockquerybuilding.AuditLogEntrySQLQueryBuilder{},
 		ValidInstrumentSQLQueryBuilder:            &mockquerybuilding.ValidInstrumentSQLQueryBuilder{},
 		ValidPreparationSQLQueryBuilder:           &mockquerybuilding.ValidPreparationSQLQueryBuilder{},
@@ -106,8 +106,8 @@ func BuildMockSQLQueryBuilder() *MockSQLQueryBuilder {
 // MockSQLQueryBuilder is our mock database structure.
 type MockSQLQueryBuilder struct {
 	*mockquerybuilding.UserSQLQueryBuilder
-	*mockquerybuilding.AccountSQLQueryBuilder
-	*mockquerybuilding.AccountUserMembershipSQLQueryBuilder
+	*mockquerybuilding.HouseholdSQLQueryBuilder
+	*mockquerybuilding.HouseholdUserMembershipSQLQueryBuilder
 	*mockquerybuilding.AuditLogEntrySQLQueryBuilder
 	*mockquerybuilding.ValidInstrumentSQLQueryBuilder
 	*mockquerybuilding.ValidPreparationSQLQueryBuilder

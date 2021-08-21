@@ -20,14 +20,14 @@ import (
 func attachCookieToRequestForTest(t *testing.T, s *service, req *http.Request, user *types.User) (context.Context, *http.Request, string) {
 	t.Helper()
 
-	exampleAccount := fakes.BuildFakeAccount()
+	exampleHousehold := fakes.BuildFakeHousehold()
 
 	ctx, sessionErr := s.sessionManager.Load(req.Context(), "")
 	require.NoError(t, sessionErr)
 	require.NoError(t, s.sessionManager.RenewToken(ctx))
 
 	s.sessionManager.Put(ctx, userIDContextKey, user.ID)
-	s.sessionManager.Put(ctx, accountIDContextKey, exampleAccount.ID)
+	s.sessionManager.Put(ctx, householdIDContextKey, exampleHousehold.ID)
 
 	token, _, err := s.sessionManager.Commit(ctx)
 	assert.NotEmpty(t, token)
@@ -47,10 +47,10 @@ type authServiceHTTPRoutesTestHelper struct {
 	sessionCtxData      *types.SessionContextData
 	service             *service
 	exampleUser         *types.User
-	exampleAccount      *types.Account
+	exampleHousehold    *types.Household
 	exampleAPIClient    *types.APIClient
-	examplePerms        map[uint64]*types.UserAccountMembershipInfo
-	examplePermCheckers map[uint64]authorization.AccountRolePermissionsChecker
+	examplePerms        map[uint64]*types.UserHouseholdMembershipInfo
+	examplePermCheckers map[uint64]authorization.HouseholdRolePermissionsChecker
 	exampleLoginInput   *types.UserLoginInput
 }
 
@@ -60,12 +60,12 @@ func (helper *authServiceHTTPRoutesTestHelper) setContextFetcher(t *testing.T) {
 	sessionCtxData := &types.SessionContextData{
 		Requester: types.RequesterInfo{
 			UserID:                helper.exampleUser.ID,
-			Reputation:            helper.exampleUser.ServiceAccountStatus,
+			Reputation:            helper.exampleUser.ServiceHouseholdStatus,
 			ReputationExplanation: helper.exampleUser.ReputationExplanation,
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 		},
-		ActiveAccountID:    helper.exampleAccount.ID,
-		AccountPermissions: helper.examplePermCheckers,
+		ActiveHouseholdID:    helper.exampleHousehold.ID,
+		HouseholdPermissions: helper.examplePermCheckers,
 	}
 
 	helper.sessionCtxData = sessionCtxData
@@ -82,20 +82,20 @@ func buildTestHelper(t *testing.T) *authServiceHTTPRoutesTestHelper {
 	helper.ctx = context.Background()
 	helper.service = buildTestService(t)
 	helper.exampleUser = fakes.BuildFakeUser()
-	helper.exampleAccount = fakes.BuildFakeAccount()
-	helper.exampleAccount.BelongsToUser = helper.exampleUser.ID
+	helper.exampleHousehold = fakes.BuildFakeHousehold()
+	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 	helper.exampleAPIClient = fakes.BuildFakeAPIClient()
 	helper.exampleAPIClient.BelongsToUser = helper.exampleUser.ID
 	helper.exampleLoginInput = fakes.BuildFakeUserLoginInputFromUser(helper.exampleUser)
 
-	helper.examplePerms = map[uint64]*types.UserAccountMembershipInfo{
-		helper.exampleAccount.ID: {
-			AccountName:  helper.exampleAccount.Name,
-			AccountRoles: []string{authorization.AccountMemberRole.String()},
+	helper.examplePerms = map[uint64]*types.UserHouseholdMembershipInfo{
+		helper.exampleHousehold.ID: {
+			HouseholdName:  helper.exampleHousehold.Name,
+			HouseholdRoles: []string{authorization.HouseholdMemberRole.String()},
 		},
 	}
-	helper.examplePermCheckers = map[uint64]authorization.AccountRolePermissionsChecker{
-		helper.exampleAccount.ID: authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
+	helper.examplePermCheckers = map[uint64]authorization.HouseholdRolePermissionsChecker{
+		helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
 	}
 
 	helper.setContextFetcher(t)

@@ -690,7 +690,7 @@ func TestInvitationsService_ArchiveHandler(T *testing.T) {
 			"ArchiveInvitation",
 			testutils.ContextMatcher,
 			helper.exampleInvitation.ID,
-			helper.exampleAccount.ID,
+			helper.exampleHousehold.ID,
 			helper.exampleUser.ID,
 		).Return(nil)
 		helper.service.invitationDataManager = invitationDataManager
@@ -740,7 +740,7 @@ func TestInvitationsService_ArchiveHandler(T *testing.T) {
 			"ArchiveInvitation",
 			testutils.ContextMatcher,
 			helper.exampleInvitation.ID,
-			helper.exampleAccount.ID,
+			helper.exampleHousehold.ID,
 			helper.exampleUser.ID,
 		).Return(sql.ErrNoRows)
 		helper.service.invitationDataManager = invitationDataManager
@@ -770,7 +770,7 @@ func TestInvitationsService_ArchiveHandler(T *testing.T) {
 			"ArchiveInvitation",
 			testutils.ContextMatcher,
 			helper.exampleInvitation.ID,
-			helper.exampleAccount.ID,
+			helper.exampleHousehold.ID,
 			helper.exampleUser.ID,
 		).Return(errors.New("blah"))
 		helper.service.invitationDataManager = invitationDataManager
@@ -791,7 +791,7 @@ func TestInvitationsService_ArchiveHandler(T *testing.T) {
 	})
 }
 
-func TestAccountsService_AuditEntryHandler(T *testing.T) {
+func TestHouseholdsService_AuditEntryHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {

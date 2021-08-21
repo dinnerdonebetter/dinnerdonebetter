@@ -41,11 +41,11 @@ func buildGCSBucket(ctx context.Context, cfg *GCSConfig) (*blob.Bucket, error) {
 	if cfg.ServiceAccountKeyFilepath != "" {
 		serviceAccountKeyBytes, err := os.ReadFile(cfg.ServiceAccountKeyFilepath)
 		if err != nil {
-			return nil, fmt.Errorf("reading service account key file: %w", err)
+			return nil, fmt.Errorf("reading service household key file: %w", err)
 		}
 
 		if creds, err = google.CredentialsFromJSON(ctx, serviceAccountKeyBytes, cfg.Scopes...); err != nil {
-			return nil, fmt.Errorf("using service account key credentials: %w", err)
+			return nil, fmt.Errorf("using service household key credentials: %w", err)
 		}
 	} else {
 		var err error

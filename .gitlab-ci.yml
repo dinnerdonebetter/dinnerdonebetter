@@ -33,7 +33,7 @@ dependency-injection-check:
 
 golang-format-check:
   stage: quality
-  image: golang:1.16.7-bullseye
+  image: golang:bullseye
   variables:
     GOPATH: "/go"
   script:

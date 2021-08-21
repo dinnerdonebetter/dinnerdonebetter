@@ -31,9 +31,9 @@ func TestQuerier_Migrate(T *testing.T) {
 		exampleUser.TwoFactorSecretVerifiedOn = nil
 		exampleUser.CreatedOn = exampleCreationTime
 
-		exampleAccount := fakes.BuildFakeAccountForUser(exampleUser)
-		exampleAccount.ExternalID = ""
-		exampleAccountCreationInput := &types.AccountCreationInput{
+		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
+		exampleHousehold.ExternalID = ""
+		exampleHouseholdCreationInput := &types.HouseholdCreationInput{
 			Name:          fmt.Sprintf("%s_default", exampleUser.Username),
 			BelongsToUser: exampleUser.ID,
 		}
@@ -105,46 +105,46 @@ func TestQuerier_Migrate(T *testing.T) {
 			WithArgs(interfaceToDriverValue(firstFakeAuditLogEntryEventArgs)...).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 
-		// create account for created TestUser
-		fakeAccountCreationQuery, fakeAccountCreationArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildAccountCreationQuery",
+		// create household for created TestUser
+		fakeHouseholdCreationQuery, fakeHouseholdCreationArgs := fakes.BuildFakeSQLQuery()
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildHouseholdCreationQuery",
 			testutils.ContextMatcher,
-			exampleAccountCreationInput,
-		).Return(fakeAccountCreationQuery, fakeAccountCreationArgs)
+			exampleHouseholdCreationInput,
+		).Return(fakeHouseholdCreationQuery, fakeHouseholdCreationArgs)
 
-		db.ExpectQuery(formatQueryForSQLMock(fakeAccountCreationQuery)).
-			WithArgs(interfaceToDriverValue(fakeAccountCreationArgs)...).
-			WillReturnRows(newDatabaseResultForID(exampleAccount.ID))
+		db.ExpectQuery(formatQueryForSQLMock(fakeHouseholdCreationQuery)).
+			WithArgs(interfaceToDriverValue(fakeHouseholdCreationArgs)...).
+			WillReturnRows(newDatabaseResultForID(exampleHousehold.ID))
 
 		secondFakeAuditLogEntryEventQuery, secondFakeAuditLogEntryEventArgs := fakes.BuildFakeSQLQuery()
 		mockQueryBuilder.AuditLogEntrySQLQueryBuilder.On(
 			"BuildCreateAuditLogEntryQuery",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.BuildAuditLogEntryCreationInputEventTypeMatcher(audit.AccountCreationEvent))).
+			mock.MatchedBy(testutils.BuildAuditLogEntryCreationInputEventTypeMatcher(audit.HouseholdCreationEvent))).
 			Return(secondFakeAuditLogEntryEventQuery, secondFakeAuditLogEntryEventArgs)
 
 		db.ExpectExec(formatQueryForSQLMock(secondFakeAuditLogEntryEventQuery)).
 			WithArgs(interfaceToDriverValue(secondFakeAuditLogEntryEventArgs)...).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 
-		// create account user membership for created user
+		// create household user membership for created user
 		fakeMembershipCreationQuery, fakeMembershipCreationArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountUserMembershipSQLQueryBuilder.On(
+		mockQueryBuilder.HouseholdUserMembershipSQLQueryBuilder.On(
 			"BuildCreateMembershipForNewUserQuery",
 			testutils.ContextMatcher,
-			exampleUser.ID, exampleAccount.ID,
+			exampleUser.ID, exampleHousehold.ID,
 		).Return(fakeMembershipCreationQuery, fakeMembershipCreationArgs)
 
 		db.ExpectExec(formatQueryForSQLMock(fakeMembershipCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeMembershipCreationArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleAccount.ID))
+			WillReturnResult(newSuccessfulDatabaseResult(exampleHousehold.ID))
 
 		thirdFakeAuditLogEntryEventQuery, thirdFakeAuditLogEntryEventArgs := fakes.BuildFakeSQLQuery()
 		mockQueryBuilder.AuditLogEntrySQLQueryBuilder.On(
 			"BuildCreateAuditLogEntryQuery",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.BuildAuditLogEntryCreationInputEventTypeMatcher(audit.UserAddedToAccountEvent))).
+			mock.MatchedBy(testutils.BuildAuditLogEntryCreationInputEventTypeMatcher(audit.UserAddedToHouseholdEvent))).
 			Return(thirdFakeAuditLogEntryEventQuery, thirdFakeAuditLogEntryEventArgs)
 
 		db.ExpectExec(formatQueryForSQLMock(thirdFakeAuditLogEntryEventQuery)).

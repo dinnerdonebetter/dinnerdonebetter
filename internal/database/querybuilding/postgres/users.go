@@ -195,7 +195,7 @@ func (b *Postgres) BuildTestUserCreationQuery(ctx context.Context, testUserConfi
 				testUserConfig.Username,
 				testUserConfig.HashedPassword,
 				querybuilding.DefaultTestUserTwoFactorSecret,
-				types.GoodStandingAccountStatus,
+				types.GoodStandingHouseholdStatus,
 				serviceRole.String(),
 				currentUnixTimeQuery,
 			).
@@ -230,7 +230,7 @@ func (b *Postgres) BuildCreateUserQuery(ctx context.Context, input *types.UserDa
 				input.Username,
 				input.HashedPassword,
 				input.TwoFactorSecret,
-				types.UnverifiedAccountStatus,
+				types.UnverifiedHouseholdStatus,
 				authorization.ServiceUserRole.String(),
 			).
 			Suffix(fmt.Sprintf("RETURNING %s", querybuilding.IDColumn)),
@@ -261,7 +261,7 @@ func (b *Postgres) BuildUpdateUserQuery(ctx context.Context, input *types.User) 
 	)
 }
 
-// BuildSetUserStatusQuery returns a SQL query (and arguments) that would change a user's account status.
+// BuildSetUserStatusQuery returns a SQL query (and arguments) that would change a user's household status.
 func (b *Postgres) BuildSetUserStatusQuery(ctx context.Context, input *types.UserReputationUpdateInput) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
 	defer span.End()
@@ -331,7 +331,7 @@ func (b *Postgres) BuildVerifyUserTwoFactorSecretQuery(ctx context.Context, user
 		span,
 		b.sqlBuilder.Update(querybuilding.UsersTableName).
 			Set(querybuilding.UsersTableTwoFactorVerifiedOnColumn, currentUnixTimeQuery).
-			Set(querybuilding.UsersTableReputationColumn, types.GoodStandingAccountStatus).
+			Set(querybuilding.UsersTableReputationColumn, types.GoodStandingHouseholdStatus).
 			Where(squirrel.Eq{
 				querybuilding.IDColumn:         userID,
 				querybuilding.ArchivedOnColumn: nil,

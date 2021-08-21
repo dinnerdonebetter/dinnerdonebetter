@@ -16,74 +16,74 @@ import (
 )
 
 var (
-	_ types.AccountUserMembershipDataManager = (*SQLQuerier)(nil)
+	_ types.HouseholdUserMembershipDataManager = (*SQLQuerier)(nil)
 )
 
 const (
-	accountMemberRolesSeparator = ","
+	householdMemberRolesSeparator = ","
 )
 
-// scanAccountUserMembership takes a database Scanner (i.e. *sql.Row) and scans the result into an AccountUserMembership struct.
-func (q *SQLQuerier) scanAccountUserMembership(ctx context.Context, scan database.Scanner) (x *types.AccountUserMembership, err error) {
+// scanHouseholdUserMembership takes a database Scanner (i.e. *sql.Row) and scans the result into an HouseholdUserMembership struct.
+func (q *SQLQuerier) scanHouseholdUserMembership(ctx context.Context, scan database.Scanner) (x *types.HouseholdUserMembership, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	x = &types.AccountUserMembership{}
+	x = &types.HouseholdUserMembership{}
 
 	var (
-		rawAccountRoles string
+		rawHouseholdRoles string
 	)
 
 	targetVars := []interface{}{
 		&x.ID,
 		&x.BelongsToUser,
-		&x.BelongsToAccount,
-		&rawAccountRoles,
-		&x.DefaultAccount,
+		&x.BelongsToHousehold,
+		&rawHouseholdRoles,
+		&x.DefaultHousehold,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
-		return nil, observability.PrepareError(err, q.logger, span, "scanning account user memberships")
+		return nil, observability.PrepareError(err, q.logger, span, "scanning household user memberships")
 	}
 
-	if roles := strings.Split(rawAccountRoles, accountMemberRolesSeparator); len(roles) > 0 {
-		x.AccountRoles = roles
+	if roles := strings.Split(rawHouseholdRoles, householdMemberRolesSeparator); len(roles) > 0 {
+		x.HouseholdRoles = roles
 	} else {
-		x.AccountRoles = []string{}
+		x.HouseholdRoles = []string{}
 	}
 
 	return x, nil
 }
 
-// scanAccountUserMemberships takes some database rows and turns them into a slice of memberships.
-func (q *SQLQuerier) scanAccountUserMemberships(ctx context.Context, rows database.ResultIterator) (defaultAccount uint64, accountRolesMap map[uint64][]string, err error) {
+// scanHouseholdUserMemberships takes some database rows and turns them into a slice of memberships.
+func (q *SQLQuerier) scanHouseholdUserMemberships(ctx context.Context, rows database.ResultIterator) (defaultHousehold uint64, householdRolesMap map[uint64][]string, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	accountRolesMap = map[uint64][]string{}
+	householdRolesMap = map[uint64][]string{}
 	logger := q.logger
 
 	for rows.Next() {
-		x, scanErr := q.scanAccountUserMembership(ctx, rows)
+		x, scanErr := q.scanHouseholdUserMembership(ctx, rows)
 		if scanErr != nil {
 			return 0, nil, scanErr
 		}
 
-		if x.DefaultAccount && defaultAccount == 0 {
-			defaultAccount = x.BelongsToAccount
+		if x.DefaultHousehold && defaultHousehold == 0 {
+			defaultHousehold = x.BelongsToHousehold
 		}
 
-		accountRolesMap[x.BelongsToAccount] = x.AccountRoles
+		householdRolesMap[x.BelongsToHousehold] = x.HouseholdRoles
 	}
 
 	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
 		return 0, nil, observability.PrepareError(err, logger, span, "handling rows")
 	}
 
-	return defaultAccount, accountRolesMap, nil
+	return defaultHousehold, householdRolesMap, nil
 }
 
 // BuildSessionContextDataForUser does .
@@ -103,39 +103,39 @@ func (q *SQLQuerier) BuildSessionContextDataForUser(ctx context.Context, userID 
 		return nil, observability.PrepareError(err, logger, span, "fetching user from database")
 	}
 
-	getAccountMembershipsQuery, getAccountMembershipsArgs := q.sqlQueryBuilder.BuildGetAccountMembershipsForUserQuery(ctx, userID)
+	getHouseholdMembershipsQuery, getHouseholdMembershipsArgs := q.sqlQueryBuilder.BuildGetHouseholdMembershipsForUserQuery(ctx, userID)
 
-	membershipRows, err := q.performReadQuery(ctx, q.db, "account memberships for user", getAccountMembershipsQuery, getAccountMembershipsArgs...)
+	membershipRows, err := q.performReadQuery(ctx, q.db, "household memberships for user", getHouseholdMembershipsQuery, getHouseholdMembershipsArgs...)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "fetching user's memberships from database")
 	}
 
-	defaultAccountID, accountRolesMap, err := q.scanAccountUserMemberships(ctx, membershipRows)
+	defaultHouseholdID, householdRolesMap, err := q.scanHouseholdUserMemberships(ctx, membershipRows)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "scanning user's memberships from database")
 	}
 
-	actualAccountRolesMap := map[uint64]authorization.AccountRolePermissionsChecker{}
-	for accountID, roles := range accountRolesMap {
-		actualAccountRolesMap[accountID] = authorization.NewAccountRolePermissionChecker(roles...)
+	actualHouseholdRolesMap := map[uint64]authorization.HouseholdRolePermissionsChecker{}
+	for householdID, roles := range householdRolesMap {
+		actualHouseholdRolesMap[householdID] = authorization.NewHouseholdRolePermissionChecker(roles...)
 	}
 
 	sessionCtxData := &types.SessionContextData{
 		Requester: types.RequesterInfo{
 			UserID:                user.ID,
-			Reputation:            user.ServiceAccountStatus,
+			Reputation:            user.ServiceHouseholdStatus,
 			ReputationExplanation: user.ReputationExplanation,
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(user.ServiceRoles...),
 		},
-		AccountPermissions: actualAccountRolesMap,
-		ActiveAccountID:    defaultAccountID,
+		HouseholdPermissions: actualHouseholdRolesMap,
+		ActiveHouseholdID:    defaultHouseholdID,
 	}
 
 	return sessionCtxData, nil
 }
 
-// GetDefaultAccountIDForUser does .
-func (q *SQLQuerier) GetDefaultAccountIDForUser(ctx context.Context, userID uint64) (uint64, error) {
+// GetDefaultHouseholdIDForUser does .
+func (q *SQLQuerier) GetDefaultHouseholdIDForUser(ctx context.Context, userID uint64) (uint64, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -144,33 +144,33 @@ func (q *SQLQuerier) GetDefaultAccountIDForUser(ctx context.Context, userID uint
 	}
 
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
-	query, args := q.sqlQueryBuilder.BuildGetDefaultAccountIDForUserQuery(ctx, userID)
+	query, args := q.sqlQueryBuilder.BuildGetDefaultHouseholdIDForUserQuery(ctx, userID)
 
 	var id uint64
-	if err := q.getOneRow(ctx, q.db, "default account ID query", query, args...).Scan(&id); err != nil {
+	if err := q.getOneRow(ctx, q.db, "default household ID query", query, args...).Scan(&id); err != nil {
 		return 0, observability.PrepareError(err, logger, span, "executing id query")
 	}
 
 	return id, nil
 }
 
-// MarkAccountAsUserDefault does a thing.
-func (q *SQLQuerier) MarkAccountAsUserDefault(ctx context.Context, userID, accountID, changedByUser uint64) error {
+// MarkHouseholdAsUserDefault does a thing.
+func (q *SQLQuerier) MarkHouseholdAsUserDefault(ctx context.Context, userID, householdID, changedByUser uint64) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if userID == 0 || accountID == 0 || changedByUser == 0 {
+	if userID == 0 || householdID == 0 || changedByUser == 0 {
 		return ErrInvalidIDProvided
 	}
 
 	logger := q.logger.WithValues(map[string]interface{}{
 		keys.UserIDKey:      userID,
-		keys.AccountIDKey:   accountID,
+		keys.HouseholdIDKey: householdID,
 		keys.RequesterIDKey: changedByUser,
 	})
 
 	tracing.AttachUserIDToSpan(span, userID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 	tracing.AttachRequestingUserIDToSpan(span, changedByUser)
 
 	tx, err := q.db.BeginTx(ctx, nil)
@@ -178,46 +178,46 @@ func (q *SQLQuerier) MarkAccountAsUserDefault(ctx context.Context, userID, accou
 		return observability.PrepareError(err, logger, span, "beginning transaction")
 	}
 
-	query, args := q.sqlQueryBuilder.BuildMarkAccountAsUserDefaultQuery(ctx, userID, accountID)
+	query, args := q.sqlQueryBuilder.BuildMarkHouseholdAsUserDefaultQuery(ctx, userID, householdID)
 
-	// create the account.
-	if err = q.performWriteQueryIgnoringReturn(ctx, tx, "user default account assignment", query, args); err != nil {
+	// create the household.
+	if err = q.performWriteQueryIgnoringReturn(ctx, tx, "user default household assignment", query, args); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "assigning user default account")
+		return observability.PrepareError(err, logger, span, "assigning user default household")
 	}
 
-	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildUserMarkedAccountAsDefaultEventEntry(userID, accountID, changedByUser)); err != nil {
+	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildUserMarkedHouseholdAsDefaultEventEntry(userID, householdID, changedByUser)); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "account not found for user")
+		return observability.PrepareError(err, logger, span, "household not found for user")
 	}
 
 	if err = tx.Commit(); err != nil {
 		return observability.PrepareError(err, logger, span, "committing transaction")
 	}
 
-	logger.Info("account marked as default")
+	logger.Info("household marked as default")
 
 	return nil
 }
 
-// UserIsMemberOfAccount does a thing.
-func (q *SQLQuerier) UserIsMemberOfAccount(ctx context.Context, userID, accountID uint64) (bool, error) {
+// UserIsMemberOfHousehold does a thing.
+func (q *SQLQuerier) UserIsMemberOfHousehold(ctx context.Context, userID, householdID uint64) (bool, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if userID == 0 || accountID == 0 {
+	if userID == 0 || householdID == 0 {
 		return false, ErrInvalidIDProvided
 	}
 
 	logger := q.logger.WithValues(map[string]interface{}{
-		keys.UserIDKey:    userID,
-		keys.AccountIDKey: accountID,
+		keys.UserIDKey:      userID,
+		keys.HouseholdIDKey: householdID,
 	})
 
 	tracing.AttachUserIDToSpan(span, userID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	query, args := q.sqlQueryBuilder.BuildUserIsMemberOfAccountQuery(ctx, userID, accountID)
+	query, args := q.sqlQueryBuilder.BuildUserIsMemberOfHouseholdQuery(ctx, userID, householdID)
 
 	result, err := q.performBooleanQuery(ctx, q.db, query, args)
 	if err != nil {
@@ -228,11 +228,11 @@ func (q *SQLQuerier) UserIsMemberOfAccount(ctx context.Context, userID, accountI
 }
 
 // ModifyUserPermissions does a thing.
-func (q *SQLQuerier) ModifyUserPermissions(ctx context.Context, userID, accountID, changedByUser uint64, input *types.ModifyUserPermissionsInput) error {
+func (q *SQLQuerier) ModifyUserPermissions(ctx context.Context, userID, householdID, changedByUser uint64, input *types.ModifyUserPermissionsInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if accountID == 0 || userID == 0 || changedByUser == 0 {
+	if householdID == 0 || userID == 0 || changedByUser == 0 {
 		return ErrInvalidIDProvided
 	}
 
@@ -241,14 +241,14 @@ func (q *SQLQuerier) ModifyUserPermissions(ctx context.Context, userID, accountI
 	}
 
 	logger := q.logger.WithValues(map[string]interface{}{
-		keys.AccountIDKey:   accountID,
+		keys.HouseholdIDKey: householdID,
 		keys.UserIDKey:      userID,
 		keys.RequesterIDKey: changedByUser,
 		"new_roles":         input.NewRoles,
 	})
 
 	tracing.AttachUserIDToSpan(span, userID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 	tracing.AttachRequestingUserIDToSpan(span, changedByUser)
 
 	tx, err := q.db.BeginTx(ctx, nil)
@@ -256,17 +256,17 @@ func (q *SQLQuerier) ModifyUserPermissions(ctx context.Context, userID, accountI
 		return observability.PrepareError(err, logger, span, "beginning transaction")
 	}
 
-	query, args := q.sqlQueryBuilder.BuildModifyUserPermissionsQuery(ctx, userID, accountID, input.NewRoles)
+	query, args := q.sqlQueryBuilder.BuildModifyUserPermissionsQuery(ctx, userID, householdID, input.NewRoles)
 
 	// modify the membership.
-	if err = q.performWriteQueryIgnoringReturn(ctx, tx, "user account permissions modification", query, args); err != nil && !errors.Is(err, sql.ErrNoRows) {
+	if err = q.performWriteQueryIgnoringReturn(ctx, tx, "user household permissions modification", query, args); err != nil && !errors.Is(err, sql.ErrNoRows) {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "modifying user account permissions")
+		return observability.PrepareError(err, logger, span, "modifying user household permissions")
 	}
 
-	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildModifyUserPermissionsEventEntry(userID, accountID, changedByUser, input.NewRoles, input.Reason)); err != nil {
+	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildModifyUserPermissionsEventEntry(userID, householdID, changedByUser, input.NewRoles, input.Reason)); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "writing user account membership permission modification audit log entry")
+		return observability.PrepareError(err, logger, span, "writing user household membership permission modification audit log entry")
 	}
 
 	if err = tx.Commit(); err != nil {
@@ -278,12 +278,12 @@ func (q *SQLQuerier) ModifyUserPermissions(ctx context.Context, userID, accountI
 	return nil
 }
 
-// TransferAccountOwnership does a thing.
-func (q *SQLQuerier) TransferAccountOwnership(ctx context.Context, accountID, transferredBy uint64, input *types.AccountOwnershipTransferInput) error {
+// TransferHouseholdOwnership does a thing.
+func (q *SQLQuerier) TransferHouseholdOwnership(ctx context.Context, householdID, transferredBy uint64, input *types.HouseholdOwnershipTransferInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if accountID == 0 || transferredBy == 0 {
+	if householdID == 0 || transferredBy == 0 {
 		return ErrInvalidIDProvided
 	}
 
@@ -292,14 +292,14 @@ func (q *SQLQuerier) TransferAccountOwnership(ctx context.Context, accountID, tr
 	}
 
 	logger := q.logger.WithValues(map[string]interface{}{
-		keys.AccountIDKey:   accountID,
+		keys.HouseholdIDKey: householdID,
 		keys.RequesterIDKey: transferredBy,
 		"current_owner":     input.CurrentOwner,
 		"new_owner":         input.NewOwner,
 	})
 
 	tracing.AttachUserIDToSpan(span, input.NewOwner)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 	tracing.AttachRequestingUserIDToSpan(span, transferredBy)
 
 	tx, err := q.db.BeginTx(ctx, nil)
@@ -307,38 +307,38 @@ func (q *SQLQuerier) TransferAccountOwnership(ctx context.Context, accountID, tr
 		return observability.PrepareError(err, logger, span, "beginning transaction")
 	}
 
-	transferAccountOwnershipQuery, transferAccountOwnershipArgs := q.sqlQueryBuilder.BuildTransferAccountOwnershipQuery(ctx, input.CurrentOwner, input.NewOwner, accountID)
+	transferHouseholdOwnershipQuery, transferHouseholdOwnershipArgs := q.sqlQueryBuilder.BuildTransferHouseholdOwnershipQuery(ctx, input.CurrentOwner, input.NewOwner, householdID)
 
 	// create the membership.
-	if err = q.performWriteQueryIgnoringReturn(ctx, tx, "user ownership transfer", transferAccountOwnershipQuery, transferAccountOwnershipArgs); err != nil {
+	if err = q.performWriteQueryIgnoringReturn(ctx, tx, "user ownership transfer", transferHouseholdOwnershipQuery, transferHouseholdOwnershipArgs); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "transferring account to new owner")
+		return observability.PrepareError(err, logger, span, "transferring household to new owner")
 	}
 
-	transferAccountMembershipQuery, transferAccountMembershipArgs := q.sqlQueryBuilder.BuildTransferAccountMembershipsQuery(ctx, input.CurrentOwner, input.NewOwner, accountID)
+	transferHouseholdMembershipQuery, transferHouseholdMembershipArgs := q.sqlQueryBuilder.BuildTransferHouseholdMembershipsQuery(ctx, input.CurrentOwner, input.NewOwner, householdID)
 
 	// create the membership.
-	if err = q.performWriteQueryIgnoringReturn(ctx, tx, "user memberships transfer", transferAccountMembershipQuery, transferAccountMembershipArgs); err != nil {
+	if err = q.performWriteQueryIgnoringReturn(ctx, tx, "user memberships transfer", transferHouseholdMembershipQuery, transferHouseholdMembershipArgs); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "transferring account memberships")
+		return observability.PrepareError(err, logger, span, "transferring household memberships")
 	}
 
-	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildTransferAccountOwnershipEventEntry(accountID, transferredBy, input)); err != nil {
+	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildTransferHouseholdOwnershipEventEntry(householdID, transferredBy, input)); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "writing account ownership transfer audit log entry")
+		return observability.PrepareError(err, logger, span, "writing household ownership transfer audit log entry")
 	}
 
 	if err = tx.Commit(); err != nil {
 		return observability.PrepareError(err, logger, span, "committing transaction")
 	}
 
-	logger.Info("account transferred to new owner")
+	logger.Info("household transferred to new owner")
 
 	return nil
 }
 
-// AddUserToAccount does a thing.
-func (q *SQLQuerier) AddUserToAccount(ctx context.Context, input *types.AddUserToAccountInput, addedByUser uint64) error {
+// AddUserToHousehold does a thing.
+func (q *SQLQuerier) AddUserToHousehold(ctx context.Context, input *types.AddUserToHouseholdInput, addedByUser uint64) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -353,11 +353,11 @@ func (q *SQLQuerier) AddUserToAccount(ctx context.Context, input *types.AddUserT
 	logger := q.logger.WithValues(map[string]interface{}{
 		keys.RequesterIDKey: addedByUser,
 		keys.UserIDKey:      input.UserID,
-		keys.AccountIDKey:   input.AccountID,
+		keys.HouseholdIDKey: input.HouseholdID,
 	})
 
 	tracing.AttachUserIDToSpan(span, input.UserID)
-	tracing.AttachAccountIDToSpan(span, input.AccountID)
+	tracing.AttachHouseholdIDToSpan(span, input.HouseholdID)
 	tracing.AttachRequestingUserIDToSpan(span, addedByUser)
 
 	tx, err := q.db.BeginTx(ctx, nil)
@@ -365,34 +365,34 @@ func (q *SQLQuerier) AddUserToAccount(ctx context.Context, input *types.AddUserT
 		return observability.PrepareError(err, logger, span, "beginning transaction")
 	}
 
-	query, args := q.sqlQueryBuilder.BuildAddUserToAccountQuery(ctx, input)
+	query, args := q.sqlQueryBuilder.BuildAddUserToHouseholdQuery(ctx, input)
 
 	// create the membership.
-	if err = q.performWriteQueryIgnoringReturn(ctx, tx, "user account membership creation", query, args); err != nil {
+	if err = q.performWriteQueryIgnoringReturn(ctx, tx, "user household membership creation", query, args); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "creating user account membership")
+		return observability.PrepareError(err, logger, span, "creating user household membership")
 	}
 
-	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildUserAddedToAccountEventEntry(addedByUser, input)); err != nil {
+	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildUserAddedToHouseholdEventEntry(addedByUser, input)); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "writing user added to account audit log entry")
+		return observability.PrepareError(err, logger, span, "writing user added to household audit log entry")
 	}
 
 	if err = tx.Commit(); err != nil {
 		return observability.PrepareError(err, logger, span, "committing transaction")
 	}
 
-	logger.Info("user added to account")
+	logger.Info("user added to household")
 
 	return nil
 }
 
-// RemoveUserFromAccount removes a user's membership to an account.
-func (q *SQLQuerier) RemoveUserFromAccount(ctx context.Context, userID, accountID, removedByUser uint64, reason string) error {
+// RemoveUserFromHousehold removes a user's membership to an household.
+func (q *SQLQuerier) RemoveUserFromHousehold(ctx context.Context, userID, householdID, removedByUser uint64, reason string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if userID == 0 || accountID == 0 || removedByUser == 0 {
+	if userID == 0 || householdID == 0 || removedByUser == 0 {
 		return ErrInvalidIDProvided
 	}
 
@@ -402,13 +402,13 @@ func (q *SQLQuerier) RemoveUserFromAccount(ctx context.Context, userID, accountI
 
 	logger := q.logger.WithValues(map[string]interface{}{
 		keys.UserIDKey:      userID,
-		keys.AccountIDKey:   accountID,
+		keys.HouseholdIDKey: householdID,
 		keys.ReasonKey:      reason,
 		keys.RequesterIDKey: removedByUser,
 	})
 
 	tracing.AttachUserIDToSpan(span, userID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 	tracing.AttachRequestingUserIDToSpan(span, removedByUser)
 
 	tx, err := q.db.BeginTx(ctx, nil)
@@ -416,24 +416,24 @@ func (q *SQLQuerier) RemoveUserFromAccount(ctx context.Context, userID, accountI
 		return observability.PrepareError(err, logger, span, "beginning transaction")
 	}
 
-	query, args := q.sqlQueryBuilder.BuildRemoveUserFromAccountQuery(ctx, userID, accountID)
+	query, args := q.sqlQueryBuilder.BuildRemoveUserFromHouseholdQuery(ctx, userID, householdID)
 
 	// create the membership.
 	if err = q.performWriteQueryIgnoringReturn(ctx, tx, "user membership removal", query, args); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "removing user from account")
+		return observability.PrepareError(err, logger, span, "removing user from household")
 	}
 
-	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildUserRemovedFromAccountEventEntry(userID, accountID, removedByUser, reason)); err != nil {
+	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildUserRemovedFromHouseholdEventEntry(userID, householdID, removedByUser, reason)); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "writing remove user from account audit log entry")
+		return observability.PrepareError(err, logger, span, "writing remove user from household audit log entry")
 	}
 
 	if err = tx.Commit(); err != nil {
 		return observability.PrepareError(err, logger, span, "committing transaction")
 	}
 
-	logger.Info("user removed from account")
+	logger.Info("user removed from household")
 
 	return nil
 }

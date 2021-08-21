@@ -16,17 +16,17 @@ const (
 func TestBuildRecipeCreationEventEntry(t *testing.T) {
 	t.Parallel()
 
-	assert.NotNil(t, audit.BuildRecipeCreationEventEntry(&types.Recipe{}, exampleAccountID))
+	assert.NotNil(t, audit.BuildRecipeCreationEventEntry(&types.Recipe{}, exampleHouseholdID))
 }
 
 func TestBuildRecipeUpdateEventEntry(t *testing.T) {
 	t.Parallel()
 
-	assert.NotNil(t, audit.BuildRecipeUpdateEventEntry(exampleUserID, exampleRecipeID, exampleAccountID, nil))
+	assert.NotNil(t, audit.BuildRecipeUpdateEventEntry(exampleUserID, exampleRecipeID, exampleHouseholdID, nil))
 }
 
 func TestBuildRecipeArchiveEventEntry(t *testing.T) {
 	t.Parallel()
 
-	assert.NotNil(t, audit.BuildRecipeArchiveEventEntry(exampleUserID, exampleRecipeID, exampleAccountID))
+	assert.NotNil(t, audit.BuildRecipeArchiveEventEntry(exampleUserID, exampleRecipeID, exampleHouseholdID))
 }

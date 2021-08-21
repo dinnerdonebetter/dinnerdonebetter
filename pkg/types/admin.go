@@ -16,14 +16,14 @@ type (
 	// AdminAuditManager describes a structure capable of managing audit entries for admin events.
 	AdminAuditManager interface {
 		LogUserBanEvent(ctx context.Context, banGiver, banReceiver uint64, reason string)
-		LogAccountTerminationEvent(ctx context.Context, terminator, terminee uint64, reason string)
+		LogHouseholdTerminationEvent(ctx context.Context, terminator, terminee uint64, reason string)
 	}
 
 	// UserReputationUpdateInput represents what an admin User could provide as input for changing statuses.
 	UserReputationUpdateInput struct {
-		NewReputation accountStatus `json:"newReputation"`
-		Reason        string        `json:"reason"`
-		TargetUserID  uint64        `json:"targetUserID"`
+		NewReputation householdStatus `json:"newReputation"`
+		Reason        string          `json:"reason"`
+		TargetUserID  uint64          `json:"targetUserID"`
 	}
 
 	// FrontendService serves static frontend files.

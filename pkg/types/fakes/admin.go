@@ -10,7 +10,7 @@ import (
 func BuildFakeUserReputationUpdateInput() *types.UserReputationUpdateInput {
 	return &types.UserReputationUpdateInput{
 		TargetUserID:  uint64(fake.Uint32()),
-		NewReputation: types.GoodStandingAccountStatus,
+		NewReputation: types.GoodStandingHouseholdStatus,
 		Reason:        fake.Sentence(10),
 	}
 }

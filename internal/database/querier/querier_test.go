@@ -36,7 +36,7 @@ type testHelper struct {
 	querier        *SQLQuerier
 	mockDB         *sqlmockExpecterWrapper
 	exampleUser    *types.User
-	exampleAccount *types.Account
+	exampleHousehold *types.Household
 }
 
 func buildTestHelper(t *testing.T) *testHelper {
@@ -49,11 +49,11 @@ func buildTestHelper(t *testing.T) *testHelper {
 		mockDB:         db,
 		ctx:            context.Background(),
 		exampleUser:    fakes.BuildFakeUser(),
-		exampleAccount: fakes.BuildFakeAccount(),
+		exampleHousehold: fakes.BuildFakeHousehold(),
 		filter:         types.DefaultQueryFilter(),
 	}
 
-	h.exampleAccount.BelongsToUser = h.exampleUser.ID
+	h.exampleHousehold.BelongsToUser = h.exampleUser.ID
 
 	return h
 }
