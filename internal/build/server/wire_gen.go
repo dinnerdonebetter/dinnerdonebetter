@@ -8,6 +8,7 @@ package server
 
 import (
 	"context"
+
 	"gitlab.com/prixfixe/prixfixe/internal/authentication"
 	"gitlab.com/prixfixe/prixfixe/internal/config"
 	"gitlab.com/prixfixe/prixfixe/internal/database"

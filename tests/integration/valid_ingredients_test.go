@@ -116,6 +116,12 @@ func (s *TestSuite) TestValidIngredients_Searching() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			// Create valid preparation.
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+
 			// create valid ingredients
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			var expected []*types.ValidIngredient
@@ -132,7 +138,7 @@ func (s *TestSuite) TestValidIngredients_Searching() {
 			exampleLimit := uint8(20)
 
 			// assert valid ingredient list equality
-			actual, err := testClients.main.SearchValidIngredients(ctx, exampleValidIngredient.Name, exampleLimit)
+			actual, err := testClients.main.SearchValidIngredients(ctx, exampleValidIngredient.Name, createdValidPreparation.ID, exampleLimit)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -141,6 +147,9 @@ func (s *TestSuite) TestValidIngredients_Searching() {
 				len(expected),
 				len(actual),
 			)
+
+			// Clean up valid preparation.
+			assert.NoError(t, testClients.main.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
 
 			// clean up
 			for _, createdValidIngredient := range expected {

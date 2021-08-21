@@ -75,9 +75,13 @@ func (b *Builder) BuildGetValidIngredientRequest(ctx context.Context, validIngre
 }
 
 // BuildSearchValidIngredientsRequest builds an HTTP request for querying valid ingredients.
-func (b *Builder) BuildSearchValidIngredientsRequest(ctx context.Context, query string, limit uint8) (*http.Request, error) {
+func (b *Builder) BuildSearchValidIngredientsRequest(ctx context.Context, preparationID uint64, query string, limit uint8) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if preparationID == 0 {
+		return nil, ErrInvalidIDProvided
+	}
 
 	logger := b.logger
 
@@ -85,6 +89,7 @@ func (b *Builder) BuildSearchValidIngredientsRequest(ctx context.Context, query 
 
 	params := url.Values{}
 	params.Set(types.SearchQueryKey, query)
+	params.Set(types.ValidPreparationIDQueryKey, strconv.FormatUint(preparationID, 10))
 	params.Set(types.LimitQueryKey, strconv.FormatUint(uint64(limit), 10))
 
 	uri := b.BuildURL(

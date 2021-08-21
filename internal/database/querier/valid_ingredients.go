@@ -237,7 +237,7 @@ func (q *SQLQuerier) GetValidIngredients(ctx context.Context, filter *types.Quer
 }
 
 // GetValidIngredientsWithIDs fetches valid ingredients from the database within a given set of IDs.
-func (q *SQLQuerier) GetValidIngredientsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]*types.ValidIngredient, error) {
+func (q *SQLQuerier) GetValidIngredientsWithIDs(ctx context.Context, limit uint8, validPreparationID uint64, ids []uint64) ([]*types.ValidIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -248,8 +248,9 @@ func (q *SQLQuerier) GetValidIngredientsWithIDs(ctx context.Context, limit uint8
 	}
 
 	logger = logger.WithValues(map[string]interface{}{
-		"limit":    limit,
-		"id_count": len(ids),
+		keys.FilterLimitKey:        limit,
+		keys.ValidPreparationIDKey: validPreparationID,
+		"id_count":                 len(ids),
 	})
 
 	query, args := q.sqlQueryBuilder.BuildGetValidIngredientsWithIDsQuery(ctx, limit, ids)

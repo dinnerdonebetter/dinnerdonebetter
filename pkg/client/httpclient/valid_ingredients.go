@@ -62,7 +62,7 @@ func (c *Client) GetValidIngredient(ctx context.Context, validIngredientID uint6
 }
 
 // SearchValidIngredients searches through a list of valid ingredients.
-func (c *Client) SearchValidIngredients(ctx context.Context, query string, limit uint8) ([]*types.ValidIngredient, error) {
+func (c *Client) SearchValidIngredients(ctx context.Context, query string, preparationID uint64, limit uint8) ([]*types.ValidIngredient, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -72,13 +72,17 @@ func (c *Client) SearchValidIngredients(ctx context.Context, query string, limit
 		return nil, ErrEmptyQueryProvided
 	}
 
+	if preparationID == 0 {
+		return nil, ErrInvalidIDProvided
+	}
+
 	if limit == 0 {
 		limit = 20
 	}
 
 	logger = logger.WithValue(keys.SearchQueryKey, query).WithValue(keys.FilterLimitKey, limit)
 
-	req, err := c.requestBuilder.BuildSearchValidIngredientsRequest(ctx, query, limit)
+	req, err := c.requestBuilder.BuildSearchValidIngredientsRequest(ctx, preparationID, query, limit)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building search for valid ingredients request")
 	}

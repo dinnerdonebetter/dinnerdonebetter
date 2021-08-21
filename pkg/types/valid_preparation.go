@@ -12,6 +12,9 @@ import (
 const (
 	// ValidPreparationsSearchIndexName is the name of the index used to search through valid preparations.
 	ValidPreparationsSearchIndexName search.IndexName = "valid_preparations"
+
+	// ValidPreparationIDQueryKey is the name of the key we use to reference preparation IDs in the URL query.
+	ValidPreparationIDQueryKey = "pid"
 )
 
 type (

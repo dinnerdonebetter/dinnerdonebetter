@@ -555,6 +555,7 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 
 	exampleQuery := "whatever"
 	exampleLimit := uint8(123)
+	exampleValidPreparation := fakes.BuildFakeValidPreparation()
 	exampleValidIngredientList := fakes.BuildFakeValidIngredientList()
 	exampleValidIngredientIDs := []uint64{}
 	for _, x := range exampleValidIngredientList.ValidIngredients {
@@ -567,8 +568,9 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.SearchQueryKey: []string{exampleQuery},
-			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+			types.ValidPreparationIDQueryKey: []string{strconv.FormatUint(exampleValidPreparation.ID, 10)},
+			types.SearchQueryKey:             []string{exampleQuery},
+			types.LimitQueryKey:              []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		indexManager := &mocksearch.IndexManager{}
@@ -585,6 +587,7 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 			"GetValidIngredientsWithIDs",
 			testutils.ContextMatcher,
 			exampleLimit,
+			exampleValidPreparation.ID,
 			exampleValidIngredientIDs,
 		).Return(exampleValidIngredientList.ValidIngredients, nil)
 		helper.service.validIngredientDataManager = validIngredientDataManager
@@ -603,6 +606,33 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, indexManager, validIngredientDataManager, encoderDecoder)
+	})
+
+	T.Run("with missing preparation ID", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		helper.req.URL.RawQuery = url.Values{
+			types.SearchQueryKey: []string{exampleQuery},
+			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+		}.Encode()
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeErrorResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			"invalid preparation ID",
+			http.StatusBadRequest,
+		).Return()
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.SearchHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, encoderDecoder)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -634,7 +664,10 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
+		helper.req.URL.RawQuery = url.Values{
+			types.ValidPreparationIDQueryKey: []string{strconv.FormatUint(exampleValidPreparation.ID, 10)},
+			types.SearchQueryKey:             []string{exampleQuery},
+		}.Encode()
 
 		indexManager := &mocksearch.IndexManager{}
 		indexManager.On(
@@ -666,8 +699,9 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.SearchQueryKey: []string{exampleQuery},
-			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+			types.ValidPreparationIDQueryKey: []string{strconv.FormatUint(exampleValidPreparation.ID, 10)},
+			types.SearchQueryKey:             []string{exampleQuery},
+			types.LimitQueryKey:              []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		indexManager := &mocksearch.IndexManager{}
@@ -684,6 +718,7 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 			"GetValidIngredientsWithIDs",
 			testutils.ContextMatcher,
 			exampleLimit,
+			exampleValidPreparation.ID,
 			exampleValidIngredientIDs,
 		).Return([]*types.ValidIngredient{}, sql.ErrNoRows)
 		helper.service.validIngredientDataManager = validIngredientDataManager
@@ -709,8 +744,9 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{
-			types.SearchQueryKey: []string{exampleQuery},
-			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+			types.ValidPreparationIDQueryKey: []string{strconv.FormatUint(exampleValidPreparation.ID, 10)},
+			types.SearchQueryKey:             []string{exampleQuery},
+			types.LimitQueryKey:              []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		indexManager := &mocksearch.IndexManager{}
@@ -727,6 +763,7 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 			"GetValidIngredientsWithIDs",
 			testutils.ContextMatcher,
 			exampleLimit,
+			exampleValidPreparation.ID,
 			exampleValidIngredientIDs,
 		).Return([]*types.ValidIngredient{}, errors.New("blah"))
 		helper.service.validIngredientDataManager = validIngredientDataManager

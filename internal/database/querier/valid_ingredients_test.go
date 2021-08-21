@@ -661,6 +661,7 @@ func TestQuerier_GetValidIngredientsWithIDs(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 		exampleValidIngredientList := fakes.BuildFakeValidIngredientList()
 
 		var exampleIDs []uint64
@@ -686,7 +687,7 @@ func TestQuerier_GetValidIngredientsWithIDs(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnRows(buildMockRowsFromValidIngredients(false, 0, exampleValidIngredientList.ValidIngredients...))
 
-		actual, err := c.GetValidIngredientsWithIDs(ctx, defaultLimit, exampleIDs)
+		actual, err := c.GetValidIngredientsWithIDs(ctx, defaultLimit, exampleValidPreparation.ID, exampleIDs)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidIngredientList.ValidIngredients, actual)
 
@@ -696,6 +697,7 @@ func TestQuerier_GetValidIngredientsWithIDs(T *testing.T) {
 	T.Run("sets limit if not present", func(t *testing.T) {
 		t.Parallel()
 
+		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 		exampleValidIngredientList := fakes.BuildFakeValidIngredientList()
 		var exampleIDs []uint64
 		for _, x := range exampleValidIngredientList.ValidIngredients {
@@ -720,7 +722,7 @@ func TestQuerier_GetValidIngredientsWithIDs(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnRows(buildMockRowsFromValidIngredients(false, 0, exampleValidIngredientList.ValidIngredients...))
 
-		actual, err := c.GetValidIngredientsWithIDs(ctx, 0, exampleIDs)
+		actual, err := c.GetValidIngredientsWithIDs(ctx, 0, exampleValidPreparation.ID, exampleIDs)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidIngredientList.ValidIngredients, actual)
 
@@ -730,6 +732,7 @@ func TestQuerier_GetValidIngredientsWithIDs(T *testing.T) {
 	T.Run("with error executing query", func(t *testing.T) {
 		t.Parallel()
 
+		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 		exampleValidIngredientList := fakes.BuildFakeValidIngredientList()
 		var exampleIDs []uint64
 		for _, x := range exampleValidIngredientList.ValidIngredients {
@@ -754,7 +757,7 @@ func TestQuerier_GetValidIngredientsWithIDs(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.GetValidIngredientsWithIDs(ctx, defaultLimit, exampleIDs)
+		actual, err := c.GetValidIngredientsWithIDs(ctx, defaultLimit, exampleValidPreparation.ID, exampleIDs)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -764,6 +767,7 @@ func TestQuerier_GetValidIngredientsWithIDs(T *testing.T) {
 	T.Run("with erroneous response from database", func(t *testing.T) {
 		t.Parallel()
 
+		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 		exampleValidIngredientList := fakes.BuildFakeValidIngredientList()
 		var exampleIDs []uint64
 		for _, x := range exampleValidIngredientList.ValidIngredients {
@@ -788,7 +792,7 @@ func TestQuerier_GetValidIngredientsWithIDs(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnRows(buildErroneousMockRow())
 
-		actual, err := c.GetValidIngredientsWithIDs(ctx, defaultLimit, exampleIDs)
+		actual, err := c.GetValidIngredientsWithIDs(ctx, defaultLimit, exampleValidPreparation.ID, exampleIDs)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 

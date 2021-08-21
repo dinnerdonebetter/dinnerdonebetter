@@ -2,6 +2,7 @@ package httpclient
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -185,22 +186,34 @@ func (s *validIngredientsTestSuite) TestClient_SearchValidIngredients() {
 	s.Run("standard", func() {
 		t := s.T()
 
+		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 		exampleValidIngredientList := fakes.BuildFakeValidIngredientList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&q=whatever", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, fmt.Sprintf("limit=20&pid=%d&q=whatever", exampleValidPreparation.ID), expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientList.ValidIngredients)
-		actual, err := c.SearchValidIngredients(s.ctx, exampleQuery, 0)
+		actual, err := c.SearchValidIngredients(s.ctx, exampleQuery, exampleValidPreparation.ID, 0)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidIngredientList.ValidIngredients, actual)
 	})
 
-	s.Run("with empty query", func() {
+	s.Run("with invalid valid preparation ID", func() {
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)
-		actual, err := c.SearchValidIngredients(s.ctx, "", 0)
+		actual, err := c.SearchValidIngredients(s.ctx, "", 0, 0)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with empty query", func() {
+		t := s.T()
+
+		exampleValidPreparation := fakes.BuildFakeValidPreparation()
+		c, _ := buildSimpleTestClient(t)
+		actual, err := c.SearchValidIngredients(s.ctx, "", exampleValidPreparation.ID, 0)
 
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -209,9 +222,10 @@ func (s *validIngredientsTestSuite) TestClient_SearchValidIngredients() {
 	s.Run("with error building request", func() {
 		t := s.T()
 
+		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 		c := buildTestClientWithInvalidURL(t)
 
-		actual, err := c.SearchValidIngredients(s.ctx, exampleQuery, 0)
+		actual, err := c.SearchValidIngredients(s.ctx, exampleQuery, exampleValidPreparation.ID, 0)
 
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -220,9 +234,10 @@ func (s *validIngredientsTestSuite) TestClient_SearchValidIngredients() {
 	s.Run("with bad response from server", func() {
 		t := s.T()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&q=whatever", expectedPath)
+		exampleValidPreparation := fakes.BuildFakeValidPreparation()
+		spec := newRequestSpec(true, http.MethodGet, fmt.Sprintf("limit=20&pid=%d&q=whatever", exampleValidPreparation.ID), expectedPath)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		actual, err := c.SearchValidIngredients(s.ctx, exampleQuery, 0)
+		actual, err := c.SearchValidIngredients(s.ctx, exampleQuery, exampleValidPreparation.ID, 0)
 
 		assert.Nil(t, actual)
 		assert.Error(t, err)

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"gitlab.com/prixfixe/prixfixe/internal/database"
@@ -202,7 +203,13 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, validIngredients)
 }
 
-func (s *service) SearchForValidIngredients(ctx context.Context, sessionCtxData *types.SessionContextData, query string, filter *types.QueryFilter) ([]*types.ValidIngredient, error) {
+func (s *service) SearchForValidIngredients(
+	ctx context.Context,
+	sessionCtxData *types.SessionContextData,
+	preparationID uint64,
+	query string,
+	filter *types.QueryFilter,
+) ([]*types.ValidIngredient, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -215,7 +222,7 @@ func (s *service) SearchForValidIngredients(ctx context.Context, sessionCtxData 
 	}
 
 	// fetch valid ingredients from database.
-	return s.validIngredientDataManager.GetValidIngredientsWithIDs(ctx, filter.Limit, relevantIDs)
+	return s.validIngredientDataManager.GetValidIngredientsWithIDs(ctx, filter.Limit, preparationID, relevantIDs)
 }
 
 // SearchHandler is our search route.
@@ -223,8 +230,9 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	query := req.URL.Query().Get(types.SearchQueryKey)
 	filter := types.ExtractQueryFilter(req)
+	query := req.URL.Query().Get(types.SearchQueryKey)
+
 	logger := s.logger.WithRequest(req).
 		WithValue(keys.FilterLimitKey, filter.Limit).
 		WithValue(keys.FilterPageKey, filter.Page).
@@ -246,8 +254,17 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
+	validPreparationID, prepIDErr := strconv.ParseUint(req.URL.Query().Get(types.ValidPreparationIDQueryKey), 10, 64)
+	if prepIDErr != nil {
+		s.logger.Error(prepIDErr, "parsing preparation ID")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid preparation ID", http.StatusBadRequest)
+		return
+	}
+
+	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
+
 	// fetch valid ingredients from database.
-	validIngredients, err := s.SearchForValidIngredients(ctx, sessionCtxData, query, filter)
+	validIngredients, err := s.SearchForValidIngredients(ctx, sessionCtxData, validPreparationID, query, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		validIngredients = []*types.ValidIngredient{}
