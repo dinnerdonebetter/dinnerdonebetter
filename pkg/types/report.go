@@ -10,14 +10,14 @@ import (
 type (
 	// Report represents a report.
 	Report struct {
-		ArchivedOn       *uint64 `json:"archivedOn"`
-		LastUpdatedOn    *uint64 `json:"lastUpdatedOn"`
-		ExternalID       string  `json:"externalID"`
-		ReportType       string  `json:"reportType"`
-		Concern          string  `json:"concern"`
-		CreatedOn        uint64  `json:"createdOn"`
-		ID               uint64  `json:"id"`
-		BelongsToAccount uint64  `json:"belongsToAccount"`
+		ArchivedOn         *uint64 `json:"archivedOn"`
+		LastUpdatedOn      *uint64 `json:"lastUpdatedOn"`
+		ExternalID         string  `json:"externalID"`
+		ReportType         string  `json:"reportType"`
+		Concern            string  `json:"concern"`
+		CreatedOn          uint64  `json:"createdOn"`
+		ID                 uint64  `json:"id"`
+		BelongsToHousehold uint64  `json:"belongsToHousehold"`
 	}
 
 	// ReportList represents a list of reports.
@@ -28,16 +28,16 @@ type (
 
 	// ReportCreationInput represents what a user could set as input for creating reports.
 	ReportCreationInput struct {
-		ReportType       string `json:"reportType"`
-		Concern          string `json:"concern"`
-		BelongsToAccount uint64 `json:"-"`
+		ReportType         string `json:"reportType"`
+		Concern            string `json:"concern"`
+		BelongsToHousehold uint64 `json:"-"`
 	}
 
 	// ReportUpdateInput represents what a user could set as input for updating reports.
 	ReportUpdateInput struct {
-		ReportType       string `json:"reportType"`
-		Concern          string `json:"concern"`
-		BelongsToAccount uint64 `json:"-"`
+		ReportType         string `json:"reportType"`
+		Concern            string `json:"concern"`
+		BelongsToHousehold uint64 `json:"-"`
 	}
 
 	// ReportDataManager describes a structure capable of storing reports permanently.
@@ -47,10 +47,10 @@ type (
 		GetAllReportsCount(ctx context.Context) (uint64, error)
 		GetAllReports(ctx context.Context, resultChannel chan []*Report, bucketSize uint16) error
 		GetReports(ctx context.Context, filter *QueryFilter) (*ReportList, error)
-		GetReportsWithIDs(ctx context.Context, accountID uint64, limit uint8, ids []uint64) ([]*Report, error)
+		GetReportsWithIDs(ctx context.Context, householdID uint64, limit uint8, ids []uint64) ([]*Report, error)
 		CreateReport(ctx context.Context, input *ReportCreationInput, createdByUser uint64) (*Report, error)
 		UpdateReport(ctx context.Context, updated *Report, changedByUser uint64, changes []*FieldChangeSummary) error
-		ArchiveReport(ctx context.Context, reportID, accountID, archivedBy uint64) error
+		ArchiveReport(ctx context.Context, reportID, householdID, archivedBy uint64) error
 		GetAuditLogEntriesForReport(ctx context.Context, reportID uint64) ([]*AuditLogEntry, error)
 	}
 

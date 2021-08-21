@@ -117,7 +117,7 @@ func (b *Postgres) buildFilteredCountQuery(ctx context.Context, tableName string
 	return b.buildQuery(span, filteredCountQueryBuilder)
 }
 
-// BuildListQuery builds a SQL query selecting rows that adhere to a given QueryFilter and belong to a given account,
+// BuildListQuery builds a SQL query selecting rows that adhere to a given QueryFilter and belong to a given household,
 // and returns both the query and the relevant args to pass to the query executor.
 func (b *Postgres) buildListQuery(ctx context.Context, tableName string, joins []string, where squirrel.Eq, ownershipColumn string, columns []string, ownerID uint64, forAdmin bool, filter *types.QueryFilter) (query string, args []interface{}) {
 	ctx, span := b.tracer.StartSpan(ctx)

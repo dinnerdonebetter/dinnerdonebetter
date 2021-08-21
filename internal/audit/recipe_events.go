@@ -20,35 +20,35 @@ func BuildRecipeCreationEventEntry(recipe *types.Recipe, createdByUser uint64) *
 	return &types.AuditLogEntryCreationInput{
 		EventType: RecipeCreationEvent,
 		Context: map[string]interface{}{
-			ActorAssignmentKey:    createdByUser,
-			RecipeAssignmentKey:   recipe.ID,
-			CreationAssignmentKey: recipe,
-			AccountAssignmentKey:  recipe.BelongsToAccount,
+			ActorAssignmentKey:     createdByUser,
+			RecipeAssignmentKey:    recipe.ID,
+			CreationAssignmentKey:  recipe,
+			HouseholdAssignmentKey: recipe.BelongsToHousehold,
 		},
 	}
 }
 
 // BuildRecipeUpdateEventEntry builds an entry creation input for when a recipe is updated.
-func BuildRecipeUpdateEventEntry(changedByUser, recipeID, accountID uint64, changes []*types.FieldChangeSummary) *types.AuditLogEntryCreationInput {
+func BuildRecipeUpdateEventEntry(changedByUser, recipeID, householdID uint64, changes []*types.FieldChangeSummary) *types.AuditLogEntryCreationInput {
 	return &types.AuditLogEntryCreationInput{
 		EventType: RecipeUpdateEvent,
 		Context: map[string]interface{}{
-			ActorAssignmentKey:   changedByUser,
-			AccountAssignmentKey: accountID,
-			RecipeAssignmentKey:  recipeID,
-			ChangesAssignmentKey: changes,
+			ActorAssignmentKey:     changedByUser,
+			HouseholdAssignmentKey: householdID,
+			RecipeAssignmentKey:    recipeID,
+			ChangesAssignmentKey:   changes,
 		},
 	}
 }
 
 // BuildRecipeArchiveEventEntry builds an entry creation input for when a recipe is archived.
-func BuildRecipeArchiveEventEntry(archivedByUser, accountID, recipeID uint64) *types.AuditLogEntryCreationInput {
+func BuildRecipeArchiveEventEntry(archivedByUser, householdID, recipeID uint64) *types.AuditLogEntryCreationInput {
 	return &types.AuditLogEntryCreationInput{
 		EventType: RecipeArchiveEvent,
 		Context: map[string]interface{}{
-			ActorAssignmentKey:   archivedByUser,
-			AccountAssignmentKey: accountID,
-			RecipeAssignmentKey:  recipeID,
+			ActorAssignmentKey:     archivedByUser,
+			HouseholdAssignmentKey: householdID,
+			RecipeAssignmentKey:    recipeID,
 		},
 	}
 }

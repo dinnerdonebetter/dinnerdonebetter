@@ -817,7 +817,7 @@ func TestRecipeStepProductsService_ArchiveHandler(T *testing.T) {
 	})
 }
 
-func TestAccountsService_AuditEntryHandler(T *testing.T) {
+func TestHouseholdsService_AuditEntryHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {

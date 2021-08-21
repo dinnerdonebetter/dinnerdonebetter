@@ -10,14 +10,14 @@ import (
 type (
 	// Invitation represents an invitation.
 	Invitation struct {
-		ArchivedOn       *uint64 `json:"archivedOn"`
-		LastUpdatedOn    *uint64 `json:"lastUpdatedOn"`
-		ExternalID       string  `json:"externalID"`
-		Code             string  `json:"code"`
-		CreatedOn        uint64  `json:"createdOn"`
-		ID               uint64  `json:"id"`
-		BelongsToAccount uint64  `json:"belongsToAccount"`
-		Consumed         bool    `json:"consumed"`
+		ArchivedOn         *uint64 `json:"archivedOn"`
+		LastUpdatedOn      *uint64 `json:"lastUpdatedOn"`
+		ExternalID         string  `json:"externalID"`
+		Code               string  `json:"code"`
+		CreatedOn          uint64  `json:"createdOn"`
+		ID                 uint64  `json:"id"`
+		BelongsToHousehold uint64  `json:"belongsToHousehold"`
+		Consumed           bool    `json:"consumed"`
 	}
 
 	// InvitationList represents a list of invitations.
@@ -28,16 +28,16 @@ type (
 
 	// InvitationCreationInput represents what a user could set as input for creating invitations.
 	InvitationCreationInput struct {
-		Code             string `json:"code"`
-		Consumed         bool   `json:"consumed"`
-		BelongsToAccount uint64 `json:"-"`
+		Code               string `json:"code"`
+		Consumed           bool   `json:"consumed"`
+		BelongsToHousehold uint64 `json:"-"`
 	}
 
 	// InvitationUpdateInput represents what a user could set as input for updating invitations.
 	InvitationUpdateInput struct {
-		Code             string `json:"code"`
-		Consumed         bool   `json:"consumed"`
-		BelongsToAccount uint64 `json:"-"`
+		Code               string `json:"code"`
+		Consumed           bool   `json:"consumed"`
+		BelongsToHousehold uint64 `json:"-"`
 	}
 
 	// InvitationDataManager describes a structure capable of storing invitations permanently.
@@ -47,10 +47,10 @@ type (
 		GetAllInvitationsCount(ctx context.Context) (uint64, error)
 		GetAllInvitations(ctx context.Context, resultChannel chan []*Invitation, bucketSize uint16) error
 		GetInvitations(ctx context.Context, filter *QueryFilter) (*InvitationList, error)
-		GetInvitationsWithIDs(ctx context.Context, accountID uint64, limit uint8, ids []uint64) ([]*Invitation, error)
+		GetInvitationsWithIDs(ctx context.Context, householdID uint64, limit uint8, ids []uint64) ([]*Invitation, error)
 		CreateInvitation(ctx context.Context, input *InvitationCreationInput, createdByUser uint64) (*Invitation, error)
 		UpdateInvitation(ctx context.Context, updated *Invitation, changedByUser uint64, changes []*FieldChangeSummary) error
-		ArchiveInvitation(ctx context.Context, invitationID, accountID, archivedBy uint64) error
+		ArchiveInvitation(ctx context.Context, invitationID, householdID, archivedBy uint64) error
 		GetAuditLogEntriesForInvitation(ctx context.Context, invitationID uint64) ([]*AuditLogEntry, error)
 	}
 

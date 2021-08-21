@@ -40,9 +40,9 @@ var (
 type bleveIndexManagerTestSuite struct {
 	suite.Suite
 
-	ctx              context.Context
-	indexPath        string
-	exampleAccountID uint64
+	ctx                context.Context
+	indexPath          string
+	exampleHouseholdID uint64
 }
 
 func createTmpIndexPath(t *testing.T) string {
@@ -63,7 +63,7 @@ func (s *bleveIndexManagerTestSuite) BeforeTest(_, _ string) {
 	require.NoError(t, err)
 
 	s.ctx = context.Background()
-	s.exampleAccountID = fakes.BuildFakeAccount().ID
+	s.exampleHouseholdID = fakes.BuildFakeHousehold().ID
 }
 
 func (s *bleveIndexManagerTestSuite) AfterTest(_, _ string) {
@@ -134,7 +134,7 @@ func (s *bleveIndexManagerTestSuite) TestIndex() {
 	x := &exampleType{
 		ID:            123,
 		Name:          exampleQuery,
-		BelongsToUser: s.exampleAccountID,
+		BelongsToUser: s.exampleHouseholdID,
 	}
 
 	assert.NoError(t, im.Index(s.ctx, x.ID, x))
@@ -153,11 +153,11 @@ func (s *bleveIndexManagerTestSuite) TestSearch() {
 	x := exampleType{
 		ID:            123,
 		Name:          exampleQuery,
-		BelongsToUser: s.exampleAccountID,
+		BelongsToUser: s.exampleHouseholdID,
 	}
 	assert.NoError(t, im.Index(s.ctx, x.ID, &x))
 
-	results, err := im.Search(s.ctx, x.Name, s.exampleAccountID)
+	results, err := im.Search(s.ctx, x.Name, s.exampleHouseholdID)
 	assert.NotEmpty(t, results)
 	assert.NoError(t, err)
 }
@@ -171,7 +171,7 @@ func (s *bleveIndexManagerTestSuite) TestSearchWithInvalidQuery() {
 	assert.NoError(t, err)
 	require.NotNil(t, im)
 
-	results, err := im.Search(s.ctx, "", s.exampleAccountID)
+	results, err := im.Search(s.ctx, "", s.exampleHouseholdID)
 	assert.Empty(t, results)
 	assert.Error(t, err)
 }
@@ -185,7 +185,7 @@ func (s *bleveIndexManagerTestSuite) TestSearchWithEmptyIndexAndSearch() {
 	assert.NoError(t, err)
 	require.NotNil(t, im)
 
-	results, err := im.Search(s.ctx, "example", s.exampleAccountID)
+	results, err := im.Search(s.ctx, "example", s.exampleHouseholdID)
 	assert.Empty(t, results)
 	assert.NoError(t, err)
 }
@@ -203,13 +203,13 @@ func (s *bleveIndexManagerTestSuite) TestSearchWithClosedIndex() {
 	x := &exampleType{
 		ID:            123,
 		Name:          exampleQuery,
-		BelongsToUser: s.exampleAccountID,
+		BelongsToUser: s.exampleHouseholdID,
 	}
 	assert.NoError(t, im.Index(s.ctx, x.ID, x))
 
 	assert.NoError(t, im.(*bleveIndexManager).index.Close())
 
-	results, err := im.Search(s.ctx, x.Name, s.exampleAccountID)
+	results, err := im.Search(s.ctx, x.Name, s.exampleHouseholdID)
 	assert.Empty(t, results)
 	assert.Error(t, err)
 }
@@ -227,11 +227,11 @@ func (s *bleveIndexManagerTestSuite) TestSearchWithInvalidID() {
 	x := &exampleTypeWithStringID{
 		ID:            "whatever",
 		Name:          exampleQuery,
-		BelongsToUser: s.exampleAccountID,
+		BelongsToUser: s.exampleHouseholdID,
 	}
 	assert.NoError(t, im.(*bleveIndexManager).index.Index(x.ID, x))
 
-	results, err := im.Search(s.ctx, x.Name, s.exampleAccountID)
+	results, err := im.Search(s.ctx, x.Name, s.exampleHouseholdID)
 	assert.Empty(t, results)
 	assert.Error(t, err)
 }
@@ -249,7 +249,7 @@ func (s *bleveIndexManagerTestSuite) TestSearchForAdmin() {
 	x := exampleType{
 		ID:            123,
 		Name:          exampleQuery,
-		BelongsToUser: s.exampleAccountID,
+		BelongsToUser: s.exampleHouseholdID,
 	}
 	assert.NoError(t, im.Index(s.ctx, x.ID, &x))
 
@@ -271,7 +271,7 @@ func (s *bleveIndexManagerTestSuite) TestDelete() {
 	x := &exampleType{
 		ID:            123,
 		Name:          exampleQuery,
-		BelongsToUser: s.exampleAccountID,
+		BelongsToUser: s.exampleHouseholdID,
 	}
 
 	assert.NoError(t, im.Index(s.ctx, x.ID, x))

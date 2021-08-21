@@ -23,18 +23,18 @@ func BuildInvitationCreationEventEntry(invitation *types.Invitation, createdByUs
 			ActorAssignmentKey:      createdByUser,
 			InvitationAssignmentKey: invitation.ID,
 			CreationAssignmentKey:   invitation,
-			AccountAssignmentKey:    invitation.BelongsToAccount,
+			HouseholdAssignmentKey:  invitation.BelongsToHousehold,
 		},
 	}
 }
 
 // BuildInvitationUpdateEventEntry builds an entry creation input for when an invitation is updated.
-func BuildInvitationUpdateEventEntry(changedByUser, invitationID, accountID uint64, changes []*types.FieldChangeSummary) *types.AuditLogEntryCreationInput {
+func BuildInvitationUpdateEventEntry(changedByUser, invitationID, householdID uint64, changes []*types.FieldChangeSummary) *types.AuditLogEntryCreationInput {
 	return &types.AuditLogEntryCreationInput{
 		EventType: InvitationUpdateEvent,
 		Context: map[string]interface{}{
 			ActorAssignmentKey:      changedByUser,
-			AccountAssignmentKey:    accountID,
+			HouseholdAssignmentKey:  householdID,
 			InvitationAssignmentKey: invitationID,
 			ChangesAssignmentKey:    changes,
 		},
@@ -42,12 +42,12 @@ func BuildInvitationUpdateEventEntry(changedByUser, invitationID, accountID uint
 }
 
 // BuildInvitationArchiveEventEntry builds an entry creation input for when an invitation is archived.
-func BuildInvitationArchiveEventEntry(archivedByUser, accountID, invitationID uint64) *types.AuditLogEntryCreationInput {
+func BuildInvitationArchiveEventEntry(archivedByUser, householdID, invitationID uint64) *types.AuditLogEntryCreationInput {
 	return &types.AuditLogEntryCreationInput{
 		EventType: InvitationArchiveEvent,
 		Context: map[string]interface{}{
 			ActorAssignmentKey:      archivedByUser,
-			AccountAssignmentKey:    accountID,
+			HouseholdAssignmentKey:  householdID,
 			InvitationAssignmentKey: invitationID,
 		},
 	}

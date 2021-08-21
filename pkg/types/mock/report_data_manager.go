@@ -46,8 +46,8 @@ func (m *ReportDataManager) GetReports(ctx context.Context, filter *types.QueryF
 }
 
 // GetReportsWithIDs is a mock function.
-func (m *ReportDataManager) GetReportsWithIDs(ctx context.Context, accountID uint64, limit uint8, ids []uint64) ([]*types.Report, error) {
-	args := m.Called(ctx, accountID, limit, ids)
+func (m *ReportDataManager) GetReportsWithIDs(ctx context.Context, householdID uint64, limit uint8, ids []uint64) ([]*types.Report, error) {
+	args := m.Called(ctx, householdID, limit, ids)
 	return args.Get(0).([]*types.Report), args.Error(1)
 }
 
@@ -63,8 +63,8 @@ func (m *ReportDataManager) UpdateReport(ctx context.Context, updated *types.Rep
 }
 
 // ArchiveReport is a mock function.
-func (m *ReportDataManager) ArchiveReport(ctx context.Context, reportID, accountID, archivedBy uint64) error {
-	return m.Called(ctx, reportID, accountID, archivedBy).Error(0)
+func (m *ReportDataManager) ArchiveReport(ctx context.Context, reportID, householdID, archivedBy uint64) error {
+	return m.Called(ctx, reportID, householdID, archivedBy).Error(0)
 }
 
 // GetAuditLogEntriesForReport is a mock function.

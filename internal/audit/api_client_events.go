@@ -29,12 +29,12 @@ func BuildAPIClientCreationEventEntry(client *types.APIClient, createdBy uint64)
 }
 
 // BuildAPIClientArchiveEventEntry builds an entry creation input for when an API client is archived.
-func BuildAPIClientArchiveEventEntry(accountID, clientID, archivedBy uint64) *types.AuditLogEntryCreationInput {
+func BuildAPIClientArchiveEventEntry(householdID, clientID, archivedBy uint64) *types.AuditLogEntryCreationInput {
 	return &types.AuditLogEntryCreationInput{
 		EventType: APIClientArchiveEvent,
 		Context: map[string]interface{}{
 			ActorAssignmentKey:     archivedBy,
-			AccountAssignmentKey:   accountID,
+			HouseholdAssignmentKey: householdID,
 			APIClientAssignmentKey: clientID,
 		},
 	}

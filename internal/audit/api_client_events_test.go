@@ -22,5 +22,5 @@ func TestBuildAPIClientCreationEventEntry(t *testing.T) {
 func TestBuildAPIClientArchiveEventEntry(t *testing.T) {
 	t.Parallel()
 
-	assert.NotNil(t, audit.BuildAPIClientArchiveEventEntry(exampleAccountID, exampleAPIClientDatabaseID, exampleUserID))
+	assert.NotNil(t, audit.BuildAPIClientArchiveEventEntry(exampleHouseholdID, exampleAPIClientDatabaseID, exampleUserID))
 }

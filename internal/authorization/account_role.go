@@ -7,18 +7,18 @@ import (
 )
 
 type (
-	// AccountRole describes a role a user has for an Account context.
-	AccountRole role
+	// HouseholdRole describes a role a user has for an Household context.
+	HouseholdRole role
 
-	// AccountRolePermissionsChecker checks permissions for one or more account Roles.
-	AccountRolePermissionsChecker interface {
+	// HouseholdRolePermissionsChecker checks permissions for one or more household Roles.
+	HouseholdRolePermissionsChecker interface {
 		HasPermission(Permission) bool
 
-		CanUpdateAccounts() bool
-		CanDeleteAccounts() bool
-		CanAddMemberToAccounts() bool
-		CanRemoveMemberFromAccounts() bool
-		CanTransferAccountToNewOwner() bool
+		CanUpdateHouseholds() bool
+		CanDeleteHouseholds() bool
+		CanAddMemberToHouseholds() bool
+		CanRemoveMemberFromHouseholds() bool
+		CanTransferHouseholdToNewOwner() bool
 		CanCreateWebhooks() bool
 		CanSeeWebhooks() bool
 		CanUpdateWebhooks() bool
@@ -42,167 +42,167 @@ type (
 )
 
 const (
-	// AccountMemberRole is a role for a plain account participant.
-	AccountMemberRole AccountRole = iota
-	// AccountAdminRole is a role for someone who can manipulate the specifics of an account.
-	AccountAdminRole AccountRole = iota
+	// HouseholdMemberRole is a role for a plain household participant.
+	HouseholdMemberRole HouseholdRole = iota
+	// HouseholdAdminRole is a role for someone who can manipulate the specifics of an household.
+	HouseholdAdminRole HouseholdRole = iota
 
-	accountAdminRoleName  = "account_admin"
-	accountMemberRoleName = "account_member"
+	householdAdminRoleName  = "household_admin"
+	householdMemberRoleName = "household_member"
 )
 
 var (
-	accountAdmin  = gorbac.NewStdRole(accountAdminRoleName)
-	accountMember = gorbac.NewStdRole(accountMemberRoleName)
+	householdAdmin  = gorbac.NewStdRole(householdAdminRoleName)
+	householdMember = gorbac.NewStdRole(householdMemberRoleName)
 )
 
-type accountRoleCollection struct {
+type householdRoleCollection struct {
 	Roles []string
 }
 
 func init() {
-	gob.Register(accountRoleCollection{})
+	gob.Register(householdRoleCollection{})
 }
 
-// NewAccountRolePermissionChecker returns a new checker for a set of Roles.
-func NewAccountRolePermissionChecker(roles ...string) AccountRolePermissionsChecker {
-	return &accountRoleCollection{
+// NewHouseholdRolePermissionChecker returns a new checker for a set of Roles.
+func NewHouseholdRolePermissionChecker(roles ...string) HouseholdRolePermissionsChecker {
+	return &householdRoleCollection{
 		Roles: roles,
 	}
 }
 
-func (r AccountRole) String() string {
+func (r HouseholdRole) String() string {
 	switch r {
-	case AccountMemberRole:
-		return accountMemberRoleName
-	case AccountAdminRole:
-		return accountAdminRoleName
+	case HouseholdMemberRole:
+		return householdMemberRoleName
+	case HouseholdAdminRole:
+		return householdAdminRoleName
 	default:
 		return ""
 	}
 }
 
 // HasPermission returns whether a user can do something or not.
-func (r accountRoleCollection) HasPermission(p Permission) bool {
+func (r householdRoleCollection) HasPermission(p Permission) bool {
 	return hasPermission(p, r.Roles...)
 }
 
-// CanUpdateAccounts returns whether a user can update accounts or not.
-func (r accountRoleCollection) CanUpdateAccounts() bool {
-	return hasPermission(UpdateAccountPermission, r.Roles...)
+// CanUpdateHouseholds returns whether a user can update households or not.
+func (r householdRoleCollection) CanUpdateHouseholds() bool {
+	return hasPermission(UpdateHouseholdPermission, r.Roles...)
 }
 
-// CanDeleteAccounts returns whether a user can delete accounts or not.
-func (r accountRoleCollection) CanDeleteAccounts() bool {
-	return hasPermission(ArchiveAccountPermission, r.Roles...)
+// CanDeleteHouseholds returns whether a user can delete households or not.
+func (r householdRoleCollection) CanDeleteHouseholds() bool {
+	return hasPermission(ArchiveHouseholdPermission, r.Roles...)
 }
 
-// CanAddMemberToAccounts returns whether a user can add members to accounts or not.
-func (r accountRoleCollection) CanAddMemberToAccounts() bool {
-	return hasPermission(AddMemberAccountPermission, r.Roles...)
+// CanAddMemberToHouseholds returns whether a user can add members to households or not.
+func (r householdRoleCollection) CanAddMemberToHouseholds() bool {
+	return hasPermission(AddMemberHouseholdPermission, r.Roles...)
 }
 
-// CanRemoveMemberFromAccounts returns whether a user can remove members from accounts or not.
-func (r accountRoleCollection) CanRemoveMemberFromAccounts() bool {
-	return hasPermission(RemoveMemberAccountPermission, r.Roles...)
+// CanRemoveMemberFromHouseholds returns whether a user can remove members from households or not.
+func (r householdRoleCollection) CanRemoveMemberFromHouseholds() bool {
+	return hasPermission(RemoveMemberHouseholdPermission, r.Roles...)
 }
 
-// CanTransferAccountToNewOwner returns whether a user can transfer an account to a new owner or not.
-func (r accountRoleCollection) CanTransferAccountToNewOwner() bool {
-	return hasPermission(TransferAccountPermission, r.Roles...)
+// CanTransferHouseholdToNewOwner returns whether a user can transfer an household to a new owner or not.
+func (r householdRoleCollection) CanTransferHouseholdToNewOwner() bool {
+	return hasPermission(TransferHouseholdPermission, r.Roles...)
 }
 
 // CanCreateWebhooks returns whether a user can create webhooks or not.
-func (r accountRoleCollection) CanCreateWebhooks() bool {
+func (r householdRoleCollection) CanCreateWebhooks() bool {
 	return hasPermission(CreateWebhooksPermission, r.Roles...)
 }
 
 // CanSeeWebhooks returns whether a user can view webhooks or not.
-func (r accountRoleCollection) CanSeeWebhooks() bool {
+func (r householdRoleCollection) CanSeeWebhooks() bool {
 	return hasPermission(ReadWebhooksPermission, r.Roles...)
 }
 
 // CanUpdateWebhooks returns whether a user can update webhooks or not.
-func (r accountRoleCollection) CanUpdateWebhooks() bool {
+func (r householdRoleCollection) CanUpdateWebhooks() bool {
 	return hasPermission(UpdateWebhooksPermission, r.Roles...)
 }
 
 // CanArchiveWebhooks returns whether a user can delete webhooks or not.
-func (r accountRoleCollection) CanArchiveWebhooks() bool {
+func (r householdRoleCollection) CanArchiveWebhooks() bool {
 	return hasPermission(ArchiveWebhooksPermission, r.Roles...)
 }
 
 // CanCreateAPIClients returns whether a user can create API clients or not.
-func (r accountRoleCollection) CanCreateAPIClients() bool {
+func (r householdRoleCollection) CanCreateAPIClients() bool {
 	return hasPermission(CreateAPIClientsPermission, r.Roles...)
 }
 
 // CanSeeAPIClients returns whether a user can view API clients or not.
-func (r accountRoleCollection) CanSeeAPIClients() bool {
+func (r householdRoleCollection) CanSeeAPIClients() bool {
 	return hasPermission(ReadAPIClientsPermission, r.Roles...)
 }
 
 // CanDeleteAPIClients returns whether a user can delete API clients or not.
-func (r accountRoleCollection) CanDeleteAPIClients() bool {
+func (r householdRoleCollection) CanDeleteAPIClients() bool {
 	return hasPermission(ArchiveAPIClientsPermission, r.Roles...)
 }
 
 // CanSeeAuditLogEntriesForWebhooks returns whether a user can view webhook audit log entries or not.
-func (r accountRoleCollection) CanSeeAuditLogEntriesForWebhooks() bool {
+func (r householdRoleCollection) CanSeeAuditLogEntriesForWebhooks() bool {
 	return hasPermission(ReadWebhooksAuditLogEntriesPermission, r.Roles...)
 }
 
 // CanSeeAuditLogEntriesForValidInstruments returns whether a user can view valid instrument audit log entries or not.
-func (r accountRoleCollection) CanSeeAuditLogEntriesForValidInstruments() bool {
+func (r householdRoleCollection) CanSeeAuditLogEntriesForValidInstruments() bool {
 	return hasPermission(ReadValidInstrumentsAuditLogEntriesPermission, r.Roles...)
 }
 
 // CanSeeAuditLogEntriesForValidPreparations returns whether a user can view valid preparation audit log entries or not.
-func (r accountRoleCollection) CanSeeAuditLogEntriesForValidPreparations() bool {
+func (r householdRoleCollection) CanSeeAuditLogEntriesForValidPreparations() bool {
 	return hasPermission(ReadValidPreparationsAuditLogEntriesPermission, r.Roles...)
 }
 
 // CanSeeAuditLogEntriesForValidIngredients returns whether a user can view valid ingredient audit log entries or not.
-func (r accountRoleCollection) CanSeeAuditLogEntriesForValidIngredients() bool {
+func (r householdRoleCollection) CanSeeAuditLogEntriesForValidIngredients() bool {
 	return hasPermission(ReadValidIngredientsAuditLogEntriesPermission, r.Roles...)
 }
 
 // CanSeeAuditLogEntriesForValidIngredientPreparations returns whether a user can view valid ingredient preparation audit log entries or not.
-func (r accountRoleCollection) CanSeeAuditLogEntriesForValidIngredientPreparations() bool {
+func (r householdRoleCollection) CanSeeAuditLogEntriesForValidIngredientPreparations() bool {
 	return hasPermission(ReadValidIngredientPreparationsAuditLogEntriesPermission, r.Roles...)
 }
 
 // CanSeeAuditLogEntriesForValidPreparationInstruments returns whether a user can view valid preparation instrument audit log entries or not.
-func (r accountRoleCollection) CanSeeAuditLogEntriesForValidPreparationInstruments() bool {
+func (r householdRoleCollection) CanSeeAuditLogEntriesForValidPreparationInstruments() bool {
 	return hasPermission(ReadValidPreparationInstrumentsAuditLogEntriesPermission, r.Roles...)
 }
 
 // CanSeeAuditLogEntriesForRecipes returns whether a user can view recipe audit log entries or not.
-func (r accountRoleCollection) CanSeeAuditLogEntriesForRecipes() bool {
+func (r householdRoleCollection) CanSeeAuditLogEntriesForRecipes() bool {
 	return hasPermission(ReadRecipesAuditLogEntriesPermission, r.Roles...)
 }
 
 // CanSeeAuditLogEntriesForRecipeSteps returns whether a user can view recipe step audit log entries or not.
-func (r accountRoleCollection) CanSeeAuditLogEntriesForRecipeSteps() bool {
+func (r householdRoleCollection) CanSeeAuditLogEntriesForRecipeSteps() bool {
 	return hasPermission(ReadRecipeStepsAuditLogEntriesPermission, r.Roles...)
 }
 
 // CanSeeAuditLogEntriesForRecipeStepIngredients returns whether a user can view recipe step ingredient audit log entries or not.
-func (r accountRoleCollection) CanSeeAuditLogEntriesForRecipeStepIngredients() bool {
+func (r householdRoleCollection) CanSeeAuditLogEntriesForRecipeStepIngredients() bool {
 	return hasPermission(ReadRecipeStepIngredientsAuditLogEntriesPermission, r.Roles...)
 }
 
 // CanSeeAuditLogEntriesForRecipeStepProducts returns whether a user can view recipe step product audit log entries or not.
-func (r accountRoleCollection) CanSeeAuditLogEntriesForRecipeStepProducts() bool {
+func (r householdRoleCollection) CanSeeAuditLogEntriesForRecipeStepProducts() bool {
 	return hasPermission(ReadRecipeStepProductsAuditLogEntriesPermission, r.Roles...)
 }
 
 // CanSeeAuditLogEntriesForInvitations returns whether a user can view invitation audit log entries or not.
-func (r accountRoleCollection) CanSeeAuditLogEntriesForInvitations() bool {
+func (r householdRoleCollection) CanSeeAuditLogEntriesForInvitations() bool {
 	return hasPermission(ReadInvitationsAuditLogEntriesPermission, r.Roles...)
 }
 
 // CanSeeAuditLogEntriesForReports returns whether a user can view report audit log entries or not.
-func (r accountRoleCollection) CanSeeAuditLogEntriesForReports() bool {
+func (r householdRoleCollection) CanSeeAuditLogEntriesForReports() bool {
 	return hasPermission(ReadReportsAuditLogEntriesPermission, r.Roles...)
 }

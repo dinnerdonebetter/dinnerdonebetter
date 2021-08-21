@@ -121,7 +121,7 @@ func (s *webhooksTestSuite) TestClient_CreateWebhook() {
 		t := s.T()
 
 		exampleInput := fakes.BuildFakeWebhookCreationInputFromWebhook(s.exampleWebhook)
-		exampleInput.BelongsToAccount = 0
+		exampleInput.BelongsToHousehold = 0
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 		c := buildTestClientWithRequestBodyValidation(t, spec, &types.WebhookCreationInput{}, exampleInput, s.exampleWebhook)

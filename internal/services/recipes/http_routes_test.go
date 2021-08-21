@@ -690,7 +690,7 @@ func TestRecipesService_ArchiveHandler(T *testing.T) {
 			"ArchiveRecipe",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
-			helper.exampleAccount.ID,
+			helper.exampleHousehold.ID,
 			helper.exampleUser.ID,
 		).Return(nil)
 		helper.service.recipeDataManager = recipeDataManager
@@ -740,7 +740,7 @@ func TestRecipesService_ArchiveHandler(T *testing.T) {
 			"ArchiveRecipe",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
-			helper.exampleAccount.ID,
+			helper.exampleHousehold.ID,
 			helper.exampleUser.ID,
 		).Return(sql.ErrNoRows)
 		helper.service.recipeDataManager = recipeDataManager
@@ -770,7 +770,7 @@ func TestRecipesService_ArchiveHandler(T *testing.T) {
 			"ArchiveRecipe",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
-			helper.exampleAccount.ID,
+			helper.exampleHousehold.ID,
 			helper.exampleUser.ID,
 		).Return(errors.New("blah"))
 		helper.service.recipeDataManager = recipeDataManager
@@ -791,7 +791,7 @@ func TestRecipesService_ArchiveHandler(T *testing.T) {
 	})
 }
 
-func TestAccountsService_AuditEntryHandler(T *testing.T) {
+func TestHouseholdsService_AuditEntryHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {

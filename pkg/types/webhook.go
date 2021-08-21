@@ -10,43 +10,43 @@ import (
 type (
 	// Webhook represents a webhook listener, an endpoint to send an HTTP request to upon an event.
 	Webhook struct {
-		LastUpdatedOn    *uint64  `json:"lastUpdatedOn"`
-		ArchivedOn       *uint64  `json:"archivedOn"`
-		ExternalID       string   `json:"externalID"`
-		Name             string   `json:"name"`
-		URL              string   `json:"url"`
-		Method           string   `json:"method"`
-		ContentType      string   `json:"contentType"`
-		Events           []string `json:"events"`
-		DataTypes        []string `json:"dataTypes"`
-		Topics           []string `json:"topics"`
-		ID               uint64   `json:"id"`
-		CreatedOn        uint64   `json:"createdOn"`
-		BelongsToAccount uint64   `json:"belongsToAccount"`
+		LastUpdatedOn      *uint64  `json:"lastUpdatedOn"`
+		ArchivedOn         *uint64  `json:"archivedOn"`
+		ExternalID         string   `json:"externalID"`
+		Name               string   `json:"name"`
+		URL                string   `json:"url"`
+		Method             string   `json:"method"`
+		ContentType        string   `json:"contentType"`
+		Events             []string `json:"events"`
+		DataTypes          []string `json:"dataTypes"`
+		Topics             []string `json:"topics"`
+		ID                 uint64   `json:"id"`
+		CreatedOn          uint64   `json:"createdOn"`
+		BelongsToHousehold uint64   `json:"belongsToHousehold"`
 	}
 
 	// WebhookCreationInput represents what a User could set as input for creating a webhook.
 	WebhookCreationInput struct {
-		Name             string   `json:"name"`
-		ContentType      string   `json:"contentType"`
-		URL              string   `json:"url"`
-		Method           string   `json:"method"`
-		Events           []string `json:"events"`
-		DataTypes        []string `json:"dataTypes"`
-		Topics           []string `json:"topics"`
-		BelongsToAccount uint64   `json:"-"`
+		Name               string   `json:"name"`
+		ContentType        string   `json:"contentType"`
+		URL                string   `json:"url"`
+		Method             string   `json:"method"`
+		Events             []string `json:"events"`
+		DataTypes          []string `json:"dataTypes"`
+		Topics             []string `json:"topics"`
+		BelongsToHousehold uint64   `json:"-"`
 	}
 
 	// WebhookUpdateInput represents what a User could set as input for updating a webhook.
 	WebhookUpdateInput struct {
-		Name             string   `json:"name"`
-		ContentType      string   `json:"contentType"`
-		URL              string   `json:"url"`
-		Method           string   `json:"method"`
-		Events           []string `json:"events"`
-		DataTypes        []string `json:"dataTypes"`
-		Topics           []string `json:"topics"`
-		BelongsToAccount uint64   `json:"-"`
+		Name               string   `json:"name"`
+		ContentType        string   `json:"contentType"`
+		URL                string   `json:"url"`
+		Method             string   `json:"method"`
+		Events             []string `json:"events"`
+		DataTypes          []string `json:"dataTypes"`
+		Topics             []string `json:"topics"`
+		BelongsToHousehold uint64   `json:"-"`
 	}
 
 	// WebhookList represents a list of webhooks.
@@ -57,13 +57,13 @@ type (
 
 	// WebhookDataManager describes a structure capable of storing webhooks.
 	WebhookDataManager interface {
-		GetWebhook(ctx context.Context, webhookID, accountID uint64) (*Webhook, error)
+		GetWebhook(ctx context.Context, webhookID, householdID uint64) (*Webhook, error)
 		GetAllWebhooksCount(ctx context.Context) (uint64, error)
 		GetAllWebhooks(ctx context.Context, resultChannel chan []*Webhook, bucketSize uint16) error
-		GetWebhooks(ctx context.Context, accountID uint64, filter *QueryFilter) (*WebhookList, error)
+		GetWebhooks(ctx context.Context, householdID uint64, filter *QueryFilter) (*WebhookList, error)
 		CreateWebhook(ctx context.Context, input *WebhookCreationInput, createdByUser uint64) (*Webhook, error)
 		UpdateWebhook(ctx context.Context, updated *Webhook, changedByUser uint64, changes []*FieldChangeSummary) error
-		ArchiveWebhook(ctx context.Context, webhookID, accountID, archivedByUserID uint64) error
+		ArchiveWebhook(ctx context.Context, webhookID, householdID, archivedByUserID uint64) error
 		GetAuditLogEntriesForWebhook(ctx context.Context, webhookID uint64) ([]*AuditLogEntry, error)
 	}
 

@@ -47,7 +47,7 @@ type Client struct {
 	unauthenticatedClient *http.Client
 	authedClient          *http.Client
 	authMethod            *authMethod
-	accountID             uint64
+	householdID           uint64
 	debug                 bool
 }
 

@@ -13,73 +13,73 @@ import (
 )
 
 var (
-	_ querybuilding.AccountSQLQueryBuilder = (*Postgres)(nil)
+	_ querybuilding.HouseholdSQLQueryBuilder = (*Postgres)(nil)
 )
 
-// BuildGetAccountQuery constructs a SQL query for fetching an account with a given ID belong to a user with a given ID.
-func (b *Postgres) BuildGetAccountQuery(ctx context.Context, accountID, userID uint64) (query string, args []interface{}) {
+// BuildGetHouseholdQuery constructs a SQL query for fetching an household with a given ID belong to a user with a given ID.
+func (b *Postgres) BuildGetHouseholdQuery(ctx context.Context, householdID, userID uint64) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
 	tracing.AttachUserIDToSpan(span, userID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	columns := append(querybuilding.AccountsTableColumns, querybuilding.AccountsUserMembershipTableColumns...)
+	columns := append(querybuilding.HouseholdsTableColumns, querybuilding.HouseholdsUserMembershipTableColumns...)
 
 	return b.buildQuery(
 		span,
 		b.sqlBuilder.Select(columns...).
-			From(querybuilding.AccountsTableName).
+			From(querybuilding.HouseholdsTableName).
 			Join(fmt.Sprintf(
 				"%s ON %s.%s = %s.%s",
-				querybuilding.AccountsUserMembershipTableName,
-				querybuilding.AccountsUserMembershipTableName,
-				querybuilding.AccountsUserMembershipTableAccountOwnershipColumn,
-				querybuilding.AccountsTableName,
+				querybuilding.HouseholdsUserMembershipTableName,
+				querybuilding.HouseholdsUserMembershipTableName,
+				querybuilding.HouseholdsUserMembershipTableHouseholdOwnershipColumn,
+				querybuilding.HouseholdsTableName,
 				querybuilding.IDColumn,
 			)).
 			Where(squirrel.Eq{
-				fmt.Sprintf("%s.%s", querybuilding.AccountsTableName, querybuilding.IDColumn):                         accountID,
-				fmt.Sprintf("%s.%s", querybuilding.AccountsTableName, querybuilding.AccountsTableUserOwnershipColumn): userID,
-				fmt.Sprintf("%s.%s", querybuilding.AccountsTableName, querybuilding.ArchivedOnColumn):                 nil,
+				fmt.Sprintf("%s.%s", querybuilding.HouseholdsTableName, querybuilding.IDColumn):                           householdID,
+				fmt.Sprintf("%s.%s", querybuilding.HouseholdsTableName, querybuilding.HouseholdsTableUserOwnershipColumn): userID,
+				fmt.Sprintf("%s.%s", querybuilding.HouseholdsTableName, querybuilding.ArchivedOnColumn):                   nil,
 			}),
 	)
 }
 
-// BuildGetAllAccountsCountQuery returns a query that fetches the total number of accounts in the database.
+// BuildGetAllHouseholdsCountQuery returns a query that fetches the total number of households in the database.
 // This query only gets generated once, and is otherwise returned from cache.
-func (b *Postgres) BuildGetAllAccountsCountQuery(ctx context.Context) string {
+func (b *Postgres) BuildGetAllHouseholdsCountQuery(ctx context.Context) string {
 	_, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	return b.buildQueryOnly(span, b.sqlBuilder.Select(fmt.Sprintf(columnCountQueryTemplate, querybuilding.AccountsTableName)).
-		From(querybuilding.AccountsTableName).
+	return b.buildQueryOnly(span, b.sqlBuilder.Select(fmt.Sprintf(columnCountQueryTemplate, querybuilding.HouseholdsTableName)).
+		From(querybuilding.HouseholdsTableName).
 		Where(squirrel.Eq{
-			fmt.Sprintf("%s.%s", querybuilding.AccountsTableName, querybuilding.ArchivedOnColumn): nil,
+			fmt.Sprintf("%s.%s", querybuilding.HouseholdsTableName, querybuilding.ArchivedOnColumn): nil,
 		}))
 }
 
-// BuildGetBatchOfAccountsQuery returns a query that fetches every account in the database within a bucketed range.
-func (b *Postgres) BuildGetBatchOfAccountsQuery(ctx context.Context, beginID, endID uint64) (query string, args []interface{}) {
+// BuildGetBatchOfHouseholdsQuery returns a query that fetches every household in the database within a bucketed range.
+func (b *Postgres) BuildGetBatchOfHouseholdsQuery(ctx context.Context, beginID, endID uint64) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return b.buildQuery(
 		span,
-		b.sqlBuilder.Select(querybuilding.AccountsTableColumns...).
-			From(querybuilding.AccountsTableName).
+		b.sqlBuilder.Select(querybuilding.HouseholdsTableColumns...).
+			From(querybuilding.HouseholdsTableName).
 			Where(squirrel.Gt{
-				fmt.Sprintf("%s.%s", querybuilding.AccountsTableName, querybuilding.IDColumn): beginID,
+				fmt.Sprintf("%s.%s", querybuilding.HouseholdsTableName, querybuilding.IDColumn): beginID,
 			}).
 			Where(squirrel.Lt{
-				fmt.Sprintf("%s.%s", querybuilding.AccountsTableName, querybuilding.IDColumn): endID,
+				fmt.Sprintf("%s.%s", querybuilding.HouseholdsTableName, querybuilding.IDColumn): endID,
 			}),
 	)
 }
 
-// BuildGetAccountsQuery builds a SQL query selecting accounts that adhere to a given QueryFilter and belong to a given account,
+// BuildGetHouseholdsQuery builds a SQL query selecting households that adhere to a given QueryFilter and belong to a given household,
 // and returns both the query and the relevant args to pass to the query executor.
-func (b *Postgres) BuildGetAccountsQuery(ctx context.Context, userID uint64, forAdmin bool, filter *types.QueryFilter) (query string, args []interface{}) {
+func (b *Postgres) BuildGetHouseholdsQuery(ctx context.Context, userID uint64, forAdmin bool, filter *types.QueryFilter) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -94,42 +94,42 @@ func (b *Postgres) BuildGetAccountsQuery(ctx context.Context, userID uint64, for
 		includeArchived = filter.IncludeArchived
 	}
 
-	columns := append(querybuilding.AccountsTableColumns, querybuilding.AccountsUserMembershipTableColumns...)
-	filteredCountQuery, filteredCountQueryArgs := b.buildFilteredCountQuery(ctx, querybuilding.AccountsTableName, nil, nil, querybuilding.AccountsTableUserOwnershipColumn, userID, forAdmin, includeArchived, filter)
-	totalCountQuery, totalCountQueryArgs := b.buildTotalCountQuery(ctx, querybuilding.AccountsTableName, nil, nil, querybuilding.AccountsTableUserOwnershipColumn, userID, forAdmin, includeArchived)
+	columns := append(querybuilding.HouseholdsTableColumns, querybuilding.HouseholdsUserMembershipTableColumns...)
+	filteredCountQuery, filteredCountQueryArgs := b.buildFilteredCountQuery(ctx, querybuilding.HouseholdsTableName, nil, nil, querybuilding.HouseholdsTableUserOwnershipColumn, userID, forAdmin, includeArchived, filter)
+	totalCountQuery, totalCountQueryArgs := b.buildTotalCountQuery(ctx, querybuilding.HouseholdsTableName, nil, nil, querybuilding.HouseholdsTableUserOwnershipColumn, userID, forAdmin, includeArchived)
 
 	builder := b.sqlBuilder.Select(append(
 		columns,
 		fmt.Sprintf("(%s) as total_count", totalCountQuery),
 		fmt.Sprintf("(%s) as filtered_count", filteredCountQuery),
 	)...).
-		From(querybuilding.AccountsTableName).
+		From(querybuilding.HouseholdsTableName).
 		Join(fmt.Sprintf(
 			"%s ON %s.%s = %s.%s",
-			querybuilding.AccountsUserMembershipTableName,
-			querybuilding.AccountsUserMembershipTableName,
-			querybuilding.AccountsUserMembershipTableAccountOwnershipColumn,
-			querybuilding.AccountsTableName,
+			querybuilding.HouseholdsUserMembershipTableName,
+			querybuilding.HouseholdsUserMembershipTableName,
+			querybuilding.HouseholdsUserMembershipTableHouseholdOwnershipColumn,
+			querybuilding.HouseholdsTableName,
 			querybuilding.IDColumn,
 		))
 
 	if !forAdmin {
 		builder = builder.Where(squirrel.Eq{
-			fmt.Sprintf("%s.%s", querybuilding.AccountsTableName, querybuilding.ArchivedOnColumn):                 nil,
-			fmt.Sprintf("%s.%s", querybuilding.AccountsTableName, querybuilding.AccountsTableUserOwnershipColumn): userID,
+			fmt.Sprintf("%s.%s", querybuilding.HouseholdsTableName, querybuilding.ArchivedOnColumn):                   nil,
+			fmt.Sprintf("%s.%s", querybuilding.HouseholdsTableName, querybuilding.HouseholdsTableUserOwnershipColumn): userID,
 		})
 	}
 
 	builder = builder.GroupBy(fmt.Sprintf(
 		"%s.%s, %s.%s",
-		querybuilding.AccountsTableName,
+		querybuilding.HouseholdsTableName,
 		querybuilding.IDColumn,
-		querybuilding.AccountsUserMembershipTableName,
+		querybuilding.HouseholdsUserMembershipTableName,
 		querybuilding.IDColumn,
 	))
 
 	if filter != nil {
-		builder = querybuilding.ApplyFilterToQueryBuilder(filter, querybuilding.AccountsTableName, builder)
+		builder = querybuilding.ApplyFilterToQueryBuilder(filter, querybuilding.HouseholdsTableName, builder)
 	}
 
 	query, selectArgs := b.buildQuery(span, builder)
@@ -137,26 +137,26 @@ func (b *Postgres) BuildGetAccountsQuery(ctx context.Context, userID uint64, for
 	return query, append(append(filteredCountQueryArgs, totalCountQueryArgs...), selectArgs...)
 }
 
-// BuildAccountCreationQuery takes an account and returns a creation query for that account and the relevant arguments.
-func (b *Postgres) BuildAccountCreationQuery(ctx context.Context, input *types.AccountCreationInput) (query string, args []interface{}) {
+// BuildHouseholdCreationQuery takes an household and returns a creation query for that household and the relevant arguments.
+func (b *Postgres) BuildHouseholdCreationQuery(ctx context.Context, input *types.HouseholdCreationInput) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return b.buildQuery(
 		span,
-		b.sqlBuilder.Insert(querybuilding.AccountsTableName).
+		b.sqlBuilder.Insert(querybuilding.HouseholdsTableName).
 			Columns(
 				querybuilding.ExternalIDColumn,
-				querybuilding.AccountsTableNameColumn,
-				querybuilding.AccountsTableBillingStatusColumn,
-				querybuilding.AccountsTableContactEmailColumn,
-				querybuilding.AccountsTableContactPhoneColumn,
-				querybuilding.AccountsTableUserOwnershipColumn,
+				querybuilding.HouseholdsTableNameColumn,
+				querybuilding.HouseholdsTableBillingStatusColumn,
+				querybuilding.HouseholdsTableContactEmailColumn,
+				querybuilding.HouseholdsTableContactPhoneColumn,
+				querybuilding.HouseholdsTableUserOwnershipColumn,
 			).
 			Values(
 				b.externalIDGenerator.NewExternalID(),
 				input.Name,
-				types.UnpaidAccountBillingStatus,
+				types.UnpaidHouseholdBillingStatus,
 				input.ContactEmail,
 				input.ContactPhone,
 				input.BelongsToUser,
@@ -165,68 +165,68 @@ func (b *Postgres) BuildAccountCreationQuery(ctx context.Context, input *types.A
 	)
 }
 
-// BuildUpdateAccountQuery takes an account and returns an update SQL query, with the relevant query parameters.
-func (b *Postgres) BuildUpdateAccountQuery(ctx context.Context, input *types.Account) (query string, args []interface{}) {
+// BuildUpdateHouseholdQuery takes an household and returns an update SQL query, with the relevant query parameters.
+func (b *Postgres) BuildUpdateHouseholdQuery(ctx context.Context, input *types.Household) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	tracing.AttachAccountIDToSpan(span, input.ID)
+	tracing.AttachHouseholdIDToSpan(span, input.ID)
 
 	return b.buildQuery(
 		span,
-		b.sqlBuilder.Update(querybuilding.AccountsTableName).
-			Set(querybuilding.AccountsTableNameColumn, input.Name).
-			Set(querybuilding.AccountsTableContactEmailColumn, input.ContactEmail).
-			Set(querybuilding.AccountsTableContactPhoneColumn, input.ContactPhone).
+		b.sqlBuilder.Update(querybuilding.HouseholdsTableName).
+			Set(querybuilding.HouseholdsTableNameColumn, input.Name).
+			Set(querybuilding.HouseholdsTableContactEmailColumn, input.ContactEmail).
+			Set(querybuilding.HouseholdsTableContactPhoneColumn, input.ContactPhone).
 			Set(querybuilding.LastUpdatedOnColumn, currentUnixTimeQuery).
 			Where(squirrel.Eq{
-				querybuilding.IDColumn:                         input.ID,
-				querybuilding.ArchivedOnColumn:                 nil,
-				querybuilding.AccountsTableUserOwnershipColumn: input.BelongsToUser,
+				querybuilding.IDColumn:                           input.ID,
+				querybuilding.ArchivedOnColumn:                   nil,
+				querybuilding.HouseholdsTableUserOwnershipColumn: input.BelongsToUser,
 			}),
 	)
 }
 
-// BuildArchiveAccountQuery returns a SQL query which marks a given account belonging to a given user as archived.
-func (b *Postgres) BuildArchiveAccountQuery(ctx context.Context, accountID, userID uint64) (query string, args []interface{}) {
+// BuildArchiveHouseholdQuery returns a SQL query which marks a given household belonging to a given user as archived.
+func (b *Postgres) BuildArchiveHouseholdQuery(ctx context.Context, householdID, userID uint64) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
 	tracing.AttachUserIDToSpan(span, userID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	return b.buildQuery(
 		span,
-		b.sqlBuilder.Update(querybuilding.AccountsTableName).
+		b.sqlBuilder.Update(querybuilding.HouseholdsTableName).
 			Set(querybuilding.LastUpdatedOnColumn, currentUnixTimeQuery).
 			Set(querybuilding.ArchivedOnColumn, currentUnixTimeQuery).
 			Where(squirrel.Eq{
-				querybuilding.IDColumn:                         accountID,
-				querybuilding.ArchivedOnColumn:                 nil,
-				querybuilding.AccountsTableUserOwnershipColumn: userID,
+				querybuilding.IDColumn:                           householdID,
+				querybuilding.ArchivedOnColumn:                   nil,
+				querybuilding.HouseholdsTableUserOwnershipColumn: userID,
 			}),
 	)
 }
 
-// BuildGetAuditLogEntriesForAccountQuery constructs a SQL query for fetching audit log entries belong to an account with a given ID.
-func (b *Postgres) BuildGetAuditLogEntriesForAccountQuery(ctx context.Context, accountID uint64) (query string, args []interface{}) {
+// BuildGetAuditLogEntriesForHouseholdQuery constructs a SQL query for fetching audit log entries belong to an household with a given ID.
+func (b *Postgres) BuildGetAuditLogEntriesForHouseholdQuery(ctx context.Context, householdID uint64) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	tracing.AttachAccountIDToSpan(span, accountID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	accountIDKey := fmt.Sprintf(
+	householdIDKey := fmt.Sprintf(
 		jsonPluckQuery,
 		querybuilding.AuditLogEntriesTableName,
 		querybuilding.AuditLogEntriesTableContextColumn,
-		audit.AccountAssignmentKey,
+		audit.HouseholdAssignmentKey,
 	)
 
 	return b.buildQuery(
 		span,
 		b.sqlBuilder.Select(querybuilding.AuditLogEntriesTableColumns...).
 			From(querybuilding.AuditLogEntriesTableName).
-			Where(squirrel.Eq{accountIDKey: accountID}).
+			Where(squirrel.Eq{householdIDKey: householdID}).
 			OrderBy(fmt.Sprintf("%s.%s", querybuilding.AuditLogEntriesTableName, querybuilding.CreatedOnColumn)),
 	)
 }

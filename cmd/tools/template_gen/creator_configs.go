@@ -25,9 +25,9 @@ type basicCreatorTemplateConfig struct {
 }
 
 var creatorConfigs = map[string]*basicCreatorTemplateConfig{
-	"internal/services/frontend/templates/partials/generated/creators/account_creator.gotpl": {
-		Title:         "New Account",
-		SubmissionURL: "/accounts/new/submit",
+	"internal/services/frontend/templates/partials/generated/creators/household_creator.gotpl": {
+		Title:         "New Household",
+		SubmissionURL: "/households/new/submit",
 		Fields: []formField{
 			{
 				LabelName:       "name",

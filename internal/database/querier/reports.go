@@ -34,7 +34,7 @@ func (q *SQLQuerier) scanReport(ctx context.Context, scan database.Scanner, incl
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
-		&x.BelongsToAccount,
+		&x.BelongsToHousehold,
 	}
 
 	if includeCounts {
@@ -222,17 +222,17 @@ func (q *SQLQuerier) GetReports(ctx context.Context, filter *types.QueryFilter) 
 }
 
 // GetReportsWithIDs fetches reports from the database within a given set of IDs.
-func (q *SQLQuerier) GetReportsWithIDs(ctx context.Context, accountID uint64, limit uint8, ids []uint64) ([]*types.Report, error) {
+func (q *SQLQuerier) GetReportsWithIDs(ctx context.Context, householdID uint64, limit uint8, ids []uint64) ([]*types.Report, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger
 
-	if accountID == 0 {
+	if householdID == 0 {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	if limit == 0 {
 		limit = uint8(types.DefaultLimit)
@@ -243,7 +243,7 @@ func (q *SQLQuerier) GetReportsWithIDs(ctx context.Context, accountID uint64, li
 		"id_count": len(ids),
 	})
 
-	query, args := q.sqlQueryBuilder.BuildGetReportsWithIDsQuery(ctx, accountID, limit, ids, false)
+	query, args := q.sqlQueryBuilder.BuildGetReportsWithIDsQuery(ctx, householdID, limit, ids, false)
 
 	rows, err := q.performReadQuery(ctx, q.db, "reports with IDs", query, args...)
 	if err != nil {
@@ -289,11 +289,11 @@ func (q *SQLQuerier) CreateReport(ctx context.Context, input *types.ReportCreati
 	}
 
 	x := &types.Report{
-		ID:               id,
-		ReportType:       input.ReportType,
-		Concern:          input.Concern,
-		BelongsToAccount: input.BelongsToAccount,
-		CreatedOn:        q.currentTime(),
+		ID:                 id,
+		ReportType:         input.ReportType,
+		Concern:            input.Concern,
+		BelongsToHousehold: input.BelongsToHousehold,
+		CreatedOn:          q.currentTime(),
 	}
 
 	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildReportCreationEventEntry(x, createdByUser)); err != nil {
@@ -326,7 +326,7 @@ func (q *SQLQuerier) UpdateReport(ctx context.Context, updated *types.Report, ch
 
 	logger := q.logger.WithValue(keys.ReportIDKey, updated.ID)
 	tracing.AttachReportIDToSpan(span, updated.ID)
-	tracing.AttachAccountIDToSpan(span, updated.BelongsToAccount)
+	tracing.AttachHouseholdIDToSpan(span, updated.BelongsToHousehold)
 	tracing.AttachRequestingUserIDToSpan(span, changedByUser)
 
 	tx, err := q.db.BeginTx(ctx, nil)
@@ -340,7 +340,7 @@ func (q *SQLQuerier) UpdateReport(ctx context.Context, updated *types.Report, ch
 		return observability.PrepareError(err, logger, span, "updating report")
 	}
 
-	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildReportUpdateEventEntry(changedByUser, updated.ID, updated.BelongsToAccount, changes)); err != nil {
+	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildReportUpdateEventEntry(changedByUser, updated.ID, updated.BelongsToHousehold, changes)); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, logger, span, "writing report update audit log entry")
 	}
@@ -355,7 +355,7 @@ func (q *SQLQuerier) UpdateReport(ctx context.Context, updated *types.Report, ch
 }
 
 // ArchiveReport archives a report from the database by its ID.
-func (q *SQLQuerier) ArchiveReport(ctx context.Context, reportID, accountID, archivedBy uint64) error {
+func (q *SQLQuerier) ArchiveReport(ctx context.Context, reportID, householdID, archivedBy uint64) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -367,11 +367,11 @@ func (q *SQLQuerier) ArchiveReport(ctx context.Context, reportID, accountID, arc
 	logger = logger.WithValue(keys.ReportIDKey, reportID)
 	tracing.AttachReportIDToSpan(span, reportID)
 
-	if accountID == 0 {
+	if householdID == 0 {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	if archivedBy == 0 {
 		return ErrInvalidIDProvided
@@ -391,7 +391,7 @@ func (q *SQLQuerier) ArchiveReport(ctx context.Context, reportID, accountID, arc
 		return observability.PrepareError(err, logger, span, "updating report")
 	}
 
-	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildReportArchiveEventEntry(archivedBy, accountID, reportID)); err != nil {
+	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildReportArchiveEventEntry(archivedBy, householdID, reportID)); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, logger, span, "writing report archive audit log entry")
 	}

@@ -17,7 +17,7 @@ func buildValidInstrumentMapping() *mapping.IndexMappingImpl {
 	validInstrumentMapping.AddFieldMappingsAt("variant", englishTextFieldMapping)
 	validInstrumentMapping.AddFieldMappingsAt("description", englishTextFieldMapping)
 	validInstrumentMapping.AddFieldMappingsAt("iconPath", englishTextFieldMapping)
-	validInstrumentMapping.AddFieldMappingsAt("belongsToAccount", bleve.NewNumericFieldMapping())
+	validInstrumentMapping.AddFieldMappingsAt("belongsToHousehold", bleve.NewNumericFieldMapping())
 	m.AddDocumentMapping("valid_instrument", validInstrumentMapping)
 
 	return m
@@ -33,7 +33,7 @@ func buildValidPreparationMapping() *mapping.IndexMappingImpl {
 	validPreparationMapping.AddFieldMappingsAt("name", englishTextFieldMapping)
 	validPreparationMapping.AddFieldMappingsAt("description", englishTextFieldMapping)
 	validPreparationMapping.AddFieldMappingsAt("iconPath", englishTextFieldMapping)
-	validPreparationMapping.AddFieldMappingsAt("belongsToAccount", bleve.NewNumericFieldMapping())
+	validPreparationMapping.AddFieldMappingsAt("belongsToHousehold", bleve.NewNumericFieldMapping())
 	m.AddDocumentMapping("valid_preparation", validPreparationMapping)
 
 	return m
@@ -51,7 +51,7 @@ func buildValidIngredientMapping() *mapping.IndexMappingImpl {
 	validIngredientMapping.AddFieldMappingsAt("description", englishTextFieldMapping)
 	validIngredientMapping.AddFieldMappingsAt("warning", englishTextFieldMapping)
 	validIngredientMapping.AddFieldMappingsAt("iconPath", englishTextFieldMapping)
-	validIngredientMapping.AddFieldMappingsAt("belongsToAccount", bleve.NewNumericFieldMapping())
+	validIngredientMapping.AddFieldMappingsAt("belongsToHousehold", bleve.NewNumericFieldMapping())
 	m.AddDocumentMapping("valid_ingredient", validIngredientMapping)
 
 	return m

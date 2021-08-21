@@ -17,7 +17,7 @@ func BuildFakeRecipe() *types.Recipe {
 		//DisplayImageURL:    fake.ImageURL(123, 123),
 		InspiredByRecipeID: func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
 		CreatedOn:          uint64(uint32(fake.Date().Unix())),
-		BelongsToAccount:   fake.Uint64(),
+		BelongsToHousehold: fake.Uint64(),
 		Steps:              BuildFakeRecipeStepList().RecipeSteps,
 	}
 }
@@ -49,7 +49,7 @@ func BuildFakeRecipeUpdateInput() *types.RecipeUpdateInput {
 		Description:        recipe.Description,
 		DisplayImageURL:    recipe.DisplayImageURL,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
-		BelongsToAccount:   recipe.BelongsToAccount,
+		BelongsToHousehold: recipe.BelongsToHousehold,
 	}
 }
 
@@ -61,7 +61,7 @@ func BuildFakeRecipeUpdateInputFromRecipe(recipe *types.Recipe) *types.RecipeUpd
 		Description:        recipe.Description,
 		DisplayImageURL:    recipe.DisplayImageURL,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
-		BelongsToAccount:   recipe.BelongsToAccount,
+		BelongsToHousehold: recipe.BelongsToHousehold,
 	}
 }
 
@@ -84,7 +84,7 @@ func BuildFakeRecipeCreationInputFromRecipe(recipe *types.Recipe) *types.RecipeC
 		Description:        recipe.Description,
 		DisplayImageURL:    recipe.DisplayImageURL,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
-		BelongsToAccount:   recipe.BelongsToAccount,
+		BelongsToHousehold: recipe.BelongsToHousehold,
 		Steps:              steps,
 	}
 }

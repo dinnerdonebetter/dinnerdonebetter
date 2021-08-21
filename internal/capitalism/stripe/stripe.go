@@ -62,18 +62,18 @@ func ProvideStripePaymentManager(logger logging.Logger, cfg *capitalism.StripeCo
 	return spm
 }
 
-func buildCustomerName(account *types.Account) string {
-	return fmt.Sprintf("%s (%d)", account.Name, account.ID)
+func buildCustomerName(household *types.Household) string {
+	return fmt.Sprintf("%s (%d)", household.Name, household.ID)
 }
 
-func buildGetCustomerParams(a *types.Account) *stripe.CustomerParams {
+func buildGetCustomerParams(a *types.Household) *stripe.CustomerParams {
 	p := &stripe.CustomerParams{
 		Name:    stripe.String(buildCustomerName(a)),
 		Email:   stripe.String(a.ContactEmail),
 		Phone:   stripe.String(a.ContactPhone),
 		Address: &stripe.AddressParams{},
 	}
-	p.AddMetadata(keys.AccountIDKey, a.ExternalID)
+	p.AddMetadata(keys.HouseholdIDKey, a.ExternalID)
 
 	return p
 }
@@ -99,7 +99,7 @@ func (s *stripePaymentManager) CreateCheckoutSession(ctx context.Context, subscr
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue(keys.AccountSubscriptionPlanIDKey, subscriptionPlanID)
+	logger := s.logger.WithValue(keys.HouseholdSubscriptionPlanIDKey, subscriptionPlanID)
 
 	params := &stripe.CheckoutSessionParams{
 		SuccessURL:         stripe.String(s.successURL),
@@ -159,13 +159,13 @@ func (s *stripePaymentManager) HandleSubscriptionEventWebhook(req *http.Request)
 	return nil
 }
 
-func (s *stripePaymentManager) CreateCustomerID(ctx context.Context, account *types.Account) (string, error) {
+func (s *stripePaymentManager) CreateCustomerID(ctx context.Context, household *types.Household) (string, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue(keys.AccountIDKey, account.ID)
+	logger := s.logger.WithValue(keys.HouseholdIDKey, household.ID)
 
-	params := buildGetCustomerParams(account)
+	params := buildGetCustomerParams(household)
 
 	c, err := s.client.Customers.New(params)
 	if err != nil {
@@ -181,7 +181,7 @@ func (s *stripePaymentManager) findSubscriptionID(ctx context.Context, customerI
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue(keys.AccountSubscriptionPlanIDKey, planID)
+	logger := s.logger.WithValue(keys.HouseholdSubscriptionPlanIDKey, planID)
 
 	cus, err := s.client.Customers.Get(customerID, nil)
 	if err != nil {
@@ -201,7 +201,7 @@ func (s *stripePaymentManager) SubscribeToPlan(ctx context.Context, customerID, 
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue(keys.AccountSubscriptionPlanIDKey, planID)
+	logger := s.logger.WithValue(keys.HouseholdSubscriptionPlanIDKey, planID)
 
 	// check first if the plan is already implemented.
 	subscriptionID, err := s.findSubscriptionID(ctx, customerID, planID)

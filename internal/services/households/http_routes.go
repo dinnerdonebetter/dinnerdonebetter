@@ -1,4 +1,4 @@
-package accounts
+package households
 
 import (
 	"database/sql"
@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	// AccountIDURIParamKey is a standard string that we'll use to refer to account IDs with.
-	AccountIDURIParamKey = "accountID"
+	// HouseholdIDURIParamKey is a standard string that we'll use to refer to household IDs with.
+	HouseholdIDURIParamKey = "householdID"
 	// UserIDURIParamKey is a standard string that we'll use to refer to user IDs with.
 	UserIDURIParamKey = "userID"
 )
@@ -43,21 +43,21 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.RequesterIDKey, requester)
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 
-	accounts, err := s.accountDataManager.GetAccounts(ctx, requester, filter)
+	households, err := s.householdDataManager.GetHouseholds(ctx, requester, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		accounts = &types.AccountList{Accounts: []*types.Account{}}
+		households = &types.HouseholdList{Households: []*types.Household{}}
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "fetching accounts")
+		observability.AcknowledgeError(err, logger, span, "fetching households")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
 	// encode our response and say farewell.
-	s.encoderDecoder.RespondWithData(ctx, res, accounts)
+	s.encoderDecoder.RespondWithData(ctx, res, households)
 }
 
-// CreateHandler is our account creation route.
+// CreateHandler is our household creation route.
 func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -74,7 +74,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// check session context data for parsed input struct.
-	input := new(types.AccountCreationInput)
+	input := new(types.HouseholdCreationInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
@@ -94,25 +94,25 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.RequesterIDKey, requester)
 	input.BelongsToUser = requester
 
-	// create account in database.
-	account, err := s.accountDataManager.CreateAccount(ctx, input, requester)
+	// create household in database.
+	household, err := s.householdDataManager.CreateHousehold(ctx, input, requester)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating account")
+		observability.AcknowledgeError(err, logger, span, "creating household")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	logger = logger.WithValue(keys.AccountIDKey, account.ID)
-	tracing.AttachAccountIDToSpan(span, account.ID)
+	logger = logger.WithValue(keys.HouseholdIDKey, household.ID)
+	tracing.AttachHouseholdIDToSpan(span, household.ID)
 
 	// notify relevant parties.
-	logger.Debug("created account")
-	s.accountCounter.Increment(ctx)
+	logger.Debug("created household")
+	s.householdCounter.Increment(ctx)
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, account, http.StatusCreated)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, household, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns an account.
+// ReadHandler returns a GET handler that returns an household.
 func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -131,27 +131,27 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.RequesterIDKey, requester)
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 
-	// determine account ID.
-	accountID := s.accountIDFetcher(req)
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	// determine household ID.
+	householdID := s.householdIDFetcher(req)
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	// fetch account from database.
-	account, err := s.accountDataManager.GetAccount(ctx, accountID, requester)
+	// fetch household from database.
+	household, err := s.householdDataManager.GetHousehold(ctx, householdID, requester)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "fetching account from database")
+		observability.AcknowledgeError(err, logger, span, "fetching household from database")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, account)
+	s.encoderDecoder.RespondWithData(ctx, res, household)
 }
 
-// UpdateHandler returns a handler that updates an account.
+// UpdateHandler returns a handler that updates an household.
 func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -167,7 +167,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	input := new(types.AccountUpdateInput)
+	input := new(types.HouseholdUpdateInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
@@ -185,38 +185,38 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.RequesterIDKey, requester)
 	input.BelongsToUser = requester
 
-	// determine account ID.
-	accountID := s.accountIDFetcher(req)
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	// determine household ID.
+	householdID := s.householdIDFetcher(req)
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	// fetch account from database.
-	account, err := s.accountDataManager.GetAccount(ctx, accountID, requester)
+	// fetch household from database.
+	household, err := s.householdDataManager.GetHousehold(ctx, householdID, requester)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "fetching account from database")
+		observability.AcknowledgeError(err, logger, span, "fetching household from database")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
 	// update the data structure.
-	changeReport := account.Update(input)
-	tracing.AttachChangeSummarySpan(span, "account", changeReport)
+	changeReport := household.Update(input)
+	tracing.AttachChangeSummarySpan(span, "household", changeReport)
 
-	// update account in database.
-	if err = s.accountDataManager.UpdateAccount(ctx, account, requester, changeReport); err != nil {
-		observability.AcknowledgeError(err, logger, span, "updating account")
+	// update household in database.
+	if err = s.householdDataManager.UpdateHousehold(ctx, household, requester, changeReport); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating household")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, account)
+	s.encoderDecoder.RespondWithData(ctx, res, household)
 }
 
-// ArchiveHandler returns a handler that archives an account.
+// ArchiveHandler returns a handler that archives an household.
 func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -236,30 +236,30 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.RequesterIDKey, requester)
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 
-	// determine account ID.
-	accountID := s.accountIDFetcher(req)
-	tracing.AttachAccountIDToSpan(span, accountID)
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	// determine household ID.
+	householdID := s.householdIDFetcher(req)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
-	// archive the account in the database.
-	err = s.accountDataManager.ArchiveAccount(ctx, accountID, requester, requester)
+	// archive the household in the database.
+	err = s.householdDataManager.ArchiveHousehold(ctx, householdID, requester, requester)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "archiving account")
+		observability.AcknowledgeError(err, logger, span, "archiving household")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
 	// notify relevant parties.
-	s.accountCounter.Decrement(ctx)
+	s.householdCounter.Decrement(ctx)
 
 	// encode our response and peace.
 	res.WriteHeader(http.StatusNoContent)
 }
 
-// AddMemberHandler is our account creation route.
+// AddMemberHandler is our household creation route.
 func (s *service) AddMemberHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -276,7 +276,7 @@ func (s *service) AddMemberHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// check session context data for parsed input struct.
-	input := new(types.AddUserToAccountInput)
+	input := new(types.AddUserToHouseholdInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
@@ -293,13 +293,13 @@ func (s *service) AddMemberHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = logger.WithValue(keys.RequesterIDKey, requester)
 
-	accountID := s.accountIDFetcher(req)
-	tracing.AttachAccountIDToSpan(span, accountID)
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	householdID := s.householdIDFetcher(req)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
-	// create account in database.
-	if err = s.accountMembershipDataManager.AddUserToAccount(ctx, input, requester); err != nil {
-		observability.AcknowledgeError(err, logger, span, "adding user to account")
+	// create household in database.
+	if err = s.householdMembershipDataManager.AddUserToHousehold(ctx, input, requester); err != nil {
+		observability.AcknowledgeError(err, logger, span, "adding user to household")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -307,7 +307,7 @@ func (s *service) AddMemberHandler(res http.ResponseWriter, req *http.Request) {
 	res.WriteHeader(http.StatusAccepted)
 }
 
-// ModifyMemberPermissionsHandler is our account creation route.
+// ModifyMemberPermissionsHandler is our household creation route.
 func (s *service) ModifyMemberPermissionsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -341,16 +341,16 @@ func (s *service) ModifyMemberPermissionsHandler(res http.ResponseWriter, req *h
 	logger = logger.WithValue(keys.RequesterIDKey, requester)
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 
-	accountID := s.accountIDFetcher(req)
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	householdID := s.householdIDFetcher(req)
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	userID := s.userIDFetcher(req)
 	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachAccountIDToSpan(span, userID)
+	tracing.AttachHouseholdIDToSpan(span, userID)
 
-	// create account in database.
-	if err = s.accountMembershipDataManager.ModifyUserPermissions(ctx, userID, accountID, requester, input); err != nil {
+	// create household in database.
+	if err = s.householdMembershipDataManager.ModifyUserPermissions(ctx, userID, householdID, requester, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "modifying user permissions")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
@@ -359,8 +359,8 @@ func (s *service) ModifyMemberPermissionsHandler(res http.ResponseWriter, req *h
 	res.WriteHeader(http.StatusAccepted)
 }
 
-// TransferAccountOwnershipHandler is our account creation route.
-func (s *service) TransferAccountOwnershipHandler(res http.ResponseWriter, req *http.Request) {
+// TransferHouseholdOwnershipHandler is our household creation route.
+func (s *service) TransferHouseholdOwnershipHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -370,13 +370,13 @@ func (s *service) TransferAccountOwnershipHandler(res http.ResponseWriter, req *
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "transferring account ownership")
+		observability.AcknowledgeError(err, logger, span, "transferring household ownership")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
 		return
 	}
 
 	// check session context data for parsed input struct.
-	input := new(types.AccountOwnershipTransferInput)
+	input := new(types.HouseholdOwnershipTransferInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
@@ -389,17 +389,17 @@ func (s *service) TransferAccountOwnershipHandler(res http.ResponseWriter, req *
 		return
 	}
 
-	accountID := s.accountIDFetcher(req)
-	tracing.AttachAccountIDToSpan(span, accountID)
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	householdID := s.householdIDFetcher(req)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
 	requester := sessionCtxData.Requester.UserID
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = logger.WithValue(keys.RequesterIDKey, requester)
 
-	// transfer ownership of account in database.
-	if err = s.accountMembershipDataManager.TransferAccountOwnership(ctx, accountID, requester, input); err != nil {
-		observability.AcknowledgeError(err, logger, span, "transferring account ownership")
+	// transfer ownership of household in database.
+	if err = s.householdMembershipDataManager.TransferHouseholdOwnership(ctx, householdID, requester, input); err != nil {
+		observability.AcknowledgeError(err, logger, span, "transferring household ownership")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -407,7 +407,7 @@ func (s *service) TransferAccountOwnershipHandler(res http.ResponseWriter, req *
 	res.WriteHeader(http.StatusAccepted)
 }
 
-// RemoveMemberHandler is our account creation route.
+// RemoveMemberHandler is our household creation route.
 func (s *service) RemoveMemberHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -431,17 +431,17 @@ func (s *service) RemoveMemberHandler(res http.ResponseWriter, req *http.Request
 	logger = logger.WithValue(keys.RequesterIDKey, requester)
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 
-	accountID := s.accountIDFetcher(req)
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	householdID := s.householdIDFetcher(req)
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	userID := s.userIDFetcher(req)
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachUserIDToSpan(span, userID)
 
-	// remove user from account in database.
-	if err = s.accountMembershipDataManager.RemoveUserFromAccount(ctx, userID, accountID, requester, reason); err != nil {
-		observability.AcknowledgeError(err, logger, span, "removing user from account")
+	// remove user from household in database.
+	if err = s.householdMembershipDataManager.RemoveUserFromHousehold(ctx, userID, householdID, requester, reason); err != nil {
+		observability.AcknowledgeError(err, logger, span, "removing user from household")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -449,17 +449,17 @@ func (s *service) RemoveMemberHandler(res http.ResponseWriter, req *http.Request
 	res.WriteHeader(http.StatusAccepted)
 }
 
-// MarkAsDefaultAccountHandler is our account creation route.
-func (s *service) MarkAsDefaultAccountHandler(res http.ResponseWriter, req *http.Request) {
+// MarkAsDefaultHouseholdHandler is our household creation route.
+func (s *service) MarkAsDefaultHouseholdHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
-	accountID := s.accountIDFetcher(req)
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	householdID := s.householdIDFetcher(req)
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
@@ -473,9 +473,9 @@ func (s *service) MarkAsDefaultAccountHandler(res http.ResponseWriter, req *http
 	logger = logger.WithValue(keys.RequesterIDKey, requester)
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 
-	// mark account as default in database.
-	if err = s.accountMembershipDataManager.MarkAccountAsUserDefault(ctx, requester, accountID, requester); err != nil {
-		observability.AcknowledgeError(err, logger, span, "marking account as default")
+	// mark household as default in database.
+	if err = s.householdMembershipDataManager.MarkHouseholdAsUserDefault(ctx, requester, householdID, requester); err != nil {
+		observability.AcknowledgeError(err, logger, span, "marking household as default")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -483,7 +483,7 @@ func (s *service) MarkAsDefaultAccountHandler(res http.ResponseWriter, req *http
 	res.WriteHeader(http.StatusAccepted)
 }
 
-// AuditEntryHandler returns a GET handler that returns all audit log entries related to an account.
+// AuditEntryHandler returns a GET handler that returns all audit log entries related to an household.
 func (s *service) AuditEntryHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -503,12 +503,12 @@ func (s *service) AuditEntryHandler(res http.ResponseWriter, req *http.Request) 
 	logger = logger.WithValue(keys.RequesterIDKey, requester)
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 
-	// determine account ID.
-	accountID := s.accountIDFetcher(req)
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	// determine household ID.
+	householdID := s.householdIDFetcher(req)
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	x, err := s.accountDataManager.GetAuditLogEntriesForAccount(ctx, accountID)
+	x, err := s.householdDataManager.GetAuditLogEntriesForHousehold(ctx, householdID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return

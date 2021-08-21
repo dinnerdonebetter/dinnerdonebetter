@@ -46,8 +46,8 @@ func (m *InvitationDataManager) GetInvitations(ctx context.Context, filter *type
 }
 
 // GetInvitationsWithIDs is a mock function.
-func (m *InvitationDataManager) GetInvitationsWithIDs(ctx context.Context, accountID uint64, limit uint8, ids []uint64) ([]*types.Invitation, error) {
-	args := m.Called(ctx, accountID, limit, ids)
+func (m *InvitationDataManager) GetInvitationsWithIDs(ctx context.Context, householdID uint64, limit uint8, ids []uint64) ([]*types.Invitation, error) {
+	args := m.Called(ctx, householdID, limit, ids)
 	return args.Get(0).([]*types.Invitation), args.Error(1)
 }
 
@@ -63,8 +63,8 @@ func (m *InvitationDataManager) UpdateInvitation(ctx context.Context, updated *t
 }
 
 // ArchiveInvitation is a mock function.
-func (m *InvitationDataManager) ArchiveInvitation(ctx context.Context, invitationID, accountID, archivedBy uint64) error {
-	return m.Called(ctx, invitationID, accountID, archivedBy).Error(0)
+func (m *InvitationDataManager) ArchiveInvitation(ctx context.Context, invitationID, householdID, archivedBy uint64) error {
+	return m.Called(ctx, invitationID, householdID, archivedBy).Error(0)
 }
 
 // GetAuditLogEntriesForInvitation is a mock function.

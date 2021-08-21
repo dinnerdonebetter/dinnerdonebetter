@@ -27,8 +27,8 @@ func (m *MockPaymentManager) HandleSubscriptionEventWebhook(req *http.Request) e
 }
 
 // CreateCustomerID satisfies our interface contract.
-func (m *MockPaymentManager) CreateCustomerID(ctx context.Context, account *types.Account) (string, error) {
-	returnValues := m.Called(ctx, account)
+func (m *MockPaymentManager) CreateCustomerID(ctx context.Context, household *types.Household) (string, error) {
+	returnValues := m.Called(ctx, household)
 
 	return returnValues.String(0), returnValues.Error(1)
 }

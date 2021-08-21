@@ -60,7 +60,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	input.BelongsToAccount = sessionCtxData.ActiveAccountID
+	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 
 	// create report in database.
 	report, err := s.reportDataManager.CreateReport(ctx, input, sessionCtxData.Requester.UserID)
@@ -223,7 +223,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
 	}
-	input.BelongsToAccount = sessionCtxData.ActiveAccountID
+	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 
 	// determine report ID.
 	reportID := s.reportIDFetcher(req)
@@ -283,7 +283,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.ReportIDKey, reportID)
 
 	// archive the report in the database.
-	err = s.reportDataManager.ArchiveReport(ctx, reportID, sessionCtxData.ActiveAccountID, sessionCtxData.Requester.UserID)
+	err = s.reportDataManager.ArchiveReport(ctx, reportID, sessionCtxData.ActiveHouseholdID, sessionCtxData.Requester.UserID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return

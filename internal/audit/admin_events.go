@@ -14,10 +14,10 @@ func BuildUserBanEventEntry(banGiver, banRecipient uint64, reason string) *types
 	}
 }
 
-// BuildAccountTerminationEventEntry builds an entry creation input for when an account is terminated.
-func BuildAccountTerminationEventEntry(terminator, terminee uint64, reason string) *types.AuditLogEntryCreationInput {
+// BuildHouseholdTerminationEventEntry builds an entry creation input for when an household is terminated.
+func BuildHouseholdTerminationEventEntry(terminator, terminee uint64, reason string) *types.AuditLogEntryCreationInput {
 	return &types.AuditLogEntryCreationInput{
-		EventType: AccountTerminatedEvent,
+		EventType: HouseholdTerminatedEvent,
 		Context: map[string]interface{}{
 			ActorAssignmentKey: terminator,
 			UserAssignmentKey:  terminee,

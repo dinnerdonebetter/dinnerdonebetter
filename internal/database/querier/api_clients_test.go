@@ -976,7 +976,7 @@ func TestQuerier_ArchiveAPIClient(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
+		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleAPIClient := fakes.BuildFakeAPIClient()
 
 		ctx := context.Background()
@@ -991,7 +991,7 @@ func TestQuerier_ArchiveAPIClient(T *testing.T) {
 			"BuildArchiveAPIClientQuery",
 			testutils.ContextMatcher,
 			exampleAPIClient.ID,
-			exampleAccount.ID,
+			exampleHousehold.ID,
 		).Return(fakeQuery, fakeArgs)
 
 		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
@@ -1004,7 +1004,7 @@ func TestQuerier_ArchiveAPIClient(T *testing.T) {
 
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		assert.NoError(t, c.ArchiveAPIClient(ctx, exampleAPIClient.ID, exampleAccount.ID, exampleUser.ID))
+		assert.NoError(t, c.ArchiveAPIClient(ctx, exampleAPIClient.ID, exampleHousehold.ID, exampleUser.ID))
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
@@ -1013,15 +1013,15 @@ func TestQuerier_ArchiveAPIClient(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
+		exampleHousehold := fakes.BuildFakeHousehold()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveAPIClient(ctx, 0, exampleAccount.ID, exampleUser.ID))
+		assert.Error(t, c.ArchiveAPIClient(ctx, 0, exampleHousehold.ID, exampleUser.ID))
 	})
 
-	T.Run("with invalid account ID", func(t *testing.T) {
+	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
@@ -1036,20 +1036,20 @@ func TestQuerier_ArchiveAPIClient(T *testing.T) {
 	T.Run("with invalid actor ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccount := fakes.BuildFakeAccount()
+		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleAPIClient := fakes.BuildFakeAPIClient()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveAPIClient(ctx, exampleAPIClient.ID, exampleAccount.ID, 0))
+		assert.Error(t, c.ArchiveAPIClient(ctx, exampleAPIClient.ID, exampleHousehold.ID, 0))
 	})
 
 	T.Run("with error beginning transaction", func(t *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
+		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleAPIClient := fakes.BuildFakeAPIClient()
 
 		ctx := context.Background()
@@ -1057,7 +1057,7 @@ func TestQuerier_ArchiveAPIClient(T *testing.T) {
 
 		db.ExpectBegin().WillReturnError(errors.New("blah"))
 
-		assert.Error(t, c.ArchiveAPIClient(ctx, exampleAPIClient.ID, exampleAccount.ID, exampleUser.ID))
+		assert.Error(t, c.ArchiveAPIClient(ctx, exampleAPIClient.ID, exampleHousehold.ID, exampleUser.ID))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -1066,7 +1066,7 @@ func TestQuerier_ArchiveAPIClient(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
+		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleAPIClient := fakes.BuildFakeAPIClient()
 
 		ctx := context.Background()
@@ -1081,7 +1081,7 @@ func TestQuerier_ArchiveAPIClient(T *testing.T) {
 			"BuildArchiveAPIClientQuery",
 			testutils.ContextMatcher,
 			exampleAPIClient.ID,
-			exampleAccount.ID,
+			exampleHousehold.ID,
 		).Return(fakeQuery, fakeArgs)
 
 		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
@@ -1092,7 +1092,7 @@ func TestQuerier_ArchiveAPIClient(T *testing.T) {
 
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		assert.Error(t, c.ArchiveAPIClient(ctx, exampleAPIClient.ID, exampleAccount.ID, exampleUser.ID))
+		assert.Error(t, c.ArchiveAPIClient(ctx, exampleAPIClient.ID, exampleHousehold.ID, exampleUser.ID))
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
@@ -1101,7 +1101,7 @@ func TestQuerier_ArchiveAPIClient(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
+		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleAPIClient := fakes.BuildFakeAPIClient()
 
 		ctx := context.Background()
@@ -1116,7 +1116,7 @@ func TestQuerier_ArchiveAPIClient(T *testing.T) {
 			"BuildArchiveAPIClientQuery",
 			testutils.ContextMatcher,
 			exampleAPIClient.ID,
-			exampleAccount.ID,
+			exampleHousehold.ID,
 		).Return(fakeQuery, fakeArgs)
 
 		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
@@ -1129,7 +1129,7 @@ func TestQuerier_ArchiveAPIClient(T *testing.T) {
 
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		assert.Error(t, c.ArchiveAPIClient(ctx, exampleAPIClient.ID, exampleAccount.ID, exampleUser.ID))
+		assert.Error(t, c.ArchiveAPIClient(ctx, exampleAPIClient.ID, exampleHousehold.ID, exampleUser.ID))
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
@@ -1138,7 +1138,7 @@ func TestQuerier_ArchiveAPIClient(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
+		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleAPIClient := fakes.BuildFakeAPIClient()
 
 		ctx := context.Background()
@@ -1153,7 +1153,7 @@ func TestQuerier_ArchiveAPIClient(T *testing.T) {
 			"BuildArchiveAPIClientQuery",
 			testutils.ContextMatcher,
 			exampleAPIClient.ID,
-			exampleAccount.ID,
+			exampleHousehold.ID,
 		).Return(fakeQuery, fakeArgs)
 
 		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
@@ -1166,7 +1166,7 @@ func TestQuerier_ArchiveAPIClient(T *testing.T) {
 
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		assert.Error(t, c.ArchiveAPIClient(ctx, exampleAPIClient.ID, exampleAccount.ID, exampleUser.ID))
+		assert.Error(t, c.ArchiveAPIClient(ctx, exampleAPIClient.ID, exampleHousehold.ID, exampleUser.ID))
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})

@@ -9,72 +9,72 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-var _ querybuilding.AccountSQLQueryBuilder = (*AccountSQLQueryBuilder)(nil)
+var _ querybuilding.HouseholdSQLQueryBuilder = (*HouseholdSQLQueryBuilder)(nil)
 
-// AccountSQLQueryBuilder is a mocked types.AccountSQLQueryBuilder for testing.
-type AccountSQLQueryBuilder struct {
+// HouseholdSQLQueryBuilder is a mocked types.HouseholdSQLQueryBuilder for testing.
+type HouseholdSQLQueryBuilder struct {
 	mock.Mock
 }
 
-// BuildTransferAccountOwnershipQuery implements our interface.
-func (m *AccountSQLQueryBuilder) BuildTransferAccountOwnershipQuery(ctx context.Context, currentOwnerID, newOwnerID, accountID uint64) (query string, args []interface{}) {
-	returnArgs := m.Called(ctx, currentOwnerID, newOwnerID, accountID)
+// BuildTransferHouseholdOwnershipQuery implements our interface.
+func (m *HouseholdSQLQueryBuilder) BuildTransferHouseholdOwnershipQuery(ctx context.Context, currentOwnerID, newOwnerID, householdID uint64) (query string, args []interface{}) {
+	returnArgs := m.Called(ctx, currentOwnerID, newOwnerID, householdID)
 
 	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
 }
 
-// BuildGetAccountQuery implements our interface.
-func (m *AccountSQLQueryBuilder) BuildGetAccountQuery(ctx context.Context, accountID, userID uint64) (query string, args []interface{}) {
-	returnArgs := m.Called(ctx, accountID, userID)
+// BuildGetHouseholdQuery implements our interface.
+func (m *HouseholdSQLQueryBuilder) BuildGetHouseholdQuery(ctx context.Context, householdID, userID uint64) (query string, args []interface{}) {
+	returnArgs := m.Called(ctx, householdID, userID)
 
 	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
 }
 
-// BuildGetAllAccountsCountQuery implements our interface.
-func (m *AccountSQLQueryBuilder) BuildGetAllAccountsCountQuery(ctx context.Context) string {
+// BuildGetAllHouseholdsCountQuery implements our interface.
+func (m *HouseholdSQLQueryBuilder) BuildGetAllHouseholdsCountQuery(ctx context.Context) string {
 	returnArgs := m.Called(ctx)
 
 	return returnArgs.String(0)
 }
 
-// BuildGetBatchOfAccountsQuery implements our interface.
-func (m *AccountSQLQueryBuilder) BuildGetBatchOfAccountsQuery(ctx context.Context, beginID, endID uint64) (query string, args []interface{}) {
+// BuildGetBatchOfHouseholdsQuery implements our interface.
+func (m *HouseholdSQLQueryBuilder) BuildGetBatchOfHouseholdsQuery(ctx context.Context, beginID, endID uint64) (query string, args []interface{}) {
 	returnArgs := m.Called(ctx, beginID, endID)
 
 	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
 }
 
-// BuildGetAccountsQuery implements our interface.
-func (m *AccountSQLQueryBuilder) BuildGetAccountsQuery(ctx context.Context, userID uint64, forAdmin bool, filter *types.QueryFilter) (query string, args []interface{}) {
+// BuildGetHouseholdsQuery implements our interface.
+func (m *HouseholdSQLQueryBuilder) BuildGetHouseholdsQuery(ctx context.Context, userID uint64, forAdmin bool, filter *types.QueryFilter) (query string, args []interface{}) {
 	returnArgs := m.Called(ctx, userID, forAdmin, filter)
 
 	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
 }
 
-// BuildAccountCreationQuery implements our interface.
-func (m *AccountSQLQueryBuilder) BuildAccountCreationQuery(ctx context.Context, input *types.AccountCreationInput) (query string, args []interface{}) {
+// BuildHouseholdCreationQuery implements our interface.
+func (m *HouseholdSQLQueryBuilder) BuildHouseholdCreationQuery(ctx context.Context, input *types.HouseholdCreationInput) (query string, args []interface{}) {
 	returnArgs := m.Called(ctx, input)
 
 	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
 }
 
-// BuildUpdateAccountQuery implements our interface.
-func (m *AccountSQLQueryBuilder) BuildUpdateAccountQuery(ctx context.Context, input *types.Account) (query string, args []interface{}) {
+// BuildUpdateHouseholdQuery implements our interface.
+func (m *HouseholdSQLQueryBuilder) BuildUpdateHouseholdQuery(ctx context.Context, input *types.Household) (query string, args []interface{}) {
 	returnArgs := m.Called(ctx, input)
 
 	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
 }
 
-// BuildArchiveAccountQuery implements our interface.
-func (m *AccountSQLQueryBuilder) BuildArchiveAccountQuery(ctx context.Context, accountID, userID uint64) (query string, args []interface{}) {
-	returnArgs := m.Called(ctx, accountID, userID)
+// BuildArchiveHouseholdQuery implements our interface.
+func (m *HouseholdSQLQueryBuilder) BuildArchiveHouseholdQuery(ctx context.Context, householdID, userID uint64) (query string, args []interface{}) {
+	returnArgs := m.Called(ctx, householdID, userID)
 
 	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
 }
 
-// BuildGetAuditLogEntriesForAccountQuery implements our interface.
-func (m *AccountSQLQueryBuilder) BuildGetAuditLogEntriesForAccountQuery(ctx context.Context, accountID uint64) (query string, args []interface{}) {
-	returnArgs := m.Called(ctx, accountID)
+// BuildGetAuditLogEntriesForHouseholdQuery implements our interface.
+func (m *HouseholdSQLQueryBuilder) BuildGetAuditLogEntriesForHouseholdQuery(ctx context.Context, householdID uint64) (query string, args []interface{}) {
+	returnArgs := m.Called(ctx, householdID)
 
 	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
 }

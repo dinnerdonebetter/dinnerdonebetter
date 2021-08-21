@@ -66,7 +66,7 @@ func (b *Postgres) BuildGetAllAPIClientsCountQuery(ctx context.Context) string {
 }
 
 // BuildGetAPIClientsQuery returns a SQL query (and arguments) that will retrieve a list of API clients that
-// meet the given filter's criteria (if relevant) and belong to a given account.
+// meet the given filter's criteria (if relevant) and belong to a given household.
 func (b *Postgres) BuildGetAPIClientsQuery(ctx context.Context, userID uint64, filter *types.QueryFilter) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
 	defer span.End()

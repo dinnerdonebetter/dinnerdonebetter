@@ -209,7 +209,7 @@ func (s *service) SearchForValidIngredients(ctx context.Context, sessionCtxData 
 	logger := s.logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachSearchQueryToSpan(span, query)
 
-	relevantIDs, err := s.search.Search(ctx, query, sessionCtxData.ActiveAccountID)
+	relevantIDs, err := s.search.Search(ctx, query, sessionCtxData.ActiveHouseholdID)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "executing valid ingredient search query")
 	}

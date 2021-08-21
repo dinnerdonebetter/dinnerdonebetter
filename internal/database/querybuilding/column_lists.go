@@ -6,39 +6,39 @@ import (
 
 var (
 	//
-	// Accounts Table.
+	// Households Table.
 	//
 
-	// AccountsUserMembershipTableColumns are the columns for the account user memberships table.
-	AccountsUserMembershipTableColumns = []string{
-		fmt.Sprintf("%s.%s", AccountsUserMembershipTableName, IDColumn),
-		fmt.Sprintf("%s.%s", AccountsUserMembershipTableName, AccountsUserMembershipTableUserOwnershipColumn),
-		fmt.Sprintf("%s.%s", AccountsUserMembershipTableName, AccountsUserMembershipTableAccountOwnershipColumn),
-		fmt.Sprintf("%s.%s", AccountsUserMembershipTableName, AccountsUserMembershipTableAccountRolesColumn),
-		fmt.Sprintf("%s.%s", AccountsUserMembershipTableName, AccountsUserMembershipTableDefaultUserAccountColumn),
-		fmt.Sprintf("%s.%s", AccountsUserMembershipTableName, CreatedOnColumn),
-		fmt.Sprintf("%s.%s", AccountsUserMembershipTableName, LastUpdatedOnColumn),
-		fmt.Sprintf("%s.%s", AccountsUserMembershipTableName, ArchivedOnColumn),
+	// HouseholdsUserMembershipTableColumns are the columns for the household user memberships table.
+	HouseholdsUserMembershipTableColumns = []string{
+		fmt.Sprintf("%s.%s", HouseholdsUserMembershipTableName, IDColumn),
+		fmt.Sprintf("%s.%s", HouseholdsUserMembershipTableName, HouseholdsUserMembershipTableUserOwnershipColumn),
+		fmt.Sprintf("%s.%s", HouseholdsUserMembershipTableName, HouseholdsUserMembershipTableHouseholdOwnershipColumn),
+		fmt.Sprintf("%s.%s", HouseholdsUserMembershipTableName, HouseholdsUserMembershipTableHouseholdRolesColumn),
+		fmt.Sprintf("%s.%s", HouseholdsUserMembershipTableName, HouseholdsUserMembershipTableDefaultUserHouseholdColumn),
+		fmt.Sprintf("%s.%s", HouseholdsUserMembershipTableName, CreatedOnColumn),
+		fmt.Sprintf("%s.%s", HouseholdsUserMembershipTableName, LastUpdatedOnColumn),
+		fmt.Sprintf("%s.%s", HouseholdsUserMembershipTableName, ArchivedOnColumn),
 	}
 
 	//
-	// Accounts Table.
+	// Households Table.
 	//
 
-	// AccountsTableColumns are the columns for the accounts table.
-	AccountsTableColumns = []string{
-		fmt.Sprintf("%s.%s", AccountsTableName, IDColumn),
-		fmt.Sprintf("%s.%s", AccountsTableName, ExternalIDColumn),
-		fmt.Sprintf("%s.%s", AccountsTableName, AccountsTableNameColumn),
-		fmt.Sprintf("%s.%s", AccountsTableName, AccountsTableBillingStatusColumn),
-		fmt.Sprintf("%s.%s", AccountsTableName, AccountsTableContactEmailColumn),
-		fmt.Sprintf("%s.%s", AccountsTableName, AccountsTableContactPhoneColumn),
-		fmt.Sprintf("%s.%s", AccountsTableName, AccountsTablePaymentProcessorCustomerIDColumn),
-		fmt.Sprintf("%s.%s", AccountsTableName, AccountsTableSubscriptionPlanIDColumn),
-		fmt.Sprintf("%s.%s", AccountsTableName, CreatedOnColumn),
-		fmt.Sprintf("%s.%s", AccountsTableName, LastUpdatedOnColumn),
-		fmt.Sprintf("%s.%s", AccountsTableName, ArchivedOnColumn),
-		fmt.Sprintf("%s.%s", AccountsTableName, AccountsTableUserOwnershipColumn),
+	// HouseholdsTableColumns are the columns for the households table.
+	HouseholdsTableColumns = []string{
+		fmt.Sprintf("%s.%s", HouseholdsTableName, IDColumn),
+		fmt.Sprintf("%s.%s", HouseholdsTableName, ExternalIDColumn),
+		fmt.Sprintf("%s.%s", HouseholdsTableName, HouseholdsTableNameColumn),
+		fmt.Sprintf("%s.%s", HouseholdsTableName, HouseholdsTableBillingStatusColumn),
+		fmt.Sprintf("%s.%s", HouseholdsTableName, HouseholdsTableContactEmailColumn),
+		fmt.Sprintf("%s.%s", HouseholdsTableName, HouseholdsTableContactPhoneColumn),
+		fmt.Sprintf("%s.%s", HouseholdsTableName, HouseholdsTablePaymentProcessorCustomerIDColumn),
+		fmt.Sprintf("%s.%s", HouseholdsTableName, HouseholdsTableSubscriptionPlanIDColumn),
+		fmt.Sprintf("%s.%s", HouseholdsTableName, CreatedOnColumn),
+		fmt.Sprintf("%s.%s", HouseholdsTableName, LastUpdatedOnColumn),
+		fmt.Sprintf("%s.%s", HouseholdsTableName, ArchivedOnColumn),
+		fmt.Sprintf("%s.%s", HouseholdsTableName, HouseholdsTableUserOwnershipColumn),
 	}
 
 	//
@@ -227,7 +227,7 @@ var (
 		fmt.Sprintf("%s.%s", RecipesTableName, CreatedOnColumn),
 		fmt.Sprintf("%s.%s", RecipesTableName, LastUpdatedOnColumn),
 		fmt.Sprintf("%s.%s", RecipesTableName, ArchivedOnColumn),
-		fmt.Sprintf("%s.%s", RecipesTableName, RecipesTableAccountOwnershipColumn),
+		fmt.Sprintf("%s.%s", RecipesTableName, RecipesTableHouseholdOwnershipColumn),
 	}
 
 	//
@@ -304,7 +304,7 @@ var (
 		fmt.Sprintf("%s.%s", InvitationsTableName, CreatedOnColumn),
 		fmt.Sprintf("%s.%s", InvitationsTableName, LastUpdatedOnColumn),
 		fmt.Sprintf("%s.%s", InvitationsTableName, ArchivedOnColumn),
-		fmt.Sprintf("%s.%s", InvitationsTableName, InvitationsTableAccountOwnershipColumn),
+		fmt.Sprintf("%s.%s", InvitationsTableName, InvitationsTableHouseholdOwnershipColumn),
 	}
 
 	//
@@ -320,6 +320,6 @@ var (
 		fmt.Sprintf("%s.%s", ReportsTableName, CreatedOnColumn),
 		fmt.Sprintf("%s.%s", ReportsTableName, LastUpdatedOnColumn),
 		fmt.Sprintf("%s.%s", ReportsTableName, ArchivedOnColumn),
-		fmt.Sprintf("%s.%s", ReportsTableName, ReportsTableAccountOwnershipColumn),
+		fmt.Sprintf("%s.%s", ReportsTableName, ReportsTableHouseholdOwnershipColumn),
 	}
 )

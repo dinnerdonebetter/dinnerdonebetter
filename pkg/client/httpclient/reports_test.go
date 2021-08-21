@@ -184,7 +184,7 @@ func (s *reportsTestSuite) TestClient_CreateReport() {
 		t := s.T()
 
 		exampleInput := fakes.BuildFakeReportCreationInput()
-		exampleInput.BelongsToAccount = 0
+		exampleInput.BelongsToHousehold = 0
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleReport)

@@ -10,32 +10,32 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestBuildUserAddedToAccountEventEntry(t *testing.T) {
+func TestBuildUserAddedToHouseholdEventEntry(t *testing.T) {
 	t.Parallel()
 
-	assert.NotNil(t, audit.BuildUserAddedToAccountEventEntry(exampleAdminUserID, &types.AddUserToAccountInput{Reason: t.Name()}))
+	assert.NotNil(t, audit.BuildUserAddedToHouseholdEventEntry(exampleAdminUserID, &types.AddUserToHouseholdInput{Reason: t.Name()}))
 }
 
-func TestBuildUserRemovedFromAccountEventEntry(t *testing.T) {
+func TestBuildUserRemovedFromHouseholdEventEntry(t *testing.T) {
 	t.Parallel()
 
-	assert.NotNil(t, audit.BuildUserRemovedFromAccountEventEntry(exampleAdminUserID, exampleUserID, exampleAccountID, "blah blah"))
+	assert.NotNil(t, audit.BuildUserRemovedFromHouseholdEventEntry(exampleAdminUserID, exampleUserID, exampleHouseholdID, "blah blah"))
 }
 
-func TestBuildUserMarkedAccountAsDefaultEventEntry(t *testing.T) {
+func TestBuildUserMarkedHouseholdAsDefaultEventEntry(t *testing.T) {
 	t.Parallel()
 
-	assert.NotNil(t, audit.BuildUserMarkedAccountAsDefaultEventEntry(exampleAdminUserID, exampleUserID, exampleAccountID))
+	assert.NotNil(t, audit.BuildUserMarkedHouseholdAsDefaultEventEntry(exampleAdminUserID, exampleUserID, exampleHouseholdID))
 }
 
 func TestBuildModifyUserPermissionsEventEntry(t *testing.T) {
 	t.Parallel()
 
-	assert.NotNil(t, audit.BuildModifyUserPermissionsEventEntry(exampleUserID, exampleAccountID, exampleAdminUserID, []string{t.Name()}, t.Name()))
+	assert.NotNil(t, audit.BuildModifyUserPermissionsEventEntry(exampleUserID, exampleHouseholdID, exampleAdminUserID, []string{t.Name()}, t.Name()))
 }
 
-func TestBuildTransferAccountOwnershipEventEntry(t *testing.T) {
+func TestBuildTransferHouseholdOwnershipEventEntry(t *testing.T) {
 	t.Parallel()
 
-	assert.NotNil(t, audit.BuildTransferAccountOwnershipEventEntry(exampleAccountID, exampleAdminUserID, fakes.BuildFakeTransferAccountOwnershipInput()))
+	assert.NotNil(t, audit.BuildTransferHouseholdOwnershipEventEntry(exampleHouseholdID, exampleAdminUserID, fakes.BuildFakeTransferHouseholdOwnershipInput()))
 }

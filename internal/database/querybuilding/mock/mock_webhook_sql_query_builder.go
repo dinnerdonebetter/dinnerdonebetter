@@ -17,8 +17,8 @@ type WebhookSQLQueryBuilder struct {
 }
 
 // BuildGetWebhookQuery implements our interface.
-func (m *WebhookSQLQueryBuilder) BuildGetWebhookQuery(ctx context.Context, webhookID, accountID uint64) (query string, args []interface{}) {
-	returnArgs := m.Called(ctx, webhookID, accountID)
+func (m *WebhookSQLQueryBuilder) BuildGetWebhookQuery(ctx context.Context, webhookID, householdID uint64) (query string, args []interface{}) {
+	returnArgs := m.Called(ctx, webhookID, householdID)
 
 	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
 }
@@ -36,8 +36,8 @@ func (m *WebhookSQLQueryBuilder) BuildGetBatchOfWebhooksQuery(ctx context.Contex
 }
 
 // BuildGetWebhooksQuery implements our interface.
-func (m *WebhookSQLQueryBuilder) BuildGetWebhooksQuery(ctx context.Context, accountID uint64, filter *types.QueryFilter) (query string, args []interface{}) {
-	returnArgs := m.Called(ctx, accountID, filter)
+func (m *WebhookSQLQueryBuilder) BuildGetWebhooksQuery(ctx context.Context, householdID uint64, filter *types.QueryFilter) (query string, args []interface{}) {
+	returnArgs := m.Called(ctx, householdID, filter)
 
 	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
 }
@@ -57,8 +57,8 @@ func (m *WebhookSQLQueryBuilder) BuildUpdateWebhookQuery(ctx context.Context, in
 }
 
 // BuildArchiveWebhookQuery implements our interface.
-func (m *WebhookSQLQueryBuilder) BuildArchiveWebhookQuery(ctx context.Context, webhookID, accountID uint64) (query string, args []interface{}) {
-	returnArgs := m.Called(ctx, webhookID, accountID)
+func (m *WebhookSQLQueryBuilder) BuildArchiveWebhookQuery(ctx context.Context, webhookID, householdID uint64) (query string, args []interface{}) {
+	returnArgs := m.Called(ctx, webhookID, householdID)
 
 	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
 }

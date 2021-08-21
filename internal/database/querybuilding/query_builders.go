@@ -8,31 +8,31 @@ import (
 )
 
 type (
-	// AccountSQLQueryBuilder describes a structure capable of generating query/arg pairs for certain situations.
-	AccountSQLQueryBuilder interface {
-		BuildGetAccountQuery(ctx context.Context, accountID, userID uint64) (query string, args []interface{})
-		BuildGetAllAccountsCountQuery(ctx context.Context) string
-		BuildGetBatchOfAccountsQuery(ctx context.Context, beginID, endID uint64) (query string, args []interface{})
-		BuildGetAccountsQuery(ctx context.Context, userID uint64, forAdmin bool, filter *types.QueryFilter) (query string, args []interface{})
-		BuildAccountCreationQuery(ctx context.Context, input *types.AccountCreationInput) (query string, args []interface{})
-		BuildUpdateAccountQuery(ctx context.Context, input *types.Account) (query string, args []interface{})
-		BuildArchiveAccountQuery(ctx context.Context, accountID, userID uint64) (query string, args []interface{})
-		BuildTransferAccountOwnershipQuery(ctx context.Context, currentOwnerID, newOwnerID, accountID uint64) (query string, args []interface{})
-		BuildGetAuditLogEntriesForAccountQuery(ctx context.Context, accountID uint64) (query string, args []interface{})
+	// HouseholdSQLQueryBuilder describes a structure capable of generating query/arg pairs for certain situations.
+	HouseholdSQLQueryBuilder interface {
+		BuildGetHouseholdQuery(ctx context.Context, householdID, userID uint64) (query string, args []interface{})
+		BuildGetAllHouseholdsCountQuery(ctx context.Context) string
+		BuildGetBatchOfHouseholdsQuery(ctx context.Context, beginID, endID uint64) (query string, args []interface{})
+		BuildGetHouseholdsQuery(ctx context.Context, userID uint64, forAdmin bool, filter *types.QueryFilter) (query string, args []interface{})
+		BuildHouseholdCreationQuery(ctx context.Context, input *types.HouseholdCreationInput) (query string, args []interface{})
+		BuildUpdateHouseholdQuery(ctx context.Context, input *types.Household) (query string, args []interface{})
+		BuildArchiveHouseholdQuery(ctx context.Context, householdID, userID uint64) (query string, args []interface{})
+		BuildTransferHouseholdOwnershipQuery(ctx context.Context, currentOwnerID, newOwnerID, householdID uint64) (query string, args []interface{})
+		BuildGetAuditLogEntriesForHouseholdQuery(ctx context.Context, householdID uint64) (query string, args []interface{})
 	}
 
-	// AccountUserMembershipSQLQueryBuilder describes a structure capable of generating query/arg pairs for certain situations.
-	AccountUserMembershipSQLQueryBuilder interface {
-		BuildGetDefaultAccountIDForUserQuery(ctx context.Context, userID uint64) (query string, args []interface{})
-		BuildArchiveAccountMembershipsForUserQuery(ctx context.Context, userID uint64) (query string, args []interface{})
-		BuildGetAccountMembershipsForUserQuery(ctx context.Context, userID uint64) (query string, args []interface{})
-		BuildMarkAccountAsUserDefaultQuery(ctx context.Context, userID, accountID uint64) (query string, args []interface{})
-		BuildModifyUserPermissionsQuery(ctx context.Context, userID, accountID uint64, newRoles []string) (query string, args []interface{})
-		BuildTransferAccountMembershipsQuery(ctx context.Context, currentOwnerID, newOwnerID, accountID uint64) (query string, args []interface{})
-		BuildUserIsMemberOfAccountQuery(ctx context.Context, userID, accountID uint64) (query string, args []interface{})
-		BuildCreateMembershipForNewUserQuery(ctx context.Context, userID, accountID uint64) (query string, args []interface{})
-		BuildAddUserToAccountQuery(ctx context.Context, input *types.AddUserToAccountInput) (query string, args []interface{})
-		BuildRemoveUserFromAccountQuery(ctx context.Context, userID, accountID uint64) (query string, args []interface{})
+	// HouseholdUserMembershipSQLQueryBuilder describes a structure capable of generating query/arg pairs for certain situations.
+	HouseholdUserMembershipSQLQueryBuilder interface {
+		BuildGetDefaultHouseholdIDForUserQuery(ctx context.Context, userID uint64) (query string, args []interface{})
+		BuildArchiveHouseholdMembershipsForUserQuery(ctx context.Context, userID uint64) (query string, args []interface{})
+		BuildGetHouseholdMembershipsForUserQuery(ctx context.Context, userID uint64) (query string, args []interface{})
+		BuildMarkHouseholdAsUserDefaultQuery(ctx context.Context, userID, householdID uint64) (query string, args []interface{})
+		BuildModifyUserPermissionsQuery(ctx context.Context, userID, householdID uint64, newRoles []string) (query string, args []interface{})
+		BuildTransferHouseholdMembershipsQuery(ctx context.Context, currentOwnerID, newOwnerID, householdID uint64) (query string, args []interface{})
+		BuildUserIsMemberOfHouseholdQuery(ctx context.Context, userID, householdID uint64) (query string, args []interface{})
+		BuildCreateMembershipForNewUserQuery(ctx context.Context, userID, householdID uint64) (query string, args []interface{})
+		BuildAddUserToHouseholdQuery(ctx context.Context, input *types.AddUserToHouseholdInput) (query string, args []interface{})
+		BuildRemoveUserFromHouseholdQuery(ctx context.Context, userID, householdID uint64) (query string, args []interface{})
 	}
 
 	// APIClientSQLQueryBuilder describes a structure capable of generating query/arg pairs for certain situations.
@@ -78,13 +78,13 @@ type (
 
 	// WebhookSQLQueryBuilder describes a structure capable of generating query/arg pairs for certain situations.
 	WebhookSQLQueryBuilder interface {
-		BuildGetWebhookQuery(ctx context.Context, webhookID, accountID uint64) (query string, args []interface{})
+		BuildGetWebhookQuery(ctx context.Context, webhookID, householdID uint64) (query string, args []interface{})
 		BuildGetAllWebhooksCountQuery(ctx context.Context) string
 		BuildGetBatchOfWebhooksQuery(ctx context.Context, beginID, endID uint64) (query string, args []interface{})
-		BuildGetWebhooksQuery(ctx context.Context, accountID uint64, filter *types.QueryFilter) (query string, args []interface{})
+		BuildGetWebhooksQuery(ctx context.Context, householdID uint64, filter *types.QueryFilter) (query string, args []interface{})
 		BuildCreateWebhookQuery(ctx context.Context, x *types.WebhookCreationInput) (query string, args []interface{})
 		BuildUpdateWebhookQuery(ctx context.Context, input *types.Webhook) (query string, args []interface{})
-		BuildArchiveWebhookQuery(ctx context.Context, webhookID, accountID uint64) (query string, args []interface{})
+		BuildArchiveWebhookQuery(ctx context.Context, webhookID, householdID uint64) (query string, args []interface{})
 		BuildGetAuditLogEntriesForWebhookQuery(ctx context.Context, webhookID uint64) (query string, args []interface{})
 	}
 
@@ -171,7 +171,7 @@ type (
 		BuildGetAllRecipesCountQuery(ctx context.Context) string
 		BuildGetBatchOfRecipesQuery(ctx context.Context, beginID, endID uint64) (query string, args []interface{})
 		BuildGetRecipesQuery(ctx context.Context, includeArchived bool, filter *types.QueryFilter) (query string, args []interface{})
-		BuildGetRecipesWithIDsQuery(ctx context.Context, accountID uint64, limit uint8, ids []uint64, restrictToAccount bool) (query string, args []interface{})
+		BuildGetRecipesWithIDsQuery(ctx context.Context, householdID uint64, limit uint8, ids []uint64, restrictToHousehold bool) (query string, args []interface{})
 		BuildCreateRecipeQuery(ctx context.Context, input *types.RecipeCreationInput) (query string, args []interface{})
 		BuildUpdateRecipeQuery(ctx context.Context, input *types.Recipe) (query string, args []interface{})
 		BuildArchiveRecipeQuery(ctx context.Context, recipeID uint64) (query string, args []interface{})
@@ -227,7 +227,7 @@ type (
 		BuildGetAllInvitationsCountQuery(ctx context.Context) string
 		BuildGetBatchOfInvitationsQuery(ctx context.Context, beginID, endID uint64) (query string, args []interface{})
 		BuildGetInvitationsQuery(ctx context.Context, includeArchived bool, filter *types.QueryFilter) (query string, args []interface{})
-		BuildGetInvitationsWithIDsQuery(ctx context.Context, accountID uint64, limit uint8, ids []uint64, restrictToAccount bool) (query string, args []interface{})
+		BuildGetInvitationsWithIDsQuery(ctx context.Context, householdID uint64, limit uint8, ids []uint64, restrictToHousehold bool) (query string, args []interface{})
 		BuildCreateInvitationQuery(ctx context.Context, input *types.InvitationCreationInput) (query string, args []interface{})
 		BuildUpdateInvitationQuery(ctx context.Context, input *types.Invitation) (query string, args []interface{})
 		BuildArchiveInvitationQuery(ctx context.Context, invitationID uint64) (query string, args []interface{})
@@ -241,7 +241,7 @@ type (
 		BuildGetAllReportsCountQuery(ctx context.Context) string
 		BuildGetBatchOfReportsQuery(ctx context.Context, beginID, endID uint64) (query string, args []interface{})
 		BuildGetReportsQuery(ctx context.Context, includeArchived bool, filter *types.QueryFilter) (query string, args []interface{})
-		BuildGetReportsWithIDsQuery(ctx context.Context, accountID uint64, limit uint8, ids []uint64, restrictToAccount bool) (query string, args []interface{})
+		BuildGetReportsWithIDsQuery(ctx context.Context, householdID uint64, limit uint8, ids []uint64, restrictToHousehold bool) (query string, args []interface{})
 		BuildCreateReportQuery(ctx context.Context, input *types.ReportCreationInput) (query string, args []interface{})
 		BuildUpdateReportQuery(ctx context.Context, input *types.Report) (query string, args []interface{})
 		BuildArchiveReportQuery(ctx context.Context, reportID uint64) (query string, args []interface{})
@@ -253,8 +253,8 @@ type (
 		BuildMigrationFunc(db *sql.DB) func()
 		BuildTestUserCreationQuery(ctx context.Context, testUserConfig *types.TestUserCreationConfig) (query string, args []interface{})
 
-		AccountSQLQueryBuilder
-		AccountUserMembershipSQLQueryBuilder
+		HouseholdSQLQueryBuilder
+		HouseholdUserMembershipSQLQueryBuilder
 		UserSQLQueryBuilder
 		AuditLogEntrySQLQueryBuilder
 		APIClientSQLQueryBuilder

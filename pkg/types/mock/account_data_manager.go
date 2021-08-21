@@ -8,67 +8,67 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-var _ types.AccountDataManager = (*AccountDataManager)(nil)
+var _ types.HouseholdDataManager = (*HouseholdDataManager)(nil)
 
-// AccountDataManager is a mocked types.AccountDataManager for testing.
-type AccountDataManager struct {
+// HouseholdDataManager is a mocked types.HouseholdDataManager for testing.
+type HouseholdDataManager struct {
 	mock.Mock
 }
 
-// AccountExists is a mock function.
-func (m *AccountDataManager) AccountExists(ctx context.Context, accountID, userID uint64) (bool, error) {
-	args := m.Called(ctx, accountID, userID)
+// HouseholdExists is a mock function.
+func (m *HouseholdDataManager) HouseholdExists(ctx context.Context, householdID, userID uint64) (bool, error) {
+	args := m.Called(ctx, householdID, userID)
 	return args.Bool(0), args.Error(1)
 }
 
-// GetAccount is a mock function.
-func (m *AccountDataManager) GetAccount(ctx context.Context, accountID, userID uint64) (*types.Account, error) {
-	args := m.Called(ctx, accountID, userID)
-	return args.Get(0).(*types.Account), args.Error(1)
+// GetHousehold is a mock function.
+func (m *HouseholdDataManager) GetHousehold(ctx context.Context, householdID, userID uint64) (*types.Household, error) {
+	args := m.Called(ctx, householdID, userID)
+	return args.Get(0).(*types.Household), args.Error(1)
 }
 
-// GetAllAccountsCount is a mock function.
-func (m *AccountDataManager) GetAllAccountsCount(ctx context.Context) (uint64, error) {
+// GetAllHouseholdsCount is a mock function.
+func (m *HouseholdDataManager) GetAllHouseholdsCount(ctx context.Context) (uint64, error) {
 	args := m.Called(ctx)
 	return args.Get(0).(uint64), args.Error(1)
 }
 
-// GetAllAccounts is a mock function.
-func (m *AccountDataManager) GetAllAccounts(ctx context.Context, results chan []*types.Account, bucketSize uint16) error {
+// GetAllHouseholds is a mock function.
+func (m *HouseholdDataManager) GetAllHouseholds(ctx context.Context, results chan []*types.Household, bucketSize uint16) error {
 	args := m.Called(ctx, results, bucketSize)
 	return args.Error(0)
 }
 
-// GetAccounts is a mock function.
-func (m *AccountDataManager) GetAccounts(ctx context.Context, userID uint64, filter *types.QueryFilter) (*types.AccountList, error) {
+// GetHouseholds is a mock function.
+func (m *HouseholdDataManager) GetHouseholds(ctx context.Context, userID uint64, filter *types.QueryFilter) (*types.HouseholdList, error) {
 	args := m.Called(ctx, userID, filter)
-	return args.Get(0).(*types.AccountList), args.Error(1)
+	return args.Get(0).(*types.HouseholdList), args.Error(1)
 }
 
-// GetAccountsForAdmin is a mock function.
-func (m *AccountDataManager) GetAccountsForAdmin(ctx context.Context, filter *types.QueryFilter) (*types.AccountList, error) {
+// GetHouseholdsForAdmin is a mock function.
+func (m *HouseholdDataManager) GetHouseholdsForAdmin(ctx context.Context, filter *types.QueryFilter) (*types.HouseholdList, error) {
 	args := m.Called(ctx, filter)
-	return args.Get(0).(*types.AccountList), args.Error(1)
+	return args.Get(0).(*types.HouseholdList), args.Error(1)
 }
 
-// CreateAccount is a mock function.
-func (m *AccountDataManager) CreateAccount(ctx context.Context, input *types.AccountCreationInput, createdByUser uint64) (*types.Account, error) {
+// CreateHousehold is a mock function.
+func (m *HouseholdDataManager) CreateHousehold(ctx context.Context, input *types.HouseholdCreationInput, createdByUser uint64) (*types.Household, error) {
 	args := m.Called(ctx, input, createdByUser)
-	return args.Get(0).(*types.Account), args.Error(1)
+	return args.Get(0).(*types.Household), args.Error(1)
 }
 
-// UpdateAccount is a mock function.
-func (m *AccountDataManager) UpdateAccount(ctx context.Context, updated *types.Account, changedByUser uint64, changes []*types.FieldChangeSummary) error {
+// UpdateHousehold is a mock function.
+func (m *HouseholdDataManager) UpdateHousehold(ctx context.Context, updated *types.Household, changedByUser uint64, changes []*types.FieldChangeSummary) error {
 	return m.Called(ctx, updated, changedByUser, changes).Error(0)
 }
 
-// ArchiveAccount is a mock function.
-func (m *AccountDataManager) ArchiveAccount(ctx context.Context, accountID, userID, archivedByUser uint64) error {
-	return m.Called(ctx, accountID, userID, archivedByUser).Error(0)
+// ArchiveHousehold is a mock function.
+func (m *HouseholdDataManager) ArchiveHousehold(ctx context.Context, householdID, userID, archivedByUser uint64) error {
+	return m.Called(ctx, householdID, userID, archivedByUser).Error(0)
 }
 
-// GetAuditLogEntriesForAccount is a mock function.
-func (m *AccountDataManager) GetAuditLogEntriesForAccount(ctx context.Context, accountID uint64) ([]*types.AuditLogEntry, error) {
-	args := m.Called(ctx, accountID)
+// GetAuditLogEntriesForHousehold is a mock function.
+func (m *HouseholdDataManager) GetAuditLogEntriesForHousehold(ctx context.Context, householdID uint64) ([]*types.AuditLogEntry, error) {
+	args := m.Called(ctx, householdID)
 	return args.Get(0).([]*types.AuditLogEntry), args.Error(1)
 }

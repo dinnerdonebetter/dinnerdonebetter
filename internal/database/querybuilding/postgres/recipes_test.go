@@ -45,7 +45,7 @@ func TestPostgres_BuildGetRecipeQuery(T *testing.T) {
 
 		exampleRecipe := fakes.BuildFakeRecipe()
 
-		expectedQuery := "SELECT recipes.id, recipes.external_id, recipes.name, recipes.source, recipes.description, recipes.inspired_by_recipe_id, recipes.created_on, recipes.last_updated_on, recipes.archived_on, recipes.belongs_to_account FROM recipes WHERE recipes.archived_on IS NULL AND recipes.id = $1"
+		expectedQuery := "SELECT recipes.id, recipes.external_id, recipes.name, recipes.source, recipes.description, recipes.inspired_by_recipe_id, recipes.created_on, recipes.last_updated_on, recipes.archived_on, recipes.belongs_to_household FROM recipes WHERE recipes.archived_on IS NULL AND recipes.id = $1"
 		expectedArgs := []interface{}{
 			exampleRecipe.ID,
 		}
@@ -85,7 +85,7 @@ func TestPostgres_BuildGetBatchOfRecipesQuery(T *testing.T) {
 
 		beginID, endID := uint64(1), uint64(1000)
 
-		expectedQuery := "SELECT recipes.id, recipes.external_id, recipes.name, recipes.source, recipes.description, recipes.inspired_by_recipe_id, recipes.created_on, recipes.last_updated_on, recipes.archived_on, recipes.belongs_to_account FROM recipes WHERE recipes.id > $1 AND recipes.id < $2"
+		expectedQuery := "SELECT recipes.id, recipes.external_id, recipes.name, recipes.source, recipes.description, recipes.inspired_by_recipe_id, recipes.created_on, recipes.last_updated_on, recipes.archived_on, recipes.belongs_to_household FROM recipes WHERE recipes.id > $1 AND recipes.id < $2"
 		expectedArgs := []interface{}{
 			beginID,
 			endID,
@@ -109,7 +109,7 @@ func TestPostgres_BuildGetRecipesQuery(T *testing.T) {
 
 		filter := fakes.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT recipes.id, recipes.external_id, recipes.name, recipes.source, recipes.description, recipes.inspired_by_recipe_id, recipes.created_on, recipes.last_updated_on, recipes.archived_on, recipes.belongs_to_account, (SELECT COUNT(recipes.id) FROM recipes WHERE recipes.archived_on IS NULL) as total_count, (SELECT COUNT(recipes.id) FROM recipes WHERE recipes.archived_on IS NULL AND recipes.created_on > $1 AND recipes.created_on < $2 AND recipes.last_updated_on > $3 AND recipes.last_updated_on < $4) as filtered_count FROM recipes WHERE recipes.archived_on IS NULL AND recipes.created_on > $5 AND recipes.created_on < $6 AND recipes.last_updated_on > $7 AND recipes.last_updated_on < $8 GROUP BY recipes.id ORDER BY recipes.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT recipes.id, recipes.external_id, recipes.name, recipes.source, recipes.description, recipes.inspired_by_recipe_id, recipes.created_on, recipes.last_updated_on, recipes.archived_on, recipes.belongs_to_household, (SELECT COUNT(recipes.id) FROM recipes WHERE recipes.archived_on IS NULL) as total_count, (SELECT COUNT(recipes.id) FROM recipes WHERE recipes.archived_on IS NULL AND recipes.created_on > $1 AND recipes.created_on < $2 AND recipes.last_updated_on > $3 AND recipes.last_updated_on < $4) as filtered_count FROM recipes WHERE recipes.archived_on IS NULL AND recipes.created_on > $5 AND recipes.created_on < $6 AND recipes.last_updated_on > $7 AND recipes.last_updated_on < $8 GROUP BY recipes.id ORDER BY recipes.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			filter.CreatedAfter,
 			filter.CreatedBefore,
@@ -137,21 +137,21 @@ func TestPostgres_BuildGetRecipesWithIDsQuery(T *testing.T) {
 		q, _ := buildTestService(t)
 		ctx := context.Background()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleIDs := []uint64{
 			789,
 			123,
 			456,
 		}
 
-		expectedQuery := "SELECT recipes.id, recipes.external_id, recipes.name, recipes.source, recipes.description, recipes.inspired_by_recipe_id, recipes.created_on, recipes.last_updated_on, recipes.archived_on, recipes.belongs_to_account FROM (SELECT recipes.id, recipes.external_id, recipes.name, recipes.source, recipes.description, recipes.inspired_by_recipe_id, recipes.created_on, recipes.last_updated_on, recipes.archived_on, recipes.belongs_to_account FROM recipes JOIN unnest('{789,123,456}'::int[]) WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT 20) AS recipes WHERE recipes.archived_on IS NULL AND recipes.belongs_to_account = $1 AND recipes.id IN ($2,$3,$4)"
+		expectedQuery := "SELECT recipes.id, recipes.external_id, recipes.name, recipes.source, recipes.description, recipes.inspired_by_recipe_id, recipes.created_on, recipes.last_updated_on, recipes.archived_on, recipes.belongs_to_household FROM (SELECT recipes.id, recipes.external_id, recipes.name, recipes.source, recipes.description, recipes.inspired_by_recipe_id, recipes.created_on, recipes.last_updated_on, recipes.archived_on, recipes.belongs_to_household FROM recipes JOIN unnest('{789,123,456}'::int[]) WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT 20) AS recipes WHERE recipes.archived_on IS NULL AND recipes.belongs_to_household = $1 AND recipes.id IN ($2,$3,$4)"
 		expectedArgs := []interface{}{
-			exampleAccountID,
+			exampleHouseholdID,
 			exampleIDs[0],
 			exampleIDs[1],
 			exampleIDs[2],
 		}
-		actualQuery, actualArgs := q.BuildGetRecipesWithIDsQuery(ctx, exampleAccountID, defaultLimit, exampleIDs, true)
+		actualQuery, actualArgs := q.BuildGetRecipesWithIDsQuery(ctx, exampleHouseholdID, defaultLimit, exampleIDs, true)
 
 		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
@@ -175,14 +175,14 @@ func TestPostgres_BuildCreateRecipeQuery(T *testing.T) {
 		exIDGen.On("NewExternalID").Return(exampleRecipe.ExternalID)
 		q.externalIDGenerator = exIDGen
 
-		expectedQuery := "INSERT INTO recipes (external_id,name,source,description,inspired_by_recipe_id,belongs_to_account) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id"
+		expectedQuery := "INSERT INTO recipes (external_id,name,source,description,inspired_by_recipe_id,belongs_to_household) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id"
 		expectedArgs := []interface{}{
 			exampleRecipe.ExternalID,
 			exampleRecipe.Name,
 			exampleRecipe.Source,
 			exampleRecipe.Description,
 			exampleRecipe.InspiredByRecipeID,
-			exampleRecipe.BelongsToAccount,
+			exampleRecipe.BelongsToHousehold,
 		}
 		actualQuery, actualArgs := q.BuildCreateRecipeQuery(ctx, exampleInput)
 
@@ -205,13 +205,13 @@ func TestPostgres_BuildUpdateRecipeQuery(T *testing.T) {
 
 		exampleRecipe := fakes.BuildFakeRecipe()
 
-		expectedQuery := "UPDATE recipes SET name = $1, source = $2, description = $3, inspired_by_recipe_id = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_account = $5 AND id = $6"
+		expectedQuery := "UPDATE recipes SET name = $1, source = $2, description = $3, inspired_by_recipe_id = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_household = $5 AND id = $6"
 		expectedArgs := []interface{}{
 			exampleRecipe.Name,
 			exampleRecipe.Source,
 			exampleRecipe.Description,
 			exampleRecipe.InspiredByRecipeID,
-			exampleRecipe.BelongsToAccount,
+			exampleRecipe.BelongsToHousehold,
 			exampleRecipe.ID,
 		}
 		actualQuery, actualArgs := q.BuildUpdateRecipeQuery(ctx, exampleRecipe)

@@ -232,7 +232,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachAPIClientDatabaseIDToSpan(span, apiClientID)
 
 	// archive the API client in the database.
-	err = s.apiClientDataManager.ArchiveAPIClient(ctx, apiClientID, sessionCtxData.ActiveAccountID, requester)
+	err = s.apiClientDataManager.ArchiveAPIClient(ctx, apiClientID, sessionCtxData.ActiveHouseholdID, requester)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return

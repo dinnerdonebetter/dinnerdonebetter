@@ -56,8 +56,8 @@ func (s *TestSuite) TestUsers_Creating() {
 
 			expectedAuditLogEntries := []*types.AuditLogEntry{
 				{EventType: audit.UserCreationEvent},
-				{EventType: audit.AccountCreationEvent},
-				{EventType: audit.UserAddedToAccountEvent},
+				{EventType: audit.HouseholdCreationEvent},
+				{EventType: audit.UserAddedToHouseholdEvent},
 			}
 			validateAuditLogEntries(t, expectedAuditLogEntries, auditLogEntries, createdUser.CreatedUserID, audit.UserAssignmentKey)
 
@@ -213,8 +213,8 @@ func (s *TestSuite) TestUsers_Archiving() {
 
 			expectedAuditLogEntries := []*types.AuditLogEntry{
 				{EventType: audit.UserCreationEvent},
-				{EventType: audit.AccountCreationEvent},
-				{EventType: audit.UserAddedToAccountEvent},
+				{EventType: audit.HouseholdCreationEvent},
+				{EventType: audit.UserAddedToHouseholdEvent},
 				{EventType: audit.UserArchiveEvent},
 			}
 			validateAuditLogEntries(t, expectedAuditLogEntries, auditLogEntries, createdUser.CreatedUserID, audit.UserAssignmentKey)
@@ -231,7 +231,7 @@ func (s *TestSuite) TestUsers_Auditing_Returns404ForNonexistentUser() {
 			defer span.End()
 
 			input := fakes.BuildFakeUserReputationUpdateInput()
-			input.NewReputation = types.BannedUserAccountStatus
+			input.NewReputation = types.BannedUserHouseholdStatus
 			input.TargetUserID = nonexistentID
 
 			// Ban user.
@@ -289,8 +289,8 @@ func (s *TestSuite) TestUsers_Auditing() {
 
 			expectedAuditLogEntries := []*types.AuditLogEntry{
 				{EventType: audit.UserCreationEvent},
-				{EventType: audit.UserAddedToAccountEvent},
-				{EventType: audit.AccountCreationEvent},
+				{EventType: audit.UserAddedToHouseholdEvent},
+				{EventType: audit.HouseholdCreationEvent},
 			}
 			validateAuditLogEntries(t, expectedAuditLogEntries, auditLogEntries, 0, "")
 
@@ -323,8 +323,8 @@ func (s *TestSuite) TestUsers_AvatarManagement() {
 
 			expectedAuditLogEntries := []*types.AuditLogEntry{
 				{EventType: audit.UserCreationEvent},
-				{EventType: audit.AccountCreationEvent},
-				{EventType: audit.UserAddedToAccountEvent},
+				{EventType: audit.HouseholdCreationEvent},
+				{EventType: audit.UserAddedToHouseholdEvent},
 				{EventType: audit.UserVerifyTwoFactorSecretEvent},
 				{EventType: audit.SuccessfulLoginEvent},
 				{EventType: audit.APIClientCreationEvent},

@@ -60,7 +60,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	input.BelongsToAccount = sessionCtxData.ActiveAccountID
+	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 
 	// create recipe in database.
 	recipe, err := s.recipeDataManager.CreateRecipe(ctx, input, sessionCtxData.Requester.UserID)
@@ -223,7 +223,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
 	}
-	input.BelongsToAccount = sessionCtxData.ActiveAccountID
+	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
@@ -283,7 +283,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// archive the recipe in the database.
-	err = s.recipeDataManager.ArchiveRecipe(ctx, recipeID, sessionCtxData.ActiveAccountID, sessionCtxData.Requester.UserID)
+	err = s.recipeDataManager.ArchiveRecipe(ctx, recipeID, sessionCtxData.ActiveHouseholdID, sessionCtxData.Requester.UserID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return

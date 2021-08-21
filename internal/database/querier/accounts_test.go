@@ -21,8 +21,8 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func buildMockRowsFromAccounts(includeCounts bool, filteredCount uint64, accounts ...*types.Account) *sqlmock.Rows {
-	columns := append(querybuilding.AccountsTableColumns, querybuilding.AccountsUserMembershipTableColumns...)
+func buildMockRowsFromHouseholds(includeCounts bool, filteredCount uint64, households ...*types.Household) *sqlmock.Rows {
+	columns := append(querybuilding.HouseholdsTableColumns, querybuilding.HouseholdsUserMembershipTableColumns...)
 
 	if includeCounts {
 		columns = append(columns, "filtered_count", "total_count")
@@ -30,7 +30,7 @@ func buildMockRowsFromAccounts(includeCounts bool, filteredCount uint64, account
 
 	exampleRows := sqlmock.NewRows(columns)
 
-	for _, x := range accounts {
+	for _, x := range households {
 		for _, y := range x.Members {
 			rowValues := []driver.Value{
 				x.ID,
@@ -47,16 +47,16 @@ func buildMockRowsFromAccounts(includeCounts bool, filteredCount uint64, account
 				x.BelongsToUser,
 				y.ID,
 				y.BelongsToUser,
-				y.BelongsToAccount,
-				strings.Join(y.AccountRoles, accountMemberRolesSeparator),
-				y.DefaultAccount,
+				y.BelongsToHousehold,
+				strings.Join(y.HouseholdRoles, householdMemberRolesSeparator),
+				y.DefaultHousehold,
 				y.CreatedOn,
 				x.LastUpdatedOn,
 				y.ArchivedOn,
 			}
 
 			if includeCounts {
-				rowValues = append(rowValues, filteredCount, len(accounts))
+				rowValues = append(rowValues, filteredCount, len(households))
 			}
 
 			exampleRows.AddRow(rowValues...)
@@ -66,7 +66,7 @@ func buildMockRowsFromAccounts(includeCounts bool, filteredCount uint64, account
 	return exampleRows
 }
 
-func TestQuerier_ScanAccounts(T *testing.T) {
+func TestQuerier_ScanHouseholds(T *testing.T) {
 	T.Parallel()
 
 	T.Run("surfaces row errs", func(t *testing.T) {
@@ -79,7 +79,7 @@ func TestQuerier_ScanAccounts(T *testing.T) {
 		mockRows.On("Next").Return(false)
 		mockRows.On("Err").Return(errors.New("blah"))
 
-		_, _, _, err := q.scanAccounts(ctx, mockRows, false)
+		_, _, _, err := q.scanHouseholds(ctx, mockRows, false)
 		assert.Error(t, err)
 	})
 
@@ -94,12 +94,12 @@ func TestQuerier_ScanAccounts(T *testing.T) {
 		mockRows.On("Err").Return(nil)
 		mockRows.On("Close").Return(errors.New("blah"))
 
-		_, _, _, err := q.scanAccounts(ctx, mockRows, false)
+		_, _, _, err := q.scanHouseholds(ctx, mockRows, false)
 		assert.Error(t, err)
 	})
 }
 
-func TestQuerier_GetAccount(T *testing.T) {
+func TestQuerier_GetHousehold(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -108,43 +108,43 @@ func TestQuerier_GetAccount(T *testing.T) {
 		ctx := context.Background()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = exampleUser.ID
 
 		c, db := buildTestClient(t)
 
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetAccountQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetHouseholdQuery",
 			testutils.ContextMatcher,
-			exampleAccount.ID, exampleUser.ID,
+			exampleHousehold.ID, exampleUser.ID,
 		).Return(fakeQuery, fakeArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
 		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnRows(buildMockRowsFromAccounts(false, 0, exampleAccount))
+			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
 
-		actual, err := c.GetAccount(ctx, exampleAccount.ID, exampleUser.ID)
+		actual, err := c.GetHousehold(ctx, exampleHousehold.ID, exampleUser.ID)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleAccount, actual)
+		assert.Equal(t, exampleHousehold, actual)
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
 
-	T.Run("with invalid account ID", func(t *testing.T) {
+	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = exampleUser.ID
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetAccount(ctx, 0, exampleUser.ID)
+		actual, err := c.GetHousehold(ctx, 0, exampleUser.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -155,12 +155,12 @@ func TestQuerier_GetAccount(T *testing.T) {
 		ctx := context.Background()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = exampleUser.ID
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetAccount(ctx, exampleAccount.ID, 0)
+		actual, err := c.GetHousehold(ctx, exampleHousehold.ID, 0)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -171,17 +171,17 @@ func TestQuerier_GetAccount(T *testing.T) {
 		ctx := context.Background()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = exampleUser.ID
 
 		c, db := buildTestClient(t)
 
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetAccountQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetHouseholdQuery",
 			testutils.ContextMatcher,
-			exampleAccount.ID, exampleUser.ID,
+			exampleHousehold.ID, exampleUser.ID,
 		).Return(fakeQuery, fakeArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
@@ -189,7 +189,7 @@ func TestQuerier_GetAccount(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.GetAccount(ctx, exampleAccount.ID, exampleUser.ID)
+		actual, err := c.GetHousehold(ctx, exampleHousehold.ID, exampleUser.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -202,17 +202,17 @@ func TestQuerier_GetAccount(T *testing.T) {
 		ctx := context.Background()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = exampleUser.ID
 
 		c, db := buildTestClient(t)
 
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetAccountQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetHouseholdQuery",
 			testutils.ContextMatcher,
-			exampleAccount.ID, exampleUser.ID,
+			exampleHousehold.ID, exampleUser.ID,
 		).Return(fakeQuery, fakeArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
@@ -220,40 +220,40 @@ func TestQuerier_GetAccount(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnRows(buildErroneousMockRow())
 
-		actual, err := c.GetAccount(ctx, exampleAccount.ID, exampleUser.ID)
+		actual, err := c.GetHousehold(ctx, exampleHousehold.ID, exampleUser.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
 
-	T.Run("with no returned accounts", func(t *testing.T) {
+	T.Run("with no returned households", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = exampleUser.ID
 
 		c, db := buildTestClient(t)
 
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetAccountQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetHouseholdQuery",
 			testutils.ContextMatcher,
-			exampleAccount.ID, exampleUser.ID,
+			exampleHousehold.ID, exampleUser.ID,
 		).Return(fakeQuery, fakeArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		columns := append(querybuilding.AccountsTableColumns, querybuilding.AccountsUserMembershipTableColumns...)
+		columns := append(querybuilding.HouseholdsTableColumns, querybuilding.HouseholdsUserMembershipTableColumns...)
 
 		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnRows(sqlmock.NewRows(columns))
 
-		actual, err := c.GetAccount(ctx, exampleAccount.ID, exampleUser.ID)
+		actual, err := c.GetHousehold(ctx, exampleHousehold.ID, exampleUser.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -261,7 +261,7 @@ func TestQuerier_GetAccount(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetAllAccountsCount(T *testing.T) {
+func TestQuerier_GetAllHouseholdsCount(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -275,15 +275,15 @@ func TestQuerier_GetAllAccountsCount(T *testing.T) {
 
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
 		fakeQuery, _ := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetAllAccountsCountQuery", testutils.ContextMatcher).Return(fakeQuery)
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetAllHouseholdsCountQuery", testutils.ContextMatcher).Return(fakeQuery)
 		c.sqlQueryBuilder = mockQueryBuilder
 
 		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs().
 			WillReturnRows(newCountDBRowResponse(exampleCount))
 
-		actual, err := c.GetAllAccountsCount(ctx)
+		actual, err := c.GetAllHouseholdsCount(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleCount, actual)
 
@@ -291,7 +291,7 @@ func TestQuerier_GetAllAccountsCount(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetAllAccounts(T *testing.T) {
+func TestQuerier_GetAllHouseholds(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -299,25 +299,25 @@ func TestQuerier_GetAllAccounts(T *testing.T) {
 
 		ctx := context.Background()
 
-		results := make(chan []*types.Account)
+		results := make(chan []*types.Household)
 		expectedCount := uint64(20)
 		doneChan := make(chan bool, 1)
-		exampleAccountList := fakes.BuildFakeAccountList()
+		exampleHouseholdList := fakes.BuildFakeHouseholdList()
 
 		c, db := buildTestClient(t)
 
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
 		fakeQuery, _ := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetAllAccountsCountQuery", testutils.ContextMatcher).Return(fakeQuery, []interface{}{})
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetAllHouseholdsCountQuery", testutils.ContextMatcher).Return(fakeQuery, []interface{}{})
 
 		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs().
 			WillReturnRows(newCountDBRowResponse(expectedCount))
 
 		secondFakeQuery, secondFakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetBatchOfAccountsQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetBatchOfHouseholdsQuery",
 			testutils.ContextMatcher,
 			uint64(1), uint64(defaultBatchSize+1),
 		).Return(secondFakeQuery, secondFakeArgs)
@@ -325,9 +325,9 @@ func TestQuerier_GetAllAccounts(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(secondFakeQuery)).
 			WithArgs(interfaceToDriverValue(secondFakeArgs)...).
-			WillReturnRows(buildMockRowsFromAccounts(false, 0, exampleAccountList.Accounts...))
+			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHouseholdList.Households...))
 
-		err := c.GetAllAccounts(ctx, results, 0)
+		err := c.GetAllHouseholds(ctx, results, 0)
 		assert.NoError(t, err)
 
 		var stillQuerying = true
@@ -353,7 +353,7 @@ func TestQuerier_GetAllAccounts(T *testing.T) {
 
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.GetAllAccounts(ctx, nil, 0))
+		assert.Error(t, c.GetAllHouseholds(ctx, nil, 0))
 	})
 
 	T.Run("with now rows returned", func(t *testing.T) {
@@ -361,7 +361,7 @@ func TestQuerier_GetAllAccounts(T *testing.T) {
 
 		ctx := context.Background()
 
-		results := make(chan []*types.Account)
+		results := make(chan []*types.Household)
 		expectedCount := uint64(20)
 		exampleBatchSize := uint16(1000)
 
@@ -369,16 +369,16 @@ func TestQuerier_GetAllAccounts(T *testing.T) {
 
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
 		fakeQuery, _ := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetAllAccountsCountQuery", testutils.ContextMatcher).Return(fakeQuery, []interface{}{})
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetAllHouseholdsCountQuery", testutils.ContextMatcher).Return(fakeQuery, []interface{}{})
 
 		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs().
 			WillReturnRows(newCountDBRowResponse(expectedCount))
 
 		secondFakeQuery, secondFakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetBatchOfAccountsQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetBatchOfHouseholdsQuery",
 			testutils.ContextMatcher,
 			uint64(1), uint64(exampleBatchSize+1),
 		).Return(secondFakeQuery, secondFakeArgs)
@@ -388,7 +388,7 @@ func TestQuerier_GetAllAccounts(T *testing.T) {
 			WithArgs(interfaceToDriverValue(secondFakeArgs)...).
 			WillReturnError(sql.ErrNoRows)
 
-		err := c.GetAllAccounts(ctx, results, exampleBatchSize)
+		err := c.GetAllHouseholds(ctx, results, exampleBatchSize)
 		assert.NoError(t, err)
 
 		time.Sleep(time.Second)
@@ -401,15 +401,15 @@ func TestQuerier_GetAllAccounts(T *testing.T) {
 
 		ctx := context.Background()
 
-		results := make(chan []*types.Account)
+		results := make(chan []*types.Household)
 		exampleBatchSize := uint16(1000)
 
 		c, db := buildTestClient(t)
 
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
 		fakeQuery, _ := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetAllAccountsCountQuery", testutils.ContextMatcher).Return(fakeQuery, []interface{}{})
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetAllHouseholdsCountQuery", testutils.ContextMatcher).Return(fakeQuery, []interface{}{})
 
 		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs().
@@ -417,7 +417,7 @@ func TestQuerier_GetAllAccounts(T *testing.T) {
 
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		err := c.GetAllAccounts(ctx, results, exampleBatchSize)
+		err := c.GetAllHouseholds(ctx, results, exampleBatchSize)
 		assert.Error(t, err)
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
@@ -428,7 +428,7 @@ func TestQuerier_GetAllAccounts(T *testing.T) {
 
 		ctx := context.Background()
 
-		results := make(chan []*types.Account)
+		results := make(chan []*types.Household)
 		expectedCount := uint64(20)
 		exampleBatchSize := uint16(1000)
 
@@ -436,16 +436,16 @@ func TestQuerier_GetAllAccounts(T *testing.T) {
 
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
 		fakeQuery, _ := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetAllAccountsCountQuery", testutils.ContextMatcher).Return(fakeQuery, []interface{}{})
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetAllHouseholdsCountQuery", testutils.ContextMatcher).Return(fakeQuery, []interface{}{})
 
 		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs().
 			WillReturnRows(newCountDBRowResponse(expectedCount))
 
 		secondFakeQuery, secondFakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetBatchOfAccountsQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetBatchOfHouseholdsQuery",
 			testutils.ContextMatcher,
 			uint64(1), uint64(exampleBatchSize+1),
 		).Return(secondFakeQuery, secondFakeArgs)
@@ -455,7 +455,7 @@ func TestQuerier_GetAllAccounts(T *testing.T) {
 			WithArgs(interfaceToDriverValue(secondFakeArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		err := c.GetAllAccounts(ctx, results, exampleBatchSize)
+		err := c.GetAllHouseholds(ctx, results, exampleBatchSize)
 		assert.NoError(t, err)
 
 		time.Sleep(time.Second)
@@ -468,7 +468,7 @@ func TestQuerier_GetAllAccounts(T *testing.T) {
 
 		ctx := context.Background()
 
-		results := make(chan []*types.Account)
+		results := make(chan []*types.Household)
 		expectedCount := uint64(20)
 		exampleBatchSize := uint16(1000)
 
@@ -476,16 +476,16 @@ func TestQuerier_GetAllAccounts(T *testing.T) {
 
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
 		fakeQuery, _ := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetAllAccountsCountQuery", testutils.ContextMatcher).Return(fakeQuery, []interface{}{})
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetAllHouseholdsCountQuery", testutils.ContextMatcher).Return(fakeQuery, []interface{}{})
 
 		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs().
 			WillReturnRows(newCountDBRowResponse(expectedCount))
 
 		secondFakeQuery, secondFakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetBatchOfAccountsQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetBatchOfHouseholdsQuery",
 			testutils.ContextMatcher,
 			uint64(1), uint64(exampleBatchSize+1),
 		).Return(secondFakeQuery, secondFakeArgs)
@@ -495,7 +495,7 @@ func TestQuerier_GetAllAccounts(T *testing.T) {
 			WithArgs(interfaceToDriverValue(secondFakeArgs)...).
 			WillReturnRows(buildErroneousMockRow())
 
-		err := c.GetAllAccounts(ctx, results, exampleBatchSize)
+		err := c.GetAllHouseholds(ctx, results, exampleBatchSize)
 		assert.NoError(t, err)
 
 		time.Sleep(time.Second)
@@ -504,7 +504,7 @@ func TestQuerier_GetAllAccounts(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetAccounts(T *testing.T) {
+func TestQuerier_GetHouseholds(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -512,7 +512,7 @@ func TestQuerier_GetAccounts(T *testing.T) {
 
 		filter := types.DefaultQueryFilter()
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccountList := fakes.BuildFakeAccountList()
+		exampleHouseholdList := fakes.BuildFakeHouseholdList()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -520,8 +520,8 @@ func TestQuerier_GetAccounts(T *testing.T) {
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetAccountsQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetHouseholdsQuery",
 			testutils.ContextMatcher,
 			exampleUser.ID,
 			false,
@@ -531,11 +531,11 @@ func TestQuerier_GetAccounts(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnRows(buildMockRowsFromAccounts(true, exampleAccountList.FilteredCount, exampleAccountList.Accounts...))
+			WillReturnRows(buildMockRowsFromHouseholds(true, exampleHouseholdList.FilteredCount, exampleHouseholdList.Households...))
 
-		actual, err := c.GetAccounts(ctx, exampleUser.ID, filter)
+		actual, err := c.GetHouseholds(ctx, exampleUser.ID, filter)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleAccountList, actual)
+		assert.Equal(t, exampleHouseholdList, actual)
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
@@ -548,7 +548,7 @@ func TestQuerier_GetAccounts(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetAccounts(ctx, 0, filter)
+		actual, err := c.GetHouseholds(ctx, 0, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -558,8 +558,8 @@ func TestQuerier_GetAccounts(T *testing.T) {
 
 		filter := (*types.QueryFilter)(nil)
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccountList := fakes.BuildFakeAccountList()
-		exampleAccountList.Page, exampleAccountList.Limit = 0, 0
+		exampleHouseholdList := fakes.BuildFakeHouseholdList()
+		exampleHouseholdList.Page, exampleHouseholdList.Limit = 0, 0
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -567,8 +567,8 @@ func TestQuerier_GetAccounts(T *testing.T) {
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetAccountsQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetHouseholdsQuery",
 			testutils.ContextMatcher,
 			exampleUser.ID,
 			false,
@@ -578,11 +578,11 @@ func TestQuerier_GetAccounts(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnRows(buildMockRowsFromAccounts(true, exampleAccountList.FilteredCount, exampleAccountList.Accounts...))
+			WillReturnRows(buildMockRowsFromHouseholds(true, exampleHouseholdList.FilteredCount, exampleHouseholdList.Households...))
 
-		actual, err := c.GetAccounts(ctx, exampleUser.ID, filter)
+		actual, err := c.GetHouseholds(ctx, exampleUser.ID, filter)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleAccountList, actual)
+		assert.Equal(t, exampleHouseholdList, actual)
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
@@ -598,8 +598,8 @@ func TestQuerier_GetAccounts(T *testing.T) {
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetAccountsQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetHouseholdsQuery",
 			testutils.ContextMatcher,
 			exampleUser.ID,
 			false,
@@ -611,7 +611,7 @@ func TestQuerier_GetAccounts(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnRows(buildErroneousMockRow())
 
-		actual, err := c.GetAccounts(ctx, exampleUser.ID, filter)
+		actual, err := c.GetHouseholds(ctx, exampleUser.ID, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -629,8 +629,8 @@ func TestQuerier_GetAccounts(T *testing.T) {
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetAccountsQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetHouseholdsQuery",
 			testutils.ContextMatcher,
 			exampleUser.ID,
 			false,
@@ -642,7 +642,7 @@ func TestQuerier_GetAccounts(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.GetAccounts(ctx, exampleUser.ID, filter)
+		actual, err := c.GetHouseholds(ctx, exampleUser.ID, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -650,14 +650,14 @@ func TestQuerier_GetAccounts(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetAccountsForAdmin(T *testing.T) {
+func TestQuerier_GetHouseholdsForAdmin(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		filter := types.DefaultQueryFilter()
-		exampleAccountList := fakes.BuildFakeAccountList()
+		exampleHouseholdList := fakes.BuildFakeHouseholdList()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -665,8 +665,8 @@ func TestQuerier_GetAccountsForAdmin(T *testing.T) {
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetAccountsQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetHouseholdsQuery",
 			testutils.ContextMatcher,
 			uint64(0),
 			true,
@@ -676,11 +676,11 @@ func TestQuerier_GetAccountsForAdmin(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnRows(buildMockRowsFromAccounts(true, exampleAccountList.FilteredCount, exampleAccountList.Accounts...))
+			WillReturnRows(buildMockRowsFromHouseholds(true, exampleHouseholdList.FilteredCount, exampleHouseholdList.Households...))
 
-		actual, err := c.GetAccountsForAdmin(ctx, filter)
+		actual, err := c.GetHouseholdsForAdmin(ctx, filter)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleAccountList, actual)
+		assert.Equal(t, exampleHouseholdList, actual)
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
@@ -689,8 +689,8 @@ func TestQuerier_GetAccountsForAdmin(T *testing.T) {
 		t.Parallel()
 
 		filter := (*types.QueryFilter)(nil)
-		exampleAccountList := fakes.BuildFakeAccountList()
-		exampleAccountList.Page, exampleAccountList.Limit = 0, 0
+		exampleHouseholdList := fakes.BuildFakeHouseholdList()
+		exampleHouseholdList.Page, exampleHouseholdList.Limit = 0, 0
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -698,8 +698,8 @@ func TestQuerier_GetAccountsForAdmin(T *testing.T) {
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetAccountsQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetHouseholdsQuery",
 			testutils.ContextMatcher,
 			uint64(0),
 			true,
@@ -709,11 +709,11 @@ func TestQuerier_GetAccountsForAdmin(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnRows(buildMockRowsFromAccounts(true, exampleAccountList.FilteredCount, exampleAccountList.Accounts...))
+			WillReturnRows(buildMockRowsFromHouseholds(true, exampleHouseholdList.FilteredCount, exampleHouseholdList.Households...))
 
-		actual, err := c.GetAccountsForAdmin(ctx, filter)
+		actual, err := c.GetHouseholdsForAdmin(ctx, filter)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleAccountList, actual)
+		assert.Equal(t, exampleHouseholdList, actual)
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
@@ -729,8 +729,8 @@ func TestQuerier_GetAccountsForAdmin(T *testing.T) {
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetAccountsQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetHouseholdsQuery",
 			testutils.ContextMatcher,
 			uint64(0),
 			true,
@@ -742,7 +742,7 @@ func TestQuerier_GetAccountsForAdmin(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnRows(buildErroneousMockRow())
 
-		actual, err := c.GetAccountsForAdmin(ctx, filter)
+		actual, err := c.GetHouseholdsForAdmin(ctx, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -760,8 +760,8 @@ func TestQuerier_GetAccountsForAdmin(T *testing.T) {
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetAccountsQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetHouseholdsQuery",
 			testutils.ContextMatcher,
 			uint64(0),
 			true,
@@ -773,7 +773,7 @@ func TestQuerier_GetAccountsForAdmin(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.GetAccountsForAdmin(ctx, filter)
+		actual, err := c.GetHouseholdsForAdmin(ctx, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -781,25 +781,25 @@ func TestQuerier_GetAccountsForAdmin(T *testing.T) {
 	})
 }
 
-func TestQuerier_CreateAccount(T *testing.T) {
+func TestQuerier_CreateHousehold(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.ExternalID = ""
-		exampleAccount.BillingStatus = types.UnpaidAccountBillingStatus
-		exampleAccount.PaymentProcessorCustomerID = ""
-		exampleAccount.BelongsToUser = exampleUser.ID
-		exampleAccount.Members = []*types.AccountUserMembership(nil)
-		exampleCreationInput := fakes.BuildFakeAccountCreationInputFromAccount(exampleAccount)
-		exampleAccountAdditionInput := &types.AddUserToAccountInput{
-			Reason:       "account creation",
-			UserID:       exampleUser.ID,
-			AccountID:    exampleAccount.ID,
-			AccountRoles: []string{authorization.AccountAdminRole.String()},
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.ExternalID = ""
+		exampleHousehold.BillingStatus = types.UnpaidHouseholdBillingStatus
+		exampleHousehold.PaymentProcessorCustomerID = ""
+		exampleHousehold.BelongsToUser = exampleUser.ID
+		exampleHousehold.Members = []*types.HouseholdUserMembership(nil)
+		exampleCreationInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
+		exampleHouseholdAdditionInput := &types.AddUserToHouseholdInput{
+			Reason:         "household creation",
+			UserID:         exampleUser.ID,
+			HouseholdID:    exampleHousehold.ID,
+			HouseholdRoles: []string{authorization.HouseholdAdminRole.String()},
 		}
 
 		ctx := context.Background()
@@ -810,15 +810,15 @@ func TestQuerier_CreateAccount(T *testing.T) {
 		db.ExpectBegin()
 
 		fakeCreationQuery, fakeCreationArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildAccountCreationQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildHouseholdCreationQuery",
 			testutils.ContextMatcher,
 			exampleCreationInput,
 		).Return(fakeCreationQuery, fakeCreationArgs)
 
 		db.ExpectQuery(formatQueryForSQLMock(fakeCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeCreationArgs)...).
-			WillReturnRows(newDatabaseResultForID(exampleAccount.ID))
+			WillReturnRows(newDatabaseResultForID(exampleHousehold.ID))
 
 		fakeCreationAuditLogEntryQuery, fakeCreationAuditLogEntryArgs := fakes.BuildFakeSQLQuery()
 		mockQueryBuilder.AuditLogEntrySQLQueryBuilder.On(
@@ -831,38 +831,38 @@ func TestQuerier_CreateAccount(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeCreationAuditLogEntryArgs)...).
 			WillReturnResult(newSuccessfulDatabaseResult(123))
 
-		fakeAccountAdditionQuery, fakeAccountAdditionArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountUserMembershipSQLQueryBuilder.On(
-			"BuildAddUserToAccountQuery",
+		fakeHouseholdAdditionQuery, fakeHouseholdAdditionArgs := fakes.BuildFakeSQLQuery()
+		mockQueryBuilder.HouseholdUserMembershipSQLQueryBuilder.On(
+			"BuildAddUserToHouseholdQuery",
 			testutils.ContextMatcher,
-			exampleAccountAdditionInput,
-		).Return(fakeAccountAdditionQuery, fakeAccountAdditionArgs)
+			exampleHouseholdAdditionInput,
+		).Return(fakeHouseholdAdditionQuery, fakeHouseholdAdditionArgs)
 
-		db.ExpectExec(formatQueryForSQLMock(fakeAccountAdditionQuery)).
-			WithArgs(interfaceToDriverValue(fakeAccountAdditionArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleAccount.ID))
+		db.ExpectExec(formatQueryForSQLMock(fakeHouseholdAdditionQuery)).
+			WithArgs(interfaceToDriverValue(fakeHouseholdAdditionArgs)...).
+			WillReturnResult(newSuccessfulDatabaseResult(exampleHousehold.ID))
 
-		fakeAccountAdditionAuditLogEntryQuery, fakeAccountAdditionAuditLogEntryArgs := fakes.BuildFakeSQLQuery()
+		fakeHouseholdAdditionAuditLogEntryQuery, fakeHouseholdAdditionAuditLogEntryArgs := fakes.BuildFakeSQLQuery()
 		mockQueryBuilder.AuditLogEntrySQLQueryBuilder.On(
 			"BuildCreateAuditLogEntryQuery",
 			testutils.ContextMatcher,
 			mock.IsType(&types.AuditLogEntryCreationInput{}),
-		).Return(fakeAccountAdditionAuditLogEntryQuery, fakeAccountAdditionAuditLogEntryArgs).Once()
+		).Return(fakeHouseholdAdditionAuditLogEntryQuery, fakeHouseholdAdditionAuditLogEntryArgs).Once()
 
-		db.ExpectExec(formatQueryForSQLMock(fakeAccountAdditionAuditLogEntryQuery)).
-			WithArgs(interfaceToDriverValue(fakeAccountAdditionAuditLogEntryArgs)...).
+		db.ExpectExec(formatQueryForSQLMock(fakeHouseholdAdditionAuditLogEntryQuery)).
+			WithArgs(interfaceToDriverValue(fakeHouseholdAdditionAuditLogEntryArgs)...).
 			WillReturnResult(newSuccessfulDatabaseResult(123))
 
 		db.ExpectCommit()
 
 		c.timeFunc = func() uint64 {
-			return exampleAccount.CreatedOn
+			return exampleHousehold.CreatedOn
 		}
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		actual, err := c.CreateAccount(ctx, exampleCreationInput, exampleUser.ID)
+		actual, err := c.CreateHousehold(ctx, exampleCreationInput, exampleUser.ID)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleAccount, actual)
+		assert.Equal(t, exampleHousehold, actual)
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
@@ -871,16 +871,16 @@ func TestQuerier_CreateAccount(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.ExternalID = ""
-		exampleAccount.BelongsToUser = exampleUser.ID
-		exampleAccount.Members = []*types.AccountUserMembership(nil)
-		exampleCreationInput := fakes.BuildFakeAccountCreationInputFromAccount(exampleAccount)
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.ExternalID = ""
+		exampleHousehold.BelongsToUser = exampleUser.ID
+		exampleHousehold.Members = []*types.HouseholdUserMembership(nil)
+		exampleCreationInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.CreateAccount(ctx, exampleCreationInput, 0)
+		actual, err := c.CreateHousehold(ctx, exampleCreationInput, 0)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -893,7 +893,7 @@ func TestQuerier_CreateAccount(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.CreateAccount(ctx, nil, exampleUser.ID)
+		actual, err := c.CreateHousehold(ctx, nil, exampleUser.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -902,18 +902,18 @@ func TestQuerier_CreateAccount(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.ExternalID = ""
-		exampleAccount.BelongsToUser = exampleUser.ID
-		exampleAccount.Members = []*types.AccountUserMembership(nil)
-		exampleCreationInput := fakes.BuildFakeAccountCreationInputFromAccount(exampleAccount)
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.ExternalID = ""
+		exampleHousehold.BelongsToUser = exampleUser.ID
+		exampleHousehold.Members = []*types.HouseholdUserMembership(nil)
+		exampleCreationInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		db.ExpectBegin().WillReturnError(errors.New("blah"))
 
-		actual, err := c.CreateAccount(ctx, exampleCreationInput, exampleUser.ID)
+		actual, err := c.CreateHousehold(ctx, exampleCreationInput, exampleUser.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -924,10 +924,10 @@ func TestQuerier_CreateAccount(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUser.ID
-		exampleAccount.Members = []*types.AccountUserMembership{}
-		exampleInput := fakes.BuildFakeAccountCreationInputFromAccount(exampleAccount)
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = exampleUser.ID
+		exampleHousehold.Members = []*types.HouseholdUserMembership{}
+		exampleInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -937,8 +937,8 @@ func TestQuerier_CreateAccount(T *testing.T) {
 		db.ExpectBegin()
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildAccountCreationQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildHouseholdCreationQuery",
 			testutils.ContextMatcher,
 			exampleInput,
 		).Return(fakeQuery, fakeArgs)
@@ -951,25 +951,25 @@ func TestQuerier_CreateAccount(T *testing.T) {
 		db.ExpectRollback()
 
 		c.timeFunc = func() uint64 {
-			return exampleAccount.CreatedOn
+			return exampleHousehold.CreatedOn
 		}
 
-		actual, err := c.CreateAccount(ctx, exampleInput, exampleUser.ID)
+		actual, err := c.CreateHousehold(ctx, exampleInput, exampleUser.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
 
-	T.Run("with error writing account creation audit log entry", func(t *testing.T) {
+	T.Run("with error writing household creation audit log entry", func(t *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.ExternalID = ""
-		exampleAccount.BelongsToUser = exampleUser.ID
-		exampleAccount.Members = []*types.AccountUserMembership(nil)
-		exampleCreationInput := fakes.BuildFakeAccountCreationInputFromAccount(exampleAccount)
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.ExternalID = ""
+		exampleHousehold.BelongsToUser = exampleUser.ID
+		exampleHousehold.Members = []*types.HouseholdUserMembership(nil)
+		exampleCreationInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -979,15 +979,15 @@ func TestQuerier_CreateAccount(T *testing.T) {
 		db.ExpectBegin()
 
 		fakeCreationQuery, fakeCreationArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildAccountCreationQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildHouseholdCreationQuery",
 			testutils.ContextMatcher,
 			exampleCreationInput,
 		).Return(fakeCreationQuery, fakeCreationArgs)
 
 		db.ExpectQuery(formatQueryForSQLMock(fakeCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeCreationArgs)...).
-			WillReturnRows(newDatabaseResultForID(exampleAccount.ID))
+			WillReturnRows(newDatabaseResultForID(exampleHousehold.ID))
 
 		fakeCreationAuditLogEntryQuery, fakeCreationAuditLogEntryArgs := fakes.BuildFakeSQLQuery()
 		mockQueryBuilder.AuditLogEntrySQLQueryBuilder.On(
@@ -1003,11 +1003,11 @@ func TestQuerier_CreateAccount(T *testing.T) {
 		db.ExpectRollback()
 
 		c.timeFunc = func() uint64 {
-			return exampleAccount.CreatedOn
+			return exampleHousehold.CreatedOn
 		}
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		actual, err := c.CreateAccount(ctx, exampleCreationInput, exampleUser.ID)
+		actual, err := c.CreateHousehold(ctx, exampleCreationInput, exampleUser.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -1018,16 +1018,16 @@ func TestQuerier_CreateAccount(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.ExternalID = ""
-		exampleAccount.BelongsToUser = exampleUser.ID
-		exampleAccount.Members = []*types.AccountUserMembership(nil)
-		exampleCreationInput := fakes.BuildFakeAccountCreationInputFromAccount(exampleAccount)
-		exampleAccountAdditionInput := &types.AddUserToAccountInput{
-			Reason:       "account creation",
-			UserID:       exampleUser.ID,
-			AccountID:    exampleAccount.ID,
-			AccountRoles: []string{authorization.AccountAdminRole.String()},
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.ExternalID = ""
+		exampleHousehold.BelongsToUser = exampleUser.ID
+		exampleHousehold.Members = []*types.HouseholdUserMembership(nil)
+		exampleCreationInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
+		exampleHouseholdAdditionInput := &types.AddUserToHouseholdInput{
+			Reason:         "household creation",
+			UserID:         exampleUser.ID,
+			HouseholdID:    exampleHousehold.ID,
+			HouseholdRoles: []string{authorization.HouseholdAdminRole.String()},
 		}
 
 		ctx := context.Background()
@@ -1038,15 +1038,15 @@ func TestQuerier_CreateAccount(T *testing.T) {
 		db.ExpectBegin()
 
 		fakeCreationQuery, fakeCreationArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildAccountCreationQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildHouseholdCreationQuery",
 			testutils.ContextMatcher,
 			exampleCreationInput,
 		).Return(fakeCreationQuery, fakeCreationArgs)
 
 		db.ExpectQuery(formatQueryForSQLMock(fakeCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeCreationArgs)...).
-			WillReturnRows(newDatabaseResultForID(exampleAccount.ID))
+			WillReturnRows(newDatabaseResultForID(exampleHousehold.ID))
 
 		fakeCreationAuditLogEntryQuery, fakeCreationAuditLogEntryArgs := fakes.BuildFakeSQLQuery()
 		mockQueryBuilder.AuditLogEntrySQLQueryBuilder.On(
@@ -1059,25 +1059,25 @@ func TestQuerier_CreateAccount(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeCreationAuditLogEntryArgs)...).
 			WillReturnResult(newSuccessfulDatabaseResult(123))
 
-		fakeAccountAdditionQuery, fakeAccountAdditionArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountUserMembershipSQLQueryBuilder.On(
-			"BuildAddUserToAccountQuery",
+		fakeHouseholdAdditionQuery, fakeHouseholdAdditionArgs := fakes.BuildFakeSQLQuery()
+		mockQueryBuilder.HouseholdUserMembershipSQLQueryBuilder.On(
+			"BuildAddUserToHouseholdQuery",
 			testutils.ContextMatcher,
-			exampleAccountAdditionInput,
-		).Return(fakeAccountAdditionQuery, fakeAccountAdditionArgs)
+			exampleHouseholdAdditionInput,
+		).Return(fakeHouseholdAdditionQuery, fakeHouseholdAdditionArgs)
 
-		db.ExpectExec(formatQueryForSQLMock(fakeAccountAdditionQuery)).
-			WithArgs(interfaceToDriverValue(fakeAccountAdditionArgs)...).
+		db.ExpectExec(formatQueryForSQLMock(fakeHouseholdAdditionQuery)).
+			WithArgs(interfaceToDriverValue(fakeHouseholdAdditionArgs)...).
 			WillReturnError(errors.New("blah"))
 
 		db.ExpectRollback()
 
 		c.timeFunc = func() uint64 {
-			return exampleAccount.CreatedOn
+			return exampleHousehold.CreatedOn
 		}
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		actual, err := c.CreateAccount(ctx, exampleCreationInput, exampleUser.ID)
+		actual, err := c.CreateHousehold(ctx, exampleCreationInput, exampleUser.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -1088,16 +1088,16 @@ func TestQuerier_CreateAccount(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.ExternalID = ""
-		exampleAccount.BelongsToUser = exampleUser.ID
-		exampleAccount.Members = []*types.AccountUserMembership(nil)
-		exampleCreationInput := fakes.BuildFakeAccountCreationInputFromAccount(exampleAccount)
-		exampleAccountAdditionInput := &types.AddUserToAccountInput{
-			Reason:       "account creation",
-			UserID:       exampleUser.ID,
-			AccountID:    exampleAccount.ID,
-			AccountRoles: []string{authorization.AccountAdminRole.String()},
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.ExternalID = ""
+		exampleHousehold.BelongsToUser = exampleUser.ID
+		exampleHousehold.Members = []*types.HouseholdUserMembership(nil)
+		exampleCreationInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
+		exampleHouseholdAdditionInput := &types.AddUserToHouseholdInput{
+			Reason:         "household creation",
+			UserID:         exampleUser.ID,
+			HouseholdID:    exampleHousehold.ID,
+			HouseholdRoles: []string{authorization.HouseholdAdminRole.String()},
 		}
 
 		ctx := context.Background()
@@ -1108,15 +1108,15 @@ func TestQuerier_CreateAccount(T *testing.T) {
 		db.ExpectBegin()
 
 		fakeCreationQuery, fakeCreationArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildAccountCreationQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildHouseholdCreationQuery",
 			testutils.ContextMatcher,
 			exampleCreationInput,
 		).Return(fakeCreationQuery, fakeCreationArgs)
 
 		db.ExpectQuery(formatQueryForSQLMock(fakeCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeCreationArgs)...).
-			WillReturnRows(newDatabaseResultForID(exampleAccount.ID))
+			WillReturnRows(newDatabaseResultForID(exampleHousehold.ID))
 
 		fakeCreationAuditLogEntryQuery, fakeCreationAuditLogEntryArgs := fakes.BuildFakeSQLQuery()
 		mockQueryBuilder.AuditLogEntrySQLQueryBuilder.On(
@@ -1129,36 +1129,36 @@ func TestQuerier_CreateAccount(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeCreationAuditLogEntryArgs)...).
 			WillReturnResult(newSuccessfulDatabaseResult(123))
 
-		fakeAccountAdditionQuery, fakeAccountAdditionArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountUserMembershipSQLQueryBuilder.On(
-			"BuildAddUserToAccountQuery",
+		fakeHouseholdAdditionQuery, fakeHouseholdAdditionArgs := fakes.BuildFakeSQLQuery()
+		mockQueryBuilder.HouseholdUserMembershipSQLQueryBuilder.On(
+			"BuildAddUserToHouseholdQuery",
 			testutils.ContextMatcher,
-			exampleAccountAdditionInput,
-		).Return(fakeAccountAdditionQuery, fakeAccountAdditionArgs)
+			exampleHouseholdAdditionInput,
+		).Return(fakeHouseholdAdditionQuery, fakeHouseholdAdditionArgs)
 
-		db.ExpectExec(formatQueryForSQLMock(fakeAccountAdditionQuery)).
-			WithArgs(interfaceToDriverValue(fakeAccountAdditionArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleAccount.ID))
+		db.ExpectExec(formatQueryForSQLMock(fakeHouseholdAdditionQuery)).
+			WithArgs(interfaceToDriverValue(fakeHouseholdAdditionArgs)...).
+			WillReturnResult(newSuccessfulDatabaseResult(exampleHousehold.ID))
 
-		fakeAccountAdditionAuditLogEntryQuery, fakeAccountAdditionAuditLogEntryArgs := fakes.BuildFakeSQLQuery()
+		fakeHouseholdAdditionAuditLogEntryQuery, fakeHouseholdAdditionAuditLogEntryArgs := fakes.BuildFakeSQLQuery()
 		mockQueryBuilder.AuditLogEntrySQLQueryBuilder.On(
 			"BuildCreateAuditLogEntryQuery",
 			testutils.ContextMatcher,
 			mock.IsType(&types.AuditLogEntryCreationInput{}),
-		).Return(fakeAccountAdditionAuditLogEntryQuery, fakeAccountAdditionAuditLogEntryArgs).Once()
+		).Return(fakeHouseholdAdditionAuditLogEntryQuery, fakeHouseholdAdditionAuditLogEntryArgs).Once()
 
-		db.ExpectExec(formatQueryForSQLMock(fakeAccountAdditionAuditLogEntryQuery)).
-			WithArgs(interfaceToDriverValue(fakeAccountAdditionAuditLogEntryArgs)...).
+		db.ExpectExec(formatQueryForSQLMock(fakeHouseholdAdditionAuditLogEntryQuery)).
+			WithArgs(interfaceToDriverValue(fakeHouseholdAdditionAuditLogEntryArgs)...).
 			WillReturnError(errors.New("blah"))
 
 		db.ExpectRollback()
 
 		c.timeFunc = func() uint64 {
-			return exampleAccount.CreatedOn
+			return exampleHousehold.CreatedOn
 		}
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		actual, err := c.CreateAccount(ctx, exampleCreationInput, exampleUser.ID)
+		actual, err := c.CreateHousehold(ctx, exampleCreationInput, exampleUser.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -1169,16 +1169,16 @@ func TestQuerier_CreateAccount(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.ExternalID = ""
-		exampleAccount.BelongsToUser = exampleUser.ID
-		exampleAccount.Members = []*types.AccountUserMembership(nil)
-		exampleCreationInput := fakes.BuildFakeAccountCreationInputFromAccount(exampleAccount)
-		exampleAccountAdditionInput := &types.AddUserToAccountInput{
-			Reason:       "account creation",
-			UserID:       exampleUser.ID,
-			AccountID:    exampleAccount.ID,
-			AccountRoles: []string{authorization.AccountAdminRole.String()},
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.ExternalID = ""
+		exampleHousehold.BelongsToUser = exampleUser.ID
+		exampleHousehold.Members = []*types.HouseholdUserMembership(nil)
+		exampleCreationInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
+		exampleHouseholdAdditionInput := &types.AddUserToHouseholdInput{
+			Reason:         "household creation",
+			UserID:         exampleUser.ID,
+			HouseholdID:    exampleHousehold.ID,
+			HouseholdRoles: []string{authorization.HouseholdAdminRole.String()},
 		}
 
 		ctx := context.Background()
@@ -1189,15 +1189,15 @@ func TestQuerier_CreateAccount(T *testing.T) {
 		db.ExpectBegin()
 
 		fakeCreationQuery, fakeCreationArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildAccountCreationQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildHouseholdCreationQuery",
 			testutils.ContextMatcher,
 			exampleCreationInput,
 		).Return(fakeCreationQuery, fakeCreationArgs)
 
 		db.ExpectQuery(formatQueryForSQLMock(fakeCreationQuery)).
 			WithArgs(interfaceToDriverValue(fakeCreationArgs)...).
-			WillReturnRows(newDatabaseResultForID(exampleAccount.ID))
+			WillReturnRows(newDatabaseResultForID(exampleHousehold.ID))
 
 		fakeCreationAuditLogEntryQuery, fakeCreationAuditLogEntryArgs := fakes.BuildFakeSQLQuery()
 		mockQueryBuilder.AuditLogEntrySQLQueryBuilder.On(
@@ -1210,36 +1210,36 @@ func TestQuerier_CreateAccount(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeCreationAuditLogEntryArgs)...).
 			WillReturnResult(newSuccessfulDatabaseResult(123))
 
-		fakeAccountAdditionQuery, fakeAccountAdditionArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountUserMembershipSQLQueryBuilder.On(
-			"BuildAddUserToAccountQuery",
+		fakeHouseholdAdditionQuery, fakeHouseholdAdditionArgs := fakes.BuildFakeSQLQuery()
+		mockQueryBuilder.HouseholdUserMembershipSQLQueryBuilder.On(
+			"BuildAddUserToHouseholdQuery",
 			testutils.ContextMatcher,
-			exampleAccountAdditionInput,
-		).Return(fakeAccountAdditionQuery, fakeAccountAdditionArgs)
+			exampleHouseholdAdditionInput,
+		).Return(fakeHouseholdAdditionQuery, fakeHouseholdAdditionArgs)
 
-		db.ExpectExec(formatQueryForSQLMock(fakeAccountAdditionQuery)).
-			WithArgs(interfaceToDriverValue(fakeAccountAdditionArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleAccount.ID))
+		db.ExpectExec(formatQueryForSQLMock(fakeHouseholdAdditionQuery)).
+			WithArgs(interfaceToDriverValue(fakeHouseholdAdditionArgs)...).
+			WillReturnResult(newSuccessfulDatabaseResult(exampleHousehold.ID))
 
-		fakeAccountAdditionAuditLogEntryQuery, fakeAccountAdditionAuditLogEntryArgs := fakes.BuildFakeSQLQuery()
+		fakeHouseholdAdditionAuditLogEntryQuery, fakeHouseholdAdditionAuditLogEntryArgs := fakes.BuildFakeSQLQuery()
 		mockQueryBuilder.AuditLogEntrySQLQueryBuilder.On(
 			"BuildCreateAuditLogEntryQuery",
 			testutils.ContextMatcher,
 			mock.IsType(&types.AuditLogEntryCreationInput{}),
-		).Return(fakeAccountAdditionAuditLogEntryQuery, fakeAccountAdditionAuditLogEntryArgs).Once()
+		).Return(fakeHouseholdAdditionAuditLogEntryQuery, fakeHouseholdAdditionAuditLogEntryArgs).Once()
 
-		db.ExpectExec(formatQueryForSQLMock(fakeAccountAdditionAuditLogEntryQuery)).
-			WithArgs(interfaceToDriverValue(fakeAccountAdditionAuditLogEntryArgs)...).
+		db.ExpectExec(formatQueryForSQLMock(fakeHouseholdAdditionAuditLogEntryQuery)).
+			WithArgs(interfaceToDriverValue(fakeHouseholdAdditionAuditLogEntryArgs)...).
 			WillReturnResult(newSuccessfulDatabaseResult(123))
 
 		db.ExpectCommit().WillReturnError(errors.New("blah"))
 
 		c.timeFunc = func() uint64 {
-			return exampleAccount.CreatedOn
+			return exampleHousehold.CreatedOn
 		}
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		actual, err := c.CreateAccount(ctx, exampleCreationInput, exampleUser.ID)
+		actual, err := c.CreateHousehold(ctx, exampleCreationInput, exampleUser.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -1247,15 +1247,15 @@ func TestQuerier_CreateAccount(T *testing.T) {
 	})
 }
 
-func TestQuerier_UpdateAccount(T *testing.T) {
+func TestQuerier_UpdateHousehold(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = exampleUser.ID
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -1265,22 +1265,22 @@ func TestQuerier_UpdateAccount(T *testing.T) {
 		db.ExpectBegin()
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildUpdateAccountQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildUpdateHouseholdQuery",
 			testutils.ContextMatcher,
-			exampleAccount,
+			exampleHousehold,
 		).Return(fakeQuery, fakeArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
 		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleAccount.ID))
+			WillReturnResult(newSuccessfulDatabaseResult(exampleHousehold.ID))
 
 		expectAuditLogEntryInTransaction(mockQueryBuilder, db, nil)
 
 		db.ExpectCommit()
 
-		assert.NoError(t, c.UpdateAccount(ctx, exampleAccount, exampleUser.ID, nil))
+		assert.NoError(t, c.UpdateHousehold(ctx, exampleHousehold, exampleUser.ID, nil))
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
@@ -1289,41 +1289,41 @@ func TestQuerier_UpdateAccount(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = exampleUser.ID
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.UpdateAccount(ctx, nil, exampleUser.ID, nil))
+		assert.Error(t, c.UpdateHousehold(ctx, nil, exampleUser.ID, nil))
 	})
 
 	T.Run("with invalid actor ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = exampleUser.ID
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.UpdateAccount(ctx, exampleAccount, 0, nil))
+		assert.Error(t, c.UpdateHousehold(ctx, exampleHousehold, 0, nil))
 	})
 
 	T.Run("with error beginning transaction", func(t *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = exampleUser.ID
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		db.ExpectBegin().WillReturnError(errors.New("blah"))
 
-		assert.Error(t, c.UpdateAccount(ctx, exampleAccount, exampleUser.ID, nil))
+		assert.Error(t, c.UpdateHousehold(ctx, exampleHousehold, exampleUser.ID, nil))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -1332,8 +1332,8 @@ func TestQuerier_UpdateAccount(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = exampleUser.ID
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -1343,10 +1343,10 @@ func TestQuerier_UpdateAccount(T *testing.T) {
 		db.ExpectBegin()
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildUpdateAccountQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildUpdateHouseholdQuery",
 			testutils.ContextMatcher,
-			exampleAccount,
+			exampleHousehold,
 		).Return(fakeQuery, fakeArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
@@ -1356,7 +1356,7 @@ func TestQuerier_UpdateAccount(T *testing.T) {
 
 		db.ExpectRollback()
 
-		assert.Error(t, c.UpdateAccount(ctx, exampleAccount, exampleUser.ID, nil))
+		assert.Error(t, c.UpdateHousehold(ctx, exampleHousehold, exampleUser.ID, nil))
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
@@ -1365,8 +1365,8 @@ func TestQuerier_UpdateAccount(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = exampleUser.ID
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -1376,22 +1376,22 @@ func TestQuerier_UpdateAccount(T *testing.T) {
 		db.ExpectBegin()
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildUpdateAccountQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildUpdateHouseholdQuery",
 			testutils.ContextMatcher,
-			exampleAccount,
+			exampleHousehold,
 		).Return(fakeQuery, fakeArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
 		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleAccount.ID))
+			WillReturnResult(newSuccessfulDatabaseResult(exampleHousehold.ID))
 
 		expectAuditLogEntryInTransaction(mockQueryBuilder, db, errors.New("blah"))
 
 		db.ExpectRollback()
 
-		assert.Error(t, c.UpdateAccount(ctx, exampleAccount, exampleUser.ID, nil))
+		assert.Error(t, c.UpdateHousehold(ctx, exampleHousehold, exampleUser.ID, nil))
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
@@ -1400,8 +1400,8 @@ func TestQuerier_UpdateAccount(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = exampleUser.ID
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -1411,36 +1411,36 @@ func TestQuerier_UpdateAccount(T *testing.T) {
 		db.ExpectBegin()
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildUpdateAccountQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildUpdateHouseholdQuery",
 			testutils.ContextMatcher,
-			exampleAccount,
+			exampleHousehold,
 		).Return(fakeQuery, fakeArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
 		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleAccount.ID))
+			WillReturnResult(newSuccessfulDatabaseResult(exampleHousehold.ID))
 
 		expectAuditLogEntryInTransaction(mockQueryBuilder, db, nil)
 
 		db.ExpectCommit().WillReturnError(errors.New("blah"))
 
-		assert.Error(t, c.UpdateAccount(ctx, exampleAccount, exampleUser.ID, nil))
+		assert.Error(t, c.UpdateHousehold(ctx, exampleHousehold, exampleUser.ID, nil))
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
 }
 
-func TestQuerier_ArchiveAccount(T *testing.T) {
+func TestQuerier_ArchiveHousehold(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = exampleUser.ID
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -1450,73 +1450,73 @@ func TestQuerier_ArchiveAccount(T *testing.T) {
 		db.ExpectBegin()
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildArchiveAccountQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildArchiveHouseholdQuery",
 			testutils.ContextMatcher,
-			exampleAccount.ID, exampleUser.ID,
+			exampleHousehold.ID, exampleUser.ID,
 		).Return(fakeQuery, fakeArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
 		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleAccount.ID))
+			WillReturnResult(newSuccessfulDatabaseResult(exampleHousehold.ID))
 
 		expectAuditLogEntryInTransaction(mockQueryBuilder, db, nil)
 
 		db.ExpectCommit()
 
-		assert.NoError(t, c.ArchiveAccount(ctx, exampleAccount.ID, exampleUser.ID, exampleUser.ID))
+		assert.NoError(t, c.ArchiveHousehold(ctx, exampleHousehold.ID, exampleUser.ID, exampleUser.ID))
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
 
-	T.Run("with invalid account ID", func(t *testing.T) {
+	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = exampleUser.ID
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveAccount(ctx, 0, exampleUser.ID, exampleUser.ID))
+		assert.Error(t, c.ArchiveHousehold(ctx, 0, exampleUser.ID, exampleUser.ID))
 	})
 
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = exampleUser.ID
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveAccount(ctx, exampleAccount.ID, 0, exampleUser.ID))
+		assert.Error(t, c.ArchiveHousehold(ctx, exampleHousehold.ID, 0, exampleUser.ID))
 	})
 
 	T.Run("with error beginning transaction", func(t *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = exampleUser.ID
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		db.ExpectBegin().WillReturnError(errors.New("blah"))
 
-		assert.Error(t, c.ArchiveAccount(ctx, exampleAccount.ID, exampleUser.ID, exampleUser.ID))
+		assert.Error(t, c.ArchiveHousehold(ctx, exampleHousehold.ID, exampleUser.ID, exampleUser.ID))
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = exampleUser.ID
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -1526,10 +1526,10 @@ func TestQuerier_ArchiveAccount(T *testing.T) {
 		db.ExpectBegin()
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildArchiveAccountQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildArchiveHouseholdQuery",
 			testutils.ContextMatcher,
-			exampleAccount.ID, exampleUser.ID,
+			exampleHousehold.ID, exampleUser.ID,
 		).Return(fakeQuery, fakeArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
@@ -1539,7 +1539,7 @@ func TestQuerier_ArchiveAccount(T *testing.T) {
 
 		db.ExpectRollback()
 
-		assert.Error(t, c.ArchiveAccount(ctx, exampleAccount.ID, exampleUser.ID, exampleUser.ID))
+		assert.Error(t, c.ArchiveHousehold(ctx, exampleHousehold.ID, exampleUser.ID, exampleUser.ID))
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
@@ -1548,8 +1548,8 @@ func TestQuerier_ArchiveAccount(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = exampleUser.ID
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -1559,22 +1559,22 @@ func TestQuerier_ArchiveAccount(T *testing.T) {
 		db.ExpectBegin()
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildArchiveAccountQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildArchiveHouseholdQuery",
 			testutils.ContextMatcher,
-			exampleAccount.ID, exampleUser.ID,
+			exampleHousehold.ID, exampleUser.ID,
 		).Return(fakeQuery, fakeArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
 		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleAccount.ID))
+			WillReturnResult(newSuccessfulDatabaseResult(exampleHousehold.ID))
 
 		expectAuditLogEntryInTransaction(mockQueryBuilder, db, errors.New("blah"))
 
 		db.ExpectRollback()
 
-		assert.Error(t, c.ArchiveAccount(ctx, exampleAccount.ID, exampleUser.ID, exampleUser.ID))
+		assert.Error(t, c.ArchiveHousehold(ctx, exampleHousehold.ID, exampleUser.ID, exampleUser.ID))
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
@@ -1583,8 +1583,8 @@ func TestQuerier_ArchiveAccount(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = exampleUser.ID
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -1594,28 +1594,28 @@ func TestQuerier_ArchiveAccount(T *testing.T) {
 		db.ExpectBegin()
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildArchiveAccountQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildArchiveHouseholdQuery",
 			testutils.ContextMatcher,
-			exampleAccount.ID, exampleUser.ID,
+			exampleHousehold.ID, exampleUser.ID,
 		).Return(fakeQuery, fakeArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
 		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(exampleAccount.ID))
+			WillReturnResult(newSuccessfulDatabaseResult(exampleHousehold.ID))
 
 		expectAuditLogEntryInTransaction(mockQueryBuilder, db, nil)
 
 		db.ExpectCommit().WillReturnError(errors.New("blah"))
 
-		assert.Error(t, c.ArchiveAccount(ctx, exampleAccount.ID, exampleUser.ID, exampleUser.ID))
+		assert.Error(t, c.ArchiveHousehold(ctx, exampleHousehold.ID, exampleUser.ID, exampleUser.ID))
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
 }
 
-func TestQuerier_GetAuditLogEntriesForAccount(T *testing.T) {
+func TestQuerier_GetAuditLogEntriesForHousehold(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -1623,16 +1623,16 @@ func TestQuerier_GetAuditLogEntriesForAccount(T *testing.T) {
 
 		ctx := context.Background()
 
-		exampleAccount := fakes.BuildFakeAccount()
+		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleAuditLogEntryList := fakes.BuildFakeAuditLogEntryList()
 		c, db := buildTestClient(t)
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetAuditLogEntriesForAccountQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetAuditLogEntriesForHouseholdQuery",
 			testutils.ContextMatcher,
-			exampleAccount.ID,
+			exampleHousehold.ID,
 		).Return(fakeQuery, fakeArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
@@ -1640,21 +1640,21 @@ func TestQuerier_GetAuditLogEntriesForAccount(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnRows(buildMockRowsFromAuditLogEntries(false, exampleAuditLogEntryList.Entries...))
 
-		actual, err := c.GetAuditLogEntriesForAccount(ctx, exampleAccount.ID)
+		actual, err := c.GetAuditLogEntriesForHousehold(ctx, exampleHousehold.ID)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleAuditLogEntryList.Entries, actual)
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
 
-	T.Run("with invalid account ID", func(t *testing.T) {
+	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetAuditLogEntriesForAccount(ctx, 0)
+		actual, err := c.GetAuditLogEntriesForHousehold(ctx, 0)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -1664,15 +1664,15 @@ func TestQuerier_GetAuditLogEntriesForAccount(T *testing.T) {
 
 		ctx := context.Background()
 
-		exampleAccount := fakes.BuildFakeAccount()
+		exampleHousehold := fakes.BuildFakeHousehold()
 		c, db := buildTestClient(t)
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetAuditLogEntriesForAccountQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetAuditLogEntriesForHouseholdQuery",
 			testutils.ContextMatcher,
-			exampleAccount.ID,
+			exampleHousehold.ID,
 		).Return(fakeQuery, fakeArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
@@ -1680,7 +1680,7 @@ func TestQuerier_GetAuditLogEntriesForAccount(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.GetAuditLogEntriesForAccount(ctx, exampleAccount.ID)
+		actual, err := c.GetAuditLogEntriesForHousehold(ctx, exampleHousehold.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -1692,15 +1692,15 @@ func TestQuerier_GetAuditLogEntriesForAccount(T *testing.T) {
 
 		ctx := context.Background()
 
-		exampleAccount := fakes.BuildFakeAccount()
+		exampleHousehold := fakes.BuildFakeHousehold()
 		c, db := buildTestClient(t)
 
 		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
 		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
-		mockQueryBuilder.AccountSQLQueryBuilder.On(
-			"BuildGetAuditLogEntriesForAccountQuery",
+		mockQueryBuilder.HouseholdSQLQueryBuilder.On(
+			"BuildGetAuditLogEntriesForHouseholdQuery",
 			testutils.ContextMatcher,
-			exampleAccount.ID,
+			exampleHousehold.ID,
 		).Return(fakeQuery, fakeArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
@@ -1708,7 +1708,7 @@ func TestQuerier_GetAuditLogEntriesForAccount(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnRows(buildErroneousMockRow())
 
-		actual, err := c.GetAuditLogEntriesForAccount(ctx, exampleAccount.ID)
+		actual, err := c.GetAuditLogEntriesForHousehold(ctx, exampleHousehold.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 

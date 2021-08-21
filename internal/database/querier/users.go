@@ -43,7 +43,7 @@ func (q *SQLQuerier) scanUser(ctx context.Context, scan database.Scanner, includ
 		&user.TwoFactorSecret,
 		&user.TwoFactorSecretVerifiedOn,
 		&rawRoles,
-		&user.ServiceAccountStatus,
+		&user.ServiceHouseholdStatus,
 		&user.ReputationExplanation,
 		&user.CreatedOn,
 		&user.LastUpdatedOn,
@@ -133,8 +133,8 @@ func (q *SQLQuerier) getUser(ctx context.Context, userID uint64, withVerifiedTOT
 	return u, nil
 }
 
-// createUser creates a user. The `user` and `account` parameters are meant to be filled out.
-func (q *SQLQuerier) createUser(ctx context.Context, user *types.User, account *types.Account, userCreationQuery string, userCreationArgs []interface{}) error {
+// createUser creates a user. The `user` and `household` parameters are meant to be filled out.
+func (q *SQLQuerier) createUser(ctx context.Context, user *types.User, household *types.Household, userCreationQuery string, userCreationArgs []interface{}) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -152,7 +152,7 @@ func (q *SQLQuerier) createUser(ctx context.Context, user *types.User, account *
 	}
 
 	user.ID = userID
-	account.BelongsToUser = user.ID
+	household.BelongsToUser = user.ID
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
 	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildUserCreationEventEntry(user.ID)); err != nil {
@@ -160,40 +160,40 @@ func (q *SQLQuerier) createUser(ctx context.Context, user *types.User, account *
 		return observability.PrepareError(err, logger, span, "writing user creation audit log entry")
 	}
 
-	// create the account.
-	accountCreationInput := types.AccountCreationInputForNewUser(user)
-	accountCreationQuery, accountCreationArgs := q.sqlQueryBuilder.BuildAccountCreationQuery(ctx, accountCreationInput)
+	// create the household.
+	householdCreationInput := types.HouseholdCreationInputForNewUser(user)
+	householdCreationQuery, householdCreationArgs := q.sqlQueryBuilder.BuildHouseholdCreationQuery(ctx, householdCreationInput)
 
-	accountID, err := q.performWriteQuery(ctx, tx, false, "account creation", accountCreationQuery, accountCreationArgs)
+	householdID, err := q.performWriteQuery(ctx, tx, false, "household creation", householdCreationQuery, householdCreationArgs)
 	if err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "create account")
+		return observability.PrepareError(err, logger, span, "create household")
 	}
 
-	account.ID = accountID
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	household.ID = householdID
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
-	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildAccountCreationEventEntry(account, user.ID)); err != nil {
+	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildHouseholdCreationEventEntry(household, user.ID)); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "writing account creation audit log entry")
+		return observability.PrepareError(err, logger, span, "writing household creation audit log entry")
 	}
 
-	addUserToAccountQuery, addUserToAccountArgs := q.sqlQueryBuilder.BuildCreateMembershipForNewUserQuery(ctx, userID, accountID)
-	if err = q.performWriteQueryIgnoringReturn(ctx, tx, "account user membership creation", addUserToAccountQuery, addUserToAccountArgs); err != nil {
+	addUserToHouseholdQuery, addUserToHouseholdArgs := q.sqlQueryBuilder.BuildCreateMembershipForNewUserQuery(ctx, userID, householdID)
+	if err = q.performWriteQueryIgnoringReturn(ctx, tx, "household user membership creation", addUserToHouseholdQuery, addUserToHouseholdArgs); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "writing account user membership creation audit log entry")
+		return observability.PrepareError(err, logger, span, "writing household user membership creation audit log entry")
 	}
 
-	addToAccountInput := &types.AddUserToAccountInput{
-		UserID:       user.ID,
-		AccountID:    account.ID,
-		AccountRoles: []string{authorization.AccountMemberRole.String()},
-		Reason:       "account creation",
+	addToHouseholdInput := &types.AddUserToHouseholdInput{
+		UserID:         user.ID,
+		HouseholdID:    household.ID,
+		HouseholdRoles: []string{authorization.HouseholdMemberRole.String()},
+		Reason:         "household creation",
 	}
 
-	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildUserAddedToAccountEventEntry(userID, addToAccountInput)); err != nil {
+	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildUserAddedToHouseholdEventEntry(userID, addToHouseholdInput)); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "writing user added to account audit log entry")
+		return observability.PrepareError(err, logger, span, "writing user added to household audit log entry")
 	}
 
 	if err = tx.Commit(); err != nil {
@@ -201,9 +201,9 @@ func (q *SQLQuerier) createUser(ctx context.Context, user *types.User, account *
 	}
 
 	tracing.AttachUserIDToSpan(span, user.ID)
-	tracing.AttachAccountIDToSpan(span, account.ID)
+	tracing.AttachHouseholdIDToSpan(span, household.ID)
 
-	logger.Info("user and account created")
+	logger.Info("user and household created")
 
 	return nil
 }
@@ -386,13 +386,13 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDataStoreC
 		CreatedOn:       q.currentTime(),
 	}
 
-	account := &types.Account{
+	household := &types.Household{
 		Name:               input.Username,
 		SubscriptionPlanID: nil,
 		CreatedOn:          q.currentTime(),
 	}
 
-	if err := q.createUser(ctx, user, account, userCreationQuery, userCreationArgs); err != nil {
+	if err := q.createUser(ctx, user, household, userCreationQuery, userCreationArgs); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "creating user")
 	}
 
@@ -583,11 +583,11 @@ func (q *SQLQuerier) ArchiveUser(ctx context.Context, userID uint64) error {
 		return observability.PrepareError(err, logger, span, "archiving user")
 	}
 
-	archiveMembershipsQuery, archiveMembershipsArgs := q.sqlQueryBuilder.BuildArchiveAccountMembershipsForUserQuery(ctx, userID)
+	archiveMembershipsQuery, archiveMembershipsArgs := q.sqlQueryBuilder.BuildArchiveHouseholdMembershipsForUserQuery(ctx, userID)
 
 	if err = q.performWriteQueryIgnoringReturn(ctx, tx, "user memberships archive", archiveMembershipsQuery, archiveMembershipsArgs); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "archiving user account memberships")
+		return observability.PrepareError(err, logger, span, "archiving user household memberships")
 	}
 
 	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildUserArchiveEventEntry(userID)); err != nil {

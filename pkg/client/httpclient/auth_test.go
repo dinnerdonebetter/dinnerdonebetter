@@ -52,7 +52,7 @@ func (s *authTestSuite) TestClient_UserStatus() {
 		t := s.T()
 
 		expected := &types.UserStatusResponse{
-			UserReputation:            s.exampleUser.ServiceAccountStatus,
+			UserReputation:            s.exampleUser.ServiceHouseholdStatus,
 			UserReputationExplanation: s.exampleUser.ReputationExplanation,
 			UserIsAuthenticated:       true,
 		}

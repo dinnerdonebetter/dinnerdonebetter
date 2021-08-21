@@ -86,7 +86,7 @@ func (b *Postgres) BuildGetBatchOfValidIngredientPreparationsQuery(ctx context.C
 	)
 }
 
-// BuildGetValidIngredientPreparationsQuery builds a SQL query selecting valid ingredient preparations that adhere to a given QueryFilter and belong to a given account,
+// BuildGetValidIngredientPreparationsQuery builds a SQL query selecting valid ingredient preparations that adhere to a given QueryFilter and belong to a given household,
 // and returns both the query and the relevant args to pass to the query executor.
 func (b *Postgres) BuildGetValidIngredientPreparationsQuery(ctx context.Context, includeArchived bool, filter *types.QueryFilter) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
@@ -113,7 +113,7 @@ func (b *Postgres) BuildGetValidIngredientPreparationsQuery(ctx context.Context,
 	)
 }
 
-// BuildGetValidIngredientPreparationsWithIDsQuery builds a SQL query selecting valid ingredient preparations that belong to a given account,
+// BuildGetValidIngredientPreparationsWithIDsQuery builds a SQL query selecting valid ingredient preparations that belong to a given household,
 // and have IDs that exist within a given set of IDs. Returns both the query and the relevant
 // args to pass to the query executor. This function is primarily intended for use with a search
 // index, which would provide a slice of string IDs to query against. This function accepts a
@@ -187,7 +187,7 @@ func (b *Postgres) BuildUpdateValidIngredientPreparationQuery(ctx context.Contex
 	)
 }
 
-// BuildArchiveValidIngredientPreparationQuery returns a SQL query which marks a given valid ingredient preparation belonging to a given account as archived.
+// BuildArchiveValidIngredientPreparationQuery returns a SQL query which marks a given valid ingredient preparation belonging to a given household as archived.
 func (b *Postgres) BuildArchiveValidIngredientPreparationQuery(ctx context.Context, validIngredientPreparationID uint64) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
 	defer span.End()

@@ -16,41 +16,41 @@ import (
 )
 
 var (
-	_ types.AccountDataManager = (*SQLQuerier)(nil)
+	_ types.HouseholdDataManager = (*SQLQuerier)(nil)
 )
 
-// scanAccount takes a database Scanner (i.e. *sql.Row) and scans the result into an Account struct.
-func (q *SQLQuerier) scanAccount(ctx context.Context, scan database.Scanner, includeCounts bool) (account *types.Account, membership *types.AccountUserMembership, filteredCount, totalCount uint64, err error) {
+// scanHousehold takes a database Scanner (i.e. *sql.Row) and scans the result into an Household struct.
+func (q *SQLQuerier) scanHousehold(ctx context.Context, scan database.Scanner, includeCounts bool) (household *types.Household, membership *types.HouseholdUserMembership, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.WithValue("include_counts", includeCounts)
 
-	account = &types.Account{Members: []*types.AccountUserMembership{}}
-	membership = &types.AccountUserMembership{}
+	household = &types.Household{Members: []*types.HouseholdUserMembership{}}
+	membership = &types.HouseholdUserMembership{}
 
 	var (
 		rawRoles string
 	)
 
 	targetVars := []interface{}{
-		&account.ID,
-		&account.ExternalID,
-		&account.Name,
-		&account.BillingStatus,
-		&account.ContactEmail,
-		&account.ContactPhone,
-		&account.PaymentProcessorCustomerID,
-		&account.SubscriptionPlanID,
-		&account.CreatedOn,
-		&account.LastUpdatedOn,
-		&account.ArchivedOn,
-		&account.BelongsToUser,
+		&household.ID,
+		&household.ExternalID,
+		&household.Name,
+		&household.BillingStatus,
+		&household.ContactEmail,
+		&household.ContactPhone,
+		&household.PaymentProcessorCustomerID,
+		&household.SubscriptionPlanID,
+		&household.CreatedOn,
+		&household.LastUpdatedOn,
+		&household.ArchivedOn,
+		&household.BelongsToUser,
 		&membership.ID,
 		&membership.BelongsToUser,
-		&membership.BelongsToAccount,
+		&membership.BelongsToHousehold,
 		&rawRoles,
-		&membership.DefaultAccount,
+		&membership.DefaultHousehold,
 		&membership.CreatedOn,
 		&membership.LastUpdatedOn,
 		&membership.ArchivedOn,
@@ -64,36 +64,36 @@ func (q *SQLQuerier) scanAccount(ctx context.Context, scan database.Scanner, inc
 		return nil, nil, 0, 0, observability.PrepareError(err, logger, span, "fetching memberships from database")
 	}
 
-	membership.AccountRoles = strings.Split(rawRoles, accountMemberRolesSeparator)
+	membership.HouseholdRoles = strings.Split(rawRoles, householdMemberRolesSeparator)
 
-	return account, membership, filteredCount, totalCount, nil
+	return household, membership, filteredCount, totalCount, nil
 }
 
-// scanAccounts takes some database rows and turns them into a slice of accounts.
-func (q *SQLQuerier) scanAccounts(ctx context.Context, rows database.ResultIterator, includeCounts bool) (accounts []*types.Account, filteredCount, totalCount uint64, err error) {
+// scanHouseholds takes some database rows and turns them into a slice of households.
+func (q *SQLQuerier) scanHouseholds(ctx context.Context, rows database.ResultIterator, includeCounts bool) (households []*types.Household, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.WithValue("include_counts", includeCounts)
-	accounts = []*types.Account{}
+	households = []*types.Household{}
 
-	var currentAccount *types.Account
+	var currentHousehold *types.Household
 	for rows.Next() {
-		account, membership, fc, tc, scanErr := q.scanAccount(ctx, rows, includeCounts)
+		household, membership, fc, tc, scanErr := q.scanHousehold(ctx, rows, includeCounts)
 		if scanErr != nil {
 			return nil, 0, 0, scanErr
 		}
 
-		if currentAccount == nil {
-			currentAccount = account
+		if currentHousehold == nil {
+			currentHousehold = household
 		}
 
-		if currentAccount.ID != account.ID {
-			accounts = append(accounts, currentAccount)
-			currentAccount = account
+		if currentHousehold.ID != household.ID {
+			households = append(households, currentHousehold)
+			currentHousehold = household
 		}
 
-		currentAccount.Members = append(currentAccount.Members, membership)
+		currentHousehold.Members = append(currentHousehold.Members, membership)
 
 		if includeCounts {
 			if filteredCount == 0 {
@@ -106,74 +106,74 @@ func (q *SQLQuerier) scanAccounts(ctx context.Context, rows database.ResultItera
 		}
 	}
 
-	if currentAccount != nil {
-		accounts = append(accounts, currentAccount)
+	if currentHousehold != nil {
+		households = append(households, currentHousehold)
 	}
 
 	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
 		return nil, 0, 0, observability.PrepareError(err, logger, span, "handling rows")
 	}
 
-	return accounts, filteredCount, totalCount, nil
+	return households, filteredCount, totalCount, nil
 }
 
-// GetAccount fetches an account from the database.
-func (q *SQLQuerier) GetAccount(ctx context.Context, accountID, userID uint64) (*types.Account, error) {
+// GetHousehold fetches an household from the database.
+func (q *SQLQuerier) GetHousehold(ctx context.Context, householdID, userID uint64) (*types.Household, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if accountID == 0 || userID == 0 {
+	if householdID == 0 || userID == 0 {
 		return nil, ErrInvalidIDProvided
 	}
 
-	tracing.AttachAccountIDToSpan(span, accountID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 	tracing.AttachUserIDToSpan(span, userID)
 
 	logger := q.logger.WithValues(map[string]interface{}{
-		keys.AccountIDKey: accountID,
-		keys.UserIDKey:    userID,
+		keys.HouseholdIDKey: householdID,
+		keys.UserIDKey:      userID,
 	})
 
-	query, args := q.sqlQueryBuilder.BuildGetAccountQuery(ctx, accountID, userID)
-	rows, err := q.performReadQuery(ctx, q.db, "account", query, args...)
+	query, args := q.sqlQueryBuilder.BuildGetHouseholdQuery(ctx, householdID, userID)
+	rows, err := q.performReadQuery(ctx, q.db, "household", query, args...)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing accounts list retrieval query")
+		return nil, observability.PrepareError(err, logger, span, "executing households list retrieval query")
 	}
 
-	accounts, _, _, err := q.scanAccounts(ctx, rows, false)
+	households, _, _, err := q.scanHouseholds(ctx, rows, false)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "beginning transaction")
 	}
 
-	var account *types.Account
-	if len(accounts) > 0 {
-		account = accounts[0]
+	var household *types.Household
+	if len(households) > 0 {
+		household = households[0]
 	}
 
-	if account == nil {
+	if household == nil {
 		return nil, sql.ErrNoRows
 	}
 
-	return account, nil
+	return household, nil
 }
 
-// GetAllAccountsCount fetches the count of accounts from the database that meet a particular filter.
-func (q *SQLQuerier) GetAllAccountsCount(ctx context.Context) (uint64, error) {
+// GetAllHouseholdsCount fetches the count of households from the database that meet a particular filter.
+func (q *SQLQuerier) GetAllHouseholdsCount(ctx context.Context) (uint64, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger
 
-	count, err := q.performCountQuery(ctx, q.db, q.sqlQueryBuilder.BuildGetAllAccountsCountQuery(ctx), "fetching count of all accounts")
+	count, err := q.performCountQuery(ctx, q.db, q.sqlQueryBuilder.BuildGetAllHouseholdsCountQuery(ctx), "fetching count of all households")
 	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of accounts")
+		return 0, observability.PrepareError(err, logger, span, "querying for count of households")
 	}
 
 	return count, nil
 }
 
-// GetAllAccounts fetches a list of all accounts in the database.
-func (q *SQLQuerier) GetAllAccounts(ctx context.Context, results chan []*types.Account, batchSize uint16) error {
+// GetAllHouseholds fetches a list of all households in the database.
+func (q *SQLQuerier) GetAllHouseholds(ctx context.Context, results chan []*types.Household, batchSize uint16) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -187,15 +187,15 @@ func (q *SQLQuerier) GetAllAccounts(ctx context.Context, results chan []*types.A
 
 	logger := q.logger.WithValue("batch_size", batchSize)
 
-	count, err := q.GetAllAccountsCount(ctx)
+	count, err := q.GetAllHouseholdsCount(ctx)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "fetching count of accounts")
+		return observability.PrepareError(err, logger, span, "fetching count of households")
 	}
 
 	for beginID := uint64(1); beginID <= count; beginID += uint64(batchSize) {
 		endID := beginID + uint64(batchSize)
 		go func(begin, end uint64) {
-			query, args := q.sqlQueryBuilder.BuildGetBatchOfAccountsQuery(ctx, begin, end)
+			query, args := q.sqlQueryBuilder.BuildGetBatchOfHouseholdsQuery(ctx, begin, end)
 			logger = logger.WithValues(map[string]interface{}{
 				"query": query,
 				"begin": begin,
@@ -210,21 +210,21 @@ func (q *SQLQuerier) GetAllAccounts(ctx context.Context, results chan []*types.A
 				return
 			}
 
-			accounts, _, _, scanErr := q.scanAccounts(ctx, rows, false)
+			households, _, _, scanErr := q.scanHouseholds(ctx, rows, false)
 			if scanErr != nil {
 				observability.AcknowledgeError(scanErr, logger, span, "scanning database rows")
 				return
 			}
 
-			results <- accounts
+			results <- households
 		}(beginID, endID)
 	}
 
 	return nil
 }
 
-// GetAccounts fetches a list of accounts from the database that meet a particular filter.
-func (q *SQLQuerier) GetAccounts(ctx context.Context, userID uint64, filter *types.QueryFilter) (x *types.AccountList, err error) {
+// GetHouseholds fetches a list of households from the database that meet a particular filter.
+func (q *SQLQuerier) GetHouseholds(ctx context.Context, userID uint64, filter *types.QueryFilter) (x *types.HouseholdList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -236,54 +236,54 @@ func (q *SQLQuerier) GetAccounts(ctx context.Context, userID uint64, filter *typ
 	tracing.AttachQueryFilterToSpan(span, filter)
 	tracing.AttachUserIDToSpan(span, userID)
 
-	x = &types.AccountList{}
+	x = &types.HouseholdList{}
 	if filter != nil {
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.sqlQueryBuilder.BuildGetAccountsQuery(ctx, userID, false, filter)
+	query, args := q.sqlQueryBuilder.BuildGetHouseholdsQuery(ctx, userID, false, filter)
 
-	rows, err := q.performReadQuery(ctx, q.db, "accounts", query, args...)
+	rows, err := q.performReadQuery(ctx, q.db, "households", query, args...)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing accounts list retrieval query")
+		return nil, observability.PrepareError(err, logger, span, "executing households list retrieval query")
 	}
 
-	if x.Accounts, x.FilteredCount, x.TotalCount, err = q.scanAccounts(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning accounts from database")
+	if x.Households, x.FilteredCount, x.TotalCount, err = q.scanHouseholds(ctx, rows, true); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "scanning households from database")
 	}
 
 	return x, nil
 }
 
-// GetAccountsForAdmin fetches a list of accounts from the database that meet a particular filter for all users.
-func (q *SQLQuerier) GetAccountsForAdmin(ctx context.Context, filter *types.QueryFilter) (x *types.AccountList, err error) {
+// GetHouseholdsForAdmin fetches a list of households from the database that meet a particular filter for all users.
+func (q *SQLQuerier) GetHouseholdsForAdmin(ctx context.Context, filter *types.QueryFilter) (x *types.HouseholdList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := filter.AttachToLogger(q.logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.AccountList{}
+	x = &types.HouseholdList{}
 	if filter != nil {
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.sqlQueryBuilder.BuildGetAccountsQuery(ctx, 0, true, filter)
+	query, args := q.sqlQueryBuilder.BuildGetHouseholdsQuery(ctx, 0, true, filter)
 
-	rows, err := q.performReadQuery(ctx, q.db, "accounts for admin", query, args...)
+	rows, err := q.performReadQuery(ctx, q.db, "households for admin", query, args...)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "querying database for accounts")
+		return nil, observability.PrepareError(err, logger, span, "querying database for households")
 	}
 
-	if x.Accounts, x.FilteredCount, x.TotalCount, err = q.scanAccounts(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning accounts")
+	if x.Households, x.FilteredCount, x.TotalCount, err = q.scanHouseholds(ctx, rows, true); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "scanning households")
 	}
 
 	return x, nil
 }
 
-// CreateAccount creates an account in the database.
-func (q *SQLQuerier) CreateAccount(ctx context.Context, input *types.AccountCreationInput, createdByUser uint64) (*types.Account, error) {
+// CreateHousehold creates an household in the database.
+func (q *SQLQuerier) CreateHousehold(ctx context.Context, input *types.HouseholdCreationInput, createdByUser uint64) (*types.Household, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -303,62 +303,62 @@ func (q *SQLQuerier) CreateAccount(ctx context.Context, input *types.AccountCrea
 		return nil, observability.PrepareError(err, logger, span, "beginning transaction")
 	}
 
-	accountCreationQuery, accountCreationArgs := q.sqlQueryBuilder.BuildAccountCreationQuery(ctx, input)
+	householdCreationQuery, householdCreationArgs := q.sqlQueryBuilder.BuildHouseholdCreationQuery(ctx, input)
 
-	// create the account.
-	id, err := q.performWriteQuery(ctx, tx, false, "account creation", accountCreationQuery, accountCreationArgs)
+	// create the household.
+	id, err := q.performWriteQuery(ctx, tx, false, "household creation", householdCreationQuery, householdCreationArgs)
 	if err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return nil, observability.PrepareError(err, logger, span, "creating account")
+		return nil, observability.PrepareError(err, logger, span, "creating household")
 	}
 
-	logger = logger.WithValue(keys.AccountIDKey, id)
+	logger = logger.WithValue(keys.HouseholdIDKey, id)
 
-	account := &types.Account{
+	household := &types.Household{
 		ID:            id,
 		Name:          input.Name,
 		BelongsToUser: input.BelongsToUser,
-		BillingStatus: types.UnpaidAccountBillingStatus,
+		BillingStatus: types.UnpaidHouseholdBillingStatus,
 		ContactEmail:  input.ContactEmail,
 		ContactPhone:  input.ContactPhone,
 		CreatedOn:     q.currentTime(),
 	}
 
-	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildAccountCreationEventEntry(account, createdByUser)); err != nil {
+	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildHouseholdCreationEventEntry(household, createdByUser)); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return nil, observability.PrepareError(err, logger, span, "writing account creation audit log event entry")
+		return nil, observability.PrepareError(err, logger, span, "writing household creation audit log event entry")
 	}
 
-	addInput := &types.AddUserToAccountInput{
-		UserID:       input.BelongsToUser,
-		AccountID:    account.ID,
-		Reason:       "account creation",
-		AccountRoles: []string{authorization.AccountAdminRole.String()},
+	addInput := &types.AddUserToHouseholdInput{
+		UserID:         input.BelongsToUser,
+		HouseholdID:    household.ID,
+		Reason:         "household creation",
+		HouseholdRoles: []string{authorization.HouseholdAdminRole.String()},
 	}
 
-	addUserToAccountQuery, addUserToAccountArgs := q.sqlQueryBuilder.BuildAddUserToAccountQuery(ctx, addInput)
-	if err = q.performWriteQueryIgnoringReturn(ctx, tx, "account user membership creation", addUserToAccountQuery, addUserToAccountArgs); err != nil {
+	addUserToHouseholdQuery, addUserToHouseholdArgs := q.sqlQueryBuilder.BuildAddUserToHouseholdQuery(ctx, addInput)
+	if err = q.performWriteQueryIgnoringReturn(ctx, tx, "household user membership creation", addUserToHouseholdQuery, addUserToHouseholdArgs); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return nil, observability.PrepareError(err, logger, span, "creating account membership")
+		return nil, observability.PrepareError(err, logger, span, "creating household membership")
 	}
 
-	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildUserAddedToAccountEventEntry(createdByUser, addInput)); err != nil {
+	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildUserAddedToHouseholdEventEntry(createdByUser, addInput)); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return nil, observability.PrepareError(err, logger, span, "writing account membership creation audit log event entry")
+		return nil, observability.PrepareError(err, logger, span, "writing household membership creation audit log event entry")
 	}
 
 	if err = tx.Commit(); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "committing transaction")
 	}
 
-	tracing.AttachAccountIDToSpan(span, account.ID)
-	logger.Info("account created")
+	tracing.AttachHouseholdIDToSpan(span, household.ID)
+	logger.Info("household created")
 
-	return account, nil
+	return household, nil
 }
 
-// UpdateAccount updates a particular account. Note that UpdateAccount expects the provided input to have a valid ID.
-func (q *SQLQuerier) UpdateAccount(ctx context.Context, updated *types.Account, changedByUser uint64, changes []*types.FieldChangeSummary) error {
+// UpdateHousehold updates a particular household. Note that UpdateHousehold expects the provided input to have a valid ID.
+func (q *SQLQuerier) UpdateHousehold(ctx context.Context, updated *types.Household, changedByUser uint64, changes []*types.FieldChangeSummary) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -370,51 +370,51 @@ func (q *SQLQuerier) UpdateAccount(ctx context.Context, updated *types.Account, 
 		return ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue(keys.AccountIDKey, updated.ID)
-	tracing.AttachAccountIDToSpan(span, updated.ID)
+	logger := q.logger.WithValue(keys.HouseholdIDKey, updated.ID)
+	tracing.AttachHouseholdIDToSpan(span, updated.ID)
 	tracing.AttachRequestingUserIDToSpan(span, changedByUser)
-	tracing.AttachChangeSummarySpan(span, "account", changes)
+	tracing.AttachChangeSummarySpan(span, "household", changes)
 
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
 		return observability.PrepareError(err, logger, span, "beginning transaction")
 	}
 
-	query, args := q.sqlQueryBuilder.BuildUpdateAccountQuery(ctx, updated)
-	if err = q.performWriteQueryIgnoringReturn(ctx, tx, "account update", query, args); err != nil {
+	query, args := q.sqlQueryBuilder.BuildUpdateHouseholdQuery(ctx, updated)
+	if err = q.performWriteQueryIgnoringReturn(ctx, tx, "household update", query, args); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "updating account")
+		return observability.PrepareError(err, logger, span, "updating household")
 	}
 
-	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildAccountUpdateEventEntry(updated.BelongsToUser, updated.ID, changedByUser, changes)); err != nil {
+	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildHouseholdUpdateEventEntry(updated.BelongsToUser, updated.ID, changedByUser, changes)); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "writing account update audit log event entry")
+		return observability.PrepareError(err, logger, span, "writing household update audit log event entry")
 	}
 
 	if err = tx.Commit(); err != nil {
 		return observability.PrepareError(err, logger, span, "committing transaction")
 	}
 
-	logger.Info("account updated")
+	logger.Info("household updated")
 
 	return nil
 }
 
-// ArchiveAccount archives an account from the database by its ID.
-func (q *SQLQuerier) ArchiveAccount(ctx context.Context, accountID, userID, archivedByUser uint64) error {
+// ArchiveHousehold archives an household from the database by its ID.
+func (q *SQLQuerier) ArchiveHousehold(ctx context.Context, householdID, userID, archivedByUser uint64) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if accountID == 0 || userID == 0 || archivedByUser == 0 {
+	if householdID == 0 || userID == 0 || archivedByUser == 0 {
 		return ErrInvalidIDProvided
 	}
 
 	tracing.AttachUserIDToSpan(span, userID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	logger := q.logger.WithValues(map[string]interface{}{
 		keys.RequesterIDKey: archivedByUser,
-		keys.AccountIDKey:   accountID,
+		keys.HouseholdIDKey: householdID,
 		keys.UserIDKey:      userID,
 	})
 
@@ -423,42 +423,42 @@ func (q *SQLQuerier) ArchiveAccount(ctx context.Context, accountID, userID, arch
 		return observability.PrepareError(err, logger, span, "beginning transaction")
 	}
 
-	query, args := q.sqlQueryBuilder.BuildArchiveAccountQuery(ctx, accountID, userID)
+	query, args := q.sqlQueryBuilder.BuildArchiveHouseholdQuery(ctx, householdID, userID)
 
-	if err = q.performWriteQueryIgnoringReturn(ctx, tx, "account archive", query, args); err != nil {
+	if err = q.performWriteQueryIgnoringReturn(ctx, tx, "household archive", query, args); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "archiving account")
+		return observability.PrepareError(err, logger, span, "archiving household")
 	}
 
-	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildAccountArchiveEventEntry(userID, accountID, archivedByUser)); err != nil {
+	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildHouseholdArchiveEventEntry(userID, householdID, archivedByUser)); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "writing account archive audit log event entry")
+		return observability.PrepareError(err, logger, span, "writing household archive audit log event entry")
 	}
 
 	if err = tx.Commit(); err != nil {
 		return observability.PrepareError(err, logger, span, "committing transaction")
 	}
 
-	logger.Info("account archived")
+	logger.Info("household archived")
 
 	return nil
 }
 
-// GetAuditLogEntriesForAccount fetches a list of audit log entries from the database that relate to a given account.
-func (q *SQLQuerier) GetAuditLogEntriesForAccount(ctx context.Context, accountID uint64) ([]*types.AuditLogEntry, error) {
+// GetAuditLogEntriesForHousehold fetches a list of audit log entries from the database that relate to a given household.
+func (q *SQLQuerier) GetAuditLogEntriesForHousehold(ctx context.Context, householdID uint64) ([]*types.AuditLogEntry, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if accountID == 0 {
+	if householdID == 0 {
 		return nil, ErrInvalidIDProvided
 	}
 
-	tracing.AttachAccountIDToSpan(span, accountID)
-	logger := q.logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
+	logger := q.logger.WithValue(keys.HouseholdIDKey, householdID)
 
-	query, args := q.sqlQueryBuilder.BuildGetAuditLogEntriesForAccountQuery(ctx, accountID)
+	query, args := q.sqlQueryBuilder.BuildGetAuditLogEntriesForHouseholdQuery(ctx, householdID)
 
-	rows, err := q.performReadQuery(ctx, q.db, "audit log entries for account", query, args...)
+	rows, err := q.performReadQuery(ctx, q.db, "audit log entries for household", query, args...)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "querying database for audit log entries")
 	}

@@ -38,7 +38,7 @@ func buildTestService(t *testing.T) *service {
 		&authservice.Config{},
 		logging.NewNoopLogger(),
 		&mocktypes.UserDataManager{},
-		&mocktypes.AccountDataManager{},
+		&mocktypes.HouseholdDataManager{},
 		&authentication.MockAuthenticator{},
 		mockencoding.NewMockEncoderDecoder(),
 		func(counterName, description string) metrics.UnitCounter {
@@ -69,7 +69,7 @@ func TestProvideUsersService(T *testing.T) {
 			&authservice.Config{},
 			logging.NewNoopLogger(),
 			&mocktypes.UserDataManager{},
-			&mocktypes.AccountDataManager{},
+			&mocktypes.HouseholdDataManager{},
 			&authentication.MockAuthenticator{},
 			mockencoding.NewMockEncoderDecoder(),
 			func(counterName, description string) metrics.UnitCounter {

@@ -8,15 +8,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestChangeActiveAccountInput_ValidateWithContext(T *testing.T) {
+func TestChangeActiveHouseholdInput_ValidateWithContext(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		x := &ChangeActiveAccountInput{
-			AccountID: 123,
+		x := &ChangeActiveHouseholdInput{
+			HouseholdID: 123,
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))

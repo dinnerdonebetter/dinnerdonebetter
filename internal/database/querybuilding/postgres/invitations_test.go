@@ -45,7 +45,7 @@ func TestPostgres_BuildGetInvitationQuery(T *testing.T) {
 
 		exampleInvitation := fakes.BuildFakeInvitation()
 
-		expectedQuery := "SELECT invitations.id, invitations.external_id, invitations.code, invitations.consumed, invitations.created_on, invitations.last_updated_on, invitations.archived_on, invitations.belongs_to_account FROM invitations WHERE invitations.archived_on IS NULL AND invitations.id = $1"
+		expectedQuery := "SELECT invitations.id, invitations.external_id, invitations.code, invitations.consumed, invitations.created_on, invitations.last_updated_on, invitations.archived_on, invitations.belongs_to_household FROM invitations WHERE invitations.archived_on IS NULL AND invitations.id = $1"
 		expectedArgs := []interface{}{
 			exampleInvitation.ID,
 		}
@@ -85,7 +85,7 @@ func TestPostgres_BuildGetBatchOfInvitationsQuery(T *testing.T) {
 
 		beginID, endID := uint64(1), uint64(1000)
 
-		expectedQuery := "SELECT invitations.id, invitations.external_id, invitations.code, invitations.consumed, invitations.created_on, invitations.last_updated_on, invitations.archived_on, invitations.belongs_to_account FROM invitations WHERE invitations.id > $1 AND invitations.id < $2"
+		expectedQuery := "SELECT invitations.id, invitations.external_id, invitations.code, invitations.consumed, invitations.created_on, invitations.last_updated_on, invitations.archived_on, invitations.belongs_to_household FROM invitations WHERE invitations.id > $1 AND invitations.id < $2"
 		expectedArgs := []interface{}{
 			beginID,
 			endID,
@@ -109,7 +109,7 @@ func TestPostgres_BuildGetInvitationsQuery(T *testing.T) {
 
 		filter := fakes.BuildFleshedOutQueryFilter()
 
-		expectedQuery := "SELECT invitations.id, invitations.external_id, invitations.code, invitations.consumed, invitations.created_on, invitations.last_updated_on, invitations.archived_on, invitations.belongs_to_account, (SELECT COUNT(invitations.id) FROM invitations WHERE invitations.archived_on IS NULL) as total_count, (SELECT COUNT(invitations.id) FROM invitations WHERE invitations.archived_on IS NULL AND invitations.created_on > $1 AND invitations.created_on < $2 AND invitations.last_updated_on > $3 AND invitations.last_updated_on < $4) as filtered_count FROM invitations WHERE invitations.archived_on IS NULL AND invitations.created_on > $5 AND invitations.created_on < $6 AND invitations.last_updated_on > $7 AND invitations.last_updated_on < $8 GROUP BY invitations.id ORDER BY invitations.id LIMIT 20 OFFSET 180"
+		expectedQuery := "SELECT invitations.id, invitations.external_id, invitations.code, invitations.consumed, invitations.created_on, invitations.last_updated_on, invitations.archived_on, invitations.belongs_to_household, (SELECT COUNT(invitations.id) FROM invitations WHERE invitations.archived_on IS NULL) as total_count, (SELECT COUNT(invitations.id) FROM invitations WHERE invitations.archived_on IS NULL AND invitations.created_on > $1 AND invitations.created_on < $2 AND invitations.last_updated_on > $3 AND invitations.last_updated_on < $4) as filtered_count FROM invitations WHERE invitations.archived_on IS NULL AND invitations.created_on > $5 AND invitations.created_on < $6 AND invitations.last_updated_on > $7 AND invitations.last_updated_on < $8 GROUP BY invitations.id ORDER BY invitations.id LIMIT 20 OFFSET 180"
 		expectedArgs := []interface{}{
 			filter.CreatedAfter,
 			filter.CreatedBefore,
@@ -137,21 +137,21 @@ func TestPostgres_BuildGetInvitationsWithIDsQuery(T *testing.T) {
 		q, _ := buildTestService(t)
 		ctx := context.Background()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleIDs := []uint64{
 			789,
 			123,
 			456,
 		}
 
-		expectedQuery := "SELECT invitations.id, invitations.external_id, invitations.code, invitations.consumed, invitations.created_on, invitations.last_updated_on, invitations.archived_on, invitations.belongs_to_account FROM (SELECT invitations.id, invitations.external_id, invitations.code, invitations.consumed, invitations.created_on, invitations.last_updated_on, invitations.archived_on, invitations.belongs_to_account FROM invitations JOIN unnest('{789,123,456}'::int[]) WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT 20) AS invitations WHERE invitations.archived_on IS NULL AND invitations.belongs_to_account = $1 AND invitations.id IN ($2,$3,$4)"
+		expectedQuery := "SELECT invitations.id, invitations.external_id, invitations.code, invitations.consumed, invitations.created_on, invitations.last_updated_on, invitations.archived_on, invitations.belongs_to_household FROM (SELECT invitations.id, invitations.external_id, invitations.code, invitations.consumed, invitations.created_on, invitations.last_updated_on, invitations.archived_on, invitations.belongs_to_household FROM invitations JOIN unnest('{789,123,456}'::int[]) WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT 20) AS invitations WHERE invitations.archived_on IS NULL AND invitations.belongs_to_household = $1 AND invitations.id IN ($2,$3,$4)"
 		expectedArgs := []interface{}{
-			exampleAccountID,
+			exampleHouseholdID,
 			exampleIDs[0],
 			exampleIDs[1],
 			exampleIDs[2],
 		}
-		actualQuery, actualArgs := q.BuildGetInvitationsWithIDsQuery(ctx, exampleAccountID, defaultLimit, exampleIDs, true)
+		actualQuery, actualArgs := q.BuildGetInvitationsWithIDsQuery(ctx, exampleHouseholdID, defaultLimit, exampleIDs, true)
 
 		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
@@ -175,12 +175,12 @@ func TestPostgres_BuildCreateInvitationQuery(T *testing.T) {
 		exIDGen.On("NewExternalID").Return(exampleInvitation.ExternalID)
 		q.externalIDGenerator = exIDGen
 
-		expectedQuery := "INSERT INTO invitations (external_id,code,consumed,belongs_to_account) VALUES ($1,$2,$3,$4) RETURNING id"
+		expectedQuery := "INSERT INTO invitations (external_id,code,consumed,belongs_to_household) VALUES ($1,$2,$3,$4) RETURNING id"
 		expectedArgs := []interface{}{
 			exampleInvitation.ExternalID,
 			exampleInvitation.Code,
 			exampleInvitation.Consumed,
-			exampleInvitation.BelongsToAccount,
+			exampleInvitation.BelongsToHousehold,
 		}
 		actualQuery, actualArgs := q.BuildCreateInvitationQuery(ctx, exampleInput)
 
@@ -203,11 +203,11 @@ func TestPostgres_BuildUpdateInvitationQuery(T *testing.T) {
 
 		exampleInvitation := fakes.BuildFakeInvitation()
 
-		expectedQuery := "UPDATE invitations SET code = $1, consumed = $2, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_account = $3 AND id = $4"
+		expectedQuery := "UPDATE invitations SET code = $1, consumed = $2, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_household = $3 AND id = $4"
 		expectedArgs := []interface{}{
 			exampleInvitation.Code,
 			exampleInvitation.Consumed,
-			exampleInvitation.BelongsToAccount,
+			exampleInvitation.BelongsToHousehold,
 			exampleInvitation.ID,
 		}
 		actualQuery, actualArgs := q.BuildUpdateInvitationQuery(ctx, exampleInvitation)

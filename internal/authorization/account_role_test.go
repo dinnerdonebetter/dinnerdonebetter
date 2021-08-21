@@ -6,19 +6,19 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewAccountRolePermissionChecker(T *testing.T) {
+func TestNewHouseholdRolePermissionChecker(T *testing.T) {
 	T.Parallel()
 
-	T.Run("account user", func(t *testing.T) {
+	T.Run("household user", func(t *testing.T) {
 		t.Parallel()
 
-		r := NewAccountRolePermissionChecker(AccountMemberRole.String())
+		r := NewHouseholdRolePermissionChecker(HouseholdMemberRole.String())
 
-		assert.False(t, r.CanUpdateAccounts())
-		assert.False(t, r.CanDeleteAccounts())
-		assert.False(t, r.CanAddMemberToAccounts())
-		assert.False(t, r.CanRemoveMemberFromAccounts())
-		assert.False(t, r.CanTransferAccountToNewOwner())
+		assert.False(t, r.CanUpdateHouseholds())
+		assert.False(t, r.CanDeleteHouseholds())
+		assert.False(t, r.CanAddMemberToHouseholds())
+		assert.False(t, r.CanRemoveMemberFromHouseholds())
+		assert.False(t, r.CanTransferHouseholdToNewOwner())
 		assert.False(t, r.CanCreateWebhooks())
 		assert.False(t, r.CanSeeWebhooks())
 		assert.False(t, r.CanUpdateWebhooks())
@@ -40,16 +40,16 @@ func TestNewAccountRolePermissionChecker(T *testing.T) {
 		assert.False(t, r.CanSeeAuditLogEntriesForReports())
 	})
 
-	T.Run("account admin", func(t *testing.T) {
+	T.Run("household admin", func(t *testing.T) {
 		t.Parallel()
 
-		r := NewAccountRolePermissionChecker(AccountAdminRole.String())
+		r := NewHouseholdRolePermissionChecker(HouseholdAdminRole.String())
 
-		assert.True(t, r.CanUpdateAccounts())
-		assert.True(t, r.CanDeleteAccounts())
-		assert.True(t, r.CanAddMemberToAccounts())
-		assert.True(t, r.CanRemoveMemberFromAccounts())
-		assert.True(t, r.CanTransferAccountToNewOwner())
+		assert.True(t, r.CanUpdateHouseholds())
+		assert.True(t, r.CanDeleteHouseholds())
+		assert.True(t, r.CanAddMemberToHouseholds())
+		assert.True(t, r.CanRemoveMemberFromHouseholds())
+		assert.True(t, r.CanTransferHouseholdToNewOwner())
 		assert.True(t, r.CanCreateWebhooks())
 		assert.True(t, r.CanSeeWebhooks())
 		assert.True(t, r.CanUpdateWebhooks())

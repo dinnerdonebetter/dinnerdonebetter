@@ -58,7 +58,7 @@ func (s *service) fetchSessionContextDataFromPASETO(ctx context.Context, req *ht
 			return nil, observability.PrepareError(err, logger, span, "decoding GOB encoded session info payload")
 		}
 
-		logger.WithValue("active_account_id", reqContext.ActiveAccountID).Debug("returning session context data")
+		logger.WithValue("active_household_id", reqContext.ActiveHouseholdID).Debug("returning session context data")
 
 		return reqContext, nil
 	}
@@ -99,7 +99,7 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 			tracing.AttachRequestingUserIDToSpan(span, userID)
 			logger = logger.WithValue(keys.RequesterIDKey, userID)
 
-			sessionCtxData, sessionCtxDataErr := s.accountMembershipManager.BuildSessionContextDataForUser(ctx, userID)
+			sessionCtxData, sessionCtxDataErr := s.householdMembershipManager.BuildSessionContextDataForUser(ctx, userID)
 			if sessionCtxDataErr != nil {
 				observability.AcknowledgeError(sessionCtxDataErr, logger, span, "fetching user info for cookie")
 				s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -140,14 +140,14 @@ func (s *service) AuthorizationMiddleware(next http.Handler) http.Handler {
 		if sessionCtxData, err := s.sessionContextDataFetcher(req); err == nil && sessionCtxData != nil {
 			logger = sessionCtxData.AttachToLogger(logger)
 
-			if sessionCtxData.Requester.Reputation == types.BannedUserAccountStatus || sessionCtxData.Requester.Reputation == types.TerminatedUserReputation {
+			if sessionCtxData.Requester.Reputation == types.BannedUserHouseholdStatus || sessionCtxData.Requester.Reputation == types.TerminatedUserReputation {
 				logger.Debug("banned user attempted to make request")
 				http.Redirect(res, req, "/", http.StatusForbidden)
 				return
 			}
 
-			if _, authorizedForAccount := sessionCtxData.AccountPermissions[sessionCtxData.ActiveAccountID]; !authorizedForAccount {
-				logger.Debug("user trying to access account they are not authorized for")
+			if _, authorizedForHousehold := sessionCtxData.HouseholdPermissions[sessionCtxData.ActiveHouseholdID]; !authorizedForHousehold {
+				logger.Debug("user trying to access household they are not authorized for")
 				http.Redirect(res, req, "/", http.StatusUnauthorized)
 				return
 			}
@@ -182,16 +182,16 @@ func (s *service) PermissionFilterMiddleware(permissions ...authorization.Permis
 
 			isServiceAdmin := sessionContextData.Requester.ServicePermissions.IsServiceAdmin()
 
-			_, allowed := sessionContextData.AccountPermissions[sessionContextData.ActiveAccountID]
+			_, allowed := sessionContextData.HouseholdPermissions[sessionContextData.ActiveHouseholdID]
 			if !allowed && !isServiceAdmin {
-				logger.Debug("not authorized for account!")
+				logger.Debug("not authorized for household!")
 				s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
 				return
 			}
 
 			for _, perm := range permissions {
 				if !sessionContextData.ServiceRolePermissionChecker().HasPermission(perm) &&
-					!sessionContextData.AccountRolePermissionsChecker().HasPermission(perm) {
+					!sessionContextData.HouseholdRolePermissionsChecker().HasPermission(perm) {
 					logger.WithValue("deficient_permission", perm.ID()).Debug("request filtered out")
 					s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
 					return

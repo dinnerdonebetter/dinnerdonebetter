@@ -24,7 +24,7 @@ type basicEditorTemplateConfig struct {
 }
 
 var editorConfigs = map[string]*basicEditorTemplateConfig{
-	"internal/services/frontend/templates/partials/generated/editors/account_editor.gotpl": {
+	"internal/services/frontend/templates/partials/generated/editors/household_editor.gotpl": {
 		Fields: []formField{
 			{
 				LabelName:       "name",
@@ -35,7 +35,7 @@ var editorConfigs = map[string]*basicEditorTemplateConfig{
 			},
 		},
 	},
-	"internal/services/frontend/templates/partials/generated/editors/account_subscription_plan_editor.gotpl": {
+	"internal/services/frontend/templates/partials/generated/editors/household_subscription_plan_editor.gotpl": {
 		Fields: []formField{
 			{
 				LabelName:       "name",

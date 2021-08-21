@@ -184,7 +184,7 @@ func (s *invitationsTestSuite) TestClient_CreateInvitation() {
 		t := s.T()
 
 		exampleInput := fakes.BuildFakeInvitationCreationInput()
-		exampleInput.BelongsToAccount = 0
+		exampleInput.BelongsToHousehold = 0
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleInvitation)

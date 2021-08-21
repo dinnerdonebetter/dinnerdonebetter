@@ -1,3 +1,4 @@
+//go:build wireinject
 // +build wireinject
 
 package server
@@ -16,12 +17,12 @@ import (
 	chi "gitlab.com/prixfixe/prixfixe/internal/routing/chi"
 	"gitlab.com/prixfixe/prixfixe/internal/search/bleve"
 	server "gitlab.com/prixfixe/prixfixe/internal/server"
-	accountsservice "gitlab.com/prixfixe/prixfixe/internal/services/accounts"
 	adminservice "gitlab.com/prixfixe/prixfixe/internal/services/admin"
 	apiclientsservice "gitlab.com/prixfixe/prixfixe/internal/services/apiclients"
 	auditservice "gitlab.com/prixfixe/prixfixe/internal/services/audit"
 	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
 	frontendservice "gitlab.com/prixfixe/prixfixe/internal/services/frontend"
+	householdsservice "gitlab.com/prixfixe/prixfixe/internal/services/households"
 	invitationsservice "gitlab.com/prixfixe/prixfixe/internal/services/invitations"
 	recipesservice "gitlab.com/prixfixe/prixfixe/internal/services/recipes"
 	recipestepingredientsservice "gitlab.com/prixfixe/prixfixe/internal/services/recipestepingredients"
@@ -64,7 +65,7 @@ func Build(
 		authentication.Providers,
 		authservice.Providers,
 		usersservice.Providers,
-		accountsservice.Providers,
+		householdsservice.Providers,
 		apiclientsservice.Providers,
 		webhooksservice.Providers,
 		auditservice.Providers,

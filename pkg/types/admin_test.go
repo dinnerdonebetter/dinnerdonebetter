@@ -15,7 +15,7 @@ func TestUserReputationUpdateInput_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		x := &UserReputationUpdateInput{
-			NewReputation: GoodStandingAccountStatus,
+			NewReputation: GoodStandingHouseholdStatus,
 			Reason:        t.Name(),
 			TargetUserID:  123,
 		}

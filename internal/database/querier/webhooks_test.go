@@ -43,7 +43,7 @@ func buildMockRowsFromWebhooks(includeCounts bool, filteredCount uint64, webhook
 			w.CreatedOn,
 			w.LastUpdatedOn,
 			w.ArchivedOn,
-			w.BelongsToAccount,
+			w.BelongsToHousehold,
 		}
 
 		if includeCounts {
@@ -79,7 +79,7 @@ func buildErroneousMockRowsFromWebhooks(includeCounts bool, filteredCount uint64
 			w.CreatedOn,
 			w.LastUpdatedOn,
 			w.ArchivedOn,
-			w.BelongsToAccount,
+			w.BelongsToHousehold,
 		}
 
 		if includeCounts {
@@ -131,7 +131,7 @@ func TestQuerier_GetWebhook(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccount := fakes.BuildFakeAccount()
+		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleWebhook := fakes.BuildFakeWebhook()
 
 		ctx := context.Background()
@@ -144,7 +144,7 @@ func TestQuerier_GetWebhook(T *testing.T) {
 			"BuildGetWebhookQuery",
 			testutils.ContextMatcher,
 			exampleWebhook.ID,
-			exampleAccount.ID,
+			exampleHousehold.ID,
 		).Return(fakeQuery, fakeArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
@@ -152,7 +152,7 @@ func TestQuerier_GetWebhook(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnRows(buildMockRowsFromWebhooks(false, 0, exampleWebhook))
 
-		actual, err := c.GetWebhook(ctx, exampleWebhook.ID, exampleAccount.ID)
+		actual, err := c.GetWebhook(ctx, exampleWebhook.ID, exampleHousehold.ID)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleWebhook, actual)
 
@@ -162,17 +162,17 @@ func TestQuerier_GetWebhook(T *testing.T) {
 	T.Run("with invalid webhook ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccount := fakes.BuildFakeAccount()
+		exampleHousehold := fakes.BuildFakeHousehold()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetWebhook(ctx, 0, exampleAccount.ID)
+		actual, err := c.GetWebhook(ctx, 0, exampleHousehold.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with invalid account ID", func(t *testing.T) {
+	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleWebhook := fakes.BuildFakeWebhook()
@@ -188,7 +188,7 @@ func TestQuerier_GetWebhook(T *testing.T) {
 	T.Run("with invalid response from database", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccount := fakes.BuildFakeAccount()
+		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleWebhook := fakes.BuildFakeWebhook()
 
 		ctx := context.Background()
@@ -201,7 +201,7 @@ func TestQuerier_GetWebhook(T *testing.T) {
 			"BuildGetWebhookQuery",
 			testutils.ContextMatcher,
 			exampleWebhook.ID,
-			exampleAccount.ID,
+			exampleHousehold.ID,
 		).Return(fakeQuery, fakeArgs)
 		c.sqlQueryBuilder = mockQueryBuilder
 
@@ -209,7 +209,7 @@ func TestQuerier_GetWebhook(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
 			WillReturnRows(buildErroneousMockRowsFromWebhooks(false, 0, exampleWebhook))
 
-		actual, err := c.GetWebhook(ctx, exampleWebhook.ID, exampleAccount.ID)
+		actual, err := c.GetWebhook(ctx, exampleWebhook.ID, exampleHousehold.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -321,7 +321,7 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
 
-	T.Run("with invalid account ID", func(t *testing.T) {
+	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -997,7 +997,7 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
+		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleWebhook := fakes.BuildFakeWebhook()
 
 		ctx := context.Background()
@@ -1012,7 +1012,7 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 			"BuildArchiveWebhookQuery",
 			testutils.ContextMatcher,
 			exampleWebhook.ID,
-			exampleAccount.ID,
+			exampleHousehold.ID,
 		).Return(fakeQuery, fakeArgs)
 
 		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
@@ -1025,7 +1025,7 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		actual := c.ArchiveWebhook(ctx, exampleWebhook.ID, exampleAccount.ID, exampleUser.ID)
+		actual := c.ArchiveWebhook(ctx, exampleWebhook.ID, exampleHousehold.ID, exampleUser.ID)
 		assert.NoError(t, actual)
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
@@ -1040,10 +1040,10 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveWebhook(ctx, 0, exampleWebhook.BelongsToAccount, exampleUser.ID))
+		assert.Error(t, c.ArchiveWebhook(ctx, 0, exampleWebhook.BelongsToHousehold, exampleUser.ID))
 	})
 
-	T.Run("with invalid account ID", func(t *testing.T) {
+	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
@@ -1063,14 +1063,14 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveWebhook(ctx, exampleWebhook.ID, exampleWebhook.BelongsToAccount, 0))
+		assert.Error(t, c.ArchiveWebhook(ctx, exampleWebhook.ID, exampleWebhook.BelongsToHousehold, 0))
 	})
 
 	T.Run("with error beginning transaction", func(t *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
+		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleWebhook := fakes.BuildFakeWebhook()
 
 		ctx := context.Background()
@@ -1078,7 +1078,7 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 
 		db.ExpectBegin().WillReturnError(errors.New("blah"))
 
-		assert.Error(t, c.ArchiveWebhook(ctx, exampleWebhook.ID, exampleAccount.ID, exampleUser.ID))
+		assert.Error(t, c.ArchiveWebhook(ctx, exampleWebhook.ID, exampleHousehold.ID, exampleUser.ID))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -1087,7 +1087,7 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
+		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleWebhook := fakes.BuildFakeWebhook()
 
 		ctx := context.Background()
@@ -1102,7 +1102,7 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 			"BuildArchiveWebhookQuery",
 			testutils.ContextMatcher,
 			exampleWebhook.ID,
-			exampleAccount.ID,
+			exampleHousehold.ID,
 		).Return(fakeQuery, fakeArgs)
 
 		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
@@ -1113,7 +1113,7 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		assert.Error(t, c.ArchiveWebhook(ctx, exampleWebhook.ID, exampleAccount.ID, exampleUser.ID))
+		assert.Error(t, c.ArchiveWebhook(ctx, exampleWebhook.ID, exampleHousehold.ID, exampleUser.ID))
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
@@ -1122,7 +1122,7 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
+		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleWebhook := fakes.BuildFakeWebhook()
 
 		ctx := context.Background()
@@ -1137,7 +1137,7 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 			"BuildArchiveWebhookQuery",
 			testutils.ContextMatcher,
 			exampleWebhook.ID,
-			exampleAccount.ID,
+			exampleHousehold.ID,
 		).Return(fakeQuery, fakeArgs)
 
 		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
@@ -1150,7 +1150,7 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		assert.Error(t, c.ArchiveWebhook(ctx, exampleWebhook.ID, exampleAccount.ID, exampleUser.ID))
+		assert.Error(t, c.ArchiveWebhook(ctx, exampleWebhook.ID, exampleHousehold.ID, exampleUser.ID))
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
@@ -1159,7 +1159,7 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleAccount := fakes.BuildFakeAccount()
+		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleWebhook := fakes.BuildFakeWebhook()
 
 		ctx := context.Background()
@@ -1174,7 +1174,7 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 			"BuildArchiveWebhookQuery",
 			testutils.ContextMatcher,
 			exampleWebhook.ID,
-			exampleAccount.ID,
+			exampleHousehold.ID,
 		).Return(fakeQuery, fakeArgs)
 
 		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
@@ -1187,7 +1187,7 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		assert.Error(t, c.ArchiveWebhook(ctx, exampleWebhook.ID, exampleAccount.ID, exampleUser.ID))
+		assert.Error(t, c.ArchiveWebhook(ctx, exampleWebhook.ID, exampleHousehold.ID, exampleUser.ID))
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})

@@ -86,7 +86,7 @@ func (b *Postgres) BuildGetBatchOfReportsQuery(ctx context.Context, beginID, end
 	)
 }
 
-// BuildGetReportsQuery builds a SQL query selecting reports that adhere to a given QueryFilter and belong to a given account,
+// BuildGetReportsQuery builds a SQL query selecting reports that adhere to a given QueryFilter and belong to a given household,
 // and returns both the query and the relevant args to pass to the query executor.
 func (b *Postgres) BuildGetReportsQuery(ctx context.Context, includeArchived bool, filter *types.QueryFilter) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
@@ -113,14 +113,14 @@ func (b *Postgres) BuildGetReportsQuery(ctx context.Context, includeArchived boo
 	)
 }
 
-// BuildGetReportsWithIDsQuery builds a SQL query selecting reports that belong to a given account,
+// BuildGetReportsWithIDsQuery builds a SQL query selecting reports that belong to a given household,
 // and have IDs that exist within a given set of IDs. Returns both the query and the relevant
 // args to pass to the query executor. This function is primarily intended for use with a search
 // index, which would provide a slice of string IDs to query against. This function accepts a
 // slice of uint64s instead of a slice of strings in order to ensure all the provided strings
 // are valid database IDs, because there's no way in squirrel to escape them in the unnest join,
 // and if we accept strings we could leave ourselves vulnerable to SQL injection attacks.
-func (b *Postgres) BuildGetReportsWithIDsQuery(ctx context.Context, accountID uint64, limit uint8, ids []uint64, restrictToAccount bool) (query string, args []interface{}) {
+func (b *Postgres) BuildGetReportsWithIDsQuery(ctx context.Context, householdID uint64, limit uint8, ids []uint64, restrictToHousehold bool) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -129,8 +129,8 @@ func (b *Postgres) BuildGetReportsWithIDsQuery(ctx context.Context, accountID ui
 		fmt.Sprintf("%s.%s", querybuilding.ReportsTableName, querybuilding.ArchivedOnColumn): nil,
 	}
 
-	if restrictToAccount {
-		where[fmt.Sprintf("%s.%s", querybuilding.ReportsTableName, querybuilding.ReportsTableAccountOwnershipColumn)] = accountID
+	if restrictToHousehold {
+		where[fmt.Sprintf("%s.%s", querybuilding.ReportsTableName, querybuilding.ReportsTableHouseholdOwnershipColumn)] = householdID
 	}
 
 	subqueryBuilder := b.sqlBuilder.Select(querybuilding.ReportsTableColumns...).
@@ -158,13 +158,13 @@ func (b *Postgres) BuildCreateReportQuery(ctx context.Context, input *types.Repo
 				querybuilding.ExternalIDColumn,
 				querybuilding.ReportsTableReportTypeColumn,
 				querybuilding.ReportsTableConcernColumn,
-				querybuilding.ReportsTableAccountOwnershipColumn,
+				querybuilding.ReportsTableHouseholdOwnershipColumn,
 			).
 			Values(
 				b.externalIDGenerator.NewExternalID(),
 				input.ReportType,
 				input.Concern,
-				input.BelongsToAccount,
+				input.BelongsToHousehold,
 			).
 			Suffix(fmt.Sprintf("RETURNING %s", querybuilding.IDColumn)),
 	)
@@ -176,7 +176,7 @@ func (b *Postgres) BuildUpdateReportQuery(ctx context.Context, input *types.Repo
 	defer span.End()
 
 	tracing.AttachReportIDToSpan(span, input.ID)
-	tracing.AttachAccountIDToSpan(span, input.BelongsToAccount)
+	tracing.AttachHouseholdIDToSpan(span, input.BelongsToHousehold)
 
 	return b.buildQuery(
 		span,
@@ -185,14 +185,14 @@ func (b *Postgres) BuildUpdateReportQuery(ctx context.Context, input *types.Repo
 			Set(querybuilding.ReportsTableConcernColumn, input.Concern).
 			Set(querybuilding.LastUpdatedOnColumn, currentUnixTimeQuery).
 			Where(squirrel.Eq{
-				querybuilding.IDColumn:                           input.ID,
-				querybuilding.ArchivedOnColumn:                   nil,
-				querybuilding.ReportsTableAccountOwnershipColumn: input.BelongsToAccount,
+				querybuilding.IDColumn:                             input.ID,
+				querybuilding.ArchivedOnColumn:                     nil,
+				querybuilding.ReportsTableHouseholdOwnershipColumn: input.BelongsToHousehold,
 			}),
 	)
 }
 
-// BuildArchiveReportQuery returns a SQL query which marks a given report belonging to a given account as archived.
+// BuildArchiveReportQuery returns a SQL query which marks a given report belonging to a given household as archived.
 func (b *Postgres) BuildArchiveReportQuery(ctx context.Context, reportID uint64) (query string, args []interface{}) {
 	_, span := b.tracer.StartSpan(ctx)
 	defer span.End()

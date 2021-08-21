@@ -108,7 +108,7 @@ func TestQuerier_LogUserBanEvent(T *testing.T) {
 	})
 }
 
-func TestQuerier_LogAccountTerminationEvent(T *testing.T) {
+func TestQuerier_LogHouseholdTerminationEvent(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -117,7 +117,7 @@ func TestQuerier_LogAccountTerminationEvent(T *testing.T) {
 		exampleServiceAdmin := fakes.BuildFakeUser()
 		exampleUser := fakes.BuildFakeUser()
 		exampleReason := "smells bad"
-		exampleAuditLogEntry := audit.BuildAccountTerminationEventEntry(exampleServiceAdmin.ID, exampleUser.ID, exampleReason)
+		exampleAuditLogEntry := audit.BuildHouseholdTerminationEventEntry(exampleServiceAdmin.ID, exampleUser.ID, exampleReason)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -127,7 +127,7 @@ func TestQuerier_LogAccountTerminationEvent(T *testing.T) {
 		prepareForAuditLogEntryCreation(t, exampleAuditLogEntry, mockQueryBuilder, db)
 		c.sqlQueryBuilder = mockQueryBuilder
 
-		c.LogAccountTerminationEvent(ctx, exampleServiceAdmin.ID, exampleUser.ID, exampleReason)
+		c.LogHouseholdTerminationEvent(ctx, exampleServiceAdmin.ID, exampleUser.ID, exampleReason)
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})

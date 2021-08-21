@@ -17,7 +17,7 @@ type (
 
 	// PaymentManager handles payments via 3rd-party providers.
 	PaymentManager interface {
-		CreateCustomerID(ctx context.Context, account *types.Account) (string, error)
+		CreateCustomerID(ctx context.Context, household *types.Household) (string, error)
 		HandleSubscriptionEventWebhook(req *http.Request) error
 		SubscribeToPlan(ctx context.Context, customerID, paymentMethodToken, planID string) (string, error)
 		CreateCheckoutSession(ctx context.Context, subscriptionPlanID string) (string, error)

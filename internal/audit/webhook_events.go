@@ -21,35 +21,35 @@ func BuildWebhookCreationEventEntry(webhook *types.Webhook, createdByUser uint64
 	return &types.AuditLogEntryCreationInput{
 		EventType: WebhookCreationEvent,
 		Context: map[string]interface{}{
-			ActorAssignmentKey:    createdByUser,
-			CreationAssignmentKey: webhook,
-			WebhookAssignmentKey:  webhook.ID,
-			AccountAssignmentKey:  webhook.BelongsToAccount,
+			ActorAssignmentKey:     createdByUser,
+			CreationAssignmentKey:  webhook,
+			WebhookAssignmentKey:   webhook.ID,
+			HouseholdAssignmentKey: webhook.BelongsToHousehold,
 		},
 	}
 }
 
 // BuildWebhookUpdateEventEntry builds an entry creation input for when a webhook is updated.
-func BuildWebhookUpdateEventEntry(changedByUser, accountID, webhookID uint64, changes []*types.FieldChangeSummary) *types.AuditLogEntryCreationInput {
+func BuildWebhookUpdateEventEntry(changedByUser, householdID, webhookID uint64, changes []*types.FieldChangeSummary) *types.AuditLogEntryCreationInput {
 	return &types.AuditLogEntryCreationInput{
 		EventType: WebhookUpdateEvent,
 		Context: map[string]interface{}{
-			ActorAssignmentKey:   changedByUser,
-			AccountAssignmentKey: accountID,
-			WebhookAssignmentKey: webhookID,
-			ChangesAssignmentKey: changes,
+			ActorAssignmentKey:     changedByUser,
+			HouseholdAssignmentKey: householdID,
+			WebhookAssignmentKey:   webhookID,
+			ChangesAssignmentKey:   changes,
 		},
 	}
 }
 
 // BuildWebhookArchiveEventEntry builds an entry creation input for when a webhook is archived.
-func BuildWebhookArchiveEventEntry(archivedByUser, accountID, webhookID uint64) *types.AuditLogEntryCreationInput {
+func BuildWebhookArchiveEventEntry(archivedByUser, householdID, webhookID uint64) *types.AuditLogEntryCreationInput {
 	return &types.AuditLogEntryCreationInput{
 		EventType: WebhookArchiveEvent,
 		Context: map[string]interface{}{
-			ActorAssignmentKey:   archivedByUser,
-			AccountAssignmentKey: accountID,
-			WebhookAssignmentKey: webhookID,
+			ActorAssignmentKey:     archivedByUser,
+			HouseholdAssignmentKey: householdID,
+			WebhookAssignmentKey:   webhookID,
 		},
 	}
 }

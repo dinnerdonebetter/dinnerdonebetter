@@ -34,7 +34,7 @@ func (q *SQLQuerier) scanInvitation(ctx context.Context, scan database.Scanner, 
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
-		&x.BelongsToAccount,
+		&x.BelongsToHousehold,
 	}
 
 	if includeCounts {
@@ -222,17 +222,17 @@ func (q *SQLQuerier) GetInvitations(ctx context.Context, filter *types.QueryFilt
 }
 
 // GetInvitationsWithIDs fetches invitations from the database within a given set of IDs.
-func (q *SQLQuerier) GetInvitationsWithIDs(ctx context.Context, accountID uint64, limit uint8, ids []uint64) ([]*types.Invitation, error) {
+func (q *SQLQuerier) GetInvitationsWithIDs(ctx context.Context, householdID uint64, limit uint8, ids []uint64) ([]*types.Invitation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger
 
-	if accountID == 0 {
+	if householdID == 0 {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	if limit == 0 {
 		limit = uint8(types.DefaultLimit)
@@ -243,7 +243,7 @@ func (q *SQLQuerier) GetInvitationsWithIDs(ctx context.Context, accountID uint64
 		"id_count": len(ids),
 	})
 
-	query, args := q.sqlQueryBuilder.BuildGetInvitationsWithIDsQuery(ctx, accountID, limit, ids, false)
+	query, args := q.sqlQueryBuilder.BuildGetInvitationsWithIDsQuery(ctx, householdID, limit, ids, false)
 
 	rows, err := q.performReadQuery(ctx, q.db, "invitations with IDs", query, args...)
 	if err != nil {
@@ -289,11 +289,11 @@ func (q *SQLQuerier) CreateInvitation(ctx context.Context, input *types.Invitati
 	}
 
 	x := &types.Invitation{
-		ID:               id,
-		Code:             input.Code,
-		Consumed:         input.Consumed,
-		BelongsToAccount: input.BelongsToAccount,
-		CreatedOn:        q.currentTime(),
+		ID:                 id,
+		Code:               input.Code,
+		Consumed:           input.Consumed,
+		BelongsToHousehold: input.BelongsToHousehold,
+		CreatedOn:          q.currentTime(),
 	}
 
 	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildInvitationCreationEventEntry(x, createdByUser)); err != nil {
@@ -326,7 +326,7 @@ func (q *SQLQuerier) UpdateInvitation(ctx context.Context, updated *types.Invita
 
 	logger := q.logger.WithValue(keys.InvitationIDKey, updated.ID)
 	tracing.AttachInvitationIDToSpan(span, updated.ID)
-	tracing.AttachAccountIDToSpan(span, updated.BelongsToAccount)
+	tracing.AttachHouseholdIDToSpan(span, updated.BelongsToHousehold)
 	tracing.AttachRequestingUserIDToSpan(span, changedByUser)
 
 	tx, err := q.db.BeginTx(ctx, nil)
@@ -340,7 +340,7 @@ func (q *SQLQuerier) UpdateInvitation(ctx context.Context, updated *types.Invita
 		return observability.PrepareError(err, logger, span, "updating invitation")
 	}
 
-	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildInvitationUpdateEventEntry(changedByUser, updated.ID, updated.BelongsToAccount, changes)); err != nil {
+	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildInvitationUpdateEventEntry(changedByUser, updated.ID, updated.BelongsToHousehold, changes)); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, logger, span, "writing invitation update audit log entry")
 	}
@@ -355,7 +355,7 @@ func (q *SQLQuerier) UpdateInvitation(ctx context.Context, updated *types.Invita
 }
 
 // ArchiveInvitation archives an invitation from the database by its ID.
-func (q *SQLQuerier) ArchiveInvitation(ctx context.Context, invitationID, accountID, archivedBy uint64) error {
+func (q *SQLQuerier) ArchiveInvitation(ctx context.Context, invitationID, householdID, archivedBy uint64) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -367,11 +367,11 @@ func (q *SQLQuerier) ArchiveInvitation(ctx context.Context, invitationID, accoun
 	logger = logger.WithValue(keys.InvitationIDKey, invitationID)
 	tracing.AttachInvitationIDToSpan(span, invitationID)
 
-	if accountID == 0 {
+	if householdID == 0 {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	if archivedBy == 0 {
 		return ErrInvalidIDProvided
@@ -391,7 +391,7 @@ func (q *SQLQuerier) ArchiveInvitation(ctx context.Context, invitationID, accoun
 		return observability.PrepareError(err, logger, span, "updating invitation")
 	}
 
-	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildInvitationArchiveEventEntry(archivedBy, accountID, invitationID)); err != nil {
+	if err = q.createAuditLogEntryInTransaction(ctx, tx, audit.BuildInvitationArchiveEventEntry(archivedBy, householdID, invitationID)); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, logger, span, "writing invitation archive audit log entry")
 	}
