@@ -27,6 +27,25 @@ type (
 		MinEstimatedTimeInSeconds uint32                  `json:"minEstimatedTimeInSeconds"`
 	}
 
+	// FullRecipeStep represents a recipe step.
+	FullRecipeStep struct {
+		TemperatureInCelsius      *uint16                     `json:"temperatureInCelsius"`
+		ArchivedOn                *uint64                     `json:"archivedOn"`
+		LastUpdatedOn             *uint64                     `json:"lastUpdatedOn"`
+		ExternalID                string                      `json:"externalID"`
+		Why                       string                      `json:"why"`
+		Notes                     string                      `json:"notes"`
+		Ingredients               []*FullRecipeStepIngredient `json:"ingredients"`
+		Preparation               ValidPreparation            `json:"preparation"`
+		PrerequisiteStep          uint64                      `json:"prerequisiteStep"`
+		Index                     uint                        `json:"index"`
+		CreatedOn                 uint64                      `json:"createdOn"`
+		BelongsToRecipe           uint64                      `json:"belongsToRecipe"`
+		ID                        uint64                      `json:"id"`
+		MaxEstimatedTimeInSeconds uint32                      `json:"maxEstimatedTimeInSeconds"`
+		MinEstimatedTimeInSeconds uint32                      `json:"minEstimatedTimeInSeconds"`
+	}
+
 	// RecipeStepList represents a list of recipe steps.
 	RecipeStepList struct {
 		RecipeSteps []*RecipeStep `json:"recipeSteps"`

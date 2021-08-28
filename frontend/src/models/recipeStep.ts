@@ -1,4 +1,5 @@
-import { RecipeStepIngredient } from "./recipeStepIngredient";
+import { RecipeStepIngredient, FullRecipeStepIngredient } from "./recipeStepIngredient";
+import { ValidPreparation } from "./validPreparation";
 
 export class RecipeStep {
      id: number;
@@ -17,39 +18,91 @@ export class RecipeStep {
      lastUpdatedOn?: number;
      archivedOn?: number;
 
-    constructor(
-          id: number = 0,
-          temperatureInCelsius?: number,
-          externalID: string = "",
-          why: string = "",
-          notes: string = "",
-          index: number = 0,
-          prerequisiteStep: number = 0,
-          preparationID: number = 0,
-          maxEstimatedTimeInSeconds: number = 0,
-          minEstimatedTimeInSeconds: number = 0,
-          belongsToRecipe: number = 0,
-          ingredients: RecipeStepIngredient[] = [],
-          createdOn: number = 0,
-          lastUpdatedOn?: number,
-          archivedOn?: number,
-    ) {
-         this.id = id;
-         this.temperatureInCelsius = temperatureInCelsius;
-         this.externalID = externalID;
-         this.why = why;
-         this.notes = notes;
-         this.index = index;
-         this.prerequisiteStep = prerequisiteStep;
-         this.preparationID = preparationID;
-         this.maxEstimatedTimeInSeconds = maxEstimatedTimeInSeconds;
-         this.minEstimatedTimeInSeconds = minEstimatedTimeInSeconds;
-         this.belongsToRecipe = belongsToRecipe;
-         this.ingredients = ingredients;
-         this.createdOn = createdOn;
-         this.lastUpdatedOn = lastUpdatedOn;
-         this.archivedOn = archivedOn;
-    }
+     constructor(
+         id: number = 0,
+         temperatureInCelsius?: number,
+         externalID: string = "",
+         why: string = "",
+         notes: string = "",
+         index: number = 0,
+         prerequisiteStep: number = 0,
+         preparationID: number = 0,
+         maxEstimatedTimeInSeconds: number = 0,
+         minEstimatedTimeInSeconds: number = 0,
+         belongsToRecipe: number = 0,
+         ingredients: RecipeStepIngredient[] = [],
+         createdOn: number = 0,
+         lastUpdatedOn?: number,
+         archivedOn?: number,
+     ) {
+          this.id = id;
+          this.temperatureInCelsius = temperatureInCelsius;
+          this.externalID = externalID;
+          this.why = why;
+          this.notes = notes;
+          this.index = index;
+          this.prerequisiteStep = prerequisiteStep;
+          this.preparationID = preparationID;
+          this.maxEstimatedTimeInSeconds = maxEstimatedTimeInSeconds;
+          this.minEstimatedTimeInSeconds = minEstimatedTimeInSeconds;
+          this.belongsToRecipe = belongsToRecipe;
+          this.ingredients = ingredients;
+          this.createdOn = createdOn;
+          this.lastUpdatedOn = lastUpdatedOn;
+          this.archivedOn = archivedOn;
+     }
+}
+
+export class FullRecipeStep {
+     id: number;
+     temperatureInCelsius?: number;
+     externalID: string;
+     why: string;
+     notes: string;
+     index: number;
+     prerequisiteStep: number;
+     preparation: ValidPreparation;
+     maxEstimatedTimeInSeconds: number;
+     minEstimatedTimeInSeconds: number;
+     belongsToRecipe: number;
+     ingredients: FullRecipeStepIngredient[];
+     createdOn: number;
+     lastUpdatedOn?: number;
+     archivedOn?: number;
+
+     constructor(
+         id: number = 0,
+         temperatureInCelsius?: number,
+         externalID: string = "",
+         why: string = "",
+         notes: string = "",
+         index: number = 0,
+         prerequisiteStep: number = 0,
+         preparation: ValidPreparation = new ValidPreparation(),
+         maxEstimatedTimeInSeconds: number = 0,
+         minEstimatedTimeInSeconds: number = 0,
+         belongsToRecipe: number = 0,
+         ingredients: FullRecipeStepIngredient[] = [],
+         createdOn: number = 0,
+         lastUpdatedOn?: number,
+         archivedOn?: number,
+     ) {
+          this.id = id;
+          this.temperatureInCelsius = temperatureInCelsius;
+          this.externalID = externalID;
+          this.why = why;
+          this.notes = notes;
+          this.index = index;
+          this.prerequisiteStep = prerequisiteStep;
+          this.preparation = preparation;
+          this.maxEstimatedTimeInSeconds = maxEstimatedTimeInSeconds;
+          this.minEstimatedTimeInSeconds = minEstimatedTimeInSeconds;
+          this.belongsToRecipe = belongsToRecipe;
+          this.ingredients = ingredients;
+          this.createdOn = createdOn;
+          this.lastUpdatedOn = lastUpdatedOn;
+          this.archivedOn = archivedOn;
+     }
 }
 
 export class RecipeStepList {

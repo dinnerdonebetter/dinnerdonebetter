@@ -6,6 +6,7 @@ import (
 	"math"
 	"net/url"
 	"strings"
+	"time"
 
 	"gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
@@ -44,4 +45,5 @@ func init() {
 
 	fiftySpaces := strings.Repeat("\n", 50)
 	fmt.Printf("%s\tRunning tests%s", fiftySpaces, fiftySpaces)
+	time.Sleep(3 * time.Second)
 }

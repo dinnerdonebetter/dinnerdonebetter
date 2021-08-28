@@ -162,8 +162,6 @@ const (
 	ValidInstrumentsTableDescriptionColumn = "description"
 	// ValidInstrumentsTableIconPathColumn is what the valid instruments table calls the icon_path column.
 	ValidInstrumentsTableIconPathColumn = "icon_path"
-	// ValidInstrumentsTableHouseholdOwnershipColumn is what the valid instruments table calls the ownership column.
-	ValidInstrumentsTableHouseholdOwnershipColumn = householdOwnershipColumn
 
 	//
 	// ValidPreparations Table.
@@ -177,8 +175,6 @@ const (
 	ValidPreparationsTableDescriptionColumn = "description"
 	// ValidPreparationsTableIconPathColumn is what the valid preparations table calls the icon_path column.
 	ValidPreparationsTableIconPathColumn = "icon_path"
-	// ValidPreparationsTableHouseholdOwnershipColumn is what the valid preparations table calls the ownership column.
-	ValidPreparationsTableHouseholdOwnershipColumn = householdOwnershipColumn
 
 	//
 	// ValidIngredients Table.
@@ -222,8 +218,6 @@ const (
 	ValidIngredientsTableVolumetricColumn = "volumetric"
 	// ValidIngredientsTableIconPathColumn is what the valid ingredients table calls the icon_path column.
 	ValidIngredientsTableIconPathColumn = "icon_path"
-	// ValidIngredientsTableHouseholdOwnershipColumn is what the valid ingredients table calls the ownership column.
-	ValidIngredientsTableHouseholdOwnershipColumn = householdOwnershipColumn
 
 	//
 	// ValidIngredientPreparations Table.
@@ -237,8 +231,6 @@ const (
 	ValidIngredientPreparationsTableValidIngredientIDColumn = "valid_ingredient_id"
 	// ValidIngredientPreparationsTableValidPreparationIDColumn is what the valid ingredient preparations table calls the valid_preparation_id column.
 	ValidIngredientPreparationsTableValidPreparationIDColumn = "valid_preparation_id"
-	// ValidIngredientPreparationsTableHouseholdOwnershipColumn is what the valid ingredient preparations table calls the ownership column.
-	ValidIngredientPreparationsTableHouseholdOwnershipColumn = householdOwnershipColumn
 
 	//
 	// ValidPreparationInstruments Table.
@@ -252,8 +244,6 @@ const (
 	ValidPreparationInstrumentsTablePreparationIDColumn = "preparation_id"
 	// ValidPreparationInstrumentsTableNotesColumn is what the valid preparation instruments table calls the notes column.
 	ValidPreparationInstrumentsTableNotesColumn = "notes"
-	// ValidPreparationInstrumentsTableHouseholdOwnershipColumn is what the valid preparation instruments table calls the ownership column.
-	ValidPreparationInstrumentsTableHouseholdOwnershipColumn = householdOwnershipColumn
 
 	//
 	// Recipes Table.
@@ -298,8 +288,6 @@ const (
 	RecipeStepsTableWhyColumn = "why"
 	// RecipeStepsTableBelongsToRecipeColumn is what the recipe steps table calls the recipe ownership column.
 	RecipeStepsTableBelongsToRecipeColumn = "belongs_to_recipe"
-	// RecipeStepsTableHouseholdOwnershipColumn is what the recipe steps table calls the ownership column.
-	RecipeStepsTableHouseholdOwnershipColumn = householdOwnershipColumn
 
 	//
 	// RecipeStepIngredients Table.
@@ -323,8 +311,6 @@ const (
 	RecipeStepIngredientsTableIngredientNotesColumn = "ingredient_notes"
 	// RecipeStepIngredientsTableBelongsToRecipeStepColumn is what the recipe step ingredients table calls the recipe step ownership column.
 	RecipeStepIngredientsTableBelongsToRecipeStepColumn = "belongs_to_recipe_step"
-	// RecipeStepIngredientsTableHouseholdOwnershipColumn is what the recipe step ingredients table calls the ownership column.
-	RecipeStepIngredientsTableHouseholdOwnershipColumn = householdOwnershipColumn
 
 	//
 	// RecipeStepProducts Table.
@@ -342,8 +328,6 @@ const (
 	RecipeStepProductsTableQuantityNotesColumn = "quantity_notes"
 	// RecipeStepProductsTableBelongsToRecipeStepColumn is what the recipe step products table calls the recipe step ownership column.
 	RecipeStepProductsTableBelongsToRecipeStepColumn = "belongs_to_recipe_step"
-	// RecipeStepProductsTableHouseholdOwnershipColumn is what the recipe step products table calls the ownership column.
-	RecipeStepProductsTableHouseholdOwnershipColumn = householdOwnershipColumn
 
 	//
 	// Invitations Table.
@@ -373,6 +357,10 @@ const (
 )
 
 var (
+	// ValidPreparationsOnRecipeStepPreparationIDJoinClause is a join clause that allows the recipe steps table to be joined on the recipes table.
+	ValidPreparationsOnRecipeStepPreparationIDJoinClause = fmt.Sprintf("%s ON %s.%s=%s.id", ValidPreparationsTableName, RecipeStepsTableName, RecipeStepsTablePreparationIDColumn, ValidPreparationsTableName)
+	// ValidIngredientsOnRecipeStepIngredientIDJoinClause is a join clause that allows the recipe steps table to be joined on the recipes table.
+	ValidIngredientsOnRecipeStepIngredientIDJoinClause = fmt.Sprintf("%s ON %s.%s=%s.id", ValidIngredientsTableName, RecipeStepIngredientsTableName, RecipeStepIngredientsTableIngredientIDColumn, ValidIngredientsTableName)
 	// RecipesOnRecipeStepsJoinClause is a join clause that allows the recipe steps table to be joined on the recipes table.
 	RecipesOnRecipeStepsJoinClause = fmt.Sprintf("%s ON %s.%s=%s.id", RecipesTableName, RecipeStepsTableName, RecipeStepsTableBelongsToRecipeColumn, RecipesTableName)
 	// RecipeStepsOnRecipeStepIngredientsJoinClause is a join clause that allows the recipe step ingredients table to be joined on the recipe steps table.

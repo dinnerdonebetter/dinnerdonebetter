@@ -30,6 +30,9 @@ var (
 
 	// validPreparationAdminPathRegex matches URLs against our frontend router's specification for specific valid preparation routes.
 	validPreparationAdminPathRegex = regexp.MustCompile(`/admin/valid_preparations/\d+`)
+
+	// recipeAppPathRegex matches URLs against our frontend router's specification for specific recipe routes.
+	recipeAppPathRegex = regexp.MustCompile(`/recipes/\d+`)
 )
 
 // StaticDir builds a static directory handler.
@@ -94,6 +97,11 @@ func (s *service) StaticDir(staticFilesDirectory string) (http.HandlerFunc, erro
 
 		if validPreparationAdminPathRegex.MatchString(req.URL.Path) {
 			logger.Debug("rerouting admin valid preparation request")
+			req.URL.Path = "/"
+		}
+
+		if recipeAppPathRegex.MatchString(req.URL.Path) {
+			logger.Debug("rerouting app individual recipe request")
 			req.URL.Path = "/"
 		}
 

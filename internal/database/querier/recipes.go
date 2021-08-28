@@ -52,6 +52,91 @@ func (q *SQLQuerier) scanRecipe(ctx context.Context, scan database.Scanner, incl
 	return x, filteredCount, totalCount, nil
 }
 
+// scanFullRecipe takes a database Scanner (i.e. *sql.Row) and scans the result into a full recipe struct.
+func (q *SQLQuerier) scanFullRecipe(ctx context.Context, scan database.Scanner) (*types.FullRecipe, *types.FullRecipeStep, *types.FullRecipeStepIngredient, error) {
+	_, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	recipe := &types.FullRecipe{Steps: []*types.FullRecipeStep{}}
+	recipeStep := &types.FullRecipeStep{Ingredients: []*types.FullRecipeStepIngredient{}}
+	recipeStepIngredient := &types.FullRecipeStepIngredient{}
+
+	targetVars := []interface{}{
+		&recipe.ID,
+		&recipe.ExternalID,
+		&recipe.Name,
+		&recipe.Source,
+		&recipe.Description,
+		&recipe.InspiredByRecipeID,
+		&recipe.CreatedOn,
+		&recipe.LastUpdatedOn,
+		&recipe.ArchivedOn,
+		&recipe.BelongsToHousehold,
+		&recipeStep.ID,
+		&recipeStep.ExternalID,
+		&recipeStep.Index,
+		&recipeStep.Preparation.ID,
+		&recipeStep.Preparation.ExternalID,
+		&recipeStep.Preparation.Name,
+		&recipeStep.Preparation.Description,
+		&recipeStep.Preparation.IconPath,
+		&recipeStep.Preparation.CreatedOn,
+		&recipeStep.Preparation.LastUpdatedOn,
+		&recipeStep.Preparation.ArchivedOn,
+		&recipeStep.PrerequisiteStep,
+		&recipeStep.MinEstimatedTimeInSeconds,
+		&recipeStep.MaxEstimatedTimeInSeconds,
+		&recipeStep.TemperatureInCelsius,
+		&recipeStep.Notes,
+		&recipeStep.Why,
+		&recipeStep.CreatedOn,
+		&recipeStep.LastUpdatedOn,
+		&recipeStep.ArchivedOn,
+		&recipeStep.BelongsToRecipe,
+		&recipeStepIngredient.ID,
+		&recipeStepIngredient.ExternalID,
+		&recipeStepIngredient.Ingredient.ID,
+		&recipeStepIngredient.Ingredient.ExternalID,
+		&recipeStepIngredient.Ingredient.Name,
+		&recipeStepIngredient.Ingredient.Variant,
+		&recipeStepIngredient.Ingredient.Description,
+		&recipeStepIngredient.Ingredient.Warning,
+		&recipeStepIngredient.Ingredient.ContainsEgg,
+		&recipeStepIngredient.Ingredient.ContainsDairy,
+		&recipeStepIngredient.Ingredient.ContainsPeanut,
+		&recipeStepIngredient.Ingredient.ContainsTreeNut,
+		&recipeStepIngredient.Ingredient.ContainsSoy,
+		&recipeStepIngredient.Ingredient.ContainsWheat,
+		&recipeStepIngredient.Ingredient.ContainsShellfish,
+		&recipeStepIngredient.Ingredient.ContainsSesame,
+		&recipeStepIngredient.Ingredient.ContainsFish,
+		&recipeStepIngredient.Ingredient.ContainsGluten,
+		&recipeStepIngredient.Ingredient.AnimalFlesh,
+		&recipeStepIngredient.Ingredient.AnimalDerived,
+		&recipeStepIngredient.Ingredient.Volumetric,
+		&recipeStepIngredient.Ingredient.IconPath,
+		&recipeStepIngredient.Ingredient.CreatedOn,
+		&recipeStepIngredient.Ingredient.LastUpdatedOn,
+		&recipeStepIngredient.Ingredient.ArchivedOn,
+		&recipeStepIngredient.Name,
+		&recipeStepIngredient.QuantityType,
+		&recipeStepIngredient.QuantityValue,
+		&recipeStepIngredient.QuantityNotes,
+		&recipeStepIngredient.ProductOfRecipeStep,
+		&recipeStepIngredient.IngredientNotes,
+		&recipeStepIngredient.CreatedOn,
+		&recipeStepIngredient.LastUpdatedOn,
+		&recipeStepIngredient.ArchivedOn,
+		&recipeStepIngredient.BelongsToRecipeStep,
+	}
+
+	if err := scan.Scan(targetVars...); err != nil {
+		return nil, nil, nil, observability.PrepareError(err, q.logger, span, "")
+	}
+
+	return recipe, recipeStep, recipeStepIngredient, nil
+}
+
 // scanRecipes takes some database rows and turns them into a slice of recipes.
 func (q *SQLQuerier) scanRecipes(ctx context.Context, rows database.ResultIterator, includeCounts bool) (recipes []*types.Recipe, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
@@ -129,6 +214,59 @@ func (q *SQLQuerier) GetRecipe(ctx context.Context, recipeID uint64) (*types.Rec
 	recipe, _, _, err := q.scanRecipe(ctx, row, false)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "scanning recipe")
+	}
+
+	return recipe, nil
+}
+
+// GetFullRecipe fetches a recipe from the database.
+func (q *SQLQuerier) GetFullRecipe(ctx context.Context, recipeID uint64) (*types.FullRecipe, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger
+
+	if recipeID == 0 {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+
+	query, args := q.sqlQueryBuilder.BuildGetFullRecipeQuery(ctx, recipeID)
+	rows, err := q.performReadQuery(ctx, q.db, "recipe", query, args...)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "executing full recipe retrieval query")
+	}
+
+	var (
+		recipe           *types.FullRecipe
+		currentStepIndex = 0
+	)
+
+	for rows.Next() {
+		rowRecipe, rowRecipeStep, rowRecipeStepIngredient, scanErr := q.scanFullRecipe(ctx, rows)
+		if scanErr != nil {
+			return nil, scanErr
+		}
+
+		if recipe == nil {
+			recipe = rowRecipe
+		}
+
+		if len(recipe.Steps) == 0 && currentStepIndex == 0 {
+			recipe.Steps = append(recipe.Steps, rowRecipeStep)
+		}
+
+		if recipe.Steps[currentStepIndex].ID != rowRecipeStep.ID {
+			currentStepIndex++
+			recipe.Steps = append(recipe.Steps, rowRecipeStep)
+		}
+
+		recipe.Steps[currentStepIndex].Ingredients = append(recipe.Steps[currentStepIndex].Ingredients, rowRecipeStepIngredient)
+	}
+
+	if recipe == nil {
+		return nil, sql.ErrNoRows
 	}
 
 	return recipe, nil
@@ -284,6 +422,9 @@ func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeCreati
 	}
 
 	query, args := q.sqlQueryBuilder.BuildCreateRecipeQuery(ctx, input)
+
+	logger = logger.WithValue("step_count", len(input.Steps))
+	logger.Debug("creating recipe")
 
 	// create the recipe.
 	id, err := q.performWriteQuery(ctx, tx, false, "recipe creation", query, args)

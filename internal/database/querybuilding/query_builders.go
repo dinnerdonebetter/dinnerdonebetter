@@ -167,6 +167,7 @@ type (
 	// RecipeSQLQueryBuilder describes a structure capable of generating query/arg pairs for certain situations.
 	RecipeSQLQueryBuilder interface {
 		BuildRecipeExistsQuery(ctx context.Context, recipeID uint64) (query string, args []interface{})
+		BuildGetFullRecipeQuery(ctx context.Context, recipeID uint64) (query string, args []interface{})
 		BuildGetRecipeQuery(ctx context.Context, recipeID uint64) (query string, args []interface{})
 		BuildGetAllRecipesCountQuery(ctx context.Context) string
 		BuildGetBatchOfRecipesQuery(ctx context.Context, beginID, endID uint64) (query string, args []interface{})

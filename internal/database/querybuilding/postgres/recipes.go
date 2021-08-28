@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	audit "gitlab.com/prixfixe/prixfixe/internal/audit"
-	querybuilding "gitlab.com/prixfixe/prixfixe/internal/database/querybuilding"
+	"gitlab.com/prixfixe/prixfixe/internal/audit"
+	"gitlab.com/prixfixe/prixfixe/internal/database/querybuilding"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 
@@ -30,6 +30,31 @@ func (b *Postgres) BuildRecipeExistsQuery(ctx context.Context, recipeID uint64) 
 			Where(squirrel.Eq{
 				fmt.Sprintf("%s.%s", querybuilding.RecipesTableName, querybuilding.IDColumn):         recipeID,
 				fmt.Sprintf("%s.%s", querybuilding.RecipesTableName, querybuilding.ArchivedOnColumn): nil,
+			}),
+	)
+}
+
+// BuildGetFullRecipeQuery constructs a SQL query for fetching a full recipe with a given ID belong to a user with a given ID.
+func (b *Postgres) BuildGetFullRecipeQuery(ctx context.Context, recipeID uint64) (query string, args []interface{}) {
+	_, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+
+	return b.buildQuery(
+		span,
+		b.sqlBuilder.Select(querybuilding.FullRecipeColumns...).
+			From(querybuilding.RecipeStepIngredientsTableName).
+			Join(querybuilding.RecipeStepsOnRecipeStepIngredientsJoinClause).
+			Join(querybuilding.RecipesOnRecipeStepsJoinClause).
+			Join(querybuilding.ValidIngredientsOnRecipeStepIngredientIDJoinClause).
+			Join(querybuilding.ValidPreparationsOnRecipeStepPreparationIDJoinClause).
+			Where(squirrel.Eq{
+				fmt.Sprintf("%s.%s", querybuilding.RecipesTableName, querybuilding.IDColumn):                                  recipeID,
+				fmt.Sprintf("%s.%s", querybuilding.RecipesTableName, querybuilding.ArchivedOnColumn):                          nil,
+				fmt.Sprintf("%s.%s", querybuilding.RecipeStepsTableName, querybuilding.ArchivedOnColumn):                      nil,
+				fmt.Sprintf("%s.%s", querybuilding.RecipeStepsTableName, querybuilding.RecipeStepsTableBelongsToRecipeColumn): recipeID,
+				fmt.Sprintf("%s.%s", querybuilding.RecipeStepIngredientsTableName, querybuilding.ArchivedOnColumn):            nil,
 			}),
 	)
 }

@@ -50,7 +50,6 @@ func (s *service) getUserIDFromCookie(ctx context.Context, req *http.Request) (c
 		}
 
 		if userID, ok := s.sessionManager.Get(ctx, userIDContextKey).(uint64); ok {
-			logger.WithValue(keys.UserIDKey, userID).Debug("determined userID from request cookie")
 			return ctx, userID, nil
 		}
 

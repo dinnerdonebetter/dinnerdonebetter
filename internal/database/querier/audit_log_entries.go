@@ -213,8 +213,6 @@ func (q *SQLQuerier) createAuditLogEntryInTransaction(ctx context.Context, tx *s
 		return err
 	}
 
-	logger.Info("audit log entry created")
-
 	return nil
 }
 
@@ -247,6 +245,4 @@ func (q *SQLQuerier) createAuditLogEntry(ctx context.Context, querier database.Q
 	}
 
 	tracing.AttachAuditLogEntryIDToSpan(span, id)
-
-	logger.Info("audit log entry created")
 }

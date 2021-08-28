@@ -13,7 +13,7 @@ func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 		ExternalID:          fake.UUID(),
 		Name:                fake.Word(),
 		QuantityType:        fake.Word(),
-		QuantityValue:       fake.Float32(),
+		QuantityValue:       float32(fake.Uint32()),
 		QuantityNotes:       fake.Word(),
 		CreatedOn:           uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipeStep: fake.Uint64(),

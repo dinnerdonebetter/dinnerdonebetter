@@ -14,7 +14,7 @@ func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 		IngredientID:        func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
 		Name:                fake.Word(),
 		QuantityType:        fake.Word(),
-		QuantityValue:       fake.Float32(),
+		QuantityValue:       float32(fake.Uint32()),
 		QuantityNotes:       fake.Word(),
 		ProductOfRecipeStep: fake.Bool(),
 		IngredientNotes:     fake.Word(),
@@ -38,6 +38,23 @@ func BuildFakeRecipeStepIngredientList() *types.RecipeStepIngredientList {
 			TotalCount:    exampleQuantity,
 		},
 		RecipeStepIngredients: examples,
+	}
+}
+
+// BuildFakeFullRecipeStepIngredient builds a faked recipe step ingredient.
+func BuildFakeFullRecipeStepIngredient() *types.FullRecipeStepIngredient {
+	return &types.FullRecipeStepIngredient{
+		ID:                  uint64(fake.Uint32()),
+		ExternalID:          fake.UUID(),
+		Ingredient:          *BuildFakeValidIngredient(),
+		Name:                fake.Word(),
+		QuantityType:        fake.Word(),
+		QuantityValue:       float32(fake.Uint32()),
+		QuantityNotes:       fake.Word(),
+		ProductOfRecipeStep: fake.Bool(),
+		IngredientNotes:     fake.Word(),
+		CreatedOn:           uint64(uint32(fake.Date().Unix())),
+		BelongsToRecipeStep: fake.Uint64(),
 	}
 }
 

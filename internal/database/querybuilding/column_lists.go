@@ -4,6 +4,10 @@ import (
 	"fmt"
 )
 
+func buildColumnReference(tableName, columnName string) string {
+	return fmt.Sprintf("%s.%s", tableName, columnName)
+}
+
 var (
 	//
 	// Households Table.
@@ -11,14 +15,14 @@ var (
 
 	// HouseholdsUserMembershipTableColumns are the columns for the household user memberships table.
 	HouseholdsUserMembershipTableColumns = []string{
-		fmt.Sprintf("%s.%s", HouseholdsUserMembershipTableName, IDColumn),
-		fmt.Sprintf("%s.%s", HouseholdsUserMembershipTableName, HouseholdsUserMembershipTableUserOwnershipColumn),
-		fmt.Sprintf("%s.%s", HouseholdsUserMembershipTableName, HouseholdsUserMembershipTableHouseholdOwnershipColumn),
-		fmt.Sprintf("%s.%s", HouseholdsUserMembershipTableName, HouseholdsUserMembershipTableHouseholdRolesColumn),
-		fmt.Sprintf("%s.%s", HouseholdsUserMembershipTableName, HouseholdsUserMembershipTableDefaultUserHouseholdColumn),
-		fmt.Sprintf("%s.%s", HouseholdsUserMembershipTableName, CreatedOnColumn),
-		fmt.Sprintf("%s.%s", HouseholdsUserMembershipTableName, LastUpdatedOnColumn),
-		fmt.Sprintf("%s.%s", HouseholdsUserMembershipTableName, ArchivedOnColumn),
+		buildColumnReference(HouseholdsUserMembershipTableName, IDColumn),
+		buildColumnReference(HouseholdsUserMembershipTableName, HouseholdsUserMembershipTableUserOwnershipColumn),
+		buildColumnReference(HouseholdsUserMembershipTableName, HouseholdsUserMembershipTableHouseholdOwnershipColumn),
+		buildColumnReference(HouseholdsUserMembershipTableName, HouseholdsUserMembershipTableHouseholdRolesColumn),
+		buildColumnReference(HouseholdsUserMembershipTableName, HouseholdsUserMembershipTableDefaultUserHouseholdColumn),
+		buildColumnReference(HouseholdsUserMembershipTableName, CreatedOnColumn),
+		buildColumnReference(HouseholdsUserMembershipTableName, LastUpdatedOnColumn),
+		buildColumnReference(HouseholdsUserMembershipTableName, ArchivedOnColumn),
 	}
 
 	//
@@ -27,18 +31,18 @@ var (
 
 	// HouseholdsTableColumns are the columns for the households table.
 	HouseholdsTableColumns = []string{
-		fmt.Sprintf("%s.%s", HouseholdsTableName, IDColumn),
-		fmt.Sprintf("%s.%s", HouseholdsTableName, ExternalIDColumn),
-		fmt.Sprintf("%s.%s", HouseholdsTableName, HouseholdsTableNameColumn),
-		fmt.Sprintf("%s.%s", HouseholdsTableName, HouseholdsTableBillingStatusColumn),
-		fmt.Sprintf("%s.%s", HouseholdsTableName, HouseholdsTableContactEmailColumn),
-		fmt.Sprintf("%s.%s", HouseholdsTableName, HouseholdsTableContactPhoneColumn),
-		fmt.Sprintf("%s.%s", HouseholdsTableName, HouseholdsTablePaymentProcessorCustomerIDColumn),
-		fmt.Sprintf("%s.%s", HouseholdsTableName, HouseholdsTableSubscriptionPlanIDColumn),
-		fmt.Sprintf("%s.%s", HouseholdsTableName, CreatedOnColumn),
-		fmt.Sprintf("%s.%s", HouseholdsTableName, LastUpdatedOnColumn),
-		fmt.Sprintf("%s.%s", HouseholdsTableName, ArchivedOnColumn),
-		fmt.Sprintf("%s.%s", HouseholdsTableName, HouseholdsTableUserOwnershipColumn),
+		buildColumnReference(HouseholdsTableName, IDColumn),
+		buildColumnReference(HouseholdsTableName, ExternalIDColumn),
+		buildColumnReference(HouseholdsTableName, HouseholdsTableNameColumn),
+		buildColumnReference(HouseholdsTableName, HouseholdsTableBillingStatusColumn),
+		buildColumnReference(HouseholdsTableName, HouseholdsTableContactEmailColumn),
+		buildColumnReference(HouseholdsTableName, HouseholdsTableContactPhoneColumn),
+		buildColumnReference(HouseholdsTableName, HouseholdsTablePaymentProcessorCustomerIDColumn),
+		buildColumnReference(HouseholdsTableName, HouseholdsTableSubscriptionPlanIDColumn),
+		buildColumnReference(HouseholdsTableName, CreatedOnColumn),
+		buildColumnReference(HouseholdsTableName, LastUpdatedOnColumn),
+		buildColumnReference(HouseholdsTableName, ArchivedOnColumn),
+		buildColumnReference(HouseholdsTableName, HouseholdsTableUserOwnershipColumn),
 	}
 
 	//
@@ -47,21 +51,21 @@ var (
 
 	// UsersTableColumns are the columns for the users table.
 	UsersTableColumns = []string{
-		fmt.Sprintf("%s.%s", UsersTableName, IDColumn),
-		fmt.Sprintf("%s.%s", UsersTableName, ExternalIDColumn),
-		fmt.Sprintf("%s.%s", UsersTableName, UsersTableUsernameColumn),
-		fmt.Sprintf("%s.%s", UsersTableName, UsersTableAvatarColumn),
-		fmt.Sprintf("%s.%s", UsersTableName, UsersTableHashedPasswordColumn),
-		fmt.Sprintf("%s.%s", UsersTableName, UsersTableRequiresPasswordChangeColumn),
-		fmt.Sprintf("%s.%s", UsersTableName, UsersTablePasswordLastChangedOnColumn),
-		fmt.Sprintf("%s.%s", UsersTableName, UsersTableTwoFactorSekretColumn),
-		fmt.Sprintf("%s.%s", UsersTableName, UsersTableTwoFactorVerifiedOnColumn),
-		fmt.Sprintf("%s.%s", UsersTableName, UsersTableServiceRolesColumn),
-		fmt.Sprintf("%s.%s", UsersTableName, UsersTableReputationColumn),
-		fmt.Sprintf("%s.%s", UsersTableName, UsersTableStatusExplanationColumn),
-		fmt.Sprintf("%s.%s", UsersTableName, CreatedOnColumn),
-		fmt.Sprintf("%s.%s", UsersTableName, LastUpdatedOnColumn),
-		fmt.Sprintf("%s.%s", UsersTableName, ArchivedOnColumn),
+		buildColumnReference(UsersTableName, IDColumn),
+		buildColumnReference(UsersTableName, ExternalIDColumn),
+		buildColumnReference(UsersTableName, UsersTableUsernameColumn),
+		buildColumnReference(UsersTableName, UsersTableAvatarColumn),
+		buildColumnReference(UsersTableName, UsersTableHashedPasswordColumn),
+		buildColumnReference(UsersTableName, UsersTableRequiresPasswordChangeColumn),
+		buildColumnReference(UsersTableName, UsersTablePasswordLastChangedOnColumn),
+		buildColumnReference(UsersTableName, UsersTableTwoFactorSekretColumn),
+		buildColumnReference(UsersTableName, UsersTableTwoFactorVerifiedOnColumn),
+		buildColumnReference(UsersTableName, UsersTableServiceRolesColumn),
+		buildColumnReference(UsersTableName, UsersTableReputationColumn),
+		buildColumnReference(UsersTableName, UsersTableStatusExplanationColumn),
+		buildColumnReference(UsersTableName, CreatedOnColumn),
+		buildColumnReference(UsersTableName, LastUpdatedOnColumn),
+		buildColumnReference(UsersTableName, ArchivedOnColumn),
 	}
 
 	//
@@ -70,11 +74,11 @@ var (
 
 	// AuditLogEntriesTableColumns are the columns for the audit log entries table.
 	AuditLogEntriesTableColumns = []string{
-		fmt.Sprintf("%s.%s", AuditLogEntriesTableName, IDColumn),
-		fmt.Sprintf("%s.%s", AuditLogEntriesTableName, ExternalIDColumn),
-		fmt.Sprintf("%s.%s", AuditLogEntriesTableName, AuditLogEntriesTableEventTypeColumn),
-		fmt.Sprintf("%s.%s", AuditLogEntriesTableName, AuditLogEntriesTableContextColumn),
-		fmt.Sprintf("%s.%s", AuditLogEntriesTableName, CreatedOnColumn),
+		buildColumnReference(AuditLogEntriesTableName, IDColumn),
+		buildColumnReference(AuditLogEntriesTableName, ExternalIDColumn),
+		buildColumnReference(AuditLogEntriesTableName, AuditLogEntriesTableEventTypeColumn),
+		buildColumnReference(AuditLogEntriesTableName, AuditLogEntriesTableContextColumn),
+		buildColumnReference(AuditLogEntriesTableName, CreatedOnColumn),
 	}
 
 	//
@@ -83,15 +87,15 @@ var (
 
 	// APIClientsTableColumns are the columns for the API clients table.
 	APIClientsTableColumns = []string{
-		fmt.Sprintf("%s.%s", APIClientsTableName, IDColumn),
-		fmt.Sprintf("%s.%s", APIClientsTableName, ExternalIDColumn),
-		fmt.Sprintf("%s.%s", APIClientsTableName, APIClientsTableNameColumn),
-		fmt.Sprintf("%s.%s", APIClientsTableName, APIClientsTableClientIDColumn),
-		fmt.Sprintf("%s.%s", APIClientsTableName, APIClientsTableSecretKeyColumn),
-		fmt.Sprintf("%s.%s", APIClientsTableName, CreatedOnColumn),
-		fmt.Sprintf("%s.%s", APIClientsTableName, LastUpdatedOnColumn),
-		fmt.Sprintf("%s.%s", APIClientsTableName, ArchivedOnColumn),
-		fmt.Sprintf("%s.%s", APIClientsTableName, APIClientsTableOwnershipColumn),
+		buildColumnReference(APIClientsTableName, IDColumn),
+		buildColumnReference(APIClientsTableName, ExternalIDColumn),
+		buildColumnReference(APIClientsTableName, APIClientsTableNameColumn),
+		buildColumnReference(APIClientsTableName, APIClientsTableClientIDColumn),
+		buildColumnReference(APIClientsTableName, APIClientsTableSecretKeyColumn),
+		buildColumnReference(APIClientsTableName, CreatedOnColumn),
+		buildColumnReference(APIClientsTableName, LastUpdatedOnColumn),
+		buildColumnReference(APIClientsTableName, ArchivedOnColumn),
+		buildColumnReference(APIClientsTableName, APIClientsTableOwnershipColumn),
 	}
 
 	//
@@ -100,19 +104,19 @@ var (
 
 	// WebhooksTableColumns are the columns for the webhooks table.
 	WebhooksTableColumns = []string{
-		fmt.Sprintf("%s.%s", WebhooksTableName, IDColumn),
-		fmt.Sprintf("%s.%s", WebhooksTableName, ExternalIDColumn),
-		fmt.Sprintf("%s.%s", WebhooksTableName, WebhooksTableNameColumn),
-		fmt.Sprintf("%s.%s", WebhooksTableName, WebhooksTableContentTypeColumn),
-		fmt.Sprintf("%s.%s", WebhooksTableName, WebhooksTableURLColumn),
-		fmt.Sprintf("%s.%s", WebhooksTableName, WebhooksTableMethodColumn),
-		fmt.Sprintf("%s.%s", WebhooksTableName, WebhooksTableEventsColumn),
-		fmt.Sprintf("%s.%s", WebhooksTableName, WebhooksTableDataTypesColumn),
-		fmt.Sprintf("%s.%s", WebhooksTableName, WebhooksTableTopicsColumn),
-		fmt.Sprintf("%s.%s", WebhooksTableName, CreatedOnColumn),
-		fmt.Sprintf("%s.%s", WebhooksTableName, LastUpdatedOnColumn),
-		fmt.Sprintf("%s.%s", WebhooksTableName, ArchivedOnColumn),
-		fmt.Sprintf("%s.%s", WebhooksTableName, WebhooksTableOwnershipColumn),
+		buildColumnReference(WebhooksTableName, IDColumn),
+		buildColumnReference(WebhooksTableName, ExternalIDColumn),
+		buildColumnReference(WebhooksTableName, WebhooksTableNameColumn),
+		buildColumnReference(WebhooksTableName, WebhooksTableContentTypeColumn),
+		buildColumnReference(WebhooksTableName, WebhooksTableURLColumn),
+		buildColumnReference(WebhooksTableName, WebhooksTableMethodColumn),
+		buildColumnReference(WebhooksTableName, WebhooksTableEventsColumn),
+		buildColumnReference(WebhooksTableName, WebhooksTableDataTypesColumn),
+		buildColumnReference(WebhooksTableName, WebhooksTableTopicsColumn),
+		buildColumnReference(WebhooksTableName, CreatedOnColumn),
+		buildColumnReference(WebhooksTableName, LastUpdatedOnColumn),
+		buildColumnReference(WebhooksTableName, ArchivedOnColumn),
+		buildColumnReference(WebhooksTableName, WebhooksTableOwnershipColumn),
 	}
 
 	//
@@ -121,15 +125,15 @@ var (
 
 	// ValidInstrumentsTableColumns are the columns for the valid instruments table.
 	ValidInstrumentsTableColumns = []string{
-		fmt.Sprintf("%s.%s", ValidInstrumentsTableName, IDColumn),
-		fmt.Sprintf("%s.%s", ValidInstrumentsTableName, ExternalIDColumn),
-		fmt.Sprintf("%s.%s", ValidInstrumentsTableName, ValidInstrumentsTableNameColumn),
-		fmt.Sprintf("%s.%s", ValidInstrumentsTableName, ValidInstrumentsTableVariantColumn),
-		fmt.Sprintf("%s.%s", ValidInstrumentsTableName, ValidInstrumentsTableDescriptionColumn),
-		fmt.Sprintf("%s.%s", ValidInstrumentsTableName, ValidInstrumentsTableIconPathColumn),
-		fmt.Sprintf("%s.%s", ValidInstrumentsTableName, CreatedOnColumn),
-		fmt.Sprintf("%s.%s", ValidInstrumentsTableName, LastUpdatedOnColumn),
-		fmt.Sprintf("%s.%s", ValidInstrumentsTableName, ArchivedOnColumn),
+		buildColumnReference(ValidInstrumentsTableName, IDColumn),
+		buildColumnReference(ValidInstrumentsTableName, ExternalIDColumn),
+		buildColumnReference(ValidInstrumentsTableName, ValidInstrumentsTableNameColumn),
+		buildColumnReference(ValidInstrumentsTableName, ValidInstrumentsTableVariantColumn),
+		buildColumnReference(ValidInstrumentsTableName, ValidInstrumentsTableDescriptionColumn),
+		buildColumnReference(ValidInstrumentsTableName, ValidInstrumentsTableIconPathColumn),
+		buildColumnReference(ValidInstrumentsTableName, CreatedOnColumn),
+		buildColumnReference(ValidInstrumentsTableName, LastUpdatedOnColumn),
+		buildColumnReference(ValidInstrumentsTableName, ArchivedOnColumn),
 	}
 
 	//
@@ -138,14 +142,14 @@ var (
 
 	// ValidPreparationsTableColumns are the columns for the valid preparations table.
 	ValidPreparationsTableColumns = []string{
-		fmt.Sprintf("%s.%s", ValidPreparationsTableName, IDColumn),
-		fmt.Sprintf("%s.%s", ValidPreparationsTableName, ExternalIDColumn),
-		fmt.Sprintf("%s.%s", ValidPreparationsTableName, ValidPreparationsTableNameColumn),
-		fmt.Sprintf("%s.%s", ValidPreparationsTableName, ValidPreparationsTableDescriptionColumn),
-		fmt.Sprintf("%s.%s", ValidPreparationsTableName, ValidPreparationsTableIconPathColumn),
-		fmt.Sprintf("%s.%s", ValidPreparationsTableName, CreatedOnColumn),
-		fmt.Sprintf("%s.%s", ValidPreparationsTableName, LastUpdatedOnColumn),
-		fmt.Sprintf("%s.%s", ValidPreparationsTableName, ArchivedOnColumn),
+		buildColumnReference(ValidPreparationsTableName, IDColumn),
+		buildColumnReference(ValidPreparationsTableName, ExternalIDColumn),
+		buildColumnReference(ValidPreparationsTableName, ValidPreparationsTableNameColumn),
+		buildColumnReference(ValidPreparationsTableName, ValidPreparationsTableDescriptionColumn),
+		buildColumnReference(ValidPreparationsTableName, ValidPreparationsTableIconPathColumn),
+		buildColumnReference(ValidPreparationsTableName, CreatedOnColumn),
+		buildColumnReference(ValidPreparationsTableName, LastUpdatedOnColumn),
+		buildColumnReference(ValidPreparationsTableName, ArchivedOnColumn),
 	}
 
 	//
@@ -154,29 +158,29 @@ var (
 
 	// ValidIngredientsTableColumns are the columns for the valid ingredients table.
 	ValidIngredientsTableColumns = []string{
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, IDColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, ExternalIDColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, ValidIngredientsTableNameColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, ValidIngredientsTableVariantColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, ValidIngredientsTableDescriptionColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, ValidIngredientsTableWarningColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, ValidIngredientsTableContainsEggColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, ValidIngredientsTableContainsDairyColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, ValidIngredientsTableContainsPeanutColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, ValidIngredientsTableContainsTreeNutColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, ValidIngredientsTableContainsSoyColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, ValidIngredientsTableContainsWheatColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, ValidIngredientsTableContainsShellfishColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, ValidIngredientsTableContainsSesameColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, ValidIngredientsTableContainsFishColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, ValidIngredientsTableContainsGlutenColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, ValidIngredientsTableAnimalFleshColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, ValidIngredientsTableAnimalDerivedColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, ValidIngredientsTableVolumetricColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, ValidIngredientsTableIconPathColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, CreatedOnColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, LastUpdatedOnColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientsTableName, ArchivedOnColumn),
+		buildColumnReference(ValidIngredientsTableName, IDColumn),
+		buildColumnReference(ValidIngredientsTableName, ExternalIDColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableNameColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableVariantColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableDescriptionColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableWarningColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableContainsEggColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableContainsDairyColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableContainsPeanutColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableContainsTreeNutColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableContainsSoyColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableContainsWheatColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableContainsShellfishColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableContainsSesameColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableContainsFishColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableContainsGlutenColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableAnimalFleshColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableAnimalDerivedColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableVolumetricColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableIconPathColumn),
+		buildColumnReference(ValidIngredientsTableName, CreatedOnColumn),
+		buildColumnReference(ValidIngredientsTableName, LastUpdatedOnColumn),
+		buildColumnReference(ValidIngredientsTableName, ArchivedOnColumn),
 	}
 
 	//
@@ -185,14 +189,14 @@ var (
 
 	// ValidIngredientPreparationsTableColumns are the columns for the valid ingredient preparations table.
 	ValidIngredientPreparationsTableColumns = []string{
-		fmt.Sprintf("%s.%s", ValidIngredientPreparationsTableName, IDColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientPreparationsTableName, ExternalIDColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientPreparationsTableName, ValidIngredientPreparationsTableNotesColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientPreparationsTableName, ValidIngredientPreparationsTableValidIngredientIDColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientPreparationsTableName, ValidIngredientPreparationsTableValidPreparationIDColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientPreparationsTableName, CreatedOnColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientPreparationsTableName, LastUpdatedOnColumn),
-		fmt.Sprintf("%s.%s", ValidIngredientPreparationsTableName, ArchivedOnColumn),
+		buildColumnReference(ValidIngredientPreparationsTableName, IDColumn),
+		buildColumnReference(ValidIngredientPreparationsTableName, ExternalIDColumn),
+		buildColumnReference(ValidIngredientPreparationsTableName, ValidIngredientPreparationsTableNotesColumn),
+		buildColumnReference(ValidIngredientPreparationsTableName, ValidIngredientPreparationsTableValidIngredientIDColumn),
+		buildColumnReference(ValidIngredientPreparationsTableName, ValidIngredientPreparationsTableValidPreparationIDColumn),
+		buildColumnReference(ValidIngredientPreparationsTableName, CreatedOnColumn),
+		buildColumnReference(ValidIngredientPreparationsTableName, LastUpdatedOnColumn),
+		buildColumnReference(ValidIngredientPreparationsTableName, ArchivedOnColumn),
 	}
 
 	//
@@ -201,14 +205,14 @@ var (
 
 	// ValidPreparationInstrumentsTableColumns are the columns for the valid preparation instruments table.
 	ValidPreparationInstrumentsTableColumns = []string{
-		fmt.Sprintf("%s.%s", ValidPreparationInstrumentsTableName, IDColumn),
-		fmt.Sprintf("%s.%s", ValidPreparationInstrumentsTableName, ExternalIDColumn),
-		fmt.Sprintf("%s.%s", ValidPreparationInstrumentsTableName, ValidPreparationInstrumentsTableInstrumentIDColumn),
-		fmt.Sprintf("%s.%s", ValidPreparationInstrumentsTableName, ValidPreparationInstrumentsTablePreparationIDColumn),
-		fmt.Sprintf("%s.%s", ValidPreparationInstrumentsTableName, ValidPreparationInstrumentsTableNotesColumn),
-		fmt.Sprintf("%s.%s", ValidPreparationInstrumentsTableName, CreatedOnColumn),
-		fmt.Sprintf("%s.%s", ValidPreparationInstrumentsTableName, LastUpdatedOnColumn),
-		fmt.Sprintf("%s.%s", ValidPreparationInstrumentsTableName, ArchivedOnColumn),
+		buildColumnReference(ValidPreparationInstrumentsTableName, IDColumn),
+		buildColumnReference(ValidPreparationInstrumentsTableName, ExternalIDColumn),
+		buildColumnReference(ValidPreparationInstrumentsTableName, ValidPreparationInstrumentsTableInstrumentIDColumn),
+		buildColumnReference(ValidPreparationInstrumentsTableName, ValidPreparationInstrumentsTablePreparationIDColumn),
+		buildColumnReference(ValidPreparationInstrumentsTableName, ValidPreparationInstrumentsTableNotesColumn),
+		buildColumnReference(ValidPreparationInstrumentsTableName, CreatedOnColumn),
+		buildColumnReference(ValidPreparationInstrumentsTableName, LastUpdatedOnColumn),
+		buildColumnReference(ValidPreparationInstrumentsTableName, ArchivedOnColumn),
 	}
 
 	//
@@ -217,17 +221,91 @@ var (
 
 	// RecipesTableColumns are the columns for the recipes table.
 	RecipesTableColumns = []string{
-		fmt.Sprintf("%s.%s", RecipesTableName, IDColumn),
-		fmt.Sprintf("%s.%s", RecipesTableName, ExternalIDColumn),
-		fmt.Sprintf("%s.%s", RecipesTableName, RecipesTableNameColumn),
-		fmt.Sprintf("%s.%s", RecipesTableName, RecipesTableSourceColumn),
-		fmt.Sprintf("%s.%s", RecipesTableName, RecipesTableDescriptionColumn),
-		// fmt.Sprintf("%s.%s", RecipesTableName, RecipesTableDisplayImageURLColumn),
-		fmt.Sprintf("%s.%s", RecipesTableName, RecipesTableInspiredByRecipeIDColumn),
-		fmt.Sprintf("%s.%s", RecipesTableName, CreatedOnColumn),
-		fmt.Sprintf("%s.%s", RecipesTableName, LastUpdatedOnColumn),
-		fmt.Sprintf("%s.%s", RecipesTableName, ArchivedOnColumn),
-		fmt.Sprintf("%s.%s", RecipesTableName, RecipesTableHouseholdOwnershipColumn),
+		buildColumnReference(RecipesTableName, IDColumn),
+		buildColumnReference(RecipesTableName, ExternalIDColumn),
+		buildColumnReference(RecipesTableName, RecipesTableNameColumn),
+		buildColumnReference(RecipesTableName, RecipesTableSourceColumn),
+		buildColumnReference(RecipesTableName, RecipesTableDescriptionColumn),
+		buildColumnReference(RecipesTableName, RecipesTableInspiredByRecipeIDColumn),
+		buildColumnReference(RecipesTableName, CreatedOnColumn),
+		buildColumnReference(RecipesTableName, LastUpdatedOnColumn),
+		buildColumnReference(RecipesTableName, ArchivedOnColumn),
+		buildColumnReference(RecipesTableName, RecipesTableHouseholdOwnershipColumn),
+	}
+
+	// FullRecipeColumns are the columns for the recipes table.
+	FullRecipeColumns = []string{
+		// recipe parts
+		buildColumnReference(RecipesTableName, IDColumn),
+		buildColumnReference(RecipesTableName, ExternalIDColumn),
+		buildColumnReference(RecipesTableName, RecipesTableNameColumn),
+		buildColumnReference(RecipesTableName, RecipesTableSourceColumn),
+		buildColumnReference(RecipesTableName, RecipesTableDescriptionColumn),
+		buildColumnReference(RecipesTableName, RecipesTableInspiredByRecipeIDColumn),
+		buildColumnReference(RecipesTableName, CreatedOnColumn),
+		buildColumnReference(RecipesTableName, LastUpdatedOnColumn),
+		buildColumnReference(RecipesTableName, ArchivedOnColumn),
+		buildColumnReference(RecipesTableName, RecipesTableHouseholdOwnershipColumn),
+		// recipe step parts
+		buildColumnReference(RecipeStepsTableName, IDColumn),
+		buildColumnReference(RecipeStepsTableName, ExternalIDColumn),
+		buildColumnReference(RecipeStepsTableName, RecipeStepsTableIndexColumn),
+		// recipe step preparation parts
+		buildColumnReference(ValidPreparationsTableName, IDColumn),
+		buildColumnReference(ValidPreparationsTableName, ExternalIDColumn),
+		buildColumnReference(ValidPreparationsTableName, ValidPreparationsTableNameColumn),
+		buildColumnReference(ValidPreparationsTableName, ValidPreparationsTableDescriptionColumn),
+		buildColumnReference(ValidPreparationsTableName, ValidPreparationsTableIconPathColumn),
+		buildColumnReference(ValidPreparationsTableName, CreatedOnColumn),
+		buildColumnReference(ValidPreparationsTableName, LastUpdatedOnColumn),
+		buildColumnReference(ValidPreparationsTableName, ArchivedOnColumn),
+		buildColumnReference(RecipeStepsTableName, RecipeStepsTablePrerequisiteStepColumn),
+		buildColumnReference(RecipeStepsTableName, RecipeStepsTableMinEstimatedTimeInSecondsColumn),
+		buildColumnReference(RecipeStepsTableName, RecipeStepsTableMaxEstimatedTimeInSecondsColumn),
+		buildColumnReference(RecipeStepsTableName, RecipeStepsTableTemperatureInCelsiusColumn),
+		buildColumnReference(RecipeStepsTableName, RecipeStepsTableNotesColumn),
+		buildColumnReference(RecipeStepsTableName, RecipeStepsTableWhyColumn),
+		buildColumnReference(RecipeStepsTableName, CreatedOnColumn),
+		buildColumnReference(RecipeStepsTableName, LastUpdatedOnColumn),
+		buildColumnReference(RecipeStepsTableName, ArchivedOnColumn),
+		buildColumnReference(RecipeStepsTableName, RecipeStepsTableBelongsToRecipeColumn),
+		// recipe step ingredient parts
+		buildColumnReference(RecipeStepIngredientsTableName, IDColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, ExternalIDColumn),
+		// recipe step ingredient ingredient parts
+		buildColumnReference(ValidIngredientsTableName, IDColumn),
+		buildColumnReference(ValidIngredientsTableName, ExternalIDColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableNameColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableVariantColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableDescriptionColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableWarningColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableContainsEggColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableContainsDairyColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableContainsPeanutColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableContainsTreeNutColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableContainsSoyColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableContainsWheatColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableContainsShellfishColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableContainsSesameColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableContainsFishColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableContainsGlutenColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableAnimalFleshColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableAnimalDerivedColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableVolumetricColumn),
+		buildColumnReference(ValidIngredientsTableName, ValidIngredientsTableIconPathColumn),
+		buildColumnReference(ValidIngredientsTableName, CreatedOnColumn),
+		buildColumnReference(ValidIngredientsTableName, LastUpdatedOnColumn),
+		buildColumnReference(ValidIngredientsTableName, ArchivedOnColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, RecipeStepIngredientsTableNameColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, RecipeStepIngredientsTableQuantityTypeColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, RecipeStepIngredientsTableQuantityValueColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, RecipeStepIngredientsTableQuantityNotesColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, RecipeStepIngredientsTableProductOfRecipeStepColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, RecipeStepIngredientsTableIngredientNotesColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, CreatedOnColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, LastUpdatedOnColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, ArchivedOnColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, RecipeStepIngredientsTableBelongsToRecipeStepColumn),
 	}
 
 	//
@@ -236,20 +314,20 @@ var (
 
 	// RecipeStepsTableColumns are the columns for the recipe steps table.
 	RecipeStepsTableColumns = []string{
-		fmt.Sprintf("%s.%s", RecipeStepsTableName, IDColumn),
-		fmt.Sprintf("%s.%s", RecipeStepsTableName, ExternalIDColumn),
-		fmt.Sprintf("%s.%s", RecipeStepsTableName, RecipeStepsTableIndexColumn),
-		fmt.Sprintf("%s.%s", RecipeStepsTableName, RecipeStepsTablePreparationIDColumn),
-		fmt.Sprintf("%s.%s", RecipeStepsTableName, RecipeStepsTablePrerequisiteStepColumn),
-		fmt.Sprintf("%s.%s", RecipeStepsTableName, RecipeStepsTableMinEstimatedTimeInSecondsColumn),
-		fmt.Sprintf("%s.%s", RecipeStepsTableName, RecipeStepsTableMaxEstimatedTimeInSecondsColumn),
-		fmt.Sprintf("%s.%s", RecipeStepsTableName, RecipeStepsTableTemperatureInCelsiusColumn),
-		fmt.Sprintf("%s.%s", RecipeStepsTableName, RecipeStepsTableNotesColumn),
-		fmt.Sprintf("%s.%s", RecipeStepsTableName, RecipeStepsTableWhyColumn),
-		fmt.Sprintf("%s.%s", RecipeStepsTableName, CreatedOnColumn),
-		fmt.Sprintf("%s.%s", RecipeStepsTableName, LastUpdatedOnColumn),
-		fmt.Sprintf("%s.%s", RecipeStepsTableName, ArchivedOnColumn),
-		fmt.Sprintf("%s.%s", RecipeStepsTableName, RecipeStepsTableBelongsToRecipeColumn),
+		buildColumnReference(RecipeStepsTableName, IDColumn),
+		buildColumnReference(RecipeStepsTableName, ExternalIDColumn),
+		buildColumnReference(RecipeStepsTableName, RecipeStepsTableIndexColumn),
+		buildColumnReference(RecipeStepsTableName, RecipeStepsTablePreparationIDColumn),
+		buildColumnReference(RecipeStepsTableName, RecipeStepsTablePrerequisiteStepColumn),
+		buildColumnReference(RecipeStepsTableName, RecipeStepsTableMinEstimatedTimeInSecondsColumn),
+		buildColumnReference(RecipeStepsTableName, RecipeStepsTableMaxEstimatedTimeInSecondsColumn),
+		buildColumnReference(RecipeStepsTableName, RecipeStepsTableTemperatureInCelsiusColumn),
+		buildColumnReference(RecipeStepsTableName, RecipeStepsTableNotesColumn),
+		buildColumnReference(RecipeStepsTableName, RecipeStepsTableWhyColumn),
+		buildColumnReference(RecipeStepsTableName, CreatedOnColumn),
+		buildColumnReference(RecipeStepsTableName, LastUpdatedOnColumn),
+		buildColumnReference(RecipeStepsTableName, ArchivedOnColumn),
+		buildColumnReference(RecipeStepsTableName, RecipeStepsTableBelongsToRecipeColumn),
 	}
 
 	//
@@ -258,19 +336,19 @@ var (
 
 	// RecipeStepIngredientsTableColumns are the columns for the recipe step ingredients table.
 	RecipeStepIngredientsTableColumns = []string{
-		fmt.Sprintf("%s.%s", RecipeStepIngredientsTableName, IDColumn),
-		fmt.Sprintf("%s.%s", RecipeStepIngredientsTableName, ExternalIDColumn),
-		fmt.Sprintf("%s.%s", RecipeStepIngredientsTableName, RecipeStepIngredientsTableIngredientIDColumn),
-		fmt.Sprintf("%s.%s", RecipeStepIngredientsTableName, RecipeStepIngredientsTableNameColumn),
-		fmt.Sprintf("%s.%s", RecipeStepIngredientsTableName, RecipeStepIngredientsTableQuantityTypeColumn),
-		fmt.Sprintf("%s.%s", RecipeStepIngredientsTableName, RecipeStepIngredientsTableQuantityValueColumn),
-		fmt.Sprintf("%s.%s", RecipeStepIngredientsTableName, RecipeStepIngredientsTableQuantityNotesColumn),
-		fmt.Sprintf("%s.%s", RecipeStepIngredientsTableName, RecipeStepIngredientsTableProductOfRecipeStepColumn),
-		fmt.Sprintf("%s.%s", RecipeStepIngredientsTableName, RecipeStepIngredientsTableIngredientNotesColumn),
-		fmt.Sprintf("%s.%s", RecipeStepIngredientsTableName, CreatedOnColumn),
-		fmt.Sprintf("%s.%s", RecipeStepIngredientsTableName, LastUpdatedOnColumn),
-		fmt.Sprintf("%s.%s", RecipeStepIngredientsTableName, ArchivedOnColumn),
-		fmt.Sprintf("%s.%s", RecipeStepIngredientsTableName, RecipeStepIngredientsTableBelongsToRecipeStepColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, IDColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, ExternalIDColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, RecipeStepIngredientsTableIngredientIDColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, RecipeStepIngredientsTableNameColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, RecipeStepIngredientsTableQuantityTypeColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, RecipeStepIngredientsTableQuantityValueColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, RecipeStepIngredientsTableQuantityNotesColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, RecipeStepIngredientsTableProductOfRecipeStepColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, RecipeStepIngredientsTableIngredientNotesColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, CreatedOnColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, LastUpdatedOnColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, ArchivedOnColumn),
+		buildColumnReference(RecipeStepIngredientsTableName, RecipeStepIngredientsTableBelongsToRecipeStepColumn),
 	}
 
 	//
@@ -279,16 +357,16 @@ var (
 
 	// RecipeStepProductsTableColumns are the columns for the recipe step products table.
 	RecipeStepProductsTableColumns = []string{
-		fmt.Sprintf("%s.%s", RecipeStepProductsTableName, IDColumn),
-		fmt.Sprintf("%s.%s", RecipeStepProductsTableName, ExternalIDColumn),
-		fmt.Sprintf("%s.%s", RecipeStepProductsTableName, RecipeStepProductsTableNameColumn),
-		fmt.Sprintf("%s.%s", RecipeStepProductsTableName, RecipeStepProductsTableQuantityTypeColumn),
-		fmt.Sprintf("%s.%s", RecipeStepProductsTableName, RecipeStepProductsTableQuantityValueColumn),
-		fmt.Sprintf("%s.%s", RecipeStepProductsTableName, RecipeStepProductsTableQuantityNotesColumn),
-		fmt.Sprintf("%s.%s", RecipeStepProductsTableName, CreatedOnColumn),
-		fmt.Sprintf("%s.%s", RecipeStepProductsTableName, LastUpdatedOnColumn),
-		fmt.Sprintf("%s.%s", RecipeStepProductsTableName, ArchivedOnColumn),
-		fmt.Sprintf("%s.%s", RecipeStepProductsTableName, RecipeStepProductsTableBelongsToRecipeStepColumn),
+		buildColumnReference(RecipeStepProductsTableName, IDColumn),
+		buildColumnReference(RecipeStepProductsTableName, ExternalIDColumn),
+		buildColumnReference(RecipeStepProductsTableName, RecipeStepProductsTableNameColumn),
+		buildColumnReference(RecipeStepProductsTableName, RecipeStepProductsTableQuantityTypeColumn),
+		buildColumnReference(RecipeStepProductsTableName, RecipeStepProductsTableQuantityValueColumn),
+		buildColumnReference(RecipeStepProductsTableName, RecipeStepProductsTableQuantityNotesColumn),
+		buildColumnReference(RecipeStepProductsTableName, CreatedOnColumn),
+		buildColumnReference(RecipeStepProductsTableName, LastUpdatedOnColumn),
+		buildColumnReference(RecipeStepProductsTableName, ArchivedOnColumn),
+		buildColumnReference(RecipeStepProductsTableName, RecipeStepProductsTableBelongsToRecipeStepColumn),
 	}
 
 	//
@@ -297,14 +375,14 @@ var (
 
 	// InvitationsTableColumns are the columns for the invitations table.
 	InvitationsTableColumns = []string{
-		fmt.Sprintf("%s.%s", InvitationsTableName, IDColumn),
-		fmt.Sprintf("%s.%s", InvitationsTableName, ExternalIDColumn),
-		fmt.Sprintf("%s.%s", InvitationsTableName, InvitationsTableCodeColumn),
-		fmt.Sprintf("%s.%s", InvitationsTableName, InvitationsTableConsumedColumn),
-		fmt.Sprintf("%s.%s", InvitationsTableName, CreatedOnColumn),
-		fmt.Sprintf("%s.%s", InvitationsTableName, LastUpdatedOnColumn),
-		fmt.Sprintf("%s.%s", InvitationsTableName, ArchivedOnColumn),
-		fmt.Sprintf("%s.%s", InvitationsTableName, InvitationsTableHouseholdOwnershipColumn),
+		buildColumnReference(InvitationsTableName, IDColumn),
+		buildColumnReference(InvitationsTableName, ExternalIDColumn),
+		buildColumnReference(InvitationsTableName, InvitationsTableCodeColumn),
+		buildColumnReference(InvitationsTableName, InvitationsTableConsumedColumn),
+		buildColumnReference(InvitationsTableName, CreatedOnColumn),
+		buildColumnReference(InvitationsTableName, LastUpdatedOnColumn),
+		buildColumnReference(InvitationsTableName, ArchivedOnColumn),
+		buildColumnReference(InvitationsTableName, InvitationsTableHouseholdOwnershipColumn),
 	}
 
 	//
@@ -313,13 +391,13 @@ var (
 
 	// ReportsTableColumns are the columns for the reports table.
 	ReportsTableColumns = []string{
-		fmt.Sprintf("%s.%s", ReportsTableName, IDColumn),
-		fmt.Sprintf("%s.%s", ReportsTableName, ExternalIDColumn),
-		fmt.Sprintf("%s.%s", ReportsTableName, ReportsTableReportTypeColumn),
-		fmt.Sprintf("%s.%s", ReportsTableName, ReportsTableConcernColumn),
-		fmt.Sprintf("%s.%s", ReportsTableName, CreatedOnColumn),
-		fmt.Sprintf("%s.%s", ReportsTableName, LastUpdatedOnColumn),
-		fmt.Sprintf("%s.%s", ReportsTableName, ArchivedOnColumn),
-		fmt.Sprintf("%s.%s", ReportsTableName, ReportsTableHouseholdOwnershipColumn),
+		buildColumnReference(ReportsTableName, IDColumn),
+		buildColumnReference(ReportsTableName, ExternalIDColumn),
+		buildColumnReference(ReportsTableName, ReportsTableReportTypeColumn),
+		buildColumnReference(ReportsTableName, ReportsTableConcernColumn),
+		buildColumnReference(ReportsTableName, CreatedOnColumn),
+		buildColumnReference(ReportsTableName, LastUpdatedOnColumn),
+		buildColumnReference(ReportsTableName, ArchivedOnColumn),
+		buildColumnReference(ReportsTableName, ReportsTableHouseholdOwnershipColumn),
 	}
 )

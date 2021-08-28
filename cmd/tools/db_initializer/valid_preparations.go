@@ -5,12 +5,22 @@ import "gitlab.com/prixfixe/prixfixe/pkg/types"
 var (
 	validPreparations = []*types.ValidPreparationCreationInput{
 		{
-			Name:        "bake",
+			Name:        "boil",
 			Description: "",
 			IconPath:    "",
 		},
 		{
-			Name:        "boil",
+			Name:        "grind",
+			Description: "",
+			IconPath:    "",
+		},
+		{
+			Name:        "brew",
+			Description: "",
+			IconPath:    "",
+		},
+		{
+			Name:        "bake",
 			Description: "",
 			IconPath:    "",
 		},
@@ -241,11 +251,6 @@ var (
 		},
 		{
 			Name:        "mill",
-			Description: "",
-			IconPath:    "",
-		},
-		{
-			Name:        "grind",
 			Description: "",
 			IconPath:    "",
 		},

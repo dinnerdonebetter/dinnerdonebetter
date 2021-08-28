@@ -24,6 +24,22 @@ type (
 		BelongsToHousehold uint64        `json:"belongsToHousehold"`
 	}
 
+	// FullRecipe represents a recipe.
+	FullRecipe struct {
+		LastUpdatedOn      *uint64           `json:"lastUpdatedOn"`
+		ArchivedOn         *uint64           `json:"archivedOn"`
+		InspiredByRecipeID *uint64           `json:"inspiredByRecipeID"`
+		Source             string            `json:"source"`
+		Description        string            `json:"description"`
+		ExternalID         string            `json:"externalID"`
+		DisplayImageURL    string            `json:"displayImageURL"`
+		Name               string            `json:"name"`
+		Steps              []*FullRecipeStep `json:"steps"`
+		ID                 uint64            `json:"id"`
+		CreatedOn          uint64            `json:"createdOn"`
+		BelongsToHousehold uint64            `json:"belongsToHousehold"`
+	}
+
 	// RecipeList represents a list of recipes.
 	RecipeList struct {
 		Recipes []*Recipe `json:"recipes"`
@@ -55,6 +71,7 @@ type (
 	RecipeDataManager interface {
 		RecipeExists(ctx context.Context, recipeID uint64) (bool, error)
 		GetRecipe(ctx context.Context, recipeID uint64) (*Recipe, error)
+		GetFullRecipe(ctx context.Context, recipeID uint64) (*FullRecipe, error)
 		GetAllRecipesCount(ctx context.Context) (uint64, error)
 		GetAllRecipes(ctx context.Context, resultChannel chan []*Recipe, bucketSize uint16) error
 		GetRecipes(ctx context.Context, filter *QueryFilter) (*RecipeList, error)

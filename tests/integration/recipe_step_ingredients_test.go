@@ -26,6 +26,24 @@ func checkRecipeStepIngredientEquality(t *testing.T, expected, actual *types.Rec
 	assert.NotZero(t, actual.CreatedOn)
 }
 
+func fullRecipeStepIngredientToRecipeStepIngredient(i *types.FullRecipeStepIngredient) *types.RecipeStepIngredient {
+	return &types.RecipeStepIngredient{
+		LastUpdatedOn:       i.LastUpdatedOn,
+		IngredientID:        &i.Ingredient.ID,
+		ArchivedOn:          i.ArchivedOn,
+		IngredientNotes:     i.IngredientNotes,
+		Name:                i.Name,
+		QuantityType:        i.QuantityType,
+		QuantityNotes:       i.QuantityNotes,
+		ExternalID:          i.ExternalID,
+		ID:                  i.ID,
+		CreatedOn:           i.CreatedOn,
+		BelongsToRecipeStep: i.BelongsToRecipeStep,
+		QuantityValue:       i.QuantityValue,
+		ProductOfRecipeStep: i.ProductOfRecipeStep,
+	}
+}
+
 func (s *TestSuite) TestRecipeStepIngredients_Creating() {
 	s.runForEachClientExcept("should be creatable", func(testClients *testClientWrapper) func() {
 		return func() {

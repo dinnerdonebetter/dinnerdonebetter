@@ -57,6 +57,30 @@ func TestPostgres_BuildGetRecipeQuery(T *testing.T) {
 	})
 }
 
+func TestPostgres_BuildGetFullRecipeQuery(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		q, _ := buildTestService(t)
+		ctx := context.Background()
+
+		exampleRecipe := fakes.BuildFakeRecipe()
+
+		expectedQuery := "SELECT recipes.id, recipes.external_id, recipes.name, recipes.source, recipes.description, recipes.inspired_by_recipe_id, recipes.created_on, recipes.last_updated_on, recipes.archived_on, recipes.belongs_to_household, recipe_steps.id, recipe_steps.external_id, recipe_steps.index, valid_preparations.id, valid_preparations.external_id, valid_preparations.name, valid_preparations.description, valid_preparations.icon_path, valid_preparations.created_on, valid_preparations.last_updated_on, valid_preparations.archived_on, recipe_steps.prerequisite_step, recipe_steps.min_estimated_time_in_seconds, recipe_steps.max_estimated_time_in_seconds, recipe_steps.temperature_in_celsius, recipe_steps.notes, recipe_steps.why, recipe_steps.created_on, recipe_steps.last_updated_on, recipe_steps.archived_on, recipe_steps.belongs_to_recipe, recipe_step_ingredients.id, recipe_step_ingredients.external_id, valid_ingredients.id, valid_ingredients.external_id, valid_ingredients.name, valid_ingredients.variant, valid_ingredients.description, valid_ingredients.warning, valid_ingredients.contains_egg, valid_ingredients.contains_dairy, valid_ingredients.contains_peanut, valid_ingredients.contains_tree_nut, valid_ingredients.contains_soy, valid_ingredients.contains_wheat, valid_ingredients.contains_shellfish, valid_ingredients.contains_sesame, valid_ingredients.contains_fish, valid_ingredients.contains_gluten, valid_ingredients.animal_flesh, valid_ingredients.animal_derived, valid_ingredients.volumetric, valid_ingredients.icon_path, valid_ingredients.created_on, valid_ingredients.last_updated_on, valid_ingredients.archived_on, recipe_step_ingredients.name, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe_step, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.created_on, recipe_step_ingredients.last_updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id=valid_ingredients.id JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id WHERE recipe_step_ingredients.archived_on IS NULL AND recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $1 AND recipes.archived_on IS NULL AND recipes.id = $2"
+		expectedArgs := []interface{}{
+			exampleRecipe.ID,
+			exampleRecipe.ID,
+		}
+		actualQuery, actualArgs := q.BuildGetFullRecipeQuery(ctx, exampleRecipe.ID)
+
+		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+}
+
 func TestPostgres_BuildGetAllRecipesCountQuery(T *testing.T) {
 	T.Parallel()
 

@@ -58,8 +58,6 @@ func (s *service) fetchSessionContextDataFromPASETO(ctx context.Context, req *ht
 			return nil, observability.PrepareError(err, logger, span, "decoding GOB encoded session info payload")
 		}
 
-		logger.WithValue("active_household_id", reqContext.ActiveHouseholdID).Debug("returning session context data")
-
 		return reqContext, nil
 	}
 
