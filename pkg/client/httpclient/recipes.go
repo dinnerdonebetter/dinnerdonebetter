@@ -36,7 +36,7 @@ func (c *Client) RecipeExists(ctx context.Context, recipeID uint64) (bool, error
 }
 
 // GetRecipe gets a recipe.
-func (c *Client) GetRecipe(ctx context.Context, recipeID uint64) (*types.Recipe, error) {
+func (c *Client) GetRecipe(ctx context.Context, recipeID uint64) (*types.FullRecipe, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -53,7 +53,7 @@ func (c *Client) GetRecipe(ctx context.Context, recipeID uint64) (*types.Recipe,
 		return nil, observability.PrepareError(err, logger, span, "building get recipe request")
 	}
 
-	var recipe *types.Recipe
+	var recipe *types.FullRecipe
 	if err = c.fetchAndUnmarshal(ctx, req, &recipe); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "retrieving recipe")
 	}

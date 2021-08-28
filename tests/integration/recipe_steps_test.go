@@ -24,7 +24,38 @@ func checkRecipeStepEquality(t *testing.T, expected, actual *types.RecipeStep) {
 	assert.Equal(t, expected.TemperatureInCelsius, actual.TemperatureInCelsius, "expected TemperatureInCelsius for recipe step #%d to be %v, but it was %v ", expected.ID, expected.TemperatureInCelsius, actual.TemperatureInCelsius)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for recipe step #%d to be %v, but it was %v ", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.Why, actual.Why, "expected Why for recipe step #%d to be %v, but it was %v ", expected.ID, expected.Why, actual.Why)
+
+	require.Equal(t, len(expected.Ingredients), len(actual.Ingredients))
+	for i := range expected.Ingredients {
+		checkRecipeStepIngredientEquality(t, expected.Ingredients[i], actual.Ingredients[i])
+	}
+
 	assert.NotZero(t, actual.CreatedOn)
+}
+
+func fullRecipeStepToRecipeStep(s *types.FullRecipeStep) *types.RecipeStep {
+	ingredients := []*types.RecipeStepIngredient{}
+	for _, i := range s.Ingredients {
+		ingredients = append(ingredients, fullRecipeStepIngredientToRecipeStepIngredient(i))
+	}
+
+	return &types.RecipeStep{
+		LastUpdatedOn:             s.LastUpdatedOn,
+		TemperatureInCelsius:      s.TemperatureInCelsius,
+		ArchivedOn:                s.ArchivedOn,
+		ExternalID:                s.ExternalID,
+		Why:                       s.Why,
+		Notes:                     s.Notes,
+		Ingredients:               ingredients,
+		PrerequisiteStep:          s.PrerequisiteStep,
+		ID:                        s.ID,
+		Index:                     s.Index,
+		CreatedOn:                 s.CreatedOn,
+		BelongsToRecipe:           s.BelongsToRecipe,
+		PreparationID:             s.Preparation.ID,
+		MaxEstimatedTimeInSeconds: s.MaxEstimatedTimeInSeconds,
+		MinEstimatedTimeInSeconds: s.MinEstimatedTimeInSeconds,
+	}
 }
 
 func (s *TestSuite) TestRecipeSteps_Creating() {

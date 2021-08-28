@@ -108,127 +108,127 @@ import { useRouter } from "vue-router";
 import { Recipe, RecipeStep, RecipeStepIngredient } from "../../../models";
 import {backendRoutes} from "../../../constants";
 
-  class SearchSuggestion {
-      name: string;
-      variant: string;
-      id: number;
+class SearchSuggestion {
+    name: string;
+    variant: string;
+    id: number;
 
-      constructor() {
-          this.name = "";
-          this.variant = "";
-          this.id = 0;
-      }
-  }
+    constructor() {
+        this.name = "";
+        this.variant = "";
+        this.id = 0;
+    }
+}
 
-  function initializeRecipe(): Recipe {
-    const r = new Recipe();
+function initializeRecipe(): Recipe {
+  const r = new Recipe();
 
-    r.steps = [new RecipeStep()]
-    r.steps[0].ingredients = [new RecipeStepIngredient()]
-    r.steps[0].ingredients[0].quantityType = "grams"
+  r.steps = [new RecipeStep()]
+  r.steps[0].ingredients = [new RecipeStepIngredient()]
+  r.steps[0].ingredients[0].quantityType = "grams"
 
-    return r;
-  }
+  return r;
+}
 
-  export default defineComponent({
-      data() {
-          return {
-              recipe: initializeRecipe(),
-              preparationQueries: new Array<string>(""),
-              ingredientNameQueries: new Array<Array<string>>([]),
-              preparationSuggestions: new Array<Array<SearchSuggestion>>(),
-              validIngredientSuggestions: new Array<Array<Array<SearchSuggestion>>>([]),
-          }
+export default defineComponent({
+    data() {
+        return {
+            recipe: initializeRecipe(),
+            preparationQueries: new Array<string>(""),
+            ingredientNameQueries: new Array<Array<string>>([]),
+            preparationSuggestions: new Array<Array<SearchSuggestion>>(),
+            validIngredientSuggestions: new Array<Array<Array<SearchSuggestion>>>([]),
+        }
+    },
+    methods: {
+      addStep() {
+        this.recipe.steps.push(new RecipeStep());
+        this.ingredientNameQueries.push([]);
+        this.validIngredientSuggestions.push(new Array<Array<SearchSuggestion>>())
+        console.log(`Step added!`);
       },
-      methods: {
-        addStep() {
-          this.recipe.steps.push(new RecipeStep());
-          this.ingredientNameQueries.push([]);
-          this.validIngredientSuggestions.push(new Array<Array<SearchSuggestion>>())
-          console.log(`Step added!`);
-        },
-        removeStep(stepIndex: number) {
-          this.recipe.steps.splice(stepIndex, 1);
-        },
-        readyForSubmission(): boolean {
-          return this.recipe.steps.length > 0;
-        },
-        addIngredient(stepIndex: number) {
-          let ingredient = new RecipeStepIngredient();
-          this.recipe.steps[stepIndex].ingredients.push(ingredient);
-          this.ingredientNameQueries.push([]);
-          this.preparationQueries[stepIndex] = "";
-          this.validIngredientSuggestions.push(new Array<Array<SearchSuggestion>>())
-          console.log(`Ingredient added!`);
-        },
-        removeIngredient(stepIndex: number, ingredientIndex: number) {
-          this.recipe.steps[stepIndex].ingredients.splice(ingredientIndex, 1);
-        },
-        validPreparationSuggestionListID(stepIndex: number) {
-            return `recipeStep_${stepIndex}_ValidPreparationSuggestions`;
-        },
-        queryForValidPreparation(stepIndex: number) {
-            let query = this.preparationQueries[stepIndex].trim();
+      removeStep(stepIndex: number) {
+        this.recipe.steps.splice(stepIndex, 1);
+      },
+      readyForSubmission(): boolean {
+        return this.recipe.steps.length > 0;
+      },
+      addIngredient(stepIndex: number) {
+        let ingredient = new RecipeStepIngredient();
+        this.recipe.steps[stepIndex].ingredients.push(ingredient);
+        this.ingredientNameQueries.push([]);
+        this.preparationQueries[stepIndex] = "";
+        this.validIngredientSuggestions.push(new Array<Array<SearchSuggestion>>())
+        console.log(`Ingredient added!`);
+      },
+      removeIngredient(stepIndex: number, ingredientIndex: number) {
+        this.recipe.steps[stepIndex].ingredients.splice(ingredientIndex, 1);
+      },
+      validPreparationSuggestionListID(stepIndex: number) {
+          return `recipeStep_${stepIndex}_ValidPreparationSuggestions`;
+      },
+      queryForValidPreparation(stepIndex: number) {
+          let query = this.preparationQueries[stepIndex].trim();
 
-            const searchURL = `${backendRoutes.VALID_PREPARATIONS_SEARCH}?q=${encodeURIComponent(query)}`;
+          const searchURL = `${backendRoutes.VALID_PREPARATIONS_SEARCH}?q=${encodeURIComponent(query)}`;
 
-            if (query.length > 1) {
-              axios.get(searchURL)
-                  .then((res: AxiosResponse<SearchSuggestion[]>) => {
-                    this.preparationSuggestions[stepIndex] = res.data || [];
-                  })
-                  .catch((err: AxiosError) => {
-                    console.error(err);
-                  });
-            } else {
-                this.preparationSuggestions[stepIndex] = [];
-            }
-        },
-        selectValidPreparationSuggestion(stepIndex: number, selection: SearchSuggestion) {
-          let step = this.recipe.steps[stepIndex];
-          step.preparationID = selection.id;
-
-          this.preparationQueries[stepIndex] = `${selection.name}${selection.variant ? ' - ' : ''}${selection.variant || ''}`;
-          this.preparationSuggestions[stepIndex] = [];
-        },
-        queryForValidIngredient(stepIndex: number, ingredientIndex: number) {
-          let preparationID = this.recipe.steps[stepIndex].preparationID
-          let query = this.ingredientNameQueries[stepIndex][ingredientIndex].trim();
-
-          if (query.length > 1 && preparationID !== 0) {
-            const searchURL = `${backendRoutes.VALID_INGREDIENTS_SEARCH}?q=${encodeURIComponent(query)}&pid=${preparationID}`;
+          if (query.length > 1) {
             axios.get(searchURL)
                 .then((res: AxiosResponse<SearchSuggestion[]>) => {
-                  this.validIngredientSuggestions[stepIndex][ingredientIndex] = res.data || [];
+                  this.preparationSuggestions[stepIndex] = res.data || [];
                 })
                 .catch((err: AxiosError) => {
                   console.error(err);
                 });
+          } else {
+              this.preparationSuggestions[stepIndex] = [];
           }
-        },
-        selectValidIngredientSuggestion(stepIndex: number, ingredientIndex: number, selection: SearchSuggestion) {
-            let ingredient = this.recipe.steps[stepIndex].ingredients[ingredientIndex];
+      },
+      selectValidPreparationSuggestion(stepIndex: number, selection: SearchSuggestion) {
+        let step = this.recipe.steps[stepIndex];
+        step.preparationID = selection.id;
 
-            ingredient.ingredientID = selection.id;
-            this.ingredientNameQueries[stepIndex][ingredientIndex] = `${selection.name}${selection.variant ? ' - ' : ''}${selection.variant || ''}`;
-            this.validIngredientSuggestions[stepIndex][ingredientIndex] = [];
-        },
-        submitRecipe() {
-          axios.post(backendRoutes.RECIPES, this.recipe)
-          .then((res: AxiosResponse<Recipe>) => {
-            console.dir(res.data);
-          })
-          .catch((err: AxiosError) =>{
-            console.error(err);
-          });
+        this.preparationQueries[stepIndex] = `${selection.name}${selection.variant ? ' - ' : ''}${selection.variant || ''}`;
+        this.preparationSuggestions[stepIndex] = [];
+      },
+      queryForValidIngredient(stepIndex: number, ingredientIndex: number) {
+        let preparationID = this.recipe.steps[stepIndex].preparationID
+        let query = this.ingredientNameQueries[stepIndex][ingredientIndex].trim();
+
+        if (query.length > 1 && preparationID !== 0) {
+          const searchURL = `${backendRoutes.VALID_INGREDIENTS_SEARCH}?q=${encodeURIComponent(query)}&pid=${preparationID}`;
+          axios.get(searchURL)
+              .then((res: AxiosResponse<SearchSuggestion[]>) => {
+                this.validIngredientSuggestions[stepIndex][ingredientIndex] = res.data || [];
+              })
+              .catch((err: AxiosError) => {
+                console.error(err);
+              });
         }
       },
-      setup(props) {
-          const router = useRouter();
+      selectValidIngredientSuggestion(stepIndex: number, ingredientIndex: number, selection: SearchSuggestion) {
+          let ingredient = this.recipe.steps[stepIndex].ingredients[ingredientIndex];
 
-          return {
-              router,
-          };
+          ingredient.ingredientID = selection.id;
+          this.ingredientNameQueries[stepIndex][ingredientIndex] = `${selection.name}${selection.variant ? ' - ' : ''}${selection.variant || ''}`;
+          this.validIngredientSuggestions[stepIndex][ingredientIndex] = [];
       },
-  });
+      submitRecipe() {
+        axios.post(backendRoutes.RECIPES, this.recipe)
+        .then((res: AxiosResponse<Recipe>) => {
+          console.dir(res.data);
+        })
+        .catch((err: AxiosError) =>{
+          console.error(err);
+        });
+      }
+    },
+    setup() {
+        const router = useRouter();
+
+        return {
+            router,
+        };
+    },
+});
 </script>

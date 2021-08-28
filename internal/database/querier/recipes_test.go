@@ -54,6 +54,138 @@ func buildMockRowsFromRecipes(includeCounts bool, filteredCount uint64, recipes 
 	return exampleRows
 }
 
+func buildMockFullRowsFromRecipe(recipe *types.FullRecipe) *sqlmock.Rows {
+	exampleRows := sqlmock.NewRows(querybuilding.FullRecipeColumns)
+
+	for _, step := range recipe.Steps {
+		for _, ingredient := range step.Ingredients {
+			exampleRows.AddRow(
+				&recipe.ID,
+				&recipe.ExternalID,
+				&recipe.Name,
+				&recipe.Source,
+				&recipe.Description,
+				&recipe.InspiredByRecipeID,
+				&recipe.CreatedOn,
+				&recipe.LastUpdatedOn,
+				&recipe.ArchivedOn,
+				&recipe.BelongsToHousehold,
+				&step.ID,
+				&step.ExternalID,
+				&step.Index,
+				&step.Preparation.ID,
+				&step.Preparation.ExternalID,
+				&step.Preparation.Name,
+				&step.Preparation.Description,
+				&step.Preparation.IconPath,
+				&step.Preparation.CreatedOn,
+				&step.Preparation.LastUpdatedOn,
+				&step.Preparation.ArchivedOn,
+				&step.PrerequisiteStep,
+				&step.MinEstimatedTimeInSeconds,
+				&step.MaxEstimatedTimeInSeconds,
+				&step.TemperatureInCelsius,
+				&step.Notes,
+				&step.Why,
+				&step.CreatedOn,
+				&step.LastUpdatedOn,
+				&step.ArchivedOn,
+				&step.BelongsToRecipe,
+				&ingredient.ID,
+				&ingredient.ExternalID,
+				&ingredient.Ingredient.ID,
+				&ingredient.Ingredient.ExternalID,
+				&ingredient.Ingredient.Name,
+				&ingredient.Ingredient.Variant,
+				&ingredient.Ingredient.Description,
+				&ingredient.Ingredient.Warning,
+				&ingredient.Ingredient.ContainsEgg,
+				&ingredient.Ingredient.ContainsDairy,
+				&ingredient.Ingredient.ContainsPeanut,
+				&ingredient.Ingredient.ContainsTreeNut,
+				&ingredient.Ingredient.ContainsSoy,
+				&ingredient.Ingredient.ContainsWheat,
+				&ingredient.Ingredient.ContainsShellfish,
+				&ingredient.Ingredient.ContainsSesame,
+				&ingredient.Ingredient.ContainsFish,
+				&ingredient.Ingredient.ContainsGluten,
+				&ingredient.Ingredient.AnimalFlesh,
+				&ingredient.Ingredient.AnimalDerived,
+				&ingredient.Ingredient.Volumetric,
+				&ingredient.Ingredient.IconPath,
+				&ingredient.Ingredient.CreatedOn,
+				&ingredient.Ingredient.LastUpdatedOn,
+				&ingredient.Ingredient.ArchivedOn,
+				&ingredient.Name,
+				&ingredient.QuantityType,
+				&ingredient.QuantityValue,
+				&ingredient.QuantityNotes,
+				&ingredient.ProductOfRecipeStep,
+				&ingredient.IngredientNotes,
+				&ingredient.CreatedOn,
+				&ingredient.LastUpdatedOn,
+				&ingredient.ArchivedOn,
+				&ingredient.BelongsToRecipeStep,
+			)
+		}
+	}
+
+	return exampleRows
+}
+
+func buildInvalidMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
+	columns := append(append(querybuilding.RecipesTableColumns, querybuilding.RecipeStepsTableColumns...), querybuilding.RecipeStepIngredientsTableColumns...)
+
+	var whatever bool
+	exampleRows := sqlmock.NewRows(columns)
+
+	for _, step := range recipe.Steps {
+		for _, ingredient := range step.Ingredients {
+			exampleRows.AddRow(
+				&recipe.ID,
+				&recipe.ExternalID,
+				&recipe.Name,
+				&recipe.Source,
+				&recipe.Description,
+				&recipe.InspiredByRecipeID,
+				&recipe.CreatedOn,
+				&recipe.LastUpdatedOn,
+				&recipe.ArchivedOn,
+				&recipe.BelongsToHousehold,
+				&step.ID,
+				&step.ExternalID,
+				&step.Index,
+				&step.PreparationID,
+				&step.PrerequisiteStep,
+				&step.MinEstimatedTimeInSeconds,
+				&step.MaxEstimatedTimeInSeconds,
+				&step.TemperatureInCelsius,
+				&step.Notes,
+				&step.Why,
+				&step.CreatedOn,
+				&step.LastUpdatedOn,
+				&step.ArchivedOn,
+				&step.BelongsToRecipe,
+				&ingredient.ID,
+				&ingredient.ExternalID,
+				&ingredient.IngredientID,
+				&ingredient.Name,
+				&ingredient.QuantityType,
+				&ingredient.QuantityValue,
+				&ingredient.QuantityNotes,
+				&ingredient.ProductOfRecipeStep,
+				&ingredient.IngredientNotes,
+				&ingredient.CreatedOn,
+				&ingredient.LastUpdatedOn,
+				&ingredient.ArchivedOn,
+				&whatever,
+			)
+		}
+	}
+
+	return exampleRows
+}
+
 func TestQuerier_ScanRecipes(T *testing.T) {
 	T.Parallel()
 
@@ -262,6 +394,179 @@ func TestQuerier_GetRecipe(T *testing.T) {
 		actual, err := c.GetRecipe(ctx, exampleRecipe.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
+	})
+}
+
+func TestQuerier_GetFullRecipe(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipe := fakes.BuildFakeFullRecipe()
+
+		exampleRecipe.Steps = []*types.FullRecipeStep{
+			fakes.BuildFakeFullRecipeStep(),
+			fakes.BuildFakeFullRecipeStep(),
+			fakes.BuildFakeFullRecipeStep(),
+		}
+
+		for _, step := range exampleRecipe.Steps {
+			step.Ingredients = []*types.FullRecipeStepIngredient{
+				fakes.BuildFakeFullRecipeStepIngredient(),
+				fakes.BuildFakeFullRecipeStepIngredient(),
+				fakes.BuildFakeFullRecipeStepIngredient(),
+			}
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
+
+		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
+		mockQueryBuilder.RecipeSQLQueryBuilder.On(
+			"BuildGetFullRecipeQuery",
+			testutils.ContextMatcher,
+			exampleRecipe.ID,
+		).Return(fakeQuery, fakeArgs)
+		c.sqlQueryBuilder = mockQueryBuilder
+
+		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
+			WithArgs(interfaceToDriverValue(fakeArgs)...).
+			WillReturnRows(buildMockFullRowsFromRecipe(exampleRecipe))
+
+		actual, err := c.GetFullRecipe(ctx, exampleRecipe.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleRecipe, actual)
+
+		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
+	})
+
+	T.Run("with invalid recipe ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		actual, err := c.GetFullRecipe(ctx, 0)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipe := fakes.BuildFakeRecipe()
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
+
+		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
+		mockQueryBuilder.RecipeSQLQueryBuilder.On(
+			"BuildGetFullRecipeQuery",
+			testutils.ContextMatcher,
+			exampleRecipe.ID,
+		).Return(fakeQuery, fakeArgs)
+		c.sqlQueryBuilder = mockQueryBuilder
+
+		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
+			WithArgs(interfaceToDriverValue(fakeArgs)...).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.GetFullRecipe(ctx, exampleRecipe.ID)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
+	})
+
+	T.Run("with error scanning response from database", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipe := fakes.BuildFakeRecipe()
+
+		exampleRecipe.Steps = []*types.RecipeStep{
+			fakes.BuildFakeRecipeStep(),
+			fakes.BuildFakeRecipeStep(),
+			fakes.BuildFakeRecipeStep(),
+		}
+
+		for _, step := range exampleRecipe.Steps {
+			step.Ingredients = []*types.RecipeStepIngredient{
+				fakes.BuildFakeRecipeStepIngredient(),
+				fakes.BuildFakeRecipeStepIngredient(),
+				fakes.BuildFakeRecipeStepIngredient(),
+			}
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
+
+		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
+		mockQueryBuilder.RecipeSQLQueryBuilder.On(
+			"BuildGetFullRecipeQuery",
+			testutils.ContextMatcher,
+			exampleRecipe.ID,
+		).Return(fakeQuery, fakeArgs)
+		c.sqlQueryBuilder = mockQueryBuilder
+
+		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
+			WithArgs(interfaceToDriverValue(fakeArgs)...).
+			WillReturnRows(buildInvalidMockFullRowsFromRecipe(exampleRecipe))
+
+		actual, err := c.GetFullRecipe(ctx, exampleRecipe.ID)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
+	})
+
+	T.Run("with no results returned", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipe := fakes.BuildFakeRecipe()
+
+		exampleRecipe.Steps = []*types.RecipeStep{
+			fakes.BuildFakeRecipeStep(),
+			fakes.BuildFakeRecipeStep(),
+			fakes.BuildFakeRecipeStep(),
+		}
+
+		for _, step := range exampleRecipe.Steps {
+			step.Ingredients = []*types.RecipeStepIngredient{
+				fakes.BuildFakeRecipeStepIngredient(),
+				fakes.BuildFakeRecipeStepIngredient(),
+				fakes.BuildFakeRecipeStepIngredient(),
+			}
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
+
+		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
+		mockQueryBuilder.RecipeSQLQueryBuilder.On(
+			"BuildGetFullRecipeQuery",
+			testutils.ContextMatcher,
+			exampleRecipe.ID,
+		).Return(fakeQuery, fakeArgs)
+		c.sqlQueryBuilder = mockQueryBuilder
+
+		db.ExpectQuery(formatQueryForSQLMock(fakeQuery)).
+			WithArgs(interfaceToDriverValue(fakeArgs)...).
+			WillReturnRows(sqlmock.NewRows([]string{"things"}))
+
+		actual, err := c.GetFullRecipe(ctx, exampleRecipe.ID)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+		assert.True(t, errors.Is(err, sql.ErrNoRows))
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
 	})
@@ -1028,6 +1333,59 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		actual, err := c.CreateRecipe(ctx, exampleInput, exampleUser.ID)
 		assert.Error(t, err)
 		assert.True(t, errors.Is(err, expectedErr))
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)
+	})
+
+	T.Run("with error creating recipe step", func(t *testing.T) {
+		t.Parallel()
+
+		exampleUser := fakes.BuildFakeUser()
+		exampleRecipe := fakes.BuildFakeRecipe()
+		exampleRecipe.ExternalID = ""
+		exampleInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		mockQueryBuilder := database.BuildMockSQLQueryBuilder()
+
+		db.ExpectBegin()
+
+		fakeCreationQuery, fakeCreationArgs := fakes.BuildFakeSQLQuery()
+		mockQueryBuilder.RecipeSQLQueryBuilder.On(
+			"BuildCreateRecipeQuery",
+			testutils.ContextMatcher,
+			exampleInput,
+		).Return(fakeCreationQuery, fakeCreationArgs)
+
+		db.ExpectQuery(formatQueryForSQLMock(fakeCreationQuery)).
+			WithArgs(interfaceToDriverValue(fakeCreationArgs)...).
+			WillReturnRows(newDatabaseResultForID(exampleRecipe.ID))
+
+			// we aren't able to expect audit log entries by anything other than their event type, so
+			// if we put this in the loop, it will only actually ever expect the "last" one.
+		fakeRecipeStepCreationQuery, fakeRecipeStepCreationArgs := fakes.BuildFakeSQLQuery()
+		mockQueryBuilder.RecipeStepSQLQueryBuilder.On(
+			"BuildCreateRecipeStepQuery",
+			testutils.ContextMatcher,
+			exampleInput.Steps[0],
+		).Return(fakeRecipeStepCreationQuery, fakeRecipeStepCreationArgs)
+
+		db.ExpectQuery(formatQueryForSQLMock(fakeRecipeStepCreationQuery)).
+			WithArgs(interfaceToDriverValue(fakeRecipeStepCreationArgs)...).
+			WillReturnError(errors.New("blah"))
+
+		db.ExpectRollback()
+
+		c.timeFunc = func() uint64 {
+			return exampleRecipe.CreatedOn
+		}
+		c.sqlQueryBuilder = mockQueryBuilder
+
+		actual, err := c.CreateRecipe(ctx, exampleInput, exampleUser.ID)
+		assert.Error(t, err)
 		assert.Nil(t, actual)
 
 		mock.AssertExpectationsForObjects(t, db, mockQueryBuilder)

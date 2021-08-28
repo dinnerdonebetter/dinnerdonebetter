@@ -7,11 +7,10 @@ import (
 	"testing"
 	"time"
 
-	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
-
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/pkg/client/httpclient"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"

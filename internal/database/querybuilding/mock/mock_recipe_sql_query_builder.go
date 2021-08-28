@@ -23,6 +23,13 @@ func (m *RecipeSQLQueryBuilder) BuildRecipeExistsQuery(ctx context.Context, reci
 	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
 }
 
+// BuildGetFullRecipeQuery implements our interface.
+func (m *RecipeSQLQueryBuilder) BuildGetFullRecipeQuery(ctx context.Context, recipeID uint64) (query string, args []interface{}) {
+	returnArgs := m.Called(ctx, recipeID)
+
+	return returnArgs.String(0), returnArgs.Get(1).([]interface{})
+}
+
 // BuildGetRecipeQuery implements our interface.
 func (m *RecipeSQLQueryBuilder) BuildGetRecipeQuery(ctx context.Context, recipeID uint64) (query string, args []interface{}) {
 	returnArgs := m.Called(ctx, recipeID)

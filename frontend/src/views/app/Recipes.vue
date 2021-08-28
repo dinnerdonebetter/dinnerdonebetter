@@ -38,7 +38,7 @@
     </div>
     <div class="min-h-screen py-6 px-10">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 md:gap-x-10 xl-grid-cols-4 gap-y-10 gap-x-6">
-        <div class="container mx-auto shadow-lg rounded-lg max-w-md hover:shadow-2xl transition duration-300" v-for="recipe in recipes">
+        <div class="container mx-auto shadow-lg rounded-lg max-w-md hover:shadow-2xl transition duration-300" v-for="recipe in recipes" @click="navigateToRecipe(recipe.id)">
           <img v-if="recipe.displayImageURL !== ''" :src="recipe.displayImageURL" alt="" class="rounded-t-lg w-full">
           <div class="p-6">
             <h1 class="md:text-1xl text-xl hover:text-indigo-600 transition duration-200 font-bold text-gray-900">{{ recipe.name }}</h1>
@@ -53,46 +53,30 @@
 <script lang="ts">
 import { defineComponent} from "vue";
 
-import {Recipe} from "../../models";
-
-const lasagnaRecipe: Recipe = new Recipe();
-lasagnaRecipe.name = "Lasagna Strabiliante";
-lasagnaRecipe.displayImageURL = "https://thestayathomechef.com/wp-content/uploads/2017/08/Most-Amazing-Lasagna-2-e1574792735811.jpg";
-
-const babaGanoushRecipe: Recipe = new Recipe();
-babaGanoushRecipe.name = "Baba Ganoush";
-babaGanoushRecipe.displayImageURL = "https://healthyfitnessmeals.com/wp-content/uploads/2020/12/Homemade-baba-ganoush-5.jpg";
-
-const hareALaRoyaleRecipe: Recipe = new Recipe();
-hareALaRoyaleRecipe.name = "Hare a la Royale";
-hareALaRoyaleRecipe.displayImageURL = "https://static01.nyt.com/images/2016/12/07/dining/07BURNER-DUCK/07BURNER-DUCK-superJumbo.jpg";
-
-const rasElHanoutChickenRecipe: Recipe = new Recipe();
-rasElHanoutChickenRecipe.name = "Ras el Hanout Chicken";
-rasElHanoutChickenRecipe.displayImageURL = "https://img.delicious.com.au/BXooNiDP/del/2016/02/ras-el-hanout-yoghurt-and-lime-grilled-chicken-27350-1.jpg";
-
-const tacosAlPastorRecipe: Recipe = new Recipe();
-tacosAlPastorRecipe.name = "Tacos al Pastor";
-tacosAlPastorRecipe.displayImageURL = "https://www.comedera.com/wp-content/uploads/2017/08/tacos-al-pastor-receta.jpg";
-
-const chuCheeCurryChickenRecipe: Recipe = new Recipe();
-chuCheeCurryChickenRecipe.name = "Chu Chee Curry Chicken";
-chuCheeCurryChickenRecipe.displayImageURL = "https://www.wandercooks.com/wp-content/uploads/2020/06/choo-chee-chicken-curry-ft-1.jpg";
+import {backendRoutes} from "../../constants";
+import axios, {AxiosError, AxiosResponse} from "axios";
+import {Recipe, RecipeList} from "../../models";
 
 export default defineComponent({
   data() {
     return {
-      recipes: [
-        lasagnaRecipe,
-        babaGanoushRecipe,
-        hareALaRoyaleRecipe,
-        rasElHanoutChickenRecipe,
-        tacosAlPastorRecipe,
-        chuCheeCurryChickenRecipe,
-      ]
+      recipes: new Array<Recipe>(),
     }
   },
+  beforeMount: function () {
+    axios.get(backendRoutes.RECIPES)
+      .then((res: AxiosResponse<RecipeList>) => {
+        this.recipes = res.data.recipes;
+        console.dir(this.recipes);
+      })
+      .catch((err: AxiosError) => {
+        console.error(err);
+      });
+  },
   methods: {
+    navigateToRecipe(id: number): void {
+      this.$router.push(`/recipes/${id}`);
+    },
   },
 });
 </script>

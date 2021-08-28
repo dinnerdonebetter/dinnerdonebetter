@@ -254,8 +254,6 @@ func (q *SQLQuerier) performWriteQuery(ctx context.Context, querier database.Que
 			return 0, observability.PrepareError(err, logger, span, "executing %s query", queryDescription)
 		}
 
-		logger.Debug("query executed successfully")
-
 		return id, nil
 	}
 
@@ -278,8 +276,6 @@ func (q *SQLQuerier) performWriteQuery(ctx context.Context, querier database.Que
 
 		return 0, sql.ErrNoRows
 	}
-
-	logger.Debug("query executed successfully")
 
 	return 0, nil
 }

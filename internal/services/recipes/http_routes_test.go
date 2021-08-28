@@ -169,13 +169,16 @@ func TestRecipesService_ReadHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
+		helper.service.recipeIDFetcher = func(*http.Request) uint64 {
+			return helper.exampleFullRecipe.ID
+		}
 
 		recipeDataManager := &mocktypes.RecipeDataManager{}
 		recipeDataManager.On(
-			"GetRecipe",
+			"GetFullRecipe",
 			testutils.ContextMatcher,
-			helper.exampleRecipe.ID,
-		).Return(helper.exampleRecipe, nil)
+			helper.exampleFullRecipe.ID,
+		).Return(helper.exampleFullRecipe, nil)
 		helper.service.recipeDataManager = recipeDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -183,7 +186,7 @@ func TestRecipesService_ReadHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.Recipe{}),
+			mock.IsType(&types.FullRecipe{}),
 		)
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -222,13 +225,16 @@ func TestRecipesService_ReadHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
+		helper.service.recipeIDFetcher = func(*http.Request) uint64 {
+			return helper.exampleFullRecipe.ID
+		}
 
 		recipeDataManager := &mocktypes.RecipeDataManager{}
 		recipeDataManager.On(
-			"GetRecipe",
+			"GetFullRecipe",
 			testutils.ContextMatcher,
-			helper.exampleRecipe.ID,
-		).Return((*types.Recipe)(nil), sql.ErrNoRows)
+			helper.exampleFullRecipe.ID,
+		).Return((*types.FullRecipe)(nil), sql.ErrNoRows)
 		helper.service.recipeDataManager = recipeDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -250,13 +256,16 @@ func TestRecipesService_ReadHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
+		helper.service.recipeIDFetcher = func(*http.Request) uint64 {
+			return helper.exampleFullRecipe.ID
+		}
 
 		recipeDataManager := &mocktypes.RecipeDataManager{}
 		recipeDataManager.On(
-			"GetRecipe",
+			"GetFullRecipe",
 			testutils.ContextMatcher,
-			helper.exampleRecipe.ID,
-		).Return((*types.Recipe)(nil), errors.New("blah"))
+			helper.exampleFullRecipe.ID,
+		).Return((*types.FullRecipe)(nil), errors.New("blah"))
 		helper.service.recipeDataManager = recipeDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()

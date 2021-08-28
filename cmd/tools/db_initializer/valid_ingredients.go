@@ -25,7 +25,7 @@ var (
 			IconPath:          "",
 		},
 		{
-			Name:              "coffee",
+			Name:              "coffee beans",
 			Variant:           "medium roast",
 			Description:       "",
 			Warning:           "",

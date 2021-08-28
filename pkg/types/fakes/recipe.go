@@ -22,6 +22,25 @@ func BuildFakeRecipe() *types.Recipe {
 	}
 }
 
+// BuildFakeFullRecipe builds a faked recipe.
+func BuildFakeFullRecipe() *types.FullRecipe {
+	return &types.FullRecipe{
+		ID:                 uint64(fake.Uint32()),
+		ExternalID:         fake.UUID(),
+		Name:               fake.Word(),
+		Source:             fake.Word(),
+		Description:        fake.Word(),
+		InspiredByRecipeID: func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
+		CreatedOn:          uint64(uint32(fake.Date().Unix())),
+		BelongsToHousehold: fake.Uint64(),
+		Steps: []*types.FullRecipeStep{
+			BuildFakeFullRecipeStep(),
+			BuildFakeFullRecipeStep(),
+			BuildFakeFullRecipeStep(),
+		},
+	}
+}
+
 // BuildFakeRecipeList builds a faked RecipeList.
 func BuildFakeRecipeList() *types.RecipeList {
 	var examples []*types.Recipe

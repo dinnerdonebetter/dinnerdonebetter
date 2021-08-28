@@ -22,8 +22,9 @@ func TestRecipes(t *testing.T) {
 type recipesBaseSuite struct {
 	suite.Suite
 
-	ctx           context.Context
-	exampleRecipe *types.Recipe
+	ctx               context.Context
+	exampleRecipe     *types.Recipe
+	exampleFullRecipe *types.FullRecipe
 }
 
 var _ suite.SetupTestSuite = (*recipesBaseSuite)(nil)
@@ -31,6 +32,7 @@ var _ suite.SetupTestSuite = (*recipesBaseSuite)(nil)
 func (s *recipesBaseSuite) SetupTest() {
 	s.ctx = context.Background()
 	s.exampleRecipe = fakes.BuildFakeRecipe()
+	s.exampleFullRecipe = fakes.BuildFakeFullRecipe()
 }
 
 type recipesTestSuite struct {
@@ -91,13 +93,13 @@ func (s *recipesTestSuite) TestClient_GetRecipe() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleRecipe.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipe)
-		actual, err := c.GetRecipe(s.ctx, s.exampleRecipe.ID)
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleFullRecipe.ID)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleFullRecipe)
+		actual, err := c.GetRecipe(s.ctx, s.exampleFullRecipe.ID)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, s.exampleRecipe, actual)
+		assert.Equal(t, s.exampleFullRecipe, actual)
 	})
 
 	s.Run("with invalid recipe ID", func() {
@@ -114,7 +116,7 @@ func (s *recipesTestSuite) TestClient_GetRecipe() {
 		t := s.T()
 
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.GetRecipe(s.ctx, s.exampleRecipe.ID)
+		actual, err := c.GetRecipe(s.ctx, s.exampleFullRecipe.ID)
 
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -123,9 +125,9 @@ func (s *recipesTestSuite) TestClient_GetRecipe() {
 	s.Run("with error executing request", func() {
 		t := s.T()
 
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleRecipe.ID)
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleFullRecipe.ID)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		actual, err := c.GetRecipe(s.ctx, s.exampleRecipe.ID)
+		actual, err := c.GetRecipe(s.ctx, s.exampleFullRecipe.ID)
 
 		assert.Nil(t, actual)
 		assert.Error(t, err)

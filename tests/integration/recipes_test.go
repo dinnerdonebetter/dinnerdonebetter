@@ -20,7 +20,39 @@ func checkRecipeEquality(t *testing.T, expected, actual *types.Recipe) {
 	assert.Equal(t, expected.Source, actual.Source, "expected Source for recipe #%d to be %v, but it was %v ", expected.ID, expected.Source, actual.Source)
 	assert.Equal(t, expected.Description, actual.Description, "expected Description for recipe #%d to be %v, but it was %v ", expected.ID, expected.Description, actual.Description)
 	assert.Equal(t, expected.InspiredByRecipeID, actual.InspiredByRecipeID, "expected InspiredByRecipeID for recipe #%d to be %v, but it was %v ", expected.ID, expected.InspiredByRecipeID, actual.InspiredByRecipeID)
+
+	require.Equal(t, len(expected.Steps), len(actual.Steps))
+	for i := range expected.Steps {
+		checkRecipeStepEquality(t, expected.Steps[i], actual.Steps[i])
+	}
+
 	assert.NotZero(t, actual.CreatedOn)
+}
+
+func up(u uint64) *uint64 {
+	return &u
+}
+
+func fullRecipeToRecipe(s *types.FullRecipe) *types.Recipe {
+	steps := []*types.RecipeStep{}
+	for _, i := range s.Steps {
+		steps = append(steps, fullRecipeStepToRecipeStep(i))
+	}
+
+	return &types.Recipe{
+		LastUpdatedOn:      s.LastUpdatedOn,
+		ArchivedOn:         s.ArchivedOn,
+		InspiredByRecipeID: s.InspiredByRecipeID,
+		Source:             s.Source,
+		Description:        s.Description,
+		ExternalID:         s.ExternalID,
+		DisplayImageURL:    s.DisplayImageURL,
+		Name:               s.Name,
+		Steps:              steps,
+		ID:                 s.ID,
+		CreatedOn:          s.CreatedOn,
+		BelongsToHousehold: s.BelongsToHousehold,
+	}
 }
 
 func (s *TestSuite) TestRecipes_Creating() {
@@ -63,13 +95,37 @@ func (s *TestSuite) TestRecipes_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			// create valid preparation
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+
+			// create valid ingredients
+			var created []*types.ValidIngredient
+			for i := 0; i < 5; i++ {
+				exampleValidIngredient := fakes.BuildFakeValidIngredient()
+				exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
+
+				createdValidIngredient, validIngredientCreationErr := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
+				requireNotNilAndNoProblems(t, createdValidIngredient, validIngredientCreationErr)
+
+				created = append(created, createdValidIngredient)
+			}
+
 			// create recipes
 			var expected []*types.Recipe
 			for i := 0; i < 5; i++ {
 				exampleRecipe := fakes.BuildFakeRecipe()
-				exampleRecipe.Steps = []*types.RecipeStep{}
-				exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
 
+				for j := range exampleRecipe.Steps {
+					exampleRecipe.Steps[j].PreparationID = createdValidPreparation.ID
+					for k := range exampleRecipe.Steps[j].Ingredients {
+						exampleRecipe.Steps[j].Ingredients[k].IngredientID = up(created[k].ID)
+					}
+				}
+
+				exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
 				createdRecipe, recipeCreationErr := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 				requireNotNilAndNoProblems(t, createdRecipe, recipeCreationErr)
 
@@ -158,10 +214,95 @@ func (s *TestSuite) TestRecipes_Reading() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			// create valid preparation
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+
+			// create valid ingredients
+			var createdIngredients []*types.ValidIngredient
+			for i := 0; i < 5; i++ {
+				exampleValidIngredient := fakes.BuildFakeValidIngredient()
+				exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
+
+				createdValidIngredient, validIngredientCreationErr := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
+				requireNotNilAndNoProblems(t, createdValidIngredient, validIngredientCreationErr)
+
+				createdIngredients = append(createdIngredients, createdValidIngredient)
+			}
+
 			// create recipe
-			exampleRecipe := fakes.BuildFakeRecipe()
-			exampleRecipe.Steps = []*types.RecipeStep{}
-			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
+			exampleRecipeInput := &types.RecipeCreationInput{
+				Name:        t.Name(),
+				Description: t.Name(),
+				Steps: []*types.RecipeStepCreationInput{
+					{
+						Why:           t.Name(),
+						PreparationID: createdValidPreparation.ID,
+						Ingredients: []*types.RecipeStepIngredientCreationInput{
+							{
+								IngredientID:  up(createdIngredients[0].ID),
+								QuantityType:  "grams",
+								QuantityValue: 123,
+							},
+							{
+								IngredientID:  up(createdIngredients[1].ID),
+								QuantityType:  "grams",
+								QuantityValue: 123,
+							},
+							{
+								IngredientID:  up(createdIngredients[2].ID),
+								QuantityType:  "grams",
+								QuantityValue: 123,
+							},
+						},
+					},
+					{
+						Why:           t.Name(),
+						PreparationID: createdValidPreparation.ID,
+						Ingredients: []*types.RecipeStepIngredientCreationInput{
+							{
+								IngredientID:  up(createdIngredients[0].ID),
+								QuantityType:  "grams",
+								QuantityValue: 123,
+							},
+							{
+								IngredientID:  up(createdIngredients[1].ID),
+								QuantityType:  "grams",
+								QuantityValue: 123,
+							},
+							{
+								IngredientID:  up(createdIngredients[2].ID),
+								QuantityType:  "grams",
+								QuantityValue: 123,
+							},
+						},
+					},
+					{
+						Why:           t.Name(),
+						PreparationID: createdValidPreparation.ID,
+						Ingredients: []*types.RecipeStepIngredientCreationInput{
+							{
+								IngredientID:  up(createdIngredients[0].ID),
+								QuantityType:  "grams",
+								QuantityValue: 123,
+							},
+							{
+								IngredientID:  up(createdIngredients[1].ID),
+								QuantityType:  "grams",
+								QuantityValue: 123,
+							},
+							{
+								IngredientID:  up(createdIngredients[2].ID),
+								QuantityType:  "grams",
+								QuantityValue: 123,
+							},
+						},
+					},
+				},
+			}
+
 			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			requireNotNilAndNoProblems(t, createdRecipe, err)
 
@@ -170,8 +311,18 @@ func (s *TestSuite) TestRecipes_Reading() {
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert recipe equality
-			checkRecipeEquality(t, exampleRecipe, actual)
-
+			assert.Equal(t, exampleRecipeInput.Name, actual.Name)
+			assert.Equal(t, exampleRecipeInput.Description, actual.Description)
+			assert.Equal(t, len(exampleRecipeInput.Steps), len(actual.Steps))
+			for i, step := range actual.Steps {
+				assert.Equal(t, exampleRecipeInput.Steps[i].Why, step.Why)
+				assert.Equal(t, exampleRecipeInput.Steps[i].PreparationID, step.Preparation.ID)
+				for j, ingredient := range step.Ingredients {
+					assert.Equal(t, *exampleRecipeInput.Steps[i].Ingredients[j].IngredientID, ingredient.Ingredient.ID)
+					assert.Equal(t, exampleRecipeInput.Steps[i].Ingredients[j].QuantityType, ingredient.QuantityType)
+					assert.Equal(t, exampleRecipeInput.Steps[i].Ingredients[j].QuantityValue, ingredient.QuantityValue)
+				}
+			}
 			// clean up recipe
 			assert.NoError(t, testClients.main.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
@@ -195,16 +346,6 @@ func (s *TestSuite) TestRecipes_Updating_Returns404ForNonexistentRecipe() {
 	})
 }
 
-// convertRecipeToRecipeUpdateInput creates an RecipeUpdateInput struct from a recipe.
-func convertRecipeToRecipeUpdateInput(x *types.Recipe) *types.RecipeUpdateInput {
-	return &types.RecipeUpdateInput{
-		Name:               x.Name,
-		Source:             x.Source,
-		Description:        x.Description,
-		InspiredByRecipeID: x.InspiredByRecipeID,
-	}
-}
-
 func (s *TestSuite) TestRecipes_Updating() {
 	s.runForEachClientExcept("it should be possible to update a recipe", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -213,15 +354,47 @@ func (s *TestSuite) TestRecipes_Updating() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			// create valid preparation
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+
+			// create valid ingredients
+			var createdIngredients []*types.ValidIngredient
+			for i := 0; i < 5; i++ {
+				exampleValidIngredient := fakes.BuildFakeValidIngredient()
+				exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
+
+				createdValidIngredient, validIngredientCreationErr := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
+				requireNotNilAndNoProblems(t, createdValidIngredient, validIngredientCreationErr)
+
+				createdIngredients = append(createdIngredients, createdValidIngredient)
+			}
+
 			// create recipe
 			exampleRecipe := fakes.BuildFakeRecipe()
-			exampleRecipe.Steps = []*types.RecipeStep{}
+
+			for i := range exampleRecipe.Steps {
+				exampleRecipe.Steps[i].PreparationID = createdValidPreparation.ID
+				for j := range exampleRecipe.Steps[i].Ingredients {
+					exampleRecipe.Steps[i].Ingredients[j].IngredientID = up(createdIngredients[i].ID)
+				}
+			}
+
 			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
 			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			requireNotNilAndNoProblems(t, createdRecipe, err)
 
+			exampleRecipe.Description = t.Name()
+
 			// change recipe
-			createdRecipe.Update(convertRecipeToRecipeUpdateInput(exampleRecipe))
+			createdRecipe.Update(&types.RecipeUpdateInput{
+				Name:               exampleRecipe.Name,
+				Source:             exampleRecipe.Source,
+				Description:        exampleRecipe.Description,
+				InspiredByRecipeID: exampleRecipe.InspiredByRecipeID,
+			})
 			assert.NoError(t, testClients.main.UpdateRecipe(ctx, createdRecipe))
 
 			// retrieve changed recipe
@@ -229,7 +402,7 @@ func (s *TestSuite) TestRecipes_Updating() {
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert recipe equality
-			checkRecipeEquality(t, exampleRecipe, actual)
+			checkRecipeEquality(t, exampleRecipe, fullRecipeToRecipe(actual))
 			assert.NotNil(t, actual.LastUpdatedOn)
 
 			auditLogEntries, err := testClients.admin.GetAuditLogForRecipe(ctx, createdRecipe.ID)
@@ -268,9 +441,34 @@ func (s *TestSuite) TestRecipes_Archiving() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			// create valid preparation
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+
+			// create valid ingredients
+			var created []*types.ValidIngredient
+			for i := 0; i < 5; i++ {
+				exampleValidIngredient := fakes.BuildFakeValidIngredient()
+				exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
+
+				createdValidIngredient, validIngredientCreationErr := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
+				requireNotNilAndNoProblems(t, createdValidIngredient, validIngredientCreationErr)
+
+				created = append(created, createdValidIngredient)
+			}
+
 			// create recipe
 			exampleRecipe := fakes.BuildFakeRecipe()
-			exampleRecipe.Steps = []*types.RecipeStep{}
+
+			for i := range exampleRecipe.Steps {
+				exampleRecipe.Steps[i].PreparationID = createdValidPreparation.ID
+				for j := range exampleRecipe.Steps[i].Ingredients {
+					exampleRecipe.Steps[i].Ingredients[j].IngredientID = up(created[i].ID)
+				}
+			}
+
 			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
 			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			requireNotNilAndNoProblems(t, createdRecipe, err)

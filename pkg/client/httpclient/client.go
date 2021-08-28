@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"path"
 	"time"
@@ -17,8 +16,6 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/panicking"
 	"gitlab.com/prixfixe/prixfixe/pkg/client/httpclient/requests"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
-	"github.com/moul/http2curl"
 )
 
 const (
@@ -227,19 +224,10 @@ func (c *Client) fetchResponseToRequest(ctx context.Context, client *http.Client
 
 	logger := c.logger.WithRequest(req)
 
-	if command, err := http2curl.GetCurlCommand(req); err == nil && c.debug {
-		logger = c.logger.WithValue("curl", command.String())
-	}
-
 	// this should be the only use of .Do in this package
 	res, err := client.Do(req.WithContext(ctx))
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "executing request")
-	}
-
-	var bdump []byte
-	if bdump, err = httputil.DumpResponse(res, true); err == nil {
-		logger = logger.WithValue("response_body", string(bdump))
 	}
 
 	logger.WithValue(keys.ResponseStatusKey, res.StatusCode).Debug("request executed")
@@ -259,8 +247,6 @@ func (c *Client) executeAndUnmarshal(ctx context.Context, req *http.Request, htt
 	if err != nil {
 		return observability.PrepareError(err, logger, span, "executing request")
 	}
-
-	logger.WithValue(keys.ResponseStatusKey, res.StatusCode).Debug("request executed")
 
 	if err = errorFromResponse(res); err != nil {
 		return observability.PrepareError(err, logger, span, "executing request")

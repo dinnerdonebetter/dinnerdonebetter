@@ -96,12 +96,18 @@ func main() {
 	wg.Add(1)
 	go func() {
 		for _, ingredient := range validIngredients {
-			if _, instrumentCreationErr := client.CreateValidIngredient(ctx, ingredient); instrumentCreationErr != nil {
-				logger.Error(instrumentCreationErr, "creating valid ingredient")
+			if _, ingredientCreationErr := client.CreateValidIngredient(ctx, ingredient); ingredientCreationErr != nil {
+				logger.Error(ingredientCreationErr, "creating valid ingredient")
 			}
 		}
 		wg.Done()
 	}()
 
 	wg.Wait()
+
+	for _, recipe := range recipes {
+		if _, recipeCreationErr := client.CreateRecipe(ctx, recipe); recipeCreationErr != nil {
+			logger.Error(recipeCreationErr, "creating valid recipe")
+		}
+	}
 }

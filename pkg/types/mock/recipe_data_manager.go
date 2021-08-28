@@ -27,6 +27,12 @@ func (m *RecipeDataManager) GetRecipe(ctx context.Context, recipeID uint64) (*ty
 	return args.Get(0).(*types.Recipe), args.Error(1)
 }
 
+// GetFullRecipe is a mock function.
+func (m *RecipeDataManager) GetFullRecipe(ctx context.Context, recipeID uint64) (*types.FullRecipe, error) {
+	args := m.Called(ctx, recipeID)
+	return args.Get(0).(*types.FullRecipe), args.Error(1)
+}
+
 // GetAllRecipesCount is a mock function.
 func (m *RecipeDataManager) GetAllRecipesCount(ctx context.Context) (uint64, error) {
 	args := m.Called(ctx)
