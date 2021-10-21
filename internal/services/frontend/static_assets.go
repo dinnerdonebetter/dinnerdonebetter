@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	"github.com/spf13/afero"
@@ -17,22 +16,10 @@ func (s *service) buildStaticFileServer() *afero.HttpFs {
 }
 
 var (
-	// Here is where you should put route regexes that need to be ignored by the static file server.
-	// For instance, if you allow someone to see an event in the frontend via a URL that contains dynamic.
-	// information, such as `/event/123`, you would want to put something like this below:
-	// 		eventsFrontendPathRegex = regexp.MustCompile(`/event/\d+`)
-
-	// validIngredientAdminPathRegex matches URLs against our frontend router's specification for specific valid ingredient routes.
-	validIngredientAdminPathRegex = regexp.MustCompile(`/admin/valid_ingredients/\d+`)
-
-	// validInstrumentAdminPathRegex matches URLs against our frontend router's specification for specific valid instrument routes.
-	validInstrumentAdminPathRegex = regexp.MustCompile(`/admin/valid_instruments/\d+`)
-
-	// validPreparationAdminPathRegex matches URLs against our frontend router's specification for specific valid preparation routes.
-	validPreparationAdminPathRegex = regexp.MustCompile(`/admin/valid_preparations/\d+`)
-
-	// recipeAppPathRegex matches URLs against our frontend router's specification for specific recipe routes.
-	recipeAppPathRegex = regexp.MustCompile(`/recipes/\d+`)
+// Here is where you should put route regexes that need to be ignored by the static file server.
+// For instance, if you allow someone to see an event in the frontend via a URL that contains dynamic.
+// information, such as `/event/123`, you would want to put something like this below:
+// 		eventsFrontendPathRegex = regexp.MustCompile(`/event/\d+`)
 )
 
 // StaticDir builds a static directory handler.
@@ -80,28 +67,9 @@ func (s *service) StaticDir(staticFilesDirectory string) (http.HandlerFunc, erro
 			"/admin/valid_instruments/new",
 			"/admin/valid_preparations",
 			"/admin/valid_preparations/new",
-			"/admin/recipes":
+			"/admin/recipes",
+			"/":
 			logger.Debug("rerouting")
-			req.URL.Path = "/"
-		}
-
-		if validIngredientAdminPathRegex.MatchString(req.URL.Path) {
-			logger.Debug("rerouting admin valid ingredient request")
-			req.URL.Path = "/"
-		}
-
-		if validInstrumentAdminPathRegex.MatchString(req.URL.Path) {
-			logger.Debug("rerouting admin valid instrument request")
-			req.URL.Path = "/"
-		}
-
-		if validPreparationAdminPathRegex.MatchString(req.URL.Path) {
-			logger.Debug("rerouting admin valid preparation request")
-			req.URL.Path = "/"
-		}
-
-		if recipeAppPathRegex.MatchString(req.URL.Path) {
-			logger.Debug("rerouting app individual recipe request")
 			req.URL.Path = "/"
 		}
 

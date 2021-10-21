@@ -1,13 +1,12 @@
 package validinstruments
 
 import (
-	"context"
 	"database/sql"
 	"errors"
 	"net/http"
 	"strings"
 
-	"gitlab.com/prixfixe/prixfixe/internal/database"
+	"github.com/segmentio/ksuid"
 
 	observability "gitlab.com/prixfixe/prixfixe/internal/observability"
 	keys "gitlab.com/prixfixe/prixfixe/internal/observability/keys"
@@ -50,43 +49,40 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// check session context data for parsed input struct.
-	input := new(types.ValidInstrumentCreationInput)
-	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
+	providedInput := new(types.ValidInstrumentCreationRequestInput)
+	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
 		return
 	}
 
-	if err = input.ValidateWithContext(ctx); err != nil {
-		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
+	if err = providedInput.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
 	}
 
+	input := types.ValidInstrumentDatabaseCreationInputFromValidInstrumentCreationInput(providedInput)
+	input.ID = ksuid.New().String()
+
+	tracing.AttachValidInstrumentIDToSpan(span, input.ID)
+
 	// create valid instrument in database.
-	validInstrument, err := s.validInstrumentDataManager.CreateValidInstrument(ctx, input, sessionCtxData.Requester.UserID)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating valid instrument")
-
-		if errors.Is(err, database.ErrUniqueConstraintViolation) {
-			s.encoderDecoder.EncodeRejectedDuplicateResponse(ctx, res)
-		} else {
-			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		}
-
+	preWrite := &types.PreWriteMessage{
+		DataType:                types.ValidInstrumentDataType,
+		ValidInstrument:         input,
+		AttributableToUserID:    sessionCtxData.Requester.UserID,
+		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+	}
+	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing valid instrument write message")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	tracing.AttachValidInstrumentIDToSpan(span, validInstrument.ID)
-	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrument.ID)
+	pwr := types.PreWriteResponse{ID: input.ID}
 
-	// notify interested parties.
-	if searchIndexErr := s.search.Index(ctx, validInstrument.ID, validInstrument); searchIndexErr != nil {
-		observability.AcknowledgeError(err, logger, span, "adding valid instrument to search index")
-	}
-	s.validInstrumentCounter.Increment(ctx)
-
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validInstrument, http.StatusCreated)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusAccepted)
 }
 
 // ReadHandler returns a GET handler that returns a valid instrument.
@@ -128,41 +124,6 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, x)
 }
 
-// ExistenceHandler returns a HEAD handler that returns 200 if a valid instrument exists, 404 otherwise.
-func (s *service) ExistenceHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-	tracing.AttachRequestToSpan(span, req)
-
-	// determine user ID.
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		s.logger.Error(err, "retrieving session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
-		return
-	}
-
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = sessionCtxData.AttachToLogger(logger)
-
-	// determine valid instrument ID.
-	validInstrumentID := s.validInstrumentIDFetcher(req)
-	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
-	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
-
-	// check the database.
-	exists, err := s.validInstrumentDataManager.ValidInstrumentExists(ctx, validInstrumentID)
-	if !errors.Is(err, sql.ErrNoRows) {
-		observability.AcknowledgeError(err, logger, span, "checking valid instrument existence")
-	}
-
-	if !exists || errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
-	}
-}
-
 // ListHandler is our list route.
 func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
@@ -202,23 +163,6 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, validInstruments)
 }
 
-// SearchForValidInstruments handles searching for and retrieving ValidInstruments.
-func (s *service) SearchForValidInstruments(ctx context.Context, sessionCtxData *types.SessionContextData, query string, filter *types.QueryFilter) ([]*types.ValidInstrument, error) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger.WithValue(keys.SearchQueryKey, query)
-	tracing.AttachSearchQueryToSpan(span, query)
-
-	relevantIDs, err := s.search.Search(ctx, query, sessionCtxData.ActiveHouseholdID)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing valid ingredient search query")
-	}
-
-	// fetch valid ingredients from database.
-	return s.validInstrumentDataManager.GetValidInstrumentsWithIDs(ctx, filter.Limit, relevantIDs)
-}
-
 // SearchHandler is our search route.
 func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
@@ -238,7 +182,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
-		s.logger.Error(err, "retrieving session context data")
+		logger.Error(err, "retrieving session context data")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
 		return
 	}
@@ -246,8 +190,15 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
+	relevantIDs, err := s.search.Search(ctx, query, sessionCtxData.ActiveAccountID)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "executing valid instrument search query")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
 	// fetch valid instruments from database.
-	validInstruments, err := s.SearchForValidInstruments(ctx, sessionCtxData, query, filter)
+	validInstruments, err := s.validInstrumentDataManager.GetValidInstrumentsWithIDs(ctx, filter.Limit, relevantIDs)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		validInstruments = []*types.ValidInstrument{}
@@ -281,7 +232,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// check for parsed input attached to session context data.
-	input := new(types.ValidInstrumentUpdateInput)
+	input := new(types.ValidInstrumentUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		logger.Error(err, "error encountered decoding request body")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
@@ -311,19 +262,18 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// update the valid instrument.
-	changeReport := validInstrument.Update(input)
-	tracing.AttachChangeSummarySpan(span, "valid_instrument", changeReport)
+	validInstrument.Update(input)
 
-	// update valid instrument in database.
-	if err = s.validInstrumentDataManager.UpdateValidInstrument(ctx, validInstrument, sessionCtxData.Requester.UserID, changeReport); err != nil {
-		observability.AcknowledgeError(err, logger, span, "updating valid instrument")
+	pum := &types.PreUpdateMessage{
+		DataType:                types.ValidInstrumentDataType,
+		ValidInstrument:         validInstrument,
+		AttributableToUserID:    sessionCtxData.Requester.UserID,
+		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+	}
+	if err = s.preUpdatesPublisher.Publish(ctx, pum); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing valid instrument update message")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
-	}
-
-	// notify interested parties.
-	if searchIndexErr := s.search.Index(ctx, validInstrument.ID, validInstrument); searchIndexErr != nil {
-		observability.AcknowledgeError(err, logger, span, "updating valid instrument in search index")
 	}
 
 	// encode our response and peace.
@@ -354,62 +304,28 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
 
-	// archive the valid instrument in the database.
-	err = s.validInstrumentDataManager.ArchiveValidInstrument(ctx, validInstrumentID, sessionCtxData.Requester.UserID)
-	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
-		return
-	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "archiving valid instrument")
+	exists, existenceCheckErr := s.validInstrumentDataManager.ValidInstrumentExists(ctx, validInstrumentID)
+	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
+		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking valid instrument existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	}
 
-	// notify interested parties.
-	s.validInstrumentCounter.Decrement(ctx)
-
-	if indexDeleteErr := s.search.Delete(ctx, validInstrumentID); indexDeleteErr != nil {
-		observability.AcknowledgeError(err, logger, span, "removing from search index")
+	pam := &types.PreArchiveMessage{
+		DataType:                types.ValidInstrumentDataType,
+		ValidInstrumentID:       validInstrumentID,
+		AttributableToUserID:    sessionCtxData.Requester.UserID,
+		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+	}
+	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing valid instrument archive message")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
 	}
 
 	// encode our response and peace.
 	res.WriteHeader(http.StatusNoContent)
-}
-
-// AuditEntryHandler returns a GET handler that returns all audit log entries related to a valid instrument.
-func (s *service) AuditEntryHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-	tracing.AttachRequestToSpan(span, req)
-
-	// determine user ID.
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
-		return
-	}
-
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = sessionCtxData.AttachToLogger(logger)
-
-	// determine valid instrument ID.
-	validInstrumentID := s.validInstrumentIDFetcher(req)
-	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
-	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
-
-	x, err := s.validInstrumentDataManager.GetAuditLogEntriesForValidInstrument(ctx, validInstrumentID)
-	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
-		return
-	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving audit log entries for valid instrument")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
-	}
-
-	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
 }

@@ -3,7 +3,6 @@ package requests
 import (
 	"context"
 	"net/http"
-	"strconv"
 
 	observability "gitlab.com/prixfixe/prixfixe/internal/observability"
 	keys "gitlab.com/prixfixe/prixfixe/internal/observability/keys"
@@ -15,57 +14,20 @@ const (
 	recipeStepsBasePath = "recipe_steps"
 )
 
-// BuildRecipeStepExistsRequest builds an HTTP request for checking the existence of a recipe step.
-func (b *Builder) BuildRecipeStepExistsRequest(ctx context.Context, recipeID, recipeStepID uint64) (*http.Request, error) {
-	ctx, span := b.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := b.logger
-
-	if recipeID == 0 {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
-
-	if recipeStepID == 0 {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
-
-	uri := b.BuildURL(
-		ctx,
-		nil,
-		recipesBasePath,
-		id(recipeID),
-		recipeStepsBasePath,
-		id(recipeStepID),
-	)
-	tracing.AttachRequestURIToSpan(span, uri)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodHead, uri, nil)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
-	}
-
-	return req, nil
-}
-
 // BuildGetRecipeStepRequest builds an HTTP request for fetching a recipe step.
-func (b *Builder) BuildGetRecipeStepRequest(ctx context.Context, recipeID, recipeStepID uint64) (*http.Request, error) {
+func (b *Builder) BuildGetRecipeStepRequest(ctx context.Context, recipeID, recipeStepID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := b.logger
 
-	if recipeID == 0 {
+	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	if recipeStepID == 0 {
+	if recipeStepID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
@@ -75,9 +37,9 @@ func (b *Builder) BuildGetRecipeStepRequest(ctx context.Context, recipeID, recip
 		ctx,
 		nil,
 		recipesBasePath,
-		id(recipeID),
+		recipeID,
 		recipeStepsBasePath,
-		id(recipeStepID),
+		recipeStepID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
@@ -90,13 +52,13 @@ func (b *Builder) BuildGetRecipeStepRequest(ctx context.Context, recipeID, recip
 }
 
 // BuildGetRecipeStepsRequest builds an HTTP request for fetching a list of recipe steps.
-func (b *Builder) BuildGetRecipeStepsRequest(ctx context.Context, recipeID uint64, filter *types.QueryFilter) (*http.Request, error) {
+func (b *Builder) BuildGetRecipeStepsRequest(ctx context.Context, recipeID string, filter *types.QueryFilter) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := filter.AttachToLogger(b.logger)
 
-	if recipeID == 0 {
+	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
@@ -106,7 +68,7 @@ func (b *Builder) BuildGetRecipeStepsRequest(ctx context.Context, recipeID uint6
 		ctx,
 		filter.ToValues(),
 		recipesBasePath,
-		id(recipeID),
+		recipeID,
 		recipeStepsBasePath,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
@@ -121,7 +83,7 @@ func (b *Builder) BuildGetRecipeStepsRequest(ctx context.Context, recipeID uint6
 }
 
 // BuildCreateRecipeStepRequest builds an HTTP request for creating a recipe step.
-func (b *Builder) BuildCreateRecipeStepRequest(ctx context.Context, input *types.RecipeStepCreationInput) (*http.Request, error) {
+func (b *Builder) BuildCreateRecipeStepRequest(ctx context.Context, input *types.RecipeStepCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -139,7 +101,7 @@ func (b *Builder) BuildCreateRecipeStepRequest(ctx context.Context, input *types
 		ctx,
 		nil,
 		recipesBasePath,
-		id(input.BelongsToRecipe),
+		input.BelongsToRecipe,
 		recipeStepsBasePath,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
@@ -170,9 +132,9 @@ func (b *Builder) BuildUpdateRecipeStepRequest(ctx context.Context, recipeStep *
 		ctx,
 		nil,
 		recipesBasePath,
-		id(recipeStep.BelongsToRecipe),
+		recipeStep.BelongsToRecipe,
 		recipeStepsBasePath,
-		strconv.FormatUint(recipeStep.ID, 10),
+		recipeStep.ID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
@@ -185,19 +147,19 @@ func (b *Builder) BuildUpdateRecipeStepRequest(ctx context.Context, recipeStep *
 }
 
 // BuildArchiveRecipeStepRequest builds an HTTP request for archiving a recipe step.
-func (b *Builder) BuildArchiveRecipeStepRequest(ctx context.Context, recipeID, recipeStepID uint64) (*http.Request, error) {
+func (b *Builder) BuildArchiveRecipeStepRequest(ctx context.Context, recipeID, recipeStepID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := b.logger
 
-	if recipeID == 0 {
+	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	if recipeStepID == 0 {
+	if recipeStepID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
@@ -207,51 +169,13 @@ func (b *Builder) BuildArchiveRecipeStepRequest(ctx context.Context, recipeID, r
 		ctx,
 		nil,
 		recipesBasePath,
-		id(recipeID),
+		recipeID,
 		recipeStepsBasePath,
-		id(recipeStepID),
+		recipeStepID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
-	}
-
-	return req, nil
-}
-
-// BuildGetAuditLogForRecipeStepRequest builds an HTTP request for fetching a list of audit log entries pertaining to a recipe step.
-func (b *Builder) BuildGetAuditLogForRecipeStepRequest(ctx context.Context, recipeID, recipeStepID uint64) (*http.Request, error) {
-	ctx, span := b.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := b.logger
-
-	if recipeID == 0 {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
-
-	if recipeStepID == 0 {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
-
-	uri := b.BuildURL(
-		ctx,
-		nil,
-		recipesBasePath,
-		id(recipeID),
-		recipeStepsBasePath,
-		id(recipeStepID),
-		"audit",
-	)
-	tracing.AttachRequestURIToSpan(span, uri)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}

@@ -1,12 +1,12 @@
-package mock
+package mockencoding
 
 import (
 	"context"
 	"net/http"
 
-	"gitlab.com/prixfixe/prixfixe/internal/encoding"
-
 	"github.com/stretchr/testify/mock"
+
+	"gitlab.com/prixfixe/prixfixe/internal/encoding"
 )
 
 var _ encoding.ServerEncoderDecoder = (*EncoderDecoder)(nil)
@@ -52,12 +52,6 @@ func (m *EncoderDecoder) EncodeErrorResponse(ctx context.Context, res http.Respo
 func (m *EncoderDecoder) EncodeInvalidInputResponse(ctx context.Context, res http.ResponseWriter) {
 	m.Called(ctx, res)
 	res.WriteHeader(http.StatusBadRequest)
-}
-
-// EncodeRejectedDuplicateResponse satisfies our EncoderDecoder interface.
-func (m *EncoderDecoder) EncodeRejectedDuplicateResponse(ctx context.Context, res http.ResponseWriter) {
-	m.Called(ctx, res)
-	res.WriteHeader(http.StatusConflict)
 }
 
 // EncodeNotFoundResponse satisfies our EncoderDecoder interface.

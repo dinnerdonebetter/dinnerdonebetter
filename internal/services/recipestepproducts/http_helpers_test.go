@@ -20,12 +20,12 @@ type recipeStepProductsServiceHTTPRoutesTestHelper struct {
 	res                      *httptest.ResponseRecorder
 	service                  *service
 	exampleUser              *types.User
-	exampleHousehold         *types.Household
+	exampleAccount           *types.Account
 	exampleRecipe            *types.Recipe
 	exampleRecipeStep        *types.RecipeStep
 	exampleRecipeStepProduct *types.RecipeStepProduct
-	exampleCreationInput     *types.RecipeStepProductCreationInput
-	exampleUpdateInput       *types.RecipeStepProductUpdateInput
+	exampleCreationInput     *types.RecipeStepProductCreationRequestInput
+	exampleUpdateInput       *types.RecipeStepProductUpdateRequestInput
 }
 
 func buildTestHelper(t *testing.T) *recipeStepProductsServiceHTTPRoutesTestHelper {
@@ -36,39 +36,39 @@ func buildTestHelper(t *testing.T) *recipeStepProductsServiceHTTPRoutesTestHelpe
 	helper.ctx = context.Background()
 	helper.service = buildTestService()
 	helper.exampleUser = fakes.BuildFakeUser()
-	helper.exampleHousehold = fakes.BuildFakeHousehold()
-	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
+	helper.exampleAccount = fakes.BuildFakeAccount()
+	helper.exampleAccount.BelongsToUser = helper.exampleUser.ID
 	helper.exampleRecipe = fakes.BuildFakeRecipe()
-	helper.exampleRecipe.BelongsToHousehold = helper.exampleHousehold.ID
+	helper.exampleRecipe.BelongsToAccount = helper.exampleAccount.ID
 	helper.exampleRecipeStep = fakes.BuildFakeRecipeStep()
 	helper.exampleRecipeStep.BelongsToRecipe = helper.exampleRecipe.ID
 	helper.exampleRecipeStepProduct = fakes.BuildFakeRecipeStepProduct()
 	helper.exampleRecipeStepProduct.BelongsToRecipeStep = helper.exampleRecipeStep.ID
-	helper.exampleCreationInput = fakes.BuildFakeRecipeStepProductCreationInputFromRecipeStepProduct(helper.exampleRecipeStepProduct)
-	helper.exampleUpdateInput = fakes.BuildFakeRecipeStepProductUpdateInputFromRecipeStepProduct(helper.exampleRecipeStepProduct)
+	helper.exampleCreationInput = fakes.BuildFakeRecipeStepProductCreationRequestInputFromRecipeStepProduct(helper.exampleRecipeStepProduct)
+	helper.exampleUpdateInput = fakes.BuildFakeRecipeStepProductUpdateRequestInputFromRecipeStepProduct(helper.exampleRecipeStepProduct)
 
-	helper.service.recipeIDFetcher = func(*http.Request) uint64 {
+	helper.service.recipeIDFetcher = func(*http.Request) string {
 		return helper.exampleRecipe.ID
 	}
 
-	helper.service.recipeStepIDFetcher = func(*http.Request) uint64 {
+	helper.service.recipeStepIDFetcher = func(*http.Request) string {
 		return helper.exampleRecipeStep.ID
 	}
 
-	helper.service.recipeStepProductIDFetcher = func(*http.Request) uint64 {
+	helper.service.recipeStepProductIDFetcher = func(*http.Request) string {
 		return helper.exampleRecipeStepProduct.ID
 	}
 
 	sessionCtxData := &types.SessionContextData{
 		Requester: types.RequesterInfo{
 			UserID:                helper.exampleUser.ID,
-			Reputation:            helper.exampleUser.ServiceHouseholdStatus,
+			Reputation:            helper.exampleUser.ServiceAccountStatus,
 			ReputationExplanation: helper.exampleUser.ReputationExplanation,
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 		},
-		ActiveHouseholdID: helper.exampleHousehold.ID,
-		HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
-			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
+		ActiveAccountID: helper.exampleAccount.ID,
+		AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
+			helper.exampleAccount.ID: authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
 		},
 	}
 

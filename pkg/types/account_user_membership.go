@@ -6,84 +6,105 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
+const (
+	// UserMembershipDataType indicates an event is user membership-related.
+	UserMembershipDataType dataType = "user_membership"
+)
+
 type (
-	// HouseholdUserMembership defines a relationship between a user and an household.
-	HouseholdUserMembership struct {
-		ArchivedOn         *uint64  `json:"archivedOn"`
-		LastUpdatedOn      *uint64  `json:"lastUpdatedOn"`
-		HouseholdRoles     []string `json:"householdRole"`
-		BelongsToUser      uint64   `json:"belongsToUser"`
-		BelongsToHousehold uint64   `json:"belongsToHousehold"`
-		CreatedOn          uint64   `json:"createdOn"`
-		ID                 uint64   `json:"id"`
-		DefaultHousehold   bool     `json:"defaultHousehold"`
+	// AccountUserMembership defines a relationship between a user and an account.
+	AccountUserMembership struct {
+		_ struct{}
+
+		ArchivedOn       *uint64  `json:"archivedOn"`
+		LastUpdatedOn    *uint64  `json:"lastUpdatedOn"`
+		ID               string   `json:"id"`
+		BelongsToUser    string   `json:"belongsToUser"`
+		BelongsToAccount string   `json:"belongsToAccount"`
+		AccountRoles     []string `json:"accountRole"`
+		CreatedOn        uint64   `json:"createdOn"`
+		DefaultAccount   bool     `json:"defaultAccount"`
 	}
 
-	// HouseholdUserMembershipList represents a list of household user memberships.
-	HouseholdUserMembershipList struct {
-		HouseholdUserMemberships []*HouseholdUserMembership `json:"householdUserMemberships"`
+	// AccountUserMembershipList represents a list of account user memberships.
+	AccountUserMembershipList struct {
+		_ struct{}
+
+		AccountUserMemberships []*AccountUserMembership `json:"accountUserMemberships"`
 		Pagination
 	}
 
-	// HouseholdUserMembershipCreationInput represents what a User could set as input for creating household user memberships.
-	HouseholdUserMembershipCreationInput struct {
-		BelongsToUser      uint64 `json:"belongsToUser"`
-		BelongsToHousehold uint64 `json:"belongsToHousehold"`
+	// AccountUserMembershipCreationInput represents what a User could set as input for creating account user memberships.
+	AccountUserMembershipCreationInput struct {
+		_ struct{}
+
+		ID               string `json:"-"`
+		BelongsToUser    string `json:"belongsToUser"`
+		BelongsToAccount string `json:"belongsToAccount"`
 	}
 
-	// HouseholdUserMembershipUpdateInput represents what a User could set as input for updating household user memberships.
-	HouseholdUserMembershipUpdateInput struct {
-		BelongsToUser      uint64 `json:"belongsToUser"`
-		BelongsToHousehold uint64 `json:"belongsToHousehold"`
+	// AccountUserMembershipUpdateInput represents what a User could set as input for updating account user memberships.
+	AccountUserMembershipUpdateInput struct {
+		_ struct{}
+
+		BelongsToUser    string `json:"belongsToUser"`
+		BelongsToAccount string `json:"belongsToAccount"`
 	}
 
-	// AddUserToHouseholdInput represents what a User could set as input for updating household user memberships.
-	AddUserToHouseholdInput struct {
-		Reason         string   `json:"reason"`
-		HouseholdRoles []string `json:"householdRole"`
-		UserID         uint64   `json:"userID"`
-		HouseholdID    uint64   `json:"householdID"`
+	// AddUserToAccountInput represents what a User could set as input for updating account user memberships.
+	AddUserToAccountInput struct {
+		_ struct{}
+
+		ID           string   `json:"-"`
+		Reason       string   `json:"reason"`
+		UserID       string   `json:"userID"`
+		AccountID    string   `json:"accountID"`
+		AccountRoles []string `json:"accountRole"`
 	}
 
-	// HouseholdOwnershipTransferInput represents what a User could set as input for updating household user memberships.
-	HouseholdOwnershipTransferInput struct {
+	// AccountOwnershipTransferInput represents what a User could set as input for updating account user memberships.
+	AccountOwnershipTransferInput struct {
+		_ struct{}
+
 		Reason       string `json:"reason"`
-		CurrentOwner uint64 `json:"currentOwner"`
-		NewOwner     uint64 `json:"newOwner"`
+		CurrentOwner string `json:"currentOwner"`
+		NewOwner     string `json:"newOwner"`
 	}
 
-	// ModifyUserPermissionsInput  represents what a User could set as input for updating household user memberships.
+	// ModifyUserPermissionsInput  represents what a User could set as input for updating account user memberships.
 	ModifyUserPermissionsInput struct {
+		_ struct{}
+
 		Reason   string   `json:"reason"`
 		NewRoles []string `json:"newRoles"`
 	}
 
-	// HouseholdUserMembershipDataManager describes a structure capable of storing householdUserMemberships permanently.
-	HouseholdUserMembershipDataManager interface {
-		BuildSessionContextDataForUser(ctx context.Context, userID uint64) (*SessionContextData, error)
-		GetDefaultHouseholdIDForUser(ctx context.Context, userID uint64) (uint64, error)
-		MarkHouseholdAsUserDefault(ctx context.Context, userID, householdID, changedByUser uint64) error
-		UserIsMemberOfHousehold(ctx context.Context, userID, householdID uint64) (bool, error)
-		ModifyUserPermissions(ctx context.Context, householdID, userID, changedByUser uint64, input *ModifyUserPermissionsInput) error
-		TransferHouseholdOwnership(ctx context.Context, householdID uint64, transferredBy uint64, input *HouseholdOwnershipTransferInput) error
-		AddUserToHousehold(ctx context.Context, input *AddUserToHouseholdInput, addedByUser uint64) error
-		RemoveUserFromHousehold(ctx context.Context, userID, householdID, removedByUser uint64, reason string) error
+	// AccountUserMembershipDataManager describes a structure capable of storing accountUserMemberships permanently.
+	AccountUserMembershipDataManager interface {
+		BuildSessionContextDataForUser(ctx context.Context, userID string) (*SessionContextData, error)
+		GetDefaultAccountIDForUser(ctx context.Context, userID string) (string, error)
+		MarkAccountAsUserDefault(ctx context.Context, userID, accountID string) error
+		UserIsMemberOfAccount(ctx context.Context, userID, accountID string) (bool, error)
+		ModifyUserPermissions(ctx context.Context, accountID, userID string, input *ModifyUserPermissionsInput) error
+		TransferAccountOwnership(ctx context.Context, accountID string, input *AccountOwnershipTransferInput) error
+		AddUserToAccount(ctx context.Context, input *AddUserToAccountInput) error
+		RemoveUserFromAccount(ctx context.Context, userID, accountID string) error
 	}
 )
 
-var _ validation.ValidatableWithContext = (*AddUserToHouseholdInput)(nil)
+var _ validation.ValidatableWithContext = (*AddUserToAccountInput)(nil)
 
-// ValidateWithContext validates an AddUserToHouseholdInput.
-func (x *AddUserToHouseholdInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates an AddUserToAccountInput.
+func (x *AddUserToAccountInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, x,
 		validation.Field(&x.UserID, validation.Required),
 	)
 }
 
-var _ validation.ValidatableWithContext = (*HouseholdOwnershipTransferInput)(nil)
+var _ validation.ValidatableWithContext = (*AccountOwnershipTransferInput)(nil)
 
-// ValidateWithContext validates a HouseholdOwnershipTransferInput.
-func (x *HouseholdOwnershipTransferInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a AccountOwnershipTransferInput.
+func (x *AccountOwnershipTransferInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, x,
 		validation.Field(&x.CurrentOwner, validation.Required),
 		validation.Field(&x.NewOwner, validation.Required),

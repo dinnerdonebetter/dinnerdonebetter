@@ -8,14 +8,14 @@ import (
 	"os"
 	"strconv"
 
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
+	flag "github.com/spf13/pflag"
+
 	"gitlab.com/prixfixe/prixfixe/internal/build/server"
 	"gitlab.com/prixfixe/prixfixe/internal/config"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/internal/secrets"
-
-	chimiddleware "github.com/go-chi/chi/middleware"
-	flag "github.com/spf13/pflag"
 )
 
 const (
@@ -37,7 +37,7 @@ func initializeLocalSecretManager(ctx context.Context) secrets.SecretManager {
 
 	cfg := &secrets.Config{
 		Provider: secrets.ProviderLocal,
-		Key:      os.Getenv("PRIXFIXE_SERVICE_LOCAL_SECRET_STORE_KEY"),
+		Key:      os.Getenv("PRIXFIXE_SERVER_LOCAL_CONFIG_STORE_KEY"),
 	}
 
 	k, err := secrets.ProvideSecretKeeper(ctx, cfg)
@@ -105,7 +105,7 @@ func main() {
 	ctx, initSpan := tracing.StartSpan(ctx)
 
 	// build our server struct.
-	srv, err := server.Build(ctx, cfg, logger)
+	srv, err := server.Build(ctx, logger, cfg)
 	if err != nil {
 		logger.Fatal(fmt.Errorf("initializing HTTP server: %w", err))
 	}

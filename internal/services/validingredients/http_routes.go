@@ -1,14 +1,12 @@
 package validingredients
 
 import (
-	"context"
 	"database/sql"
 	"errors"
 	"net/http"
-	"strconv"
 	"strings"
 
-	"gitlab.com/prixfixe/prixfixe/internal/database"
+	"github.com/segmentio/ksuid"
 
 	observability "gitlab.com/prixfixe/prixfixe/internal/observability"
 	keys "gitlab.com/prixfixe/prixfixe/internal/observability/keys"
@@ -51,43 +49,40 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// check session context data for parsed input struct.
-	input := new(types.ValidIngredientCreationInput)
-	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
+	providedInput := new(types.ValidIngredientCreationRequestInput)
+	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
 		return
 	}
 
-	if err = input.ValidateWithContext(ctx); err != nil {
-		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
+	if err = providedInput.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
 	}
 
+	input := types.ValidIngredientDatabaseCreationInputFromValidIngredientCreationInput(providedInput)
+	input.ID = ksuid.New().String()
+
+	tracing.AttachValidIngredientIDToSpan(span, input.ID)
+
 	// create valid ingredient in database.
-	validIngredient, err := s.validIngredientDataManager.CreateValidIngredient(ctx, input, sessionCtxData.Requester.UserID)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating valid ingredient")
-
-		if errors.Is(err, database.ErrUniqueConstraintViolation) {
-			s.encoderDecoder.EncodeRejectedDuplicateResponse(ctx, res)
-		} else {
-			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		}
-
+	preWrite := &types.PreWriteMessage{
+		DataType:                types.ValidIngredientDataType,
+		ValidIngredient:         input,
+		AttributableToUserID:    sessionCtxData.Requester.UserID,
+		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+	}
+	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing valid ingredient write message")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	tracing.AttachValidIngredientIDToSpan(span, validIngredient.ID)
-	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredient.ID)
+	pwr := types.PreWriteResponse{ID: input.ID}
 
-	// notify interested parties.
-	if searchIndexErr := s.search.Index(ctx, validIngredient.ID, validIngredient); searchIndexErr != nil {
-		observability.AcknowledgeError(err, logger, span, "adding valid ingredient to search index")
-	}
-	s.validIngredientCounter.Increment(ctx)
-
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validIngredient, http.StatusCreated)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusAccepted)
 }
 
 // ReadHandler returns a GET handler that returns a valid ingredient.
@@ -129,41 +124,6 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, x)
 }
 
-// ExistenceHandler returns a HEAD handler that returns 200 if a valid ingredient exists, 404 otherwise.
-func (s *service) ExistenceHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-	tracing.AttachRequestToSpan(span, req)
-
-	// determine user ID.
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		s.logger.Error(err, "retrieving session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
-		return
-	}
-
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = sessionCtxData.AttachToLogger(logger)
-
-	// determine valid ingredient ID.
-	validIngredientID := s.validIngredientIDFetcher(req)
-	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
-	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
-
-	// check the database.
-	exists, err := s.validIngredientDataManager.ValidIngredientExists(ctx, validIngredientID)
-	if !errors.Is(err, sql.ErrNoRows) {
-		observability.AcknowledgeError(err, logger, span, "checking valid ingredient existence")
-	}
-
-	if !exists || errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
-	}
-}
-
 // ListHandler is our list route.
 func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
@@ -203,36 +163,13 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, validIngredients)
 }
 
-func (s *service) SearchForValidIngredients(
-	ctx context.Context,
-	sessionCtxData *types.SessionContextData,
-	preparationID uint64,
-	query string,
-	filter *types.QueryFilter,
-) ([]*types.ValidIngredient, error) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger.WithValue(keys.SearchQueryKey, query)
-	tracing.AttachSearchQueryToSpan(span, query)
-
-	relevantIDs, err := s.search.Search(ctx, query, sessionCtxData.ActiveHouseholdID)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing valid ingredient search query")
-	}
-
-	// fetch valid ingredients from database.
-	return s.validIngredientDataManager.GetValidIngredientsWithIDs(ctx, filter.Limit, preparationID, relevantIDs)
-}
-
 // SearchHandler is our search route.
 func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	filter := types.ExtractQueryFilter(req)
 	query := req.URL.Query().Get(types.SearchQueryKey)
-
+	filter := types.ExtractQueryFilter(req)
 	logger := s.logger.WithRequest(req).
 		WithValue(keys.FilterLimitKey, filter.Limit).
 		WithValue(keys.FilterPageKey, filter.Page).
@@ -240,13 +177,12 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 		WithValue(keys.SearchQueryKey, query)
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachSearchQueryToSpan(span, query)
 	tracing.AttachFilterToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
 
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
-		s.logger.Error(err, "retrieving session context data")
+		logger.Error(err, "retrieving session context data")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
 		return
 	}
@@ -254,17 +190,15 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	validPreparationID, prepIDErr := strconv.ParseUint(req.URL.Query().Get(types.ValidPreparationIDQueryKey), 10, 64)
-	if prepIDErr != nil {
-		s.logger.Error(prepIDErr, "parsing preparation ID")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid preparation ID", http.StatusBadRequest)
+	relevantIDs, err := s.search.Search(ctx, query, sessionCtxData.ActiveAccountID)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "executing valid ingredient search query")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
-
 	// fetch valid ingredients from database.
-	validIngredients, err := s.SearchForValidIngredients(ctx, sessionCtxData, validPreparationID, query, filter)
+	validIngredients, err := s.validIngredientDataManager.GetValidIngredientsWithIDs(ctx, filter.Limit, relevantIDs)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		validIngredients = []*types.ValidIngredient{}
@@ -298,7 +232,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// check for parsed input attached to session context data.
-	input := new(types.ValidIngredientUpdateInput)
+	input := new(types.ValidIngredientUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		logger.Error(err, "error encountered decoding request body")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
@@ -328,19 +262,18 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// update the valid ingredient.
-	changeReport := validIngredient.Update(input)
-	tracing.AttachChangeSummarySpan(span, "valid_ingredient", changeReport)
+	validIngredient.Update(input)
 
-	// update valid ingredient in database.
-	if err = s.validIngredientDataManager.UpdateValidIngredient(ctx, validIngredient, sessionCtxData.Requester.UserID, changeReport); err != nil {
-		observability.AcknowledgeError(err, logger, span, "updating valid ingredient")
+	pum := &types.PreUpdateMessage{
+		DataType:                types.ValidIngredientDataType,
+		ValidIngredient:         validIngredient,
+		AttributableToUserID:    sessionCtxData.Requester.UserID,
+		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+	}
+	if err = s.preUpdatesPublisher.Publish(ctx, pum); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing valid ingredient update message")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
-	}
-
-	// notify interested parties.
-	if searchIndexErr := s.search.Index(ctx, validIngredient.ID, validIngredient); searchIndexErr != nil {
-		observability.AcknowledgeError(err, logger, span, "updating valid ingredient in search index")
 	}
 
 	// encode our response and peace.
@@ -371,62 +304,28 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 
-	// archive the valid ingredient in the database.
-	err = s.validIngredientDataManager.ArchiveValidIngredient(ctx, validIngredientID, sessionCtxData.Requester.UserID)
-	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
-		return
-	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "archiving valid ingredient")
+	exists, existenceCheckErr := s.validIngredientDataManager.ValidIngredientExists(ctx, validIngredientID)
+	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
+		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking valid ingredient existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	}
 
-	// notify interested parties.
-	s.validIngredientCounter.Decrement(ctx)
-
-	if indexDeleteErr := s.search.Delete(ctx, validIngredientID); indexDeleteErr != nil {
-		observability.AcknowledgeError(err, logger, span, "removing from search index")
+	pam := &types.PreArchiveMessage{
+		DataType:                types.ValidIngredientDataType,
+		ValidIngredientID:       validIngredientID,
+		AttributableToUserID:    sessionCtxData.Requester.UserID,
+		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+	}
+	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing valid ingredient archive message")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
 	}
 
 	// encode our response and peace.
 	res.WriteHeader(http.StatusNoContent)
-}
-
-// AuditEntryHandler returns a GET handler that returns all audit log entries related to a valid ingredient.
-func (s *service) AuditEntryHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-	tracing.AttachRequestToSpan(span, req)
-
-	// determine user ID.
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
-		return
-	}
-
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = sessionCtxData.AttachToLogger(logger)
-
-	// determine valid ingredient ID.
-	validIngredientID := s.validIngredientIDFetcher(req)
-	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
-	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
-
-	x, err := s.validIngredientDataManager.GetAuditLogEntriesForValidIngredient(ctx, validIngredientID)
-	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
-		return
-	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving audit log entries for valid ingredient")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
-	}
-
-	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
 }

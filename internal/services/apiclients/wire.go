@@ -1,9 +1,9 @@
 package apiclients
 
 import (
-	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
-
 	"github.com/google/wire"
+
+	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
 )
 
 var (

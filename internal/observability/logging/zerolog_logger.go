@@ -3,12 +3,16 @@ package logging
 import (
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/keys"
-
 	"github.com/rs/zerolog"
+
+	"gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 )
+
+const here = "gitlab.com/prixfixe/prixfixe/"
 
 func init() {
 	zerolog.CallerSkipFrameCount += 2
@@ -16,6 +20,9 @@ func init() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnixMs
 	zerolog.TimestampFunc = func() time.Time {
 		return time.Now().UTC()
+	}
+	zerolog.CallerMarshalFunc = func(file string, line int) string {
+		return strings.TrimPrefix(file, here) + ":" + strconv.Itoa(line)
 	}
 }
 
@@ -82,7 +89,9 @@ func (l *zerologLogger) Debug(input string) {
 
 // Error satisfies our contract for the logging.Logger Error method.
 func (l *zerologLogger) Error(err error, input string) {
-	l.logger.Error().Stack().Caller().Err(err).Msg(input)
+	if err != nil {
+		l.logger.Error().Stack().Caller().Err(err).Msg(input)
+	}
 }
 
 // Fatal satisfies our contract for the logging.Logger Fatal method.
@@ -139,7 +148,7 @@ func (l *zerologLogger) attachRequestToLog(req *http.Request) zerolog.Logger {
 
 		if l.requestIDFunc != nil {
 			if reqID := l.requestIDFunc(req); reqID != "" {
-				l2 = l2.With().Str("request_id", reqID).Logger()
+				l2 = l2.With().Str("request.id", reqID).Logger()
 			}
 		}
 

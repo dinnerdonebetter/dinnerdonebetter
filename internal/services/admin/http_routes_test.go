@@ -7,20 +7,20 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/alexedwards/scs/v2/mockstore"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+
 	"gitlab.com/prixfixe/prixfixe/internal/authorization"
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
 	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
-
-	"github.com/alexedwards/scs/v2/mockstore"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
 
-func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
+func TestAdminService_UserAccountStatusChangeHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("banning users", func(t *testing.T) {
@@ -30,7 +30,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewReputation = types.BannedUserHouseholdStatus
+		helper.exampleInput.NewReputation = types.BannedUserAccountStatus
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
@@ -47,56 +47,10 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.userDB = userDataManager
 
-		auditLog := &mocktypes.AuditLogEntryDataManager{}
-		auditLog.On(
-			"LogUserBanEvent",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID, helper.exampleInput.TargetUserID, helper.exampleInput.Reason,
-		).Return()
-		helper.service.auditLog = auditLog
-
 		helper.service.UserReputationChangeHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, userDataManager, auditLog)
-	})
-
-	T.Run("terminating users", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
-
-		helper.exampleInput.NewReputation = types.TerminatedUserReputation
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		userDataManager := &mocktypes.AdminUserDataManager{}
-		userDataManager.On(
-			"UpdateUserReputation",
-			testutils.ContextMatcher,
-			helper.exampleInput.TargetUserID,
-			helper.exampleInput,
-		).Return(nil)
-		helper.service.userDB = userDataManager
-
-		auditLog := &mocktypes.AuditLogEntryDataManager{}
-		auditLog.On(
-			"LogHouseholdTerminationEvent",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID, helper.exampleInput.TargetUserID, helper.exampleInput.Reason,
-		).Return()
-		helper.service.auditLog = auditLog
-
-		helper.service.UserReputationChangeHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, userDataManager, auditLog)
+		mock.AssertExpectationsForObjects(t, userDataManager)
 	})
 
 	T.Run("back in good standing", func(t *testing.T) {
@@ -106,7 +60,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewReputation = types.GoodStandingHouseholdStatus
+		helper.exampleInput.NewReputation = types.GoodStandingAccountStatus
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
@@ -135,7 +89,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.exampleInput.NewReputation = types.BannedUserHouseholdStatus
+		helper.exampleInput.NewReputation = types.BannedUserAccountStatus
 
 		helper.service.UserReputationChangeHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
@@ -183,7 +137,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewReputation = types.BannedUserHouseholdStatus
+		helper.exampleInput.NewReputation = types.BannedUserAccountStatus
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
@@ -207,7 +161,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t)
 	})
 
-	T.Run("with inadequate admin user attempting to terminate households", func(t *testing.T) {
+	T.Run("with inadequate admin user attempting to terminate accounts", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -246,7 +200,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewReputation = types.BannedUserHouseholdStatus
+		helper.exampleInput.NewReputation = types.BannedUserAccountStatus
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
@@ -265,7 +219,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewReputation = types.BannedUserHouseholdStatus
+		helper.exampleInput.NewReputation = types.BannedUserAccountStatus
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
@@ -295,7 +249,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewReputation = types.BannedUserHouseholdStatus
+		helper.exampleInput.NewReputation = types.BannedUserAccountStatus
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
@@ -325,7 +279,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		helper.exampleInput.NewReputation = types.BannedUserHouseholdStatus
+		helper.exampleInput.NewReputation = types.BannedUserAccountStatus
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
@@ -336,16 +290,6 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		mockHandler := &mockstore.MockStore{}
 		mockHandler.ExpectDelete("", errors.New("blah"))
 		helper.service.sessionManager.Store = mockHandler
-
-		auditLog := &mocktypes.AuditLogEntryDataManager{}
-		auditLog.On(
-			"LogUserBanEvent",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-			helper.exampleInput.TargetUserID,
-			helper.exampleInput.Reason,
-		).Return()
-		helper.service.auditLog = auditLog
 
 		userDataManager := &mocktypes.AdminUserDataManager{}
 		userDataManager.On(

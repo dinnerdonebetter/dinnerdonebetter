@@ -2,101 +2,172 @@ package integration
 
 import (
 	"testing"
-
-	audit "gitlab.com/prixfixe/prixfixe/internal/audit"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 func checkValidIngredientPreparationEquality(t *testing.T, expected, actual *types.ValidIngredientPreparation) {
 	t.Helper()
 
 	assert.NotZero(t, actual.ID)
-	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for valid ingredient preparation #%d to be %v, but it was %v ", expected.ID, expected.Notes, actual.Notes)
-	assert.Equal(t, expected.ValidIngredientID, actual.ValidIngredientID, "expected ValidIngredientID for valid ingredient preparation #%d to be %v, but it was %v ", expected.ID, expected.ValidIngredientID, actual.ValidIngredientID)
-	assert.Equal(t, expected.ValidPreparationID, actual.ValidPreparationID, "expected ValidPreparationID for valid ingredient preparation #%d to be %v, but it was %v ", expected.ID, expected.ValidPreparationID, actual.ValidPreparationID)
+	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for valid ingredient preparation %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
+	assert.Equal(t, expected.ValidPreparationID, actual.ValidPreparationID, "expected ValidPreparationID for valid ingredient preparation %s to be %v, but it was %v", expected.ID, expected.ValidPreparationID, actual.ValidPreparationID)
+	assert.Equal(t, expected.ValidIngredientID, actual.ValidIngredientID, "expected ValidIngredientID for valid ingredient preparation %s to be %v, but it was %v", expected.ID, expected.ValidIngredientID, actual.ValidIngredientID)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
-func (s *TestSuite) TestValidIngredientPreparations_Creating() {
-	s.runForEachClientExcept("should be creatable", func(testClients *testClientWrapper) func() {
+// convertValidIngredientPreparationToValidIngredientPreparationUpdateInput creates an ValidIngredientPreparationUpdateRequestInput struct from a valid ingredient preparation.
+func convertValidIngredientPreparationToValidIngredientPreparationUpdateInput(x *types.ValidIngredientPreparation) *types.ValidIngredientPreparationUpdateRequestInput {
+	return &types.ValidIngredientPreparationUpdateRequestInput{
+		Notes:              x.Notes,
+		ValidPreparationID: x.ValidPreparationID,
+		ValidIngredientID:  x.ValidIngredientID,
+	}
+}
+
+func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
+	s.runForCookieClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// Create valid ingredient.
-			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			requireNotNilAndNoProblems(t, createdValidIngredient, err)
+			stopChan := make(chan bool, 1)
+			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			require.NotNil(t, notificationsChan)
+			require.NoError(t, err)
 
-			// Create valid preparation.
-			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+			var n *types.DataChangeMessage
 
-			// Create valid ingredient preparation.
+			t.Log("creating valid ingredient preparation")
 			exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
-			exampleValidIngredientPreparation.ValidPreparationID = createdValidPreparation.ID
-			exampleValidIngredientPreparation.ValidIngredientID = createdValidIngredient.ID
-			exampleValidIngredientPreparationInput := fakes.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
-			createdValidIngredientPreparation, err := testClients.main.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
+			exampleValidIngredientPreparationInput := fakes.BuildFakeValidIngredientPreparationCreationRequestInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
+			createdValidIngredientPreparationID, err := testClients.main.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
+			require.NoError(t, err)
+			t.Logf("valid ingredient preparation %q created", createdValidIngredientPreparationID)
+
+			n = <-notificationsChan
+			assert.Equal(t, n.DataType, types.ValidIngredientPreparationDataType)
+			require.NotNil(t, n.ValidIngredientPreparation)
+			checkValidIngredientPreparationEquality(t, exampleValidIngredientPreparation, n.ValidIngredientPreparation)
+
+			createdValidIngredientPreparation, err := testClients.main.GetValidIngredientPreparation(ctx, createdValidIngredientPreparationID)
 			requireNotNilAndNoProblems(t, createdValidIngredientPreparation, err)
+
+			checkValidIngredientPreparationEquality(t, exampleValidIngredientPreparation, createdValidIngredientPreparation)
+
+			t.Log("changing valid ingredient preparation")
+			newValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
+			createdValidIngredientPreparation.Update(convertValidIngredientPreparationToValidIngredientPreparationUpdateInput(newValidIngredientPreparation))
+			assert.NoError(t, testClients.main.UpdateValidIngredientPreparation(ctx, createdValidIngredientPreparation))
+
+			n = <-notificationsChan
+			assert.Equal(t, n.DataType, types.ValidIngredientPreparationDataType)
+
+			t.Log("fetching changed valid ingredient preparation")
+			actual, err := testClients.main.GetValidIngredientPreparation(ctx, createdValidIngredientPreparationID)
+			requireNotNilAndNoProblems(t, actual, err)
+
+			// assert valid ingredient preparation equality
+			checkValidIngredientPreparationEquality(t, newValidIngredientPreparation, actual)
+			assert.NotNil(t, actual.LastUpdatedOn)
+
+			t.Log("cleaning up valid ingredient preparation")
+			assert.NoError(t, testClients.main.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparationID))
+		}
+	})
+
+	s.runForPASETOClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			var checkFunc func() bool
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			t.Log("creating valid ingredient preparation")
+			exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
+			exampleValidIngredientPreparationInput := fakes.BuildFakeValidIngredientPreparationCreationRequestInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
+			createdValidIngredientPreparationID, err := testClients.main.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
+			require.NoError(t, err)
+			t.Logf("valid ingredient preparation %q created", createdValidIngredientPreparationID)
+
+			var createdValidIngredientPreparation *types.ValidIngredientPreparation
+			checkFunc = func() bool {
+				createdValidIngredientPreparation, err = testClients.main.GetValidIngredientPreparation(ctx, createdValidIngredientPreparationID)
+				return assert.NotNil(t, createdValidIngredientPreparation) && assert.NoError(t, err)
+			}
+			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
+			checkValidIngredientPreparationEquality(t, exampleValidIngredientPreparation, createdValidIngredientPreparation)
 
 			// assert valid ingredient preparation equality
 			checkValidIngredientPreparationEquality(t, exampleValidIngredientPreparation, createdValidIngredientPreparation)
 
-			auditLogEntries, err := testClients.admin.GetAuditLogForValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID)
-			require.NoError(t, err)
+			// change valid ingredient preparation
+			newValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
+			createdValidIngredientPreparation.Update(convertValidIngredientPreparationToValidIngredientPreparationUpdateInput(newValidIngredientPreparation))
+			assert.NoError(t, testClients.main.UpdateValidIngredientPreparation(ctx, createdValidIngredientPreparation))
 
-			expectedAuditLogEntries := []*types.AuditLogEntry{
-				{EventType: audit.ValidIngredientPreparationCreationEvent},
+			time.Sleep(time.Second)
+
+			// retrieve changed valid ingredient preparation
+			var actual *types.ValidIngredientPreparation
+			checkFunc = func() bool {
+				actual, err = testClients.main.GetValidIngredientPreparation(ctx, createdValidIngredientPreparationID)
+				return assert.NotNil(t, createdValidIngredientPreparation) && assert.NoError(t, err)
 			}
-			validateAuditLogEntries(t, expectedAuditLogEntries, auditLogEntries, createdValidIngredientPreparation.ID, audit.ValidIngredientPreparationAssignmentKey)
+			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
 
-			// Clean up valid ingredient preparation.
-			assert.NoError(t, testClients.main.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID))
+			requireNotNilAndNoProblems(t, actual, err)
+
+			// assert valid ingredient preparation equality
+			checkValidIngredientPreparationEquality(t, newValidIngredientPreparation, actual)
+			assert.NotNil(t, actual.LastUpdatedOn)
+
+			t.Log("cleaning up valid ingredient preparation")
+			assert.NoError(t, testClients.main.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparationID))
 		}
 	})
 }
 
 func (s *TestSuite) TestValidIngredientPreparations_Listing() {
-	s.runForEachClientExcept("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runForCookieClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// Create valid ingredient.
-			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			requireNotNilAndNoProblems(t, createdValidIngredient, err)
+			stopChan := make(chan bool, 1)
+			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			require.NotNil(t, notificationsChan)
+			require.NoError(t, err)
 
-			// Create valid preparation.
-			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+			var n *types.DataChangeMessage
 
-			// create valid ingredient preparations
+			t.Log("creating valid ingredient preparations")
 			var expected []*types.ValidIngredientPreparation
 			for i := 0; i < 5; i++ {
 				exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
-				exampleValidIngredientPreparation.ValidPreparationID = createdValidPreparation.ID
-				exampleValidIngredientPreparation.ValidIngredientID = createdValidIngredient.ID
-				exampleValidIngredientPreparationInput := fakes.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
+				exampleValidIngredientPreparationInput := fakes.BuildFakeValidIngredientPreparationCreationRequestInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
+				createdValidIngredientPreparationID, createdValidIngredientPreparationErr := testClients.main.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
+				require.NoError(t, createdValidIngredientPreparationErr)
+				t.Logf("valid ingredient preparation %q created", createdValidIngredientPreparationID)
 
-				createdValidIngredientPreparation, validIngredientPreparationCreationErr := testClients.main.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
-				requireNotNilAndNoProblems(t, createdValidIngredientPreparation, validIngredientPreparationCreationErr)
+				n = <-notificationsChan
+				assert.Equal(t, n.DataType, types.ValidIngredientPreparationDataType)
+				require.NotNil(t, n.ValidIngredientPreparation)
+				checkValidIngredientPreparationEquality(t, exampleValidIngredientPreparation, n.ValidIngredientPreparation)
+
+				createdValidIngredientPreparation, createdValidIngredientPreparationErr := testClients.main.GetValidIngredientPreparation(ctx, createdValidIngredientPreparationID)
+				requireNotNilAndNoProblems(t, createdValidIngredientPreparation, createdValidIngredientPreparationErr)
 
 				expected = append(expected, createdValidIngredientPreparation)
 			}
@@ -112,271 +183,55 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing() {
 				len(actual.ValidIngredientPreparations),
 			)
 
-			// clean up
-			for _, createdValidIngredientPreparation := range actual.ValidIngredientPreparations {
+			t.Log("cleaning up")
+			for _, createdValidIngredientPreparation := range expected {
 				assert.NoError(t, testClients.main.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID))
 			}
 		}
 	})
-}
 
-func (s *TestSuite) TestValidIngredientPreparations_ExistenceChecking_ReturnsFalseForNonexistentValidIngredientPreparation() {
-	s.runForEachClientExcept("should not return an error for nonexistent valid ingredient preparation", func(testClients *testClientWrapper) func() {
+	s.runForPASETOClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
+			var checkFunc func() bool
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			actual, err := testClients.main.ValidIngredientPreparationExists(ctx, nonexistentID)
-			assert.NoError(t, err)
-			assert.False(t, actual)
-		}
-	})
-}
+			t.Log("creating valid ingredient preparations")
+			var expected []*types.ValidIngredientPreparation
+			for i := 0; i < 5; i++ {
+				exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
+				exampleValidIngredientPreparationInput := fakes.BuildFakeValidIngredientPreparationCreationRequestInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
+				createdValidIngredientPreparationID, err := testClients.main.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
+				require.NoError(t, err)
 
-func (s *TestSuite) TestValidIngredientPreparations_ExistenceChecking_ReturnsTrueForValidValidIngredientPreparation() {
-	s.runForEachClientExcept("should not return an error for existent valid ingredient preparation", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
+				var createdValidIngredientPreparation *types.ValidIngredientPreparation
+				checkFunc = func() bool {
+					createdValidIngredientPreparation, err = testClients.main.GetValidIngredientPreparation(ctx, createdValidIngredientPreparationID)
+					return assert.NotNil(t, createdValidIngredientPreparation) && assert.NoError(t, err)
+				}
+				assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
+				checkValidIngredientPreparationEquality(t, exampleValidIngredientPreparation, createdValidIngredientPreparation)
 
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// Create valid ingredient.
-			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			requireNotNilAndNoProblems(t, createdValidIngredient, err)
-
-			// Create valid preparation.
-			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			requireNotNilAndNoProblems(t, createdValidPreparation, err)
-
-			// create valid ingredient preparation
-			exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
-			exampleValidIngredientPreparation.ValidPreparationID = createdValidPreparation.ID
-			exampleValidIngredientPreparation.ValidIngredientID = createdValidIngredient.ID
-			exampleValidIngredientPreparationInput := fakes.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
-			createdValidIngredientPreparation, err := testClients.main.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
-			requireNotNilAndNoProblems(t, createdValidIngredientPreparation, err)
-
-			// retrieve valid ingredient preparation
-			actual, err := testClients.main.ValidIngredientPreparationExists(ctx, createdValidIngredientPreparation.ID)
-			assert.NoError(t, err)
-			assert.True(t, actual)
-
-			// clean up valid ingredient preparation
-			assert.NoError(t, testClients.main.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID))
-		}
-	})
-}
-
-func (s *TestSuite) TestValidIngredientPreparations_Reading_Returns404ForNonexistentValidIngredientPreparation() {
-	s.runForEachClientExcept("it should return an error when trying to read a valid ingredient preparation that does not exist", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			_, err := testClients.main.GetValidIngredientPreparation(ctx, nonexistentID)
-			assert.Error(t, err)
-		}
-	})
-}
-
-func (s *TestSuite) TestValidIngredientPreparations_Reading() {
-	s.runForEachClientExcept("it should be readable", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// Create valid ingredient.
-			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			requireNotNilAndNoProblems(t, createdValidIngredient, err)
-
-			// Create valid preparation.
-			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			requireNotNilAndNoProblems(t, createdValidPreparation, err)
-
-			// create valid ingredient preparation
-			exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
-			exampleValidIngredientPreparation.ValidPreparationID = createdValidPreparation.ID
-			exampleValidIngredientPreparation.ValidIngredientID = createdValidIngredient.ID
-			exampleValidIngredientPreparationInput := fakes.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
-			createdValidIngredientPreparation, err := testClients.main.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
-			requireNotNilAndNoProblems(t, createdValidIngredientPreparation, err)
-
-			// retrieve valid ingredient preparation
-			actual, err := testClients.main.GetValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID)
-			requireNotNilAndNoProblems(t, actual, err)
-
-			// assert valid ingredient preparation equality
-			checkValidIngredientPreparationEquality(t, exampleValidIngredientPreparation, actual)
-
-			// clean up valid ingredient preparation
-			assert.NoError(t, testClients.main.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID))
-		}
-	})
-}
-
-func (s *TestSuite) TestValidIngredientPreparations_Updating_Returns404ForNonexistentValidIngredientPreparation() {
-	s.runForEachClientExcept("it should return an error when trying to update something that does not exist", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
-			exampleValidIngredientPreparation.ID = nonexistentID
-
-			assert.Error(t, testClients.main.UpdateValidIngredientPreparation(ctx, exampleValidIngredientPreparation))
-		}
-	})
-}
-
-// convertValidIngredientPreparationToValidIngredientPreparationUpdateInput creates an ValidIngredientPreparationUpdateInput struct from a valid ingredient preparation.
-func convertValidIngredientPreparationToValidIngredientPreparationUpdateInput(x *types.ValidIngredientPreparation) *types.ValidIngredientPreparationUpdateInput {
-	return &types.ValidIngredientPreparationUpdateInput{
-		Notes:              x.Notes,
-		ValidIngredientID:  x.ValidIngredientID,
-		ValidPreparationID: x.ValidPreparationID,
-	}
-}
-
-func (s *TestSuite) TestValidIngredientPreparations_Updating() {
-	s.runForEachClientExcept("it should be possible to update a valid ingredient preparation", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// Create valid ingredient.
-			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			requireNotNilAndNoProblems(t, createdValidIngredient, err)
-
-			// Create valid preparation.
-			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			requireNotNilAndNoProblems(t, createdValidPreparation, err)
-
-			// create valid ingredient preparation
-			exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
-			exampleValidIngredientPreparation.ValidPreparationID = createdValidPreparation.ID
-			exampleValidIngredientPreparation.ValidIngredientID = createdValidIngredient.ID
-			exampleValidIngredientPreparationInput := fakes.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
-			createdValidIngredientPreparation, err := testClients.main.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
-			requireNotNilAndNoProblems(t, createdValidIngredientPreparation, err)
-
-			// change valid ingredient preparation
-			createdValidIngredientPreparation.Update(convertValidIngredientPreparationToValidIngredientPreparationUpdateInput(exampleValidIngredientPreparation))
-			assert.NoError(t, testClients.main.UpdateValidIngredientPreparation(ctx, createdValidIngredientPreparation))
-
-			// retrieve changed valid ingredient preparation
-			actual, err := testClients.main.GetValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID)
-			requireNotNilAndNoProblems(t, actual, err)
-
-			// assert valid ingredient preparation equality
-			checkValidIngredientPreparationEquality(t, exampleValidIngredientPreparation, actual)
-			assert.NotNil(t, actual.LastUpdatedOn)
-
-			auditLogEntries, err := testClients.admin.GetAuditLogForValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID)
-			require.NoError(t, err)
-
-			expectedAuditLogEntries := []*types.AuditLogEntry{
-				{EventType: audit.ValidIngredientPreparationCreationEvent},
-				{EventType: audit.ValidIngredientPreparationUpdateEvent},
+				expected = append(expected, createdValidIngredientPreparation)
 			}
-			validateAuditLogEntries(t, expectedAuditLogEntries, auditLogEntries, createdValidIngredientPreparation.ID, audit.ValidIngredientPreparationAssignmentKey)
 
-			// clean up valid ingredient preparation
-			assert.NoError(t, testClients.main.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID))
-		}
-	})
-}
+			// assert valid ingredient preparation list equality
+			actual, err := testClients.main.GetValidIngredientPreparations(ctx, nil)
+			requireNotNilAndNoProblems(t, actual, err)
+			assert.True(
+				t,
+				len(expected) <= len(actual.ValidIngredientPreparations),
+				"expected %d to be <= %d",
+				len(expected),
+				len(actual.ValidIngredientPreparations),
+			)
 
-func (s *TestSuite) TestValidIngredientPreparations_Archiving_Returns404ForNonexistentValidIngredientPreparation() {
-	s.runForEachClientExcept("it should return an error when trying to delete something that does not exist", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			assert.Error(t, testClients.main.ArchiveValidIngredientPreparation(ctx, nonexistentID))
-		}
-	})
-}
-
-func (s *TestSuite) TestValidIngredientPreparations_Archiving() {
-	s.runForEachClientExcept("it should be possible to delete a valid ingredient preparation", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// Create valid ingredient.
-			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			requireNotNilAndNoProblems(t, createdValidIngredient, err)
-
-			// Create valid preparation.
-			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			requireNotNilAndNoProblems(t, createdValidPreparation, err)
-
-			// create valid ingredient preparation
-			exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
-			exampleValidIngredientPreparation.ValidPreparationID = createdValidPreparation.ID
-			exampleValidIngredientPreparation.ValidIngredientID = createdValidIngredient.ID
-			exampleValidIngredientPreparationInput := fakes.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(exampleValidIngredientPreparation)
-			createdValidIngredientPreparation, err := testClients.main.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
-			requireNotNilAndNoProblems(t, createdValidIngredientPreparation, err)
-
-			// clean up valid ingredient preparation
-			assert.NoError(t, testClients.main.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID))
-
-			auditLogEntries, err := testClients.admin.GetAuditLogForValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID)
-			require.NoError(t, err)
-
-			expectedAuditLogEntries := []*types.AuditLogEntry{
-				{EventType: audit.ValidIngredientPreparationCreationEvent},
-				{EventType: audit.ValidIngredientPreparationArchiveEvent},
+			t.Log("cleaning up")
+			for _, createdValidIngredientPreparation := range expected {
+				assert.NoError(t, testClients.main.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID))
 			}
-			validateAuditLogEntries(t, expectedAuditLogEntries, auditLogEntries, createdValidIngredientPreparation.ID, audit.ValidIngredientPreparationAssignmentKey)
-		}
-	})
-}
-
-func (s *TestSuite) TestValidIngredientPreparations_Auditing_Returns404ForNonexistentValidIngredientPreparation() {
-	s.runForEachClientExcept("it should return an error when trying to audit something that does not exist", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			x, err := testClients.admin.GetAuditLogForValidIngredientPreparation(ctx, nonexistentID)
-
-			assert.NoError(t, err)
-			assert.Empty(t, x)
 		}
 	})
 }

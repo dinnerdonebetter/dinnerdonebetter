@@ -35,8 +35,8 @@ func (c *Client) fetchAuthTokenForAPIClient(ctx context.Context, httpClient *htt
 		RequestTime: time.Now().UTC().UnixNano(),
 	}
 
-	if c.householdID != 0 {
-		input.HouseholdID = c.householdID
+	if c.accountID != "" {
+		input.AccountID = c.accountID
 	}
 
 	logger := c.logger.WithValue(keys.APIClientClientIDKey, clientID)

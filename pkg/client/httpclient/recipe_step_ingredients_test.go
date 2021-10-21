@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"testing"
 
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 func TestRecipeStepIngredients(t *testing.T) {
@@ -23,8 +23,8 @@ type recipeStepIngredientsBaseSuite struct {
 	suite.Suite
 	ctx                         context.Context
 	exampleRecipeStepIngredient *types.RecipeStepIngredient
-	exampleRecipeID             uint64
-	exampleRecipeStepID         uint64
+	exampleRecipeID             string
+	exampleRecipeStepID         string
 }
 
 var _ suite.SetupTestSuite = (*recipeStepIngredientsBaseSuite)(nil)
@@ -43,74 +43,8 @@ type recipeStepIngredientsTestSuite struct {
 	recipeStepIngredientsBaseSuite
 }
 
-func (s *recipeStepIngredientsTestSuite) TestClient_RecipeStepIngredientExists() {
-	const expectedPathFormat = "/api/v1/recipes/%d/recipe_steps/%d/recipe_step_ingredients/%d"
-
-	s.Run("standard", func() {
-		t := s.T()
-
-		spec := newRequestSpec(true, http.MethodHead, "", expectedPathFormat, s.exampleRecipeID, s.exampleRecipeStepID, s.exampleRecipeStepIngredient.ID)
-
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
-		actual, err := c.RecipeStepIngredientExists(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, s.exampleRecipeStepIngredient.ID)
-
-		assert.NoError(t, err)
-		assert.True(t, actual)
-	})
-
-	s.Run("with invalid recipe ID", func() {
-		t := s.T()
-
-		c, _ := buildSimpleTestClient(t)
-		actual, err := c.RecipeStepIngredientExists(s.ctx, 0, s.exampleRecipeStepID, s.exampleRecipeStepIngredient.ID)
-
-		assert.Error(t, err)
-		assert.False(t, actual)
-	})
-
-	s.Run("with invalid recipe step ID", func() {
-		t := s.T()
-
-		c, _ := buildSimpleTestClient(t)
-		actual, err := c.RecipeStepIngredientExists(s.ctx, s.exampleRecipeID, 0, s.exampleRecipeStepIngredient.ID)
-
-		assert.Error(t, err)
-		assert.False(t, actual)
-	})
-
-	s.Run("with invalid recipe step ingredient ID", func() {
-		t := s.T()
-
-		c, _ := buildSimpleTestClient(t)
-		actual, err := c.RecipeStepIngredientExists(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, 0)
-
-		assert.Error(t, err)
-		assert.False(t, actual)
-	})
-
-	s.Run("with error building request", func() {
-		t := s.T()
-
-		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.RecipeStepIngredientExists(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, s.exampleRecipeStepIngredient.ID)
-
-		assert.Error(t, err)
-		assert.False(t, actual)
-	})
-
-	s.Run("with error executing request", func() {
-		t := s.T()
-
-		c, _ := buildTestClientThatWaitsTooLong(t)
-		actual, err := c.RecipeStepIngredientExists(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, s.exampleRecipeStepIngredient.ID)
-
-		assert.Error(t, err)
-		assert.False(t, actual)
-	})
-}
-
 func (s *recipeStepIngredientsTestSuite) TestClient_GetRecipeStepIngredient() {
-	const expectedPathFormat = "/api/v1/recipes/%d/recipe_steps/%d/recipe_step_ingredients/%d"
+	const expectedPathFormat = "/api/v1/recipes/%s/recipe_steps/%s/recipe_step_ingredients/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -128,7 +62,7 @@ func (s *recipeStepIngredientsTestSuite) TestClient_GetRecipeStepIngredient() {
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)
-		actual, err := c.GetRecipeStepIngredient(s.ctx, 0, s.exampleRecipeStepID, s.exampleRecipeStepIngredient.ID)
+		actual, err := c.GetRecipeStepIngredient(s.ctx, "", s.exampleRecipeStepID, s.exampleRecipeStepIngredient.ID)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -138,7 +72,7 @@ func (s *recipeStepIngredientsTestSuite) TestClient_GetRecipeStepIngredient() {
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)
-		actual, err := c.GetRecipeStepIngredient(s.ctx, s.exampleRecipeID, 0, s.exampleRecipeStepIngredient.ID)
+		actual, err := c.GetRecipeStepIngredient(s.ctx, s.exampleRecipeID, "", s.exampleRecipeStepIngredient.ID)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -148,7 +82,7 @@ func (s *recipeStepIngredientsTestSuite) TestClient_GetRecipeStepIngredient() {
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)
-		actual, err := c.GetRecipeStepIngredient(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, 0)
+		actual, err := c.GetRecipeStepIngredient(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, "")
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -177,7 +111,7 @@ func (s *recipeStepIngredientsTestSuite) TestClient_GetRecipeStepIngredient() {
 }
 
 func (s *recipeStepIngredientsTestSuite) TestClient_GetRecipeStepIngredients() {
-	const expectedPath = "/api/v1/recipes/%d/recipe_steps/%d/recipe_step_ingredients"
+	const expectedPath = "/api/v1/recipes/%s/recipe_steps/%s/recipe_step_ingredients"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -201,7 +135,7 @@ func (s *recipeStepIngredientsTestSuite) TestClient_GetRecipeStepIngredients() {
 		filter := (*types.QueryFilter)(nil)
 
 		c, _ := buildSimpleTestClient(t)
-		actual, err := c.GetRecipeStepIngredients(s.ctx, 0, s.exampleRecipeStepID, filter)
+		actual, err := c.GetRecipeStepIngredients(s.ctx, "", s.exampleRecipeStepID, filter)
 
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -213,7 +147,7 @@ func (s *recipeStepIngredientsTestSuite) TestClient_GetRecipeStepIngredients() {
 		filter := (*types.QueryFilter)(nil)
 
 		c, _ := buildSimpleTestClient(t)
-		actual, err := c.GetRecipeStepIngredients(s.ctx, s.exampleRecipeID, 0, filter)
+		actual, err := c.GetRecipeStepIngredients(s.ctx, s.exampleRecipeID, "", filter)
 
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -246,34 +180,34 @@ func (s *recipeStepIngredientsTestSuite) TestClient_GetRecipeStepIngredients() {
 }
 
 func (s *recipeStepIngredientsTestSuite) TestClient_CreateRecipeStepIngredient() {
-	const expectedPath = "/api/v1/recipes/%d/recipe_steps/%d/recipe_step_ingredients"
+	const expectedPath = "/api/v1/recipes/%s/recipe_steps/%s/recipe_step_ingredients"
 
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeRecipeStepIngredientCreationInput()
+		exampleInput := fakes.BuildFakeRecipeStepIngredientCreationRequestInput()
 		exampleInput.BelongsToRecipeStep = s.exampleRecipeStepID
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleRecipeID, s.exampleRecipeStepID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepIngredient)
+		c, _ := buildTestClientWithJSONResponse(t, spec, &types.PreWriteResponse{ID: s.exampleRecipeStepIngredient.ID})
 
 		actual, err := c.CreateRecipeStepIngredient(s.ctx, s.exampleRecipeID, exampleInput)
-		require.NotNil(t, actual)
+		require.NotEmpty(t, actual)
 		assert.NoError(t, err)
 
-		assert.Equal(t, s.exampleRecipeStepIngredient, actual)
+		assert.Equal(t, s.exampleRecipeStepIngredient.ID, actual)
 	})
 
 	s.Run("with invalid recipe ID", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeRecipeStepIngredientCreationInput()
+		exampleInput := fakes.BuildFakeRecipeStepIngredientCreationRequestInput()
 		exampleInput.BelongsToRecipeStep = s.exampleRecipeStepID
 
 		c, _ := buildSimpleTestClient(t)
 
-		actual, err := c.CreateRecipeStepIngredient(s.ctx, 0, exampleInput)
-		assert.Nil(t, actual)
+		actual, err := c.CreateRecipeStepIngredient(s.ctx, "", exampleInput)
+		assert.Empty(t, actual)
 		assert.Error(t, err)
 	})
 
@@ -283,7 +217,7 @@ func (s *recipeStepIngredientsTestSuite) TestClient_CreateRecipeStepIngredient()
 		c, _ := buildSimpleTestClient(t)
 
 		actual, err := c.CreateRecipeStepIngredient(s.ctx, s.exampleRecipeID, nil)
-		assert.Nil(t, actual)
+		assert.Empty(t, actual)
 		assert.Error(t, err)
 	})
 
@@ -291,39 +225,39 @@ func (s *recipeStepIngredientsTestSuite) TestClient_CreateRecipeStepIngredient()
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)
-		exampleInput := &types.RecipeStepIngredientCreationInput{}
+		exampleInput := &types.RecipeStepIngredientCreationRequestInput{}
 
 		actual, err := c.CreateRecipeStepIngredient(s.ctx, s.exampleRecipeID, exampleInput)
-		assert.Nil(t, actual)
+		assert.Empty(t, actual)
 		assert.Error(t, err)
 	})
 
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(s.exampleRecipeStepIngredient)
+		exampleInput := fakes.BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(s.exampleRecipeStepIngredient)
 
 		c := buildTestClientWithInvalidURL(t)
 
 		actual, err := c.CreateRecipeStepIngredient(s.ctx, s.exampleRecipeID, exampleInput)
-		assert.Nil(t, actual)
+		assert.Empty(t, actual)
 		assert.Error(t, err)
 	})
 
 	s.Run("with error executing request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(s.exampleRecipeStepIngredient)
+		exampleInput := fakes.BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(s.exampleRecipeStepIngredient)
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		actual, err := c.CreateRecipeStepIngredient(s.ctx, s.exampleRecipeID, exampleInput)
-		assert.Nil(t, actual)
+		assert.Empty(t, actual)
 		assert.Error(t, err)
 	})
 }
 
 func (s *recipeStepIngredientsTestSuite) TestClient_UpdateRecipeStepIngredient() {
-	const expectedPathFormat = "/api/v1/recipes/%d/recipe_steps/%d/recipe_step_ingredients/%d"
+	const expectedPathFormat = "/api/v1/recipes/%s/recipe_steps/%s/recipe_step_ingredients/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -340,7 +274,7 @@ func (s *recipeStepIngredientsTestSuite) TestClient_UpdateRecipeStepIngredient()
 
 		c, _ := buildSimpleTestClient(t)
 
-		err := c.UpdateRecipeStepIngredient(s.ctx, 0, s.exampleRecipeStepIngredient)
+		err := c.UpdateRecipeStepIngredient(s.ctx, "", s.exampleRecipeStepIngredient)
 		assert.Error(t, err)
 	})
 
@@ -373,7 +307,7 @@ func (s *recipeStepIngredientsTestSuite) TestClient_UpdateRecipeStepIngredient()
 }
 
 func (s *recipeStepIngredientsTestSuite) TestClient_ArchiveRecipeStepIngredient() {
-	const expectedPathFormat = "/api/v1/recipes/%d/recipe_steps/%d/recipe_step_ingredients/%d"
+	const expectedPathFormat = "/api/v1/recipes/%s/recipe_steps/%s/recipe_step_ingredients/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -390,7 +324,7 @@ func (s *recipeStepIngredientsTestSuite) TestClient_ArchiveRecipeStepIngredient(
 
 		c, _ := buildSimpleTestClient(t)
 
-		err := c.ArchiveRecipeStepIngredient(s.ctx, 0, s.exampleRecipeStepID, s.exampleRecipeStepIngredient.ID)
+		err := c.ArchiveRecipeStepIngredient(s.ctx, "", s.exampleRecipeStepID, s.exampleRecipeStepIngredient.ID)
 		assert.Error(t, err)
 	})
 
@@ -399,7 +333,7 @@ func (s *recipeStepIngredientsTestSuite) TestClient_ArchiveRecipeStepIngredient(
 
 		c, _ := buildSimpleTestClient(t)
 
-		err := c.ArchiveRecipeStepIngredient(s.ctx, s.exampleRecipeID, 0, s.exampleRecipeStepIngredient.ID)
+		err := c.ArchiveRecipeStepIngredient(s.ctx, s.exampleRecipeID, "", s.exampleRecipeStepIngredient.ID)
 		assert.Error(t, err)
 	})
 
@@ -408,7 +342,7 @@ func (s *recipeStepIngredientsTestSuite) TestClient_ArchiveRecipeStepIngredient(
 
 		c, _ := buildSimpleTestClient(t)
 
-		err := c.ArchiveRecipeStepIngredient(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, 0)
+		err := c.ArchiveRecipeStepIngredient(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, "")
 		assert.Error(t, err)
 	})
 
@@ -427,77 +361,6 @@ func (s *recipeStepIngredientsTestSuite) TestClient_ArchiveRecipeStepIngredient(
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		err := c.ArchiveRecipeStepIngredient(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, s.exampleRecipeStepIngredient.ID)
-		assert.Error(t, err)
-	})
-}
-
-func (s *recipeStepIngredientsTestSuite) TestClient_GetAuditLogForRecipeStepIngredient() {
-	const (
-		expectedPath   = "/api/v1/recipes/%d/recipe_steps/%d/recipe_step_ingredients/%d/audit"
-		expectedMethod = http.MethodGet
-	)
-
-	s.Run("standard", func() {
-		t := s.T()
-
-		spec := newRequestSpec(true, expectedMethod, "", expectedPath, s.exampleRecipeID, s.exampleRecipeStepID, s.exampleRecipeStepIngredient.ID)
-		exampleAuditLogEntryList := fakes.BuildFakeAuditLogEntryList().Entries
-
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleAuditLogEntryList)
-
-		actual, err := c.GetAuditLogForRecipeStepIngredient(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, s.exampleRecipeStepIngredient.ID)
-		require.NotNil(t, actual)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleAuditLogEntryList, actual)
-	})
-
-	s.Run("with invalid recipe ID", func() {
-		t := s.T()
-
-		c, _ := buildSimpleTestClient(t)
-
-		actual, err := c.GetAuditLogForRecipeStepIngredient(s.ctx, 0, s.exampleRecipeStepID, s.exampleRecipeStepIngredient.ID)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	s.Run("with invalid recipe step ID", func() {
-		t := s.T()
-
-		c, _ := buildSimpleTestClient(t)
-
-		actual, err := c.GetAuditLogForRecipeStepIngredient(s.ctx, s.exampleRecipeID, 0, s.exampleRecipeStepIngredient.ID)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	s.Run("with invalid recipe step ingredient ID", func() {
-		t := s.T()
-
-		c, _ := buildSimpleTestClient(t)
-
-		actual, err := c.GetAuditLogForRecipeStepIngredient(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, 0)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	s.Run("with error building request", func() {
-		t := s.T()
-
-		c := buildTestClientWithInvalidURL(t)
-
-		actual, err := c.GetAuditLogForRecipeStepIngredient(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, s.exampleRecipeStepIngredient.ID)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	s.Run("with error executing request", func() {
-		t := s.T()
-
-		c, _ := buildTestClientThatWaitsTooLong(t)
-
-		actual, err := c.GetAuditLogForRecipeStepIngredient(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, s.exampleRecipeStepIngredient.ID)
-		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }

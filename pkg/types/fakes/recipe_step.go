@@ -1,50 +1,26 @@
 package fakes
 
 import (
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
 	fake "github.com/brianvoe/gofakeit/v5"
+	"github.com/segmentio/ksuid"
+
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
 // BuildFakeRecipeStep builds a faked recipe step.
 func BuildFakeRecipeStep() *types.RecipeStep {
 	return &types.RecipeStep{
-		ID:                        uint64(fake.Uint32()),
-		ExternalID:                fake.UUID(),
+		ID:                        ksuid.New().String(),
 		Index:                     uint(fake.Uint32()),
-		PreparationID:             uint64(fake.Uint32()),
+		PreparationID:             fake.Word(),
 		PrerequisiteStep:          uint64(fake.Uint32()),
 		MinEstimatedTimeInSeconds: fake.Uint32(),
 		MaxEstimatedTimeInSeconds: fake.Uint32(),
 		TemperatureInCelsius:      func(x uint16) *uint16 { return &x }(fake.Uint16()),
 		Notes:                     fake.Word(),
-		Why:                       fake.Word(),
+		RecipeID:                  fake.Word(),
 		CreatedOn:                 uint64(uint32(fake.Date().Unix())),
-		BelongsToRecipe:           fake.Uint64(),
-		Ingredients:               BuildFakeRecipeStepIngredientList().RecipeStepIngredients,
-	}
-}
-
-// BuildFakeFullRecipeStep builds a faked recipe step.
-func BuildFakeFullRecipeStep() *types.FullRecipeStep {
-	return &types.FullRecipeStep{
-		ID:                        uint64(fake.Uint32()),
-		ExternalID:                fake.UUID(),
-		Index:                     uint(fake.Uint32()),
-		Preparation:               *BuildFakeValidPreparation(),
-		PrerequisiteStep:          uint64(fake.Uint32()),
-		MinEstimatedTimeInSeconds: fake.Uint32(),
-		MaxEstimatedTimeInSeconds: fake.Uint32(),
-		TemperatureInCelsius:      func(x uint16) *uint16 { return &x }(fake.Uint16()),
-		Notes:                     fake.Word(),
-		Why:                       fake.Word(),
-		CreatedOn:                 uint64(uint32(fake.Date().Unix())),
-		BelongsToRecipe:           fake.Uint64(),
-		Ingredients: []*types.FullRecipeStepIngredient{
-			BuildFakeFullRecipeStepIngredient(),
-			BuildFakeFullRecipeStepIngredient(),
-			BuildFakeFullRecipeStepIngredient(),
-		},
+		BelongsToRecipe:           fake.UUID(),
 	}
 }
 
@@ -66,10 +42,10 @@ func BuildFakeRecipeStepList() *types.RecipeStepList {
 	}
 }
 
-// BuildFakeRecipeStepUpdateInput builds a faked RecipeStepUpdateInput from a recipe step.
-func BuildFakeRecipeStepUpdateInput() *types.RecipeStepUpdateInput {
+// BuildFakeRecipeStepUpdateRequestInput builds a faked RecipeStepUpdateRequestInput from a recipe step.
+func BuildFakeRecipeStepUpdateRequestInput() *types.RecipeStepUpdateRequestInput {
 	recipeStep := BuildFakeRecipeStep()
-	return &types.RecipeStepUpdateInput{
+	return &types.RecipeStepUpdateRequestInput{
 		Index:                     recipeStep.Index,
 		PreparationID:             recipeStep.PreparationID,
 		PrerequisiteStep:          recipeStep.PrerequisiteStep,
@@ -77,14 +53,14 @@ func BuildFakeRecipeStepUpdateInput() *types.RecipeStepUpdateInput {
 		MaxEstimatedTimeInSeconds: recipeStep.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,
 		Notes:                     recipeStep.Notes,
-		Why:                       recipeStep.Why,
+		RecipeID:                  recipeStep.RecipeID,
 		BelongsToRecipe:           recipeStep.BelongsToRecipe,
 	}
 }
 
-// BuildFakeRecipeStepUpdateInputFromRecipeStep builds a faked RecipeStepUpdateInput from a recipe step.
-func BuildFakeRecipeStepUpdateInputFromRecipeStep(recipeStep *types.RecipeStep) *types.RecipeStepUpdateInput {
-	return &types.RecipeStepUpdateInput{
+// BuildFakeRecipeStepUpdateRequestInputFromRecipeStep builds a faked RecipeStepUpdateRequestInput from a recipe step.
+func BuildFakeRecipeStepUpdateRequestInputFromRecipeStep(recipeStep *types.RecipeStep) *types.RecipeStepUpdateRequestInput {
+	return &types.RecipeStepUpdateRequestInput{
 		Index:                     recipeStep.Index,
 		PreparationID:             recipeStep.PreparationID,
 		PrerequisiteStep:          recipeStep.PrerequisiteStep,
@@ -92,25 +68,21 @@ func BuildFakeRecipeStepUpdateInputFromRecipeStep(recipeStep *types.RecipeStep) 
 		MaxEstimatedTimeInSeconds: recipeStep.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,
 		Notes:                     recipeStep.Notes,
-		Why:                       recipeStep.Why,
+		RecipeID:                  recipeStep.RecipeID,
 		BelongsToRecipe:           recipeStep.BelongsToRecipe,
 	}
 }
 
-// BuildFakeRecipeStepCreationInput builds a faked RecipeStepCreationInput.
-func BuildFakeRecipeStepCreationInput() *types.RecipeStepCreationInput {
+// BuildFakeRecipeStepCreationRequestInput builds a faked RecipeStepCreationRequestInput.
+func BuildFakeRecipeStepCreationRequestInput() *types.RecipeStepCreationRequestInput {
 	recipeStep := BuildFakeRecipeStep()
-	return BuildFakeRecipeStepCreationInputFromRecipeStep(recipeStep)
+	return BuildFakeRecipeStepCreationRequestInputFromRecipeStep(recipeStep)
 }
 
-// BuildFakeRecipeStepCreationInputFromRecipeStep builds a faked RecipeStepCreationInput from a recipe step.
-func BuildFakeRecipeStepCreationInputFromRecipeStep(recipeStep *types.RecipeStep) *types.RecipeStepCreationInput {
-	ingredients := []*types.RecipeStepIngredientCreationInput{}
-	for _, i := range recipeStep.Ingredients {
-		ingredients = append(ingredients, BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(i))
-	}
-
-	return &types.RecipeStepCreationInput{
+// BuildFakeRecipeStepCreationRequestInputFromRecipeStep builds a faked RecipeStepCreationRequestInput from a recipe step.
+func BuildFakeRecipeStepCreationRequestInputFromRecipeStep(recipeStep *types.RecipeStep) *types.RecipeStepCreationRequestInput {
+	return &types.RecipeStepCreationRequestInput{
+		ID:                        recipeStep.ID,
 		Index:                     recipeStep.Index,
 		PreparationID:             recipeStep.PreparationID,
 		PrerequisiteStep:          recipeStep.PrerequisiteStep,
@@ -118,8 +90,29 @@ func BuildFakeRecipeStepCreationInputFromRecipeStep(recipeStep *types.RecipeStep
 		MaxEstimatedTimeInSeconds: recipeStep.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,
 		Notes:                     recipeStep.Notes,
-		Why:                       recipeStep.Why,
+		RecipeID:                  recipeStep.RecipeID,
 		BelongsToRecipe:           recipeStep.BelongsToRecipe,
-		Ingredients:               ingredients,
+	}
+}
+
+// BuildFakeRecipeStepDatabaseCreationInput builds a faked RecipeStepDatabaseCreationInput.
+func BuildFakeRecipeStepDatabaseCreationInput() *types.RecipeStepDatabaseCreationInput {
+	recipeStep := BuildFakeRecipeStep()
+	return BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(recipeStep)
+}
+
+// BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep builds a faked RecipeStepDatabaseCreationInput from a recipe step.
+func BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(recipeStep *types.RecipeStep) *types.RecipeStepDatabaseCreationInput {
+	return &types.RecipeStepDatabaseCreationInput{
+		ID:                        recipeStep.ID,
+		Index:                     recipeStep.Index,
+		PreparationID:             recipeStep.PreparationID,
+		PrerequisiteStep:          recipeStep.PrerequisiteStep,
+		MinEstimatedTimeInSeconds: recipeStep.MinEstimatedTimeInSeconds,
+		MaxEstimatedTimeInSeconds: recipeStep.MaxEstimatedTimeInSeconds,
+		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,
+		Notes:                     recipeStep.Notes,
+		RecipeID:                  recipeStep.RecipeID,
+		BelongsToRecipe:           recipeStep.BelongsToRecipe,
 	}
 }

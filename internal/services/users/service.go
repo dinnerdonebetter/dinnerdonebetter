@@ -33,12 +33,12 @@ type (
 	// service handles our users.
 	service struct {
 		userDataManager           types.UserDataManager
-		householdDataManager      types.HouseholdDataManager
+		accountDataManager        types.AccountDataManager
 		authSettings              *authservice.Config
 		authenticator             authentication.Authenticator
 		logger                    logging.Logger
 		encoderDecoder            encoding.ServerEncoderDecoder
-		userIDFetcher             func(*http.Request) uint64
+		userIDFetcher             func(*http.Request) string
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
 		userCounter               metrics.UnitCounter
 		secretGenerator           random.Generator
@@ -53,7 +53,7 @@ func ProvideUsersService(
 	authSettings *authservice.Config,
 	logger logging.Logger,
 	userDataManager types.UserDataManager,
-	householdDataManager types.HouseholdDataManager,
+	accountDataManager types.AccountDataManager,
 	authenticator authentication.Authenticator,
 	encoder encoding.ServerEncoderDecoder,
 	counterProvider metrics.UnitCounterProvider,
@@ -64,9 +64,9 @@ func ProvideUsersService(
 	return &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
 		userDataManager:           userDataManager,
-		householdDataManager:      householdDataManager,
+		accountDataManager:        accountDataManager,
 		authenticator:             authenticator,
-		userIDFetcher:             routeParamManager.BuildRouteParamIDFetcher(logger, UserIDURIParamKey, "user"),
+		userIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(UserIDURIParamKey),
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		encoderDecoder:            encoder,
 		authSettings:              authSettings,

@@ -16,43 +16,14 @@ const (
 	validInstrumentsBasePath = "valid_instruments"
 )
 
-// BuildValidInstrumentExistsRequest builds an HTTP request for checking the existence of a valid instrument.
-func (b *Builder) BuildValidInstrumentExistsRequest(ctx context.Context, validInstrumentID uint64) (*http.Request, error) {
-	ctx, span := b.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := b.logger
-
-	if validInstrumentID == 0 {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
-	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
-
-	uri := b.BuildURL(
-		ctx,
-		nil,
-		validInstrumentsBasePath,
-		id(validInstrumentID),
-	)
-	tracing.AttachRequestURIToSpan(span, uri)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodHead, uri, nil)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
-	}
-
-	return req, nil
-}
-
 // BuildGetValidInstrumentRequest builds an HTTP request for fetching a valid instrument.
-func (b *Builder) BuildGetValidInstrumentRequest(ctx context.Context, validInstrumentID uint64) (*http.Request, error) {
+func (b *Builder) BuildGetValidInstrumentRequest(ctx context.Context, validInstrumentID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := b.logger
 
-	if validInstrumentID == 0 {
+	if validInstrumentID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
@@ -62,7 +33,7 @@ func (b *Builder) BuildGetValidInstrumentRequest(ctx context.Context, validInstr
 		ctx,
 		nil,
 		validInstrumentsBasePath,
-		id(validInstrumentID),
+		validInstrumentID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
@@ -79,9 +50,7 @@ func (b *Builder) BuildSearchValidInstrumentsRequest(ctx context.Context, query 
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
-
-	logger = logger.WithValue(types.SearchQueryKey, query).WithValue(types.LimitQueryKey, limit)
+	logger := b.logger.WithValue(types.SearchQueryKey, query).WithValue(types.LimitQueryKey, limit)
 
 	params := url.Values{}
 	params.Set(types.SearchQueryKey, query)
@@ -127,7 +96,7 @@ func (b *Builder) BuildGetValidInstrumentsRequest(ctx context.Context, filter *t
 }
 
 // BuildCreateValidInstrumentRequest builds an HTTP request for creating a valid instrument.
-func (b *Builder) BuildCreateValidInstrumentRequest(ctx context.Context, input *types.ValidInstrumentCreationInput) (*http.Request, error) {
+func (b *Builder) BuildCreateValidInstrumentRequest(ctx context.Context, input *types.ValidInstrumentCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -174,7 +143,7 @@ func (b *Builder) BuildUpdateValidInstrumentRequest(ctx context.Context, validIn
 		ctx,
 		nil,
 		validInstrumentsBasePath,
-		strconv.FormatUint(validInstrument.ID, 10),
+		validInstrument.ID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
@@ -187,13 +156,13 @@ func (b *Builder) BuildUpdateValidInstrumentRequest(ctx context.Context, validIn
 }
 
 // BuildArchiveValidInstrumentRequest builds an HTTP request for archiving a valid instrument.
-func (b *Builder) BuildArchiveValidInstrumentRequest(ctx context.Context, validInstrumentID uint64) (*http.Request, error) {
+func (b *Builder) BuildArchiveValidInstrumentRequest(ctx context.Context, validInstrumentID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := b.logger
 
-	if validInstrumentID == 0 {
+	if validInstrumentID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
@@ -203,41 +172,11 @@ func (b *Builder) BuildArchiveValidInstrumentRequest(ctx context.Context, validI
 		ctx,
 		nil,
 		validInstrumentsBasePath,
-		id(validInstrumentID),
+		validInstrumentID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
-	}
-
-	return req, nil
-}
-
-// BuildGetAuditLogForValidInstrumentRequest builds an HTTP request for fetching a list of audit log entries pertaining to a valid instrument.
-func (b *Builder) BuildGetAuditLogForValidInstrumentRequest(ctx context.Context, validInstrumentID uint64) (*http.Request, error) {
-	ctx, span := b.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := b.logger
-
-	if validInstrumentID == 0 {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
-	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
-
-	uri := b.BuildURL(
-		ctx,
-		nil,
-		validInstrumentsBasePath,
-		id(validInstrumentID),
-		"audit",
-	)
-	tracing.AttachRequestURIToSpan(span, uri)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}

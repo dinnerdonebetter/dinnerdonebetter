@@ -4,12 +4,11 @@ import (
 	"context"
 	"database/sql"
 
-	"gitlab.com/prixfixe/prixfixe/internal/database/querybuilding"
-	mockquerybuilding "gitlab.com/prixfixe/prixfixe/internal/database/querybuilding/mock"
+	"github.com/alexedwards/scs/v2"
+	"github.com/stretchr/testify/mock"
+
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
-
-	"github.com/stretchr/testify/mock"
 )
 
 var _ DataManager = (*MockDatabase)(nil)
@@ -17,20 +16,20 @@ var _ DataManager = (*MockDatabase)(nil)
 // BuildMockDatabase builds a mock database.
 func BuildMockDatabase() *MockDatabase {
 	return &MockDatabase{
-		AuditLogEntryDataManager:              &mocktypes.AuditLogEntryDataManager{},
-		HouseholdDataManager:                  &mocktypes.HouseholdDataManager{},
-		HouseholdUserMembershipDataManager:    &mocktypes.HouseholdUserMembershipDataManager{},
+		AccountDataManager:                    &mocktypes.AccountDataManager{},
+		AccountUserMembershipDataManager:      &mocktypes.AccountUserMembershipDataManager{},
 		ValidInstrumentDataManager:            &mocktypes.ValidInstrumentDataManager{},
-		ValidPreparationDataManager:           &mocktypes.ValidPreparationDataManager{},
 		ValidIngredientDataManager:            &mocktypes.ValidIngredientDataManager{},
+		ValidPreparationDataManager:           &mocktypes.ValidPreparationDataManager{},
 		ValidIngredientPreparationDataManager: &mocktypes.ValidIngredientPreparationDataManager{},
-		ValidPreparationInstrumentDataManager: &mocktypes.ValidPreparationInstrumentDataManager{},
 		RecipeDataManager:                     &mocktypes.RecipeDataManager{},
 		RecipeStepDataManager:                 &mocktypes.RecipeStepDataManager{},
+		RecipeStepInstrumentDataManager:       &mocktypes.RecipeStepInstrumentDataManager{},
 		RecipeStepIngredientDataManager:       &mocktypes.RecipeStepIngredientDataManager{},
 		RecipeStepProductDataManager:          &mocktypes.RecipeStepProductDataManager{},
-		InvitationDataManager:                 &mocktypes.InvitationDataManager{},
-		ReportDataManager:                     &mocktypes.ReportDataManager{},
+		MealPlanDataManager:                   &mocktypes.MealPlanDataManager{},
+		MealPlanOptionDataManager:             &mocktypes.MealPlanOptionDataManager{},
+		MealPlanOptionVoteDataManager:         &mocktypes.MealPlanOptionVoteDataManager{},
 		UserDataManager:                       &mocktypes.UserDataManager{},
 		AdminUserDataManager:                  &mocktypes.AdminUserDataManager{},
 		APIClientDataManager:                  &mocktypes.APIClientDataManager{},
@@ -42,24 +41,29 @@ func BuildMockDatabase() *MockDatabase {
 // So `mockDB.On("GetUserByUsername"...)` is destined to fail, whereas `mockDB.UserDataManager.On("GetUserByUsername"...)` would do what you want it to do.
 type MockDatabase struct {
 	*mocktypes.AdminUserDataManager
-	*mocktypes.AuditLogEntryDataManager
-	*mocktypes.HouseholdUserMembershipDataManager
+	*mocktypes.AccountUserMembershipDataManager
 	*mocktypes.ValidInstrumentDataManager
-	*mocktypes.ValidPreparationDataManager
 	*mocktypes.ValidIngredientDataManager
+	*mocktypes.ValidPreparationDataManager
 	*mocktypes.ValidIngredientPreparationDataManager
-	*mocktypes.ValidPreparationInstrumentDataManager
 	*mocktypes.RecipeDataManager
 	*mocktypes.RecipeStepDataManager
+	*mocktypes.RecipeStepInstrumentDataManager
 	*mocktypes.RecipeStepIngredientDataManager
 	*mocktypes.RecipeStepProductDataManager
-	*mocktypes.InvitationDataManager
-	*mocktypes.ReportDataManager
+	*mocktypes.MealPlanDataManager
+	*mocktypes.MealPlanOptionDataManager
+	*mocktypes.MealPlanOptionVoteDataManager
 	*mocktypes.UserDataManager
 	*mocktypes.APIClientDataManager
 	*mocktypes.WebhookDataManager
-	*mocktypes.HouseholdDataManager
+	*mocktypes.AccountDataManager
 	mock.Mock
+}
+
+// ProvideSessionStore satisfies the DataManager interface.
+func (m *MockDatabase) ProvideSessionStore() scs.Store {
+	return m.Called().Get(0).(scs.Store)
 }
 
 // Migrate satisfies the DataManager interface.
@@ -76,67 +80,6 @@ func (m *MockDatabase) IsReady(ctx context.Context, maxAttempts uint8) (ready bo
 func (m *MockDatabase) BeginTx(ctx context.Context, options *sql.TxOptions) (*sql.Tx, error) {
 	args := m.Called(ctx, options)
 	return args.Get(0).(*sql.Tx), args.Error(1)
-}
-
-var _ querybuilding.SQLQueryBuilder = (*MockSQLQueryBuilder)(nil)
-
-// BuildMockSQLQueryBuilder builds a MockSQLQueryBuilder.
-func BuildMockSQLQueryBuilder() *MockSQLQueryBuilder {
-	return &MockSQLQueryBuilder{
-		HouseholdSQLQueryBuilder:                  &mockquerybuilding.HouseholdSQLQueryBuilder{},
-		HouseholdUserMembershipSQLQueryBuilder:    &mockquerybuilding.HouseholdUserMembershipSQLQueryBuilder{},
-		AuditLogEntrySQLQueryBuilder:              &mockquerybuilding.AuditLogEntrySQLQueryBuilder{},
-		ValidInstrumentSQLQueryBuilder:            &mockquerybuilding.ValidInstrumentSQLQueryBuilder{},
-		ValidPreparationSQLQueryBuilder:           &mockquerybuilding.ValidPreparationSQLQueryBuilder{},
-		ValidIngredientSQLQueryBuilder:            &mockquerybuilding.ValidIngredientSQLQueryBuilder{},
-		ValidIngredientPreparationSQLQueryBuilder: &mockquerybuilding.ValidIngredientPreparationSQLQueryBuilder{},
-		ValidPreparationInstrumentSQLQueryBuilder: &mockquerybuilding.ValidPreparationInstrumentSQLQueryBuilder{},
-		RecipeSQLQueryBuilder:                     &mockquerybuilding.RecipeSQLQueryBuilder{},
-		RecipeStepSQLQueryBuilder:                 &mockquerybuilding.RecipeStepSQLQueryBuilder{},
-		RecipeStepIngredientSQLQueryBuilder:       &mockquerybuilding.RecipeStepIngredientSQLQueryBuilder{},
-		RecipeStepProductSQLQueryBuilder:          &mockquerybuilding.RecipeStepProductSQLQueryBuilder{},
-		InvitationSQLQueryBuilder:                 &mockquerybuilding.InvitationSQLQueryBuilder{},
-		ReportSQLQueryBuilder:                     &mockquerybuilding.ReportSQLQueryBuilder{},
-		APIClientSQLQueryBuilder:                  &mockquerybuilding.APIClientSQLQueryBuilder{},
-		UserSQLQueryBuilder:                       &mockquerybuilding.UserSQLQueryBuilder{},
-		WebhookSQLQueryBuilder:                    &mockquerybuilding.WebhookSQLQueryBuilder{},
-	}
-}
-
-// MockSQLQueryBuilder is our mock database structure.
-type MockSQLQueryBuilder struct {
-	*mockquerybuilding.UserSQLQueryBuilder
-	*mockquerybuilding.HouseholdSQLQueryBuilder
-	*mockquerybuilding.HouseholdUserMembershipSQLQueryBuilder
-	*mockquerybuilding.AuditLogEntrySQLQueryBuilder
-	*mockquerybuilding.ValidInstrumentSQLQueryBuilder
-	*mockquerybuilding.ValidPreparationSQLQueryBuilder
-	*mockquerybuilding.ValidIngredientSQLQueryBuilder
-	*mockquerybuilding.ValidIngredientPreparationSQLQueryBuilder
-	*mockquerybuilding.ValidPreparationInstrumentSQLQueryBuilder
-	*mockquerybuilding.RecipeSQLQueryBuilder
-	*mockquerybuilding.RecipeStepSQLQueryBuilder
-	*mockquerybuilding.RecipeStepIngredientSQLQueryBuilder
-	*mockquerybuilding.RecipeStepProductSQLQueryBuilder
-	*mockquerybuilding.InvitationSQLQueryBuilder
-	*mockquerybuilding.ReportSQLQueryBuilder
-	*mockquerybuilding.APIClientSQLQueryBuilder
-	*mockquerybuilding.WebhookSQLQueryBuilder
-	mock.Mock
-}
-
-// BuildMigrationFunc implements our interface.
-func (m *MockSQLQueryBuilder) BuildMigrationFunc(db *sql.DB) func() {
-	args := m.Called(db)
-
-	return args.Get(0).(func())
-}
-
-// BuildTestUserCreationQuery implements our interface.
-func (m *MockSQLQueryBuilder) BuildTestUserCreationQuery(ctx context.Context, testUserConfig *types.TestUserCreationConfig) (query string, args []interface{}) {
-	returnValues := m.Called(ctx, testUserConfig)
-
-	return returnValues.Get(0).(string), returnValues.Get(1).([]interface{})
 }
 
 var _ ResultIterator = (*MockResultIterator)(nil)

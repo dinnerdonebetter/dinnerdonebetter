@@ -7,19 +7,14 @@ import (
 	"io"
 	"time"
 
+	"github.com/alexedwards/scs/v2"
+
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
 var (
-	_ Scanner = (*sql.Row)(nil)
-	_ Querier = (*sql.DB)(nil)
-	_ Querier = (*sql.Tx)(nil)
-
 	// ErrDatabaseNotReady indicates the given database is not ready.
 	ErrDatabaseNotReady = errors.New("database is not ready yet")
-
-	// ErrUniqueConstraintViolation is what we return when you try to create a duplicate entry on a table with a unique constraint.
-	ErrUniqueConstraintViolation = errors.New("an entry like this already exists in the database")
 )
 
 type (
@@ -36,8 +31,8 @@ type (
 		io.Closer
 	}
 
-	// Querier is a subset interface for sql.{DB|Tx} objects.
-	Querier interface {
+	// SQLQueryExecutor is a subset interface for sql.{DB|Tx} objects.
+	SQLQueryExecutor interface {
 		ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
 		QueryContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error)
 		QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row
@@ -53,26 +48,25 @@ type (
 	DataManager interface {
 		Migrate(ctx context.Context, maxAttempts uint8, testUserConfig *types.TestUserCreationConfig) error
 		IsReady(ctx context.Context, maxAttempts uint8) (ready bool)
+		ProvideSessionStore() scs.Store
 
 		types.AdminUserDataManager
-		types.HouseholdDataManager
-		types.HouseholdUserMembershipDataManager
+		types.AccountDataManager
+		types.AccountUserMembershipDataManager
 		types.UserDataManager
-		types.AuditLogEntryDataManager
 		types.APIClientDataManager
 		types.WebhookDataManager
 		types.ValidInstrumentDataManager
-		types.ValidPreparationDataManager
 		types.ValidIngredientDataManager
+		types.ValidPreparationDataManager
 		types.ValidIngredientPreparationDataManager
-		types.ValidPreparationInstrumentDataManager
 		types.RecipeDataManager
 		types.RecipeStepDataManager
+		types.RecipeStepInstrumentDataManager
 		types.RecipeStepIngredientDataManager
 		types.RecipeStepProductDataManager
-		types.InvitationDataManager
-		types.ReportDataManager
-		types.AdminAuditManager
-		types.AuthAuditManager
+		types.MealPlanDataManager
+		types.MealPlanOptionDataManager
+		types.MealPlanOptionVoteDataManager
 	}
 )

@@ -7,14 +7,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIsValidHouseholdStatus(T *testing.T) {
+func TestIsValidAccountStatus(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		assert.True(t, IsValidHouseholdStatus(string(GoodStandingHouseholdStatus)))
-		assert.False(t, IsValidHouseholdStatus("blah"))
+		assert.True(t, IsValidAccountStatus(string(GoodStandingAccountStatus)))
+		assert.False(t, IsValidAccountStatus("blah"))
 	})
 }
 
@@ -45,7 +45,7 @@ func TestUser_IsBanned(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		x := &User{ServiceHouseholdStatus: BannedUserHouseholdStatus}
+		x := &User{ServiceAccountStatus: BannedUserAccountStatus}
 
 		assert.True(t, x.IsBanned())
 	})
@@ -92,7 +92,7 @@ func TestTOTPSecretVerificationInput_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		x := &TOTPSecretVerificationInput{
-			UserID:    123,
+			UserID:    "123",
 			TOTPToken: "123456",
 		}
 

@@ -6,12 +6,12 @@ import (
 	"net/url"
 	"time"
 
-	keys "gitlab.com/prixfixe/prixfixe/internal/observability/keys"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
 	useragent "github.com/mssola/user_agent"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
+
+	keys "gitlab.com/prixfixe/prixfixe/internal/observability/keys"
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
 func attachUint8ToSpan(span trace.Span, attachmentKey string, id uint8) {
@@ -56,43 +56,26 @@ func AttachFilterToSpan(span trace.Span, page uint64, limit uint8, sortBy string
 	attachStringToSpan(span, keys.FilterSortByKey, sortBy)
 }
 
-// AttachAuditLogEntryIDToSpan attaches an audit log entry ID to a given span.
-func AttachAuditLogEntryIDToSpan(span trace.Span, entryID uint64) {
-	attachUint64ToSpan(span, keys.AuditLogEntryIDKey, entryID)
+// AttachAccountIDToSpan provides a consistent way to attach an account's ID to a span.
+func AttachAccountIDToSpan(span trace.Span, accountID string) {
+	attachStringToSpan(span, keys.AccountIDKey, accountID)
 }
 
-// AttachAuditLogEntryEventTypeToSpan attaches an audit log entry ID to a given span.
-func AttachAuditLogEntryEventTypeToSpan(span trace.Span, eventType string) {
-	attachStringToSpan(span, keys.AuditLogEntryEventTypeKey, eventType)
-}
-
-// AttachHouseholdIDToSpan provides a consistent way to attach an household's ID to a span.
-func AttachHouseholdIDToSpan(span trace.Span, householdID uint64) {
-	attachUint64ToSpan(span, keys.HouseholdIDKey, householdID)
-}
-
-// AttachActiveHouseholdIDToSpan provides a consistent way to attach an household's ID to a span.
-func AttachActiveHouseholdIDToSpan(span trace.Span, householdID uint64) {
-	attachUint64ToSpan(span, keys.ActiveHouseholdIDKey, householdID)
+// AttachActiveAccountIDToSpan provides a consistent way to attach an account's ID to a span.
+func AttachActiveAccountIDToSpan(span trace.Span, accountID string) {
+	attachStringToSpan(span, keys.ActiveAccountIDKey, accountID)
 }
 
 // AttachRequestingUserIDToSpan provides a consistent way to attach a user's ID to a span.
-func AttachRequestingUserIDToSpan(span trace.Span, userID uint64) {
-	attachUint64ToSpan(span, keys.RequesterIDKey, userID)
-}
-
-// AttachChangeSummarySpan provides a consistent way to attach a SessionContextData object to a span.
-func AttachChangeSummarySpan(span trace.Span, typeName string, changes []*types.FieldChangeSummary) {
-	for i, change := range changes {
-		span.SetAttributes(attribute.Any(fmt.Sprintf("%s.field_changes.%d", typeName, i), change))
-	}
+func AttachRequestingUserIDToSpan(span trace.Span, userID string) {
+	attachStringToSpan(span, keys.RequesterIDKey, userID)
 }
 
 // AttachSessionContextDataToSpan provides a consistent way to attach a SessionContextData object to a span.
 func AttachSessionContextDataToSpan(span trace.Span, sessionCtxData *types.SessionContextData) {
 	if sessionCtxData != nil {
 		AttachRequestingUserIDToSpan(span, sessionCtxData.Requester.UserID)
-		AttachActiveHouseholdIDToSpan(span, sessionCtxData.ActiveHouseholdID)
+		AttachActiveAccountIDToSpan(span, sessionCtxData.ActiveAccountID)
 		if sessionCtxData.Requester.ServicePermissions != nil {
 			attachBooleanToSpan(span, keys.UserIsServiceAdminKey, sessionCtxData.Requester.ServicePermissions.IsServiceAdmin())
 		}
@@ -100,8 +83,8 @@ func AttachSessionContextDataToSpan(span trace.Span, sessionCtxData *types.Sessi
 }
 
 // AttachAPIClientDatabaseIDToSpan is a consistent way to attach an API client's database row ID to a span.
-func AttachAPIClientDatabaseIDToSpan(span trace.Span, clientID uint64) {
-	attachUint64ToSpan(span, keys.APIClientDatabaseIDKey, clientID)
+func AttachAPIClientDatabaseIDToSpan(span trace.Span, clientID string) {
+	attachStringToSpan(span, keys.APIClientDatabaseIDKey, clientID)
 }
 
 // AttachAPIClientClientIDToSpan is a consistent way to attach an API client's ID to a span.
@@ -118,8 +101,8 @@ func AttachUserToSpan(span trace.Span, user *types.User) {
 }
 
 // AttachUserIDToSpan provides a consistent way to attach a user's ID to a span.
-func AttachUserIDToSpan(span trace.Span, userID uint64) {
-	attachUint64ToSpan(span, keys.UserIDKey, userID)
+func AttachUserIDToSpan(span trace.Span, userID string) {
+	attachStringToSpan(span, keys.UserIDKey, userID)
 }
 
 // AttachUsernameToSpan provides a consistent way to attach a user's username to a span.
@@ -128,8 +111,8 @@ func AttachUsernameToSpan(span trace.Span, username string) {
 }
 
 // AttachWebhookIDToSpan provides a consistent way to attach a webhook's ID to a span.
-func AttachWebhookIDToSpan(span trace.Span, webhookID uint64) {
-	attachUint64ToSpan(span, keys.WebhookIDKey, webhookID)
+func AttachWebhookIDToSpan(span trace.Span, webhookID string) {
+	attachStringToSpan(span, keys.WebhookIDKey, webhookID)
 }
 
 // AttachURLToSpan attaches a given URI to a span.
@@ -147,22 +130,6 @@ func AttachRequestToSpan(span trace.Span, req *http.Request) {
 	if req != nil {
 		attachStringToSpan(span, keys.RequestURIKey, req.URL.String())
 		attachStringToSpan(span, keys.RequestMethodKey, req.Method)
-
-		htmxHeaderSpanKeys := map[string]string{
-			"HX-Prompt":                  "htmx.prompt",
-			"HX-Target":                  "htmx.target",
-			"HX-Request":                 "htmx.request",
-			"HX-Trigger":                 "htmx.trigger",
-			"HX-Current-URL":             "htmx.currentURL",
-			"HX-Trigger-LabelName":       "htmx.triggerName",
-			"HX-History-Restore-Request": "htmx.historyRestoreRequest",
-		}
-
-		for header, spanKey := range htmxHeaderSpanKeys {
-			if val := req.Header.Get(header); val != "" {
-				attachStringToSpan(span, spanKey, val)
-			}
-		}
 
 		for k, v := range req.Header {
 			attachSliceToSpan(span, fmt.Sprintf("%s.%s", keys.RequestHeadersKey, k), v)
@@ -234,56 +201,61 @@ func AttachUserAgentDataToSpan(span trace.Span, ua *useragent.UserAgent) {
 }
 
 // AttachValidInstrumentIDToSpan attaches a valid instrument ID to a given span.
-func AttachValidInstrumentIDToSpan(span trace.Span, validInstrumentID uint64) {
-	attachUint64ToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
-}
-
-// AttachValidPreparationIDToSpan attaches a valid preparation ID to a given span.
-func AttachValidPreparationIDToSpan(span trace.Span, validPreparationID uint64) {
-	attachUint64ToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
+func AttachValidInstrumentIDToSpan(span trace.Span, validInstrumentID string) {
+	attachStringToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
 }
 
 // AttachValidIngredientIDToSpan attaches a valid ingredient ID to a given span.
-func AttachValidIngredientIDToSpan(span trace.Span, validIngredientID uint64) {
-	attachUint64ToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
+func AttachValidIngredientIDToSpan(span trace.Span, validIngredientID string) {
+	attachStringToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
+}
+
+// AttachValidPreparationIDToSpan attaches a valid preparation ID to a given span.
+func AttachValidPreparationIDToSpan(span trace.Span, validPreparationID string) {
+	attachStringToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 }
 
 // AttachValidIngredientPreparationIDToSpan attaches a valid ingredient preparation ID to a given span.
-func AttachValidIngredientPreparationIDToSpan(span trace.Span, validIngredientPreparationID uint64) {
-	attachUint64ToSpan(span, keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
-}
-
-// AttachValidPreparationInstrumentIDToSpan attaches a valid preparation instrument ID to a given span.
-func AttachValidPreparationInstrumentIDToSpan(span trace.Span, validPreparationInstrumentID uint64) {
-	attachUint64ToSpan(span, keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
+func AttachValidIngredientPreparationIDToSpan(span trace.Span, validIngredientPreparationID string) {
+	attachStringToSpan(span, keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 }
 
 // AttachRecipeIDToSpan attaches a recipe ID to a given span.
-func AttachRecipeIDToSpan(span trace.Span, recipeID uint64) {
-	attachUint64ToSpan(span, keys.RecipeIDKey, recipeID)
+func AttachRecipeIDToSpan(span trace.Span, recipeID string) {
+	attachStringToSpan(span, keys.RecipeIDKey, recipeID)
 }
 
 // AttachRecipeStepIDToSpan attaches a recipe step ID to a given span.
-func AttachRecipeStepIDToSpan(span trace.Span, recipeStepID uint64) {
-	attachUint64ToSpan(span, keys.RecipeStepIDKey, recipeStepID)
+func AttachRecipeStepIDToSpan(span trace.Span, recipeStepID string) {
+	attachStringToSpan(span, keys.RecipeStepIDKey, recipeStepID)
+}
+
+// AttachRecipeStepInstrumentIDToSpan attaches a recipe step instrument ID to a given span.
+func AttachRecipeStepInstrumentIDToSpan(span trace.Span, recipeStepInstrumentID string) {
+	attachStringToSpan(span, keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 }
 
 // AttachRecipeStepIngredientIDToSpan attaches a recipe step ingredient ID to a given span.
-func AttachRecipeStepIngredientIDToSpan(span trace.Span, recipeStepIngredientID uint64) {
-	attachUint64ToSpan(span, keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
+func AttachRecipeStepIngredientIDToSpan(span trace.Span, recipeStepIngredientID string) {
+	attachStringToSpan(span, keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 }
 
 // AttachRecipeStepProductIDToSpan attaches a recipe step product ID to a given span.
-func AttachRecipeStepProductIDToSpan(span trace.Span, recipeStepProductID uint64) {
-	attachUint64ToSpan(span, keys.RecipeStepProductIDKey, recipeStepProductID)
+func AttachRecipeStepProductIDToSpan(span trace.Span, recipeStepProductID string) {
+	attachStringToSpan(span, keys.RecipeStepProductIDKey, recipeStepProductID)
 }
 
-// AttachInvitationIDToSpan attaches an invitation ID to a given span.
-func AttachInvitationIDToSpan(span trace.Span, invitationID uint64) {
-	attachUint64ToSpan(span, keys.InvitationIDKey, invitationID)
+// AttachMealPlanIDToSpan attaches a meal plan ID to a given span.
+func AttachMealPlanIDToSpan(span trace.Span, mealPlanID string) {
+	attachStringToSpan(span, keys.MealPlanIDKey, mealPlanID)
 }
 
-// AttachReportIDToSpan attaches a report ID to a given span.
-func AttachReportIDToSpan(span trace.Span, reportID uint64) {
-	attachUint64ToSpan(span, keys.ReportIDKey, reportID)
+// AttachMealPlanOptionIDToSpan attaches a meal plan option ID to a given span.
+func AttachMealPlanOptionIDToSpan(span trace.Span, mealPlanOptionID string) {
+	attachStringToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
+}
+
+// AttachMealPlanOptionVoteIDToSpan attaches a meal plan option vote ID to a given span.
+func AttachMealPlanOptionVoteIDToSpan(span trace.Span, mealPlanOptionVoteID string) {
+	attachStringToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 }

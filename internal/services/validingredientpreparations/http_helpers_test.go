@@ -20,10 +20,10 @@ type validIngredientPreparationsServiceHTTPRoutesTestHelper struct {
 	res                               *httptest.ResponseRecorder
 	service                           *service
 	exampleUser                       *types.User
-	exampleHousehold                  *types.Household
+	exampleAccount                    *types.Account
 	exampleValidIngredientPreparation *types.ValidIngredientPreparation
-	exampleCreationInput              *types.ValidIngredientPreparationCreationInput
-	exampleUpdateInput                *types.ValidIngredientPreparationUpdateInput
+	exampleCreationInput              *types.ValidIngredientPreparationCreationRequestInput
+	exampleUpdateInput                *types.ValidIngredientPreparationUpdateRequestInput
 }
 
 func buildTestHelper(t *testing.T) *validIngredientPreparationsServiceHTTPRoutesTestHelper {
@@ -34,26 +34,26 @@ func buildTestHelper(t *testing.T) *validIngredientPreparationsServiceHTTPRoutes
 	helper.ctx = context.Background()
 	helper.service = buildTestService()
 	helper.exampleUser = fakes.BuildFakeUser()
-	helper.exampleHousehold = fakes.BuildFakeHousehold()
-	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
+	helper.exampleAccount = fakes.BuildFakeAccount()
+	helper.exampleAccount.BelongsToUser = helper.exampleUser.ID
 	helper.exampleValidIngredientPreparation = fakes.BuildFakeValidIngredientPreparation()
-	helper.exampleCreationInput = fakes.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(helper.exampleValidIngredientPreparation)
-	helper.exampleUpdateInput = fakes.BuildFakeValidIngredientPreparationUpdateInputFromValidIngredientPreparation(helper.exampleValidIngredientPreparation)
+	helper.exampleCreationInput = fakes.BuildFakeValidIngredientPreparationCreationRequestInputFromValidIngredientPreparation(helper.exampleValidIngredientPreparation)
+	helper.exampleUpdateInput = fakes.BuildFakeValidIngredientPreparationUpdateRequestInputFromValidIngredientPreparation(helper.exampleValidIngredientPreparation)
 
-	helper.service.validIngredientPreparationIDFetcher = func(*http.Request) uint64 {
+	helper.service.validIngredientPreparationIDFetcher = func(*http.Request) string {
 		return helper.exampleValidIngredientPreparation.ID
 	}
 
 	sessionCtxData := &types.SessionContextData{
 		Requester: types.RequesterInfo{
 			UserID:                helper.exampleUser.ID,
-			Reputation:            helper.exampleUser.ServiceHouseholdStatus,
+			Reputation:            helper.exampleUser.ServiceAccountStatus,
 			ReputationExplanation: helper.exampleUser.ReputationExplanation,
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 		},
-		ActiveHouseholdID: helper.exampleHousehold.ID,
-		HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
-			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
+		ActiveAccountID: helper.exampleAccount.ID,
+		AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
+			helper.exampleAccount.ID: authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
 		},
 	}
 

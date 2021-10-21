@@ -14,10 +14,10 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 )
 
 const (

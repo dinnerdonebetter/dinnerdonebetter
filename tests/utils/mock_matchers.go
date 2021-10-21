@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
 	"github.com/stretchr/testify/mock"
+
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
 // ContextMatcher is a matcher for use with testify/mock's MatchBy function. It provides some level of type
@@ -16,8 +16,9 @@ var ContextMatcher interface{} = mock.MatchedBy(func(context.Context) bool {
 	return true
 })
 
-// HTTPRequestMatcher is a matcher. It provides some level of type assurance over mock.Anything,
-// in that the resulting function will panic if anything other than a *http.Request.
+// HTTPRequestMatcher is a matcher for use with testify/mock's MatchBy function. It provides some level of type
+// safety reassurance over mock.Anything, in that the resulting function will panic if anything other than
+// a *http.Request.
 var HTTPRequestMatcher interface{} = mock.MatchedBy(func(*http.Request) bool {
 	return true
 })
@@ -29,22 +30,11 @@ var HTTPResponseWriterMatcher interface{} = mock.MatchedBy(func(http.ResponseWri
 	return true
 })
 
-// BuildAuditLogEntryCreationInputMatcher is a matcher for use with testify/mock's MatchBy function.
-func BuildAuditLogEntryCreationInputMatcher(event *types.AuditLogEntryCreationInput) func(*types.AuditLogEntryCreationInput) bool {
-	return func(input *types.AuditLogEntryCreationInput) bool {
-		for k, v := range input.Context {
-			if v2, present := event.Context[k]; !present || v2 != v {
-				return false
-			}
-		}
+// PreWriteMessageMatcher matches the types.PreWriteMessage type.
+func PreWriteMessageMatcher(*types.PreWriteMessage) bool { return true }
 
-		return input.EventType == event.EventType
-	}
-}
+// PreUpdateMessageMatcher matches the types.PreUpdateMessage type.
+func PreUpdateMessageMatcher(*types.PreUpdateMessage) bool { return true }
 
-// BuildAuditLogEntryCreationInputEventTypeMatcher is a matcher for use with testify/mock's MatchBy function.
-func BuildAuditLogEntryCreationInputEventTypeMatcher(eventType string) func(*types.AuditLogEntryCreationInput) bool {
-	return func(input *types.AuditLogEntryCreationInput) bool {
-		return input.EventType == eventType
-	}
-}
+// PreArchiveMessageMatcher matches the types.PreArchiveMessage type.
+func PreArchiveMessageMatcher(*types.PreArchiveMessage) bool { return true }

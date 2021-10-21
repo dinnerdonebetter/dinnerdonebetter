@@ -3,9 +3,9 @@ package encoding
 import (
 	"testing"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-
 	"github.com/stretchr/testify/assert"
+
+	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 )
 
 func Test_clientEncoder_ContentType(T *testing.T) {

@@ -1,67 +1,80 @@
-version: "3.3"
+version: "3.8"
 services:
-    prixfixe-server:
-        environment:
-            PRIXFIXE_SERVICE_LOCAL_SECRET_STORE_KEY: 'SUFNQVdBUkVUSEFUVEhJU1NFQ1JFVElTVU5TRUNVUkU='
-            CONFIGURATION_FILEPATH: '/etc/config.toml'
-            JAEGER_DISABLED: 'true'
+    redis:
+        hostname: worker_queue
+        image: redis:6-buster
+        container_name: redis
         ports:
-            - 80:8888
-        build:
-            context: '../../../../'
-            dockerfile: 'environments/testing/dockerfiles/integration-server.Dockerfile'
-    test:
+            - '6379:6379'
+        logging:
+          driver: none
+    postgres:
+        container_name: postgres
+        hostname: pgdatabase
+        image: postgres:13
         environment:
-            TARGET_ADDRESS: 'http://prixfixe-server:8888'
+            POSTGRES_DB: 'prixfixe'
+            POSTGRES_PASSWORD: 'hunter2'
+            POSTGRES_USER: 'dbuser'
+        logging:
+            driver: none
+        ports:
+            - '5432:5432'
+    elasticsearch:
+        image: elasticsearch:7.14.1
+        ports:
+            - '9200:9200'
+            - '9300:9300'
+        environment:
+            discovery.type: 'single-node'
+        healthcheck:
+            test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+            interval: 30s
+            timeout: 30s
+            retries: 3
+        logging:
+            driver: none
+    tracing-server:
+        image: jaegertracing/all-in-one:1.22.0
+        logging:
+            driver: none
+        ports:
+            - "5775:5775/udp"
+            - "6831:6831/udp"
+            - "6832:6832/udp"
+            - "5778:5778"
+            - "16686:16686"
+            - "14268:14268"
+            - "9411:9411"
+    prometheus:
+        image: quay.io/prometheus/prometheus:v2.25.0
+        logging:
+            driver: none
+        ports:
+            - '9090:9090'
+        volumes:
+            - source: "../../../../environments/testing/prometheus/config.yaml"
+              target: "/etc/prometheus/config.yaml"
+              type: 'bind'
+        command: '--config.file=/etc/prometheus/config.yaml --storage.tsdb.path=/prometheus'
+    grafana:
+        image: grafana/grafana
+        logging:
+            driver: none
+        ports:
+            - '3000:3000'
         links:
-            - prixfixe-server
-#            - tracing-server
-#            - prometheus
-        build:
-            context: '../../../../'
-            dockerfile: 'environments/testing/dockerfiles/integration-tests.Dockerfile'
-        container_name: 'integration_tests'
-#    tracing-server:
-#        image: jaegertracing/all-in-one:1.22.0
-#        logging:
-#            driver: none
-#        ports:
-#            - "5775:5775/udp"
-#            - "6831:6831/udp"
-#            - "6832:6832/udp"
-#            - "5778:5778"
-#            - "16686:16686"
-#            - "14268:14268"
-#            - "9411:9411"
-#    prometheus:
-#        image: quay.io/prometheus/prometheus:v2.25.0
-#        logging:
-#            driver: none
-#        ports:
-#            - 9090:9090
-#        volumes:
-#            - source: "../../../../environments/testing/prometheus/config.yaml"
-#              target: "/etc/prometheus/config.yaml"
-#              type: 'bind'
-#        command: '--config.file=/etc/prometheus/config.yaml --storage.tsdb.path=/prometheus'
-#    grafana:
-#        image: grafana/grafana
-#        logging:
-#            driver: none
-#        ports:
-#            - 3000:3000
-#        links:
-#            - prometheus
-#        volumes:
-#            - source: '../../../../environments/testing/grafana/grafana.ini'
-#              target: '/etc/grafana/grafana.ini'
-#              type: 'bind'
-#            - source: '../../../../environments/testing/grafana/datasources.yaml'
-#              target: '/etc/grafana/provisioning/datasources/datasources.yml'
-#              type: 'bind'
-#            - source: '../../../../environments/testing/grafana/dashboards.yaml'
-#              target: '/etc/grafana/provisioning/dashboards/dashboards.yml'
-#              type: 'bind'
-#            - source: '../../../../environments/testing/grafana/dashboards'
-#              target: '/etc/grafana/provisioning/dashboards/dashboards'
-#              type: 'bind'
+            - prometheus
+        volumes:
+            - source: '../../../../environments/testing/grafana/grafana.ini'
+              target: '/etc/grafana/grafana.ini'
+              type: 'bind'
+            - source: '../../../../environments/testing/grafana/datasources.yaml'
+              target: '/etc/grafana/provisioning/datasources/datasources.yml'
+              type: 'bind'
+            - source: '../../../../environments/testing/grafana/dashboards.yaml'
+              target: '/etc/grafana/provisioning/dashboards/dashboards.yml'
+              type: 'bind'
+            - source: '../../../../environments/testing/grafana/dashboards'
+              target: '/etc/grafana/provisioning/dashboards/dashboards'
+              type: 'bind'

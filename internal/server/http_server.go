@@ -9,6 +9,9 @@ import (
 	"os"
 	"time"
 
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"golang.org/x/net/http2"
+
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
@@ -17,9 +20,6 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/routing"
 	"gitlab.com/prixfixe/prixfixe/internal/services/frontend"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
-	"golang.org/x/net/http2"
 )
 
 const (
@@ -31,24 +31,25 @@ type (
 	// HTTPServer is our API http server.
 	HTTPServer struct {
 		authService                        types.AuthService
-		householdsService                  types.HouseholdDataService
+		accountsService                    types.AccountDataService
 		frontendService                    frontend.Service
-		auditService                       types.AuditLogEntryDataService
 		usersService                       types.UserDataService
 		adminService                       types.AdminService
 		apiClientsService                  types.APIClientDataService
 		webhooksService                    types.WebhookDataService
 		validInstrumentsService            types.ValidInstrumentDataService
-		validPreparationsService           types.ValidPreparationDataService
 		validIngredientsService            types.ValidIngredientDataService
+		validPreparationsService           types.ValidPreparationDataService
 		validIngredientPreparationsService types.ValidIngredientPreparationDataService
-		validPreparationInstrumentsService types.ValidPreparationInstrumentDataService
 		recipesService                     types.RecipeDataService
 		recipeStepsService                 types.RecipeStepDataService
+		recipeStepInstrumentsService       types.RecipeStepInstrumentDataService
 		recipeStepIngredientsService       types.RecipeStepIngredientDataService
 		recipeStepProductsService          types.RecipeStepProductDataService
-		invitationsService                 types.InvitationDataService
-		reportsService                     types.ReportDataService
+		mealPlansService                   types.MealPlanDataService
+		mealPlanOptionsService             types.MealPlanOptionDataService
+		mealPlanOptionVotesService         types.MealPlanOptionVoteDataService
+		websocketsService                  types.WebsocketDataService
 		encoder                            encoding.ServerEncoderDecoder
 		logger                             logging.Logger
 		router                             routing.Router
@@ -64,21 +65,22 @@ func ProvideHTTPServer(
 	serverSettings Config,
 	metricsHandler metrics.InstrumentationHandler,
 	authService types.AuthService,
-	auditService types.AuditLogEntryDataService,
 	usersService types.UserDataService,
-	householdsService types.HouseholdDataService,
+	accountsService types.AccountDataService,
 	apiClientsService types.APIClientDataService,
+	websocketsService types.WebsocketDataService,
 	validInstrumentsService types.ValidInstrumentDataService,
-	validPreparationsService types.ValidPreparationDataService,
 	validIngredientsService types.ValidIngredientDataService,
+	validPreparationsService types.ValidPreparationDataService,
 	validIngredientPreparationsService types.ValidIngredientPreparationDataService,
-	validPreparationInstrumentsService types.ValidPreparationInstrumentDataService,
 	recipesService types.RecipeDataService,
 	recipeStepsService types.RecipeStepDataService,
+	recipeStepInstrumentsService types.RecipeStepInstrumentDataService,
 	recipeStepIngredientsService types.RecipeStepIngredientDataService,
 	recipeStepProductsService types.RecipeStepProductDataService,
-	invitationsService types.InvitationDataService,
-	reportsService types.ReportDataService,
+	mealPlansService types.MealPlanDataService,
+	mealPlanOptionsService types.MealPlanOptionDataService,
+	mealPlanOptionVotesService types.MealPlanOptionVoteDataService,
 	webhooksService types.WebhookDataService,
 	adminService types.AdminService,
 	frontendService frontend.Service,
@@ -96,23 +98,24 @@ func ProvideHTTPServer(
 
 		// services,
 		adminService:                       adminService,
-		auditService:                       auditService,
 		webhooksService:                    webhooksService,
 		frontendService:                    frontendService,
 		usersService:                       usersService,
-		householdsService:                  householdsService,
+		accountsService:                    accountsService,
 		authService:                        authService,
+		websocketsService:                  websocketsService,
 		validInstrumentsService:            validInstrumentsService,
-		validPreparationsService:           validPreparationsService,
 		validIngredientsService:            validIngredientsService,
+		validPreparationsService:           validPreparationsService,
 		validIngredientPreparationsService: validIngredientPreparationsService,
-		validPreparationInstrumentsService: validPreparationInstrumentsService,
 		recipesService:                     recipesService,
 		recipeStepsService:                 recipeStepsService,
+		recipeStepInstrumentsService:       recipeStepInstrumentsService,
 		recipeStepIngredientsService:       recipeStepIngredientsService,
 		recipeStepProductsService:          recipeStepProductsService,
-		invitationsService:                 invitationsService,
-		reportsService:                     reportsService,
+		mealPlansService:                   mealPlansService,
+		mealPlanOptionsService:             mealPlanOptionsService,
+		mealPlanOptionVotesService:         mealPlanOptionVotesService,
 		apiClientsService:                  apiClientsService,
 	}
 

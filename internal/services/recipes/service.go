@@ -1,11 +1,13 @@
 package recipes
 
 import (
+	"context"
+	"fmt"
 	"net/http"
 
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
+	publishers "gitlab.com/prixfixe/prixfixe/internal/messagequeue/publishers"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	routing "gitlab.com/prixfixe/prixfixe/internal/routing"
 	"gitlab.com/prixfixe/prixfixe/internal/search"
@@ -14,9 +16,7 @@ import (
 )
 
 const (
-	counterName        metrics.CounterName = "recipes"
-	counterDescription string              = "the number of recipes managed by the recipes service"
-	serviceName        string              = "recipes_service"
+	serviceName string = "recipes_service"
 )
 
 var _ types.RecipeDataService = (*service)(nil)
@@ -29,9 +29,11 @@ type (
 	service struct {
 		logger                    logging.Logger
 		recipeDataManager         types.RecipeDataManager
-		recipeIDFetcher           func(*http.Request) uint64
+		recipeIDFetcher           func(*http.Request) string
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
-		recipeCounter             metrics.UnitCounter
+		preWritesPublisher        publishers.Publisher
+		preUpdatesPublisher       publishers.Publisher
+		preArchivesPublisher      publishers.Publisher
 		encoderDecoder            encoding.ServerEncoderDecoder
 		tracer                    tracing.Tracer
 	}
@@ -39,20 +41,38 @@ type (
 
 // ProvideService builds a new RecipesService.
 func ProvideService(
+	ctx context.Context,
 	logger logging.Logger,
-	cfg Config,
+	cfg *Config,
 	recipeDataManager types.RecipeDataManager,
 	encoder encoding.ServerEncoderDecoder,
-	counterProvider metrics.UnitCounterProvider,
 	routeParamManager routing.RouteParamManager,
+	publisherProvider publishers.PublisherProvider,
 ) (types.RecipeDataService, error) {
+	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up recipe queue pre-writes publisher: %w", err)
+	}
+
+	preUpdatesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreUpdatesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up recipe queue pre-updates publisher: %w", err)
+	}
+
+	preArchivesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreArchivesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up recipe queue pre-archives publisher: %w", err)
+	}
+
 	svc := &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
-		recipeIDFetcher:           routeParamManager.BuildRouteParamIDFetcher(logger, RecipeIDURIParamKey, "recipe"),
+		recipeIDFetcher:           routeParamManager.BuildRouteParamStringIDFetcher(RecipeIDURIParamKey),
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		recipeDataManager:         recipeDataManager,
+		preWritesPublisher:        preWritesPublisher,
+		preUpdatesPublisher:       preUpdatesPublisher,
+		preArchivesPublisher:      preArchivesPublisher,
 		encoderDecoder:            encoder,
-		recipeCounter:             metrics.EnsureUnitCounter(counterProvider, logger, counterName, counterDescription),
 		tracer:                    tracing.NewTracer(serviceName),
 	}
 

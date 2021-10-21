@@ -15,12 +15,12 @@ import (
 )
 
 type usersServiceHTTPRoutesTestHelper struct {
-	ctx              context.Context
-	req              *http.Request
-	res              *httptest.ResponseRecorder
-	service          *service
-	exampleUser      *types.User
-	exampleHousehold *types.Household
+	ctx            context.Context
+	req            *http.Request
+	res            *httptest.ResponseRecorder
+	service        *service
+	exampleUser    *types.User
+	exampleAccount *types.Account
 }
 
 func newTestHelper(t *testing.T) *usersServiceHTTPRoutesTestHelper {
@@ -31,23 +31,23 @@ func newTestHelper(t *testing.T) *usersServiceHTTPRoutesTestHelper {
 	helper.ctx = context.Background()
 	helper.service = buildTestService(t)
 	helper.exampleUser = fakes.BuildFakeUser()
-	helper.exampleHousehold = fakes.BuildFakeHousehold()
-	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
+	helper.exampleAccount = fakes.BuildFakeAccount()
+	helper.exampleAccount.BelongsToUser = helper.exampleUser.ID
 
-	helper.service.userIDFetcher = func(*http.Request) uint64 {
+	helper.service.userIDFetcher = func(*http.Request) string {
 		return helper.exampleUser.ID
 	}
 
 	sessionCtxData := &types.SessionContextData{
 		Requester: types.RequesterInfo{
 			UserID:                helper.exampleUser.ID,
-			Reputation:            helper.exampleUser.ServiceHouseholdStatus,
+			Reputation:            helper.exampleUser.ServiceAccountStatus,
 			ReputationExplanation: helper.exampleUser.ReputationExplanation,
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 		},
-		ActiveHouseholdID: helper.exampleHousehold.ID,
-		HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
-			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
+		ActiveAccountID: helper.exampleAccount.ID,
+		AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
+			helper.exampleAccount.ID: authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
 		},
 	}
 

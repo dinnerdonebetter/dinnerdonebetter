@@ -9,40 +9,14 @@ import (
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
-// ValidPreparationExists retrieves whether a valid preparation exists.
-func (c *Client) ValidPreparationExists(ctx context.Context, validPreparationID uint64) (bool, error) {
-	ctx, span := c.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := c.logger
-
-	if validPreparationID == 0 {
-		return false, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
-
-	req, err := c.requestBuilder.BuildValidPreparationExistsRequest(ctx, validPreparationID)
-	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "building valid preparation existence request")
-	}
-
-	exists, err := c.responseIsOK(ctx, req)
-	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "checking existence for valid preparation #%d", validPreparationID)
-	}
-
-	return exists, nil
-}
-
 // GetValidPreparation gets a valid preparation.
-func (c *Client) GetValidPreparation(ctx context.Context, validPreparationID uint64) (*types.ValidPreparation, error) {
+func (c *Client) GetValidPreparation(ctx context.Context, validPreparationID string) (*types.ValidPreparation, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger
 
-	if validPreparationID == 0 {
+	if validPreparationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
@@ -113,31 +87,31 @@ func (c *Client) GetValidPreparations(ctx context.Context, filter *types.QueryFi
 }
 
 // CreateValidPreparation creates a valid preparation.
-func (c *Client) CreateValidPreparation(ctx context.Context, input *types.ValidPreparationCreationInput) (*types.ValidPreparation, error) {
+func (c *Client) CreateValidPreparation(ctx context.Context, input *types.ValidPreparationCreationRequestInput) (string, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger
 
 	if input == nil {
-		return nil, ErrNilInputProvided
+		return "", ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return "", observability.PrepareError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateValidPreparationRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building create valid preparation request")
+		return "", observability.PrepareError(err, logger, span, "building create valid preparation request")
 	}
 
-	var validPreparation *types.ValidPreparation
-	if err = c.fetchAndUnmarshal(ctx, req, &validPreparation); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating valid preparation")
+	var pwr *types.PreWriteResponse
+	if err = c.fetchAndUnmarshal(ctx, req, &pwr); err != nil {
+		return "", observability.PrepareError(err, logger, span, "creating valid preparation")
 	}
 
-	return validPreparation, nil
+	return pwr.ID, nil
 }
 
 // UpdateValidPreparation updates a valid preparation.
@@ -159,20 +133,20 @@ func (c *Client) UpdateValidPreparation(ctx context.Context, validPreparation *t
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, &validPreparation); err != nil {
-		return observability.PrepareError(err, logger, span, "updating valid preparation #%d", validPreparation.ID)
+		return observability.PrepareError(err, logger, span, "updating valid preparation %s", validPreparation.ID)
 	}
 
 	return nil
 }
 
 // ArchiveValidPreparation archives a valid preparation.
-func (c *Client) ArchiveValidPreparation(ctx context.Context, validPreparationID uint64) error {
+func (c *Client) ArchiveValidPreparation(ctx context.Context, validPreparationID string) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger
 
-	if validPreparationID == 0 {
+	if validPreparationID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
@@ -184,34 +158,8 @@ func (c *Client) ArchiveValidPreparation(ctx context.Context, validPreparationID
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "archiving valid preparation #%d", validPreparationID)
+		return observability.PrepareError(err, logger, span, "archiving valid preparation %s", validPreparationID)
 	}
 
 	return nil
-}
-
-// GetAuditLogForValidPreparation retrieves a list of audit log entries pertaining to a valid preparation.
-func (c *Client) GetAuditLogForValidPreparation(ctx context.Context, validPreparationID uint64) ([]*types.AuditLogEntry, error) {
-	ctx, span := c.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := c.logger
-
-	if validPreparationID == 0 {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
-
-	req, err := c.requestBuilder.BuildGetAuditLogForValidPreparationRequest(ctx, validPreparationID)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building get audit log entries for valid preparation request")
-	}
-
-	var entries []*types.AuditLogEntry
-	if err = c.fetchAndUnmarshal(ctx, req, &entries); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving plan")
-	}
-
-	return entries, nil
 }

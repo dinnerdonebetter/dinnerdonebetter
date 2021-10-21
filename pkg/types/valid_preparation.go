@@ -2,137 +2,158 @@ package types
 
 import (
 	"context"
+	"encoding/gob"
 	"net/http"
-
-	"gitlab.com/prixfixe/prixfixe/internal/search"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
-	// ValidPreparationsSearchIndexName is the name of the index used to search through valid preparations.
-	ValidPreparationsSearchIndexName search.IndexName = "valid_preparations"
-
-	// ValidPreparationIDQueryKey is the name of the key we use to reference preparation IDs in the URL query.
-	ValidPreparationIDQueryKey = "pid"
+	// ValidPreparationDataType indicates an event is related to a valid preparation.
+	ValidPreparationDataType dataType = "valid_preparation"
 )
+
+func init() {
+	gob.Register(new(ValidPreparation))
+	gob.Register(new(ValidPreparationList))
+	gob.Register(new(ValidPreparationCreationRequestInput))
+	gob.Register(new(ValidPreparationUpdateRequestInput))
+}
 
 type (
 	// ValidPreparation represents a valid preparation.
 	ValidPreparation struct {
-		LastUpdatedOn *uint64 `json:"lastUpdatedOn"`
+		_             struct{}
 		ArchivedOn    *uint64 `json:"archivedOn"`
+		LastUpdatedOn *uint64 `json:"lastUpdatedOn"`
 		Name          string  `json:"name"`
 		Description   string  `json:"description"`
-		IconPath      string  `json:"iconPath"`
-		ExternalID    string  `json:"externalID"`
+		Icon          string  `json:"icon"`
+		ID            string  `json:"id"`
 		CreatedOn     uint64  `json:"createdOn"`
-		ID            uint64  `json:"id"`
 	}
 
 	// ValidPreparationList represents a list of valid preparations.
 	ValidPreparationList struct {
+		_                 struct{}
 		ValidPreparations []*ValidPreparation `json:"validPreparations"`
 		Pagination
 	}
 
-	// ValidPreparationCreationInput represents what a user could set as input for creating valid preparations.
-	ValidPreparationCreationInput struct {
+	// ValidPreparationCreationRequestInput represents what a user could set as input for creating valid preparations.
+	ValidPreparationCreationRequestInput struct {
+		_ struct{}
+
+		ID          string `json:"-"`
 		Name        string `json:"name"`
 		Description string `json:"description"`
-		IconPath    string `json:"iconPath"`
+		Icon        string `json:"icon"`
 	}
 
-	// ValidPreparationUpdateInput represents what a user could set as input for updating valid preparations.
-	ValidPreparationUpdateInput struct {
+	// ValidPreparationDatabaseCreationInput represents what a user could set as input for creating valid preparations.
+	ValidPreparationDatabaseCreationInput struct {
+		_ struct{}
+
+		ID          string `json:"id"`
 		Name        string `json:"name"`
 		Description string `json:"description"`
-		IconPath    string `json:"iconPath"`
+		Icon        string `json:"icon"`
+	}
+
+	// ValidPreparationUpdateRequestInput represents what a user could set as input for updating valid preparations.
+	ValidPreparationUpdateRequestInput struct {
+		_ struct{}
+
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		Icon        string `json:"icon"`
 	}
 
 	// ValidPreparationDataManager describes a structure capable of storing valid preparations permanently.
 	ValidPreparationDataManager interface {
-		ValidPreparationExists(ctx context.Context, validPreparationID uint64) (bool, error)
-		GetValidPreparation(ctx context.Context, validPreparationID uint64) (*ValidPreparation, error)
-		GetAllValidPreparationsCount(ctx context.Context) (uint64, error)
-		GetAllValidPreparations(ctx context.Context, resultChannel chan []*ValidPreparation, bucketSize uint16) error
+		ValidPreparationExists(ctx context.Context, validPreparationID string) (bool, error)
+		GetValidPreparation(ctx context.Context, validPreparationID string) (*ValidPreparation, error)
+		GetTotalValidPreparationCount(ctx context.Context) (uint64, error)
 		GetValidPreparations(ctx context.Context, filter *QueryFilter) (*ValidPreparationList, error)
-		GetValidPreparationsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]*ValidPreparation, error)
-		CreateValidPreparation(ctx context.Context, input *ValidPreparationCreationInput, createdByUser uint64) (*ValidPreparation, error)
-		UpdateValidPreparation(ctx context.Context, updated *ValidPreparation, changedByUser uint64, changes []*FieldChangeSummary) error
-		ArchiveValidPreparation(ctx context.Context, validPreparationID, archivedBy uint64) error
-		GetAuditLogEntriesForValidPreparation(ctx context.Context, validPreparationID uint64) ([]*AuditLogEntry, error)
+		GetValidPreparationsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*ValidPreparation, error)
+		CreateValidPreparation(ctx context.Context, input *ValidPreparationDatabaseCreationInput) (*ValidPreparation, error)
+		UpdateValidPreparation(ctx context.Context, updated *ValidPreparation) error
+		ArchiveValidPreparation(ctx context.Context, validPreparationID string) error
 	}
 
 	// ValidPreparationDataService describes a structure capable of serving traffic related to valid preparations.
 	ValidPreparationDataService interface {
 		SearchHandler(res http.ResponseWriter, req *http.Request)
-		SearchForValidPreparations(ctx context.Context, sessionCtxData *SessionContextData, query string, filter *QueryFilter) ([]*ValidPreparation, error)
-		AuditEntryHandler(res http.ResponseWriter, req *http.Request)
 		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
-		ExistenceHandler(res http.ResponseWriter, req *http.Request)
 		ReadHandler(res http.ResponseWriter, req *http.Request)
 		UpdateHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 
-// Update merges an ValidPreparationUpdateInput with a valid preparation.
-func (x *ValidPreparation) Update(input *ValidPreparationUpdateInput) []*FieldChangeSummary {
-	var out []*FieldChangeSummary
-
-	if input.Name != x.Name {
-		out = append(out, &FieldChangeSummary{
-			FieldName: "Name",
-			OldValue:  x.Name,
-			NewValue:  input.Name,
-		})
-
+// Update merges an ValidPreparationUpdateRequestInput with a valid preparation.
+func (x *ValidPreparation) Update(input *ValidPreparationUpdateRequestInput) {
+	if input.Name != "" && input.Name != x.Name {
 		x.Name = input.Name
 	}
 
-	if input.Description != x.Description {
-		out = append(out, &FieldChangeSummary{
-			FieldName: "Description",
-			OldValue:  x.Description,
-			NewValue:  input.Description,
-		})
-
+	if input.Description != "" && input.Description != x.Description {
 		x.Description = input.Description
 	}
 
-	if input.IconPath != x.IconPath {
-		out = append(out, &FieldChangeSummary{
-			FieldName: "IconPath",
-			OldValue:  x.IconPath,
-			NewValue:  input.IconPath,
-		})
-
-		x.IconPath = input.IconPath
+	if input.Icon != "" && input.Icon != x.Icon {
+		x.Icon = input.Icon
 	}
-
-	return out
 }
 
-var _ validation.ValidatableWithContext = (*ValidPreparationCreationInput)(nil)
+var _ validation.ValidatableWithContext = (*ValidPreparationCreationRequestInput)(nil)
 
-// ValidateWithContext validates a ValidPreparationCreationInput.
-func (x *ValidPreparationCreationInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a ValidPreparationCreationRequestInput.
+func (x *ValidPreparationCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.Description, validation.Required),
+		validation.Field(&x.Icon, validation.Required),
 	)
 }
 
-var _ validation.ValidatableWithContext = (*ValidPreparationUpdateInput)(nil)
+var _ validation.ValidatableWithContext = (*ValidPreparationDatabaseCreationInput)(nil)
 
-// ValidateWithContext validates a ValidPreparationUpdateInput.
-func (x *ValidPreparationUpdateInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a ValidPreparationDatabaseCreationInput.
+func (x *ValidPreparationDatabaseCreationInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(
+		ctx,
+		x,
+		validation.Field(&x.ID, validation.Required),
+		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.Description, validation.Required),
+		validation.Field(&x.Icon, validation.Required),
+	)
+}
+
+// ValidPreparationDatabaseCreationInputFromValidPreparationCreationInput creates a DatabaseCreationInput from a CreationInput.
+func ValidPreparationDatabaseCreationInputFromValidPreparationCreationInput(input *ValidPreparationCreationRequestInput) *ValidPreparationDatabaseCreationInput {
+	x := &ValidPreparationDatabaseCreationInput{
+		Name:        input.Name,
+		Description: input.Description,
+		Icon:        input.Icon,
+	}
+
+	return x
+}
+
+var _ validation.ValidatableWithContext = (*ValidPreparationUpdateRequestInput)(nil)
+
+// ValidateWithContext validates a ValidPreparationUpdateRequestInput.
+func (x *ValidPreparationUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.Description, validation.Required),
+		validation.Field(&x.Icon, validation.Required),
 	)
 }

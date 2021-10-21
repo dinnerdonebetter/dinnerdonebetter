@@ -1,11 +1,13 @@
 package recipestepproducts
 
 import (
+	"context"
+	"fmt"
 	"net/http"
 
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
+	publishers "gitlab.com/prixfixe/prixfixe/internal/messagequeue/publishers"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	routing "gitlab.com/prixfixe/prixfixe/internal/routing"
 	"gitlab.com/prixfixe/prixfixe/internal/search"
@@ -16,9 +18,7 @@ import (
 )
 
 const (
-	counterName        metrics.CounterName = "recipe_step_products"
-	counterDescription string              = "the number of recipe step products managed by the recipe step products service"
-	serviceName        string              = "recipe_step_products_service"
+	serviceName string = "recipe_step_products_service"
 )
 
 var _ types.RecipeStepProductDataService = (*service)(nil)
@@ -31,11 +31,13 @@ type (
 	service struct {
 		logger                       logging.Logger
 		recipeStepProductDataManager types.RecipeStepProductDataManager
-		recipeIDFetcher              func(*http.Request) uint64
-		recipeStepIDFetcher          func(*http.Request) uint64
-		recipeStepProductIDFetcher   func(*http.Request) uint64
+		recipeIDFetcher              func(*http.Request) string
+		recipeStepIDFetcher          func(*http.Request) string
+		recipeStepProductIDFetcher   func(*http.Request) string
 		sessionContextDataFetcher    func(*http.Request) (*types.SessionContextData, error)
-		recipeStepProductCounter     metrics.UnitCounter
+		preWritesPublisher           publishers.Publisher
+		preUpdatesPublisher          publishers.Publisher
+		preArchivesPublisher         publishers.Publisher
 		encoderDecoder               encoding.ServerEncoderDecoder
 		tracer                       tracing.Tracer
 	}
@@ -43,22 +45,40 @@ type (
 
 // ProvideService builds a new RecipeStepProductsService.
 func ProvideService(
+	ctx context.Context,
 	logger logging.Logger,
-	cfg Config,
+	cfg *Config,
 	recipeStepProductDataManager types.RecipeStepProductDataManager,
 	encoder encoding.ServerEncoderDecoder,
-	counterProvider metrics.UnitCounterProvider,
 	routeParamManager routing.RouteParamManager,
+	publisherProvider publishers.PublisherProvider,
 ) (types.RecipeStepProductDataService, error) {
+	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up recipe step product queue pre-writes publisher: %w", err)
+	}
+
+	preUpdatesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreUpdatesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up recipe step product queue pre-updates publisher: %w", err)
+	}
+
+	preArchivesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreArchivesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up recipe step product queue pre-archives publisher: %w", err)
+	}
+
 	svc := &service{
 		logger:                       logging.EnsureLogger(logger).WithName(serviceName),
-		recipeIDFetcher:              routeParamManager.BuildRouteParamIDFetcher(logger, recipesservice.RecipeIDURIParamKey, "recipe"),
-		recipeStepIDFetcher:          routeParamManager.BuildRouteParamIDFetcher(logger, recipestepsservice.RecipeStepIDURIParamKey, "recipe_step"),
-		recipeStepProductIDFetcher:   routeParamManager.BuildRouteParamIDFetcher(logger, RecipeStepProductIDURIParamKey, "recipe_step_product"),
+		recipeIDFetcher:              routeParamManager.BuildRouteParamStringIDFetcher(recipesservice.RecipeIDURIParamKey),
+		recipeStepIDFetcher:          routeParamManager.BuildRouteParamStringIDFetcher(recipestepsservice.RecipeStepIDURIParamKey),
+		recipeStepProductIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(RecipeStepProductIDURIParamKey),
 		sessionContextDataFetcher:    authservice.FetchContextFromRequest,
 		recipeStepProductDataManager: recipeStepProductDataManager,
+		preWritesPublisher:           preWritesPublisher,
+		preUpdatesPublisher:          preUpdatesPublisher,
+		preArchivesPublisher:         preArchivesPublisher,
 		encoderDecoder:               encoder,
-		recipeStepProductCounter:     metrics.EnsureUnitCounter(counterProvider, logger, counterName, counterDescription),
 		tracer:                       tracing.NewTracer(serviceName),
 	}
 

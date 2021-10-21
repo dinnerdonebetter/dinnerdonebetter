@@ -18,8 +18,8 @@ func (c *Client) UpdateUserReputation(ctx context.Context, input *types.UserRepu
 		return ErrNilInputProvided
 	}
 
-	logger := c.logger.WithValue(keys.HouseholdIDKey, input.TargetUserID)
-	tracing.AttachHouseholdIDToSpan(span, input.TargetUserID)
+	logger := c.logger.WithValue(keys.AccountIDKey, input.TargetUserID)
+	tracing.AttachUserIDToSpan(span, input.TargetUserID)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return observability.PrepareError(err, logger, span, "validating input")

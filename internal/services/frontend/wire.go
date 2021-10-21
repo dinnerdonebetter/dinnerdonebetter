@@ -1,9 +1,9 @@
 package frontend
 
 import (
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
 	"github.com/google/wire"
+
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
 var (

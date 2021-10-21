@@ -21,11 +21,11 @@ func initializeRBAC() *gorbac.RBAC {
 
 	must(rbac.Add(serviceUser))
 	must(rbac.Add(serviceAdmin))
-	must(rbac.Add(householdAdmin))
-	must(rbac.Add(householdMember))
+	must(rbac.Add(accountAdmin))
+	must(rbac.Add(accountMember))
 
-	must(rbac.SetParent(householdAdminRoleName, householdMemberRoleName))
-	must(rbac.SetParent(serviceAdminRoleName, householdAdminRoleName))
+	must(rbac.SetParent(accountAdminRoleName, accountMemberRoleName))
+	must(rbac.SetParent(serviceAdminRoleName, accountAdminRoleName))
 
 	return rbac
 }

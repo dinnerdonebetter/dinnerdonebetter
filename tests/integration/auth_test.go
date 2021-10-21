@@ -8,14 +8,14 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/pquerna/otp/totp"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-
-	"github.com/pquerna/otp/totp"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func (s *TestSuite) TestLogin() {
@@ -169,9 +169,9 @@ func (s *TestSuite) TestCheckingAuthStatus() {
 		assert.NoError(t, err)
 
 		assert.Equal(t, true, actual.UserIsAuthenticated, "expected UserIsAuthenticated to equal %v, but got %v", true, actual.UserIsAuthenticated)
-		assert.Equal(t, types.GoodStandingHouseholdStatus, actual.UserReputation, "expected UserReputation to equal %v, but got %v", types.GoodStandingHouseholdStatus, actual.UserReputation)
+		assert.Equal(t, types.GoodStandingAccountStatus, actual.UserReputation, "expected UserReputation to equal %v, but got %v", types.GoodStandingAccountStatus, actual.UserReputation)
 		assert.Equal(t, "", actual.UserReputationExplanation, "expected UserReputationExplanation to equal %v, but got %v", "", actual.UserReputationExplanation)
-		assert.NotZero(t, actual.ActiveHousehold)
+		assert.NotZero(t, actual.ActiveAccount)
 
 		assert.NoError(t, testClient.EndSession(ctx))
 	})

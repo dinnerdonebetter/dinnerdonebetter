@@ -1,12 +1,12 @@
-package mock
+package mockrouting
 
 import (
 	"net/http"
 
+	"github.com/stretchr/testify/mock"
+
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
-	"github.com/stretchr/testify/mock"
 )
 
 // NewRouteParamManager returns a new RouteParamManager.

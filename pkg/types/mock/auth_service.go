@@ -1,13 +1,13 @@
-package mock
+package mocktypes
 
 import (
 	"context"
 	"net/http"
 
+	"github.com/stretchr/testify/mock"
+
 	"gitlab.com/prixfixe/prixfixe/internal/authorization"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
-	"github.com/stretchr/testify/mock"
 )
 
 var _ types.AuthService = (*AuthService)(nil)
@@ -47,8 +47,8 @@ func (m *AuthService) PASETOHandler(res http.ResponseWriter, req *http.Request) 
 	m.Called(req, res)
 }
 
-// ChangeActiveHouseholdHandler satisfies our interface contract.
-func (m *AuthService) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *http.Request) {
+// ChangeActiveAccountHandler satisfies our interface contract.
+func (m *AuthService) ChangeActiveAccountHandler(res http.ResponseWriter, req *http.Request) {
 	m.Called(req, res)
 }
 
@@ -82,8 +82,8 @@ func (m *AuthService) PASETOCreationInputMiddleware(next http.Handler) http.Hand
 	return m.Called(next).Get(0).(http.Handler)
 }
 
-// ChangeActiveHouseholdInputMiddleware satisfies our interface contract.
-func (m *AuthService) ChangeActiveHouseholdInputMiddleware(next http.Handler) http.Handler {
+// ChangeActiveAccountInputMiddleware satisfies our interface contract.
+func (m *AuthService) ChangeActiveAccountInputMiddleware(next http.Handler) http.Handler {
 	return m.Called(next).Get(0).(http.Handler)
 }
 

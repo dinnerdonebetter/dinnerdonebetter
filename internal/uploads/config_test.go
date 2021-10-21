@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"gitlab.com/prixfixe/prixfixe/internal/storage"
-
 	"github.com/stretchr/testify/assert"
+
+	"gitlab.com/prixfixe/prixfixe/internal/storage"
 )
 
 func TestConfig_ValidateWithContext(T *testing.T) {

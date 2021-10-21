@@ -4,7 +4,10 @@ import (
 	"net/http"
 	"testing"
 
-	"gitlab.com/prixfixe/prixfixe/internal/authentication"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+
+	mockauthn "gitlab.com/prixfixe/prixfixe/internal/authentication/mock"
 	"gitlab.com/prixfixe/prixfixe/internal/database"
 	mockencoding "gitlab.com/prixfixe/prixfixe/internal/encoding/mock"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
@@ -17,9 +20,6 @@ import (
 	mockuploads "gitlab.com/prixfixe/prixfixe/internal/uploads/mock"
 	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
 	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 func buildTestService(t *testing.T) *service {
@@ -38,8 +38,8 @@ func buildTestService(t *testing.T) *service {
 		&authservice.Config{},
 		logging.NewNoopLogger(),
 		&mocktypes.UserDataManager{},
-		&mocktypes.HouseholdDataManager{},
-		&authentication.MockAuthenticator{},
+		&mocktypes.AccountDataManager{},
+		&mockauthn.Authenticator{},
 		mockencoding.NewMockEncoderDecoder(),
 		func(counterName, description string) metrics.UnitCounter {
 			return uc
@@ -62,15 +62,16 @@ func TestProvideUsersService(T *testing.T) {
 
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
-			"BuildRouteParamIDFetcher",
-			mock.IsType(logging.NewNoopLogger()), UserIDURIParamKey, "user").Return(func(*http.Request) uint64 { return 0 })
+			"BuildRouteParamStringIDFetcher",
+			UserIDURIParamKey,
+		).Return(func(*http.Request) string { return "" })
 
 		s := ProvideUsersService(
 			&authservice.Config{},
 			logging.NewNoopLogger(),
 			&mocktypes.UserDataManager{},
-			&mocktypes.HouseholdDataManager{},
-			&authentication.MockAuthenticator{},
+			&mocktypes.AccountDataManager{},
+			&mockauthn.Authenticator{},
 			mockencoding.NewMockEncoderDecoder(),
 			func(counterName, description string) metrics.UnitCounter {
 				return &mockmetrics.UnitCounter{}

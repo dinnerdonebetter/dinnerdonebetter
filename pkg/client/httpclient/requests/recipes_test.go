@@ -4,60 +4,16 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
-
-func TestBuilder_BuildRecipeExistsRequest(T *testing.T) {
-	T.Parallel()
-
-	const expectedPathFormat = "/api/v1/recipes/%d"
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		exampleRecipe := fakes.BuildFakeRecipe()
-
-		actual, err := helper.builder.BuildRecipeExistsRequest(helper.ctx, exampleRecipe.ID)
-		spec := newRequestSpec(true, http.MethodHead, "", expectedPathFormat, exampleRecipe.ID)
-
-		assert.NoError(t, err)
-		assertRequestQuality(t, actual, spec)
-	})
-
-	T.Run("with invalid recipe ID", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		actual, err := helper.builder.BuildRecipeExistsRequest(helper.ctx, 0)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	T.Run("with invalid request builder", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-		helper.builder = buildTestRequestBuilderWithInvalidURL()
-
-		exampleRecipe := fakes.BuildFakeRecipe()
-
-		actual, err := helper.builder.BuildRecipeExistsRequest(helper.ctx, exampleRecipe.ID)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-}
 
 func TestBuilder_BuildGetRecipeRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/recipes/%d"
+	const expectedPathFormat = "/api/v1/recipes/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -79,7 +35,7 @@ func TestBuilder_BuildGetRecipeRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildGetRecipeRequest(helper.ctx, 0)
+		actual, err := helper.builder.BuildGetRecipeRequest(helper.ctx, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -141,7 +97,7 @@ func TestBuilder_BuildCreateRecipeRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		exampleInput := fakes.BuildFakeRecipeCreationInput()
+		exampleInput := fakes.BuildFakeRecipeCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 
@@ -166,7 +122,7 @@ func TestBuilder_BuildCreateRecipeRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildCreateRecipeRequest(helper.ctx, &types.RecipeCreationInput{})
+		actual, err := helper.builder.BuildCreateRecipeRequest(helper.ctx, &types.RecipeCreationRequestInput{})
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -177,7 +133,7 @@ func TestBuilder_BuildCreateRecipeRequest(T *testing.T) {
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
-		exampleInput := fakes.BuildFakeRecipeCreationInput()
+		exampleInput := fakes.BuildFakeRecipeCreationRequestInput()
 
 		actual, err := helper.builder.BuildCreateRecipeRequest(helper.ctx, exampleInput)
 		assert.Nil(t, actual)
@@ -188,7 +144,7 @@ func TestBuilder_BuildCreateRecipeRequest(T *testing.T) {
 func TestBuilder_BuildUpdateRecipeRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/recipes/%d"
+	const expectedPathFormat = "/api/v1/recipes/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -232,7 +188,7 @@ func TestBuilder_BuildUpdateRecipeRequest(T *testing.T) {
 func TestBuilder_BuildArchiveRecipeRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/recipes/%d"
+	const expectedPathFormat = "/api/v1/recipes/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -254,7 +210,7 @@ func TestBuilder_BuildArchiveRecipeRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildArchiveRecipeRequest(helper.ctx, 0)
+		actual, err := helper.builder.BuildArchiveRecipeRequest(helper.ctx, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -268,50 +224,6 @@ func TestBuilder_BuildArchiveRecipeRequest(T *testing.T) {
 		exampleRecipe := fakes.BuildFakeRecipe()
 
 		actual, err := helper.builder.BuildArchiveRecipeRequest(helper.ctx, exampleRecipe.ID)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-}
-
-func TestBuilder_BuildGetAuditLogForRecipeRequest(T *testing.T) {
-	T.Parallel()
-
-	const expectedPath = "/api/v1/recipes/%d/audit"
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		exampleRecipe := fakes.BuildFakeRecipe()
-
-		actual, err := helper.builder.BuildGetAuditLogForRecipeRequest(helper.ctx, exampleRecipe.ID)
-		require.NotNil(t, actual)
-		assert.NoError(t, err)
-
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPath, exampleRecipe.ID)
-		assertRequestQuality(t, actual, spec)
-	})
-
-	T.Run("with invalid recipe ID", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		actual, err := helper.builder.BuildGetAuditLogForRecipeRequest(helper.ctx, 0)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	T.Run("with invalid request builder", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-		helper.builder = buildTestRequestBuilderWithInvalidURL()
-
-		exampleRecipe := fakes.BuildFakeRecipe()
-
-		actual, err := helper.builder.BuildGetAuditLogForRecipeRequest(helper.ctx, exampleRecipe.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

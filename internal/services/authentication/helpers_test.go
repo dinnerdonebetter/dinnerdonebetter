@@ -6,15 +6,16 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/prixfixe/prixfixe/internal/authentication"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
-	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
-
 	"github.com/gorilla/securecookie"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
+	"gitlab.com/prixfixe/prixfixe/internal/authentication"
+	mockauthn "gitlab.com/prixfixe/prixfixe/internal/authentication/mock"
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
+	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
 )
 
 func TestAuthenticationService_getUserIDFromCookie(T *testing.T) {
@@ -173,7 +174,7 @@ func TestAuthenticationService_validateLogin(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		authenticator := &authentication.MockAuthenticator{}
+		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"ValidateLogin",
 			testutils.ContextMatcher,
@@ -196,7 +197,7 @@ func TestAuthenticationService_validateLogin(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		authenticator := &authentication.MockAuthenticator{}
+		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"ValidateLogin",
 			testutils.ContextMatcher,
@@ -221,7 +222,7 @@ func TestAuthenticationService_validateLogin(T *testing.T) {
 
 		expectedErr := errors.New("arbitrary")
 
-		authenticator := &authentication.MockAuthenticator{}
+		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"ValidateLogin",
 			testutils.ContextMatcher,
@@ -244,7 +245,7 @@ func TestAuthenticationService_validateLogin(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		authenticator := &authentication.MockAuthenticator{}
+		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"ValidateLogin",
 			testutils.ContextMatcher,

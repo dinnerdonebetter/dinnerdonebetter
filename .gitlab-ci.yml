@@ -12,28 +12,26 @@ before_script:
 
 coverage:
   stage: quality
-  image: golang:bullseye
+  image: golang:1.17-stretch
   variables:
     GOPATH: "/go"
   script:
     - apt-get update -y && apt-get install -y make git gcc musl-dev
-    - go run mage.go ensureMage
-    - mage vendor coverage
+    - make vendor coverage
 
 dependency-injection-check:
   stage: quality
-  image: golang:bullseye
+  image: golang:1.17-stretch
   variables:
     GOPATH: "/go"
   script:
     - apt-get update -y && apt-get install -y make git gcc musl-dev
-    - GO111MODULE=off go get github.com/google/wire/cmd/wire
-    - go run mage.go ensureMage
-    - mage rewire
+    - go install github.com/google/wire/cmd/wire@latest
+    - make rewire
 
 golang-format-check:
   stage: quality
-  image: golang:bullseye
+  image: golang:1.17-stretch
   variables:
     GOPATH: "/go"
   script:
@@ -42,64 +40,7 @@ golang-format-check:
 
 golang-lint:
   stage: quality
-  image: golangci/golangci-lint:latest # v1.18
-  variables:
-    GO111MODULE: "on"
+  image: golangci/golangci-lint:v1.42
   script:
     - go mod vendor
     - golangci-lint run --config=.golangci.yml --deadline=15m
-
-#integration_tests
-#  stage: integration-testing
-#  image: docker/compose:latest
-#  services:
-#    - docker:dind
-#  variables:
-#    GOPATH: "/go"
-#  script:
-#    - apk add --update make
-#    - docker-compose --file environments/testing/compose_files/integration_tests/integration-tests-base.yaml --file environments/testing/compose_files/integration_tests/integration-tests-postgres.yaml up --build --force-recreate --remove-orphans --renew-anon-volumes --always-recreate-deps --abort-on-container-exit
-
-#frontend-selenium-tests:
-#  stage: integration-testing
-#  image: docker/compose:latest
-#  services:
-#    - docker:dind
-#  script:
-#    - apk add --update make
-#    - docker-compose --file environments/testing/compose_files/frontend-tests.yaml up --build --force-recreate --remove-orphans --renew-anon-volumes --always-recreate-deps --abort-on-container-exit
-
-build-dev-container:
-  stage: quality
-  image: docker:latest
-  services:
-    - docker:dind
-  script:
-    - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
-    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev_ci_check --file environments/dev/Dockerfile .
-  except:
-    - dev
-
-build-and-publish-dev-container:
-  stage: publish
-  image: docker:latest
-  services:
-    - docker:dind
-  script:
-    - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
-    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:dev --file environments/dev/Dockerfile .
-    - docker push registry.gitlab.com/prixfixe/prixfixe:dev
-  only:
-    - dev
-
-build-and-publish-index-initializer:
-  stage: publish
-  image: docker:latest
-  services:
-    - docker:dind
-  script:
-    - docker login --username=gitlab-ci-token --password=$CI_JOB_TOKEN registry.gitlab.com
-    - docker build --tag registry.gitlab.com/prixfixe/prixfixe:index_init --file environments/tooling/index_init.Dockerfile .
-    - docker push registry.gitlab.com/prixfixe/prixfixe:index_init
-  only:
-    - dev

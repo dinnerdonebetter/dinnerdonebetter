@@ -8,14 +8,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-chi/chi/v5"
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
+	"github.com/unrolled/secure"
+
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/internal/routing"
-
-	"github.com/go-chi/chi"
-	chimiddleware "github.com/go-chi/chi/middleware"
-	"github.com/go-chi/cors"
-	"github.com/unrolled/secure"
 )
 
 const (
@@ -150,7 +150,7 @@ func (r *router) WithMiddleware(middleware ...routing.Middleware) routing.Router
 
 // LogRoutes logs the described routes.
 func (r *router) LogRoutes() {
-	if err := chi.Walk(r.router, func(method string, route string, _ http.Handler, _ ...func(http.Handler) http.Handler) error {
+	if err := chi.Walk(r.router, func(method, route string, _ http.Handler, _ ...func(http.Handler) http.Handler) error {
 		r.logger.WithValues(map[string]interface{}{
 			"method": method,
 			"route":  route,

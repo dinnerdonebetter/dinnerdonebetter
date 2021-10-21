@@ -1,9 +1,9 @@
 package uploads
 
 import (
-	"gitlab.com/prixfixe/prixfixe/internal/storage"
-
 	"github.com/google/wire"
+
+	"gitlab.com/prixfixe/prixfixe/internal/storage"
 )
 
 var (

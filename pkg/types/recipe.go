@@ -2,160 +2,168 @@ package types
 
 import (
 	"context"
+	"encoding/gob"
 	"net/http"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
+const (
+	// RecipeDataType indicates an event is related to a recipe.
+	RecipeDataType dataType = "recipe"
+)
+
+func init() {
+	gob.Register(new(Recipe))
+	gob.Register(new(RecipeList))
+	gob.Register(new(RecipeCreationRequestInput))
+	gob.Register(new(RecipeUpdateRequestInput))
+}
+
 type (
 	// Recipe represents a recipe.
 	Recipe struct {
-		LastUpdatedOn      *uint64       `json:"lastUpdatedOn"`
-		ArchivedOn         *uint64       `json:"archivedOn"`
-		InspiredByRecipeID *uint64       `json:"inspiredByRecipeID"`
-		Source             string        `json:"source"`
-		Description        string        `json:"description"`
-		ExternalID         string        `json:"externalID"`
-		DisplayImageURL    string        `json:"displayImageURL"`
-		Name               string        `json:"name"`
-		Steps              []*RecipeStep `json:"steps"`
-		ID                 uint64        `json:"id"`
-		CreatedOn          uint64        `json:"createdOn"`
-		BelongsToHousehold uint64        `json:"belongsToHousehold"`
-	}
-
-	// FullRecipe represents a recipe.
-	FullRecipe struct {
-		LastUpdatedOn      *uint64           `json:"lastUpdatedOn"`
-		ArchivedOn         *uint64           `json:"archivedOn"`
-		InspiredByRecipeID *uint64           `json:"inspiredByRecipeID"`
-		Source             string            `json:"source"`
-		Description        string            `json:"description"`
-		ExternalID         string            `json:"externalID"`
-		DisplayImageURL    string            `json:"displayImageURL"`
-		Name               string            `json:"name"`
-		Steps              []*FullRecipeStep `json:"steps"`
-		ID                 uint64            `json:"id"`
-		CreatedOn          uint64            `json:"createdOn"`
-		BelongsToHousehold uint64            `json:"belongsToHousehold"`
+		_                  struct{}
+		LastUpdatedOn      *uint64 `json:"lastUpdatedOn"`
+		ArchivedOn         *uint64 `json:"archivedOn"`
+		InspiredByRecipeID *string `json:"inspiredByRecipeID"`
+		Source             string  `json:"source"`
+		Description        string  `json:"description"`
+		ID                 string  `json:"id"`
+		Name               string  `json:"name"`
+		BelongsToAccount   string  `json:"belongsToAccount"`
+		CreatedOn          uint64  `json:"createdOn"`
 	}
 
 	// RecipeList represents a list of recipes.
 	RecipeList struct {
+		_       struct{}
 		Recipes []*Recipe `json:"recipes"`
 		Pagination
 	}
 
-	// RecipeCreationInput represents what a user could set as input for creating recipes.
-	RecipeCreationInput struct {
-		InspiredByRecipeID *uint64                    `json:"inspiredByRecipeID"`
-		Name               string                     `json:"name"`
-		Source             string                     `json:"source"`
-		DisplayImageURL    string                     `json:"displayImageURL"`
-		Description        string                     `json:"description"`
-		Steps              []*RecipeStepCreationInput `json:"steps"`
-		BelongsToHousehold uint64                     `json:"-"`
-	}
+	// RecipeCreationRequestInput represents what a user could set as input for creating recipes.
+	RecipeCreationRequestInput struct {
+		_ struct{}
 
-	// RecipeUpdateInput represents what a user could set as input for updating recipes.
-	RecipeUpdateInput struct {
-		InspiredByRecipeID *uint64 `json:"inspiredByRecipeID"`
+		ID                 string  `json:"-"`
 		Name               string  `json:"name"`
 		Source             string  `json:"source"`
-		DisplayImageURL    string  `json:"displayImageURL"`
 		Description        string  `json:"description"`
-		BelongsToHousehold uint64  `json:"-"`
+		InspiredByRecipeID *string `json:"inspiredByRecipeID"`
+		BelongsToAccount   string  `json:"-"`
+	}
+
+	// RecipeDatabaseCreationInput represents what a user could set as input for creating recipes.
+	RecipeDatabaseCreationInput struct {
+		_ struct{}
+
+		ID                 string  `json:"id"`
+		Name               string  `json:"name"`
+		Source             string  `json:"source"`
+		Description        string  `json:"description"`
+		InspiredByRecipeID *string `json:"inspiredByRecipeID"`
+		BelongsToAccount   string  `json:"belongsToAccount"`
+	}
+
+	// RecipeUpdateRequestInput represents what a user could set as input for updating recipes.
+	RecipeUpdateRequestInput struct {
+		_ struct{}
+
+		Name               string  `json:"name"`
+		Source             string  `json:"source"`
+		Description        string  `json:"description"`
+		InspiredByRecipeID *string `json:"inspiredByRecipeID"`
+		BelongsToAccount   string  `json:"-"`
 	}
 
 	// RecipeDataManager describes a structure capable of storing recipes permanently.
 	RecipeDataManager interface {
-		RecipeExists(ctx context.Context, recipeID uint64) (bool, error)
-		GetRecipe(ctx context.Context, recipeID uint64) (*Recipe, error)
-		GetFullRecipe(ctx context.Context, recipeID uint64) (*FullRecipe, error)
-		GetAllRecipesCount(ctx context.Context) (uint64, error)
-		GetAllRecipes(ctx context.Context, resultChannel chan []*Recipe, bucketSize uint16) error
+		RecipeExists(ctx context.Context, recipeID string) (bool, error)
+		GetRecipe(ctx context.Context, recipeID string) (*Recipe, error)
+		GetTotalRecipeCount(ctx context.Context) (uint64, error)
 		GetRecipes(ctx context.Context, filter *QueryFilter) (*RecipeList, error)
-		GetRecipesWithIDs(ctx context.Context, householdID uint64, limit uint8, ids []uint64) ([]*Recipe, error)
-		CreateRecipe(ctx context.Context, input *RecipeCreationInput, createdByUser uint64) (*Recipe, error)
-		UpdateRecipe(ctx context.Context, updated *Recipe, changedByUser uint64, changes []*FieldChangeSummary) error
-		ArchiveRecipe(ctx context.Context, recipeID, householdID, archivedBy uint64) error
-		GetAuditLogEntriesForRecipe(ctx context.Context, recipeID uint64) ([]*AuditLogEntry, error)
+		GetRecipesWithIDs(ctx context.Context, accountID string, limit uint8, ids []string) ([]*Recipe, error)
+		CreateRecipe(ctx context.Context, input *RecipeDatabaseCreationInput) (*Recipe, error)
+		UpdateRecipe(ctx context.Context, updated *Recipe) error
+		ArchiveRecipe(ctx context.Context, recipeID, accountID string) error
 	}
 
 	// RecipeDataService describes a structure capable of serving traffic related to recipes.
 	RecipeDataService interface {
-		AuditEntryHandler(res http.ResponseWriter, req *http.Request)
 		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
-		ExistenceHandler(res http.ResponseWriter, req *http.Request)
 		ReadHandler(res http.ResponseWriter, req *http.Request)
 		UpdateHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 
-// Update merges an RecipeUpdateInput with a recipe.
-func (x *Recipe) Update(input *RecipeUpdateInput) []*FieldChangeSummary {
-	var out []*FieldChangeSummary
-
-	if input.Name != x.Name {
-		out = append(out, &FieldChangeSummary{
-			FieldName: "Name",
-			OldValue:  x.Name,
-			NewValue:  input.Name,
-		})
-
+// Update merges an RecipeUpdateRequestInput with a recipe.
+func (x *Recipe) Update(input *RecipeUpdateRequestInput) {
+	if input.Name != "" && input.Name != x.Name {
 		x.Name = input.Name
 	}
 
-	if input.Source != x.Source {
-		out = append(out, &FieldChangeSummary{
-			FieldName: "Source",
-			OldValue:  x.Source,
-			NewValue:  input.Source,
-		})
-
+	if input.Source != "" && input.Source != x.Source {
 		x.Source = input.Source
 	}
 
-	if input.Description != x.Description {
-		out = append(out, &FieldChangeSummary{
-			FieldName: "Description",
-			OldValue:  x.Description,
-			NewValue:  input.Description,
-		})
-
+	if input.Description != "" && input.Description != x.Description {
 		x.Description = input.Description
 	}
 
-	if input.InspiredByRecipeID != nil && (x.InspiredByRecipeID == nil || (*input.InspiredByRecipeID != 0 && *input.InspiredByRecipeID != *x.InspiredByRecipeID)) {
-		out = append(out, &FieldChangeSummary{
-			FieldName: "InspiredByRecipeID",
-			OldValue:  x.InspiredByRecipeID,
-			NewValue:  input.InspiredByRecipeID,
-		})
-
+	if input.InspiredByRecipeID != nil && (x.InspiredByRecipeID == nil || (*input.InspiredByRecipeID != "" && *input.InspiredByRecipeID != *x.InspiredByRecipeID)) {
 		x.InspiredByRecipeID = input.InspiredByRecipeID
 	}
-
-	return out
 }
 
-var _ validation.ValidatableWithContext = (*RecipeCreationInput)(nil)
+var _ validation.ValidatableWithContext = (*RecipeCreationRequestInput)(nil)
 
-// ValidateWithContext validates a RecipeCreationInput.
-func (x *RecipeCreationInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a RecipeCreationRequestInput.
+func (x *RecipeCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.Source, validation.Required),
+		validation.Field(&x.Description, validation.Required),
+		validation.Field(&x.InspiredByRecipeID, validation.Required),
 	)
 }
 
-var _ validation.ValidatableWithContext = (*RecipeUpdateInput)(nil)
+var _ validation.ValidatableWithContext = (*RecipeDatabaseCreationInput)(nil)
 
-// ValidateWithContext validates a RecipeUpdateInput.
-func (x *RecipeUpdateInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a RecipeDatabaseCreationInput.
+func (x *RecipeDatabaseCreationInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(
+		ctx,
+		x,
+		validation.Field(&x.ID, validation.Required),
+		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.Source, validation.Required),
+		validation.Field(&x.Description, validation.Required),
+		validation.Field(&x.InspiredByRecipeID, validation.Required),
+		validation.Field(&x.BelongsToAccount, validation.Required),
+	)
+}
+
+// RecipeDatabaseCreationInputFromRecipeCreationInput creates a DatabaseCreationInput from a CreationInput.
+func RecipeDatabaseCreationInputFromRecipeCreationInput(input *RecipeCreationRequestInput) *RecipeDatabaseCreationInput {
+	x := &RecipeDatabaseCreationInput{
+		Name:               input.Name,
+		Source:             input.Source,
+		Description:        input.Description,
+		InspiredByRecipeID: input.InspiredByRecipeID,
+	}
+
+	return x
+}
+
+var _ validation.ValidatableWithContext = (*RecipeUpdateRequestInput)(nil)
+
+// ValidateWithContext validates a RecipeUpdateRequestInput.
+func (x *RecipeUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,

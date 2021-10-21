@@ -1,27 +1,26 @@
 package webhooks
 
 import (
+	"errors"
 	"net/http"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+
 	mockencoding "gitlab.com/prixfixe/prixfixe/internal/encoding/mock"
+	mockpublishers "gitlab.com/prixfixe/prixfixe/internal/messagequeue/publishers/mock"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
-	mockmetrics "gitlab.com/prixfixe/prixfixe/internal/observability/metrics/mock"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	mockrouting "gitlab.com/prixfixe/prixfixe/internal/routing/mock"
 	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 func buildTestService() *service {
 	return &service{
 		logger:             logging.NewNoopLogger(),
-		webhookCounter:     &mockmetrics.UnitCounter{},
 		webhookDataManager: &mocktypes.WebhookDataManager{},
-		webhookIDFetcher:   func(req *http.Request) uint64 { return 0 },
+		webhookIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:     mockencoding.NewMockEncoderDecoder(),
 		tracer:             tracing.NewTracer("test"),
 	}
@@ -33,25 +32,86 @@ func TestProvideWebhooksService(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		var ucp metrics.UnitCounterProvider = func(counterName, description string) metrics.UnitCounter {
-			return &mockmetrics.UnitCounter{}
-		}
-
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
-			"BuildRouteParamIDFetcher",
-			mock.IsType(logging.NewNoopLogger()), WebhookIDURIParamKey, "webhook").Return(func(*http.Request) uint64 { return 0 })
+			"BuildRouteParamStringIDFetcher",
+			WebhookIDURIParamKey,
+		).Return(func(*http.Request) string { return "" })
 
-		actual := ProvideWebhooksService(
+		cfg := &Config{
+			PreWritesTopicName:   "pre-writes",
+			PreArchivesTopicName: "pre-archives",
+		}
+
+		pp := &mockpublishers.ProducerProvider{}
+		pp.On("ProviderPublisher", cfg.PreWritesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProviderPublisher", cfg.PreArchivesTopicName).Return(&mockpublishers.Publisher{}, nil)
+
+		actual, err := ProvideWebhooksService(
 			logging.NewNoopLogger(),
+			cfg,
 			&mocktypes.WebhookDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
-			ucp,
 			rpm,
+			pp,
 		)
 
 		assert.NotNil(t, actual)
+		assert.NoError(t, err)
 
-		mock.AssertExpectationsForObjects(t, rpm)
+		mock.AssertExpectationsForObjects(t, rpm, pp)
+	})
+
+	T.Run("with error providing pre-writes publisher", func(t *testing.T) {
+		t.Parallel()
+
+		cfg := &Config{
+			PreWritesTopicName:   "pre-writes",
+			PreArchivesTopicName: "pre-archives",
+		}
+
+		pp := &mockpublishers.ProducerProvider{}
+		pp.On("ProviderPublisher", cfg.PreWritesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
+
+		actual, err := ProvideWebhooksService(
+			logging.NewNoopLogger(),
+			cfg,
+			&mocktypes.WebhookDataManager{},
+			mockencoding.NewMockEncoderDecoder(),
+			nil,
+			pp,
+		)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+
+		mock.AssertExpectationsForObjects(t, pp)
+	})
+
+	T.Run("with error providing pre-archives publisher", func(t *testing.T) {
+		t.Parallel()
+
+		cfg := &Config{
+			PreWritesTopicName:   "pre-writes",
+			PreArchivesTopicName: "pre-archives",
+		}
+
+		pp := &mockpublishers.ProducerProvider{}
+		pp.On("ProviderPublisher", cfg.PreWritesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProviderPublisher", cfg.PreArchivesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
+
+		actual, err := ProvideWebhooksService(
+			logging.NewNoopLogger(),
+			cfg,
+			&mocktypes.WebhookDataManager{},
+			mockencoding.NewMockEncoderDecoder(),
+			nil,
+			pp,
+		)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+
+		mock.AssertExpectationsForObjects(t, pp)
 	})
 }

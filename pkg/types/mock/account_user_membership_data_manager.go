@@ -1,62 +1,62 @@
-package mock
+package mocktypes
 
 import (
 	"context"
 
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
 	"github.com/stretchr/testify/mock"
+
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
-var _ types.HouseholdUserMembershipDataManager = (*HouseholdUserMembershipDataManager)(nil)
+var _ types.AccountUserMembershipDataManager = (*AccountUserMembershipDataManager)(nil)
 
-// HouseholdUserMembershipDataManager is a mocked types.HouseholdUserMembershipDataManager for testing.
-type HouseholdUserMembershipDataManager struct {
+// AccountUserMembershipDataManager is a mocked types.AccountUserMembershipDataManager for testing.
+type AccountUserMembershipDataManager struct {
 	mock.Mock
 }
 
 // BuildSessionContextDataForUser satisfies our interface contract.
-func (m *HouseholdUserMembershipDataManager) BuildSessionContextDataForUser(ctx context.Context, userID uint64) (*types.SessionContextData, error) {
+func (m *AccountUserMembershipDataManager) BuildSessionContextDataForUser(ctx context.Context, userID string) (*types.SessionContextData, error) {
 	returnValues := m.Called(ctx, userID)
 
 	return returnValues.Get(0).(*types.SessionContextData), returnValues.Error(1)
 }
 
-// GetDefaultHouseholdIDForUser satisfies our interface contract.
-func (m *HouseholdUserMembershipDataManager) GetDefaultHouseholdIDForUser(ctx context.Context, userID uint64) (uint64, error) {
+// GetDefaultAccountIDForUser satisfies our interface contract.
+func (m *AccountUserMembershipDataManager) GetDefaultAccountIDForUser(ctx context.Context, userID string) (string, error) {
 	returnValues := m.Called(ctx, userID)
 
-	return returnValues.Get(0).(uint64), returnValues.Error(1)
+	return returnValues.Get(0).(string), returnValues.Error(1)
 }
 
-// MarkHouseholdAsUserDefault implements the interface.
-func (m *HouseholdUserMembershipDataManager) MarkHouseholdAsUserDefault(ctx context.Context, userID, householdID, changedByUser uint64) error {
-	return m.Called(ctx, userID, householdID, changedByUser).Error(0)
+// MarkAccountAsUserDefault implements the interface.
+func (m *AccountUserMembershipDataManager) MarkAccountAsUserDefault(ctx context.Context, userID, accountID string) error {
+	return m.Called(ctx, userID, accountID).Error(0)
 }
 
-// UserIsMemberOfHousehold implements the interface.
-func (m *HouseholdUserMembershipDataManager) UserIsMemberOfHousehold(ctx context.Context, userID, householdID uint64) (bool, error) {
-	returnValues := m.Called(ctx, userID, householdID)
+// UserIsMemberOfAccount implements the interface.
+func (m *AccountUserMembershipDataManager) UserIsMemberOfAccount(ctx context.Context, userID, accountID string) (bool, error) {
+	returnValues := m.Called(ctx, userID, accountID)
 
 	return returnValues.Bool(0), returnValues.Error(1)
 }
 
-// AddUserToHousehold implements the interface.
-func (m *HouseholdUserMembershipDataManager) AddUserToHousehold(ctx context.Context, input *types.AddUserToHouseholdInput, addedByUser uint64) error {
-	return m.Called(ctx, input, addedByUser).Error(0)
+// AddUserToAccount implements the interface.
+func (m *AccountUserMembershipDataManager) AddUserToAccount(ctx context.Context, input *types.AddUserToAccountInput) error {
+	return m.Called(ctx, input).Error(0)
 }
 
-// RemoveUserFromHousehold implements the interface.
-func (m *HouseholdUserMembershipDataManager) RemoveUserFromHousehold(ctx context.Context, userID, householdID, removedByUser uint64, reason string) error {
-	return m.Called(ctx, userID, householdID, removedByUser, reason).Error(0)
+// RemoveUserFromAccount implements the interface.
+func (m *AccountUserMembershipDataManager) RemoveUserFromAccount(ctx context.Context, userID, accountID string) error {
+	return m.Called(ctx, userID, accountID).Error(0)
 }
 
 // ModifyUserPermissions implements the interface.
-func (m *HouseholdUserMembershipDataManager) ModifyUserPermissions(ctx context.Context, userID, householdID, changedByUser uint64, input *types.ModifyUserPermissionsInput) error {
-	return m.Called(ctx, userID, householdID, changedByUser, input).Error(0)
+func (m *AccountUserMembershipDataManager) ModifyUserPermissions(ctx context.Context, accountID, userID string, input *types.ModifyUserPermissionsInput) error {
+	return m.Called(ctx, userID, accountID, input).Error(0)
 }
 
-// TransferHouseholdOwnership implements the interface.
-func (m *HouseholdUserMembershipDataManager) TransferHouseholdOwnership(ctx context.Context, householdID, transferredBy uint64, input *types.HouseholdOwnershipTransferInput) error {
-	return m.Called(ctx, householdID, transferredBy, input).Error(0)
+// TransferAccountOwnership implements the interface.
+func (m *AccountUserMembershipDataManager) TransferAccountOwnership(ctx context.Context, accountID string, input *types.AccountOwnershipTransferInput) error {
+	return m.Called(ctx, accountID, input).Error(0)
 }

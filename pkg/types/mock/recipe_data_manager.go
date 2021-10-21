@@ -1,11 +1,11 @@
-package mock
+package mocktypes
 
 import (
 	"context"
 
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
 	"github.com/stretchr/testify/mock"
+
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
 var _ types.RecipeDataManager = (*RecipeDataManager)(nil)
@@ -16,33 +16,21 @@ type RecipeDataManager struct {
 }
 
 // RecipeExists is a mock function.
-func (m *RecipeDataManager) RecipeExists(ctx context.Context, recipeID uint64) (bool, error) {
+func (m *RecipeDataManager) RecipeExists(ctx context.Context, recipeID string) (bool, error) {
 	args := m.Called(ctx, recipeID)
 	return args.Bool(0), args.Error(1)
 }
 
 // GetRecipe is a mock function.
-func (m *RecipeDataManager) GetRecipe(ctx context.Context, recipeID uint64) (*types.Recipe, error) {
+func (m *RecipeDataManager) GetRecipe(ctx context.Context, recipeID string) (*types.Recipe, error) {
 	args := m.Called(ctx, recipeID)
 	return args.Get(0).(*types.Recipe), args.Error(1)
 }
 
-// GetFullRecipe is a mock function.
-func (m *RecipeDataManager) GetFullRecipe(ctx context.Context, recipeID uint64) (*types.FullRecipe, error) {
-	args := m.Called(ctx, recipeID)
-	return args.Get(0).(*types.FullRecipe), args.Error(1)
-}
-
-// GetAllRecipesCount is a mock function.
-func (m *RecipeDataManager) GetAllRecipesCount(ctx context.Context) (uint64, error) {
+// GetTotalRecipeCount is a mock function.
+func (m *RecipeDataManager) GetTotalRecipeCount(ctx context.Context) (uint64, error) {
 	args := m.Called(ctx)
 	return args.Get(0).(uint64), args.Error(1)
-}
-
-// GetAllRecipes is a mock function.
-func (m *RecipeDataManager) GetAllRecipes(ctx context.Context, results chan []*types.Recipe, bucketSize uint16) error {
-	args := m.Called(ctx, results, bucketSize)
-	return args.Error(0)
 }
 
 // GetRecipes is a mock function.
@@ -52,29 +40,23 @@ func (m *RecipeDataManager) GetRecipes(ctx context.Context, filter *types.QueryF
 }
 
 // GetRecipesWithIDs is a mock function.
-func (m *RecipeDataManager) GetRecipesWithIDs(ctx context.Context, householdID uint64, limit uint8, ids []uint64) ([]*types.Recipe, error) {
-	args := m.Called(ctx, householdID, limit, ids)
+func (m *RecipeDataManager) GetRecipesWithIDs(ctx context.Context, accountID string, limit uint8, ids []string) ([]*types.Recipe, error) {
+	args := m.Called(ctx, accountID, limit, ids)
 	return args.Get(0).([]*types.Recipe), args.Error(1)
 }
 
 // CreateRecipe is a mock function.
-func (m *RecipeDataManager) CreateRecipe(ctx context.Context, input *types.RecipeCreationInput, createdByUser uint64) (*types.Recipe, error) {
-	args := m.Called(ctx, input, createdByUser)
+func (m *RecipeDataManager) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseCreationInput) (*types.Recipe, error) {
+	args := m.Called(ctx, input)
 	return args.Get(0).(*types.Recipe), args.Error(1)
 }
 
 // UpdateRecipe is a mock function.
-func (m *RecipeDataManager) UpdateRecipe(ctx context.Context, updated *types.Recipe, changedByUser uint64, changes []*types.FieldChangeSummary) error {
-	return m.Called(ctx, updated, changedByUser, changes).Error(0)
+func (m *RecipeDataManager) UpdateRecipe(ctx context.Context, updated *types.Recipe) error {
+	return m.Called(ctx, updated).Error(0)
 }
 
 // ArchiveRecipe is a mock function.
-func (m *RecipeDataManager) ArchiveRecipe(ctx context.Context, recipeID, householdID, archivedBy uint64) error {
-	return m.Called(ctx, recipeID, householdID, archivedBy).Error(0)
-}
-
-// GetAuditLogEntriesForRecipe is a mock function.
-func (m *RecipeDataManager) GetAuditLogEntriesForRecipe(ctx context.Context, recipeID uint64) ([]*types.AuditLogEntry, error) {
-	args := m.Called(ctx, recipeID)
-	return args.Get(0).([]*types.AuditLogEntry), args.Error(1)
+func (m *RecipeDataManager) ArchiveRecipe(ctx context.Context, recipeID, accountID string) error {
+	return m.Called(ctx, recipeID, accountID).Error(0)
 }

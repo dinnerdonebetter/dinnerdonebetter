@@ -17,9 +17,6 @@
 # Vim
 *.swp
 
-# Sqlite databases
-*.db
-
 # OSX
 .DS_Store
 
@@ -43,5 +40,3 @@ internal/services/frontend/_vendor_/*
 *.coverprofile
 *.profile
 
-# bleve indices
-*.bleve

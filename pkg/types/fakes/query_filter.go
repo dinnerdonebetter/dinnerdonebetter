@@ -1,9 +1,9 @@
 package fakes
 
 import (
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
 	fake "github.com/brianvoe/gofakeit/v5"
+
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
 // BuildFleshedOutQueryFilter builds a fully fleshed out QueryFilter.

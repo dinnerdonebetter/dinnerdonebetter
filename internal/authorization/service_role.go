@@ -19,13 +19,9 @@ type (
 	ServiceRolePermissionChecker interface {
 		HasPermission(Permission) bool
 
-		AsHouseholdRolePermissionChecker() HouseholdRolePermissionsChecker
+		AsAccountRolePermissionChecker() AccountRolePermissionsChecker
 		IsServiceAdmin() bool
 		CanCycleCookieSecrets() bool
-		CanSeeHouseholdAuditLogEntries() bool
-		CanSeeAPIClientAuditLogEntries() bool
-		CanSeeUserAuditLogEntries() bool
-		CanSeeWebhookAuditLogEntries() bool
 		CanUpdateUserReputations() bool
 		CanSeeUserData() bool
 		CanSearchUsers() bool
@@ -74,8 +70,8 @@ func NewServiceRolePermissionChecker(roles ...string) ServiceRolePermissionCheck
 	}
 }
 
-func (r serviceRoleCollection) AsHouseholdRolePermissionChecker() HouseholdRolePermissionsChecker {
-	return NewHouseholdRolePermissionChecker(r.Roles...)
+func (r serviceRoleCollection) AsAccountRolePermissionChecker() AccountRolePermissionsChecker {
+	return NewAccountRolePermissionChecker(r.Roles...)
 }
 
 // HasPermission returns whether a user can do something or not.
@@ -97,26 +93,6 @@ func (r serviceRoleCollection) IsServiceAdmin() bool {
 // CanCycleCookieSecrets returns whether a user can cycle cookie secrets or not.
 func (r serviceRoleCollection) CanCycleCookieSecrets() bool {
 	return hasPermission(CycleCookieSecretPermission, r.Roles...)
-}
-
-// CanSeeHouseholdAuditLogEntries returns whether a user can view household audit log entries or not.
-func (r serviceRoleCollection) CanSeeHouseholdAuditLogEntries() bool {
-	return hasPermission(ReadHouseholdAuditLogEntriesPermission, r.Roles...)
-}
-
-// CanSeeAPIClientAuditLogEntries returns whether a user can view API client audit log entries or not.
-func (r serviceRoleCollection) CanSeeAPIClientAuditLogEntries() bool {
-	return hasPermission(ReadAPIClientAuditLogEntriesPermission, r.Roles...)
-}
-
-// CanSeeUserAuditLogEntries returns whether a user can view user audit log entries or not.
-func (r serviceRoleCollection) CanSeeUserAuditLogEntries() bool {
-	return hasPermission(ReadUserAuditLogEntriesPermission, r.Roles...)
-}
-
-// CanSeeWebhookAuditLogEntries returns whether a user can view webhook audit log entries or not.
-func (r serviceRoleCollection) CanSeeWebhookAuditLogEntries() bool {
-	return hasPermission(ReadWebhookAuditLogEntriesPermission, r.Roles...)
 }
 
 // CanUpdateUserReputations returns whether a user can update user reputations or not.

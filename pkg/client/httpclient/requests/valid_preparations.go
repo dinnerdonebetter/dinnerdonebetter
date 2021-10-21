@@ -16,43 +16,14 @@ const (
 	validPreparationsBasePath = "valid_preparations"
 )
 
-// BuildValidPreparationExistsRequest builds an HTTP request for checking the existence of a valid preparation.
-func (b *Builder) BuildValidPreparationExistsRequest(ctx context.Context, validPreparationID uint64) (*http.Request, error) {
-	ctx, span := b.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := b.logger
-
-	if validPreparationID == 0 {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
-
-	uri := b.BuildURL(
-		ctx,
-		nil,
-		validPreparationsBasePath,
-		id(validPreparationID),
-	)
-	tracing.AttachRequestURIToSpan(span, uri)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodHead, uri, nil)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
-	}
-
-	return req, nil
-}
-
 // BuildGetValidPreparationRequest builds an HTTP request for fetching a valid preparation.
-func (b *Builder) BuildGetValidPreparationRequest(ctx context.Context, validPreparationID uint64) (*http.Request, error) {
+func (b *Builder) BuildGetValidPreparationRequest(ctx context.Context, validPreparationID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := b.logger
 
-	if validPreparationID == 0 {
+	if validPreparationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
@@ -62,7 +33,7 @@ func (b *Builder) BuildGetValidPreparationRequest(ctx context.Context, validPrep
 		ctx,
 		nil,
 		validPreparationsBasePath,
-		id(validPreparationID),
+		validPreparationID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
@@ -79,9 +50,7 @@ func (b *Builder) BuildSearchValidPreparationsRequest(ctx context.Context, query
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
-
-	logger = logger.WithValue(types.SearchQueryKey, query).WithValue(types.LimitQueryKey, limit)
+	logger := b.logger.WithValue(types.SearchQueryKey, query).WithValue(types.LimitQueryKey, limit)
 
 	params := url.Values{}
 	params.Set(types.SearchQueryKey, query)
@@ -127,7 +96,7 @@ func (b *Builder) BuildGetValidPreparationsRequest(ctx context.Context, filter *
 }
 
 // BuildCreateValidPreparationRequest builds an HTTP request for creating a valid preparation.
-func (b *Builder) BuildCreateValidPreparationRequest(ctx context.Context, input *types.ValidPreparationCreationInput) (*http.Request, error) {
+func (b *Builder) BuildCreateValidPreparationRequest(ctx context.Context, input *types.ValidPreparationCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -174,7 +143,7 @@ func (b *Builder) BuildUpdateValidPreparationRequest(ctx context.Context, validP
 		ctx,
 		nil,
 		validPreparationsBasePath,
-		strconv.FormatUint(validPreparation.ID, 10),
+		validPreparation.ID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
@@ -187,13 +156,13 @@ func (b *Builder) BuildUpdateValidPreparationRequest(ctx context.Context, validP
 }
 
 // BuildArchiveValidPreparationRequest builds an HTTP request for archiving a valid preparation.
-func (b *Builder) BuildArchiveValidPreparationRequest(ctx context.Context, validPreparationID uint64) (*http.Request, error) {
+func (b *Builder) BuildArchiveValidPreparationRequest(ctx context.Context, validPreparationID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := b.logger
 
-	if validPreparationID == 0 {
+	if validPreparationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
@@ -203,41 +172,11 @@ func (b *Builder) BuildArchiveValidPreparationRequest(ctx context.Context, valid
 		ctx,
 		nil,
 		validPreparationsBasePath,
-		id(validPreparationID),
+		validPreparationID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
-	}
-
-	return req, nil
-}
-
-// BuildGetAuditLogForValidPreparationRequest builds an HTTP request for fetching a list of audit log entries pertaining to a valid preparation.
-func (b *Builder) BuildGetAuditLogForValidPreparationRequest(ctx context.Context, validPreparationID uint64) (*http.Request, error) {
-	ctx, span := b.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := b.logger
-
-	if validPreparationID == 0 {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
-
-	uri := b.BuildURL(
-		ctx,
-		nil,
-		validPreparationsBasePath,
-		id(validPreparationID),
-		"audit",
-	)
-	tracing.AttachRequestURIToSpan(span, uri)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}

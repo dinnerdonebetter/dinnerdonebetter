@@ -16,43 +16,14 @@ const (
 	validIngredientsBasePath = "valid_ingredients"
 )
 
-// BuildValidIngredientExistsRequest builds an HTTP request for checking the existence of a valid ingredient.
-func (b *Builder) BuildValidIngredientExistsRequest(ctx context.Context, validIngredientID uint64) (*http.Request, error) {
-	ctx, span := b.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := b.logger
-
-	if validIngredientID == 0 {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
-	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
-
-	uri := b.BuildURL(
-		ctx,
-		nil,
-		validIngredientsBasePath,
-		id(validIngredientID),
-	)
-	tracing.AttachRequestURIToSpan(span, uri)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodHead, uri, nil)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
-	}
-
-	return req, nil
-}
-
 // BuildGetValidIngredientRequest builds an HTTP request for fetching a valid ingredient.
-func (b *Builder) BuildGetValidIngredientRequest(ctx context.Context, validIngredientID uint64) (*http.Request, error) {
+func (b *Builder) BuildGetValidIngredientRequest(ctx context.Context, validIngredientID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := b.logger
 
-	if validIngredientID == 0 {
+	if validIngredientID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
@@ -62,7 +33,7 @@ func (b *Builder) BuildGetValidIngredientRequest(ctx context.Context, validIngre
 		ctx,
 		nil,
 		validIngredientsBasePath,
-		id(validIngredientID),
+		validIngredientID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
@@ -75,21 +46,14 @@ func (b *Builder) BuildGetValidIngredientRequest(ctx context.Context, validIngre
 }
 
 // BuildSearchValidIngredientsRequest builds an HTTP request for querying valid ingredients.
-func (b *Builder) BuildSearchValidIngredientsRequest(ctx context.Context, preparationID uint64, query string, limit uint8) (*http.Request, error) {
+func (b *Builder) BuildSearchValidIngredientsRequest(ctx context.Context, query string, limit uint8) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if preparationID == 0 {
-		return nil, ErrInvalidIDProvided
-	}
-
-	logger := b.logger
-
-	logger = logger.WithValue(types.SearchQueryKey, query).WithValue(types.LimitQueryKey, limit)
+	logger := b.logger.WithValue(types.SearchQueryKey, query).WithValue(types.LimitQueryKey, limit)
 
 	params := url.Values{}
 	params.Set(types.SearchQueryKey, query)
-	params.Set(types.ValidPreparationIDQueryKey, strconv.FormatUint(preparationID, 10))
 	params.Set(types.LimitQueryKey, strconv.FormatUint(uint64(limit), 10))
 
 	uri := b.BuildURL(
@@ -132,7 +96,7 @@ func (b *Builder) BuildGetValidIngredientsRequest(ctx context.Context, filter *t
 }
 
 // BuildCreateValidIngredientRequest builds an HTTP request for creating a valid ingredient.
-func (b *Builder) BuildCreateValidIngredientRequest(ctx context.Context, input *types.ValidIngredientCreationInput) (*http.Request, error) {
+func (b *Builder) BuildCreateValidIngredientRequest(ctx context.Context, input *types.ValidIngredientCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -179,7 +143,7 @@ func (b *Builder) BuildUpdateValidIngredientRequest(ctx context.Context, validIn
 		ctx,
 		nil,
 		validIngredientsBasePath,
-		strconv.FormatUint(validIngredient.ID, 10),
+		validIngredient.ID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
@@ -192,13 +156,13 @@ func (b *Builder) BuildUpdateValidIngredientRequest(ctx context.Context, validIn
 }
 
 // BuildArchiveValidIngredientRequest builds an HTTP request for archiving a valid ingredient.
-func (b *Builder) BuildArchiveValidIngredientRequest(ctx context.Context, validIngredientID uint64) (*http.Request, error) {
+func (b *Builder) BuildArchiveValidIngredientRequest(ctx context.Context, validIngredientID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := b.logger
 
-	if validIngredientID == 0 {
+	if validIngredientID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
@@ -208,41 +172,11 @@ func (b *Builder) BuildArchiveValidIngredientRequest(ctx context.Context, validI
 		ctx,
 		nil,
 		validIngredientsBasePath,
-		id(validIngredientID),
+		validIngredientID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building user status request")
-	}
-
-	return req, nil
-}
-
-// BuildGetAuditLogForValidIngredientRequest builds an HTTP request for fetching a list of audit log entries pertaining to a valid ingredient.
-func (b *Builder) BuildGetAuditLogForValidIngredientRequest(ctx context.Context, validIngredientID uint64) (*http.Request, error) {
-	ctx, span := b.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := b.logger
-
-	if validIngredientID == 0 {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
-	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
-
-	uri := b.BuildURL(
-		ctx,
-		nil,
-		validIngredientsBasePath,
-		id(validIngredientID),
-		"audit",
-	)
-	tracing.AttachRequestURIToSpan(span, uri)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}

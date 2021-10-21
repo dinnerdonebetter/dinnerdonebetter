@@ -5,10 +5,10 @@ import (
 	"encoding/base64"
 	"testing"
 
-	"gitlab.com/prixfixe/prixfixe/internal/random"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"gitlab.com/prixfixe/prixfixe/internal/random"
 )
 
 func buildExampleKey(ctx context.Context, t *testing.T) string {
@@ -30,36 +30,6 @@ func TestProvideSecretKeeper(T *testing.T) {
 
 		cfg := &Config{
 			Provider: ProviderLocal,
-			Key:      buildExampleKey(ctx, t),
-		}
-
-		actual, err := ProvideSecretKeeper(ctx, cfg)
-		assert.NoError(t, err)
-		assert.NotNil(t, actual)
-	})
-
-	T.Run("standard_aws", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		cfg := &Config{
-			Provider: ProviderAWS,
-			Key:      buildExampleKey(ctx, t),
-		}
-
-		actual, err := ProvideSecretKeeper(ctx, cfg)
-		assert.NoError(t, err)
-		assert.NotNil(t, actual)
-	})
-
-	T.Run("standard_vault", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		cfg := &Config{
-			Provider: ProviderHashicorpVault,
 			Key:      buildExampleKey(ctx, t),
 		}
 

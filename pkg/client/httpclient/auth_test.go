@@ -7,12 +7,12 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 func TestAuth(t *testing.T) {
@@ -52,7 +52,7 @@ func (s *authTestSuite) TestClient_UserStatus() {
 		t := s.T()
 
 		expected := &types.UserStatusResponse{
-			UserReputation:            s.exampleUser.ServiceHouseholdStatus,
+			UserReputation:            s.exampleUser.ServiceAccountStatus,
 			UserReputationExplanation: s.exampleUser.ReputationExplanation,
 			UserIsAuthenticated:       true,
 		}
@@ -350,7 +350,7 @@ func (s *authTestSuite) TestClient_VerifyTOTPSecret() {
 		exampleInput := fakes.BuildFakeTOTPSecretVerificationInputForUser(s.exampleUser)
 		c, _ := buildSimpleTestClient(t)
 
-		err := c.VerifyTOTPSecret(s.ctx, 0, exampleInput.TOTPToken)
+		err := c.VerifyTOTPSecret(s.ctx, "", exampleInput.TOTPToken)
 		assert.Error(t, err)
 	})
 

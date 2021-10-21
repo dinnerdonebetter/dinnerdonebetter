@@ -6,9 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-
 	"github.com/stretchr/testify/assert"
+
+	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 )
 
 func TestProvideClientEncoder(T *testing.T) {

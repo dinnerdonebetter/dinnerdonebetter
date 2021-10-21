@@ -20,10 +20,10 @@ type validPreparationsServiceHTTPRoutesTestHelper struct {
 	res                     *httptest.ResponseRecorder
 	service                 *service
 	exampleUser             *types.User
-	exampleHousehold        *types.Household
+	exampleAccount          *types.Account
 	exampleValidPreparation *types.ValidPreparation
-	exampleCreationInput    *types.ValidPreparationCreationInput
-	exampleUpdateInput      *types.ValidPreparationUpdateInput
+	exampleCreationInput    *types.ValidPreparationCreationRequestInput
+	exampleUpdateInput      *types.ValidPreparationUpdateRequestInput
 }
 
 func buildTestHelper(t *testing.T) *validPreparationsServiceHTTPRoutesTestHelper {
@@ -34,26 +34,26 @@ func buildTestHelper(t *testing.T) *validPreparationsServiceHTTPRoutesTestHelper
 	helper.ctx = context.Background()
 	helper.service = buildTestService()
 	helper.exampleUser = fakes.BuildFakeUser()
-	helper.exampleHousehold = fakes.BuildFakeHousehold()
-	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
+	helper.exampleAccount = fakes.BuildFakeAccount()
+	helper.exampleAccount.BelongsToUser = helper.exampleUser.ID
 	helper.exampleValidPreparation = fakes.BuildFakeValidPreparation()
-	helper.exampleCreationInput = fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(helper.exampleValidPreparation)
-	helper.exampleUpdateInput = fakes.BuildFakeValidPreparationUpdateInputFromValidPreparation(helper.exampleValidPreparation)
+	helper.exampleCreationInput = fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(helper.exampleValidPreparation)
+	helper.exampleUpdateInput = fakes.BuildFakeValidPreparationUpdateRequestInputFromValidPreparation(helper.exampleValidPreparation)
 
-	helper.service.validPreparationIDFetcher = func(*http.Request) uint64 {
+	helper.service.validPreparationIDFetcher = func(*http.Request) string {
 		return helper.exampleValidPreparation.ID
 	}
 
 	sessionCtxData := &types.SessionContextData{
 		Requester: types.RequesterInfo{
 			UserID:                helper.exampleUser.ID,
-			Reputation:            helper.exampleUser.ServiceHouseholdStatus,
+			Reputation:            helper.exampleUser.ServiceAccountStatus,
 			ReputationExplanation: helper.exampleUser.ReputationExplanation,
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 		},
-		ActiveHouseholdID: helper.exampleHousehold.ID,
-		HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
-			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
+		ActiveAccountID: helper.exampleAccount.ID,
+		AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
+			helper.exampleAccount.ID: authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
 		},
 	}
 

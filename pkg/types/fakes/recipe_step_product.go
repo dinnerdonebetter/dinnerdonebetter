@@ -1,22 +1,20 @@
 package fakes
 
 import (
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
 	fake "github.com/brianvoe/gofakeit/v5"
+	"github.com/segmentio/ksuid"
+
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
 // BuildFakeRecipeStepProduct builds a faked recipe step product.
 func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 	return &types.RecipeStepProduct{
-		ID:                  uint64(fake.Uint32()),
-		ExternalID:          fake.UUID(),
+		ID:                  ksuid.New().String(),
 		Name:                fake.Word(),
-		QuantityType:        fake.Word(),
-		QuantityValue:       float32(fake.Uint32()),
-		QuantityNotes:       fake.Word(),
+		RecipeStepID:        fake.Word(),
 		CreatedOn:           uint64(uint32(fake.Date().Unix())),
-		BelongsToRecipeStep: fake.Uint64(),
+		BelongsToRecipeStep: fake.UUID(),
 	}
 }
 
@@ -38,42 +36,53 @@ func BuildFakeRecipeStepProductList() *types.RecipeStepProductList {
 	}
 }
 
-// BuildFakeRecipeStepProductUpdateInput builds a faked RecipeStepProductUpdateInput from a recipe step product.
-func BuildFakeRecipeStepProductUpdateInput() *types.RecipeStepProductUpdateInput {
+// BuildFakeRecipeStepProductUpdateRequestInput builds a faked RecipeStepProductUpdateRequestInput from a recipe step product.
+func BuildFakeRecipeStepProductUpdateRequestInput() *types.RecipeStepProductUpdateRequestInput {
 	recipeStepProduct := BuildFakeRecipeStepProduct()
-	return &types.RecipeStepProductUpdateInput{
+	return &types.RecipeStepProductUpdateRequestInput{
 		Name:                recipeStepProduct.Name,
-		QuantityType:        recipeStepProduct.QuantityType,
-		QuantityValue:       recipeStepProduct.QuantityValue,
-		QuantityNotes:       recipeStepProduct.QuantityNotes,
+		RecipeStepID:        recipeStepProduct.RecipeStepID,
 		BelongsToRecipeStep: recipeStepProduct.BelongsToRecipeStep,
 	}
 }
 
-// BuildFakeRecipeStepProductUpdateInputFromRecipeStepProduct builds a faked RecipeStepProductUpdateInput from a recipe step product.
-func BuildFakeRecipeStepProductUpdateInputFromRecipeStepProduct(recipeStepProduct *types.RecipeStepProduct) *types.RecipeStepProductUpdateInput {
-	return &types.RecipeStepProductUpdateInput{
+// BuildFakeRecipeStepProductUpdateRequestInputFromRecipeStepProduct builds a faked RecipeStepProductUpdateRequestInput from a recipe step product.
+func BuildFakeRecipeStepProductUpdateRequestInputFromRecipeStepProduct(recipeStepProduct *types.RecipeStepProduct) *types.RecipeStepProductUpdateRequestInput {
+	return &types.RecipeStepProductUpdateRequestInput{
 		Name:                recipeStepProduct.Name,
-		QuantityType:        recipeStepProduct.QuantityType,
-		QuantityValue:       recipeStepProduct.QuantityValue,
-		QuantityNotes:       recipeStepProduct.QuantityNotes,
+		RecipeStepID:        recipeStepProduct.RecipeStepID,
 		BelongsToRecipeStep: recipeStepProduct.BelongsToRecipeStep,
 	}
 }
 
-// BuildFakeRecipeStepProductCreationInput builds a faked RecipeStepProductCreationInput.
-func BuildFakeRecipeStepProductCreationInput() *types.RecipeStepProductCreationInput {
+// BuildFakeRecipeStepProductCreationRequestInput builds a faked RecipeStepProductCreationRequestInput.
+func BuildFakeRecipeStepProductCreationRequestInput() *types.RecipeStepProductCreationRequestInput {
 	recipeStepProduct := BuildFakeRecipeStepProduct()
-	return BuildFakeRecipeStepProductCreationInputFromRecipeStepProduct(recipeStepProduct)
+	return BuildFakeRecipeStepProductCreationRequestInputFromRecipeStepProduct(recipeStepProduct)
 }
 
-// BuildFakeRecipeStepProductCreationInputFromRecipeStepProduct builds a faked RecipeStepProductCreationInput from a recipe step product.
-func BuildFakeRecipeStepProductCreationInputFromRecipeStepProduct(recipeStepProduct *types.RecipeStepProduct) *types.RecipeStepProductCreationInput {
-	return &types.RecipeStepProductCreationInput{
+// BuildFakeRecipeStepProductCreationRequestInputFromRecipeStepProduct builds a faked RecipeStepProductCreationRequestInput from a recipe step product.
+func BuildFakeRecipeStepProductCreationRequestInputFromRecipeStepProduct(recipeStepProduct *types.RecipeStepProduct) *types.RecipeStepProductCreationRequestInput {
+	return &types.RecipeStepProductCreationRequestInput{
+		ID:                  recipeStepProduct.ID,
 		Name:                recipeStepProduct.Name,
-		QuantityType:        recipeStepProduct.QuantityType,
-		QuantityValue:       recipeStepProduct.QuantityValue,
-		QuantityNotes:       recipeStepProduct.QuantityNotes,
+		RecipeStepID:        recipeStepProduct.RecipeStepID,
+		BelongsToRecipeStep: recipeStepProduct.BelongsToRecipeStep,
+	}
+}
+
+// BuildFakeRecipeStepProductDatabaseCreationInput builds a faked RecipeStepProductDatabaseCreationInput.
+func BuildFakeRecipeStepProductDatabaseCreationInput() *types.RecipeStepProductDatabaseCreationInput {
+	recipeStepProduct := BuildFakeRecipeStepProduct()
+	return BuildFakeRecipeStepProductDatabaseCreationInputFromRecipeStepProduct(recipeStepProduct)
+}
+
+// BuildFakeRecipeStepProductDatabaseCreationInputFromRecipeStepProduct builds a faked RecipeStepProductDatabaseCreationInput from a recipe step product.
+func BuildFakeRecipeStepProductDatabaseCreationInputFromRecipeStepProduct(recipeStepProduct *types.RecipeStepProduct) *types.RecipeStepProductDatabaseCreationInput {
+	return &types.RecipeStepProductDatabaseCreationInput{
+		ID:                  recipeStepProduct.ID,
+		Name:                recipeStepProduct.Name,
+		RecipeStepID:        recipeStepProduct.RecipeStepID,
 		BelongsToRecipeStep: recipeStepProduct.BelongsToRecipeStep,
 	}
 }

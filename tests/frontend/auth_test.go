@@ -7,14 +7,14 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-
 	"github.com/makiuchi-d/gozxing"
 	"github.com/makiuchi-d/gozxing/qrcode"
 	"github.com/mxschmitt/playwright-go"
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 var defaultBrowserWaitTime = time.Second / 2
@@ -30,20 +30,23 @@ func TestRegistrationFlow(T *testing.T) {
 			page, err := browser.NewPage()
 			require.NoError(t, err, "could not create page")
 
-			_, err = page.Goto(urlToUse + "/register")
-			require.NoError(t, err, "could not navigate to registration page")
+			_, err = page.Goto(urlToUse)
+			require.NoError(t, err, "could not navigate to root page")
 
-			require.NoError(t, page.Type("[data-automation=registration_username_input]", user.Username))
-			require.NoError(t, page.Type("[data-automation=registration_password_input]", user.Password))
-			require.NoError(t, page.Type("[data-automation=registration_password_repeat_input]", user.Password))
+			registerLinkClickErr := page.Click("#registerLink")
+			require.NoError(t, registerLinkClickErr, "could not find register link on homepage")
 
-			time.Sleep(defaultBrowserWaitTime)
-
-			require.NoError(t, page.Click("[data-automation=register_button]"))
+			require.NoError(t, page.Type("#usernameInput", user.Username))
+			require.NoError(t, page.Type("#passwordInput", user.Password))
 
 			time.Sleep(defaultBrowserWaitTime)
 
-			qrCodeElement, qrCodeElementErr := page.QuerySelector("[data-automation=two_factor_qr_code]")
+			assert.Equal(t, urlToUse+"/register", page.URL())
+			require.NoError(t, page.Click("#registrationButton"))
+
+			time.Sleep(defaultBrowserWaitTime)
+
+			qrCodeElement, qrCodeElementErr := page.QuerySelector("#twoFactorSecretQRCode")
 			require.NoError(t, qrCodeElementErr)
 
 			img, err := png.Decode(bytes.NewReader(getScreenshotBytes(t, qrCodeElement)))
@@ -67,10 +70,10 @@ func TestRegistrationFlow(T *testing.T) {
 			require.NoError(t, firstCodeGenerationErr)
 			require.NotEmpty(t, code)
 
-			totpInputFieldFindErr := page.Type("[data-automation=totp_secret_verification_token_input]", code)
+			totpInputFieldFindErr := page.Type("#totpTokenInput", code)
 			require.NoError(t, totpInputFieldFindErr, "unexpected error finding TOTP token input field: %v", totpInputFieldFindErr)
 
-			require.NoError(t, page.Click("[data-automation=totp_token_submit_button]"))
+			require.NoError(t, page.Click("#totpTokenSubmitButton"))
 
 			time.Sleep(defaultBrowserWaitTime)
 			assert.Equal(t, urlToUse+"/login", page.URL())
@@ -81,14 +84,14 @@ func TestRegistrationFlow(T *testing.T) {
 			require.NoError(t, secondCodeGenerationErr)
 			require.NotEmpty(t, code)
 
-			require.NoError(t, page.Type("[data-automation=login_username_input]", user.Username))
-			require.NoError(t, page.Type("[data-automation=login_password_input]", user.Password))
-			require.NoError(t, page.Type("[data-automation=login_totp_token_input]", code))
+			require.NoError(t, page.Type("#usernameInput", user.Username))
+			require.NoError(t, page.Type("#passwordInput", user.Password))
+			require.NoError(t, page.Type("#totpTokenInput", code))
 
-			require.NoError(t, page.Click("[data-automation=login_button]"))
+			require.NoError(t, page.Click("#loginButton"))
 			time.Sleep(defaultBrowserWaitTime)
 
-			assert.Equal(t, urlToUse+"/home", page.URL())
+			assert.Equal(t, urlToUse+"/", page.URL())
 		}
 	})
 }

@@ -9,61 +9,61 @@ import (
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
-// SwitchActiveHousehold will switch the household on whose behalf requests are made.
-func (c *Client) SwitchActiveHousehold(ctx context.Context, householdID uint64) error {
+// SwitchActiveAccount will switch the account on whose behalf requests are made.
+func (c *Client) SwitchActiveAccount(ctx context.Context, accountID string) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if householdID == 0 {
+	if accountID == "" {
 		return ErrInvalidIDProvided
 	}
 
-	logger := c.logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	logger := c.logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachAccountIDToSpan(span, accountID)
 
 	if c.authMethod == cookieAuthMethod {
-		req, err := c.requestBuilder.BuildSwitchActiveHouseholdRequest(ctx, householdID)
+		req, err := c.requestBuilder.BuildSwitchActiveAccountRequest(ctx, accountID)
 		if err != nil {
-			return observability.PrepareError(err, logger, span, "building household switch request")
+			return observability.PrepareError(err, logger, span, "building account switch request")
 		}
 
 		if err = c.executeAndUnmarshal(ctx, req, c.authedClient, nil); err != nil {
-			return observability.PrepareError(err, logger, span, "executing household switch request")
+			return observability.PrepareError(err, logger, span, "executing account switch request")
 		}
 	}
 
-	c.householdID = householdID
+	c.accountID = accountID
 
 	return nil
 }
 
-// GetHousehold retrieves an household.
-func (c *Client) GetHousehold(ctx context.Context, householdID uint64) (*types.Household, error) {
+// GetAccount retrieves an account.
+func (c *Client) GetAccount(ctx context.Context, accountID string) (*types.Account, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if householdID == 0 {
+	if accountID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := c.logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	logger := c.logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachAccountIDToSpan(span, accountID)
 
-	req, err := c.requestBuilder.BuildGetHouseholdRequest(ctx, householdID)
+	req, err := c.requestBuilder.BuildGetAccountRequest(ctx, accountID)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building household retrieval request")
+		return nil, observability.PrepareError(err, logger, span, "building account retrieval request")
 	}
 
-	var household *types.Household
-	if err = c.fetchAndUnmarshal(ctx, req, &household); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving household")
+	var account *types.Account
+	if err = c.fetchAndUnmarshal(ctx, req, &account); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "retrieving account")
 	}
 
-	return household, nil
+	return account, nil
 }
 
-// GetHouseholds retrieves a list of households.
-func (c *Client) GetHouseholds(ctx context.Context, filter *types.QueryFilter) (*types.HouseholdList, error) {
+// GetAccounts retrieves a list of accounts.
+func (c *Client) GetAccounts(ctx context.Context, filter *types.QueryFilter) (*types.AccountList, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -71,21 +71,21 @@ func (c *Client) GetHouseholds(ctx context.Context, filter *types.QueryFilter) (
 
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := c.requestBuilder.BuildGetHouseholdsRequest(ctx, filter)
+	req, err := c.requestBuilder.BuildGetAccountsRequest(ctx, filter)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building household list request")
+		return nil, observability.PrepareError(err, logger, span, "building account list request")
 	}
 
-	var households *types.HouseholdList
-	if err = c.fetchAndUnmarshal(ctx, req, &households); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving households")
+	var accounts *types.AccountList
+	if err = c.fetchAndUnmarshal(ctx, req, &accounts); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "retrieving accounts")
 	}
 
-	return households, nil
+	return accounts, nil
 }
 
-// CreateHousehold creates an household.
-func (c *Client) CreateHousehold(ctx context.Context, input *types.HouseholdCreationInput) (*types.Household, error) {
+// CreateAccount creates an account.
+func (c *Client) CreateAccount(ctx context.Context, input *types.AccountCreationInput) (*types.Account, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -93,75 +93,75 @@ func (c *Client) CreateHousehold(ctx context.Context, input *types.HouseholdCrea
 		return nil, ErrNilInputProvided
 	}
 
-	logger := c.logger.WithValue("household_name", input.Name)
+	logger := c.logger.WithValue("account_name", input.Name)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateHouseholdRequest(ctx, input)
+	req, err := c.requestBuilder.BuildCreateAccountRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building household creation request")
+		return nil, observability.PrepareError(err, logger, span, "building account creation request")
 	}
 
-	var household *types.Household
-	if err = c.fetchAndUnmarshal(ctx, req, &household); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating household")
+	var account *types.Account
+	if err = c.fetchAndUnmarshal(ctx, req, &account); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "creating account")
 	}
 
-	return household, nil
+	return account, nil
 }
 
-// UpdateHousehold updates an household.
-func (c *Client) UpdateHousehold(ctx context.Context, household *types.Household) error {
+// UpdateAccount updates an account.
+func (c *Client) UpdateAccount(ctx context.Context, account *types.Account) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if household == nil {
+	if account == nil {
 		return ErrNilInputProvided
 	}
 
-	logger := c.logger.WithValue(keys.HouseholdIDKey, household.ID)
-	tracing.AttachHouseholdIDToSpan(span, household.ID)
+	logger := c.logger.WithValue(keys.AccountIDKey, account.ID)
+	tracing.AttachAccountIDToSpan(span, account.ID)
 
-	req, err := c.requestBuilder.BuildUpdateHouseholdRequest(ctx, household)
+	req, err := c.requestBuilder.BuildUpdateAccountRequest(ctx, account)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building household update request")
+		return observability.PrepareError(err, logger, span, "building account update request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, &household); err != nil {
-		return observability.PrepareError(err, logger, span, "updating household")
+	if err = c.fetchAndUnmarshal(ctx, req, &account); err != nil {
+		return observability.PrepareError(err, logger, span, "updating account")
 	}
 
 	return nil
 }
 
-// ArchiveHousehold archives an household.
-func (c *Client) ArchiveHousehold(ctx context.Context, householdID uint64) error {
+// ArchiveAccount archives an account.
+func (c *Client) ArchiveAccount(ctx context.Context, accountID string) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if householdID == 0 {
+	if accountID == "" {
 		return ErrInvalidIDProvided
 	}
 
-	logger := c.logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	logger := c.logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachAccountIDToSpan(span, accountID)
 
-	req, err := c.requestBuilder.BuildArchiveHouseholdRequest(ctx, householdID)
+	req, err := c.requestBuilder.BuildArchiveAccountRequest(ctx, accountID)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building household archive request")
+		return observability.PrepareError(err, logger, span, "building account archive request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "archiving household")
+		return observability.PrepareError(err, logger, span, "archiving account")
 	}
 
 	return nil
 }
 
-// AddUserToHousehold adds a user to an household.
-func (c *Client) AddUserToHousehold(ctx context.Context, input *types.AddUserToHouseholdInput) error {
+// AddUserToAccount adds a user to an account.
+func (c *Client) AddUserToAccount(ctx context.Context, input *types.AddUserToAccountInput) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -169,8 +169,8 @@ func (c *Client) AddUserToHousehold(ctx context.Context, input *types.AddUserToH
 		return ErrNilInputProvided
 	}
 
-	logger := c.logger.WithValue(keys.HouseholdIDKey, input.HouseholdID).WithValue(keys.UserIDKey, input.UserID)
-	tracing.AttachHouseholdIDToSpan(span, input.HouseholdID)
+	logger := c.logger.WithValue(keys.AccountIDKey, input.AccountID).WithValue(keys.UserIDKey, input.UserID)
+	tracing.AttachAccountIDToSpan(span, input.AccountID)
 	tracing.AttachUserIDToSpan(span, input.UserID)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
@@ -179,83 +179,79 @@ func (c *Client) AddUserToHousehold(ctx context.Context, input *types.AddUserToH
 
 	req, err := c.requestBuilder.BuildAddUserRequest(ctx, input)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building add user to household request")
+		return observability.PrepareError(err, logger, span, "building add user to account request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "adding user to household")
+		return observability.PrepareError(err, logger, span, "adding user to account")
 	}
 
 	return nil
 }
 
-// MarkAsDefault marks a given household as the default for a given user.
-func (c *Client) MarkAsDefault(ctx context.Context, householdID uint64) error {
+// MarkAsDefault marks a given account as the default for a given user.
+func (c *Client) MarkAsDefault(ctx context.Context, accountID string) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if householdID == 0 {
+	if accountID == "" {
 		return ErrInvalidIDProvided
 	}
 
-	logger := c.logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	logger := c.logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachAccountIDToSpan(span, accountID)
 
-	req, err := c.requestBuilder.BuildMarkAsDefaultRequest(ctx, householdID)
+	req, err := c.requestBuilder.BuildMarkAsDefaultRequest(ctx, accountID)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building mark household as default request")
+		return observability.PrepareError(err, logger, span, "building mark account as default request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "marking household as default")
+		return observability.PrepareError(err, logger, span, "marking account as default")
 	}
 
 	return nil
 }
 
-// RemoveUserFromHousehold removes a user from an household.
-func (c *Client) RemoveUserFromHousehold(ctx context.Context, householdID, userID uint64, reason string) error {
+// RemoveUserFromAccount removes a user from an account.
+func (c *Client) RemoveUserFromAccount(ctx context.Context, accountID, userID string) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if householdID == 0 {
+	if accountID == "" {
 		return ErrInvalidIDProvided
 	}
 
-	if userID == 0 {
+	if userID == "" {
 		return ErrInvalidIDProvided
 	}
 
-	if reason == "" {
-		return ErrEmptyInputProvided
-	}
-
-	logger := c.logger.WithValue(keys.HouseholdIDKey, householdID).WithValue(keys.UserIDKey, userID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	logger := c.logger.WithValue(keys.AccountIDKey, accountID).WithValue(keys.UserIDKey, userID)
+	tracing.AttachAccountIDToSpan(span, accountID)
 	tracing.AttachUserIDToSpan(span, userID)
 
-	req, err := c.requestBuilder.BuildRemoveUserRequest(ctx, householdID, userID, reason)
+	req, err := c.requestBuilder.BuildRemoveUserRequest(ctx, accountID, userID, "")
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building remove user from household request")
+		return observability.PrepareError(err, logger, span, "building remove user from account request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "removing user from household")
+		return observability.PrepareError(err, logger, span, "removing user from account")
 	}
 
 	return nil
 }
 
-// ModifyMemberPermissions modifies a given user's permissions for a given household.
-func (c *Client) ModifyMemberPermissions(ctx context.Context, householdID, userID uint64, input *types.ModifyUserPermissionsInput) error {
+// ModifyMemberPermissions modifies a given user's permissions for a given account.
+func (c *Client) ModifyMemberPermissions(ctx context.Context, accountID, userID string, input *types.ModifyUserPermissionsInput) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if householdID == 0 {
+	if accountID == "" {
 		return ErrInvalidIDProvided
 	}
 
-	if userID == 0 {
+	if userID == "" {
 		return ErrInvalidIDProvided
 	}
 
@@ -263,32 +259,32 @@ func (c *Client) ModifyMemberPermissions(ctx context.Context, householdID, userI
 		return ErrNilInputProvided
 	}
 
-	logger := c.logger.WithValue(keys.HouseholdIDKey, householdID).WithValue(keys.UserIDKey, userID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	logger := c.logger.WithValue(keys.AccountIDKey, accountID).WithValue(keys.UserIDKey, userID)
+	tracing.AttachAccountIDToSpan(span, accountID)
 	tracing.AttachUserIDToSpan(span, userID)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return observability.PrepareError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildModifyMemberPermissionsRequest(ctx, householdID, userID, input)
+	req, err := c.requestBuilder.BuildModifyMemberPermissionsRequest(ctx, accountID, userID, input)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building modify household member permissions request")
+		return observability.PrepareError(err, logger, span, "building modify account member permissions request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "modifying user household permissions")
+		return observability.PrepareError(err, logger, span, "modifying user account permissions")
 	}
 
 	return nil
 }
 
-// TransferHouseholdOwnership transfers ownership of an household to a given user.
-func (c *Client) TransferHouseholdOwnership(ctx context.Context, householdID uint64, input *types.HouseholdOwnershipTransferInput) error {
+// TransferAccountOwnership transfers ownership of an account to a given user.
+func (c *Client) TransferAccountOwnership(ctx context.Context, accountID string, input *types.AccountOwnershipTransferInput) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if householdID == 0 {
+	if accountID == "" {
 		return ErrInvalidIDProvided
 	}
 
@@ -296,7 +292,7 @@ func (c *Client) TransferHouseholdOwnership(ctx context.Context, householdID uin
 		return ErrNilInputProvided
 	}
 
-	logger := c.logger.WithValue(keys.HouseholdIDKey, householdID).
+	logger := c.logger.WithValue(keys.AccountIDKey, accountID).
 		WithValue("old_owner", input.CurrentOwner).
 		WithValue("new_owner", input.NewOwner)
 
@@ -307,39 +303,14 @@ func (c *Client) TransferHouseholdOwnership(ctx context.Context, householdID uin
 		return observability.PrepareError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildTransferHouseholdOwnershipRequest(ctx, householdID, input)
+	req, err := c.requestBuilder.BuildTransferAccountOwnershipRequest(ctx, accountID, input)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building transfer household ownership request")
+		return observability.PrepareError(err, logger, span, "building transfer account ownership request")
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "transferring household to user")
+		return observability.PrepareError(err, logger, span, "transferring account to user")
 	}
 
 	return nil
-}
-
-// GetAuditLogForHousehold retrieves a list of audit log entries pertaining to an household.
-func (c *Client) GetAuditLogForHousehold(ctx context.Context, householdID uint64) ([]*types.AuditLogEntry, error) {
-	ctx, span := c.tracer.StartSpan(ctx)
-	defer span.End()
-
-	if householdID == 0 {
-		return nil, ErrInvalidIDProvided
-	}
-
-	logger := c.logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
-
-	req, err := c.requestBuilder.BuildGetAuditLogForHouseholdRequest(ctx, householdID)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building fetch audit log entries for household request")
-	}
-
-	var entries []*types.AuditLogEntry
-	if err = c.fetchAndUnmarshal(ctx, req, &entries); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching audit log entries for household")
-	}
-
-	return entries, nil
 }

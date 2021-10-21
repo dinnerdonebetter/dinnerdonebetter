@@ -4,23 +4,22 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/alexedwards/scs/v2"
+	"github.com/gorilla/securecookie"
+
 	"gitlab.com/prixfixe/prixfixe/internal/authentication"
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-	"gitlab.com/prixfixe/prixfixe/internal/routing"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
-	"github.com/alexedwards/scs/v2"
-	"github.com/gorilla/securecookie"
 )
 
 const (
-	serviceName           = "auth_service"
-	userIDContextKey      = string(types.UserIDContextKey)
-	householdIDContextKey = string(types.HouseholdIDContextKey)
-	cookieErrorLogName    = "_COOKIE_CONSTRUCTION_ERROR_"
-	cookieSecretSize      = 64
+	serviceName         = "auth_service"
+	userIDContextKey    = string(types.UserIDContextKey)
+	accountIDContextKey = string(types.AccountIDContextKey)
+	cookieErrorLogName  = "_COOKIE_CONSTRUCTION_ERROR_"
+	cookieSecretSize    = 64
 )
 
 type (
@@ -32,18 +31,17 @@ type (
 
 	// service handles passwords service-wide.
 	service struct {
-		config                     *Config
-		logger                     logging.Logger
-		authenticator              authentication.Authenticator
-		userDataManager            types.UserDataManager
-		auditLog                   types.AuthAuditManager
-		apiClientManager           types.APIClientDataManager
-		householdMembershipManager types.HouseholdUserMembershipDataManager
-		encoderDecoder             encoding.ServerEncoderDecoder
-		cookieManager              cookieEncoderDecoder
-		sessionManager             sessionManager
-		sessionContextDataFetcher  func(*http.Request) (*types.SessionContextData, error)
-		tracer                     tracing.Tracer
+		config                    *Config
+		logger                    logging.Logger
+		authenticator             authentication.Authenticator
+		userDataManager           types.UserDataManager
+		apiClientManager          types.APIClientDataManager
+		accountMembershipManager  types.AccountUserMembershipDataManager
+		encoderDecoder            encoding.ServerEncoderDecoder
+		cookieManager             cookieEncoderDecoder
+		sessionManager            sessionManager
+		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
+		tracer                    tracing.Tracer
 	}
 )
 
@@ -53,12 +51,10 @@ func ProvideService(
 	cfg *Config,
 	authenticator authentication.Authenticator,
 	userDataManager types.UserDataManager,
-	auditLog types.AuthAuditManager,
 	apiClientsService types.APIClientDataManager,
-	householdMembershipManager types.HouseholdUserMembershipDataManager,
+	accountMembershipManager types.AccountUserMembershipDataManager,
 	sessionManager *scs.SessionManager,
 	encoder encoding.ServerEncoderDecoder,
-	routeParamManager routing.RouteParamManager,
 ) (types.AuthService, error) {
 	hashKey := []byte(cfg.Cookies.HashKey)
 	if len(hashKey) == 0 {
@@ -66,18 +62,17 @@ func ProvideService(
 	}
 
 	svc := &service{
-		logger:                     logging.EnsureLogger(logger).WithName(serviceName),
-		encoderDecoder:             encoder,
-		config:                     cfg,
-		userDataManager:            userDataManager,
-		auditLog:                   auditLog,
-		apiClientManager:           apiClientsService,
-		householdMembershipManager: householdMembershipManager,
-		authenticator:              authenticator,
-		sessionManager:             sessionManager,
-		sessionContextDataFetcher:  FetchContextFromRequest,
-		cookieManager:              securecookie.New(hashKey, []byte(cfg.Cookies.SigningKey)),
-		tracer:                     tracing.NewTracer(serviceName),
+		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
+		encoderDecoder:            encoder,
+		config:                    cfg,
+		userDataManager:           userDataManager,
+		apiClientManager:          apiClientsService,
+		accountMembershipManager:  accountMembershipManager,
+		authenticator:             authenticator,
+		sessionManager:            sessionManager,
+		sessionContextDataFetcher: FetchContextFromRequest,
+		cookieManager:             securecookie.New(hashKey, []byte(cfg.Cookies.SigningKey)),
+		tracer:                    tracing.NewTracer(serviceName),
 	}
 
 	if _, err := svc.cookieManager.Encode(cfg.Cookies.Name, "blah"); err != nil {

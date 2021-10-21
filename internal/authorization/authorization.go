@@ -41,31 +41,6 @@ func CanDeleteValidInstruments(roles ...string) bool {
 	return hasPermission(ArchiveValidInstrumentsPermission, roles...)
 }
 
-// CanCreateValidPreparations returns whether a user can create valid preparations or not.
-func CanCreateValidPreparations(roles ...string) bool {
-	return hasPermission(CreateValidPreparationsPermission, roles...)
-}
-
-// CanSeeValidPreparations returns whether a user can view valid preparations or not.
-func CanSeeValidPreparations(roles ...string) bool {
-	return hasPermission(ReadValidPreparationsPermission, roles...)
-}
-
-// CanSearchValidPreparations returns whether a user can search valid preparations or not.
-func CanSearchValidPreparations(roles ...string) bool {
-	return hasPermission(SearchValidPreparationsPermission, roles...)
-}
-
-// CanUpdateValidPreparations returns whether a user can update valid preparations or not.
-func CanUpdateValidPreparations(roles ...string) bool {
-	return hasPermission(UpdateValidPreparationsPermission, roles...)
-}
-
-// CanDeleteValidPreparations returns whether a user can delete valid preparations or not.
-func CanDeleteValidPreparations(roles ...string) bool {
-	return hasPermission(ArchiveValidPreparationsPermission, roles...)
-}
-
 // CanCreateValidIngredients returns whether a user can create valid ingredients or not.
 func CanCreateValidIngredients(roles ...string) bool {
 	return hasPermission(CreateValidIngredientsPermission, roles...)
@@ -91,6 +66,31 @@ func CanDeleteValidIngredients(roles ...string) bool {
 	return hasPermission(ArchiveValidIngredientsPermission, roles...)
 }
 
+// CanCreateValidPreparations returns whether a user can create valid preparations or not.
+func CanCreateValidPreparations(roles ...string) bool {
+	return hasPermission(CreateValidPreparationsPermission, roles...)
+}
+
+// CanSeeValidPreparations returns whether a user can view valid preparations or not.
+func CanSeeValidPreparations(roles ...string) bool {
+	return hasPermission(ReadValidPreparationsPermission, roles...)
+}
+
+// CanSearchValidPreparations returns whether a user can search valid preparations or not.
+func CanSearchValidPreparations(roles ...string) bool {
+	return hasPermission(SearchValidPreparationsPermission, roles...)
+}
+
+// CanUpdateValidPreparations returns whether a user can update valid preparations or not.
+func CanUpdateValidPreparations(roles ...string) bool {
+	return hasPermission(UpdateValidPreparationsPermission, roles...)
+}
+
+// CanDeleteValidPreparations returns whether a user can delete valid preparations or not.
+func CanDeleteValidPreparations(roles ...string) bool {
+	return hasPermission(ArchiveValidPreparationsPermission, roles...)
+}
+
 // CanCreateValidIngredientPreparations returns whether a user can create valid ingredient preparations or not.
 func CanCreateValidIngredientPreparations(roles ...string) bool {
 	return hasPermission(CreateValidIngredientPreparationsPermission, roles...)
@@ -109,26 +109,6 @@ func CanUpdateValidIngredientPreparations(roles ...string) bool {
 // CanDeleteValidIngredientPreparations returns whether a user can delete valid ingredient preparations or not.
 func CanDeleteValidIngredientPreparations(roles ...string) bool {
 	return hasPermission(ArchiveValidIngredientPreparationsPermission, roles...)
-}
-
-// CanCreateValidPreparationInstruments returns whether a user can create valid preparation instruments or not.
-func CanCreateValidPreparationInstruments(roles ...string) bool {
-	return hasPermission(CreateValidPreparationInstrumentsPermission, roles...)
-}
-
-// CanSeeValidPreparationInstruments returns whether a user can view valid preparation instruments or not.
-func CanSeeValidPreparationInstruments(roles ...string) bool {
-	return hasPermission(ReadValidPreparationInstrumentsPermission, roles...)
-}
-
-// CanUpdateValidPreparationInstruments returns whether a user can update valid preparation instruments or not.
-func CanUpdateValidPreparationInstruments(roles ...string) bool {
-	return hasPermission(UpdateValidPreparationInstrumentsPermission, roles...)
-}
-
-// CanDeleteValidPreparationInstruments returns whether a user can delete valid preparation instruments or not.
-func CanDeleteValidPreparationInstruments(roles ...string) bool {
-	return hasPermission(ArchiveValidPreparationInstrumentsPermission, roles...)
 }
 
 // CanCreateRecipes returns whether a user can create recipes or not.
@@ -171,6 +151,26 @@ func CanDeleteRecipeSteps(roles ...string) bool {
 	return hasPermission(ArchiveRecipeStepsPermission, roles...)
 }
 
+// CanCreateRecipeStepInstruments returns whether a user can create recipe step instruments or not.
+func CanCreateRecipeStepInstruments(roles ...string) bool {
+	return hasPermission(CreateRecipeStepInstrumentsPermission, roles...)
+}
+
+// CanSeeRecipeStepInstruments returns whether a user can view recipe step instruments or not.
+func CanSeeRecipeStepInstruments(roles ...string) bool {
+	return hasPermission(ReadRecipeStepInstrumentsPermission, roles...)
+}
+
+// CanUpdateRecipeStepInstruments returns whether a user can update recipe step instruments or not.
+func CanUpdateRecipeStepInstruments(roles ...string) bool {
+	return hasPermission(UpdateRecipeStepInstrumentsPermission, roles...)
+}
+
+// CanDeleteRecipeStepInstruments returns whether a user can delete recipe step instruments or not.
+func CanDeleteRecipeStepInstruments(roles ...string) bool {
+	return hasPermission(ArchiveRecipeStepInstrumentsPermission, roles...)
+}
+
 // CanCreateRecipeStepIngredients returns whether a user can create recipe step ingredients or not.
 func CanCreateRecipeStepIngredients(roles ...string) bool {
 	return hasPermission(CreateRecipeStepIngredientsPermission, roles...)
@@ -211,42 +211,62 @@ func CanDeleteRecipeStepProducts(roles ...string) bool {
 	return hasPermission(ArchiveRecipeStepProductsPermission, roles...)
 }
 
-// CanCreateInvitations returns whether a user can create invitations or not.
-func CanCreateInvitations(roles ...string) bool {
-	return hasPermission(CreateInvitationsPermission, roles...)
+// CanCreateMealPlans returns whether a user can create meal plans or not.
+func CanCreateMealPlans(roles ...string) bool {
+	return hasPermission(CreateMealPlansPermission, roles...)
 }
 
-// CanSeeInvitations returns whether a user can view invitations or not.
-func CanSeeInvitations(roles ...string) bool {
-	return hasPermission(ReadInvitationsPermission, roles...)
+// CanSeeMealPlans returns whether a user can view meal plans or not.
+func CanSeeMealPlans(roles ...string) bool {
+	return hasPermission(ReadMealPlansPermission, roles...)
 }
 
-// CanUpdateInvitations returns whether a user can update invitations or not.
-func CanUpdateInvitations(roles ...string) bool {
-	return hasPermission(UpdateInvitationsPermission, roles...)
+// CanUpdateMealPlans returns whether a user can update meal plans or not.
+func CanUpdateMealPlans(roles ...string) bool {
+	return hasPermission(UpdateMealPlansPermission, roles...)
 }
 
-// CanDeleteInvitations returns whether a user can delete invitations or not.
-func CanDeleteInvitations(roles ...string) bool {
-	return hasPermission(ArchiveInvitationsPermission, roles...)
+// CanDeleteMealPlans returns whether a user can delete meal plans or not.
+func CanDeleteMealPlans(roles ...string) bool {
+	return hasPermission(ArchiveMealPlansPermission, roles...)
 }
 
-// CanCreateReports returns whether a user can create reports or not.
-func CanCreateReports(roles ...string) bool {
-	return hasPermission(CreateReportsPermission, roles...)
+// CanCreateMealPlanOptions returns whether a user can create meal plan options or not.
+func CanCreateMealPlanOptions(roles ...string) bool {
+	return hasPermission(CreateMealPlanOptionsPermission, roles...)
 }
 
-// CanSeeReports returns whether a user can view reports or not.
-func CanSeeReports(roles ...string) bool {
-	return hasPermission(ReadReportsPermission, roles...)
+// CanSeeMealPlanOptions returns whether a user can view meal plan options or not.
+func CanSeeMealPlanOptions(roles ...string) bool {
+	return hasPermission(ReadMealPlanOptionsPermission, roles...)
 }
 
-// CanUpdateReports returns whether a user can update reports or not.
-func CanUpdateReports(roles ...string) bool {
-	return hasPermission(UpdateReportsPermission, roles...)
+// CanUpdateMealPlanOptions returns whether a user can update meal plan options or not.
+func CanUpdateMealPlanOptions(roles ...string) bool {
+	return hasPermission(UpdateMealPlanOptionsPermission, roles...)
 }
 
-// CanDeleteReports returns whether a user can delete reports or not.
-func CanDeleteReports(roles ...string) bool {
-	return hasPermission(ArchiveReportsPermission, roles...)
+// CanDeleteMealPlanOptions returns whether a user can delete meal plan options or not.
+func CanDeleteMealPlanOptions(roles ...string) bool {
+	return hasPermission(ArchiveMealPlanOptionsPermission, roles...)
+}
+
+// CanCreateMealPlanOptionVotes returns whether a user can create meal plan option votes or not.
+func CanCreateMealPlanOptionVotes(roles ...string) bool {
+	return hasPermission(CreateMealPlanOptionVotesPermission, roles...)
+}
+
+// CanSeeMealPlanOptionVotes returns whether a user can view meal plan option votes or not.
+func CanSeeMealPlanOptionVotes(roles ...string) bool {
+	return hasPermission(ReadMealPlanOptionVotesPermission, roles...)
+}
+
+// CanUpdateMealPlanOptionVotes returns whether a user can update meal plan option votes or not.
+func CanUpdateMealPlanOptionVotes(roles ...string) bool {
+	return hasPermission(UpdateMealPlanOptionVotesPermission, roles...)
+}
+
+// CanDeleteMealPlanOptionVotes returns whether a user can delete meal plan option votes or not.
+func CanDeleteMealPlanOptionVotes(roles ...string) bool {
+	return hasPermission(ArchiveMealPlanOptionVotesPermission, roles...)
 }

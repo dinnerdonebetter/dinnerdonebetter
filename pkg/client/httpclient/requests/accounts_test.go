@@ -6,38 +6,37 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
-func TestBuilder_BuildSwitchActiveHouseholdRequest(T *testing.T) {
+func TestBuilder_BuildSwitchActiveAccountRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/users/household/select"
+	const expectedPathFormat = "/users/account/select"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat)
 
-		actual, err := helper.builder.BuildSwitchActiveHouseholdRequest(helper.ctx, exampleHouseholdID)
+		actual, err := helper.builder.BuildSwitchActiveAccountRequest(helper.ctx, exampleAccountID)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildSwitchActiveHouseholdRequest(helper.ctx, 0)
+		actual, err := helper.builder.BuildSwitchActiveAccountRequest(helper.ctx, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -47,39 +46,39 @@ func TestBuilder_BuildSwitchActiveHouseholdRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildSwitchActiveHouseholdRequest(helper.ctx, exampleHouseholdID)
+		actual, err := helper.builder.BuildSwitchActiveAccountRequest(helper.ctx, exampleAccountID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }
 
-func TestBuilder_BuildGetHouseholdRequest(T *testing.T) {
+func TestBuilder_BuildGetAccountRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/households/%d"
+	const expectedPathFormat = "/api/v1/accounts/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, exampleHouseholdID)
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, exampleAccountID)
 
-		actual, err := helper.builder.BuildGetHouseholdRequest(helper.ctx, exampleHouseholdID)
+		actual, err := helper.builder.BuildGetAccountRequest(helper.ctx, exampleAccountID)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildGetHouseholdRequest(helper.ctx, 0)
+		actual, err := helper.builder.BuildGetAccountRequest(helper.ctx, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -89,18 +88,18 @@ func TestBuilder_BuildGetHouseholdRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildGetHouseholdRequest(helper.ctx, exampleHouseholdID)
+		actual, err := helper.builder.BuildGetAccountRequest(helper.ctx, exampleAccountID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }
 
-func TestBuilder_BuildGetHouseholdsRequest(T *testing.T) {
+func TestBuilder_BuildGetAccountsRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPath = "/api/v1/households"
+	const expectedPath = "/api/v1/accounts"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -110,7 +109,7 @@ func TestBuilder_BuildGetHouseholdsRequest(T *testing.T) {
 		filter := (*types.QueryFilter)(nil)
 		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPath)
 
-		actual, err := helper.builder.BuildGetHouseholdsRequest(helper.ctx, filter)
+		actual, err := helper.builder.BuildGetAccountsRequest(helper.ctx, filter)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -124,25 +123,25 @@ func TestBuilder_BuildGetHouseholdsRequest(T *testing.T) {
 
 		filter := (*types.QueryFilter)(nil)
 
-		actual, err := helper.builder.BuildGetHouseholdsRequest(helper.ctx, filter)
+		actual, err := helper.builder.BuildGetAccountsRequest(helper.ctx, filter)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }
 
-func TestBuilder_BuildCreateHouseholdRequest(T *testing.T) {
+func TestBuilder_BuildCreateAccountRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPath = "/api/v1/households"
+	const expectedPath = "/api/v1/accounts"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
-		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
+		exampleAccount := fakes.BuildFakeAccount()
+		exampleInput := fakes.BuildFakeAccountCreationInputFromAccount(exampleAccount)
 
-		actual, err := helper.builder.BuildCreateHouseholdRequest(helper.ctx, exampleInput)
+		actual, err := helper.builder.BuildCreateAccountRequest(helper.ctx, exampleInput)
 		assert.NoError(t, err)
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
@@ -155,7 +154,7 @@ func TestBuilder_BuildCreateHouseholdRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildCreateHouseholdRequest(helper.ctx, nil)
+		actual, err := helper.builder.BuildCreateAccountRequest(helper.ctx, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -165,7 +164,7 @@ func TestBuilder_BuildCreateHouseholdRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildCreateHouseholdRequest(helper.ctx, &types.HouseholdCreationInput{})
+		actual, err := helper.builder.BuildCreateAccountRequest(helper.ctx, &types.AccountCreationInput{})
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -175,29 +174,29 @@ func TestBuilder_BuildCreateHouseholdRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
-		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
+		exampleAccount := fakes.BuildFakeAccount()
+		exampleInput := fakes.BuildFakeAccountCreationInputFromAccount(exampleAccount)
 
-		actual, err := helper.builder.BuildCreateHouseholdRequest(helper.ctx, exampleInput)
+		actual, err := helper.builder.BuildCreateAccountRequest(helper.ctx, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }
 
-func TestBuilder_BuildUpdateHouseholdRequest(T *testing.T) {
+func TestBuilder_BuildUpdateAccountRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/households/%d"
+	const expectedPathFormat = "/api/v1/accounts/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
-		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleAccount := fakes.BuildFakeAccount()
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, exampleHousehold.ID)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, exampleAccount.ID)
 
-		actual, err := helper.builder.BuildUpdateHouseholdRequest(helper.ctx, exampleHousehold)
+		actual, err := helper.builder.BuildUpdateAccountRequest(helper.ctx, exampleAccount)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -208,7 +207,7 @@ func TestBuilder_BuildUpdateHouseholdRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildUpdateHouseholdRequest(helper.ctx, nil)
+		actual, err := helper.builder.BuildUpdateAccountRequest(helper.ctx, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -218,39 +217,39 @@ func TestBuilder_BuildUpdateHouseholdRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
-		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleAccount := fakes.BuildFakeAccount()
 
-		actual, err := helper.builder.BuildUpdateHouseholdRequest(helper.ctx, exampleHousehold)
+		actual, err := helper.builder.BuildUpdateAccountRequest(helper.ctx, exampleAccount)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }
 
-func TestBuilder_BuildArchiveHouseholdRequest(T *testing.T) {
+func TestBuilder_BuildArchiveAccountRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/households/%d"
+	const expectedPathFormat = "/api/v1/accounts/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
-		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, exampleHouseholdID)
+		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, exampleAccountID)
 
-		actual, err := helper.builder.BuildArchiveHouseholdRequest(helper.ctx, exampleHouseholdID)
+		actual, err := helper.builder.BuildArchiveAccountRequest(helper.ctx, exampleAccountID)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildArchiveHouseholdRequest(helper.ctx, 0)
+		actual, err := helper.builder.BuildArchiveAccountRequest(helper.ctx, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -260,9 +259,9 @@ func TestBuilder_BuildArchiveHouseholdRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildArchiveHouseholdRequest(helper.ctx, exampleHouseholdID)
+		actual, err := helper.builder.BuildArchiveAccountRequest(helper.ctx, exampleAccountID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -271,15 +270,15 @@ func TestBuilder_BuildArchiveHouseholdRequest(T *testing.T) {
 func TestBuilder_BuildAddUserRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/households/%d/member"
+	const expectedPathFormat = "/api/v1/accounts/%s/member"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
 
-		exampleInput := fakes.BuildFakeAddUserToHouseholdInput()
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, exampleInput.HouseholdID)
+		exampleInput := fakes.BuildFakeAddUserToAccountInput()
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, exampleInput.AccountID)
 
 		actual, err := helper.builder.BuildAddUserRequest(helper.ctx, exampleInput)
 		assert.NoError(t, err)
@@ -302,7 +301,7 @@ func TestBuilder_BuildAddUserRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildAddUserRequest(helper.ctx, &types.AddUserToHouseholdInput{})
+		actual, err := helper.builder.BuildAddUserRequest(helper.ctx, &types.AddUserToAccountInput{})
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -313,7 +312,7 @@ func TestBuilder_BuildAddUserRequest(T *testing.T) {
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
-		exampleInput := fakes.BuildFakeAddUserToHouseholdInput()
+		exampleInput := fakes.BuildFakeAddUserToAccountInput()
 
 		actual, err := helper.builder.BuildAddUserRequest(helper.ctx, exampleInput)
 		assert.Nil(t, actual)
@@ -324,28 +323,28 @@ func TestBuilder_BuildAddUserRequest(T *testing.T) {
 func TestBuilder_BuildMarkAsDefaultRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/households/%d/default"
+	const expectedPathFormat = "/api/v1/accounts/%s/default"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
-		spec := newRequestSpec(true, http.MethodPost, "", expectedPathFormat, exampleHouseholdID)
+		spec := newRequestSpec(true, http.MethodPost, "", expectedPathFormat, exampleAccountID)
 
-		actual, err := helper.builder.BuildMarkAsDefaultRequest(helper.ctx, exampleHouseholdID)
+		actual, err := helper.builder.BuildMarkAsDefaultRequest(helper.ctx, exampleAccountID)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildMarkAsDefaultRequest(helper.ctx, 0)
+		actual, err := helper.builder.BuildMarkAsDefaultRequest(helper.ctx, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -355,9 +354,9 @@ func TestBuilder_BuildMarkAsDefaultRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildMarkAsDefaultRequest(helper.ctx, exampleHouseholdID)
+		actual, err := helper.builder.BuildMarkAsDefaultRequest(helper.ctx, exampleAccountID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -366,32 +365,32 @@ func TestBuilder_BuildMarkAsDefaultRequest(T *testing.T) {
 func TestBuilder_BuildRemoveUserRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/households/%d/members/%d"
+	const expectedPathFormat = "/api/v1/accounts/%s/members/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		reason := t.Name()
 		expectedReason := url.QueryEscape(reason)
-		spec := newRequestSpec(false, http.MethodDelete, fmt.Sprintf("reason=%s", expectedReason), expectedPathFormat, exampleHouseholdID, helper.exampleUser.ID)
+		spec := newRequestSpec(false, http.MethodDelete, fmt.Sprintf("reason=%s", expectedReason), expectedPathFormat, exampleAccountID, helper.exampleUser.ID)
 
-		actual, err := helper.builder.BuildRemoveUserRequest(helper.ctx, exampleHouseholdID, helper.exampleUser.ID, reason)
+		actual, err := helper.builder.BuildRemoveUserRequest(helper.ctx, exampleAccountID, helper.exampleUser.ID, reason)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
 
 		reason := t.Name()
 
-		actual, err := helper.builder.BuildRemoveUserRequest(helper.ctx, 0, helper.exampleUser.ID, reason)
+		actual, err := helper.builder.BuildRemoveUserRequest(helper.ctx, "", helper.exampleUser.ID, reason)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -400,11 +399,11 @@ func TestBuilder_BuildRemoveUserRequest(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		reason := t.Name()
 
-		actual, err := helper.builder.BuildRemoveUserRequest(helper.ctx, exampleHouseholdID, 0, reason)
+		actual, err := helper.builder.BuildRemoveUserRequest(helper.ctx, exampleAccountID, "", reason)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -414,11 +413,11 @@ func TestBuilder_BuildRemoveUserRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		reason := t.Name()
 
-		actual, err := helper.builder.BuildRemoveUserRequest(helper.ctx, exampleHouseholdID, helper.exampleUser.ID, reason)
+		actual, err := helper.builder.BuildRemoveUserRequest(helper.ctx, exampleAccountID, helper.exampleUser.ID, reason)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -427,31 +426,31 @@ func TestBuilder_BuildRemoveUserRequest(T *testing.T) {
 func TestBuilder_BuildModifyMemberPermissionsRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/households/%d/members/%d/permissions"
+	const expectedPathFormat = "/api/v1/accounts/%s/members/%s/permissions"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
-		spec := newRequestSpec(false, http.MethodPatch, "", expectedPathFormat, exampleHouseholdID, helper.exampleUser.ID)
+		spec := newRequestSpec(false, http.MethodPatch, "", expectedPathFormat, exampleAccountID, helper.exampleUser.ID)
 		exampleInput := fakes.BuildFakeUserPermissionModificationInput()
 
-		actual, err := helper.builder.BuildModifyMemberPermissionsRequest(helper.ctx, exampleHouseholdID, helper.exampleUser.ID, exampleInput)
+		actual, err := helper.builder.BuildModifyMemberPermissionsRequest(helper.ctx, exampleAccountID, helper.exampleUser.ID, exampleInput)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
 
 		exampleInput := fakes.BuildFakeUserPermissionModificationInput()
 
-		actual, err := helper.builder.BuildModifyMemberPermissionsRequest(helper.ctx, 0, helper.exampleUser.ID, exampleInput)
+		actual, err := helper.builder.BuildModifyMemberPermissionsRequest(helper.ctx, "", helper.exampleUser.ID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -460,11 +459,11 @@ func TestBuilder_BuildModifyMemberPermissionsRequest(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		exampleInput := fakes.BuildFakeUserPermissionModificationInput()
 
-		actual, err := helper.builder.BuildModifyMemberPermissionsRequest(helper.ctx, exampleHouseholdID, 0, exampleInput)
+		actual, err := helper.builder.BuildModifyMemberPermissionsRequest(helper.ctx, exampleAccountID, "", exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -473,9 +472,9 @@ func TestBuilder_BuildModifyMemberPermissionsRequest(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildModifyMemberPermissionsRequest(helper.ctx, exampleHouseholdID, helper.exampleUser.ID, nil)
+		actual, err := helper.builder.BuildModifyMemberPermissionsRequest(helper.ctx, exampleAccountID, helper.exampleUser.ID, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -484,9 +483,9 @@ func TestBuilder_BuildModifyMemberPermissionsRequest(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildModifyMemberPermissionsRequest(helper.ctx, exampleHouseholdID, helper.exampleUser.ID, &types.ModifyUserPermissionsInput{})
+		actual, err := helper.builder.BuildModifyMemberPermissionsRequest(helper.ctx, exampleAccountID, helper.exampleUser.ID, &types.ModifyUserPermissionsInput{})
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -496,44 +495,44 @@ func TestBuilder_BuildModifyMemberPermissionsRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		exampleInput := fakes.BuildFakeUserPermissionModificationInput()
 
-		actual, err := helper.builder.BuildModifyMemberPermissionsRequest(helper.ctx, exampleHouseholdID, helper.exampleUser.ID, exampleInput)
+		actual, err := helper.builder.BuildModifyMemberPermissionsRequest(helper.ctx, exampleAccountID, helper.exampleUser.ID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }
 
-func TestBuilder_BuildTransferHouseholdOwnershipRequest(T *testing.T) {
+func TestBuilder_BuildTransferAccountOwnershipRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/households/%d/transfer"
+	const expectedPathFormat = "/api/v1/accounts/%s/transfer"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, exampleHouseholdID)
-		exampleInput := fakes.BuildFakeTransferHouseholdOwnershipInput()
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, exampleAccountID)
+		exampleInput := fakes.BuildFakeTransferAccountOwnershipInput()
 
-		actual, err := helper.builder.BuildTransferHouseholdOwnershipRequest(helper.ctx, exampleHouseholdID, exampleInput)
+		actual, err := helper.builder.BuildTransferAccountOwnershipRequest(helper.ctx, exampleAccountID, exampleInput)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
 
-		exampleInput := fakes.BuildFakeTransferHouseholdOwnershipInput()
+		exampleInput := fakes.BuildFakeTransferAccountOwnershipInput()
 
-		actual, err := helper.builder.BuildTransferHouseholdOwnershipRequest(helper.ctx, 0, exampleInput)
+		actual, err := helper.builder.BuildTransferAccountOwnershipRequest(helper.ctx, "", exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -542,9 +541,9 @@ func TestBuilder_BuildTransferHouseholdOwnershipRequest(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildTransferHouseholdOwnershipRequest(helper.ctx, exampleHouseholdID, nil)
+		actual, err := helper.builder.BuildTransferAccountOwnershipRequest(helper.ctx, exampleAccountID, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -553,9 +552,9 @@ func TestBuilder_BuildTransferHouseholdOwnershipRequest(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildTransferHouseholdOwnershipRequest(helper.ctx, exampleHouseholdID, &types.HouseholdOwnershipTransferInput{})
+		actual, err := helper.builder.BuildTransferAccountOwnershipRequest(helper.ctx, exampleAccountID, &types.AccountOwnershipTransferInput{})
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -565,53 +564,11 @@ func TestBuilder_BuildTransferHouseholdOwnershipRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
-		exampleInput := fakes.BuildFakeTransferHouseholdOwnershipInput()
+		exampleInput := fakes.BuildFakeTransferAccountOwnershipInput()
 
-		actual, err := helper.builder.BuildTransferHouseholdOwnershipRequest(helper.ctx, exampleHouseholdID, exampleInput)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-}
-
-func TestBuilder_BuildGetAuditLogForHouseholdRequest(T *testing.T) {
-	T.Parallel()
-
-	const expectedPath = "/api/v1/households/%d/audit"
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-		exampleHouseholdID := fakes.BuildFakeID()
-
-		actual, err := helper.builder.BuildGetAuditLogForHouseholdRequest(helper.ctx, exampleHouseholdID)
-		require.NotNil(t, actual)
-		assert.NoError(t, err)
-
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPath, exampleHouseholdID)
-		assertRequestQuality(t, actual, spec)
-	})
-
-	T.Run("with invalid household ID", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		actual, err := helper.builder.BuildGetAuditLogForHouseholdRequest(helper.ctx, 0)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	T.Run("with invalid request builder", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-		helper.builder = buildTestRequestBuilderWithInvalidURL()
-		exampleHouseholdID := fakes.BuildFakeID()
-
-		actual, err := helper.builder.BuildGetAuditLogForHouseholdRequest(helper.ctx, exampleHouseholdID)
+		actual, err := helper.builder.BuildTransferAccountOwnershipRequest(helper.ctx, exampleAccountID, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

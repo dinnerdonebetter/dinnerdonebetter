@@ -20,11 +20,15 @@ const (
 type (
 	// GCSBlobConfig configures a gcs blob passwords method.
 	GCSBlobConfig struct {
+		_ struct{}
+
 		GoogleAccessID string `json:"google_access_id" mapstructure:"google_access_id" toml:"google_access_id,omitempty"`
 	}
 
 	// GCSConfig configures a gcs based storage provider.
 	GCSConfig struct {
+		_ struct{}
+
 		BlobSettings              GCSBlobConfig `json:"blob_settings" mapstructure:"blob_settings" toml:"blob_settings,omitempty"`
 		ServiceAccountKeyFilepath string        `json:"service_account_key_filepath" mapstructure:"service_account_key_filepath" toml:"service_account_key_filepath,omitempty"`
 		BucketName                string        `json:"bucket_name" mapstructure:"bucket_name" toml:"bucket_name,omitempty"`
@@ -41,11 +45,11 @@ func buildGCSBucket(ctx context.Context, cfg *GCSConfig) (*blob.Bucket, error) {
 	if cfg.ServiceAccountKeyFilepath != "" {
 		serviceAccountKeyBytes, err := os.ReadFile(cfg.ServiceAccountKeyFilepath)
 		if err != nil {
-			return nil, fmt.Errorf("reading service household key file: %w", err)
+			return nil, fmt.Errorf("reading service account key file: %w", err)
 		}
 
 		if creds, err = google.CredentialsFromJSON(ctx, serviceAccountKeyBytes, cfg.Scopes...); err != nil {
-			return nil, fmt.Errorf("using service household key credentials: %w", err)
+			return nil, fmt.Errorf("using service account key credentials: %w", err)
 		}
 	} else {
 		var err error

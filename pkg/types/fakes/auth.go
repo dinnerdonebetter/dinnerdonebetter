@@ -3,55 +3,56 @@ package fakes
 import (
 	"time"
 
+	fake "github.com/brianvoe/gofakeit/v5"
+	"github.com/segmentio/ksuid"
+
 	"gitlab.com/prixfixe/prixfixe/internal/authorization"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
-	fake "github.com/brianvoe/gofakeit/v5"
 )
 
 // BuildFakeSessionContextData builds a faked SessionContextData.
 func BuildFakeSessionContextData() *types.SessionContextData {
-	fakeHouseholdID := fake.Uint64()
+	fakeAccountID := fake.UUID()
 
 	return &types.SessionContextData{
-		HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
-			fakeHouseholdID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdAdminRole.String()),
+		AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
+			fakeAccountID: authorization.NewAccountRolePermissionChecker(authorization.AccountAdminRole.String()),
 		},
 		Requester: types.RequesterInfo{
-			Reputation:            types.GoodStandingHouseholdStatus,
+			Reputation:            types.GoodStandingAccountStatus,
 			ReputationExplanation: "",
-			UserID:                fake.Uint64(),
+			UserID:                ksuid.New().String(),
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
 		},
-		ActiveHouseholdID: fakeHouseholdID,
+		ActiveAccountID: fakeAccountID,
 	}
 }
 
-// BuildFakeSessionContextDataForHousehold builds a faked SessionContextData.
-func BuildFakeSessionContextDataForHousehold(household *types.Household) *types.SessionContextData {
-	fakeHouseholdID := fake.Uint64()
+// BuildFakeSessionContextDataForAccount builds a faked SessionContextData.
+func BuildFakeSessionContextDataForAccount(account *types.Account) *types.SessionContextData {
+	fakeAccountID := fake.UUID()
 
 	return &types.SessionContextData{
-		HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
-			household.ID: authorization.NewHouseholdRolePermissionChecker(authorization.ServiceUserRole.String()),
+		AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
+			account.ID: authorization.NewAccountRolePermissionChecker(authorization.ServiceUserRole.String()),
 		},
 		Requester: types.RequesterInfo{
-			Reputation:            types.GoodStandingHouseholdStatus,
+			Reputation:            types.GoodStandingAccountStatus,
 			ReputationExplanation: "",
-			UserID:                fake.Uint64(),
+			UserID:                ksuid.New().String(),
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
 		},
-		ActiveHouseholdID: fakeHouseholdID,
+		ActiveAccountID: fakeAccountID,
 	}
 }
 
-// BuildFakeAddUserToHouseholdInput builds a faked AddUserToHouseholdInput.
-func BuildFakeAddUserToHouseholdInput() *types.AddUserToHouseholdInput {
-	return &types.AddUserToHouseholdInput{
-		Reason:         fake.Sentence(10),
-		UserID:         fake.Uint64(),
-		HouseholdID:    fake.Uint64(),
-		HouseholdRoles: []string{authorization.HouseholdMemberRole.String()},
+// BuildFakeAddUserToAccountInput builds a faked AddUserToAccountInput.
+func BuildFakeAddUserToAccountInput() *types.AddUserToAccountInput {
+	return &types.AddUserToAccountInput{
+		Reason:       fake.Sentence(10),
+		UserID:       ksuid.New().String(),
+		AccountID:    ksuid.New().String(),
+		AccountRoles: []string{authorization.AccountMemberRole.String()},
 	}
 }
 
@@ -59,30 +60,30 @@ func BuildFakeAddUserToHouseholdInput() *types.AddUserToHouseholdInput {
 func BuildFakeUserPermissionModificationInput() *types.ModifyUserPermissionsInput {
 	return &types.ModifyUserPermissionsInput{
 		Reason:   fake.Sentence(10),
-		NewRoles: []string{authorization.HouseholdMemberRole.String()},
+		NewRoles: []string{authorization.AccountMemberRole.String()},
 	}
 }
 
-// BuildFakeTransferHouseholdOwnershipInput builds a faked HouseholdOwnershipTransferInput.
-func BuildFakeTransferHouseholdOwnershipInput() *types.HouseholdOwnershipTransferInput {
-	return &types.HouseholdOwnershipTransferInput{
+// BuildFakeTransferAccountOwnershipInput builds a faked AccountOwnershipTransferInput.
+func BuildFakeTransferAccountOwnershipInput() *types.AccountOwnershipTransferInput {
+	return &types.AccountOwnershipTransferInput{
 		Reason:       fake.Sentence(10),
-		CurrentOwner: fake.Uint64(),
-		NewOwner:     fake.Uint64(),
+		CurrentOwner: fake.UUID(),
+		NewOwner:     fake.UUID(),
 	}
 }
 
-// BuildFakeChangeActiveHouseholdInput builds a faked ChangeActiveHouseholdInput.
-func BuildFakeChangeActiveHouseholdInput() *types.ChangeActiveHouseholdInput {
-	return &types.ChangeActiveHouseholdInput{
-		HouseholdID: fake.Uint64(),
+// BuildFakeChangeActiveAccountInput builds a faked ChangeActiveAccountInput.
+func BuildFakeChangeActiveAccountInput() *types.ChangeActiveAccountInput {
+	return &types.ChangeActiveAccountInput{
+		AccountID: fake.UUID(),
 	}
 }
 
 // BuildFakePASETOCreationInput builds a faked PASETOCreationInput.
 func BuildFakePASETOCreationInput() *types.PASETOCreationInput {
 	return &types.PASETOCreationInput{
-		ClientID:    fake.UUID(),
+		ClientID:    ksuid.New().String(),
 		RequestTime: time.Now().Unix(),
 	}
 }

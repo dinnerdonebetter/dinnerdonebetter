@@ -15,7 +15,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gorilla/securecookie"
+	"github.com/o1egl/paseto"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+
 	"gitlab.com/prixfixe/prixfixe/internal/authentication"
+	mockauthn "gitlab.com/prixfixe/prixfixe/internal/authentication/mock"
 	"gitlab.com/prixfixe/prixfixe/internal/authorization"
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
@@ -24,12 +31,6 @@ import (
 	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
 	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
-
-	"github.com/gorilla/securecookie"
-	"github.com/o1egl/paseto"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
 
 func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {
@@ -46,11 +47,11 @@ func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, nil)
 		sm.On("RenewToken", testutils.ContextMatcher).Return(nil)
 		sm.On("Put", testutils.ContextMatcher, userIDContextKey, helper.exampleUser.ID)
-		sm.On("Put", testutils.ContextMatcher, householdIDContextKey, helper.exampleHousehold.ID)
+		sm.On("Put", testutils.ContextMatcher, accountIDContextKey, helper.exampleAccount.ID)
 		sm.On("Commit", testutils.ContextMatcher).Return(expectedToken, time.Now().Add(24*time.Hour), nil)
 		helper.service.sessionManager = sm
 
-		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleHousehold.ID, helper.exampleUser.ID)
+		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleAccount.ID, helper.exampleUser.ID)
 		require.NotNil(t, cookie)
 		assert.NoError(t, err)
 
@@ -71,7 +72,7 @@ func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleHousehold.ID, helper.exampleUser.ID)
+		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleAccount.ID, helper.exampleUser.ID)
 		require.Nil(t, cookie)
 		assert.Error(t, err)
 
@@ -88,7 +89,7 @@ func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {
 		sm.On("RenewToken", testutils.ContextMatcher).Return(errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleHousehold.ID, helper.exampleUser.ID)
+		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleAccount.ID, helper.exampleUser.ID)
 		require.Nil(t, cookie)
 		assert.Error(t, err)
 
@@ -106,11 +107,11 @@ func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, nil)
 		sm.On("RenewToken", testutils.ContextMatcher).Return(nil)
 		sm.On("Put", testutils.ContextMatcher, userIDContextKey, helper.exampleUser.ID)
-		sm.On("Put", testutils.ContextMatcher, householdIDContextKey, helper.exampleHousehold.ID)
+		sm.On("Put", testutils.ContextMatcher, accountIDContextKey, helper.exampleAccount.ID)
 		sm.On("Commit", testutils.ContextMatcher).Return(expectedToken, time.Now(), errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleHousehold.ID, helper.exampleUser.ID)
+		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleAccount.ID, helper.exampleUser.ID)
 		require.Nil(t, cookie)
 		assert.Error(t, err)
 
@@ -128,7 +129,7 @@ func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, nil)
 		sm.On("RenewToken", testutils.ContextMatcher).Return(nil)
 		sm.On("Put", testutils.ContextMatcher, userIDContextKey, helper.exampleUser.ID)
-		sm.On("Put", testutils.ContextMatcher, householdIDContextKey, helper.exampleHousehold.ID)
+		sm.On("Put", testutils.ContextMatcher, accountIDContextKey, helper.exampleAccount.ID)
 		sm.On("Commit", testutils.ContextMatcher).Return(expectedToken, time.Now().Add(24*time.Hour), nil)
 		helper.service.sessionManager = sm
 
@@ -137,7 +138,7 @@ func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {
 			[]byte(""),
 		)
 
-		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleHousehold.ID, helper.exampleUser.ID)
+		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleAccount.ID, helper.exampleUser.ID)
 		require.Nil(t, cookie)
 		assert.Error(t, err)
 	})
@@ -155,7 +156,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleLoginInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -167,7 +168,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		authenticator := &authentication.MockAuthenticator{}
+		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"ValidateLogin",
 			testutils.ContextMatcher,
@@ -178,28 +179,20 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
 		membershipDB.On(
-			"GetDefaultHouseholdIDForUser",
+			"GetDefaultAccountIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-		).Return(helper.exampleHousehold.ID, nil)
-		helper.service.householdMembershipManager = membershipDB
-
-		auditLog := &mocktypes.AuditLogEntryDataManager{}
-		auditLog.On(
-			"LogSuccessfulLoginEvent",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		)
-		helper.service.auditLog = auditLog
+		).Return(helper.exampleAccount.ID, nil)
+		helper.service.accountMembershipManager = membershipDB
 
 		helper.service.BeginSessionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB, auditLog)
+		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB)
 	})
 
 	T.Run("with missing login data", func(t *testing.T) {
@@ -209,7 +202,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(nil))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(nil))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -228,7 +221,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, &types.UserLoginInput{})
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -247,7 +240,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleLoginInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -276,7 +269,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleLoginInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -301,14 +294,14 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		helper.exampleUser.ServiceHouseholdStatus = types.BannedUserHouseholdStatus
+		helper.exampleUser.ServiceAccountStatus = types.BannedUserAccountStatus
 		helper.exampleUser.ReputationExplanation = "bad behavior"
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleLoginInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -320,19 +313,12 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		auditLog := &mocktypes.AuditLogEntryDataManager{}
-		auditLog.On(
-			"LogBannedUserLoginAttemptEvent",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID)
-		helper.service.auditLog = auditLog
-
 		helper.service.BeginSessionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusForbidden, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, userDataManager, auditLog)
+		mock.AssertExpectationsForObjects(t, userDataManager)
 	})
 
 	T.Run("with invalid login", func(t *testing.T) {
@@ -344,7 +330,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleLoginInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -356,7 +342,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		authenticator := &authentication.MockAuthenticator{}
+		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"ValidateLogin",
 			testutils.ContextMatcher,
@@ -367,19 +353,12 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(false, nil)
 		helper.service.authenticator = authenticator
 
-		auditLog := &mocktypes.AuditLogEntryDataManager{}
-		auditLog.On(
-			"LogUnsuccessfulLoginBadPasswordEvent",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID)
-		helper.service.auditLog = auditLog
-
 		helper.service.BeginSessionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, auditLog)
+		mock.AssertExpectationsForObjects(t, userDataManager, authenticator)
 	})
 
 	T.Run("with error validating login", func(t *testing.T) {
@@ -391,7 +370,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleLoginInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -403,7 +382,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		authenticator := &authentication.MockAuthenticator{}
+		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"ValidateLogin",
 			testutils.ContextMatcher,
@@ -431,7 +410,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleLoginInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -443,7 +422,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		authenticator := &authentication.MockAuthenticator{}
+		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"ValidateLogin",
 			testutils.ContextMatcher,
@@ -454,20 +433,12 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(false, authentication.ErrInvalidTOTPToken)
 		helper.service.authenticator = authenticator
 
-		auditLog := &mocktypes.AuditLogEntryDataManager{}
-		auditLog.On(
-			"LogUnsuccessfulLoginBad2FATokenEvent",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		)
-		helper.service.auditLog = auditLog
-
 		helper.service.BeginSessionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, auditLog)
+		mock.AssertExpectationsForObjects(t, userDataManager, authenticator)
 	})
 
 	T.Run("with non-matching password error returned", func(t *testing.T) {
@@ -479,7 +450,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleLoginInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -491,7 +462,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		authenticator := &authentication.MockAuthenticator{}
+		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"ValidateLogin",
 			testutils.ContextMatcher,
@@ -502,23 +473,15 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(false, authentication.ErrPasswordDoesNotMatch)
 		helper.service.authenticator = authenticator
 
-		auditLog := &mocktypes.AuditLogEntryDataManager{}
-		auditLog.On(
-			"LogUnsuccessfulLoginBadPasswordEvent",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		)
-		helper.service.auditLog = auditLog
-
 		helper.service.BeginSessionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, auditLog)
+		mock.AssertExpectationsForObjects(t, userDataManager, authenticator)
 	})
 
-	T.Run("with error fetching default household", func(t *testing.T) {
+	T.Run("with error fetching default account", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -527,7 +490,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleLoginInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -539,7 +502,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		authenticator := &authentication.MockAuthenticator{}
+		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"ValidateLogin",
 			testutils.ContextMatcher,
@@ -550,13 +513,13 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
 		membershipDB.On(
-			"GetDefaultHouseholdIDForUser",
+			"GetDefaultAccountIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-		).Return(uint64(0), errors.New("blah"))
-		helper.service.householdMembershipManager = membershipDB
+		).Return("", errors.New("blah"))
+		helper.service.accountMembershipManager = membershipDB
 
 		helper.service.BeginSessionHandler(helper.res, helper.req)
 
@@ -575,7 +538,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleLoginInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -587,7 +550,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		authenticator := &authentication.MockAuthenticator{}
+		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"ValidateLogin",
 			testutils.ContextMatcher,
@@ -598,13 +561,13 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
 		membershipDB.On(
-			"GetDefaultHouseholdIDForUser",
+			"GetDefaultAccountIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-		).Return(helper.exampleHousehold.ID, nil)
-		helper.service.householdMembershipManager = membershipDB
+		).Return(helper.exampleAccount.ID, nil)
+		helper.service.accountMembershipManager = membershipDB
 
 		sm := &mockSessionManager{}
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, errors.New("blah"))
@@ -627,7 +590,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleLoginInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -639,7 +602,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		authenticator := &authentication.MockAuthenticator{}
+		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"ValidateLogin",
 			testutils.ContextMatcher,
@@ -650,13 +613,13 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
 		membershipDB.On(
-			"GetDefaultHouseholdIDForUser",
+			"GetDefaultAccountIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-		).Return(helper.exampleHousehold.ID, nil)
-		helper.service.householdMembershipManager = membershipDB
+		).Return(helper.exampleAccount.ID, nil)
+		helper.service.accountMembershipManager = membershipDB
 
 		sm := &mockSessionManager{}
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, nil)
@@ -680,7 +643,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleLoginInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -692,7 +655,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		authenticator := &authentication.MockAuthenticator{}
+		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"ValidateLogin",
 			testutils.ContextMatcher,
@@ -703,19 +666,19 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
 		membershipDB.On(
-			"GetDefaultHouseholdIDForUser",
+			"GetDefaultAccountIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-		).Return(helper.exampleHousehold.ID, nil)
-		helper.service.householdMembershipManager = membershipDB
+		).Return(helper.exampleAccount.ID, nil)
+		helper.service.accountMembershipManager = membershipDB
 
 		sm := &mockSessionManager{}
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, nil)
 		sm.On("RenewToken", testutils.ContextMatcher).Return(nil)
 		sm.On("Put", testutils.ContextMatcher, userIDContextKey, helper.exampleUser.ID)
-		sm.On("Put", testutils.ContextMatcher, householdIDContextKey, helper.exampleHousehold.ID)
+		sm.On("Put", testutils.ContextMatcher, accountIDContextKey, helper.exampleAccount.ID)
 		sm.On("Commit", testutils.ContextMatcher).Return("", time.Now(), errors.New("blah"))
 		helper.service.sessionManager = sm
 
@@ -736,7 +699,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleLoginInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -757,7 +720,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		authenticator := &authentication.MockAuthenticator{}
+		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"ValidateLogin",
 			testutils.ContextMatcher,
@@ -768,13 +731,13 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
 		membershipDB.On(
-			"GetDefaultHouseholdIDForUser",
+			"GetDefaultAccountIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-		).Return(helper.exampleHousehold.ID, nil)
-		helper.service.householdMembershipManager = membershipDB
+		).Return(helper.exampleAccount.ID, nil)
+		helper.service.accountMembershipManager = membershipDB
 
 		helper.service.BeginSessionHandler(helper.res, helper.req)
 
@@ -793,7 +756,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleLoginInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -813,7 +776,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		authenticator := &authentication.MockAuthenticator{}
+		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"ValidateLogin",
 			testutils.ContextMatcher,
@@ -824,13 +787,13 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
 		membershipDB.On(
-			"GetDefaultHouseholdIDForUser",
+			"GetDefaultAccountIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-		).Return(helper.exampleHousehold.ID, nil)
-		helper.service.householdMembershipManager = membershipDB
+		).Return(helper.exampleAccount.ID, nil)
+		helper.service.accountMembershipManager = membershipDB
 
 		helper.service.BeginSessionHandler(helper.res, helper.req)
 
@@ -841,7 +804,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 	})
 }
 
-func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
+func TestAuthenticationService_ChangeActiveAccountHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -850,29 +813,29 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeChangeActiveHouseholdInput()
+		exampleInput := fakes.BuildFakeChangeActiveAccountInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
-		householdMembershipManager.On(
-			"UserIsMemberOfHousehold",
+		accountMembershipManager := &mocktypes.AccountUserMembershipDataManager{}
+		accountMembershipManager.On(
+			"UserIsMemberOfAccount",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			exampleInput.HouseholdID,
+			exampleInput.AccountID,
 		).Return(true, nil)
-		helper.service.householdMembershipManager = householdMembershipManager
+		helper.service.accountMembershipManager = accountMembershipManager
 
-		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
+		helper.service.ChangeActiveAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, householdMembershipManager)
+		mock.AssertExpectationsForObjects(t, accountMembershipManager)
 	})
 
 	T.Run("with error fetching session context data", func(t *testing.T) {
@@ -882,7 +845,7 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
+		helper.service.ChangeActiveAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -895,11 +858,11 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(nil))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(nil))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
+		helper.service.ChangeActiveAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -911,80 +874,80 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		exampleInput := &types.ChangeActiveHouseholdInput{}
+		exampleInput := &types.ChangeActiveAccountInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
+		helper.service.ChangeActiveAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
 	})
 
-	T.Run("with error checking user household membership", func(t *testing.T) {
+	T.Run("with error checking user account membership", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeChangeActiveHouseholdInput()
+		exampleInput := fakes.BuildFakeChangeActiveAccountInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
-		householdMembershipManager.On(
-			"UserIsMemberOfHousehold",
+		accountMembershipManager := &mocktypes.AccountUserMembershipDataManager{}
+		accountMembershipManager.On(
+			"UserIsMemberOfAccount",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			exampleInput.HouseholdID,
+			exampleInput.AccountID,
 		).Return(false, errors.New("blah"))
-		helper.service.householdMembershipManager = householdMembershipManager
+		helper.service.accountMembershipManager = accountMembershipManager
 
-		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
+		helper.service.ChangeActiveAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, householdMembershipManager)
+		mock.AssertExpectationsForObjects(t, accountMembershipManager)
 	})
 
-	T.Run("without household authorization", func(t *testing.T) {
+	T.Run("without account authorization", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeChangeActiveHouseholdInput()
+		exampleInput := fakes.BuildFakeChangeActiveAccountInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
-		householdMembershipManager.On(
-			"UserIsMemberOfHousehold",
+		accountMembershipManager := &mocktypes.AccountUserMembershipDataManager{}
+		accountMembershipManager.On(
+			"UserIsMemberOfAccount",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			exampleInput.HouseholdID,
+			exampleInput.AccountID,
 		).Return(false, nil)
-		helper.service.householdMembershipManager = householdMembershipManager
+		helper.service.accountMembershipManager = accountMembershipManager
 
-		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
+		helper.service.ChangeActiveAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, householdMembershipManager)
+		mock.AssertExpectationsForObjects(t, accountMembershipManager)
 	})
 
 	T.Run("with error loading from session manager", func(t *testing.T) {
@@ -993,33 +956,33 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeChangeActiveHouseholdInput()
+		exampleInput := fakes.BuildFakeChangeActiveAccountInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
-		householdMembershipManager.On(
-			"UserIsMemberOfHousehold",
+		accountMembershipManager := &mocktypes.AccountUserMembershipDataManager{}
+		accountMembershipManager.On(
+			"UserIsMemberOfAccount",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			exampleInput.HouseholdID,
+			exampleInput.AccountID,
 		).Return(true, nil)
-		helper.service.householdMembershipManager = householdMembershipManager
+		helper.service.accountMembershipManager = accountMembershipManager
 
 		sm := &mockSessionManager{}
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
+		helper.service.ChangeActiveAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, householdMembershipManager, sm)
+		mock.AssertExpectationsForObjects(t, accountMembershipManager, sm)
 	})
 
 	T.Run("with error renewing token in session manager", func(t *testing.T) {
@@ -1028,34 +991,34 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeChangeActiveHouseholdInput()
+		exampleInput := fakes.BuildFakeChangeActiveAccountInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
-		householdMembershipManager.On(
-			"UserIsMemberOfHousehold",
+		accountMembershipManager := &mocktypes.AccountUserMembershipDataManager{}
+		accountMembershipManager.On(
+			"UserIsMemberOfAccount",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			exampleInput.HouseholdID,
+			exampleInput.AccountID,
 		).Return(true, nil)
-		helper.service.householdMembershipManager = householdMembershipManager
+		helper.service.accountMembershipManager = accountMembershipManager
 
 		sm := &mockSessionManager{}
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, nil)
 		sm.On("RenewToken", testutils.ContextMatcher).Return(errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
+		helper.service.ChangeActiveAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, householdMembershipManager, sm)
+		mock.AssertExpectationsForObjects(t, accountMembershipManager, sm)
 	})
 
 	T.Run("with error committing to session manager", func(t *testing.T) {
@@ -1064,37 +1027,37 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeChangeActiveHouseholdInput()
+		exampleInput := fakes.BuildFakeChangeActiveAccountInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
-		householdMembershipManager.On(
-			"UserIsMemberOfHousehold",
+		accountMembershipManager := &mocktypes.AccountUserMembershipDataManager{}
+		accountMembershipManager.On(
+			"UserIsMemberOfAccount",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			exampleInput.HouseholdID,
+			exampleInput.AccountID,
 		).Return(true, nil)
-		helper.service.householdMembershipManager = householdMembershipManager
+		helper.service.accountMembershipManager = accountMembershipManager
 
 		sm := &mockSessionManager{}
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, nil)
 		sm.On("RenewToken", testutils.ContextMatcher).Return(nil)
 		sm.On("Put", testutils.ContextMatcher, userIDContextKey, helper.exampleUser.ID)
-		sm.On("Put", testutils.ContextMatcher, householdIDContextKey, exampleInput.HouseholdID)
+		sm.On("Put", testutils.ContextMatcher, accountIDContextKey, exampleInput.AccountID)
 		sm.On("Commit", testutils.ContextMatcher).Return("", time.Now(), errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
+		helper.service.ChangeActiveAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, householdMembershipManager, sm)
+		mock.AssertExpectationsForObjects(t, accountMembershipManager, sm)
 	})
 
 	T.Run("with error renewing token in session manager", func(t *testing.T) {
@@ -1103,34 +1066,34 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeChangeActiveHouseholdInput()
+		exampleInput := fakes.BuildFakeChangeActiveAccountInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
-		householdMembershipManager.On(
-			"UserIsMemberOfHousehold",
+		accountMembershipManager := &mocktypes.AccountUserMembershipDataManager{}
+		accountMembershipManager.On(
+			"UserIsMemberOfAccount",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			exampleInput.HouseholdID,
+			exampleInput.AccountID,
 		).Return(true, nil)
-		helper.service.householdMembershipManager = householdMembershipManager
+		helper.service.accountMembershipManager = accountMembershipManager
 
 		sm := &mockSessionManager{}
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, nil)
 		sm.On("RenewToken", testutils.ContextMatcher).Return(errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
+		helper.service.ChangeActiveAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, householdMembershipManager, sm)
+		mock.AssertExpectationsForObjects(t, accountMembershipManager, sm)
 	})
 
 	T.Run("with error building cookie", func(t *testing.T) {
@@ -1139,22 +1102,22 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeChangeActiveHouseholdInput()
+		exampleInput := fakes.BuildFakeChangeActiveAccountInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://todo.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
-		householdMembershipManager.On(
-			"UserIsMemberOfHousehold",
+		accountMembershipManager := &mocktypes.AccountUserMembershipDataManager{}
+		accountMembershipManager.On(
+			"UserIsMemberOfAccount",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			exampleInput.HouseholdID,
+			exampleInput.AccountID,
 		).Return(true, nil)
-		helper.service.householdMembershipManager = householdMembershipManager
+		helper.service.accountMembershipManager = accountMembershipManager
 
 		cookieManager := &mockCookieEncoderDecoder{}
 		cookieManager.On(
@@ -1164,12 +1127,12 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		).Return("", errors.New("blah"))
 		helper.service.cookieManager = cookieManager
 
-		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
+		helper.service.ChangeActiveAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, householdMembershipManager)
+		mock.AssertExpectationsForObjects(t, accountMembershipManager)
 	})
 }
 
@@ -1181,13 +1144,6 @@ func TestAuthenticationService_LogoutHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		auditLog := &mocktypes.AuditLogEntryDataManager{}
-		auditLog.On(
-			"LogLogoutEvent",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID)
-		helper.service.auditLog = auditLog
-
 		helper.ctx, helper.req, _ = attachCookieToRequestForTest(t, helper.service, helper.req, helper.exampleUser)
 
 		helper.service.EndSessionHandler(helper.res, helper.req)
@@ -1195,8 +1151,6 @@ func TestAuthenticationService_LogoutHandler(T *testing.T) {
 		assert.Equal(t, http.StatusSeeOther, helper.res.Code)
 		actualCookie := helper.res.Header().Get("Set-Cookie")
 		assert.Contains(t, actualCookie, "Max-Age=0")
-
-		mock.AssertExpectationsForObjects(t, auditLog)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -1301,13 +1255,6 @@ func TestAuthenticationService_CycleSecretHandler(T *testing.T) {
 		helper.exampleUser.ServiceRoles = []string{authorization.ServiceAdminRole.String()}
 		helper.setContextFetcher(t)
 
-		auditLog := &mocktypes.AuditLogEntryDataManager{}
-		auditLog.On(
-			"LogCycleCookieSecretEvent",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID)
-		helper.service.auditLog = auditLog
-
 		helper.ctx, helper.req, _ = attachCookieToRequestForTest(t, helper.service, helper.req, helper.exampleUser)
 		c := helper.req.Cookies()[0]
 
@@ -1318,8 +1265,6 @@ func TestAuthenticationService_CycleSecretHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code, "expected code to be %d, but was %d", http.StatusUnauthorized, helper.res.Code)
 		assert.Error(t, helper.service.cookieManager.Decode(helper.service.config.Cookies.Name, c.Value, &token))
-
-		mock.AssertExpectationsForObjects(t, auditLog)
 	})
 
 	T.Run("with error getting session context data", func(t *testing.T) {
@@ -1371,7 +1316,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		helper.service.config.PASETO.Lifetime = time.Minute
 
 		exampleInput := &types.PASETOCreationInput{
-			HouseholdID: helper.exampleHousehold.ID,
+			AccountID:   helper.exampleAccount.ID,
 			ClientID:    helper.exampleAPIClient.ClientID,
 			RequestTime: time.Now().UTC().UnixNano(),
 		}
@@ -1379,12 +1324,12 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		expected := &types.SessionContextData{
 			Requester: types.RequesterInfo{
 				UserID:                helper.exampleUser.ID,
-				Reputation:            helper.exampleUser.ServiceHouseholdStatus,
+				Reputation:            helper.exampleUser.ServiceAccountStatus,
 				ReputationExplanation: helper.exampleUser.ReputationExplanation,
 				ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 			},
-			ActiveHouseholdID:    helper.exampleHousehold.ID,
-			HouseholdPermissions: helper.examplePermCheckers,
+			ActiveAccountID:    helper.exampleAccount.ID,
+			AccountPermissions: helper.examplePermCheckers,
 		}
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
@@ -1411,13 +1356,13 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
 		membershipDB.On(
 			"BuildSessionContextDataForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(expected, nil)
-		helper.service.householdMembershipManager = membershipDB
+		helper.service.accountMembershipManager = membershipDB
 
 		var bodyBytes bytes.Buffer
 		marshalErr := json.NewEncoder(&bodyBytes).Encode(exampleInput)
@@ -1476,12 +1421,12 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		expected := &types.SessionContextData{
 			Requester: types.RequesterInfo{
 				UserID:                helper.exampleUser.ID,
-				Reputation:            helper.exampleUser.ServiceHouseholdStatus,
+				Reputation:            helper.exampleUser.ServiceAccountStatus,
 				ReputationExplanation: helper.exampleUser.ReputationExplanation,
 				ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 			},
-			ActiveHouseholdID:    helper.exampleHousehold.ID,
-			HouseholdPermissions: helper.examplePermCheckers,
+			ActiveAccountID:    helper.exampleAccount.ID,
+			AccountPermissions: helper.examplePermCheckers,
 		}
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
@@ -1508,13 +1453,13 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
 		membershipDB.On(
 			"BuildSessionContextDataForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(expected, nil)
-		helper.service.householdMembershipManager = membershipDB
+		helper.service.accountMembershipManager = membershipDB
 
 		var bodyBytes bytes.Buffer
 		marshalErr := json.NewEncoder(&bodyBytes).Encode(exampleInput)
@@ -1757,7 +1702,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, apiClientDataManager, userDataManager)
 	})
 
-	T.Run("with error fetching household memberships", func(t *testing.T) {
+	T.Run("with error fetching account memberships", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -1793,13 +1738,13 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
 		membershipDB.On(
 			"BuildSessionContextDataForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return((*types.SessionContextData)(nil), errors.New("blah"))
-		helper.service.householdMembershipManager = membershipDB
+		helper.service.accountMembershipManager = membershipDB
 
 		var bodyBytes bytes.Buffer
 		marshalErr := json.NewEncoder(&bodyBytes).Encode(exampleInput)
@@ -1863,7 +1808,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, apiClientDataManager)
 	})
 
-	T.Run("with inadequate household permissions", func(t *testing.T) {
+	T.Run("with inadequate account permissions", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -1872,7 +1817,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		helper.service.config.PASETO.Lifetime = time.Minute
 
 		exampleInput := &types.PASETOCreationInput{
-			HouseholdID: helper.exampleHousehold.ID,
+			AccountID:   helper.exampleAccount.ID,
 			ClientID:    helper.exampleAPIClient.ClientID,
 			RequestTime: time.Now().UTC().UnixNano(),
 		}
@@ -1901,15 +1846,15 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		delete(helper.sessionCtxData.HouseholdPermissions, helper.exampleHousehold.ID)
+		delete(helper.sessionCtxData.AccountPermissions, helper.exampleAccount.ID)
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
 		membershipDB.On(
 			"BuildSessionContextDataForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.sessionCtxData, nil)
-		helper.service.householdMembershipManager = membershipDB
+		helper.service.accountMembershipManager = membershipDB
 
 		var bodyBytes bytes.Buffer
 		marshalErr := json.NewEncoder(&bodyBytes).Encode(exampleInput)
@@ -1964,13 +1909,13 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
 		membershipDB.On(
 			"BuildSessionContextDataForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.sessionCtxData, nil)
-		helper.service.householdMembershipManager = membershipDB
+		helper.service.accountMembershipManager = membershipDB
 
 		var bodyBytes bytes.Buffer
 		marshalErr := json.NewEncoder(&bodyBytes).Encode(exampleInput)

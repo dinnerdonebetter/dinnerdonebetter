@@ -6,21 +6,21 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"gitlab.com/prixfixe/prixfixe/internal/authorization"
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-
-	"github.com/stretchr/testify/require"
 )
 
 type adminServiceHTTPRoutesTestHelper struct {
-	ctx              context.Context
-	service          *service
-	exampleUser      *types.User
-	exampleHousehold *types.Household
-	exampleInput     *types.UserReputationUpdateInput
+	ctx            context.Context
+	service        *service
+	exampleUser    *types.User
+	exampleAccount *types.Account
+	exampleInput   *types.UserReputationUpdateInput
 
 	req *http.Request
 	res *httptest.ResponseRecorder
@@ -32,13 +32,13 @@ func (helper *adminServiceHTTPRoutesTestHelper) neuterAdminUser() {
 		return &types.SessionContextData{
 			Requester: types.RequesterInfo{
 				UserID:                helper.exampleUser.ID,
-				Reputation:            helper.exampleUser.ServiceHouseholdStatus,
+				Reputation:            helper.exampleUser.ServiceAccountStatus,
 				ReputationExplanation: helper.exampleUser.ReputationExplanation,
 				ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 			},
-			ActiveHouseholdID: helper.exampleHousehold.ID,
-			HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
-				helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
+			ActiveAccountID: helper.exampleAccount.ID,
+			AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
+				helper.exampleAccount.ID: authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
 			},
 		}, nil
 	}
@@ -57,8 +57,8 @@ func buildTestHelper(t *testing.T) *adminServiceHTTPRoutesTestHelper {
 
 	helper.exampleUser = fakes.BuildFakeUser()
 	helper.exampleUser.ServiceRoles = []string{authorization.ServiceAdminRole.String()}
-	helper.exampleHousehold = fakes.BuildFakeHousehold()
-	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
+	helper.exampleAccount = fakes.BuildFakeAccount()
+	helper.exampleAccount.BelongsToUser = helper.exampleUser.ID
 	helper.exampleInput = fakes.BuildFakeUserReputationUpdateInput()
 
 	helper.res = httptest.NewRecorder()
@@ -69,13 +69,13 @@ func buildTestHelper(t *testing.T) *adminServiceHTTPRoutesTestHelper {
 	sessionCtxData := &types.SessionContextData{
 		Requester: types.RequesterInfo{
 			UserID:                helper.exampleUser.ID,
-			Reputation:            helper.exampleUser.ServiceHouseholdStatus,
+			Reputation:            helper.exampleUser.ServiceAccountStatus,
 			ReputationExplanation: helper.exampleUser.ReputationExplanation,
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 		},
-		ActiveHouseholdID: helper.exampleHousehold.ID,
-		HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
-			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
+		ActiveAccountID: helper.exampleAccount.ID,
+		AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
+			helper.exampleAccount.ID: authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
 		},
 	}
 
@@ -83,7 +83,7 @@ func buildTestHelper(t *testing.T) *adminServiceHTTPRoutesTestHelper {
 	helper.service.sessionContextDataFetcher = func(*http.Request) (*types.SessionContextData, error) {
 		return sessionCtxData, nil
 	}
-	helper.service.userIDFetcher = func(req *http.Request) uint64 {
+	helper.service.userIDFetcher = func(req *http.Request) string {
 		return helper.exampleUser.ID
 	}
 

@@ -1,4 +1,4 @@
-FROM golang:buster
+FROM golang:1.17-stretch
 
 WORKDIR /go/src/gitlab.com/prixfixe/prixfixe
 

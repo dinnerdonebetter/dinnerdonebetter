@@ -5,38 +5,39 @@ import (
 	"fmt"
 	"path"
 
+	"github.com/heptiolabs/healthcheck"
+
 	"gitlab.com/prixfixe/prixfixe/internal/authorization"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
 	"gitlab.com/prixfixe/prixfixe/internal/routing"
+	accountsservice "gitlab.com/prixfixe/prixfixe/internal/services/accounts"
 	apiclientsservice "gitlab.com/prixfixe/prixfixe/internal/services/apiclients"
-	auditservice "gitlab.com/prixfixe/prixfixe/internal/services/audit"
-	householdsservice "gitlab.com/prixfixe/prixfixe/internal/services/households"
-	invitationsservice "gitlab.com/prixfixe/prixfixe/internal/services/invitations"
+	mealplanoptionsservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptions"
+	mealplanoptionvotesservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptionvotes"
+	mealplansservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplans"
 	recipesservice "gitlab.com/prixfixe/prixfixe/internal/services/recipes"
 	recipestepingredientsservice "gitlab.com/prixfixe/prixfixe/internal/services/recipestepingredients"
+	recipestepinstrumentsservice "gitlab.com/prixfixe/prixfixe/internal/services/recipestepinstruments"
 	recipestepproductsservice "gitlab.com/prixfixe/prixfixe/internal/services/recipestepproducts"
 	recipestepsservice "gitlab.com/prixfixe/prixfixe/internal/services/recipesteps"
-	reportsservice "gitlab.com/prixfixe/prixfixe/internal/services/reports"
 	usersservice "gitlab.com/prixfixe/prixfixe/internal/services/users"
 	validingredientpreparationsservice "gitlab.com/prixfixe/prixfixe/internal/services/validingredientpreparations"
 	validingredientsservice "gitlab.com/prixfixe/prixfixe/internal/services/validingredients"
 	validinstrumentsservice "gitlab.com/prixfixe/prixfixe/internal/services/validinstruments"
-	validpreparationinstrumentsservice "gitlab.com/prixfixe/prixfixe/internal/services/validpreparationinstruments"
 	validpreparationsservice "gitlab.com/prixfixe/prixfixe/internal/services/validpreparations"
 	webhooksservice "gitlab.com/prixfixe/prixfixe/internal/services/webhooks"
-
-	"github.com/heptiolabs/healthcheck"
 )
 
 const (
-	root             = "/"
-	auditRoute       = "/audit"
-	searchRoot       = "/search"
-	numericIDPattern = "{%s:[0-9]+}"
+	root       = "/"
+	searchRoot = "/search"
 )
 
-func buildNumericIDURLChunk(key string) string {
-	return fmt.Sprintf(root+numericIDPattern, key)
+func buildURLVarChunk(key, pattern string) string {
+	if pattern != "" {
+		return fmt.Sprintf("/{%s:%s}", key, pattern)
+	}
+	return fmt.Sprintf("/{%s}", key)
 }
 
 func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, metricsHandler metrics.Handler) {
@@ -66,14 +67,13 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 
 	router.Route("/users", func(userRouter routing.Router) {
 		userRouter.Post("/login", s.authService.BeginSessionHandler)
-		userRouter.WithMiddleware(s.authService.UserAttributionMiddleware, s.authService.CookieRequirementMiddleware).
-			Post("/logout", s.authService.EndSessionHandler)
+		userRouter.WithMiddleware(s.authService.UserAttributionMiddleware, s.authService.CookieRequirementMiddleware).Post("/logout", s.authService.EndSessionHandler)
 		userRouter.Post(root, s.usersService.CreateHandler)
 		userRouter.Post("/totp_secret/verify", s.usersService.TOTPSecretVerificationHandler)
 
 		// need credentials beyond this point
 		authedRouter := userRouter.WithMiddleware(s.authService.UserAttributionMiddleware, s.authService.AuthorizationMiddleware)
-		authedRouter.Post("/household/select", s.authService.ChangeActiveHouseholdHandler)
+		authedRouter.Post("/account/select", s.authService.ChangeActiveAccountHandler)
 		authedRouter.Post("/totp_secret/new", s.usersService.NewTOTPSecretHandler)
 		authedRouter.Put("/password/new", s.usersService.UpdatePasswordHandler)
 	})
@@ -89,18 +89,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			adminRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateUserStatusPermission)).
 				Post("/users/status", s.adminService.UserReputationChangeHandler)
-
-			adminRouter.Route("/audit_log", func(auditRouter routing.Router) {
-				entryIDRouteParam := buildNumericIDURLChunk(auditservice.LogEntryURIParamKey)
-				auditRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadAllAuditLogEntriesPermission)).
-					Get(root, s.auditService.ListHandler)
-				auditRouter.Route(entryIDRouteParam, func(singleEntryRouter routing.Router) {
-					singleEntryRouter.
-						WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadAllAuditLogEntriesPermission)).
-						Get(root, s.auditService.ReadHandler)
-				})
-			})
 		})
 
 		// Users
@@ -114,47 +102,41 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			usersRouter.Post("/avatar/upload", s.usersService.AvatarUploadHandler)
 			usersRouter.Get("/self", s.usersService.SelfHandler)
 
-			singleUserRoute := buildNumericIDURLChunk(usersservice.UserIDURIParamKey)
+			singleUserRoute := buildURLVarChunk(usersservice.UserIDURIParamKey, "")
 			usersRouter.Route(singleUserRoute, func(singleUserRouter routing.Router) {
 				singleUserRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadUserPermission)).
 					Get(root, s.usersService.ReadHandler)
-				singleUserRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadUserAuditLogEntriesPermission)).
-					Get(auditRoute, s.usersService.AuditEntryHandler)
 
 				singleUserRouter.Delete(root, s.usersService.ArchiveHandler)
 			})
 		})
 
-		// Households
-		v1Router.Route("/households", func(householdsRouter routing.Router) {
-			householdsRouter.Post(root, s.householdsService.CreateHandler)
-			householdsRouter.Get(root, s.householdsService.ListHandler)
+		// Accounts
+		v1Router.Route("/accounts", func(accountsRouter routing.Router) {
+			accountsRouter.Post(root, s.accountsService.CreateHandler)
+			accountsRouter.Get(root, s.accountsService.ListHandler)
 
-			singleUserRoute := buildNumericIDURLChunk(householdsservice.UserIDURIParamKey)
-			singleHouseholdRoute := buildNumericIDURLChunk(householdsservice.HouseholdIDURIParamKey)
-			householdsRouter.Route(singleHouseholdRoute, func(singleHouseholdRouter routing.Router) {
-				singleHouseholdRouter.Get(root, s.householdsService.ReadHandler)
-				singleHouseholdRouter.Put(root, s.householdsService.UpdateHandler)
-				singleHouseholdRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveHouseholdPermission)).
-					Delete(root, s.householdsService.ArchiveHandler)
-				singleHouseholdRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadHouseholdAuditLogEntriesPermission)).
-					Get(auditRoute, s.householdsService.AuditEntryHandler)
+			singleUserRoute := buildURLVarChunk(accountsservice.UserIDURIParamKey, "")
+			singleAccountRoute := buildURLVarChunk(accountsservice.AccountIDURIParamKey, "")
+			accountsRouter.Route(singleAccountRoute, func(singleAccountRouter routing.Router) {
+				singleAccountRouter.Get(root, s.accountsService.ReadHandler)
+				singleAccountRouter.Put(root, s.accountsService.UpdateHandler)
+				singleAccountRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveAccountPermission)).
+					Delete(root, s.accountsService.ArchiveHandler)
 
-				singleHouseholdRouter.Post("/default", s.householdsService.MarkAsDefaultHouseholdHandler)
-				singleHouseholdRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.RemoveMemberHouseholdPermission)).
-					Delete("/members"+singleUserRoute, s.householdsService.RemoveMemberHandler)
-				singleHouseholdRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.AddMemberHouseholdPermission)).
-					Post("/member", s.householdsService.AddMemberHandler)
-				singleHouseholdRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ModifyMemberPermissionsForHouseholdPermission)).
-					Patch("/members"+singleUserRoute+"/permissions", s.householdsService.ModifyMemberPermissionsHandler)
-				singleHouseholdRouter.Post("/transfer", s.householdsService.TransferHouseholdOwnershipHandler)
+				singleAccountRouter.Post("/default", s.accountsService.MarkAsDefaultAccountHandler)
+				singleAccountRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.RemoveMemberAccountPermission)).
+					Delete("/members"+singleUserRoute, s.accountsService.RemoveMemberHandler)
+				singleAccountRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.AddMemberAccountPermission)).
+					Post("/member", s.accountsService.AddMemberHandler)
+				singleAccountRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ModifyMemberPermissionsForAccountPermission)).
+					Patch("/members"+singleUserRoute+"/permissions", s.accountsService.ModifyMemberPermissionsHandler)
+				singleAccountRouter.Post("/transfer", s.accountsService.TransferAccountOwnershipHandler)
 			})
 		})
 
@@ -167,7 +149,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateAPIClientsPermission)).
 				Post(root, s.apiClientsService.CreateHandler)
 
-			singleClientRoute := buildNumericIDURLChunk(apiclientsservice.APIClientIDURIParamKey)
+			singleClientRoute := buildURLVarChunk(apiclientsservice.APIClientIDURIParamKey, "")
 			clientRouter.Route(singleClientRoute, func(singleClientRouter routing.Router) {
 				singleClientRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadAPIClientsPermission)).
@@ -175,15 +157,17 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				singleClientRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveAPIClientsPermission)).
 					Delete(root, s.apiClientsService.ArchiveHandler)
-				singleClientRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadAPIClientAuditLogEntriesPermission)).
-					Get(auditRoute, s.apiClientsService.AuditEntryHandler)
 			})
+		})
+
+		// Websockets
+		v1Router.Route("/websockets", func(websocketsRouter routing.Router) {
+			websocketsRouter.Get("/data_changes", s.websocketsService.SubscribeHandler)
 		})
 
 		// Webhooks
 		v1Router.Route("/webhooks", func(webhookRouter routing.Router) {
-			singleWebhookRoute := buildNumericIDURLChunk(webhooksservice.WebhookIDURIParamKey)
+			singleWebhookRoute := buildURLVarChunk(webhooksservice.WebhookIDURIParamKey, "")
 			webhookRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadWebhooksPermission)).
 				Get(root, s.webhooksService.ListHandler)
@@ -197,19 +181,13 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				singleWebhookRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveWebhooksPermission)).
 					Delete(root, s.webhooksService.ArchiveHandler)
-				singleWebhookRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateWebhooksPermission)).
-					Put(root, s.webhooksService.UpdateHandler)
-				singleWebhookRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadWebhooksAuditLogEntriesPermission)).
-					Get(auditRoute, s.webhooksService.AuditEntryHandler)
 			})
 		})
 
 		// ValidInstruments
 		validInstrumentPath := "valid_instruments"
 		validInstrumentsRouteWithPrefix := fmt.Sprintf("/%s", validInstrumentPath)
-		validInstrumentIDRouteParam := buildNumericIDURLChunk(validinstrumentsservice.ValidInstrumentIDURIParamKey)
+		validInstrumentIDRouteParam := buildURLVarChunk(validinstrumentsservice.ValidInstrumentIDURIParamKey, "")
 		v1Router.Route(validInstrumentsRouteWithPrefix, func(validInstrumentsRouter routing.Router) {
 			validInstrumentsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidInstrumentsPermission)).
@@ -226,58 +204,18 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidInstrumentsPermission)).
 					Get(root, s.validInstrumentsService.ReadHandler)
 				singleValidInstrumentRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidInstrumentsPermission)).
-					Head(root, s.validInstrumentsService.ExistenceHandler)
-				singleValidInstrumentRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidInstrumentsPermission)).
 					Delete(root, s.validInstrumentsService.ArchiveHandler)
 				singleValidInstrumentRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidInstrumentsPermission)).
 					Put(root, s.validInstrumentsService.UpdateHandler)
-				singleValidInstrumentRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidInstrumentsAuditLogEntriesPermission)).
-					Get(auditRoute, s.validInstrumentsService.AuditEntryHandler)
-			})
-		})
-
-		// ValidPreparations
-		validPreparationPath := "valid_preparations"
-		validPreparationsRouteWithPrefix := fmt.Sprintf("/%s", validPreparationPath)
-		validPreparationIDRouteParam := buildNumericIDURLChunk(validpreparationsservice.ValidPreparationIDURIParamKey)
-		v1Router.Route(validPreparationsRouteWithPrefix, func(validPreparationsRouter routing.Router) {
-			validPreparationsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidPreparationsPermission)).
-				Post(root, s.validPreparationsService.CreateHandler)
-			validPreparationsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationsPermission)).
-				Get(root, s.validPreparationsService.ListHandler)
-			validPreparationsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationsPermission)).
-				Get(searchRoot, s.validPreparationsService.SearchHandler)
-
-			validPreparationsRouter.Route(validPreparationIDRouteParam, func(singleValidPreparationRouter routing.Router) {
-				singleValidPreparationRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationsPermission)).
-					Get(root, s.validPreparationsService.ReadHandler)
-				singleValidPreparationRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationsPermission)).
-					Head(root, s.validPreparationsService.ExistenceHandler)
-				singleValidPreparationRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidPreparationsPermission)).
-					Delete(root, s.validPreparationsService.ArchiveHandler)
-				singleValidPreparationRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidPreparationsPermission)).
-					Put(root, s.validPreparationsService.UpdateHandler)
-				singleValidPreparationRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationsAuditLogEntriesPermission)).
-					Get(auditRoute, s.validPreparationsService.AuditEntryHandler)
 			})
 		})
 
 		// ValidIngredients
 		validIngredientPath := "valid_ingredients"
 		validIngredientsRouteWithPrefix := fmt.Sprintf("/%s", validIngredientPath)
-		validIngredientIDRouteParam := buildNumericIDURLChunk(validingredientsservice.ValidIngredientIDURIParamKey)
+		validIngredientIDRouteParam := buildURLVarChunk(validingredientsservice.ValidIngredientIDURIParamKey, "")
 		v1Router.Route(validIngredientsRouteWithPrefix, func(validIngredientsRouter routing.Router) {
 			validIngredientsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidIngredientsPermission)).
@@ -294,24 +232,46 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientsPermission)).
 					Get(root, s.validIngredientsService.ReadHandler)
 				singleValidIngredientRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientsPermission)).
-					Head(root, s.validIngredientsService.ExistenceHandler)
-				singleValidIngredientRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidIngredientsPermission)).
 					Delete(root, s.validIngredientsService.ArchiveHandler)
 				singleValidIngredientRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidIngredientsPermission)).
 					Put(root, s.validIngredientsService.UpdateHandler)
-				singleValidIngredientRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientsAuditLogEntriesPermission)).
-					Get(auditRoute, s.validIngredientsService.AuditEntryHandler)
+			})
+		})
+
+		// ValidPreparations
+		validPreparationPath := "valid_preparations"
+		validPreparationsRouteWithPrefix := fmt.Sprintf("/%s", validPreparationPath)
+		validPreparationIDRouteParam := buildURLVarChunk(validpreparationsservice.ValidPreparationIDURIParamKey, "")
+		v1Router.Route(validPreparationsRouteWithPrefix, func(validPreparationsRouter routing.Router) {
+			validPreparationsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidPreparationsPermission)).
+				Post(root, s.validPreparationsService.CreateHandler)
+			validPreparationsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationsPermission)).
+				Get(root, s.validPreparationsService.ListHandler)
+			validPreparationsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationsPermission)).
+				Get(searchRoot, s.validPreparationsService.SearchHandler)
+
+			validPreparationsRouter.Route(validPreparationIDRouteParam, func(singleValidPreparationRouter routing.Router) {
+				singleValidPreparationRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationsPermission)).
+					Get(root, s.validPreparationsService.ReadHandler)
+				singleValidPreparationRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidPreparationsPermission)).
+					Delete(root, s.validPreparationsService.ArchiveHandler)
+				singleValidPreparationRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidPreparationsPermission)).
+					Put(root, s.validPreparationsService.UpdateHandler)
 			})
 		})
 
 		// ValidIngredientPreparations
 		validIngredientPreparationPath := "valid_ingredient_preparations"
 		validIngredientPreparationsRouteWithPrefix := fmt.Sprintf("/%s", validIngredientPreparationPath)
-		validIngredientPreparationIDRouteParam := buildNumericIDURLChunk(validingredientpreparationsservice.ValidIngredientPreparationIDURIParamKey)
+		validIngredientPreparationIDRouteParam := buildURLVarChunk(validingredientpreparationsservice.ValidIngredientPreparationIDURIParamKey, "")
 		v1Router.Route(validIngredientPreparationsRouteWithPrefix, func(validIngredientPreparationsRouter routing.Router) {
 			validIngredientPreparationsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidIngredientPreparationsPermission)).
@@ -325,55 +285,18 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientPreparationsPermission)).
 					Get(root, s.validIngredientPreparationsService.ReadHandler)
 				singleValidIngredientPreparationRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientPreparationsPermission)).
-					Head(root, s.validIngredientPreparationsService.ExistenceHandler)
-				singleValidIngredientPreparationRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidIngredientPreparationsPermission)).
 					Delete(root, s.validIngredientPreparationsService.ArchiveHandler)
 				singleValidIngredientPreparationRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidIngredientPreparationsPermission)).
 					Put(root, s.validIngredientPreparationsService.UpdateHandler)
-				singleValidIngredientPreparationRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientPreparationsAuditLogEntriesPermission)).
-					Get(auditRoute, s.validIngredientPreparationsService.AuditEntryHandler)
-			})
-		})
-
-		// ValidPreparationInstruments
-		validPreparationInstrumentPath := "valid_preparation_instruments"
-		validPreparationInstrumentsRouteWithPrefix := fmt.Sprintf("/%s", validPreparationInstrumentPath)
-		validPreparationInstrumentIDRouteParam := buildNumericIDURLChunk(validpreparationinstrumentsservice.ValidPreparationInstrumentIDURIParamKey)
-		v1Router.Route(validPreparationInstrumentsRouteWithPrefix, func(validPreparationInstrumentsRouter routing.Router) {
-			validPreparationInstrumentsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidPreparationInstrumentsPermission)).
-				Post(root, s.validPreparationInstrumentsService.CreateHandler)
-			validPreparationInstrumentsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationInstrumentsPermission)).
-				Get(root, s.validPreparationInstrumentsService.ListHandler)
-
-			validPreparationInstrumentsRouter.Route(validPreparationInstrumentIDRouteParam, func(singleValidPreparationInstrumentRouter routing.Router) {
-				singleValidPreparationInstrumentRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationInstrumentsPermission)).
-					Get(root, s.validPreparationInstrumentsService.ReadHandler)
-				singleValidPreparationInstrumentRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationInstrumentsPermission)).
-					Head(root, s.validPreparationInstrumentsService.ExistenceHandler)
-				singleValidPreparationInstrumentRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidPreparationInstrumentsPermission)).
-					Delete(root, s.validPreparationInstrumentsService.ArchiveHandler)
-				singleValidPreparationInstrumentRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidPreparationInstrumentsPermission)).
-					Put(root, s.validPreparationInstrumentsService.UpdateHandler)
-				singleValidPreparationInstrumentRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationInstrumentsAuditLogEntriesPermission)).
-					Get(auditRoute, s.validPreparationInstrumentsService.AuditEntryHandler)
 			})
 		})
 
 		// Recipes
 		recipePath := "recipes"
 		recipesRouteWithPrefix := fmt.Sprintf("/%s", recipePath)
-		recipeIDRouteParam := buildNumericIDURLChunk(recipesservice.RecipeIDURIParamKey)
+		recipeIDRouteParam := buildURLVarChunk(recipesservice.RecipeIDURIParamKey, "")
 		v1Router.Route(recipesRouteWithPrefix, func(recipesRouter routing.Router) {
 			recipesRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipesPermission)).
@@ -387,17 +310,11 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesPermission)).
 					Get(root, s.recipesService.ReadHandler)
 				singleRecipeRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesPermission)).
-					Head(root, s.recipesService.ExistenceHandler)
-				singleRecipeRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipesPermission)).
 					Delete(root, s.recipesService.ArchiveHandler)
 				singleRecipeRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipesPermission)).
 					Put(root, s.recipesService.UpdateHandler)
-				singleRecipeRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesAuditLogEntriesPermission)).
-					Get(auditRoute, s.recipesService.AuditEntryHandler)
 			})
 		})
 
@@ -409,7 +326,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			recipeStepPath,
 		)
 		recipeStepsRouteWithPrefix := fmt.Sprintf("/%s", recipeStepsRoute)
-		recipeStepIDRouteParam := buildNumericIDURLChunk(recipestepsservice.RecipeStepIDURIParamKey)
+		recipeStepIDRouteParam := buildURLVarChunk(recipestepsservice.RecipeStepIDURIParamKey, "")
 		v1Router.Route(recipeStepsRouteWithPrefix, func(recipeStepsRouter routing.Router) {
 			recipeStepsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipeStepsPermission)).
@@ -423,17 +340,43 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepsPermission)).
 					Get(root, s.recipeStepsService.ReadHandler)
 				singleRecipeStepRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepsPermission)).
-					Head(root, s.recipeStepsService.ExistenceHandler)
-				singleRecipeStepRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepsPermission)).
 					Delete(root, s.recipeStepsService.ArchiveHandler)
 				singleRecipeStepRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepsPermission)).
 					Put(root, s.recipeStepsService.UpdateHandler)
-				singleRecipeStepRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepsAuditLogEntriesPermission)).
-					Get(auditRoute, s.recipeStepsService.AuditEntryHandler)
+			})
+		})
+
+		// RecipeStepInstruments
+		recipeStepInstrumentPath := "recipe_step_instruments"
+		recipeStepInstrumentsRoute := path.Join(
+			recipePath,
+			recipeIDRouteParam,
+			recipeStepPath,
+			recipeStepIDRouteParam,
+			recipeStepInstrumentPath,
+		)
+		recipeStepInstrumentsRouteWithPrefix := fmt.Sprintf("/%s", recipeStepInstrumentsRoute)
+		recipeStepInstrumentIDRouteParam := buildURLVarChunk(recipestepinstrumentsservice.RecipeStepInstrumentIDURIParamKey, "")
+		v1Router.Route(recipeStepInstrumentsRouteWithPrefix, func(recipeStepInstrumentsRouter routing.Router) {
+			recipeStepInstrumentsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipeStepInstrumentsPermission)).
+				Post(root, s.recipeStepInstrumentsService.CreateHandler)
+			recipeStepInstrumentsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepInstrumentsPermission)).
+				Get(root, s.recipeStepInstrumentsService.ListHandler)
+
+			recipeStepInstrumentsRouter.Route(recipeStepInstrumentIDRouteParam, func(singleRecipeStepInstrumentRouter routing.Router) {
+				singleRecipeStepInstrumentRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepInstrumentsPermission)).
+					Get(root, s.recipeStepInstrumentsService.ReadHandler)
+				singleRecipeStepInstrumentRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepInstrumentsPermission)).
+					Delete(root, s.recipeStepInstrumentsService.ArchiveHandler)
+				singleRecipeStepInstrumentRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepInstrumentsPermission)).
+					Put(root, s.recipeStepInstrumentsService.UpdateHandler)
 			})
 		})
 
@@ -447,7 +390,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			recipeStepIngredientPath,
 		)
 		recipeStepIngredientsRouteWithPrefix := fmt.Sprintf("/%s", recipeStepIngredientsRoute)
-		recipeStepIngredientIDRouteParam := buildNumericIDURLChunk(recipestepingredientsservice.RecipeStepIngredientIDURIParamKey)
+		recipeStepIngredientIDRouteParam := buildURLVarChunk(recipestepingredientsservice.RecipeStepIngredientIDURIParamKey, "")
 		v1Router.Route(recipeStepIngredientsRouteWithPrefix, func(recipeStepIngredientsRouter routing.Router) {
 			recipeStepIngredientsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipeStepIngredientsPermission)).
@@ -461,17 +404,11 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepIngredientsPermission)).
 					Get(root, s.recipeStepIngredientsService.ReadHandler)
 				singleRecipeStepIngredientRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepIngredientsPermission)).
-					Head(root, s.recipeStepIngredientsService.ExistenceHandler)
-				singleRecipeStepIngredientRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepIngredientsPermission)).
 					Delete(root, s.recipeStepIngredientsService.ArchiveHandler)
 				singleRecipeStepIngredientRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepIngredientsPermission)).
 					Put(root, s.recipeStepIngredientsService.UpdateHandler)
-				singleRecipeStepIngredientRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepIngredientsAuditLogEntriesPermission)).
-					Get(auditRoute, s.recipeStepIngredientsService.AuditEntryHandler)
 			})
 		})
 
@@ -485,7 +422,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			recipeStepProductPath,
 		)
 		recipeStepProductsRouteWithPrefix := fmt.Sprintf("/%s", recipeStepProductsRoute)
-		recipeStepProductIDRouteParam := buildNumericIDURLChunk(recipestepproductsservice.RecipeStepProductIDURIParamKey)
+		recipeStepProductIDRouteParam := buildURLVarChunk(recipestepproductsservice.RecipeStepProductIDURIParamKey, "")
 		v1Router.Route(recipeStepProductsRouteWithPrefix, func(recipeStepProductsRouter routing.Router) {
 			recipeStepProductsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateRecipeStepProductsPermission)).
@@ -499,79 +436,86 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepProductsPermission)).
 					Get(root, s.recipeStepProductsService.ReadHandler)
 				singleRecipeStepProductRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepProductsPermission)).
-					Head(root, s.recipeStepProductsService.ExistenceHandler)
-				singleRecipeStepProductRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveRecipeStepProductsPermission)).
 					Delete(root, s.recipeStepProductsService.ArchiveHandler)
 				singleRecipeStepProductRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipeStepProductsPermission)).
 					Put(root, s.recipeStepProductsService.UpdateHandler)
-				singleRecipeStepProductRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipeStepProductsAuditLogEntriesPermission)).
-					Get(auditRoute, s.recipeStepProductsService.AuditEntryHandler)
 			})
 		})
 
-		// Invitations
-		invitationPath := "invitations"
-		invitationsRouteWithPrefix := fmt.Sprintf("/%s", invitationPath)
-		invitationIDRouteParam := buildNumericIDURLChunk(invitationsservice.InvitationIDURIParamKey)
-		v1Router.Route(invitationsRouteWithPrefix, func(invitationsRouter routing.Router) {
-			invitationsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateInvitationsPermission)).
-				Post(root, s.invitationsService.CreateHandler)
-			invitationsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadInvitationsPermission)).
-				Get(root, s.invitationsService.ListHandler)
+		// MealPlans
+		mealPlanPath := "meal_plans"
+		mealPlansRouteWithPrefix := fmt.Sprintf("/%s", mealPlanPath)
+		mealPlanIDRouteParam := buildURLVarChunk(mealplansservice.MealPlanIDURIParamKey, "")
+		v1Router.Route(mealPlansRouteWithPrefix, func(mealPlansRouter routing.Router) {
+			mealPlansRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlansPermission)).
+				Post(root, s.mealPlansService.CreateHandler)
+			mealPlansRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlansPermission)).
+				Get(root, s.mealPlansService.ListHandler)
 
-			invitationsRouter.Route(invitationIDRouteParam, func(singleInvitationRouter routing.Router) {
-				singleInvitationRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadInvitationsPermission)).
-					Get(root, s.invitationsService.ReadHandler)
-				singleInvitationRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadInvitationsPermission)).
-					Head(root, s.invitationsService.ExistenceHandler)
-				singleInvitationRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveInvitationsPermission)).
-					Delete(root, s.invitationsService.ArchiveHandler)
-				singleInvitationRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateInvitationsPermission)).
-					Put(root, s.invitationsService.UpdateHandler)
-				singleInvitationRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadInvitationsAuditLogEntriesPermission)).
-					Get(auditRoute, s.invitationsService.AuditEntryHandler)
+			mealPlansRouter.Route(mealPlanIDRouteParam, func(singleMealPlanRouter routing.Router) {
+				singleMealPlanRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlansPermission)).
+					Get(root, s.mealPlansService.ReadHandler)
+				singleMealPlanRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlansPermission)).
+					Delete(root, s.mealPlansService.ArchiveHandler)
+				singleMealPlanRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealPlansPermission)).
+					Put(root, s.mealPlansService.UpdateHandler)
 			})
 		})
 
-		// Reports
-		reportPath := "reports"
-		reportsRouteWithPrefix := fmt.Sprintf("/%s", reportPath)
-		reportIDRouteParam := buildNumericIDURLChunk(reportsservice.ReportIDURIParamKey)
-		v1Router.Route(reportsRouteWithPrefix, func(reportsRouter routing.Router) {
-			reportsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateReportsPermission)).
-				Post(root, s.reportsService.CreateHandler)
-			reportsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadReportsPermission)).
-				Get(root, s.reportsService.ListHandler)
+		// MealPlanOptions
+		mealPlanOptionPath := "meal_plan_options"
+		mealPlanOptionsRouteWithPrefix := fmt.Sprintf("/%s", mealPlanOptionPath)
+		mealPlanOptionIDRouteParam := buildURLVarChunk(mealplanoptionsservice.MealPlanOptionIDURIParamKey, "")
+		v1Router.Route(mealPlanOptionsRouteWithPrefix, func(mealPlanOptionsRouter routing.Router) {
+			mealPlanOptionsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlanOptionsPermission)).
+				Post(root, s.mealPlanOptionsService.CreateHandler)
+			mealPlanOptionsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanOptionsPermission)).
+				Get(root, s.mealPlanOptionsService.ListHandler)
 
-			reportsRouter.Route(reportIDRouteParam, func(singleReportRouter routing.Router) {
-				singleReportRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadReportsPermission)).
-					Get(root, s.reportsService.ReadHandler)
-				singleReportRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadReportsPermission)).
-					Head(root, s.reportsService.ExistenceHandler)
-				singleReportRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveReportsPermission)).
-					Delete(root, s.reportsService.ArchiveHandler)
-				singleReportRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateReportsPermission)).
-					Put(root, s.reportsService.UpdateHandler)
-				singleReportRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadReportsAuditLogEntriesPermission)).
-					Get(auditRoute, s.reportsService.AuditEntryHandler)
+			mealPlanOptionsRouter.Route(mealPlanOptionIDRouteParam, func(singleMealPlanOptionRouter routing.Router) {
+				singleMealPlanOptionRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanOptionsPermission)).
+					Get(root, s.mealPlanOptionsService.ReadHandler)
+				singleMealPlanOptionRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlanOptionsPermission)).
+					Delete(root, s.mealPlanOptionsService.ArchiveHandler)
+				singleMealPlanOptionRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealPlanOptionsPermission)).
+					Put(root, s.mealPlanOptionsService.UpdateHandler)
+			})
+		})
+
+		// MealPlanOptionVotes
+		mealPlanOptionVotePath := "meal_plan_option_votes"
+		mealPlanOptionVotesRouteWithPrefix := fmt.Sprintf("/%s", mealPlanOptionVotePath)
+		mealPlanOptionVoteIDRouteParam := buildURLVarChunk(mealplanoptionvotesservice.MealPlanOptionVoteIDURIParamKey, "")
+		v1Router.Route(mealPlanOptionVotesRouteWithPrefix, func(mealPlanOptionVotesRouter routing.Router) {
+			mealPlanOptionVotesRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlanOptionVotesPermission)).
+				Post(root, s.mealPlanOptionVotesService.CreateHandler)
+			mealPlanOptionVotesRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanOptionVotesPermission)).
+				Get(root, s.mealPlanOptionVotesService.ListHandler)
+
+			mealPlanOptionVotesRouter.Route(mealPlanOptionVoteIDRouteParam, func(singleMealPlanOptionVoteRouter routing.Router) {
+				singleMealPlanOptionVoteRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanOptionVotesPermission)).
+					Get(root, s.mealPlanOptionVotesService.ReadHandler)
+				singleMealPlanOptionVoteRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlanOptionVotesPermission)).
+					Delete(root, s.mealPlanOptionVotesService.ArchiveHandler)
+				singleMealPlanOptionVoteRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealPlanOptionVotesPermission)).
+					Put(root, s.mealPlanOptionVotesService.UpdateHandler)
 			})
 		})
 	})

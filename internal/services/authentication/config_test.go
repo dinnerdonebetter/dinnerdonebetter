@@ -5,10 +5,10 @@ import (
 	"testing"
 	"time"
 
-	random "gitlab.com/prixfixe/prixfixe/internal/random"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	random "gitlab.com/prixfixe/prixfixe/internal/random"
 )
 
 func TestConfig_Validate(T *testing.T) {

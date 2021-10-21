@@ -2,16 +2,15 @@ package httpclient
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"testing"
-
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 func TestValidIngredients(t *testing.T) {
@@ -40,54 +39,8 @@ type validIngredientsTestSuite struct {
 	validIngredientsBaseSuite
 }
 
-func (s *validIngredientsTestSuite) TestClient_ValidIngredientExists() {
-	const expectedPathFormat = "/api/v1/valid_ingredients/%d"
-
-	s.Run("standard", func() {
-		t := s.T()
-
-		spec := newRequestSpec(true, http.MethodHead, "", expectedPathFormat, s.exampleValidIngredient.ID)
-
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
-		actual, err := c.ValidIngredientExists(s.ctx, s.exampleValidIngredient.ID)
-
-		assert.NoError(t, err)
-		assert.True(t, actual)
-	})
-
-	s.Run("with invalid valid ingredient ID", func() {
-		t := s.T()
-
-		c, _ := buildSimpleTestClient(t)
-		actual, err := c.ValidIngredientExists(s.ctx, 0)
-
-		assert.Error(t, err)
-		assert.False(t, actual)
-	})
-
-	s.Run("with error building request", func() {
-		t := s.T()
-
-		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.ValidIngredientExists(s.ctx, s.exampleValidIngredient.ID)
-
-		assert.Error(t, err)
-		assert.False(t, actual)
-	})
-
-	s.Run("with error executing request", func() {
-		t := s.T()
-
-		c, _ := buildTestClientThatWaitsTooLong(t)
-		actual, err := c.ValidIngredientExists(s.ctx, s.exampleValidIngredient.ID)
-
-		assert.Error(t, err)
-		assert.False(t, actual)
-	})
-}
-
 func (s *validIngredientsTestSuite) TestClient_GetValidIngredient() {
-	const expectedPathFormat = "/api/v1/valid_ingredients/%d"
+	const expectedPathFormat = "/api/v1/valid_ingredients/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -105,7 +58,7 @@ func (s *validIngredientsTestSuite) TestClient_GetValidIngredient() {
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)
-		actual, err := c.GetValidIngredient(s.ctx, 0)
+		actual, err := c.GetValidIngredient(s.ctx, "")
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -186,34 +139,22 @@ func (s *validIngredientsTestSuite) TestClient_SearchValidIngredients() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 		exampleValidIngredientList := fakes.BuildFakeValidIngredientList()
 
-		spec := newRequestSpec(true, http.MethodGet, fmt.Sprintf("limit=20&pid=%d&q=whatever", exampleValidPreparation.ID), expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&q=whatever", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientList.ValidIngredients)
-		actual, err := c.SearchValidIngredients(s.ctx, exampleQuery, exampleValidPreparation.ID, 0)
+		actual, err := c.SearchValidIngredients(s.ctx, exampleQuery, 0)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidIngredientList.ValidIngredients, actual)
 	})
 
-	s.Run("with invalid valid preparation ID", func() {
-		t := s.T()
-
-		c, _ := buildSimpleTestClient(t)
-		actual, err := c.SearchValidIngredients(s.ctx, "", 0, 0)
-
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
 	s.Run("with empty query", func() {
 		t := s.T()
 
-		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 		c, _ := buildSimpleTestClient(t)
-		actual, err := c.SearchValidIngredients(s.ctx, "", exampleValidPreparation.ID, 0)
+		actual, err := c.SearchValidIngredients(s.ctx, "", 0)
 
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -222,10 +163,9 @@ func (s *validIngredientsTestSuite) TestClient_SearchValidIngredients() {
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 		c := buildTestClientWithInvalidURL(t)
 
-		actual, err := c.SearchValidIngredients(s.ctx, exampleQuery, exampleValidPreparation.ID, 0)
+		actual, err := c.SearchValidIngredients(s.ctx, exampleQuery, 0)
 
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -234,10 +174,9 @@ func (s *validIngredientsTestSuite) TestClient_SearchValidIngredients() {
 	s.Run("with bad response from server", func() {
 		t := s.T()
 
-		exampleValidPreparation := fakes.BuildFakeValidPreparation()
-		spec := newRequestSpec(true, http.MethodGet, fmt.Sprintf("limit=20&pid=%d&q=whatever", exampleValidPreparation.ID), expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=20&q=whatever", expectedPath)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		actual, err := c.SearchValidIngredients(s.ctx, exampleQuery, exampleValidPreparation.ID, 0)
+		actual, err := c.SearchValidIngredients(s.ctx, exampleQuery, 0)
 
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -250,16 +189,16 @@ func (s *validIngredientsTestSuite) TestClient_CreateValidIngredient() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeValidIngredientCreationInput()
+		exampleInput := fakes.BuildFakeValidIngredientCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredient)
+		c, _ := buildTestClientWithJSONResponse(t, spec, &types.PreWriteResponse{ID: s.exampleValidIngredient.ID})
 
 		actual, err := c.CreateValidIngredient(s.ctx, exampleInput)
-		require.NotNil(t, actual)
+		require.NotEmpty(t, actual)
 		assert.NoError(t, err)
 
-		assert.Equal(t, s.exampleValidIngredient, actual)
+		assert.Equal(t, s.exampleValidIngredient.ID, actual)
 	})
 
 	s.Run("with nil input", func() {
@@ -268,7 +207,7 @@ func (s *validIngredientsTestSuite) TestClient_CreateValidIngredient() {
 		c, _ := buildSimpleTestClient(t)
 
 		actual, err := c.CreateValidIngredient(s.ctx, nil)
-		assert.Nil(t, actual)
+		assert.Empty(t, actual)
 		assert.Error(t, err)
 	})
 
@@ -276,39 +215,39 @@ func (s *validIngredientsTestSuite) TestClient_CreateValidIngredient() {
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)
-		exampleInput := &types.ValidIngredientCreationInput{}
+		exampleInput := &types.ValidIngredientCreationRequestInput{}
 
 		actual, err := c.CreateValidIngredient(s.ctx, exampleInput)
-		assert.Nil(t, actual)
+		assert.Empty(t, actual)
 		assert.Error(t, err)
 	})
 
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(s.exampleValidIngredient)
+		exampleInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(s.exampleValidIngredient)
 
 		c := buildTestClientWithInvalidURL(t)
 
 		actual, err := c.CreateValidIngredient(s.ctx, exampleInput)
-		assert.Nil(t, actual)
+		assert.Empty(t, actual)
 		assert.Error(t, err)
 	})
 
 	s.Run("with error executing request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(s.exampleValidIngredient)
+		exampleInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(s.exampleValidIngredient)
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		actual, err := c.CreateValidIngredient(s.ctx, exampleInput)
-		assert.Nil(t, actual)
+		assert.Empty(t, actual)
 		assert.Error(t, err)
 	})
 }
 
 func (s *validIngredientsTestSuite) TestClient_UpdateValidIngredient() {
-	const expectedPathFormat = "/api/v1/valid_ingredients/%d"
+	const expectedPathFormat = "/api/v1/valid_ingredients/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -349,7 +288,7 @@ func (s *validIngredientsTestSuite) TestClient_UpdateValidIngredient() {
 }
 
 func (s *validIngredientsTestSuite) TestClient_ArchiveValidIngredient() {
-	const expectedPathFormat = "/api/v1/valid_ingredients/%d"
+	const expectedPathFormat = "/api/v1/valid_ingredients/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -366,7 +305,7 @@ func (s *validIngredientsTestSuite) TestClient_ArchiveValidIngredient() {
 
 		c, _ := buildSimpleTestClient(t)
 
-		err := c.ArchiveValidIngredient(s.ctx, 0)
+		err := c.ArchiveValidIngredient(s.ctx, "")
 		assert.Error(t, err)
 	})
 
@@ -385,57 +324,6 @@ func (s *validIngredientsTestSuite) TestClient_ArchiveValidIngredient() {
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		err := c.ArchiveValidIngredient(s.ctx, s.exampleValidIngredient.ID)
-		assert.Error(t, err)
-	})
-}
-
-func (s *validIngredientsTestSuite) TestClient_GetAuditLogForValidIngredient() {
-	const (
-		expectedPath   = "/api/v1/valid_ingredients/%d/audit"
-		expectedMethod = http.MethodGet
-	)
-
-	s.Run("standard", func() {
-		t := s.T()
-
-		spec := newRequestSpec(true, expectedMethod, "", expectedPath, s.exampleValidIngredient.ID)
-		exampleAuditLogEntryList := fakes.BuildFakeAuditLogEntryList().Entries
-
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleAuditLogEntryList)
-
-		actual, err := c.GetAuditLogForValidIngredient(s.ctx, s.exampleValidIngredient.ID)
-		require.NotNil(t, actual)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleAuditLogEntryList, actual)
-	})
-
-	s.Run("with invalid valid ingredient ID", func() {
-		t := s.T()
-
-		c, _ := buildSimpleTestClient(t)
-
-		actual, err := c.GetAuditLogForValidIngredient(s.ctx, 0)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	s.Run("with error building request", func() {
-		t := s.T()
-
-		c := buildTestClientWithInvalidURL(t)
-
-		actual, err := c.GetAuditLogForValidIngredient(s.ctx, s.exampleValidIngredient.ID)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	s.Run("with error executing request", func() {
-		t := s.T()
-
-		c, _ := buildTestClientThatWaitsTooLong(t)
-
-		actual, err := c.GetAuditLogForValidIngredient(s.ctx, s.exampleValidIngredient.ID)
-		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }

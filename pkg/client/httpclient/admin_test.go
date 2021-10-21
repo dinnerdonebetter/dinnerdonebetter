@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"testing"
 
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 func TestAdmin(t *testing.T) {
@@ -21,17 +21,17 @@ func TestAdmin(t *testing.T) {
 type adminTestSuite struct {
 	suite.Suite
 
-	ctx                  context.Context
-	exampleHousehold     *types.Household
-	exampleHouseholdList *types.HouseholdList
+	ctx                context.Context
+	exampleAccount     *types.Account
+	exampleAccountList *types.AccountList
 }
 
 var _ suite.SetupTestSuite = (*adminTestSuite)(nil)
 
 func (s *adminTestSuite) SetupTest() {
 	s.ctx = context.Background()
-	s.exampleHousehold = fakes.BuildFakeHousehold()
-	s.exampleHouseholdList = fakes.BuildFakeHouseholdList()
+	s.exampleAccount = fakes.BuildFakeAccount()
+	s.exampleAccountList = fakes.BuildFakeAccountList()
 }
 
 func (s *adminTestSuite) TestClient_UpdateUserReputation() {

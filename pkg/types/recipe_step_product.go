@@ -2,147 +2,149 @@ package types
 
 import (
 	"context"
+	"encoding/gob"
 	"net/http"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
+const (
+	// RecipeStepProductDataType indicates an event is related to a recipe step product.
+	RecipeStepProductDataType dataType = "recipe_step_product"
+)
+
+func init() {
+	gob.Register(new(RecipeStepProduct))
+	gob.Register(new(RecipeStepProductList))
+	gob.Register(new(RecipeStepProductCreationRequestInput))
+	gob.Register(new(RecipeStepProductUpdateRequestInput))
+}
+
 type (
 	// RecipeStepProduct represents a recipe step product.
 	RecipeStepProduct struct {
+		_                   struct{}
 		LastUpdatedOn       *uint64 `json:"lastUpdatedOn"`
 		ArchivedOn          *uint64 `json:"archivedOn"`
-		ExternalID          string  `json:"externalID"`
-		QuantityNotes       string  `json:"quantityNotes"`
+		ID                  string  `json:"id"`
 		Name                string  `json:"name"`
-		QuantityType        string  `json:"quantityType"`
-		ID                  uint64  `json:"id"`
-		BelongsToRecipeStep uint64  `json:"belongsToRecipeStep"`
+		RecipeStepID        string  `json:"recipeStepID"`
+		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
 		CreatedOn           uint64  `json:"createdOn"`
-		QuantityValue       float32 `json:"quantityValue"`
 	}
 
 	// RecipeStepProductList represents a list of recipe step products.
 	RecipeStepProductList struct {
+		_                  struct{}
 		RecipeStepProducts []*RecipeStepProduct `json:"recipeStepProducts"`
 		Pagination
 	}
 
-	// RecipeStepProductCreationInput represents what a user could set as input for creating recipe step products.
-	RecipeStepProductCreationInput struct {
-		Name                string  `json:"name"`
-		QuantityType        string  `json:"quantityType"`
-		QuantityNotes       string  `json:"quantityNotes"`
-		BelongsToRecipeStep uint64  `json:"-"`
-		QuantityValue       float32 `json:"quantityValue"`
+	// RecipeStepProductCreationRequestInput represents what a user could set as input for creating recipe step products.
+	RecipeStepProductCreationRequestInput struct {
+		_ struct{}
+
+		ID                  string `json:"-"`
+		Name                string `json:"name"`
+		RecipeStepID        string `json:"recipeStepID"`
+		BelongsToRecipeStep string `json:"-"`
 	}
 
-	// RecipeStepProductUpdateInput represents what a user could set as input for updating recipe step products.
-	RecipeStepProductUpdateInput struct {
-		Name                string  `json:"name"`
-		QuantityType        string  `json:"quantityType"`
-		QuantityNotes       string  `json:"quantityNotes"`
-		BelongsToRecipeStep uint64  `json:"belongsToRecipeStep"`
-		QuantityValue       float32 `json:"quantityValue"`
+	// RecipeStepProductDatabaseCreationInput represents what a user could set as input for creating recipe step products.
+	RecipeStepProductDatabaseCreationInput struct {
+		_ struct{}
+
+		ID                  string `json:"id"`
+		Name                string `json:"name"`
+		RecipeStepID        string `json:"recipeStepID"`
+		BelongsToRecipeStep string `json:"belongsToRecipeStep"`
+	}
+
+	// RecipeStepProductUpdateRequestInput represents what a user could set as input for updating recipe step products.
+	RecipeStepProductUpdateRequestInput struct {
+		_ struct{}
+
+		Name                string `json:"name"`
+		RecipeStepID        string `json:"recipeStepID"`
+		BelongsToRecipeStep string `json:"belongsToRecipeStep"`
 	}
 
 	// RecipeStepProductDataManager describes a structure capable of storing recipe step products permanently.
 	RecipeStepProductDataManager interface {
-		RecipeStepProductExists(ctx context.Context, recipeID, recipeStepID, recipeStepProductID uint64) (bool, error)
-		GetRecipeStepProduct(ctx context.Context, recipeID, recipeStepID, recipeStepProductID uint64) (*RecipeStepProduct, error)
-		GetAllRecipeStepProductsCount(ctx context.Context) (uint64, error)
-		GetAllRecipeStepProducts(ctx context.Context, resultChannel chan []*RecipeStepProduct, bucketSize uint16) error
-		GetRecipeStepProducts(ctx context.Context, recipeID, recipeStepID uint64, filter *QueryFilter) (*RecipeStepProductList, error)
-		GetRecipeStepProductsWithIDs(ctx context.Context, recipeStepID uint64, limit uint8, ids []uint64) ([]*RecipeStepProduct, error)
-		CreateRecipeStepProduct(ctx context.Context, input *RecipeStepProductCreationInput, createdByUser uint64) (*RecipeStepProduct, error)
-		UpdateRecipeStepProduct(ctx context.Context, updated *RecipeStepProduct, changedByUser uint64, changes []*FieldChangeSummary) error
-		ArchiveRecipeStepProduct(ctx context.Context, recipeStepID, recipeStepProductID, archivedBy uint64) error
-		GetAuditLogEntriesForRecipeStepProduct(ctx context.Context, recipeStepProductID uint64) ([]*AuditLogEntry, error)
+		RecipeStepProductExists(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) (bool, error)
+		GetRecipeStepProduct(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) (*RecipeStepProduct, error)
+		GetTotalRecipeStepProductCount(ctx context.Context) (uint64, error)
+		GetRecipeStepProducts(ctx context.Context, recipeID, recipeStepID string, filter *QueryFilter) (*RecipeStepProductList, error)
+		GetRecipeStepProductsWithIDs(ctx context.Context, recipeStepID string, limit uint8, ids []string) ([]*RecipeStepProduct, error)
+		CreateRecipeStepProduct(ctx context.Context, input *RecipeStepProductDatabaseCreationInput) (*RecipeStepProduct, error)
+		UpdateRecipeStepProduct(ctx context.Context, updated *RecipeStepProduct) error
+		ArchiveRecipeStepProduct(ctx context.Context, recipeStepID, recipeStepProductID string) error
 	}
 
 	// RecipeStepProductDataService describes a structure capable of serving traffic related to recipe step products.
 	RecipeStepProductDataService interface {
-		AuditEntryHandler(res http.ResponseWriter, req *http.Request)
 		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
-		ExistenceHandler(res http.ResponseWriter, req *http.Request)
 		ReadHandler(res http.ResponseWriter, req *http.Request)
 		UpdateHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 
-// Update merges an RecipeStepProductUpdateInput with a recipe step product.
-func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateInput) []*FieldChangeSummary {
-	var out []*FieldChangeSummary
-
-	if input.Name != x.Name {
-		out = append(out, &FieldChangeSummary{
-			FieldName: "Name",
-			OldValue:  x.Name,
-			NewValue:  input.Name,
-		})
-
+// Update merges an RecipeStepProductUpdateRequestInput with a recipe step product.
+func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateRequestInput) {
+	if input.Name != "" && input.Name != x.Name {
 		x.Name = input.Name
 	}
 
-	if input.QuantityType != x.QuantityType {
-		out = append(out, &FieldChangeSummary{
-			FieldName: "QuantityType",
-			OldValue:  x.QuantityType,
-			NewValue:  input.QuantityType,
-		})
-
-		x.QuantityType = input.QuantityType
+	if input.RecipeStepID != "" && input.RecipeStepID != x.RecipeStepID {
+		x.RecipeStepID = input.RecipeStepID
 	}
-
-	if input.QuantityValue != 0 && input.QuantityValue != x.QuantityValue {
-		out = append(out, &FieldChangeSummary{
-			FieldName: "QuantityValue",
-			OldValue:  x.QuantityValue,
-			NewValue:  input.QuantityValue,
-		})
-
-		x.QuantityValue = input.QuantityValue
-	}
-
-	if input.QuantityNotes != x.QuantityNotes {
-		out = append(out, &FieldChangeSummary{
-			FieldName: "QuantityNotes",
-			OldValue:  x.QuantityNotes,
-			NewValue:  input.QuantityNotes,
-		})
-
-		x.QuantityNotes = input.QuantityNotes
-	}
-
-	return out
 }
 
-var _ validation.ValidatableWithContext = (*RecipeStepProductCreationInput)(nil)
+var _ validation.ValidatableWithContext = (*RecipeStepProductCreationRequestInput)(nil)
 
-// ValidateWithContext validates a RecipeStepProductCreationInput.
-func (x *RecipeStepProductCreationInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a RecipeStepProductCreationRequestInput.
+func (x *RecipeStepProductCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.QuantityType, validation.Required),
-		validation.Field(&x.QuantityValue, validation.Required),
-		validation.Field(&x.QuantityNotes, validation.Required),
+		validation.Field(&x.RecipeStepID, validation.Required),
 	)
 }
 
-var _ validation.ValidatableWithContext = (*RecipeStepProductUpdateInput)(nil)
+var _ validation.ValidatableWithContext = (*RecipeStepProductDatabaseCreationInput)(nil)
 
-// ValidateWithContext validates a RecipeStepProductUpdateInput.
-func (x *RecipeStepProductUpdateInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a RecipeStepProductDatabaseCreationInput.
+func (x *RecipeStepProductDatabaseCreationInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(
+		ctx,
+		x,
+		validation.Field(&x.ID, validation.Required),
+		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.RecipeStepID, validation.Required),
+	)
+}
+
+// RecipeStepProductDatabaseCreationInputFromRecipeStepProductCreationInput creates a DatabaseCreationInput from a CreationInput.
+func RecipeStepProductDatabaseCreationInputFromRecipeStepProductCreationInput(input *RecipeStepProductCreationRequestInput) *RecipeStepProductDatabaseCreationInput {
+	x := &RecipeStepProductDatabaseCreationInput{
+		Name:         input.Name,
+		RecipeStepID: input.RecipeStepID,
+	}
+
+	return x
+}
+
+var _ validation.ValidatableWithContext = (*RecipeStepProductUpdateRequestInput)(nil)
+
+// ValidateWithContext validates a RecipeStepProductUpdateRequestInput.
+func (x *RecipeStepProductUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.QuantityType, validation.Required),
-		validation.Field(&x.QuantityValue, validation.Required),
-		validation.Field(&x.QuantityNotes, validation.Required),
+		validation.Field(&x.RecipeStepID, validation.Required),
 	)
 }

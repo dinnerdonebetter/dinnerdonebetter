@@ -6,6 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+
 	"gitlab.com/prixfixe/prixfixe/internal/authorization"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	mockrouting "gitlab.com/prixfixe/prixfixe/internal/routing/mock"
@@ -13,19 +16,16 @@ import (
 	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
 	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
-
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
 
 type serviceHTTPRoutesTestHelper struct {
-	ctx              context.Context
-	req              *http.Request
-	res              *httptest.ResponseRecorder
-	service          *service
-	sessionCtxData   *types.SessionContextData
-	exampleUser      *types.User
-	exampleHousehold *types.Household
+	ctx            context.Context
+	req            *http.Request
+	res            *httptest.ResponseRecorder
+	service        *service
+	sessionCtxData *types.SessionContextData
+	exampleUser    *types.User
+	exampleAccount *types.Account
 }
 
 func buildTestHelper(t *testing.T) *serviceHTTPRoutesTestHelper {
@@ -35,8 +35,8 @@ func buildTestHelper(t *testing.T) *serviceHTTPRoutesTestHelper {
 
 	helper.ctx = context.Background()
 	helper.exampleUser = fakes.BuildFakeUser()
-	helper.exampleHousehold = fakes.BuildFakeHousehold()
-	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
+	helper.exampleAccount = fakes.BuildFakeAccount()
+	helper.exampleAccount.BelongsToUser = helper.exampleUser.ID
 
 	cfg := &Config{}
 	logger := logging.NewNoopLogger()
@@ -62,13 +62,13 @@ func buildTestHelper(t *testing.T) *serviceHTTPRoutesTestHelper {
 	helper.sessionCtxData = &types.SessionContextData{
 		Requester: types.RequesterInfo{
 			UserID:                helper.exampleUser.ID,
-			Reputation:            helper.exampleUser.ServiceHouseholdStatus,
+			Reputation:            helper.exampleUser.ServiceAccountStatus,
 			ReputationExplanation: helper.exampleUser.ReputationExplanation,
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 		},
-		ActiveHouseholdID: helper.exampleHousehold.ID,
-		HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
-			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
+		ActiveAccountID: helper.exampleAccount.ID,
+		AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
+			helper.exampleAccount.ID: authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
 		},
 	}
 

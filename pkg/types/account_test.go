@@ -7,26 +7,25 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHousehold_Update(T *testing.T) {
+func TestAccount_Update(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		x := &Household{}
-
-		assert.NotEmpty(t, x.Update(&HouseholdUpdateInput{Name: t.Name()}))
+		x := &Account{}
+		x.Update(&AccountUpdateInput{Name: t.Name()})
 	})
 }
 
-func TestHouseholdCreationInput_ValidateWithContext(T *testing.T) {
+func TestAccountCreationInput_ValidateWithContext(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		x := &HouseholdCreationInput{
+		x := &AccountCreationInput{
 			Name: t.Name(),
 		}
 
@@ -34,14 +33,14 @@ func TestHouseholdCreationInput_ValidateWithContext(T *testing.T) {
 	})
 }
 
-func TestHouseholdUpdateInput_ValidateWithContext(T *testing.T) {
+func TestAccountUpdateInput_ValidateWithContext(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		x := &HouseholdUpdateInput{
+		x := &AccountUpdateInput{
 			Name: t.Name(),
 		}
 
@@ -49,12 +48,12 @@ func TestHouseholdUpdateInput_ValidateWithContext(T *testing.T) {
 	})
 }
 
-func TestHouseholdCreationInputForNewUser(T *testing.T) {
+func TestAccountCreationInputForNewUser(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		assert.NotNil(t, HouseholdCreationInputForNewUser(&User{}))
+		assert.NotNil(t, AccountCreationInputForNewUser(&User{}))
 	})
 }

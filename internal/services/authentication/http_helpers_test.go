@@ -7,27 +7,27 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"gitlab.com/prixfixe/prixfixe/internal/authorization"
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func attachCookieToRequestForTest(t *testing.T, s *service, req *http.Request, user *types.User) (context.Context, *http.Request, string) {
 	t.Helper()
 
-	exampleHousehold := fakes.BuildFakeHousehold()
+	exampleAccount := fakes.BuildFakeAccount()
 
 	ctx, sessionErr := s.sessionManager.Load(req.Context(), "")
 	require.NoError(t, sessionErr)
 	require.NoError(t, s.sessionManager.RenewToken(ctx))
 
 	s.sessionManager.Put(ctx, userIDContextKey, user.ID)
-	s.sessionManager.Put(ctx, householdIDContextKey, exampleHousehold.ID)
+	s.sessionManager.Put(ctx, accountIDContextKey, exampleAccount.ID)
 
 	token, _, err := s.sessionManager.Commit(ctx)
 	assert.NotEmpty(t, token)
@@ -47,10 +47,10 @@ type authServiceHTTPRoutesTestHelper struct {
 	sessionCtxData      *types.SessionContextData
 	service             *service
 	exampleUser         *types.User
-	exampleHousehold    *types.Household
+	exampleAccount      *types.Account
 	exampleAPIClient    *types.APIClient
-	examplePerms        map[uint64]*types.UserHouseholdMembershipInfo
-	examplePermCheckers map[uint64]authorization.HouseholdRolePermissionsChecker
+	examplePerms        map[string]*types.UserAccountMembershipInfo
+	examplePermCheckers map[string]authorization.AccountRolePermissionsChecker
 	exampleLoginInput   *types.UserLoginInput
 }
 
@@ -60,12 +60,12 @@ func (helper *authServiceHTTPRoutesTestHelper) setContextFetcher(t *testing.T) {
 	sessionCtxData := &types.SessionContextData{
 		Requester: types.RequesterInfo{
 			UserID:                helper.exampleUser.ID,
-			Reputation:            helper.exampleUser.ServiceHouseholdStatus,
+			Reputation:            helper.exampleUser.ServiceAccountStatus,
 			ReputationExplanation: helper.exampleUser.ReputationExplanation,
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 		},
-		ActiveHouseholdID:    helper.exampleHousehold.ID,
-		HouseholdPermissions: helper.examplePermCheckers,
+		ActiveAccountID:    helper.exampleAccount.ID,
+		AccountPermissions: helper.examplePermCheckers,
 	}
 
 	helper.sessionCtxData = sessionCtxData
@@ -82,20 +82,20 @@ func buildTestHelper(t *testing.T) *authServiceHTTPRoutesTestHelper {
 	helper.ctx = context.Background()
 	helper.service = buildTestService(t)
 	helper.exampleUser = fakes.BuildFakeUser()
-	helper.exampleHousehold = fakes.BuildFakeHousehold()
-	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
+	helper.exampleAccount = fakes.BuildFakeAccount()
+	helper.exampleAccount.BelongsToUser = helper.exampleUser.ID
 	helper.exampleAPIClient = fakes.BuildFakeAPIClient()
 	helper.exampleAPIClient.BelongsToUser = helper.exampleUser.ID
 	helper.exampleLoginInput = fakes.BuildFakeUserLoginInputFromUser(helper.exampleUser)
 
-	helper.examplePerms = map[uint64]*types.UserHouseholdMembershipInfo{
-		helper.exampleHousehold.ID: {
-			HouseholdName:  helper.exampleHousehold.Name,
-			HouseholdRoles: []string{authorization.HouseholdMemberRole.String()},
+	helper.examplePerms = map[string]*types.UserAccountMembershipInfo{
+		helper.exampleAccount.ID: {
+			AccountName:  helper.exampleAccount.Name,
+			AccountRoles: []string{authorization.AccountMemberRole.String()},
 		},
 	}
-	helper.examplePermCheckers = map[uint64]authorization.HouseholdRolePermissionsChecker{
-		helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
+	helper.examplePermCheckers = map[string]authorization.AccountRolePermissionsChecker{
+		helper.exampleAccount.ID: authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
 	}
 
 	helper.setContextFetcher(t)

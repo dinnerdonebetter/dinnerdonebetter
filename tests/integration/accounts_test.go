@@ -1,253 +1,221 @@
 package integration
 
 import (
-	"fmt"
 	"testing"
-	"time"
 
-	"gitlab.com/prixfixe/prixfixe/internal/audit"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"gitlab.com/prixfixe/prixfixe/internal/authorization"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/pkg/client/httpclient"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
-func checkHouseholdEquality(t *testing.T, expected, actual *types.Household) {
+func checkAccountEquality(t *testing.T, expected, actual *types.Account) {
 	t.Helper()
 
 	assert.NotZero(t, actual.ID)
-	assert.Equal(t, expected.Name, actual.Name, "expected BucketName for household #%d to be %v, but it was %v ", expected.ID, expected.Name, actual.Name)
+	assert.Equal(t, expected.Name, actual.Name, "expected BucketName for account %s to be %v, but it was %v ", expected.ID, expected.Name, actual.Name)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
-func (s *TestSuite) TestHouseholds_Creating() {
-	s.runForEachClientExcept("should be possible to create households", func(testClients *testClientWrapper) func() {
+func (s *TestSuite) TestAccounts_Creating() {
+	s.runForEachClientExcept("should be possible to create accounts", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// Create household.
-			exampleHousehold := fakes.BuildFakeHousehold()
-			exampleHouseholdInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
-			createdHousehold, err := testClients.main.CreateHousehold(ctx, exampleHouseholdInput)
-			requireNotNilAndNoProblems(t, createdHousehold, err)
+			// Create account.
+			exampleAccount := fakes.BuildFakeAccount()
+			exampleAccountInput := fakes.BuildFakeAccountCreationInputFromAccount(exampleAccount)
+			createdAccount, err := testClients.main.CreateAccount(ctx, exampleAccountInput)
+			requireNotNilAndNoProblems(t, createdAccount, err)
 
-			// Assert household equality.
-			checkHouseholdEquality(t, exampleHousehold, createdHousehold)
-
-			auditLogEntries, err := testClients.admin.GetAuditLogForHousehold(ctx, createdHousehold.ID)
-			require.NoError(t, err)
-
-			expectedAuditLogEntries := []*types.AuditLogEntry{
-				{EventType: audit.HouseholdCreationEvent},
-				{EventType: audit.UserAddedToHouseholdEvent},
-			}
-			validateAuditLogEntries(t, expectedAuditLogEntries, auditLogEntries, createdHousehold.ID, audit.HouseholdAssignmentKey)
+			// Assert account equality.
+			checkAccountEquality(t, exampleAccount, createdAccount)
 
 			// Clean up.
-			assert.NoError(t, testClients.main.ArchiveHousehold(ctx, createdHousehold.ID))
+			assert.NoError(t, testClients.main.ArchiveAccount(ctx, createdAccount.ID))
 		}
 	})
 }
 
-func (s *TestSuite) TestHouseholds_Listing() {
-	s.runForEachClientExcept("should be possible to list households", func(testClients *testClientWrapper) func() {
+func (s *TestSuite) TestAccounts_Listing() {
+	s.runForEachClientExcept("should be possible to list accounts", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// Create households.
-			var expected []*types.Household
+			// Create accounts.
+			var expected []*types.Account
 			for i := 0; i < 5; i++ {
-				// Create household.
-				exampleHousehold := fakes.BuildFakeHousehold()
-				exampleHouseholdInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
-				createdHousehold, householdCreationErr := testClients.main.CreateHousehold(ctx, exampleHouseholdInput)
-				requireNotNilAndNoProblems(t, createdHousehold, householdCreationErr)
+				// Create account.
+				exampleAccount := fakes.BuildFakeAccount()
+				exampleAccountInput := fakes.BuildFakeAccountCreationInputFromAccount(exampleAccount)
+				createdAccount, accountCreationErr := testClients.main.CreateAccount(ctx, exampleAccountInput)
+				requireNotNilAndNoProblems(t, createdAccount, accountCreationErr)
 
-				expected = append(expected, createdHousehold)
+				expected = append(expected, createdAccount)
 			}
 
-			// Assert household list equality.
-			actual, err := testClients.main.GetHouseholds(ctx, nil)
+			// Assert account list equality.
+			actual, err := testClients.main.GetAccounts(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual.Households),
+				len(expected) <= len(actual.Accounts),
 				"expected %d to be <= %d",
 				len(expected),
-				len(actual.Households),
+				len(actual.Accounts),
 			)
 
 			// Clean up.
-			for _, createdHousehold := range actual.Households {
-				assert.NoError(t, testClients.main.ArchiveHousehold(ctx, createdHousehold.ID))
+			for _, createdAccount := range actual.Accounts {
+				assert.NoError(t, testClients.main.ArchiveAccount(ctx, createdAccount.ID))
 			}
 		}
 	})
 }
 
-func (s *TestSuite) TestHouseholds_Reading_Returns404ForNonexistentHousehold() {
-	s.runForEachClientExcept("should not be possible to read a non-existent household", func(testClients *testClientWrapper) func() {
+func (s *TestSuite) TestAccounts_Reading_Returns404ForNonexistentAccount() {
+	s.runForEachClientExcept("should not be possible to read a non-existent account", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// Attempt to fetch nonexistent household.
-			_, err := testClients.main.GetHousehold(ctx, nonexistentID)
+			// Attempt to fetch nonexistent account.
+			_, err := testClients.main.GetAccount(ctx, nonexistentID)
 			assert.Error(t, err)
 		}
 	})
 }
 
-func (s *TestSuite) TestHouseholds_Reading() {
-	s.runForEachClientExcept("should be possible to read an household", func(testClients *testClientWrapper) func() {
+func (s *TestSuite) TestAccounts_Reading() {
+	s.runForEachClientExcept("should be possible to read an account", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// Create household.
-			exampleHousehold := fakes.BuildFakeHousehold()
-			exampleHouseholdInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
-			createdHousehold, err := testClients.main.CreateHousehold(ctx, exampleHouseholdInput)
-			requireNotNilAndNoProblems(t, createdHousehold, err)
+			// Create account.
+			exampleAccount := fakes.BuildFakeAccount()
+			exampleAccountInput := fakes.BuildFakeAccountCreationInputFromAccount(exampleAccount)
+			createdAccount, err := testClients.main.CreateAccount(ctx, exampleAccountInput)
+			requireNotNilAndNoProblems(t, createdAccount, err)
 
-			// Fetch household.
-			actual, err := testClients.main.GetHousehold(ctx, createdHousehold.ID)
+			// Fetch account.
+			actual, err := testClients.main.GetAccount(ctx, createdAccount.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
-			// Assert household equality.
-			checkHouseholdEquality(t, exampleHousehold, actual)
+			// Assert account equality.
+			checkAccountEquality(t, exampleAccount, actual)
 
-			// Clean up household.
-			assert.NoError(t, testClients.main.ArchiveHousehold(ctx, createdHousehold.ID))
+			// Clean up account.
+			assert.NoError(t, testClients.main.ArchiveAccount(ctx, createdAccount.ID))
 		}
 	})
 }
 
-func (s *TestSuite) TestHouseholds_Updating_Returns404ForNonexistentHousehold() {
-	s.runForEachClientExcept("should not be possible to update a non-existent household", func(testClients *testClientWrapper) func() {
+func (s *TestSuite) TestAccounts_Updating_Returns404ForNonexistentAccount() {
+	s.runForEachClientExcept("should not be possible to update a non-existent account", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			exampleHousehold := fakes.BuildFakeHousehold()
-			exampleHousehold.ID = nonexistentID
+			exampleAccount := fakes.BuildFakeAccount()
+			exampleAccount.ID = nonexistentID
 
-			assert.Error(t, testClients.main.UpdateHousehold(ctx, exampleHousehold))
+			assert.Error(t, testClients.main.UpdateAccount(ctx, exampleAccount))
 		}
 	})
 }
 
-// convertHouseholdToHouseholdUpdateInput creates an HouseholdUpdateInput struct from an household.
-func convertHouseholdToHouseholdUpdateInput(x *types.Household) *types.HouseholdUpdateInput {
-	return &types.HouseholdUpdateInput{
+// convertAccountToAccountUpdateInput creates an AccountUpdateInput struct from an account.
+func convertAccountToAccountUpdateInput(x *types.Account) *types.AccountUpdateInput {
+	return &types.AccountUpdateInput{
 		Name:          x.Name,
 		BelongsToUser: x.BelongsToUser,
 	}
 }
 
-func (s *TestSuite) TestHouseholds_Updating() {
-	s.runForEachClientExcept("should be possible to update an household", func(testClients *testClientWrapper) func() {
+func (s *TestSuite) TestAccounts_Updating() {
+	s.runForEachClientExcept("should be possible to update an account", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// Create household.
-			exampleHousehold := fakes.BuildFakeHousehold()
-			exampleHouseholdInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
-			createdHousehold, err := testClients.main.CreateHousehold(ctx, exampleHouseholdInput)
-			requireNotNilAndNoProblems(t, createdHousehold, err)
+			// Create account.
+			exampleAccount := fakes.BuildFakeAccount()
+			exampleAccountInput := fakes.BuildFakeAccountCreationInputFromAccount(exampleAccount)
+			createdAccount, err := testClients.main.CreateAccount(ctx, exampleAccountInput)
+			requireNotNilAndNoProblems(t, createdAccount, err)
 
-			// Change household.
-			createdHousehold.Update(convertHouseholdToHouseholdUpdateInput(exampleHousehold))
-			assert.NoError(t, testClients.main.UpdateHousehold(ctx, createdHousehold))
+			// Change account.
+			createdAccount.Update(convertAccountToAccountUpdateInput(exampleAccount))
+			assert.NoError(t, testClients.main.UpdateAccount(ctx, createdAccount))
 
-			// Fetch household.
-			actual, err := testClients.main.GetHousehold(ctx, createdHousehold.ID)
+			// Fetch account.
+			actual, err := testClients.main.GetAccount(ctx, createdAccount.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
-			// Assert household equality.
-			checkHouseholdEquality(t, exampleHousehold, actual)
+			// Assert account equality.
+			checkAccountEquality(t, exampleAccount, actual)
 			assert.NotNil(t, actual.LastUpdatedOn)
 
-			auditLogEntries, err := testClients.admin.GetAuditLogForHousehold(ctx, createdHousehold.ID)
-			require.NoError(t, err)
-
-			expectedAuditLogEntries := []*types.AuditLogEntry{
-				{EventType: audit.HouseholdCreationEvent},
-				{EventType: audit.UserAddedToHouseholdEvent},
-				{EventType: audit.HouseholdUpdateEvent},
-			}
-			validateAuditLogEntries(t, expectedAuditLogEntries, auditLogEntries, createdHousehold.ID, audit.HouseholdAssignmentKey)
-
-			// Clean up household.
-			assert.NoError(t, testClients.main.ArchiveHousehold(ctx, createdHousehold.ID))
+			// Clean up account.
+			assert.NoError(t, testClients.main.ArchiveAccount(ctx, createdAccount.ID))
 		}
 	})
 }
 
-func (s *TestSuite) TestHouseholds_Archiving_Returns404ForNonexistentHousehold() {
-	s.runForEachClientExcept("should not be possible to archiv a non-existent household", func(testClients *testClientWrapper) func() {
+func (s *TestSuite) TestAccounts_Archiving_Returns404ForNonexistentAccount() {
+	s.runForEachClientExcept("should not be possible to archive a non-existent account", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			assert.Error(t, testClients.main.ArchiveHousehold(ctx, nonexistentID))
+			assert.Error(t, testClients.main.ArchiveAccount(ctx, nonexistentID))
 		}
 	})
 }
 
-func (s *TestSuite) TestHouseholds_Archiving() {
-	s.runForEachClientExcept("should be possible to archive an household", func(testClients *testClientWrapper) func() {
+func (s *TestSuite) TestAccounts_Archiving() {
+	s.runForEachClientExcept("should be possible to archive an account", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// Create household.
-			exampleHousehold := fakes.BuildFakeHousehold()
-			exampleHouseholdInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
-			createdHousehold, err := testClients.main.CreateHousehold(ctx, exampleHouseholdInput)
-			requireNotNilAndNoProblems(t, createdHousehold, err)
+			// Create account.
+			exampleAccount := fakes.BuildFakeAccount()
+			exampleAccountInput := fakes.BuildFakeAccountCreationInputFromAccount(exampleAccount)
+			createdAccount, err := testClients.main.CreateAccount(ctx, exampleAccountInput)
+			requireNotNilAndNoProblems(t, createdAccount, err)
 
-			// Clean up household.
-			assert.NoError(t, testClients.main.ArchiveHousehold(ctx, createdHousehold.ID))
-
-			auditLogEntries, err := testClients.admin.GetAuditLogForHousehold(ctx, createdHousehold.ID)
-			require.NoError(t, err)
-
-			expectedAuditLogEntries := []*types.AuditLogEntry{
-				{EventType: audit.HouseholdCreationEvent},
-				{EventType: audit.UserAddedToHouseholdEvent},
-				{EventType: audit.HouseholdArchiveEvent},
-			}
-			validateAuditLogEntries(t, expectedAuditLogEntries, auditLogEntries, createdHousehold.ID, audit.HouseholdAssignmentKey)
+			// Clean up account.
+			assert.NoError(t, testClients.main.ArchiveAccount(ctx, createdAccount.ID))
 		}
 	})
 }
 
-func (s *TestSuite) TestHouseholds_ChangingMemberships() {
-	s.runForEachClientExcept("should be possible to change members of an household", func(testClients *testClientWrapper) func() {
+func (s *TestSuite) TestAccounts_ChangingMemberships() {
+	s.runForCookieClient("should be possible to change members of an account", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -258,36 +226,43 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 
 			currentStatus, statusErr := testClients.main.UserStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
-			t.Logf("initial household is #%d; initial user ID is #%d", currentStatus.ActiveHousehold, s.user.ID)
+			t.Logf("initial account is %s; initial user ID is %s", currentStatus.ActiveAccount, s.user.ID)
 
-			// fetch household data
-			householdCreationInput := &types.HouseholdCreationInput{
-				Name: fakes.BuildFakeHousehold().Name,
+			// fetch account data
+			accountCreationInput := &types.AccountCreationInput{
+				Name: fakes.BuildFakeAccount().Name,
 			}
-			household, householdCreationErr := testClients.main.CreateHousehold(ctx, householdCreationInput)
-			require.NoError(t, householdCreationErr)
-			require.NotNil(t, household)
+			account, accountCreationErr := testClients.main.CreateAccount(ctx, accountCreationInput)
+			require.NoError(t, accountCreationErr)
+			require.NotNil(t, account)
 
-			t.Logf("created household #%d", household.ID)
+			t.Logf("created account %s", account.ID)
 
-			require.NoError(t, testClients.main.SwitchActiveHousehold(ctx, household.ID))
+			require.NoError(t, testClients.main.SwitchActiveAccount(ctx, account.ID))
 
-			t.Logf("switched main test client active household to #%d, creating webhook", household.ID)
+			t.Logf("switched main test client active account to %s, creating webhook", account.ID)
 
-			// create a webhook
+			stopChan := make(chan bool, 1)
+			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			require.NotNil(t, notificationsChan)
+			require.NoError(t, err)
+
+			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
 			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
-			createdWebhook, creationErr := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
-			requireNotNilAndNoProblems(t, createdWebhook, creationErr)
-			require.Equal(t, household.ID, createdWebhook.BelongsToHousehold)
+			createdWebhookID, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			require.NoError(t, err)
 
-			t.Logf("created webhook #%d for household #%d", createdWebhook.ID, createdWebhook.BelongsToHousehold)
+			n := <-notificationsChan
+			assert.Equal(t, n.DataType, types.WebhookDataType)
+			require.NotNil(t, n.Webhook)
+			checkWebhookEquality(t, exampleWebhook, n.Webhook)
 
-			expectedAuditLogEntries := []*types.AuditLogEntry{
-				{EventType: audit.HouseholdCreationEvent},
-				{EventType: audit.UserAddedToHouseholdEvent},
-				{EventType: audit.WebhookCreationEvent},
-			}
+			createdWebhook, err := testClients.main.GetWebhook(ctx, createdWebhookID)
+			requireNotNilAndNoProblems(t, createdWebhook, err)
+			require.Equal(t, account.ID, createdWebhook.BelongsToAccount)
+
+			t.Logf("created webhook %s for account %s", createdWebhook.ID, createdWebhook.BelongsToAccount)
 
 			// create dummy users
 			users := []*types.User{}
@@ -301,66 +276,59 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 
 				currentStatus, statusErr = c.UserStatus(s.ctx)
 				requireNotNilAndNoProblems(t, currentStatus, statusErr)
-				t.Logf("created user user #%d with household #%d", u.ID, currentStatus.ActiveHousehold)
+				t.Logf("created user user %q with account %s", u.ID, currentStatus.ActiveAccount)
 			}
 
 			// check that each user cannot see the unreachable webhook
 			for i := 0; i < userCount; i++ {
-				t.Logf("checking that user #%d CANNOT see webhook #%d belonging to household #%d", users[i].ID, createdWebhook.ID, createdWebhook.BelongsToHousehold)
+				t.Logf("checking that user %q CANNOT see webhook %s belonging to account %s", users[i].ID, createdWebhook.ID, createdWebhook.BelongsToAccount)
 				webhook, err := clients[i].GetWebhook(ctx, createdWebhook.ID)
 				require.Nil(t, webhook)
 				require.Error(t, err)
 			}
 
-			// add them to the household
+			// add them to the account
 			for i := 0; i < userCount; i++ {
-				t.Logf("adding user #%d to household #%d", users[i].ID, household.ID)
-				require.NoError(t, testClients.main.AddUserToHousehold(ctx, &types.AddUserToHouseholdInput{
-					UserID:         users[i].ID,
-					HouseholdID:    household.ID,
-					Reason:         t.Name(),
-					HouseholdRoles: []string{authorization.HouseholdAdminRole.String()},
+				t.Logf("adding user %q to account %s", users[i].ID, account.ID)
+				require.NoError(t, testClients.main.AddUserToAccount(ctx, &types.AddUserToAccountInput{
+					UserID:       users[i].ID,
+					AccountID:    account.ID,
+					Reason:       t.Name(),
+					AccountRoles: []string{authorization.AccountAdminRole.String()},
 				}))
-				t.Logf("added user #%d to household #%d", users[i].ID, household.ID)
-				expectedAuditLogEntries = append(expectedAuditLogEntries, &types.AuditLogEntry{EventType: audit.UserAddedToHouseholdEvent})
+				t.Logf("added user %q to account %s", users[i].ID, account.ID)
 
-				t.Logf("setting user #%d's client to household #%d", users[i].ID, household.ID)
-				require.NoError(t, clients[i].SwitchActiveHousehold(ctx, household.ID))
+				n := <-notificationsChan
+				assert.Equal(t, n.DataType, types.UserMembershipDataType)
+
+				t.Logf("setting user %q's client to account %s", users[i].ID, account.ID)
+				require.NoError(t, clients[i].SwitchActiveAccount(ctx, account.ID))
 
 				currentStatus, statusErr = clients[i].UserStatus(s.ctx)
 				requireNotNilAndNoProblems(t, currentStatus, statusErr)
-				require.Equal(t, currentStatus.ActiveHousehold, household.ID)
-				t.Logf("set user #%d's current active household to #%d", users[i].ID, household.ID)
+				require.Equal(t, currentStatus.ActiveAccount, account.ID)
+				t.Logf("set user %q's current active account to %s", users[i].ID, account.ID)
 			}
 
 			// grant all permissions
 			for i := 0; i < userCount; i++ {
 				input := &types.ModifyUserPermissionsInput{
 					Reason:   t.Name(),
-					NewRoles: []string{authorization.HouseholdAdminRole.String()},
+					NewRoles: []string{authorization.AccountAdminRole.String()},
 				}
-				require.NoError(t, testClients.main.ModifyMemberPermissions(ctx, household.ID, users[i].ID, input))
-				expectedAuditLogEntries = append(expectedAuditLogEntries, &types.AuditLogEntry{EventType: audit.UserHouseholdPermissionsModifiedEvent})
+				require.NoError(t, testClients.main.ModifyMemberPermissions(ctx, account.ID, users[i].ID, input))
 			}
 
 			// check that each user can see the webhook
 			for i := 0; i < userCount; i++ {
-				t.Logf("checking if user #%d CAN now see webhook #%d belonging to household #%d", users[i].ID, createdWebhook.ID, createdWebhook.BelongsToHousehold)
+				t.Logf("checking if user %q CAN now see webhook %s belonging to account %s", users[i].ID, createdWebhook.ID, createdWebhook.BelongsToAccount)
 				webhook, err := clients[i].GetWebhook(ctx, createdWebhook.ID)
 				requireNotNilAndNoProblems(t, webhook, err)
 			}
 
-			originalWebhookName := createdWebhook.Name
-			// check that each user can update the webhook
+			// remove users from account
 			for i := 0; i < userCount; i++ {
-				createdWebhook.Name = fmt.Sprintf("%s_%d", originalWebhookName, time.Now().UnixNano())
-				require.NoError(t, clients[i].UpdateWebhook(ctx, createdWebhook))
-				expectedAuditLogEntries = append(expectedAuditLogEntries, &types.AuditLogEntry{EventType: audit.WebhookUpdateEvent})
-			}
-
-			// remove users from household
-			for i := 0; i < userCount; i++ {
-				require.NoError(t, testClients.main.RemoveUserFromHousehold(ctx, household.ID, users[i].ID, t.Name()))
+				require.NoError(t, testClients.main.RemoveUserFromAccount(ctx, account.ID, users[i].ID))
 			}
 
 			// check that each user cannot see the webhook
@@ -370,11 +338,134 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 				require.Error(t, err)
 			}
 
-			// check audit log entries
-			auditLogEntries, err := testClients.admin.GetAuditLogForHousehold(ctx, household.ID)
+			// Clean up.
+			require.NoError(t, testClients.main.ArchiveWebhook(ctx, createdWebhook.ID))
+
+			for i := 0; i < userCount; i++ {
+				require.NoError(t, testClients.admin.ArchiveUser(ctx, users[i].ID))
+			}
+		}
+	})
+
+	s.runForPASETOClient("should be possible to change members of an account", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			const userCount = 1
+
+			currentStatus, statusErr := testClients.main.UserStatus(s.ctx)
+			requireNotNilAndNoProblems(t, currentStatus, statusErr)
+			t.Logf("initial account is %s; initial user ID is %s", currentStatus.ActiveAccount, s.user.ID)
+
+			// fetch account data
+			accountCreationInput := &types.AccountCreationInput{
+				Name: fakes.BuildFakeAccount().Name,
+			}
+			account, accountCreationErr := testClients.main.CreateAccount(ctx, accountCreationInput)
+			require.NoError(t, accountCreationErr)
+			require.NotNil(t, account)
+
+			t.Logf("created account %s", account.ID)
+
+			require.NoError(t, testClients.main.SwitchActiveAccount(ctx, account.ID))
+
+			t.Logf("switched main test client active account to %s, creating webhook", account.ID)
+
+			// Create webhook.
+			exampleWebhook := fakes.BuildFakeWebhook()
+			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
+			createdWebhookID, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
 
-			validateAuditLogEntries(t, expectedAuditLogEntries, auditLogEntries, household.ID, audit.HouseholdAssignmentKey)
+			var createdWebhook *types.Webhook
+			checkFunc := func() bool {
+				createdWebhook, err = testClients.main.GetWebhook(ctx, createdWebhookID)
+				return assert.NotNil(t, createdWebhook) && assert.NoError(t, err)
+			}
+			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
+
+			// assert webhook equality
+			requireNotNilAndNoProblems(t, createdWebhook, err)
+			require.Equal(t, account.ID, createdWebhook.BelongsToAccount)
+
+			t.Logf("created webhook %s for account %s", createdWebhook.ID, createdWebhook.BelongsToAccount)
+
+			// create dummy users
+			users := []*types.User{}
+			clients := []*httpclient.Client{}
+
+			// create users
+			for i := 0; i < userCount; i++ {
+				u, _, c, _ := createUserAndClientForTest(ctx, t)
+				users = append(users, u)
+				clients = append(clients, c)
+
+				currentStatus, statusErr = c.UserStatus(s.ctx)
+				requireNotNilAndNoProblems(t, currentStatus, statusErr)
+				t.Logf("created user user %q with account %s", u.ID, currentStatus.ActiveAccount)
+			}
+
+			// check that each user cannot see the unreachable webhook
+			for i := 0; i < userCount; i++ {
+				t.Logf("checking that user %q CANNOT see webhook %s belonging to account %s", users[i].ID, createdWebhook.ID, createdWebhook.BelongsToAccount)
+				webhook, err := clients[i].GetWebhook(ctx, createdWebhook.ID)
+				require.Nil(t, webhook)
+				require.Error(t, err)
+			}
+
+			// add them to the account
+			for i := 0; i < userCount; i++ {
+				t.Logf("adding user %q to account %s", users[i].ID, account.ID)
+				require.NoError(t, testClients.main.AddUserToAccount(ctx, &types.AddUserToAccountInput{
+					UserID:       users[i].ID,
+					AccountID:    account.ID,
+					Reason:       t.Name(),
+					AccountRoles: []string{authorization.AccountAdminRole.String()},
+				}))
+				t.Logf("added user %q to account %s", users[i].ID, account.ID)
+
+				t.Logf("setting user %q's client to account %s", users[i].ID, account.ID)
+				checkFunc = func() bool {
+					return assert.NoError(t, clients[i].SwitchActiveAccount(ctx, account.ID))
+				}
+				assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
+
+				currentStatus, statusErr = clients[i].UserStatus(s.ctx)
+				requireNotNilAndNoProblems(t, currentStatus, statusErr)
+				require.Equal(t, currentStatus.ActiveAccount, account.ID)
+				t.Logf("set user %q's current active account to %s", users[i].ID, account.ID)
+			}
+
+			// grant all permissions
+			for i := 0; i < userCount; i++ {
+				input := &types.ModifyUserPermissionsInput{
+					Reason:   t.Name(),
+					NewRoles: []string{authorization.AccountAdminRole.String()},
+				}
+				require.NoError(t, testClients.main.ModifyMemberPermissions(ctx, account.ID, users[i].ID, input))
+			}
+
+			// check that each user can see the webhook
+			for i := 0; i < userCount; i++ {
+				t.Logf("checking if user %q CAN now see webhook %s belonging to account %s", users[i].ID, createdWebhook.ID, createdWebhook.BelongsToAccount)
+				webhook, err := clients[i].GetWebhook(ctx, createdWebhook.ID)
+				requireNotNilAndNoProblems(t, webhook, err)
+			}
+
+			// remove users from account
+			for i := 0; i < userCount; i++ {
+				require.NoError(t, testClients.main.RemoveUserFromAccount(ctx, account.ID, users[i].ID))
+			}
+
+			// check that each user cannot see the webhook
+			for i := 0; i < userCount; i++ {
+				webhook, err := clients[i].GetWebhook(ctx, createdWebhook.ID)
+				require.Nil(t, webhook)
+				require.Error(t, err)
+			}
 
 			// Clean up.
 			require.NoError(t, testClients.main.ArchiveWebhook(ctx, createdWebhook.ID))
@@ -386,8 +477,8 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 	})
 }
 
-func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
-	s.runForEachClientExcept("should be possible to transfer ownership of an household", func(testClients *testClientWrapper) func() {
+func (s *TestSuite) TestAccounts_OwnershipTransfer() {
+	s.runForCookieClient("should be possible to transfer ownership of an account", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -397,44 +488,58 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 			// create users
 			futureOwner, _, _, futureOwnerClient := createUserAndClientForTest(ctx, t)
 
-			// fetch household data
-			householdCreationInput := &types.HouseholdCreationInput{
-				Name: fakes.BuildFakeHousehold().Name,
+			// fetch account data
+			accountCreationInput := &types.AccountCreationInput{
+				Name: fakes.BuildFakeAccount().Name,
 			}
-			household, householdCreationErr := testClients.main.CreateHousehold(ctx, householdCreationInput)
-			require.NoError(t, householdCreationErr)
-			require.NotNil(t, household)
+			account, accountCreationErr := testClients.main.CreateAccount(ctx, accountCreationInput)
+			require.NoError(t, accountCreationErr)
+			require.NotNil(t, account)
 
-			t.Logf("created household #%d", household.ID)
+			t.Logf("created account %s", account.ID)
 
-			require.NoError(t, testClients.main.SwitchActiveHousehold(ctx, household.ID))
+			require.NoError(t, testClients.main.SwitchActiveAccount(ctx, account.ID))
 
-			t.Logf("switched to active household: %d", household.ID)
+			t.Logf("switched to active account: %s", account.ID)
 
 			// create a webhook
+			stopChan := make(chan bool, 1)
+			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			require.NotNil(t, notificationsChan)
+			require.NoError(t, err)
+
+			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
 			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
-			createdWebhook, creationErr := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
-			requireNotNilAndNoProblems(t, createdWebhook, creationErr)
+			createdWebhookID, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			require.NoError(t, err)
 
-			t.Logf("created webhook #%d belonging to household #%d", createdWebhook.ID, createdWebhook.BelongsToHousehold)
-			require.Equal(t, household.ID, createdWebhook.BelongsToHousehold)
+			n := <-notificationsChan
+			assert.Equal(t, n.DataType, types.WebhookDataType)
+			require.NotNil(t, n.Webhook)
+			checkWebhookEquality(t, exampleWebhook, n.Webhook)
+
+			createdWebhook, err := testClients.main.GetWebhook(ctx, createdWebhookID)
+			requireNotNilAndNoProblems(t, createdWebhook, err)
+
+			t.Logf("created webhook %s belonging to account %s", createdWebhook.ID, createdWebhook.BelongsToAccount)
+			require.Equal(t, account.ID, createdWebhook.BelongsToAccount)
 
 			// check that user cannot see the webhook
 			webhook, err := futureOwnerClient.GetWebhook(ctx, createdWebhook.ID)
 			require.Nil(t, webhook)
 			require.Error(t, err)
 
-			// add them to the household
-			require.NoError(t, testClients.main.TransferHouseholdOwnership(ctx, household.ID, &types.HouseholdOwnershipTransferInput{
+			// add them to the account
+			require.NoError(t, testClients.main.TransferAccountOwnership(ctx, account.ID, &types.AccountOwnershipTransferInput{
 				Reason:       t.Name(),
-				CurrentOwner: household.BelongsToUser,
+				CurrentOwner: account.BelongsToUser,
 				NewOwner:     futureOwner.ID,
 			}))
 
-			t.Logf("transferred household %d from user %d to user %d", household.ID, household.BelongsToUser, futureOwner.ID)
+			t.Logf("transferred account %s from user %s to user %s", account.ID, account.BelongsToUser, futureOwner.ID)
 
-			require.NoError(t, futureOwnerClient.SwitchActiveHousehold(ctx, household.ID))
+			require.NoError(t, futureOwnerClient.SwitchActiveAccount(ctx, account.ID))
 
 			// check that user can see the webhook
 			webhook, err = futureOwnerClient.GetWebhook(ctx, createdWebhook.ID)
@@ -445,93 +550,88 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 			require.Nil(t, webhook)
 			require.Error(t, err)
 
-			// check that new owner can update the webhook
-			require.NoError(t, futureOwnerClient.UpdateWebhook(ctx, createdWebhook))
-
-			// check audit log entries
-			auditLogEntries, err := testClients.admin.GetAuditLogForHousehold(ctx, household.ID)
-			require.NoError(t, err)
-
-			expectedAuditLogEntries := []*types.AuditLogEntry{
-				{EventType: audit.HouseholdCreationEvent},
-				{EventType: audit.UserAddedToHouseholdEvent},
-				{EventType: audit.WebhookCreationEvent},
-				{EventType: audit.HouseholdTransferredEvent},
-				{EventType: audit.WebhookUpdateEvent},
-			}
-			validateAuditLogEntries(t, expectedAuditLogEntries, auditLogEntries, household.ID, audit.HouseholdAssignmentKey)
+			// check that new owner can delete the webhook
+			require.NoError(t, futureOwnerClient.ArchiveWebhook(ctx, createdWebhook.ID))
 
 			// Clean up.
 			require.Error(t, testClients.main.ArchiveWebhook(ctx, createdWebhook.ID))
-			require.NoError(t, futureOwnerClient.ArchiveWebhook(ctx, createdWebhook.ID))
-
 			require.NoError(t, testClients.admin.ArchiveUser(ctx, futureOwner.ID))
 		}
 	})
-}
 
-func (s *TestSuite) TestHouseholds_Auditing_Returns404ForNonexistentHousehold() {
-	s.runForEachClientExcept("should not be possible to audit a non-existent household", func(testClients *testClientWrapper) func() {
+	s.runForPASETOClient("should be possible to transfer ownership of an account", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			x, err := testClients.admin.GetAuditLogForHousehold(ctx, nonexistentID)
+			// create users
+			futureOwner, _, _, futureOwnerClient := createUserAndClientForTest(ctx, t)
 
-			assert.NoError(t, err)
-			assert.Empty(t, x)
-		}
-	})
-}
+			// fetch account data
+			accountCreationInput := &types.AccountCreationInput{
+				Name: fakes.BuildFakeAccount().Name,
+			}
+			account, accountCreationErr := testClients.main.CreateAccount(ctx, accountCreationInput)
+			require.NoError(t, accountCreationErr)
+			require.NotNil(t, account)
 
-func (s *TestSuite) TestHouseholds_Auditing_InaccessibleToNonAdmins() {
-	s.runForEachClientExcept("should not be possible to audit an household as non-admin", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
+			t.Logf("created account %s", account.ID)
 
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
+			require.NoError(t, testClients.main.SwitchActiveAccount(ctx, account.ID))
 
-			// Create household.
-			exampleHousehold := fakes.BuildFakeHousehold()
-			exampleHouseholdInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
-			createdHousehold, err := testClients.main.CreateHousehold(ctx, exampleHouseholdInput)
-			requireNotNilAndNoProblems(t, createdHousehold, err)
+			t.Logf("switched to active account: %s", account.ID)
 
-			// fetch audit log entries
-			actual, err := testClients.main.GetAuditLogForHousehold(ctx, createdHousehold.ID)
-			assert.Error(t, err)
-			assert.Nil(t, actual)
+			// create a webhook
+			exampleWebhook := fakes.BuildFakeWebhook()
+			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
+			createdWebhookID, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			require.NoError(t, err)
 
-			// Clean up household.
-			assert.NoError(t, testClients.main.ArchiveHousehold(ctx, createdHousehold.ID))
-		}
-	})
-}
+			var createdWebhook *types.Webhook
+			checkFunc := func() bool {
+				createdWebhook, err = testClients.main.GetWebhook(ctx, createdWebhookID)
+				return assert.NotNil(t, createdWebhook) && assert.NoError(t, err)
+			}
+			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
 
-func (s *TestSuite) TestHouseholds_Auditing() {
-	s.runForEachClientExcept("should be possible to audit an household", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
+			requireNotNilAndNoProblems(t, createdWebhook, err)
 
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
+			t.Logf("created webhook %s belonging to account %s", createdWebhook.ID, createdWebhook.BelongsToAccount)
+			require.Equal(t, account.ID, createdWebhook.BelongsToAccount)
 
-			// Create household.
-			exampleHousehold := fakes.BuildFakeHousehold()
-			exampleHouseholdInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
-			createdHousehold, err := testClients.main.CreateHousehold(ctx, exampleHouseholdInput)
-			requireNotNilAndNoProblems(t, createdHousehold, err)
+			// check that user cannot see the webhook
+			webhook, err := futureOwnerClient.GetWebhook(ctx, createdWebhook.ID)
+			require.Nil(t, webhook)
+			require.Error(t, err)
 
-			// fetch audit log entries
-			actual, err := testClients.admin.GetAuditLogForHousehold(ctx, createdHousehold.ID)
-			assert.NoError(t, err)
-			assert.NotNil(t, actual)
+			// add them to the account
+			require.NoError(t, testClients.main.TransferAccountOwnership(ctx, account.ID, &types.AccountOwnershipTransferInput{
+				Reason:       t.Name(),
+				CurrentOwner: account.BelongsToUser,
+				NewOwner:     futureOwner.ID,
+			}))
 
-			// Clean up household.
-			assert.NoError(t, testClients.main.ArchiveHousehold(ctx, createdHousehold.ID))
+			t.Logf("transferred account %s from user %s to user %s", account.ID, account.BelongsToUser, futureOwner.ID)
+
+			require.NoError(t, futureOwnerClient.SwitchActiveAccount(ctx, account.ID))
+
+			// check that user can see the webhook
+			webhook, err = futureOwnerClient.GetWebhook(ctx, createdWebhook.ID)
+			requireNotNilAndNoProblems(t, webhook, err)
+
+			// check that old user cannot see the webhook
+			webhook, err = testClients.main.GetWebhook(ctx, createdWebhook.ID)
+			require.Nil(t, webhook)
+			require.Error(t, err)
+
+			// check that new owner can delete the webhook
+			require.NoError(t, futureOwnerClient.ArchiveWebhook(ctx, createdWebhook.ID))
+
+			// Clean up.
+			require.Error(t, testClients.main.ArchiveWebhook(ctx, createdWebhook.ID))
+			require.NoError(t, testClients.admin.ArchiveUser(ctx, futureOwner.ID))
 		}
 	})
 }

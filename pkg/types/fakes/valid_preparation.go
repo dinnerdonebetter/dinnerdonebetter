@@ -1,19 +1,19 @@
 package fakes
 
 import (
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
 	fake "github.com/brianvoe/gofakeit/v5"
+	"github.com/segmentio/ksuid"
+
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
 // BuildFakeValidPreparation builds a faked valid preparation.
 func BuildFakeValidPreparation() *types.ValidPreparation {
 	return &types.ValidPreparation{
-		ID:          uint64(fake.Uint32()),
-		ExternalID:  fake.UUID(),
-		Name:        BuildUniqueName(),
+		ID:          ksuid.New().String(),
+		Name:        fake.Word(),
 		Description: fake.Word(),
-		IconPath:    fake.Word(),
+		Icon:        fake.Word(),
 		CreatedOn:   uint64(uint32(fake.Date().Unix())),
 	}
 }
@@ -36,36 +36,53 @@ func BuildFakeValidPreparationList() *types.ValidPreparationList {
 	}
 }
 
-// BuildFakeValidPreparationUpdateInput builds a faked ValidPreparationUpdateInput from a valid preparation.
-func BuildFakeValidPreparationUpdateInput() *types.ValidPreparationUpdateInput {
+// BuildFakeValidPreparationUpdateRequestInput builds a faked ValidPreparationUpdateRequestInput from a valid preparation.
+func BuildFakeValidPreparationUpdateRequestInput() *types.ValidPreparationUpdateRequestInput {
 	validPreparation := BuildFakeValidPreparation()
-	return &types.ValidPreparationUpdateInput{
+	return &types.ValidPreparationUpdateRequestInput{
 		Name:        validPreparation.Name,
 		Description: validPreparation.Description,
-		IconPath:    validPreparation.IconPath,
+		Icon:        validPreparation.Icon,
 	}
 }
 
-// BuildFakeValidPreparationUpdateInputFromValidPreparation builds a faked ValidPreparationUpdateInput from a valid preparation.
-func BuildFakeValidPreparationUpdateInputFromValidPreparation(validPreparation *types.ValidPreparation) *types.ValidPreparationUpdateInput {
-	return &types.ValidPreparationUpdateInput{
+// BuildFakeValidPreparationUpdateRequestInputFromValidPreparation builds a faked ValidPreparationUpdateRequestInput from a valid preparation.
+func BuildFakeValidPreparationUpdateRequestInputFromValidPreparation(validPreparation *types.ValidPreparation) *types.ValidPreparationUpdateRequestInput {
+	return &types.ValidPreparationUpdateRequestInput{
 		Name:        validPreparation.Name,
 		Description: validPreparation.Description,
-		IconPath:    validPreparation.IconPath,
+		Icon:        validPreparation.Icon,
 	}
 }
 
-// BuildFakeValidPreparationCreationInput builds a faked ValidPreparationCreationInput.
-func BuildFakeValidPreparationCreationInput() *types.ValidPreparationCreationInput {
+// BuildFakeValidPreparationCreationRequestInput builds a faked ValidPreparationCreationRequestInput.
+func BuildFakeValidPreparationCreationRequestInput() *types.ValidPreparationCreationRequestInput {
 	validPreparation := BuildFakeValidPreparation()
-	return BuildFakeValidPreparationCreationInputFromValidPreparation(validPreparation)
+	return BuildFakeValidPreparationCreationRequestInputFromValidPreparation(validPreparation)
 }
 
-// BuildFakeValidPreparationCreationInputFromValidPreparation builds a faked ValidPreparationCreationInput from a valid preparation.
-func BuildFakeValidPreparationCreationInputFromValidPreparation(validPreparation *types.ValidPreparation) *types.ValidPreparationCreationInput {
-	return &types.ValidPreparationCreationInput{
+// BuildFakeValidPreparationCreationRequestInputFromValidPreparation builds a faked ValidPreparationCreationRequestInput from a valid preparation.
+func BuildFakeValidPreparationCreationRequestInputFromValidPreparation(validPreparation *types.ValidPreparation) *types.ValidPreparationCreationRequestInput {
+	return &types.ValidPreparationCreationRequestInput{
+		ID:          validPreparation.ID,
 		Name:        validPreparation.Name,
 		Description: validPreparation.Description,
-		IconPath:    validPreparation.IconPath,
+		Icon:        validPreparation.Icon,
+	}
+}
+
+// BuildFakeValidPreparationDatabaseCreationInput builds a faked ValidPreparationDatabaseCreationInput.
+func BuildFakeValidPreparationDatabaseCreationInput() *types.ValidPreparationDatabaseCreationInput {
+	validPreparation := BuildFakeValidPreparation()
+	return BuildFakeValidPreparationDatabaseCreationInputFromValidPreparation(validPreparation)
+}
+
+// BuildFakeValidPreparationDatabaseCreationInputFromValidPreparation builds a faked ValidPreparationDatabaseCreationInput from a valid preparation.
+func BuildFakeValidPreparationDatabaseCreationInputFromValidPreparation(validPreparation *types.ValidPreparation) *types.ValidPreparationDatabaseCreationInput {
+	return &types.ValidPreparationDatabaseCreationInput{
+		ID:          validPreparation.ID,
+		Name:        validPreparation.Name,
+		Description: validPreparation.Description,
+		Icon:        validPreparation.Icon,
 	}
 }

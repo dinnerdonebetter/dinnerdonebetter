@@ -4,60 +4,16 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
-
-func TestBuilder_BuildValidInstrumentExistsRequest(T *testing.T) {
-	T.Parallel()
-
-	const expectedPathFormat = "/api/v1/valid_instruments/%d"
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		exampleValidInstrument := fakes.BuildFakeValidInstrument()
-
-		actual, err := helper.builder.BuildValidInstrumentExistsRequest(helper.ctx, exampleValidInstrument.ID)
-		spec := newRequestSpec(true, http.MethodHead, "", expectedPathFormat, exampleValidInstrument.ID)
-
-		assert.NoError(t, err)
-		assertRequestQuality(t, actual, spec)
-	})
-
-	T.Run("with invalid valid instrument ID", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		actual, err := helper.builder.BuildValidInstrumentExistsRequest(helper.ctx, 0)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	T.Run("with invalid request builder", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-		helper.builder = buildTestRequestBuilderWithInvalidURL()
-
-		exampleValidInstrument := fakes.BuildFakeValidInstrument()
-
-		actual, err := helper.builder.BuildValidInstrumentExistsRequest(helper.ctx, exampleValidInstrument.ID)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-}
 
 func TestBuilder_BuildGetValidInstrumentRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/valid_instruments/%d"
+	const expectedPathFormat = "/api/v1/valid_instruments/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -79,7 +35,7 @@ func TestBuilder_BuildGetValidInstrumentRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildGetValidInstrumentRequest(helper.ctx, 0)
+		actual, err := helper.builder.BuildGetValidInstrumentRequest(helper.ctx, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -176,7 +132,7 @@ func TestBuilder_BuildCreateValidInstrumentRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		exampleInput := fakes.BuildFakeValidInstrumentCreationInput()
+		exampleInput := fakes.BuildFakeValidInstrumentCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 
@@ -201,7 +157,7 @@ func TestBuilder_BuildCreateValidInstrumentRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildCreateValidInstrumentRequest(helper.ctx, &types.ValidInstrumentCreationInput{})
+		actual, err := helper.builder.BuildCreateValidInstrumentRequest(helper.ctx, &types.ValidInstrumentCreationRequestInput{})
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -212,7 +168,7 @@ func TestBuilder_BuildCreateValidInstrumentRequest(T *testing.T) {
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
-		exampleInput := fakes.BuildFakeValidInstrumentCreationInput()
+		exampleInput := fakes.BuildFakeValidInstrumentCreationRequestInput()
 
 		actual, err := helper.builder.BuildCreateValidInstrumentRequest(helper.ctx, exampleInput)
 		assert.Nil(t, actual)
@@ -223,7 +179,7 @@ func TestBuilder_BuildCreateValidInstrumentRequest(T *testing.T) {
 func TestBuilder_BuildUpdateValidInstrumentRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/valid_instruments/%d"
+	const expectedPathFormat = "/api/v1/valid_instruments/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -267,7 +223,7 @@ func TestBuilder_BuildUpdateValidInstrumentRequest(T *testing.T) {
 func TestBuilder_BuildArchiveValidInstrumentRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/valid_instruments/%d"
+	const expectedPathFormat = "/api/v1/valid_instruments/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -289,7 +245,7 @@ func TestBuilder_BuildArchiveValidInstrumentRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildArchiveValidInstrumentRequest(helper.ctx, 0)
+		actual, err := helper.builder.BuildArchiveValidInstrumentRequest(helper.ctx, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -303,50 +259,6 @@ func TestBuilder_BuildArchiveValidInstrumentRequest(T *testing.T) {
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
 
 		actual, err := helper.builder.BuildArchiveValidInstrumentRequest(helper.ctx, exampleValidInstrument.ID)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-}
-
-func TestBuilder_BuildGetAuditLogForValidInstrumentRequest(T *testing.T) {
-	T.Parallel()
-
-	const expectedPath = "/api/v1/valid_instruments/%d/audit"
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		exampleValidInstrument := fakes.BuildFakeValidInstrument()
-
-		actual, err := helper.builder.BuildGetAuditLogForValidInstrumentRequest(helper.ctx, exampleValidInstrument.ID)
-		require.NotNil(t, actual)
-		assert.NoError(t, err)
-
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPath, exampleValidInstrument.ID)
-		assertRequestQuality(t, actual, spec)
-	})
-
-	T.Run("with invalid valid instrument ID", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		actual, err := helper.builder.BuildGetAuditLogForValidInstrumentRequest(helper.ctx, 0)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	T.Run("with invalid request builder", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-		helper.builder = buildTestRequestBuilderWithInvalidURL()
-
-		exampleValidInstrument := fakes.BuildFakeValidInstrument()
-
-		actual, err := helper.builder.BuildGetAuditLogForValidInstrumentRequest(helper.ctx, exampleValidInstrument.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

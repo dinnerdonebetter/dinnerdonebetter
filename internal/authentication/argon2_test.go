@@ -5,11 +5,11 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/prixfixe/prixfixe/internal/authentication"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/assert"
+
+	"gitlab.com/prixfixe/prixfixe/internal/authentication"
+	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 )
 
 const (
