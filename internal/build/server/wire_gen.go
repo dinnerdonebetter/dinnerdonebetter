@@ -8,6 +8,7 @@ package server
 
 import (
 	"context"
+
 	"gitlab.com/prixfixe/prixfixe/internal/authentication"
 	"gitlab.com/prixfixe/prixfixe/internal/config"
 	"gitlab.com/prixfixe/prixfixe/internal/database"
@@ -19,11 +20,11 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/routing/chi"
 	"gitlab.com/prixfixe/prixfixe/internal/search/elasticsearch"
 	"gitlab.com/prixfixe/prixfixe/internal/server"
-	"gitlab.com/prixfixe/prixfixe/internal/services/accounts"
 	"gitlab.com/prixfixe/prixfixe/internal/services/admin"
 	"gitlab.com/prixfixe/prixfixe/internal/services/apiclients"
 	authentication2 "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
 	"gitlab.com/prixfixe/prixfixe/internal/services/frontend"
+	"gitlab.com/prixfixe/prixfixe/internal/services/households"
 	"gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptions"
 	"gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptionvotes"
 	"gitlab.com/prixfixe/prixfixe/internal/services/mealplans"
@@ -64,7 +65,7 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	}
 	userDataManager := database.ProvideUserDataManager(dataManager)
 	apiClientDataManager := database.ProvideAPIClientDataManager(dataManager)
-	accountUserMembershipDataManager := database.ProvideAccountUserMembershipDataManager(dataManager)
+	householdUserMembershipDataManager := database.ProvideHouseholdUserMembershipDataManager(dataManager)
 	cookieConfig := authenticationConfig.Cookies
 	sessionManager, err := config2.ProvideSessionManager(cookieConfig, dataManager)
 	if err != nil {
@@ -73,11 +74,11 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	encodingConfig := cfg.Encoding
 	contentType := encoding.ProvideContentType(encodingConfig)
 	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, contentType)
-	authService, err := authentication2.ProvideService(logger, authenticationConfig, authenticator, userDataManager, apiClientDataManager, accountUserMembershipDataManager, sessionManager, serverEncoderDecoder)
+	authService, err := authentication2.ProvideService(logger, authenticationConfig, authenticator, userDataManager, apiClientDataManager, householdUserMembershipDataManager, sessionManager, serverEncoderDecoder)
 	if err != nil {
 		return nil, err
 	}
-	accountDataManager := database.ProvideAccountDataManager(dataManager)
+	householdDataManager := database.ProvideHouseholdDataManager(dataManager)
 	unitCounterProvider, err := metrics.ProvideUnitCounterProvider(metricsConfig, logger)
 	if err != nil {
 		return nil, err
@@ -91,14 +92,14 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 		return nil, err
 	}
 	uploadManager := uploads.ProvideUploadManager(uploader)
-	userDataService := users.ProvideUsersService(authenticationConfig, logger, userDataManager, accountDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, imageUploadProcessor, uploadManager, routeParamManager)
-	accountsConfig := servicesConfigurations.Accounts
+	userDataService := users.ProvideUsersService(authenticationConfig, logger, userDataManager, householdDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, imageUploadProcessor, uploadManager, routeParamManager)
+	householdsConfig := servicesConfigurations.Households
 	configConfig := &cfg.Events
 	publisherProvider, err := config3.ProvidePublisherProvider(logger, configConfig)
 	if err != nil {
 		return nil, err
 	}
-	accountDataService, err := accounts.ProvideService(logger, accountsConfig, accountDataManager, accountUserMembershipDataManager, serverEncoderDecoder, unitCounterProvider, routeParamManager, publisherProvider)
+	householdDataService, err := households.ProvideService(logger, householdsConfig, householdDataManager, householdUserMembershipDataManager, serverEncoderDecoder, unitCounterProvider, routeParamManager, publisherProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -197,7 +198,7 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	frontendAuthService := frontend.ProvideAuthService(authService)
 	service := frontend.ProvideService(frontendConfig, logger, frontendAuthService)
 	router := chi.NewRouter(logger)
-	httpServer, err := server.ProvideHTTPServer(ctx, serverConfig, instrumentationHandler, authService, userDataService, accountDataService, apiClientDataService, websocketDataService, validInstrumentDataService, validIngredientDataService, validPreparationDataService, validIngredientPreparationDataService, recipeDataService, recipeStepDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, recipeStepProductDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, webhookDataService, adminService, service, logger, serverEncoderDecoder, router)
+	httpServer, err := server.ProvideHTTPServer(ctx, serverConfig, instrumentationHandler, authService, userDataService, householdDataService, apiClientDataService, websocketDataService, validInstrumentDataService, validIngredientDataService, validPreparationDataService, validIngredientPreparationDataService, recipeDataService, recipeStepDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, recipeStepProductDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, webhookDataService, adminService, service, logger, serverEncoderDecoder, router)
 	if err != nil {
 		return nil, err
 	}

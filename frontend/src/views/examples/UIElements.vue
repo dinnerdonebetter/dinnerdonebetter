@@ -29,7 +29,7 @@
               <div class="mx-3">
                 <span class="font-semibold text-green-500">Success</span>
                 <p class="text-sm text-gray-600">
-                  Your account was registered!
+                  Your household was registered!
                 </p>
               </div>
             </div>

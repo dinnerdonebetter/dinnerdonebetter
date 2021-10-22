@@ -15,7 +15,7 @@ const setUserReputationQuery = `
 	UPDATE users SET reputation = $1, reputation_explanation = $2 WHERE archived_on IS NULL AND id = $3
 `
 
-// UpdateUserReputation updates a user's account status.
+// UpdateUserReputation updates a user's household status.
 func (q *SQLQuerier) UpdateUserReputation(ctx context.Context, userID string, input *types.UserReputationUpdateInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

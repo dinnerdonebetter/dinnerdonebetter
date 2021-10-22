@@ -31,7 +31,7 @@ type (
 		Description        string  `json:"description"`
 		ID                 string  `json:"id"`
 		Name               string  `json:"name"`
-		BelongsToAccount   string  `json:"belongsToAccount"`
+		BelongsToHousehold string  `json:"belongsToHousehold"`
 		CreatedOn          uint64  `json:"createdOn"`
 	}
 
@@ -51,7 +51,7 @@ type (
 		Source             string  `json:"source"`
 		Description        string  `json:"description"`
 		InspiredByRecipeID *string `json:"inspiredByRecipeID"`
-		BelongsToAccount   string  `json:"-"`
+		BelongsToHousehold string  `json:"-"`
 	}
 
 	// RecipeDatabaseCreationInput represents what a user could set as input for creating recipes.
@@ -63,7 +63,7 @@ type (
 		Source             string  `json:"source"`
 		Description        string  `json:"description"`
 		InspiredByRecipeID *string `json:"inspiredByRecipeID"`
-		BelongsToAccount   string  `json:"belongsToAccount"`
+		BelongsToHousehold string  `json:"belongsToHousehold"`
 	}
 
 	// RecipeUpdateRequestInput represents what a user could set as input for updating recipes.
@@ -74,7 +74,7 @@ type (
 		Source             string  `json:"source"`
 		Description        string  `json:"description"`
 		InspiredByRecipeID *string `json:"inspiredByRecipeID"`
-		BelongsToAccount   string  `json:"-"`
+		BelongsToHousehold string  `json:"-"`
 	}
 
 	// RecipeDataManager describes a structure capable of storing recipes permanently.
@@ -83,10 +83,10 @@ type (
 		GetRecipe(ctx context.Context, recipeID string) (*Recipe, error)
 		GetTotalRecipeCount(ctx context.Context) (uint64, error)
 		GetRecipes(ctx context.Context, filter *QueryFilter) (*RecipeList, error)
-		GetRecipesWithIDs(ctx context.Context, accountID string, limit uint8, ids []string) ([]*Recipe, error)
+		GetRecipesWithIDs(ctx context.Context, householdID string, limit uint8, ids []string) ([]*Recipe, error)
 		CreateRecipe(ctx context.Context, input *RecipeDatabaseCreationInput) (*Recipe, error)
 		UpdateRecipe(ctx context.Context, updated *Recipe) error
-		ArchiveRecipe(ctx context.Context, recipeID, accountID string) error
+		ArchiveRecipe(ctx context.Context, recipeID, householdID string) error
 	}
 
 	// RecipeDataService describes a structure capable of serving traffic related to recipes.
@@ -144,7 +144,7 @@ func (x *RecipeDatabaseCreationInput) ValidateWithContext(ctx context.Context) e
 		validation.Field(&x.Source, validation.Required),
 		validation.Field(&x.Description, validation.Required),
 		validation.Field(&x.InspiredByRecipeID, validation.Required),
-		validation.Field(&x.BelongsToAccount, validation.Required),
+		validation.Field(&x.BelongsToHousehold, validation.Required),
 	)
 }
 

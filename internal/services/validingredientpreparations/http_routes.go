@@ -72,7 +72,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		DataType:                   types.ValidIngredientPreparationDataType,
 		ValidIngredientPreparation: input,
 		AttributableToUserID:       sessionCtxData.Requester.UserID,
-		AttributableToAccountID:    sessionCtxData.ActiveAccountID,
+		AttributableToHouseholdID:  sessionCtxData.ActiveHouseholdID,
 	}
 	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing valid ingredient preparation write message")
@@ -219,7 +219,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		DataType:                   types.ValidIngredientPreparationDataType,
 		ValidIngredientPreparation: validIngredientPreparation,
 		AttributableToUserID:       sessionCtxData.Requester.UserID,
-		AttributableToAccountID:    sessionCtxData.ActiveAccountID,
+		AttributableToHouseholdID:  sessionCtxData.ActiveHouseholdID,
 	}
 	if err = s.preUpdatesPublisher.Publish(ctx, pum); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing valid ingredient preparation update message")
@@ -269,7 +269,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		DataType:                     types.ValidIngredientPreparationDataType,
 		ValidIngredientPreparationID: validIngredientPreparationID,
 		AttributableToUserID:         sessionCtxData.Requester.UserID,
-		AttributableToAccountID:      sessionCtxData.ActiveAccountID,
+		AttributableToHouseholdID:    sessionCtxData.ActiveHouseholdID,
 	}
 	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing valid ingredient preparation archive message")

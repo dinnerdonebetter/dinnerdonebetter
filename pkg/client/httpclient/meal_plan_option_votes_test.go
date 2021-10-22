@@ -138,7 +138,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_CreateMealPlanOptionVote() {
 		t := s.T()
 
 		exampleInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInput()
-		exampleInput.BelongsToAccount = ""
+		exampleInput.BelongsToHousehold = ""
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, &types.PreWriteResponse{ID: s.exampleMealPlanOptionVote.ID})

@@ -21,7 +21,7 @@ func BuildFakeUser() *types.User {
 		Username: fake.Password(true, true, true, false, false, 32),
 		// HashedPassword: "",
 		// Salt:           []byte(fakes.Word()),
-		ServiceAccountStatus:      types.GoodStandingAccountStatus,
+		ServiceHouseholdStatus:    types.GoodStandingHouseholdStatus,
 		TwoFactorSecret:           base32.StdEncoding.EncodeToString([]byte(fake.Password(false, true, true, false, false, 32))),
 		TwoFactorSecretVerifiedOn: func(i uint64) *uint64 { return &i }(uint64(uint32(fake.Date().Unix()))),
 		ServiceRoles:              []string{authorization.ServiceUserRole.String()},
@@ -100,7 +100,7 @@ func BuildFakeUserDataStoreCreationInputFromUser(user *types.User) *types.UserDa
 func BuildFakeUserReputationUpdateInputFromUser(user *types.User) *types.UserReputationUpdateInput {
 	return &types.UserReputationUpdateInput{
 		TargetUserID:  ksuid.New().String(),
-		NewReputation: user.ServiceAccountStatus,
+		NewReputation: user.ServiceHouseholdStatus,
 		Reason:        fake.Sentence(10),
 	}
 }

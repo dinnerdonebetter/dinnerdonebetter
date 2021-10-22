@@ -53,13 +53,13 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := types.WebhookDatabaseCreationInputFromWebhookCreationInput(providedInput)
 	input.ID = ksuid.New().String()
 	tracing.AttachWebhookIDToSpan(span, input.ID)
-	input.BelongsToAccount = sessionCtxData.ActiveAccountID
+	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 
 	preWrite := &types.PreWriteMessage{
-		DataType:                types.WebhookDataType,
-		Webhook:                 input,
-		AttributableToUserID:    sessionCtxData.Requester.UserID,
-		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+		DataType:                  types.WebhookDataType,
+		Webhook:                   input,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 	}
 	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing webhook write message")
@@ -95,7 +95,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// find the webhooks.
-	webhooks, err := s.webhookDataManager.GetWebhooks(ctx, sessionCtxData.ActiveAccountID, filter)
+	webhooks, err := s.webhookDataManager.GetWebhooks(ctx, sessionCtxData.ActiveHouseholdID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		webhooks = &types.WebhookList{
 			Webhooks: []*types.Webhook{},
@@ -134,11 +134,11 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachWebhookIDToSpan(span, webhookID)
 	logger = logger.WithValue(keys.WebhookIDKey, webhookID)
 
-	tracing.AttachAccountIDToSpan(span, sessionCtxData.ActiveAccountID)
-	logger = logger.WithValue(keys.AccountIDKey, sessionCtxData.ActiveAccountID)
+	tracing.AttachHouseholdIDToSpan(span, sessionCtxData.ActiveHouseholdID)
+	logger = logger.WithValue(keys.HouseholdIDKey, sessionCtxData.ActiveHouseholdID)
 
 	// fetch the webhook from the database.
-	webhook, err := s.webhookDataManager.GetWebhook(ctx, webhookID, sessionCtxData.ActiveAccountID)
+	webhook, err := s.webhookDataManager.GetWebhook(ctx, webhookID, sessionCtxData.ActiveHouseholdID)
 	if errors.Is(err, sql.ErrNoRows) {
 		logger.Debug("No rows found in webhook database")
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
@@ -172,15 +172,15 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	userID := sessionCtxData.Requester.UserID
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
-	accountID := sessionCtxData.ActiveAccountID
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	householdID := sessionCtxData.ActiveHouseholdID
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
 	// determine relevant webhook ID.
 	webhookID := s.webhookIDFetcher(req)
 	tracing.AttachWebhookIDToSpan(span, webhookID)
 	logger = logger.WithValue(keys.WebhookIDKey, webhookID)
 
-	exists, webhookExistenceCheckErr := s.webhookDataManager.WebhookExists(ctx, webhookID, sessionCtxData.ActiveAccountID)
+	exists, webhookExistenceCheckErr := s.webhookDataManager.WebhookExists(ctx, webhookID, sessionCtxData.ActiveHouseholdID)
 	if webhookExistenceCheckErr != nil && !errors.Is(webhookExistenceCheckErr, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		observability.AcknowledgeError(webhookExistenceCheckErr, logger, span, "checking item existence")
@@ -191,10 +191,10 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	pam := &types.PreArchiveMessage{
-		DataType:                types.WebhookDataType,
-		WebhookID:               webhookID,
-		AttributableToUserID:    sessionCtxData.Requester.UserID,
-		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+		DataType:                  types.WebhookDataType,
+		WebhookID:                 webhookID,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 	}
 	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing webhook archive message")

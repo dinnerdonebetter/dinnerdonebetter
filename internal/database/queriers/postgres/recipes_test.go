@@ -35,7 +35,7 @@ func buildMockRowsFromRecipes(includeCounts bool, filteredCount uint64, recipes 
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,
-			x.BelongsToAccount,
+			x.BelongsToHousehold,
 		}
 
 		if includeCounts {
@@ -285,7 +285,7 @@ func TestQuerier_GetRecipes(T *testing.T) {
 			"recipes",
 			nil,
 			nil,
-			accountOwnershipColumn,
+			householdOwnershipColumn,
 			recipesTableColumns,
 			"",
 			false,
@@ -319,7 +319,7 @@ func TestQuerier_GetRecipes(T *testing.T) {
 			"recipes",
 			nil,
 			nil,
-			accountOwnershipColumn,
+			householdOwnershipColumn,
 			recipesTableColumns,
 			"",
 			false,
@@ -350,7 +350,7 @@ func TestQuerier_GetRecipes(T *testing.T) {
 			"recipes",
 			nil,
 			nil,
-			accountOwnershipColumn,
+			householdOwnershipColumn,
 			recipesTableColumns,
 			"",
 			false,
@@ -381,7 +381,7 @@ func TestQuerier_GetRecipes(T *testing.T) {
 			"recipes",
 			nil,
 			nil,
-			accountOwnershipColumn,
+			householdOwnershipColumn,
 			recipesTableColumns,
 			"",
 			false,
@@ -406,7 +406,7 @@ func TestQuerier_GetRecipesWithIDs(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleRecipeList := fakes.BuildFakeRecipeList()
 
 		var exampleIDs []string
@@ -417,12 +417,12 @@ func TestQuerier_GetRecipesWithIDs(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildGetRecipesWithIDsQuery(ctx, exampleAccountID, defaultLimit, exampleIDs)
+		query, args := c.buildGetRecipesWithIDsQuery(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromRecipes(false, 0, exampleRecipeList.Recipes...))
 
-		actual, err := c.GetRecipesWithIDs(ctx, exampleAccountID, 0, exampleIDs)
+		actual, err := c.GetRecipesWithIDs(ctx, exampleHouseholdID, 0, exampleIDs)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleRecipeList.Recipes, actual)
 
@@ -432,12 +432,12 @@ func TestQuerier_GetRecipesWithIDs(T *testing.T) {
 	T.Run("with invalid IDs", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetRecipesWithIDs(ctx, exampleAccountID, defaultLimit, nil)
+		actual, err := c.GetRecipesWithIDs(ctx, exampleHouseholdID, defaultLimit, nil)
 		assert.Error(t, err)
 		assert.Empty(t, actual)
 	})
@@ -445,7 +445,7 @@ func TestQuerier_GetRecipesWithIDs(T *testing.T) {
 	T.Run("with error executing query", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleRecipeList := fakes.BuildFakeRecipeList()
 
 		var exampleIDs []string
@@ -456,12 +456,12 @@ func TestQuerier_GetRecipesWithIDs(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildGetRecipesWithIDsQuery(ctx, exampleAccountID, defaultLimit, exampleIDs)
+		query, args := c.buildGetRecipesWithIDsQuery(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.GetRecipesWithIDs(ctx, exampleAccountID, defaultLimit, exampleIDs)
+		actual, err := c.GetRecipesWithIDs(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
 		assert.Error(t, err)
 		assert.Empty(t, actual)
 
@@ -471,7 +471,7 @@ func TestQuerier_GetRecipesWithIDs(T *testing.T) {
 	T.Run("with error scanning query results", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleRecipeList := fakes.BuildFakeRecipeList()
 
 		var exampleIDs []string
@@ -482,12 +482,12 @@ func TestQuerier_GetRecipesWithIDs(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildGetRecipesWithIDsQuery(ctx, exampleAccountID, defaultLimit, exampleIDs)
+		query, args := c.buildGetRecipesWithIDsQuery(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
 
-		actual, err := c.GetRecipesWithIDs(ctx, exampleAccountID, defaultLimit, exampleIDs)
+		actual, err := c.GetRecipesWithIDs(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
 		assert.Error(t, err)
 		assert.Empty(t, actual)
 
@@ -514,7 +514,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleInput.Source,
 			exampleInput.Description,
 			exampleInput.InspiredByRecipeID,
-			exampleInput.BelongsToAccount,
+			exampleInput.BelongsToHousehold,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(recipeCreationQuery)).
@@ -559,7 +559,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleInput.Source,
 			exampleInput.Description,
 			exampleInput.InspiredByRecipeID,
-			exampleInput.BelongsToAccount,
+			exampleInput.BelongsToHousehold,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(recipeCreationQuery)).
@@ -595,7 +595,7 @@ func TestQuerier_UpdateRecipe(T *testing.T) {
 			exampleRecipe.Source,
 			exampleRecipe.Description,
 			exampleRecipe.InspiredByRecipeID,
-			exampleRecipe.BelongsToAccount,
+			exampleRecipe.BelongsToHousehold,
 			exampleRecipe.ID,
 		}
 
@@ -630,7 +630,7 @@ func TestQuerier_UpdateRecipe(T *testing.T) {
 			exampleRecipe.Source,
 			exampleRecipe.Description,
 			exampleRecipe.InspiredByRecipeID,
-			exampleRecipe.BelongsToAccount,
+			exampleRecipe.BelongsToHousehold,
 			exampleRecipe.ID,
 		}
 
@@ -650,14 +650,14 @@ func TestQuerier_ArchiveRecipe(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleRecipe := fakes.BuildFakeRecipe()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleAccountID,
+			exampleHouseholdID,
 			exampleRecipe.ID,
 		}
 
@@ -665,7 +665,7 @@ func TestQuerier_ArchiveRecipe(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult(exampleRecipe.ID))
 
-		assert.NoError(t, c.ArchiveRecipe(ctx, exampleRecipe.ID, exampleAccountID))
+		assert.NoError(t, c.ArchiveRecipe(ctx, exampleRecipe.ID, exampleHouseholdID))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -673,15 +673,15 @@ func TestQuerier_ArchiveRecipe(T *testing.T) {
 	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveRecipe(ctx, "", exampleAccountID))
+		assert.Error(t, c.ArchiveRecipe(ctx, "", exampleHouseholdID))
 	})
 
-	T.Run("with invalid account ID", func(t *testing.T) {
+	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleRecipe := fakes.BuildFakeRecipe()
@@ -695,14 +695,14 @@ func TestQuerier_ArchiveRecipe(T *testing.T) {
 	T.Run("with error writing to database", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleRecipe := fakes.BuildFakeRecipe()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleAccountID,
+			exampleHouseholdID,
 			exampleRecipe.ID,
 		}
 
@@ -710,7 +710,7 @@ func TestQuerier_ArchiveRecipe(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		assert.Error(t, c.ArchiveRecipe(ctx, exampleRecipe.ID, exampleAccountID))
+		assert.Error(t, c.ArchiveRecipe(ctx, exampleRecipe.ID, exampleHouseholdID))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

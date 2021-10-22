@@ -17,9 +17,9 @@ type (
 	UserReputationUpdateInput struct {
 		_ struct{}
 
-		NewReputation accountStatus `json:"newReputation"`
-		Reason        string        `json:"reason"`
-		TargetUserID  string        `json:"targetUserID"`
+		NewReputation householdStatus `json:"newReputation"`
+		Reason        string          `json:"reason"`
+		TargetUserID  string          `json:"targetUserID"`
 	}
 
 	// FrontendService serves static frontend files.

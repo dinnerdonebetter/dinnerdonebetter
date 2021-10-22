@@ -65,15 +65,15 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := types.MealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVoteCreationInput(providedInput)
 	input.ID = ksuid.New().String()
 
-	input.BelongsToAccount = sessionCtxData.ActiveAccountID
+	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, input.ID)
 
 	// create meal plan option vote in database.
 	preWrite := &types.PreWriteMessage{
-		DataType:                types.MealPlanOptionVoteDataType,
-		MealPlanOptionVote:      input,
-		AttributableToUserID:    sessionCtxData.Requester.UserID,
-		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+		DataType:                  types.MealPlanOptionVoteDataType,
+		MealPlanOptionVote:        input,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 	}
 	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing meal plan option vote write message")
@@ -196,7 +196,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
 	}
-	input.BelongsToAccount = sessionCtxData.ActiveAccountID
+	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 
 	// determine meal plan option vote ID.
 	mealPlanOptionVoteID := s.mealPlanOptionVoteIDFetcher(req)
@@ -218,10 +218,10 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	mealPlanOptionVote.Update(input)
 
 	pum := &types.PreUpdateMessage{
-		DataType:                types.MealPlanOptionVoteDataType,
-		MealPlanOptionVote:      mealPlanOptionVote,
-		AttributableToUserID:    sessionCtxData.Requester.UserID,
-		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+		DataType:                  types.MealPlanOptionVoteDataType,
+		MealPlanOptionVote:        mealPlanOptionVote,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 	}
 	if err = s.preUpdatesPublisher.Publish(ctx, pum); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing meal plan option vote update message")
@@ -268,10 +268,10 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	pam := &types.PreArchiveMessage{
-		DataType:                types.MealPlanOptionVoteDataType,
-		MealPlanOptionVoteID:    mealPlanOptionVoteID,
-		AttributableToUserID:    sessionCtxData.Requester.UserID,
-		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+		DataType:                  types.MealPlanOptionVoteDataType,
+		MealPlanOptionVoteID:      mealPlanOptionVoteID,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 	}
 	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing meal plan option vote archive message")

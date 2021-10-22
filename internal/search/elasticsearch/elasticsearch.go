@@ -162,7 +162,7 @@ var (
 func (sm *indexManager) search(
 	ctx context.Context,
 	query,
-	accountID string,
+	householdID string,
 ) (ids []string, err error) {
 	_, span := sm.tracer.StartSpan(ctx)
 	defer span.End()
@@ -177,11 +177,11 @@ func (sm *indexManager) search(
 	baseQuery := elastic.NewMultiMatchQuery(query, sm.searchFields...)
 
 	var q elastic.Query
-	if accountID == "" {
+	if householdID == "" {
 		q = baseQuery
 	} else {
-		accountIDMatchQuery := elastic.NewMatchQuery("accountID", accountID)
-		q = elastic.NewBoolQuery().Should(accountIDMatchQuery).Should(baseQuery)
+		householdIDMatchQuery := elastic.NewMatchQuery("householdID", householdID)
+		q = elastic.NewBoolQuery().Should(householdIDMatchQuery).Should(baseQuery)
 	}
 
 	results, err := sm.esclient.Search().Index(sm.indexName).Query(q).Do(ctx)
@@ -202,8 +202,8 @@ func (sm *indexManager) search(
 }
 
 // Search implements our IndexManager interface.
-func (sm *indexManager) Search(ctx context.Context, query, accountID string) (ids []string, err error) {
-	return sm.search(ctx, query, accountID)
+func (sm *indexManager) Search(ctx context.Context, query, householdID string) (ids []string, err error) {
+	return sm.search(ctx, query, householdID)
 }
 
 // Delete implements our IndexManager interface.

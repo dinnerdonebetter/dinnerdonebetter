@@ -35,7 +35,7 @@ func buildMockRowsFromMealPlanOptions(includeCounts bool, filteredCount uint64, 
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,
-			x.BelongsToAccount,
+			x.BelongsToHousehold,
 		}
 
 		if includeCounts {
@@ -285,7 +285,7 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 			"meal_plan_options",
 			nil,
 			nil,
-			accountOwnershipColumn,
+			householdOwnershipColumn,
 			mealPlanOptionsTableColumns,
 			"",
 			false,
@@ -319,7 +319,7 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 			"meal_plan_options",
 			nil,
 			nil,
-			accountOwnershipColumn,
+			householdOwnershipColumn,
 			mealPlanOptionsTableColumns,
 			"",
 			false,
@@ -350,7 +350,7 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 			"meal_plan_options",
 			nil,
 			nil,
-			accountOwnershipColumn,
+			householdOwnershipColumn,
 			mealPlanOptionsTableColumns,
 			"",
 			false,
@@ -381,7 +381,7 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 			"meal_plan_options",
 			nil,
 			nil,
-			accountOwnershipColumn,
+			householdOwnershipColumn,
 			mealPlanOptionsTableColumns,
 			"",
 			false,
@@ -406,7 +406,7 @@ func TestQuerier_GetMealPlanOptionsWithIDs(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleMealPlanOptionList := fakes.BuildFakeMealPlanOptionList()
 
 		var exampleIDs []string
@@ -417,12 +417,12 @@ func TestQuerier_GetMealPlanOptionsWithIDs(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildGetMealPlanOptionsWithIDsQuery(ctx, exampleAccountID, defaultLimit, exampleIDs)
+		query, args := c.buildGetMealPlanOptionsWithIDsQuery(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromMealPlanOptions(false, 0, exampleMealPlanOptionList.MealPlanOptions...))
 
-		actual, err := c.GetMealPlanOptionsWithIDs(ctx, exampleAccountID, 0, exampleIDs)
+		actual, err := c.GetMealPlanOptionsWithIDs(ctx, exampleHouseholdID, 0, exampleIDs)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleMealPlanOptionList.MealPlanOptions, actual)
 
@@ -432,12 +432,12 @@ func TestQuerier_GetMealPlanOptionsWithIDs(T *testing.T) {
 	T.Run("with invalid IDs", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetMealPlanOptionsWithIDs(ctx, exampleAccountID, defaultLimit, nil)
+		actual, err := c.GetMealPlanOptionsWithIDs(ctx, exampleHouseholdID, defaultLimit, nil)
 		assert.Error(t, err)
 		assert.Empty(t, actual)
 	})
@@ -445,7 +445,7 @@ func TestQuerier_GetMealPlanOptionsWithIDs(T *testing.T) {
 	T.Run("with error executing query", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleMealPlanOptionList := fakes.BuildFakeMealPlanOptionList()
 
 		var exampleIDs []string
@@ -456,12 +456,12 @@ func TestQuerier_GetMealPlanOptionsWithIDs(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildGetMealPlanOptionsWithIDsQuery(ctx, exampleAccountID, defaultLimit, exampleIDs)
+		query, args := c.buildGetMealPlanOptionsWithIDsQuery(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.GetMealPlanOptionsWithIDs(ctx, exampleAccountID, defaultLimit, exampleIDs)
+		actual, err := c.GetMealPlanOptionsWithIDs(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
 		assert.Error(t, err)
 		assert.Empty(t, actual)
 
@@ -471,7 +471,7 @@ func TestQuerier_GetMealPlanOptionsWithIDs(T *testing.T) {
 	T.Run("with error scanning query results", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleMealPlanOptionList := fakes.BuildFakeMealPlanOptionList()
 
 		var exampleIDs []string
@@ -482,12 +482,12 @@ func TestQuerier_GetMealPlanOptionsWithIDs(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildGetMealPlanOptionsWithIDsQuery(ctx, exampleAccountID, defaultLimit, exampleIDs)
+		query, args := c.buildGetMealPlanOptionsWithIDsQuery(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
 
-		actual, err := c.GetMealPlanOptionsWithIDs(ctx, exampleAccountID, defaultLimit, exampleIDs)
+		actual, err := c.GetMealPlanOptionsWithIDs(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
 		assert.Error(t, err)
 		assert.Empty(t, actual)
 
@@ -514,7 +514,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 			exampleInput.DayOfWeek,
 			exampleInput.RecipeID,
 			exampleInput.Notes,
-			exampleInput.BelongsToAccount,
+			exampleInput.BelongsToHousehold,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(mealPlanOptionCreationQuery)).
@@ -559,7 +559,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 			exampleInput.DayOfWeek,
 			exampleInput.RecipeID,
 			exampleInput.Notes,
-			exampleInput.BelongsToAccount,
+			exampleInput.BelongsToHousehold,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(mealPlanOptionCreationQuery)).
@@ -595,7 +595,7 @@ func TestQuerier_UpdateMealPlanOption(T *testing.T) {
 			exampleMealPlanOption.DayOfWeek,
 			exampleMealPlanOption.RecipeID,
 			exampleMealPlanOption.Notes,
-			exampleMealPlanOption.BelongsToAccount,
+			exampleMealPlanOption.BelongsToHousehold,
 			exampleMealPlanOption.ID,
 		}
 
@@ -630,7 +630,7 @@ func TestQuerier_UpdateMealPlanOption(T *testing.T) {
 			exampleMealPlanOption.DayOfWeek,
 			exampleMealPlanOption.RecipeID,
 			exampleMealPlanOption.Notes,
-			exampleMealPlanOption.BelongsToAccount,
+			exampleMealPlanOption.BelongsToHousehold,
 			exampleMealPlanOption.ID,
 		}
 
@@ -650,14 +650,14 @@ func TestQuerier_ArchiveMealPlanOption(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleAccountID,
+			exampleHouseholdID,
 			exampleMealPlanOption.ID,
 		}
 
@@ -665,7 +665,7 @@ func TestQuerier_ArchiveMealPlanOption(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult(exampleMealPlanOption.ID))
 
-		assert.NoError(t, c.ArchiveMealPlanOption(ctx, exampleMealPlanOption.ID, exampleAccountID))
+		assert.NoError(t, c.ArchiveMealPlanOption(ctx, exampleMealPlanOption.ID, exampleHouseholdID))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -673,15 +673,15 @@ func TestQuerier_ArchiveMealPlanOption(T *testing.T) {
 	T.Run("with invalid meal plan option ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveMealPlanOption(ctx, "", exampleAccountID))
+		assert.Error(t, c.ArchiveMealPlanOption(ctx, "", exampleHouseholdID))
 	})
 
-	T.Run("with invalid account ID", func(t *testing.T) {
+	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
@@ -695,14 +695,14 @@ func TestQuerier_ArchiveMealPlanOption(T *testing.T) {
 	T.Run("with error writing to database", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleAccountID,
+			exampleHouseholdID,
 			exampleMealPlanOption.ID,
 		}
 
@@ -710,7 +710,7 @@ func TestQuerier_ArchiveMealPlanOption(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		assert.Error(t, c.ArchiveMealPlanOption(ctx, exampleMealPlanOption.ID, exampleAccountID))
+		assert.Error(t, c.ArchiveMealPlanOption(ctx, exampleMealPlanOption.ID, exampleHouseholdID))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

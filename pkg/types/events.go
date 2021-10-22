@@ -23,9 +23,9 @@ type (
 		MealPlanOption             *MealPlanOptionDatabaseCreationInput             `json:"mealPlanOption,omitempty"`
 		MealPlanOptionVote         *MealPlanOptionVoteDatabaseCreationInput         `json:"mealPlanOptionVote,omitempty"`
 		Webhook                    *WebhookDatabaseCreationInput                    `json:"webhook,omitempty"`
-		UserMembership             *AddUserToAccountInput                           `json:"userMembership,omitempty"`
+		UserMembership             *AddUserToHouseholdInput                         `json:"userMembership,omitempty"`
 		AttributableToUserID       string                                           `json:"attributableToUserID"`
-		AttributableToAccountID    string                                           `json:"attributableToAccountID"`
+		AttributableToHouseholdID  string                                           `json:"attributableToHouseholdID"`
 	}
 
 	// PreUpdateMessage represents an event that asks a worker to update data in the datastore.
@@ -48,7 +48,7 @@ type (
 		MealPlanOption             *MealPlanOption             `json:"mealPlanOption,omitempty"`
 		MealPlanOptionVote         *MealPlanOptionVote         `json:"mealPlanOptionVote,omitempty"`
 		AttributableToUserID       string                      `json:"attributableToUserID"`
-		AttributableToAccountID    string                      `json:"attributableToAccountID"`
+		AttributableToHouseholdID  string                      `json:"attributableToHouseholdID"`
 	}
 
 	// PreArchiveMessage represents an event that asks a worker to archive data in the datastore.
@@ -70,7 +70,7 @@ type (
 		MealPlanOptionVoteID         string   `json:"mealPlanOptionVoteID"`
 		WebhookID                    string   `json:"webhookID"`
 		AttributableToUserID         string   `json:"attributableToUserID"`
-		AttributableToAccountID      string   `json:"attributableToAccountID"`
+		AttributableToHouseholdID    string   `json:"attributableToHouseholdID"`
 	}
 
 	// DataChangeMessage represents an event that asks a worker to write data to the datastore.
@@ -94,9 +94,9 @@ type (
 		MealPlanOption             *MealPlanOption             `json:"mealPlanOption,omitempty"`
 		MealPlanOptionVote         *MealPlanOptionVote         `json:"mealPlanOptionVote,omitempty"`
 		Webhook                    *Webhook                    `json:"webhook,omitempty"`
-		UserMembership             *AccountUserMembership      `json:"userMembership,omitempty"`
+		UserMembership             *HouseholdUserMembership    `json:"userMembership,omitempty"`
 		Context                    map[string]string           `json:"context,omitempty"`
 		AttributableToUserID       string                      `json:"attributableToUserID"`
-		AttributableToAccountID    string                      `json:"attributableToAccountID"`
+		AttributableToHouseholdID  string                      `json:"attributableToHouseholdID"`
 	}
 )

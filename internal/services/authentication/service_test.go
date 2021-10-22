@@ -36,7 +36,7 @@ func buildTestService(t *testing.T) *service {
 		&mockauthn.Authenticator{},
 		&mocktypes.UserDataManager{},
 		&mocktypes.APIClientDataManager{},
-		&mocktypes.AccountUserMembershipDataManager{},
+		&mocktypes.HouseholdUserMembershipDataManager{},
 		scs.New(),
 		encoderDecoder,
 	)
@@ -64,7 +64,7 @@ func TestProvideService(T *testing.T) {
 			&mockauthn.Authenticator{},
 			&mocktypes.UserDataManager{},
 			&mocktypes.APIClientDataManager{},
-			&mocktypes.AccountUserMembershipDataManager{},
+			&mocktypes.HouseholdUserMembershipDataManager{},
 			scs.New(),
 			encoderDecoder,
 		)
@@ -89,7 +89,7 @@ func TestProvideService(T *testing.T) {
 			&mockauthn.Authenticator{},
 			&mocktypes.UserDataManager{},
 			&mocktypes.APIClientDataManager{},
-			&mocktypes.AccountUserMembershipDataManager{},
+			&mocktypes.HouseholdUserMembershipDataManager{},
 			scs.New(),
 			encoderDecoder,
 		)

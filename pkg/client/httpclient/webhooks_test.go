@@ -122,7 +122,7 @@ func (s *webhooksTestSuite) TestClient_CreateWebhook() {
 
 		exampleInput := fakes.BuildFakeWebhookCreationInputFromWebhook(s.exampleWebhook)
 		exampleInput.ID = ""
-		exampleInput.BelongsToAccount = ""
+		exampleInput.BelongsToHousehold = ""
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, &types.PreWriteResponse{ID: s.exampleWebhook.ID})

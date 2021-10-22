@@ -186,7 +186,7 @@ func (q *SQLQuerier) GetValidInstruments(ctx context.Context, filter *types.Quer
 		"valid_instruments",
 		nil,
 		nil,
-		accountOwnershipColumn,
+		householdOwnershipColumn,
 		validInstrumentsTableColumns,
 		"",
 		false,

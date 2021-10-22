@@ -40,8 +40,8 @@ func (m *MealPlanDataManager) GetMealPlans(ctx context.Context, filter *types.Qu
 }
 
 // GetMealPlansWithIDs is a mock function.
-func (m *MealPlanDataManager) GetMealPlansWithIDs(ctx context.Context, accountID string, limit uint8, ids []string) ([]*types.MealPlan, error) {
-	args := m.Called(ctx, accountID, limit, ids)
+func (m *MealPlanDataManager) GetMealPlansWithIDs(ctx context.Context, householdID string, limit uint8, ids []string) ([]*types.MealPlan, error) {
+	args := m.Called(ctx, householdID, limit, ids)
 	return args.Get(0).([]*types.MealPlan), args.Error(1)
 }
 
@@ -57,6 +57,6 @@ func (m *MealPlanDataManager) UpdateMealPlan(ctx context.Context, updated *types
 }
 
 // ArchiveMealPlan is a mock function.
-func (m *MealPlanDataManager) ArchiveMealPlan(ctx context.Context, mealPlanID, accountID string) error {
-	return m.Called(ctx, mealPlanID, accountID).Error(0)
+func (m *MealPlanDataManager) ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error {
+	return m.Called(ctx, mealPlanID, householdID).Error(0)
 }

@@ -26,7 +26,7 @@ var (
 		"meal_plan_options.created_on",
 		"meal_plan_options.last_updated_on",
 		"meal_plan_options.archived_on",
-		"meal_plan_options.belongs_to_account",
+		"meal_plan_options.belongs_to_household",
 	}
 )
 
@@ -48,7 +48,7 @@ func (q *SQLQuerier) scanMealPlanOption(ctx context.Context, scan database.Scann
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
-		&x.BelongsToAccount,
+		&x.BelongsToHousehold,
 	}
 
 	if includeCounts {
@@ -122,7 +122,7 @@ func (q *SQLQuerier) MealPlanOptionExists(ctx context.Context, mealPlanOptionID 
 	return result, nil
 }
 
-const getMealPlanOptionQuery = "SELECT meal_plan_options.id, meal_plan_options.meal_plan_id, meal_plan_options.day_of_week, meal_plan_options.recipe_id, meal_plan_options.notes, meal_plan_options.created_on, meal_plan_options.last_updated_on, meal_plan_options.archived_on, meal_plan_options.belongs_to_account FROM meal_plan_options WHERE meal_plan_options.archived_on IS NULL AND meal_plan_options.id = $1"
+const getMealPlanOptionQuery = "SELECT meal_plan_options.id, meal_plan_options.meal_plan_id, meal_plan_options.day_of_week, meal_plan_options.recipe_id, meal_plan_options.notes, meal_plan_options.created_on, meal_plan_options.last_updated_on, meal_plan_options.archived_on, meal_plan_options.belongs_to_household FROM meal_plan_options WHERE meal_plan_options.archived_on IS NULL AND meal_plan_options.id = $1"
 
 // GetMealPlanOption fetches a meal plan option from the database.
 func (q *SQLQuerier) GetMealPlanOption(ctx context.Context, mealPlanOptionID string) (*types.MealPlanOption, error) {
@@ -188,7 +188,7 @@ func (q *SQLQuerier) GetMealPlanOptions(ctx context.Context, filter *types.Query
 		"meal_plan_options",
 		nil,
 		nil,
-		accountOwnershipColumn,
+		householdOwnershipColumn,
 		mealPlanOptionsTableColumns,
 		"",
 		false,
@@ -207,7 +207,7 @@ func (q *SQLQuerier) GetMealPlanOptions(ctx context.Context, filter *types.Query
 	return x, nil
 }
 
-func (q *SQLQuerier) buildGetMealPlanOptionsWithIDsQuery(ctx context.Context, accountID string, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *SQLQuerier) buildGetMealPlanOptionsWithIDsQuery(ctx context.Context, householdID string, limit uint8, ids []string) (query string, args []interface{}) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -216,8 +216,8 @@ func (q *SQLQuerier) buildGetMealPlanOptionsWithIDsQuery(ctx context.Context, ac
 		"meal_plan_options.archived_on": nil,
 	}
 
-	if accountID != "" {
-		withIDsWhere["meal_plan_options.belongs_to_account"] = accountID
+	if householdID != "" {
+		withIDsWhere["meal_plan_options.belongs_to_household"] = householdID
 	}
 
 	subqueryBuilder := q.sqlBuilder.Select(mealPlanOptionsTableColumns...).
@@ -235,7 +235,7 @@ func (q *SQLQuerier) buildGetMealPlanOptionsWithIDsQuery(ctx context.Context, ac
 }
 
 // GetMealPlanOptionsWithIDs fetches meal plan options from the database within a given set of IDs.
-func (q *SQLQuerier) GetMealPlanOptionsWithIDs(ctx context.Context, accountID string, limit uint8, ids []string) ([]*types.MealPlanOption, error) {
+func (q *SQLQuerier) GetMealPlanOptionsWithIDs(ctx context.Context, householdID string, limit uint8, ids []string) ([]*types.MealPlanOption, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -254,7 +254,7 @@ func (q *SQLQuerier) GetMealPlanOptionsWithIDs(ctx context.Context, accountID st
 		"id_count": len(ids),
 	})
 
-	query, args := q.buildGetMealPlanOptionsWithIDsQuery(ctx, accountID, limit, ids)
+	query, args := q.buildGetMealPlanOptionsWithIDsQuery(ctx, householdID, limit, ids)
 
 	rows, err := q.performReadQuery(ctx, q.db, "meal plan options with IDs", query, args)
 	if err != nil {
@@ -269,7 +269,7 @@ func (q *SQLQuerier) GetMealPlanOptionsWithIDs(ctx context.Context, accountID st
 	return mealPlanOptions, nil
 }
 
-const mealPlanOptionCreationQuery = "INSERT INTO meal_plan_options (id,meal_plan_id,day_of_week,recipe_id,notes,belongs_to_account) VALUES ($1,$2,$3,$4,$5,$6)"
+const mealPlanOptionCreationQuery = "INSERT INTO meal_plan_options (id,meal_plan_id,day_of_week,recipe_id,notes,belongs_to_household) VALUES ($1,$2,$3,$4,$5,$6)"
 
 // CreateMealPlanOption creates a meal plan option in the database.
 func (q *SQLQuerier) CreateMealPlanOption(ctx context.Context, input *types.MealPlanOptionDatabaseCreationInput) (*types.MealPlanOption, error) {
@@ -288,7 +288,7 @@ func (q *SQLQuerier) CreateMealPlanOption(ctx context.Context, input *types.Meal
 		input.DayOfWeek,
 		input.RecipeID,
 		input.Notes,
-		input.BelongsToAccount,
+		input.BelongsToHousehold,
 	}
 
 	// create the meal plan option.
@@ -297,13 +297,13 @@ func (q *SQLQuerier) CreateMealPlanOption(ctx context.Context, input *types.Meal
 	}
 
 	x := &types.MealPlanOption{
-		ID:               input.ID,
-		MealPlanID:       input.MealPlanID,
-		DayOfWeek:        input.DayOfWeek,
-		RecipeID:         input.RecipeID,
-		Notes:            input.Notes,
-		BelongsToAccount: input.BelongsToAccount,
-		CreatedOn:        q.currentTime(),
+		ID:                 input.ID,
+		MealPlanID:         input.MealPlanID,
+		DayOfWeek:          input.DayOfWeek,
+		RecipeID:           input.RecipeID,
+		Notes:              input.Notes,
+		BelongsToHousehold: input.BelongsToHousehold,
+		CreatedOn:          q.currentTime(),
 	}
 
 	tracing.AttachMealPlanOptionIDToSpan(span, x.ID)
@@ -312,7 +312,7 @@ func (q *SQLQuerier) CreateMealPlanOption(ctx context.Context, input *types.Meal
 	return x, nil
 }
 
-const updateMealPlanOptionQuery = "UPDATE meal_plan_options SET meal_plan_id = $1, day_of_week = $2, recipe_id = $3, notes = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_account = $5 AND id = $6"
+const updateMealPlanOptionQuery = "UPDATE meal_plan_options SET meal_plan_id = $1, day_of_week = $2, recipe_id = $3, notes = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_household = $5 AND id = $6"
 
 // UpdateMealPlanOption updates a particular meal plan option.
 func (q *SQLQuerier) UpdateMealPlanOption(ctx context.Context, updated *types.MealPlanOption) error {
@@ -325,14 +325,14 @@ func (q *SQLQuerier) UpdateMealPlanOption(ctx context.Context, updated *types.Me
 
 	logger := q.logger.WithValue(keys.MealPlanOptionIDKey, updated.ID)
 	tracing.AttachMealPlanOptionIDToSpan(span, updated.ID)
-	tracing.AttachAccountIDToSpan(span, updated.BelongsToAccount)
+	tracing.AttachHouseholdIDToSpan(span, updated.BelongsToHousehold)
 
 	args := []interface{}{
 		updated.MealPlanID,
 		updated.DayOfWeek,
 		updated.RecipeID,
 		updated.Notes,
-		updated.BelongsToAccount,
+		updated.BelongsToHousehold,
 		updated.ID,
 	}
 
@@ -345,10 +345,10 @@ func (q *SQLQuerier) UpdateMealPlanOption(ctx context.Context, updated *types.Me
 	return nil
 }
 
-const archiveMealPlanOptionQuery = "UPDATE meal_plan_options SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_account = $1 AND id = $2"
+const archiveMealPlanOptionQuery = "UPDATE meal_plan_options SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_household = $1 AND id = $2"
 
 // ArchiveMealPlanOption archives a meal plan option from the database by its ID.
-func (q *SQLQuerier) ArchiveMealPlanOption(ctx context.Context, mealPlanOptionID, accountID string) error {
+func (q *SQLQuerier) ArchiveMealPlanOption(ctx context.Context, mealPlanOptionID, householdID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -360,14 +360,14 @@ func (q *SQLQuerier) ArchiveMealPlanOption(ctx context.Context, mealPlanOptionID
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
-	if accountID == "" {
+	if householdID == "" {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	args := []interface{}{
-		accountID,
+		householdID,
 		mealPlanOptionID,
 	}
 

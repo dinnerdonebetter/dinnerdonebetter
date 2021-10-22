@@ -59,7 +59,7 @@ func (q *SQLQuerier) Migrate(ctx context.Context, maxAttempts uint8, testUserCon
 				testUserConfig.Username,
 				testUserConfig.HashedPassword,
 				defaultTestUserTwoFactorSecret,
-				types.GoodStandingAccountStatus,
+				types.GoodStandingHouseholdStatus,
 				authorization.ServiceAdminRole.String(),
 			}
 
@@ -68,14 +68,14 @@ func (q *SQLQuerier) Migrate(ctx context.Context, maxAttempts uint8, testUserCon
 				ID:       testUserConfig.ID,
 				Username: testUserConfig.Username,
 			}
-			account := &types.Account{
+			household := &types.Household{
 				ID: ksuid.New().String(),
 			}
 
-			if err = q.createUser(ctx, user, account, testUserCreationQuery, testUserCreationArgs); err != nil {
+			if err = q.createUser(ctx, user, household, testUserCreationQuery, testUserCreationArgs); err != nil {
 				return observability.PrepareError(err, q.logger, span, "creating test user")
 			}
-			q.logger.WithValue(keys.UsernameKey, testUserConfig.Username).Debug("created test user and account")
+			q.logger.WithValue(keys.UsernameKey, testUserConfig.Username).Debug("created test user and household")
 		}
 	}
 

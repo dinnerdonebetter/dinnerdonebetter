@@ -69,10 +69,10 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// create valid preparation in database.
 	preWrite := &types.PreWriteMessage{
-		DataType:                types.ValidPreparationDataType,
-		ValidPreparation:        input,
-		AttributableToUserID:    sessionCtxData.Requester.UserID,
-		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+		DataType:                  types.ValidPreparationDataType,
+		ValidPreparation:          input,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 	}
 	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing valid preparation write message")
@@ -190,7 +190,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	relevantIDs, err := s.search.Search(ctx, query, sessionCtxData.ActiveAccountID)
+	relevantIDs, err := s.search.Search(ctx, query, sessionCtxData.ActiveHouseholdID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "executing valid preparation search query")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -265,10 +265,10 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	validPreparation.Update(input)
 
 	pum := &types.PreUpdateMessage{
-		DataType:                types.ValidPreparationDataType,
-		ValidPreparation:        validPreparation,
-		AttributableToUserID:    sessionCtxData.Requester.UserID,
-		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+		DataType:                  types.ValidPreparationDataType,
+		ValidPreparation:          validPreparation,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 	}
 	if err = s.preUpdatesPublisher.Publish(ctx, pum); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing valid preparation update message")
@@ -315,10 +315,10 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	pam := &types.PreArchiveMessage{
-		DataType:                types.ValidPreparationDataType,
-		ValidPreparationID:      validPreparationID,
-		AttributableToUserID:    sessionCtxData.Requester.UserID,
-		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+		DataType:                  types.ValidPreparationDataType,
+		ValidPreparationID:        validPreparationID,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 	}
 	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing valid preparation archive message")

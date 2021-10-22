@@ -21,8 +21,8 @@ func (s *service) overrideSessionContextDataValuesWithSessionData(ctx context.Co
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if activeAccount, ok := s.sessionManager.Get(ctx, accountIDContextKey).(string); ok {
-		sessionCtxData.ActiveAccountID = activeAccount
+	if activeHousehold, ok := s.sessionManager.Get(ctx, householdIDContextKey).(string); ok {
+		sessionCtxData.ActiveHouseholdID = activeHousehold
 	}
 }
 

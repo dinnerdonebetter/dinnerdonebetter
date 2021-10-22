@@ -197,7 +197,7 @@ func Test_pingConnections(T *testing.T) {
 		).Return(nil)
 
 		s.service.connections = map[string][]websocketConnection{
-			s.exampleAccount.ID: {mc},
+			s.exampleHousehold.ID: {mc},
 		}
 
 		go s.service.pingConnections()
@@ -220,7 +220,7 @@ func Test_pingConnections(T *testing.T) {
 		).Return(errors.New("blah"))
 
 		s.service.connections = map[string][]websocketConnection{
-			s.exampleAccount.ID: {mc},
+			s.exampleHousehold.ID: {mc},
 		}
 
 		go s.service.pingConnections()

@@ -75,11 +75,11 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// create recipe step ingredient in database.
 	preWrite := &types.PreWriteMessage{
-		DataType:                types.RecipeStepIngredientDataType,
-		RecipeStepID:            recipeStepID,
-		RecipeStepIngredient:    input,
-		AttributableToUserID:    sessionCtxData.Requester.UserID,
-		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+		DataType:                  types.RecipeStepIngredientDataType,
+		RecipeStepID:              recipeStepID,
+		RecipeStepIngredient:      input,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 	}
 	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing recipe step ingredient write message")
@@ -253,11 +253,11 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	recipeStepIngredient.Update(input)
 
 	pum := &types.PreUpdateMessage{
-		DataType:                types.RecipeStepIngredientDataType,
-		RecipeStepID:            recipeStepID,
-		RecipeStepIngredient:    recipeStepIngredient,
-		AttributableToUserID:    sessionCtxData.Requester.UserID,
-		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+		DataType:                  types.RecipeStepIngredientDataType,
+		RecipeStepID:              recipeStepID,
+		RecipeStepIngredient:      recipeStepIngredient,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 	}
 	if err = s.preUpdatesPublisher.Publish(ctx, pum); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing recipe step ingredient update message")
@@ -314,11 +314,11 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	pam := &types.PreArchiveMessage{
-		DataType:                types.RecipeStepIngredientDataType,
-		RecipeStepID:            recipeStepID,
-		RecipeStepIngredientID:  recipeStepIngredientID,
-		AttributableToUserID:    sessionCtxData.Requester.UserID,
-		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+		DataType:                  types.RecipeStepIngredientDataType,
+		RecipeStepID:              recipeStepID,
+		RecipeStepIngredientID:    recipeStepIngredientID,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 	}
 	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing recipe step ingredient archive message")

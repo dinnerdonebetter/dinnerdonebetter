@@ -184,7 +184,7 @@ func (q *SQLQuerier) GetValidPreparations(ctx context.Context, filter *types.Que
 		"valid_preparations",
 		nil,
 		nil,
-		accountOwnershipColumn,
+		householdOwnershipColumn,
 		validPreparationsTableColumns,
 		"",
 		false,

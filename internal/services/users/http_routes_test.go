@@ -361,8 +361,8 @@ func TestService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = helper.exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = helper.exampleUser.ID
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
@@ -452,8 +452,8 @@ func TestService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = helper.exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = helper.exampleUser.ID
 
 		helper.service.authSettings.EnableUserSignup = true
 		helper.service.CreateHandler(helper.res, helper.req)
@@ -476,8 +476,8 @@ func TestService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = helper.exampleUser.ID
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = helper.exampleUser.ID
 
 		helper.req = helper.req.WithContext(
 			context.WithValue(

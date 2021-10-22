@@ -47,11 +47,11 @@ func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, nil)
 		sm.On("RenewToken", testutils.ContextMatcher).Return(nil)
 		sm.On("Put", testutils.ContextMatcher, userIDContextKey, helper.exampleUser.ID)
-		sm.On("Put", testutils.ContextMatcher, accountIDContextKey, helper.exampleAccount.ID)
+		sm.On("Put", testutils.ContextMatcher, householdIDContextKey, helper.exampleHousehold.ID)
 		sm.On("Commit", testutils.ContextMatcher).Return(expectedToken, time.Now().Add(24*time.Hour), nil)
 		helper.service.sessionManager = sm
 
-		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleAccount.ID, helper.exampleUser.ID)
+		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleHousehold.ID, helper.exampleUser.ID)
 		require.NotNil(t, cookie)
 		assert.NoError(t, err)
 
@@ -72,7 +72,7 @@ func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleAccount.ID, helper.exampleUser.ID)
+		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleHousehold.ID, helper.exampleUser.ID)
 		require.Nil(t, cookie)
 		assert.Error(t, err)
 
@@ -89,7 +89,7 @@ func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {
 		sm.On("RenewToken", testutils.ContextMatcher).Return(errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleAccount.ID, helper.exampleUser.ID)
+		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleHousehold.ID, helper.exampleUser.ID)
 		require.Nil(t, cookie)
 		assert.Error(t, err)
 
@@ -107,11 +107,11 @@ func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, nil)
 		sm.On("RenewToken", testutils.ContextMatcher).Return(nil)
 		sm.On("Put", testutils.ContextMatcher, userIDContextKey, helper.exampleUser.ID)
-		sm.On("Put", testutils.ContextMatcher, accountIDContextKey, helper.exampleAccount.ID)
+		sm.On("Put", testutils.ContextMatcher, householdIDContextKey, helper.exampleHousehold.ID)
 		sm.On("Commit", testutils.ContextMatcher).Return(expectedToken, time.Now(), errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleAccount.ID, helper.exampleUser.ID)
+		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleHousehold.ID, helper.exampleUser.ID)
 		require.Nil(t, cookie)
 		assert.Error(t, err)
 
@@ -129,7 +129,7 @@ func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, nil)
 		sm.On("RenewToken", testutils.ContextMatcher).Return(nil)
 		sm.On("Put", testutils.ContextMatcher, userIDContextKey, helper.exampleUser.ID)
-		sm.On("Put", testutils.ContextMatcher, accountIDContextKey, helper.exampleAccount.ID)
+		sm.On("Put", testutils.ContextMatcher, householdIDContextKey, helper.exampleHousehold.ID)
 		sm.On("Commit", testutils.ContextMatcher).Return(expectedToken, time.Now().Add(24*time.Hour), nil)
 		helper.service.sessionManager = sm
 
@@ -138,7 +138,7 @@ func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {
 			[]byte(""),
 		)
 
-		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleAccount.ID, helper.exampleUser.ID)
+		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleHousehold.ID, helper.exampleUser.ID)
 		require.Nil(t, cookie)
 		assert.Error(t, err)
 	})
@@ -179,13 +179,13 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
 		membershipDB.On(
-			"GetDefaultAccountIDForUser",
+			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-		).Return(helper.exampleAccount.ID, nil)
-		helper.service.accountMembershipManager = membershipDB
+		).Return(helper.exampleHousehold.ID, nil)
+		helper.service.householdMembershipManager = membershipDB
 
 		helper.service.BeginSessionHandler(helper.res, helper.req)
 
@@ -294,7 +294,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		helper.exampleUser.ServiceAccountStatus = types.BannedUserAccountStatus
+		helper.exampleUser.ServiceHouseholdStatus = types.BannedUserHouseholdStatus
 		helper.exampleUser.ReputationExplanation = "bad behavior"
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
@@ -481,7 +481,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, userDataManager, authenticator)
 	})
 
-	T.Run("with error fetching default account", func(t *testing.T) {
+	T.Run("with error fetching default household", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -513,13 +513,13 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
 		membershipDB.On(
-			"GetDefaultAccountIDForUser",
+			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return("", errors.New("blah"))
-		helper.service.accountMembershipManager = membershipDB
+		helper.service.householdMembershipManager = membershipDB
 
 		helper.service.BeginSessionHandler(helper.res, helper.req)
 
@@ -561,13 +561,13 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
 		membershipDB.On(
-			"GetDefaultAccountIDForUser",
+			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-		).Return(helper.exampleAccount.ID, nil)
-		helper.service.accountMembershipManager = membershipDB
+		).Return(helper.exampleHousehold.ID, nil)
+		helper.service.householdMembershipManager = membershipDB
 
 		sm := &mockSessionManager{}
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, errors.New("blah"))
@@ -613,13 +613,13 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
 		membershipDB.On(
-			"GetDefaultAccountIDForUser",
+			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-		).Return(helper.exampleAccount.ID, nil)
-		helper.service.accountMembershipManager = membershipDB
+		).Return(helper.exampleHousehold.ID, nil)
+		helper.service.householdMembershipManager = membershipDB
 
 		sm := &mockSessionManager{}
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, nil)
@@ -666,19 +666,19 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
 		membershipDB.On(
-			"GetDefaultAccountIDForUser",
+			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-		).Return(helper.exampleAccount.ID, nil)
-		helper.service.accountMembershipManager = membershipDB
+		).Return(helper.exampleHousehold.ID, nil)
+		helper.service.householdMembershipManager = membershipDB
 
 		sm := &mockSessionManager{}
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, nil)
 		sm.On("RenewToken", testutils.ContextMatcher).Return(nil)
 		sm.On("Put", testutils.ContextMatcher, userIDContextKey, helper.exampleUser.ID)
-		sm.On("Put", testutils.ContextMatcher, accountIDContextKey, helper.exampleAccount.ID)
+		sm.On("Put", testutils.ContextMatcher, householdIDContextKey, helper.exampleHousehold.ID)
 		sm.On("Commit", testutils.ContextMatcher).Return("", time.Now(), errors.New("blah"))
 		helper.service.sessionManager = sm
 
@@ -731,13 +731,13 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
 		membershipDB.On(
-			"GetDefaultAccountIDForUser",
+			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-		).Return(helper.exampleAccount.ID, nil)
-		helper.service.accountMembershipManager = membershipDB
+		).Return(helper.exampleHousehold.ID, nil)
+		helper.service.householdMembershipManager = membershipDB
 
 		helper.service.BeginSessionHandler(helper.res, helper.req)
 
@@ -787,13 +787,13 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
 		membershipDB.On(
-			"GetDefaultAccountIDForUser",
+			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-		).Return(helper.exampleAccount.ID, nil)
-		helper.service.accountMembershipManager = membershipDB
+		).Return(helper.exampleHousehold.ID, nil)
+		helper.service.householdMembershipManager = membershipDB
 
 		helper.service.BeginSessionHandler(helper.res, helper.req)
 
@@ -804,7 +804,7 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 	})
 }
 
-func TestAuthenticationService_ChangeActiveAccountHandler(T *testing.T) {
+func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -813,7 +813,7 @@ func TestAuthenticationService_ChangeActiveAccountHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeChangeActiveAccountInput()
+		exampleInput := fakes.BuildFakeChangeActiveHouseholdInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -821,21 +821,21 @@ func TestAuthenticationService_ChangeActiveAccountHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		accountMembershipManager := &mocktypes.AccountUserMembershipDataManager{}
-		accountMembershipManager.On(
-			"UserIsMemberOfAccount",
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager.On(
+			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			exampleInput.AccountID,
+			exampleInput.HouseholdID,
 		).Return(true, nil)
-		helper.service.accountMembershipManager = accountMembershipManager
+		helper.service.householdMembershipManager = householdMembershipManager
 
-		helper.service.ChangeActiveAccountHandler(helper.res, helper.req)
+		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, accountMembershipManager)
+		mock.AssertExpectationsForObjects(t, householdMembershipManager)
 	})
 
 	T.Run("with error fetching session context data", func(t *testing.T) {
@@ -845,7 +845,7 @@ func TestAuthenticationService_ChangeActiveAccountHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ChangeActiveAccountHandler(helper.res, helper.req)
+		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -862,7 +862,7 @@ func TestAuthenticationService_ChangeActiveAccountHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.ChangeActiveAccountHandler(helper.res, helper.req)
+		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -874,7 +874,7 @@ func TestAuthenticationService_ChangeActiveAccountHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		exampleInput := &types.ChangeActiveAccountInput{}
+		exampleInput := &types.ChangeActiveHouseholdInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -882,19 +882,19 @@ func TestAuthenticationService_ChangeActiveAccountHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.ChangeActiveAccountHandler(helper.res, helper.req)
+		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
 	})
 
-	T.Run("with error checking user account membership", func(t *testing.T) {
+	T.Run("with error checking user household membership", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeChangeActiveAccountInput()
+		exampleInput := fakes.BuildFakeChangeActiveHouseholdInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -902,30 +902,30 @@ func TestAuthenticationService_ChangeActiveAccountHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		accountMembershipManager := &mocktypes.AccountUserMembershipDataManager{}
-		accountMembershipManager.On(
-			"UserIsMemberOfAccount",
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager.On(
+			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			exampleInput.AccountID,
+			exampleInput.HouseholdID,
 		).Return(false, errors.New("blah"))
-		helper.service.accountMembershipManager = accountMembershipManager
+		helper.service.householdMembershipManager = householdMembershipManager
 
-		helper.service.ChangeActiveAccountHandler(helper.res, helper.req)
+		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, accountMembershipManager)
+		mock.AssertExpectationsForObjects(t, householdMembershipManager)
 	})
 
-	T.Run("without account authorization", func(t *testing.T) {
+	T.Run("without household authorization", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeChangeActiveAccountInput()
+		exampleInput := fakes.BuildFakeChangeActiveHouseholdInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -933,21 +933,21 @@ func TestAuthenticationService_ChangeActiveAccountHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		accountMembershipManager := &mocktypes.AccountUserMembershipDataManager{}
-		accountMembershipManager.On(
-			"UserIsMemberOfAccount",
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager.On(
+			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			exampleInput.AccountID,
+			exampleInput.HouseholdID,
 		).Return(false, nil)
-		helper.service.accountMembershipManager = accountMembershipManager
+		helper.service.householdMembershipManager = householdMembershipManager
 
-		helper.service.ChangeActiveAccountHandler(helper.res, helper.req)
+		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, accountMembershipManager)
+		mock.AssertExpectationsForObjects(t, householdMembershipManager)
 	})
 
 	T.Run("with error loading from session manager", func(t *testing.T) {
@@ -956,7 +956,7 @@ func TestAuthenticationService_ChangeActiveAccountHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeChangeActiveAccountInput()
+		exampleInput := fakes.BuildFakeChangeActiveHouseholdInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -964,25 +964,25 @@ func TestAuthenticationService_ChangeActiveAccountHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		accountMembershipManager := &mocktypes.AccountUserMembershipDataManager{}
-		accountMembershipManager.On(
-			"UserIsMemberOfAccount",
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager.On(
+			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			exampleInput.AccountID,
+			exampleInput.HouseholdID,
 		).Return(true, nil)
-		helper.service.accountMembershipManager = accountMembershipManager
+		helper.service.householdMembershipManager = householdMembershipManager
 
 		sm := &mockSessionManager{}
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		helper.service.ChangeActiveAccountHandler(helper.res, helper.req)
+		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, accountMembershipManager, sm)
+		mock.AssertExpectationsForObjects(t, householdMembershipManager, sm)
 	})
 
 	T.Run("with error renewing token in session manager", func(t *testing.T) {
@@ -991,7 +991,7 @@ func TestAuthenticationService_ChangeActiveAccountHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeChangeActiveAccountInput()
+		exampleInput := fakes.BuildFakeChangeActiveHouseholdInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -999,26 +999,26 @@ func TestAuthenticationService_ChangeActiveAccountHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		accountMembershipManager := &mocktypes.AccountUserMembershipDataManager{}
-		accountMembershipManager.On(
-			"UserIsMemberOfAccount",
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager.On(
+			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			exampleInput.AccountID,
+			exampleInput.HouseholdID,
 		).Return(true, nil)
-		helper.service.accountMembershipManager = accountMembershipManager
+		helper.service.householdMembershipManager = householdMembershipManager
 
 		sm := &mockSessionManager{}
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, nil)
 		sm.On("RenewToken", testutils.ContextMatcher).Return(errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		helper.service.ChangeActiveAccountHandler(helper.res, helper.req)
+		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, accountMembershipManager, sm)
+		mock.AssertExpectationsForObjects(t, householdMembershipManager, sm)
 	})
 
 	T.Run("with error committing to session manager", func(t *testing.T) {
@@ -1027,7 +1027,7 @@ func TestAuthenticationService_ChangeActiveAccountHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeChangeActiveAccountInput()
+		exampleInput := fakes.BuildFakeChangeActiveHouseholdInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1035,29 +1035,29 @@ func TestAuthenticationService_ChangeActiveAccountHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		accountMembershipManager := &mocktypes.AccountUserMembershipDataManager{}
-		accountMembershipManager.On(
-			"UserIsMemberOfAccount",
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager.On(
+			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			exampleInput.AccountID,
+			exampleInput.HouseholdID,
 		).Return(true, nil)
-		helper.service.accountMembershipManager = accountMembershipManager
+		helper.service.householdMembershipManager = householdMembershipManager
 
 		sm := &mockSessionManager{}
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, nil)
 		sm.On("RenewToken", testutils.ContextMatcher).Return(nil)
 		sm.On("Put", testutils.ContextMatcher, userIDContextKey, helper.exampleUser.ID)
-		sm.On("Put", testutils.ContextMatcher, accountIDContextKey, exampleInput.AccountID)
+		sm.On("Put", testutils.ContextMatcher, householdIDContextKey, exampleInput.HouseholdID)
 		sm.On("Commit", testutils.ContextMatcher).Return("", time.Now(), errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		helper.service.ChangeActiveAccountHandler(helper.res, helper.req)
+		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, accountMembershipManager, sm)
+		mock.AssertExpectationsForObjects(t, householdMembershipManager, sm)
 	})
 
 	T.Run("with error renewing token in session manager", func(t *testing.T) {
@@ -1066,7 +1066,7 @@ func TestAuthenticationService_ChangeActiveAccountHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeChangeActiveAccountInput()
+		exampleInput := fakes.BuildFakeChangeActiveHouseholdInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1074,26 +1074,26 @@ func TestAuthenticationService_ChangeActiveAccountHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		accountMembershipManager := &mocktypes.AccountUserMembershipDataManager{}
-		accountMembershipManager.On(
-			"UserIsMemberOfAccount",
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager.On(
+			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			exampleInput.AccountID,
+			exampleInput.HouseholdID,
 		).Return(true, nil)
-		helper.service.accountMembershipManager = accountMembershipManager
+		helper.service.householdMembershipManager = householdMembershipManager
 
 		sm := &mockSessionManager{}
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, nil)
 		sm.On("RenewToken", testutils.ContextMatcher).Return(errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		helper.service.ChangeActiveAccountHandler(helper.res, helper.req)
+		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, accountMembershipManager, sm)
+		mock.AssertExpectationsForObjects(t, householdMembershipManager, sm)
 	})
 
 	T.Run("with error building cookie", func(t *testing.T) {
@@ -1102,7 +1102,7 @@ func TestAuthenticationService_ChangeActiveAccountHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeChangeActiveAccountInput()
+		exampleInput := fakes.BuildFakeChangeActiveHouseholdInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1110,14 +1110,14 @@ func TestAuthenticationService_ChangeActiveAccountHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		accountMembershipManager := &mocktypes.AccountUserMembershipDataManager{}
-		accountMembershipManager.On(
-			"UserIsMemberOfAccount",
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager.On(
+			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			exampleInput.AccountID,
+			exampleInput.HouseholdID,
 		).Return(true, nil)
-		helper.service.accountMembershipManager = accountMembershipManager
+		helper.service.householdMembershipManager = householdMembershipManager
 
 		cookieManager := &mockCookieEncoderDecoder{}
 		cookieManager.On(
@@ -1127,12 +1127,12 @@ func TestAuthenticationService_ChangeActiveAccountHandler(T *testing.T) {
 		).Return("", errors.New("blah"))
 		helper.service.cookieManager = cookieManager
 
-		helper.service.ChangeActiveAccountHandler(helper.res, helper.req)
+		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, accountMembershipManager)
+		mock.AssertExpectationsForObjects(t, householdMembershipManager)
 	})
 }
 
@@ -1316,7 +1316,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		helper.service.config.PASETO.Lifetime = time.Minute
 
 		exampleInput := &types.PASETOCreationInput{
-			AccountID:   helper.exampleAccount.ID,
+			HouseholdID: helper.exampleHousehold.ID,
 			ClientID:    helper.exampleAPIClient.ClientID,
 			RequestTime: time.Now().UTC().UnixNano(),
 		}
@@ -1324,12 +1324,12 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		expected := &types.SessionContextData{
 			Requester: types.RequesterInfo{
 				UserID:                helper.exampleUser.ID,
-				Reputation:            helper.exampleUser.ServiceAccountStatus,
+				Reputation:            helper.exampleUser.ServiceHouseholdStatus,
 				ReputationExplanation: helper.exampleUser.ReputationExplanation,
 				ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 			},
-			ActiveAccountID:    helper.exampleAccount.ID,
-			AccountPermissions: helper.examplePermCheckers,
+			ActiveHouseholdID:    helper.exampleHousehold.ID,
+			HouseholdPermissions: helper.examplePermCheckers,
 		}
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
@@ -1356,13 +1356,13 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
 		membershipDB.On(
 			"BuildSessionContextDataForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(expected, nil)
-		helper.service.accountMembershipManager = membershipDB
+		helper.service.householdMembershipManager = membershipDB
 
 		var bodyBytes bytes.Buffer
 		marshalErr := json.NewEncoder(&bodyBytes).Encode(exampleInput)
@@ -1421,12 +1421,12 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		expected := &types.SessionContextData{
 			Requester: types.RequesterInfo{
 				UserID:                helper.exampleUser.ID,
-				Reputation:            helper.exampleUser.ServiceAccountStatus,
+				Reputation:            helper.exampleUser.ServiceHouseholdStatus,
 				ReputationExplanation: helper.exampleUser.ReputationExplanation,
 				ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 			},
-			ActiveAccountID:    helper.exampleAccount.ID,
-			AccountPermissions: helper.examplePermCheckers,
+			ActiveHouseholdID:    helper.exampleHousehold.ID,
+			HouseholdPermissions: helper.examplePermCheckers,
 		}
 
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
@@ -1453,13 +1453,13 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
 		membershipDB.On(
 			"BuildSessionContextDataForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(expected, nil)
-		helper.service.accountMembershipManager = membershipDB
+		helper.service.householdMembershipManager = membershipDB
 
 		var bodyBytes bytes.Buffer
 		marshalErr := json.NewEncoder(&bodyBytes).Encode(exampleInput)
@@ -1702,7 +1702,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, apiClientDataManager, userDataManager)
 	})
 
-	T.Run("with error fetching account memberships", func(t *testing.T) {
+	T.Run("with error fetching household memberships", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -1738,13 +1738,13 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
 		membershipDB.On(
 			"BuildSessionContextDataForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return((*types.SessionContextData)(nil), errors.New("blah"))
-		helper.service.accountMembershipManager = membershipDB
+		helper.service.householdMembershipManager = membershipDB
 
 		var bodyBytes bytes.Buffer
 		marshalErr := json.NewEncoder(&bodyBytes).Encode(exampleInput)
@@ -1808,7 +1808,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, apiClientDataManager)
 	})
 
-	T.Run("with inadequate account permissions", func(t *testing.T) {
+	T.Run("with inadequate household permissions", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -1817,7 +1817,7 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		helper.service.config.PASETO.Lifetime = time.Minute
 
 		exampleInput := &types.PASETOCreationInput{
-			AccountID:   helper.exampleAccount.ID,
+			HouseholdID: helper.exampleHousehold.ID,
 			ClientID:    helper.exampleAPIClient.ClientID,
 			RequestTime: time.Now().UTC().UnixNano(),
 		}
@@ -1846,15 +1846,15 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		delete(helper.sessionCtxData.AccountPermissions, helper.exampleAccount.ID)
+		delete(helper.sessionCtxData.HouseholdPermissions, helper.exampleHousehold.ID)
 
-		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
 		membershipDB.On(
 			"BuildSessionContextDataForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.sessionCtxData, nil)
-		helper.service.accountMembershipManager = membershipDB
+		helper.service.householdMembershipManager = membershipDB
 
 		var bodyBytes bytes.Buffer
 		marshalErr := json.NewEncoder(&bodyBytes).Encode(exampleInput)
@@ -1909,13 +1909,13 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		membershipDB := &mocktypes.AccountUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
 		membershipDB.On(
 			"BuildSessionContextDataForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.sessionCtxData, nil)
-		helper.service.accountMembershipManager = membershipDB
+		helper.service.householdMembershipManager = membershipDB
 
 		var bodyBytes bytes.Buffer
 		marshalErr := json.NewEncoder(&bodyBytes).Encode(exampleInput)

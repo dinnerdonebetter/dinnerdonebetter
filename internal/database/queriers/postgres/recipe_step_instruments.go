@@ -239,7 +239,7 @@ func (q *SQLQuerier) GetRecipeStepInstruments(ctx context.Context, recipeID, rec
 		"recipe_step_instruments",
 		getRecipeStepInstrumentsJoins,
 		nil,
-		accountOwnershipColumn,
+		householdOwnershipColumn,
 		recipeStepInstrumentsTableColumns,
 		"",
 		false,

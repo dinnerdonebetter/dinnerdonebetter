@@ -50,7 +50,7 @@ type Client struct {
 	authMethod            *authMethod
 	authHeaderBuilder     authHeaderBuilder
 	websocketDialer       *websocket.Dialer
-	accountID             string
+	householdID           string
 	debug                 bool
 }
 

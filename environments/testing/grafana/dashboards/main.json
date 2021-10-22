@@ -128,14 +128,14 @@
       "pluginVersion": "7.4.3",
       "targets": [
         {
-          "expr": "accounts_count",
+          "expr": "households_count",
           "interval": "",
           "legendFormat": "count",
           "queryType": "randomWalk",
           "refId": "A"
         }
       ],
-      "title": "Accounts Count",
+      "title": "Households Count",
       "type": "stat"
     },
     {

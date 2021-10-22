@@ -16,7 +16,7 @@ func BuildFakeRecipe() *types.Recipe {
 		Description:        fake.Word(),
 		InspiredByRecipeID: func(x string) *string { return &x }(fake.Word()),
 		CreatedOn:          uint64(uint32(fake.Date().Unix())),
-		BelongsToAccount:   fake.UUID(),
+		BelongsToHousehold: fake.UUID(),
 	}
 }
 
@@ -46,7 +46,7 @@ func BuildFakeRecipeUpdateRequestInput() *types.RecipeUpdateRequestInput {
 		Source:             recipe.Source,
 		Description:        recipe.Description,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
-		BelongsToAccount:   recipe.BelongsToAccount,
+		BelongsToHousehold: recipe.BelongsToHousehold,
 	}
 }
 
@@ -57,7 +57,7 @@ func BuildFakeRecipeUpdateRequestInputFromRecipe(recipe *types.Recipe) *types.Re
 		Source:             recipe.Source,
 		Description:        recipe.Description,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
-		BelongsToAccount:   recipe.BelongsToAccount,
+		BelongsToHousehold: recipe.BelongsToHousehold,
 	}
 }
 
@@ -75,7 +75,7 @@ func BuildFakeRecipeCreationRequestInputFromRecipe(recipe *types.Recipe) *types.
 		Source:             recipe.Source,
 		Description:        recipe.Description,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
-		BelongsToAccount:   recipe.BelongsToAccount,
+		BelongsToHousehold: recipe.BelongsToHousehold,
 	}
 }
 
@@ -93,6 +93,6 @@ func BuildFakeRecipeDatabaseCreationInputFromRecipe(recipe *types.Recipe) *types
 		Source:             recipe.Source,
 		Description:        recipe.Description,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
-		BelongsToAccount:   recipe.BelongsToAccount,
+		BelongsToHousehold: recipe.BelongsToHousehold,
 	}
 }

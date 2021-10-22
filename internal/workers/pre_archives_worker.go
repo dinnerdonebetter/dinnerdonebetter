@@ -158,9 +158,9 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
@@ -178,9 +178,9 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
@@ -198,9 +198,9 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
@@ -218,9 +218,9 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
@@ -228,7 +228,7 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 			}
 		}
 	case types.RecipeDataType:
-		if err := w.dataManager.ArchiveRecipe(ctx, msg.RecipeID, msg.AttributableToAccountID); err != nil {
+		if err := w.dataManager.ArchiveRecipe(ctx, msg.RecipeID, msg.AttributableToHouseholdID); err != nil {
 			return observability.PrepareError(err, w.logger, span, "archiving recipe")
 		}
 
@@ -238,9 +238,9 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
@@ -258,9 +258,9 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
@@ -278,9 +278,9 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
@@ -298,9 +298,9 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
@@ -318,9 +318,9 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
@@ -328,7 +328,7 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 			}
 		}
 	case types.MealPlanDataType:
-		if err := w.dataManager.ArchiveMealPlan(ctx, msg.MealPlanID, msg.AttributableToAccountID); err != nil {
+		if err := w.dataManager.ArchiveMealPlan(ctx, msg.MealPlanID, msg.AttributableToHouseholdID); err != nil {
 			return observability.PrepareError(err, w.logger, span, "archiving meal plan")
 		}
 
@@ -338,9 +338,9 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
@@ -348,7 +348,7 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 			}
 		}
 	case types.MealPlanOptionDataType:
-		if err := w.dataManager.ArchiveMealPlanOption(ctx, msg.MealPlanOptionID, msg.AttributableToAccountID); err != nil {
+		if err := w.dataManager.ArchiveMealPlanOption(ctx, msg.MealPlanOptionID, msg.AttributableToHouseholdID); err != nil {
 			return observability.PrepareError(err, w.logger, span, "archiving meal plan option")
 		}
 
@@ -358,9 +358,9 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
@@ -368,7 +368,7 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 			}
 		}
 	case types.MealPlanOptionVoteDataType:
-		if err := w.dataManager.ArchiveMealPlanOptionVote(ctx, msg.MealPlanOptionVoteID, msg.AttributableToAccountID); err != nil {
+		if err := w.dataManager.ArchiveMealPlanOptionVote(ctx, msg.MealPlanOptionVoteID, msg.AttributableToHouseholdID); err != nil {
 			return observability.PrepareError(err, w.logger, span, "archiving meal plan option vote")
 		}
 
@@ -378,9 +378,9 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
@@ -388,15 +388,15 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 			}
 		}
 	case types.WebhookDataType:
-		if err := w.dataManager.ArchiveWebhook(ctx, msg.WebhookID, msg.AttributableToAccountID); err != nil {
+		if err := w.dataManager.ArchiveWebhook(ctx, msg.WebhookID, msg.AttributableToHouseholdID); err != nil {
 			return observability.PrepareError(err, w.logger, span, "creating webhook")
 		}
 
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {

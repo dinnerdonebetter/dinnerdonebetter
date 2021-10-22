@@ -18,7 +18,7 @@ func (c *Client) UpdateUserReputation(ctx context.Context, input *types.UserRepu
 		return ErrNilInputProvided
 	}
 
-	logger := c.logger.WithValue(keys.AccountIDKey, input.TargetUserID)
+	logger := c.logger.WithValue(keys.HouseholdIDKey, input.TargetUserID)
 	tracing.AttachUserIDToSpan(span, input.TargetUserID)
 
 	if err := input.ValidateWithContext(ctx); err != nil {

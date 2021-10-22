@@ -20,7 +20,7 @@ type mealPlansServiceHTTPRoutesTestHelper struct {
 	res                  *httptest.ResponseRecorder
 	service              *service
 	exampleUser          *types.User
-	exampleAccount       *types.Account
+	exampleHousehold     *types.Household
 	exampleMealPlan      *types.MealPlan
 	exampleCreationInput *types.MealPlanCreationRequestInput
 	exampleUpdateInput   *types.MealPlanUpdateRequestInput
@@ -34,10 +34,10 @@ func buildTestHelper(t *testing.T) *mealPlansServiceHTTPRoutesTestHelper {
 	helper.ctx = context.Background()
 	helper.service = buildTestService()
 	helper.exampleUser = fakes.BuildFakeUser()
-	helper.exampleAccount = fakes.BuildFakeAccount()
-	helper.exampleAccount.BelongsToUser = helper.exampleUser.ID
+	helper.exampleHousehold = fakes.BuildFakeHousehold()
+	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 	helper.exampleMealPlan = fakes.BuildFakeMealPlan()
-	helper.exampleMealPlan.BelongsToAccount = helper.exampleAccount.ID
+	helper.exampleMealPlan.BelongsToHousehold = helper.exampleHousehold.ID
 	helper.exampleCreationInput = fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(helper.exampleMealPlan)
 	helper.exampleUpdateInput = fakes.BuildFakeMealPlanUpdateRequestInputFromMealPlan(helper.exampleMealPlan)
 
@@ -48,13 +48,13 @@ func buildTestHelper(t *testing.T) *mealPlansServiceHTTPRoutesTestHelper {
 	sessionCtxData := &types.SessionContextData{
 		Requester: types.RequesterInfo{
 			UserID:                helper.exampleUser.ID,
-			Reputation:            helper.exampleUser.ServiceAccountStatus,
+			Reputation:            helper.exampleUser.ServiceHouseholdStatus,
 			ReputationExplanation: helper.exampleUser.ReputationExplanation,
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 		},
-		ActiveAccountID: helper.exampleAccount.ID,
-		AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
-			helper.exampleAccount.ID: authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
+		ActiveHouseholdID: helper.exampleHousehold.ID,
+		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
+			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
 		},
 	}
 

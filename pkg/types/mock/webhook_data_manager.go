@@ -16,14 +16,14 @@ type WebhookDataManager struct {
 }
 
 // WebhookExists satisfies our WebhookDataManager interface.
-func (m *WebhookDataManager) WebhookExists(ctx context.Context, webhookID, accountID string) (bool, error) {
-	args := m.Called(ctx, webhookID, accountID)
+func (m *WebhookDataManager) WebhookExists(ctx context.Context, webhookID, householdID string) (bool, error) {
+	args := m.Called(ctx, webhookID, householdID)
 	return args.Bool(0), args.Error(1)
 }
 
 // GetWebhook satisfies our WebhookDataManager interface.
-func (m *WebhookDataManager) GetWebhook(ctx context.Context, webhookID, accountID string) (*types.Webhook, error) {
-	args := m.Called(ctx, webhookID, accountID)
+func (m *WebhookDataManager) GetWebhook(ctx context.Context, webhookID, householdID string) (*types.Webhook, error) {
+	args := m.Called(ctx, webhookID, householdID)
 	return args.Get(0).(*types.Webhook), args.Error(1)
 }
 
@@ -34,8 +34,8 @@ func (m *WebhookDataManager) GetAllWebhooksCount(ctx context.Context) (uint64, e
 }
 
 // GetWebhooks satisfies our WebhookDataManager interface.
-func (m *WebhookDataManager) GetWebhooks(ctx context.Context, accountID string, filter *types.QueryFilter) (*types.WebhookList, error) {
-	args := m.Called(ctx, accountID, filter)
+func (m *WebhookDataManager) GetWebhooks(ctx context.Context, householdID string, filter *types.QueryFilter) (*types.WebhookList, error) {
+	args := m.Called(ctx, householdID, filter)
 	return args.Get(0).(*types.WebhookList), args.Error(1)
 }
 
@@ -56,6 +56,6 @@ func (m *WebhookDataManager) UpdateWebhook(ctx context.Context, updated *types.W
 }
 
 // ArchiveWebhook satisfies our WebhookDataManager interface.
-func (m *WebhookDataManager) ArchiveWebhook(ctx context.Context, webhookID, accountID string) error {
-	return m.Called(ctx, webhookID, accountID).Error(0)
+func (m *WebhookDataManager) ArchiveWebhook(ctx context.Context, webhookID, householdID string) error {
+	return m.Called(ctx, webhookID, householdID).Error(0)
 }

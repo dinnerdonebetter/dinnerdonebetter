@@ -18,8 +18,8 @@ const (
 	SessionContextDataKey ContextKey = "session_context_data"
 	// UserIDContextKey is the non-string type we use for referencing SessionContextData structs.
 	UserIDContextKey ContextKey = "user_id"
-	// AccountIDContextKey is the non-string type we use for referencing SessionContextData structs.
-	AccountIDContextKey ContextKey = "account_id"
+	// HouseholdIDContextKey is the non-string type we use for referencing SessionContextData structs.
+	HouseholdIDContextKey ContextKey = "household_id"
 	// UserLoginInputContextKey is the non-string type we use for referencing SessionContextData structs.
 	UserLoginInputContextKey ContextKey = "user_login_input"
 	// UserRegistrationInputContextKey is the non-string type we use for referencing SessionContextData structs.
@@ -31,22 +31,22 @@ func init() {
 }
 
 type (
-	// UserAccountMembershipInfo represents key information about an account membership.
-	UserAccountMembershipInfo struct {
+	// UserHouseholdMembershipInfo represents key information about an household membership.
+	UserHouseholdMembershipInfo struct {
 		_ struct{}
 
-		AccountName  string   `json:"name"`
-		AccountID    string   `json:"accountID"`
-		AccountRoles []string `json:"-"`
+		HouseholdName  string   `json:"name"`
+		HouseholdID    string   `json:"householdID"`
+		HouseholdRoles []string `json:"-"`
 	}
 
 	// SessionContextData represents what we encode in our passwords cookies.
 	SessionContextData struct {
 		_ struct{}
 
-		AccountPermissions map[string]authorization.AccountRolePermissionsChecker `json:"-"`
-		Requester          RequesterInfo                                          `json:"-"`
-		ActiveAccountID    string                                                 `json:"-"`
+		HouseholdPermissions map[string]authorization.HouseholdRolePermissionsChecker `json:"-"`
+		Requester            RequesterInfo                                            `json:"-"`
+		ActiveHouseholdID    string                                                   `json:"-"`
 	}
 
 	// RequesterInfo contains data relevant to the user making a request.
@@ -54,7 +54,7 @@ type (
 		_ struct{}
 
 		ServicePermissions    authorization.ServiceRolePermissionChecker `json:"-"`
-		Reputation            accountStatus                              `json:"-"`
+		Reputation            householdStatus                            `json:"-"`
 		ReputationExplanation string                                     `json:"-"`
 		UserID                string                                     `json:"-"`
 	}
@@ -63,17 +63,17 @@ type (
 	UserStatusResponse struct {
 		_ struct{}
 
-		UserReputation            accountStatus `json:"accountStatus,omitempty"`
-		UserReputationExplanation string        `json:"reputationExplanation"`
-		ActiveAccount             string        `json:"activeAccount,omitempty"`
-		UserIsAuthenticated       bool          `json:"isAuthenticated"`
+		UserReputation            householdStatus `json:"householdStatus,omitempty"`
+		UserReputationExplanation string          `json:"reputationExplanation"`
+		ActiveHousehold           string          `json:"activeHousehold,omitempty"`
+		UserIsAuthenticated       bool            `json:"isAuthenticated"`
 	}
 
-	// ChangeActiveAccountInput represents what a User could set as input for switching accounts.
-	ChangeActiveAccountInput struct {
+	// ChangeActiveHouseholdInput represents what a User could set as input for switching households.
+	ChangeActiveHouseholdInput struct {
 		_ struct{}
 
-		AccountID string `json:"accountID"`
+		HouseholdID string `json:"householdID"`
 	}
 
 	// PASETOCreationInput is used to create a PASETO.
@@ -81,7 +81,7 @@ type (
 		_ struct{}
 
 		ClientID          string `json:"clientID"`
-		AccountID         string `json:"accountID"`
+		HouseholdID       string `json:"householdID"`
 		RequestTime       int64  `json:"requestTime"`
 		RequestedLifetime uint64 `json:"requestedLifetime,omitempty"`
 	}
@@ -101,7 +101,7 @@ type (
 		EndSessionHandler(res http.ResponseWriter, req *http.Request)
 		CycleCookieSecretHandler(res http.ResponseWriter, req *http.Request)
 		PASETOHandler(res http.ResponseWriter, req *http.Request)
-		ChangeActiveAccountHandler(res http.ResponseWriter, req *http.Request)
+		ChangeActiveHouseholdHandler(res http.ResponseWriter, req *http.Request)
 
 		PermissionFilterMiddleware(permissions ...authorization.Permission) func(next http.Handler) http.Handler
 		CookieRequirementMiddleware(next http.Handler) http.Handler
@@ -114,12 +114,12 @@ type (
 	}
 )
 
-var _ validation.ValidatableWithContext = (*ChangeActiveAccountInput)(nil)
+var _ validation.ValidatableWithContext = (*ChangeActiveHouseholdInput)(nil)
 
-// ValidateWithContext validates a ChangeActiveAccountInput.
-func (x *ChangeActiveAccountInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a ChangeActiveHouseholdInput.
+func (x *ChangeActiveHouseholdInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, x,
-		validation.Field(&x.AccountID, validation.Required),
+		validation.Field(&x.HouseholdID, validation.Required),
 	)
 }
 
@@ -133,9 +133,9 @@ func (i *PASETOCreationInput) ValidateWithContext(ctx context.Context) error {
 	)
 }
 
-// AccountRolePermissionsChecker returns the relevant AccountRolePermissionsChecker.
-func (x *SessionContextData) AccountRolePermissionsChecker() authorization.AccountRolePermissionsChecker {
-	return x.AccountPermissions[x.ActiveAccountID]
+// HouseholdRolePermissionsChecker returns the relevant HouseholdRolePermissionsChecker.
+func (x *SessionContextData) HouseholdRolePermissionsChecker() authorization.HouseholdRolePermissionsChecker {
+	return x.HouseholdPermissions[x.ActiveHouseholdID]
 }
 
 // ServiceRolePermissionChecker returns the relevant ServiceRolePermissionChecker.
@@ -158,7 +158,7 @@ func (x *SessionContextData) ToBytes() []byte {
 func (x *SessionContextData) AttachToLogger(logger logging.Logger) logging.Logger {
 	if x != nil {
 		logger = logger.WithValue(keys.RequesterIDKey, x.Requester.UserID).
-			WithValue(keys.ActiveAccountIDKey, x.ActiveAccountID)
+			WithValue(keys.ActiveHouseholdIDKey, x.ActiveHouseholdID)
 
 		if x.Requester.ServicePermissions != nil {
 			logger = logger.WithValue(keys.ServiceRoleKey, x.Requester.ServicePermissions.IsServiceAdmin())

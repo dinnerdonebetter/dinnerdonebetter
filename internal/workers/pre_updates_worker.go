@@ -158,10 +158,10 @@ func (w *PreUpdatesWorker) HandleMessage(ctx context.Context, message []byte) er
 
 		if w.postUpdatesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				ValidInstrument:         msg.ValidInstrument,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				ValidInstrument:           msg.ValidInstrument,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postUpdatesPublisher.Publish(ctx, dcm); err != nil {
@@ -179,10 +179,10 @@ func (w *PreUpdatesWorker) HandleMessage(ctx context.Context, message []byte) er
 
 		if w.postUpdatesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				ValidIngredient:         msg.ValidIngredient,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				ValidIngredient:           msg.ValidIngredient,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postUpdatesPublisher.Publish(ctx, dcm); err != nil {
@@ -200,10 +200,10 @@ func (w *PreUpdatesWorker) HandleMessage(ctx context.Context, message []byte) er
 
 		if w.postUpdatesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				ValidPreparation:        msg.ValidPreparation,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				ValidPreparation:          msg.ValidPreparation,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postUpdatesPublisher.Publish(ctx, dcm); err != nil {
@@ -224,7 +224,7 @@ func (w *PreUpdatesWorker) HandleMessage(ctx context.Context, message []byte) er
 				DataType:                   msg.DataType,
 				ValidIngredientPreparation: msg.ValidIngredientPreparation,
 				AttributableToUserID:       msg.AttributableToUserID,
-				AttributableToAccountID:    msg.AttributableToAccountID,
+				AttributableToHouseholdID:  msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postUpdatesPublisher.Publish(ctx, dcm); err != nil {
@@ -242,10 +242,10 @@ func (w *PreUpdatesWorker) HandleMessage(ctx context.Context, message []byte) er
 
 		if w.postUpdatesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				Recipe:                  msg.Recipe,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				Recipe:                    msg.Recipe,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postUpdatesPublisher.Publish(ctx, dcm); err != nil {
@@ -263,10 +263,10 @@ func (w *PreUpdatesWorker) HandleMessage(ctx context.Context, message []byte) er
 
 		if w.postUpdatesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				RecipeStep:              msg.RecipeStep,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				RecipeStep:                msg.RecipeStep,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postUpdatesPublisher.Publish(ctx, dcm); err != nil {
@@ -284,10 +284,10 @@ func (w *PreUpdatesWorker) HandleMessage(ctx context.Context, message []byte) er
 
 		if w.postUpdatesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				RecipeStepInstrument:    msg.RecipeStepInstrument,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				RecipeStepInstrument:      msg.RecipeStepInstrument,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postUpdatesPublisher.Publish(ctx, dcm); err != nil {
@@ -305,10 +305,10 @@ func (w *PreUpdatesWorker) HandleMessage(ctx context.Context, message []byte) er
 
 		if w.postUpdatesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				RecipeStepIngredient:    msg.RecipeStepIngredient,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				RecipeStepIngredient:      msg.RecipeStepIngredient,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postUpdatesPublisher.Publish(ctx, dcm); err != nil {
@@ -326,10 +326,10 @@ func (w *PreUpdatesWorker) HandleMessage(ctx context.Context, message []byte) er
 
 		if w.postUpdatesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				RecipeStepProduct:       msg.RecipeStepProduct,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				RecipeStepProduct:         msg.RecipeStepProduct,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postUpdatesPublisher.Publish(ctx, dcm); err != nil {
@@ -347,10 +347,10 @@ func (w *PreUpdatesWorker) HandleMessage(ctx context.Context, message []byte) er
 
 		if w.postUpdatesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				MealPlan:                msg.MealPlan,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				MealPlan:                  msg.MealPlan,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postUpdatesPublisher.Publish(ctx, dcm); err != nil {
@@ -368,10 +368,10 @@ func (w *PreUpdatesWorker) HandleMessage(ctx context.Context, message []byte) er
 
 		if w.postUpdatesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				MealPlanOption:          msg.MealPlanOption,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				MealPlanOption:            msg.MealPlanOption,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postUpdatesPublisher.Publish(ctx, dcm); err != nil {
@@ -389,10 +389,10 @@ func (w *PreUpdatesWorker) HandleMessage(ctx context.Context, message []byte) er
 
 		if w.postUpdatesPublisher != nil {
 			dcm := &types.DataChangeMessage{
-				DataType:                msg.DataType,
-				MealPlanOptionVote:      msg.MealPlanOptionVote,
-				AttributableToUserID:    msg.AttributableToUserID,
-				AttributableToAccountID: msg.AttributableToAccountID,
+				DataType:                  msg.DataType,
+				MealPlanOptionVote:        msg.MealPlanOptionVote,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
 
 			if err := w.postUpdatesPublisher.Publish(ctx, dcm); err != nil {

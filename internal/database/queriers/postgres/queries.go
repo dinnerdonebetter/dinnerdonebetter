@@ -18,7 +18,7 @@ const (
 	commaSeparator           = ","
 	columnCountQueryTemplate = `COUNT(%s.id)`
 	userOwnershipColumn      = "belongs_to_user"
-	accountOwnershipColumn   = "belongs_to_account"
+	householdOwnershipColumn = "belongs_to_household"
 )
 
 func joinIDs(ids []string) string {
@@ -120,7 +120,7 @@ func (q *SQLQuerier) buildFilteredCountQuery(ctx context.Context, tableName stri
 	return q.buildQuery(span, filteredCountQueryBuilder)
 }
 
-// BuildListQuery builds a SQL query selecting rows that adhere to a given QueryFilter and belong to a given account,
+// BuildListQuery builds a SQL query selecting rows that adhere to a given QueryFilter and belong to a given household,
 // and returns both the query and the relevant args to pass to the query executor.
 func (q *SQLQuerier) buildListQuery(
 	ctx context.Context,

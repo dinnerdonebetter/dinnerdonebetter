@@ -21,17 +21,17 @@ func TestAdmin(t *testing.T) {
 type adminTestSuite struct {
 	suite.Suite
 
-	ctx                context.Context
-	exampleAccount     *types.Account
-	exampleAccountList *types.AccountList
+	ctx                  context.Context
+	exampleHousehold     *types.Household
+	exampleHouseholdList *types.HouseholdList
 }
 
 var _ suite.SetupTestSuite = (*adminTestSuite)(nil)
 
 func (s *adminTestSuite) SetupTest() {
 	s.ctx = context.Background()
-	s.exampleAccount = fakes.BuildFakeAccount()
-	s.exampleAccountList = fakes.BuildFakeAccountList()
+	s.exampleHousehold = fakes.BuildFakeHousehold()
+	s.exampleHouseholdList = fakes.BuildFakeHouseholdList()
 }
 
 func (s *adminTestSuite) TestClient_UpdateUserReputation() {

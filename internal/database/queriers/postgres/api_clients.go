@@ -311,7 +311,7 @@ func (q *SQLQuerier) ArchiveAPIClient(ctx context.Context, clientID, userID stri
 		return ErrNilInputProvided
 	}
 
-	tracing.AttachAccountIDToSpan(span, userID)
+	tracing.AttachHouseholdIDToSpan(span, userID)
 	tracing.AttachAPIClientDatabaseIDToSpan(span, clientID)
 
 	logger := q.logger.WithValues(map[string]interface{}{

@@ -16,8 +16,8 @@ var _ DataManager = (*MockDatabase)(nil)
 // BuildMockDatabase builds a mock database.
 func BuildMockDatabase() *MockDatabase {
 	return &MockDatabase{
-		AccountDataManager:                    &mocktypes.AccountDataManager{},
-		AccountUserMembershipDataManager:      &mocktypes.AccountUserMembershipDataManager{},
+		HouseholdDataManager:                  &mocktypes.HouseholdDataManager{},
+		HouseholdUserMembershipDataManager:    &mocktypes.HouseholdUserMembershipDataManager{},
 		ValidInstrumentDataManager:            &mocktypes.ValidInstrumentDataManager{},
 		ValidIngredientDataManager:            &mocktypes.ValidIngredientDataManager{},
 		ValidPreparationDataManager:           &mocktypes.ValidPreparationDataManager{},
@@ -41,7 +41,7 @@ func BuildMockDatabase() *MockDatabase {
 // So `mockDB.On("GetUserByUsername"...)` is destined to fail, whereas `mockDB.UserDataManager.On("GetUserByUsername"...)` would do what you want it to do.
 type MockDatabase struct {
 	*mocktypes.AdminUserDataManager
-	*mocktypes.AccountUserMembershipDataManager
+	*mocktypes.HouseholdUserMembershipDataManager
 	*mocktypes.ValidInstrumentDataManager
 	*mocktypes.ValidIngredientDataManager
 	*mocktypes.ValidPreparationDataManager
@@ -57,7 +57,7 @@ type MockDatabase struct {
 	*mocktypes.UserDataManager
 	*mocktypes.APIClientDataManager
 	*mocktypes.WebhookDataManager
-	*mocktypes.AccountDataManager
+	*mocktypes.HouseholdDataManager
 	mock.Mock
 }
 

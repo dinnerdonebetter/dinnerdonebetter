@@ -62,9 +62,9 @@ func (s *service) UserReputationChangeHandler(res http.ResponseWriter, req *http
 	var allowed bool
 
 	switch input.NewReputation {
-	case types.BannedUserAccountStatus, types.TerminatedUserReputation:
+	case types.BannedUserHouseholdStatus, types.TerminatedUserReputation:
 		allowed = sessionCtxData.Requester.ServicePermissions.CanUpdateUserReputations()
-	case types.GoodStandingAccountStatus, types.UnverifiedAccountStatus:
+	case types.GoodStandingHouseholdStatus, types.UnverifiedHouseholdStatus:
 		allowed = true
 	}
 

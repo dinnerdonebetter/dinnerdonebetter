@@ -10,13 +10,13 @@ import (
 // BuildFakeMealPlanOption builds a faked meal plan option.
 func BuildFakeMealPlanOption() *types.MealPlanOption {
 	return &types.MealPlanOption{
-		ID:               ksuid.New().String(),
-		MealPlanID:       fake.Word(),
-		DayOfWeek:        fake.Uint8(),
-		RecipeID:         fake.Word(),
-		Notes:            fake.Word(),
-		CreatedOn:        uint64(uint32(fake.Date().Unix())),
-		BelongsToAccount: fake.UUID(),
+		ID:                 ksuid.New().String(),
+		MealPlanID:         fake.Word(),
+		DayOfWeek:          fake.Uint8(),
+		RecipeID:           fake.Word(),
+		Notes:              fake.Word(),
+		CreatedOn:          uint64(uint32(fake.Date().Unix())),
+		BelongsToHousehold: fake.UUID(),
 	}
 }
 
@@ -42,22 +42,22 @@ func BuildFakeMealPlanOptionList() *types.MealPlanOptionList {
 func BuildFakeMealPlanOptionUpdateRequestInput() *types.MealPlanOptionUpdateRequestInput {
 	mealPlanOption := BuildFakeMealPlanOption()
 	return &types.MealPlanOptionUpdateRequestInput{
-		MealPlanID:       mealPlanOption.MealPlanID,
-		DayOfWeek:        mealPlanOption.DayOfWeek,
-		RecipeID:         mealPlanOption.RecipeID,
-		Notes:            mealPlanOption.Notes,
-		BelongsToAccount: mealPlanOption.BelongsToAccount,
+		MealPlanID:         mealPlanOption.MealPlanID,
+		DayOfWeek:          mealPlanOption.DayOfWeek,
+		RecipeID:           mealPlanOption.RecipeID,
+		Notes:              mealPlanOption.Notes,
+		BelongsToHousehold: mealPlanOption.BelongsToHousehold,
 	}
 }
 
 // BuildFakeMealPlanOptionUpdateRequestInputFromMealPlanOption builds a faked MealPlanOptionUpdateRequestInput from a meal plan option.
 func BuildFakeMealPlanOptionUpdateRequestInputFromMealPlanOption(mealPlanOption *types.MealPlanOption) *types.MealPlanOptionUpdateRequestInput {
 	return &types.MealPlanOptionUpdateRequestInput{
-		MealPlanID:       mealPlanOption.MealPlanID,
-		DayOfWeek:        mealPlanOption.DayOfWeek,
-		RecipeID:         mealPlanOption.RecipeID,
-		Notes:            mealPlanOption.Notes,
-		BelongsToAccount: mealPlanOption.BelongsToAccount,
+		MealPlanID:         mealPlanOption.MealPlanID,
+		DayOfWeek:          mealPlanOption.DayOfWeek,
+		RecipeID:           mealPlanOption.RecipeID,
+		Notes:              mealPlanOption.Notes,
+		BelongsToHousehold: mealPlanOption.BelongsToHousehold,
 	}
 }
 
@@ -70,12 +70,12 @@ func BuildFakeMealPlanOptionCreationRequestInput() *types.MealPlanOptionCreation
 // BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption builds a faked MealPlanOptionCreationRequestInput from a meal plan option.
 func BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(mealPlanOption *types.MealPlanOption) *types.MealPlanOptionCreationRequestInput {
 	return &types.MealPlanOptionCreationRequestInput{
-		ID:               mealPlanOption.ID,
-		MealPlanID:       mealPlanOption.MealPlanID,
-		DayOfWeek:        mealPlanOption.DayOfWeek,
-		RecipeID:         mealPlanOption.RecipeID,
-		Notes:            mealPlanOption.Notes,
-		BelongsToAccount: mealPlanOption.BelongsToAccount,
+		ID:                 mealPlanOption.ID,
+		MealPlanID:         mealPlanOption.MealPlanID,
+		DayOfWeek:          mealPlanOption.DayOfWeek,
+		RecipeID:           mealPlanOption.RecipeID,
+		Notes:              mealPlanOption.Notes,
+		BelongsToHousehold: mealPlanOption.BelongsToHousehold,
 	}
 }
 
@@ -88,11 +88,11 @@ func BuildFakeMealPlanOptionDatabaseCreationInput() *types.MealPlanOptionDatabas
 // BuildFakeMealPlanOptionDatabaseCreationInputFromMealPlanOption builds a faked MealPlanOptionDatabaseCreationInput from a meal plan option.
 func BuildFakeMealPlanOptionDatabaseCreationInputFromMealPlanOption(mealPlanOption *types.MealPlanOption) *types.MealPlanOptionDatabaseCreationInput {
 	return &types.MealPlanOptionDatabaseCreationInput{
-		ID:               mealPlanOption.ID,
-		MealPlanID:       mealPlanOption.MealPlanID,
-		DayOfWeek:        mealPlanOption.DayOfWeek,
-		RecipeID:         mealPlanOption.RecipeID,
-		Notes:            mealPlanOption.Notes,
-		BelongsToAccount: mealPlanOption.BelongsToAccount,
+		ID:                 mealPlanOption.ID,
+		MealPlanID:         mealPlanOption.MealPlanID,
+		DayOfWeek:          mealPlanOption.DayOfWeek,
+		RecipeID:           mealPlanOption.RecipeID,
+		Notes:              mealPlanOption.Notes,
+		BelongsToHousehold: mealPlanOption.BelongsToHousehold,
 	}
 }

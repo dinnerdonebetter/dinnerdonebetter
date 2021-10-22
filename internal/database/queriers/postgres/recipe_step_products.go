@@ -237,7 +237,7 @@ func (q *SQLQuerier) GetRecipeStepProducts(ctx context.Context, recipeID, recipe
 		"recipe_step_products",
 		getRecipeStepProductsJoins,
 		nil,
-		accountOwnershipColumn,
+		householdOwnershipColumn,
 		recipeStepProductsTableColumns,
 		"",
 		false,

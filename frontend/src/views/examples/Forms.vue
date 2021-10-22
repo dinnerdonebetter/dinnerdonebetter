@@ -83,7 +83,7 @@
       <div class="mt-4">
         <div class="p-6 bg-white rounded-md shadow-md">
           <h2 class="text-lg font-semibold text-gray-700 capitalize">
-            Account settings
+            Household settings
           </h2>
 
           <form @submit.prevent="register">

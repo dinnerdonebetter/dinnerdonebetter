@@ -100,7 +100,7 @@ func TestAttachFilterToSpan(T *testing.T) {
 	})
 }
 
-func TestAttachAccountIDToSpan(T *testing.T) {
+func TestAttachHouseholdIDToSpan(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -108,7 +108,7 @@ func TestAttachAccountIDToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		AttachAccountIDToSpan(span, "123")
+		AttachHouseholdIDToSpan(span, "123")
 	})
 }
 
@@ -133,11 +133,11 @@ func TestAttachSessionContextDataToSpan(T *testing.T) {
 		_, span := StartSpan(context.Background())
 
 		AttachSessionContextDataToSpan(span, &types.SessionContextData{
-			AccountPermissions: nil,
+			HouseholdPermissions: nil,
 			Requester: types.RequesterInfo{
 				ServicePermissions: authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
 			},
-			ActiveAccountID: "",
+			ActiveHouseholdID: "",
 		})
 	})
 }

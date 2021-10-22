@@ -955,7 +955,7 @@ func TestPreArchivesWorker_HandleMessage(T *testing.T) {
 			"ArchiveRecipe",
 			testutils.ContextMatcher,
 			body.RecipeID,
-			body.AttributableToAccountID,
+			body.AttributableToHouseholdID,
 		).Return(nil)
 
 		postArchivesPublisher := &mockpublishers.Publisher{}
@@ -1012,7 +1012,7 @@ func TestPreArchivesWorker_HandleMessage(T *testing.T) {
 			"ArchiveRecipe",
 			testutils.ContextMatcher,
 			body.RecipeID,
-			body.AttributableToAccountID,
+			body.AttributableToHouseholdID,
 		).Return(errors.New("blah"))
 
 		postArchivesPublisher := &mockpublishers.Publisher{}
@@ -1056,7 +1056,7 @@ func TestPreArchivesWorker_HandleMessage(T *testing.T) {
 			"ArchiveRecipe",
 			testutils.ContextMatcher,
 			body.RecipeID,
-			body.AttributableToAccountID,
+			body.AttributableToHouseholdID,
 		).Return(nil)
 
 		searchIndexManager := &mocksearch.IndexManager{}
@@ -1108,7 +1108,7 @@ func TestPreArchivesWorker_HandleMessage(T *testing.T) {
 			"ArchiveRecipe",
 			testutils.ContextMatcher,
 			body.RecipeID,
-			body.AttributableToAccountID,
+			body.AttributableToHouseholdID,
 		).Return(nil)
 
 		postArchivesPublisher := &mockpublishers.Publisher{}
@@ -2005,7 +2005,7 @@ func TestPreArchivesWorker_HandleMessage(T *testing.T) {
 			"ArchiveMealPlan",
 			testutils.ContextMatcher,
 			body.MealPlanID,
-			body.AttributableToAccountID,
+			body.AttributableToHouseholdID,
 		).Return(nil)
 
 		postArchivesPublisher := &mockpublishers.Publisher{}
@@ -2062,7 +2062,7 @@ func TestPreArchivesWorker_HandleMessage(T *testing.T) {
 			"ArchiveMealPlan",
 			testutils.ContextMatcher,
 			body.MealPlanID,
-			body.AttributableToAccountID,
+			body.AttributableToHouseholdID,
 		).Return(errors.New("blah"))
 
 		postArchivesPublisher := &mockpublishers.Publisher{}
@@ -2106,7 +2106,7 @@ func TestPreArchivesWorker_HandleMessage(T *testing.T) {
 			"ArchiveMealPlan",
 			testutils.ContextMatcher,
 			body.MealPlanID,
-			body.AttributableToAccountID,
+			body.AttributableToHouseholdID,
 		).Return(nil)
 
 		searchIndexManager := &mocksearch.IndexManager{}
@@ -2158,7 +2158,7 @@ func TestPreArchivesWorker_HandleMessage(T *testing.T) {
 			"ArchiveMealPlan",
 			testutils.ContextMatcher,
 			body.MealPlanID,
-			body.AttributableToAccountID,
+			body.AttributableToHouseholdID,
 		).Return(nil)
 
 		postArchivesPublisher := &mockpublishers.Publisher{}
@@ -2215,7 +2215,7 @@ func TestPreArchivesWorker_HandleMessage(T *testing.T) {
 			"ArchiveMealPlanOption",
 			testutils.ContextMatcher,
 			body.MealPlanOptionID,
-			body.AttributableToAccountID,
+			body.AttributableToHouseholdID,
 		).Return(nil)
 
 		postArchivesPublisher := &mockpublishers.Publisher{}
@@ -2272,7 +2272,7 @@ func TestPreArchivesWorker_HandleMessage(T *testing.T) {
 			"ArchiveMealPlanOption",
 			testutils.ContextMatcher,
 			body.MealPlanOptionID,
-			body.AttributableToAccountID,
+			body.AttributableToHouseholdID,
 		).Return(errors.New("blah"))
 
 		postArchivesPublisher := &mockpublishers.Publisher{}
@@ -2316,7 +2316,7 @@ func TestPreArchivesWorker_HandleMessage(T *testing.T) {
 			"ArchiveMealPlanOption",
 			testutils.ContextMatcher,
 			body.MealPlanOptionID,
-			body.AttributableToAccountID,
+			body.AttributableToHouseholdID,
 		).Return(nil)
 
 		searchIndexManager := &mocksearch.IndexManager{}
@@ -2368,7 +2368,7 @@ func TestPreArchivesWorker_HandleMessage(T *testing.T) {
 			"ArchiveMealPlanOption",
 			testutils.ContextMatcher,
 			body.MealPlanOptionID,
-			body.AttributableToAccountID,
+			body.AttributableToHouseholdID,
 		).Return(nil)
 
 		postArchivesPublisher := &mockpublishers.Publisher{}
@@ -2425,7 +2425,7 @@ func TestPreArchivesWorker_HandleMessage(T *testing.T) {
 			"ArchiveMealPlanOptionVote",
 			testutils.ContextMatcher,
 			body.MealPlanOptionVoteID,
-			body.AttributableToAccountID,
+			body.AttributableToHouseholdID,
 		).Return(nil)
 
 		postArchivesPublisher := &mockpublishers.Publisher{}
@@ -2482,7 +2482,7 @@ func TestPreArchivesWorker_HandleMessage(T *testing.T) {
 			"ArchiveMealPlanOptionVote",
 			testutils.ContextMatcher,
 			body.MealPlanOptionVoteID,
-			body.AttributableToAccountID,
+			body.AttributableToHouseholdID,
 		).Return(errors.New("blah"))
 
 		postArchivesPublisher := &mockpublishers.Publisher{}
@@ -2526,7 +2526,7 @@ func TestPreArchivesWorker_HandleMessage(T *testing.T) {
 			"ArchiveMealPlanOptionVote",
 			testutils.ContextMatcher,
 			body.MealPlanOptionVoteID,
-			body.AttributableToAccountID,
+			body.AttributableToHouseholdID,
 		).Return(nil)
 
 		searchIndexManager := &mocksearch.IndexManager{}
@@ -2578,7 +2578,7 @@ func TestPreArchivesWorker_HandleMessage(T *testing.T) {
 			"ArchiveMealPlanOptionVote",
 			testutils.ContextMatcher,
 			body.MealPlanOptionVoteID,
-			body.AttributableToAccountID,
+			body.AttributableToHouseholdID,
 		).Return(nil)
 
 		postArchivesPublisher := &mockpublishers.Publisher{}
@@ -2635,7 +2635,7 @@ func TestPreArchivesWorker_HandleMessage(T *testing.T) {
 			"ArchiveWebhook",
 			testutils.ContextMatcher,
 			body.WebhookID,
-			body.AttributableToAccountID,
+			body.AttributableToHouseholdID,
 		).Return(nil)
 
 		postArchivesPublisher := &mockpublishers.Publisher{}
@@ -2685,7 +2685,7 @@ func TestPreArchivesWorker_HandleMessage(T *testing.T) {
 			"ArchiveWebhook",
 			testutils.ContextMatcher,
 			body.WebhookID,
-			body.AttributableToAccountID,
+			body.AttributableToHouseholdID,
 		).Return(errors.New("blah"))
 
 		postArchivesPublisher := &mockpublishers.Publisher{}
@@ -2731,7 +2731,7 @@ func TestPreArchivesWorker_HandleMessage(T *testing.T) {
 			"ArchiveWebhook",
 			testutils.ContextMatcher,
 			body.WebhookID,
-			body.AttributableToAccountID,
+			body.AttributableToHouseholdID,
 		).Return(nil)
 
 		postArchivesPublisher := &mockpublishers.Publisher{}

@@ -65,15 +65,15 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := types.MealPlanOptionDatabaseCreationInputFromMealPlanOptionCreationInput(providedInput)
 	input.ID = ksuid.New().String()
 
-	input.BelongsToAccount = sessionCtxData.ActiveAccountID
+	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 	tracing.AttachMealPlanOptionIDToSpan(span, input.ID)
 
 	// create meal plan option in database.
 	preWrite := &types.PreWriteMessage{
-		DataType:                types.MealPlanOptionDataType,
-		MealPlanOption:          input,
-		AttributableToUserID:    sessionCtxData.Requester.UserID,
-		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+		DataType:                  types.MealPlanOptionDataType,
+		MealPlanOption:            input,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 	}
 	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing meal plan option write message")
@@ -196,7 +196,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
 	}
-	input.BelongsToAccount = sessionCtxData.ActiveAccountID
+	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 
 	// determine meal plan option ID.
 	mealPlanOptionID := s.mealPlanOptionIDFetcher(req)
@@ -218,10 +218,10 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	mealPlanOption.Update(input)
 
 	pum := &types.PreUpdateMessage{
-		DataType:                types.MealPlanOptionDataType,
-		MealPlanOption:          mealPlanOption,
-		AttributableToUserID:    sessionCtxData.Requester.UserID,
-		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+		DataType:                  types.MealPlanOptionDataType,
+		MealPlanOption:            mealPlanOption,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 	}
 	if err = s.preUpdatesPublisher.Publish(ctx, pum); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing meal plan option update message")
@@ -268,10 +268,10 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	pam := &types.PreArchiveMessage{
-		DataType:                types.MealPlanOptionDataType,
-		MealPlanOptionID:        mealPlanOptionID,
-		AttributableToUserID:    sessionCtxData.Requester.UserID,
-		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+		DataType:                  types.MealPlanOptionDataType,
+		MealPlanOptionID:          mealPlanOptionID,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 	}
 	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing meal plan option archive message")

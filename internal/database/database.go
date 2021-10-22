@@ -51,8 +51,8 @@ type (
 		ProvideSessionStore() scs.Store
 
 		types.AdminUserDataManager
-		types.AccountDataManager
-		types.AccountUserMembershipDataManager
+		types.HouseholdDataManager
+		types.HouseholdUserMembershipDataManager
 		types.UserDataManager
 		types.APIClientDataManager
 		types.WebhookDataManager

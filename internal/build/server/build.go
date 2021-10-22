@@ -20,11 +20,11 @@ import (
 	chi "gitlab.com/prixfixe/prixfixe/internal/routing/chi"
 	"gitlab.com/prixfixe/prixfixe/internal/search/elasticsearch"
 	server "gitlab.com/prixfixe/prixfixe/internal/server"
-	accountsservice "gitlab.com/prixfixe/prixfixe/internal/services/accounts"
 	adminservice "gitlab.com/prixfixe/prixfixe/internal/services/admin"
 	apiclientsservice "gitlab.com/prixfixe/prixfixe/internal/services/apiclients"
 	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
 	frontendservice "gitlab.com/prixfixe/prixfixe/internal/services/frontend"
+	householdsservice "gitlab.com/prixfixe/prixfixe/internal/services/households"
 	mealplanoptionsservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptionvotes"
 	mealplansservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplans"
@@ -68,7 +68,7 @@ func Build(
 		authentication.Providers,
 		authservice.Providers,
 		usersservice.Providers,
-		accountsservice.Providers,
+		householdsservice.Providers,
 		apiclientsservice.Providers,
 		webhooksservice.Providers,
 		websocketsservice.Providers,

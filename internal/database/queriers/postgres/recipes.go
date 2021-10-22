@@ -26,7 +26,7 @@ var (
 		"recipes.created_on",
 		"recipes.last_updated_on",
 		"recipes.archived_on",
-		"recipes.belongs_to_account",
+		"recipes.belongs_to_household",
 	}
 )
 
@@ -48,7 +48,7 @@ func (q *SQLQuerier) scanRecipe(ctx context.Context, scan database.Scanner, incl
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
-		&x.BelongsToAccount,
+		&x.BelongsToHousehold,
 	}
 
 	if includeCounts {
@@ -122,7 +122,7 @@ func (q *SQLQuerier) RecipeExists(ctx context.Context, recipeID string) (exists 
 	return result, nil
 }
 
-const getRecipeQuery = "SELECT recipes.id, recipes.name, recipes.source, recipes.description, recipes.inspired_by_recipe_id, recipes.created_on, recipes.last_updated_on, recipes.archived_on, recipes.belongs_to_account FROM recipes WHERE recipes.archived_on IS NULL AND recipes.id = $1"
+const getRecipeQuery = "SELECT recipes.id, recipes.name, recipes.source, recipes.description, recipes.inspired_by_recipe_id, recipes.created_on, recipes.last_updated_on, recipes.archived_on, recipes.belongs_to_household FROM recipes WHERE recipes.archived_on IS NULL AND recipes.id = $1"
 
 // GetRecipe fetches a recipe from the database.
 func (q *SQLQuerier) GetRecipe(ctx context.Context, recipeID string) (*types.Recipe, error) {
@@ -188,7 +188,7 @@ func (q *SQLQuerier) GetRecipes(ctx context.Context, filter *types.QueryFilter) 
 		"recipes",
 		nil,
 		nil,
-		accountOwnershipColumn,
+		householdOwnershipColumn,
 		recipesTableColumns,
 		"",
 		false,
@@ -207,7 +207,7 @@ func (q *SQLQuerier) GetRecipes(ctx context.Context, filter *types.QueryFilter) 
 	return x, nil
 }
 
-func (q *SQLQuerier) buildGetRecipesWithIDsQuery(ctx context.Context, accountID string, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *SQLQuerier) buildGetRecipesWithIDsQuery(ctx context.Context, householdID string, limit uint8, ids []string) (query string, args []interface{}) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -216,8 +216,8 @@ func (q *SQLQuerier) buildGetRecipesWithIDsQuery(ctx context.Context, accountID 
 		"recipes.archived_on": nil,
 	}
 
-	if accountID != "" {
-		withIDsWhere["recipes.belongs_to_account"] = accountID
+	if householdID != "" {
+		withIDsWhere["recipes.belongs_to_household"] = householdID
 	}
 
 	subqueryBuilder := q.sqlBuilder.Select(recipesTableColumns...).
@@ -235,7 +235,7 @@ func (q *SQLQuerier) buildGetRecipesWithIDsQuery(ctx context.Context, accountID 
 }
 
 // GetRecipesWithIDs fetches recipes from the database within a given set of IDs.
-func (q *SQLQuerier) GetRecipesWithIDs(ctx context.Context, accountID string, limit uint8, ids []string) ([]*types.Recipe, error) {
+func (q *SQLQuerier) GetRecipesWithIDs(ctx context.Context, householdID string, limit uint8, ids []string) ([]*types.Recipe, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -254,7 +254,7 @@ func (q *SQLQuerier) GetRecipesWithIDs(ctx context.Context, accountID string, li
 		"id_count": len(ids),
 	})
 
-	query, args := q.buildGetRecipesWithIDsQuery(ctx, accountID, limit, ids)
+	query, args := q.buildGetRecipesWithIDsQuery(ctx, householdID, limit, ids)
 
 	rows, err := q.performReadQuery(ctx, q.db, "recipes with IDs", query, args)
 	if err != nil {
@@ -269,7 +269,7 @@ func (q *SQLQuerier) GetRecipesWithIDs(ctx context.Context, accountID string, li
 	return recipes, nil
 }
 
-const recipeCreationQuery = "INSERT INTO recipes (id,name,source,description,inspired_by_recipe_id,belongs_to_account) VALUES ($1,$2,$3,$4,$5,$6)"
+const recipeCreationQuery = "INSERT INTO recipes (id,name,source,description,inspired_by_recipe_id,belongs_to_household) VALUES ($1,$2,$3,$4,$5,$6)"
 
 // CreateRecipe creates a recipe in the database.
 func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseCreationInput) (*types.Recipe, error) {
@@ -288,7 +288,7 @@ func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeDataba
 		input.Source,
 		input.Description,
 		input.InspiredByRecipeID,
-		input.BelongsToAccount,
+		input.BelongsToHousehold,
 	}
 
 	// create the recipe.
@@ -302,7 +302,7 @@ func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeDataba
 		Source:             input.Source,
 		Description:        input.Description,
 		InspiredByRecipeID: input.InspiredByRecipeID,
-		BelongsToAccount:   input.BelongsToAccount,
+		BelongsToHousehold: input.BelongsToHousehold,
 		CreatedOn:          q.currentTime(),
 	}
 
@@ -312,7 +312,7 @@ func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeDataba
 	return x, nil
 }
 
-const updateRecipeQuery = "UPDATE recipes SET name = $1, source = $2, description = $3, inspired_by_recipe_id = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_account = $5 AND id = $6"
+const updateRecipeQuery = "UPDATE recipes SET name = $1, source = $2, description = $3, inspired_by_recipe_id = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_household = $5 AND id = $6"
 
 // UpdateRecipe updates a particular recipe.
 func (q *SQLQuerier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error {
@@ -325,14 +325,14 @@ func (q *SQLQuerier) UpdateRecipe(ctx context.Context, updated *types.Recipe) er
 
 	logger := q.logger.WithValue(keys.RecipeIDKey, updated.ID)
 	tracing.AttachRecipeIDToSpan(span, updated.ID)
-	tracing.AttachAccountIDToSpan(span, updated.BelongsToAccount)
+	tracing.AttachHouseholdIDToSpan(span, updated.BelongsToHousehold)
 
 	args := []interface{}{
 		updated.Name,
 		updated.Source,
 		updated.Description,
 		updated.InspiredByRecipeID,
-		updated.BelongsToAccount,
+		updated.BelongsToHousehold,
 		updated.ID,
 	}
 
@@ -345,10 +345,10 @@ func (q *SQLQuerier) UpdateRecipe(ctx context.Context, updated *types.Recipe) er
 	return nil
 }
 
-const archiveRecipeQuery = "UPDATE recipes SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_account = $1 AND id = $2"
+const archiveRecipeQuery = "UPDATE recipes SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_household = $1 AND id = $2"
 
 // ArchiveRecipe archives a recipe from the database by its ID.
-func (q *SQLQuerier) ArchiveRecipe(ctx context.Context, recipeID, accountID string) error {
+func (q *SQLQuerier) ArchiveRecipe(ctx context.Context, recipeID, householdID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -360,14 +360,14 @@ func (q *SQLQuerier) ArchiveRecipe(ctx context.Context, recipeID, accountID stri
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	if accountID == "" {
+	if householdID == "" {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	args := []interface{}{
-		accountID,
+		householdID,
 		recipeID,
 	}
 

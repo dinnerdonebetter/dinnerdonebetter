@@ -1,18 +1,18 @@
 export class authenticationState {
-    accountStatus: string;
+    householdStatus: string;
     isAuthenticated: boolean;
     userIsServiceAdmin: boolean;
     reputationExplanation: string;
     expiresOn: number;
 
     constructor(
-        accountStatus: string = "",
+        householdStatus: string = "",
         isAuthenticated: boolean = false,
         userIsServiceAdmin: boolean = false,
         reputationExplanation: string = "",
         expiresOn: number = 0, //parseInt(Date.now() / 1000),
     ) {
-        this.accountStatus = accountStatus;
+        this.householdStatus = householdStatus;
         this.isAuthenticated = isAuthenticated;
         this.userIsServiceAdmin = userIsServiceAdmin;
         this.reputationExplanation = reputationExplanation;

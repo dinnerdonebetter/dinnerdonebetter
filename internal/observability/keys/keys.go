@@ -1,16 +1,16 @@
 package keys
 
 const (
-	// AccountSubscriptionPlanIDKey is the standard key for referring to an account subscription plan ID.
-	AccountSubscriptionPlanIDKey = "account_subscription_plan.id"
-	// PermissionsKey is the standard key for referring to an account user membership ID.
+	// HouseholdSubscriptionPlanIDKey is the standard key for referring to an household subscription plan ID.
+	HouseholdSubscriptionPlanIDKey = "household_subscription_plan.id"
+	// PermissionsKey is the standard key for referring to an household user membership ID.
 	PermissionsKey = "user.permissions"
 	// RequesterIDKey is the standard key for referring to a requesting user's ID.
 	RequesterIDKey = "request.made_by"
-	// AccountIDKey is the standard key for referring to an account ID.
-	AccountIDKey = "account.id"
-	// ActiveAccountIDKey is the standard key for referring to an active account ID.
-	ActiveAccountIDKey = "active_account_id"
+	// HouseholdIDKey is the standard key for referring to an household ID.
+	HouseholdIDKey = "household.id"
+	// ActiveHouseholdIDKey is the standard key for referring to an active household ID.
+	ActiveHouseholdIDKey = "active_household_id"
 	// UserIDKey is the standard key for referring to a user ID.
 	UserIDKey = "user.id"
 	// UserIsServiceAdminKey is the standard key for referring to a user's admin status.

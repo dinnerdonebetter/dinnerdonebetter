@@ -65,15 +65,15 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := types.RecipeDatabaseCreationInputFromRecipeCreationInput(providedInput)
 	input.ID = ksuid.New().String()
 
-	input.BelongsToAccount = sessionCtxData.ActiveAccountID
+	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 	tracing.AttachRecipeIDToSpan(span, input.ID)
 
 	// create recipe in database.
 	preWrite := &types.PreWriteMessage{
-		DataType:                types.RecipeDataType,
-		Recipe:                  input,
-		AttributableToUserID:    sessionCtxData.Requester.UserID,
-		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+		DataType:                  types.RecipeDataType,
+		Recipe:                    input,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 	}
 	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing recipe write message")
@@ -196,7 +196,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
 	}
-	input.BelongsToAccount = sessionCtxData.ActiveAccountID
+	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
@@ -218,10 +218,10 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	recipe.Update(input)
 
 	pum := &types.PreUpdateMessage{
-		DataType:                types.RecipeDataType,
-		Recipe:                  recipe,
-		AttributableToUserID:    sessionCtxData.Requester.UserID,
-		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+		DataType:                  types.RecipeDataType,
+		Recipe:                    recipe,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 	}
 	if err = s.preUpdatesPublisher.Publish(ctx, pum); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing recipe update message")
@@ -268,10 +268,10 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	pam := &types.PreArchiveMessage{
-		DataType:                types.RecipeDataType,
-		RecipeID:                recipeID,
-		AttributableToUserID:    sessionCtxData.Requester.UserID,
-		AttributableToAccountID: sessionCtxData.ActiveAccountID,
+		DataType:                  types.RecipeDataType,
+		RecipeID:                  recipeID,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 	}
 	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing recipe archive message")

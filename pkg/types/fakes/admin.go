@@ -11,7 +11,7 @@ import (
 func BuildFakeUserReputationUpdateInput() *types.UserReputationUpdateInput {
 	return &types.UserReputationUpdateInput{
 		TargetUserID:  ksuid.New().String(),
-		NewReputation: types.GoodStandingAccountStatus,
+		NewReputation: types.GoodStandingHouseholdStatus,
 		Reason:        fake.Sentence(10),
 	}
 }

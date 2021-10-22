@@ -23,15 +23,15 @@ func init() {
 type (
 	// MealPlan represents a meal plan.
 	MealPlan struct {
-		_                struct{}
-		ArchivedOn       *uint64 `json:"archivedOn"`
-		LastUpdatedOn    *uint64 `json:"lastUpdatedOn"`
-		State            string  `json:"state"`
-		ID               string  `json:"id"`
-		BelongsToAccount string  `json:"belongsToAccount"`
-		StartsAt         uint64  `json:"startsAt"`
-		EndsAt           uint64  `json:"endsAt"`
-		CreatedOn        uint64  `json:"createdOn"`
+		_                  struct{}
+		ArchivedOn         *uint64 `json:"archivedOn"`
+		LastUpdatedOn      *uint64 `json:"lastUpdatedOn"`
+		State              string  `json:"state"`
+		ID                 string  `json:"id"`
+		BelongsToHousehold string  `json:"belongsToHousehold"`
+		StartsAt           uint64  `json:"startsAt"`
+		EndsAt             uint64  `json:"endsAt"`
+		CreatedOn          uint64  `json:"createdOn"`
 	}
 
 	// MealPlanList represents a list of meal plans.
@@ -43,31 +43,31 @@ type (
 
 	// MealPlanCreationRequestInput represents what a user could set as input for creating meal plans.
 	MealPlanCreationRequestInput struct {
-		_                struct{}
-		ID               string `json:"-"`
-		State            string `json:"state"`
-		BelongsToAccount string `json:"-"`
-		StartsAt         uint64 `json:"startsAt"`
-		EndsAt           uint64 `json:"endsAt"`
+		_                  struct{}
+		ID                 string `json:"-"`
+		State              string `json:"state"`
+		BelongsToHousehold string `json:"-"`
+		StartsAt           uint64 `json:"startsAt"`
+		EndsAt             uint64 `json:"endsAt"`
 	}
 
 	// MealPlanDatabaseCreationInput represents what a user could set as input for creating meal plans.
 	MealPlanDatabaseCreationInput struct {
-		_                struct{}
-		ID               string `json:"id"`
-		State            string `json:"state"`
-		BelongsToAccount string `json:"belongsToAccount"`
-		StartsAt         uint64 `json:"startsAt"`
-		EndsAt           uint64 `json:"endsAt"`
+		_                  struct{}
+		ID                 string `json:"id"`
+		State              string `json:"state"`
+		BelongsToHousehold string `json:"belongsToHousehold"`
+		StartsAt           uint64 `json:"startsAt"`
+		EndsAt             uint64 `json:"endsAt"`
 	}
 
 	// MealPlanUpdateRequestInput represents what a user could set as input for updating meal plans.
 	MealPlanUpdateRequestInput struct {
-		_                struct{}
-		State            string `json:"state"`
-		BelongsToAccount string `json:"-"`
-		StartsAt         uint64 `json:"startsAt"`
-		EndsAt           uint64 `json:"endsAt"`
+		_                  struct{}
+		State              string `json:"state"`
+		BelongsToHousehold string `json:"-"`
+		StartsAt           uint64 `json:"startsAt"`
+		EndsAt             uint64 `json:"endsAt"`
 	}
 
 	// MealPlanDataManager describes a structure capable of storing meal plans permanently.
@@ -76,10 +76,10 @@ type (
 		GetMealPlan(ctx context.Context, mealPlanID string) (*MealPlan, error)
 		GetTotalMealPlanCount(ctx context.Context) (uint64, error)
 		GetMealPlans(ctx context.Context, filter *QueryFilter) (*MealPlanList, error)
-		GetMealPlansWithIDs(ctx context.Context, accountID string, limit uint8, ids []string) ([]*MealPlan, error)
+		GetMealPlansWithIDs(ctx context.Context, householdID string, limit uint8, ids []string) ([]*MealPlan, error)
 		CreateMealPlan(ctx context.Context, input *MealPlanDatabaseCreationInput) (*MealPlan, error)
 		UpdateMealPlan(ctx context.Context, updated *MealPlan) error
-		ArchiveMealPlan(ctx context.Context, mealPlanID, accountID string) error
+		ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error
 	}
 
 	// MealPlanDataService describes a structure capable of serving traffic related to meal plans.
@@ -131,7 +131,7 @@ func (x *MealPlanDatabaseCreationInput) ValidateWithContext(ctx context.Context)
 		validation.Field(&x.State, validation.Required),
 		validation.Field(&x.StartsAt, validation.Required),
 		validation.Field(&x.EndsAt, validation.Required),
-		validation.Field(&x.BelongsToAccount, validation.Required),
+		validation.Field(&x.BelongsToHousehold, validation.Required),
 	)
 }
 

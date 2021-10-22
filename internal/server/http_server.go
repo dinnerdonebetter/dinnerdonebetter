@@ -31,7 +31,7 @@ type (
 	// HTTPServer is our API http server.
 	HTTPServer struct {
 		authService                        types.AuthService
-		accountsService                    types.AccountDataService
+		householdsService                  types.HouseholdDataService
 		frontendService                    frontend.Service
 		usersService                       types.UserDataService
 		adminService                       types.AdminService
@@ -66,7 +66,7 @@ func ProvideHTTPServer(
 	metricsHandler metrics.InstrumentationHandler,
 	authService types.AuthService,
 	usersService types.UserDataService,
-	accountsService types.AccountDataService,
+	householdsService types.HouseholdDataService,
 	apiClientsService types.APIClientDataService,
 	websocketsService types.WebsocketDataService,
 	validInstrumentsService types.ValidInstrumentDataService,
@@ -101,7 +101,7 @@ func ProvideHTTPServer(
 		webhooksService:                    webhooksService,
 		frontendService:                    frontendService,
 		usersService:                       usersService,
-		accountsService:                    accountsService,
+		householdsService:                  householdsService,
 		authService:                        authService,
 		websocketsService:                  websocketsService,
 		validInstrumentsService:            validInstrumentsService,

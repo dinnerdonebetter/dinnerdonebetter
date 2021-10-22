@@ -39,7 +39,7 @@ func buildMockRowsFromUsers(includeCounts bool, filteredCount uint64, users ...*
 			user.TwoFactorSecret,
 			user.TwoFactorSecretVerifiedOn,
 			strings.Join(user.ServiceRoles, serviceRolesSeparator),
-			user.ServiceAccountStatus,
+			user.ServiceHouseholdStatus,
 			user.ReputationExplanation,
 			user.CreatedOn,
 			user.LastUpdatedOn,
@@ -108,7 +108,7 @@ func TestQuerier_UserHasStatus(T *testing.T) {
 		c, db := buildTestClient(t)
 		ctx := context.Background()
 		exampleUserID := fakes.BuildFakeID()
-		exampleStatus := string(types.GoodStandingAccountStatus)
+		exampleStatus := string(types.GoodStandingHouseholdStatus)
 
 		args := []interface{}{exampleUserID, exampleStatus}
 
@@ -128,7 +128,7 @@ func TestQuerier_UserHasStatus(T *testing.T) {
 
 		c, _ := buildTestClient(t)
 		ctx := context.Background()
-		exampleStatus := string(types.GoodStandingAccountStatus)
+		exampleStatus := string(types.GoodStandingHouseholdStatus)
 
 		actual, err := c.UserHasStatus(ctx, "", exampleStatus)
 		assert.Error(t, err)
@@ -153,7 +153,7 @@ func TestQuerier_UserHasStatus(T *testing.T) {
 		c, db := buildTestClient(t)
 		ctx := context.Background()
 		exampleUserID := fakes.BuildFakeID()
-		exampleStatus := string(types.GoodStandingAccountStatus)
+		exampleStatus := string(types.GoodStandingHouseholdStatus)
 
 		args := []interface{}{exampleUserID, exampleStatus}
 
@@ -706,8 +706,8 @@ func TestQuerier_createUser(T *testing.T) {
 		exampleUser.TwoFactorSecretVerifiedOn = nil
 		exampleUser.CreatedOn = exampleCreationTime
 
-		exampleAccount := fakes.BuildFakeAccountForUser(exampleUser)
-		exampleAccount.CreatedOn = exampleCreationTime
+		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
+		exampleHousehold.CreatedOn = exampleCreationTime
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -724,38 +724,38 @@ func TestQuerier_createUser(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeUserCreationArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult(exampleUser.ID))
 
-		// create account for created user
-		accountCreationInput := types.AccountCreationInputForNewUser(exampleUser)
-		accountCreationInput.ID = exampleAccount.ID
-		accountCreationArgs := []interface{}{
-			accountCreationInput.ID,
-			accountCreationInput.Name,
-			types.UnpaidAccountBillingStatus,
-			accountCreationInput.ContactEmail,
-			accountCreationInput.ContactPhone,
-			accountCreationInput.BelongsToUser,
+		// create household for created user
+		householdCreationInput := types.HouseholdCreationInputForNewUser(exampleUser)
+		householdCreationInput.ID = exampleHousehold.ID
+		householdCreationArgs := []interface{}{
+			householdCreationInput.ID,
+			householdCreationInput.Name,
+			types.UnpaidHouseholdBillingStatus,
+			householdCreationInput.ContactEmail,
+			householdCreationInput.ContactPhone,
+			householdCreationInput.BelongsToUser,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(accountCreationQuery)).
-			WithArgs(interfaceToDriverValue(accountCreationArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleAccount.ID))
+		db.ExpectExec(formatQueryForSQLMock(householdCreationQuery)).
+			WithArgs(interfaceToDriverValue(householdCreationArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult(exampleHousehold.ID))
 
-		// create account user membership for created user
-		createAccountMembershipForNewUserArgs := []interface{}{
+		// create household user membership for created user
+		createHouseholdMembershipForNewUserArgs := []interface{}{
 			&idMatcher{},
 			exampleUser.ID,
-			exampleAccount.ID,
+			exampleHousehold.ID,
 			true,
-			authorization.AccountAdminRole.String(),
+			authorization.HouseholdAdminRole.String(),
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(createAccountMembershipForNewUserQuery)).
-			WithArgs(interfaceToDriverValue(createAccountMembershipForNewUserArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleAccount.ID))
+		db.ExpectExec(formatQueryForSQLMock(createHouseholdMembershipForNewUserQuery)).
+			WithArgs(interfaceToDriverValue(createHouseholdMembershipForNewUserArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult(exampleHousehold.ID))
 
 		db.ExpectCommit()
 
-		assert.NoError(t, c.createUser(ctx, exampleUser, exampleAccount, fakeUserCreationQuery, fakeUserCreationArgs))
+		assert.NoError(t, c.createUser(ctx, exampleUser, exampleHousehold, fakeUserCreationQuery, fakeUserCreationArgs))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -769,15 +769,15 @@ func TestQuerier_createUser(T *testing.T) {
 		exampleUser.TwoFactorSecretVerifiedOn = nil
 		exampleUser.CreatedOn = exampleCreationTime
 
-		exampleAccount := fakes.BuildFakeAccountForUser(exampleUser)
-		exampleAccount.CreatedOn = exampleCreationTime
+		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
+		exampleHousehold.CreatedOn = exampleCreationTime
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		fakeUserCreationQuery, fakeUserCreationArgs := fakes.BuildFakeSQLQuery()
 
-		assert.Error(t, c.createUser(ctx, &types.User{}, exampleAccount, fakeUserCreationQuery, fakeUserCreationArgs))
+		assert.Error(t, c.createUser(ctx, &types.User{}, exampleHousehold, fakeUserCreationQuery, fakeUserCreationArgs))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -791,8 +791,8 @@ func TestQuerier_createUser(T *testing.T) {
 		exampleUser.TwoFactorSecretVerifiedOn = nil
 		exampleUser.CreatedOn = exampleCreationTime
 
-		exampleAccount := fakes.BuildFakeAccountForUser(exampleUser)
-		exampleAccount.CreatedOn = exampleCreationTime
+		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
+		exampleHousehold.CreatedOn = exampleCreationTime
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -801,7 +801,7 @@ func TestQuerier_createUser(T *testing.T) {
 
 		query, args := fakes.BuildFakeSQLQuery()
 
-		assert.Error(t, c.createUser(ctx, exampleUser, exampleAccount, query, args))
+		assert.Error(t, c.createUser(ctx, exampleUser, exampleHousehold, query, args))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -815,8 +815,8 @@ func TestQuerier_createUser(T *testing.T) {
 		exampleUser.TwoFactorSecretVerifiedOn = nil
 		exampleUser.CreatedOn = exampleCreationTime
 
-		exampleAccount := fakes.BuildFakeAccountForUser(exampleUser)
-		exampleAccount.CreatedOn = exampleCreationTime
+		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
+		exampleHousehold.CreatedOn = exampleCreationTime
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -835,12 +835,12 @@ func TestQuerier_createUser(T *testing.T) {
 
 		db.ExpectRollback()
 
-		assert.Error(t, c.createUser(ctx, exampleUser, exampleAccount, fakeUserCreationQuery, fakeUserCreationArgs))
+		assert.Error(t, c.createUser(ctx, exampleUser, exampleHousehold, fakeUserCreationQuery, fakeUserCreationArgs))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
 
-	T.Run("with error creating account", func(t *testing.T) {
+	T.Run("with error creating household", func(t *testing.T) {
 		t.Parallel()
 
 		exampleCreationTime := fakes.BuildFakeTime()
@@ -849,8 +849,8 @@ func TestQuerier_createUser(T *testing.T) {
 		exampleUser.TwoFactorSecretVerifiedOn = nil
 		exampleUser.CreatedOn = exampleCreationTime
 
-		exampleAccount := fakes.BuildFakeAccountForUser(exampleUser)
-		exampleAccount.CreatedOn = exampleCreationTime
+		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
+		exampleHousehold.CreatedOn = exampleCreationTime
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -867,30 +867,30 @@ func TestQuerier_createUser(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeUserCreationArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult(exampleUser.ID))
 
-		// create account for created user
-		accountCreationInput := types.AccountCreationInputForNewUser(exampleUser)
-		accountCreationInput.ID = exampleAccount.ID
-		accountCreationArgs := []interface{}{
-			accountCreationInput.ID,
-			accountCreationInput.Name,
-			types.UnpaidAccountBillingStatus,
-			accountCreationInput.ContactEmail,
-			accountCreationInput.ContactPhone,
-			accountCreationInput.BelongsToUser,
+		// create household for created user
+		householdCreationInput := types.HouseholdCreationInputForNewUser(exampleUser)
+		householdCreationInput.ID = exampleHousehold.ID
+		householdCreationArgs := []interface{}{
+			householdCreationInput.ID,
+			householdCreationInput.Name,
+			types.UnpaidHouseholdBillingStatus,
+			householdCreationInput.ContactEmail,
+			householdCreationInput.ContactPhone,
+			householdCreationInput.BelongsToUser,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(accountCreationQuery)).
-			WithArgs(interfaceToDriverValue(accountCreationArgs)...).
+		db.ExpectExec(formatQueryForSQLMock(householdCreationQuery)).
+			WithArgs(interfaceToDriverValue(householdCreationArgs)...).
 			WillReturnError(errors.New("blah"))
 
 		db.ExpectRollback()
 
-		assert.Error(t, c.createUser(ctx, exampleUser, exampleAccount, fakeUserCreationQuery, fakeUserCreationArgs))
+		assert.Error(t, c.createUser(ctx, exampleUser, exampleHousehold, fakeUserCreationQuery, fakeUserCreationArgs))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
 
-	T.Run("with error creating account user membership", func(t *testing.T) {
+	T.Run("with error creating household user membership", func(t *testing.T) {
 		t.Parallel()
 
 		exampleCreationTime := fakes.BuildFakeTime()
@@ -899,8 +899,8 @@ func TestQuerier_createUser(T *testing.T) {
 		exampleUser.TwoFactorSecretVerifiedOn = nil
 		exampleUser.CreatedOn = exampleCreationTime
 
-		exampleAccount := fakes.BuildFakeAccountForUser(exampleUser)
-		exampleAccount.CreatedOn = exampleCreationTime
+		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
+		exampleHousehold.CreatedOn = exampleCreationTime
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -917,39 +917,39 @@ func TestQuerier_createUser(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeUserCreationArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult(exampleUser.ID))
 
-		// create account for created user
-		accountCreationInput := types.AccountCreationInputForNewUser(exampleUser)
-		accountCreationInput.ID = exampleAccount.ID
-		accountCreationArgs := []interface{}{
-			accountCreationInput.ID,
-			accountCreationInput.Name,
-			types.UnpaidAccountBillingStatus,
-			accountCreationInput.ContactEmail,
-			accountCreationInput.ContactPhone,
-			accountCreationInput.BelongsToUser,
+		// create household for created user
+		householdCreationInput := types.HouseholdCreationInputForNewUser(exampleUser)
+		householdCreationInput.ID = exampleHousehold.ID
+		householdCreationArgs := []interface{}{
+			householdCreationInput.ID,
+			householdCreationInput.Name,
+			types.UnpaidHouseholdBillingStatus,
+			householdCreationInput.ContactEmail,
+			householdCreationInput.ContactPhone,
+			householdCreationInput.BelongsToUser,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(accountCreationQuery)).
-			WithArgs(interfaceToDriverValue(accountCreationArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleAccount.ID))
+		db.ExpectExec(formatQueryForSQLMock(householdCreationQuery)).
+			WithArgs(interfaceToDriverValue(householdCreationArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult(exampleHousehold.ID))
 
-		// create account user membership for created user
+		// create household user membership for created user
 
-		createAccountMembershipForNewUserArgs := []interface{}{
+		createHouseholdMembershipForNewUserArgs := []interface{}{
 			&idMatcher{},
 			exampleUser.ID,
-			exampleAccount.ID,
+			exampleHousehold.ID,
 			true,
-			authorization.AccountAdminRole.String(),
+			authorization.HouseholdAdminRole.String(),
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(createAccountMembershipForNewUserQuery)).
-			WithArgs(interfaceToDriverValue(createAccountMembershipForNewUserArgs)...).
+		db.ExpectExec(formatQueryForSQLMock(createHouseholdMembershipForNewUserQuery)).
+			WithArgs(interfaceToDriverValue(createHouseholdMembershipForNewUserArgs)...).
 			WillReturnError(errors.New("blah"))
 
 		db.ExpectRollback()
 
-		assert.Error(t, c.createUser(ctx, exampleUser, exampleAccount, fakeUserCreationQuery, fakeUserCreationArgs))
+		assert.Error(t, c.createUser(ctx, exampleUser, exampleHousehold, fakeUserCreationQuery, fakeUserCreationArgs))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -963,8 +963,8 @@ func TestQuerier_createUser(T *testing.T) {
 		exampleUser.TwoFactorSecretVerifiedOn = nil
 		exampleUser.CreatedOn = exampleCreationTime
 
-		exampleAccount := fakes.BuildFakeAccountForUser(exampleUser)
-		exampleAccount.CreatedOn = exampleCreationTime
+		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
+		exampleHousehold.CreatedOn = exampleCreationTime
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -981,39 +981,39 @@ func TestQuerier_createUser(T *testing.T) {
 			WithArgs(interfaceToDriverValue(fakeUserCreationArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult(exampleUser.ID))
 
-		// create account for created user
-		accountCreationInput := types.AccountCreationInputForNewUser(exampleUser)
-		accountCreationInput.ID = exampleAccount.ID
-		accountCreationArgs := []interface{}{
-			accountCreationInput.ID,
-			accountCreationInput.Name,
-			types.UnpaidAccountBillingStatus,
-			accountCreationInput.ContactEmail,
-			accountCreationInput.ContactPhone,
-			accountCreationInput.BelongsToUser,
+		// create household for created user
+		householdCreationInput := types.HouseholdCreationInputForNewUser(exampleUser)
+		householdCreationInput.ID = exampleHousehold.ID
+		householdCreationArgs := []interface{}{
+			householdCreationInput.ID,
+			householdCreationInput.Name,
+			types.UnpaidHouseholdBillingStatus,
+			householdCreationInput.ContactEmail,
+			householdCreationInput.ContactPhone,
+			householdCreationInput.BelongsToUser,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(accountCreationQuery)).
-			WithArgs(interfaceToDriverValue(accountCreationArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleAccount.ID))
+		db.ExpectExec(formatQueryForSQLMock(householdCreationQuery)).
+			WithArgs(interfaceToDriverValue(householdCreationArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult(exampleHousehold.ID))
 
-		// create account user membership for created user
+		// create household user membership for created user
 
-		createAccountMembershipForNewUserArgs := []interface{}{
+		createHouseholdMembershipForNewUserArgs := []interface{}{
 			&idMatcher{},
 			exampleUser.ID,
-			exampleAccount.ID,
+			exampleHousehold.ID,
 			true,
-			authorization.AccountAdminRole.String(),
+			authorization.HouseholdAdminRole.String(),
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(createAccountMembershipForNewUserQuery)).
-			WithArgs(interfaceToDriverValue(createAccountMembershipForNewUserArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleAccount.ID))
+		db.ExpectExec(formatQueryForSQLMock(createHouseholdMembershipForNewUserQuery)).
+			WithArgs(interfaceToDriverValue(createHouseholdMembershipForNewUserArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult(exampleHousehold.ID))
 
 		db.ExpectCommit().WillReturnError(errors.New("blah"))
 
-		assert.Error(t, c.createUser(ctx, exampleUser, exampleAccount, fakeUserCreationQuery, fakeUserCreationArgs))
+		assert.Error(t, c.createUser(ctx, exampleUser, exampleHousehold, fakeUserCreationQuery, fakeUserCreationArgs))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -1030,11 +1030,11 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 		exampleUser.TwoFactorSecretVerifiedOn = nil
 		exampleUser.CreatedOn = exampleCreationTime
-		exampleUser.ServiceAccountStatus = ""
+		exampleUser.ServiceHouseholdStatus = ""
 		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
 
-		exampleAccount := fakes.BuildFakeAccountForUser(exampleUser)
-		exampleAccount.CreatedOn = exampleCreationTime
+		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
+		exampleHousehold.CreatedOn = exampleCreationTime
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -1050,7 +1050,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleUserCreationInput.Username,
 			exampleUserCreationInput.HashedPassword,
 			exampleUserCreationInput.TwoFactorSecret,
-			types.UnverifiedAccountStatus,
+			types.UnverifiedHouseholdStatus,
 			authorization.ServiceUserRole.String(),
 		}
 
@@ -1058,34 +1058,34 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WithArgs(interfaceToDriverValue(userCreationArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult(exampleUser.ID))
 
-		// create account for created user
-		accountCreationInput := types.AccountCreationInputForNewUser(exampleUser)
-		accountCreationInput.ID = exampleAccount.ID
-		accountCreationArgs := []interface{}{
+		// create household for created user
+		householdCreationInput := types.HouseholdCreationInputForNewUser(exampleUser)
+		householdCreationInput.ID = exampleHousehold.ID
+		householdCreationArgs := []interface{}{
 			&idMatcher{},
-			accountCreationInput.Name,
-			types.UnpaidAccountBillingStatus,
-			accountCreationInput.ContactEmail,
-			accountCreationInput.ContactPhone,
+			householdCreationInput.Name,
+			types.UnpaidHouseholdBillingStatus,
+			householdCreationInput.ContactEmail,
+			householdCreationInput.ContactPhone,
 			&idMatcher{},
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(accountCreationQuery)).
-			WithArgs(interfaceToDriverValue(accountCreationArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleAccount.ID))
+		db.ExpectExec(formatQueryForSQLMock(householdCreationQuery)).
+			WithArgs(interfaceToDriverValue(householdCreationArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult(exampleHousehold.ID))
 
-		// create account user membership for created user
-		createAccountMembershipForNewUserArgs := []interface{}{
+		// create household user membership for created user
+		createHouseholdMembershipForNewUserArgs := []interface{}{
 			&idMatcher{},
 			&idMatcher{},
 			&idMatcher{},
 			true,
-			authorization.AccountAdminRole.String(),
+			authorization.HouseholdAdminRole.String(),
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(createAccountMembershipForNewUserQuery)).
-			WithArgs(interfaceToDriverValue(createAccountMembershipForNewUserArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleAccount.ID))
+		db.ExpectExec(formatQueryForSQLMock(createHouseholdMembershipForNewUserQuery)).
+			WithArgs(interfaceToDriverValue(createHouseholdMembershipForNewUserArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult(exampleHousehold.ID))
 
 		db.ExpectCommit()
 
@@ -1357,7 +1357,7 @@ func TestQuerier_VerifyUserTwoFactorSecret(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			types.GoodStandingAccountStatus,
+			types.GoodStandingHouseholdStatus,
 			exampleUserID,
 		}
 
@@ -1388,7 +1388,7 @@ func TestQuerier_VerifyUserTwoFactorSecret(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			types.GoodStandingAccountStatus,
+			types.GoodStandingHouseholdStatus,
 			exampleUserID,
 		}
 

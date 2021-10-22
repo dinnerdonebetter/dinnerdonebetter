@@ -26,7 +26,7 @@ var (
 			"Frontend",
 			"Webhooks",
 			"Websockets",
-			"Accounts",
+			"Households",
 			"ValidInstruments",
 			"ValidIngredients",
 			"ValidPreparations",

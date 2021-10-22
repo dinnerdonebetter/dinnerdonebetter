@@ -34,7 +34,7 @@ var (
 func init() {
 	flag.StringVarP(&uri, "url", "u", "", "where the target instance is hosted")
 	flag.Uint16VarP(&userCount, "user-count", "c", 0, "how many users to create")
-	flag.Uint16VarP(&dataCount, "data-count", "d", 0, "how many accounts/api clients/etc per user to create")
+	flag.Uint16VarP(&dataCount, "data-count", "d", 0, "how many households/api clients/etc per user to create")
 	flag.BoolVarP(&debug, "debug", "z", false, "whether debug mode is enabled")
 	flag.BoolVarP(&singleUserMode, "single-user-mode", "s", false, "whether single user mode is enabled")
 }
@@ -127,14 +127,14 @@ func main() {
 			wg.Add(1)
 			go func(wg *sync.WaitGroup) {
 				for j := 0; j < int(dataCount); j++ {
-					iterationLogger := userLogger.WithValue("creating", "accounts").WithValue("iteration", j)
+					iterationLogger := userLogger.WithValue("creating", "households").WithValue("iteration", j)
 
-					createdAccount, accountCreationError := userClient.CreateAccount(ctx, fakes.BuildFakeAccountCreationInput())
-					if accountCreationError != nil {
-						quitter.ComplainAndQuit(fmt.Errorf("creating account %s: %w", j, accountCreationError))
+					createdHousehold, householdCreationError := userClient.CreateHousehold(ctx, fakes.BuildFakeHouseholdCreationInput())
+					if householdCreationError != nil {
+						quitter.ComplainAndQuit(fmt.Errorf("creating household %s: %w", j, householdCreationError))
 					}
 
-					iterationLogger.WithValue(keys.AccountIDKey, createdAccount.ID).Debug("created account")
+					iterationLogger.WithValue(keys.HouseholdIDKey, createdHousehold.ID).Debug("created household")
 				}
 				wg.Done()
 			}(wg)

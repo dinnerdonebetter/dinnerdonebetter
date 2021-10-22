@@ -414,7 +414,7 @@ func TestValidInstrumentsService_SearchHandler(T *testing.T) {
 			"Search",
 			testutils.ContextMatcher,
 			exampleQuery,
-			helper.exampleAccount.ID,
+			helper.exampleHousehold.ID,
 		).Return(exampleValidInstrumentIDs, nil)
 		helper.service.search = indexManager
 
@@ -479,7 +479,7 @@ func TestValidInstrumentsService_SearchHandler(T *testing.T) {
 			"Search",
 			testutils.ContextMatcher,
 			exampleQuery,
-			helper.exampleAccount.ID,
+			helper.exampleHousehold.ID,
 		).Return([]string{}, errors.New("blah"))
 		helper.service.search = indexManager
 
@@ -513,7 +513,7 @@ func TestValidInstrumentsService_SearchHandler(T *testing.T) {
 			"Search",
 			testutils.ContextMatcher,
 			exampleQuery,
-			helper.exampleAccount.ID,
+			helper.exampleHousehold.ID,
 		).Return(exampleValidInstrumentIDs, nil)
 		helper.service.search = indexManager
 
@@ -556,7 +556,7 @@ func TestValidInstrumentsService_SearchHandler(T *testing.T) {
 			"Search",
 			testutils.ContextMatcher,
 			exampleQuery,
-			helper.exampleAccount.ID,
+			helper.exampleHousehold.ID,
 		).Return(exampleValidInstrumentIDs, nil)
 		helper.service.search = indexManager
 

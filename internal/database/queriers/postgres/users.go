@@ -64,7 +64,7 @@ func (q *SQLQuerier) scanUser(ctx context.Context, scan database.Scanner, includ
 		&user.TwoFactorSecret,
 		&user.TwoFactorSecretVerifiedOn,
 		&rawRoles,
-		&user.ServiceAccountStatus,
+		&user.ServiceHouseholdStatus,
 		&user.ReputationExplanation,
 		&user.CreatedOn,
 		&user.LastUpdatedOn,
@@ -192,13 +192,13 @@ func (q *SQLQuerier) getUser(ctx context.Context, userID string, withVerifiedTOT
 	return u, nil
 }
 
-const createAccountMembershipForNewUserQuery = `
-	INSERT INTO account_user_memberships (id,belongs_to_user,belongs_to_account,default_account,account_roles)
+const createHouseholdMembershipForNewUserQuery = `
+	INSERT INTO household_user_memberships (id,belongs_to_user,belongs_to_household,default_household,household_roles)
 	VALUES ($1,$2,$3,$4,$5)
 `
 
-// createUser creates a user. The `user` and `account` parameters are meant to be filled out.
-func (q *SQLQuerier) createUser(ctx context.Context, user *types.User, account *types.Account, userCreationQuery string, userCreationArgs []interface{}) error {
+// createUser creates a user. The `user` and `household` parameters are meant to be filled out.
+func (q *SQLQuerier) createUser(ctx context.Context, user *types.User, household *types.Household, userCreationQuery string, userCreationArgs []interface{}) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -207,7 +207,7 @@ func (q *SQLQuerier) createUser(ctx context.Context, user *types.User, account *
 	if user.ID == "" {
 		return ErrEmptyInputProvided
 	}
-	account.BelongsToUser = user.ID
+	household.BelongsToUser = user.ID
 	logger = logger.WithValue(keys.UserIDKey, user.ID)
 
 	// begin user creation transaction
@@ -221,37 +221,37 @@ func (q *SQLQuerier) createUser(ctx context.Context, user *types.User, account *
 		return observability.PrepareError(writeErr, logger, span, "creating user")
 	}
 
-	// create the account.
-	accountCreationInput := types.AccountCreationInputForNewUser(user)
-	accountCreationInput.ID = account.ID
+	// create the household.
+	householdCreationInput := types.HouseholdCreationInputForNewUser(user)
+	householdCreationInput.ID = household.ID
 
-	accountCreationArgs := []interface{}{
-		accountCreationInput.ID,
-		accountCreationInput.Name,
-		types.UnpaidAccountBillingStatus,
-		accountCreationInput.ContactEmail,
-		accountCreationInput.ContactPhone,
-		accountCreationInput.BelongsToUser,
+	householdCreationArgs := []interface{}{
+		householdCreationInput.ID,
+		householdCreationInput.Name,
+		types.UnpaidHouseholdBillingStatus,
+		householdCreationInput.ContactEmail,
+		householdCreationInput.ContactPhone,
+		householdCreationInput.BelongsToUser,
 	}
 
-	if writeErr := q.performWriteQuery(ctx, tx, "account creation", accountCreationQuery, accountCreationArgs); writeErr != nil {
+	if writeErr := q.performWriteQuery(ctx, tx, "household creation", householdCreationQuery, householdCreationArgs); writeErr != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(writeErr, logger, span, "create account")
+		return observability.PrepareError(writeErr, logger, span, "create household")
 	}
 
-	logger = logger.WithValue(keys.AccountIDKey, account.ID)
+	logger = logger.WithValue(keys.HouseholdIDKey, household.ID)
 
-	createAccountMembershipForNewUserArgs := []interface{}{
+	createHouseholdMembershipForNewUserArgs := []interface{}{
 		ksuid.New().String(),
 		user.ID,
-		account.ID,
+		household.ID,
 		true,
-		authorization.AccountAdminRole.String(),
+		authorization.HouseholdAdminRole.String(),
 	}
 
-	if err = q.performWriteQuery(ctx, tx, "account user membership creation", createAccountMembershipForNewUserQuery, createAccountMembershipForNewUserArgs); err != nil {
+	if err = q.performWriteQuery(ctx, tx, "household user membership creation", createHouseholdMembershipForNewUserQuery, createHouseholdMembershipForNewUserArgs); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "writing account user membership")
+		return observability.PrepareError(err, logger, span, "writing household user membership")
 	}
 
 	if err = tx.Commit(); err != nil {
@@ -259,9 +259,9 @@ func (q *SQLQuerier) createUser(ctx context.Context, user *types.User, account *
 	}
 
 	tracing.AttachUserIDToSpan(span, user.ID)
-	tracing.AttachAccountIDToSpan(span, account.ID)
+	tracing.AttachHouseholdIDToSpan(span, household.ID)
 
-	logger.Info("user and account created")
+	logger.Info("user and household created")
 
 	return nil
 }
@@ -490,7 +490,7 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDataStoreC
 		input.Username,
 		input.HashedPassword,
 		input.TwoFactorSecret,
-		types.UnverifiedAccountStatus,
+		types.UnverifiedHouseholdStatus,
 		authorization.ServiceUserRole.String(),
 	}
 
@@ -503,7 +503,7 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDataStoreC
 		CreatedOn:       q.currentTime(),
 	}
 
-	account := &types.Account{
+	household := &types.Household{
 		ID:                 ksuid.New().String(),
 		Name:               input.Username,
 		SubscriptionPlanID: nil,
@@ -511,7 +511,7 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDataStoreC
 	}
 
 	// create the user.
-	if err := q.createUser(ctx, user, account, userCreationQuery, userCreationArgs); err != nil {
+	if err := q.createUser(ctx, user, household, userCreationQuery, userCreationArgs); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "creating user")
 	}
 
@@ -642,7 +642,7 @@ func (q *SQLQuerier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, user
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
 	args := []interface{}{
-		types.GoodStandingAccountStatus,
+		types.GoodStandingHouseholdStatus,
 		userID,
 	}
 
@@ -660,7 +660,7 @@ const archiveUserQuery = `
 `
 
 const archiveMembershipsQuery = `
-	UPDATE account_user_memberships SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_user = $1
+	UPDATE household_user_memberships SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_user = $1
 `
 
 // ArchiveUser archives a user.
@@ -692,7 +692,7 @@ func (q *SQLQuerier) ArchiveUser(ctx context.Context, userID string) error {
 
 	if err = q.performWriteQuery(ctx, tx, "user memberships archive", archiveMembershipsQuery, archiveMembershipsArgs); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "archiving user account memberships")
+		return observability.PrepareError(err, logger, span, "archiving user household memberships")
 	}
 
 	if err = tx.Commit(); err != nil {

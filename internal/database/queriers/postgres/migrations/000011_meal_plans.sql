@@ -6,5 +6,5 @@ CREATE TABLE IF NOT EXISTS meal_plans (
 	created_on BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 	last_updated_on BIGINT DEFAULT NULL,
 	archived_on BIGINT DEFAULT NULL,
-	belongs_to_account CHAR(27) NOT NULL REFERENCES accounts(id) ON DELETE CASCADE
+	belongs_to_household CHAR(27) NOT NULL REFERENCES households(id) ON DELETE CASCADE
 );

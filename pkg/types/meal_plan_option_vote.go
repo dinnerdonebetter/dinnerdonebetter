@@ -23,17 +23,17 @@ func init() {
 type (
 	// MealPlanOptionVote represents a meal plan option vote.
 	MealPlanOptionVote struct {
-		_                struct{}
-		LastUpdatedOn    *uint64 `json:"lastUpdatedOn"`
-		ArchivedOn       *uint64 `json:"archivedOn"`
-		ID               string  `json:"id"`
-		BelongsToAccount string  `json:"belongsToAccount"`
-		Notes            string  `json:"notes"`
-		MealPlanOptionID string  `json:"mealPlanOptionID"`
-		CreatedOn        uint64  `json:"createdOn"`
-		Points           int16   `json:"points"`
-		Abstain          bool    `json:"abstain"`
-		DayOfWeek        uint8   `json:"dayOfWeek"`
+		_                  struct{}
+		LastUpdatedOn      *uint64 `json:"lastUpdatedOn"`
+		ArchivedOn         *uint64 `json:"archivedOn"`
+		ID                 string  `json:"id"`
+		BelongsToHousehold string  `json:"belongsToHousehold"`
+		Notes              string  `json:"notes"`
+		MealPlanOptionID   string  `json:"mealPlanOptionID"`
+		CreatedOn          uint64  `json:"createdOn"`
+		Points             int16   `json:"points"`
+		Abstain            bool    `json:"abstain"`
+		DayOfWeek          uint8   `json:"dayOfWeek"`
 	}
 
 	// MealPlanOptionVoteList represents a list of meal plan option votes.
@@ -45,37 +45,37 @@ type (
 
 	// MealPlanOptionVoteCreationRequestInput represents what a user could set as input for creating meal plan option votes.
 	MealPlanOptionVoteCreationRequestInput struct {
-		_                struct{}
-		ID               string `json:"-"`
-		MealPlanOptionID string `json:"mealPlanOptionID"`
-		Notes            string `json:"notes"`
-		BelongsToAccount string `json:"-"`
-		Points           int16  `json:"points"`
-		DayOfWeek        uint8  `json:"dayOfWeek"`
-		Abstain          bool   `json:"abstain"`
+		_                  struct{}
+		ID                 string `json:"-"`
+		MealPlanOptionID   string `json:"mealPlanOptionID"`
+		Notes              string `json:"notes"`
+		BelongsToHousehold string `json:"-"`
+		Points             int16  `json:"points"`
+		DayOfWeek          uint8  `json:"dayOfWeek"`
+		Abstain            bool   `json:"abstain"`
 	}
 
 	// MealPlanOptionVoteDatabaseCreationInput represents what a user could set as input for creating meal plan option votes.
 	MealPlanOptionVoteDatabaseCreationInput struct {
-		_                struct{}
-		ID               string `json:"id"`
-		MealPlanOptionID string `json:"mealPlanOptionID"`
-		Notes            string `json:"notes"`
-		BelongsToAccount string `json:"belongsToAccount"`
-		Points           int16  `json:"points"`
-		DayOfWeek        uint8  `json:"dayOfWeek"`
-		Abstain          bool   `json:"abstain"`
+		_                  struct{}
+		ID                 string `json:"id"`
+		MealPlanOptionID   string `json:"mealPlanOptionID"`
+		Notes              string `json:"notes"`
+		BelongsToHousehold string `json:"belongsToHousehold"`
+		Points             int16  `json:"points"`
+		DayOfWeek          uint8  `json:"dayOfWeek"`
+		Abstain            bool   `json:"abstain"`
 	}
 
 	// MealPlanOptionVoteUpdateRequestInput represents what a user could set as input for updating meal plan option votes.
 	MealPlanOptionVoteUpdateRequestInput struct {
-		_                struct{}
-		MealPlanOptionID string `json:"mealPlanOptionID"`
-		Notes            string `json:"notes"`
-		BelongsToAccount string `json:"-"`
-		Points           int16  `json:"points"`
-		DayOfWeek        uint8  `json:"dayOfWeek"`
-		Abstain          bool   `json:"abstain"`
+		_                  struct{}
+		MealPlanOptionID   string `json:"mealPlanOptionID"`
+		Notes              string `json:"notes"`
+		BelongsToHousehold string `json:"-"`
+		Points             int16  `json:"points"`
+		DayOfWeek          uint8  `json:"dayOfWeek"`
+		Abstain            bool   `json:"abstain"`
 	}
 
 	// MealPlanOptionVoteDataManager describes a structure capable of storing meal plan option votes permanently.
@@ -84,10 +84,10 @@ type (
 		GetMealPlanOptionVote(ctx context.Context, mealPlanOptionVoteID string) (*MealPlanOptionVote, error)
 		GetTotalMealPlanOptionVoteCount(ctx context.Context) (uint64, error)
 		GetMealPlanOptionVotes(ctx context.Context, filter *QueryFilter) (*MealPlanOptionVoteList, error)
-		GetMealPlanOptionVotesWithIDs(ctx context.Context, accountID string, limit uint8, ids []string) ([]*MealPlanOptionVote, error)
+		GetMealPlanOptionVotesWithIDs(ctx context.Context, householdID string, limit uint8, ids []string) ([]*MealPlanOptionVote, error)
 		CreateMealPlanOptionVote(ctx context.Context, input *MealPlanOptionVoteDatabaseCreationInput) (*MealPlanOptionVote, error)
 		UpdateMealPlanOptionVote(ctx context.Context, updated *MealPlanOptionVote) error
-		ArchiveMealPlanOptionVote(ctx context.Context, mealPlanOptionVoteID, accountID string) error
+		ArchiveMealPlanOptionVote(ctx context.Context, mealPlanOptionVoteID, householdID string) error
 	}
 
 	// MealPlanOptionVoteDataService describes a structure capable of serving traffic related to meal plan option votes.
@@ -149,7 +149,7 @@ func (x *MealPlanOptionVoteDatabaseCreationInput) ValidateWithContext(ctx contex
 		validation.Field(&x.DayOfWeek, validation.Required),
 		validation.Field(&x.Points, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
-		validation.Field(&x.BelongsToAccount, validation.Required),
+		validation.Field(&x.BelongsToHousehold, validation.Required),
 	)
 }
 

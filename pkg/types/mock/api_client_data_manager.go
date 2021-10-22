@@ -46,6 +46,6 @@ func (m *APIClientDataManager) CreateAPIClient(ctx context.Context, input *types
 }
 
 // ArchiveAPIClient is a mock function.
-func (m *APIClientDataManager) ArchiveAPIClient(ctx context.Context, clientID, accountID string) error {
-	return m.Called(ctx, clientID, accountID).Error(0)
+func (m *APIClientDataManager) ArchiveAPIClient(ctx context.Context, clientID, householdID string) error {
+	return m.Called(ctx, clientID, householdID).Error(0)
 }

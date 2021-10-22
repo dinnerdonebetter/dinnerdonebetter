@@ -9,7 +9,7 @@ export class Recipe {
      steps: RecipeStep[]
      displayImageURL: string;
      inspiredByRecipeID: number;
-     belongsToAccount: number;
+     belongsToHousehold: number;
      createdOn: number;
      lastUpdatedOn?: number;
      archivedOn?: number;
@@ -23,7 +23,7 @@ export class Recipe {
          steps: RecipeStep[] = [],
          displayImageURL: string = "",
          inspiredByRecipeID: number = 0,
-         belongsToAccount: number = 0,
+         belongsToHousehold: number = 0,
          createdOn: number = 0,
          lastUpdatedOn?: number,
          archivedOn?: number,
@@ -36,7 +36,7 @@ export class Recipe {
           this.steps = steps;
           this.displayImageURL = displayImageURL;
           this.inspiredByRecipeID = inspiredByRecipeID;
-          this.belongsToAccount = belongsToAccount;
+          this.belongsToHousehold = belongsToHousehold;
           this.createdOn = createdOn;
           this.lastUpdatedOn = lastUpdatedOn;
           this.archivedOn = archivedOn;
@@ -52,7 +52,7 @@ export class FullRecipe {
      steps: FullRecipeStep[];
      displayImageURL: string;
      inspiredByRecipeID: number;
-     belongsToAccount: number;
+     belongsToHousehold: number;
      createdOn: number;
      lastUpdatedOn?: number;
      archivedOn?: number;
@@ -66,7 +66,7 @@ export class FullRecipe {
          steps: FullRecipeStep[] = [],
          displayImageURL: string = "",
          inspiredByRecipeID: number = 0,
-         belongsToAccount: number = 0,
+         belongsToHousehold: number = 0,
          createdOn: number = 0,
          lastUpdatedOn?: number,
          archivedOn?: number,
@@ -79,7 +79,7 @@ export class FullRecipe {
           this.steps = steps;
           this.displayImageURL = displayImageURL;
           this.inspiredByRecipeID = inspiredByRecipeID;
-          this.belongsToAccount = belongsToAccount;
+          this.belongsToHousehold = belongsToHousehold;
           this.createdOn = createdOn;
           this.lastUpdatedOn = lastUpdatedOn;
           this.archivedOn = archivedOn;

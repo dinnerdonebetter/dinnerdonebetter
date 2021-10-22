@@ -17,48 +17,48 @@ type (
 	Webhook struct {
 		_ struct{}
 
-		LastUpdatedOn    *uint64  `json:"lastUpdatedOn"`
-		ArchivedOn       *uint64  `json:"archivedOn"`
-		Name             string   `json:"name"`
-		URL              string   `json:"url"`
-		Method           string   `json:"method"`
-		ContentType      string   `json:"contentType"`
-		ID               string   `json:"id"`
-		BelongsToAccount string   `json:"belongsToAccount"`
-		Events           []string `json:"events"`
-		DataTypes        []string `json:"dataTypes"`
-		Topics           []string `json:"topics"`
-		CreatedOn        uint64   `json:"createdOn"`
+		LastUpdatedOn      *uint64  `json:"lastUpdatedOn"`
+		ArchivedOn         *uint64  `json:"archivedOn"`
+		Name               string   `json:"name"`
+		URL                string   `json:"url"`
+		Method             string   `json:"method"`
+		ContentType        string   `json:"contentType"`
+		ID                 string   `json:"id"`
+		BelongsToHousehold string   `json:"belongsToHousehold"`
+		Events             []string `json:"events"`
+		DataTypes          []string `json:"dataTypes"`
+		Topics             []string `json:"topics"`
+		CreatedOn          uint64   `json:"createdOn"`
 	}
 
 	// WebhookCreationRequestInput represents what a User could set as input for creating a webhook.
 	WebhookCreationRequestInput struct {
 		_ struct{}
 
-		ID               string   `json:"-"`
-		Name             string   `json:"name"`
-		ContentType      string   `json:"contentType"`
-		URL              string   `json:"url"`
-		Method           string   `json:"method"`
-		BelongsToAccount string   `json:"-"`
-		Events           []string `json:"events"`
-		DataTypes        []string `json:"dataTypes"`
-		Topics           []string `json:"topics"`
+		ID                 string   `json:"-"`
+		Name               string   `json:"name"`
+		ContentType        string   `json:"contentType"`
+		URL                string   `json:"url"`
+		Method             string   `json:"method"`
+		BelongsToHousehold string   `json:"-"`
+		Events             []string `json:"events"`
+		DataTypes          []string `json:"dataTypes"`
+		Topics             []string `json:"topics"`
 	}
 
 	// WebhookDatabaseCreationInput represents what a User could set as input for creating a webhook.
 	WebhookDatabaseCreationInput struct {
 		_ struct{}
 
-		ID               string   `json:"id"`
-		Name             string   `json:"name"`
-		ContentType      string   `json:"contentType"`
-		URL              string   `json:"url"`
-		Method           string   `json:"method"`
-		BelongsToAccount string   `json:"belongsToAccount"`
-		Events           []string `json:"events"`
-		DataTypes        []string `json:"dataTypes"`
-		Topics           []string `json:"topics"`
+		ID                 string   `json:"id"`
+		Name               string   `json:"name"`
+		ContentType        string   `json:"contentType"`
+		URL                string   `json:"url"`
+		Method             string   `json:"method"`
+		BelongsToHousehold string   `json:"belongsToHousehold"`
+		Events             []string `json:"events"`
+		DataTypes          []string `json:"dataTypes"`
+		Topics             []string `json:"topics"`
 	}
 
 	// WebhookList represents a list of webhooks.
@@ -71,12 +71,12 @@ type (
 
 	// WebhookDataManager describes a structure capable of storing webhooks.
 	WebhookDataManager interface {
-		WebhookExists(ctx context.Context, webhookID, accountID string) (bool, error)
-		GetWebhook(ctx context.Context, webhookID, accountID string) (*Webhook, error)
+		WebhookExists(ctx context.Context, webhookID, householdID string) (bool, error)
+		GetWebhook(ctx context.Context, webhookID, householdID string) (*Webhook, error)
 		GetAllWebhooksCount(ctx context.Context) (uint64, error)
-		GetWebhooks(ctx context.Context, accountID string, filter *QueryFilter) (*WebhookList, error)
+		GetWebhooks(ctx context.Context, householdID string, filter *QueryFilter) (*WebhookList, error)
 		CreateWebhook(ctx context.Context, input *WebhookDatabaseCreationInput) (*Webhook, error)
-		ArchiveWebhook(ctx context.Context, webhookID, accountID string) error
+		ArchiveWebhook(ctx context.Context, webhookID, householdID string) error
 	}
 
 	// WebhookDataService describes a structure capable of serving traffic related to webhooks.
@@ -129,6 +129,6 @@ func (w *WebhookDatabaseCreationInput) ValidateWithContext(ctx context.Context) 
 		validation.Field(&w.ContentType, validation.Required, validation.In("application/json", "application/xml")),
 		validation.Field(&w.Events, validation.Required),
 		validation.Field(&w.DataTypes, validation.Required),
-		validation.Field(&w.BelongsToAccount, validation.Required),
+		validation.Field(&w.BelongsToHousehold, validation.Required),
 	)
 }

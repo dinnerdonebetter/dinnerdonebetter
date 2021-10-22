@@ -36,7 +36,7 @@ var (
 		"webhooks.created_on",
 		"webhooks.last_updated_on",
 		"webhooks.archived_on",
-		"webhooks.belongs_to_account",
+		"webhooks.belongs_to_household",
 	}
 )
 
@@ -66,7 +66,7 @@ func (q *SQLQuerier) scanWebhook(ctx context.Context, scan database.Scanner, inc
 		&webhook.CreatedOn,
 		&webhook.LastUpdatedOn,
 		&webhook.ArchivedOn,
-		&webhook.BelongsToAccount,
+		&webhook.BelongsToHousehold,
 	}
 
 	if includeCounts {
@@ -129,10 +129,10 @@ func (q *SQLQuerier) scanWebhooks(ctx context.Context, rows database.ResultItera
 	return webhooks, filteredCount, totalCount, nil
 }
 
-const webhookExistenceQuery = "SELECT EXISTS ( SELECT webhooks.id FROM webhooks WHERE webhooks.archived_on IS NULL AND webhooks.belongs_to_account = $1 AND webhooks.id = $2 )"
+const webhookExistenceQuery = "SELECT EXISTS ( SELECT webhooks.id FROM webhooks WHERE webhooks.archived_on IS NULL AND webhooks.belongs_to_household = $1 AND webhooks.id = $2 )"
 
 // WebhookExists fetches whether a webhook exists from the database.
-func (q *SQLQuerier) WebhookExists(ctx context.Context, webhookID, accountID string) (exists bool, err error) {
+func (q *SQLQuerier) WebhookExists(ctx context.Context, webhookID, householdID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -144,14 +144,14 @@ func (q *SQLQuerier) WebhookExists(ctx context.Context, webhookID, accountID str
 	logger = logger.WithValue(keys.WebhookIDKey, webhookID)
 	tracing.AttachWebhookIDToSpan(span, webhookID)
 
-	if accountID == "" {
+	if householdID == "" {
 		return false, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	args := []interface{}{
-		accountID,
+		householdID,
 		webhookID,
 	}
 
@@ -164,28 +164,28 @@ func (q *SQLQuerier) WebhookExists(ctx context.Context, webhookID, accountID str
 }
 
 const getWebhookQuery = `
-	SELECT webhooks.id, webhooks.name, webhooks.content_type, webhooks.url, webhooks.method, webhooks.events, webhooks.data_types, webhooks.topics, webhooks.created_on, webhooks.last_updated_on, webhooks.archived_on, webhooks.belongs_to_account FROM webhooks WHERE webhooks.archived_on IS NULL AND webhooks.belongs_to_account = $1 AND webhooks.id = $2
+	SELECT webhooks.id, webhooks.name, webhooks.content_type, webhooks.url, webhooks.method, webhooks.events, webhooks.data_types, webhooks.topics, webhooks.created_on, webhooks.last_updated_on, webhooks.archived_on, webhooks.belongs_to_household FROM webhooks WHERE webhooks.archived_on IS NULL AND webhooks.belongs_to_household = $1 AND webhooks.id = $2
 `
 
 // GetWebhook fetches a webhook from the database.
-func (q *SQLQuerier) GetWebhook(ctx context.Context, webhookID, accountID string) (*types.Webhook, error) {
+func (q *SQLQuerier) GetWebhook(ctx context.Context, webhookID, householdID string) (*types.Webhook, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if webhookID == "" || accountID == "" {
+	if webhookID == "" || householdID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 
-	tracing.AttachAccountIDToSpan(span, accountID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 	tracing.AttachWebhookIDToSpan(span, webhookID)
 
 	logger := q.logger.WithValues(map[string]interface{}{
-		keys.WebhookIDKey: webhookID,
-		keys.AccountIDKey: accountID,
+		keys.WebhookIDKey:   webhookID,
+		keys.HouseholdIDKey: householdID,
 	})
 
 	args := []interface{}{
-		accountID,
+		householdID,
 		webhookID,
 	}
 
@@ -219,16 +219,16 @@ func (q *SQLQuerier) GetAllWebhooksCount(ctx context.Context) (uint64, error) {
 }
 
 // GetWebhooks fetches a list of webhooks from the database that meet a particular filter.
-func (q *SQLQuerier) GetWebhooks(ctx context.Context, accountID string, filter *types.QueryFilter) (*types.WebhookList, error) {
+func (q *SQLQuerier) GetWebhooks(ctx context.Context, householdID string, filter *types.QueryFilter) (*types.WebhookList, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if accountID == "" {
+	if householdID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := q.logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	logger := q.logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	x := &types.WebhookList{}
@@ -241,9 +241,9 @@ func (q *SQLQuerier) GetWebhooks(ctx context.Context, accountID string, filter *
 		"webhooks",
 		nil,
 		nil,
-		"belongs_to_account",
+		"belongs_to_household",
 		webhooksTableColumns,
-		accountID,
+		householdID,
 		false,
 		filter,
 	)
@@ -261,7 +261,7 @@ func (q *SQLQuerier) GetWebhooks(ctx context.Context, accountID string, filter *
 }
 
 const createWebhookQuery = `
-	INSERT INTO webhooks (id,name,content_type,url,method,events,data_types,topics,belongs_to_account) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+	INSERT INTO webhooks (id,name,content_type,url,method,events,data_types,topics,belongs_to_household) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
 `
 
 // CreateWebhook creates a webhook in a database.
@@ -273,8 +273,8 @@ func (q *SQLQuerier) CreateWebhook(ctx context.Context, input *types.WebhookData
 		return nil, ErrNilInputProvided
 	}
 
-	tracing.AttachAccountIDToSpan(span, input.BelongsToAccount)
-	logger := q.logger.WithValue(keys.AccountIDKey, input.BelongsToAccount)
+	tracing.AttachHouseholdIDToSpan(span, input.BelongsToHousehold)
+	logger := q.logger.WithValue(keys.HouseholdIDKey, input.BelongsToHousehold)
 
 	args := []interface{}{
 		input.ID,
@@ -285,7 +285,7 @@ func (q *SQLQuerier) CreateWebhook(ctx context.Context, input *types.WebhookData
 		strings.Join(input.Events, webhooksTableEventsSeparator),
 		strings.Join(input.DataTypes, webhooksTableDataTypesSeparator),
 		strings.Join(input.Topics, webhooksTableTopicsSeparator),
-		input.BelongsToAccount,
+		input.BelongsToHousehold,
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "webhook creation", createWebhookQuery, args); err != nil {
@@ -293,16 +293,16 @@ func (q *SQLQuerier) CreateWebhook(ctx context.Context, input *types.WebhookData
 	}
 
 	x := &types.Webhook{
-		ID:               input.ID,
-		Name:             input.Name,
-		ContentType:      input.ContentType,
-		URL:              input.URL,
-		Method:           input.Method,
-		Events:           input.Events,
-		DataTypes:        input.DataTypes,
-		Topics:           input.Topics,
-		BelongsToAccount: input.BelongsToAccount,
-		CreatedOn:        q.currentTime(),
+		ID:                 input.ID,
+		Name:               input.Name,
+		ContentType:        input.ContentType,
+		URL:                input.URL,
+		Method:             input.Method,
+		Events:             input.Events,
+		DataTypes:          input.DataTypes,
+		Topics:             input.Topics,
+		BelongsToHousehold: input.BelongsToHousehold,
+		CreatedOn:          q.currentTime(),
 	}
 
 	tracing.AttachWebhookIDToSpan(span, x.ID)
@@ -318,28 +318,28 @@ UPDATE webhooks SET
 	last_updated_on = extract(epoch FROM NOW()), 
 	archived_on = extract(epoch FROM NOW())
 WHERE archived_on IS NULL 
-AND belongs_to_account = $1
+AND belongs_to_household = $1
 AND id = $2
 `
 
 // ArchiveWebhook archives a webhook from the database.
-func (q *SQLQuerier) ArchiveWebhook(ctx context.Context, webhookID, accountID string) error {
+func (q *SQLQuerier) ArchiveWebhook(ctx context.Context, webhookID, householdID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if webhookID == "" || accountID == "" {
+	if webhookID == "" || householdID == "" {
 		return ErrInvalidIDProvided
 	}
 
 	tracing.AttachWebhookIDToSpan(span, webhookID)
-	tracing.AttachAccountIDToSpan(span, accountID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	logger := q.logger.WithValues(map[string]interface{}{
-		keys.WebhookIDKey: webhookID,
-		keys.AccountIDKey: accountID,
+		keys.WebhookIDKey:   webhookID,
+		keys.HouseholdIDKey: householdID,
 	})
 
-	args := []interface{}{accountID, webhookID}
+	args := []interface{}{householdID, webhookID}
 
 	if err := q.performWriteQuery(ctx, q.db, "webhook archive", archiveWebhookQuery, args); err != nil {
 		return observability.PrepareError(err, logger, span, "archiving webhook")

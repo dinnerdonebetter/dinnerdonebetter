@@ -24,9 +24,9 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 					Retrying:   &storage.AzureRetryConfig{},
 				},
 				GCSConfig: &storage.GCSConfig{
-					ServiceAccountKeyFilepath: "/blah/blah",
-					BucketName:                "blah",
-					Scopes:                    nil,
+					ServiceHouseholdKeyFilepath: "/blah/blah",
+					BucketName:                  "blah",
+					Scopes:                      nil,
 				},
 				S3Config:          &storage.S3Config{BucketName: "blahs"},
 				BucketName:        "blahs",

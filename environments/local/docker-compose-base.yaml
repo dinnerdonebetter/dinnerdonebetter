@@ -56,6 +56,7 @@ services:
       ports:
         - '3000:3000'
       links:
+        - loki
         - prometheus
       volumes:
         - source: '../../environments/local/grafana/grafana.ini'
@@ -70,3 +71,25 @@ services:
         - source: '../../environments/local/grafana/dashboards'
           target: '/etc/grafana/provisioning/dashboards/dashboards'
           type: 'bind'
+    loki:
+      image: grafana/loki:v1.3.0
+      volumes:
+        - source: '../../../../environments/local/loki/config.yaml'
+          target: '/etc/config/loki.yaml'
+          type: 'bind'
+      entrypoint:
+        - /usr/bin/loki
+        - -config.file=/etc/config/loki.yaml
+      ports:
+        - "3100:3100"
+    cadvisor:
+      image: google/cadvisor:latest
+      container_name: mon_cadvisor
+      restart: always
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+        - /:/rootfs:ro
+        - /var/run:/var/run:rw
+        - /sys:/sys:ro
+        - /var/lib/docker/:/var/lib/docker:ro

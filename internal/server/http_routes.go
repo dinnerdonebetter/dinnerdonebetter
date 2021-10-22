@@ -10,8 +10,8 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/authorization"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
 	"gitlab.com/prixfixe/prixfixe/internal/routing"
-	accountsservice "gitlab.com/prixfixe/prixfixe/internal/services/accounts"
 	apiclientsservice "gitlab.com/prixfixe/prixfixe/internal/services/apiclients"
+	householdsservice "gitlab.com/prixfixe/prixfixe/internal/services/households"
 	mealplanoptionsservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptionvotes"
 	mealplansservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplans"
@@ -73,7 +73,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 
 		// need credentials beyond this point
 		authedRouter := userRouter.WithMiddleware(s.authService.UserAttributionMiddleware, s.authService.AuthorizationMiddleware)
-		authedRouter.Post("/account/select", s.authService.ChangeActiveAccountHandler)
+		authedRouter.Post("/household/select", s.authService.ChangeActiveHouseholdHandler)
 		authedRouter.Post("/totp_secret/new", s.usersService.NewTOTPSecretHandler)
 		authedRouter.Put("/password/new", s.usersService.UpdatePasswordHandler)
 	})
@@ -112,31 +112,31 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			})
 		})
 
-		// Accounts
-		v1Router.Route("/accounts", func(accountsRouter routing.Router) {
-			accountsRouter.Post(root, s.accountsService.CreateHandler)
-			accountsRouter.Get(root, s.accountsService.ListHandler)
+		// Households
+		v1Router.Route("/households", func(householdsRouter routing.Router) {
+			householdsRouter.Post(root, s.householdsService.CreateHandler)
+			householdsRouter.Get(root, s.householdsService.ListHandler)
 
-			singleUserRoute := buildURLVarChunk(accountsservice.UserIDURIParamKey, "")
-			singleAccountRoute := buildURLVarChunk(accountsservice.AccountIDURIParamKey, "")
-			accountsRouter.Route(singleAccountRoute, func(singleAccountRouter routing.Router) {
-				singleAccountRouter.Get(root, s.accountsService.ReadHandler)
-				singleAccountRouter.Put(root, s.accountsService.UpdateHandler)
-				singleAccountRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveAccountPermission)).
-					Delete(root, s.accountsService.ArchiveHandler)
+			singleUserRoute := buildURLVarChunk(householdsservice.UserIDURIParamKey, "")
+			singleHouseholdRoute := buildURLVarChunk(householdsservice.HouseholdIDURIParamKey, "")
+			householdsRouter.Route(singleHouseholdRoute, func(singleHouseholdRouter routing.Router) {
+				singleHouseholdRouter.Get(root, s.householdsService.ReadHandler)
+				singleHouseholdRouter.Put(root, s.householdsService.UpdateHandler)
+				singleHouseholdRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveHouseholdPermission)).
+					Delete(root, s.householdsService.ArchiveHandler)
 
-				singleAccountRouter.Post("/default", s.accountsService.MarkAsDefaultAccountHandler)
-				singleAccountRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.RemoveMemberAccountPermission)).
-					Delete("/members"+singleUserRoute, s.accountsService.RemoveMemberHandler)
-				singleAccountRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.AddMemberAccountPermission)).
-					Post("/member", s.accountsService.AddMemberHandler)
-				singleAccountRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ModifyMemberPermissionsForAccountPermission)).
-					Patch("/members"+singleUserRoute+"/permissions", s.accountsService.ModifyMemberPermissionsHandler)
-				singleAccountRouter.Post("/transfer", s.accountsService.TransferAccountOwnershipHandler)
+				singleHouseholdRouter.Post("/default", s.householdsService.MarkAsDefaultHouseholdHandler)
+				singleHouseholdRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.RemoveMemberHouseholdPermission)).
+					Delete("/members"+singleUserRoute, s.householdsService.RemoveMemberHandler)
+				singleHouseholdRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.AddMemberHouseholdPermission)).
+					Post("/member", s.householdsService.AddMemberHandler)
+				singleHouseholdRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ModifyMemberPermissionsForHouseholdPermission)).
+					Patch("/members"+singleUserRoute+"/permissions", s.householdsService.ModifyMemberPermissionsHandler)
+				singleHouseholdRouter.Post("/transfer", s.householdsService.TransferHouseholdOwnershipHandler)
 			})
 		})
 

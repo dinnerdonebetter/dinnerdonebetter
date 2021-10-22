@@ -22,9 +22,9 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/search"
 	"gitlab.com/prixfixe/prixfixe/internal/secrets"
 	server "gitlab.com/prixfixe/prixfixe/internal/server"
-	accountsservice "gitlab.com/prixfixe/prixfixe/internal/services/accounts"
 	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
 	frontendservice "gitlab.com/prixfixe/prixfixe/internal/services/frontend"
+	householdsservice "gitlab.com/prixfixe/prixfixe/internal/services/households"
 	mealplanoptionsservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptionvotes"
 	mealplansservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplans"
@@ -231,7 +231,7 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 			Address:  localElasticsearchLocation,
 		},
 		Services: config.ServicesConfigurations{
-			Accounts: accountsservice.Config{
+			Households: householdsservice.Config{
 				PreWritesTopicName: preWritesTopicName,
 			},
 			Auth: authservice.Config{
@@ -431,7 +431,7 @@ func frontendTestsConfig(ctx context.Context, filePath string) error {
 			Address:  localElasticsearchLocation,
 		},
 		Services: config.ServicesConfigurations{
-			Accounts: accountsservice.Config{
+			Households: householdsservice.Config{
 				PreWritesTopicName: preWritesTopicName,
 			},
 			Auth: authservice.Config{
@@ -646,7 +646,7 @@ func buildIntegrationTestForDBImplementation(dbVendor, dbDetails string) configF
 				Address:  localElasticsearchLocation,
 			},
 			Services: config.ServicesConfigurations{
-				Accounts: accountsservice.Config{
+				Households: householdsservice.Config{
 					PreWritesTopicName: preWritesTopicName,
 				},
 				Auth: authservice.Config{

@@ -214,7 +214,7 @@ func (q *SQLQuerier) GetValidIngredients(ctx context.Context, filter *types.Quer
 		"valid_ingredients",
 		nil,
 		nil,
-		accountOwnershipColumn,
+		householdOwnershipColumn,
 		validIngredientsTableColumns,
 		"",
 		false,

@@ -7,14 +7,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIsValidAccountStatus(T *testing.T) {
+func TestIsValidHouseholdStatus(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		assert.True(t, IsValidAccountStatus(string(GoodStandingAccountStatus)))
-		assert.False(t, IsValidAccountStatus("blah"))
+		assert.True(t, IsValidHouseholdStatus(string(GoodStandingHouseholdStatus)))
+		assert.False(t, IsValidHouseholdStatus("blah"))
 	})
 }
 
@@ -45,7 +45,7 @@ func TestUser_IsBanned(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		x := &User{ServiceAccountStatus: BannedUserAccountStatus}
+		x := &User{ServiceHouseholdStatus: BannedUserHouseholdStatus}
 
 		assert.True(t, x.IsBanned())
 	})

@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS users (
     UNIQUE("username")
 );
 
-CREATE TABLE IF NOT EXISTS accounts (
+CREATE TABLE IF NOT EXISTS households (
     id CHAR(27) NOT NULL PRIMARY KEY,
     name TEXT NOT NULL,
     billing_status TEXT NOT NULL DEFAULT 'unpaid',
@@ -40,16 +40,16 @@ CREATE TABLE IF NOT EXISTS accounts (
     UNIQUE("belongs_to_user", "name")
 );
 
-CREATE TABLE IF NOT EXISTS account_user_memberships (
+CREATE TABLE IF NOT EXISTS household_user_memberships (
     id CHAR(27) NOT NULL PRIMARY KEY,
-    belongs_to_account CHAR(27) NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+    belongs_to_household CHAR(27) NOT NULL REFERENCES households(id) ON DELETE CASCADE,
     belongs_to_user CHAR(27) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    default_account BOOLEAN NOT NULL DEFAULT 'false',
-    account_roles TEXT NOT NULL DEFAULT 'account_user',
+    default_household BOOLEAN NOT NULL DEFAULT 'false',
+    household_roles TEXT NOT NULL DEFAULT 'household_user',
     created_on BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
     last_updated_on BIGINT DEFAULT NULL,
     archived_on BIGINT DEFAULT NULL,
-    UNIQUE("belongs_to_account", "belongs_to_user")
+    UNIQUE("belongs_to_household", "belongs_to_user")
 );
 
 CREATE TABLE IF NOT EXISTS api_clients (
@@ -77,5 +77,5 @@ CREATE TABLE IF NOT EXISTS webhooks (
     created_on BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
     last_updated_on BIGINT DEFAULT NULL,
     archived_on BIGINT DEFAULT NULL,
-    belongs_to_account CHAR(27) NOT NULL REFERENCES accounts(id) ON DELETE CASCADE
+    belongs_to_household CHAR(27) NOT NULL REFERENCES households(id) ON DELETE CASCADE
 );

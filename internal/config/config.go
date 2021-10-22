@@ -19,9 +19,9 @@ import (
 	routing "gitlab.com/prixfixe/prixfixe/internal/routing"
 	"gitlab.com/prixfixe/prixfixe/internal/search"
 	server "gitlab.com/prixfixe/prixfixe/internal/server"
-	accountsservice "gitlab.com/prixfixe/prixfixe/internal/services/accounts"
 	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
 	frontendservice "gitlab.com/prixfixe/prixfixe/internal/services/frontend"
+	householdsservice "gitlab.com/prixfixe/prixfixe/internal/services/households"
 	mealplanoptionsservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptionvotes"
 	mealplansservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplans"
@@ -72,7 +72,7 @@ type (
 		MealPlans                   mealplansservice.Config                   `json:"mealPlans" mapstructure:"meal_plans" toml:"meal_plans,omitempty"`
 		MealPlanOptions             mealplanoptionsservice.Config             `json:"mealPlanOptions" mapstructure:"meal_plan_options" toml:"meal_plan_options,omitempty"`
 		RecipeStepProducts          recipestepproductsservice.Config          `json:"recipeStepProducts" mapstructure:"recipe_step_products" toml:"recipe_step_products,omitempty"`
-		Accounts                    accountsservice.Config                    `json:"accounts" mapstructure:"accounts" toml:"accounts,omitempty"`
+		Households                  householdsservice.Config                  `json:"households" mapstructure:"households" toml:"households,omitempty"`
 		Websockets                  websocketsservice.Config                  `json:"websockets" mapstructure:"websockets" toml:"websockets,omitempty"`
 		Webhooks                    webhooksservice.Config                    `json:"webhooks" mapstructure:"webhooks" toml:"webhooks,omitempty"`
 		Frontend                    frontendservice.Config                    `json:"frontend" mapstructure:"frontend" toml:"frontend,omitempty"`

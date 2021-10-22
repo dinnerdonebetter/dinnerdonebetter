@@ -56,14 +56,14 @@ func AttachFilterToSpan(span trace.Span, page uint64, limit uint8, sortBy string
 	attachStringToSpan(span, keys.FilterSortByKey, sortBy)
 }
 
-// AttachAccountIDToSpan provides a consistent way to attach an account's ID to a span.
-func AttachAccountIDToSpan(span trace.Span, accountID string) {
-	attachStringToSpan(span, keys.AccountIDKey, accountID)
+// AttachHouseholdIDToSpan provides a consistent way to attach an household's ID to a span.
+func AttachHouseholdIDToSpan(span trace.Span, householdID string) {
+	attachStringToSpan(span, keys.HouseholdIDKey, householdID)
 }
 
-// AttachActiveAccountIDToSpan provides a consistent way to attach an account's ID to a span.
-func AttachActiveAccountIDToSpan(span trace.Span, accountID string) {
-	attachStringToSpan(span, keys.ActiveAccountIDKey, accountID)
+// AttachActiveHouseholdIDToSpan provides a consistent way to attach an household's ID to a span.
+func AttachActiveHouseholdIDToSpan(span trace.Span, householdID string) {
+	attachStringToSpan(span, keys.ActiveHouseholdIDKey, householdID)
 }
 
 // AttachRequestingUserIDToSpan provides a consistent way to attach a user's ID to a span.
@@ -75,7 +75,7 @@ func AttachRequestingUserIDToSpan(span trace.Span, userID string) {
 func AttachSessionContextDataToSpan(span trace.Span, sessionCtxData *types.SessionContextData) {
 	if sessionCtxData != nil {
 		AttachRequestingUserIDToSpan(span, sessionCtxData.Requester.UserID)
-		AttachActiveAccountIDToSpan(span, sessionCtxData.ActiveAccountID)
+		AttachActiveHouseholdIDToSpan(span, sessionCtxData.ActiveHouseholdID)
 		if sessionCtxData.Requester.ServicePermissions != nil {
 			attachBooleanToSpan(span, keys.UserIsServiceAdminKey, sessionCtxData.Requester.ServicePermissions.IsServiceAdmin())
 		}

@@ -245,7 +245,7 @@ func (q *SQLQuerier) GetRecipeStepIngredients(ctx context.Context, recipeID, rec
 		"recipe_step_ingredients",
 		getRecipeStepIngredientsJoins,
 		nil,
-		accountOwnershipColumn,
+		householdOwnershipColumn,
 		recipeStepIngredientsTableColumns,
 		"",
 		false,
