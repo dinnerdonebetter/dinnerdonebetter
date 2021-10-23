@@ -34,7 +34,7 @@ type (
 		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
 		CreatedOn           uint64  `json:"createdOn"`
 		QuantityValue       float32 `json:"quantityValue"`
-		ProductOfRecipe     bool    `json:"productOfRecipe"`
+		ProductOfRecipeStep bool    `json:"productOfRecipe"`
 	}
 
 	// FullRecipeStepIngredient represents a recipe step ingredient.
@@ -139,8 +139,8 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 		x.QuantityNotes = input.QuantityNotes
 	}
 
-	if input.ProductOfRecipe != x.ProductOfRecipe {
-		x.ProductOfRecipe = input.ProductOfRecipe
+	if input.ProductOfRecipe != x.ProductOfRecipeStep {
+		x.ProductOfRecipeStep = input.ProductOfRecipe
 	}
 
 	if input.IngredientNotes != "" && input.IngredientNotes != x.IngredientNotes {

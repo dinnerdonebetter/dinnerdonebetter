@@ -222,11 +222,15 @@ deploy_base_infra:
 	--always-recreate-deps \
 	--detach
 
+
 .PHONY: lintegration_tests # this is just a handy lil' helper I use sometimes
 lintegration_tests: lint clear integration-tests
 
 .PHONY: integration-tests
 integration-tests: integration-tests-postgres
+
+.PHONY: integration_tests_postgres
+integration_tests_postgres: integration-tests-postgres
 
 .PHONY: integration-tests-
 integration-tests-%:

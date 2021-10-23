@@ -107,9 +107,6 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
-			// assert valid preparation equality
-			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
-
 			// change valid preparation
 			newValidPreparation := fakes.BuildFakeValidPreparation()
 			createdValidPreparation.Update(convertValidPreparationToValidPreparationUpdateInput(newValidPreparation))

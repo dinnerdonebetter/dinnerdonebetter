@@ -137,9 +137,6 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
-			// assert valid ingredient equality
-			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
-
 			// change valid ingredient
 			newValidIngredient := fakes.BuildFakeValidIngredient()
 			createdValidIngredient.Update(convertValidIngredientToValidIngredientUpdateInput(newValidIngredient))

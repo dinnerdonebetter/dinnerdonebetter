@@ -56,7 +56,7 @@ func (q *SQLQuerier) scanRecipeStepIngredient(ctx context.Context, scan database
 		&x.QuantityType,
 		&x.QuantityValue,
 		&x.QuantityNotes,
-		&x.ProductOfRecipe,
+		&x.ProductOfRecipeStep,
 		&x.IngredientNotes,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
@@ -151,7 +151,30 @@ func (q *SQLQuerier) RecipeStepIngredientExists(ctx context.Context, recipeID, r
 	return result, nil
 }
 
-const getRecipeStepIngredientQuery = "SELECT recipe_step_ingredients.id, recipe_step_ingredients.ingredient_id, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe_step, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.created_on, recipe_step_ingredients.last_updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_ingredients.archived_on IS NULL AND recipe_step_ingredients.belongs_to_recipe_step = $1 AND recipe_step_ingredients.id = $2 AND recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_on IS NULL AND recipes.id = $5"
+const getRecipeStepIngredientQuery = `SELECT 
+	recipe_step_ingredients.id,
+	recipe_step_ingredients.ingredient_id,
+	recipe_step_ingredients.quantity_type,
+	recipe_step_ingredients.quantity_value,
+	recipe_step_ingredients.quantity_notes,
+	recipe_step_ingredients.product_of_recipe_step,
+	recipe_step_ingredients.ingredient_notes,
+	recipe_step_ingredients.created_on,
+	recipe_step_ingredients.last_updated_on, 
+	recipe_step_ingredients.archived_on,
+	recipe_step_ingredients.belongs_to_recipe_step 
+FROM recipe_step_ingredients 
+JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id 
+JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id 
+WHERE recipe_step_ingredients.archived_on IS NULL 
+AND recipe_step_ingredients.belongs_to_recipe_step = $1 
+AND recipe_step_ingredients.id = $2 
+AND recipe_steps.archived_on IS NULL 
+AND recipe_steps.belongs_to_recipe = $3 
+AND recipe_steps.id = $4 
+AND recipes.archived_on IS NULL 
+AND recipes.id = $5
+`
 
 // GetRecipeStepIngredient fetches a recipe step ingredient from the database.
 func (q *SQLQuerier) GetRecipeStepIngredient(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (*types.RecipeStepIngredient, error) {
@@ -364,7 +387,7 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 		QuantityType:        input.QuantityType,
 		QuantityValue:       input.QuantityValue,
 		QuantityNotes:       input.QuantityNotes,
-		ProductOfRecipe:     input.ProductOfRecipe,
+		ProductOfRecipeStep: input.ProductOfRecipe,
 		IngredientNotes:     input.IngredientNotes,
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		CreatedOn:           q.currentTime(),
@@ -400,7 +423,7 @@ func (q *SQLQuerier) UpdateRecipeStepIngredient(ctx context.Context, updated *ty
 		updated.QuantityType,
 		updated.QuantityValue,
 		updated.QuantityNotes,
-		updated.ProductOfRecipe,
+		updated.ProductOfRecipeStep,
 		updated.IngredientNotes,
 		updated.BelongsToRecipeStep,
 		updated.ID,
