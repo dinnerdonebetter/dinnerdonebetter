@@ -64,29 +64,27 @@ type (
 	// RecipeStepIngredientCreationRequestInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientCreationRequestInput struct {
 		_                   struct{}
-		IngredientID        *string                                     `json:"ingredientID"`
-		ID                  string                                      `json:"-"`
-		QuantityType        string                                      `json:"quantityType"`
-		QuantityNotes       string                                      `json:"quantityNotes"`
-		IngredientNotes     string                                      `json:"ingredientNotes"`
-		BelongsToRecipeStep string                                      `json:"-"`
-		Ingredients         []*RecipeStepIngredientCreationRequestInput `json:"ingredients"`
-		QuantityValue       float32                                     `json:"quantityValue"`
-		ProductOfRecipe     bool                                        `json:"productOfRecipe"`
+		IngredientID        *string `json:"ingredientID"`
+		ID                  string  `json:"-"`
+		QuantityType        string  `json:"quantityType"`
+		QuantityNotes       string  `json:"quantityNotes"`
+		IngredientNotes     string  `json:"ingredientNotes"`
+		BelongsToRecipeStep string  `json:"-"`
+		QuantityValue       float32 `json:"quantityValue"`
+		ProductOfRecipe     bool    `json:"productOfRecipe"`
 	}
 
 	// RecipeStepIngredientDatabaseCreationInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientDatabaseCreationInput struct {
 		_                   struct{}
-		IngredientID        *string                                      `json:"ingredientID"`
-		ID                  string                                       `json:"id"`
-		QuantityType        string                                       `json:"quantityType"`
-		QuantityNotes       string                                       `json:"quantityNotes"`
-		IngredientNotes     string                                       `json:"ingredientNotes"`
-		BelongsToRecipeStep string                                       `json:"belongsToRecipeStep"`
-		Ingredients         []*RecipeStepIngredientDatabaseCreationInput `json:"ingredients"`
-		QuantityValue       float32                                      `json:"quantityValue"`
-		ProductOfRecipe     bool                                         `json:"productOfRecipe"`
+		IngredientID        *string `json:"ingredientID"`
+		ID                  string  `json:"id"`
+		QuantityType        string  `json:"quantityType"`
+		QuantityNotes       string  `json:"quantityNotes"`
+		IngredientNotes     string  `json:"ingredientNotes"`
+		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
+		QuantityValue       float32 `json:"quantityValue"`
+		ProductOfRecipe     bool    `json:"productOfRecipe"`
 	}
 
 	// RecipeStepIngredientUpdateRequestInput represents what a user could set as input for updating recipe step ingredients.

@@ -22,6 +22,7 @@ type recipesServiceHTTPRoutesTestHelper struct {
 	exampleUser          *types.User
 	exampleHousehold     *types.Household
 	exampleRecipe        *types.Recipe
+	exampleFullRecipe    *types.FullRecipe
 	exampleCreationInput *types.RecipeCreationRequestInput
 	exampleUpdateInput   *types.RecipeUpdateRequestInput
 }
@@ -38,6 +39,8 @@ func buildTestHelper(t *testing.T) *recipesServiceHTTPRoutesTestHelper {
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 	helper.exampleRecipe = fakes.BuildFakeRecipe()
 	helper.exampleRecipe.BelongsToHousehold = helper.exampleHousehold.ID
+	helper.exampleFullRecipe = fakes.BuildFakeFullRecipe()
+	helper.exampleFullRecipe.BelongsToHousehold = helper.exampleHousehold.ID
 	helper.exampleCreationInput = fakes.BuildFakeRecipeCreationRequestInputFromRecipe(helper.exampleRecipe)
 	helper.exampleUpdateInput = fakes.BuildFakeRecipeUpdateRequestInputFromRecipe(helper.exampleRecipe)
 

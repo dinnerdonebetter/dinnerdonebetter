@@ -50,6 +50,7 @@ func (s *TestSuite) TestRecipes_CompleteLifecycle() {
 
 			t.Log("creating recipe")
 			exampleRecipe := fakes.BuildFakeRecipe()
+			exampleRecipe.Steps = []*types.RecipeStep{}
 			exampleRecipeInput := fakes.BuildFakeRecipeCreationRequestInputFromRecipe(exampleRecipe)
 			createdRecipeID, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			require.NoError(t, err)
@@ -96,6 +97,7 @@ func (s *TestSuite) TestRecipes_CompleteLifecycle() {
 
 			t.Log("creating recipe")
 			exampleRecipe := fakes.BuildFakeRecipe()
+			exampleRecipe.Steps = []*types.RecipeStep{}
 			exampleRecipeInput := fakes.BuildFakeRecipeCreationRequestInputFromRecipe(exampleRecipe)
 			createdRecipeID, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			require.NoError(t, err)
@@ -158,6 +160,7 @@ func (s *TestSuite) TestRecipes_Listing() {
 			var expected []*types.Recipe
 			for i := 0; i < 5; i++ {
 				exampleRecipe := fakes.BuildFakeRecipe()
+				exampleRecipe.Steps = []*types.RecipeStep{}
 				exampleRecipeInput := fakes.BuildFakeRecipeCreationRequestInputFromRecipe(exampleRecipe)
 				createdRecipeID, createdRecipeErr := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 				require.NoError(t, createdRecipeErr)
@@ -204,6 +207,7 @@ func (s *TestSuite) TestRecipes_Listing() {
 			var expected []*types.Recipe
 			for i := 0; i < 5; i++ {
 				exampleRecipe := fakes.BuildFakeRecipe()
+				exampleRecipe.Steps = []*types.RecipeStep{}
 				exampleRecipeInput := fakes.BuildFakeRecipeCreationRequestInputFromRecipe(exampleRecipe)
 				createdRecipeID, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 				require.NoError(t, err)

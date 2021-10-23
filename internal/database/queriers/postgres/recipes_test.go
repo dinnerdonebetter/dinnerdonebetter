@@ -7,6 +7,8 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -173,6 +175,7 @@ func TestQuerier_GetRecipe(T *testing.T) {
 		t.Parallel()
 
 		exampleRecipe := fakes.BuildFakeRecipe()
+		exampleRecipe.Steps = nil
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -207,6 +210,7 @@ func TestQuerier_GetRecipe(T *testing.T) {
 		t.Parallel()
 
 		exampleRecipe := fakes.BuildFakeRecipe()
+		exampleRecipe.Steps = nil
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -276,6 +280,9 @@ func TestQuerier_GetRecipes(T *testing.T) {
 
 		filter := types.DefaultQueryFilter()
 		exampleRecipeList := fakes.BuildFakeRecipeList()
+		for i := range exampleRecipeList.Recipes {
+			exampleRecipeList.Recipes[i].Steps = nil
+		}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -310,6 +317,9 @@ func TestQuerier_GetRecipes(T *testing.T) {
 		exampleRecipeList := fakes.BuildFakeRecipeList()
 		exampleRecipeList.Page = 0
 		exampleRecipeList.Limit = 0
+		for i := range exampleRecipeList.Recipes {
+			exampleRecipeList.Recipes[i].Steps = nil
+		}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -408,6 +418,9 @@ func TestQuerier_GetRecipesWithIDs(T *testing.T) {
 
 		exampleHouseholdID := fakes.BuildFakeID()
 		exampleRecipeList := fakes.BuildFakeRecipeList()
+		for i := range exampleRecipeList.Recipes {
+			exampleRecipeList.Recipes[i].Steps = nil
+		}
 
 		var exampleIDs []string
 		for _, x := range exampleRecipeList.Recipes {
@@ -502,6 +515,16 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		t.Parallel()
 
 		exampleRecipe := fakes.BuildFakeRecipe()
+		exampleRecipe.ID = "1"
+		for i, step := range exampleRecipe.Steps {
+			exampleRecipe.Steps[i].ID = "2"
+			exampleRecipe.Steps[i].BelongsToRecipe = "1"
+			for j := range step.Ingredients {
+				exampleRecipe.Steps[i].Ingredients[j].ID = "3"
+				exampleRecipe.Steps[i].Ingredients[j].BelongsToRecipeStep = "2"
+			}
+		}
+
 		exampleInput := fakes.BuildFakeRecipeDatabaseCreationInputFromRecipe(exampleRecipe)
 
 		ctx := context.Background()
@@ -567,6 +590,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		actual, err := c.CreateRecipe(ctx, exampleInput)
 		assert.NoError(t, err)
+		require.Equal(t, len(exampleRecipe.Steps), len(actual.Steps))
 
 		for i, step := range exampleRecipe.Steps {
 			step.BelongsToRecipe = actual.ID
@@ -622,6 +646,15 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		expectedErr := errors.New(t.Name())
 		exampleRecipe := fakes.BuildFakeRecipe()
+		exampleRecipe.ID = "1"
+		for i, step := range exampleRecipe.Steps {
+			exampleRecipe.Steps[i].ID = "2"
+			exampleRecipe.Steps[i].BelongsToRecipe = "1"
+			for j := range step.Ingredients {
+				exampleRecipe.Steps[i].Ingredients[j].ID = "3"
+				exampleRecipe.Steps[i].Ingredients[j].BelongsToRecipeStep = "2"
+			}
+		}
 		exampleInput := fakes.BuildFakeRecipeDatabaseCreationInputFromRecipe(exampleRecipe)
 
 		ctx := context.Background()
@@ -661,6 +694,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		exampleRecipe := fakes.BuildFakeRecipe()
 		exampleRecipe.ID = "1"
+		exampleRecipe.Steps = nil
 		exampleInput := fakes.BuildFakeRecipeDatabaseCreationInputFromRecipe(exampleRecipe)
 
 		ctx := context.Background()

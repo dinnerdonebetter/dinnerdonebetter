@@ -17,6 +17,25 @@ func BuildFakeRecipe() *types.Recipe {
 		InspiredByRecipeID: func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
 		CreatedOn:          uint64(uint32(fake.Date().Unix())),
 		BelongsToHousehold: fake.UUID(),
+		Steps:              BuildFakeRecipeStepList().RecipeSteps,
+	}
+}
+
+// BuildFakeFullRecipe builds a faked recipe.
+func BuildFakeFullRecipe() *types.FullRecipe {
+	return &types.FullRecipe{
+		ID:                 ksuid.New().String(),
+		Name:               fake.Word(),
+		Source:             fake.Word(),
+		Description:        fake.Word(),
+		InspiredByRecipeID: func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
+		CreatedOn:          uint64(uint32(fake.Date().Unix())),
+		BelongsToHousehold: ksuid.New().String(),
+		Steps: []*types.FullRecipeStep{
+			BuildFakeFullRecipeStep(),
+			BuildFakeFullRecipeStep(),
+			BuildFakeFullRecipeStep(),
+		},
 	}
 }
 
@@ -87,6 +106,11 @@ func BuildFakeRecipeDatabaseCreationInput() *types.RecipeDatabaseCreationInput {
 
 // BuildFakeRecipeDatabaseCreationInputFromRecipe builds a faked RecipeDatabaseCreationInput from a recipe.
 func BuildFakeRecipeDatabaseCreationInputFromRecipe(recipe *types.Recipe) *types.RecipeDatabaseCreationInput {
+	steps := []*types.RecipeStepDatabaseCreationInput{}
+	for _, step := range recipe.Steps {
+		steps = append(steps, BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(step))
+	}
+
 	return &types.RecipeDatabaseCreationInput{
 		ID:                 recipe.ID,
 		Name:               recipe.Name,
@@ -94,5 +118,6 @@ func BuildFakeRecipeDatabaseCreationInputFromRecipe(recipe *types.Recipe) *types
 		Description:        recipe.Description,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
 		BelongsToHousehold: recipe.BelongsToHousehold,
+		Steps:              steps,
 	}
 }

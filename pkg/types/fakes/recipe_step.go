@@ -25,6 +25,28 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 	}
 }
 
+// BuildFakeFullRecipeStep builds a faked recipe step.
+func BuildFakeFullRecipeStep() *types.FullRecipeStep {
+	return &types.FullRecipeStep{
+		ID:                        ksuid.New().String(),
+		Index:                     uint(fake.Uint32()),
+		Preparation:               *BuildFakeValidPreparation(),
+		PrerequisiteStep:          uint64(fake.Uint32()),
+		MinEstimatedTimeInSeconds: fake.Uint32(),
+		MaxEstimatedTimeInSeconds: fake.Uint32(),
+		TemperatureInCelsius:      func(x uint16) *uint16 { return &x }(fake.Uint16()),
+		Notes:                     fake.Word(),
+		Why:                       fake.Word(),
+		CreatedOn:                 uint64(uint32(fake.Date().Unix())),
+		BelongsToRecipe:           ksuid.New().String(),
+		Ingredients: []*types.FullRecipeStepIngredient{
+			BuildFakeFullRecipeStepIngredient(),
+			BuildFakeFullRecipeStepIngredient(),
+			BuildFakeFullRecipeStepIngredient(),
+		},
+	}
+}
+
 // BuildFakeRecipeStepList builds a faked RecipeStepList.
 func BuildFakeRecipeStepList() *types.RecipeStepList {
 	var examples []*types.RecipeStep
@@ -107,6 +129,11 @@ func BuildFakeRecipeStepDatabaseCreationInput() *types.RecipeStepDatabaseCreatio
 
 // BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep builds a faked RecipeStepDatabaseCreationInput from a recipe step.
 func BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(recipeStep *types.RecipeStep) *types.RecipeStepDatabaseCreationInput {
+	ingredients := []*types.RecipeStepIngredientDatabaseCreationInput{}
+	for _, i := range recipeStep.Ingredients {
+		ingredients = append(ingredients, BuildFakeRecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredient(i))
+	}
+
 	return &types.RecipeStepDatabaseCreationInput{
 		ID:                        recipeStep.ID,
 		Index:                     recipeStep.Index,
@@ -118,6 +145,7 @@ func BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(recipeStep *types.Re
 		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,
 		Notes:                     recipeStep.Notes,
 		RecipeID:                  recipeStep.RecipeID,
+		Ingredients:               ingredients,
 		BelongsToRecipe:           recipeStep.BelongsToRecipe,
 	}
 }

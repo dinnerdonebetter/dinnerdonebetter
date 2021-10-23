@@ -22,6 +22,21 @@ func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 	}
 }
 
+// BuildFakeFullRecipeStepIngredient builds a faked recipe step ingredient.
+func BuildFakeFullRecipeStepIngredient() *types.FullRecipeStepIngredient {
+	return &types.FullRecipeStepIngredient{
+		ID:                  ksuid.New().String(),
+		Ingredient:          *BuildFakeValidIngredient(),
+		QuantityType:        fake.Word(),
+		QuantityValue:       float32(fake.Uint32()),
+		QuantityNotes:       fake.Word(),
+		ProductOfRecipeStep: fake.Bool(),
+		IngredientNotes:     fake.Word(),
+		CreatedOn:           uint64(uint32(fake.Date().Unix())),
+		BelongsToRecipeStep: ksuid.New().String(),
+	}
+}
+
 // BuildFakeRecipeStepIngredientList builds a faked RecipeStepIngredientList.
 func BuildFakeRecipeStepIngredientList() *types.RecipeStepIngredientList {
 	var examples []*types.RecipeStepIngredient

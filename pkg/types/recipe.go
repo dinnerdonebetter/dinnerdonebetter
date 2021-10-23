@@ -102,6 +102,7 @@ type (
 	RecipeDataManager interface {
 		RecipeExists(ctx context.Context, recipeID string) (bool, error)
 		GetRecipe(ctx context.Context, recipeID string) (*Recipe, error)
+		GetFullRecipe(ctx context.Context, recipeID string) (*FullRecipe, error)
 		GetTotalRecipeCount(ctx context.Context) (uint64, error)
 		GetRecipes(ctx context.Context, filter *QueryFilter) (*RecipeList, error)
 		GetRecipesWithIDs(ctx context.Context, householdID string, limit uint8, ids []string) ([]*Recipe, error)
