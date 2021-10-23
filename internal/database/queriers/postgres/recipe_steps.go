@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
@@ -30,6 +31,7 @@ var (
 		"recipe_steps.max_estimated_time_in_seconds",
 		"recipe_steps.temperature_in_celsius",
 		"recipe_steps.notes",
+		"recipe_steps.why",
 		"recipe_steps.recipe_id",
 		"recipe_steps.created_on",
 		"recipe_steps.last_updated_on",
@@ -60,6 +62,7 @@ func (q *SQLQuerier) scanRecipeStep(ctx context.Context, scan database.Scanner, 
 		&x.MaxEstimatedTimeInSeconds,
 		&x.TemperatureInCelsius,
 		&x.Notes,
+		&x.Why,
 		&x.RecipeID,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
@@ -146,7 +149,7 @@ func (q *SQLQuerier) RecipeStepExists(ctx context.Context, recipeID, recipeStepI
 	return result, nil
 }
 
-const getRecipeStepQuery = "SELECT recipe_steps.id, recipe_steps.index, recipe_steps.preparation_id, recipe_steps.prerequisite_step, recipe_steps.min_estimated_time_in_seconds, recipe_steps.max_estimated_time_in_seconds, recipe_steps.temperature_in_celsius, recipe_steps.notes, recipe_steps.recipe_id, recipe_steps.created_on, recipe_steps.last_updated_on, recipe_steps.archived_on, recipe_steps.belongs_to_recipe FROM recipe_steps JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $1 AND recipe_steps.id = $2 AND recipes.archived_on IS NULL AND recipes.id = $3"
+const getRecipeStepQuery = "SELECT recipe_steps.id, recipe_steps.index, recipe_steps.preparation_id, recipe_steps.prerequisite_step, recipe_steps.min_estimated_time_in_seconds, recipe_steps.max_estimated_time_in_seconds, recipe_steps.temperature_in_celsius, recipe_steps.notes, recipe_steps.why, recipe_steps.recipe_id, recipe_steps.created_on, recipe_steps.last_updated_on, recipe_steps.archived_on, recipe_steps.belongs_to_recipe FROM recipe_steps JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $1 AND recipe_steps.id = $2 AND recipes.archived_on IS NULL AND recipes.id = $3"
 
 // GetRecipeStep fetches a recipe step from the database.
 func (q *SQLQuerier) GetRecipeStep(ctx context.Context, recipeID, recipeStepID string) (*types.RecipeStep, error) {
@@ -310,10 +313,10 @@ func (q *SQLQuerier) GetRecipeStepsWithIDs(ctx context.Context, recipeID string,
 	return recipeSteps, nil
 }
 
-const recipeStepCreationQuery = "INSERT INTO recipe_steps (id,index,preparation_id,prerequisite_step,min_estimated_time_in_seconds,max_estimated_time_in_seconds,temperature_in_celsius,notes,recipe_id,belongs_to_recipe) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)"
+const recipeStepCreationQuery = "INSERT INTO recipe_steps (id,index,preparation_id,prerequisite_step,min_estimated_time_in_seconds,max_estimated_time_in_seconds,temperature_in_celsius,notes,why,recipe_id,belongs_to_recipe) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)"
 
 // CreateRecipeStep creates a recipe step in the database.
-func (q *SQLQuerier) CreateRecipeStep(ctx context.Context, input *types.RecipeStepDatabaseCreationInput) (*types.RecipeStep, error) {
+func (q *SQLQuerier) createRecipeStep(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepDatabaseCreationInput) (*types.RecipeStep, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -332,12 +335,13 @@ func (q *SQLQuerier) CreateRecipeStep(ctx context.Context, input *types.RecipeSt
 		input.MaxEstimatedTimeInSeconds,
 		input.TemperatureInCelsius,
 		input.Notes,
+		input.Why,
 		input.RecipeID,
 		input.BelongsToRecipe,
 	}
 
 	// create the recipe step.
-	if err := q.performWriteQuery(ctx, q.db, "recipe step creation", recipeStepCreationQuery, args); err != nil {
+	if err := q.performWriteQuery(ctx, db, "recipe step creation", recipeStepCreationQuery, args); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "creating recipe step")
 	}
 
@@ -350,9 +354,23 @@ func (q *SQLQuerier) CreateRecipeStep(ctx context.Context, input *types.RecipeSt
 		MaxEstimatedTimeInSeconds: input.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      input.TemperatureInCelsius,
 		Notes:                     input.Notes,
+		Why:                       input.Why,
 		RecipeID:                  input.RecipeID,
 		BelongsToRecipe:           input.BelongsToRecipe,
 		CreatedOn:                 q.currentTime(),
+	}
+
+	for _, ingredientInput := range input.Ingredients {
+		ingredientInput.BelongsToRecipeStep = x.ID
+		ingredient, createErr := q.createRecipeStepIngredient(ctx, db, ingredientInput)
+		if createErr != nil {
+			if tx, ok := db.(*sql.Tx); ok {
+				q.rollbackTransaction(ctx, tx)
+			}
+			return nil, observability.PrepareError(createErr, logger, span, "creating recipe step ingredient")
+		}
+
+		x.Ingredients = append(x.Ingredients, ingredient)
 	}
 
 	tracing.AttachRecipeStepIDToSpan(span, x.ID)
@@ -361,7 +379,12 @@ func (q *SQLQuerier) CreateRecipeStep(ctx context.Context, input *types.RecipeSt
 	return x, nil
 }
 
-const updateRecipeStepQuery = "UPDATE recipe_steps SET index = $1, preparation_id = $2, prerequisite_step = $3, min_estimated_time_in_seconds = $4, max_estimated_time_in_seconds = $5, temperature_in_celsius = $6, notes = $7, recipe_id = $8, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe = $9 AND id = $10"
+// CreateRecipeStep creates a recipe step in the database.
+func (q *SQLQuerier) CreateRecipeStep(ctx context.Context, input *types.RecipeStepDatabaseCreationInput) (*types.RecipeStep, error) {
+	return q.createRecipeStep(ctx, q.db, input)
+}
+
+const updateRecipeStepQuery = "UPDATE recipe_steps SET index = $1, preparation_id = $2, prerequisite_step = $3, min_estimated_time_in_seconds = $4, max_estimated_time_in_seconds = $5, temperature_in_celsius = $6, notes = $7, why = $8, recipe_id = $9, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe = $10 AND id = $11"
 
 // UpdateRecipeStep updates a particular recipe step.
 func (q *SQLQuerier) UpdateRecipeStep(ctx context.Context, updated *types.RecipeStep) error {
@@ -383,6 +406,7 @@ func (q *SQLQuerier) UpdateRecipeStep(ctx context.Context, updated *types.Recipe
 		updated.MaxEstimatedTimeInSeconds,
 		updated.TemperatureInCelsius,
 		updated.Notes,
+		updated.Why,
 		updated.RecipeID,
 		updated.BelongsToRecipe,
 		updated.ID,

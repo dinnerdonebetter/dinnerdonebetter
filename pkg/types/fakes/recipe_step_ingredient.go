@@ -11,12 +11,12 @@ import (
 func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 	return &types.RecipeStepIngredient{
 		ID:                  ksuid.New().String(),
-		IngredientID:        func(x string) *string { return &x }(fake.Word()),
-		QuantityType:        fake.Word(),
+		IngredientID:        func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
+		QuantityType:        fake.LoremIpsumSentence(exampleQuantity),
 		QuantityValue:       fake.Float32(),
-		QuantityNotes:       fake.Word(),
+		QuantityNotes:       fake.LoremIpsumSentence(exampleQuantity),
 		ProductOfRecipe:     fake.Bool(),
-		IngredientNotes:     fake.Word(),
+		IngredientNotes:     fake.LoremIpsumSentence(exampleQuantity),
 		CreatedOn:           uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipeStep: fake.UUID(),
 	}

@@ -30,7 +30,7 @@ func buildMockRowsFromValidPreparations(includeCounts bool, filteredCount uint64
 			x.ID,
 			x.Name,
 			x.Description,
-			x.Icon,
+			x.IconPath,
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,
@@ -505,7 +505,7 @@ func TestQuerier_CreateValidPreparation(T *testing.T) {
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.Description,
-			exampleInput.Icon,
+			exampleInput.IconPath,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(validPreparationCreationQuery)).
@@ -548,7 +548,7 @@ func TestQuerier_CreateValidPreparation(T *testing.T) {
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.Description,
-			exampleInput.Icon,
+			exampleInput.IconPath,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(validPreparationCreationQuery)).
@@ -582,7 +582,7 @@ func TestQuerier_UpdateValidPreparation(T *testing.T) {
 		args := []interface{}{
 			exampleValidPreparation.Name,
 			exampleValidPreparation.Description,
-			exampleValidPreparation.Icon,
+			exampleValidPreparation.IconPath,
 			exampleValidPreparation.ID,
 		}
 
@@ -615,7 +615,7 @@ func TestQuerier_UpdateValidPreparation(T *testing.T) {
 		args := []interface{}{
 			exampleValidPreparation.Name,
 			exampleValidPreparation.Description,
-			exampleValidPreparation.Icon,
+			exampleValidPreparation.IconPath,
 			exampleValidPreparation.ID,
 		}
 

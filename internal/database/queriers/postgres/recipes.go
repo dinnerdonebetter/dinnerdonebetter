@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
@@ -60,6 +61,85 @@ func (q *SQLQuerier) scanRecipe(ctx context.Context, scan database.Scanner, incl
 	}
 
 	return x, filteredCount, totalCount, nil
+}
+
+// scanFullRecipe takes a database Scanner (i.e. *sql.Row) and scans the result into a full recipe struct.
+func (q *SQLQuerier) scanFullRecipe(ctx context.Context, scan database.Scanner) (*types.FullRecipe, *types.FullRecipeStep, *types.FullRecipeStepIngredient, error) {
+	_, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	recipe := &types.FullRecipe{Steps: []*types.FullRecipeStep{}}
+	recipeStep := &types.FullRecipeStep{Ingredients: []*types.FullRecipeStepIngredient{}}
+	recipeStepIngredient := &types.FullRecipeStepIngredient{}
+
+	targetVars := []interface{}{
+		&recipe.ID,
+		&recipe.Name,
+		&recipe.Source,
+		&recipe.Description,
+		&recipe.InspiredByRecipeID,
+		&recipe.CreatedOn,
+		&recipe.LastUpdatedOn,
+		&recipe.ArchivedOn,
+		&recipe.BelongsToHousehold,
+		&recipeStep.ID,
+		&recipeStep.Index,
+		&recipeStep.Preparation.ID,
+		&recipeStep.Preparation.Name,
+		&recipeStep.Preparation.Description,
+		&recipeStep.Preparation.IconPath,
+		&recipeStep.Preparation.CreatedOn,
+		&recipeStep.Preparation.LastUpdatedOn,
+		&recipeStep.Preparation.ArchivedOn,
+		&recipeStep.PrerequisiteStep,
+		&recipeStep.MinEstimatedTimeInSeconds,
+		&recipeStep.MaxEstimatedTimeInSeconds,
+		&recipeStep.TemperatureInCelsius,
+		&recipeStep.Notes,
+		&recipeStep.Why,
+		&recipeStep.CreatedOn,
+		&recipeStep.LastUpdatedOn,
+		&recipeStep.ArchivedOn,
+		&recipeStep.BelongsToRecipe,
+		&recipeStepIngredient.ID,
+		&recipeStepIngredient.Ingredient.ID,
+		&recipeStepIngredient.Ingredient.Name,
+		&recipeStepIngredient.Ingredient.Variant,
+		&recipeStepIngredient.Ingredient.Description,
+		&recipeStepIngredient.Ingredient.Warning,
+		&recipeStepIngredient.Ingredient.ContainsEgg,
+		&recipeStepIngredient.Ingredient.ContainsDairy,
+		&recipeStepIngredient.Ingredient.ContainsPeanut,
+		&recipeStepIngredient.Ingredient.ContainsTreeNut,
+		&recipeStepIngredient.Ingredient.ContainsSoy,
+		&recipeStepIngredient.Ingredient.ContainsWheat,
+		&recipeStepIngredient.Ingredient.ContainsShellfish,
+		&recipeStepIngredient.Ingredient.ContainsSesame,
+		&recipeStepIngredient.Ingredient.ContainsFish,
+		&recipeStepIngredient.Ingredient.ContainsGluten,
+		&recipeStepIngredient.Ingredient.AnimalFlesh,
+		&recipeStepIngredient.Ingredient.AnimalDerived,
+		&recipeStepIngredient.Ingredient.Volumetric,
+		&recipeStepIngredient.Ingredient.IconPath,
+		&recipeStepIngredient.Ingredient.CreatedOn,
+		&recipeStepIngredient.Ingredient.LastUpdatedOn,
+		&recipeStepIngredient.Ingredient.ArchivedOn,
+		&recipeStepIngredient.QuantityType,
+		&recipeStepIngredient.QuantityValue,
+		&recipeStepIngredient.QuantityNotes,
+		&recipeStepIngredient.ProductOfRecipeStep,
+		&recipeStepIngredient.IngredientNotes,
+		&recipeStepIngredient.CreatedOn,
+		&recipeStepIngredient.LastUpdatedOn,
+		&recipeStepIngredient.ArchivedOn,
+		&recipeStepIngredient.BelongsToRecipeStep,
+	}
+
+	if err := scan.Scan(targetVars...); err != nil {
+		return nil, nil, nil, observability.PrepareError(err, q.logger, span, "")
+	}
+
+	return recipe, recipeStep, recipeStepIngredient, nil
 }
 
 // scanRecipes takes some database rows and turns them into a slice of recipes.
@@ -146,6 +226,136 @@ func (q *SQLQuerier) GetRecipe(ctx context.Context, recipeID string) (*types.Rec
 	recipe, _, _, err := q.scanRecipe(ctx, row, false)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "scanning recipe")
+	}
+
+	return recipe, nil
+}
+
+const getFullRecipeQuery = `SELECT 
+	recipes.id,
+	recipes.name,
+	recipes.source,
+	recipes.description,
+	recipes.inspired_by_recipe_id,
+	recipes.created_on,
+	recipes.last_updated_on,
+	recipes.archived_on,
+	recipes.belongs_to_household,
+	recipe_steps.id,
+	recipe_steps.index,
+	valid_preparations.id,
+	valid_preparations.name,
+	valid_preparations.description,
+	valid_preparations.icon_path,
+	valid_preparations.created_on,
+	valid_preparations.last_updated_on,
+	valid_preparations.archived_on,
+	recipe_steps.prerequisite_step,
+	recipe_steps.min_estimated_time_in_seconds,
+	recipe_steps.max_estimated_time_in_seconds,
+	recipe_steps.temperature_in_celsius,
+	recipe_steps.notes,
+	recipe_steps.why,
+	recipe_steps.created_on,
+	recipe_steps.last_updated_on,
+	recipe_steps.archived_on,
+	recipe_steps.belongs_to_recipe,
+	recipe_step_ingredients.id,
+	valid_ingredients.id,
+	valid_ingredients.name,
+	valid_ingredients.variant,
+	valid_ingredients.description,
+	valid_ingredients.warning,
+	valid_ingredients.contains_egg,
+	valid_ingredients.contains_dairy,
+	valid_ingredients.contains_peanut,
+	valid_ingredients.contains_tree_nut,
+	valid_ingredients.contains_soy,
+	valid_ingredients.contains_wheat,
+	valid_ingredients.contains_shellfish,
+	valid_ingredients.contains_sesame,
+	valid_ingredients.contains_fish,
+	valid_ingredients.contains_gluten,
+	valid_ingredients.animal_flesh,
+	valid_ingredients.animal_derived,
+	valid_ingredients.volumetric,
+	valid_ingredients.icon_path,
+	valid_ingredients.created_on,
+	valid_ingredients.last_updated_on,
+	valid_ingredients.archived_on,
+	recipe_step_ingredients.quantity_type,
+	recipe_step_ingredients.quantity_value,
+	recipe_step_ingredients.quantity_notes,
+	recipe_step_ingredients.product_of_recipe_step,
+	recipe_step_ingredients.ingredient_notes,
+	recipe_step_ingredients.created_on,
+	recipe_step_ingredients.last_updated_on,
+	recipe_step_ingredients.archived_on,
+	recipe_step_ingredients.belongs_to_recipe_step 
+FROM recipe_step_ingredients 
+	JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id 
+	JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id 
+	JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id=valid_ingredients.id
+	JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id 
+WHERE recipe_step_ingredients.archived_on IS NULL 
+	AND recipe_steps.archived_on IS NULL 
+	AND recipe_steps.belongs_to_recipe = $1 
+	AND recipes.archived_on IS NULL 
+	AND recipes.id = $2
+`
+
+// GetFullRecipe fetches a recipe from the database.
+func (q *SQLQuerier) GetFullRecipe(ctx context.Context, recipeID string) (*types.FullRecipe, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger
+
+	if recipeID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+
+	args := []interface{}{
+		recipeID,
+		recipeID,
+	}
+
+	rows, err := q.performReadQuery(ctx, q.db, "recipe", getFullRecipeQuery, args)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "executing full recipe retrieval query")
+	}
+
+	var (
+		recipe           *types.FullRecipe
+		currentStepIndex = 0
+	)
+
+	for rows.Next() {
+		rowRecipe, rowRecipeStep, rowRecipeStepIngredient, scanErr := q.scanFullRecipe(ctx, rows)
+		if scanErr != nil {
+			return nil, scanErr
+		}
+
+		if recipe == nil {
+			recipe = rowRecipe
+		}
+
+		if len(recipe.Steps) == 0 && currentStepIndex == 0 {
+			recipe.Steps = append(recipe.Steps, rowRecipeStep)
+		}
+
+		if recipe.Steps[currentStepIndex].ID != rowRecipeStep.ID {
+			currentStepIndex++
+			recipe.Steps = append(recipe.Steps, rowRecipeStep)
+		}
+
+		recipe.Steps[currentStepIndex].Ingredients = append(recipe.Steps[currentStepIndex].Ingredients, rowRecipeStepIngredient)
+	}
+
+	if recipe == nil {
+		return nil, sql.ErrNoRows
 	}
 
 	return recipe, nil
@@ -282,6 +492,11 @@ func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeDataba
 
 	logger := q.logger.WithValue(keys.RecipeIDKey, input.ID)
 
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "beginning transaction")
+	}
+
 	args := []interface{}{
 		input.ID,
 		input.Name,
@@ -292,7 +507,8 @@ func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeDataba
 	}
 
 	// create the recipe.
-	if err := q.performWriteQuery(ctx, q.db, "recipe creation", recipeCreationQuery, args); err != nil {
+	if err = q.performWriteQuery(ctx, q.db, "recipe creation", recipeCreationQuery, args); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareError(err, logger, span, "creating recipe")
 	}
 
@@ -304,6 +520,20 @@ func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeDataba
 		InspiredByRecipeID: input.InspiredByRecipeID,
 		BelongsToHousehold: input.BelongsToHousehold,
 		CreatedOn:          q.currentTime(),
+	}
+
+	for _, stepInput := range input.Steps {
+		stepInput.BelongsToRecipe = x.ID
+		s, createErr := q.createRecipeStep(ctx, tx, stepInput)
+		if createErr != nil {
+			q.rollbackTransaction(ctx, tx)
+			return nil, observability.PrepareError(createErr, logger, span, "creating recipe step")
+		}
+		x.Steps = append(x.Steps, s)
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "committing transaction")
 	}
 
 	tracing.AttachRecipeIDToSpan(span, x.ID)

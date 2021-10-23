@@ -37,6 +37,23 @@ type (
 		ProductOfRecipe     bool    `json:"productOfRecipe"`
 	}
 
+	// FullRecipeStepIngredient represents a recipe step ingredient.
+	FullRecipeStepIngredient struct {
+		_                   struct{}
+		IngredientID        *string         `json:"ingredientID"`
+		LastUpdatedOn       *uint64         `json:"lastUpdatedOn"`
+		ArchivedOn          *uint64         `json:"archivedOn"`
+		IngredientNotes     string          `json:"ingredientNotes"`
+		QuantityNotes       string          `json:"quantityNotes"`
+		ID                  string          `json:"id"`
+		QuantityType        string          `json:"quantityType"`
+		BelongsToRecipeStep string          `json:"belongsToRecipeStep"`
+		Ingredient          ValidIngredient `json:"ingredient"`
+		CreatedOn           uint64          `json:"createdOn"`
+		QuantityValue       float32         `json:"quantityValue"`
+		ProductOfRecipeStep bool            `json:"productOfRecipe"`
+	}
+
 	// RecipeStepIngredientList represents a list of recipe step ingredients.
 	RecipeStepIngredientList struct {
 		_                     struct{}
@@ -47,27 +64,29 @@ type (
 	// RecipeStepIngredientCreationRequestInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientCreationRequestInput struct {
 		_                   struct{}
-		IngredientID        *string `json:"ingredientID"`
-		ID                  string  `json:"-"`
-		QuantityType        string  `json:"quantityType"`
-		QuantityNotes       string  `json:"quantityNotes"`
-		IngredientNotes     string  `json:"ingredientNotes"`
-		BelongsToRecipeStep string  `json:"-"`
-		QuantityValue       float32 `json:"quantityValue"`
-		ProductOfRecipe     bool    `json:"productOfRecipe"`
+		IngredientID        *string                                     `json:"ingredientID"`
+		ID                  string                                      `json:"-"`
+		QuantityType        string                                      `json:"quantityType"`
+		QuantityNotes       string                                      `json:"quantityNotes"`
+		IngredientNotes     string                                      `json:"ingredientNotes"`
+		BelongsToRecipeStep string                                      `json:"-"`
+		Ingredients         []*RecipeStepIngredientCreationRequestInput `json:"ingredients"`
+		QuantityValue       float32                                     `json:"quantityValue"`
+		ProductOfRecipe     bool                                        `json:"productOfRecipe"`
 	}
 
 	// RecipeStepIngredientDatabaseCreationInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientDatabaseCreationInput struct {
 		_                   struct{}
-		IngredientID        *string `json:"ingredientID"`
-		ID                  string  `json:"id"`
-		QuantityType        string  `json:"quantityType"`
-		QuantityNotes       string  `json:"quantityNotes"`
-		IngredientNotes     string  `json:"ingredientNotes"`
-		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
-		QuantityValue       float32 `json:"quantityValue"`
-		ProductOfRecipe     bool    `json:"productOfRecipe"`
+		IngredientID        *string                                      `json:"ingredientID"`
+		ID                  string                                       `json:"id"`
+		QuantityType        string                                       `json:"quantityType"`
+		QuantityNotes       string                                       `json:"quantityNotes"`
+		IngredientNotes     string                                       `json:"ingredientNotes"`
+		BelongsToRecipeStep string                                       `json:"belongsToRecipeStep"`
+		Ingredients         []*RecipeStepIngredientDatabaseCreationInput `json:"ingredients"`
+		QuantityValue       float32                                      `json:"quantityValue"`
+		ProductOfRecipe     bool                                         `json:"productOfRecipe"`
 	}
 
 	// RecipeStepIngredientUpdateRequestInput represents what a user could set as input for updating recipe step ingredients.

@@ -502,24 +502,64 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		t.Parallel()
 
 		exampleRecipe := fakes.BuildFakeRecipe()
-		exampleRecipe.ID = "1"
 		exampleInput := fakes.BuildFakeRecipeDatabaseCreationInputFromRecipe(exampleRecipe)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
-			exampleInput.ID,
-			exampleInput.Name,
-			exampleInput.Source,
-			exampleInput.Description,
-			exampleInput.InspiredByRecipeID,
-			exampleInput.BelongsToHousehold,
+		db.ExpectBegin()
+
+		recipeCreationArgs := []interface{}{
+			exampleRecipe.ID,
+			exampleRecipe.Name,
+			exampleRecipe.Source,
+			exampleRecipe.Description,
+			exampleRecipe.InspiredByRecipeID,
+			exampleRecipe.BelongsToHousehold,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(recipeCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
+			WithArgs(interfaceToDriverValue(recipeCreationArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult(exampleRecipe.ID))
+
+		for _, step := range exampleInput.Steps {
+			recipeStepCreationArgs := []interface{}{
+				step.ID,
+				step.Index,
+				step.PreparationID,
+				step.PrerequisiteStep,
+				step.MinEstimatedTimeInSeconds,
+				step.MaxEstimatedTimeInSeconds,
+				step.TemperatureInCelsius,
+				step.Notes,
+				step.Why,
+				step.RecipeID,
+				step.BelongsToRecipe,
+			}
+
+			db.ExpectExec(formatQueryForSQLMock(recipeStepCreationQuery)).
+				WithArgs(interfaceToDriverValue(recipeStepCreationArgs)...).
+				WillReturnResult(newArbitraryDatabaseResult(step.ID))
+
+			for _, ingredient := range step.Ingredients {
+				recipeStepIngredientCreationArgs := []interface{}{
+					ingredient.ID,
+					ingredient.IngredientID,
+					ingredient.QuantityType,
+					ingredient.QuantityValue,
+					ingredient.QuantityNotes,
+					ingredient.ProductOfRecipe,
+					ingredient.IngredientNotes,
+					ingredient.BelongsToRecipeStep,
+				}
+
+				db.ExpectExec(formatQueryForSQLMock(recipeStepIngredientCreationQuery)).
+					WithArgs(interfaceToDriverValue(recipeStepIngredientCreationArgs)...).
+					WillReturnResult(newArbitraryDatabaseResult(ingredient.ID))
+			}
+		}
+
+		db.ExpectCommit()
 
 		c.timeFunc = func() uint64 {
 			return exampleRecipe.CreatedOn
@@ -527,7 +567,41 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		actual, err := c.CreateRecipe(ctx, exampleInput)
 		assert.NoError(t, err)
+
+		for i, step := range exampleRecipe.Steps {
+			step.BelongsToRecipe = actual.ID
+			step.CreatedOn = actual.Steps[i].CreatedOn
+
+			for j, ingredient := range step.Ingredients {
+				ingredient.BelongsToRecipeStep = step.ID
+				ingredient.CreatedOn = actual.Steps[i].Ingredients[j].CreatedOn
+			}
+		}
+
 		assert.Equal(t, exampleRecipe, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error beginning transaction", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipe := fakes.BuildFakeRecipe()
+		exampleRecipe.ID = "1"
+		exampleInput := fakes.BuildFakeRecipeDatabaseCreationInputFromRecipe(exampleRecipe)
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		db.ExpectBegin().WillReturnError(errors.New("blah"))
+
+		c.timeFunc = func() uint64 {
+			return exampleRecipe.CreatedOn
+		}
+
+		actual, err := c.CreateRecipe(ctx, exampleInput)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -562,9 +636,13 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleInput.BelongsToHousehold,
 		}
 
+		db.ExpectBegin()
+
 		db.ExpectExec(formatQueryForSQLMock(recipeCreationQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(expectedErr)
+
+		db.ExpectRollback()
 
 		c.timeFunc = func() uint64 {
 			return exampleRecipe.CreatedOn
@@ -573,6 +651,44 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		actual, err := c.CreateRecipe(ctx, exampleInput)
 		assert.Error(t, err)
 		assert.True(t, errors.Is(err, expectedErr))
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error committing transaction", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipe := fakes.BuildFakeRecipe()
+		exampleRecipe.ID = "1"
+		exampleInput := fakes.BuildFakeRecipeDatabaseCreationInputFromRecipe(exampleRecipe)
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{
+			exampleInput.ID,
+			exampleInput.Name,
+			exampleInput.Source,
+			exampleInput.Description,
+			exampleInput.InspiredByRecipeID,
+			exampleInput.BelongsToHousehold,
+		}
+
+		db.ExpectBegin()
+
+		db.ExpectExec(formatQueryForSQLMock(recipeCreationQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult(exampleRecipe.ID))
+
+		db.ExpectCommit().WillReturnError(errors.New("blah"))
+
+		c.timeFunc = func() uint64 {
+			return exampleRecipe.CreatedOn
+		}
+
+		actual, err := c.CreateRecipe(ctx, exampleInput)
+		assert.Error(t, err)
 		assert.Nil(t, actual)
 
 		mock.AssertExpectationsForObjects(t, db)

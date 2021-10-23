@@ -21,7 +21,7 @@ var (
 		"valid_preparations.id",
 		"valid_preparations.name",
 		"valid_preparations.description",
-		"valid_preparations.icon",
+		"valid_preparations.icon_path",
 		"valid_preparations.created_on",
 		"valid_preparations.last_updated_on",
 		"valid_preparations.archived_on",
@@ -41,7 +41,7 @@ func (q *SQLQuerier) scanValidPreparation(ctx context.Context, scan database.Sca
 		&x.ID,
 		&x.Name,
 		&x.Description,
-		&x.Icon,
+		&x.IconPath,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
@@ -118,7 +118,7 @@ func (q *SQLQuerier) ValidPreparationExists(ctx context.Context, validPreparatio
 	return result, nil
 }
 
-const getValidPreparationQuery = "SELECT valid_preparations.id, valid_preparations.name, valid_preparations.description, valid_preparations.icon, valid_preparations.created_on, valid_preparations.last_updated_on, valid_preparations.archived_on FROM valid_preparations WHERE valid_preparations.archived_on IS NULL AND valid_preparations.id = $1"
+const getValidPreparationQuery = "SELECT valid_preparations.id, valid_preparations.name, valid_preparations.description, valid_preparations.icon_path, valid_preparations.created_on, valid_preparations.last_updated_on, valid_preparations.archived_on FROM valid_preparations WHERE valid_preparations.archived_on IS NULL AND valid_preparations.id = $1"
 
 // GetValidPreparation fetches a valid preparation from the database.
 func (q *SQLQuerier) GetValidPreparation(ctx context.Context, validPreparationID string) (*types.ValidPreparation, error) {
@@ -261,7 +261,7 @@ func (q *SQLQuerier) GetValidPreparationsWithIDs(ctx context.Context, limit uint
 	return validPreparations, nil
 }
 
-const validPreparationCreationQuery = "INSERT INTO valid_preparations (id,name,description,icon) VALUES ($1,$2,$3,$4)"
+const validPreparationCreationQuery = "INSERT INTO valid_preparations (id,name,description,icon_path) VALUES ($1,$2,$3,$4)"
 
 // CreateValidPreparation creates a valid preparation in the database.
 func (q *SQLQuerier) CreateValidPreparation(ctx context.Context, input *types.ValidPreparationDatabaseCreationInput) (*types.ValidPreparation, error) {
@@ -278,7 +278,7 @@ func (q *SQLQuerier) CreateValidPreparation(ctx context.Context, input *types.Va
 		input.ID,
 		input.Name,
 		input.Description,
-		input.Icon,
+		input.IconPath,
 	}
 
 	// create the valid preparation.
@@ -290,7 +290,7 @@ func (q *SQLQuerier) CreateValidPreparation(ctx context.Context, input *types.Va
 		ID:          input.ID,
 		Name:        input.Name,
 		Description: input.Description,
-		Icon:        input.Icon,
+		IconPath:    input.IconPath,
 		CreatedOn:   q.currentTime(),
 	}
 
@@ -300,7 +300,7 @@ func (q *SQLQuerier) CreateValidPreparation(ctx context.Context, input *types.Va
 	return x, nil
 }
 
-const updateValidPreparationQuery = "UPDATE valid_preparations SET name = $1, description = $2, icon = $3, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $4"
+const updateValidPreparationQuery = "UPDATE valid_preparations SET name = $1, description = $2, icon_path = $3, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $4"
 
 // UpdateValidPreparation updates a particular valid preparation.
 func (q *SQLQuerier) UpdateValidPreparation(ctx context.Context, updated *types.ValidPreparation) error {
@@ -317,7 +317,7 @@ func (q *SQLQuerier) UpdateValidPreparation(ctx context.Context, updated *types.
 	args := []interface{}{
 		updated.Name,
 		updated.Description,
-		updated.Icon,
+		updated.IconPath,
 		updated.ID,
 	}
 

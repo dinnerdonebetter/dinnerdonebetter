@@ -20,7 +20,7 @@ func BuildFakeUser() *types.User {
 		ID:       ksuid.New().String(),
 		Username: fake.Password(true, true, true, false, false, 32),
 		// HashedPassword: "",
-		// Salt:           []byte(fakes.Word()),
+		// Salt:           []byte(fakes.LoremIpsumSentence(exampleQuantity)),
 		ServiceHouseholdStatus:    types.GoodStandingHouseholdStatus,
 		TwoFactorSecret:           base32.StdEncoding.EncodeToString([]byte(fake.Password(false, true, true, false, false, 32))),
 		TwoFactorSecretVerifiedOn: func(i uint64) *uint64 { return &i }(uint64(uint32(fake.Date().Unix()))),

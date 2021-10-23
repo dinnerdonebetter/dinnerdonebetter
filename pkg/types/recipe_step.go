@@ -24,19 +24,42 @@ type (
 	// RecipeStep represents a recipe step.
 	RecipeStep struct {
 		_                         struct{}
-		ArchivedOn                *uint64 `json:"archivedOn"`
-		LastUpdatedOn             *uint64 `json:"lastUpdatedOn"`
-		TemperatureInCelsius      *uint16 `json:"temperatureInCelsius"`
-		ID                        string  `json:"id"`
-		PreparationID             string  `json:"preparationID"`
-		Notes                     string  `json:"notes"`
-		RecipeID                  string  `json:"recipeID"`
-		BelongsToRecipe           string  `json:"belongsToRecipe"`
-		PrerequisiteStep          uint64  `json:"prerequisiteStep"`
-		Index                     uint    `json:"index"`
-		CreatedOn                 uint64  `json:"createdOn"`
-		MinEstimatedTimeInSeconds uint32  `json:"minEstimatedTimeInSeconds"`
-		MaxEstimatedTimeInSeconds uint32  `json:"maxEstimatedTimeInSeconds"`
+		ArchivedOn                *uint64                 `json:"archivedOn"`
+		TemperatureInCelsius      *uint16                 `json:"temperatureInCelsius"`
+		LastUpdatedOn             *uint64                 `json:"lastUpdatedOn"`
+		BelongsToRecipe           string                  `json:"belongsToRecipe"`
+		ID                        string                  `json:"id"`
+		PreparationID             string                  `json:"preparationID"`
+		Notes                     string                  `json:"notes"`
+		Why                       string                  `json:"why"`
+		RecipeID                  string                  `json:"recipeID"`
+		Ingredients               []*RecipeStepIngredient `json:"ingredients"`
+		PrerequisiteStep          uint64                  `json:"prerequisiteStep"`
+		Index                     uint                    `json:"index"`
+		CreatedOn                 uint64                  `json:"createdOn"`
+		MinEstimatedTimeInSeconds uint32                  `json:"minEstimatedTimeInSeconds"`
+		MaxEstimatedTimeInSeconds uint32                  `json:"maxEstimatedTimeInSeconds"`
+	}
+
+	// FullRecipeStep represents a recipe step.
+	FullRecipeStep struct {
+		_                         struct{}
+		ArchivedOn                *uint64                     `json:"archivedOn"`
+		TemperatureInCelsius      *uint16                     `json:"temperatureInCelsius"`
+		LastUpdatedOn             *uint64                     `json:"lastUpdatedOn"`
+		Why                       string                      `json:"why"`
+		ID                        string                      `json:"id"`
+		PreparationID             string                      `json:"preparationID"`
+		Notes                     string                      `json:"notes"`
+		RecipeID                  string                      `json:"recipeID"`
+		BelongsToRecipe           string                      `json:"belongsToRecipe"`
+		Preparation               ValidPreparation            `json:"preparation"`
+		Ingredients               []*FullRecipeStepIngredient `json:"ingredients"`
+		Index                     uint                        `json:"index"`
+		CreatedOn                 uint64                      `json:"createdOn"`
+		PrerequisiteStep          uint64                      `json:"prerequisiteStep"`
+		MinEstimatedTimeInSeconds uint32                      `json:"minEstimatedTimeInSeconds"`
+		MaxEstimatedTimeInSeconds uint32                      `json:"maxEstimatedTimeInSeconds"`
 	}
 
 	// RecipeStepList represents a list of recipe steps.
@@ -49,31 +72,35 @@ type (
 	// RecipeStepCreationRequestInput represents what a user could set as input for creating recipe steps.
 	RecipeStepCreationRequestInput struct {
 		_                         struct{}
-		TemperatureInCelsius      *uint16 `json:"temperatureInCelsius"`
-		Notes                     string  `json:"notes"`
-		PreparationID             string  `json:"preparationID"`
-		BelongsToRecipe           string  `json:"-"`
-		ID                        string  `json:"-"`
-		RecipeID                  string  `json:"recipeID"`
-		Index                     uint    `json:"index"`
-		PrerequisiteStep          uint64  `json:"prerequisiteStep"`
-		MinEstimatedTimeInSeconds uint32  `json:"minEstimatedTimeInSeconds"`
-		MaxEstimatedTimeInSeconds uint32  `json:"maxEstimatedTimeInSeconds"`
+		TemperatureInCelsius      *uint16                                     `json:"temperatureInCelsius"`
+		Notes                     string                                      `json:"notes"`
+		Why                       string                                      `json:"why"`
+		PreparationID             string                                      `json:"preparationID"`
+		BelongsToRecipe           string                                      `json:"-"`
+		RecipeID                  string                                      `json:"recipeID"`
+		ID                        string                                      `json:"-"`
+		Ingredients               []*RecipeStepIngredientCreationRequestInput `json:"ingredients"`
+		Index                     uint                                        `json:"index"`
+		PrerequisiteStep          uint64                                      `json:"prerequisiteStep"`
+		MinEstimatedTimeInSeconds uint32                                      `json:"minEstimatedTimeInSeconds"`
+		MaxEstimatedTimeInSeconds uint32                                      `json:"maxEstimatedTimeInSeconds"`
 	}
 
 	// RecipeStepDatabaseCreationInput represents what a user could set as input for creating recipe steps.
 	RecipeStepDatabaseCreationInput struct {
 		_                         struct{}
-		TemperatureInCelsius      *uint16 `json:"temperatureInCelsius"`
-		Notes                     string  `json:"notes"`
-		PreparationID             string  `json:"preparationID"`
-		BelongsToRecipe           string  `json:"belongsToRecipe"`
-		ID                        string  `json:"id"`
-		RecipeID                  string  `json:"recipeID"`
-		Index                     uint    `json:"index"`
-		PrerequisiteStep          uint64  `json:"prerequisiteStep"`
-		MinEstimatedTimeInSeconds uint32  `json:"minEstimatedTimeInSeconds"`
-		MaxEstimatedTimeInSeconds uint32  `json:"maxEstimatedTimeInSeconds"`
+		TemperatureInCelsius      *uint16                                      `json:"temperatureInCelsius"`
+		Notes                     string                                       `json:"notes"`
+		Why                       string                                       `json:"why"`
+		PreparationID             string                                       `json:"preparationID"`
+		BelongsToRecipe           string                                       `json:"belongsToRecipe"`
+		RecipeID                  string                                       `json:"recipeID"`
+		ID                        string                                       `json:"id"`
+		Ingredients               []*RecipeStepIngredientDatabaseCreationInput `json:"ingredients"`
+		Index                     uint                                         `json:"index"`
+		PrerequisiteStep          uint64                                       `json:"prerequisiteStep"`
+		MinEstimatedTimeInSeconds uint32                                       `json:"minEstimatedTimeInSeconds"`
+		MaxEstimatedTimeInSeconds uint32                                       `json:"maxEstimatedTimeInSeconds"`
 	}
 
 	// RecipeStepUpdateRequestInput represents what a user could set as input for updating recipe steps.
@@ -81,6 +108,7 @@ type (
 		_                         struct{}
 		TemperatureInCelsius      *uint16 `json:"temperatureInCelsius"`
 		Notes                     string  `json:"notes"`
+		Why                       string  `json:"why"`
 		PreparationID             string  `json:"preparationID"`
 		BelongsToRecipe           string  `json:"belongsToRecipe"`
 		RecipeID                  string  `json:"recipeID"`

@@ -18,7 +18,7 @@ func TestValidInstrumentCreationRequestInput_Validate(T *testing.T) {
 			Name:        fake.Word(),
 			Variant:     fake.Word(),
 			Description: fake.Word(),
-			Icon:        fake.Word(),
+			IconPath:    fake.Word(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -45,7 +45,7 @@ func TestValidInstrumentUpdateRequestInput_Validate(T *testing.T) {
 			Name:        fake.Word(),
 			Variant:     fake.Word(),
 			Description: fake.Word(),
-			Icon:        fake.Word(),
+			IconPath:    fake.Word(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

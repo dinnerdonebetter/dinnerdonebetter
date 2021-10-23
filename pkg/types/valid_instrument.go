@@ -28,7 +28,7 @@ type (
 		ArchivedOn    *uint64 `json:"archivedOn"`
 		Variant       string  `json:"variant"`
 		Description   string  `json:"description"`
-		Icon          string  `json:"icon"`
+		IconPath      string  `json:"iconPath"`
 		ID            string  `json:"id"`
 		Name          string  `json:"name"`
 		CreatedOn     uint64  `json:"createdOn"`
@@ -49,7 +49,7 @@ type (
 		Name        string `json:"name"`
 		Variant     string `json:"variant"`
 		Description string `json:"description"`
-		Icon        string `json:"icon"`
+		IconPath    string `json:"iconPath"`
 	}
 
 	// ValidInstrumentDatabaseCreationInput represents what a user could set as input for creating valid instruments.
@@ -60,7 +60,7 @@ type (
 		Name        string `json:"name"`
 		Variant     string `json:"variant"`
 		Description string `json:"description"`
-		Icon        string `json:"icon"`
+		IconPath    string `json:"iconPath"`
 	}
 
 	// ValidInstrumentUpdateRequestInput represents what a user could set as input for updating valid instruments.
@@ -70,7 +70,7 @@ type (
 		Name        string `json:"name"`
 		Variant     string `json:"variant"`
 		Description string `json:"description"`
-		Icon        string `json:"icon"`
+		IconPath    string `json:"iconPath"`
 	}
 
 	// ValidInstrumentDataManager describes a structure capable of storing valid instruments permanently.
@@ -110,8 +110,8 @@ func (x *ValidInstrument) Update(input *ValidInstrumentUpdateRequestInput) {
 		x.Description = input.Description
 	}
 
-	if input.Icon != "" && input.Icon != x.Icon {
-		x.Icon = input.Icon
+	if input.IconPath != "" && input.IconPath != x.IconPath {
+		x.IconPath = input.IconPath
 	}
 }
 
@@ -125,7 +125,7 @@ func (x *ValidInstrumentCreationRequestInput) ValidateWithContext(ctx context.Co
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Variant, validation.Required),
 		validation.Field(&x.Description, validation.Required),
-		validation.Field(&x.Icon, validation.Required),
+		validation.Field(&x.IconPath, validation.Required),
 	)
 }
 
@@ -140,7 +140,7 @@ func (x *ValidInstrumentDatabaseCreationInput) ValidateWithContext(ctx context.C
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Variant, validation.Required),
 		validation.Field(&x.Description, validation.Required),
-		validation.Field(&x.Icon, validation.Required),
+		validation.Field(&x.IconPath, validation.Required),
 	)
 }
 
@@ -150,7 +150,7 @@ func ValidInstrumentDatabaseCreationInputFromValidInstrumentCreationInput(input 
 		Name:        input.Name,
 		Variant:     input.Variant,
 		Description: input.Description,
-		Icon:        input.Icon,
+		IconPath:    input.IconPath,
 	}
 
 	return x
@@ -166,6 +166,6 @@ func (x *ValidInstrumentUpdateRequestInput) ValidateWithContext(ctx context.Cont
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Variant, validation.Required),
 		validation.Field(&x.Description, validation.Required),
-		validation.Field(&x.Icon, validation.Required),
+		validation.Field(&x.IconPath, validation.Required),
 	)
 }

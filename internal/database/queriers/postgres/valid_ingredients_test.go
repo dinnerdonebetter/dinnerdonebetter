@@ -44,8 +44,8 @@ func buildMockRowsFromValidIngredients(includeCounts bool, filteredCount uint64,
 			x.ContainsGluten,
 			x.AnimalFlesh,
 			x.AnimalDerived,
-			x.MeasurableByVolume,
-			x.Icon,
+			x.Volumetric,
+			x.IconPath,
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,
@@ -534,8 +534,8 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 			exampleInput.ContainsGluten,
 			exampleInput.AnimalFlesh,
 			exampleInput.AnimalDerived,
-			exampleInput.MeasurableByVolume,
-			exampleInput.Icon,
+			exampleInput.Volumetric,
+			exampleInput.IconPath,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(validIngredientCreationQuery)).
@@ -592,8 +592,8 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 			exampleInput.ContainsGluten,
 			exampleInput.AnimalFlesh,
 			exampleInput.AnimalDerived,
-			exampleInput.MeasurableByVolume,
-			exampleInput.Icon,
+			exampleInput.Volumetric,
+			exampleInput.IconPath,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(validIngredientCreationQuery)).
@@ -641,8 +641,8 @@ func TestQuerier_UpdateValidIngredient(T *testing.T) {
 			exampleValidIngredient.ContainsGluten,
 			exampleValidIngredient.AnimalFlesh,
 			exampleValidIngredient.AnimalDerived,
-			exampleValidIngredient.MeasurableByVolume,
-			exampleValidIngredient.Icon,
+			exampleValidIngredient.Volumetric,
+			exampleValidIngredient.IconPath,
 			exampleValidIngredient.ID,
 		}
 
@@ -689,8 +689,8 @@ func TestQuerier_UpdateValidIngredient(T *testing.T) {
 			exampleValidIngredient.ContainsGluten,
 			exampleValidIngredient.AnimalFlesh,
 			exampleValidIngredient.AnimalDerived,
-			exampleValidIngredient.MeasurableByVolume,
-			exampleValidIngredient.Icon,
+			exampleValidIngredient.Volumetric,
+			exampleValidIngredient.IconPath,
 			exampleValidIngredient.ID,
 		}
 

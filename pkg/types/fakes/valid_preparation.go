@@ -11,9 +11,9 @@ import (
 func BuildFakeValidPreparation() *types.ValidPreparation {
 	return &types.ValidPreparation{
 		ID:          ksuid.New().String(),
-		Name:        fake.Word(),
-		Description: fake.Word(),
-		Icon:        fake.Word(),
+		Name:        fake.LoremIpsumSentence(exampleQuantity),
+		Description: fake.LoremIpsumSentence(exampleQuantity),
+		IconPath:    fake.LoremIpsumSentence(exampleQuantity),
 		CreatedOn:   uint64(uint32(fake.Date().Unix())),
 	}
 }
@@ -42,7 +42,7 @@ func BuildFakeValidPreparationUpdateRequestInput() *types.ValidPreparationUpdate
 	return &types.ValidPreparationUpdateRequestInput{
 		Name:        validPreparation.Name,
 		Description: validPreparation.Description,
-		Icon:        validPreparation.Icon,
+		IconPath:    validPreparation.IconPath,
 	}
 }
 
@@ -51,7 +51,7 @@ func BuildFakeValidPreparationUpdateRequestInputFromValidPreparation(validPrepar
 	return &types.ValidPreparationUpdateRequestInput{
 		Name:        validPreparation.Name,
 		Description: validPreparation.Description,
-		Icon:        validPreparation.Icon,
+		IconPath:    validPreparation.IconPath,
 	}
 }
 
@@ -67,7 +67,7 @@ func BuildFakeValidPreparationCreationRequestInputFromValidPreparation(validPrep
 		ID:          validPreparation.ID,
 		Name:        validPreparation.Name,
 		Description: validPreparation.Description,
-		Icon:        validPreparation.Icon,
+		IconPath:    validPreparation.IconPath,
 	}
 }
 
@@ -83,6 +83,6 @@ func BuildFakeValidPreparationDatabaseCreationInputFromValidPreparation(validPre
 		ID:          validPreparation.ID,
 		Name:        validPreparation.Name,
 		Description: validPreparation.Description,
-		Icon:        validPreparation.Icon,
+		IconPath:    validPreparation.IconPath,
 	}
 }

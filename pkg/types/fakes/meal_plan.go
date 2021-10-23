@@ -11,7 +11,7 @@ import (
 func BuildFakeMealPlan() *types.MealPlan {
 	return &types.MealPlan{
 		ID:                 ksuid.New().String(),
-		State:              fake.Word(),
+		State:              fake.LoremIpsumSentence(exampleQuantity),
 		StartsAt:           uint64(fake.Uint32()),
 		EndsAt:             uint64(fake.Uint32()),
 		CreatedOn:          uint64(uint32(fake.Date().Unix())),

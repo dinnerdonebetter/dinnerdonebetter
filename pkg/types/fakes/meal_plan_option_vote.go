@@ -11,11 +11,11 @@ import (
 func BuildFakeMealPlanOptionVote() *types.MealPlanOptionVote {
 	return &types.MealPlanOptionVote{
 		ID:                 ksuid.New().String(),
-		MealPlanOptionID:   fake.Word(),
+		MealPlanOptionID:   fake.LoremIpsumSentence(exampleQuantity),
 		DayOfWeek:          fake.Uint8(),
 		Points:             fake.Int16(),
 		Abstain:            fake.Bool(),
-		Notes:              fake.Word(),
+		Notes:              fake.LoremIpsumSentence(exampleQuantity),
 		CreatedOn:          uint64(uint32(fake.Date().Unix())),
 		BelongsToHousehold: fake.UUID(),
 	}

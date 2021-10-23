@@ -11,10 +11,10 @@ import (
 func BuildFakeRecipe() *types.Recipe {
 	return &types.Recipe{
 		ID:                 ksuid.New().String(),
-		Name:               fake.Word(),
-		Source:             fake.Word(),
-		Description:        fake.Word(),
-		InspiredByRecipeID: func(x string) *string { return &x }(fake.Word()),
+		Name:               fake.LoremIpsumSentence(exampleQuantity),
+		Source:             fake.LoremIpsumSentence(exampleQuantity),
+		Description:        fake.LoremIpsumSentence(exampleQuantity),
+		InspiredByRecipeID: func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
 		CreatedOn:          uint64(uint32(fake.Date().Unix())),
 		BelongsToHousehold: fake.UUID(),
 	}

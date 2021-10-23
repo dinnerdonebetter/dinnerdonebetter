@@ -27,7 +27,7 @@ var (
 		"recipe_step_ingredients.quantity_type",
 		"recipe_step_ingredients.quantity_value",
 		"recipe_step_ingredients.quantity_notes",
-		"recipe_step_ingredients.product_of_recipe",
+		"recipe_step_ingredients.product_of_recipe_step",
 		"recipe_step_ingredients.ingredient_notes",
 		"recipe_step_ingredients.created_on",
 		"recipe_step_ingredients.last_updated_on",
@@ -151,7 +151,7 @@ func (q *SQLQuerier) RecipeStepIngredientExists(ctx context.Context, recipeID, r
 	return result, nil
 }
 
-const getRecipeStepIngredientQuery = "SELECT recipe_step_ingredients.id, recipe_step_ingredients.ingredient_id, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.created_on, recipe_step_ingredients.last_updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_ingredients.archived_on IS NULL AND recipe_step_ingredients.belongs_to_recipe_step = $1 AND recipe_step_ingredients.id = $2 AND recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_on IS NULL AND recipes.id = $5"
+const getRecipeStepIngredientQuery = "SELECT recipe_step_ingredients.id, recipe_step_ingredients.ingredient_id, recipe_step_ingredients.quantity_type, recipe_step_ingredients.quantity_value, recipe_step_ingredients.quantity_notes, recipe_step_ingredients.product_of_recipe_step, recipe_step_ingredients.ingredient_notes, recipe_step_ingredients.created_on, recipe_step_ingredients.last_updated_on, recipe_step_ingredients.archived_on, recipe_step_ingredients.belongs_to_recipe_step FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_ingredients.archived_on IS NULL AND recipe_step_ingredients.belongs_to_recipe_step = $1 AND recipe_step_ingredients.id = $2 AND recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_on IS NULL AND recipes.id = $5"
 
 // GetRecipeStepIngredient fetches a recipe step ingredient from the database.
 func (q *SQLQuerier) GetRecipeStepIngredient(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (*types.RecipeStepIngredient, error) {
@@ -329,10 +329,10 @@ func (q *SQLQuerier) GetRecipeStepIngredientsWithIDs(ctx context.Context, recipe
 	return recipeStepIngredients, nil
 }
 
-const recipeStepIngredientCreationQuery = "INSERT INTO recipe_step_ingredients (id,ingredient_id,quantity_type,quantity_value,quantity_notes,product_of_recipe,ingredient_notes,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)"
+const recipeStepIngredientCreationQuery = "INSERT INTO recipe_step_ingredients (id,ingredient_id,quantity_type,quantity_value,quantity_notes,product_of_recipe_step,ingredient_notes,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)"
 
-// CreateRecipeStepIngredient creates a recipe step ingredient in the database.
-func (q *SQLQuerier) CreateRecipeStepIngredient(ctx context.Context, input *types.RecipeStepIngredientDatabaseCreationInput) (*types.RecipeStepIngredient, error) {
+// createRecipeStepIngredient creates a recipe step ingredient in the database.
+func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepIngredientDatabaseCreationInput) (*types.RecipeStepIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -354,7 +354,7 @@ func (q *SQLQuerier) CreateRecipeStepIngredient(ctx context.Context, input *type
 	}
 
 	// create the recipe step ingredient.
-	if err := q.performWriteQuery(ctx, q.db, "recipe step ingredient creation", recipeStepIngredientCreationQuery, args); err != nil {
+	if err := q.performWriteQuery(ctx, db, "recipe step ingredient creation", recipeStepIngredientCreationQuery, args); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "creating recipe step ingredient")
 	}
 
@@ -376,7 +376,12 @@ func (q *SQLQuerier) CreateRecipeStepIngredient(ctx context.Context, input *type
 	return x, nil
 }
 
-const updateRecipeStepIngredientQuery = "UPDATE recipe_step_ingredients SET ingredient_id = $1, quantity_type = $2, quantity_value = $3, quantity_notes = $4, product_of_recipe = $5, ingredient_notes = $6, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $7 AND id = $8"
+// CreateRecipeStepIngredient creates a recipe step ingredient in the database.
+func (q *SQLQuerier) CreateRecipeStepIngredient(ctx context.Context, input *types.RecipeStepIngredientDatabaseCreationInput) (*types.RecipeStepIngredient, error) {
+	return q.createRecipeStepIngredient(ctx, q.db, input)
+}
+
+const updateRecipeStepIngredientQuery = "UPDATE recipe_step_ingredients SET ingredient_id = $1, quantity_type = $2, quantity_value = $3, quantity_notes = $4, product_of_recipe_step = $5, ingredient_notes = $6, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $7 AND id = $8"
 
 // UpdateRecipeStepIngredient updates a particular recipe step ingredient.
 func (q *SQLQuerier) UpdateRecipeStepIngredient(ctx context.Context, updated *types.RecipeStepIngredient) error {

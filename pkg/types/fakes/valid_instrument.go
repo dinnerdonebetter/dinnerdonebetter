@@ -11,10 +11,10 @@ import (
 func BuildFakeValidInstrument() *types.ValidInstrument {
 	return &types.ValidInstrument{
 		ID:          ksuid.New().String(),
-		Name:        fake.Word(),
-		Variant:     fake.Word(),
-		Description: fake.Word(),
-		Icon:        fake.Word(),
+		Name:        fake.LoremIpsumSentence(exampleQuantity),
+		Variant:     fake.LoremIpsumSentence(exampleQuantity),
+		Description: fake.LoremIpsumSentence(exampleQuantity),
+		IconPath:    fake.LoremIpsumSentence(exampleQuantity),
 		CreatedOn:   uint64(uint32(fake.Date().Unix())),
 	}
 }
@@ -44,7 +44,7 @@ func BuildFakeValidInstrumentUpdateRequestInput() *types.ValidInstrumentUpdateRe
 		Name:        validInstrument.Name,
 		Variant:     validInstrument.Variant,
 		Description: validInstrument.Description,
-		Icon:        validInstrument.Icon,
+		IconPath:    validInstrument.IconPath,
 	}
 }
 
@@ -54,7 +54,7 @@ func BuildFakeValidInstrumentUpdateRequestInputFromValidInstrument(validInstrume
 		Name:        validInstrument.Name,
 		Variant:     validInstrument.Variant,
 		Description: validInstrument.Description,
-		Icon:        validInstrument.Icon,
+		IconPath:    validInstrument.IconPath,
 	}
 }
 
@@ -71,7 +71,7 @@ func BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(validInstru
 		Name:        validInstrument.Name,
 		Variant:     validInstrument.Variant,
 		Description: validInstrument.Description,
-		Icon:        validInstrument.Icon,
+		IconPath:    validInstrument.IconPath,
 	}
 }
 
@@ -88,6 +88,6 @@ func BuildFakeValidInstrumentDatabaseCreationInputFromValidInstrument(validInstr
 		Name:        validInstrument.Name,
 		Variant:     validInstrument.Variant,
 		Description: validInstrument.Description,
-		Icon:        validInstrument.Icon,
+		IconPath:    validInstrument.IconPath,
 	}
 }

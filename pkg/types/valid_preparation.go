@@ -28,7 +28,7 @@ type (
 		LastUpdatedOn *uint64 `json:"lastUpdatedOn"`
 		Name          string  `json:"name"`
 		Description   string  `json:"description"`
-		Icon          string  `json:"icon"`
+		IconPath      string  `json:"iconPath"`
 		ID            string  `json:"id"`
 		CreatedOn     uint64  `json:"createdOn"`
 	}
@@ -47,7 +47,7 @@ type (
 		ID          string `json:"-"`
 		Name        string `json:"name"`
 		Description string `json:"description"`
-		Icon        string `json:"icon"`
+		IconPath    string `json:"iconPath"`
 	}
 
 	// ValidPreparationDatabaseCreationInput represents what a user could set as input for creating valid preparations.
@@ -57,7 +57,7 @@ type (
 		ID          string `json:"id"`
 		Name        string `json:"name"`
 		Description string `json:"description"`
-		Icon        string `json:"icon"`
+		IconPath    string `json:"iconPath"`
 	}
 
 	// ValidPreparationUpdateRequestInput represents what a user could set as input for updating valid preparations.
@@ -66,7 +66,7 @@ type (
 
 		Name        string `json:"name"`
 		Description string `json:"description"`
-		Icon        string `json:"icon"`
+		IconPath    string `json:"iconPath"`
 	}
 
 	// ValidPreparationDataManager describes a structure capable of storing valid preparations permanently.
@@ -102,8 +102,8 @@ func (x *ValidPreparation) Update(input *ValidPreparationUpdateRequestInput) {
 		x.Description = input.Description
 	}
 
-	if input.Icon != "" && input.Icon != x.Icon {
-		x.Icon = input.Icon
+	if input.IconPath != "" && input.IconPath != x.IconPath {
+		x.IconPath = input.IconPath
 	}
 }
 
@@ -116,7 +116,7 @@ func (x *ValidPreparationCreationRequestInput) ValidateWithContext(ctx context.C
 		x,
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Description, validation.Required),
-		validation.Field(&x.Icon, validation.Required),
+		validation.Field(&x.IconPath, validation.Required),
 	)
 }
 
@@ -130,7 +130,7 @@ func (x *ValidPreparationDatabaseCreationInput) ValidateWithContext(ctx context.
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Description, validation.Required),
-		validation.Field(&x.Icon, validation.Required),
+		validation.Field(&x.IconPath, validation.Required),
 	)
 }
 
@@ -139,7 +139,7 @@ func ValidPreparationDatabaseCreationInputFromValidPreparationCreationInput(inpu
 	x := &ValidPreparationDatabaseCreationInput{
 		Name:        input.Name,
 		Description: input.Description,
-		Icon:        input.Icon,
+		IconPath:    input.IconPath,
 	}
 
 	return x
@@ -154,6 +154,6 @@ func (x *ValidPreparationUpdateRequestInput) ValidateWithContext(ctx context.Con
 		x,
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Description, validation.Required),
-		validation.Field(&x.Icon, validation.Required),
+		validation.Field(&x.IconPath, validation.Required),
 	)
 }

@@ -35,8 +35,8 @@ var (
 		"valid_ingredients.contains_gluten",
 		"valid_ingredients.animal_flesh",
 		"valid_ingredients.animal_derived",
-		"valid_ingredients.measurable_by_volume",
-		"valid_ingredients.icon",
+		"valid_ingredients.volumetric",
+		"valid_ingredients.icon_path",
 		"valid_ingredients.created_on",
 		"valid_ingredients.last_updated_on",
 		"valid_ingredients.archived_on",
@@ -70,8 +70,8 @@ func (q *SQLQuerier) scanValidIngredient(ctx context.Context, scan database.Scan
 		&x.ContainsGluten,
 		&x.AnimalFlesh,
 		&x.AnimalDerived,
-		&x.MeasurableByVolume,
-		&x.Icon,
+		&x.Volumetric,
+		&x.IconPath,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
@@ -148,7 +148,7 @@ func (q *SQLQuerier) ValidIngredientExists(ctx context.Context, validIngredientI
 	return result, nil
 }
 
-const getValidIngredientQuery = "SELECT valid_ingredients.id, valid_ingredients.name, valid_ingredients.variant, valid_ingredients.description, valid_ingredients.warning, valid_ingredients.contains_egg, valid_ingredients.contains_dairy, valid_ingredients.contains_peanut, valid_ingredients.contains_tree_nut, valid_ingredients.contains_soy, valid_ingredients.contains_wheat, valid_ingredients.contains_shellfish, valid_ingredients.contains_sesame, valid_ingredients.contains_fish, valid_ingredients.contains_gluten, valid_ingredients.animal_flesh, valid_ingredients.animal_derived, valid_ingredients.measurable_by_volume, valid_ingredients.icon, valid_ingredients.created_on, valid_ingredients.last_updated_on, valid_ingredients.archived_on FROM valid_ingredients WHERE valid_ingredients.archived_on IS NULL AND valid_ingredients.id = $1"
+const getValidIngredientQuery = "SELECT valid_ingredients.id, valid_ingredients.name, valid_ingredients.variant, valid_ingredients.description, valid_ingredients.warning, valid_ingredients.contains_egg, valid_ingredients.contains_dairy, valid_ingredients.contains_peanut, valid_ingredients.contains_tree_nut, valid_ingredients.contains_soy, valid_ingredients.contains_wheat, valid_ingredients.contains_shellfish, valid_ingredients.contains_sesame, valid_ingredients.contains_fish, valid_ingredients.contains_gluten, valid_ingredients.animal_flesh, valid_ingredients.animal_derived, valid_ingredients.volumetric, valid_ingredients.icon_path, valid_ingredients.created_on, valid_ingredients.last_updated_on, valid_ingredients.archived_on FROM valid_ingredients WHERE valid_ingredients.archived_on IS NULL AND valid_ingredients.id = $1"
 
 // GetValidIngredient fetches a valid ingredient from the database.
 func (q *SQLQuerier) GetValidIngredient(ctx context.Context, validIngredientID string) (*types.ValidIngredient, error) {
@@ -167,11 +167,11 @@ func (q *SQLQuerier) GetValidIngredient(ctx context.Context, validIngredientID s
 		validIngredientID,
 	}
 
-	row := q.getOneRow(ctx, q.db, "validIngredient", getValidIngredientQuery, args)
+	row := q.getOneRow(ctx, q.db, "valid ingredient", getValidIngredientQuery, args)
 
 	validIngredient, _, _, err := q.scanValidIngredient(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning validIngredient")
+		return nil, observability.PrepareError(err, logger, span, "scanning valid ingredient")
 	}
 
 	return validIngredient, nil
@@ -291,7 +291,7 @@ func (q *SQLQuerier) GetValidIngredientsWithIDs(ctx context.Context, limit uint8
 	return validIngredients, nil
 }
 
-const validIngredientCreationQuery = "INSERT INTO valid_ingredients (id,name,variant,description,warning,contains_egg,contains_dairy,contains_peanut,contains_tree_nut,contains_soy,contains_wheat,contains_shellfish,contains_sesame,contains_fish,contains_gluten,animal_flesh,animal_derived,measurable_by_volume,icon) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)"
+const validIngredientCreationQuery = "INSERT INTO valid_ingredients (id,name,variant,description,warning,contains_egg,contains_dairy,contains_peanut,contains_tree_nut,contains_soy,contains_wheat,contains_shellfish,contains_sesame,contains_fish,contains_gluten,animal_flesh,animal_derived,volumetric,icon_path) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)"
 
 // CreateValidIngredient creates a valid ingredient in the database.
 func (q *SQLQuerier) CreateValidIngredient(ctx context.Context, input *types.ValidIngredientDatabaseCreationInput) (*types.ValidIngredient, error) {
@@ -322,8 +322,8 @@ func (q *SQLQuerier) CreateValidIngredient(ctx context.Context, input *types.Val
 		input.ContainsGluten,
 		input.AnimalFlesh,
 		input.AnimalDerived,
-		input.MeasurableByVolume,
-		input.Icon,
+		input.Volumetric,
+		input.IconPath,
 	}
 
 	// create the valid ingredient.
@@ -332,26 +332,26 @@ func (q *SQLQuerier) CreateValidIngredient(ctx context.Context, input *types.Val
 	}
 
 	x := &types.ValidIngredient{
-		ID:                 input.ID,
-		Name:               input.Name,
-		Variant:            input.Variant,
-		Description:        input.Description,
-		Warning:            input.Warning,
-		ContainsEgg:        input.ContainsEgg,
-		ContainsDairy:      input.ContainsDairy,
-		ContainsPeanut:     input.ContainsPeanut,
-		ContainsTreeNut:    input.ContainsTreeNut,
-		ContainsSoy:        input.ContainsSoy,
-		ContainsWheat:      input.ContainsWheat,
-		ContainsShellfish:  input.ContainsShellfish,
-		ContainsSesame:     input.ContainsSesame,
-		ContainsFish:       input.ContainsFish,
-		ContainsGluten:     input.ContainsGluten,
-		AnimalFlesh:        input.AnimalFlesh,
-		AnimalDerived:      input.AnimalDerived,
-		MeasurableByVolume: input.MeasurableByVolume,
-		Icon:               input.Icon,
-		CreatedOn:          q.currentTime(),
+		ID:                input.ID,
+		Name:              input.Name,
+		Variant:           input.Variant,
+		Description:       input.Description,
+		Warning:           input.Warning,
+		ContainsEgg:       input.ContainsEgg,
+		ContainsDairy:     input.ContainsDairy,
+		ContainsPeanut:    input.ContainsPeanut,
+		ContainsTreeNut:   input.ContainsTreeNut,
+		ContainsSoy:       input.ContainsSoy,
+		ContainsWheat:     input.ContainsWheat,
+		ContainsShellfish: input.ContainsShellfish,
+		ContainsSesame:    input.ContainsSesame,
+		ContainsFish:      input.ContainsFish,
+		ContainsGluten:    input.ContainsGluten,
+		AnimalFlesh:       input.AnimalFlesh,
+		AnimalDerived:     input.AnimalDerived,
+		Volumetric:        input.Volumetric,
+		IconPath:          input.IconPath,
+		CreatedOn:         q.currentTime(),
 	}
 
 	tracing.AttachValidIngredientIDToSpan(span, x.ID)
@@ -360,7 +360,7 @@ func (q *SQLQuerier) CreateValidIngredient(ctx context.Context, input *types.Val
 	return x, nil
 }
 
-const updateValidIngredientQuery = "UPDATE valid_ingredients SET name = $1, variant = $2, description = $3, warning = $4, contains_egg = $5, contains_dairy = $6, contains_peanut = $7, contains_tree_nut = $8, contains_soy = $9, contains_wheat = $10, contains_shellfish = $11, contains_sesame = $12, contains_fish = $13, contains_gluten = $14, animal_flesh = $15, animal_derived = $16, measurable_by_volume = $17, icon = $18, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $19"
+const updateValidIngredientQuery = "UPDATE valid_ingredients SET name = $1, variant = $2, description = $3, warning = $4, contains_egg = $5, contains_dairy = $6, contains_peanut = $7, contains_tree_nut = $8, contains_soy = $9, contains_wheat = $10, contains_shellfish = $11, contains_sesame = $12, contains_fish = $13, contains_gluten = $14, animal_flesh = $15, animal_derived = $16, volumetric = $17, icon_path = $18, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $19"
 
 // UpdateValidIngredient updates a particular valid ingredient.
 func (q *SQLQuerier) UpdateValidIngredient(ctx context.Context, updated *types.ValidIngredient) error {
@@ -391,8 +391,8 @@ func (q *SQLQuerier) UpdateValidIngredient(ctx context.Context, updated *types.V
 		updated.ContainsGluten,
 		updated.AnimalFlesh,
 		updated.AnimalDerived,
-		updated.MeasurableByVolume,
-		updated.Icon,
+		updated.Volumetric,
+		updated.IconPath,
 		updated.ID,
 	}
 

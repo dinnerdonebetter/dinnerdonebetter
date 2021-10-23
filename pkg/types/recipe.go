@@ -23,21 +23,40 @@ func init() {
 type (
 	// Recipe represents a recipe.
 	Recipe struct {
-		_                  struct{}
-		LastUpdatedOn      *uint64 `json:"lastUpdatedOn"`
-		ArchivedOn         *uint64 `json:"archivedOn"`
-		InspiredByRecipeID *string `json:"inspiredByRecipeID"`
-		Source             string  `json:"source"`
-		Description        string  `json:"description"`
-		ID                 string  `json:"id"`
-		Name               string  `json:"name"`
-		BelongsToHousehold string  `json:"belongsToHousehold"`
-		CreatedOn          uint64  `json:"createdOn"`
+		_ struct{}
+
+		LastUpdatedOn      *uint64       `json:"lastUpdatedOn"`
+		ArchivedOn         *uint64       `json:"archivedOn"`
+		InspiredByRecipeID *string       `json:"inspiredByRecipeID"`
+		Source             string        `json:"source"`
+		Description        string        `json:"description"`
+		ID                 string        `json:"id"`
+		Name               string        `json:"name"`
+		BelongsToHousehold string        `json:"belongsToHousehold"`
+		Steps              []*RecipeStep `json:"steps"`
+		CreatedOn          uint64        `json:"createdOn"`
+	}
+
+	// FullRecipe represents a recipe.
+	FullRecipe struct {
+		_ struct{}
+
+		LastUpdatedOn      *uint64           `json:"lastUpdatedOn"`
+		ArchivedOn         *uint64           `json:"archivedOn"`
+		InspiredByRecipeID *string           `json:"inspiredByRecipeID"`
+		Source             string            `json:"source"`
+		Description        string            `json:"description"`
+		ID                 string            `json:"id"`
+		Name               string            `json:"name"`
+		BelongsToHousehold string            `json:"belongsToHousehold"`
+		Steps              []*FullRecipeStep `json:"steps"`
+		CreatedOn          uint64            `json:"createdOn"`
 	}
 
 	// RecipeList represents a list of recipes.
 	RecipeList struct {
-		_       struct{}
+		_ struct{}
+
 		Recipes []*Recipe `json:"recipes"`
 		Pagination
 	}
@@ -46,24 +65,26 @@ type (
 	RecipeCreationRequestInput struct {
 		_ struct{}
 
-		ID                 string  `json:"-"`
-		Name               string  `json:"name"`
-		Source             string  `json:"source"`
-		Description        string  `json:"description"`
-		InspiredByRecipeID *string `json:"inspiredByRecipeID"`
-		BelongsToHousehold string  `json:"-"`
+		InspiredByRecipeID *string                           `json:"inspiredByRecipeID"`
+		ID                 string                            `json:"-"`
+		Name               string                            `json:"name"`
+		Source             string                            `json:"source"`
+		Description        string                            `json:"description"`
+		BelongsToHousehold string                            `json:"-"`
+		Steps              []*RecipeStepCreationRequestInput `json:"steps"`
 	}
 
 	// RecipeDatabaseCreationInput represents what a user could set as input for creating recipes.
 	RecipeDatabaseCreationInput struct {
 		_ struct{}
 
-		ID                 string  `json:"id"`
-		Name               string  `json:"name"`
-		Source             string  `json:"source"`
-		Description        string  `json:"description"`
-		InspiredByRecipeID *string `json:"inspiredByRecipeID"`
-		BelongsToHousehold string  `json:"belongsToHousehold"`
+		InspiredByRecipeID *string                            `json:"inspiredByRecipeID"`
+		ID                 string                             `json:"id"`
+		Name               string                             `json:"name"`
+		Source             string                             `json:"source"`
+		Description        string                             `json:"description"`
+		BelongsToHousehold string                             `json:"belongsToHousehold"`
+		Steps              []*RecipeStepDatabaseCreationInput `json:"steps"`
 	}
 
 	// RecipeUpdateRequestInput represents what a user could set as input for updating recipes.

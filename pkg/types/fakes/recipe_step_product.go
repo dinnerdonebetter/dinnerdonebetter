@@ -11,8 +11,8 @@ import (
 func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 	return &types.RecipeStepProduct{
 		ID:                  ksuid.New().String(),
-		Name:                fake.Word(),
-		RecipeStepID:        fake.Word(),
+		Name:                fake.LoremIpsumSentence(exampleQuantity),
+		RecipeStepID:        fake.LoremIpsumSentence(exampleQuantity),
 		CreatedOn:           uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipeStep: fake.UUID(),
 	}

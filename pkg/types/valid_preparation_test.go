@@ -17,7 +17,7 @@ func TestValidPreparationCreationRequestInput_Validate(T *testing.T) {
 		x := &ValidPreparationCreationRequestInput{
 			Name:        fake.Word(),
 			Description: fake.Word(),
-			Icon:        fake.Word(),
+			IconPath:    fake.Word(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -43,7 +43,7 @@ func TestValidPreparationUpdateRequestInput_Validate(T *testing.T) {
 		x := &ValidPreparationUpdateRequestInput{
 			Name:        fake.Word(),
 			Description: fake.Word(),
-			Icon:        fake.Word(),
+			IconPath:    fake.Word(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

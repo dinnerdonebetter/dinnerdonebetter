@@ -12,13 +12,14 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 	return &types.RecipeStep{
 		ID:                        ksuid.New().String(),
 		Index:                     uint(fake.Uint32()),
-		PreparationID:             fake.Word(),
+		PreparationID:             fake.LoremIpsumSentence(exampleQuantity),
 		PrerequisiteStep:          uint64(fake.Uint32()),
 		MinEstimatedTimeInSeconds: fake.Uint32(),
 		MaxEstimatedTimeInSeconds: fake.Uint32(),
 		TemperatureInCelsius:      func(x uint16) *uint16 { return &x }(fake.Uint16()),
-		Notes:                     fake.Word(),
-		RecipeID:                  fake.Word(),
+		Why:                       fake.LoremIpsumSentence(exampleQuantity),
+		Notes:                     fake.LoremIpsumSentence(exampleQuantity),
+		RecipeID:                  fake.LoremIpsumSentence(exampleQuantity),
 		CreatedOn:                 uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipe:           fake.UUID(),
 	}
@@ -53,6 +54,7 @@ func BuildFakeRecipeStepUpdateRequestInput() *types.RecipeStepUpdateRequestInput
 		MaxEstimatedTimeInSeconds: recipeStep.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,
 		Notes:                     recipeStep.Notes,
+		Why:                       recipeStep.Why,
 		RecipeID:                  recipeStep.RecipeID,
 		BelongsToRecipe:           recipeStep.BelongsToRecipe,
 	}
@@ -61,6 +63,7 @@ func BuildFakeRecipeStepUpdateRequestInput() *types.RecipeStepUpdateRequestInput
 // BuildFakeRecipeStepUpdateRequestInputFromRecipeStep builds a faked RecipeStepUpdateRequestInput from a recipe step.
 func BuildFakeRecipeStepUpdateRequestInputFromRecipeStep(recipeStep *types.RecipeStep) *types.RecipeStepUpdateRequestInput {
 	return &types.RecipeStepUpdateRequestInput{
+		Why:                       recipeStep.Why,
 		Index:                     recipeStep.Index,
 		PreparationID:             recipeStep.PreparationID,
 		PrerequisiteStep:          recipeStep.PrerequisiteStep,
@@ -83,6 +86,7 @@ func BuildFakeRecipeStepCreationRequestInput() *types.RecipeStepCreationRequestI
 func BuildFakeRecipeStepCreationRequestInputFromRecipeStep(recipeStep *types.RecipeStep) *types.RecipeStepCreationRequestInput {
 	return &types.RecipeStepCreationRequestInput{
 		ID:                        recipeStep.ID,
+		Why:                       recipeStep.Why,
 		Index:                     recipeStep.Index,
 		PreparationID:             recipeStep.PreparationID,
 		PrerequisiteStep:          recipeStep.PrerequisiteStep,
@@ -106,6 +110,7 @@ func BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(recipeStep *types.Re
 	return &types.RecipeStepDatabaseCreationInput{
 		ID:                        recipeStep.ID,
 		Index:                     recipeStep.Index,
+		Why:                       recipeStep.Why,
 		PreparationID:             recipeStep.PreparationID,
 		PrerequisiteStep:          recipeStep.PrerequisiteStep,
 		MinEstimatedTimeInSeconds: recipeStep.MinEstimatedTimeInSeconds,
