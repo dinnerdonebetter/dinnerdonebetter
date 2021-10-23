@@ -9,6 +9,11 @@ import (
 
 // BuildFakeRecipeStep builds a faked recipe step.
 func BuildFakeRecipeStep() *types.RecipeStep {
+	var ingredients []*types.RecipeStepIngredient
+	for i := 0; i < exampleQuantity; i++ {
+		ingredients = append(ingredients, BuildFakeRecipeStepIngredient())
+	}
+
 	return &types.RecipeStep{
 		ID:                        ksuid.New().String(),
 		Index:                     uint(fake.Uint32()),
@@ -22,11 +27,17 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 		RecipeID:                  fake.LoremIpsumSentence(exampleQuantity),
 		CreatedOn:                 uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipe:           fake.UUID(),
+		Ingredients:               ingredients,
 	}
 }
 
 // BuildFakeFullRecipeStep builds a faked recipe step.
 func BuildFakeFullRecipeStep() *types.FullRecipeStep {
+	var ingredients []*types.FullRecipeStepIngredient
+	for i := 0; i < exampleQuantity; i++ {
+		ingredients = append(ingredients, BuildFakeFullRecipeStepIngredient())
+	}
+
 	return &types.FullRecipeStep{
 		ID:                        ksuid.New().String(),
 		Index:                     uint(fake.Uint32()),
@@ -39,11 +50,7 @@ func BuildFakeFullRecipeStep() *types.FullRecipeStep {
 		Why:                       fake.Word(),
 		CreatedOn:                 uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipe:           ksuid.New().String(),
-		Ingredients: []*types.FullRecipeStepIngredient{
-			BuildFakeFullRecipeStepIngredient(),
-			BuildFakeFullRecipeStepIngredient(),
-			BuildFakeFullRecipeStepIngredient(),
-		},
+		Ingredients:               ingredients,
 	}
 }
 
@@ -106,6 +113,11 @@ func BuildFakeRecipeStepCreationRequestInput() *types.RecipeStepCreationRequestI
 
 // BuildFakeRecipeStepCreationRequestInputFromRecipeStep builds a faked RecipeStepCreationRequestInput from a recipe step.
 func BuildFakeRecipeStepCreationRequestInputFromRecipeStep(recipeStep *types.RecipeStep) *types.RecipeStepCreationRequestInput {
+	ingredients := []*types.RecipeStepIngredientCreationRequestInput{}
+	for _, ingredient := range recipeStep.Ingredients {
+		ingredients = append(ingredients, BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(ingredient))
+	}
+
 	return &types.RecipeStepCreationRequestInput{
 		ID:                        recipeStep.ID,
 		Why:                       recipeStep.Why,
@@ -118,6 +130,7 @@ func BuildFakeRecipeStepCreationRequestInputFromRecipeStep(recipeStep *types.Rec
 		Notes:                     recipeStep.Notes,
 		RecipeID:                  recipeStep.RecipeID,
 		BelongsToRecipe:           recipeStep.BelongsToRecipe,
+		Ingredients:               ingredients,
 	}
 }
 

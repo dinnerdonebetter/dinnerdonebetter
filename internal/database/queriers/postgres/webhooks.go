@@ -289,7 +289,7 @@ func (q *SQLQuerier) CreateWebhook(ctx context.Context, input *types.WebhookData
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "webhook creation", createWebhookQuery, args); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating webhook")
+		return nil, observability.PrepareError(err, logger, span, "performing webhook creation query")
 	}
 
 	x := &types.Webhook{

@@ -328,7 +328,7 @@ func (q *SQLQuerier) CreateValidIngredient(ctx context.Context, input *types.Val
 
 	// create the valid ingredient.
 	if err := q.performWriteQuery(ctx, q.db, "valid ingredient creation", validIngredientCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating valid ingredient")
+		return nil, observability.PrepareError(err, logger, span, "performing valid ingredient creation query")
 	}
 
 	x := &types.ValidIngredient{

@@ -416,7 +416,7 @@ func (q *SQLQuerier) AddUserToHousehold(ctx context.Context, input *types.AddUse
 
 	// create the membership.
 	if err := q.performWriteQuery(ctx, q.db, "user household membership creation", addUserToHouseholdQuery, addUserToHouseholdArgs); err != nil {
-		return observability.PrepareError(err, logger, span, "creating user household membership")
+		return observability.PrepareError(err, logger, span, "performing user household membership creation query")
 	}
 
 	logger.Info("user added to household")

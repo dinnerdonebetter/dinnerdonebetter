@@ -23,6 +23,11 @@ func BuildFakeRecipe() *types.Recipe {
 
 // BuildFakeFullRecipe builds a faked recipe.
 func BuildFakeFullRecipe() *types.FullRecipe {
+	var steps []*types.FullRecipeStep
+	for i := 0; i < exampleQuantity; i++ {
+		steps = append(steps, BuildFakeFullRecipeStep())
+	}
+
 	return &types.FullRecipe{
 		ID:                 ksuid.New().String(),
 		Name:               fake.Word(),
@@ -31,11 +36,7 @@ func BuildFakeFullRecipe() *types.FullRecipe {
 		InspiredByRecipeID: func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
 		CreatedOn:          uint64(uint32(fake.Date().Unix())),
 		BelongsToHousehold: ksuid.New().String(),
-		Steps: []*types.FullRecipeStep{
-			BuildFakeFullRecipeStep(),
-			BuildFakeFullRecipeStep(),
-			BuildFakeFullRecipeStep(),
-		},
+		Steps:              steps,
 	}
 }
 
@@ -88,6 +89,11 @@ func BuildFakeRecipeCreationRequestInput() *types.RecipeCreationRequestInput {
 
 // BuildFakeRecipeCreationRequestInputFromRecipe builds a faked RecipeCreationRequestInput from a recipe.
 func BuildFakeRecipeCreationRequestInputFromRecipe(recipe *types.Recipe) *types.RecipeCreationRequestInput {
+	steps := []*types.RecipeStepCreationRequestInput{}
+	for _, step := range recipe.Steps {
+		steps = append(steps, BuildFakeRecipeStepCreationRequestInputFromRecipeStep(step))
+	}
+
 	return &types.RecipeCreationRequestInput{
 		ID:                 recipe.ID,
 		Name:               recipe.Name,
@@ -95,6 +101,7 @@ func BuildFakeRecipeCreationRequestInputFromRecipe(recipe *types.Recipe) *types.
 		Description:        recipe.Description,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
 		BelongsToHousehold: recipe.BelongsToHousehold,
+		Steps:              steps,
 	}
 }
 

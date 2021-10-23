@@ -290,7 +290,7 @@ func (q *SQLQuerier) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 
 	// create the meal plan.
 	if err := q.performWriteQuery(ctx, q.db, "meal plan creation", mealPlanCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating meal plan")
+		return nil, observability.PrepareError(err, logger, span, "performing meal plan creation query")
 	}
 
 	x := &types.MealPlan{

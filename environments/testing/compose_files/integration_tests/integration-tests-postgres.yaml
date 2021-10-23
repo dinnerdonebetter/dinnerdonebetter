@@ -37,6 +37,8 @@ services:
     test:
         environment:
             TARGET_ADDRESS: 'http://api_server:8888'
+        depends_on:
+            - workers
         links:
             - prixfixe_api_server
         build:

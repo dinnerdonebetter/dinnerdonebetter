@@ -355,7 +355,7 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 
 	// create the recipe step ingredient.
 	if err := q.performWriteQuery(ctx, db, "recipe step ingredient creation", recipeStepIngredientCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating recipe step ingredient")
+		return nil, observability.PrepareError(err, logger, span, "performing recipe step ingredient creation query")
 	}
 
 	x := &types.RecipeStepIngredient{

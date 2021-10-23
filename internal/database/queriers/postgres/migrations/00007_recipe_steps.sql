@@ -1,7 +1,7 @@
-CREATE TABLE IF NOT EXISTS recipe_steps (
+    CREATE TABLE IF NOT EXISTS recipe_steps (
 	"id" CHAR(27) NOT NULL PRIMARY KEY,
 	"index" INTEGER NOT NULL,
-	"preparation_id" TEXT NOT NULL,
+	"preparation_id" CHAR(27) NOT NULL REFERENCES valid_preparations("id") ON DELETE CASCADE,
 	"prerequisite_step" BIGINT NOT NULL,
 	"min_estimated_time_in_seconds" BIGINT NOT NULL,
 	"max_estimated_time_in_seconds" BIGINT NOT NULL,

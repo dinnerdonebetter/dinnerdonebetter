@@ -179,15 +179,20 @@ func (q *SQLQuerier) rollbackTransaction(ctx context.Context, tx *sql.Tx) {
 	if err := tx.Rollback(); err != nil {
 		observability.AcknowledgeError(err, q.logger, span, "rolling back transaction")
 	}
+
+	q.logger.Debug("transaction rolled back")
 }
 
 func (q *SQLQuerier) getOneRow(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []interface{}) *sql.Row {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := q.logger.WithValue("query", query).WithValue("args", args)
 	tracing.AttachDatabaseQueryToSpan(span, fmt.Sprintf("%s single row fetch query", queryDescription), query, args)
 
 	row := querier.QueryRowContext(ctx, query, args...)
+
+	logger.Debug("single row query performed")
 
 	return row
 }
@@ -209,6 +214,8 @@ func (q *SQLQuerier) performReadQuery(ctx context.Context, querier database.SQLQ
 		return nil, observability.PrepareError(rowsErr, logger, span, "scanning results")
 	}
 
+	logger.Debug("read query performed")
+
 	return rows, nil
 }
 
@@ -224,6 +231,8 @@ func (q *SQLQuerier) performCountQuery(ctx context.Context, querier database.SQL
 	if err := q.getOneRow(ctx, querier, queryDesc, query, []interface{}{}).Scan(&count); err != nil {
 		return 0, observability.PrepareError(err, logger, span, "executing count query")
 	}
+
+	logger.Debug("count query performed")
 
 	return count, nil
 }
@@ -244,6 +253,8 @@ func (q *SQLQuerier) performBooleanQuery(ctx context.Context, querier database.S
 	if err != nil {
 		return false, observability.PrepareError(err, logger, span, "executing boolean query")
 	}
+
+	logger.Debug("boolean query performed")
 
 	return exists, nil
 }

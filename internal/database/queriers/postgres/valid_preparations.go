@@ -283,7 +283,7 @@ func (q *SQLQuerier) CreateValidPreparation(ctx context.Context, input *types.Va
 
 	// create the valid preparation.
 	if err := q.performWriteQuery(ctx, q.db, "valid preparation creation", validPreparationCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating valid preparation")
+		return nil, observability.PrepareError(err, logger, span, "performing valid preparation creation query")
 	}
 
 	x := &types.ValidPreparation{

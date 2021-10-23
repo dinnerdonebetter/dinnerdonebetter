@@ -414,7 +414,7 @@ func (q *SQLQuerier) CreateHousehold(ctx context.Context, input *types.Household
 
 	if err = q.performWriteQuery(ctx, tx, "household user membership creation", addUserToHouseholdDuringCreationQuery, addUserToHouseholdArgs); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return nil, observability.PrepareError(err, logger, span, "creating household membership")
+		return nil, observability.PrepareError(err, logger, span, "performing household membership creation query")
 	}
 
 	if err = tx.Commit(); err != nil {

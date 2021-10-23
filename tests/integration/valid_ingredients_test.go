@@ -91,7 +91,6 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 
 			createdValidIngredient, err := testClients.main.GetValidIngredient(ctx, createdValidIngredientID)
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
-
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
 			t.Log("changing valid ingredient")

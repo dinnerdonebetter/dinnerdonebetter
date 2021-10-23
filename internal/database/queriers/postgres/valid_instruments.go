@@ -286,7 +286,7 @@ func (q *SQLQuerier) CreateValidInstrument(ctx context.Context, input *types.Val
 
 	// create the valid instrument.
 	if err := q.performWriteQuery(ctx, q.db, "valid instrument creation", validInstrumentCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating valid instrument")
+		return nil, observability.PrepareError(err, logger, span, "performing valid instrument creation query")
 	}
 
 	x := &types.ValidInstrument{

@@ -7,6 +7,6 @@ WORKDIR /go/src/gitlab.com/prixfixe/prixfixe
 COPY . .
 
 # to debug a specific test:
-# ENTRYPOINT [ "go", "test", "-parallel", "1", "-v", "-failfast", "gitlab.com/prixfixe/prixfixe/tests/integration", "-run", "TestIntegration/TestSomething" ]
+ENTRYPOINT [ "go", "test", "-parallel", "1", "-v", "-failfast", "gitlab.com/prixfixe/prixfixe/tests/integration", "-run", "TestIntegration/TestRecipeStepIngredients_CompleteLifecycle" ]
 
-ENTRYPOINT [ "go", "test", "-v", "-failfast", "gitlab.com/prixfixe/prixfixe/tests/integration" ]
+# ENTRYPOINT [ "go", "test", "-v", "-failfast", "gitlab.com/prixfixe/prixfixe/tests/integration" ]

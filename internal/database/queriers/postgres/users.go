@@ -512,7 +512,7 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDataStoreC
 
 	// create the user.
 	if err := q.createUser(ctx, user, household, userCreationQuery, userCreationArgs); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating user")
+		return nil, observability.PrepareError(err, logger, span, "performing user creation query")
 	}
 
 	return user, nil

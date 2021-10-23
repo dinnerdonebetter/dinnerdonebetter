@@ -296,7 +296,7 @@ func (q *SQLQuerier) CreateMealPlanOptionVote(ctx context.Context, input *types.
 
 	// create the meal plan option vote.
 	if err := q.performWriteQuery(ctx, q.db, "meal plan option vote creation", mealPlanOptionVoteCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating meal plan option vote")
+		return nil, observability.PrepareError(err, logger, span, "performing meal plan option vote creation query")
 	}
 
 	x := &types.MealPlanOptionVote{

@@ -151,6 +151,7 @@ func (x *RecipeCreationRequestInput) ValidateWithContext(ctx context.Context) er
 		validation.Field(&x.Source, validation.Required),
 		validation.Field(&x.Description, validation.Required),
 		validation.Field(&x.InspiredByRecipeID, validation.Required),
+		validation.Field(&x.Steps, validation.NilOrNotEmpty),
 	)
 }
 
@@ -172,11 +173,17 @@ func (x *RecipeDatabaseCreationInput) ValidateWithContext(ctx context.Context) e
 
 // RecipeDatabaseCreationInputFromRecipeCreationInput creates a DatabaseCreationInput from a CreationInput.
 func RecipeDatabaseCreationInputFromRecipeCreationInput(input *RecipeCreationRequestInput) *RecipeDatabaseCreationInput {
+	var steps []*RecipeStepDatabaseCreationInput
+	for _, step := range input.Steps {
+		steps = append(steps, RecipeStepDatabaseCreationInputFromRecipeStepCreationInput(step))
+	}
+
 	x := &RecipeDatabaseCreationInput{
 		Name:               input.Name,
 		Source:             input.Source,
 		Description:        input.Description,
 		InspiredByRecipeID: input.InspiredByRecipeID,
+		Steps:              steps,
 	}
 
 	return x

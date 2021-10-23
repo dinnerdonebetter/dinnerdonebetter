@@ -20,6 +20,10 @@ import (
 	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
 )
 
+func stringPointer(s string) *string {
+	return &s
+}
+
 func requireNotNilAndNoProblems(t *testing.T, i interface{}, err error) {
 	t.Helper()
 

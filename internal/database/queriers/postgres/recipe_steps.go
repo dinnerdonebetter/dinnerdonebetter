@@ -342,7 +342,7 @@ func (q *SQLQuerier) createRecipeStep(ctx context.Context, db database.SQLQueryE
 
 	// create the recipe step.
 	if err := q.performWriteQuery(ctx, db, "recipe step creation", recipeStepCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating recipe step")
+		return nil, observability.PrepareError(err, logger, span, "performing recipe step creation query")
 	}
 
 	x := &types.RecipeStep{

@@ -65,6 +65,13 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := types.RecipeDatabaseCreationInputFromRecipeCreationInput(providedInput)
 	input.ID = ksuid.New().String()
 
+	for i, step := range input.Steps {
+		input.Steps[i].ID = ksuid.New().String()
+		for j := range step.Ingredients {
+			input.Steps[i].Ingredients[j].ID = ksuid.New().String()
+		}
+	}
+
 	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 	tracing.AttachRecipeIDToSpan(span, input.ID)
 

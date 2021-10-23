@@ -58,6 +58,7 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 
 			t.Log("creating prerequisite recipe")
 			exampleRecipe := fakes.BuildFakeRecipe()
+			exampleRecipe.Steps = nil
 			exampleRecipeInput := fakes.BuildFakeRecipeCreationRequestInputFromRecipe(exampleRecipe)
 			createdRecipeID, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			require.NoError(t, err)
@@ -124,6 +125,7 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 
 			t.Log("creating prerequisite recipe")
 			exampleRecipe := fakes.BuildFakeRecipe()
+			exampleRecipe.Steps = nil
 			exampleRecipeInput := fakes.BuildFakeRecipeCreationRequestInputFromRecipe(exampleRecipe)
 			createdRecipeID, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			require.NoError(t, err)
@@ -204,6 +206,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 
 			t.Log("creating prerequisite recipe")
 			exampleRecipe := fakes.BuildFakeRecipe()
+			exampleRecipe.Steps = nil
 			exampleRecipeInput := fakes.BuildFakeRecipeCreationRequestInputFromRecipe(exampleRecipe)
 			createdRecipeID, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			require.NoError(t, err)
@@ -270,6 +273,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 
 			t.Log("creating prerequisite recipe")
 			exampleRecipe := fakes.BuildFakeRecipe()
+			exampleRecipe.Steps = nil
 			exampleRecipeInput := fakes.BuildFakeRecipeCreationRequestInputFromRecipe(exampleRecipe)
 			createdRecipeID, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			require.NoError(t, err)

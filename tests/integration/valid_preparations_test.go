@@ -61,7 +61,6 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 
 			createdValidPreparation, err := testClients.main.GetValidPreparation(ctx, createdValidPreparationID)
 			requireNotNilAndNoProblems(t, createdValidPreparation, err)
-
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
 			t.Log("changing valid preparation")
