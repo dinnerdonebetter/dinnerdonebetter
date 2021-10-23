@@ -48,9 +48,48 @@ func (s *TestSuite) TestRecipes_CompleteLifecycle() {
 
 			var n *types.DataChangeMessage
 
+			t.Log("creating prerequisite valid ingredient")
+			exampleValidIngredient := fakes.BuildFakeValidIngredient()
+			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
+			createdValidIngredientID, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			require.NoError(t, err)
+			t.Logf("valid ingredient %q created", createdValidIngredientID)
+
+			n = <-notificationsChan
+			assert.Equal(t, n.DataType, types.ValidIngredientDataType)
+			require.NotNil(t, n.ValidIngredient)
+			checkValidIngredientEquality(t, exampleValidIngredient, n.ValidIngredient)
+
+			createdValidIngredient, err := testClients.main.GetValidIngredient(ctx, createdValidIngredientID)
+			requireNotNilAndNoProblems(t, createdValidIngredient, err)
+			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
+
+			t.Log("creating prerequisite valid preparation")
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparationID, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			require.NoError(t, err)
+			t.Logf("valid preparation %q created", createdValidPreparationID)
+
+			n = <-notificationsChan
+			assert.Equal(t, n.DataType, types.ValidPreparationDataType)
+			require.NotNil(t, n.ValidPreparation)
+			checkValidPreparationEquality(t, exampleValidPreparation, n.ValidPreparation)
+
+			createdValidPreparation, err := testClients.main.GetValidPreparation(ctx, createdValidPreparationID)
+			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
+
 			t.Log("creating recipe")
 			exampleRecipe := fakes.BuildFakeRecipe()
-			exampleRecipe.Steps = []*types.RecipeStep{}
+
+			for i, recipeStep := range exampleRecipe.Steps {
+				exampleRecipe.Steps[i].PreparationID = createdValidPreparation.ID
+				for j := range recipeStep.Ingredients {
+					exampleRecipe.Steps[i].Ingredients[j].IngredientID = stringPointer(createdValidIngredient.ID)
+				}
+			}
+
 			exampleRecipeInput := fakes.BuildFakeRecipeCreationRequestInputFromRecipe(exampleRecipe)
 			createdRecipeID, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			require.NoError(t, err)
@@ -95,9 +134,46 @@ func (s *TestSuite) TestRecipes_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			t.Log("creating valid preparation")
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparationID, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			require.NoError(t, err)
+			t.Logf("valid preparation %q created", createdValidPreparationID)
+
+			var createdValidPreparation *types.ValidPreparation
+			checkFunc = func() bool {
+				createdValidPreparation, err = testClients.main.GetValidPreparation(ctx, createdValidPreparationID)
+				return assert.NotNil(t, createdValidPreparation) && assert.NoError(t, err)
+			}
+			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
+			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
+
+			t.Log("creating valid ingredient")
+			exampleValidIngredient := fakes.BuildFakeValidIngredient()
+			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
+			createdValidIngredientID, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			require.NoError(t, err)
+			t.Logf("valid ingredient %q created", createdValidIngredientID)
+
+			var createdValidIngredient *types.ValidIngredient
+			checkFunc = func() bool {
+				createdValidIngredient, err = testClients.main.GetValidIngredient(ctx, createdValidIngredientID)
+				return assert.NotNil(t, createdValidIngredient) && assert.NoError(t, err)
+			}
+			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
+			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
+
 			t.Log("creating recipe")
 			exampleRecipe := fakes.BuildFakeRecipe()
-			exampleRecipe.Steps = []*types.RecipeStep{}
+
+			for i, recipeStep := range exampleRecipe.Steps {
+				exampleRecipe.Steps[i].PreparationID = createdValidPreparation.ID
+				for j := range recipeStep.Ingredients {
+					exampleRecipe.Steps[i].Ingredients[j].IngredientID = stringPointer(createdValidIngredient.ID)
+				}
+			}
+
 			exampleRecipeInput := fakes.BuildFakeRecipeCreationRequestInputFromRecipe(exampleRecipe)
 			createdRecipeID, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			require.NoError(t, err)
@@ -156,11 +232,50 @@ func (s *TestSuite) TestRecipes_Listing() {
 
 			var n *types.DataChangeMessage
 
+			t.Log("creating prerequisite valid ingredient")
+			exampleValidIngredient := fakes.BuildFakeValidIngredient()
+			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
+			createdValidIngredientID, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			require.NoError(t, err)
+			t.Logf("valid ingredient %q created", createdValidIngredientID)
+
+			n = <-notificationsChan
+			assert.Equal(t, n.DataType, types.ValidIngredientDataType)
+			require.NotNil(t, n.ValidIngredient)
+			checkValidIngredientEquality(t, exampleValidIngredient, n.ValidIngredient)
+
+			createdValidIngredient, err := testClients.main.GetValidIngredient(ctx, createdValidIngredientID)
+			requireNotNilAndNoProblems(t, createdValidIngredient, err)
+			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
+
+			t.Log("creating prerequisite valid preparation")
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparationID, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			require.NoError(t, err)
+			t.Logf("valid preparation %q created", createdValidPreparationID)
+
+			n = <-notificationsChan
+			assert.Equal(t, n.DataType, types.ValidPreparationDataType)
+			require.NotNil(t, n.ValidPreparation)
+			checkValidPreparationEquality(t, exampleValidPreparation, n.ValidPreparation)
+
+			createdValidPreparation, err := testClients.main.GetValidPreparation(ctx, createdValidPreparationID)
+			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
+
 			t.Log("creating recipes")
 			var expected []*types.Recipe
 			for i := 0; i < 5; i++ {
 				exampleRecipe := fakes.BuildFakeRecipe()
-				exampleRecipe.Steps = []*types.RecipeStep{}
+
+				for i, recipeStep := range exampleRecipe.Steps {
+					exampleRecipe.Steps[i].PreparationID = createdValidPreparation.ID
+					for j := range recipeStep.Ingredients {
+						exampleRecipe.Steps[i].Ingredients[j].IngredientID = stringPointer(createdValidIngredient.ID)
+					}
+				}
+
 				exampleRecipeInput := fakes.BuildFakeRecipeCreationRequestInputFromRecipe(exampleRecipe)
 				createdRecipeID, createdRecipeErr := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 				require.NoError(t, createdRecipeErr)
@@ -203,11 +318,48 @@ func (s *TestSuite) TestRecipes_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			t.Log("creating valid preparation")
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparationID, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			require.NoError(t, err)
+			t.Logf("valid preparation %q created", createdValidPreparationID)
+
+			var createdValidPreparation *types.ValidPreparation
+			checkFunc = func() bool {
+				createdValidPreparation, err = testClients.main.GetValidPreparation(ctx, createdValidPreparationID)
+				return assert.NotNil(t, createdValidPreparation) && assert.NoError(t, err)
+			}
+			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
+			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
+
+			t.Log("creating valid ingredient")
+			exampleValidIngredient := fakes.BuildFakeValidIngredient()
+			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
+			createdValidIngredientID, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			require.NoError(t, err)
+			t.Logf("valid ingredient %q created", createdValidIngredientID)
+
+			var createdValidIngredient *types.ValidIngredient
+			checkFunc = func() bool {
+				createdValidIngredient, err = testClients.main.GetValidIngredient(ctx, createdValidIngredientID)
+				return assert.NotNil(t, createdValidIngredient) && assert.NoError(t, err)
+			}
+			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
+			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
+
 			t.Log("creating recipes")
 			var expected []*types.Recipe
 			for i := 0; i < 5; i++ {
 				exampleRecipe := fakes.BuildFakeRecipe()
-				exampleRecipe.Steps = []*types.RecipeStep{}
+
+				for j, recipeStep := range exampleRecipe.Steps {
+					exampleRecipe.Steps[j].PreparationID = createdValidPreparation.ID
+					for k := range recipeStep.Ingredients {
+						exampleRecipe.Steps[j].Ingredients[k].IngredientID = stringPointer(createdValidIngredient.ID)
+					}
+				}
+
 				exampleRecipeInput := fakes.BuildFakeRecipeCreationRequestInputFromRecipe(exampleRecipe)
 				createdRecipeID, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 				require.NoError(t, err)
