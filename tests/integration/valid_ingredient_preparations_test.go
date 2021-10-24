@@ -115,7 +115,7 @@ func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
 			createdValidIngredientPreparation.Update(convertValidIngredientPreparationToValidIngredientPreparationUpdateInput(newValidIngredientPreparation))
 			assert.NoError(t, testClients.main.UpdateValidIngredientPreparation(ctx, createdValidIngredientPreparation))
 
-			time.Sleep(time.Second)
+			time.Sleep(2 * time.Second)
 
 			// retrieve changed valid ingredient preparation
 			var actual *types.ValidIngredientPreparation

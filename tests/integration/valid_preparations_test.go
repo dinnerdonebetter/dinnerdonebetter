@@ -112,7 +112,7 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			createdValidPreparation.Update(convertValidPreparationToValidPreparationUpdateInput(newValidPreparation))
 			assert.NoError(t, testClients.main.UpdateValidPreparation(ctx, createdValidPreparation))
 
-			time.Sleep(time.Second)
+			time.Sleep(2 * time.Second)
 
 			// retrieve changed valid preparation
 			var actual *types.ValidPreparation
@@ -324,7 +324,7 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 			}
 
 			exampleLimit := uint8(20)
-			time.Sleep(time.Second) // give the index a moment
+			time.Sleep(2 * time.Second) // give the index a moment
 
 			// assert valid preparation list equality
 			actual, err := testClients.main.SearchValidPreparations(ctx, searchQuery, exampleLimit)

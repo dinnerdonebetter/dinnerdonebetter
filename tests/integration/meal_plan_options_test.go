@@ -117,7 +117,7 @@ func (s *TestSuite) TestMealPlanOptions_CompleteLifecycle() {
 			createdMealPlanOption.Update(convertMealPlanOptionToMealPlanOptionUpdateInput(newMealPlanOption))
 			assert.NoError(t, testClients.main.UpdateMealPlanOption(ctx, createdMealPlanOption))
 
-			time.Sleep(time.Second)
+			time.Sleep(2 * time.Second)
 
 			// retrieve changed meal plan option
 			var actual *types.MealPlanOption

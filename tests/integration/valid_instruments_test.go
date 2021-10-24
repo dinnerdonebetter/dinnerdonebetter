@@ -118,7 +118,7 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			createdValidInstrument.Update(convertValidInstrumentToValidInstrumentUpdateInput(newValidInstrument))
 			assert.NoError(t, testClients.main.UpdateValidInstrument(ctx, createdValidInstrument))
 
-			time.Sleep(time.Second)
+			time.Sleep(2 * time.Second)
 
 			// retrieve changed valid instrument
 			var actual *types.ValidInstrument
@@ -330,7 +330,7 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 			}
 
 			exampleLimit := uint8(20)
-			time.Sleep(time.Second) // give the index a moment
+			time.Sleep(2 * time.Second) // give the index a moment
 
 			// assert valid instrument list equality
 			actual, err := testClients.main.SearchValidInstruments(ctx, searchQuery, exampleLimit)

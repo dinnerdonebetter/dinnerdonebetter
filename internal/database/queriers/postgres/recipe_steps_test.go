@@ -204,6 +204,7 @@ func TestQuerier_GetRecipeStep(T *testing.T) {
 
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStep := fakes.BuildFakeRecipeStep()
+		exampleRecipeStep.Ingredients = nil
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -329,6 +330,10 @@ func TestQuerier_GetRecipeSteps(T *testing.T) {
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepList := fakes.BuildFakeRecipeStepList()
 
+		for i := range exampleRecipeStepList.RecipeSteps {
+			exampleRecipeStepList.RecipeSteps[i].Ingredients = nil
+		}
+
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
@@ -376,6 +381,9 @@ func TestQuerier_GetRecipeSteps(T *testing.T) {
 		exampleRecipeStepList := fakes.BuildFakeRecipeStepList()
 		exampleRecipeStepList.Page = 0
 		exampleRecipeStepList.Limit = 0
+		for i := range exampleRecipeStepList.RecipeSteps {
+			exampleRecipeStepList.RecipeSteps[i].Ingredients = nil
+		}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -478,8 +486,9 @@ func TestQuerier_GetRecipeStepsWithIDs(T *testing.T) {
 		exampleRecipeStepList := fakes.BuildFakeRecipeStepList()
 
 		var exampleIDs []string
-		for _, x := range exampleRecipeStepList.RecipeSteps {
+		for i, x := range exampleRecipeStepList.RecipeSteps {
 			exampleIDs = append(exampleIDs, x.ID)
+			exampleRecipeStepList.RecipeSteps[i].Ingredients = nil
 		}
 
 		ctx := context.Background()
@@ -589,6 +598,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 
 		exampleRecipeStep := fakes.BuildFakeRecipeStep()
 		exampleRecipeStep.ID = "1"
+		exampleRecipeStep.Ingredients = nil
 		exampleInput := fakes.BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(exampleRecipeStep)
 
 		ctx := context.Background()

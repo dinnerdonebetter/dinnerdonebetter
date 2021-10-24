@@ -142,7 +142,7 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 			createdValidIngredient.Update(convertValidIngredientToValidIngredientUpdateInput(newValidIngredient))
 			assert.NoError(t, testClients.main.UpdateValidIngredient(ctx, createdValidIngredient))
 
-			time.Sleep(time.Second)
+			time.Sleep(2 * time.Second)
 
 			// retrieve changed valid ingredient
 			var actual *types.ValidIngredient
@@ -354,7 +354,7 @@ func (s *TestSuite) TestValidIngredients_Searching() {
 			}
 
 			exampleLimit := uint8(20)
-			time.Sleep(time.Second) // give the index a moment
+			time.Sleep(2 * time.Second) // give the index a moment
 
 			// assert valid ingredient list equality
 			actual, err := testClients.main.SearchValidIngredients(ctx, searchQuery, exampleLimit)

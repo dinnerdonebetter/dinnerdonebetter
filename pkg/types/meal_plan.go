@@ -29,9 +29,9 @@ type (
 		State              string            `json:"state"`
 		ID                 string            `json:"id"`
 		BelongsToHousehold string            `json:"belongsToHousehold"`
+		Options            []*MealPlanOption `json:"options"`
 		StartsAt           uint64            `json:"startsAt"`
 		EndsAt             uint64            `json:"endsAt"`
-		Options            []*MealPlanOption `json:"options"`
 		CreatedOn          uint64            `json:"createdOn"`
 	}
 
@@ -58,8 +58,8 @@ type (
 		_                  struct{}
 		ID                 string                                 `json:"id"`
 		State              string                                 `json:"state"`
-		Options            []*MealPlanOptionDatabaseCreationInput `json:"options"`
 		BelongsToHousehold string                                 `json:"belongsToHousehold"`
+		Options            []*MealPlanOptionDatabaseCreationInput `json:"options"`
 		StartsAt           uint64                                 `json:"startsAt"`
 		EndsAt             uint64                                 `json:"endsAt"`
 	}
@@ -142,7 +142,7 @@ func (x *MealPlanDatabaseCreationInput) ValidateWithContext(ctx context.Context)
 
 // MealPlanDatabaseCreationInputFromMealPlanCreationInput creates a DatabaseCreationInput from a CreationInput.
 func MealPlanDatabaseCreationInputFromMealPlanCreationInput(input *MealPlanCreationRequestInput) *MealPlanDatabaseCreationInput {
-	var options []*MealPlanOptionDatabaseCreationInput
+	options := []*MealPlanOptionDatabaseCreationInput{}
 	for _, option := range input.Options {
 		options = append(options, MealPlanOptionDatabaseCreationInputFromMealPlanOptionCreationInput(option))
 	}

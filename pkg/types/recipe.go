@@ -173,7 +173,7 @@ func (x *RecipeDatabaseCreationInput) ValidateWithContext(ctx context.Context) e
 
 // RecipeDatabaseCreationInputFromRecipeCreationInput creates a DatabaseCreationInput from a CreationInput.
 func RecipeDatabaseCreationInputFromRecipeCreationInput(input *RecipeCreationRequestInput) *RecipeDatabaseCreationInput {
-	var steps []*RecipeStepDatabaseCreationInput
+	steps := []*RecipeStepDatabaseCreationInput{}
 	for _, step := range input.Steps {
 		steps = append(steps, RecipeStepDatabaseCreationInputFromRecipeStepCreationInput(step))
 	}

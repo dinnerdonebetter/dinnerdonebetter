@@ -280,6 +280,11 @@ func (q *SQLQuerier) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 
 	logger := q.logger.WithValue(keys.MealPlanIDKey, input.ID)
 
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "beginning transaction")
+	}
+
 	args := []interface{}{
 		input.ID,
 		input.State,
@@ -289,7 +294,8 @@ func (q *SQLQuerier) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 	}
 
 	// create the meal plan.
-	if err := q.performWriteQuery(ctx, q.db, "meal plan creation", mealPlanCreationQuery, args); err != nil {
+	if err = q.performWriteQuery(ctx, tx, "meal plan creation", mealPlanCreationQuery, args); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareError(err, logger, span, "performing meal plan creation query")
 	}
 
@@ -300,6 +306,17 @@ func (q *SQLQuerier) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 		EndsAt:             input.EndsAt,
 		BelongsToHousehold: input.BelongsToHousehold,
 		CreatedOn:          q.currentTime(),
+	}
+
+	// for option in input.Options
+	//  createMealPlanOption(ctx, tx, option)
+	// 	if createErr != nil {
+	// 		q.rollbackTransaction(ctx, tx)
+	// 	}
+	// 	x.Options = append(x.Options, opt)
+
+	if err = tx.Commit(); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "committing transaction")
 	}
 
 	tracing.AttachMealPlanIDToSpan(span, x.ID)
