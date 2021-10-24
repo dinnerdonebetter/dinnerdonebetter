@@ -222,7 +222,7 @@ func TestAttachURLToSpan(T *testing.T) {
 		t.Parallel()
 
 		_, span := StartSpan(context.Background())
-		u, err := url.ParseRequestURI("https://todo.verygoodsoftwarenotvirus.ru")
+		u, err := url.ParseRequestURI("https://local.prixfixe.dev")
 		assert.NoError(t, err)
 
 		AttachURLToSpan(span, u)
