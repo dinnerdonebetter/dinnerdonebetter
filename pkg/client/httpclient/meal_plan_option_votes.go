@@ -10,11 +10,23 @@ import (
 )
 
 // GetMealPlanOptionVote gets a meal plan option vote.
-func (c *Client) GetMealPlanOptionVote(ctx context.Context, mealPlanOptionVoteID string) (*types.MealPlanOptionVote, error) {
+func (c *Client) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID string) (*types.MealPlanOptionVote, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger
+
+	if mealPlanID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if mealPlanOptionID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
 	if mealPlanOptionVoteID == "" {
 		return nil, ErrInvalidIDProvided
@@ -22,7 +34,7 @@ func (c *Client) GetMealPlanOptionVote(ctx context.Context, mealPlanOptionVoteID
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
 
-	req, err := c.requestBuilder.BuildGetMealPlanOptionVoteRequest(ctx, mealPlanOptionVoteID)
+	req, err := c.requestBuilder.BuildGetMealPlanOptionVoteRequest(ctx, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building get meal plan option vote request")
 	}
@@ -36,14 +48,26 @@ func (c *Client) GetMealPlanOptionVote(ctx context.Context, mealPlanOptionVoteID
 }
 
 // GetMealPlanOptionVotes retrieves a list of meal plan option votes.
-func (c *Client) GetMealPlanOptionVotes(ctx context.Context, filter *types.QueryFilter) (*types.MealPlanOptionVoteList, error) {
+func (c *Client) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanOptionID string, filter *types.QueryFilter) (*types.MealPlanOptionVoteList, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.loggerWithFilter(filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := c.requestBuilder.BuildGetMealPlanOptionVotesRequest(ctx, filter)
+	if mealPlanID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if mealPlanOptionID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+
+	req, err := c.requestBuilder.BuildGetMealPlanOptionVotesRequest(ctx, mealPlanID, mealPlanOptionID, filter)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building meal plan option votes list request")
 	}
@@ -57,11 +81,17 @@ func (c *Client) GetMealPlanOptionVotes(ctx context.Context, filter *types.Query
 }
 
 // CreateMealPlanOptionVote creates a meal plan option vote.
-func (c *Client) CreateMealPlanOptionVote(ctx context.Context, input *types.MealPlanOptionVoteCreationRequestInput) (string, error) {
+func (c *Client) CreateMealPlanOptionVote(ctx context.Context, mealPlanID string, input *types.MealPlanOptionVoteCreationRequestInput) (string, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger
+
+	if mealPlanID == "" {
+		return "", ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if input == nil {
 		return "", ErrNilInputProvided
@@ -71,7 +101,7 @@ func (c *Client) CreateMealPlanOptionVote(ctx context.Context, input *types.Meal
 		return "", observability.PrepareError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildCreateMealPlanOptionVoteRequest(ctx, input)
+	req, err := c.requestBuilder.BuildCreateMealPlanOptionVoteRequest(ctx, mealPlanID, input)
 	if err != nil {
 		return "", observability.PrepareError(err, logger, span, "building create meal plan option vote request")
 	}
@@ -85,11 +115,17 @@ func (c *Client) CreateMealPlanOptionVote(ctx context.Context, input *types.Meal
 }
 
 // UpdateMealPlanOptionVote updates a meal plan option vote.
-func (c *Client) UpdateMealPlanOptionVote(ctx context.Context, mealPlanOptionVote *types.MealPlanOptionVote) error {
+func (c *Client) UpdateMealPlanOptionVote(ctx context.Context, mealPlanID string, mealPlanOptionVote *types.MealPlanOptionVote) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger
+
+	if mealPlanID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if mealPlanOptionVote == nil {
 		return ErrNilInputProvided
@@ -97,7 +133,7 @@ func (c *Client) UpdateMealPlanOptionVote(ctx context.Context, mealPlanOptionVot
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVote.ID)
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVote.ID)
 
-	req, err := c.requestBuilder.BuildUpdateMealPlanOptionVoteRequest(ctx, mealPlanOptionVote)
+	req, err := c.requestBuilder.BuildUpdateMealPlanOptionVoteRequest(ctx, mealPlanID, mealPlanOptionVote)
 	if err != nil {
 		return observability.PrepareError(err, logger, span, "building update meal plan option vote request")
 	}
@@ -110,11 +146,23 @@ func (c *Client) UpdateMealPlanOptionVote(ctx context.Context, mealPlanOptionVot
 }
 
 // ArchiveMealPlanOptionVote archives a meal plan option vote.
-func (c *Client) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanOptionVoteID string) error {
+func (c *Client) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID string) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger
+
+	if mealPlanID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if mealPlanOptionID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
 	if mealPlanOptionVoteID == "" {
 		return ErrInvalidIDProvided
@@ -122,7 +170,7 @@ func (c *Client) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanOptionVo
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
 
-	req, err := c.requestBuilder.BuildArchiveMealPlanOptionVoteRequest(ctx, mealPlanOptionVoteID)
+	req, err := c.requestBuilder.BuildArchiveMealPlanOptionVoteRequest(ctx, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID)
 	if err != nil {
 		return observability.PrepareError(err, logger, span, "building archive meal plan option vote request")
 	}

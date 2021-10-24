@@ -19,6 +19,7 @@ var (
 	// mealPlansTableColumns are the columns for the meal_plans table.
 	mealPlansTableColumns = []string{
 		"meal_plans.id",
+		"meal_plans.notes",
 		"meal_plans.state",
 		"meal_plans.starts_at",
 		"meal_plans.ends_at",
@@ -40,6 +41,7 @@ func (q *SQLQuerier) scanMealPlan(ctx context.Context, scan database.Scanner, in
 
 	targetVars := []interface{}{
 		&x.ID,
+		&x.Notes,
 		&x.State,
 		&x.StartsAt,
 		&x.EndsAt,
@@ -120,7 +122,7 @@ func (q *SQLQuerier) MealPlanExists(ctx context.Context, mealPlanID string) (exi
 	return result, nil
 }
 
-const getMealPlanQuery = "SELECT meal_plans.id, meal_plans.state, meal_plans.starts_at, meal_plans.ends_at, meal_plans.created_on, meal_plans.last_updated_on, meal_plans.archived_on, meal_plans.belongs_to_household FROM meal_plans WHERE meal_plans.archived_on IS NULL AND meal_plans.id = $1"
+const getMealPlanQuery = "SELECT meal_plans.id, meal_plans.notes, meal_plans.state, meal_plans.starts_at, meal_plans.ends_at, meal_plans.created_on, meal_plans.last_updated_on, meal_plans.archived_on, meal_plans.belongs_to_household FROM meal_plans WHERE meal_plans.archived_on IS NULL AND meal_plans.id = $1"
 
 // GetMealPlan fetches a meal plan from the database.
 func (q *SQLQuerier) GetMealPlan(ctx context.Context, mealPlanID string) (*types.MealPlan, error) {
@@ -267,7 +269,7 @@ func (q *SQLQuerier) GetMealPlansWithIDs(ctx context.Context, householdID string
 	return mealPlans, nil
 }
 
-const mealPlanCreationQuery = "INSERT INTO meal_plans (id,state,starts_at,ends_at,belongs_to_household) VALUES ($1,$2,$3,$4,$5)"
+const mealPlanCreationQuery = "INSERT INTO meal_plans (id,notes,state,starts_at,ends_at,belongs_to_household) VALUES ($1,$2,$3,$4,$5,$6)"
 
 // CreateMealPlan creates a meal plan in the database.
 func (q *SQLQuerier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatabaseCreationInput) (*types.MealPlan, error) {
@@ -280,13 +282,9 @@ func (q *SQLQuerier) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 
 	logger := q.logger.WithValue(keys.MealPlanIDKey, input.ID)
 
-	tx, err := q.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "beginning transaction")
-	}
-
 	args := []interface{}{
 		input.ID,
+		input.Notes,
 		input.State,
 		input.StartsAt,
 		input.EndsAt,
@@ -294,29 +292,18 @@ func (q *SQLQuerier) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 	}
 
 	// create the meal plan.
-	if err = q.performWriteQuery(ctx, tx, "meal plan creation", mealPlanCreationQuery, args); err != nil {
-		q.rollbackTransaction(ctx, tx)
-		return nil, observability.PrepareError(err, logger, span, "performing meal plan creation query")
+	if err := q.performWriteQuery(ctx, q.db, "meal plan creation", mealPlanCreationQuery, args); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "creating meal plan")
 	}
 
 	x := &types.MealPlan{
 		ID:                 input.ID,
+		Notes:              input.Notes,
 		State:              input.State,
 		StartsAt:           input.StartsAt,
 		EndsAt:             input.EndsAt,
 		BelongsToHousehold: input.BelongsToHousehold,
 		CreatedOn:          q.currentTime(),
-	}
-
-	// for option in input.Options
-	//  createMealPlanOption(ctx, tx, option)
-	// 	if createErr != nil {
-	// 		q.rollbackTransaction(ctx, tx)
-	// 	}
-	// 	x.Options = append(x.Options, opt)
-
-	if err = tx.Commit(); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "committing transaction")
 	}
 
 	tracing.AttachMealPlanIDToSpan(span, x.ID)
@@ -325,7 +312,7 @@ func (q *SQLQuerier) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 	return x, nil
 }
 
-const updateMealPlanQuery = "UPDATE meal_plans SET state = $1, starts_at = $2, ends_at = $3, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_household = $4 AND id = $5"
+const updateMealPlanQuery = "UPDATE meal_plans SET notes = $1, state = $2, starts_at = $3, ends_at = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_household = $5 AND id = $6"
 
 // UpdateMealPlan updates a particular meal plan.
 func (q *SQLQuerier) UpdateMealPlan(ctx context.Context, updated *types.MealPlan) error {
@@ -341,6 +328,7 @@ func (q *SQLQuerier) UpdateMealPlan(ctx context.Context, updated *types.MealPlan
 	tracing.AttachHouseholdIDToSpan(span, updated.BelongsToHousehold)
 
 	args := []interface{}{
+		updated.Notes,
 		updated.State,
 		updated.StartsAt,
 		updated.EndsAt,

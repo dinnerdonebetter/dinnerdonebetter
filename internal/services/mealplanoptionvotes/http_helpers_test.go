@@ -21,6 +21,8 @@ type mealPlanOptionVotesServiceHTTPRoutesTestHelper struct {
 	service                   *service
 	exampleUser               *types.User
 	exampleHousehold          *types.Household
+	exampleMealPlan           *types.MealPlan
+	exampleMealPlanOption     *types.MealPlanOption
 	exampleMealPlanOptionVote *types.MealPlanOptionVote
 	exampleCreationInput      *types.MealPlanOptionVoteCreationRequestInput
 	exampleUpdateInput        *types.MealPlanOptionVoteUpdateRequestInput
@@ -36,10 +38,22 @@ func buildTestHelper(t *testing.T) *mealPlanOptionVotesServiceHTTPRoutesTestHelp
 	helper.exampleUser = fakes.BuildFakeUser()
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
+	helper.exampleMealPlan = fakes.BuildFakeMealPlan()
+	helper.exampleMealPlan.BelongsToHousehold = helper.exampleHousehold.ID
+	helper.exampleMealPlanOption = fakes.BuildFakeMealPlanOption()
+	helper.exampleMealPlanOption.BelongsToMealPlan = helper.exampleMealPlan.ID
 	helper.exampleMealPlanOptionVote = fakes.BuildFakeMealPlanOptionVote()
-	helper.exampleMealPlanOptionVote.BelongsToHousehold = helper.exampleHousehold.ID
+	helper.exampleMealPlanOptionVote.BelongsToMealPlanOption = helper.exampleMealPlanOption.ID
 	helper.exampleCreationInput = fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(helper.exampleMealPlanOptionVote)
 	helper.exampleUpdateInput = fakes.BuildFakeMealPlanOptionVoteUpdateRequestInputFromMealPlanOptionVote(helper.exampleMealPlanOptionVote)
+
+	helper.service.mealPlanIDFetcher = func(*http.Request) string {
+		return helper.exampleMealPlan.ID
+	}
+
+	helper.service.mealPlanOptionIDFetcher = func(*http.Request) string {
+		return helper.exampleMealPlanOption.ID
+	}
 
 	helper.service.mealPlanOptionVoteIDFetcher = func(*http.Request) string {
 		return helper.exampleMealPlanOptionVote.ID

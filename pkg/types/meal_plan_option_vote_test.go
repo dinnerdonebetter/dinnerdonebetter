@@ -15,11 +15,9 @@ func TestMealPlanOptionVoteCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionVoteCreationRequestInput{
-			MealPlanOptionID: fake.Word(),
-			DayOfWeek:        fake.Uint8(),
-			Points:           fake.Int16(),
-			Abstain:          fake.Bool(),
-			Notes:            fake.Word(),
+			Points:  fake.Int16(),
+			Abstain: fake.Bool(),
+			Notes:   fake.Word(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -43,11 +41,9 @@ func TestMealPlanOptionVoteUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionVoteUpdateRequestInput{
-			MealPlanOptionID: fake.Word(),
-			DayOfWeek:        fake.Uint8(),
-			Points:           fake.Int16(),
-			Abstain:          fake.Bool(),
-			Notes:            fake.Word(),
+			Points:  fake.Int16(),
+			Abstain: fake.Bool(),
+			Notes:   fake.Word(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

@@ -14,6 +14,7 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	mockrouting "gitlab.com/prixfixe/prixfixe/internal/routing/mock"
+	mealplansservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplans"
 	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
 )
 
@@ -35,6 +36,10 @@ func TestProvideMealPlanOptionsService(T *testing.T) {
 
 		ctx := context.Background()
 		rpm := mockrouting.NewRouteParamManager()
+		rpm.On(
+			"BuildRouteParamStringIDFetcher",
+			mealplansservice.MealPlanIDURIParamKey,
+		).Return(func(*http.Request) string { return "" })
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
 			MealPlanOptionIDURIParamKey,

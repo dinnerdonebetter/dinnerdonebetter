@@ -12,6 +12,7 @@ import (
 	routing "gitlab.com/prixfixe/prixfixe/internal/routing"
 	"gitlab.com/prixfixe/prixfixe/internal/search"
 	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
+	mealplansservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplans"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
@@ -29,6 +30,7 @@ type (
 	service struct {
 		logger                    logging.Logger
 		mealPlanOptionDataManager types.MealPlanOptionDataManager
+		mealPlanIDFetcher         func(*http.Request) string
 		mealPlanOptionIDFetcher   func(*http.Request) string
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
 		preWritesPublisher        publishers.Publisher
@@ -66,6 +68,7 @@ func ProvideService(
 
 	svc := &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
+		mealPlanIDFetcher:         routeParamManager.BuildRouteParamStringIDFetcher(mealplansservice.MealPlanIDURIParamKey),
 		mealPlanOptionIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(MealPlanOptionIDURIParamKey),
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		mealPlanOptionDataManager: mealPlanOptionDataManager,

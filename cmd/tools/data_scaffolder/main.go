@@ -263,54 +263,6 @@ func main() {
 				wg.Done()
 			}(wg)
 
-			wg.Add(1)
-			go func(wg *sync.WaitGroup) {
-				for j := 0; j < int(dataCount); j++ {
-					iterationLogger := userLogger.WithValue("creating", "meal plans").WithValue("iteration", j)
-
-					// create meal plan
-					createdMealPlanID, mealPlanCreationErr := userClient.CreateMealPlan(ctx, fakes.BuildFakeMealPlanCreationRequestInput())
-					if mealPlanCreationErr != nil {
-						quitter.ComplainAndQuit(fmt.Errorf("creating meal plan #%d: %w", j, mealPlanCreationErr))
-					}
-
-					iterationLogger.WithValue(keys.MealPlanIDKey, createdMealPlanID).Debug("created meal plan")
-				}
-				wg.Done()
-			}(wg)
-
-			wg.Add(1)
-			go func(wg *sync.WaitGroup) {
-				for j := 0; j < int(dataCount); j++ {
-					iterationLogger := userLogger.WithValue("creating", "meal plan options").WithValue("iteration", j)
-
-					// create meal plan option
-					createdMealPlanOptionID, mealPlanOptionCreationErr := userClient.CreateMealPlanOption(ctx, fakes.BuildFakeMealPlanOptionCreationRequestInput())
-					if mealPlanOptionCreationErr != nil {
-						quitter.ComplainAndQuit(fmt.Errorf("creating meal plan option #%d: %w", j, mealPlanOptionCreationErr))
-					}
-
-					iterationLogger.WithValue(keys.MealPlanOptionIDKey, createdMealPlanOptionID).Debug("created meal plan option")
-				}
-				wg.Done()
-			}(wg)
-
-			wg.Add(1)
-			go func(wg *sync.WaitGroup) {
-				for j := 0; j < int(dataCount); j++ {
-					iterationLogger := userLogger.WithValue("creating", "meal plan option votes").WithValue("iteration", j)
-
-					// create meal plan option vote
-					createdMealPlanOptionVoteID, mealPlanOptionVoteCreationErr := userClient.CreateMealPlanOptionVote(ctx, fakes.BuildFakeMealPlanOptionVoteCreationRequestInput())
-					if mealPlanOptionVoteCreationErr != nil {
-						quitter.ComplainAndQuit(fmt.Errorf("creating meal plan option vote #%d: %w", j, mealPlanOptionVoteCreationErr))
-					}
-
-					iterationLogger.WithValue(keys.MealPlanOptionVoteIDKey, createdMealPlanOptionVoteID).Debug("created meal plan option vote")
-				}
-				wg.Done()
-			}(wg)
-
 			wg.Done()
 		}(i, wg)
 	}

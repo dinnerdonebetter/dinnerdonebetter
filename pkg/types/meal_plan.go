@@ -29,6 +29,7 @@ type (
 		State              string            `json:"state"`
 		ID                 string            `json:"id"`
 		BelongsToHousehold string            `json:"belongsToHousehold"`
+		Notes              string            `json:"notes"`
 		Options            []*MealPlanOption `json:"options"`
 		StartsAt           uint64            `json:"startsAt"`
 		EndsAt             uint64            `json:"endsAt"`
@@ -48,6 +49,7 @@ type (
 		ID                 string                                `json:"-"`
 		State              string                                `json:"state"`
 		BelongsToHousehold string                                `json:"-"`
+		Notes              string                                `json:"notes"`
 		Options            []*MealPlanOptionCreationRequestInput `json:"options"`
 		StartsAt           uint64                                `json:"startsAt"`
 		EndsAt             uint64                                `json:"endsAt"`
@@ -59,6 +61,7 @@ type (
 		ID                 string                                 `json:"id"`
 		State              string                                 `json:"state"`
 		BelongsToHousehold string                                 `json:"belongsToHousehold"`
+		Notes              string                                 `json:"notes"`
 		Options            []*MealPlanOptionDatabaseCreationInput `json:"options"`
 		StartsAt           uint64                                 `json:"startsAt"`
 		EndsAt             uint64                                 `json:"endsAt"`
@@ -69,6 +72,7 @@ type (
 		_                  struct{}
 		State              string `json:"state"`
 		BelongsToHousehold string `json:"-"`
+		Notes              string `json:"notes"`
 		StartsAt           uint64 `json:"startsAt"`
 		EndsAt             uint64 `json:"endsAt"`
 	}
@@ -97,6 +101,10 @@ type (
 
 // Update merges an MealPlanUpdateRequestInput with a meal plan.
 func (x *MealPlan) Update(input *MealPlanUpdateRequestInput) {
+	if input.Notes != "" && input.Notes != x.Notes {
+		x.Notes = input.Notes
+	}
+
 	if input.State != "" && input.State != x.State {
 		x.State = input.State
 	}
@@ -148,6 +156,7 @@ func MealPlanDatabaseCreationInputFromMealPlanCreationInput(input *MealPlanCreat
 	}
 
 	x := &MealPlanDatabaseCreationInput{
+		Notes:    input.Notes,
 		State:    input.State,
 		StartsAt: input.StartsAt,
 		EndsAt:   input.EndsAt,

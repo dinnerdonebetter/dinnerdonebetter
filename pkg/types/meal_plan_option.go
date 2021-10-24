@@ -23,16 +23,15 @@ func init() {
 type (
 	// MealPlanOption represents a meal plan option.
 	MealPlanOption struct {
-		_                  struct{}
-		LastUpdatedOn      *uint64 `json:"lastUpdatedOn"`
-		ArchivedOn         *uint64 `json:"archivedOn"`
-		BelongsToHousehold string  `json:"belongsToHousehold"`
-		RecipeID           string  `json:"recipeID"`
-		Notes              string  `json:"notes"`
-		ID                 string  `json:"id"`
-		MealPlanID         string  `json:"mealPlanID"`
-		CreatedOn          uint64  `json:"createdOn"`
-		DayOfWeek          uint8   `json:"dayOfWeek"`
+		_                 struct{}
+		LastUpdatedOn     *uint64 `json:"lastUpdatedOn"`
+		ArchivedOn        *uint64 `json:"archivedOn"`
+		RecipeID          string  `json:"recipeID"`
+		Notes             string  `json:"notes"`
+		ID                string  `json:"id"`
+		BelongsToMealPlan string  `json:"belongsToMealPlan"`
+		CreatedOn         uint64  `json:"createdOn"`
+		DayOfWeek         uint8   `json:"dayOfWeek"`
 	}
 
 	// MealPlanOptionList represents a list of meal plan options.
@@ -44,46 +43,43 @@ type (
 
 	// MealPlanOptionCreationRequestInput represents what a user could set as input for creating meal plan options.
 	MealPlanOptionCreationRequestInput struct {
-		_                  struct{}
-		ID                 string `json:"-"`
-		MealPlanID         string `json:"mealPlanID"`
-		RecipeID           string `json:"recipeID"`
-		Notes              string `json:"notes"`
-		BelongsToHousehold string `json:"-"`
-		DayOfWeek          uint8  `json:"dayOfWeek"`
+		_                 struct{}
+		ID                string `json:"-"`
+		RecipeID          string `json:"recipeID"`
+		Notes             string `json:"notes"`
+		BelongsToMealPlan string `json:"-"`
+		DayOfWeek         uint8  `json:"dayOfWeek"`
 	}
 
 	// MealPlanOptionDatabaseCreationInput represents what a user could set as input for creating meal plan options.
 	MealPlanOptionDatabaseCreationInput struct {
-		_                  struct{}
-		ID                 string `json:"id"`
-		MealPlanID         string `json:"mealPlanID"`
-		RecipeID           string `json:"recipeID"`
-		Notes              string `json:"notes"`
-		BelongsToHousehold string `json:"belongsToHousehold"`
-		DayOfWeek          uint8  `json:"dayOfWeek"`
+		_                 struct{}
+		ID                string `json:"id"`
+		RecipeID          string `json:"recipeID"`
+		Notes             string `json:"notes"`
+		BelongsToMealPlan string `json:"belongsToMealPlan"`
+		DayOfWeek         uint8  `json:"dayOfWeek"`
 	}
 
 	// MealPlanOptionUpdateRequestInput represents what a user could set as input for updating meal plan options.
 	MealPlanOptionUpdateRequestInput struct {
-		_                  struct{}
-		MealPlanID         string `json:"mealPlanID"`
-		RecipeID           string `json:"recipeID"`
-		Notes              string `json:"notes"`
-		BelongsToHousehold string `json:"-"`
-		DayOfWeek          uint8  `json:"dayOfWeek"`
+		_                 struct{}
+		RecipeID          string `json:"recipeID"`
+		Notes             string `json:"notes"`
+		BelongsToMealPlan string `json:"-"`
+		DayOfWeek         uint8  `json:"dayOfWeek"`
 	}
 
 	// MealPlanOptionDataManager describes a structure capable of storing meal plan options permanently.
 	MealPlanOptionDataManager interface {
-		MealPlanOptionExists(ctx context.Context, mealPlanOptionID string) (bool, error)
-		GetMealPlanOption(ctx context.Context, mealPlanOptionID string) (*MealPlanOption, error)
+		MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlanOptionID string) (bool, error)
+		GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) (*MealPlanOption, error)
 		GetTotalMealPlanOptionCount(ctx context.Context) (uint64, error)
-		GetMealPlanOptions(ctx context.Context, filter *QueryFilter) (*MealPlanOptionList, error)
-		GetMealPlanOptionsWithIDs(ctx context.Context, householdID string, limit uint8, ids []string) ([]*MealPlanOption, error)
+		GetMealPlanOptions(ctx context.Context, mealPlanID string, filter *QueryFilter) (*MealPlanOptionList, error)
+		GetMealPlanOptionsWithIDs(ctx context.Context, mealPlanID string, limit uint8, ids []string) ([]*MealPlanOption, error)
 		CreateMealPlanOption(ctx context.Context, input *MealPlanOptionDatabaseCreationInput) (*MealPlanOption, error)
 		UpdateMealPlanOption(ctx context.Context, updated *MealPlanOption) error
-		ArchiveMealPlanOption(ctx context.Context, mealPlanOptionID, householdID string) error
+		ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) error
 	}
 
 	// MealPlanOptionDataService describes a structure capable of serving traffic related to meal plan options.
@@ -98,10 +94,6 @@ type (
 
 // Update merges an MealPlanOptionUpdateRequestInput with a meal plan option.
 func (x *MealPlanOption) Update(input *MealPlanOptionUpdateRequestInput) {
-	if input.MealPlanID != "" && input.MealPlanID != x.MealPlanID {
-		x.MealPlanID = input.MealPlanID
-	}
-
 	if input.DayOfWeek != 0 && input.DayOfWeek != x.DayOfWeek {
 		x.DayOfWeek = input.DayOfWeek
 	}
@@ -122,7 +114,6 @@ func (x *MealPlanOptionCreationRequestInput) ValidateWithContext(ctx context.Con
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.MealPlanID, validation.Required),
 		validation.Field(&x.DayOfWeek, validation.Required),
 		validation.Field(&x.RecipeID, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
@@ -137,21 +128,19 @@ func (x *MealPlanOptionDatabaseCreationInput) ValidateWithContext(ctx context.Co
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
-		validation.Field(&x.MealPlanID, validation.Required),
 		validation.Field(&x.DayOfWeek, validation.Required),
 		validation.Field(&x.RecipeID, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
-		validation.Field(&x.BelongsToHousehold, validation.Required),
 	)
 }
 
 // MealPlanOptionDatabaseCreationInputFromMealPlanOptionCreationInput creates a DatabaseCreationInput from a CreationInput.
 func MealPlanOptionDatabaseCreationInputFromMealPlanOptionCreationInput(input *MealPlanOptionCreationRequestInput) *MealPlanOptionDatabaseCreationInput {
 	x := &MealPlanOptionDatabaseCreationInput{
-		MealPlanID: input.MealPlanID,
-		DayOfWeek:  input.DayOfWeek,
-		RecipeID:   input.RecipeID,
-		Notes:      input.Notes,
+		BelongsToMealPlan: input.BelongsToMealPlan,
+		DayOfWeek:         input.DayOfWeek,
+		RecipeID:          input.RecipeID,
+		Notes:             input.Notes,
 	}
 
 	return x
@@ -164,9 +153,9 @@ func (x *MealPlanOptionUpdateRequestInput) ValidateWithContext(ctx context.Conte
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.MealPlanID, validation.Required),
 		validation.Field(&x.DayOfWeek, validation.Required),
 		validation.Field(&x.RecipeID, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
+		validation.Field(&x.BelongsToMealPlan, validation.Required),
 	)
 }

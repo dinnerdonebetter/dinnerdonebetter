@@ -28,6 +28,7 @@ func buildMockRowsFromMealPlans(includeCounts bool, filteredCount uint64, mealPl
 	for _, x := range mealPlans {
 		rowValues := []driver.Value{
 			x.ID,
+			x.Notes,
 			x.State,
 			x.StartsAt,
 			x.EndsAt,
@@ -172,7 +173,6 @@ func TestQuerier_GetMealPlan(T *testing.T) {
 		t.Parallel()
 
 		exampleMealPlan := fakes.BuildFakeMealPlan()
-		exampleMealPlan.Options = nil
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -276,9 +276,6 @@ func TestQuerier_GetMealPlans(T *testing.T) {
 
 		filter := types.DefaultQueryFilter()
 		exampleMealPlanList := fakes.BuildFakeMealPlanList()
-		for i := range exampleMealPlanList.MealPlans {
-			exampleMealPlanList.MealPlans[i].Options = nil
-		}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -313,9 +310,6 @@ func TestQuerier_GetMealPlans(T *testing.T) {
 		exampleMealPlanList := fakes.BuildFakeMealPlanList()
 		exampleMealPlanList.Page = 0
 		exampleMealPlanList.Limit = 0
-		for i := range exampleMealPlanList.MealPlans {
-			exampleMealPlanList.MealPlans[i].Options = nil
-		}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -416,9 +410,8 @@ func TestQuerier_GetMealPlansWithIDs(T *testing.T) {
 		exampleMealPlanList := fakes.BuildFakeMealPlanList()
 
 		var exampleIDs []string
-		for i, x := range exampleMealPlanList.MealPlans {
+		for _, x := range exampleMealPlanList.MealPlans {
 			exampleIDs = append(exampleIDs, x.ID)
-			exampleMealPlanList.MealPlans[i].Options = nil
 		}
 
 		ctx := context.Background()
@@ -510,16 +503,14 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 		exampleMealPlan.ID = "1"
-		exampleMealPlan.Options = nil
 		exampleInput := fakes.BuildFakeMealPlanDatabaseCreationInputFromMealPlan(exampleMealPlan)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		db.ExpectBegin()
-
 		args := []interface{}{
 			exampleInput.ID,
+			exampleInput.Notes,
 			exampleInput.State,
 			exampleInput.StartsAt,
 			exampleInput.EndsAt,
@@ -529,8 +520,6 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 		db.ExpectExec(formatQueryForSQLMock(mealPlanCreationQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult(exampleMealPlan.ID))
-
-		db.ExpectCommit()
 
 		c.timeFunc = func() uint64 {
 			return exampleMealPlan.CreatedOn
@@ -559,16 +548,14 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 
 		expectedErr := errors.New(t.Name())
 		exampleMealPlan := fakes.BuildFakeMealPlan()
-		exampleMealPlan.Options = nil
 		exampleInput := fakes.BuildFakeMealPlanDatabaseCreationInputFromMealPlan(exampleMealPlan)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		db.ExpectBegin()
-
 		args := []interface{}{
 			exampleInput.ID,
+			exampleInput.Notes,
 			exampleInput.State,
 			exampleInput.StartsAt,
 			exampleInput.EndsAt,
@@ -578,8 +565,6 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 		db.ExpectExec(formatQueryForSQLMock(mealPlanCreationQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(expectedErr)
-
-		db.ExpectRollback()
 
 		c.timeFunc = func() uint64 {
 			return exampleMealPlan.CreatedOn
@@ -606,6 +591,7 @@ func TestQuerier_UpdateMealPlan(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
+			exampleMealPlan.Notes,
 			exampleMealPlan.State,
 			exampleMealPlan.StartsAt,
 			exampleMealPlan.EndsAt,
@@ -640,6 +626,7 @@ func TestQuerier_UpdateMealPlan(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
+			exampleMealPlan.Notes,
 			exampleMealPlan.State,
 			exampleMealPlan.StartsAt,
 			exampleMealPlan.EndsAt,
@@ -663,14 +650,14 @@ func TestQuerier_ArchiveMealPlan(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleHouseholdID,
+			exampleAccountID,
 			exampleMealPlan.ID,
 		}
 
@@ -678,7 +665,7 @@ func TestQuerier_ArchiveMealPlan(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult(exampleMealPlan.ID))
 
-		assert.NoError(t, c.ArchiveMealPlan(ctx, exampleMealPlan.ID, exampleHouseholdID))
+		assert.NoError(t, c.ArchiveMealPlan(ctx, exampleMealPlan.ID, exampleAccountID))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -686,12 +673,12 @@ func TestQuerier_ArchiveMealPlan(T *testing.T) {
 	T.Run("with invalid meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveMealPlan(ctx, "", exampleHouseholdID))
+		assert.Error(t, c.ArchiveMealPlan(ctx, "", exampleAccountID))
 	})
 
 	T.Run("with invalid household ID", func(t *testing.T) {
@@ -708,14 +695,14 @@ func TestQuerier_ArchiveMealPlan(T *testing.T) {
 	T.Run("with error writing to database", func(t *testing.T) {
 		t.Parallel()
 
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleHouseholdID,
+			exampleAccountID,
 			exampleMealPlan.ID,
 		}
 
@@ -723,7 +710,7 @@ func TestQuerier_ArchiveMealPlan(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		assert.Error(t, c.ArchiveMealPlan(ctx, exampleMealPlan.ID, exampleHouseholdID))
+		assert.Error(t, c.ArchiveMealPlan(ctx, exampleMealPlan.ID, exampleAccountID))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

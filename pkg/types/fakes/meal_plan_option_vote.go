@@ -10,14 +10,12 @@ import (
 // BuildFakeMealPlanOptionVote builds a faked meal plan option vote.
 func BuildFakeMealPlanOptionVote() *types.MealPlanOptionVote {
 	return &types.MealPlanOptionVote{
-		ID:                 ksuid.New().String(),
-		MealPlanOptionID:   fake.LoremIpsumSentence(exampleQuantity),
-		DayOfWeek:          fake.Uint8(),
-		Points:             fake.Int16(),
-		Abstain:            fake.Bool(),
-		Notes:              fake.LoremIpsumSentence(exampleQuantity),
-		CreatedOn:          uint64(uint32(fake.Date().Unix())),
-		BelongsToHousehold: fake.UUID(),
+		ID:                      ksuid.New().String(),
+		Points:                  fake.Int16(),
+		Abstain:                 fake.Bool(),
+		Notes:                   fake.Word(),
+		CreatedOn:               uint64(uint32(fake.Date().Unix())),
+		BelongsToMealPlanOption: fake.UUID(),
 	}
 }
 
@@ -43,24 +41,20 @@ func BuildFakeMealPlanOptionVoteList() *types.MealPlanOptionVoteList {
 func BuildFakeMealPlanOptionVoteUpdateRequestInput() *types.MealPlanOptionVoteUpdateRequestInput {
 	mealPlanOptionVote := BuildFakeMealPlanOptionVote()
 	return &types.MealPlanOptionVoteUpdateRequestInput{
-		MealPlanOptionID:   mealPlanOptionVote.MealPlanOptionID,
-		DayOfWeek:          mealPlanOptionVote.DayOfWeek,
-		Points:             mealPlanOptionVote.Points,
-		Abstain:            mealPlanOptionVote.Abstain,
-		Notes:              mealPlanOptionVote.Notes,
-		BelongsToHousehold: mealPlanOptionVote.BelongsToHousehold,
+		Points:                  mealPlanOptionVote.Points,
+		Abstain:                 mealPlanOptionVote.Abstain,
+		Notes:                   mealPlanOptionVote.Notes,
+		BelongsToMealPlanOption: mealPlanOptionVote.BelongsToMealPlanOption,
 	}
 }
 
 // BuildFakeMealPlanOptionVoteUpdateRequestInputFromMealPlanOptionVote builds a faked MealPlanOptionVoteUpdateRequestInput from a meal plan option vote.
 func BuildFakeMealPlanOptionVoteUpdateRequestInputFromMealPlanOptionVote(mealPlanOptionVote *types.MealPlanOptionVote) *types.MealPlanOptionVoteUpdateRequestInput {
 	return &types.MealPlanOptionVoteUpdateRequestInput{
-		MealPlanOptionID:   mealPlanOptionVote.MealPlanOptionID,
-		DayOfWeek:          mealPlanOptionVote.DayOfWeek,
-		Points:             mealPlanOptionVote.Points,
-		Abstain:            mealPlanOptionVote.Abstain,
-		Notes:              mealPlanOptionVote.Notes,
-		BelongsToHousehold: mealPlanOptionVote.BelongsToHousehold,
+		Points:                  mealPlanOptionVote.Points,
+		Abstain:                 mealPlanOptionVote.Abstain,
+		Notes:                   mealPlanOptionVote.Notes,
+		BelongsToMealPlanOption: mealPlanOptionVote.BelongsToMealPlanOption,
 	}
 }
 
@@ -73,13 +67,11 @@ func BuildFakeMealPlanOptionVoteCreationRequestInput() *types.MealPlanOptionVote
 // BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote builds a faked MealPlanOptionVoteCreationRequestInput from a meal plan option vote.
 func BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(mealPlanOptionVote *types.MealPlanOptionVote) *types.MealPlanOptionVoteCreationRequestInput {
 	return &types.MealPlanOptionVoteCreationRequestInput{
-		ID:                 mealPlanOptionVote.ID,
-		MealPlanOptionID:   mealPlanOptionVote.MealPlanOptionID,
-		DayOfWeek:          mealPlanOptionVote.DayOfWeek,
-		Points:             mealPlanOptionVote.Points,
-		Abstain:            mealPlanOptionVote.Abstain,
-		Notes:              mealPlanOptionVote.Notes,
-		BelongsToHousehold: mealPlanOptionVote.BelongsToHousehold,
+		ID:                      mealPlanOptionVote.ID,
+		Points:                  mealPlanOptionVote.Points,
+		Abstain:                 mealPlanOptionVote.Abstain,
+		Notes:                   mealPlanOptionVote.Notes,
+		BelongsToMealPlanOption: mealPlanOptionVote.BelongsToMealPlanOption,
 	}
 }
 
@@ -92,12 +84,10 @@ func BuildFakeMealPlanOptionVoteDatabaseCreationInput() *types.MealPlanOptionVot
 // BuildFakeMealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVote builds a faked MealPlanOptionVoteDatabaseCreationInput from a meal plan option vote.
 func BuildFakeMealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVote(mealPlanOptionVote *types.MealPlanOptionVote) *types.MealPlanOptionVoteDatabaseCreationInput {
 	return &types.MealPlanOptionVoteDatabaseCreationInput{
-		ID:                 mealPlanOptionVote.ID,
-		MealPlanOptionID:   mealPlanOptionVote.MealPlanOptionID,
-		DayOfWeek:          mealPlanOptionVote.DayOfWeek,
-		Points:             mealPlanOptionVote.Points,
-		Abstain:            mealPlanOptionVote.Abstain,
-		Notes:              mealPlanOptionVote.Notes,
-		BelongsToHousehold: mealPlanOptionVote.BelongsToHousehold,
+		ID:                      mealPlanOptionVote.ID,
+		Points:                  mealPlanOptionVote.Points,
+		Abstain:                 mealPlanOptionVote.Abstain,
+		Notes:                   mealPlanOptionVote.Notes,
+		BelongsToMealPlanOption: mealPlanOptionVote.BelongsToMealPlanOption,
 	}
 }

@@ -13,21 +13,28 @@ import (
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
+const (
+	mealPlanOptionsOnMealPlanOptionVotesJoinClause = "meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id"
+)
+
 var (
 	_ types.MealPlanOptionVoteDataManager = (*SQLQuerier)(nil)
 
 	// mealPlanOptionVotesTableColumns are the columns for the meal_plan_option_votes table.
 	mealPlanOptionVotesTableColumns = []string{
 		"meal_plan_option_votes.id",
-		"meal_plan_option_votes.meal_plan_option_id",
-		"meal_plan_option_votes.day_of_week",
 		"meal_plan_option_votes.points",
 		"meal_plan_option_votes.abstain",
 		"meal_plan_option_votes.notes",
 		"meal_plan_option_votes.created_on",
 		"meal_plan_option_votes.last_updated_on",
 		"meal_plan_option_votes.archived_on",
-		"meal_plan_option_votes.belongs_to_household",
+		"meal_plan_option_votes.belongs_to_meal_plan_option",
+	}
+
+	getMealPlanOptionVotesJoins = []string{
+		mealPlanOptionsOnMealPlanOptionVotesJoinClause,
+		mealPlansOnMealPlanOptionsJoinClause,
 	}
 )
 
@@ -42,15 +49,13 @@ func (q *SQLQuerier) scanMealPlanOptionVote(ctx context.Context, scan database.S
 
 	targetVars := []interface{}{
 		&x.ID,
-		&x.MealPlanOptionID,
-		&x.DayOfWeek,
 		&x.Points,
 		&x.Abstain,
 		&x.Notes,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
-		&x.BelongsToHousehold,
+		&x.BelongsToMealPlanOption,
 	}
 
 	if includeCounts {
@@ -97,14 +102,26 @@ func (q *SQLQuerier) scanMealPlanOptionVotes(ctx context.Context, rows database.
 	return mealPlanOptionVotes, filteredCount, totalCount, nil
 }
 
-const mealPlanOptionVoteExistenceQuery = "SELECT EXISTS ( SELECT meal_plan_option_votes.id FROM meal_plan_option_votes WHERE meal_plan_option_votes.archived_on IS NULL AND meal_plan_option_votes.id = $1 )"
+const mealPlanOptionVoteExistenceQuery = "SELECT EXISTS ( SELECT meal_plan_option_votes.id FROM meal_plan_option_votes JOIN meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id JOIN mealPlans ON meal_plan_options.belongs_to_meal_plan=mealPlans.id WHERE meal_plan_option_votes.archived_on IS NULL AND meal_plan_option_votes.belongs_to_meal_plan_option = $1 AND meal_plan_option_votes.id = $2 AND meal_plan_options.archived_on IS NULL AND meal_plan_options.belongs_to_meal_plan = $3 AND meal_plan_options.id = $4 AND meal_plans.archived_on IS NULL AND meal_plans.id = $5 )"
 
 // MealPlanOptionVoteExists fetches whether a meal plan option vote exists from the database.
-func (q *SQLQuerier) MealPlanOptionVoteExists(ctx context.Context, mealPlanOptionVoteID string) (exists bool, err error) {
+func (q *SQLQuerier) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger
+
+	if mealPlanID == "" {
+		return false, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if mealPlanOptionID == "" {
+		return false, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
 	if mealPlanOptionVoteID == "" {
 		return false, ErrInvalidIDProvided
@@ -113,7 +130,11 @@ func (q *SQLQuerier) MealPlanOptionVoteExists(ctx context.Context, mealPlanOptio
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
 
 	args := []interface{}{
+		mealPlanOptionID,
 		mealPlanOptionVoteID,
+		mealPlanID,
+		mealPlanOptionID,
+		mealPlanID,
 	}
 
 	result, err := q.performBooleanQuery(ctx, q.db, mealPlanOptionVoteExistenceQuery, args)
@@ -124,14 +145,26 @@ func (q *SQLQuerier) MealPlanOptionVoteExists(ctx context.Context, mealPlanOptio
 	return result, nil
 }
 
-const getMealPlanOptionVoteQuery = "SELECT meal_plan_option_votes.id, meal_plan_option_votes.meal_plan_option_id, meal_plan_option_votes.day_of_week, meal_plan_option_votes.points, meal_plan_option_votes.abstain, meal_plan_option_votes.notes, meal_plan_option_votes.created_on, meal_plan_option_votes.last_updated_on, meal_plan_option_votes.archived_on, meal_plan_option_votes.belongs_to_household FROM meal_plan_option_votes WHERE meal_plan_option_votes.archived_on IS NULL AND meal_plan_option_votes.id = $1"
+const getMealPlanOptionVoteQuery = "SELECT meal_plan_option_votes.id, meal_plan_option_votes.points, meal_plan_option_votes.abstain, meal_plan_option_votes.notes, meal_plan_option_votes.created_on, meal_plan_option_votes.last_updated_on, meal_plan_option_votes.archived_on, meal_plan_option_votes.belongs_to_meal_plan_option FROM meal_plan_option_votes JOIN meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id JOIN mealPlans ON meal_plan_options.belongs_to_meal_plan=mealPlans.id WHERE meal_plan_option_votes.archived_on IS NULL AND meal_plan_option_votes.belongs_to_meal_plan_option = $1 AND meal_plan_option_votes.id = $2 AND meal_plan_options.archived_on IS NULL AND meal_plan_options.belongs_to_meal_plan = $3 AND meal_plan_options.id = $4 AND meal_plans.archived_on IS NULL AND meal_plans.id = $5"
 
 // GetMealPlanOptionVote fetches a meal plan option vote from the database.
-func (q *SQLQuerier) GetMealPlanOptionVote(ctx context.Context, mealPlanOptionVoteID string) (*types.MealPlanOptionVote, error) {
+func (q *SQLQuerier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID string) (*types.MealPlanOptionVote, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger
+
+	if mealPlanID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if mealPlanOptionID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
 	if mealPlanOptionVoteID == "" {
 		return nil, ErrInvalidIDProvided
@@ -140,7 +173,11 @@ func (q *SQLQuerier) GetMealPlanOptionVote(ctx context.Context, mealPlanOptionVo
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
 
 	args := []interface{}{
+		mealPlanOptionID,
 		mealPlanOptionVoteID,
+		mealPlanID,
+		mealPlanOptionID,
+		mealPlanID,
 	}
 
 	row := q.getOneRow(ctx, q.db, "mealPlanOptionVote", getMealPlanOptionVoteQuery, args)
@@ -171,11 +208,23 @@ func (q *SQLQuerier) GetTotalMealPlanOptionVoteCount(ctx context.Context) (uint6
 }
 
 // GetMealPlanOptionVotes fetches a list of meal plan option votes from the database that meet a particular filter.
-func (q *SQLQuerier) GetMealPlanOptionVotes(ctx context.Context, filter *types.QueryFilter) (x *types.MealPlanOptionVoteList, err error) {
+func (q *SQLQuerier) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanOptionID string, filter *types.QueryFilter) (x *types.MealPlanOptionVoteList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger
+
+	if mealPlanID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if mealPlanOptionID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
 	x = &types.MealPlanOptionVoteList{}
 	logger = filter.AttachToLogger(logger)
@@ -188,7 +237,7 @@ func (q *SQLQuerier) GetMealPlanOptionVotes(ctx context.Context, filter *types.Q
 	query, args := q.buildListQuery(
 		ctx,
 		"meal_plan_option_votes",
-		nil,
+		getMealPlanOptionVotesJoins,
 		nil,
 		householdOwnershipColumn,
 		mealPlanOptionVotesTableColumns,
@@ -209,17 +258,14 @@ func (q *SQLQuerier) GetMealPlanOptionVotes(ctx context.Context, filter *types.Q
 	return x, nil
 }
 
-func (q *SQLQuerier) buildGetMealPlanOptionVotesWithIDsQuery(ctx context.Context, householdID string, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *SQLQuerier) buildGetMealPlanOptionVotesWithIDsQuery(ctx context.Context, mealPlanOptionID string, limit uint8, ids []string) (query string, args []interface{}) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	withIDsWhere := squirrel.Eq{
-		"meal_plan_option_votes.id":          ids,
-		"meal_plan_option_votes.archived_on": nil,
-	}
-
-	if householdID != "" {
-		withIDsWhere["meal_plan_option_votes.belongs_to_household"] = householdID
+		"meal_plan_option_votes.id":                          ids,
+		"meal_plan_option_votes.archived_on":                 nil,
+		"meal_plan_option_votes.belongs_to_meal_plan_option": mealPlanOptionID,
 	}
 
 	subqueryBuilder := q.sqlBuilder.Select(mealPlanOptionVotesTableColumns...).
@@ -237,11 +283,17 @@ func (q *SQLQuerier) buildGetMealPlanOptionVotesWithIDsQuery(ctx context.Context
 }
 
 // GetMealPlanOptionVotesWithIDs fetches meal plan option votes from the database within a given set of IDs.
-func (q *SQLQuerier) GetMealPlanOptionVotesWithIDs(ctx context.Context, householdID string, limit uint8, ids []string) ([]*types.MealPlanOptionVote, error) {
+func (q *SQLQuerier) GetMealPlanOptionVotesWithIDs(ctx context.Context, mealPlanOptionID string, limit uint8, ids []string) ([]*types.MealPlanOptionVote, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger
+
+	if mealPlanOptionID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
 	if ids == nil {
 		return nil, ErrNilInputProvided
@@ -256,7 +308,7 @@ func (q *SQLQuerier) GetMealPlanOptionVotesWithIDs(ctx context.Context, househol
 		"id_count": len(ids),
 	})
 
-	query, args := q.buildGetMealPlanOptionVotesWithIDsQuery(ctx, householdID, limit, ids)
+	query, args := q.buildGetMealPlanOptionVotesWithIDsQuery(ctx, mealPlanOptionID, limit, ids)
 
 	rows, err := q.performReadQuery(ctx, q.db, "meal plan option votes with IDs", query, args)
 	if err != nil {
@@ -271,7 +323,7 @@ func (q *SQLQuerier) GetMealPlanOptionVotesWithIDs(ctx context.Context, househol
 	return mealPlanOptionVotes, nil
 }
 
-const mealPlanOptionVoteCreationQuery = "INSERT INTO meal_plan_option_votes (id,meal_plan_option_id,day_of_week,points,abstain,notes,belongs_to_household) VALUES ($1,$2,$3,$4,$5,$6,$7)"
+const mealPlanOptionVoteCreationQuery = "INSERT INTO meal_plan_option_votes (id,points,abstain,notes,belongs_to_meal_plan_option) VALUES ($1,$2,$3,$4,$5)"
 
 // CreateMealPlanOptionVote creates a meal plan option vote in the database.
 func (q *SQLQuerier) CreateMealPlanOptionVote(ctx context.Context, input *types.MealPlanOptionVoteDatabaseCreationInput) (*types.MealPlanOptionVote, error) {
@@ -286,28 +338,24 @@ func (q *SQLQuerier) CreateMealPlanOptionVote(ctx context.Context, input *types.
 
 	args := []interface{}{
 		input.ID,
-		input.MealPlanOptionID,
-		input.DayOfWeek,
 		input.Points,
 		input.Abstain,
 		input.Notes,
-		input.BelongsToHousehold,
+		input.BelongsToMealPlanOption,
 	}
 
 	// create the meal plan option vote.
 	if err := q.performWriteQuery(ctx, q.db, "meal plan option vote creation", mealPlanOptionVoteCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "performing meal plan option vote creation query")
+		return nil, observability.PrepareError(err, logger, span, "creating meal plan option vote")
 	}
 
 	x := &types.MealPlanOptionVote{
-		ID:                 input.ID,
-		MealPlanOptionID:   input.MealPlanOptionID,
-		DayOfWeek:          input.DayOfWeek,
-		Points:             input.Points,
-		Abstain:            input.Abstain,
-		Notes:              input.Notes,
-		BelongsToHousehold: input.BelongsToHousehold,
-		CreatedOn:          q.currentTime(),
+		ID:                      input.ID,
+		Points:                  input.Points,
+		Abstain:                 input.Abstain,
+		Notes:                   input.Notes,
+		BelongsToMealPlanOption: input.BelongsToMealPlanOption,
+		CreatedOn:               q.currentTime(),
 	}
 
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, x.ID)
@@ -316,7 +364,7 @@ func (q *SQLQuerier) CreateMealPlanOptionVote(ctx context.Context, input *types.
 	return x, nil
 }
 
-const updateMealPlanOptionVoteQuery = "UPDATE meal_plan_option_votes SET meal_plan_option_id = $1, day_of_week = $2, points = $3, abstain = $4, notes = $5, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_household = $6 AND id = $7"
+const updateMealPlanOptionVoteQuery = "UPDATE meal_plan_option_votes SET points = $1, abstain = $2, notes = $3, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_meal_plan_option = $4 AND id = $5"
 
 // UpdateMealPlanOptionVote updates a particular meal plan option vote.
 func (q *SQLQuerier) UpdateMealPlanOptionVote(ctx context.Context, updated *types.MealPlanOptionVote) error {
@@ -329,15 +377,12 @@ func (q *SQLQuerier) UpdateMealPlanOptionVote(ctx context.Context, updated *type
 
 	logger := q.logger.WithValue(keys.MealPlanOptionVoteIDKey, updated.ID)
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, updated.ID)
-	tracing.AttachHouseholdIDToSpan(span, updated.BelongsToHousehold)
 
 	args := []interface{}{
-		updated.MealPlanOptionID,
-		updated.DayOfWeek,
 		updated.Points,
 		updated.Abstain,
 		updated.Notes,
-		updated.BelongsToHousehold,
+		updated.BelongsToMealPlanOption,
 		updated.ID,
 	}
 
@@ -350,14 +395,20 @@ func (q *SQLQuerier) UpdateMealPlanOptionVote(ctx context.Context, updated *type
 	return nil
 }
 
-const archiveMealPlanOptionVoteQuery = "UPDATE meal_plan_option_votes SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_household = $1 AND id = $2"
+const archiveMealPlanOptionVoteQuery = "UPDATE meal_plan_option_votes SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_meal_plan_option = $1 AND id = $2"
 
 // ArchiveMealPlanOptionVote archives a meal plan option vote from the database by its ID.
-func (q *SQLQuerier) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanOptionVoteID, householdID string) error {
+func (q *SQLQuerier) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanOptionID, mealPlanOptionVoteID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger
+
+	if mealPlanOptionID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
 	if mealPlanOptionVoteID == "" {
 		return ErrInvalidIDProvided
@@ -365,14 +416,8 @@ func (q *SQLQuerier) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanOpti
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
 
-	if householdID == "" {
-		return ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
-
 	args := []interface{}{
-		householdID,
+		mealPlanOptionID,
 		mealPlanOptionVoteID,
 	}
 

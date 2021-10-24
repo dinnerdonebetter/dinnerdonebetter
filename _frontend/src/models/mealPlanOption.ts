@@ -4,7 +4,6 @@ import {defaultFactories} from "@/models/fakes";
 
 export class MealPlanOption {
   id: number;
-  mealPlanID: string;
   dayOfWeek: number;
   recipeID: string;
   notes: string;
@@ -14,7 +13,6 @@ export class MealPlanOption {
 
   constructor() {
     this.id = 0;
-    this.mealPlanID = "";
     this.dayOfWeek = 0;
     this.recipeID = "";
     this.notes = "";
@@ -27,7 +25,6 @@ static areEqual = function(
 ): boolean {
     return (
       mpo1.id === mpo2.id &&
-      mpo1.mealPlanID === mpo2.mealPlanID &&
       mpo1.dayOfWeek === mpo2.dayOfWeek &&
       mpo1.recipeID === mpo2.recipeID &&
       mpo1.notes === mpo2.notes &&
@@ -37,7 +34,6 @@ static areEqual = function(
 }
 
 export const fakeValidIngredientFactory = Factory.Sync.makeFactory<MealPlanOption> ({
-  mealPlanID: Factory.Sync.each(() =>  faker.random.word()),
   dayOfWeek: Factory.Sync.each(() =>  faker.random.number()),
   recipeID: Factory.Sync.each(() =>  faker.random.word()),
   notes: Factory.Sync.each(() =>  faker.random.word()),

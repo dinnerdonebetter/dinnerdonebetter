@@ -16,14 +16,14 @@ type MealPlanOptionDataManager struct {
 }
 
 // MealPlanOptionExists is a mock function.
-func (m *MealPlanOptionDataManager) MealPlanOptionExists(ctx context.Context, mealPlanOptionID string) (bool, error) {
-	args := m.Called(ctx, mealPlanOptionID)
+func (m *MealPlanOptionDataManager) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlanOptionID string) (bool, error) {
+	args := m.Called(ctx, mealPlanID, mealPlanOptionID)
 	return args.Bool(0), args.Error(1)
 }
 
 // GetMealPlanOption is a mock function.
-func (m *MealPlanOptionDataManager) GetMealPlanOption(ctx context.Context, mealPlanOptionID string) (*types.MealPlanOption, error) {
-	args := m.Called(ctx, mealPlanOptionID)
+func (m *MealPlanOptionDataManager) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) (*types.MealPlanOption, error) {
+	args := m.Called(ctx, mealPlanID, mealPlanOptionID)
 	return args.Get(0).(*types.MealPlanOption), args.Error(1)
 }
 
@@ -34,14 +34,14 @@ func (m *MealPlanOptionDataManager) GetTotalMealPlanOptionCount(ctx context.Cont
 }
 
 // GetMealPlanOptions is a mock function.
-func (m *MealPlanOptionDataManager) GetMealPlanOptions(ctx context.Context, filter *types.QueryFilter) (*types.MealPlanOptionList, error) {
-	args := m.Called(ctx, filter)
+func (m *MealPlanOptionDataManager) GetMealPlanOptions(ctx context.Context, mealPlanID string, filter *types.QueryFilter) (*types.MealPlanOptionList, error) {
+	args := m.Called(ctx, mealPlanID, filter)
 	return args.Get(0).(*types.MealPlanOptionList), args.Error(1)
 }
 
 // GetMealPlanOptionsWithIDs is a mock function.
-func (m *MealPlanOptionDataManager) GetMealPlanOptionsWithIDs(ctx context.Context, householdID string, limit uint8, ids []string) ([]*types.MealPlanOption, error) {
-	args := m.Called(ctx, householdID, limit, ids)
+func (m *MealPlanOptionDataManager) GetMealPlanOptionsWithIDs(ctx context.Context, mealPlanID string, limit uint8, ids []string) ([]*types.MealPlanOption, error) {
+	args := m.Called(ctx, mealPlanID, limit, ids)
 	return args.Get(0).([]*types.MealPlanOption), args.Error(1)
 }
 
@@ -57,6 +57,6 @@ func (m *MealPlanOptionDataManager) UpdateMealPlanOption(ctx context.Context, up
 }
 
 // ArchiveMealPlanOption is a mock function.
-func (m *MealPlanOptionDataManager) ArchiveMealPlanOption(ctx context.Context, mealPlanOptionID, householdID string) error {
-	return m.Called(ctx, mealPlanOptionID, householdID).Error(0)
+func (m *MealPlanOptionDataManager) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) error {
+	return m.Called(ctx, mealPlanID, mealPlanOptionID).Error(0)
 }

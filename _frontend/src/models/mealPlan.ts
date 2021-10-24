@@ -4,6 +4,7 @@ import {defaultFactories} from "@/models/fakes";
 
 export class MealPlan {
   id: number;
+  notes: string;
   state: string;
   startsAt: number;
   endsAt: number;
@@ -13,6 +14,7 @@ export class MealPlan {
 
   constructor() {
     this.id = 0;
+    this.notes = "";
     this.state = "";
     this.startsAt = 0;
     this.endsAt = 0;
@@ -25,6 +27,7 @@ static areEqual = function(
 ): boolean {
     return (
       mp1.id === mp2.id &&
+      mp1.notes === mp2.notes &&
       mp1.state === mp2.state &&
       mp1.startsAt === mp2.startsAt &&
       mp1.endsAt === mp2.endsAt &&
@@ -34,6 +37,7 @@ static areEqual = function(
 }
 
 export const fakeValidIngredientFactory = Factory.Sync.makeFactory<MealPlan> ({
+  notes: Factory.Sync.each(() =>  faker.random.word()),
   state: Factory.Sync.each(() =>  faker.random.word()),
   startsAt: Factory.Sync.each(() =>  faker.random.number()),
   endsAt: Factory.Sync.each(() =>  faker.random.number()),

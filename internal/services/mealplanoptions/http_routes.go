@@ -65,12 +65,18 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := types.MealPlanOptionDatabaseCreationInputFromMealPlanOptionCreationInput(providedInput)
 	input.ID = ksuid.New().String()
 
-	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
+	// determine meal plan ID.
+	mealPlanID := s.mealPlanIDFetcher(req)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+
+	input.BelongsToMealPlan = mealPlanID
 	tracing.AttachMealPlanOptionIDToSpan(span, input.ID)
 
 	// create meal plan option in database.
 	preWrite := &types.PreWriteMessage{
 		DataType:                  types.MealPlanOptionDataType,
+		MealPlanID:                mealPlanID,
 		MealPlanOption:            input,
 		AttributableToUserID:      sessionCtxData.Requester.UserID,
 		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
@@ -105,13 +111,18 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
+	// determine meal plan ID.
+	mealPlanID := s.mealPlanIDFetcher(req)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+
 	// determine meal plan option ID.
 	mealPlanOptionID := s.mealPlanOptionIDFetcher(req)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	// fetch meal plan option from database.
-	x, err := s.mealPlanOptionDataManager.GetMealPlanOption(ctx, mealPlanOptionID)
+	x, err := s.mealPlanOptionDataManager.GetMealPlanOption(ctx, mealPlanID, mealPlanOptionID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -150,7 +161,12 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	mealPlanOptions, err := s.mealPlanOptionDataManager.GetMealPlanOptions(ctx, filter)
+	// determine meal plan ID.
+	mealPlanID := s.mealPlanIDFetcher(req)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+
+	mealPlanOptions, err := s.mealPlanOptionDataManager.GetMealPlanOptions(ctx, mealPlanID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		mealPlanOptions = &types.MealPlanOptionList{MealPlanOptions: []*types.MealPlanOption{}}
@@ -183,6 +199,16 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
+	// determine meal plan ID.
+	mealPlanID := s.mealPlanIDFetcher(req)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+
+	// determine meal plan option ID.
+	mealPlanOptionID := s.mealPlanOptionIDFetcher(req)
+	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
+
 	// check for parsed input attached to session context data.
 	input := new(types.MealPlanOptionUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
@@ -191,20 +217,16 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	input.BelongsToMealPlan = mealPlanID
+
 	if err = input.ValidateWithContext(ctx); err != nil {
 		logger.Error(err, "provided input was invalid")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
 	}
-	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
-
-	// determine meal plan option ID.
-	mealPlanOptionID := s.mealPlanOptionIDFetcher(req)
-	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
-	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	// fetch meal plan option from database.
-	mealPlanOption, err := s.mealPlanOptionDataManager.GetMealPlanOption(ctx, mealPlanOptionID)
+	mealPlanOption, err := s.mealPlanOptionDataManager.GetMealPlanOption(ctx, mealPlanID, mealPlanOptionID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -219,6 +241,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	pum := &types.PreUpdateMessage{
 		DataType:                  types.MealPlanOptionDataType,
+		MealPlanID:                mealPlanID,
 		MealPlanOption:            mealPlanOption,
 		AttributableToUserID:      sessionCtxData.Requester.UserID,
 		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
@@ -252,12 +275,17 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
+	// determine meal plan ID.
+	mealPlanID := s.mealPlanIDFetcher(req)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+
 	// determine meal plan option ID.
 	mealPlanOptionID := s.mealPlanOptionIDFetcher(req)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 
-	exists, existenceCheckErr := s.mealPlanOptionDataManager.MealPlanOptionExists(ctx, mealPlanOptionID)
+	exists, existenceCheckErr := s.mealPlanOptionDataManager.MealPlanOptionExists(ctx, mealPlanID, mealPlanOptionID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
 		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking meal plan option existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -269,6 +297,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	pam := &types.PreArchiveMessage{
 		DataType:                  types.MealPlanOptionDataType,
+		MealPlanID:                mealPlanID,
 		MealPlanOptionID:          mealPlanOptionID,
 		AttributableToUserID:      sessionCtxData.Requester.UserID,
 		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,

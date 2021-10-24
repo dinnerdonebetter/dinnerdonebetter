@@ -21,6 +21,7 @@ type mealPlanOptionsServiceHTTPRoutesTestHelper struct {
 	service               *service
 	exampleUser           *types.User
 	exampleHousehold      *types.Household
+	exampleMealPlan       *types.MealPlan
 	exampleMealPlanOption *types.MealPlanOption
 	exampleCreationInput  *types.MealPlanOptionCreationRequestInput
 	exampleUpdateInput    *types.MealPlanOptionUpdateRequestInput
@@ -36,10 +37,16 @@ func buildTestHelper(t *testing.T) *mealPlanOptionsServiceHTTPRoutesTestHelper {
 	helper.exampleUser = fakes.BuildFakeUser()
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
+	helper.exampleMealPlan = fakes.BuildFakeMealPlan()
+	helper.exampleMealPlan.BelongsToHousehold = helper.exampleHousehold.ID
 	helper.exampleMealPlanOption = fakes.BuildFakeMealPlanOption()
-	helper.exampleMealPlanOption.BelongsToHousehold = helper.exampleHousehold.ID
+	helper.exampleMealPlanOption.BelongsToMealPlan = helper.exampleMealPlan.ID
 	helper.exampleCreationInput = fakes.BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(helper.exampleMealPlanOption)
 	helper.exampleUpdateInput = fakes.BuildFakeMealPlanOptionUpdateRequestInputFromMealPlanOption(helper.exampleMealPlanOption)
+
+	helper.service.mealPlanIDFetcher = func(*http.Request) string {
+		return helper.exampleMealPlan.ID
+	}
 
 	helper.service.mealPlanOptionIDFetcher = func(*http.Request) string {
 		return helper.exampleMealPlanOption.ID

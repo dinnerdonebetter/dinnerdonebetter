@@ -16,6 +16,7 @@ func checkMealPlanEquality(t *testing.T, expected, actual *types.MealPlan) {
 	t.Helper()
 
 	assert.NotZero(t, actual.ID)
+	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for meal plan %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.State, actual.State, "expected State for meal plan %s to be %v, but it was %v", expected.ID, expected.State, actual.State)
 	assert.Equal(t, expected.StartsAt, actual.StartsAt, "expected StartsAt for meal plan %s to be %v, but it was %v", expected.ID, expected.StartsAt, actual.StartsAt)
 	assert.Equal(t, expected.EndsAt, actual.EndsAt, "expected EndsAt for meal plan %s to be %v, but it was %v", expected.ID, expected.EndsAt, actual.EndsAt)
@@ -25,6 +26,7 @@ func checkMealPlanEquality(t *testing.T, expected, actual *types.MealPlan) {
 // convertMealPlanToMealPlanUpdateInput creates an MealPlanUpdateRequestInput struct from a meal plan.
 func convertMealPlanToMealPlanUpdateInput(x *types.MealPlan) *types.MealPlanUpdateRequestInput {
 	return &types.MealPlanUpdateRequestInput{
+		Notes:    x.Notes,
 		State:    x.State,
 		StartsAt: x.StartsAt,
 		EndsAt:   x.EndsAt,
@@ -115,7 +117,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycle() {
 			createdMealPlan.Update(convertMealPlanToMealPlanUpdateInput(newMealPlan))
 			assert.NoError(t, testClients.main.UpdateMealPlan(ctx, createdMealPlan))
 
-			time.Sleep(2 * time.Second)
+			time.Sleep(time.Second)
 
 			// retrieve changed meal plan
 			var actual *types.MealPlan
@@ -157,8 +159,8 @@ func (s *TestSuite) TestMealPlans_Listing() {
 			for i := 0; i < 5; i++ {
 				exampleMealPlan := fakes.BuildFakeMealPlan()
 				exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
-				createdMealPlanID, ecreatedMealPlanErr := testClients.main.CreateMealPlan(ctx, exampleMealPlanInput)
-				require.NoError(t, ecreatedMealPlanErr)
+				createdMealPlanID, err := testClients.main.CreateMealPlan(ctx, exampleMealPlanInput)
+				require.NoError(t, err)
 				t.Logf("meal plan %q created", createdMealPlanID)
 
 				n = <-notificationsChan
@@ -166,8 +168,8 @@ func (s *TestSuite) TestMealPlans_Listing() {
 				require.NotNil(t, n.MealPlan)
 				checkMealPlanEquality(t, exampleMealPlan, n.MealPlan)
 
-				createdMealPlan, ecreatedMealPlanErr := testClients.main.GetMealPlan(ctx, createdMealPlanID)
-				requireNotNilAndNoProblems(t, createdMealPlan, ecreatedMealPlanErr)
+				createdMealPlan, err := testClients.main.GetMealPlan(ctx, createdMealPlanID)
+				requireNotNilAndNoProblems(t, createdMealPlan, err)
 
 				expected = append(expected, createdMealPlan)
 			}
@@ -203,13 +205,13 @@ func (s *TestSuite) TestMealPlans_Listing() {
 			for i := 0; i < 5; i++ {
 				exampleMealPlan := fakes.BuildFakeMealPlan()
 				exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
-				createdMealPlanID, err := testClients.main.CreateMealPlan(ctx, exampleMealPlanInput)
-				require.NoError(t, err)
+				createdMealPlanID, mealPlanErr := testClients.main.CreateMealPlan(ctx, exampleMealPlanInput)
+				require.NoError(t, mealPlanErr)
 
 				var createdMealPlan *types.MealPlan
 				checkFunc = func() bool {
-					createdMealPlan, err = testClients.main.GetMealPlan(ctx, createdMealPlanID)
-					return assert.NotNil(t, createdMealPlan) && assert.NoError(t, err)
+					createdMealPlan, mealPlanErr = testClients.main.GetMealPlan(ctx, createdMealPlanID)
+					return assert.NotNil(t, createdMealPlan) && assert.NoError(t, mealPlanErr)
 				}
 				assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
 				checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)

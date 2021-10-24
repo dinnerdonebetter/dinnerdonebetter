@@ -348,7 +348,7 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 			}
 		}
 	case types.MealPlanOptionDataType:
-		if err := w.dataManager.ArchiveMealPlanOption(ctx, msg.MealPlanOptionID, msg.AttributableToHouseholdID); err != nil {
+		if err := w.dataManager.ArchiveMealPlanOption(ctx, msg.MealPlanID, msg.MealPlanOptionID); err != nil {
 			return observability.PrepareError(err, w.logger, span, "archiving meal plan option")
 		}
 
@@ -368,7 +368,7 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 			}
 		}
 	case types.MealPlanOptionVoteDataType:
-		if err := w.dataManager.ArchiveMealPlanOptionVote(ctx, msg.MealPlanOptionVoteID, msg.AttributableToHouseholdID); err != nil {
+		if err := w.dataManager.ArchiveMealPlanOptionVote(ctx, msg.MealPlanOptionID, msg.MealPlanOptionVoteID); err != nil {
 			return observability.PrepareError(err, w.logger, span, "archiving meal plan option vote")
 		}
 

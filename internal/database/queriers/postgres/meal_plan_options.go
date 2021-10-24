@@ -13,20 +13,27 @@ import (
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
+const (
+	mealPlansOnMealPlanOptionsJoinClause = "meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id"
+)
+
 var (
 	_ types.MealPlanOptionDataManager = (*SQLQuerier)(nil)
 
 	// mealPlanOptionsTableColumns are the columns for the meal_plan_options table.
 	mealPlanOptionsTableColumns = []string{
 		"meal_plan_options.id",
-		"meal_plan_options.meal_plan_id",
 		"meal_plan_options.day_of_week",
 		"meal_plan_options.recipe_id",
 		"meal_plan_options.notes",
 		"meal_plan_options.created_on",
 		"meal_plan_options.last_updated_on",
 		"meal_plan_options.archived_on",
-		"meal_plan_options.belongs_to_household",
+		"meal_plan_options.belongs_to_meal_plan",
+	}
+
+	getMealPlanOptionsJoins = []string{
+		mealPlansOnMealPlanOptionsJoinClause,
 	}
 )
 
@@ -41,14 +48,13 @@ func (q *SQLQuerier) scanMealPlanOption(ctx context.Context, scan database.Scann
 
 	targetVars := []interface{}{
 		&x.ID,
-		&x.MealPlanID,
 		&x.DayOfWeek,
 		&x.RecipeID,
 		&x.Notes,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
-		&x.BelongsToHousehold,
+		&x.BelongsToMealPlan,
 	}
 
 	if includeCounts {
@@ -95,14 +101,20 @@ func (q *SQLQuerier) scanMealPlanOptions(ctx context.Context, rows database.Resu
 	return mealPlanOptions, filteredCount, totalCount, nil
 }
 
-const mealPlanOptionExistenceQuery = "SELECT EXISTS ( SELECT meal_plan_options.id FROM meal_plan_options WHERE meal_plan_options.archived_on IS NULL AND meal_plan_options.id = $1 )"
+const mealPlanOptionExistenceQuery = "SELECT EXISTS ( SELECT meal_plan_options.id FROM meal_plan_options JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id WHERE meal_plan_options.archived_on IS NULL AND meal_plan_options.belongs_to_meal_plan = $1 AND meal_plan_options.id = $2 AND meal_plans.archived_on IS NULL AND meal_plans.id = $3 )"
 
 // MealPlanOptionExists fetches whether a meal plan option exists from the database.
-func (q *SQLQuerier) MealPlanOptionExists(ctx context.Context, mealPlanOptionID string) (exists bool, err error) {
+func (q *SQLQuerier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlanOptionID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger
+
+	if mealPlanID == "" {
+		return false, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if mealPlanOptionID == "" {
 		return false, ErrInvalidIDProvided
@@ -111,7 +123,9 @@ func (q *SQLQuerier) MealPlanOptionExists(ctx context.Context, mealPlanOptionID 
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
 	args := []interface{}{
+		mealPlanID,
 		mealPlanOptionID,
+		mealPlanID,
 	}
 
 	result, err := q.performBooleanQuery(ctx, q.db, mealPlanOptionExistenceQuery, args)
@@ -122,14 +136,20 @@ func (q *SQLQuerier) MealPlanOptionExists(ctx context.Context, mealPlanOptionID 
 	return result, nil
 }
 
-const getMealPlanOptionQuery = "SELECT meal_plan_options.id, meal_plan_options.meal_plan_id, meal_plan_options.day_of_week, meal_plan_options.recipe_id, meal_plan_options.notes, meal_plan_options.created_on, meal_plan_options.last_updated_on, meal_plan_options.archived_on, meal_plan_options.belongs_to_household FROM meal_plan_options WHERE meal_plan_options.archived_on IS NULL AND meal_plan_options.id = $1"
+const getMealPlanOptionQuery = "SELECT meal_plan_options.id, meal_plan_options.day_of_week, meal_plan_options.recipe_id, meal_plan_options.notes, meal_plan_options.created_on, meal_plan_options.last_updated_on, meal_plan_options.archived_on, meal_plan_options.belongs_to_meal_plan FROM meal_plan_options JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id WHERE meal_plan_options.archived_on IS NULL AND meal_plan_options.belongs_to_meal_plan = $1 AND meal_plan_options.id = $2 AND meal_plans.archived_on IS NULL AND meal_plans.id = $3"
 
 // GetMealPlanOption fetches a meal plan option from the database.
-func (q *SQLQuerier) GetMealPlanOption(ctx context.Context, mealPlanOptionID string) (*types.MealPlanOption, error) {
+func (q *SQLQuerier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) (*types.MealPlanOption, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger
+
+	if mealPlanID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if mealPlanOptionID == "" {
 		return nil, ErrInvalidIDProvided
@@ -138,7 +158,9 @@ func (q *SQLQuerier) GetMealPlanOption(ctx context.Context, mealPlanOptionID str
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
 	args := []interface{}{
+		mealPlanID,
 		mealPlanOptionID,
+		mealPlanID,
 	}
 
 	row := q.getOneRow(ctx, q.db, "mealPlanOption", getMealPlanOptionQuery, args)
@@ -169,11 +191,17 @@ func (q *SQLQuerier) GetTotalMealPlanOptionCount(ctx context.Context) (uint64, e
 }
 
 // GetMealPlanOptions fetches a list of meal plan options from the database that meet a particular filter.
-func (q *SQLQuerier) GetMealPlanOptions(ctx context.Context, filter *types.QueryFilter) (x *types.MealPlanOptionList, err error) {
+func (q *SQLQuerier) GetMealPlanOptions(ctx context.Context, mealPlanID string, filter *types.QueryFilter) (x *types.MealPlanOptionList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger
+
+	if mealPlanID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	x = &types.MealPlanOptionList{}
 	logger = filter.AttachToLogger(logger)
@@ -186,7 +214,7 @@ func (q *SQLQuerier) GetMealPlanOptions(ctx context.Context, filter *types.Query
 	query, args := q.buildListQuery(
 		ctx,
 		"meal_plan_options",
-		nil,
+		getMealPlanOptionsJoins,
 		nil,
 		householdOwnershipColumn,
 		mealPlanOptionsTableColumns,
@@ -207,17 +235,14 @@ func (q *SQLQuerier) GetMealPlanOptions(ctx context.Context, filter *types.Query
 	return x, nil
 }
 
-func (q *SQLQuerier) buildGetMealPlanOptionsWithIDsQuery(ctx context.Context, householdID string, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *SQLQuerier) buildGetMealPlanOptionsWithIDsQuery(ctx context.Context, mealPlanID string, limit uint8, ids []string) (query string, args []interface{}) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	withIDsWhere := squirrel.Eq{
-		"meal_plan_options.id":          ids,
-		"meal_plan_options.archived_on": nil,
-	}
-
-	if householdID != "" {
-		withIDsWhere["meal_plan_options.belongs_to_household"] = householdID
+		"meal_plan_options.id":                   ids,
+		"meal_plan_options.archived_on":          nil,
+		"meal_plan_options.belongs_to_meal_plan": mealPlanID,
 	}
 
 	subqueryBuilder := q.sqlBuilder.Select(mealPlanOptionsTableColumns...).
@@ -235,11 +260,17 @@ func (q *SQLQuerier) buildGetMealPlanOptionsWithIDsQuery(ctx context.Context, ho
 }
 
 // GetMealPlanOptionsWithIDs fetches meal plan options from the database within a given set of IDs.
-func (q *SQLQuerier) GetMealPlanOptionsWithIDs(ctx context.Context, householdID string, limit uint8, ids []string) ([]*types.MealPlanOption, error) {
+func (q *SQLQuerier) GetMealPlanOptionsWithIDs(ctx context.Context, mealPlanID string, limit uint8, ids []string) ([]*types.MealPlanOption, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger
+
+	if mealPlanID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if ids == nil {
 		return nil, ErrNilInputProvided
@@ -254,7 +285,7 @@ func (q *SQLQuerier) GetMealPlanOptionsWithIDs(ctx context.Context, householdID 
 		"id_count": len(ids),
 	})
 
-	query, args := q.buildGetMealPlanOptionsWithIDsQuery(ctx, householdID, limit, ids)
+	query, args := q.buildGetMealPlanOptionsWithIDsQuery(ctx, mealPlanID, limit, ids)
 
 	rows, err := q.performReadQuery(ctx, q.db, "meal plan options with IDs", query, args)
 	if err != nil {
@@ -269,10 +300,10 @@ func (q *SQLQuerier) GetMealPlanOptionsWithIDs(ctx context.Context, householdID 
 	return mealPlanOptions, nil
 }
 
-const mealPlanOptionCreationQuery = "INSERT INTO meal_plan_options (id,meal_plan_id,day_of_week,recipe_id,notes,belongs_to_household) VALUES ($1,$2,$3,$4,$5,$6)"
+const mealPlanOptionCreationQuery = "INSERT INTO meal_plan_options (id,day_of_week,recipe_id,notes,belongs_to_meal_plan) VALUES ($1,$2,$3,$4,$5)"
 
-// createMealPlanOption creates a meal plan option in the database.
-func (q *SQLQuerier) createMealPlanOption(ctx context.Context, db database.SQLQueryExecutor, input *types.MealPlanOptionDatabaseCreationInput) (*types.MealPlanOption, error) {
+// CreateMealPlanOption creates a meal plan option in the database.
+func (q *SQLQuerier) CreateMealPlanOption(ctx context.Context, input *types.MealPlanOptionDatabaseCreationInput) (*types.MealPlanOption, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -284,26 +315,24 @@ func (q *SQLQuerier) createMealPlanOption(ctx context.Context, db database.SQLQu
 
 	args := []interface{}{
 		input.ID,
-		input.MealPlanID,
 		input.DayOfWeek,
 		input.RecipeID,
 		input.Notes,
-		input.BelongsToHousehold,
+		input.BelongsToMealPlan,
 	}
 
 	// create the meal plan option.
-	if err := q.performWriteQuery(ctx, db, "meal plan option creation", mealPlanOptionCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "performing meal plan option creation query")
+	if err := q.performWriteQuery(ctx, q.db, "meal plan option creation", mealPlanOptionCreationQuery, args); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "creating meal plan option")
 	}
 
 	x := &types.MealPlanOption{
-		ID:                 input.ID,
-		MealPlanID:         input.MealPlanID,
-		DayOfWeek:          input.DayOfWeek,
-		RecipeID:           input.RecipeID,
-		Notes:              input.Notes,
-		BelongsToHousehold: input.BelongsToHousehold,
-		CreatedOn:          q.currentTime(),
+		ID:                input.ID,
+		DayOfWeek:         input.DayOfWeek,
+		RecipeID:          input.RecipeID,
+		Notes:             input.Notes,
+		BelongsToMealPlan: input.BelongsToMealPlan,
+		CreatedOn:         q.currentTime(),
 	}
 
 	tracing.AttachMealPlanOptionIDToSpan(span, x.ID)
@@ -312,12 +341,7 @@ func (q *SQLQuerier) createMealPlanOption(ctx context.Context, db database.SQLQu
 	return x, nil
 }
 
-// CreateMealPlanOption creates a meal plan option in the database.
-func (q *SQLQuerier) CreateMealPlanOption(ctx context.Context, input *types.MealPlanOptionDatabaseCreationInput) (*types.MealPlanOption, error) {
-	return q.createMealPlanOption(ctx, q.db, input)
-}
-
-const updateMealPlanOptionQuery = "UPDATE meal_plan_options SET meal_plan_id = $1, day_of_week = $2, recipe_id = $3, notes = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_household = $5 AND id = $6"
+const updateMealPlanOptionQuery = "UPDATE meal_plan_options SET day_of_week = $1, recipe_id = $2, notes = $3, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_meal_plan = $4 AND id = $5"
 
 // UpdateMealPlanOption updates a particular meal plan option.
 func (q *SQLQuerier) UpdateMealPlanOption(ctx context.Context, updated *types.MealPlanOption) error {
@@ -330,14 +354,12 @@ func (q *SQLQuerier) UpdateMealPlanOption(ctx context.Context, updated *types.Me
 
 	logger := q.logger.WithValue(keys.MealPlanOptionIDKey, updated.ID)
 	tracing.AttachMealPlanOptionIDToSpan(span, updated.ID)
-	tracing.AttachHouseholdIDToSpan(span, updated.BelongsToHousehold)
 
 	args := []interface{}{
-		updated.MealPlanID,
 		updated.DayOfWeek,
 		updated.RecipeID,
 		updated.Notes,
-		updated.BelongsToHousehold,
+		updated.BelongsToMealPlan,
 		updated.ID,
 	}
 
@@ -350,14 +372,20 @@ func (q *SQLQuerier) UpdateMealPlanOption(ctx context.Context, updated *types.Me
 	return nil
 }
 
-const archiveMealPlanOptionQuery = "UPDATE meal_plan_options SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_household = $1 AND id = $2"
+const archiveMealPlanOptionQuery = "UPDATE meal_plan_options SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_meal_plan = $1 AND id = $2"
 
 // ArchiveMealPlanOption archives a meal plan option from the database by its ID.
-func (q *SQLQuerier) ArchiveMealPlanOption(ctx context.Context, mealPlanOptionID, householdID string) error {
+func (q *SQLQuerier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger
+
+	if mealPlanID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if mealPlanOptionID == "" {
 		return ErrInvalidIDProvided
@@ -365,14 +393,8 @@ func (q *SQLQuerier) ArchiveMealPlanOption(ctx context.Context, mealPlanOptionID
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
-	if householdID == "" {
-		return ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
-
 	args := []interface{}{
-		householdID,
+		mealPlanID,
 		mealPlanOptionID,
 	}
 

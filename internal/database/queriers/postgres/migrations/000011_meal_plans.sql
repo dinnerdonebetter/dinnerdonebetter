@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS meal_plans (
 	"id" CHAR(27) NOT NULL PRIMARY KEY,
+	"notes" TEXT NOT NULL,
 	"state" TEXT NOT NULL,
 	"starts_at" BIGINT NOT NULL,
 	"ends_at" BIGINT NOT NULL,

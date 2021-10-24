@@ -20,7 +20,9 @@ type (
 		RecipeStepIngredient       *RecipeStepIngredientDatabaseCreationInput       `json:"recipeStepIngredient,omitempty"`
 		RecipeStepProduct          *RecipeStepProductDatabaseCreationInput          `json:"recipeStepProduct,omitempty"`
 		MealPlan                   *MealPlanDatabaseCreationInput                   `json:"mealPlan,omitempty"`
+		MealPlanID                 string                                           `json:"mealPlanID"`
 		MealPlanOption             *MealPlanOptionDatabaseCreationInput             `json:"mealPlanOption,omitempty"`
+		MealPlanOptionID           string                                           `json:"mealPlanOptionID"`
 		MealPlanOptionVote         *MealPlanOptionVoteDatabaseCreationInput         `json:"mealPlanOptionVote,omitempty"`
 		Webhook                    *WebhookDatabaseCreationInput                    `json:"webhook,omitempty"`
 		UserMembership             *AddUserToHouseholdInput                         `json:"userMembership,omitempty"`
@@ -45,7 +47,9 @@ type (
 		RecipeStepIngredient       *RecipeStepIngredient       `json:"recipeStepIngredient,omitempty"`
 		RecipeStepProduct          *RecipeStepProduct          `json:"recipeStepProduct,omitempty"`
 		MealPlan                   *MealPlan                   `json:"mealPlan,omitempty"`
+		MealPlanID                 string                      `json:"mealPlanID"`
 		MealPlanOption             *MealPlanOption             `json:"mealPlanOption,omitempty"`
+		MealPlanOptionID           string                      `json:"mealPlanOptionID"`
 		MealPlanOptionVote         *MealPlanOptionVote         `json:"mealPlanOptionVote,omitempty"`
 		AttributableToUserID       string                      `json:"attributableToUserID"`
 		AttributableToHouseholdID  string                      `json:"attributableToHouseholdID"`
@@ -91,7 +95,9 @@ type (
 		RecipeStepIngredient       *RecipeStepIngredient       `json:"recipeStepIngredient,omitempty"`
 		RecipeStepProduct          *RecipeStepProduct          `json:"recipeStepProduct,omitempty"`
 		MealPlan                   *MealPlan                   `json:"mealPlan,omitempty"`
+		MealPlanID                 string                      `json:"mealPlanID"`
 		MealPlanOption             *MealPlanOption             `json:"mealPlanOption,omitempty"`
+		MealPlanOptionID           string                      `json:"mealPlanOptionID"`
 		MealPlanOptionVote         *MealPlanOptionVote         `json:"mealPlanOptionVote,omitempty"`
 		Webhook                    *Webhook                    `json:"webhook,omitempty"`
 		UserMembership             *HouseholdUserMembership    `json:"userMembership,omitempty"`

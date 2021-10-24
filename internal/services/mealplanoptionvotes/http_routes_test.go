@@ -168,6 +168,8 @@ func TestMealPlanOptionVotesService_ReadHandler(T *testing.T) {
 		mealPlanOptionVoteDataManager.On(
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(helper.exampleMealPlanOptionVote, nil)
 		helper.service.mealPlanOptionVoteDataManager = mealPlanOptionVoteDataManager
@@ -221,6 +223,8 @@ func TestMealPlanOptionVotesService_ReadHandler(T *testing.T) {
 		mealPlanOptionVoteDataManager.On(
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return((*types.MealPlanOptionVote)(nil), sql.ErrNoRows)
 		helper.service.mealPlanOptionVoteDataManager = mealPlanOptionVoteDataManager
@@ -249,6 +253,8 @@ func TestMealPlanOptionVotesService_ReadHandler(T *testing.T) {
 		mealPlanOptionVoteDataManager.On(
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return((*types.MealPlanOptionVote)(nil), errors.New("blah"))
 		helper.service.mealPlanOptionVoteDataManager = mealPlanOptionVoteDataManager
@@ -283,6 +289,8 @@ func TestMealPlanOptionVotesService_ListHandler(T *testing.T) {
 		mealPlanOptionVoteDataManager.On(
 			"GetMealPlanOptionVotes",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanOption.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return(exampleMealPlanOptionVoteList, nil)
 		helper.service.mealPlanOptionVoteDataManager = mealPlanOptionVoteDataManager
@@ -336,6 +344,8 @@ func TestMealPlanOptionVotesService_ListHandler(T *testing.T) {
 		mealPlanOptionVoteDataManager.On(
 			"GetMealPlanOptionVotes",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanOption.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.MealPlanOptionVoteList)(nil), sql.ErrNoRows)
 		helper.service.mealPlanOptionVoteDataManager = mealPlanOptionVoteDataManager
@@ -365,6 +375,8 @@ func TestMealPlanOptionVotesService_ListHandler(T *testing.T) {
 		mealPlanOptionVoteDataManager.On(
 			"GetMealPlanOptionVotes",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanOption.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.MealPlanOptionVoteList)(nil), errors.New("blah"))
 		helper.service.mealPlanOptionVoteDataManager = mealPlanOptionVoteDataManager
@@ -406,6 +418,8 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 		mealPlanOptionVoteDataManager.On(
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(helper.exampleMealPlanOptionVote, nil)
 		helper.service.mealPlanOptionVoteDataManager = mealPlanOptionVoteDataManager
@@ -489,6 +503,8 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 		mealPlanOptionVoteDataManager.On(
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return((*types.MealPlanOptionVote)(nil), sql.ErrNoRows)
 		helper.service.mealPlanOptionVoteDataManager = mealPlanOptionVoteDataManager
@@ -518,6 +534,8 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 		mealPlanOptionVoteDataManager.On(
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return((*types.MealPlanOptionVote)(nil), errors.New("blah"))
 		helper.service.mealPlanOptionVoteDataManager = mealPlanOptionVoteDataManager
@@ -547,6 +565,8 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 		mealPlanOptionVoteDataManager.On(
 			"GetMealPlanOptionVote",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(helper.exampleMealPlanOptionVote, nil)
 		helper.service.mealPlanOptionVoteDataManager = mealPlanOptionVoteDataManager
@@ -579,6 +599,8 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 		mealPlanOptionVoteDataManager.On(
 			"MealPlanOptionVoteExists",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(true, nil)
 		helper.service.mealPlanOptionVoteDataManager = mealPlanOptionVoteDataManager
@@ -631,6 +653,8 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 		mealPlanOptionVoteDataManager.On(
 			"MealPlanOptionVoteExists",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(false, nil)
 		helper.service.mealPlanOptionVoteDataManager = mealPlanOptionVoteDataManager
@@ -659,6 +683,8 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 		mealPlanOptionVoteDataManager.On(
 			"MealPlanOptionVoteExists",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(false, errors.New("blah"))
 		helper.service.mealPlanOptionVoteDataManager = mealPlanOptionVoteDataManager
@@ -679,6 +705,8 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 		mealPlanOptionVoteDataManager.On(
 			"MealPlanOptionVoteExists",
 			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanOption.ID,
 			helper.exampleMealPlanOptionVote.ID,
 		).Return(true, nil)
 		helper.service.mealPlanOptionVoteDataManager = mealPlanOptionVoteDataManager

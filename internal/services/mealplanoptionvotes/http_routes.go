@@ -65,12 +65,18 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := types.MealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVoteCreationInput(providedInput)
 	input.ID = ksuid.New().String()
 
-	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
+	// determine meal plan option ID.
+	mealPlanOptionID := s.mealPlanOptionIDFetcher(req)
+	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
+
+	input.BelongsToMealPlanOption = mealPlanOptionID
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, input.ID)
 
 	// create meal plan option vote in database.
 	preWrite := &types.PreWriteMessage{
 		DataType:                  types.MealPlanOptionVoteDataType,
+		MealPlanOptionID:          mealPlanOptionID,
 		MealPlanOptionVote:        input,
 		AttributableToUserID:      sessionCtxData.Requester.UserID,
 		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
@@ -105,13 +111,23 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
+	// determine meal plan ID.
+	mealPlanID := s.mealPlanIDFetcher(req)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+
+	// determine meal plan option ID.
+	mealPlanOptionID := s.mealPlanOptionIDFetcher(req)
+	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
+
 	// determine meal plan option vote ID.
 	mealPlanOptionVoteID := s.mealPlanOptionVoteIDFetcher(req)
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 
 	// fetch meal plan option vote from database.
-	x, err := s.mealPlanOptionVoteDataManager.GetMealPlanOptionVote(ctx, mealPlanOptionVoteID)
+	x, err := s.mealPlanOptionVoteDataManager.GetMealPlanOptionVote(ctx, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -150,7 +166,17 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	mealPlanOptionVotes, err := s.mealPlanOptionVoteDataManager.GetMealPlanOptionVotes(ctx, filter)
+	// determine meal plan ID.
+	mealPlanID := s.mealPlanIDFetcher(req)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+
+	// determine meal plan option ID.
+	mealPlanOptionID := s.mealPlanOptionIDFetcher(req)
+	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
+
+	mealPlanOptionVotes, err := s.mealPlanOptionVoteDataManager.GetMealPlanOptionVotes(ctx, mealPlanID, mealPlanOptionID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		mealPlanOptionVotes = &types.MealPlanOptionVoteList{MealPlanOptionVotes: []*types.MealPlanOptionVote{}}
@@ -196,7 +222,16 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
 	}
-	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
+
+	// determine meal plan ID.
+	mealPlanID := s.mealPlanIDFetcher(req)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+
+	// determine meal plan option ID.
+	mealPlanOptionID := s.mealPlanOptionIDFetcher(req)
+	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	// determine meal plan option vote ID.
 	mealPlanOptionVoteID := s.mealPlanOptionVoteIDFetcher(req)
@@ -204,7 +239,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 
 	// fetch meal plan option vote from database.
-	mealPlanOptionVote, err := s.mealPlanOptionVoteDataManager.GetMealPlanOptionVote(ctx, mealPlanOptionVoteID)
+	mealPlanOptionVote, err := s.mealPlanOptionVoteDataManager.GetMealPlanOptionVote(ctx, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -219,6 +254,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	pum := &types.PreUpdateMessage{
 		DataType:                  types.MealPlanOptionVoteDataType,
+		MealPlanOptionID:          mealPlanOptionID,
 		MealPlanOptionVote:        mealPlanOptionVote,
 		AttributableToUserID:      sessionCtxData.Requester.UserID,
 		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
@@ -252,12 +288,22 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
+	// determine meal plan ID.
+	mealPlanID := s.mealPlanIDFetcher(req)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+
+	// determine meal plan option ID.
+	mealPlanOptionID := s.mealPlanOptionIDFetcher(req)
+	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
+
 	// determine meal plan option vote ID.
 	mealPlanOptionVoteID := s.mealPlanOptionVoteIDFetcher(req)
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 
-	exists, existenceCheckErr := s.mealPlanOptionVoteDataManager.MealPlanOptionVoteExists(ctx, mealPlanOptionVoteID)
+	exists, existenceCheckErr := s.mealPlanOptionVoteDataManager.MealPlanOptionVoteExists(ctx, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
 		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking meal plan option vote existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -269,6 +315,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	pam := &types.PreArchiveMessage{
 		DataType:                  types.MealPlanOptionVoteDataType,
+		MealPlanOptionID:          mealPlanOptionID,
 		MealPlanOptionVoteID:      mealPlanOptionVoteID,
 		AttributableToUserID:      sessionCtxData.Requester.UserID,
 		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
