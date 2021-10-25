@@ -6,7 +6,7 @@ WORKDIR /go/src/gitlab.com/prixfixe/prixfixe
 
 COPY . .
 
-# ENV SKIP_COOKIE_TESTS=TRUE
+ENV SKIP_PASETO_TESTS=TRUE
 
 # to debug a specific test:
 # ENTRYPOINT [ "go", "test", "-parallel", "1", "-v", "-failfast", "gitlab.com/prixfixe/prixfixe/tests/integration", "-run", "TestIntegration/TestRecipes" ]

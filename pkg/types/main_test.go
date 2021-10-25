@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const(
+const (
 	exampleQuantity = 3
 )
 

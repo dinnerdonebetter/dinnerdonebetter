@@ -7,7 +7,6 @@ import (
 	"os"
 	"strconv"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -20,9 +19,6 @@ import (
 const (
 	cookieAuthType = "cookie"
 	pasetoAuthType = "PASETO"
-
-	creationTimeout = 10 * time.Second
-	waitPeriod      = 300 * time.Millisecond
 )
 
 var (
@@ -75,7 +71,7 @@ func (s *TestSuite) runForCookieClient(name string, subtestBuilder func(*testCli
 }
 
 func (s *TestSuite) runForPASETOClient(name string, subtestBuilder func(*testClientWrapper) func()) {
-	if x, err := strconv.ParseBool(os.Getenv("SKIP_COOKIE_TESTS")); err != nil && x {
+	if x, _ := strconv.ParseBool(os.Getenv("SKIP_PASETO_TESTS")); x {
 		return
 	}
 

@@ -661,6 +661,7 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 			exampleInput.Points,
 			exampleInput.Abstain,
 			exampleInput.Notes,
+			exampleInput.ByUser,
 			exampleInput.BelongsToMealPlanOption,
 		}
 
@@ -705,6 +706,7 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 			exampleInput.Points,
 			exampleInput.Abstain,
 			exampleInput.Notes,
+			exampleInput.ByUser,
 			exampleInput.BelongsToMealPlanOption,
 		}
 
@@ -740,6 +742,7 @@ func TestQuerier_UpdateMealPlanOptionVote(T *testing.T) {
 			exampleMealPlanOptionVote.Points,
 			exampleMealPlanOptionVote.Abstain,
 			exampleMealPlanOptionVote.Notes,
+			exampleMealPlanOptionVote.ByUser,
 			exampleMealPlanOptionVote.BelongsToMealPlanOption,
 			exampleMealPlanOptionVote.ID,
 		}
@@ -774,6 +777,7 @@ func TestQuerier_UpdateMealPlanOptionVote(T *testing.T) {
 			exampleMealPlanOptionVote.Points,
 			exampleMealPlanOptionVote.Abstain,
 			exampleMealPlanOptionVote.Notes,
+			exampleMealPlanOptionVote.ByUser,
 			exampleMealPlanOptionVote.BelongsToMealPlanOption,
 			exampleMealPlanOptionVote.ID,
 		}

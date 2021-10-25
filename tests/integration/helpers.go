@@ -20,6 +20,11 @@ import (
 	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
 )
 
+const (
+	creationTimeout = 10 * time.Second
+	waitPeriod      = 1000 * time.Millisecond
+)
+
 func stringPointer(s string) *string {
 	return &s
 }
