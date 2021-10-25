@@ -31,6 +31,7 @@ func buildMockRowsFromMealPlanOptionVotes(includeCounts bool, filteredCount uint
 			x.Points,
 			x.Abstain,
 			x.Notes,
+			x.ByUser,
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,

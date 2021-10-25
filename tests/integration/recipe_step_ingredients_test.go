@@ -107,7 +107,7 @@ func (s *TestSuite) TestRecipeStepIngredients_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidIngredients, _, createdRecipe := createRecipeWithPolling(ctx, t, testClients.main)
+			createdValidIngredients, _, createdRecipe := createRecipeWhilePolling(ctx, t, testClients.main)
 
 			createdRecipeStepID := createdRecipe.Steps[0].ID
 			var createdRecipeStepIngredientID string
@@ -180,7 +180,7 @@ func (s *TestSuite) TestRecipeStepIngredients_Listing() {
 
 			var n *types.DataChangeMessage
 
-			createdValidIngredients, _, createdRecipe := createRecipeWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
+			_, _, createdRecipe := createRecipeWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
 
 			var (
 				createdRecipeStepID string
@@ -193,9 +193,11 @@ func (s *TestSuite) TestRecipeStepIngredients_Listing() {
 			t.Log("creating recipe step ingredients")
 			var expected []*types.RecipeStepIngredient
 			for i := 0; i < 5; i++ {
+				x, _, _ := createRecipeWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
+
 				exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 				exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStepID
-				exampleRecipeStepIngredient.IngredientID = &createdValidIngredients[0].ID
+				exampleRecipeStepIngredient.IngredientID = &x[0].ID
 				exampleRecipeStepIngredientInput := fakes.BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
 				createdRecipeStepIngredientID, createdRecipeStepIngredientErr := testClients.main.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
 				require.NoError(t, createdRecipeStepIngredientErr)
@@ -245,7 +247,7 @@ func (s *TestSuite) TestRecipeStepIngredients_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidIngredients, _, createdRecipe := createRecipeWithPolling(ctx, t, testClients.main)
+			_, _, createdRecipe := createRecipeWhilePolling(ctx, t, testClients.main)
 
 			var (
 				createdRecipeStepID string
@@ -258,9 +260,11 @@ func (s *TestSuite) TestRecipeStepIngredients_Listing() {
 			t.Log("creating recipe step ingredients")
 			var expected []*types.RecipeStepIngredient
 			for i := 0; i < 5; i++ {
+				x, _, _ := createRecipeWhilePolling(ctx, t, testClients.main)
+
 				exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 				exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStepID
-				exampleRecipeStepIngredient.IngredientID = &createdValidIngredients[0].ID
+				exampleRecipeStepIngredient.IngredientID = &x[0].ID
 				exampleRecipeStepIngredientInput := fakes.BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
 				createdRecipeStepIngredientID, createdRecipeStepIngredientErr := testClients.main.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
 				require.NoError(t, createdRecipeStepIngredientErr)

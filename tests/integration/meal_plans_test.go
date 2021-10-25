@@ -73,7 +73,7 @@ func createMealPlanWhilePolling(ctx context.Context, t *testing.T, client *httpc
 	t.Log("creating meal plan")
 	exampleMealPlan := fakes.BuildFakeMealPlan()
 	for i := range exampleMealPlan.Options {
-		_, _, createdRecipe := createRecipeWithPolling(ctx, t, client)
+		_, _, createdRecipe := createRecipeWhilePolling(ctx, t, client)
 		exampleMealPlan.Options[i].RecipeID = createdRecipe.ID
 	}
 

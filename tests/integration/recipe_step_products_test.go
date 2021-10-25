@@ -108,7 +108,7 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeWithPolling(ctx, t, testClients.main)
+			_, _, createdRecipe := createRecipeWhilePolling(ctx, t, testClients.main)
 
 			var (
 				createdRecipeStepID string
@@ -250,7 +250,7 @@ func (s *TestSuite) TestRecipeStepProducts_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeWithPolling(ctx, t, testClients.main)
+			_, _, createdRecipe := createRecipeWhilePolling(ctx, t, testClients.main)
 
 			var (
 				createdRecipeStepID string

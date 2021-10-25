@@ -29,6 +29,7 @@ type (
 		BelongsToMealPlanOption string  `json:"belongsToMealPlanOption"`
 		Notes                   string  `json:"notes"`
 		ID                      string  `json:"id"`
+		ByUser                  string  `json:"byUser"`
 		CreatedOn               uint64  `json:"createdOn"`
 		Points                  int16   `json:"points"`
 		Abstain                 bool    `json:"abstain"`
@@ -46,6 +47,7 @@ type (
 		_                       struct{}
 		ID                      string `json:"-"`
 		Notes                   string `json:"notes"`
+		ByUser                  string `json:"-"`
 		BelongsToMealPlanOption string `json:"-"`
 		Points                  int16  `json:"points"`
 		Abstain                 bool   `json:"abstain"`
@@ -56,6 +58,7 @@ type (
 		_                       struct{}
 		ID                      string `json:"id"`
 		Notes                   string `json:"notes"`
+		ByUser                  string `json:"byUser"`
 		BelongsToMealPlanOption string `json:"belongsToMealPlanOption"`
 		Points                  int16  `json:"points"`
 		Abstain                 bool   `json:"abstain"`
@@ -128,6 +131,7 @@ func (x *MealPlanOptionVoteDatabaseCreationInput) ValidateWithContext(ctx contex
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Points, validation.Required),
+		validation.Field(&x.ByUser, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
 	)
 }
@@ -137,6 +141,7 @@ func MealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVoteCreationInput(
 	x := &MealPlanOptionVoteDatabaseCreationInput{
 		Points:  input.Points,
 		Abstain: input.Abstain,
+		ByUser:  input.ByUser,
 		Notes:   input.Notes,
 	}
 

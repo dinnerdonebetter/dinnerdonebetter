@@ -62,6 +62,47 @@ func (q *SQLQuerier) scanMealPlan(ctx context.Context, scan database.Scanner, in
 	return x, filteredCount, totalCount, nil
 }
 
+// scanMealPlanWithOptions takes a database Scanner (i.e. *sql.Row) and scans the result into a meal plan struct.
+func (q *SQLQuerier) scanMealPlanWithOptions(ctx context.Context, scan database.Scanner, includeCounts bool) (mealPlan *types.MealPlan, mealPlanOption *types.MealPlanOption, filteredCount, totalCount uint64, err error) {
+	_, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.WithValue("include_counts", includeCounts)
+
+	mealPlan = &types.MealPlan{}
+	mealPlanOption = &types.MealPlanOption{}
+
+	targetVars := []interface{}{
+		&mealPlan.ID,
+		&mealPlan.Notes,
+		&mealPlan.State,
+		&mealPlan.StartsAt,
+		&mealPlan.EndsAt,
+		&mealPlan.CreatedOn,
+		&mealPlan.LastUpdatedOn,
+		&mealPlan.ArchivedOn,
+		&mealPlan.BelongsToHousehold,
+		&mealPlanOption.ID,
+		&mealPlanOption.DayOfWeek,
+		&mealPlanOption.RecipeID,
+		&mealPlanOption.Notes,
+		&mealPlanOption.CreatedOn,
+		&mealPlanOption.LastUpdatedOn,
+		&mealPlanOption.ArchivedOn,
+		&mealPlanOption.BelongsToMealPlan,
+	}
+
+	if includeCounts {
+		targetVars = append(targetVars, &filteredCount, &totalCount)
+	}
+
+	if err = scan.Scan(targetVars...); err != nil {
+		return nil, nil, 0, 0, observability.PrepareError(err, logger, span, "")
+	}
+
+	return mealPlan, mealPlanOption, filteredCount, totalCount, nil
+}
+
 // scanMealPlans takes some database rows and turns them into a slice of meal plans.
 func (q *SQLQuerier) scanMealPlans(ctx context.Context, rows database.ResultIterator, includeCounts bool) (mealPlans []*types.MealPlan, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
@@ -122,7 +163,29 @@ func (q *SQLQuerier) MealPlanExists(ctx context.Context, mealPlanID string) (exi
 	return result, nil
 }
 
-const getMealPlanQuery = "SELECT meal_plans.id, meal_plans.notes, meal_plans.state, meal_plans.starts_at, meal_plans.ends_at, meal_plans.created_on, meal_plans.last_updated_on, meal_plans.archived_on, meal_plans.belongs_to_household FROM meal_plans WHERE meal_plans.archived_on IS NULL AND meal_plans.id = $1"
+const getMealPlanQuery = `SELECT
+	meal_plans.id,
+	meal_plans.notes,
+	meal_plans.state,
+	meal_plans.starts_at,
+	meal_plans.ends_at,
+	meal_plans.created_on,
+	meal_plans.last_updated_on,
+	meal_plans.archived_on,
+	meal_plans.belongs_to_household,
+    meal_plan_options.id,
+    meal_plan_options.day_of_week,
+    meal_plan_options.recipe_id,
+    meal_plan_options.notes,
+    meal_plan_options.created_on,
+    meal_plan_options.last_updated_on,
+	meal_plan_options.archived_on,
+    meal_plan_options.belongs_to_meal_plan
+FROM meal_plans 
+	FULL OUTER JOIN meal_plan_options ON meal_plan_options.belongs_to_meal_plan=meal_plans.id
+WHERE meal_plans.archived_on IS NULL 
+AND meal_plans.id = $1
+`
 
 // GetMealPlan fetches a meal plan from the database.
 func (q *SQLQuerier) GetMealPlan(ctx context.Context, mealPlanID string) (*types.MealPlan, error) {
@@ -141,11 +204,25 @@ func (q *SQLQuerier) GetMealPlan(ctx context.Context, mealPlanID string) (*types
 		mealPlanID,
 	}
 
-	row := q.getOneRow(ctx, q.db, "mealPlan", getMealPlanQuery, args)
-
-	mealPlan, _, _, err := q.scanMealPlan(ctx, row, false)
+	rows, err := q.performReadQuery(ctx, q.db, "meal plan", getMealPlanQuery, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning mealPlan")
+		return nil, observability.PrepareError(err, logger, span, "executing meal plan with options retrieval query")
+	}
+
+	var (
+		mealPlan *types.MealPlan
+	)
+	for rows.Next() {
+		rowMealPlan, rowMealPlanOption, _, _, err := q.scanMealPlanWithOptions(ctx, rows, false)
+		if err != nil {
+			return nil, observability.PrepareError(err, logger, span, "scanning mealPlan")
+		}
+
+		if mealPlan == nil {
+			mealPlan = rowMealPlan
+		}
+
+		mealPlan.Options = append(mealPlan.Options, rowMealPlanOption)
 	}
 
 	return mealPlan, nil

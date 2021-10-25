@@ -64,6 +64,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	input := types.MealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVoteCreationInput(providedInput)
 	input.ID = ksuid.New().String()
+	tracing.AttachMealPlanOptionVoteIDToSpan(span, input.ID)
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
@@ -76,7 +77,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	input.BelongsToMealPlanOption = mealPlanOptionID
-	tracing.AttachMealPlanOptionVoteIDToSpan(span, input.ID)
+	input.ByUser = sessionCtxData.Requester.UserID
 
 	// create meal plan option vote in database.
 	preWrite := &types.PreWriteMessage{

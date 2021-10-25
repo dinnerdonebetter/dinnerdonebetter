@@ -75,6 +75,7 @@ func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 
 			t.Log("changing recipe step instrument")
 			newRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
+			newRecipeStepInstrument.BelongsToRecipeStep = createdRecipeStepID
 			createdRecipeStepInstrument.Update(convertRecipeStepInstrumentToRecipeStepInstrumentUpdateInput(newRecipeStepInstrument))
 			assert.NoError(t, testClients.main.UpdateRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepInstrument))
 
@@ -108,7 +109,7 @@ func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeWithPolling(ctx, t, testClients.main)
+			_, _, createdRecipe := createRecipeWhilePolling(ctx, t, testClients.main)
 
 			var createdRecipeStepID string
 			for _, step := range createdRecipe.Steps {
@@ -138,6 +139,7 @@ func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 
 			// change recipe step instrument
 			newRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
+			newRecipeStepInstrument.BelongsToRecipeStep = createdRecipeStepID
 			createdRecipeStepInstrument.Update(convertRecipeStepInstrumentToRecipeStepInstrumentUpdateInput(newRecipeStepInstrument))
 			assert.NoError(t, testClients.main.UpdateRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepInstrument))
 
@@ -246,7 +248,7 @@ func (s *TestSuite) TestRecipeStepInstruments_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeWithPolling(ctx, t, testClients.main)
+			_, _, createdRecipe := createRecipeWhilePolling(ctx, t, testClients.main)
 
 			var createdRecipeStepID string
 			for _, step := range createdRecipe.Steps {

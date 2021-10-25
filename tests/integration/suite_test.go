@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 	"testing"
 	"time"
 
@@ -20,7 +22,7 @@ const (
 	pasetoAuthType = "PASETO"
 
 	creationTimeout = 10 * time.Second
-	waitPeriod      = 1000 * time.Millisecond
+	waitPeriod      = 300 * time.Millisecond
 )
 
 var (
@@ -73,6 +75,10 @@ func (s *TestSuite) runForCookieClient(name string, subtestBuilder func(*testCli
 }
 
 func (s *TestSuite) runForPASETOClient(name string, subtestBuilder func(*testClientWrapper) func()) {
+	if x, err := strconv.ParseBool(os.Getenv("SKIP_COOKIE_TESTS")); err != nil && x {
+		return
+	}
+
 	for a, c := range s.eachClientExcept(cookieAuthType) {
 		authType, testClients := a, c
 		s.Run(fmt.Sprintf("%s via %s", name, authType), subtestBuilder(testClients))
