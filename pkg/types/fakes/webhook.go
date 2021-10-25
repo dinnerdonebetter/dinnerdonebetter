@@ -3,26 +3,26 @@ package fakes
 import (
 	"net/http"
 
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
 	fake "github.com/brianvoe/gofakeit/v5"
+	"github.com/segmentio/ksuid"
+
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
 // BuildFakeWebhook builds a faked Webhook.
 func BuildFakeWebhook() *types.Webhook {
 	return &types.Webhook{
-		ID:                 uint64(fake.Uint32()),
-		ExternalID:         fake.UUID(),
+		ID:                 ksuid.New().String(),
 		Name:               fake.UUID(),
 		ContentType:        "application/json",
 		URL:                fake.URL(),
 		Method:             http.MethodPost,
-		Events:             []string{fake.Word()},
-		DataTypes:          []string{fake.Word()},
-		Topics:             []string{fake.Word()},
+		Events:             []string{fake.LoremIpsumSentence(exampleQuantity)},
+		DataTypes:          []string{fake.LoremIpsumSentence(exampleQuantity)},
+		Topics:             []string{fake.LoremIpsumSentence(exampleQuantity)},
 		CreatedOn:          uint64(uint32(fake.Date().Unix())),
 		ArchivedOn:         nil,
-		BelongsToHousehold: fake.Uint64(),
+		BelongsToHousehold: fake.UUID(),
 	}
 }
 
@@ -44,44 +44,37 @@ func BuildFakeWebhookList() *types.WebhookList {
 	}
 }
 
-// BuildFakeWebhookUpdateInput builds a faked WebhookUpdateInput.
-func BuildFakeWebhookUpdateInput() *types.WebhookUpdateInput {
-	webhook := BuildFakeWebhook()
-	return &types.WebhookUpdateInput{
-		Name:               webhook.Name,
-		ContentType:        webhook.ContentType,
-		URL:                webhook.URL,
-		Method:             webhook.Method,
-		Events:             webhook.Events,
-		DataTypes:          webhook.DataTypes,
-		Topics:             webhook.Topics,
-		BelongsToHousehold: webhook.BelongsToHousehold,
-	}
-}
-
-// BuildFakeWebhookUpdateInputFromWebhook builds a faked WebhookUpdateInput.
-func BuildFakeWebhookUpdateInputFromWebhook(webhook *types.Webhook) *types.WebhookUpdateInput {
-	return &types.WebhookUpdateInput{
-		Name:               webhook.Name,
-		ContentType:        webhook.ContentType,
-		URL:                webhook.URL,
-		Method:             webhook.Method,
-		Events:             webhook.Events,
-		DataTypes:          webhook.DataTypes,
-		Topics:             webhook.Topics,
-		BelongsToHousehold: webhook.BelongsToHousehold,
-	}
-}
-
-// BuildFakeWebhookCreationInput builds a faked WebhookCreationInput.
-func BuildFakeWebhookCreationInput() *types.WebhookCreationInput {
+// BuildFakeWebhookCreationInput builds a faked WebhookCreationRequestInput from a webhook.
+func BuildFakeWebhookCreationInput() *types.WebhookCreationRequestInput {
 	webhook := BuildFakeWebhook()
 	return BuildFakeWebhookCreationInputFromWebhook(webhook)
 }
 
-// BuildFakeWebhookCreationInputFromWebhook builds a faked WebhookCreationInput.
-func BuildFakeWebhookCreationInputFromWebhook(webhook *types.Webhook) *types.WebhookCreationInput {
-	return &types.WebhookCreationInput{
+// BuildFakeWebhookDatabaseCreationInput builds a faked WebhookCreationRequestInput from a webhook.
+func BuildFakeWebhookDatabaseCreationInput() *types.WebhookDatabaseCreationInput {
+	webhook := BuildFakeWebhook()
+	return BuildFakeWebhookDatabaseCreationInputFromWebhook(webhook)
+}
+
+// BuildFakeWebhookCreationInputFromWebhook builds a faked WebhookCreationRequestInput.
+func BuildFakeWebhookCreationInputFromWebhook(webhook *types.Webhook) *types.WebhookCreationRequestInput {
+	return &types.WebhookCreationRequestInput{
+		ID:                 webhook.ID,
+		Name:               webhook.Name,
+		ContentType:        webhook.ContentType,
+		URL:                webhook.URL,
+		Method:             webhook.Method,
+		Events:             webhook.Events,
+		DataTypes:          webhook.DataTypes,
+		Topics:             webhook.Topics,
+		BelongsToHousehold: webhook.BelongsToHousehold,
+	}
+}
+
+// BuildFakeWebhookDatabaseCreationInputFromWebhook builds a faked WebhookCreationRequestInput.
+func BuildFakeWebhookDatabaseCreationInputFromWebhook(webhook *types.Webhook) *types.WebhookDatabaseCreationInput {
+	return &types.WebhookDatabaseCreationInput{
+		ID:                 webhook.ID,
 		Name:               webhook.Name,
 		ContentType:        webhook.ContentType,
 		URL:                webhook.URL,

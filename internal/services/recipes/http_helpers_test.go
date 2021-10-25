@@ -23,8 +23,8 @@ type recipesServiceHTTPRoutesTestHelper struct {
 	exampleHousehold     *types.Household
 	exampleRecipe        *types.Recipe
 	exampleFullRecipe    *types.FullRecipe
-	exampleCreationInput *types.RecipeCreationInput
-	exampleUpdateInput   *types.RecipeUpdateInput
+	exampleCreationInput *types.RecipeCreationRequestInput
+	exampleUpdateInput   *types.RecipeUpdateRequestInput
 }
 
 func buildTestHelper(t *testing.T) *recipesServiceHTTPRoutesTestHelper {
@@ -41,10 +41,10 @@ func buildTestHelper(t *testing.T) *recipesServiceHTTPRoutesTestHelper {
 	helper.exampleRecipe.BelongsToHousehold = helper.exampleHousehold.ID
 	helper.exampleFullRecipe = fakes.BuildFakeFullRecipe()
 	helper.exampleFullRecipe.BelongsToHousehold = helper.exampleHousehold.ID
-	helper.exampleCreationInput = fakes.BuildFakeRecipeCreationInputFromRecipe(helper.exampleRecipe)
-	helper.exampleUpdateInput = fakes.BuildFakeRecipeUpdateInputFromRecipe(helper.exampleRecipe)
+	helper.exampleCreationInput = fakes.BuildFakeRecipeCreationRequestInputFromRecipe(helper.exampleRecipe)
+	helper.exampleUpdateInput = fakes.BuildFakeRecipeUpdateRequestInputFromRecipe(helper.exampleRecipe)
 
-	helper.service.recipeIDFetcher = func(*http.Request) uint64 {
+	helper.service.recipeIDFetcher = func(*http.Request) string {
 		return helper.exampleRecipe.ID
 	}
 
@@ -56,7 +56,7 @@ func buildTestHelper(t *testing.T) *recipesServiceHTTPRoutesTestHelper {
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 		},
 		ActiveHouseholdID: helper.exampleHousehold.ID,
-		HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
+		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
 			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
 		},
 	}

@@ -1,12 +1,6 @@
 package keys
 
 const (
-	// AuditLogEntryIDKey is the standard key for referring to an audit log entry ID.
-	AuditLogEntryIDKey = "audit_log_entry.id"
-	// AuditLogEntryEventTypeKey is the standard key for referring to an audit log event type.
-	AuditLogEntryEventTypeKey = "audit_log_entry.event_type"
-	// AuditLogEntryContextKey is the standard key for referring to an audit log event type.
-	AuditLogEntryContextKey = "audit_log_entry.context"
 	// HouseholdSubscriptionPlanIDKey is the standard key for referring to an household subscription plan ID.
 	HouseholdSubscriptionPlanIDKey = "household_subscription_plan.id"
 	// PermissionsKey is the standard key for referring to an household user membership ID.
@@ -89,17 +83,14 @@ const (
 	// ValidInstrumentIDKey is the standard key for referring to a valid instrument ID.
 	ValidInstrumentIDKey = "valid_instrument_id"
 
-	// ValidPreparationIDKey is the standard key for referring to a valid preparation ID.
-	ValidPreparationIDKey = "valid_preparation_id"
-
 	// ValidIngredientIDKey is the standard key for referring to a valid ingredient ID.
 	ValidIngredientIDKey = "valid_ingredient_id"
 
+	// ValidPreparationIDKey is the standard key for referring to a valid preparation ID.
+	ValidPreparationIDKey = "valid_preparation_id"
+
 	// ValidIngredientPreparationIDKey is the standard key for referring to a valid ingredient preparation ID.
 	ValidIngredientPreparationIDKey = "valid_ingredient_preparation_id"
-
-	// ValidPreparationInstrumentIDKey is the standard key for referring to a valid preparation instrument ID.
-	ValidPreparationInstrumentIDKey = "valid_preparation_instrument_id"
 
 	// RecipeIDKey is the standard key for referring to a recipe ID.
 	RecipeIDKey = "recipe_id"
@@ -107,15 +98,21 @@ const (
 	// RecipeStepIDKey is the standard key for referring to a recipe step ID.
 	RecipeStepIDKey = "recipe_step_id"
 
+	// RecipeStepInstrumentIDKey is the standard key for referring to a recipe step instrument ID.
+	RecipeStepInstrumentIDKey = "recipe_step_instrument_id"
+
 	// RecipeStepIngredientIDKey is the standard key for referring to a recipe step ingredient ID.
 	RecipeStepIngredientIDKey = "recipe_step_ingredient_id"
 
 	// RecipeStepProductIDKey is the standard key for referring to a recipe step product ID.
 	RecipeStepProductIDKey = "recipe_step_product_id"
 
-	// InvitationIDKey is the standard key for referring to an invitation ID.
-	InvitationIDKey = "invitation_id"
+	// MealPlanIDKey is the standard key for referring to a meal plan ID.
+	MealPlanIDKey = "meal_plan_id"
 
-	// ReportIDKey is the standard key for referring to a report ID.
-	ReportIDKey = "report_id"
+	// MealPlanOptionIDKey is the standard key for referring to a meal plan option ID.
+	MealPlanOptionIDKey = "meal_plan_option_id"
+
+	// MealPlanOptionVoteIDKey is the standard key for referring to a meal plan option vote ID.
+	MealPlanOptionVoteIDKey = "meal_plan_option_vote_id"
 )

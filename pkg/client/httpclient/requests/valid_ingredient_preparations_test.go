@@ -4,60 +4,16 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
-
-func TestBuilder_BuildValidIngredientPreparationExistsRequest(T *testing.T) {
-	T.Parallel()
-
-	const expectedPathFormat = "/api/v1/valid_ingredient_preparations/%d"
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
-
-		actual, err := helper.builder.BuildValidIngredientPreparationExistsRequest(helper.ctx, exampleValidIngredientPreparation.ID)
-		spec := newRequestSpec(true, http.MethodHead, "", expectedPathFormat, exampleValidIngredientPreparation.ID)
-
-		assert.NoError(t, err)
-		assertRequestQuality(t, actual, spec)
-	})
-
-	T.Run("with invalid valid ingredient preparation ID", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		actual, err := helper.builder.BuildValidIngredientPreparationExistsRequest(helper.ctx, 0)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	T.Run("with invalid request builder", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-		helper.builder = buildTestRequestBuilderWithInvalidURL()
-
-		exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
-
-		actual, err := helper.builder.BuildValidIngredientPreparationExistsRequest(helper.ctx, exampleValidIngredientPreparation.ID)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-}
 
 func TestBuilder_BuildGetValidIngredientPreparationRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/valid_ingredient_preparations/%d"
+	const expectedPathFormat = "/api/v1/valid_ingredient_preparations/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -79,7 +35,7 @@ func TestBuilder_BuildGetValidIngredientPreparationRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildGetValidIngredientPreparationRequest(helper.ctx, 0)
+		actual, err := helper.builder.BuildGetValidIngredientPreparationRequest(helper.ctx, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -141,7 +97,7 @@ func TestBuilder_BuildCreateValidIngredientPreparationRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		exampleInput := fakes.BuildFakeValidIngredientPreparationCreationInput()
+		exampleInput := fakes.BuildFakeValidIngredientPreparationCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 
@@ -166,7 +122,7 @@ func TestBuilder_BuildCreateValidIngredientPreparationRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildCreateValidIngredientPreparationRequest(helper.ctx, &types.ValidIngredientPreparationCreationInput{})
+		actual, err := helper.builder.BuildCreateValidIngredientPreparationRequest(helper.ctx, &types.ValidIngredientPreparationCreationRequestInput{})
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -177,7 +133,7 @@ func TestBuilder_BuildCreateValidIngredientPreparationRequest(T *testing.T) {
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
-		exampleInput := fakes.BuildFakeValidIngredientPreparationCreationInput()
+		exampleInput := fakes.BuildFakeValidIngredientPreparationCreationRequestInput()
 
 		actual, err := helper.builder.BuildCreateValidIngredientPreparationRequest(helper.ctx, exampleInput)
 		assert.Nil(t, actual)
@@ -188,7 +144,7 @@ func TestBuilder_BuildCreateValidIngredientPreparationRequest(T *testing.T) {
 func TestBuilder_BuildUpdateValidIngredientPreparationRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/valid_ingredient_preparations/%d"
+	const expectedPathFormat = "/api/v1/valid_ingredient_preparations/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -232,7 +188,7 @@ func TestBuilder_BuildUpdateValidIngredientPreparationRequest(T *testing.T) {
 func TestBuilder_BuildArchiveValidIngredientPreparationRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/valid_ingredient_preparations/%d"
+	const expectedPathFormat = "/api/v1/valid_ingredient_preparations/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -254,7 +210,7 @@ func TestBuilder_BuildArchiveValidIngredientPreparationRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildArchiveValidIngredientPreparationRequest(helper.ctx, 0)
+		actual, err := helper.builder.BuildArchiveValidIngredientPreparationRequest(helper.ctx, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -268,50 +224,6 @@ func TestBuilder_BuildArchiveValidIngredientPreparationRequest(T *testing.T) {
 		exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
 
 		actual, err := helper.builder.BuildArchiveValidIngredientPreparationRequest(helper.ctx, exampleValidIngredientPreparation.ID)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-}
-
-func TestBuilder_BuildGetAuditLogForValidIngredientPreparationRequest(T *testing.T) {
-	T.Parallel()
-
-	const expectedPath = "/api/v1/valid_ingredient_preparations/%d/audit"
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
-
-		actual, err := helper.builder.BuildGetAuditLogForValidIngredientPreparationRequest(helper.ctx, exampleValidIngredientPreparation.ID)
-		require.NotNil(t, actual)
-		assert.NoError(t, err)
-
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPath, exampleValidIngredientPreparation.ID)
-		assertRequestQuality(t, actual, spec)
-	})
-
-	T.Run("with invalid valid ingredient preparation ID", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		actual, err := helper.builder.BuildGetAuditLogForValidIngredientPreparationRequest(helper.ctx, 0)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	T.Run("with invalid request builder", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-		helper.builder = buildTestRequestBuilderWithInvalidURL()
-
-		exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
-
-		actual, err := helper.builder.BuildGetAuditLogForValidIngredientPreparationRequest(helper.ctx, exampleValidIngredientPreparation.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

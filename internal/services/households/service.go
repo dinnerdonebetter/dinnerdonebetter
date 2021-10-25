@@ -1,9 +1,11 @@
 package households
 
 import (
+	"fmt"
 	"net/http"
 
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
+	"gitlab.com/prixfixe/prixfixe/internal/messagequeue/publishers"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
@@ -30,33 +32,44 @@ type (
 		logger                         logging.Logger
 		householdDataManager           types.HouseholdDataManager
 		householdMembershipDataManager types.HouseholdUserMembershipDataManager
-		householdIDFetcher             func(*http.Request) uint64
-		userIDFetcher                  func(*http.Request) uint64
-		sessionContextDataFetcher      func(*http.Request) (*types.SessionContextData, error)
+		tracer                         tracing.Tracer
 		householdCounter               metrics.UnitCounter
 		encoderDecoder                 encoding.ServerEncoderDecoder
-		tracer                         tracing.Tracer
+		preWritesPublisher             publishers.Publisher
+		sessionContextDataFetcher      func(*http.Request) (*types.SessionContextData, error)
+		userIDFetcher                  func(*http.Request) string
+		householdIDFetcher             func(*http.Request) string
 	}
 )
 
 // ProvideService builds a new HouseholdsService.
 func ProvideService(
 	logger logging.Logger,
+	cfg Config,
 	householdDataManager types.HouseholdDataManager,
 	householdMembershipDataManager types.HouseholdUserMembershipDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	counterProvider metrics.UnitCounterProvider,
 	routeParamManager routing.RouteParamManager,
-) types.HouseholdDataService {
-	return &service{
+	publisherProvider publishers.PublisherProvider,
+) (types.HouseholdDataService, error) {
+	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up event publisher: %w", err)
+	}
+
+	s := &service{
 		logger:                         logging.EnsureLogger(logger).WithName(serviceName),
-		householdIDFetcher:             routeParamManager.BuildRouteParamIDFetcher(logger, HouseholdIDURIParamKey, "household"),
-		userIDFetcher:                  routeParamManager.BuildRouteParamIDFetcher(logger, UserIDURIParamKey, "user"),
+		householdIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(HouseholdIDURIParamKey),
+		userIDFetcher:                  routeParamManager.BuildRouteParamStringIDFetcher(UserIDURIParamKey),
 		sessionContextDataFetcher:      authservice.FetchContextFromRequest,
 		householdDataManager:           householdDataManager,
 		householdMembershipDataManager: householdMembershipDataManager,
 		encoderDecoder:                 encoder,
+		preWritesPublisher:             preWritesPublisher,
 		householdCounter:               metrics.EnsureUnitCounter(counterProvider, logger, counterName, counterDescription),
 		tracer:                         tracing.NewTracer(serviceName),
 	}
+
+	return s, nil
 }

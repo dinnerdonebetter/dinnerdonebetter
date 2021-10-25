@@ -4,20 +4,20 @@ import (
 	"net/http"
 	"testing"
 
-	"gitlab.com/prixfixe/prixfixe/internal/authentication"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+
+	mockauthn "gitlab.com/prixfixe/prixfixe/internal/authentication/mock"
 	"gitlab.com/prixfixe/prixfixe/internal/database"
 	mockencoding "gitlab.com/prixfixe/prixfixe/internal/encoding/mock"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
 	mockmetrics "gitlab.com/prixfixe/prixfixe/internal/observability/metrics/mock"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-	"gitlab.com/prixfixe/prixfixe/internal/random"
+	mockrandom "gitlab.com/prixfixe/prixfixe/internal/random/mock"
 	mockrouting "gitlab.com/prixfixe/prixfixe/internal/routing/mock"
 	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
 	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 func buildTestService(t *testing.T) *service {
@@ -27,11 +27,11 @@ func buildTestService(t *testing.T) *service {
 		apiClientDataManager:      database.BuildMockDatabase(),
 		logger:                    logging.NewNoopLogger(),
 		encoderDecoder:            mockencoding.NewMockEncoderDecoder(),
-		authenticator:             &authentication.MockAuthenticator{},
+		authenticator:             &mockauthn.Authenticator{},
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
-		urlClientIDExtractor:      func(req *http.Request) uint64 { return 0 },
+		urlClientIDExtractor:      func(req *http.Request) string { return "" },
 		apiClientCounter:          &mockmetrics.UnitCounter{},
-		secretGenerator:           &random.MockGenerator{},
+		secretGenerator:           &mockrandom.Generator{},
 		tracer:                    tracing.NewTracer(serviceName),
 		cfg:                       &config{},
 	}
@@ -46,17 +46,15 @@ func TestProvideAPIClientsService(T *testing.T) {
 
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
-			"BuildRouteParamIDFetcher",
-			mock.IsType(logging.NewNoopLogger()),
+			"BuildRouteParamStringIDFetcher",
 			APIClientIDURIParamKey,
-			"api client",
-		).Return(func(*http.Request) uint64 { return 0 })
+		).Return(func(*http.Request) string { return "" })
 
 		s := ProvideAPIClientsService(
 			logging.NewNoopLogger(),
 			mockAPIClientDataManager,
 			&mocktypes.UserDataManager{},
-			&authentication.MockAuthenticator{},
+			&mockauthn.Authenticator{},
 			mockencoding.NewMockEncoderDecoder(),
 			func(counterName, description string) metrics.UnitCounter {
 				return nil

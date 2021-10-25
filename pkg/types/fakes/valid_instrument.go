@@ -1,20 +1,20 @@
 package fakes
 
 import (
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
 	fake "github.com/brianvoe/gofakeit/v5"
+	"github.com/segmentio/ksuid"
+
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
 // BuildFakeValidInstrument builds a faked valid instrument.
 func BuildFakeValidInstrument() *types.ValidInstrument {
 	return &types.ValidInstrument{
-		ID:          uint64(fake.Uint32()),
-		ExternalID:  fake.UUID(),
-		Name:        BuildUniqueName(),
-		Variant:     fake.Word(),
-		Description: fake.Word(),
-		IconPath:    fake.Word(),
+		ID:          ksuid.New().String(),
+		Name:        fake.LoremIpsumSentence(exampleQuantity),
+		Variant:     fake.LoremIpsumSentence(exampleQuantity),
+		Description: fake.LoremIpsumSentence(exampleQuantity),
+		IconPath:    fake.LoremIpsumSentence(exampleQuantity),
 		CreatedOn:   uint64(uint32(fake.Date().Unix())),
 	}
 }
@@ -37,10 +37,10 @@ func BuildFakeValidInstrumentList() *types.ValidInstrumentList {
 	}
 }
 
-// BuildFakeValidInstrumentUpdateInput builds a faked ValidInstrumentUpdateInput from a valid instrument.
-func BuildFakeValidInstrumentUpdateInput() *types.ValidInstrumentUpdateInput {
+// BuildFakeValidInstrumentUpdateRequestInput builds a faked ValidInstrumentUpdateRequestInput from a valid instrument.
+func BuildFakeValidInstrumentUpdateRequestInput() *types.ValidInstrumentUpdateRequestInput {
 	validInstrument := BuildFakeValidInstrument()
-	return &types.ValidInstrumentUpdateInput{
+	return &types.ValidInstrumentUpdateRequestInput{
 		Name:        validInstrument.Name,
 		Variant:     validInstrument.Variant,
 		Description: validInstrument.Description,
@@ -48,9 +48,9 @@ func BuildFakeValidInstrumentUpdateInput() *types.ValidInstrumentUpdateInput {
 	}
 }
 
-// BuildFakeValidInstrumentUpdateInputFromValidInstrument builds a faked ValidInstrumentUpdateInput from a valid instrument.
-func BuildFakeValidInstrumentUpdateInputFromValidInstrument(validInstrument *types.ValidInstrument) *types.ValidInstrumentUpdateInput {
-	return &types.ValidInstrumentUpdateInput{
+// BuildFakeValidInstrumentUpdateRequestInputFromValidInstrument builds a faked ValidInstrumentUpdateRequestInput from a valid instrument.
+func BuildFakeValidInstrumentUpdateRequestInputFromValidInstrument(validInstrument *types.ValidInstrument) *types.ValidInstrumentUpdateRequestInput {
+	return &types.ValidInstrumentUpdateRequestInput{
 		Name:        validInstrument.Name,
 		Variant:     validInstrument.Variant,
 		Description: validInstrument.Description,
@@ -58,15 +58,33 @@ func BuildFakeValidInstrumentUpdateInputFromValidInstrument(validInstrument *typ
 	}
 }
 
-// BuildFakeValidInstrumentCreationInput builds a faked ValidInstrumentCreationInput.
-func BuildFakeValidInstrumentCreationInput() *types.ValidInstrumentCreationInput {
+// BuildFakeValidInstrumentCreationRequestInput builds a faked ValidInstrumentCreationRequestInput.
+func BuildFakeValidInstrumentCreationRequestInput() *types.ValidInstrumentCreationRequestInput {
 	validInstrument := BuildFakeValidInstrument()
-	return BuildFakeValidInstrumentCreationInputFromValidInstrument(validInstrument)
+	return BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(validInstrument)
 }
 
-// BuildFakeValidInstrumentCreationInputFromValidInstrument builds a faked ValidInstrumentCreationInput from a valid instrument.
-func BuildFakeValidInstrumentCreationInputFromValidInstrument(validInstrument *types.ValidInstrument) *types.ValidInstrumentCreationInput {
-	return &types.ValidInstrumentCreationInput{
+// BuildFakeValidInstrumentCreationRequestInputFromValidInstrument builds a faked ValidInstrumentCreationRequestInput from a valid instrument.
+func BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(validInstrument *types.ValidInstrument) *types.ValidInstrumentCreationRequestInput {
+	return &types.ValidInstrumentCreationRequestInput{
+		ID:          validInstrument.ID,
+		Name:        validInstrument.Name,
+		Variant:     validInstrument.Variant,
+		Description: validInstrument.Description,
+		IconPath:    validInstrument.IconPath,
+	}
+}
+
+// BuildFakeValidInstrumentDatabaseCreationInput builds a faked ValidInstrumentDatabaseCreationInput.
+func BuildFakeValidInstrumentDatabaseCreationInput() *types.ValidInstrumentDatabaseCreationInput {
+	validInstrument := BuildFakeValidInstrument()
+	return BuildFakeValidInstrumentDatabaseCreationInputFromValidInstrument(validInstrument)
+}
+
+// BuildFakeValidInstrumentDatabaseCreationInputFromValidInstrument builds a faked ValidInstrumentDatabaseCreationInput from a valid instrument.
+func BuildFakeValidInstrumentDatabaseCreationInputFromValidInstrument(validInstrument *types.ValidInstrument) *types.ValidInstrumentDatabaseCreationInput {
+	return &types.ValidInstrumentDatabaseCreationInput{
+		ID:          validInstrument.ID,
 		Name:        validInstrument.Name,
 		Variant:     validInstrument.Variant,
 		Description: validInstrument.Description,

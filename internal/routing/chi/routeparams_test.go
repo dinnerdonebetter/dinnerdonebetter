@@ -5,11 +5,11 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/stretchr/testify/assert"
+
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
-
-	"github.com/go-chi/chi"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNewRouteParamManager(T *testing.T) {

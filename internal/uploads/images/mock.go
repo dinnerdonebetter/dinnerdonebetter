@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	"gitlab.com/prixfixe/prixfixe/internal/encoding"
-
 	"github.com/stretchr/testify/mock"
+
+	"gitlab.com/prixfixe/prixfixe/internal/encoding"
 )
 
 var _ ImageUploadProcessor = (*MockImageUploadProcessor)(nil)

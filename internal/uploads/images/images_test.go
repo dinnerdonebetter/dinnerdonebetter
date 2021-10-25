@@ -16,11 +16,11 @@ import (
 	"path/filepath"
 	"testing"
 
-	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
+	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
 )
 
 func newAvatarUploadRequest(t *testing.T, filename string, avatar io.Reader) *http.Request {

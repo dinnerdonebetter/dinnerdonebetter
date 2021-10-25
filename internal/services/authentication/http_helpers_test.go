@@ -7,14 +7,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"gitlab.com/prixfixe/prixfixe/internal/authorization"
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func attachCookieToRequestForTest(t *testing.T, s *service, req *http.Request, user *types.User) (context.Context, *http.Request, string) {
@@ -49,8 +49,8 @@ type authServiceHTTPRoutesTestHelper struct {
 	exampleUser         *types.User
 	exampleHousehold    *types.Household
 	exampleAPIClient    *types.APIClient
-	examplePerms        map[uint64]*types.UserHouseholdMembershipInfo
-	examplePermCheckers map[uint64]authorization.HouseholdRolePermissionsChecker
+	examplePerms        map[string]*types.UserHouseholdMembershipInfo
+	examplePermCheckers map[string]authorization.HouseholdRolePermissionsChecker
 	exampleLoginInput   *types.UserLoginInput
 }
 
@@ -88,13 +88,13 @@ func buildTestHelper(t *testing.T) *authServiceHTTPRoutesTestHelper {
 	helper.exampleAPIClient.BelongsToUser = helper.exampleUser.ID
 	helper.exampleLoginInput = fakes.BuildFakeUserLoginInputFromUser(helper.exampleUser)
 
-	helper.examplePerms = map[uint64]*types.UserHouseholdMembershipInfo{
+	helper.examplePerms = map[string]*types.UserHouseholdMembershipInfo{
 		helper.exampleHousehold.ID: {
 			HouseholdName:  helper.exampleHousehold.Name,
 			HouseholdRoles: []string{authorization.HouseholdMemberRole.String()},
 		},
 	}
-	helper.examplePermCheckers = map[uint64]authorization.HouseholdRolePermissionsChecker{
+	helper.examplePermCheckers = map[string]authorization.HouseholdRolePermissionsChecker{
 		helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
 	}
 

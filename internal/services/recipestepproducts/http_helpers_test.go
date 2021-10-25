@@ -24,8 +24,8 @@ type recipeStepProductsServiceHTTPRoutesTestHelper struct {
 	exampleRecipe            *types.Recipe
 	exampleRecipeStep        *types.RecipeStep
 	exampleRecipeStepProduct *types.RecipeStepProduct
-	exampleCreationInput     *types.RecipeStepProductCreationInput
-	exampleUpdateInput       *types.RecipeStepProductUpdateInput
+	exampleCreationInput     *types.RecipeStepProductCreationRequestInput
+	exampleUpdateInput       *types.RecipeStepProductUpdateRequestInput
 }
 
 func buildTestHelper(t *testing.T) *recipeStepProductsServiceHTTPRoutesTestHelper {
@@ -44,18 +44,18 @@ func buildTestHelper(t *testing.T) *recipeStepProductsServiceHTTPRoutesTestHelpe
 	helper.exampleRecipeStep.BelongsToRecipe = helper.exampleRecipe.ID
 	helper.exampleRecipeStepProduct = fakes.BuildFakeRecipeStepProduct()
 	helper.exampleRecipeStepProduct.BelongsToRecipeStep = helper.exampleRecipeStep.ID
-	helper.exampleCreationInput = fakes.BuildFakeRecipeStepProductCreationInputFromRecipeStepProduct(helper.exampleRecipeStepProduct)
-	helper.exampleUpdateInput = fakes.BuildFakeRecipeStepProductUpdateInputFromRecipeStepProduct(helper.exampleRecipeStepProduct)
+	helper.exampleCreationInput = fakes.BuildFakeRecipeStepProductCreationRequestInputFromRecipeStepProduct(helper.exampleRecipeStepProduct)
+	helper.exampleUpdateInput = fakes.BuildFakeRecipeStepProductUpdateRequestInputFromRecipeStepProduct(helper.exampleRecipeStepProduct)
 
-	helper.service.recipeIDFetcher = func(*http.Request) uint64 {
+	helper.service.recipeIDFetcher = func(*http.Request) string {
 		return helper.exampleRecipe.ID
 	}
 
-	helper.service.recipeStepIDFetcher = func(*http.Request) uint64 {
+	helper.service.recipeStepIDFetcher = func(*http.Request) string {
 		return helper.exampleRecipeStep.ID
 	}
 
-	helper.service.recipeStepProductIDFetcher = func(*http.Request) uint64 {
+	helper.service.recipeStepProductIDFetcher = func(*http.Request) string {
 		return helper.exampleRecipeStepProduct.ID
 	}
 
@@ -67,7 +67,7 @@ func buildTestHelper(t *testing.T) *recipeStepProductsServiceHTTPRoutesTestHelpe
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 		},
 		ActiveHouseholdID: helper.exampleHousehold.ID,
-		HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
+		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
 			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
 		},
 	}

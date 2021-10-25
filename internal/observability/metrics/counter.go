@@ -3,9 +3,9 @@ package metrics
 import (
 	"context"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-
 	"go.opentelemetry.io/otel/metric"
+
+	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 )
 
 var _ UnitCounter = (*unitCounter)(nil)

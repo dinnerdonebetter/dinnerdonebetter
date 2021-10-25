@@ -22,8 +22,8 @@ type validInstrumentsServiceHTTPRoutesTestHelper struct {
 	exampleUser            *types.User
 	exampleHousehold       *types.Household
 	exampleValidInstrument *types.ValidInstrument
-	exampleCreationInput   *types.ValidInstrumentCreationInput
-	exampleUpdateInput     *types.ValidInstrumentUpdateInput
+	exampleCreationInput   *types.ValidInstrumentCreationRequestInput
+	exampleUpdateInput     *types.ValidInstrumentUpdateRequestInput
 }
 
 func buildTestHelper(t *testing.T) *validInstrumentsServiceHTTPRoutesTestHelper {
@@ -37,10 +37,10 @@ func buildTestHelper(t *testing.T) *validInstrumentsServiceHTTPRoutesTestHelper 
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 	helper.exampleValidInstrument = fakes.BuildFakeValidInstrument()
-	helper.exampleCreationInput = fakes.BuildFakeValidInstrumentCreationInputFromValidInstrument(helper.exampleValidInstrument)
-	helper.exampleUpdateInput = fakes.BuildFakeValidInstrumentUpdateInputFromValidInstrument(helper.exampleValidInstrument)
+	helper.exampleCreationInput = fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(helper.exampleValidInstrument)
+	helper.exampleUpdateInput = fakes.BuildFakeValidInstrumentUpdateRequestInputFromValidInstrument(helper.exampleValidInstrument)
 
-	helper.service.validInstrumentIDFetcher = func(*http.Request) uint64 {
+	helper.service.validInstrumentIDFetcher = func(*http.Request) string {
 		return helper.exampleValidInstrument.ID
 	}
 
@@ -52,7 +52,7 @@ func buildTestHelper(t *testing.T) *validInstrumentsServiceHTTPRoutesTestHelper 
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 		},
 		ActiveHouseholdID: helper.exampleHousehold.ID,
-		HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
+		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
 			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
 		},
 	}

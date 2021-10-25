@@ -7,13 +7,13 @@ import (
 	"net/url"
 	"testing"
 
-	"gitlab.com/prixfixe/prixfixe/internal/authorization"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-
 	useragent "github.com/mssola/user_agent"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"gitlab.com/prixfixe/prixfixe/internal/authorization"
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 func Test_attachUint8ToSpan(T *testing.T) {
@@ -100,30 +100,6 @@ func TestAttachFilterToSpan(T *testing.T) {
 	})
 }
 
-func TestAttachAuditLogEntryIDToSpan(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		_, span := StartSpan(context.Background())
-
-		AttachAuditLogEntryIDToSpan(span, 123)
-	})
-}
-
-func TestAttachAuditLogEntryEventTypeToSpan(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		_, span := StartSpan(context.Background())
-
-		AttachAuditLogEntryEventTypeToSpan(span, t.Name())
-	})
-}
-
 func TestAttachHouseholdIDToSpan(T *testing.T) {
 	T.Parallel()
 
@@ -132,7 +108,7 @@ func TestAttachHouseholdIDToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		AttachHouseholdIDToSpan(span, 123)
+		AttachHouseholdIDToSpan(span, "123")
 	})
 }
 
@@ -144,24 +120,7 @@ func TestAttachRequestingUserIDToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		AttachRequestingUserIDToSpan(span, 123)
-	})
-}
-
-func TestAttachChangeSummarySpan(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		_, span := StartSpan(context.Background())
-
-		AttachChangeSummarySpan(span, t.Name(), []*types.FieldChangeSummary{
-			{
-				OldValue: "blah",
-				NewValue: "butt",
-			},
-		})
+		AttachRequestingUserIDToSpan(span, "123")
 	})
 }
 
@@ -178,7 +137,7 @@ func TestAttachSessionContextDataToSpan(T *testing.T) {
 			Requester: types.RequesterInfo{
 				ServicePermissions: authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
 			},
-			ActiveHouseholdID: 0,
+			ActiveHouseholdID: "",
 		})
 	})
 }
@@ -191,7 +150,7 @@ func TestAttachAPIClientDatabaseIDToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		AttachAPIClientDatabaseIDToSpan(span, 123)
+		AttachAPIClientDatabaseIDToSpan(span, "123")
 	})
 }
 
@@ -228,7 +187,7 @@ func TestAttachUserIDToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		AttachUserIDToSpan(span, 123)
+		AttachUserIDToSpan(span, "123")
 	})
 }
 
@@ -252,7 +211,7 @@ func TestAttachWebhookIDToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		AttachWebhookIDToSpan(span, 123)
+		AttachWebhookIDToSpan(span, "123")
 	})
 }
 
@@ -263,7 +222,7 @@ func TestAttachURLToSpan(T *testing.T) {
 		t.Parallel()
 
 		_, span := StartSpan(context.Background())
-		u, err := url.ParseRequestURI("https://todo.verygoodsoftwarenotvirus.ru")
+		u, err := url.ParseRequestURI("https://local.prixfixe.dev")
 		assert.NoError(t, err)
 
 		AttachURLToSpan(span, u)
@@ -389,19 +348,7 @@ func TestAttachValidInstrumentIDToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		AttachValidInstrumentIDToSpan(span, 123)
-	})
-}
-
-func TestAttachValidPreparationIDToSpan(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		_, span := StartSpan(context.Background())
-
-		AttachValidPreparationIDToSpan(span, 123)
+		AttachValidInstrumentIDToSpan(span, "123")
 	})
 }
 
@@ -413,7 +360,19 @@ func TestAttachValidIngredientIDToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		AttachValidIngredientIDToSpan(span, 123)
+		AttachValidIngredientIDToSpan(span, "123")
+	})
+}
+
+func TestAttachValidPreparationIDToSpan(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		_, span := StartSpan(context.Background())
+
+		AttachValidPreparationIDToSpan(span, "123")
 	})
 }
 
@@ -425,19 +384,7 @@ func TestAttachValidIngredientPreparationIDToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		AttachValidIngredientPreparationIDToSpan(span, 123)
-	})
-}
-
-func TestAttachValidPreparationInstrumentIDToSpan(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		_, span := StartSpan(context.Background())
-
-		AttachValidPreparationInstrumentIDToSpan(span, 123)
+		AttachValidIngredientPreparationIDToSpan(span, "123")
 	})
 }
 
@@ -449,7 +396,7 @@ func TestAttachRecipeIDToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		AttachRecipeIDToSpan(span, 123)
+		AttachRecipeIDToSpan(span, "123")
 	})
 }
 
@@ -461,7 +408,19 @@ func TestAttachRecipeStepIDToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		AttachRecipeStepIDToSpan(span, 123)
+		AttachRecipeStepIDToSpan(span, "123")
+	})
+}
+
+func TestAttachRecipeStepInstrumentIDToSpan(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		_, span := StartSpan(context.Background())
+
+		AttachRecipeStepInstrumentIDToSpan(span, "123")
 	})
 }
 
@@ -473,7 +432,7 @@ func TestAttachRecipeStepIngredientIDToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		AttachRecipeStepIngredientIDToSpan(span, 123)
+		AttachRecipeStepIngredientIDToSpan(span, "123")
 	})
 }
 
@@ -485,11 +444,11 @@ func TestAttachRecipeStepProductIDToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		AttachRecipeStepProductIDToSpan(span, 123)
+		AttachRecipeStepProductIDToSpan(span, "123")
 	})
 }
 
-func TestAttachInvitationIDToSpan(T *testing.T) {
+func TestAttachMealPlanIDToSpan(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -497,11 +456,11 @@ func TestAttachInvitationIDToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		AttachInvitationIDToSpan(span, 123)
+		AttachMealPlanIDToSpan(span, "123")
 	})
 }
 
-func TestAttachReportIDToSpan(T *testing.T) {
+func TestAttachMealPlanOptionIDToSpan(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -509,6 +468,18 @@ func TestAttachReportIDToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		AttachReportIDToSpan(span, 123)
+		AttachMealPlanOptionIDToSpan(span, "123")
+	})
+}
+
+func TestAttachMealPlanOptionVoteIDToSpan(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		_, span := StartSpan(context.Background())
+
+		AttachMealPlanOptionVoteIDToSpan(span, "123")
 	})
 }

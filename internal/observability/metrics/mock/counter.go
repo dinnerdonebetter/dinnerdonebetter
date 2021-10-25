@@ -1,11 +1,11 @@
-package mock
+package mockmetrics
 
 import (
 	"context"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
-
 	"github.com/stretchr/testify/mock"
+
+	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
 )
 
 var _ metrics.UnitCounter = (*UnitCounter)(nil)

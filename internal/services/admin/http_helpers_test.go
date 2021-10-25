@@ -6,13 +6,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"gitlab.com/prixfixe/prixfixe/internal/authorization"
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-
-	"github.com/stretchr/testify/require"
 )
 
 type adminServiceHTTPRoutesTestHelper struct {
@@ -37,7 +37,7 @@ func (helper *adminServiceHTTPRoutesTestHelper) neuterAdminUser() {
 				ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 			},
 			ActiveHouseholdID: helper.exampleHousehold.ID,
-			HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
+			HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
 				helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
 			},
 		}, nil
@@ -74,7 +74,7 @@ func buildTestHelper(t *testing.T) *adminServiceHTTPRoutesTestHelper {
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 		},
 		ActiveHouseholdID: helper.exampleHousehold.ID,
-		HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
+		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
 			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
 		},
 	}
@@ -83,7 +83,7 @@ func buildTestHelper(t *testing.T) *adminServiceHTTPRoutesTestHelper {
 	helper.service.sessionContextDataFetcher = func(*http.Request) (*types.SessionContextData, error) {
 		return sessionCtxData, nil
 	}
-	helper.service.userIDFetcher = func(req *http.Request) uint64 {
+	helper.service.userIDFetcher = func(req *http.Request) string {
 		return helper.exampleUser.ID
 	}
 

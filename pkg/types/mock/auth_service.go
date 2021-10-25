@@ -1,13 +1,13 @@
-package mock
+package mocktypes
 
 import (
 	"context"
 	"net/http"
 
+	"github.com/stretchr/testify/mock"
+
 	"gitlab.com/prixfixe/prixfixe/internal/authorization"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
-	"github.com/stretchr/testify/mock"
 )
 
 var _ types.AuthService = (*AuthService)(nil)

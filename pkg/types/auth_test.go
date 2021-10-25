@@ -16,7 +16,7 @@ func TestChangeActiveHouseholdInput_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		x := &ChangeActiveHouseholdInput{
-			HouseholdID: 123,
+			HouseholdID: "123",
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))

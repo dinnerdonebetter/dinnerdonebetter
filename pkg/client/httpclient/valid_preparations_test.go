@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"testing"
 
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 func TestValidPreparations(t *testing.T) {
@@ -39,54 +39,8 @@ type validPreparationsTestSuite struct {
 	validPreparationsBaseSuite
 }
 
-func (s *validPreparationsTestSuite) TestClient_ValidPreparationExists() {
-	const expectedPathFormat = "/api/v1/valid_preparations/%d"
-
-	s.Run("standard", func() {
-		t := s.T()
-
-		spec := newRequestSpec(true, http.MethodHead, "", expectedPathFormat, s.exampleValidPreparation.ID)
-
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
-		actual, err := c.ValidPreparationExists(s.ctx, s.exampleValidPreparation.ID)
-
-		assert.NoError(t, err)
-		assert.True(t, actual)
-	})
-
-	s.Run("with invalid valid preparation ID", func() {
-		t := s.T()
-
-		c, _ := buildSimpleTestClient(t)
-		actual, err := c.ValidPreparationExists(s.ctx, 0)
-
-		assert.Error(t, err)
-		assert.False(t, actual)
-	})
-
-	s.Run("with error building request", func() {
-		t := s.T()
-
-		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.ValidPreparationExists(s.ctx, s.exampleValidPreparation.ID)
-
-		assert.Error(t, err)
-		assert.False(t, actual)
-	})
-
-	s.Run("with error executing request", func() {
-		t := s.T()
-
-		c, _ := buildTestClientThatWaitsTooLong(t)
-		actual, err := c.ValidPreparationExists(s.ctx, s.exampleValidPreparation.ID)
-
-		assert.Error(t, err)
-		assert.False(t, actual)
-	})
-}
-
 func (s *validPreparationsTestSuite) TestClient_GetValidPreparation() {
-	const expectedPathFormat = "/api/v1/valid_preparations/%d"
+	const expectedPathFormat = "/api/v1/valid_preparations/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -104,7 +58,7 @@ func (s *validPreparationsTestSuite) TestClient_GetValidPreparation() {
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)
-		actual, err := c.GetValidPreparation(s.ctx, 0)
+		actual, err := c.GetValidPreparation(s.ctx, "")
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -235,16 +189,16 @@ func (s *validPreparationsTestSuite) TestClient_CreateValidPreparation() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeValidPreparationCreationInput()
+		exampleInput := fakes.BuildFakeValidPreparationCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparation)
+		c, _ := buildTestClientWithJSONResponse(t, spec, &types.PreWriteResponse{ID: s.exampleValidPreparation.ID})
 
 		actual, err := c.CreateValidPreparation(s.ctx, exampleInput)
-		require.NotNil(t, actual)
+		require.NotEmpty(t, actual)
 		assert.NoError(t, err)
 
-		assert.Equal(t, s.exampleValidPreparation, actual)
+		assert.Equal(t, s.exampleValidPreparation.ID, actual)
 	})
 
 	s.Run("with nil input", func() {
@@ -253,7 +207,7 @@ func (s *validPreparationsTestSuite) TestClient_CreateValidPreparation() {
 		c, _ := buildSimpleTestClient(t)
 
 		actual, err := c.CreateValidPreparation(s.ctx, nil)
-		assert.Nil(t, actual)
+		assert.Empty(t, actual)
 		assert.Error(t, err)
 	})
 
@@ -261,39 +215,39 @@ func (s *validPreparationsTestSuite) TestClient_CreateValidPreparation() {
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)
-		exampleInput := &types.ValidPreparationCreationInput{}
+		exampleInput := &types.ValidPreparationCreationRequestInput{}
 
 		actual, err := c.CreateValidPreparation(s.ctx, exampleInput)
-		assert.Nil(t, actual)
+		assert.Empty(t, actual)
 		assert.Error(t, err)
 	})
 
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(s.exampleValidPreparation)
+		exampleInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(s.exampleValidPreparation)
 
 		c := buildTestClientWithInvalidURL(t)
 
 		actual, err := c.CreateValidPreparation(s.ctx, exampleInput)
-		assert.Nil(t, actual)
+		assert.Empty(t, actual)
 		assert.Error(t, err)
 	})
 
 	s.Run("with error executing request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(s.exampleValidPreparation)
+		exampleInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(s.exampleValidPreparation)
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		actual, err := c.CreateValidPreparation(s.ctx, exampleInput)
-		assert.Nil(t, actual)
+		assert.Empty(t, actual)
 		assert.Error(t, err)
 	})
 }
 
 func (s *validPreparationsTestSuite) TestClient_UpdateValidPreparation() {
-	const expectedPathFormat = "/api/v1/valid_preparations/%d"
+	const expectedPathFormat = "/api/v1/valid_preparations/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -334,7 +288,7 @@ func (s *validPreparationsTestSuite) TestClient_UpdateValidPreparation() {
 }
 
 func (s *validPreparationsTestSuite) TestClient_ArchiveValidPreparation() {
-	const expectedPathFormat = "/api/v1/valid_preparations/%d"
+	const expectedPathFormat = "/api/v1/valid_preparations/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -351,7 +305,7 @@ func (s *validPreparationsTestSuite) TestClient_ArchiveValidPreparation() {
 
 		c, _ := buildSimpleTestClient(t)
 
-		err := c.ArchiveValidPreparation(s.ctx, 0)
+		err := c.ArchiveValidPreparation(s.ctx, "")
 		assert.Error(t, err)
 	})
 
@@ -370,57 +324,6 @@ func (s *validPreparationsTestSuite) TestClient_ArchiveValidPreparation() {
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		err := c.ArchiveValidPreparation(s.ctx, s.exampleValidPreparation.ID)
-		assert.Error(t, err)
-	})
-}
-
-func (s *validPreparationsTestSuite) TestClient_GetAuditLogForValidPreparation() {
-	const (
-		expectedPath   = "/api/v1/valid_preparations/%d/audit"
-		expectedMethod = http.MethodGet
-	)
-
-	s.Run("standard", func() {
-		t := s.T()
-
-		spec := newRequestSpec(true, expectedMethod, "", expectedPath, s.exampleValidPreparation.ID)
-		exampleAuditLogEntryList := fakes.BuildFakeAuditLogEntryList().Entries
-
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleAuditLogEntryList)
-
-		actual, err := c.GetAuditLogForValidPreparation(s.ctx, s.exampleValidPreparation.ID)
-		require.NotNil(t, actual)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleAuditLogEntryList, actual)
-	})
-
-	s.Run("with invalid valid preparation ID", func() {
-		t := s.T()
-
-		c, _ := buildSimpleTestClient(t)
-
-		actual, err := c.GetAuditLogForValidPreparation(s.ctx, 0)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	s.Run("with error building request", func() {
-		t := s.T()
-
-		c := buildTestClientWithInvalidURL(t)
-
-		actual, err := c.GetAuditLogForValidPreparation(s.ctx, s.exampleValidPreparation.ID)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	s.Run("with error executing request", func() {
-		t := s.T()
-
-		c, _ := buildTestClientThatWaitsTooLong(t)
-
-		actual, err := c.GetAuditLogForValidPreparation(s.ctx, s.exampleValidPreparation.ID)
-		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }

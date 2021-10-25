@@ -6,6 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+
 	"gitlab.com/prixfixe/prixfixe/internal/authorization"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	mockrouting "gitlab.com/prixfixe/prixfixe/internal/routing/mock"
@@ -13,9 +16,6 @@ import (
 	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
 	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
-
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
 
 type serviceHTTPRoutesTestHelper struct {
@@ -67,7 +67,7 @@ func buildTestHelper(t *testing.T) *serviceHTTPRoutesTestHelper {
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 		},
 		ActiveHouseholdID: helper.exampleHousehold.ID,
-		HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
+		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
 			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
 		},
 	}

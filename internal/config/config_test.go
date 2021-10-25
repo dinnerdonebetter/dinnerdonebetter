@@ -2,28 +2,26 @@ package config
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"testing"
 	"time"
 
-	"gitlab.com/prixfixe/prixfixe/internal/database"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	database "gitlab.com/prixfixe/prixfixe/internal/database"
 	dbconfig "gitlab.com/prixfixe/prixfixe/internal/database/config"
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
 	observability "gitlab.com/prixfixe/prixfixe/internal/observability"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
 	server "gitlab.com/prixfixe/prixfixe/internal/server"
-	auditservice "gitlab.com/prixfixe/prixfixe/internal/services/audit"
 	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
 	validingredientsservice "gitlab.com/prixfixe/prixfixe/internal/services/validingredients"
 	validinstrumentsservice "gitlab.com/prixfixe/prixfixe/internal/services/validinstruments"
 	validpreparationsservice "gitlab.com/prixfixe/prixfixe/internal/services/validpreparations"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestServerConfig_EncodeToFile(T *testing.T) {
@@ -52,9 +50,6 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 				},
 			},
 			Services: ServicesConfigurations{
-				AuditLog: auditservice.Config{
-					Enabled: true,
-				},
 				Auth: authservice.Config{
 					Cookies: authservice.CookieConfig{
 						Name:     "prixfixe_cookie",
@@ -68,19 +63,18 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 				ValidInstruments: validinstrumentsservice.Config{
 					SearchIndexPath: "/valid_instruments_index_path",
 				},
-				ValidPreparations: validpreparationsservice.Config{
-					SearchIndexPath: "/valid_preparations_index_path",
-				},
 				ValidIngredients: validingredientsservice.Config{
 					SearchIndexPath: "/valid_ingredients_index_path",
 				},
+				ValidPreparations: validpreparationsservice.Config{
+					SearchIndexPath: "/valid_preparations_index_path",
+				},
 			},
 			Database: dbconfig.Config{
-				Provider:                  "postgres",
-				MetricsCollectionInterval: 2 * time.Second,
-				Debug:                     true,
-				RunMigrations:             true,
-				ConnectionDetails:         database.ConnectionDetails("postgres://username:passwords@host/table"),
+				Provider:          "postgres",
+				Debug:             true,
+				RunMigrations:     true,
+				ConnectionDetails: database.ConnectionDetails("postgres://username:passwords@host/table"),
 			},
 		}
 
@@ -120,22 +114,10 @@ func TestServerConfig_ProvideDatabaseClient(T *testing.T) {
 				},
 			}
 
-			x, err := ProvideDatabaseClient(ctx, logger, &sql.DB{}, cfg)
+			x, err := ProvideDatabaseClient(ctx, logger, cfg)
 			assert.NotNil(t, x)
 			assert.NoError(t, err)
 		}
-	})
-
-	T.Run("with nil *sql.DB", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		cfg := &InstanceConfig{}
-
-		x, err := ProvideDatabaseClient(ctx, logger, nil, cfg)
-		assert.Nil(t, x)
-		assert.Error(t, err)
 	})
 
 	T.Run("with invalid provider", func(t *testing.T) {
@@ -150,7 +132,7 @@ func TestServerConfig_ProvideDatabaseClient(T *testing.T) {
 			},
 		}
 
-		x, err := ProvideDatabaseClient(ctx, logger, &sql.DB{}, cfg)
+		x, err := ProvideDatabaseClient(ctx, logger, cfg)
 		assert.Nil(t, x)
 		assert.Error(t, err)
 	})

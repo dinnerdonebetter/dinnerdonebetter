@@ -8,15 +8,15 @@ import (
 	"sync"
 	"time"
 
+	"github.com/pquerna/otp/totp"
+	flag "github.com/spf13/pflag"
+
 	"gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/pkg/client/httpclient"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
-
-	"github.com/pquerna/otp/totp"
-	flag "github.com/spf13/pflag"
 )
 
 var (
@@ -96,7 +96,7 @@ func main() {
 		go func(x int, wg *sync.WaitGroup) {
 			createdUser, userCreationErr := testutils.CreateServiceUser(ctx, uri, "")
 			if userCreationErr != nil {
-				quitter.ComplainAndQuit(fmt.Errorf("creating user #%d: %w", x, userCreationErr))
+				quitter.ComplainAndQuit(fmt.Errorf("creating user %q: %w", x, userCreationErr))
 			}
 
 			if x == 0 && singleUserMode {
@@ -131,7 +131,7 @@ func main() {
 
 					createdHousehold, householdCreationError := userClient.CreateHousehold(ctx, fakes.BuildFakeHouseholdCreationInput())
 					if householdCreationError != nil {
-						quitter.ComplainAndQuit(fmt.Errorf("creating household #%d: %w", j, householdCreationError))
+						quitter.ComplainAndQuit(fmt.Errorf("creating household %s: %w", j, householdCreationError))
 					}
 
 					iterationLogger.WithValue(keys.HouseholdIDKey, createdHousehold.ID).Debug("created household")
@@ -146,7 +146,7 @@ func main() {
 
 					code, codeErr := totp.GenerateCode(strings.ToUpper(createdUser.TwoFactorSecret), time.Now().UTC())
 					if codeErr != nil {
-						quitter.ComplainAndQuit(fmt.Errorf("creating API Client #%d: %w", j, codeErr))
+						quitter.ComplainAndQuit(fmt.Errorf("creating API Client %s: %w", j, codeErr))
 					}
 
 					fakeInput := fakes.BuildFakeAPIClientCreationInput()
@@ -160,7 +160,7 @@ func main() {
 						Name: fakeInput.Name,
 					})
 					if apiClientCreationErr != nil {
-						quitter.ComplainAndQuit(fmt.Errorf("API Client webhook #%d: %w", j, apiClientCreationErr))
+						quitter.ComplainAndQuit(fmt.Errorf("API Client webhook %s: %w", j, apiClientCreationErr))
 					}
 
 					iterationLogger.WithValue(keys.APIClientDatabaseIDKey, createdAPIClient.ID).Debug("created API Client")
@@ -173,12 +173,12 @@ func main() {
 				for j := 0; j < int(dataCount); j++ {
 					iterationLogger := userLogger.WithValue("creating", "webhooks").WithValue("iteration", j)
 
-					createdWebhook, webhookCreationErr := userClient.CreateWebhook(ctx, fakes.BuildFakeWebhookCreationInput())
+					createdWebhookID, webhookCreationErr := userClient.CreateWebhook(ctx, fakes.BuildFakeWebhookCreationInput())
 					if webhookCreationErr != nil {
-						quitter.ComplainAndQuit(fmt.Errorf("creating webhook #%d: %w", j, webhookCreationErr))
+						quitter.ComplainAndQuit(fmt.Errorf("creating webhook %s: %w", j, webhookCreationErr))
 					}
 
-					iterationLogger.WithValue(keys.WebhookIDKey, createdWebhook.ID).Debug("created webhook")
+					iterationLogger.WithValue(keys.WebhookIDKey, createdWebhookID).Debug("created webhook")
 				}
 				wg.Done()
 			}(wg)
@@ -189,28 +189,12 @@ func main() {
 					iterationLogger := userLogger.WithValue("creating", "valid instruments").WithValue("iteration", j)
 
 					// create valid instrument
-					createdValidInstrument, validInstrumentCreationErr := userClient.CreateValidInstrument(ctx, fakes.BuildFakeValidInstrumentCreationInput())
+					createdValidInstrumentID, validInstrumentCreationErr := userClient.CreateValidInstrument(ctx, fakes.BuildFakeValidInstrumentCreationRequestInput())
 					if validInstrumentCreationErr != nil {
 						quitter.ComplainAndQuit(fmt.Errorf("creating valid instrument #%d: %w", j, validInstrumentCreationErr))
 					}
 
-					iterationLogger.WithValue(keys.ValidInstrumentIDKey, createdValidInstrument.ID).Debug("created valid instrument")
-				}
-				wg.Done()
-			}(wg)
-
-			wg.Add(1)
-			go func(wg *sync.WaitGroup) {
-				for j := 0; j < int(dataCount); j++ {
-					iterationLogger := userLogger.WithValue("creating", "valid preparations").WithValue("iteration", j)
-
-					// create valid preparation
-					createdValidPreparation, validPreparationCreationErr := userClient.CreateValidPreparation(ctx, fakes.BuildFakeValidPreparationCreationInput())
-					if validPreparationCreationErr != nil {
-						quitter.ComplainAndQuit(fmt.Errorf("creating valid preparation #%d: %w", j, validPreparationCreationErr))
-					}
-
-					iterationLogger.WithValue(keys.ValidPreparationIDKey, createdValidPreparation.ID).Debug("created valid preparation")
+					iterationLogger.WithValue(keys.ValidInstrumentIDKey, createdValidInstrumentID).Debug("created valid instrument")
 				}
 				wg.Done()
 			}(wg)
@@ -221,12 +205,28 @@ func main() {
 					iterationLogger := userLogger.WithValue("creating", "valid ingredients").WithValue("iteration", j)
 
 					// create valid ingredient
-					createdValidIngredient, validIngredientCreationErr := userClient.CreateValidIngredient(ctx, fakes.BuildFakeValidIngredientCreationInput())
+					createdValidIngredientID, validIngredientCreationErr := userClient.CreateValidIngredient(ctx, fakes.BuildFakeValidIngredientCreationRequestInput())
 					if validIngredientCreationErr != nil {
 						quitter.ComplainAndQuit(fmt.Errorf("creating valid ingredient #%d: %w", j, validIngredientCreationErr))
 					}
 
-					iterationLogger.WithValue(keys.ValidIngredientIDKey, createdValidIngredient.ID).Debug("created valid ingredient")
+					iterationLogger.WithValue(keys.ValidIngredientIDKey, createdValidIngredientID).Debug("created valid ingredient")
+				}
+				wg.Done()
+			}(wg)
+
+			wg.Add(1)
+			go func(wg *sync.WaitGroup) {
+				for j := 0; j < int(dataCount); j++ {
+					iterationLogger := userLogger.WithValue("creating", "valid preparations").WithValue("iteration", j)
+
+					// create valid preparation
+					createdValidPreparationID, validPreparationCreationErr := userClient.CreateValidPreparation(ctx, fakes.BuildFakeValidPreparationCreationRequestInput())
+					if validPreparationCreationErr != nil {
+						quitter.ComplainAndQuit(fmt.Errorf("creating valid preparation #%d: %w", j, validPreparationCreationErr))
+					}
+
+					iterationLogger.WithValue(keys.ValidPreparationIDKey, createdValidPreparationID).Debug("created valid preparation")
 				}
 				wg.Done()
 			}(wg)
@@ -237,28 +237,12 @@ func main() {
 					iterationLogger := userLogger.WithValue("creating", "valid ingredient preparations").WithValue("iteration", j)
 
 					// create valid ingredient preparation
-					createdValidIngredientPreparation, validIngredientPreparationCreationErr := userClient.CreateValidIngredientPreparation(ctx, fakes.BuildFakeValidIngredientPreparationCreationInput())
+					createdValidIngredientPreparationID, validIngredientPreparationCreationErr := userClient.CreateValidIngredientPreparation(ctx, fakes.BuildFakeValidIngredientPreparationCreationRequestInput())
 					if validIngredientPreparationCreationErr != nil {
 						quitter.ComplainAndQuit(fmt.Errorf("creating valid ingredient preparation #%d: %w", j, validIngredientPreparationCreationErr))
 					}
 
-					iterationLogger.WithValue(keys.ValidIngredientPreparationIDKey, createdValidIngredientPreparation.ID).Debug("created valid ingredient preparation")
-				}
-				wg.Done()
-			}(wg)
-
-			wg.Add(1)
-			go func(wg *sync.WaitGroup) {
-				for j := 0; j < int(dataCount); j++ {
-					iterationLogger := userLogger.WithValue("creating", "valid preparation instruments").WithValue("iteration", j)
-
-					// create valid preparation instrument
-					createdValidPreparationInstrument, validPreparationInstrumentCreationErr := userClient.CreateValidPreparationInstrument(ctx, fakes.BuildFakeValidPreparationInstrumentCreationInput())
-					if validPreparationInstrumentCreationErr != nil {
-						quitter.ComplainAndQuit(fmt.Errorf("creating valid preparation instrument #%d: %w", j, validPreparationInstrumentCreationErr))
-					}
-
-					iterationLogger.WithValue(keys.ValidPreparationInstrumentIDKey, createdValidPreparationInstrument.ID).Debug("created valid preparation instrument")
+					iterationLogger.WithValue(keys.ValidIngredientPreparationIDKey, createdValidIngredientPreparationID).Debug("created valid ingredient preparation")
 				}
 				wg.Done()
 			}(wg)
@@ -269,44 +253,12 @@ func main() {
 					iterationLogger := userLogger.WithValue("creating", "recipes").WithValue("iteration", j)
 
 					// create recipe
-					createdRecipe, recipeCreationErr := userClient.CreateRecipe(ctx, fakes.BuildFakeRecipeCreationInput())
+					createdRecipeID, recipeCreationErr := userClient.CreateRecipe(ctx, fakes.BuildFakeRecipeCreationRequestInput())
 					if recipeCreationErr != nil {
 						quitter.ComplainAndQuit(fmt.Errorf("creating recipe #%d: %w", j, recipeCreationErr))
 					}
 
-					iterationLogger.WithValue(keys.RecipeIDKey, createdRecipe.ID).Debug("created recipe")
-				}
-				wg.Done()
-			}(wg)
-
-			wg.Add(1)
-			go func(wg *sync.WaitGroup) {
-				for j := 0; j < int(dataCount); j++ {
-					iterationLogger := userLogger.WithValue("creating", "invitations").WithValue("iteration", j)
-
-					// create invitation
-					createdInvitation, invitationCreationErr := userClient.CreateInvitation(ctx, fakes.BuildFakeInvitationCreationInput())
-					if invitationCreationErr != nil {
-						quitter.ComplainAndQuit(fmt.Errorf("creating invitation #%d: %w", j, invitationCreationErr))
-					}
-
-					iterationLogger.WithValue(keys.InvitationIDKey, createdInvitation.ID).Debug("created invitation")
-				}
-				wg.Done()
-			}(wg)
-
-			wg.Add(1)
-			go func(wg *sync.WaitGroup) {
-				for j := 0; j < int(dataCount); j++ {
-					iterationLogger := userLogger.WithValue("creating", "reports").WithValue("iteration", j)
-
-					// create report
-					createdReport, reportCreationErr := userClient.CreateReport(ctx, fakes.BuildFakeReportCreationInput())
-					if reportCreationErr != nil {
-						quitter.ComplainAndQuit(fmt.Errorf("creating report #%d: %w", j, reportCreationErr))
-					}
-
-					iterationLogger.WithValue(keys.ReportIDKey, createdReport.ID).Debug("created report")
+					iterationLogger.WithValue(keys.RecipeIDKey, createdRecipeID).Debug("created recipe")
 				}
 				wg.Done()
 			}(wg)

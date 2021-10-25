@@ -4,60 +4,16 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
-
-func TestBuilder_BuildValidPreparationExistsRequest(T *testing.T) {
-	T.Parallel()
-
-	const expectedPathFormat = "/api/v1/valid_preparations/%d"
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		exampleValidPreparation := fakes.BuildFakeValidPreparation()
-
-		actual, err := helper.builder.BuildValidPreparationExistsRequest(helper.ctx, exampleValidPreparation.ID)
-		spec := newRequestSpec(true, http.MethodHead, "", expectedPathFormat, exampleValidPreparation.ID)
-
-		assert.NoError(t, err)
-		assertRequestQuality(t, actual, spec)
-	})
-
-	T.Run("with invalid valid preparation ID", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		actual, err := helper.builder.BuildValidPreparationExistsRequest(helper.ctx, 0)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	T.Run("with invalid request builder", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-		helper.builder = buildTestRequestBuilderWithInvalidURL()
-
-		exampleValidPreparation := fakes.BuildFakeValidPreparation()
-
-		actual, err := helper.builder.BuildValidPreparationExistsRequest(helper.ctx, exampleValidPreparation.ID)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-}
 
 func TestBuilder_BuildGetValidPreparationRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/valid_preparations/%d"
+	const expectedPathFormat = "/api/v1/valid_preparations/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -79,7 +35,7 @@ func TestBuilder_BuildGetValidPreparationRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildGetValidPreparationRequest(helper.ctx, 0)
+		actual, err := helper.builder.BuildGetValidPreparationRequest(helper.ctx, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -176,7 +132,7 @@ func TestBuilder_BuildCreateValidPreparationRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		exampleInput := fakes.BuildFakeValidPreparationCreationInput()
+		exampleInput := fakes.BuildFakeValidPreparationCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 
@@ -201,7 +157,7 @@ func TestBuilder_BuildCreateValidPreparationRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildCreateValidPreparationRequest(helper.ctx, &types.ValidPreparationCreationInput{})
+		actual, err := helper.builder.BuildCreateValidPreparationRequest(helper.ctx, &types.ValidPreparationCreationRequestInput{})
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -212,7 +168,7 @@ func TestBuilder_BuildCreateValidPreparationRequest(T *testing.T) {
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
-		exampleInput := fakes.BuildFakeValidPreparationCreationInput()
+		exampleInput := fakes.BuildFakeValidPreparationCreationRequestInput()
 
 		actual, err := helper.builder.BuildCreateValidPreparationRequest(helper.ctx, exampleInput)
 		assert.Nil(t, actual)
@@ -223,7 +179,7 @@ func TestBuilder_BuildCreateValidPreparationRequest(T *testing.T) {
 func TestBuilder_BuildUpdateValidPreparationRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/valid_preparations/%d"
+	const expectedPathFormat = "/api/v1/valid_preparations/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -267,7 +223,7 @@ func TestBuilder_BuildUpdateValidPreparationRequest(T *testing.T) {
 func TestBuilder_BuildArchiveValidPreparationRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/valid_preparations/%d"
+	const expectedPathFormat = "/api/v1/valid_preparations/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -289,7 +245,7 @@ func TestBuilder_BuildArchiveValidPreparationRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildArchiveValidPreparationRequest(helper.ctx, 0)
+		actual, err := helper.builder.BuildArchiveValidPreparationRequest(helper.ctx, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -303,50 +259,6 @@ func TestBuilder_BuildArchiveValidPreparationRequest(T *testing.T) {
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 
 		actual, err := helper.builder.BuildArchiveValidPreparationRequest(helper.ctx, exampleValidPreparation.ID)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-}
-
-func TestBuilder_BuildGetAuditLogForValidPreparationRequest(T *testing.T) {
-	T.Parallel()
-
-	const expectedPath = "/api/v1/valid_preparations/%d/audit"
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		exampleValidPreparation := fakes.BuildFakeValidPreparation()
-
-		actual, err := helper.builder.BuildGetAuditLogForValidPreparationRequest(helper.ctx, exampleValidPreparation.ID)
-		require.NotNil(t, actual)
-		assert.NoError(t, err)
-
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPath, exampleValidPreparation.ID)
-		assertRequestQuality(t, actual, spec)
-	})
-
-	T.Run("with invalid valid preparation ID", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		actual, err := helper.builder.BuildGetAuditLogForValidPreparationRequest(helper.ctx, 0)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	T.Run("with invalid request builder", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-		helper.builder = buildTestRequestBuilderWithInvalidURL()
-
-		exampleValidPreparation := fakes.BuildFakeValidPreparation()
-
-		actual, err := helper.builder.BuildGetAuditLogForValidPreparationRequest(helper.ctx, exampleValidPreparation.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

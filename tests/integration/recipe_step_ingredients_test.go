@@ -2,167 +2,221 @@ package integration
 
 import (
 	"testing"
-
-	audit "gitlab.com/prixfixe/prixfixe/internal/audit"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 func checkRecipeStepIngredientEquality(t *testing.T, expected, actual *types.RecipeStepIngredient) {
 	t.Helper()
 
 	assert.NotZero(t, actual.ID)
-	assert.Equal(t, expected.IngredientID, actual.IngredientID, "expected IngredientID for recipe step ingredient #%d to be %v, but it was %v ", expected.ID, expected.IngredientID, actual.IngredientID)
-	assert.Equal(t, expected.Name, actual.Name, "expected Name for recipe step ingredient #%d to be %v, but it was %v ", expected.ID, expected.Name, actual.Name)
-	assert.Equal(t, expected.QuantityType, actual.QuantityType, "expected QuantityType for recipe step ingredient #%d to be %v, but it was %v ", expected.ID, expected.QuantityType, actual.QuantityType)
-	assert.Equal(t, expected.QuantityValue, actual.QuantityValue, "expected QuantityValue for recipe step ingredient #%d to be %v, but it was %v ", expected.ID, expected.QuantityValue, actual.QuantityValue)
-	assert.Equal(t, expected.QuantityNotes, actual.QuantityNotes, "expected QuantityNotes for recipe step ingredient #%d to be %v, but it was %v ", expected.ID, expected.QuantityNotes, actual.QuantityNotes)
-	assert.Equal(t, expected.ProductOfRecipeStep, actual.ProductOfRecipeStep, "expected ProductOfRecipeStep for recipe step ingredient #%d to be %v, but it was %v ", expected.ID, expected.ProductOfRecipeStep, actual.ProductOfRecipeStep)
-	assert.Equal(t, expected.IngredientNotes, actual.IngredientNotes, "expected IngredientNotes for recipe step ingredient #%d to be %v, but it was %v ", expected.ID, expected.IngredientNotes, actual.IngredientNotes)
+	assert.Equal(t, expected.IngredientID, actual.IngredientID, "expected IngredientID for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.IngredientID, actual.IngredientID)
+	assert.Equal(t, expected.QuantityType, actual.QuantityType, "expected QuantityType for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.QuantityType, actual.QuantityType)
+	assert.Equal(t, expected.QuantityValue, actual.QuantityValue, "expected QuantityValue for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.QuantityValue, actual.QuantityValue)
+	assert.Equal(t, expected.QuantityNotes, actual.QuantityNotes, "expected QuantityNotes for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.QuantityNotes, actual.QuantityNotes)
+	assert.Equal(t, expected.ProductOfRecipeStep, actual.ProductOfRecipeStep, "expected ProductOfRecipeStep for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.ProductOfRecipeStep, actual.ProductOfRecipeStep)
+	assert.Equal(t, expected.IngredientNotes, actual.IngredientNotes, "expected IngredientNotes for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.IngredientNotes, actual.IngredientNotes)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
-func fullRecipeStepIngredientToRecipeStepIngredient(i *types.FullRecipeStepIngredient) *types.RecipeStepIngredient {
-	return &types.RecipeStepIngredient{
-		LastUpdatedOn:       i.LastUpdatedOn,
-		IngredientID:        &i.Ingredient.ID,
-		ArchivedOn:          i.ArchivedOn,
-		IngredientNotes:     i.IngredientNotes,
-		Name:                i.Name,
-		QuantityType:        i.QuantityType,
-		QuantityNotes:       i.QuantityNotes,
-		ExternalID:          i.ExternalID,
-		ID:                  i.ID,
-		CreatedOn:           i.CreatedOn,
-		BelongsToRecipeStep: i.BelongsToRecipeStep,
-		QuantityValue:       i.QuantityValue,
-		ProductOfRecipeStep: i.ProductOfRecipeStep,
+// convertRecipeStepIngredientToRecipeStepIngredientUpdateInput creates an RecipeStepIngredientUpdateRequestInput struct from a recipe step ingredient.
+func convertRecipeStepIngredientToRecipeStepIngredientUpdateInput(x *types.RecipeStepIngredient) *types.RecipeStepIngredientUpdateRequestInput {
+	return &types.RecipeStepIngredientUpdateRequestInput{
+		IngredientID:    x.IngredientID,
+		QuantityType:    x.QuantityType,
+		QuantityValue:   x.QuantityValue,
+		QuantityNotes:   x.QuantityNotes,
+		ProductOfRecipe: x.ProductOfRecipeStep,
+		IngredientNotes: x.IngredientNotes,
 	}
 }
 
-func (s *TestSuite) TestRecipeStepIngredients_Creating() {
-	s.runForEachClientExcept("should be creatable", func(testClients *testClientWrapper) func() {
+func (s *TestSuite) TestRecipeStepIngredients_CompleteLifecycle() {
+	s.runForCookieClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// Create valid preparation.
-			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			requireNotNilAndNoProblems(t, createdValidPreparation, err)
-
-			// Create valid ingredient.
-			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			requireNotNilAndNoProblems(t, createdValidIngredient, err)
-
-			// Create recipe.
-			exampleRecipe := fakes.BuildFakeRecipe()
-			exampleRecipe.Steps = []*types.RecipeStep{}
-			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
-			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
-			requireNotNilAndNoProblems(t, createdRecipe, err)
-
-			// Create recipe step.
-			exampleRecipeStep := fakes.BuildFakeRecipeStep()
-			exampleRecipeStep.PreparationID = createdValidPreparation.ID
-			exampleRecipeStep.Ingredients = []*types.RecipeStepIngredient{}
-			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
-			exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
-			createdRecipeStep, err := testClients.main.CreateRecipeStep(ctx, exampleRecipeStepInput)
-			requireNotNilAndNoProblems(t, createdRecipeStep, err)
-
-			// Create recipe step ingredient.
-			exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-			exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStep.ID
-			exampleRecipeStepIngredient.IngredientID = &createdValidIngredient.ID
-			exampleRecipeStepIngredientInput := fakes.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
-			createdRecipeStepIngredient, err := testClients.main.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
-			requireNotNilAndNoProblems(t, createdRecipeStepIngredient, err)
-
-			// assert recipe step ingredient equality
-			checkRecipeStepIngredientEquality(t, exampleRecipeStepIngredient, createdRecipeStepIngredient)
-
-			auditLogEntries, err := testClients.admin.GetAuditLogForRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID)
+			stopChan := make(chan bool, 1)
+			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
-			expectedAuditLogEntries := []*types.AuditLogEntry{
-				{EventType: audit.RecipeStepIngredientCreationEvent},
+			var n *types.DataChangeMessage
+
+			createdValidIngredients, _, createdRecipe := createRecipeWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
+
+			var (
+				createdRecipeStepID,
+				createdRecipeStepIngredientID string
+			)
+			for _, step := range createdRecipe.Steps {
+				createdRecipeStepID = step.ID
+				for _, ingredient := range step.Ingredients {
+					createdRecipeStepIngredientID = ingredient.ID
+					break
+				}
 			}
-			validateAuditLogEntries(t, expectedAuditLogEntries, auditLogEntries, createdRecipeStepIngredient.ID, audit.RecipeStepIngredientAssignmentKey)
 
-			// Clean up recipe step ingredient.
-			assert.NoError(t, testClients.main.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID))
+			t.Log("fetching changed recipe step ingredient")
+			createdRecipeStepIngredient, err := testClients.main.GetRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepIngredientID)
+			requireNotNilAndNoProblems(t, createdRecipeStepIngredient, err)
 
-			// Clean up recipe step.
-			assert.NoError(t, testClients.main.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+			t.Log("changing recipe step ingredient")
+			newRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
+			newRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStepID
+			newRecipeStepIngredient.IngredientID = &createdValidIngredients[0].ID
+			createdRecipeStepIngredient.Update(convertRecipeStepIngredientToRecipeStepIngredientUpdateInput(newRecipeStepIngredient))
+			assert.NoError(t, testClients.main.UpdateRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepIngredient))
 
-			// Clean up recipe.
+			n = <-notificationsChan
+			assert.Equal(t, n.DataType, types.RecipeStepIngredientDataType)
+
+			t.Log("fetching changed recipe step ingredient")
+			actual, err := testClients.main.GetRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepIngredientID)
+			requireNotNilAndNoProblems(t, actual, err)
+
+			// assert recipe step ingredient equality
+			checkRecipeStepIngredientEquality(t, newRecipeStepIngredient, actual)
+			assert.NotNil(t, actual.LastUpdatedOn)
+
+			t.Log("cleaning up recipe step ingredient")
+			assert.NoError(t, testClients.main.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepIngredientID))
+
+			t.Log("cleaning up recipe step")
+			assert.NoError(t, testClients.main.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
+
+			t.Log("cleaning up recipe")
+			assert.NoError(t, testClients.main.ArchiveRecipe(ctx, createdRecipe.ID))
+		}
+	})
+
+	s.runForPASETOClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			var checkFunc func() bool
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			createdValidIngredients, _, createdRecipe := createRecipeWhilePolling(ctx, t, testClients.main)
+
+			createdRecipeStepID := createdRecipe.Steps[0].ID
+			var createdRecipeStepIngredientID string
+			for _, step := range createdRecipe.Steps {
+				createdRecipeStepID = step.ID
+				for _, ingredient := range step.Ingredients {
+					createdRecipeStepIngredientID = ingredient.ID
+					break
+				}
+				break
+			}
+
+			var (
+				createdRecipeStepIngredient *types.RecipeStepIngredient
+				err                         error
+			)
+			checkFunc = func() bool {
+				createdRecipeStepIngredient, err = testClients.main.GetRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepIngredientID)
+				return assert.NotNil(t, createdRecipeStepIngredient) && assert.NoError(t, err)
+			}
+			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
+
+			// change recipe step ingredient
+			newRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
+			newRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStepID
+			newRecipeStepIngredient.IngredientID = &createdValidIngredients[0].ID
+			createdRecipeStepIngredient.Update(convertRecipeStepIngredientToRecipeStepIngredientUpdateInput(newRecipeStepIngredient))
+			assert.NoError(t, testClients.main.UpdateRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepIngredient))
+
+			time.Sleep(2 * time.Second)
+
+			// retrieve changed recipe step ingredient
+			var actual *types.RecipeStepIngredient
+			checkFunc = func() bool {
+				actual, err = testClients.main.GetRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepIngredientID)
+				return assert.NotNil(t, createdRecipeStepIngredient) && assert.NoError(t, err)
+			}
+			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
+
+			requireNotNilAndNoProblems(t, actual, err)
+
+			// assert recipe step ingredient equality
+			checkRecipeStepIngredientEquality(t, newRecipeStepIngredient, actual)
+			assert.NotNil(t, actual.LastUpdatedOn)
+
+			t.Log("cleaning up recipe step ingredient")
+			assert.NoError(t, testClients.main.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepIngredientID))
+
+			t.Log("cleaning up recipe step")
+			assert.NoError(t, testClients.main.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
+
+			t.Log("cleaning up recipe")
 			assert.NoError(t, testClients.main.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
 
 func (s *TestSuite) TestRecipeStepIngredients_Listing() {
-	s.runForEachClientExcept("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runForCookieClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// Create valid preparation.
-			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+			stopChan := make(chan bool, 1)
+			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			require.NotNil(t, notificationsChan)
+			require.NoError(t, err)
 
-			// Create valid ingredient.
-			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			requireNotNilAndNoProblems(t, createdValidIngredient, err)
+			var n *types.DataChangeMessage
 
-			// Create recipe.
-			exampleRecipe := fakes.BuildFakeRecipe()
-			exampleRecipe.Steps = []*types.RecipeStep{}
-			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
-			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
-			requireNotNilAndNoProblems(t, createdRecipe, err)
+			_, _, createdRecipe := createRecipeWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
 
-			// Create recipe step.
-			exampleRecipeStep := fakes.BuildFakeRecipeStep()
-			exampleRecipeStep.PreparationID = createdValidPreparation.ID
-			exampleRecipeStep.Ingredients = []*types.RecipeStepIngredient{}
-			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
-			exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
-			createdRecipeStep, err := testClients.main.CreateRecipeStep(ctx, exampleRecipeStepInput)
-			requireNotNilAndNoProblems(t, createdRecipeStep, err)
+			var (
+				createdRecipeStepID string
+			)
+			for _, step := range createdRecipe.Steps {
+				createdRecipeStepID = step.ID
+				break
+			}
 
-			// create recipe step ingredients
+			t.Log("creating recipe step ingredients")
 			var expected []*types.RecipeStepIngredient
 			for i := 0; i < 5; i++ {
-				exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-				exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStep.ID
-				exampleRecipeStepIngredient.IngredientID = &createdValidIngredient.ID
-				exampleRecipeStepIngredientInput := fakes.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
+				x, _, _ := createRecipeWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
 
-				createdRecipeStepIngredient, recipeStepIngredientCreationErr := testClients.main.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
-				requireNotNilAndNoProblems(t, createdRecipeStepIngredient, recipeStepIngredientCreationErr)
+				exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
+				exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStepID
+				exampleRecipeStepIngredient.IngredientID = &x[0].ID
+				exampleRecipeStepIngredientInput := fakes.BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
+				createdRecipeStepIngredientID, createdRecipeStepIngredientErr := testClients.main.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
+				require.NoError(t, createdRecipeStepIngredientErr)
+				t.Logf("recipe step ingredient %q created", createdRecipeStepIngredientID)
+
+				n = <-notificationsChan
+				assert.Equal(t, n.DataType, types.RecipeStepIngredientDataType)
+				require.NotNil(t, n.RecipeStepIngredient)
+				checkRecipeStepIngredientEquality(t, exampleRecipeStepIngredient, n.RecipeStepIngredient)
+
+				createdRecipeStepIngredient, createdRecipeStepIngredientErr := testClients.main.GetRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepIngredientID)
+				requireNotNilAndNoProblems(t, createdRecipeStepIngredient, createdRecipeStepIngredientErr)
+				require.Equal(t, createdRecipeStepID, createdRecipeStepIngredient.BelongsToRecipeStep)
 
 				expected = append(expected, createdRecipeStepIngredient)
 			}
 
 			// assert recipe step ingredient list equality
-			actual, err := testClients.main.GetRecipeStepIngredients(ctx, createdRecipe.ID, createdRecipeStep.ID, nil)
+			actual, err := testClients.main.GetRecipeStepIngredients(ctx, createdRecipe.ID, createdRecipeStepID, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -172,508 +226,80 @@ func (s *TestSuite) TestRecipeStepIngredients_Listing() {
 				len(actual.RecipeStepIngredients),
 			)
 
-			// clean up
-			for _, createdRecipeStepIngredient := range actual.RecipeStepIngredients {
-				assert.NoError(t, testClients.main.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID))
+			t.Log("cleaning up")
+			for _, createdRecipeStepIngredient := range expected {
+				assert.NoError(t, testClients.main.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepIngredient.ID))
 			}
 
-			// Clean up recipe step.
-			assert.NoError(t, testClients.main.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+			t.Log("cleaning up recipe step")
+			assert.NoError(t, testClients.main.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
 
-			// Clean up recipe.
+			t.Log("cleaning up recipe")
 			assert.NoError(t, testClients.main.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
-}
 
-func (s *TestSuite) TestRecipeStepIngredients_ExistenceChecking_ReturnsFalseForNonexistentRecipeStepIngredient() {
-	s.runForEachClientExcept("should not return an error for nonexistent recipe step ingredient", func(testClients *testClientWrapper) func() {
+	s.runForPASETOClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
+			var checkFunc func() bool
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// Create valid preparation.
-			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+			_, _, createdRecipe := createRecipeWhilePolling(ctx, t, testClients.main)
 
-			// Create recipe.
-			exampleRecipe := fakes.BuildFakeRecipe()
-			exampleRecipe.Steps = []*types.RecipeStep{}
-			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
-			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
-			requireNotNilAndNoProblems(t, createdRecipe, err)
+			var (
+				createdRecipeStepID string
+			)
+			for _, step := range createdRecipe.Steps {
+				createdRecipeStepID = step.ID
+				break
+			}
 
-			// Create recipe step.
-			exampleRecipeStep := fakes.BuildFakeRecipeStep()
-			exampleRecipeStep.PreparationID = createdValidPreparation.ID
-			exampleRecipeStep.Ingredients = []*types.RecipeStepIngredient{}
-			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
-			exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
-			createdRecipeStep, err := testClients.main.CreateRecipeStep(ctx, exampleRecipeStepInput)
-			requireNotNilAndNoProblems(t, createdRecipeStep, err)
+			t.Log("creating recipe step ingredients")
+			var expected []*types.RecipeStepIngredient
+			for i := 0; i < 5; i++ {
+				x, _, _ := createRecipeWhilePolling(ctx, t, testClients.main)
 
-			actual, err := testClients.main.RecipeStepIngredientExists(ctx, createdRecipe.ID, createdRecipeStep.ID, nonexistentID)
-			assert.NoError(t, err)
-			assert.False(t, actual)
+				exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
+				exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStepID
+				exampleRecipeStepIngredient.IngredientID = &x[0].ID
+				exampleRecipeStepIngredientInput := fakes.BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
+				createdRecipeStepIngredientID, createdRecipeStepIngredientErr := testClients.main.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
+				require.NoError(t, createdRecipeStepIngredientErr)
 
-			// Clean up recipe step.
-			assert.NoError(t, testClients.main.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
+				var createdRecipeStepIngredient *types.RecipeStepIngredient
+				checkFunc = func() bool {
+					createdRecipeStepIngredient, createdRecipeStepIngredientErr = testClients.main.GetRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepIngredientID)
+					return assert.NotNil(t, createdRecipeStepIngredient) && assert.NoError(t, createdRecipeStepIngredientErr)
+				}
+				assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
+				checkRecipeStepIngredientEquality(t, exampleRecipeStepIngredient, createdRecipeStepIngredient)
 
-			// Clean up recipe.
-			assert.NoError(t, testClients.main.ArchiveRecipe(ctx, createdRecipe.ID))
-		}
-	})
-}
+				expected = append(expected, createdRecipeStepIngredient)
+			}
 
-func (s *TestSuite) TestRecipeStepIngredients_ExistenceChecking_ReturnsTrueForValidRecipeStepIngredient() {
-	s.runForEachClientExcept("should not return an error for existent recipe step ingredient", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// Create valid preparation.
-			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			requireNotNilAndNoProblems(t, createdValidPreparation, err)
-
-			// Create valid ingredient.
-			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			requireNotNilAndNoProblems(t, createdValidIngredient, err)
-
-			// Create recipe.
-			exampleRecipe := fakes.BuildFakeRecipe()
-			exampleRecipe.Steps = []*types.RecipeStep{}
-			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
-			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
-			requireNotNilAndNoProblems(t, createdRecipe, err)
-
-			// Create recipe step.
-			exampleRecipeStep := fakes.BuildFakeRecipeStep()
-			exampleRecipeStep.PreparationID = createdValidPreparation.ID
-			exampleRecipeStep.Ingredients = []*types.RecipeStepIngredient{}
-			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
-			exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
-			createdRecipeStep, err := testClients.main.CreateRecipeStep(ctx, exampleRecipeStepInput)
-			requireNotNilAndNoProblems(t, createdRecipeStep, err)
-
-			// create recipe step ingredient
-			exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-			exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStep.ID
-			exampleRecipeStepIngredient.IngredientID = &createdValidIngredient.ID
-			exampleRecipeStepIngredientInput := fakes.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
-			createdRecipeStepIngredient, err := testClients.main.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
-			requireNotNilAndNoProblems(t, createdRecipeStepIngredient, err)
-
-			// retrieve recipe step ingredient
-			actual, err := testClients.main.RecipeStepIngredientExists(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID)
-			assert.NoError(t, err)
-			assert.True(t, actual)
-
-			// clean up recipe step ingredient
-			assert.NoError(t, testClients.main.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID))
-
-			// Clean up recipe step.
-			assert.NoError(t, testClients.main.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
-
-			// Clean up recipe.
-			assert.NoError(t, testClients.main.ArchiveRecipe(ctx, createdRecipe.ID))
-		}
-	})
-}
-
-func (s *TestSuite) TestRecipeStepIngredients_Reading_Returns404ForNonexistentRecipeStepIngredient() {
-	s.runForEachClientExcept("it should return an error when trying to read a recipe step ingredient that does not exist", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// Create valid preparation.
-			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			requireNotNilAndNoProblems(t, createdValidPreparation, err)
-
-			// Create recipe.
-			exampleRecipe := fakes.BuildFakeRecipe()
-			exampleRecipe.Steps = []*types.RecipeStep{}
-			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
-			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
-			requireNotNilAndNoProblems(t, createdRecipe, err)
-
-			// Create recipe step.
-			exampleRecipeStep := fakes.BuildFakeRecipeStep()
-			exampleRecipeStep.PreparationID = createdValidPreparation.ID
-			exampleRecipeStep.Ingredients = []*types.RecipeStepIngredient{}
-			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
-			exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
-			createdRecipeStep, err := testClients.main.CreateRecipeStep(ctx, exampleRecipeStepInput)
-			requireNotNilAndNoProblems(t, createdRecipeStep, err)
-
-			_, err = testClients.main.GetRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, nonexistentID)
-			assert.Error(t, err)
-
-			// Clean up recipe step.
-			assert.NoError(t, testClients.main.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
-
-			// Clean up recipe.
-			assert.NoError(t, testClients.main.ArchiveRecipe(ctx, createdRecipe.ID))
-		}
-	})
-}
-
-func (s *TestSuite) TestRecipeStepIngredients_Reading() {
-	s.runForEachClientExcept("it should be readable", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// Create valid preparation.
-			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			requireNotNilAndNoProblems(t, createdValidPreparation, err)
-
-			// Create valid ingredient.
-			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			requireNotNilAndNoProblems(t, createdValidIngredient, err)
-
-			// Create recipe.
-			exampleRecipe := fakes.BuildFakeRecipe()
-			exampleRecipe.Steps = []*types.RecipeStep{}
-			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
-			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
-			requireNotNilAndNoProblems(t, createdRecipe, err)
-
-			// Create recipe step.
-			exampleRecipeStep := fakes.BuildFakeRecipeStep()
-			exampleRecipeStep.PreparationID = createdValidPreparation.ID
-			exampleRecipeStep.Ingredients = []*types.RecipeStepIngredient{}
-			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
-			exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
-			createdRecipeStep, err := testClients.main.CreateRecipeStep(ctx, exampleRecipeStepInput)
-			requireNotNilAndNoProblems(t, createdRecipeStep, err)
-
-			// create recipe step ingredient
-			exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-			exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStep.ID
-			exampleRecipeStepIngredient.IngredientID = &createdValidIngredient.ID
-			exampleRecipeStepIngredientInput := fakes.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
-			createdRecipeStepIngredient, err := testClients.main.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
-			requireNotNilAndNoProblems(t, createdRecipeStepIngredient, err)
-
-			// retrieve recipe step ingredient
-			actual, err := testClients.main.GetRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID)
+			// assert recipe step ingredient list equality
+			actual, err := testClients.main.GetRecipeStepIngredients(ctx, createdRecipe.ID, createdRecipeStepID, nil)
 			requireNotNilAndNoProblems(t, actual, err)
+			assert.True(
+				t,
+				len(expected) <= len(actual.RecipeStepIngredients),
+				"expected %d to be <= %d",
+				len(expected),
+				len(actual.RecipeStepIngredients),
+			)
 
-			// assert recipe step ingredient equality
-			checkRecipeStepIngredientEquality(t, exampleRecipeStepIngredient, actual)
-
-			// clean up recipe step ingredient
-			assert.NoError(t, testClients.main.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID))
-
-			// Clean up recipe step.
-			assert.NoError(t, testClients.main.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
-
-			// Clean up recipe.
-			assert.NoError(t, testClients.main.ArchiveRecipe(ctx, createdRecipe.ID))
-		}
-	})
-}
-
-func (s *TestSuite) TestRecipeStepIngredients_Updating_Returns404ForNonexistentRecipeStepIngredient() {
-	s.runForEachClientExcept("it should return an error when trying to update something that does not exist", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// Create valid preparation.
-			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			requireNotNilAndNoProblems(t, createdValidPreparation, err)
-
-			// Create recipe.
-			exampleRecipe := fakes.BuildFakeRecipe()
-			exampleRecipe.Steps = []*types.RecipeStep{}
-			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
-			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
-			requireNotNilAndNoProblems(t, createdRecipe, err)
-
-			// Create recipe step.
-			exampleRecipeStep := fakes.BuildFakeRecipeStep()
-			exampleRecipeStep.PreparationID = createdValidPreparation.ID
-			exampleRecipeStep.Ingredients = []*types.RecipeStepIngredient{}
-			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
-			exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
-			createdRecipeStep, err := testClients.main.CreateRecipeStep(ctx, exampleRecipeStepInput)
-			requireNotNilAndNoProblems(t, createdRecipeStep, err)
-
-			exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-			exampleRecipeStepIngredient.ID = nonexistentID
-
-			assert.Error(t, testClients.main.UpdateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredient))
-
-			// Clean up recipe step.
-			assert.NoError(t, testClients.main.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
-
-			// Clean up recipe.
-			assert.NoError(t, testClients.main.ArchiveRecipe(ctx, createdRecipe.ID))
-		}
-	})
-}
-
-// convertRecipeStepIngredientToRecipeStepIngredientUpdateInput creates an RecipeStepIngredientUpdateInput struct from a recipe step ingredient.
-func convertRecipeStepIngredientToRecipeStepIngredientUpdateInput(x *types.RecipeStepIngredient) *types.RecipeStepIngredientUpdateInput {
-	return &types.RecipeStepIngredientUpdateInput{
-		IngredientID:        x.IngredientID,
-		Name:                x.Name,
-		QuantityType:        x.QuantityType,
-		QuantityValue:       x.QuantityValue,
-		QuantityNotes:       x.QuantityNotes,
-		ProductOfRecipeStep: x.ProductOfRecipeStep,
-		IngredientNotes:     x.IngredientNotes,
-	}
-}
-
-func (s *TestSuite) TestRecipeStepIngredients_Updating() {
-	s.runForEachClientExcept("it should be possible to update a recipe step ingredient", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// Create valid preparation.
-			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			requireNotNilAndNoProblems(t, createdValidPreparation, err)
-
-			// Create valid ingredient.
-			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			requireNotNilAndNoProblems(t, createdValidIngredient, err)
-
-			// Create recipe.
-			exampleRecipe := fakes.BuildFakeRecipe()
-			exampleRecipe.Steps = []*types.RecipeStep{}
-			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
-			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
-			requireNotNilAndNoProblems(t, createdRecipe, err)
-
-			// Create recipe step.
-			exampleRecipeStep := fakes.BuildFakeRecipeStep()
-			exampleRecipeStep.PreparationID = createdValidPreparation.ID
-			exampleRecipeStep.Ingredients = []*types.RecipeStepIngredient{}
-			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
-			exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
-			createdRecipeStep, err := testClients.main.CreateRecipeStep(ctx, exampleRecipeStepInput)
-			requireNotNilAndNoProblems(t, createdRecipeStep, err)
-
-			// create recipe step ingredient
-			exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-			exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStep.ID
-			exampleRecipeStepIngredient.IngredientID = &createdValidIngredient.ID
-			exampleRecipeStepIngredientInput := fakes.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
-			createdRecipeStepIngredient, err := testClients.main.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
-			requireNotNilAndNoProblems(t, createdRecipeStepIngredient, err)
-
-			// change recipe step ingredient
-			createdRecipeStepIngredient.Update(convertRecipeStepIngredientToRecipeStepIngredientUpdateInput(exampleRecipeStepIngredient))
-			assert.NoError(t, testClients.main.UpdateRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepIngredient))
-
-			// retrieve changed recipe step ingredient
-			actual, err := testClients.main.GetRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID)
-			requireNotNilAndNoProblems(t, actual, err)
-
-			// assert recipe step ingredient equality
-			checkRecipeStepIngredientEquality(t, exampleRecipeStepIngredient, actual)
-			assert.NotNil(t, actual.LastUpdatedOn)
-
-			auditLogEntries, err := testClients.admin.GetAuditLogForRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID)
-			require.NoError(t, err)
-
-			expectedAuditLogEntries := []*types.AuditLogEntry{
-				{EventType: audit.RecipeStepIngredientCreationEvent},
-				{EventType: audit.RecipeStepIngredientUpdateEvent},
+			t.Log("cleaning up")
+			for _, createdRecipeStepIngredient := range expected {
+				assert.NoError(t, testClients.main.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepIngredient.ID))
 			}
-			validateAuditLogEntries(t, expectedAuditLogEntries, auditLogEntries, createdRecipeStepIngredient.ID, audit.RecipeStepIngredientAssignmentKey)
 
-			// clean up recipe step ingredient
-			assert.NoError(t, testClients.main.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID))
+			t.Log("cleaning up recipe step")
+			assert.NoError(t, testClients.main.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
 
-			// Clean up recipe step.
-			assert.NoError(t, testClients.main.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
-
-			// Clean up recipe.
-			assert.NoError(t, testClients.main.ArchiveRecipe(ctx, createdRecipe.ID))
-		}
-	})
-}
-
-func (s *TestSuite) TestRecipeStepIngredients_Archiving_Returns404ForNonexistentRecipeStepIngredient() {
-	s.runForEachClientExcept("it should return an error when trying to delete something that does not exist", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// Create valid preparation.
-			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			requireNotNilAndNoProblems(t, createdValidPreparation, err)
-
-			// Create recipe.
-			exampleRecipe := fakes.BuildFakeRecipe()
-			exampleRecipe.Steps = []*types.RecipeStep{}
-			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
-			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
-			requireNotNilAndNoProblems(t, createdRecipe, err)
-
-			// Create recipe step.
-			exampleRecipeStep := fakes.BuildFakeRecipeStep()
-			exampleRecipeStep.PreparationID = createdValidPreparation.ID
-			exampleRecipeStep.Ingredients = []*types.RecipeStepIngredient{}
-			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
-			exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
-			createdRecipeStep, err := testClients.main.CreateRecipeStep(ctx, exampleRecipeStepInput)
-			requireNotNilAndNoProblems(t, createdRecipeStep, err)
-
-			assert.Error(t, testClients.main.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, nonexistentID))
-
-			// Clean up recipe step.
-			assert.NoError(t, testClients.main.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
-
-			// Clean up recipe.
-			assert.NoError(t, testClients.main.ArchiveRecipe(ctx, createdRecipe.ID))
-		}
-	})
-}
-
-func (s *TestSuite) TestRecipeStepIngredients_Archiving() {
-	s.runForEachClientExcept("it should be possible to delete a recipe step ingredient", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// Create valid preparation.
-			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			requireNotNilAndNoProblems(t, createdValidPreparation, err)
-
-			// Create valid ingredient.
-			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			requireNotNilAndNoProblems(t, createdValidIngredient, err)
-
-			// Create recipe.
-			exampleRecipe := fakes.BuildFakeRecipe()
-			exampleRecipe.Steps = []*types.RecipeStep{}
-			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
-			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
-			requireNotNilAndNoProblems(t, createdRecipe, err)
-
-			// Create recipe step.
-			exampleRecipeStep := fakes.BuildFakeRecipeStep()
-			exampleRecipeStep.PreparationID = createdValidPreparation.ID
-			exampleRecipeStep.Ingredients = []*types.RecipeStepIngredient{}
-			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
-			exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
-			createdRecipeStep, err := testClients.main.CreateRecipeStep(ctx, exampleRecipeStepInput)
-			requireNotNilAndNoProblems(t, createdRecipeStep, err)
-
-			// create recipe step ingredient
-			exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-			exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStep.ID
-			exampleRecipeStepIngredient.IngredientID = &createdValidIngredient.ID
-			exampleRecipeStepIngredientInput := fakes.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
-			createdRecipeStepIngredient, err := testClients.main.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)
-			requireNotNilAndNoProblems(t, createdRecipeStepIngredient, err)
-
-			// clean up recipe step ingredient
-			assert.NoError(t, testClients.main.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID))
-
-			auditLogEntries, err := testClients.admin.GetAuditLogForRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepIngredient.ID)
-			require.NoError(t, err)
-
-			expectedAuditLogEntries := []*types.AuditLogEntry{
-				{EventType: audit.RecipeStepIngredientCreationEvent},
-				{EventType: audit.RecipeStepIngredientArchiveEvent},
-			}
-			validateAuditLogEntries(t, expectedAuditLogEntries, auditLogEntries, createdRecipeStepIngredient.ID, audit.RecipeStepIngredientAssignmentKey)
-
-			// Clean up recipe step.
-			assert.NoError(t, testClients.main.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
-
-			// Clean up recipe.
-			assert.NoError(t, testClients.main.ArchiveRecipe(ctx, createdRecipe.ID))
-		}
-	})
-}
-
-func (s *TestSuite) TestRecipeStepIngredients_Auditing_Returns404ForNonexistentRecipeStepIngredient() {
-	s.runForEachClientExcept("it should return an error when trying to audit something that does not exist", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// Create valid preparation.
-			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			requireNotNilAndNoProblems(t, createdValidPreparation, err)
-
-			// Create recipe.
-			exampleRecipe := fakes.BuildFakeRecipe()
-			exampleRecipe.Steps = []*types.RecipeStep{}
-			exampleRecipeInput := fakes.BuildFakeRecipeCreationInputFromRecipe(exampleRecipe)
-			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
-			requireNotNilAndNoProblems(t, createdRecipe, err)
-
-			// Create recipe step.
-			exampleRecipeStep := fakes.BuildFakeRecipeStep()
-			exampleRecipeStep.PreparationID = createdValidPreparation.ID
-			exampleRecipeStep.Ingredients = []*types.RecipeStepIngredient{}
-			exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
-			exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationInputFromRecipeStep(exampleRecipeStep)
-			createdRecipeStep, err := testClients.main.CreateRecipeStep(ctx, exampleRecipeStepInput)
-			requireNotNilAndNoProblems(t, createdRecipeStep, err)
-
-			x, err := testClients.admin.GetAuditLogForRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStep.ID, nonexistentID)
-
-			assert.NoError(t, err)
-			assert.Empty(t, x)
-
-			// Clean up recipe step.
-			assert.NoError(t, testClients.main.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
-
-			// Clean up recipe.
+			t.Log("cleaning up recipe")
 			assert.NoError(t, testClients.main.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})

@@ -5,6 +5,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/segmentio/ksuid"
+
 	"gitlab.com/prixfixe/prixfixe/internal/observability"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
@@ -92,10 +94,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	requester := sessionCtxData.Requester.UserID
 	logger = logger.WithValue(keys.RequesterIDKey, requester)
+
 	input.BelongsToUser = requester
+	input.ID = ksuid.New().String()
 
 	// create household in database.
-	household, err := s.householdDataManager.CreateHousehold(ctx, input, requester)
+	household, err := s.householdDataManager.CreateHousehold(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating household")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -202,11 +206,10 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// update the data structure.
-	changeReport := household.Update(input)
-	tracing.AttachChangeSummarySpan(span, "household", changeReport)
+	household.Update(input)
 
 	// update household in database.
-	if err = s.householdDataManager.UpdateHousehold(ctx, household, requester, changeReport); err != nil {
+	if err = s.householdDataManager.UpdateHousehold(ctx, household); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating household")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
@@ -242,7 +245,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
 	// archive the household in the database.
-	err = s.householdDataManager.ArchiveHousehold(ctx, householdID, requester, requester)
+	err = s.householdDataManager.ArchiveHousehold(ctx, householdID, requester)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -282,6 +285,7 @@ func (s *service) AddMemberHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
 		return
 	}
+	input.ID = ksuid.New().String()
 
 	if err = input.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
@@ -297,14 +301,21 @@ func (s *service) AddMemberHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
-	// create household in database.
-	if err = s.householdMembershipDataManager.AddUserToHousehold(ctx, input, requester); err != nil {
-		observability.AcknowledgeError(err, logger, span, "adding user to household")
+	preWrite := &types.PreWriteMessage{
+		DataType:                  types.UserMembershipDataType,
+		UserMembership:            input,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: householdID,
+	}
+	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing household write message")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	pwr := types.PreWriteResponse{ID: input.ID}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusAccepted)
 }
 
 // ModifyMemberPermissionsHandler is our household creation route.
@@ -347,10 +358,10 @@ func (s *service) ModifyMemberPermissionsHandler(res http.ResponseWriter, req *h
 
 	userID := s.userIDFetcher(req)
 	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachHouseholdIDToSpan(span, userID)
+	tracing.AttachUserIDToSpan(span, userID)
 
 	// create household in database.
-	if err = s.householdMembershipDataManager.ModifyUserPermissions(ctx, userID, householdID, requester, input); err != nil {
+	if err = s.householdMembershipDataManager.ModifyUserPermissions(ctx, householdID, userID, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "modifying user permissions")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
@@ -398,7 +409,7 @@ func (s *service) TransferHouseholdOwnershipHandler(res http.ResponseWriter, req
 	logger = logger.WithValue(keys.RequesterIDKey, requester)
 
 	// transfer ownership of household in database.
-	if err = s.householdMembershipDataManager.TransferHouseholdOwnership(ctx, householdID, requester, input); err != nil {
+	if err = s.householdMembershipDataManager.TransferHouseholdOwnership(ctx, householdID, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "transferring household ownership")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
@@ -440,7 +451,7 @@ func (s *service) RemoveMemberHandler(res http.ResponseWriter, req *http.Request
 	tracing.AttachUserIDToSpan(span, userID)
 
 	// remove user from household in database.
-	if err = s.householdMembershipDataManager.RemoveUserFromHousehold(ctx, userID, householdID, requester, reason); err != nil {
+	if err = s.householdMembershipDataManager.RemoveUserFromHousehold(ctx, userID, householdID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "removing user from household")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
@@ -474,52 +485,11 @@ func (s *service) MarkAsDefaultHouseholdHandler(res http.ResponseWriter, req *ht
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 
 	// mark household as default in database.
-	if err = s.householdMembershipDataManager.MarkHouseholdAsUserDefault(ctx, requester, householdID, requester); err != nil {
+	if err = s.householdMembershipDataManager.MarkHouseholdAsUserDefault(ctx, requester, householdID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "marking household as default")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
 	res.WriteHeader(http.StatusAccepted)
-}
-
-// AuditEntryHandler returns a GET handler that returns all audit log entries related to an household.
-func (s *service) AuditEntryHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-	tracing.AttachRequestToSpan(span, req)
-
-	// determine user ID.
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
-		return
-	}
-
-	requester := sessionCtxData.Requester.UserID
-	logger = logger.WithValue(keys.RequesterIDKey, requester)
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-
-	// determine household ID.
-	householdID := s.householdIDFetcher(req)
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
-
-	x, err := s.householdDataManager.GetAuditLogEntriesForHousehold(ctx, householdID)
-	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
-		return
-	}
-
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "fetching audit log entries")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
-	}
-
-	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
 }

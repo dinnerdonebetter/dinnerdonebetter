@@ -20,15 +20,19 @@ const (
 type (
 	// GCSBlobConfig configures a gcs blob passwords method.
 	GCSBlobConfig struct {
+		_ struct{}
+
 		GoogleAccessID string `json:"google_access_id" mapstructure:"google_access_id" toml:"google_access_id,omitempty"`
 	}
 
 	// GCSConfig configures a gcs based storage provider.
 	GCSConfig struct {
-		BlobSettings              GCSBlobConfig `json:"blob_settings" mapstructure:"blob_settings" toml:"blob_settings,omitempty"`
-		ServiceAccountKeyFilepath string        `json:"service_account_key_filepath" mapstructure:"service_account_key_filepath" toml:"service_account_key_filepath,omitempty"`
-		BucketName                string        `json:"bucket_name" mapstructure:"bucket_name" toml:"bucket_name,omitempty"`
-		Scopes                    []string      `json:"scopes" mapstructure:"scopes" toml:"scopes,omitempty"`
+		_ struct{}
+
+		BlobSettings                GCSBlobConfig `json:"blob_settings" mapstructure:"blob_settings" toml:"blob_settings,omitempty"`
+		ServiceHouseholdKeyFilepath string        `json:"service_household_key_filepath" mapstructure:"service_household_key_filepath" toml:"service_household_key_filepath,omitempty"`
+		BucketName                  string        `json:"bucket_name" mapstructure:"bucket_name" toml:"bucket_name,omitempty"`
+		Scopes                      []string      `json:"scopes" mapstructure:"scopes" toml:"scopes,omitempty"`
 	}
 )
 
@@ -38,13 +42,13 @@ func buildGCSBucket(ctx context.Context, cfg *GCSConfig) (*blob.Bucket, error) {
 		bucket *blob.Bucket
 	)
 
-	if cfg.ServiceAccountKeyFilepath != "" {
-		serviceAccountKeyBytes, err := os.ReadFile(cfg.ServiceAccountKeyFilepath)
+	if cfg.ServiceHouseholdKeyFilepath != "" {
+		serviceHouseholdKeyBytes, err := os.ReadFile(cfg.ServiceHouseholdKeyFilepath)
 		if err != nil {
 			return nil, fmt.Errorf("reading service household key file: %w", err)
 		}
 
-		if creds, err = google.CredentialsFromJSON(ctx, serviceAccountKeyBytes, cfg.Scopes...); err != nil {
+		if creds, err = google.CredentialsFromJSON(ctx, serviceHouseholdKeyBytes, cfg.Scopes...); err != nil {
 			return nil, fmt.Errorf("using service household key credentials: %w", err)
 		}
 	} else {

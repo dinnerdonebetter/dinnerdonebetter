@@ -23,8 +23,8 @@ type recipeStepsServiceHTTPRoutesTestHelper struct {
 	exampleHousehold     *types.Household
 	exampleRecipe        *types.Recipe
 	exampleRecipeStep    *types.RecipeStep
-	exampleCreationInput *types.RecipeStepCreationInput
-	exampleUpdateInput   *types.RecipeStepUpdateInput
+	exampleCreationInput *types.RecipeStepCreationRequestInput
+	exampleUpdateInput   *types.RecipeStepUpdateRequestInput
 }
 
 func buildTestHelper(t *testing.T) *recipeStepsServiceHTTPRoutesTestHelper {
@@ -41,14 +41,14 @@ func buildTestHelper(t *testing.T) *recipeStepsServiceHTTPRoutesTestHelper {
 	helper.exampleRecipe.BelongsToHousehold = helper.exampleHousehold.ID
 	helper.exampleRecipeStep = fakes.BuildFakeRecipeStep()
 	helper.exampleRecipeStep.BelongsToRecipe = helper.exampleRecipe.ID
-	helper.exampleCreationInput = fakes.BuildFakeRecipeStepCreationInputFromRecipeStep(helper.exampleRecipeStep)
-	helper.exampleUpdateInput = fakes.BuildFakeRecipeStepUpdateInputFromRecipeStep(helper.exampleRecipeStep)
+	helper.exampleCreationInput = fakes.BuildFakeRecipeStepCreationRequestInputFromRecipeStep(helper.exampleRecipeStep)
+	helper.exampleUpdateInput = fakes.BuildFakeRecipeStepUpdateRequestInputFromRecipeStep(helper.exampleRecipeStep)
 
-	helper.service.recipeIDFetcher = func(*http.Request) uint64 {
+	helper.service.recipeIDFetcher = func(*http.Request) string {
 		return helper.exampleRecipe.ID
 	}
 
-	helper.service.recipeStepIDFetcher = func(*http.Request) uint64 {
+	helper.service.recipeStepIDFetcher = func(*http.Request) string {
 		return helper.exampleRecipeStep.ID
 	}
 
@@ -60,7 +60,7 @@ func buildTestHelper(t *testing.T) *recipeStepsServiceHTTPRoutesTestHelper {
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 		},
 		ActiveHouseholdID: helper.exampleHousehold.ID,
-		HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
+		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
 			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
 		},
 	}

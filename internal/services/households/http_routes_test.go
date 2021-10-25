@@ -9,18 +9,19 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
 	mockencoding "gitlab.com/prixfixe/prixfixe/internal/encoding/mock"
+	mockpublishers "gitlab.com/prixfixe/prixfixe/internal/messagequeue/publishers/mock"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	mockmetrics "gitlab.com/prixfixe/prixfixe/internal/observability/metrics/mock"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
 	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
 
 func TestHouseholdsService_ListHandler(T *testing.T) {
@@ -154,7 +155,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -163,7 +164,6 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 			"CreateHousehold",
 			testutils.ContextMatcher,
 			mock.IsType(&types.HouseholdCreationInput{}),
-			helper.exampleUser.ID,
 		).Return(helper.exampleHousehold, nil)
 		helper.service.householdDataManager = householdDataManager
 
@@ -188,7 +188,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -206,7 +206,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(nil))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -225,7 +225,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -244,7 +244,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -253,7 +253,6 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 			"CreateHousehold",
 			testutils.ContextMatcher,
 			mock.IsType(&types.HouseholdCreationInput{}),
-			helper.exampleUser.ID,
 		).Return((*types.Household)(nil), errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
 
@@ -393,7 +392,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -401,13 +400,13 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		householdDataManager.On(
 			"GetHousehold",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID, helper.exampleUser.ID,
+			helper.exampleHousehold.ID,
+			helper.exampleUser.ID,
 		).Return(helper.exampleHousehold, nil)
 		householdDataManager.On(
 			"UpdateHousehold",
 			testutils.ContextMatcher,
-			mock.IsType(&types.Household{}), helper.exampleUser.ID,
-			mock.IsType([]*types.FieldChangeSummary{}),
+			mock.IsType(&types.Household{}),
 		).Return(nil)
 		helper.service.householdDataManager = householdDataManager
 
@@ -428,7 +427,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -446,7 +445,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(nil))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -465,7 +464,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -484,7 +483,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -513,7 +512,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -542,7 +541,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -553,13 +552,13 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		householdDataManager.On(
 			"GetHousehold",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID, helper.exampleUser.ID,
+			helper.exampleHousehold.ID,
+			helper.exampleUser.ID,
 		).Return(helper.exampleHousehold, nil)
 		householdDataManager.On(
 			"UpdateHousehold",
 			testutils.ContextMatcher,
-			mock.IsType(&types.Household{}), helper.exampleUser.ID,
-			mock.IsType([]*types.FieldChangeSummary{}),
+			mock.IsType(&types.Household{}),
 		).Return(errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
 
@@ -584,7 +583,6 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 			"ArchiveHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
 			helper.exampleUser.ID,
 		).Return(nil)
 		helper.service.householdDataManager = householdDataManager
@@ -634,7 +632,6 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			helper.exampleUser.ID,
-			helper.exampleUser.ID,
 		).Return(sql.ErrNoRows)
 		helper.service.householdDataManager = householdDataManager
 
@@ -663,7 +660,6 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 			"ArchiveHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
 			helper.exampleUser.ID,
 		).Return(errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
@@ -697,24 +693,23 @@ func TestHouseholdsService_AddMemberHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManager{}
-		householdMembershipDataManager.On(
-			"AddUserToHousehold",
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
+			"Publish",
 			testutils.ContextMatcher,
-			exampleInput,
-			helper.exampleUser.ID,
+			mock.MatchedBy(testutils.PreWriteMessageMatcher),
 		).Return(nil)
-		helper.service.householdMembershipDataManager = householdMembershipDataManager
+		helper.service.preWritesPublisher = mockEventProducer
 
 		helper.service.AddMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdMembershipDataManager)
+		mock.AssertExpectationsForObjects(t, mockEventProducer)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -727,7 +722,7 @@ func TestHouseholdsService_AddMemberHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -745,7 +740,7 @@ func TestHouseholdsService_AddMemberHandler(T *testing.T) {
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(nil))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -764,7 +759,7 @@ func TestHouseholdsService_AddMemberHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -773,7 +768,7 @@ func TestHouseholdsService_AddMemberHandler(T *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 	})
 
-	T.Run("with error writing to database", func(t *testing.T) {
+	T.Run("with error publishing to event queue", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -783,24 +778,23 @@ func TestHouseholdsService_AddMemberHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManager{}
-		householdMembershipDataManager.On(
-			"AddUserToHousehold",
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
+			"Publish",
 			testutils.ContextMatcher,
-			exampleInput,
-			helper.exampleUser.ID,
+			mock.MatchedBy(testutils.PreWriteMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.householdMembershipDataManager = householdMembershipDataManager
+		helper.service.preWritesPublisher = mockEventProducer
 
 		helper.service.AddMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdMembershipDataManager)
+		mock.AssertExpectationsForObjects(t, mockEventProducer)
 	})
 }
 
@@ -817,7 +811,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -827,7 +821,6 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
 			exampleInput,
 		).Return(nil)
 		helper.service.householdMembershipDataManager = householdMembershipDataManager
@@ -846,7 +839,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(nil))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -865,7 +858,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -885,7 +878,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -904,7 +897,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -914,7 +907,6 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
 			exampleInput,
 		).Return(errors.New("blah"))
 		helper.service.householdMembershipDataManager = householdMembershipDataManager
@@ -940,7 +932,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -949,7 +941,6 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 			"TransferHouseholdOwnership",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
 			exampleInput,
 		).Return(nil)
 		helper.service.householdMembershipDataManager = householdMembershipDataManager
@@ -968,7 +959,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(nil))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -987,7 +978,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -1007,7 +998,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -1026,7 +1017,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -1035,7 +1026,6 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 			"TransferHouseholdOwnership",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
 			exampleInput,
 		).Return(errors.New("blah"))
 		helper.service.householdMembershipDataManager = householdMembershipDataManager
@@ -1064,8 +1054,6 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
-			exampleReason,
 		).Return(nil)
 		helper.service.householdMembershipDataManager = householdMembershipDataManager
 
@@ -1115,8 +1103,6 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
-			exampleReason,
 		).Return(errors.New("blah"))
 		helper.service.householdMembershipDataManager = householdMembershipDataManager
 
@@ -1150,7 +1136,6 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
 		).Return(nil)
 		helper.service.householdMembershipDataManager = householdMembershipDataManager
 
@@ -1195,7 +1180,6 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
 		).Return(errors.New("blah"))
 		helper.service.householdMembershipDataManager = householdMembershipDataManager
 
@@ -1212,119 +1196,5 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, encoderDecoder)
-	})
-}
-
-func TestHouseholdsService_AuditEntryHandler(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		exampleAuditLogEntries := fakes.BuildFakeAuditLogEntryList().Entries
-
-		householdDataManager := &mocktypes.HouseholdDataManager{}
-		householdDataManager.On(
-			"GetAuditLogEntriesForHousehold",
-			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
-		).Return(exampleAuditLogEntries, nil)
-		helper.service.householdDataManager = householdDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType([]*types.AuditLogEntry{}),
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
-		helper.service.AuditEntryHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, householdDataManager, encoderDecoder)
-	})
-
-	T.Run("with error retrieving session context data", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
-		helper.service.AuditEntryHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
-	})
-
-	T.Run("with sql.ErrNoRows", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		householdDataManager := &mocktypes.HouseholdDataManager{}
-		householdDataManager.On(
-			"GetAuditLogEntriesForHousehold",
-			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
-		).Return([]*types.AuditLogEntry(nil), sql.ErrNoRows)
-		helper.service.householdDataManager = householdDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
-		helper.service.AuditEntryHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, householdDataManager, encoderDecoder)
-	})
-
-	T.Run("with error reading from database", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		householdDataManager := &mocktypes.HouseholdDataManager{}
-		householdDataManager.On(
-			"GetAuditLogEntriesForHousehold",
-			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
-		).Return([]*types.AuditLogEntry(nil), errors.New("blah"))
-		helper.service.householdDataManager = householdDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
-		helper.service.AuditEntryHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, householdDataManager, encoderDecoder)
 	})
 }

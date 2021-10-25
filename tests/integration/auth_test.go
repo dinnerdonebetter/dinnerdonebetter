@@ -8,14 +8,14 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/pquerna/otp/totp"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-
-	"github.com/pquerna/otp/totp"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func (s *TestSuite) TestLogin() {

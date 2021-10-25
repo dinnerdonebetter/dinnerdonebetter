@@ -3,74 +3,174 @@ package integration
 import (
 	"fmt"
 	"testing"
-
-	audit "gitlab.com/prixfixe/prixfixe/internal/audit"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 func checkValidInstrumentEquality(t *testing.T, expected, actual *types.ValidInstrument) {
 	t.Helper()
 
 	assert.NotZero(t, actual.ID)
-	assert.Equal(t, expected.Name, actual.Name, "expected Name for valid instrument #%d to be %v, but it was %v ", expected.ID, expected.Name, actual.Name)
-	assert.Equal(t, expected.Variant, actual.Variant, "expected Variant for valid instrument #%d to be %v, but it was %v ", expected.ID, expected.Variant, actual.Variant)
-	assert.Equal(t, expected.Description, actual.Description, "expected Description for valid instrument #%d to be %v, but it was %v ", expected.ID, expected.Description, actual.Description)
-	assert.Equal(t, expected.IconPath, actual.IconPath, "expected IconPath for valid instrument #%d to be %v, but it was %v ", expected.ID, expected.IconPath, actual.IconPath)
+	assert.Equal(t, expected.Name, actual.Name, "expected Name for valid instrument %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
+	assert.Equal(t, expected.Variant, actual.Variant, "expected Variant for valid instrument %s to be %v, but it was %v", expected.ID, expected.Variant, actual.Variant)
+	assert.Equal(t, expected.Description, actual.Description, "expected Description for valid instrument %s to be %v, but it was %v", expected.ID, expected.Description, actual.Description)
+	assert.Equal(t, expected.IconPath, actual.IconPath, "expected IconPath for valid instrument %s to be %v, but it was %v", expected.ID, expected.IconPath, actual.IconPath)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
-func (s *TestSuite) TestValidInstruments_Creating() {
-	s.runForEachClientExcept("should be creatable", func(testClients *testClientWrapper) func() {
+// convertValidInstrumentToValidInstrumentUpdateInput creates an ValidInstrumentUpdateRequestInput struct from a valid instrument.
+func convertValidInstrumentToValidInstrumentUpdateInput(x *types.ValidInstrument) *types.ValidInstrumentUpdateRequestInput {
+	return &types.ValidInstrumentUpdateRequestInput{
+		Name:        x.Name,
+		Variant:     x.Variant,
+		Description: x.Description,
+		IconPath:    x.IconPath,
+	}
+}
+
+func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
+	s.runForCookieClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// Create valid instrument.
+			stopChan := make(chan bool, 1)
+			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			require.NotNil(t, notificationsChan)
+			require.NoError(t, err)
+
+			var n *types.DataChangeMessage
+
+			t.Log("creating valid instrument")
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
-			exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationInputFromValidInstrument(exampleValidInstrument)
-			createdValidInstrument, err := testClients.main.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+			exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
+			createdValidInstrumentID, err := testClients.main.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+			require.NoError(t, err)
+			t.Logf("valid instrument %q created", createdValidInstrumentID)
+
+			n = <-notificationsChan
+			assert.Equal(t, n.DataType, types.ValidInstrumentDataType)
+			require.NotNil(t, n.ValidInstrument)
+			checkValidInstrumentEquality(t, exampleValidInstrument, n.ValidInstrument)
+
+			createdValidInstrument, err := testClients.main.GetValidInstrument(ctx, createdValidInstrumentID)
 			requireNotNilAndNoProblems(t, createdValidInstrument, err)
+
+			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
+
+			t.Log("changing valid instrument")
+			newValidInstrument := fakes.BuildFakeValidInstrument()
+			createdValidInstrument.Update(convertValidInstrumentToValidInstrumentUpdateInput(newValidInstrument))
+			assert.NoError(t, testClients.main.UpdateValidInstrument(ctx, createdValidInstrument))
+
+			n = <-notificationsChan
+			assert.Equal(t, n.DataType, types.ValidInstrumentDataType)
+
+			t.Log("fetching changed valid instrument")
+			actual, err := testClients.main.GetValidInstrument(ctx, createdValidInstrumentID)
+			requireNotNilAndNoProblems(t, actual, err)
+
+			// assert valid instrument equality
+			checkValidInstrumentEquality(t, newValidInstrument, actual)
+			assert.NotNil(t, actual.LastUpdatedOn)
+
+			t.Log("cleaning up valid instrument")
+			assert.NoError(t, testClients.main.ArchiveValidInstrument(ctx, createdValidInstrumentID))
+		}
+	})
+
+	s.runForPASETOClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			var checkFunc func() bool
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			t.Log("creating valid instrument")
+			exampleValidInstrument := fakes.BuildFakeValidInstrument()
+			exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
+			createdValidInstrumentID, err := testClients.main.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+			require.NoError(t, err)
+			t.Logf("valid instrument %q created", createdValidInstrumentID)
+
+			var createdValidInstrument *types.ValidInstrument
+			checkFunc = func() bool {
+				createdValidInstrument, err = testClients.main.GetValidInstrument(ctx, createdValidInstrumentID)
+				return assert.NotNil(t, createdValidInstrument) && assert.NoError(t, err)
+			}
+			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
+			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
 
 			// assert valid instrument equality
 			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
 
-			auditLogEntries, err := testClients.admin.GetAuditLogForValidInstrument(ctx, createdValidInstrument.ID)
-			require.NoError(t, err)
+			// change valid instrument
+			newValidInstrument := fakes.BuildFakeValidInstrument()
+			createdValidInstrument.Update(convertValidInstrumentToValidInstrumentUpdateInput(newValidInstrument))
+			assert.NoError(t, testClients.main.UpdateValidInstrument(ctx, createdValidInstrument))
 
-			expectedAuditLogEntries := []*types.AuditLogEntry{
-				{EventType: audit.ValidInstrumentCreationEvent},
+			time.Sleep(2 * time.Second)
+
+			// retrieve changed valid instrument
+			var actual *types.ValidInstrument
+			checkFunc = func() bool {
+				actual, err = testClients.main.GetValidInstrument(ctx, createdValidInstrumentID)
+				return assert.NotNil(t, createdValidInstrument) && assert.NoError(t, err)
 			}
-			validateAuditLogEntries(t, expectedAuditLogEntries, auditLogEntries, createdValidInstrument.ID, audit.ValidInstrumentAssignmentKey)
+			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
 
-			// Clean up valid instrument.
-			assert.NoError(t, testClients.main.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
+			requireNotNilAndNoProblems(t, actual, err)
+
+			// assert valid instrument equality
+			checkValidInstrumentEquality(t, newValidInstrument, actual)
+			assert.NotNil(t, actual.LastUpdatedOn)
+
+			t.Log("cleaning up valid instrument")
+			assert.NoError(t, testClients.main.ArchiveValidInstrument(ctx, createdValidInstrumentID))
 		}
 	})
 }
 
 func (s *TestSuite) TestValidInstruments_Listing() {
-	s.runForEachClientExcept("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runForCookieClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// create valid instruments
+			stopChan := make(chan bool, 1)
+			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			require.NotNil(t, notificationsChan)
+			require.NoError(t, err)
+
+			var n *types.DataChangeMessage
+
+			t.Log("creating valid instruments")
 			var expected []*types.ValidInstrument
 			for i := 0; i < 5; i++ {
 				exampleValidInstrument := fakes.BuildFakeValidInstrument()
-				exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationInputFromValidInstrument(exampleValidInstrument)
+				exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
+				createdValidInstrumentID, createdValidInstrumentErr := testClients.main.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+				require.NoError(t, createdValidInstrumentErr)
+				t.Logf("valid instrument %q created", createdValidInstrumentID)
 
-				createdValidInstrument, validInstrumentCreationErr := testClients.main.CreateValidInstrument(ctx, exampleValidInstrumentInput)
-				requireNotNilAndNoProblems(t, createdValidInstrument, validInstrumentCreationErr)
+				n = <-notificationsChan
+				assert.Equal(t, n.DataType, types.ValidInstrumentDataType)
+				require.NotNil(t, n.ValidInstrument)
+				checkValidInstrumentEquality(t, exampleValidInstrument, n.ValidInstrument)
+
+				createdValidInstrument, createdValidInstrumentErr := testClients.main.GetValidInstrument(ctx, createdValidInstrumentID)
+				requireNotNilAndNoProblems(t, createdValidInstrument, createdValidInstrumentErr)
 
 				expected = append(expected, createdValidInstrument)
 			}
@@ -86,49 +186,52 @@ func (s *TestSuite) TestValidInstruments_Listing() {
 				len(actual.ValidInstruments),
 			)
 
-			// clean up
-			for _, createdValidInstrument := range actual.ValidInstruments {
+			t.Log("cleaning up")
+			for _, createdValidInstrument := range expected {
 				assert.NoError(t, testClients.main.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
 			}
 		}
 	})
-}
 
-func (s *TestSuite) TestValidInstruments_Searching() {
-	s.runForEachClientExcept("should be able to be search for valid instruments", func(testClients *testClientWrapper) func() {
+	s.runForPASETOClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
+			var checkFunc func() bool
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// create valid instruments
-			exampleValidInstrument := fakes.BuildFakeValidInstrument()
+			t.Log("creating valid instruments")
 			var expected []*types.ValidInstrument
 			for i := 0; i < 5; i++ {
-				exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationInputFromValidInstrument(exampleValidInstrument)
-				exampleValidInstrumentInput.Name = fmt.Sprintf("%s %d", exampleValidInstrumentInput.Name, i)
+				exampleValidInstrument := fakes.BuildFakeValidInstrument()
+				exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
+				createdValidInstrumentID, err := testClients.main.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+				require.NoError(t, err)
 
-				createdValidInstrument, validInstrumentCreationErr := testClients.main.CreateValidInstrument(ctx, exampleValidInstrumentInput)
-				requireNotNilAndNoProblems(t, createdValidInstrument, validInstrumentCreationErr)
+				var createdValidInstrument *types.ValidInstrument
+				checkFunc = func() bool {
+					createdValidInstrument, err = testClients.main.GetValidInstrument(ctx, createdValidInstrumentID)
+					return assert.NotNil(t, createdValidInstrument) && assert.NoError(t, err)
+				}
+				assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
+				checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
 
 				expected = append(expected, createdValidInstrument)
 			}
 
-			exampleLimit := uint8(20)
-
 			// assert valid instrument list equality
-			actual, err := testClients.main.SearchValidInstruments(ctx, exampleValidInstrument.Name, exampleLimit)
+			actual, err := testClients.main.GetValidInstruments(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
-				len(expected) <= len(actual),
-				"expected results length %d to be <= %d",
+				len(expected) <= len(actual.ValidInstruments),
+				"expected %d to be <= %d",
 				len(expected),
-				len(actual),
+				len(actual.ValidInstruments),
 			)
 
-			// clean up
+			t.Log("cleaning up")
 			for _, createdValidInstrument := range expected {
 				assert.NoError(t, testClients.main.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
 			}
@@ -136,208 +239,114 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 	})
 }
 
-func (s *TestSuite) TestValidInstruments_ExistenceChecking_ReturnsFalseForNonexistentValidInstrument() {
-	s.runForEachClientExcept("should not return an error for nonexistent valid instrument", func(testClients *testClientWrapper) func() {
+func (s *TestSuite) TestValidInstruments_Searching() {
+	s.runForCookieClient("should be able to be search for valid instruments", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			actual, err := testClients.main.ValidInstrumentExists(ctx, nonexistentID)
-			assert.NoError(t, err)
-			assert.False(t, actual)
-		}
-	})
-}
-
-func (s *TestSuite) TestValidInstruments_ExistenceChecking_ReturnsTrueForValidValidInstrument() {
-	s.runForEachClientExcept("should not return an error for existent valid instrument", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// create valid instrument
-			exampleValidInstrument := fakes.BuildFakeValidInstrument()
-			exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationInputFromValidInstrument(exampleValidInstrument)
-			createdValidInstrument, err := testClients.main.CreateValidInstrument(ctx, exampleValidInstrumentInput)
-			requireNotNilAndNoProblems(t, createdValidInstrument, err)
-
-			// retrieve valid instrument
-			actual, err := testClients.main.ValidInstrumentExists(ctx, createdValidInstrument.ID)
-			assert.NoError(t, err)
-			assert.True(t, actual)
-
-			// clean up valid instrument
-			assert.NoError(t, testClients.main.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
-		}
-	})
-}
-
-func (s *TestSuite) TestValidInstruments_Reading_Returns404ForNonexistentValidInstrument() {
-	s.runForEachClientExcept("it should return an error when trying to read a valid instrument that does not exist", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			_, err := testClients.main.GetValidInstrument(ctx, nonexistentID)
-			assert.Error(t, err)
-		}
-	})
-}
-
-func (s *TestSuite) TestValidInstruments_Reading() {
-	s.runForEachClientExcept("it should be readable", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// create valid instrument
-			exampleValidInstrument := fakes.BuildFakeValidInstrument()
-			exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationInputFromValidInstrument(exampleValidInstrument)
-			createdValidInstrument, err := testClients.main.CreateValidInstrument(ctx, exampleValidInstrumentInput)
-			requireNotNilAndNoProblems(t, createdValidInstrument, err)
-
-			// retrieve valid instrument
-			actual, err := testClients.main.GetValidInstrument(ctx, createdValidInstrument.ID)
-			requireNotNilAndNoProblems(t, actual, err)
-
-			// assert valid instrument equality
-			checkValidInstrumentEquality(t, exampleValidInstrument, actual)
-
-			// clean up valid instrument
-			assert.NoError(t, testClients.main.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
-		}
-	})
-}
-
-func (s *TestSuite) TestValidInstruments_Updating_Returns404ForNonexistentValidInstrument() {
-	s.runForEachClientExcept("it should return an error when trying to update something that does not exist", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			exampleValidInstrument := fakes.BuildFakeValidInstrument()
-			exampleValidInstrument.ID = nonexistentID
-
-			assert.Error(t, testClients.main.UpdateValidInstrument(ctx, exampleValidInstrument))
-		}
-	})
-}
-
-// convertValidInstrumentToValidInstrumentUpdateInput creates an ValidInstrumentUpdateInput struct from a valid instrument.
-func convertValidInstrumentToValidInstrumentUpdateInput(x *types.ValidInstrument) *types.ValidInstrumentUpdateInput {
-	return &types.ValidInstrumentUpdateInput{
-		Name:        x.Name,
-		Variant:     x.Variant,
-		Description: x.Description,
-		IconPath:    x.IconPath,
-	}
-}
-
-func (s *TestSuite) TestValidInstruments_Updating() {
-	s.runForEachClientExcept("it should be possible to update a valid instrument", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// create valid instrument
-			exampleValidInstrument := fakes.BuildFakeValidInstrument()
-			exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationInputFromValidInstrument(exampleValidInstrument)
-			createdValidInstrument, err := testClients.main.CreateValidInstrument(ctx, exampleValidInstrumentInput)
-			requireNotNilAndNoProblems(t, createdValidInstrument, err)
-
-			// change valid instrument
-			createdValidInstrument.Update(convertValidInstrumentToValidInstrumentUpdateInput(exampleValidInstrument))
-			assert.NoError(t, testClients.main.UpdateValidInstrument(ctx, createdValidInstrument))
-
-			// retrieve changed valid instrument
-			actual, err := testClients.main.GetValidInstrument(ctx, createdValidInstrument.ID)
-			requireNotNilAndNoProblems(t, actual, err)
-
-			// assert valid instrument equality
-			checkValidInstrumentEquality(t, exampleValidInstrument, actual)
-			assert.NotNil(t, actual.LastUpdatedOn)
-
-			auditLogEntries, err := testClients.admin.GetAuditLogForValidInstrument(ctx, createdValidInstrument.ID)
+			stopChan := make(chan bool, 1)
+			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
-			expectedAuditLogEntries := []*types.AuditLogEntry{
-				{EventType: audit.ValidInstrumentCreationEvent},
-				{EventType: audit.ValidInstrumentUpdateEvent},
-			}
-			validateAuditLogEntries(t, expectedAuditLogEntries, auditLogEntries, createdValidInstrument.ID, audit.ValidInstrumentAssignmentKey)
+			var n *types.DataChangeMessage
 
-			// clean up valid instrument
-			assert.NoError(t, testClients.main.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
-		}
-	})
-}
-
-func (s *TestSuite) TestValidInstruments_Archiving_Returns404ForNonexistentValidInstrument() {
-	s.runForEachClientExcept("it should return an error when trying to delete something that does not exist", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			assert.Error(t, testClients.main.ArchiveValidInstrument(ctx, nonexistentID))
-		}
-	})
-}
-
-func (s *TestSuite) TestValidInstruments_Archiving() {
-	s.runForEachClientExcept("it should be possible to delete a valid instrument", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// create valid instrument
+			t.Log("creating valid instruments")
+			var expected []*types.ValidInstrument
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
-			exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationInputFromValidInstrument(exampleValidInstrument)
-			createdValidInstrument, err := testClients.main.CreateValidInstrument(ctx, exampleValidInstrumentInput)
-			requireNotNilAndNoProblems(t, createdValidInstrument, err)
+			searchQuery := exampleValidInstrument.Name
+			for i := 0; i < 5; i++ {
+				exampleValidInstrument.Name = fmt.Sprintf("%s %d", searchQuery, i)
+				exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
+				createdValidInstrumentID, createdValidInstrumentErr := testClients.main.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+				require.NoError(t, createdValidInstrumentErr)
+				t.Logf("valid instrument %q created", createdValidInstrumentID)
 
-			// clean up valid instrument
-			assert.NoError(t, testClients.main.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
+				n = <-notificationsChan
+				assert.Equal(t, n.DataType, types.ValidInstrumentDataType)
+				require.NotNil(t, n.ValidInstrument)
+				checkValidInstrumentEquality(t, exampleValidInstrument, n.ValidInstrument)
 
-			auditLogEntries, err := testClients.admin.GetAuditLogForValidInstrument(ctx, createdValidInstrument.ID)
-			require.NoError(t, err)
+				createdValidInstrument, createdValidInstrumentErr := testClients.main.GetValidInstrument(ctx, createdValidInstrumentID)
+				requireNotNilAndNoProblems(t, createdValidInstrument, createdValidInstrumentErr)
 
-			expectedAuditLogEntries := []*types.AuditLogEntry{
-				{EventType: audit.ValidInstrumentCreationEvent},
-				{EventType: audit.ValidInstrumentArchiveEvent},
+				expected = append(expected, createdValidInstrument)
 			}
-			validateAuditLogEntries(t, expectedAuditLogEntries, auditLogEntries, createdValidInstrument.ID, audit.ValidInstrumentAssignmentKey)
+
+			exampleLimit := uint8(20)
+
+			// give the index a moment
+			time.Sleep(3 * time.Second)
+
+			// assert valid instrument list equality
+			actual, err := testClients.main.SearchValidInstruments(ctx, searchQuery, exampleLimit)
+			requireNotNilAndNoProblems(t, actual, err)
+			assert.True(
+				t,
+				len(expected) <= len(actual),
+				"expected %d to be <= %d",
+				len(expected),
+				len(actual),
+			)
+
+			t.Log("cleaning up")
+			for _, createdValidInstrument := range expected {
+				assert.NoError(t, testClients.main.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
+			}
 		}
 	})
-}
 
-func (s *TestSuite) TestValidInstruments_Auditing_Returns404ForNonexistentValidInstrument() {
-	s.runForEachClientExcept("it should return an error when trying to audit something that does not exist", func(testClients *testClientWrapper) func() {
+	s.runForPASETOClient("should be able to be search for valid instruments", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
+			var checkFunc func() bool
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			x, err := testClients.admin.GetAuditLogForValidInstrument(ctx, nonexistentID)
+			t.Log("creating valid instruments")
+			var expected []*types.ValidInstrument
+			exampleValidInstrument := fakes.BuildFakeValidInstrument()
+			searchQuery := exampleValidInstrument.Name
+			for i := 0; i < 5; i++ {
+				exampleValidInstrument.Name = fmt.Sprintf("%s %d", searchQuery, i)
+				exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
+				createdValidInstrumentID, err := testClients.main.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+				require.NoError(t, err)
+				t.Logf("valid instrument %q created", createdValidInstrumentID)
 
-			assert.NoError(t, err)
-			assert.Empty(t, x)
+				var createdValidInstrument *types.ValidInstrument
+				checkFunc = func() bool {
+					createdValidInstrument, err = testClients.main.GetValidInstrument(ctx, createdValidInstrumentID)
+					return assert.NotNil(t, createdValidInstrument) && assert.NoError(t, err)
+				}
+				assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
+				requireNotNilAndNoProblems(t, createdValidInstrument, err)
+
+				expected = append(expected, createdValidInstrument)
+			}
+
+			exampleLimit := uint8(20)
+			time.Sleep(2 * time.Second) // give the index a moment
+
+			// assert valid instrument list equality
+			actual, err := testClients.main.SearchValidInstruments(ctx, searchQuery, exampleLimit)
+			requireNotNilAndNoProblems(t, actual, err)
+			assert.True(
+				t,
+				len(expected) <= len(actual),
+				"expected %d to be <= %d",
+				len(expected),
+				len(actual),
+			)
+
+			t.Log("cleaning up")
+			for _, createdValidInstrument := range expected {
+				assert.NoError(t, testClients.main.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
+			}
 		}
 	})
 }

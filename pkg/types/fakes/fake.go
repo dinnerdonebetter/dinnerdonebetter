@@ -15,11 +15,6 @@ const (
 	exampleQuantity = 3
 )
 
-// BuildUniqueName builds a name that is hopefully more unique than just one word.
-func BuildUniqueName() string {
-	return fmt.Sprintf("%s%s%s%s", fake.Word(), fake.Word(), fake.Word(), fake.Word())
-}
-
 // BuildFakeSQLQuery builds a fake SQL query and arg pair.
 func BuildFakeSQLQuery() (query string, args []interface{}) {
 	s := fmt.Sprintf("%s %s WHERE things = ? AND stuff = ?",
@@ -31,8 +26,13 @@ func BuildFakeSQLQuery() (query string, args []interface{}) {
 }
 
 // BuildFakeID builds a fake ID.
-func BuildFakeID() uint64 {
-	return fake.Uint64()
+func BuildFakeID() string {
+	return fake.UUID()
+}
+
+// BuildFakeNumericID builds a fake ID.
+func BuildFakeNumericID() uint64 {
+	return uint64(fake.Uint32())
 }
 
 // BuildFakeTime builds a fake time.

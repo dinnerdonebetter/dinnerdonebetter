@@ -9,18 +9,19 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 const (
-	exampleURI       = "https://prixfixe.verygoodsoftwarenotvirus.ru"
+	exampleDomain    = "prixfixe.verygoodsoftwarenotvirus.ru"
+	exampleURI       = "https://" + exampleDomain
 	asciiControlChar = string(byte(127))
 )
 

@@ -8,13 +8,13 @@ import (
 	"net/url"
 	"testing"
 
-	"gitlab.com/prixfixe/prixfixe/internal/encoding"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/panicking"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
+	"gitlab.com/prixfixe/prixfixe/internal/encoding"
+	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
+	mockpanicking "gitlab.com/prixfixe/prixfixe/internal/panicking/mock"
 )
 
 type (
@@ -164,7 +164,7 @@ func TestBuilder_Must(T *testing.T) {
 		helper := buildTestHelper()
 		exampleErr := errors.New("blah")
 
-		mockPanicker := panicking.NewMockPanicker()
+		mockPanicker := mockpanicking.NewMockPanicker()
 		mockPanicker.On("Panic", exampleErr).Return()
 		helper.builder.panicker = mockPanicker
 
@@ -275,6 +275,7 @@ func TestBuilder_BuildHealthCheckRequest(T *testing.T) {
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
+
 		ctx := context.Background()
 
 		expectedMethod := http.MethodGet
@@ -289,6 +290,7 @@ func TestBuilder_BuildHealthCheckRequest(T *testing.T) {
 
 	T.Run("with invalid request builder", func(t *testing.T) {
 		t.Parallel()
+
 		ctx := context.Background()
 
 		c := buildTestRequestBuilderWithInvalidURL()

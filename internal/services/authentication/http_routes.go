@@ -9,23 +9,20 @@ import (
 	"errors"
 	"math"
 	"net/http"
-	"strconv"
 	"time"
 
-	"gitlab.com/prixfixe/prixfixe/internal/authorization"
+	"github.com/google/uuid"
+	"github.com/gorilla/securecookie"
+	"github.com/o1egl/paseto"
 
 	"gitlab.com/prixfixe/prixfixe/internal/authentication"
 	"gitlab.com/prixfixe/prixfixe/internal/observability"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
-	"github.com/google/uuid"
-	"github.com/gorilla/securecookie"
-	"github.com/o1egl/paseto"
 )
 
-func (s *service) issueSessionManagedCookie(ctx context.Context, householdID, requesterID uint64) (cookie *http.Cookie, err error) {
+func (s *service) issueSessionManagedCookie(ctx context.Context, householdID, requesterID string) (cookie *http.Cookie, err error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -89,7 +86,6 @@ func (s *service) AuthenticateUser(ctx context.Context, loginData *types.UserLog
 	tracing.AttachUserToSpan(span, user)
 
 	if user.IsBanned() {
-		s.auditLog.LogBannedUserLoginAttemptEvent(ctx, user.ID)
 		return user, nil, ErrUserBanned
 	}
 
@@ -98,10 +94,8 @@ func (s *service) AuthenticateUser(ctx context.Context, loginData *types.UserLog
 
 	if err != nil {
 		if errors.Is(err, authentication.ErrInvalidTOTPToken) {
-			s.auditLog.LogUnsuccessfulLoginBad2FATokenEvent(ctx, user.ID)
 			return user, nil, ErrInvalidCredentials
 		} else if errors.Is(err, authentication.ErrPasswordDoesNotMatch) {
-			s.auditLog.LogUnsuccessfulLoginBadPasswordEvent(ctx, user.ID)
 			return user, nil, ErrInvalidCredentials
 		}
 
@@ -110,7 +104,6 @@ func (s *service) AuthenticateUser(ctx context.Context, loginData *types.UserLog
 		return user, nil, observability.PrepareError(err, logger, span, "validating login")
 	} else if !loginValid {
 		logger.Debug("login was invalid")
-		s.auditLog.LogUnsuccessfulLoginBadPasswordEvent(ctx, user.ID)
 		return user, nil, ErrInvalidCredentials
 	}
 
@@ -123,8 +116,6 @@ func (s *service) AuthenticateUser(ctx context.Context, loginData *types.UserLog
 	if err != nil {
 		return user, nil, observability.PrepareError(err, logger, span, "issuing cookie")
 	}
-
-	s.auditLog.LogSuccessfulLoginEvent(ctx, user.ID)
 
 	return user, cookie, nil
 }
@@ -172,23 +163,12 @@ func (s *service) BeginSessionHandler(res http.ResponseWriter, req *http.Request
 
 	statusResponse := &types.UserStatusResponse{
 		UserIsAuthenticated:       true,
-		UserIsServiceAdmin:        userIsServiceAdmin(user),
 		UserReputation:            user.ServiceHouseholdStatus,
 		UserReputationExplanation: user.ReputationExplanation,
 	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, statusResponse, http.StatusAccepted)
 	logger.Debug("user logged in")
-}
-
-func userIsServiceAdmin(user *types.User) bool {
-	for _, role := range user.ServiceRoles {
-		if role == authorization.ServiceAdminRole.String() {
-			return true
-		}
-	}
-
-	return false
 }
 
 // ChangeActiveHouseholdHandler is our login route.
@@ -274,7 +254,6 @@ func (s *service) LogoutUser(ctx context.Context, sessionCtxData *types.SessionC
 		return observability.PrepareError(cookieBuildingErr, logger, span, "building cookie")
 	}
 
-	s.auditLog.LogLogoutEvent(ctx, sessionCtxData.Requester.UserID)
 	newCookie.MaxAge = -1
 	http.SetCookie(res, newCookie)
 
@@ -363,7 +342,7 @@ func (s *service) PASETOHandler(res http.ResponseWriter, req *http.Request) {
 	requestedHousehold := input.HouseholdID
 	logger = logger.WithValue(keys.APIClientClientIDKey, input.ClientID)
 
-	if requestedHousehold != 0 {
+	if requestedHousehold != "" {
 		logger = logger.WithValue("requested_household", requestedHousehold)
 	}
 
@@ -418,9 +397,9 @@ func (s *service) PASETOHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	var requestedHouseholdID uint64
+	var requestedHouseholdID string
 
-	if requestedHousehold != 0 {
+	if requestedHousehold != "" {
 		if _, isMember := sessionCtxData.HouseholdPermissions[requestedHousehold]; !isMember {
 			logger.Debug("invalid household ID requested for token")
 			s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
@@ -458,8 +437,8 @@ func (s *service) buildPASETOToken(ctx context.Context, sessionCtxData *types.Se
 	expiry := now.Add(lifetime)
 
 	jsonToken := paseto.JSONToken{
-		Audience:   strconv.FormatUint(client.BelongsToUser, 10),
-		Subject:    strconv.FormatUint(client.BelongsToUser, 10),
+		Audience:   client.BelongsToUser,
+		Subject:    client.BelongsToUser,
 		Jti:        uuid.NewString(),
 		Issuer:     s.config.PASETO.Issuer,
 		IssuedAt:   now,
@@ -520,8 +499,6 @@ func (s *service) CycleCookieSecretHandler(res http.ResponseWriter, req *http.Re
 		securecookie.GenerateRandomKey(cookieSecretSize),
 		[]byte(s.config.Cookies.SigningKey),
 	)
-
-	s.auditLog.LogCycleCookieSecretEvent(ctx, sessionCtxData.Requester.UserID)
 
 	res.WriteHeader(http.StatusAccepted)
 }

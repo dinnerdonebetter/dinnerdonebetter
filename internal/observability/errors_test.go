@@ -5,10 +5,10 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestPrepareError(T *testing.T) {

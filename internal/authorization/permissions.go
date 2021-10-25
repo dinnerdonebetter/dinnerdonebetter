@@ -12,16 +12,6 @@ type (
 const (
 	// CycleCookieSecretPermission is a service admin permission.
 	CycleCookieSecretPermission Permission = "update.cookie_secret"
-	// ReadAllAuditLogEntriesPermission is a service admin permission.
-	ReadAllAuditLogEntriesPermission Permission = "read.audit_log_entries.all"
-	// ReadHouseholdAuditLogEntriesPermission is a service admin permission.
-	ReadHouseholdAuditLogEntriesPermission Permission = "read.audit_log_entries.household"
-	// ReadAPIClientAuditLogEntriesPermission is a service admin permission.
-	ReadAPIClientAuditLogEntriesPermission Permission = "read.audit_log_entries.api_client"
-	// ReadUserAuditLogEntriesPermission is a service admin permission.
-	ReadUserAuditLogEntriesPermission Permission = "read.audit_log_entries.user"
-	// ReadWebhookAuditLogEntriesPermission is a service admin permission.
-	ReadWebhookAuditLogEntriesPermission Permission = "read.audit_log_entries.webhook"
 	// UpdateUserStatusPermission is a service admin permission.
 	UpdateUserStatusPermission Permission = "update.user_status"
 	// ReadUserPermission is a service admin permission.
@@ -55,30 +45,6 @@ const (
 	ReadAPIClientsPermission Permission = "read.api_clients"
 	// ArchiveAPIClientsPermission is an household admin permission.
 	ArchiveAPIClientsPermission Permission = "archive.api_clients"
-	// ReadWebhooksAuditLogEntriesPermission is an household admin permission.
-	ReadWebhooksAuditLogEntriesPermission Permission = "read.audit_log_entries.webhooks"
-	// ReadValidInstrumentsAuditLogEntriesPermission is an household admin permission.
-	ReadValidInstrumentsAuditLogEntriesPermission Permission = "read.audit_log_entries.valid_instruments"
-	// ReadValidPreparationsAuditLogEntriesPermission is an household admin permission.
-	ReadValidPreparationsAuditLogEntriesPermission Permission = "read.audit_log_entries.valid_preparations"
-	// ReadValidIngredientsAuditLogEntriesPermission is an household admin permission.
-	ReadValidIngredientsAuditLogEntriesPermission Permission = "read.audit_log_entries.valid_ingredients"
-	// ReadValidIngredientPreparationsAuditLogEntriesPermission is an household admin permission.
-	ReadValidIngredientPreparationsAuditLogEntriesPermission Permission = "read.audit_log_entries.valid_ingredient_preparations"
-	// ReadValidPreparationInstrumentsAuditLogEntriesPermission is an household admin permission.
-	ReadValidPreparationInstrumentsAuditLogEntriesPermission Permission = "read.audit_log_entries.valid_preparation_instruments"
-	// ReadRecipesAuditLogEntriesPermission is an household admin permission.
-	ReadRecipesAuditLogEntriesPermission Permission = "read.audit_log_entries.recipes"
-	// ReadRecipeStepsAuditLogEntriesPermission is an household admin permission.
-	ReadRecipeStepsAuditLogEntriesPermission Permission = "read.audit_log_entries.recipe_steps"
-	// ReadRecipeStepIngredientsAuditLogEntriesPermission is an household admin permission.
-	ReadRecipeStepIngredientsAuditLogEntriesPermission Permission = "read.audit_log_entries.recipe_step_ingredients"
-	// ReadRecipeStepProductsAuditLogEntriesPermission is an household admin permission.
-	ReadRecipeStepProductsAuditLogEntriesPermission Permission = "read.audit_log_entries.recipe_step_products"
-	// ReadInvitationsAuditLogEntriesPermission is an household admin permission.
-	ReadInvitationsAuditLogEntriesPermission Permission = "read.audit_log_entries.invitations"
-	// ReadReportsAuditLogEntriesPermission is an household admin permission.
-	ReadReportsAuditLogEntriesPermission Permission = "read.audit_log_entries.reports"
 
 	// CreateValidInstrumentsPermission is an household user permission.
 	CreateValidInstrumentsPermission Permission = "create.valid_instruments"
@@ -91,17 +57,6 @@ const (
 	// ArchiveValidInstrumentsPermission is an household user permission.
 	ArchiveValidInstrumentsPermission Permission = "archive.valid_instruments"
 
-	// CreateValidPreparationsPermission is an household user permission.
-	CreateValidPreparationsPermission Permission = "create.valid_preparations"
-	// ReadValidPreparationsPermission is an household user permission.
-	ReadValidPreparationsPermission Permission = "read.valid_preparations"
-	// SearchValidPreparationsPermission is an household user permission.
-	SearchValidPreparationsPermission Permission = "search.valid_preparations"
-	// UpdateValidPreparationsPermission is an household user permission.
-	UpdateValidPreparationsPermission Permission = "update.valid_preparations"
-	// ArchiveValidPreparationsPermission is an household user permission.
-	ArchiveValidPreparationsPermission Permission = "archive.valid_preparations"
-
 	// CreateValidIngredientsPermission is an household user permission.
 	CreateValidIngredientsPermission Permission = "create.valid_ingredients"
 	// ReadValidIngredientsPermission is an household user permission.
@@ -113,6 +68,17 @@ const (
 	// ArchiveValidIngredientsPermission is an household user permission.
 	ArchiveValidIngredientsPermission Permission = "archive.valid_ingredients"
 
+	// CreateValidPreparationsPermission is an household user permission.
+	CreateValidPreparationsPermission Permission = "create.valid_preparations"
+	// ReadValidPreparationsPermission is an household user permission.
+	ReadValidPreparationsPermission Permission = "read.valid_preparations"
+	// SearchValidPreparationsPermission is an household user permission.
+	SearchValidPreparationsPermission Permission = "search.valid_preparations"
+	// UpdateValidPreparationsPermission is an household user permission.
+	UpdateValidPreparationsPermission Permission = "update.valid_preparations"
+	// ArchiveValidPreparationsPermission is an household user permission.
+	ArchiveValidPreparationsPermission Permission = "archive.valid_preparations"
+
 	// CreateValidIngredientPreparationsPermission is an household user permission.
 	CreateValidIngredientPreparationsPermission Permission = "create.valid_ingredient_preparations"
 	// ReadValidIngredientPreparationsPermission is an household user permission.
@@ -123,17 +89,6 @@ const (
 	UpdateValidIngredientPreparationsPermission Permission = "update.valid_ingredient_preparations"
 	// ArchiveValidIngredientPreparationsPermission is an household user permission.
 	ArchiveValidIngredientPreparationsPermission Permission = "archive.valid_ingredient_preparations"
-
-	// CreateValidPreparationInstrumentsPermission is an household user permission.
-	CreateValidPreparationInstrumentsPermission Permission = "create.valid_preparation_instruments"
-	// ReadValidPreparationInstrumentsPermission is an household user permission.
-	ReadValidPreparationInstrumentsPermission Permission = "read.valid_preparation_instruments"
-	// SearchValidPreparationInstrumentsPermission is an household user permission.
-	SearchValidPreparationInstrumentsPermission Permission = "search.valid_preparation_instruments"
-	// UpdateValidPreparationInstrumentsPermission is an household user permission.
-	UpdateValidPreparationInstrumentsPermission Permission = "update.valid_preparation_instruments"
-	// ArchiveValidPreparationInstrumentsPermission is an household user permission.
-	ArchiveValidPreparationInstrumentsPermission Permission = "archive.valid_preparation_instruments"
 
 	// CreateRecipesPermission is an household user permission.
 	CreateRecipesPermission Permission = "create.recipes"
@@ -157,6 +112,17 @@ const (
 	// ArchiveRecipeStepsPermission is an household user permission.
 	ArchiveRecipeStepsPermission Permission = "archive.recipe_steps"
 
+	// CreateRecipeStepInstrumentsPermission is an household user permission.
+	CreateRecipeStepInstrumentsPermission Permission = "create.recipe_step_instruments"
+	// ReadRecipeStepInstrumentsPermission is an household user permission.
+	ReadRecipeStepInstrumentsPermission Permission = "read.recipe_step_instruments"
+	// SearchRecipeStepInstrumentsPermission is an household user permission.
+	SearchRecipeStepInstrumentsPermission Permission = "search.recipe_step_instruments"
+	// UpdateRecipeStepInstrumentsPermission is an household user permission.
+	UpdateRecipeStepInstrumentsPermission Permission = "update.recipe_step_instruments"
+	// ArchiveRecipeStepInstrumentsPermission is an household user permission.
+	ArchiveRecipeStepInstrumentsPermission Permission = "archive.recipe_step_instruments"
+
 	// CreateRecipeStepIngredientsPermission is an household user permission.
 	CreateRecipeStepIngredientsPermission Permission = "create.recipe_step_ingredients"
 	// ReadRecipeStepIngredientsPermission is an household user permission.
@@ -179,27 +145,38 @@ const (
 	// ArchiveRecipeStepProductsPermission is an household user permission.
 	ArchiveRecipeStepProductsPermission Permission = "archive.recipe_step_products"
 
-	// CreateInvitationsPermission is an household user permission.
-	CreateInvitationsPermission Permission = "create.invitations"
-	// ReadInvitationsPermission is an household user permission.
-	ReadInvitationsPermission Permission = "read.invitations"
-	// SearchInvitationsPermission is an household user permission.
-	SearchInvitationsPermission Permission = "search.invitations"
-	// UpdateInvitationsPermission is an household user permission.
-	UpdateInvitationsPermission Permission = "update.invitations"
-	// ArchiveInvitationsPermission is an household user permission.
-	ArchiveInvitationsPermission Permission = "archive.invitations"
+	// CreateMealPlansPermission is an household user permission.
+	CreateMealPlansPermission Permission = "create.meal_plans"
+	// ReadMealPlansPermission is an household user permission.
+	ReadMealPlansPermission Permission = "read.meal_plans"
+	// SearchMealPlansPermission is an household user permission.
+	SearchMealPlansPermission Permission = "search.meal_plans"
+	// UpdateMealPlansPermission is an household user permission.
+	UpdateMealPlansPermission Permission = "update.meal_plans"
+	// ArchiveMealPlansPermission is an household user permission.
+	ArchiveMealPlansPermission Permission = "archive.meal_plans"
 
-	// CreateReportsPermission is an household user permission.
-	CreateReportsPermission Permission = "create.reports"
-	// ReadReportsPermission is an household user permission.
-	ReadReportsPermission Permission = "read.reports"
-	// SearchReportsPermission is an household user permission.
-	SearchReportsPermission Permission = "search.reports"
-	// UpdateReportsPermission is an household user permission.
-	UpdateReportsPermission Permission = "update.reports"
-	// ArchiveReportsPermission is an household user permission.
-	ArchiveReportsPermission Permission = "archive.reports"
+	// CreateMealPlanOptionsPermission is an household user permission.
+	CreateMealPlanOptionsPermission Permission = "create.meal_plan_options"
+	// ReadMealPlanOptionsPermission is an household user permission.
+	ReadMealPlanOptionsPermission Permission = "read.meal_plan_options"
+	// SearchMealPlanOptionsPermission is an household user permission.
+	SearchMealPlanOptionsPermission Permission = "search.meal_plan_options"
+	// UpdateMealPlanOptionsPermission is an household user permission.
+	UpdateMealPlanOptionsPermission Permission = "update.meal_plan_options"
+	// ArchiveMealPlanOptionsPermission is an household user permission.
+	ArchiveMealPlanOptionsPermission Permission = "archive.meal_plan_options"
+
+	// CreateMealPlanOptionVotesPermission is an household user permission.
+	CreateMealPlanOptionVotesPermission Permission = "create.meal_plan_option_votes"
+	// ReadMealPlanOptionVotesPermission is an household user permission.
+	ReadMealPlanOptionVotesPermission Permission = "read.meal_plan_option_votes"
+	// SearchMealPlanOptionVotesPermission is an household user permission.
+	SearchMealPlanOptionVotesPermission Permission = "search.meal_plan_option_votes"
+	// UpdateMealPlanOptionVotesPermission is an household user permission.
+	UpdateMealPlanOptionVotesPermission Permission = "update.meal_plan_option_votes"
+	// ArchiveMealPlanOptionVotesPermission is an household user permission.
+	ArchiveMealPlanOptionVotesPermission Permission = "archive.meal_plan_option_votes"
 )
 
 // ID implements the gorbac Permission interface.
@@ -215,44 +192,27 @@ func (p Permission) Match(perm gorbac.Permission) bool {
 var (
 	// service admin permissions.
 	serviceAdminPermissions = map[string]gorbac.Permission{
-		CycleCookieSecretPermission.ID():            CycleCookieSecretPermission,
-		ReadAllAuditLogEntriesPermission.ID():       ReadAllAuditLogEntriesPermission,
-		ReadHouseholdAuditLogEntriesPermission.ID(): ReadHouseholdAuditLogEntriesPermission,
-		ReadAPIClientAuditLogEntriesPermission.ID(): ReadAPIClientAuditLogEntriesPermission,
-		ReadUserAuditLogEntriesPermission.ID():      ReadUserAuditLogEntriesPermission,
-		ReadWebhookAuditLogEntriesPermission.ID():   ReadWebhookAuditLogEntriesPermission,
-		UpdateUserStatusPermission.ID():             UpdateUserStatusPermission,
-		ReadUserPermission.ID():                     ReadUserPermission,
-		SearchUserPermission.ID():                   SearchUserPermission,
+		CycleCookieSecretPermission.ID(): CycleCookieSecretPermission,
+		UpdateUserStatusPermission.ID():  UpdateUserStatusPermission,
+		ReadUserPermission.ID():          ReadUserPermission,
+		SearchUserPermission.ID():        SearchUserPermission,
 	}
 
 	// household admin permissions.
 	householdAdminPermissions = map[string]gorbac.Permission{
-		UpdateHouseholdPermission.ID():                                UpdateHouseholdPermission,
-		ArchiveHouseholdPermission.ID():                               ArchiveHouseholdPermission,
-		AddMemberHouseholdPermission.ID():                             AddMemberHouseholdPermission,
-		ModifyMemberPermissionsForHouseholdPermission.ID():            ModifyMemberPermissionsForHouseholdPermission,
-		RemoveMemberHouseholdPermission.ID():                          RemoveMemberHouseholdPermission,
-		TransferHouseholdPermission.ID():                              TransferHouseholdPermission,
-		CreateWebhooksPermission.ID():                                 CreateWebhooksPermission,
-		ReadWebhooksPermission.ID():                                   ReadWebhooksPermission,
-		UpdateWebhooksPermission.ID():                                 UpdateWebhooksPermission,
-		ArchiveWebhooksPermission.ID():                                ArchiveWebhooksPermission,
-		CreateAPIClientsPermission.ID():                               CreateAPIClientsPermission,
-		ReadAPIClientsPermission.ID():                                 ReadAPIClientsPermission,
-		ArchiveAPIClientsPermission.ID():                              ArchiveAPIClientsPermission,
-		ReadWebhooksAuditLogEntriesPermission.ID():                    ReadWebhooksAuditLogEntriesPermission,
-		ReadValidInstrumentsAuditLogEntriesPermission.ID():            ReadValidInstrumentsAuditLogEntriesPermission,
-		ReadValidPreparationsAuditLogEntriesPermission.ID():           ReadValidPreparationsAuditLogEntriesPermission,
-		ReadValidIngredientsAuditLogEntriesPermission.ID():            ReadValidIngredientsAuditLogEntriesPermission,
-		ReadValidIngredientPreparationsAuditLogEntriesPermission.ID(): ReadValidIngredientPreparationsAuditLogEntriesPermission,
-		ReadValidPreparationInstrumentsAuditLogEntriesPermission.ID(): ReadValidPreparationInstrumentsAuditLogEntriesPermission,
-		ReadRecipesAuditLogEntriesPermission.ID():                     ReadRecipesAuditLogEntriesPermission,
-		ReadRecipeStepsAuditLogEntriesPermission.ID():                 ReadRecipeStepsAuditLogEntriesPermission,
-		ReadRecipeStepIngredientsAuditLogEntriesPermission.ID():       ReadRecipeStepIngredientsAuditLogEntriesPermission,
-		ReadRecipeStepProductsAuditLogEntriesPermission.ID():          ReadRecipeStepProductsAuditLogEntriesPermission,
-		ReadInvitationsAuditLogEntriesPermission.ID():                 ReadInvitationsAuditLogEntriesPermission,
-		ReadReportsAuditLogEntriesPermission.ID():                     ReadReportsAuditLogEntriesPermission,
+		UpdateHouseholdPermission.ID():                     UpdateHouseholdPermission,
+		ArchiveHouseholdPermission.ID():                    ArchiveHouseholdPermission,
+		AddMemberHouseholdPermission.ID():                  AddMemberHouseholdPermission,
+		ModifyMemberPermissionsForHouseholdPermission.ID(): ModifyMemberPermissionsForHouseholdPermission,
+		RemoveMemberHouseholdPermission.ID():               RemoveMemberHouseholdPermission,
+		TransferHouseholdPermission.ID():                   TransferHouseholdPermission,
+		CreateWebhooksPermission.ID():                      CreateWebhooksPermission,
+		ReadWebhooksPermission.ID():                        ReadWebhooksPermission,
+		UpdateWebhooksPermission.ID():                      UpdateWebhooksPermission,
+		ArchiveWebhooksPermission.ID():                     ArchiveWebhooksPermission,
+		CreateAPIClientsPermission.ID():                    CreateAPIClientsPermission,
+		ReadAPIClientsPermission.ID():                      ReadAPIClientsPermission,
+		ArchiveAPIClientsPermission.ID():                   ArchiveAPIClientsPermission,
 	}
 
 	// household member permissions.
@@ -263,29 +223,23 @@ var (
 		UpdateValidInstrumentsPermission.ID():  UpdateValidInstrumentsPermission,
 		ArchiveValidInstrumentsPermission.ID(): ArchiveValidInstrumentsPermission,
 
-		CreateValidPreparationsPermission.ID():  CreateValidPreparationsPermission,
-		ReadValidPreparationsPermission.ID():    ReadValidPreparationsPermission,
-		SearchValidPreparationsPermission.ID():  SearchValidPreparationsPermission,
-		UpdateValidPreparationsPermission.ID():  UpdateValidPreparationsPermission,
-		ArchiveValidPreparationsPermission.ID(): ArchiveValidPreparationsPermission,
-
 		CreateValidIngredientsPermission.ID():  CreateValidIngredientsPermission,
 		ReadValidIngredientsPermission.ID():    ReadValidIngredientsPermission,
 		SearchValidIngredientsPermission.ID():  SearchValidIngredientsPermission,
 		UpdateValidIngredientsPermission.ID():  UpdateValidIngredientsPermission,
 		ArchiveValidIngredientsPermission.ID(): ArchiveValidIngredientsPermission,
 
+		CreateValidPreparationsPermission.ID():  CreateValidPreparationsPermission,
+		ReadValidPreparationsPermission.ID():    ReadValidPreparationsPermission,
+		SearchValidPreparationsPermission.ID():  SearchValidPreparationsPermission,
+		UpdateValidPreparationsPermission.ID():  UpdateValidPreparationsPermission,
+		ArchiveValidPreparationsPermission.ID(): ArchiveValidPreparationsPermission,
+
 		CreateValidIngredientPreparationsPermission.ID():  CreateValidIngredientPreparationsPermission,
 		ReadValidIngredientPreparationsPermission.ID():    ReadValidIngredientPreparationsPermission,
 		SearchValidIngredientPreparationsPermission.ID():  SearchValidIngredientPreparationsPermission,
 		UpdateValidIngredientPreparationsPermission.ID():  UpdateValidIngredientPreparationsPermission,
 		ArchiveValidIngredientPreparationsPermission.ID(): ArchiveValidIngredientPreparationsPermission,
-
-		CreateValidPreparationInstrumentsPermission.ID():  CreateValidPreparationInstrumentsPermission,
-		ReadValidPreparationInstrumentsPermission.ID():    ReadValidPreparationInstrumentsPermission,
-		SearchValidPreparationInstrumentsPermission.ID():  SearchValidPreparationInstrumentsPermission,
-		UpdateValidPreparationInstrumentsPermission.ID():  UpdateValidPreparationInstrumentsPermission,
-		ArchiveValidPreparationInstrumentsPermission.ID(): ArchiveValidPreparationInstrumentsPermission,
 
 		CreateRecipesPermission.ID():  CreateRecipesPermission,
 		ReadRecipesPermission.ID():    ReadRecipesPermission,
@@ -299,6 +253,12 @@ var (
 		UpdateRecipeStepsPermission.ID():  UpdateRecipeStepsPermission,
 		ArchiveRecipeStepsPermission.ID(): ArchiveRecipeStepsPermission,
 
+		CreateRecipeStepInstrumentsPermission.ID():  CreateRecipeStepInstrumentsPermission,
+		ReadRecipeStepInstrumentsPermission.ID():    ReadRecipeStepInstrumentsPermission,
+		SearchRecipeStepInstrumentsPermission.ID():  SearchRecipeStepInstrumentsPermission,
+		UpdateRecipeStepInstrumentsPermission.ID():  UpdateRecipeStepInstrumentsPermission,
+		ArchiveRecipeStepInstrumentsPermission.ID(): ArchiveRecipeStepInstrumentsPermission,
+
 		CreateRecipeStepIngredientsPermission.ID():  CreateRecipeStepIngredientsPermission,
 		ReadRecipeStepIngredientsPermission.ID():    ReadRecipeStepIngredientsPermission,
 		SearchRecipeStepIngredientsPermission.ID():  SearchRecipeStepIngredientsPermission,
@@ -311,17 +271,23 @@ var (
 		UpdateRecipeStepProductsPermission.ID():  UpdateRecipeStepProductsPermission,
 		ArchiveRecipeStepProductsPermission.ID(): ArchiveRecipeStepProductsPermission,
 
-		CreateInvitationsPermission.ID():  CreateInvitationsPermission,
-		ReadInvitationsPermission.ID():    ReadInvitationsPermission,
-		SearchInvitationsPermission.ID():  SearchInvitationsPermission,
-		UpdateInvitationsPermission.ID():  UpdateInvitationsPermission,
-		ArchiveInvitationsPermission.ID(): ArchiveInvitationsPermission,
+		CreateMealPlansPermission.ID():  CreateMealPlansPermission,
+		ReadMealPlansPermission.ID():    ReadMealPlansPermission,
+		SearchMealPlansPermission.ID():  SearchMealPlansPermission,
+		UpdateMealPlansPermission.ID():  UpdateMealPlansPermission,
+		ArchiveMealPlansPermission.ID(): ArchiveMealPlansPermission,
 
-		CreateReportsPermission.ID():  CreateReportsPermission,
-		ReadReportsPermission.ID():    ReadReportsPermission,
-		SearchReportsPermission.ID():  SearchReportsPermission,
-		UpdateReportsPermission.ID():  UpdateReportsPermission,
-		ArchiveReportsPermission.ID(): ArchiveReportsPermission,
+		CreateMealPlanOptionsPermission.ID():  CreateMealPlanOptionsPermission,
+		ReadMealPlanOptionsPermission.ID():    ReadMealPlanOptionsPermission,
+		SearchMealPlanOptionsPermission.ID():  SearchMealPlanOptionsPermission,
+		UpdateMealPlanOptionsPermission.ID():  UpdateMealPlanOptionsPermission,
+		ArchiveMealPlanOptionsPermission.ID(): ArchiveMealPlanOptionsPermission,
+
+		CreateMealPlanOptionVotesPermission.ID():  CreateMealPlanOptionVotesPermission,
+		ReadMealPlanOptionVotesPermission.ID():    ReadMealPlanOptionVotesPermission,
+		SearchMealPlanOptionVotesPermission.ID():  SearchMealPlanOptionVotesPermission,
+		UpdateMealPlanOptionVotesPermission.ID():  UpdateMealPlanOptionVotesPermission,
+		ArchiveMealPlanOptionVotesPermission.ID(): ArchiveMealPlanOptionVotesPermission,
 	}
 )
 

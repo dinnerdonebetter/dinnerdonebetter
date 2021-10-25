@@ -6,13 +6,13 @@ import (
 	"encoding/json"
 	"testing"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/random"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gocloud.dev/secrets"
 	"gocloud.dev/secrets/localsecrets"
+
+	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
+	"gitlab.com/prixfixe/prixfixe/internal/random"
 )
 
 type example struct {

@@ -1,12 +1,12 @@
-package mock
+package mockuploads
 
 import (
 	"context"
 	"net/http"
 
-	"gitlab.com/prixfixe/prixfixe/internal/uploads"
-
 	"github.com/stretchr/testify/mock"
+
+	"gitlab.com/prixfixe/prixfixe/internal/uploads"
 )
 
 var _ uploads.UploadManager = (*UploadManager)(nil)

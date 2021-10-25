@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="unit tests (pkg)" type="GoTestRunConfiguration" factoryName="Go Test">
+    <module name="prixfixe" />
+    <working_directory value="$PROJECT_DIR$/pkg" />
+    <root_directory value="$PROJECT_DIR$" />
+    <kind value="DIRECTORY" />
+    <package value="gitlab.com/prixfixe/prixfixe" />
+    <directory value="$PROJECT_DIR$/pkg" />
+    <filePath value="$PROJECT_DIR$" />
+    <framework value="gotest" />
+    <method v="2" />
+  </configuration>
+</component>

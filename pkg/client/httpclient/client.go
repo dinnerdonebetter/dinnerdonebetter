@@ -4,9 +4,13 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"path"
 	"time"
+
+	"github.com/gorilla/websocket"
+	"github.com/moul/http2curl"
 
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
 	"gitlab.com/prixfixe/prixfixe/internal/observability"
@@ -44,7 +48,9 @@ type Client struct {
 	unauthenticatedClient *http.Client
 	authedClient          *http.Client
 	authMethod            *authMethod
-	householdID           uint64
+	authHeaderBuilder     authHeaderBuilder
+	websocketDialer       *websocket.Dialer
+	householdID           string
 	debug                 bool
 }
 
@@ -83,8 +89,9 @@ func NewClient(u *url.URL, options ...option) (*Client, error) {
 		tracer:                tracing.NewTracer(clientName),
 		panicker:              panicking.NewProductionPanicker(),
 		encoder:               encoding.ProvideClientEncoder(l, encoding.ContentTypeJSON),
-		authedClient:          &http.Client{Transport: buildWrappedTransport(defaultTimeout), Timeout: defaultTimeout},
-		unauthenticatedClient: &http.Client{Transport: buildWrappedTransport(defaultTimeout), Timeout: defaultTimeout},
+		authedClient:          &http.Client{Transport: tracing.BuildTracedHTTPTransport(defaultTimeout), Timeout: defaultTimeout},
+		unauthenticatedClient: &http.Client{Transport: tracing.BuildTracedHTTPTransport(defaultTimeout), Timeout: defaultTimeout},
+		websocketDialer:       websocket.DefaultDialer,
 	}
 
 	requestBuilder, err := requests.NewBuilder(c.url, c.logger, encoding.ProvideClientEncoder(l, defaultContentType))
@@ -216,6 +223,14 @@ func (c *Client) IsUp(ctx context.Context) bool {
 	return res.StatusCode == http.StatusOK
 }
 
+func (c *Client) logRequest(logger logging.Logger, res *http.Response) {
+	if bdump, err := httputil.DumpResponse(res, true); err == nil {
+		logger = logger.WithValue("response_body", string(bdump))
+	}
+
+	logger.WithValue(keys.ResponseStatusKey, res.StatusCode).Debug("request executed")
+}
+
 // fetchResponseToRequest takes a given *http.Request and executes it with the provided.
 // client, alongside some debugging logging.
 func (c *Client) fetchResponseToRequest(ctx context.Context, client *http.Client, req *http.Request) (*http.Response, error) {
@@ -224,13 +239,15 @@ func (c *Client) fetchResponseToRequest(ctx context.Context, client *http.Client
 
 	logger := c.logger.WithRequest(req)
 
+	if command, err := http2curl.GetCurlCommand(req); err == nil && c.debug {
+		logger = c.logger.WithValue("curl", command.String())
+	}
+
 	// this should be the only use of .Do in this package
 	res, err := client.Do(req.WithContext(ctx))
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "executing request")
 	}
-
-	logger.WithValue(keys.ResponseStatusKey, res.StatusCode).Debug("request executed")
 
 	return res, nil
 }

@@ -1,11 +1,13 @@
 package validingredientpreparations
 
 import (
+	"context"
+	"fmt"
 	"net/http"
 
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
+	publishers "gitlab.com/prixfixe/prixfixe/internal/messagequeue/publishers"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	routing "gitlab.com/prixfixe/prixfixe/internal/routing"
 	"gitlab.com/prixfixe/prixfixe/internal/search"
@@ -14,9 +16,7 @@ import (
 )
 
 const (
-	counterName        metrics.CounterName = "valid_ingredient_preparations"
-	counterDescription string              = "the number of valid ingredient preparations managed by the valid ingredient preparations service"
-	serviceName        string              = "valid_ingredient_preparations_service"
+	serviceName string = "valid_ingredient_preparations_service"
 )
 
 var _ types.ValidIngredientPreparationDataService = (*service)(nil)
@@ -29,9 +29,11 @@ type (
 	service struct {
 		logger                                logging.Logger
 		validIngredientPreparationDataManager types.ValidIngredientPreparationDataManager
-		validIngredientPreparationIDFetcher   func(*http.Request) uint64
+		validIngredientPreparationIDFetcher   func(*http.Request) string
 		sessionContextDataFetcher             func(*http.Request) (*types.SessionContextData, error)
-		validIngredientPreparationCounter     metrics.UnitCounter
+		preWritesPublisher                    publishers.Publisher
+		preUpdatesPublisher                   publishers.Publisher
+		preArchivesPublisher                  publishers.Publisher
 		encoderDecoder                        encoding.ServerEncoderDecoder
 		tracer                                tracing.Tracer
 	}
@@ -39,20 +41,38 @@ type (
 
 // ProvideService builds a new ValidIngredientPreparationsService.
 func ProvideService(
+	ctx context.Context,
 	logger logging.Logger,
-	cfg Config,
+	cfg *Config,
 	validIngredientPreparationDataManager types.ValidIngredientPreparationDataManager,
 	encoder encoding.ServerEncoderDecoder,
-	counterProvider metrics.UnitCounterProvider,
 	routeParamManager routing.RouteParamManager,
+	publisherProvider publishers.PublisherProvider,
 ) (types.ValidIngredientPreparationDataService, error) {
+	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up valid ingredient preparation queue pre-writes publisher: %w", err)
+	}
+
+	preUpdatesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreUpdatesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up valid ingredient preparation queue pre-updates publisher: %w", err)
+	}
+
+	preArchivesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreArchivesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up valid ingredient preparation queue pre-archives publisher: %w", err)
+	}
+
 	svc := &service{
 		logger:                                logging.EnsureLogger(logger).WithName(serviceName),
-		validIngredientPreparationIDFetcher:   routeParamManager.BuildRouteParamIDFetcher(logger, ValidIngredientPreparationIDURIParamKey, "valid_ingredient_preparation"),
+		validIngredientPreparationIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientPreparationIDURIParamKey),
 		sessionContextDataFetcher:             authservice.FetchContextFromRequest,
 		validIngredientPreparationDataManager: validIngredientPreparationDataManager,
+		preWritesPublisher:                    preWritesPublisher,
+		preUpdatesPublisher:                   preUpdatesPublisher,
+		preArchivesPublisher:                  preArchivesPublisher,
 		encoderDecoder:                        encoder,
-		validIngredientPreparationCounter:     metrics.EnsureUnitCounter(counterProvider, logger, counterName, counterDescription),
 		tracer:                                tracing.NewTracer(serviceName),
 	}
 

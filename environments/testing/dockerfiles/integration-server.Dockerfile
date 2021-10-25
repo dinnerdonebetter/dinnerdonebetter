@@ -1,5 +1,5 @@
 # build stage
-FROM golang:buster AS build-stage
+FROM golang:1.17-stretch AS build-stage
 
 WORKDIR /go/src/gitlab.com/prixfixe/prixfixe
 
@@ -10,7 +10,7 @@ COPY . .
 RUN go build -trimpath -o /prixfixe -v gitlab.com/prixfixe/prixfixe/cmd/server
 
 # final stage
-FROM debian:bullseye-slim
+FROM debian:stretch
 
 COPY --from=build-stage /prixfixe /prixfixe
 

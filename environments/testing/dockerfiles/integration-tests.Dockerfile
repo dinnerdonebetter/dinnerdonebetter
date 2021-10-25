@@ -1,4 +1,4 @@
-FROM golang:buster
+FROM golang:1.17-stretch
 
 RUN apt-get update -y && apt-get install -y make git gcc musl-dev
 
@@ -6,7 +6,9 @@ WORKDIR /go/src/gitlab.com/prixfixe/prixfixe
 
 COPY . .
 
-ENTRYPOINT [ "go", "test", "-parallel", "1", "-v", "gitlab.com/prixfixe/prixfixe/tests/integration" ]
+ENV SKIP_PASETO_TESTS=TRUE
 
 # to debug a specific test:
-# ENTRYPOINT [ "go", "test", "-parallel", "1", "-v", "-failfast", "gitlab.com/prixfixe/prixfixe/tests/integration", "-run", "TestIntegration/TestSomething" ]
+# ENTRYPOINT [ "go", "test", "-parallel", "1", "-v", "-failfast", "gitlab.com/prixfixe/prixfixe/tests/integration", "-run", "TestIntegration/TestRecipes" ]
+
+ENTRYPOINT [ "go", "test", "-v", "-failfast", "gitlab.com/prixfixe/prixfixe/tests/integration" ]

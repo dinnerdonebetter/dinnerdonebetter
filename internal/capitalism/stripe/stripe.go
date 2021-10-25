@@ -63,7 +63,7 @@ func ProvideStripePaymentManager(logger logging.Logger, cfg *capitalism.StripeCo
 }
 
 func buildCustomerName(household *types.Household) string {
-	return fmt.Sprintf("%s (%d)", household.Name, household.ID)
+	return fmt.Sprintf("%s (%s)", household.Name, household.ID)
 }
 
 func buildGetCustomerParams(a *types.Household) *stripe.CustomerParams {
@@ -73,7 +73,7 @@ func buildGetCustomerParams(a *types.Household) *stripe.CustomerParams {
 		Phone:   stripe.String(a.ContactPhone),
 		Address: &stripe.AddressParams{},
 	}
-	p.AddMetadata(keys.HouseholdIDKey, a.ExternalID)
+	p.AddMetadata(keys.HouseholdIDKey, a.ID)
 
 	return p
 }

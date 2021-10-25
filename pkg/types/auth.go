@@ -6,11 +6,11 @@ import (
 	"encoding/gob"
 	"net/http"
 
+	validation "github.com/go-ozzo/ozzo-validation/v4"
+
 	"gitlab.com/prixfixe/prixfixe/internal/authorization"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-
-	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
@@ -33,50 +33,63 @@ func init() {
 type (
 	// UserHouseholdMembershipInfo represents key information about an household membership.
 	UserHouseholdMembershipInfo struct {
+		_ struct{}
+
 		HouseholdName  string   `json:"name"`
+		HouseholdID    string   `json:"householdID"`
 		HouseholdRoles []string `json:"-"`
-		HouseholdID    uint64   `json:"householdID"`
 	}
 
 	// SessionContextData represents what we encode in our passwords cookies.
 	SessionContextData struct {
-		HouseholdPermissions map[uint64]authorization.HouseholdRolePermissionsChecker `json:"-"`
+		_ struct{}
+
+		HouseholdPermissions map[string]authorization.HouseholdRolePermissionsChecker `json:"-"`
 		Requester            RequesterInfo                                            `json:"-"`
-		ActiveHouseholdID    uint64                                                   `json:"-"`
+		ActiveHouseholdID    string                                                   `json:"-"`
 	}
 
 	// RequesterInfo contains data relevant to the user making a request.
 	RequesterInfo struct {
+		_ struct{}
+
 		ServicePermissions    authorization.ServiceRolePermissionChecker `json:"-"`
 		Reputation            householdStatus                            `json:"-"`
 		ReputationExplanation string                                     `json:"-"`
-		UserID                uint64                                     `json:"-"`
+		UserID                string                                     `json:"-"`
 	}
 
 	// UserStatusResponse is what we encode when the frontend wants to check auth status.
 	UserStatusResponse struct {
+		_ struct{}
+
 		UserReputation            householdStatus `json:"householdStatus,omitempty"`
 		UserReputationExplanation string          `json:"reputationExplanation"`
-		ActiveHousehold           uint64          `json:"activeHousehold,omitempty"`
-		UserIsServiceAdmin        bool            `json:"userIsServiceAdmin"`
+		ActiveHousehold           string          `json:"activeHousehold,omitempty"`
 		UserIsAuthenticated       bool            `json:"isAuthenticated"`
 	}
 
 	// ChangeActiveHouseholdInput represents what a User could set as input for switching households.
 	ChangeActiveHouseholdInput struct {
-		HouseholdID uint64 `json:"householdID"`
+		_ struct{}
+
+		HouseholdID string `json:"householdID"`
 	}
 
 	// PASETOCreationInput is used to create a PASETO.
 	PASETOCreationInput struct {
+		_ struct{}
+
 		ClientID          string `json:"clientID"`
-		HouseholdID       uint64 `json:"householdID"`
+		HouseholdID       string `json:"householdID"`
 		RequestTime       int64  `json:"requestTime"`
 		RequestedLifetime uint64 `json:"requestedLifetime,omitempty"`
 	}
 
 	// PASETOResponse is used to respond to a PASETO request.
 	PASETOResponse struct {
+		_ struct{}
+
 		Token     string `json:"token"`
 		ExpiresAt string `json:"expiresAt"`
 	}
@@ -98,16 +111,6 @@ type (
 
 		AuthenticateUser(ctx context.Context, loginData *UserLoginInput) (*User, *http.Cookie, error)
 		LogoutUser(ctx context.Context, sessionCtxData *SessionContextData, req *http.Request, res http.ResponseWriter) error
-	}
-
-	// AuthAuditManager describes a structure capable of auditing auth events.
-	AuthAuditManager interface {
-		LogCycleCookieSecretEvent(ctx context.Context, userID uint64)
-		LogSuccessfulLoginEvent(ctx context.Context, userID uint64)
-		LogBannedUserLoginAttemptEvent(ctx context.Context, userID uint64)
-		LogUnsuccessfulLoginBadPasswordEvent(ctx context.Context, userID uint64)
-		LogUnsuccessfulLoginBad2FATokenEvent(ctx context.Context, userID uint64)
-		LogLogoutEvent(ctx context.Context, userID uint64)
 	}
 )
 

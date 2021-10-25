@@ -4,76 +4,16 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
-
-func TestBuilder_BuildRecipeStepExistsRequest(T *testing.T) {
-	T.Parallel()
-
-	const expectedPathFormat = "/api/v1/recipes/%d/recipe_steps/%d"
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipeStep := fakes.BuildFakeRecipeStep()
-
-		actual, err := helper.builder.BuildRecipeStepExistsRequest(helper.ctx, exampleRecipeID, exampleRecipeStep.ID)
-		spec := newRequestSpec(true, http.MethodHead, "", expectedPathFormat, exampleRecipeID, exampleRecipeStep.ID)
-
-		assert.NoError(t, err)
-		assertRequestQuality(t, actual, spec)
-	})
-
-	T.Run("with invalid recipe ID", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		exampleRecipeStep := fakes.BuildFakeRecipeStep()
-
-		actual, err := helper.builder.BuildRecipeStepExistsRequest(helper.ctx, 0, exampleRecipeStep.ID)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	T.Run("with invalid recipe step ID", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		exampleRecipeID := fakes.BuildFakeID()
-
-		actual, err := helper.builder.BuildRecipeStepExistsRequest(helper.ctx, exampleRecipeID, 0)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	T.Run("with invalid request builder", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-		helper.builder = buildTestRequestBuilderWithInvalidURL()
-
-		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipeStep := fakes.BuildFakeRecipeStep()
-
-		actual, err := helper.builder.BuildRecipeStepExistsRequest(helper.ctx, exampleRecipeID, exampleRecipeStep.ID)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-}
 
 func TestBuilder_BuildGetRecipeStepRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/recipes/%d/recipe_steps/%d"
+	const expectedPathFormat = "/api/v1/recipes/%s/recipe_steps/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -98,7 +38,7 @@ func TestBuilder_BuildGetRecipeStepRequest(T *testing.T) {
 
 		exampleRecipeStep := fakes.BuildFakeRecipeStep()
 
-		actual, err := helper.builder.BuildGetRecipeStepRequest(helper.ctx, 0, exampleRecipeStep.ID)
+		actual, err := helper.builder.BuildGetRecipeStepRequest(helper.ctx, "", exampleRecipeStep.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -110,7 +50,7 @@ func TestBuilder_BuildGetRecipeStepRequest(T *testing.T) {
 
 		exampleRecipeID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildGetRecipeStepRequest(helper.ctx, exampleRecipeID, 0)
+		actual, err := helper.builder.BuildGetRecipeStepRequest(helper.ctx, exampleRecipeID, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -133,7 +73,7 @@ func TestBuilder_BuildGetRecipeStepRequest(T *testing.T) {
 func TestBuilder_BuildGetRecipeStepsRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/recipes/%d/recipe_steps"
+	const expectedPathFormat = "/api/v1/recipes/%s/recipe_steps"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -158,7 +98,7 @@ func TestBuilder_BuildGetRecipeStepsRequest(T *testing.T) {
 
 		filter := (*types.QueryFilter)(nil)
 
-		actual, err := helper.builder.BuildGetRecipeStepsRequest(helper.ctx, 0, filter)
+		actual, err := helper.builder.BuildGetRecipeStepsRequest(helper.ctx, "", filter)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -182,14 +122,14 @@ func TestBuilder_BuildGetRecipeStepsRequest(T *testing.T) {
 func TestBuilder_BuildCreateRecipeStepRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPath = "/api/v1/recipes/%d/recipe_steps"
+	const expectedPath = "/api/v1/recipes/%s/recipe_steps"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
 
-		exampleInput := fakes.BuildFakeRecipeStepCreationInput()
+		exampleInput := fakes.BuildFakeRecipeStepCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, exampleInput.BelongsToRecipe)
 
@@ -214,7 +154,7 @@ func TestBuilder_BuildCreateRecipeStepRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildCreateRecipeStepRequest(helper.ctx, &types.RecipeStepCreationInput{})
+		actual, err := helper.builder.BuildCreateRecipeStepRequest(helper.ctx, &types.RecipeStepCreationRequestInput{})
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -225,7 +165,7 @@ func TestBuilder_BuildCreateRecipeStepRequest(T *testing.T) {
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
-		exampleInput := fakes.BuildFakeRecipeStepCreationInput()
+		exampleInput := fakes.BuildFakeRecipeStepCreationRequestInput()
 
 		actual, err := helper.builder.BuildCreateRecipeStepRequest(helper.ctx, exampleInput)
 		assert.Nil(t, actual)
@@ -236,7 +176,7 @@ func TestBuilder_BuildCreateRecipeStepRequest(T *testing.T) {
 func TestBuilder_BuildUpdateRecipeStepRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/recipes/%d/recipe_steps/%d"
+	const expectedPathFormat = "/api/v1/recipes/%s/recipe_steps/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -280,7 +220,7 @@ func TestBuilder_BuildUpdateRecipeStepRequest(T *testing.T) {
 func TestBuilder_BuildArchiveRecipeStepRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/recipes/%d/recipe_steps/%d"
+	const expectedPathFormat = "/api/v1/recipes/%s/recipe_steps/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -305,7 +245,7 @@ func TestBuilder_BuildArchiveRecipeStepRequest(T *testing.T) {
 
 		exampleRecipeStep := fakes.BuildFakeRecipeStep()
 
-		actual, err := helper.builder.BuildArchiveRecipeStepRequest(helper.ctx, 0, exampleRecipeStep.ID)
+		actual, err := helper.builder.BuildArchiveRecipeStepRequest(helper.ctx, "", exampleRecipeStep.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -317,7 +257,7 @@ func TestBuilder_BuildArchiveRecipeStepRequest(T *testing.T) {
 
 		exampleRecipeID := fakes.BuildFakeID()
 
-		actual, err := helper.builder.BuildArchiveRecipeStepRequest(helper.ctx, exampleRecipeID, 0)
+		actual, err := helper.builder.BuildArchiveRecipeStepRequest(helper.ctx, exampleRecipeID, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -332,66 +272,6 @@ func TestBuilder_BuildArchiveRecipeStepRequest(T *testing.T) {
 		exampleRecipeStep := fakes.BuildFakeRecipeStep()
 
 		actual, err := helper.builder.BuildArchiveRecipeStepRequest(helper.ctx, exampleRecipeID, exampleRecipeStep.ID)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-}
-
-func TestBuilder_BuildGetAuditLogForRecipeStepRequest(T *testing.T) {
-	T.Parallel()
-
-	const expectedPath = "/api/v1/recipes/%d/recipe_steps/%d/audit"
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipeStep := fakes.BuildFakeRecipeStep()
-
-		actual, err := helper.builder.BuildGetAuditLogForRecipeStepRequest(helper.ctx, exampleRecipeID, exampleRecipeStep.ID)
-		require.NotNil(t, actual)
-		assert.NoError(t, err)
-
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPath, exampleRecipeID, exampleRecipeStep.ID)
-		assertRequestQuality(t, actual, spec)
-	})
-
-	T.Run("with invalid recipe ID", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		exampleRecipeStep := fakes.BuildFakeRecipeStep()
-
-		actual, err := helper.builder.BuildGetAuditLogForRecipeStepRequest(helper.ctx, 0, exampleRecipeStep.ID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-	})
-
-	T.Run("with invalid recipe step ID", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		exampleRecipeID := fakes.BuildFakeID()
-
-		actual, err := helper.builder.BuildGetAuditLogForRecipeStepRequest(helper.ctx, exampleRecipeID, 0)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	T.Run("with invalid request builder", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-		helper.builder = buildTestRequestBuilderWithInvalidURL()
-
-		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipeStep := fakes.BuildFakeRecipeStep()
-
-		actual, err := helper.builder.BuildGetAuditLogForRecipeStepRequest(helper.ctx, exampleRecipeID, exampleRecipeStep.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

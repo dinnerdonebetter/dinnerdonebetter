@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/segmentio/ksuid"
+
 	observability "gitlab.com/prixfixe/prixfixe/internal/observability"
 	keys "gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
@@ -47,18 +49,21 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// check session context data for parsed input struct.
-	input := new(types.RecipeStepProductCreationInput)
-	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
+	providedInput := new(types.RecipeStepProductCreationRequestInput)
+	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
 		return
 	}
 
-	if err = input.ValidateWithContext(ctx); err != nil {
-		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
+	if err = providedInput.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	input := types.RecipeStepProductDatabaseCreationInputFromRecipeStepProductCreationInput(providedInput)
+	input.ID = ksuid.New().String()
 
 	// determine recipe step ID.
 	recipeStepID := s.recipeStepIDFetcher(req)
@@ -66,21 +71,25 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
 	input.BelongsToRecipeStep = recipeStepID
+	tracing.AttachRecipeStepProductIDToSpan(span, input.ID)
 
 	// create recipe step product in database.
-	recipeStepProduct, err := s.recipeStepProductDataManager.CreateRecipeStepProduct(ctx, input, sessionCtxData.Requester.UserID)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating recipe step product")
+	preWrite := &types.PreWriteMessage{
+		DataType:                  types.RecipeStepProductDataType,
+		RecipeStepID:              recipeStepID,
+		RecipeStepProduct:         input,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+	}
+	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing recipe step product write message")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	tracing.AttachRecipeStepProductIDToSpan(span, recipeStepProduct.ID)
+	pwr := types.PreWriteResponse{ID: input.ID}
 
-	// notify interested parties.
-	s.recipeStepProductCounter.Increment(ctx)
-
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, recipeStepProduct, http.StatusCreated)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusAccepted)
 }
 
 // ReadHandler returns a GET handler that returns a recipe step product.
@@ -130,51 +139,6 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, x)
-}
-
-// ExistenceHandler returns a HEAD handler that returns 200 if a recipe step product exists, 404 otherwise.
-func (s *service) ExistenceHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-	tracing.AttachRequestToSpan(span, req)
-
-	// determine user ID.
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		s.logger.Error(err, "retrieving session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
-		return
-	}
-
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = sessionCtxData.AttachToLogger(logger)
-
-	// determine recipe ID.
-	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-
-	// determine recipe step ID.
-	recipeStepID := s.recipeStepIDFetcher(req)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
-	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-
-	// determine recipe step product ID.
-	recipeStepProductID := s.recipeStepProductIDFetcher(req)
-	tracing.AttachRecipeStepProductIDToSpan(span, recipeStepProductID)
-	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
-
-	// check the database.
-	exists, err := s.recipeStepProductDataManager.RecipeStepProductExists(ctx, recipeID, recipeStepID, recipeStepProductID)
-	if !errors.Is(err, sql.ErrNoRows) {
-		observability.AcknowledgeError(err, logger, span, "checking recipe step product existence")
-	}
-
-	if !exists || errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
-	}
 }
 
 // ListHandler is our list route.
@@ -246,7 +210,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// check for parsed input attached to session context data.
-	input := new(types.RecipeStepProductUpdateInput)
+	input := new(types.RecipeStepProductUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		logger.Error(err, "error encountered decoding request body")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
@@ -286,17 +250,20 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// update the recipe step product.
-	changeReport := recipeStepProduct.Update(input)
-	tracing.AttachChangeSummarySpan(span, "recipe_step_product", changeReport)
+	recipeStepProduct.Update(input)
 
-	// update recipe step product in database.
-	if err = s.recipeStepProductDataManager.UpdateRecipeStepProduct(ctx, recipeStepProduct, sessionCtxData.Requester.UserID, changeReport); err != nil {
-		observability.AcknowledgeError(err, logger, span, "updating recipe step product")
+	pum := &types.PreUpdateMessage{
+		DataType:                  types.RecipeStepProductDataType,
+		RecipeStepID:              recipeStepID,
+		RecipeStepProduct:         recipeStepProduct,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+	}
+	if err = s.preUpdatesPublisher.Publish(ctx, pum); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing recipe step product update message")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
-
-	// notify interested parties.
 
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, recipeStepProduct)
@@ -336,58 +303,29 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachRecipeStepProductIDToSpan(span, recipeStepProductID)
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
 
-	// archive the recipe step product in the database.
-	err = s.recipeStepProductDataManager.ArchiveRecipeStepProduct(ctx, recipeStepID, recipeStepProductID, sessionCtxData.Requester.UserID)
-	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
-		return
-	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "archiving recipe step product")
+	exists, existenceCheckErr := s.recipeStepProductDataManager.RecipeStepProductExists(ctx, recipeID, recipeStepID, recipeStepProductID)
+	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
+		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking recipe step product existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	}
 
-	// notify interested parties.
-	s.recipeStepProductCounter.Decrement(ctx)
+	pam := &types.PreArchiveMessage{
+		DataType:                  types.RecipeStepProductDataType,
+		RecipeStepID:              recipeStepID,
+		RecipeStepProductID:       recipeStepProductID,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+	}
+	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing recipe step product archive message")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
 
 	// encode our response and peace.
 	res.WriteHeader(http.StatusNoContent)
-}
-
-// AuditEntryHandler returns a GET handler that returns all audit log entries related to a recipe step product.
-func (s *service) AuditEntryHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-	tracing.AttachRequestToSpan(span, req)
-
-	// determine user ID.
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
-		return
-	}
-
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = sessionCtxData.AttachToLogger(logger)
-
-	// determine recipe step product ID.
-	recipeStepProductID := s.recipeStepProductIDFetcher(req)
-	tracing.AttachRecipeStepProductIDToSpan(span, recipeStepProductID)
-	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
-
-	x, err := s.recipeStepProductDataManager.GetAuditLogEntriesForRecipeStepProduct(ctx, recipeStepProductID)
-	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
-		return
-	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving audit log entries for recipe step product")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
-	}
-
-	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
 }

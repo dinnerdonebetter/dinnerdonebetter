@@ -1,20 +1,20 @@
 package fakes
 
 import (
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
 	fake "github.com/brianvoe/gofakeit/v5"
+	"github.com/segmentio/ksuid"
+
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
 // BuildFakeValidIngredient builds a faked valid ingredient.
 func BuildFakeValidIngredient() *types.ValidIngredient {
 	return &types.ValidIngredient{
-		ID:                uint64(fake.Uint32()),
-		ExternalID:        fake.UUID(),
-		Name:              BuildUniqueName(),
-		Variant:           fake.Word(),
-		Description:       fake.Word(),
-		Warning:           fake.Word(),
+		ID:                ksuid.New().String(),
+		Name:              fake.LoremIpsumSentence(exampleQuantity),
+		Variant:           fake.LoremIpsumSentence(exampleQuantity),
+		Description:       fake.LoremIpsumSentence(exampleQuantity),
+		Warning:           fake.LoremIpsumSentence(exampleQuantity),
 		ContainsEgg:       fake.Bool(),
 		ContainsDairy:     fake.Bool(),
 		ContainsPeanut:    fake.Bool(),
@@ -28,7 +28,7 @@ func BuildFakeValidIngredient() *types.ValidIngredient {
 		AnimalFlesh:       fake.Bool(),
 		AnimalDerived:     fake.Bool(),
 		Volumetric:        fake.Bool(),
-		IconPath:          fake.Word(),
+		IconPath:          fake.LoremIpsumSentence(exampleQuantity),
 		CreatedOn:         uint64(uint32(fake.Date().Unix())),
 	}
 }
@@ -51,10 +51,10 @@ func BuildFakeValidIngredientList() *types.ValidIngredientList {
 	}
 }
 
-// BuildFakeValidIngredientUpdateInput builds a faked ValidIngredientUpdateInput from a valid ingredient.
-func BuildFakeValidIngredientUpdateInput() *types.ValidIngredientUpdateInput {
+// BuildFakeValidIngredientUpdateRequestInput builds a faked ValidIngredientUpdateRequestInput from a valid ingredient.
+func BuildFakeValidIngredientUpdateRequestInput() *types.ValidIngredientUpdateRequestInput {
 	validIngredient := BuildFakeValidIngredient()
-	return &types.ValidIngredientUpdateInput{
+	return &types.ValidIngredientUpdateRequestInput{
 		Name:              validIngredient.Name,
 		Variant:           validIngredient.Variant,
 		Description:       validIngredient.Description,
@@ -76,9 +76,9 @@ func BuildFakeValidIngredientUpdateInput() *types.ValidIngredientUpdateInput {
 	}
 }
 
-// BuildFakeValidIngredientUpdateInputFromValidIngredient builds a faked ValidIngredientUpdateInput from a valid ingredient.
-func BuildFakeValidIngredientUpdateInputFromValidIngredient(validIngredient *types.ValidIngredient) *types.ValidIngredientUpdateInput {
-	return &types.ValidIngredientUpdateInput{
+// BuildFakeValidIngredientUpdateRequestInputFromValidIngredient builds a faked ValidIngredientUpdateRequestInput from a valid ingredient.
+func BuildFakeValidIngredientUpdateRequestInputFromValidIngredient(validIngredient *types.ValidIngredient) *types.ValidIngredientUpdateRequestInput {
+	return &types.ValidIngredientUpdateRequestInput{
 		Name:              validIngredient.Name,
 		Variant:           validIngredient.Variant,
 		Description:       validIngredient.Description,
@@ -100,15 +100,47 @@ func BuildFakeValidIngredientUpdateInputFromValidIngredient(validIngredient *typ
 	}
 }
 
-// BuildFakeValidIngredientCreationInput builds a faked ValidIngredientCreationInput.
-func BuildFakeValidIngredientCreationInput() *types.ValidIngredientCreationInput {
+// BuildFakeValidIngredientCreationRequestInput builds a faked ValidIngredientCreationRequestInput.
+func BuildFakeValidIngredientCreationRequestInput() *types.ValidIngredientCreationRequestInput {
 	validIngredient := BuildFakeValidIngredient()
-	return BuildFakeValidIngredientCreationInputFromValidIngredient(validIngredient)
+	return BuildFakeValidIngredientCreationRequestInputFromValidIngredient(validIngredient)
 }
 
-// BuildFakeValidIngredientCreationInputFromValidIngredient builds a faked ValidIngredientCreationInput from a valid ingredient.
-func BuildFakeValidIngredientCreationInputFromValidIngredient(validIngredient *types.ValidIngredient) *types.ValidIngredientCreationInput {
-	return &types.ValidIngredientCreationInput{
+// BuildFakeValidIngredientCreationRequestInputFromValidIngredient builds a faked ValidIngredientCreationRequestInput from a valid ingredient.
+func BuildFakeValidIngredientCreationRequestInputFromValidIngredient(validIngredient *types.ValidIngredient) *types.ValidIngredientCreationRequestInput {
+	return &types.ValidIngredientCreationRequestInput{
+		ID:                validIngredient.ID,
+		Name:              validIngredient.Name,
+		Variant:           validIngredient.Variant,
+		Description:       validIngredient.Description,
+		Warning:           validIngredient.Warning,
+		ContainsEgg:       validIngredient.ContainsEgg,
+		ContainsDairy:     validIngredient.ContainsDairy,
+		ContainsPeanut:    validIngredient.ContainsPeanut,
+		ContainsTreeNut:   validIngredient.ContainsTreeNut,
+		ContainsSoy:       validIngredient.ContainsSoy,
+		ContainsWheat:     validIngredient.ContainsWheat,
+		ContainsShellfish: validIngredient.ContainsShellfish,
+		ContainsSesame:    validIngredient.ContainsSesame,
+		ContainsFish:      validIngredient.ContainsFish,
+		ContainsGluten:    validIngredient.ContainsGluten,
+		AnimalFlesh:       validIngredient.AnimalFlesh,
+		AnimalDerived:     validIngredient.AnimalDerived,
+		Volumetric:        validIngredient.Volumetric,
+		IconPath:          validIngredient.IconPath,
+	}
+}
+
+// BuildFakeValidIngredientDatabaseCreationInput builds a faked ValidIngredientDatabaseCreationInput.
+func BuildFakeValidIngredientDatabaseCreationInput() *types.ValidIngredientDatabaseCreationInput {
+	validIngredient := BuildFakeValidIngredient()
+	return BuildFakeValidIngredientDatabaseCreationInputFromValidIngredient(validIngredient)
+}
+
+// BuildFakeValidIngredientDatabaseCreationInputFromValidIngredient builds a faked ValidIngredientDatabaseCreationInput from a valid ingredient.
+func BuildFakeValidIngredientDatabaseCreationInputFromValidIngredient(validIngredient *types.ValidIngredient) *types.ValidIngredientDatabaseCreationInput {
+	return &types.ValidIngredientDatabaseCreationInput{
+		ID:                validIngredient.ID,
 		Name:              validIngredient.Name,
 		Variant:           validIngredient.Variant,
 		Description:       validIngredient.Description,

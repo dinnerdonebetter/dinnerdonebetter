@@ -13,11 +13,11 @@ import (
 	"strings"
 	"time"
 
-	"gitlab.com/prixfixe/prixfixe/pkg/client/httpclient"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
 	"github.com/brianvoe/gofakeit/v5"
 	"github.com/pquerna/otp/totp"
+
+	"gitlab.com/prixfixe/prixfixe/pkg/client/httpclient"
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
 var (

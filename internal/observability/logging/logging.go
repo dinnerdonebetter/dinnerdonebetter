@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	chimiddleware "github.com/go-chi/chi/middleware"
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
 )
 
 const (
@@ -41,7 +41,7 @@ var (
 type Logger interface {
 	Info(string)
 	Debug(string)
-	Error(error, string)
+	Error(err error, whatWasHappeningWhenErrorOccurred string)
 	Fatal(error)
 	Printf(string, ...interface{})
 

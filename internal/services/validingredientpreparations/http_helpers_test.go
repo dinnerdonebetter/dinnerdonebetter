@@ -22,8 +22,8 @@ type validIngredientPreparationsServiceHTTPRoutesTestHelper struct {
 	exampleUser                       *types.User
 	exampleHousehold                  *types.Household
 	exampleValidIngredientPreparation *types.ValidIngredientPreparation
-	exampleCreationInput              *types.ValidIngredientPreparationCreationInput
-	exampleUpdateInput                *types.ValidIngredientPreparationUpdateInput
+	exampleCreationInput              *types.ValidIngredientPreparationCreationRequestInput
+	exampleUpdateInput                *types.ValidIngredientPreparationUpdateRequestInput
 }
 
 func buildTestHelper(t *testing.T) *validIngredientPreparationsServiceHTTPRoutesTestHelper {
@@ -37,10 +37,10 @@ func buildTestHelper(t *testing.T) *validIngredientPreparationsServiceHTTPRoutes
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 	helper.exampleValidIngredientPreparation = fakes.BuildFakeValidIngredientPreparation()
-	helper.exampleCreationInput = fakes.BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(helper.exampleValidIngredientPreparation)
-	helper.exampleUpdateInput = fakes.BuildFakeValidIngredientPreparationUpdateInputFromValidIngredientPreparation(helper.exampleValidIngredientPreparation)
+	helper.exampleCreationInput = fakes.BuildFakeValidIngredientPreparationCreationRequestInputFromValidIngredientPreparation(helper.exampleValidIngredientPreparation)
+	helper.exampleUpdateInput = fakes.BuildFakeValidIngredientPreparationUpdateRequestInputFromValidIngredientPreparation(helper.exampleValidIngredientPreparation)
 
-	helper.service.validIngredientPreparationIDFetcher = func(*http.Request) uint64 {
+	helper.service.validIngredientPreparationIDFetcher = func(*http.Request) string {
 		return helper.exampleValidIngredientPreparation.ID
 	}
 
@@ -52,7 +52,7 @@ func buildTestHelper(t *testing.T) *validIngredientPreparationsServiceHTTPRoutes
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 		},
 		ActiveHouseholdID: helper.exampleHousehold.ID,
-		HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
+		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
 			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
 		},
 	}

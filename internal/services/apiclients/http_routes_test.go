@@ -8,21 +8,21 @@ import (
 	"net/http"
 	"testing"
 
-	"gitlab.com/prixfixe/prixfixe/internal/authentication"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+
+	mockauthn "gitlab.com/prixfixe/prixfixe/internal/authentication/mock"
 	"gitlab.com/prixfixe/prixfixe/internal/database"
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
 	mockencoding "gitlab.com/prixfixe/prixfixe/internal/encoding/mock"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	mockmetrics "gitlab.com/prixfixe/prixfixe/internal/observability/metrics/mock"
-	"gitlab.com/prixfixe/prixfixe/internal/random"
+	mockrandom "gitlab.com/prixfixe/prixfixe/internal/random/mock"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
 	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
 
 func TestAPIClientsService_ListHandler(T *testing.T) {
@@ -142,6 +142,10 @@ func TestAPIClientsService_ListHandler(T *testing.T) {
 	})
 }
 
+var apiClientCreationInputMatcher interface{} = mock.MatchedBy(func(input *types.APIClientCreationInput) bool {
+	return true
+})
+
 func TestAPIClientsService_CreateHandler(T *testing.T) {
 	T.Parallel()
 
@@ -154,7 +158,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -166,7 +170,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
 
-		a := &authentication.MockAuthenticator{}
+		a := &mockauthn.Authenticator{}
 		a.On(
 			"ValidateLogin",
 			testutils.ContextMatcher,
@@ -177,7 +181,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = a
 
-		sg := &random.MockGenerator{}
+		sg := &mockrandom.Generator{}
 		sg.On(
 			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
@@ -193,8 +197,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		mockDB.APIClientDataManager.On(
 			"CreateAPIClient",
 			testutils.ContextMatcher,
-			helper.exampleInput,
-			helper.exampleUser.ID,
+			apiClientCreationInputMatcher,
 		).Return(helper.exampleAPIClient, nil)
 		helper.service.apiClientDataManager = mockDB
 
@@ -226,7 +229,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(nil))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -245,7 +248,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -262,7 +265,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -290,26 +293,27 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
 		mockDB := database.BuildMockDatabase()
+
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
+
 		mockDB.APIClientDataManager.On(
 			"CreateAPIClient",
 			testutils.ContextMatcher,
-			helper.exampleInput,
-			helper.exampleUser.ID,
+			apiClientCreationInputMatcher,
 		).Return(helper.exampleAPIClient, nil)
 		helper.service.apiClientDataManager = mockDB
 		helper.service.userDataManager = mockDB
 
-		a := &authentication.MockAuthenticator{}
+		a := &mockauthn.Authenticator{}
 		a.On(
 			"ValidateLogin",
 			testutils.ContextMatcher,
@@ -335,7 +339,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -345,16 +349,16 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
+
 		mockDB.APIClientDataManager.On(
 			"CreateAPIClient",
 			testutils.ContextMatcher,
-			helper.exampleInput,
-			helper.exampleUser.ID,
+			apiClientCreationInputMatcher,
 		).Return(helper.exampleAPIClient, nil)
 		helper.service.apiClientDataManager = mockDB
 		helper.service.userDataManager = mockDB
 
-		a := &authentication.MockAuthenticator{}
+		a := &mockauthn.Authenticator{}
 		a.On(
 			"ValidateLogin",
 			testutils.ContextMatcher,
@@ -380,7 +384,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -391,7 +395,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
-		a := &authentication.MockAuthenticator{}
+		a := &mockauthn.Authenticator{}
 		a.On(
 			"ValidateLogin",
 			testutils.ContextMatcher,
@@ -402,7 +406,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = a
 
-		sg := &random.MockGenerator{}
+		sg := &mockrandom.Generator{}
 		sg.On(
 			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
@@ -413,8 +417,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		mockDB.APIClientDataManager.On(
 			"CreateAPIClient",
 			testutils.ContextMatcher,
-			helper.exampleInput,
-			helper.exampleUser.ID,
+			apiClientCreationInputMatcher,
 		).Return(helper.exampleAPIClient, nil)
 
 		helper.service.apiClientDataManager = mockDB
@@ -435,7 +438,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -447,7 +450,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
 
-		a := &authentication.MockAuthenticator{}
+		a := &mockauthn.Authenticator{}
 		a.On(
 			"ValidateLogin",
 			testutils.ContextMatcher,
@@ -458,7 +461,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = a
 
-		sg := &random.MockGenerator{}
+		sg := &mockrandom.Generator{}
 		sg.On(
 			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
@@ -474,8 +477,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		mockDB.APIClientDataManager.On(
 			"CreateAPIClient",
 			testutils.ContextMatcher,
-			helper.exampleInput,
-			helper.exampleUser.ID,
+			apiClientCreationInputMatcher,
 		).Return(helper.exampleAPIClient, nil)
 		helper.service.apiClientDataManager = mockDB
 
@@ -494,7 +496,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
@@ -505,7 +507,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
-		a := &authentication.MockAuthenticator{}
+		a := &mockauthn.Authenticator{}
 		a.On(
 			"ValidateLogin",
 			testutils.ContextMatcher,
@@ -516,7 +518,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = a
 
-		sg := &random.MockGenerator{}
+		sg := &mockrandom.Generator{}
 		sg.On(
 			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
@@ -532,8 +534,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		mockDB.APIClientDataManager.On(
 			"CreateAPIClient",
 			testutils.ContextMatcher,
-			helper.exampleInput,
-			helper.exampleUser.ID,
+			apiClientCreationInputMatcher,
 		).Return((*types.APIClient)(nil), errors.New("blah"))
 
 		helper.service.apiClientDataManager = mockDB
@@ -674,7 +675,6 @@ func TestAPIClientsService_ArchiveHandler(T *testing.T) {
 			"ArchiveAPIClient",
 			testutils.ContextMatcher,
 			helper.exampleAPIClient.ID,
-			helper.exampleHousehold.ID,
 			helper.exampleUser.ID,
 		).Return(nil)
 		helper.service.apiClientDataManager = apiClientDataManager
@@ -723,7 +723,6 @@ func TestAPIClientsService_ArchiveHandler(T *testing.T) {
 			"ArchiveAPIClient",
 			testutils.ContextMatcher,
 			helper.exampleAPIClient.ID,
-			helper.exampleHousehold.ID,
 			helper.exampleUser.ID,
 		).Return(sql.ErrNoRows)
 		helper.service.apiClientDataManager = apiClientDataManager
@@ -753,7 +752,6 @@ func TestAPIClientsService_ArchiveHandler(T *testing.T) {
 			"ArchiveAPIClient",
 			testutils.ContextMatcher,
 			helper.exampleAPIClient.ID,
-			helper.exampleHousehold.ID,
 			helper.exampleUser.ID,
 		).Return(errors.New("blah"))
 		helper.service.apiClientDataManager = apiClientDataManager
@@ -769,120 +767,6 @@ func TestAPIClientsService_ArchiveHandler(T *testing.T) {
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, apiClientDataManager, encoderDecoder)
-	})
-}
-
-func TestAPIClientsService_AuditEntryHandler(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		exampleAuditLogEntries := fakes.BuildFakeAuditLogEntryList().Entries
-
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
-		apiClientDataManager.On(
-			"GetAuditLogEntriesForAPIClient",
-			testutils.ContextMatcher,
-			helper.exampleAPIClient.ID,
-		).Return(exampleAuditLogEntries, nil)
-		helper.service.apiClientDataManager = apiClientDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType([]*types.AuditLogEntry{}),
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
-		helper.service.AuditEntryHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, apiClientDataManager, encoderDecoder)
-	})
-
-	T.Run("with error retrieving session context data", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
-		helper.service.AuditEntryHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
-	})
-
-	T.Run("with sql.ErrNoRows", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
-		apiClientDataManager.On(
-			"GetAuditLogEntriesForAPIClient",
-			testutils.ContextMatcher,
-			helper.exampleAPIClient.ID,
-		).Return([]*types.AuditLogEntry(nil), sql.ErrNoRows)
-		helper.service.apiClientDataManager = apiClientDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
-		helper.service.AuditEntryHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, apiClientDataManager, encoderDecoder)
-	})
-
-	T.Run("with error reading from database", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
-		apiClientDataManager.On(
-			"GetAuditLogEntriesForAPIClient",
-			testutils.ContextMatcher,
-			helper.exampleAPIClient.ID,
-		).Return([]*types.AuditLogEntry(nil), errors.New("blah"))
-		helper.service.apiClientDataManager = apiClientDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
-		helper.service.AuditEntryHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, apiClientDataManager, encoderDecoder)
 	})

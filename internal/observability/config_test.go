@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestConfig_ValidateWithContext(T *testing.T) {

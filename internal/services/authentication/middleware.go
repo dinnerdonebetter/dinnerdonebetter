@@ -9,13 +9,13 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/o1egl/paseto"
+
 	"gitlab.com/prixfixe/prixfixe/internal/authorization"
 	"gitlab.com/prixfixe/prixfixe/internal/observability"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
-	"github.com/o1egl/paseto"
 )
 
 const (
@@ -58,6 +58,8 @@ func (s *service) fetchSessionContextDataFromPASETO(ctx context.Context, req *ht
 			return nil, observability.PrepareError(err, logger, span, "decoding GOB encoded session info payload")
 		}
 
+		logger.WithValue("active_household_id", reqContext.ActiveHouseholdID).Debug("returning session context data")
+
 		return reqContext, nil
 	}
 
@@ -91,7 +93,7 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 		logger := s.logger.WithRequest(req)
 
 		// handle cookies if relevant.
-		if cookieContext, userID, err := s.getUserIDFromCookie(ctx, req); err == nil && userID != 0 {
+		if cookieContext, userID, err := s.getUserIDFromCookie(ctx, req); err == nil && userID != "" {
 			ctx = cookieContext
 
 			tracing.AttachRequestingUserIDToSpan(span, userID)
@@ -188,8 +190,9 @@ func (s *service) PermissionFilterMiddleware(permissions ...authorization.Permis
 			}
 
 			for _, perm := range permissions {
-				if !sessionContextData.ServiceRolePermissionChecker().HasPermission(perm) &&
-					!sessionContextData.HouseholdRolePermissionsChecker().HasPermission(perm) {
+				doesNotHaveServicePermission := !sessionContextData.ServiceRolePermissionChecker().HasPermission(perm)
+				doesNotHaveHouseholdPermission := !sessionContextData.HouseholdRolePermissionsChecker().HasPermission(perm)
+				if doesNotHaveServicePermission && doesNotHaveHouseholdPermission {
 					logger.WithValue("deficient_permission", perm.ID()).Debug("request filtered out")
 					s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
 					return

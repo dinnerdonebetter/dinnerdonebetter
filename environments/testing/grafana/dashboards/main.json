@@ -128,14 +128,14 @@
       "pluginVersion": "7.4.3",
       "targets": [
         {
-          "expr": "accounts_count",
+          "expr": "households_count",
           "interval": "",
           "legendFormat": "count",
           "queryType": "randomWalk",
           "refId": "A"
         }
       ],
-      "title": "Accounts Count",
+      "title": "Households Count",
       "type": "stat"
     },
     {
@@ -256,66 +256,6 @@
         }
       ],
       "title": "Webhooks Count",
-      "type": "stat"
-    },
-    {
-      "datasource": "prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {},
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 18
-      },
-      "id": 6,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "text": {},
-        "textMode": "auto"
-      },
-      "pluginVersion": "7.4.3",
-      "targets": [
-        {
-          "expr": "items_count",
-          "interval": "",
-          "legendFormat": "count",
-          "queryType": "randomWalk",
-          "refId": "A"
-        }
-      ],
-      "title": "Items Count",
       "type": "stat"
     }
   ],

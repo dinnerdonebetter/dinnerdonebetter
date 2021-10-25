@@ -9,40 +9,14 @@ import (
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
-// ValidIngredientPreparationExists retrieves whether a valid ingredient preparation exists.
-func (c *Client) ValidIngredientPreparationExists(ctx context.Context, validIngredientPreparationID uint64) (bool, error) {
-	ctx, span := c.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := c.logger
-
-	if validIngredientPreparationID == 0 {
-		return false, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
-	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparationID)
-
-	req, err := c.requestBuilder.BuildValidIngredientPreparationExistsRequest(ctx, validIngredientPreparationID)
-	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "building valid ingredient preparation existence request")
-	}
-
-	exists, err := c.responseIsOK(ctx, req)
-	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "checking existence for valid ingredient preparation #%d", validIngredientPreparationID)
-	}
-
-	return exists, nil
-}
-
 // GetValidIngredientPreparation gets a valid ingredient preparation.
-func (c *Client) GetValidIngredientPreparation(ctx context.Context, validIngredientPreparationID uint64) (*types.ValidIngredientPreparation, error) {
+func (c *Client) GetValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) (*types.ValidIngredientPreparation, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger
 
-	if validIngredientPreparationID == 0 {
+	if validIngredientPreparationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
@@ -83,31 +57,31 @@ func (c *Client) GetValidIngredientPreparations(ctx context.Context, filter *typ
 }
 
 // CreateValidIngredientPreparation creates a valid ingredient preparation.
-func (c *Client) CreateValidIngredientPreparation(ctx context.Context, input *types.ValidIngredientPreparationCreationInput) (*types.ValidIngredientPreparation, error) {
+func (c *Client) CreateValidIngredientPreparation(ctx context.Context, input *types.ValidIngredientPreparationCreationRequestInput) (string, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger
 
 	if input == nil {
-		return nil, ErrNilInputProvided
+		return "", ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return "", observability.PrepareError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateValidIngredientPreparationRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building create valid ingredient preparation request")
+		return "", observability.PrepareError(err, logger, span, "building create valid ingredient preparation request")
 	}
 
-	var validIngredientPreparation *types.ValidIngredientPreparation
-	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientPreparation); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating valid ingredient preparation")
+	var pwr *types.PreWriteResponse
+	if err = c.fetchAndUnmarshal(ctx, req, &pwr); err != nil {
+		return "", observability.PrepareError(err, logger, span, "creating valid ingredient preparation")
 	}
 
-	return validIngredientPreparation, nil
+	return pwr.ID, nil
 }
 
 // UpdateValidIngredientPreparation updates a valid ingredient preparation.
@@ -129,20 +103,20 @@ func (c *Client) UpdateValidIngredientPreparation(ctx context.Context, validIngr
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientPreparation); err != nil {
-		return observability.PrepareError(err, logger, span, "updating valid ingredient preparation #%d", validIngredientPreparation.ID)
+		return observability.PrepareError(err, logger, span, "updating valid ingredient preparation %s", validIngredientPreparation.ID)
 	}
 
 	return nil
 }
 
 // ArchiveValidIngredientPreparation archives a valid ingredient preparation.
-func (c *Client) ArchiveValidIngredientPreparation(ctx context.Context, validIngredientPreparationID uint64) error {
+func (c *Client) ArchiveValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger
 
-	if validIngredientPreparationID == 0 {
+	if validIngredientPreparationID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
@@ -154,34 +128,8 @@ func (c *Client) ArchiveValidIngredientPreparation(ctx context.Context, validIng
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "archiving valid ingredient preparation #%d", validIngredientPreparationID)
+		return observability.PrepareError(err, logger, span, "archiving valid ingredient preparation %s", validIngredientPreparationID)
 	}
 
 	return nil
-}
-
-// GetAuditLogForValidIngredientPreparation retrieves a list of audit log entries pertaining to a valid ingredient preparation.
-func (c *Client) GetAuditLogForValidIngredientPreparation(ctx context.Context, validIngredientPreparationID uint64) ([]*types.AuditLogEntry, error) {
-	ctx, span := c.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := c.logger
-
-	if validIngredientPreparationID == 0 {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
-	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparationID)
-
-	req, err := c.requestBuilder.BuildGetAuditLogForValidIngredientPreparationRequest(ctx, validIngredientPreparationID)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building get audit log entries for valid ingredient preparation request")
-	}
-
-	var entries []*types.AuditLogEntry
-	if err = c.fetchAndUnmarshal(ctx, req, &entries); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving plan")
-	}
-
-	return entries, nil
 }

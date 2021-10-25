@@ -22,8 +22,7 @@ type webhooksServiceHTTPRoutesTestHelper struct {
 	exampleUser          *types.User
 	exampleHousehold     *types.Household
 	exampleWebhook       *types.Webhook
-	exampleCreationInput *types.WebhookCreationInput
-	exampleUpdateInput   *types.WebhookUpdateInput
+	exampleCreationInput *types.WebhookCreationRequestInput
 }
 
 func newTestHelper(t *testing.T) *webhooksServiceHTTPRoutesTestHelper {
@@ -39,9 +38,8 @@ func newTestHelper(t *testing.T) *webhooksServiceHTTPRoutesTestHelper {
 	helper.exampleWebhook = fakes.BuildFakeWebhook()
 	helper.exampleWebhook.BelongsToHousehold = helper.exampleHousehold.ID
 	helper.exampleCreationInput = fakes.BuildFakeWebhookCreationInputFromWebhook(helper.exampleWebhook)
-	helper.exampleUpdateInput = fakes.BuildFakeWebhookUpdateInputFromWebhook(helper.exampleWebhook)
 
-	helper.service.webhookIDFetcher = func(*http.Request) uint64 {
+	helper.service.webhookIDFetcher = func(*http.Request) string {
 		return helper.exampleWebhook.ID
 	}
 
@@ -53,7 +51,7 @@ func newTestHelper(t *testing.T) *webhooksServiceHTTPRoutesTestHelper {
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 		},
 		ActiveHouseholdID: helper.exampleHousehold.ID,
-		HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
+		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
 			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
 		},
 	}

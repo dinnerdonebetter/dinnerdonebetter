@@ -3,12 +3,12 @@ package authentication
 import (
 	"context"
 
+	"github.com/alexedwards/argon2id"
+	"github.com/pquerna/otp/totp"
+
 	"gitlab.com/prixfixe/prixfixe/internal/observability"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-
-	"github.com/alexedwards/argon2id"
-	"github.com/pquerna/otp/totp"
 )
 
 const (
@@ -38,8 +38,8 @@ type (
 // ProvideArgon2Authenticator returns an argon2 powered Argon2Authenticator.
 func ProvideArgon2Authenticator(logger logging.Logger) Authenticator {
 	ba := &Argon2Authenticator{
-		logger: logging.EnsureLogger(logger).WithName(argon2Provider),
-		tracer: tracing.NewTracer(argon2Provider),
+		logger: logging.EnsureLogger(logger).WithName("argon2"),
+		tracer: tracing.NewTracer("argon2"),
 	}
 
 	return ba

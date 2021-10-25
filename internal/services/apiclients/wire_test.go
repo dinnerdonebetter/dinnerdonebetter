@@ -3,9 +3,9 @@ package apiclients
 import (
 	"testing"
 
-	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
-
 	"github.com/stretchr/testify/assert"
+
+	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
 )
 
 func TestProvideConfig(T *testing.T) {

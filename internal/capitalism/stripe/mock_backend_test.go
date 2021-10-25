@@ -50,6 +50,17 @@ func (m *mockBackend) CallRaw(method, path, key string, body *form.Values, param
 	return m.Called(method, path, key, body, params, v).Error(0)
 }
 
+func (m *mockBackend) CallStreaming(method, path, key string, params stripe.ParamsContainer, v stripe.StreamingLastResponseSetter) error {
+	b := m.anticipatedReturns[0]
+	m.anticipatedReturns = append(m.anticipatedReturns[:0], m.anticipatedReturns[1:]...)
+
+	if err := json.Unmarshal(b, v); err != nil {
+		panic(err)
+	}
+
+	return m.Called(method, path, key, params, v).Error(0)
+}
+
 func (m *mockBackend) CallMultipart(method, path, key, boundary string, body *bytes.Buffer, params *stripe.Params, v stripe.LastResponseSetter) error {
 	b := m.anticipatedReturns[0]
 	m.anticipatedReturns = append(m.anticipatedReturns[:0], m.anticipatedReturns[1:]...)

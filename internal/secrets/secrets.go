@@ -7,10 +7,10 @@ import (
 	"errors"
 	"fmt"
 
+	"gocloud.dev/secrets"
+
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-
-	"gocloud.dev/secrets"
 )
 
 const (

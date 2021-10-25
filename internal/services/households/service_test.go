@@ -1,19 +1,21 @@
 package households
 
 import (
+	"errors"
 	"net/http"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+
 	mockencoding "gitlab.com/prixfixe/prixfixe/internal/encoding/mock"
+	mockpublishers "gitlab.com/prixfixe/prixfixe/internal/messagequeue/publishers/mock"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
 	mockmetrics "gitlab.com/prixfixe/prixfixe/internal/observability/metrics/mock"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	mockrouting "gitlab.com/prixfixe/prixfixe/internal/routing/mock"
 	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 func buildTestService() *service {
@@ -22,39 +24,85 @@ func buildTestService() *service {
 		householdCounter:               &mockmetrics.UnitCounter{},
 		householdDataManager:           &mocktypes.HouseholdDataManager{},
 		householdMembershipDataManager: &mocktypes.HouseholdUserMembershipDataManager{},
-		householdIDFetcher:             func(req *http.Request) uint64 { return 0 },
+		householdIDFetcher:             func(req *http.Request) string { return "" },
 		encoderDecoder:                 mockencoding.NewMockEncoderDecoder(),
 		tracer:                         tracing.NewTracer("test"),
 	}
 }
 
-func TestProvideHouseholdsService(t *testing.T) {
-	t.Parallel()
+func TestProvideHouseholdsService(T *testing.T) {
+	T.Parallel()
 
-	var ucp metrics.UnitCounterProvider = func(counterName, description string) metrics.UnitCounter {
-		return &mockmetrics.UnitCounter{}
-	}
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
 
-	l := logging.NewNoopLogger()
+		var ucp metrics.UnitCounterProvider = func(counterName, description string) metrics.UnitCounter {
+			return &mockmetrics.UnitCounter{}
+		}
 
-	rpm := mockrouting.NewRouteParamManager()
-	rpm.On(
-		"BuildRouteParamIDFetcher",
-		mock.IsType(l), HouseholdIDURIParamKey, "household").Return(func(*http.Request) uint64 { return 0 })
-	rpm.On(
-		"BuildRouteParamIDFetcher",
-		mock.IsType(l), UserIDURIParamKey, "user").Return(func(*http.Request) uint64 { return 0 })
+		rpm := mockrouting.NewRouteParamManager()
+		rpm.On(
+			"BuildRouteParamStringIDFetcher",
+			HouseholdIDURIParamKey,
+		).Return(func(*http.Request) string { return "" })
+		rpm.On(
+			"BuildRouteParamStringIDFetcher",
+			UserIDURIParamKey,
+		).Return(func(*http.Request) string { return "" })
 
-	s := ProvideService(
-		logging.NewNoopLogger(),
-		&mocktypes.HouseholdDataManager{},
-		&mocktypes.HouseholdUserMembershipDataManager{},
-		mockencoding.NewMockEncoderDecoder(),
-		ucp,
-		rpm,
-	)
+		cfg := Config{
+			PreWritesTopicName: "pre-writes",
+		}
 
-	assert.NotNil(t, s)
+		pp := &mockpublishers.ProducerProvider{}
+		pp.On("ProviderPublisher", cfg.PreWritesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
-	mock.AssertExpectationsForObjects(t, rpm)
+		s, err := ProvideService(
+			logging.NewNoopLogger(),
+			cfg,
+			&mocktypes.HouseholdDataManager{},
+			&mocktypes.HouseholdUserMembershipDataManager{},
+			mockencoding.NewMockEncoderDecoder(),
+			ucp,
+			rpm,
+			pp,
+		)
+
+		assert.NotNil(t, s)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, rpm, pp)
+	})
+
+	T.Run("with error providing publisher", func(t *testing.T) {
+		t.Parallel()
+
+		var ucp metrics.UnitCounterProvider = func(counterName, description string) metrics.UnitCounter {
+			return &mockmetrics.UnitCounter{}
+		}
+
+		rpm := mockrouting.NewRouteParamManager()
+		cfg := Config{
+			PreWritesTopicName: "pre-writes",
+		}
+
+		pp := &mockpublishers.ProducerProvider{}
+		pp.On("ProviderPublisher", cfg.PreWritesTopicName).Return(&mockpublishers.Publisher{}, errors.New("blah"))
+
+		s, err := ProvideService(
+			logging.NewNoopLogger(),
+			cfg,
+			&mocktypes.HouseholdDataManager{},
+			&mocktypes.HouseholdUserMembershipDataManager{},
+			mockencoding.NewMockEncoderDecoder(),
+			ucp,
+			rpm,
+			pp,
+		)
+
+		assert.Nil(t, s)
+		assert.Error(t, err)
+
+		mock.AssertExpectationsForObjects(t, rpm, pp)
+	})
 }

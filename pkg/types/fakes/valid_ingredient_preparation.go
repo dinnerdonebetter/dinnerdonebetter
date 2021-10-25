@@ -1,19 +1,19 @@
 package fakes
 
 import (
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
 	fake "github.com/brianvoe/gofakeit/v5"
+	"github.com/segmentio/ksuid"
+
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
 // BuildFakeValidIngredientPreparation builds a faked valid ingredient preparation.
 func BuildFakeValidIngredientPreparation() *types.ValidIngredientPreparation {
 	return &types.ValidIngredientPreparation{
-		ID:                 uint64(fake.Uint32()),
-		ExternalID:         fake.UUID(),
-		Notes:              fake.Word(),
-		ValidIngredientID:  uint64(fake.Uint32()),
-		ValidPreparationID: uint64(fake.Uint32()),
+		ID:                 ksuid.New().String(),
+		Notes:              fake.LoremIpsumSentence(exampleQuantity),
+		ValidPreparationID: fake.LoremIpsumSentence(exampleQuantity),
+		ValidIngredientID:  fake.LoremIpsumSentence(exampleQuantity),
 		CreatedOn:          uint64(uint32(fake.Date().Unix())),
 	}
 }
@@ -36,36 +36,53 @@ func BuildFakeValidIngredientPreparationList() *types.ValidIngredientPreparation
 	}
 }
 
-// BuildFakeValidIngredientPreparationUpdateInput builds a faked ValidIngredientPreparationUpdateInput from a valid ingredient preparation.
-func BuildFakeValidIngredientPreparationUpdateInput() *types.ValidIngredientPreparationUpdateInput {
+// BuildFakeValidIngredientPreparationUpdateRequestInput builds a faked ValidIngredientPreparationUpdateRequestInput from a valid ingredient preparation.
+func BuildFakeValidIngredientPreparationUpdateRequestInput() *types.ValidIngredientPreparationUpdateRequestInput {
 	validIngredientPreparation := BuildFakeValidIngredientPreparation()
-	return &types.ValidIngredientPreparationUpdateInput{
+	return &types.ValidIngredientPreparationUpdateRequestInput{
 		Notes:              validIngredientPreparation.Notes,
-		ValidIngredientID:  validIngredientPreparation.ValidIngredientID,
 		ValidPreparationID: validIngredientPreparation.ValidPreparationID,
+		ValidIngredientID:  validIngredientPreparation.ValidIngredientID,
 	}
 }
 
-// BuildFakeValidIngredientPreparationUpdateInputFromValidIngredientPreparation builds a faked ValidIngredientPreparationUpdateInput from a valid ingredient preparation.
-func BuildFakeValidIngredientPreparationUpdateInputFromValidIngredientPreparation(validIngredientPreparation *types.ValidIngredientPreparation) *types.ValidIngredientPreparationUpdateInput {
-	return &types.ValidIngredientPreparationUpdateInput{
+// BuildFakeValidIngredientPreparationUpdateRequestInputFromValidIngredientPreparation builds a faked ValidIngredientPreparationUpdateRequestInput from a valid ingredient preparation.
+func BuildFakeValidIngredientPreparationUpdateRequestInputFromValidIngredientPreparation(validIngredientPreparation *types.ValidIngredientPreparation) *types.ValidIngredientPreparationUpdateRequestInput {
+	return &types.ValidIngredientPreparationUpdateRequestInput{
 		Notes:              validIngredientPreparation.Notes,
-		ValidIngredientID:  validIngredientPreparation.ValidIngredientID,
 		ValidPreparationID: validIngredientPreparation.ValidPreparationID,
+		ValidIngredientID:  validIngredientPreparation.ValidIngredientID,
 	}
 }
 
-// BuildFakeValidIngredientPreparationCreationInput builds a faked ValidIngredientPreparationCreationInput.
-func BuildFakeValidIngredientPreparationCreationInput() *types.ValidIngredientPreparationCreationInput {
+// BuildFakeValidIngredientPreparationCreationRequestInput builds a faked ValidIngredientPreparationCreationRequestInput.
+func BuildFakeValidIngredientPreparationCreationRequestInput() *types.ValidIngredientPreparationCreationRequestInput {
 	validIngredientPreparation := BuildFakeValidIngredientPreparation()
-	return BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(validIngredientPreparation)
+	return BuildFakeValidIngredientPreparationCreationRequestInputFromValidIngredientPreparation(validIngredientPreparation)
 }
 
-// BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation builds a faked ValidIngredientPreparationCreationInput from a valid ingredient preparation.
-func BuildFakeValidIngredientPreparationCreationInputFromValidIngredientPreparation(validIngredientPreparation *types.ValidIngredientPreparation) *types.ValidIngredientPreparationCreationInput {
-	return &types.ValidIngredientPreparationCreationInput{
+// BuildFakeValidIngredientPreparationCreationRequestInputFromValidIngredientPreparation builds a faked ValidIngredientPreparationCreationRequestInput from a valid ingredient preparation.
+func BuildFakeValidIngredientPreparationCreationRequestInputFromValidIngredientPreparation(validIngredientPreparation *types.ValidIngredientPreparation) *types.ValidIngredientPreparationCreationRequestInput {
+	return &types.ValidIngredientPreparationCreationRequestInput{
+		ID:                 validIngredientPreparation.ID,
 		Notes:              validIngredientPreparation.Notes,
-		ValidIngredientID:  validIngredientPreparation.ValidIngredientID,
 		ValidPreparationID: validIngredientPreparation.ValidPreparationID,
+		ValidIngredientID:  validIngredientPreparation.ValidIngredientID,
+	}
+}
+
+// BuildFakeValidIngredientPreparationDatabaseCreationInput builds a faked ValidIngredientPreparationDatabaseCreationInput.
+func BuildFakeValidIngredientPreparationDatabaseCreationInput() *types.ValidIngredientPreparationDatabaseCreationInput {
+	validIngredientPreparation := BuildFakeValidIngredientPreparation()
+	return BuildFakeValidIngredientPreparationDatabaseCreationInputFromValidIngredientPreparation(validIngredientPreparation)
+}
+
+// BuildFakeValidIngredientPreparationDatabaseCreationInputFromValidIngredientPreparation builds a faked ValidIngredientPreparationDatabaseCreationInput from a valid ingredient preparation.
+func BuildFakeValidIngredientPreparationDatabaseCreationInputFromValidIngredientPreparation(validIngredientPreparation *types.ValidIngredientPreparation) *types.ValidIngredientPreparationDatabaseCreationInput {
+	return &types.ValidIngredientPreparationDatabaseCreationInput{
+		ID:                 validIngredientPreparation.ID,
+		Notes:              validIngredientPreparation.Notes,
+		ValidPreparationID: validIngredientPreparation.ValidPreparationID,
+		ValidIngredientID:  validIngredientPreparation.ValidIngredientID,
 	}
 }

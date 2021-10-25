@@ -8,6 +8,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const (
+	exampleQuantity = 3
+)
+
 func init() {
 	fake.Seed(time.Now().UnixNano())
 }

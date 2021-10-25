@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/segmentio/ksuid"
+
 	observability "gitlab.com/prixfixe/prixfixe/internal/observability"
 	keys "gitlab.com/prixfixe/prixfixe/internal/observability/keys"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
@@ -47,33 +49,40 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// check session context data for parsed input struct.
-	input := new(types.ValidIngredientPreparationCreationInput)
-	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
+	providedInput := new(types.ValidIngredientPreparationCreationRequestInput)
+	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
 		return
 	}
 
-	if err = input.ValidateWithContext(ctx); err != nil {
-		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
+	if err = providedInput.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
 	}
 
+	input := types.ValidIngredientPreparationDatabaseCreationInputFromValidIngredientPreparationCreationInput(providedInput)
+	input.ID = ksuid.New().String()
+
+	tracing.AttachValidIngredientPreparationIDToSpan(span, input.ID)
+
 	// create valid ingredient preparation in database.
-	validIngredientPreparation, err := s.validIngredientPreparationDataManager.CreateValidIngredientPreparation(ctx, input, sessionCtxData.Requester.UserID)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating valid ingredient preparation")
+	preWrite := &types.PreWriteMessage{
+		DataType:                   types.ValidIngredientPreparationDataType,
+		ValidIngredientPreparation: input,
+		AttributableToUserID:       sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID:  sessionCtxData.ActiveHouseholdID,
+	}
+	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing valid ingredient preparation write message")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparation.ID)
+	pwr := types.PreWriteResponse{ID: input.ID}
 
-	// notify interested parties.
-	s.validIngredientPreparationCounter.Increment(ctx)
-
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validIngredientPreparation, http.StatusCreated)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusAccepted)
 }
 
 // ReadHandler returns a GET handler that returns a valid ingredient preparation.
@@ -113,41 +122,6 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, x)
-}
-
-// ExistenceHandler returns a HEAD handler that returns 200 if a valid ingredient preparation exists, 404 otherwise.
-func (s *service) ExistenceHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-	tracing.AttachRequestToSpan(span, req)
-
-	// determine user ID.
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		s.logger.Error(err, "retrieving session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
-		return
-	}
-
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = sessionCtxData.AttachToLogger(logger)
-
-	// determine valid ingredient preparation ID.
-	validIngredientPreparationID := s.validIngredientPreparationIDFetcher(req)
-	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparationID)
-	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
-
-	// check the database.
-	exists, err := s.validIngredientPreparationDataManager.ValidIngredientPreparationExists(ctx, validIngredientPreparationID)
-	if !errors.Is(err, sql.ErrNoRows) {
-		observability.AcknowledgeError(err, logger, span, "checking valid ingredient preparation existence")
-	}
-
-	if !exists || errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
-	}
 }
 
 // ListHandler is our list route.
@@ -209,7 +183,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// check for parsed input attached to session context data.
-	input := new(types.ValidIngredientPreparationUpdateInput)
+	input := new(types.ValidIngredientPreparationUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		logger.Error(err, "error encountered decoding request body")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
@@ -239,17 +213,19 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// update the valid ingredient preparation.
-	changeReport := validIngredientPreparation.Update(input)
-	tracing.AttachChangeSummarySpan(span, "valid_ingredient_preparation", changeReport)
+	validIngredientPreparation.Update(input)
 
-	// update valid ingredient preparation in database.
-	if err = s.validIngredientPreparationDataManager.UpdateValidIngredientPreparation(ctx, validIngredientPreparation, sessionCtxData.Requester.UserID, changeReport); err != nil {
-		observability.AcknowledgeError(err, logger, span, "updating valid ingredient preparation")
+	pum := &types.PreUpdateMessage{
+		DataType:                   types.ValidIngredientPreparationDataType,
+		ValidIngredientPreparation: validIngredientPreparation,
+		AttributableToUserID:       sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID:  sessionCtxData.ActiveHouseholdID,
+	}
+	if err = s.preUpdatesPublisher.Publish(ctx, pum); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing valid ingredient preparation update message")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
-
-	// notify interested parties.
 
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, validIngredientPreparation)
@@ -279,58 +255,28 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparationID)
 	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 
-	// archive the valid ingredient preparation in the database.
-	err = s.validIngredientPreparationDataManager.ArchiveValidIngredientPreparation(ctx, validIngredientPreparationID, sessionCtxData.Requester.UserID)
-	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
-		return
-	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "archiving valid ingredient preparation")
+	exists, existenceCheckErr := s.validIngredientPreparationDataManager.ValidIngredientPreparationExists(ctx, validIngredientPreparationID)
+	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
+		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking valid ingredient preparation existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	}
 
-	// notify interested parties.
-	s.validIngredientPreparationCounter.Decrement(ctx)
+	pam := &types.PreArchiveMessage{
+		DataType:                     types.ValidIngredientPreparationDataType,
+		ValidIngredientPreparationID: validIngredientPreparationID,
+		AttributableToUserID:         sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID:    sessionCtxData.ActiveHouseholdID,
+	}
+	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing valid ingredient preparation archive message")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
 
 	// encode our response and peace.
 	res.WriteHeader(http.StatusNoContent)
-}
-
-// AuditEntryHandler returns a GET handler that returns all audit log entries related to a valid ingredient preparation.
-func (s *service) AuditEntryHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-	tracing.AttachRequestToSpan(span, req)
-
-	// determine user ID.
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
-		return
-	}
-
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = sessionCtxData.AttachToLogger(logger)
-
-	// determine valid ingredient preparation ID.
-	validIngredientPreparationID := s.validIngredientPreparationIDFetcher(req)
-	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparationID)
-	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
-
-	x, err := s.validIngredientPreparationDataManager.GetAuditLogEntriesForValidIngredientPreparation(ctx, validIngredientPreparationID)
-	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
-		return
-	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving audit log entries for valid ingredient preparation")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
-	}
-
-	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
 }

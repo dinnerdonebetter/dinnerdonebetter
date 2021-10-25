@@ -4,15 +4,14 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/prixfixe/prixfixe/internal/authentication"
-	"gitlab.com/prixfixe/prixfixe/internal/encoding"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/routing/chi"
-	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
-
 	"github.com/alexedwards/scs/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	mockauthn "gitlab.com/prixfixe/prixfixe/internal/authentication/mock"
+	"gitlab.com/prixfixe/prixfixe/internal/encoding"
+	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
+	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
 )
 
 func buildTestService(t *testing.T) *service {
@@ -34,14 +33,12 @@ func buildTestService(t *testing.T) *service {
 				Lifetime:     time.Hour,
 			},
 		},
-		&authentication.MockAuthenticator{},
+		&mockauthn.Authenticator{},
 		&mocktypes.UserDataManager{},
-		&mocktypes.AuditLogEntryDataManager{},
 		&mocktypes.APIClientDataManager{},
 		&mocktypes.HouseholdUserMembershipDataManager{},
 		scs.New(),
 		encoderDecoder,
-		chi.NewRouteParamManager(),
 	)
 	require.NoError(t, err)
 
@@ -64,14 +61,12 @@ func TestProvideService(T *testing.T) {
 					SigningKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!",
 				},
 			},
-			&authentication.MockAuthenticator{},
+			&mockauthn.Authenticator{},
 			&mocktypes.UserDataManager{},
-			&mocktypes.AuditLogEntryDataManager{},
 			&mocktypes.APIClientDataManager{},
 			&mocktypes.HouseholdUserMembershipDataManager{},
 			scs.New(),
 			encoderDecoder,
-			chi.NewRouteParamManager(),
 		)
 
 		assert.NotNil(t, s)
@@ -91,14 +86,12 @@ func TestProvideService(T *testing.T) {
 					SigningKey: "BLAHBLAHBLAH",
 				},
 			},
-			&authentication.MockAuthenticator{},
+			&mockauthn.Authenticator{},
 			&mocktypes.UserDataManager{},
-			&mocktypes.AuditLogEntryDataManager{},
 			&mocktypes.APIClientDataManager{},
 			&mocktypes.HouseholdUserMembershipDataManager{},
 			scs.New(),
 			encoderDecoder,
-			chi.NewRouteParamManager(),
 		)
 
 		assert.Nil(t, s)

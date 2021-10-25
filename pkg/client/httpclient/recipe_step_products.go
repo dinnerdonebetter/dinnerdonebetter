@@ -9,64 +9,26 @@ import (
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
-// RecipeStepProductExists retrieves whether a recipe step product exists.
-func (c *Client) RecipeStepProductExists(ctx context.Context, recipeID, recipeStepID, recipeStepProductID uint64) (bool, error) {
-	ctx, span := c.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := c.logger
-
-	if recipeID == 0 {
-		return false, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
-
-	if recipeStepID == 0 {
-		return false, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
-
-	if recipeStepProductID == 0 {
-		return false, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
-	tracing.AttachRecipeStepProductIDToSpan(span, recipeStepProductID)
-
-	req, err := c.requestBuilder.BuildRecipeStepProductExistsRequest(ctx, recipeID, recipeStepID, recipeStepProductID)
-	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "building recipe step product existence request")
-	}
-
-	exists, err := c.responseIsOK(ctx, req)
-	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "checking existence for recipe step product #%d", recipeStepProductID)
-	}
-
-	return exists, nil
-}
-
 // GetRecipeStepProduct gets a recipe step product.
-func (c *Client) GetRecipeStepProduct(ctx context.Context, recipeID, recipeStepID, recipeStepProductID uint64) (*types.RecipeStepProduct, error) {
+func (c *Client) GetRecipeStepProduct(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) (*types.RecipeStepProduct, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger
 
-	if recipeID == 0 {
+	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	if recipeStepID == 0 {
+	if recipeStepID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
-	if recipeStepProductID == 0 {
+	if recipeStepProductID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
@@ -86,20 +48,20 @@ func (c *Client) GetRecipeStepProduct(ctx context.Context, recipeID, recipeStepI
 }
 
 // GetRecipeStepProducts retrieves a list of recipe step products.
-func (c *Client) GetRecipeStepProducts(ctx context.Context, recipeID, recipeStepID uint64, filter *types.QueryFilter) (*types.RecipeStepProductList, error) {
+func (c *Client) GetRecipeStepProducts(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (*types.RecipeStepProductList, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.loggerWithFilter(filter)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if recipeID == 0 {
+	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	if recipeStepID == 0 {
+	if recipeStepID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
@@ -119,47 +81,47 @@ func (c *Client) GetRecipeStepProducts(ctx context.Context, recipeID, recipeStep
 }
 
 // CreateRecipeStepProduct creates a recipe step product.
-func (c *Client) CreateRecipeStepProduct(ctx context.Context, recipeID uint64, input *types.RecipeStepProductCreationInput) (*types.RecipeStepProduct, error) {
+func (c *Client) CreateRecipeStepProduct(ctx context.Context, recipeID string, input *types.RecipeStepProductCreationRequestInput) (string, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger
 
-	if recipeID == 0 {
-		return nil, ErrInvalidIDProvided
+	if recipeID == "" {
+		return "", ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if input == nil {
-		return nil, ErrNilInputProvided
+		return "", ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return "", observability.PrepareError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateRecipeStepProductRequest(ctx, recipeID, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building create recipe step product request")
+		return "", observability.PrepareError(err, logger, span, "building create recipe step product request")
 	}
 
-	var recipeStepProduct *types.RecipeStepProduct
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepProduct); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating recipe step product")
+	var pwr *types.PreWriteResponse
+	if err = c.fetchAndUnmarshal(ctx, req, &pwr); err != nil {
+		return "", observability.PrepareError(err, logger, span, "creating recipe step product")
 	}
 
-	return recipeStepProduct, nil
+	return pwr.ID, nil
 }
 
 // UpdateRecipeStepProduct updates a recipe step product.
-func (c *Client) UpdateRecipeStepProduct(ctx context.Context, recipeID uint64, recipeStepProduct *types.RecipeStepProduct) error {
+func (c *Client) UpdateRecipeStepProduct(ctx context.Context, recipeID string, recipeStepProduct *types.RecipeStepProduct) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger
 
-	if recipeID == 0 {
+	if recipeID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
@@ -177,32 +139,32 @@ func (c *Client) UpdateRecipeStepProduct(ctx context.Context, recipeID uint64, r
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepProduct); err != nil {
-		return observability.PrepareError(err, logger, span, "updating recipe step product #%d", recipeStepProduct.ID)
+		return observability.PrepareError(err, logger, span, "updating recipe step product %s", recipeStepProduct.ID)
 	}
 
 	return nil
 }
 
 // ArchiveRecipeStepProduct archives a recipe step product.
-func (c *Client) ArchiveRecipeStepProduct(ctx context.Context, recipeID, recipeStepID, recipeStepProductID uint64) error {
+func (c *Client) ArchiveRecipeStepProduct(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger
 
-	if recipeID == 0 {
+	if recipeID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	if recipeStepID == 0 {
+	if recipeStepID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
-	if recipeStepProductID == 0 {
+	if recipeStepProductID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
@@ -214,46 +176,8 @@ func (c *Client) ArchiveRecipeStepProduct(ctx context.Context, recipeID, recipeS
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "archiving recipe step product #%d", recipeStepProductID)
+		return observability.PrepareError(err, logger, span, "archiving recipe step product %s", recipeStepProductID)
 	}
 
 	return nil
-}
-
-// GetAuditLogForRecipeStepProduct retrieves a list of audit log entries pertaining to a recipe step product.
-func (c *Client) GetAuditLogForRecipeStepProduct(ctx context.Context, recipeID, recipeStepID, recipeStepProductID uint64) ([]*types.AuditLogEntry, error) {
-	ctx, span := c.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := c.logger
-
-	if recipeID == 0 {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
-
-	if recipeStepID == 0 {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
-
-	if recipeStepProductID == 0 {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
-	tracing.AttachRecipeStepProductIDToSpan(span, recipeStepProductID)
-
-	req, err := c.requestBuilder.BuildGetAuditLogForRecipeStepProductRequest(ctx, recipeID, recipeStepID, recipeStepProductID)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building get audit log entries for recipe step product request")
-	}
-
-	var entries []*types.AuditLogEntry
-	if err = c.fetchAndUnmarshal(ctx, req, &entries); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving plan")
-	}
-
-	return entries, nil
 }

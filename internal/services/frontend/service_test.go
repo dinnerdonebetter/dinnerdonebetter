@@ -3,11 +3,11 @@ package frontend
 import (
 	"testing"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+
+	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
+	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
 )
 
 func TestProvideService(t *testing.T) {

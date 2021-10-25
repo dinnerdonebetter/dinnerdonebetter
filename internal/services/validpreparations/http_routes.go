@@ -1,13 +1,12 @@
 package validpreparations
 
 import (
-	"context"
 	"database/sql"
 	"errors"
 	"net/http"
 	"strings"
 
-	"gitlab.com/prixfixe/prixfixe/internal/database"
+	"github.com/segmentio/ksuid"
 
 	observability "gitlab.com/prixfixe/prixfixe/internal/observability"
 	keys "gitlab.com/prixfixe/prixfixe/internal/observability/keys"
@@ -50,43 +49,40 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// check session context data for parsed input struct.
-	input := new(types.ValidPreparationCreationInput)
-	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
+	providedInput := new(types.ValidPreparationCreationRequestInput)
+	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
 		return
 	}
 
-	if err = input.ValidateWithContext(ctx); err != nil {
-		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
+	if err = providedInput.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
 	}
 
+	input := types.ValidPreparationDatabaseCreationInputFromValidPreparationCreationInput(providedInput)
+	input.ID = ksuid.New().String()
+
+	tracing.AttachValidPreparationIDToSpan(span, input.ID)
+
 	// create valid preparation in database.
-	validPreparation, err := s.validPreparationDataManager.CreateValidPreparation(ctx, input, sessionCtxData.Requester.UserID)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating valid preparation")
-
-		if errors.Is(err, database.ErrUniqueConstraintViolation) {
-			s.encoderDecoder.EncodeRejectedDuplicateResponse(ctx, res)
-		} else {
-			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		}
-
+	preWrite := &types.PreWriteMessage{
+		DataType:                  types.ValidPreparationDataType,
+		ValidPreparation:          input,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+	}
+	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing valid preparation write message")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	tracing.AttachValidPreparationIDToSpan(span, validPreparation.ID)
-	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparation.ID)
+	pwr := types.PreWriteResponse{ID: input.ID}
 
-	// notify interested parties.
-	if searchIndexErr := s.search.Index(ctx, validPreparation.ID, validPreparation); searchIndexErr != nil {
-		observability.AcknowledgeError(err, logger, span, "adding valid preparation to search index")
-	}
-	s.validPreparationCounter.Increment(ctx)
-
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validPreparation, http.StatusCreated)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusAccepted)
 }
 
 // ReadHandler returns a GET handler that returns a valid preparation.
@@ -128,41 +124,6 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, x)
 }
 
-// ExistenceHandler returns a HEAD handler that returns 200 if a valid preparation exists, 404 otherwise.
-func (s *service) ExistenceHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-	tracing.AttachRequestToSpan(span, req)
-
-	// determine user ID.
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		s.logger.Error(err, "retrieving session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
-		return
-	}
-
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = sessionCtxData.AttachToLogger(logger)
-
-	// determine valid preparation ID.
-	validPreparationID := s.validPreparationIDFetcher(req)
-	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
-	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
-
-	// check the database.
-	exists, err := s.validPreparationDataManager.ValidPreparationExists(ctx, validPreparationID)
-	if !errors.Is(err, sql.ErrNoRows) {
-		observability.AcknowledgeError(err, logger, span, "checking valid preparation existence")
-	}
-
-	if !exists || errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
-	}
-}
-
 // ListHandler is our list route.
 func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
@@ -202,23 +163,6 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, validPreparations)
 }
 
-// SearchForValidPreparations handles searching for and retrieving ValidPreparations.
-func (s *service) SearchForValidPreparations(ctx context.Context, sessionCtxData *types.SessionContextData, query string, filter *types.QueryFilter) ([]*types.ValidPreparation, error) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger.WithValue(keys.SearchQueryKey, query)
-	tracing.AttachSearchQueryToSpan(span, query)
-
-	relevantIDs, err := s.search.Search(ctx, query, sessionCtxData.ActiveHouseholdID)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "executing valid ingredient search query")
-	}
-
-	// fetch valid ingredients from database.
-	return s.validPreparationDataManager.GetValidPreparationsWithIDs(ctx, filter.Limit, relevantIDs)
-}
-
 // SearchHandler is our search route.
 func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
@@ -238,7 +182,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
-		s.logger.Error(err, "retrieving session context data")
+		logger.Error(err, "retrieving session context data")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
 		return
 	}
@@ -288,7 +232,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// check for parsed input attached to session context data.
-	input := new(types.ValidPreparationUpdateInput)
+	input := new(types.ValidPreparationUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		logger.Error(err, "error encountered decoding request body")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
@@ -318,19 +262,18 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// update the valid preparation.
-	changeReport := validPreparation.Update(input)
-	tracing.AttachChangeSummarySpan(span, "valid_preparation", changeReport)
+	validPreparation.Update(input)
 
-	// update valid preparation in database.
-	if err = s.validPreparationDataManager.UpdateValidPreparation(ctx, validPreparation, sessionCtxData.Requester.UserID, changeReport); err != nil {
-		observability.AcknowledgeError(err, logger, span, "updating valid preparation")
+	pum := &types.PreUpdateMessage{
+		DataType:                  types.ValidPreparationDataType,
+		ValidPreparation:          validPreparation,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+	}
+	if err = s.preUpdatesPublisher.Publish(ctx, pum); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing valid preparation update message")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
-	}
-
-	// notify interested parties.
-	if searchIndexErr := s.search.Index(ctx, validPreparation.ID, validPreparation); searchIndexErr != nil {
-		observability.AcknowledgeError(err, logger, span, "updating valid preparation in search index")
 	}
 
 	// encode our response and peace.
@@ -361,62 +304,28 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 
-	// archive the valid preparation in the database.
-	err = s.validPreparationDataManager.ArchiveValidPreparation(ctx, validPreparationID, sessionCtxData.Requester.UserID)
-	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
-		return
-	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "archiving valid preparation")
+	exists, existenceCheckErr := s.validPreparationDataManager.ValidPreparationExists(ctx, validPreparationID)
+	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
+		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking valid preparation existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	}
 
-	// notify interested parties.
-	s.validPreparationCounter.Decrement(ctx)
-
-	if indexDeleteErr := s.search.Delete(ctx, validPreparationID); indexDeleteErr != nil {
-		observability.AcknowledgeError(err, logger, span, "removing from search index")
+	pam := &types.PreArchiveMessage{
+		DataType:                  types.ValidPreparationDataType,
+		ValidPreparationID:        validPreparationID,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+	}
+	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing valid preparation archive message")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
 	}
 
 	// encode our response and peace.
 	res.WriteHeader(http.StatusNoContent)
-}
-
-// AuditEntryHandler returns a GET handler that returns all audit log entries related to a valid preparation.
-func (s *service) AuditEntryHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-	tracing.AttachRequestToSpan(span, req)
-
-	// determine user ID.
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
-		return
-	}
-
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = sessionCtxData.AttachToLogger(logger)
-
-	// determine valid preparation ID.
-	validPreparationID := s.validPreparationIDFetcher(req)
-	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
-	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
-
-	x, err := s.validPreparationDataManager.GetAuditLogEntriesForValidPreparation(ctx, validPreparationID)
-	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
-		return
-	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving audit log entries for valid preparation")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
-	}
-
-	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
 }

@@ -3,24 +3,25 @@ package fakes
 import (
 	"time"
 
+	fake "github.com/brianvoe/gofakeit/v5"
+	"github.com/segmentio/ksuid"
+
 	"gitlab.com/prixfixe/prixfixe/internal/authorization"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
-	fake "github.com/brianvoe/gofakeit/v5"
 )
 
 // BuildFakeSessionContextData builds a faked SessionContextData.
 func BuildFakeSessionContextData() *types.SessionContextData {
-	fakeHouseholdID := fake.Uint64()
+	fakeHouseholdID := fake.UUID()
 
 	return &types.SessionContextData{
-		HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
+		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
 			fakeHouseholdID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdAdminRole.String()),
 		},
 		Requester: types.RequesterInfo{
 			Reputation:            types.GoodStandingHouseholdStatus,
 			ReputationExplanation: "",
-			UserID:                fake.Uint64(),
+			UserID:                ksuid.New().String(),
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
 		},
 		ActiveHouseholdID: fakeHouseholdID,
@@ -29,16 +30,16 @@ func BuildFakeSessionContextData() *types.SessionContextData {
 
 // BuildFakeSessionContextDataForHousehold builds a faked SessionContextData.
 func BuildFakeSessionContextDataForHousehold(household *types.Household) *types.SessionContextData {
-	fakeHouseholdID := fake.Uint64()
+	fakeHouseholdID := fake.UUID()
 
 	return &types.SessionContextData{
-		HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
+		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
 			household.ID: authorization.NewHouseholdRolePermissionChecker(authorization.ServiceUserRole.String()),
 		},
 		Requester: types.RequesterInfo{
 			Reputation:            types.GoodStandingHouseholdStatus,
 			ReputationExplanation: "",
-			UserID:                fake.Uint64(),
+			UserID:                ksuid.New().String(),
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
 		},
 		ActiveHouseholdID: fakeHouseholdID,
@@ -49,8 +50,8 @@ func BuildFakeSessionContextDataForHousehold(household *types.Household) *types.
 func BuildFakeAddUserToHouseholdInput() *types.AddUserToHouseholdInput {
 	return &types.AddUserToHouseholdInput{
 		Reason:         fake.Sentence(10),
-		UserID:         fake.Uint64(),
-		HouseholdID:    fake.Uint64(),
+		UserID:         ksuid.New().String(),
+		HouseholdID:    ksuid.New().String(),
 		HouseholdRoles: []string{authorization.HouseholdMemberRole.String()},
 	}
 }
@@ -67,22 +68,22 @@ func BuildFakeUserPermissionModificationInput() *types.ModifyUserPermissionsInpu
 func BuildFakeTransferHouseholdOwnershipInput() *types.HouseholdOwnershipTransferInput {
 	return &types.HouseholdOwnershipTransferInput{
 		Reason:       fake.Sentence(10),
-		CurrentOwner: fake.Uint64(),
-		NewOwner:     fake.Uint64(),
+		CurrentOwner: fake.UUID(),
+		NewOwner:     fake.UUID(),
 	}
 }
 
 // BuildFakeChangeActiveHouseholdInput builds a faked ChangeActiveHouseholdInput.
 func BuildFakeChangeActiveHouseholdInput() *types.ChangeActiveHouseholdInput {
 	return &types.ChangeActiveHouseholdInput{
-		HouseholdID: fake.Uint64(),
+		HouseholdID: fake.UUID(),
 	}
 }
 
 // BuildFakePASETOCreationInput builds a faked PASETOCreationInput.
 func BuildFakePASETOCreationInput() *types.PASETOCreationInput {
 	return &types.PASETOCreationInput{
-		ClientID:    fake.UUID(),
+		ClientID:    ksuid.New().String(),
 		RequestTime: time.Now().Unix(),
 	}
 }

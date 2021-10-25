@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"testing"
 
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
 )
 
 func TestValidInstruments(t *testing.T) {
@@ -39,54 +39,8 @@ type validInstrumentsTestSuite struct {
 	validInstrumentsBaseSuite
 }
 
-func (s *validInstrumentsTestSuite) TestClient_ValidInstrumentExists() {
-	const expectedPathFormat = "/api/v1/valid_instruments/%d"
-
-	s.Run("standard", func() {
-		t := s.T()
-
-		spec := newRequestSpec(true, http.MethodHead, "", expectedPathFormat, s.exampleValidInstrument.ID)
-
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
-		actual, err := c.ValidInstrumentExists(s.ctx, s.exampleValidInstrument.ID)
-
-		assert.NoError(t, err)
-		assert.True(t, actual)
-	})
-
-	s.Run("with invalid valid instrument ID", func() {
-		t := s.T()
-
-		c, _ := buildSimpleTestClient(t)
-		actual, err := c.ValidInstrumentExists(s.ctx, 0)
-
-		assert.Error(t, err)
-		assert.False(t, actual)
-	})
-
-	s.Run("with error building request", func() {
-		t := s.T()
-
-		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.ValidInstrumentExists(s.ctx, s.exampleValidInstrument.ID)
-
-		assert.Error(t, err)
-		assert.False(t, actual)
-	})
-
-	s.Run("with error executing request", func() {
-		t := s.T()
-
-		c, _ := buildTestClientThatWaitsTooLong(t)
-		actual, err := c.ValidInstrumentExists(s.ctx, s.exampleValidInstrument.ID)
-
-		assert.Error(t, err)
-		assert.False(t, actual)
-	})
-}
-
 func (s *validInstrumentsTestSuite) TestClient_GetValidInstrument() {
-	const expectedPathFormat = "/api/v1/valid_instruments/%d"
+	const expectedPathFormat = "/api/v1/valid_instruments/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -104,7 +58,7 @@ func (s *validInstrumentsTestSuite) TestClient_GetValidInstrument() {
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)
-		actual, err := c.GetValidInstrument(s.ctx, 0)
+		actual, err := c.GetValidInstrument(s.ctx, "")
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -235,16 +189,16 @@ func (s *validInstrumentsTestSuite) TestClient_CreateValidInstrument() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeValidInstrumentCreationInput()
+		exampleInput := fakes.BuildFakeValidInstrumentCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidInstrument)
+		c, _ := buildTestClientWithJSONResponse(t, spec, &types.PreWriteResponse{ID: s.exampleValidInstrument.ID})
 
 		actual, err := c.CreateValidInstrument(s.ctx, exampleInput)
-		require.NotNil(t, actual)
+		require.NotEmpty(t, actual)
 		assert.NoError(t, err)
 
-		assert.Equal(t, s.exampleValidInstrument, actual)
+		assert.Equal(t, s.exampleValidInstrument.ID, actual)
 	})
 
 	s.Run("with nil input", func() {
@@ -253,7 +207,7 @@ func (s *validInstrumentsTestSuite) TestClient_CreateValidInstrument() {
 		c, _ := buildSimpleTestClient(t)
 
 		actual, err := c.CreateValidInstrument(s.ctx, nil)
-		assert.Nil(t, actual)
+		assert.Empty(t, actual)
 		assert.Error(t, err)
 	})
 
@@ -261,39 +215,39 @@ func (s *validInstrumentsTestSuite) TestClient_CreateValidInstrument() {
 		t := s.T()
 
 		c, _ := buildSimpleTestClient(t)
-		exampleInput := &types.ValidInstrumentCreationInput{}
+		exampleInput := &types.ValidInstrumentCreationRequestInput{}
 
 		actual, err := c.CreateValidInstrument(s.ctx, exampleInput)
-		assert.Nil(t, actual)
+		assert.Empty(t, actual)
 		assert.Error(t, err)
 	})
 
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeValidInstrumentCreationInputFromValidInstrument(s.exampleValidInstrument)
+		exampleInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(s.exampleValidInstrument)
 
 		c := buildTestClientWithInvalidURL(t)
 
 		actual, err := c.CreateValidInstrument(s.ctx, exampleInput)
-		assert.Nil(t, actual)
+		assert.Empty(t, actual)
 		assert.Error(t, err)
 	})
 
 	s.Run("with error executing request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeValidInstrumentCreationInputFromValidInstrument(s.exampleValidInstrument)
+		exampleInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(s.exampleValidInstrument)
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		actual, err := c.CreateValidInstrument(s.ctx, exampleInput)
-		assert.Nil(t, actual)
+		assert.Empty(t, actual)
 		assert.Error(t, err)
 	})
 }
 
 func (s *validInstrumentsTestSuite) TestClient_UpdateValidInstrument() {
-	const expectedPathFormat = "/api/v1/valid_instruments/%d"
+	const expectedPathFormat = "/api/v1/valid_instruments/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -334,7 +288,7 @@ func (s *validInstrumentsTestSuite) TestClient_UpdateValidInstrument() {
 }
 
 func (s *validInstrumentsTestSuite) TestClient_ArchiveValidInstrument() {
-	const expectedPathFormat = "/api/v1/valid_instruments/%d"
+	const expectedPathFormat = "/api/v1/valid_instruments/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
@@ -351,7 +305,7 @@ func (s *validInstrumentsTestSuite) TestClient_ArchiveValidInstrument() {
 
 		c, _ := buildSimpleTestClient(t)
 
-		err := c.ArchiveValidInstrument(s.ctx, 0)
+		err := c.ArchiveValidInstrument(s.ctx, "")
 		assert.Error(t, err)
 	})
 
@@ -370,57 +324,6 @@ func (s *validInstrumentsTestSuite) TestClient_ArchiveValidInstrument() {
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		err := c.ArchiveValidInstrument(s.ctx, s.exampleValidInstrument.ID)
-		assert.Error(t, err)
-	})
-}
-
-func (s *validInstrumentsTestSuite) TestClient_GetAuditLogForValidInstrument() {
-	const (
-		expectedPath   = "/api/v1/valid_instruments/%d/audit"
-		expectedMethod = http.MethodGet
-	)
-
-	s.Run("standard", func() {
-		t := s.T()
-
-		spec := newRequestSpec(true, expectedMethod, "", expectedPath, s.exampleValidInstrument.ID)
-		exampleAuditLogEntryList := fakes.BuildFakeAuditLogEntryList().Entries
-
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleAuditLogEntryList)
-
-		actual, err := c.GetAuditLogForValidInstrument(s.ctx, s.exampleValidInstrument.ID)
-		require.NotNil(t, actual)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleAuditLogEntryList, actual)
-	})
-
-	s.Run("with invalid valid instrument ID", func() {
-		t := s.T()
-
-		c, _ := buildSimpleTestClient(t)
-
-		actual, err := c.GetAuditLogForValidInstrument(s.ctx, 0)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	s.Run("with error building request", func() {
-		t := s.T()
-
-		c := buildTestClientWithInvalidURL(t)
-
-		actual, err := c.GetAuditLogForValidInstrument(s.ctx, s.exampleValidInstrument.ID)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
-	s.Run("with error executing request", func() {
-		t := s.T()
-
-		c, _ := buildTestClientThatWaitsTooLong(t)
-
-		actual, err := c.GetAuditLogForValidInstrument(s.ctx, s.exampleValidInstrument.ID)
-		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }

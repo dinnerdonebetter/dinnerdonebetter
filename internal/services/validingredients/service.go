@@ -1,12 +1,14 @@
 package validingredients
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
+	publishers "gitlab.com/prixfixe/prixfixe/internal/messagequeue/publishers"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	routing "gitlab.com/prixfixe/prixfixe/internal/routing"
 	"gitlab.com/prixfixe/prixfixe/internal/search"
@@ -15,9 +17,7 @@ import (
 )
 
 const (
-	counterName        metrics.CounterName = "valid_ingredients"
-	counterDescription string              = "the number of valid ingredients managed by the valid ingredients service"
-	serviceName        string              = "valid_ingredients_service"
+	serviceName string = "valid_ingredients_service"
 )
 
 var _ types.ValidIngredientDataService = (*service)(nil)
@@ -30,9 +30,11 @@ type (
 	service struct {
 		logger                     logging.Logger
 		validIngredientDataManager types.ValidIngredientDataManager
-		validIngredientIDFetcher   func(*http.Request) uint64
+		validIngredientIDFetcher   func(*http.Request) string
 		sessionContextDataFetcher  func(*http.Request) (*types.SessionContextData, error)
-		validIngredientCounter     metrics.UnitCounter
+		preWritesPublisher         publishers.Publisher
+		preUpdatesPublisher        publishers.Publisher
+		preArchivesPublisher       publishers.Publisher
 		encoderDecoder             encoding.ServerEncoderDecoder
 		tracer                     tracing.Tracer
 		search                     SearchIndex
@@ -41,26 +43,46 @@ type (
 
 // ProvideService builds a new ValidIngredientsService.
 func ProvideService(
+	ctx context.Context,
 	logger logging.Logger,
-	cfg Config,
+	cfg *Config,
 	validIngredientDataManager types.ValidIngredientDataManager,
 	encoder encoding.ServerEncoderDecoder,
-	counterProvider metrics.UnitCounterProvider,
 	searchIndexProvider search.IndexManagerProvider,
 	routeParamManager routing.RouteParamManager,
+	publisherProvider publishers.PublisherProvider,
 ) (types.ValidIngredientDataService, error) {
-	searchIndexManager, err := searchIndexProvider(search.IndexPath(cfg.SearchIndexPath), "valid_ingredients", logger)
+	client := &http.Client{Transport: tracing.BuildTracedHTTPTransport(time.Second)}
+
+	searchIndexManager, err := searchIndexProvider(ctx, logger, client, search.IndexPath(cfg.SearchIndexPath), "valid_ingredients", "name", "variant", "description", "warning", "icon")
 	if err != nil {
-		return nil, fmt.Errorf("setting up search index: %w", err)
+		return nil, fmt.Errorf("setting up valid ingredient search index: %w", err)
+	}
+
+	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up valid ingredient queue pre-writes publisher: %w", err)
+	}
+
+	preUpdatesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreUpdatesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up valid ingredient queue pre-updates publisher: %w", err)
+	}
+
+	preArchivesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreArchivesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up valid ingredient queue pre-archives publisher: %w", err)
 	}
 
 	svc := &service{
 		logger:                     logging.EnsureLogger(logger).WithName(serviceName),
-		validIngredientIDFetcher:   routeParamManager.BuildRouteParamIDFetcher(logger, ValidIngredientIDURIParamKey, "valid_ingredient"),
+		validIngredientIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientIDURIParamKey),
 		sessionContextDataFetcher:  authservice.FetchContextFromRequest,
 		validIngredientDataManager: validIngredientDataManager,
+		preWritesPublisher:         preWritesPublisher,
+		preUpdatesPublisher:        preUpdatesPublisher,
+		preArchivesPublisher:       preArchivesPublisher,
 		encoderDecoder:             encoder,
-		validIngredientCounter:     metrics.EnsureUnitCounter(counterProvider, logger, counterName, counterDescription),
 		search:                     searchIndexManager,
 		tracer:                     tracing.NewTracer(serviceName),
 	}

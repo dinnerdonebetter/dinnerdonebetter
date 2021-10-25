@@ -24,8 +24,8 @@ type recipeStepIngredientsServiceHTTPRoutesTestHelper struct {
 	exampleRecipe               *types.Recipe
 	exampleRecipeStep           *types.RecipeStep
 	exampleRecipeStepIngredient *types.RecipeStepIngredient
-	exampleCreationInput        *types.RecipeStepIngredientCreationInput
-	exampleUpdateInput          *types.RecipeStepIngredientUpdateInput
+	exampleCreationInput        *types.RecipeStepIngredientCreationRequestInput
+	exampleUpdateInput          *types.RecipeStepIngredientUpdateRequestInput
 }
 
 func buildTestHelper(t *testing.T) *recipeStepIngredientsServiceHTTPRoutesTestHelper {
@@ -44,18 +44,18 @@ func buildTestHelper(t *testing.T) *recipeStepIngredientsServiceHTTPRoutesTestHe
 	helper.exampleRecipeStep.BelongsToRecipe = helper.exampleRecipe.ID
 	helper.exampleRecipeStepIngredient = fakes.BuildFakeRecipeStepIngredient()
 	helper.exampleRecipeStepIngredient.BelongsToRecipeStep = helper.exampleRecipeStep.ID
-	helper.exampleCreationInput = fakes.BuildFakeRecipeStepIngredientCreationInputFromRecipeStepIngredient(helper.exampleRecipeStepIngredient)
-	helper.exampleUpdateInput = fakes.BuildFakeRecipeStepIngredientUpdateInputFromRecipeStepIngredient(helper.exampleRecipeStepIngredient)
+	helper.exampleCreationInput = fakes.BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(helper.exampleRecipeStepIngredient)
+	helper.exampleUpdateInput = fakes.BuildFakeRecipeStepIngredientUpdateRequestInputFromRecipeStepIngredient(helper.exampleRecipeStepIngredient)
 
-	helper.service.recipeIDFetcher = func(*http.Request) uint64 {
+	helper.service.recipeIDFetcher = func(*http.Request) string {
 		return helper.exampleRecipe.ID
 	}
 
-	helper.service.recipeStepIDFetcher = func(*http.Request) uint64 {
+	helper.service.recipeStepIDFetcher = func(*http.Request) string {
 		return helper.exampleRecipeStep.ID
 	}
 
-	helper.service.recipeStepIngredientIDFetcher = func(*http.Request) uint64 {
+	helper.service.recipeStepIngredientIDFetcher = func(*http.Request) string {
 		return helper.exampleRecipeStepIngredient.ID
 	}
 
@@ -67,7 +67,7 @@ func buildTestHelper(t *testing.T) *recipeStepIngredientsServiceHTTPRoutesTestHe
 			ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 		},
 		ActiveHouseholdID: helper.exampleHousehold.ID,
-		HouseholdPermissions: map[uint64]authorization.HouseholdRolePermissionsChecker{
+		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
 			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
 		},
 	}

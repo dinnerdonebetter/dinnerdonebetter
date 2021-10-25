@@ -2,129 +2,157 @@ package types
 
 import (
 	"context"
+	"encoding/gob"
 	"net/http"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
+const (
+	// ValidIngredientPreparationDataType indicates an event is related to a valid ingredient preparation.
+	ValidIngredientPreparationDataType dataType = "valid_ingredient_preparation"
+)
+
+func init() {
+	gob.Register(new(ValidIngredientPreparation))
+	gob.Register(new(ValidIngredientPreparationList))
+	gob.Register(new(ValidIngredientPreparationCreationRequestInput))
+	gob.Register(new(ValidIngredientPreparationUpdateRequestInput))
+}
+
 type (
 	// ValidIngredientPreparation represents a valid ingredient preparation.
 	ValidIngredientPreparation struct {
-		LastUpdatedOn      *uint64 `json:"lastUpdatedOn"`
+		_                  struct{}
 		ArchivedOn         *uint64 `json:"archivedOn"`
+		LastUpdatedOn      *uint64 `json:"lastUpdatedOn"`
 		Notes              string  `json:"notes"`
-		ExternalID         string  `json:"externalID"`
-		ValidIngredientID  uint64  `json:"validIngredientID"`
-		ValidPreparationID uint64  `json:"validPreparationID"`
+		ValidPreparationID string  `json:"validPreparationID"`
+		ValidIngredientID  string  `json:"validIngredientID"`
+		ID                 string  `json:"id"`
 		CreatedOn          uint64  `json:"createdOn"`
-		ID                 uint64  `json:"id"`
 	}
 
 	// ValidIngredientPreparationList represents a list of valid ingredient preparations.
 	ValidIngredientPreparationList struct {
+		_                           struct{}
 		ValidIngredientPreparations []*ValidIngredientPreparation `json:"validIngredientPreparations"`
 		Pagination
 	}
 
-	// ValidIngredientPreparationCreationInput represents what a user could set as input for creating valid ingredient preparations.
-	ValidIngredientPreparationCreationInput struct {
+	// ValidIngredientPreparationCreationRequestInput represents what a user could set as input for creating valid ingredient preparations.
+	ValidIngredientPreparationCreationRequestInput struct {
+		_ struct{}
+
+		ID                 string `json:"-"`
 		Notes              string `json:"notes"`
-		ValidIngredientID  uint64 `json:"validIngredientID"`
-		ValidPreparationID uint64 `json:"validPreparationID"`
+		ValidPreparationID string `json:"validPreparationID"`
+		ValidIngredientID  string `json:"validIngredientID"`
 	}
 
-	// ValidIngredientPreparationUpdateInput represents what a user could set as input for updating valid ingredient preparations.
-	ValidIngredientPreparationUpdateInput struct {
+	// ValidIngredientPreparationDatabaseCreationInput represents what a user could set as input for creating valid ingredient preparations.
+	ValidIngredientPreparationDatabaseCreationInput struct {
+		_ struct{}
+
+		ID                 string `json:"id"`
 		Notes              string `json:"notes"`
-		ValidIngredientID  uint64 `json:"validIngredientID"`
-		ValidPreparationID uint64 `json:"validPreparationID"`
+		ValidPreparationID string `json:"validPreparationID"`
+		ValidIngredientID  string `json:"validIngredientID"`
+	}
+
+	// ValidIngredientPreparationUpdateRequestInput represents what a user could set as input for updating valid ingredient preparations.
+	ValidIngredientPreparationUpdateRequestInput struct {
+		_ struct{}
+
+		Notes              string `json:"notes"`
+		ValidPreparationID string `json:"validPreparationID"`
+		ValidIngredientID  string `json:"validIngredientID"`
 	}
 
 	// ValidIngredientPreparationDataManager describes a structure capable of storing valid ingredient preparations permanently.
 	ValidIngredientPreparationDataManager interface {
-		ValidIngredientPreparationExists(ctx context.Context, validIngredientPreparationID uint64) (bool, error)
-		GetValidIngredientPreparation(ctx context.Context, validIngredientPreparationID uint64) (*ValidIngredientPreparation, error)
-		GetAllValidIngredientPreparationsCount(ctx context.Context) (uint64, error)
-		GetAllValidIngredientPreparations(ctx context.Context, resultChannel chan []*ValidIngredientPreparation, bucketSize uint16) error
+		ValidIngredientPreparationExists(ctx context.Context, validIngredientPreparationID string) (bool, error)
+		GetValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) (*ValidIngredientPreparation, error)
+		GetTotalValidIngredientPreparationCount(ctx context.Context) (uint64, error)
 		GetValidIngredientPreparations(ctx context.Context, filter *QueryFilter) (*ValidIngredientPreparationList, error)
-		GetValidIngredientPreparationsWithIDs(ctx context.Context, limit uint8, ids []uint64) ([]*ValidIngredientPreparation, error)
-		CreateValidIngredientPreparation(ctx context.Context, input *ValidIngredientPreparationCreationInput, createdByUser uint64) (*ValidIngredientPreparation, error)
-		UpdateValidIngredientPreparation(ctx context.Context, updated *ValidIngredientPreparation, changedByUser uint64, changes []*FieldChangeSummary) error
-		ArchiveValidIngredientPreparation(ctx context.Context, validIngredientPreparationID, archivedBy uint64) error
-		GetAuditLogEntriesForValidIngredientPreparation(ctx context.Context, validIngredientPreparationID uint64) ([]*AuditLogEntry, error)
+		GetValidIngredientPreparationsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*ValidIngredientPreparation, error)
+		CreateValidIngredientPreparation(ctx context.Context, input *ValidIngredientPreparationDatabaseCreationInput) (*ValidIngredientPreparation, error)
+		UpdateValidIngredientPreparation(ctx context.Context, updated *ValidIngredientPreparation) error
+		ArchiveValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) error
 	}
 
 	// ValidIngredientPreparationDataService describes a structure capable of serving traffic related to valid ingredient preparations.
 	ValidIngredientPreparationDataService interface {
-		AuditEntryHandler(res http.ResponseWriter, req *http.Request)
 		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
-		ExistenceHandler(res http.ResponseWriter, req *http.Request)
 		ReadHandler(res http.ResponseWriter, req *http.Request)
 		UpdateHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 
-// Update merges an ValidIngredientPreparationUpdateInput with a valid ingredient preparation.
-func (x *ValidIngredientPreparation) Update(input *ValidIngredientPreparationUpdateInput) []*FieldChangeSummary {
-	var out []*FieldChangeSummary
-
-	if input.Notes != x.Notes {
-		out = append(out, &FieldChangeSummary{
-			FieldName: "Notes",
-			OldValue:  x.Notes,
-			NewValue:  input.Notes,
-		})
-
+// Update merges an ValidIngredientPreparationUpdateRequestInput with a valid ingredient preparation.
+func (x *ValidIngredientPreparation) Update(input *ValidIngredientPreparationUpdateRequestInput) {
+	if input.Notes != "" && input.Notes != x.Notes {
 		x.Notes = input.Notes
 	}
 
-	if input.ValidIngredientID != 0 && input.ValidIngredientID != x.ValidIngredientID {
-		out = append(out, &FieldChangeSummary{
-			FieldName: "ValidIngredientID",
-			OldValue:  x.ValidIngredientID,
-			NewValue:  input.ValidIngredientID,
-		})
-
-		x.ValidIngredientID = input.ValidIngredientID
-	}
-
-	if input.ValidPreparationID != 0 && input.ValidPreparationID != x.ValidPreparationID {
-		out = append(out, &FieldChangeSummary{
-			FieldName: "ValidPreparationID",
-			OldValue:  x.ValidPreparationID,
-			NewValue:  input.ValidPreparationID,
-		})
-
+	if input.ValidPreparationID != "" && input.ValidPreparationID != x.ValidPreparationID {
 		x.ValidPreparationID = input.ValidPreparationID
 	}
 
-	return out
+	if input.ValidIngredientID != "" && input.ValidIngredientID != x.ValidIngredientID {
+		x.ValidIngredientID = input.ValidIngredientID
+	}
 }
 
-var _ validation.ValidatableWithContext = (*ValidIngredientPreparationCreationInput)(nil)
+var _ validation.ValidatableWithContext = (*ValidIngredientPreparationCreationRequestInput)(nil)
 
-// ValidateWithContext validates a ValidIngredientPreparationCreationInput.
-func (x *ValidIngredientPreparationCreationInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a ValidIngredientPreparationCreationRequestInput.
+func (x *ValidIngredientPreparationCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
 		validation.Field(&x.Notes, validation.Required),
-		validation.Field(&x.ValidIngredientID, validation.Required),
 		validation.Field(&x.ValidPreparationID, validation.Required),
+		validation.Field(&x.ValidIngredientID, validation.Required),
 	)
 }
 
-var _ validation.ValidatableWithContext = (*ValidIngredientPreparationUpdateInput)(nil)
+var _ validation.ValidatableWithContext = (*ValidIngredientPreparationDatabaseCreationInput)(nil)
 
-// ValidateWithContext validates a ValidIngredientPreparationUpdateInput.
-func (x *ValidIngredientPreparationUpdateInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a ValidIngredientPreparationDatabaseCreationInput.
+func (x *ValidIngredientPreparationDatabaseCreationInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(
+		ctx,
+		x,
+		validation.Field(&x.ID, validation.Required),
+		validation.Field(&x.Notes, validation.Required),
+		validation.Field(&x.ValidPreparationID, validation.Required),
+		validation.Field(&x.ValidIngredientID, validation.Required),
+	)
+}
+
+// ValidIngredientPreparationDatabaseCreationInputFromValidIngredientPreparationCreationInput creates a DatabaseCreationInput from a CreationInput.
+func ValidIngredientPreparationDatabaseCreationInputFromValidIngredientPreparationCreationInput(input *ValidIngredientPreparationCreationRequestInput) *ValidIngredientPreparationDatabaseCreationInput {
+	x := &ValidIngredientPreparationDatabaseCreationInput{
+		Notes:              input.Notes,
+		ValidPreparationID: input.ValidPreparationID,
+		ValidIngredientID:  input.ValidIngredientID,
+	}
+
+	return x
+}
+
+var _ validation.ValidatableWithContext = (*ValidIngredientPreparationUpdateRequestInput)(nil)
+
+// ValidateWithContext validates a ValidIngredientPreparationUpdateRequestInput.
+func (x *ValidIngredientPreparationUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
 		validation.Field(&x.Notes, validation.Required),
-		validation.Field(&x.ValidIngredientID, validation.Required),
 		validation.Field(&x.ValidPreparationID, validation.Required),
+		validation.Field(&x.ValidIngredientID, validation.Required),
 	)
 }

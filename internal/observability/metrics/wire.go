@@ -1,9 +1,9 @@
 package metrics
 
 import (
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-
 	"github.com/google/wire"
+
+	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 )
 
 var (

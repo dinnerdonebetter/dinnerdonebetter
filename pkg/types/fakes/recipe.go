@@ -1,43 +1,42 @@
 package fakes
 
 import (
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-
 	fake "github.com/brianvoe/gofakeit/v5"
+	"github.com/segmentio/ksuid"
+
+	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
 // BuildFakeRecipe builds a faked recipe.
 func BuildFakeRecipe() *types.Recipe {
 	return &types.Recipe{
-		ID:          uint64(fake.Uint32()),
-		ExternalID:  fake.UUID(),
-		Name:        fake.Word(),
-		Source:      fake.Word(),
-		Description: fake.Word(),
-		//DisplayImageURL:    fake.ImageURL(123, 123),
-		InspiredByRecipeID: func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
+		ID:                 ksuid.New().String(),
+		Name:               fake.LoremIpsumSentence(exampleQuantity),
+		Source:             fake.LoremIpsumSentence(exampleQuantity),
+		Description:        fake.LoremIpsumSentence(exampleQuantity),
+		InspiredByRecipeID: func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
 		CreatedOn:          uint64(uint32(fake.Date().Unix())),
-		BelongsToHousehold: fake.Uint64(),
+		BelongsToHousehold: fake.UUID(),
 		Steps:              BuildFakeRecipeStepList().RecipeSteps,
 	}
 }
 
 // BuildFakeFullRecipe builds a faked recipe.
 func BuildFakeFullRecipe() *types.FullRecipe {
+	var steps []*types.FullRecipeStep
+	for i := 0; i < exampleQuantity; i++ {
+		steps = append(steps, BuildFakeFullRecipeStep())
+	}
+
 	return &types.FullRecipe{
-		ID:                 uint64(fake.Uint32()),
-		ExternalID:         fake.UUID(),
-		Name:               fake.Word(),
-		Source:             fake.Word(),
-		Description:        fake.Word(),
-		InspiredByRecipeID: func(x uint64) *uint64 { return &x }(uint64(fake.Uint32())),
+		ID:                 ksuid.New().String(),
+		Name:               fake.LoremIpsumSentence(exampleQuantity),
+		Source:             fake.LoremIpsumSentence(exampleQuantity),
+		Description:        fake.LoremIpsumSentence(exampleQuantity),
+		InspiredByRecipeID: func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
 		CreatedOn:          uint64(uint32(fake.Date().Unix())),
-		BelongsToHousehold: fake.Uint64(),
-		Steps: []*types.FullRecipeStep{
-			BuildFakeFullRecipeStep(),
-			BuildFakeFullRecipeStep(),
-			BuildFakeFullRecipeStep(),
-		},
+		BelongsToHousehold: ksuid.New().String(),
+		Steps:              steps,
 	}
 }
 
@@ -59,49 +58,71 @@ func BuildFakeRecipeList() *types.RecipeList {
 	}
 }
 
-// BuildFakeRecipeUpdateInput builds a faked RecipeUpdateInput from a recipe.
-func BuildFakeRecipeUpdateInput() *types.RecipeUpdateInput {
+// BuildFakeRecipeUpdateRequestInput builds a faked RecipeUpdateRequestInput from a recipe.
+func BuildFakeRecipeUpdateRequestInput() *types.RecipeUpdateRequestInput {
 	recipe := BuildFakeRecipe()
-	return &types.RecipeUpdateInput{
+	return &types.RecipeUpdateRequestInput{
 		Name:               recipe.Name,
 		Source:             recipe.Source,
 		Description:        recipe.Description,
-		DisplayImageURL:    recipe.DisplayImageURL,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
 		BelongsToHousehold: recipe.BelongsToHousehold,
 	}
 }
 
-// BuildFakeRecipeUpdateInputFromRecipe builds a faked RecipeUpdateInput from a recipe.
-func BuildFakeRecipeUpdateInputFromRecipe(recipe *types.Recipe) *types.RecipeUpdateInput {
-	return &types.RecipeUpdateInput{
+// BuildFakeRecipeUpdateRequestInputFromRecipe builds a faked RecipeUpdateRequestInput from a recipe.
+func BuildFakeRecipeUpdateRequestInputFromRecipe(recipe *types.Recipe) *types.RecipeUpdateRequestInput {
+	return &types.RecipeUpdateRequestInput{
 		Name:               recipe.Name,
 		Source:             recipe.Source,
 		Description:        recipe.Description,
-		DisplayImageURL:    recipe.DisplayImageURL,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
 		BelongsToHousehold: recipe.BelongsToHousehold,
 	}
 }
 
-// BuildFakeRecipeCreationInput builds a faked RecipeCreationInput.
-func BuildFakeRecipeCreationInput() *types.RecipeCreationInput {
+// BuildFakeRecipeCreationRequestInput builds a faked RecipeCreationRequestInput.
+func BuildFakeRecipeCreationRequestInput() *types.RecipeCreationRequestInput {
 	recipe := BuildFakeRecipe()
-	return BuildFakeRecipeCreationInputFromRecipe(recipe)
+	return BuildFakeRecipeCreationRequestInputFromRecipe(recipe)
 }
 
-// BuildFakeRecipeCreationInputFromRecipe builds a faked RecipeCreationInput from a recipe.
-func BuildFakeRecipeCreationInputFromRecipe(recipe *types.Recipe) *types.RecipeCreationInput {
-	steps := []*types.RecipeStepCreationInput{}
+// BuildFakeRecipeCreationRequestInputFromRecipe builds a faked RecipeCreationRequestInput from a recipe.
+func BuildFakeRecipeCreationRequestInputFromRecipe(recipe *types.Recipe) *types.RecipeCreationRequestInput {
+	steps := []*types.RecipeStepCreationRequestInput{}
 	for _, step := range recipe.Steps {
-		steps = append(steps, BuildFakeRecipeStepCreationInputFromRecipeStep(step))
+		steps = append(steps, BuildFakeRecipeStepCreationRequestInputFromRecipeStep(step))
 	}
 
-	return &types.RecipeCreationInput{
+	return &types.RecipeCreationRequestInput{
+		ID:                 recipe.ID,
 		Name:               recipe.Name,
 		Source:             recipe.Source,
 		Description:        recipe.Description,
-		DisplayImageURL:    recipe.DisplayImageURL,
+		InspiredByRecipeID: recipe.InspiredByRecipeID,
+		BelongsToHousehold: recipe.BelongsToHousehold,
+		Steps:              steps,
+	}
+}
+
+// BuildFakeRecipeDatabaseCreationInput builds a faked RecipeDatabaseCreationInput.
+func BuildFakeRecipeDatabaseCreationInput() *types.RecipeDatabaseCreationInput {
+	recipe := BuildFakeRecipe()
+	return BuildFakeRecipeDatabaseCreationInputFromRecipe(recipe)
+}
+
+// BuildFakeRecipeDatabaseCreationInputFromRecipe builds a faked RecipeDatabaseCreationInput from a recipe.
+func BuildFakeRecipeDatabaseCreationInputFromRecipe(recipe *types.Recipe) *types.RecipeDatabaseCreationInput {
+	steps := []*types.RecipeStepDatabaseCreationInput{}
+	for _, step := range recipe.Steps {
+		steps = append(steps, BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(step))
+	}
+
+	return &types.RecipeDatabaseCreationInput{
+		ID:                 recipe.ID,
+		Name:               recipe.Name,
+		Source:             recipe.Source,
+		Description:        recipe.Description,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
 		BelongsToHousehold: recipe.BelongsToHousehold,
 		Steps:              steps,

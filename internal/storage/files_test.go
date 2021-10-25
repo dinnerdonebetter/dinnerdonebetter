@@ -8,14 +8,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"gocloud.dev/blob/memblob"
+
+	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
+	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
+	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
 )
 
 func TestUploader_ReadFile(T *testing.T) {

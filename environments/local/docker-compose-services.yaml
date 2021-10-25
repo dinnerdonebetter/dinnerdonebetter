@@ -1,0 +1,53 @@
+version: "3.8"
+services:
+    workers:
+        container_name: workers
+        links:
+          - loki
+          - worker_queue
+          - postgres
+          - elasticsearch
+        volumes:
+            - source: '../../environments/testing/config_files/integration-tests-postgres.config'
+              target: '/etc/service.config'
+              type: 'bind'
+            - source: '../../'
+              target: '/go/src/gitlab.com/prixfixe/prixfixe/cmd/workers'
+              type: 'bind'
+        build:
+            context: '../../'
+            dockerfile: 'environments/local/workers.Dockerfile'
+        logging:
+          driver: loki
+          options:
+            loki-url: http://localhost:3100/loki/api/v1/push
+            loki-external-labels: job=dockerlogs,environment=development
+    prixfixe-server:
+        container_name: api_server
+        links:
+          - loki
+          - postgres
+          - elasticsearch
+          - workers
+          - worker_queue
+        environment:
+            PRIXFIXE_SERVER_LOCAL_CONFIG_STORE_KEY: 'SUFNQVdBUkVUSEFUVEhJU1NFQ1JFVElTVU5TRUNVUkU='
+            CONFIGURATION_FILEPATH: '/etc/service.config'
+            JAEGER_DISABLED: 'false'
+        ports:
+            - '8888:8888'
+        volumes:
+            - source: '../../environments/local/service.config'
+              target: '/etc/service.config'
+              type: 'bind'
+            - source: '../../'
+              target: '/go/src/gitlab.com/prixfixe/prixfixe'
+              type: 'bind'
+        build:
+            context: '../../'
+            dockerfile: 'environments/local/Dockerfile'
+        logging:
+          driver: loki
+          options:
+            loki-url: http://localhost:3100/loki/api/v1/push
+            loki-external-labels: job=dockerlogs,environment=development

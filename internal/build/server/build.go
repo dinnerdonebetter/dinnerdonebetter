@@ -6,55 +6,58 @@ package server
 import (
 	"context"
 
+	"github.com/google/wire"
+
 	"gitlab.com/prixfixe/prixfixe/internal/authentication"
 	"gitlab.com/prixfixe/prixfixe/internal/config"
 	database "gitlab.com/prixfixe/prixfixe/internal/database"
 	dbconfig "gitlab.com/prixfixe/prixfixe/internal/database/config"
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
+	msgconfig "gitlab.com/prixfixe/prixfixe/internal/messagequeue/config"
 	observability "gitlab.com/prixfixe/prixfixe/internal/observability"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
 	chi "gitlab.com/prixfixe/prixfixe/internal/routing/chi"
-	"gitlab.com/prixfixe/prixfixe/internal/search/bleve"
+	"gitlab.com/prixfixe/prixfixe/internal/search/elasticsearch"
 	server "gitlab.com/prixfixe/prixfixe/internal/server"
 	adminservice "gitlab.com/prixfixe/prixfixe/internal/services/admin"
 	apiclientsservice "gitlab.com/prixfixe/prixfixe/internal/services/apiclients"
-	auditservice "gitlab.com/prixfixe/prixfixe/internal/services/audit"
 	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
 	frontendservice "gitlab.com/prixfixe/prixfixe/internal/services/frontend"
 	householdsservice "gitlab.com/prixfixe/prixfixe/internal/services/households"
-	invitationsservice "gitlab.com/prixfixe/prixfixe/internal/services/invitations"
+	mealplanoptionsservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptions"
+	mealplanoptionvotesservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptionvotes"
+	mealplansservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplans"
 	recipesservice "gitlab.com/prixfixe/prixfixe/internal/services/recipes"
 	recipestepingredientsservice "gitlab.com/prixfixe/prixfixe/internal/services/recipestepingredients"
+	recipestepinstrumentsservice "gitlab.com/prixfixe/prixfixe/internal/services/recipestepinstruments"
 	recipestepproductsservice "gitlab.com/prixfixe/prixfixe/internal/services/recipestepproducts"
 	recipestepsservice "gitlab.com/prixfixe/prixfixe/internal/services/recipesteps"
-	reportsservice "gitlab.com/prixfixe/prixfixe/internal/services/reports"
 	usersservice "gitlab.com/prixfixe/prixfixe/internal/services/users"
 	validingredientpreparationsservice "gitlab.com/prixfixe/prixfixe/internal/services/validingredientpreparations"
 	validingredientsservice "gitlab.com/prixfixe/prixfixe/internal/services/validingredients"
 	validinstrumentsservice "gitlab.com/prixfixe/prixfixe/internal/services/validinstruments"
-	validpreparationinstrumentsservice "gitlab.com/prixfixe/prixfixe/internal/services/validpreparationinstruments"
 	validpreparationsservice "gitlab.com/prixfixe/prixfixe/internal/services/validpreparations"
 	webhooksservice "gitlab.com/prixfixe/prixfixe/internal/services/webhooks"
+	websocketsservice "gitlab.com/prixfixe/prixfixe/internal/services/websockets"
 	storage "gitlab.com/prixfixe/prixfixe/internal/storage"
 	uploads "gitlab.com/prixfixe/prixfixe/internal/uploads"
 	images "gitlab.com/prixfixe/prixfixe/internal/uploads/images"
-
-	"github.com/google/wire"
 )
 
 // Build builds a server.
 func Build(
 	ctx context.Context,
-	cfg *config.InstanceConfig,
 	logger logging.Logger,
+	cfg *config.InstanceConfig,
 ) (*server.HTTPServer, error) {
 	wire.Build(
-		bleve.Providers,
+		elasticsearch.Providers,
 		config.Providers,
 		database.Providers,
 		dbconfig.Providers,
 		encoding.Providers,
+		msgconfig.Providers,
 		server.Providers,
 		metrics.Providers,
 		images.Providers,
@@ -68,20 +71,21 @@ func Build(
 		householdsservice.Providers,
 		apiclientsservice.Providers,
 		webhooksservice.Providers,
-		auditservice.Providers,
+		websocketsservice.Providers,
 		adminservice.Providers,
 		frontendservice.Providers,
 		validinstrumentsservice.Providers,
-		validpreparationsservice.Providers,
 		validingredientsservice.Providers,
+		validpreparationsservice.Providers,
 		validingredientpreparationsservice.Providers,
-		validpreparationinstrumentsservice.Providers,
 		recipesservice.Providers,
 		recipestepsservice.Providers,
+		recipestepinstrumentsservice.Providers,
 		recipestepingredientsservice.Providers,
 		recipestepproductsservice.Providers,
-		invitationsservice.Providers,
-		reportsservice.Providers,
+		mealplansservice.Providers,
+		mealplanoptionsservice.Providers,
+		mealplanoptionvotesservice.Providers,
 	)
 
 	return nil, nil

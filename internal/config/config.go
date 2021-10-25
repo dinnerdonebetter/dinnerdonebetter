@@ -2,43 +2,41 @@ package config
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"os"
 	"strings"
-	"time"
 
-	capitalism "gitlab.com/prixfixe/prixfixe/internal/capitalism"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
+
 	database "gitlab.com/prixfixe/prixfixe/internal/database"
 	dbconfig "gitlab.com/prixfixe/prixfixe/internal/database/config"
-	querier "gitlab.com/prixfixe/prixfixe/internal/database/querier"
-	querybuilding "gitlab.com/prixfixe/prixfixe/internal/database/querybuilding"
-	postgres "gitlab.com/prixfixe/prixfixe/internal/database/querybuilding/postgres"
+	"gitlab.com/prixfixe/prixfixe/internal/database/queriers/postgres"
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
+	msgconfig "gitlab.com/prixfixe/prixfixe/internal/messagequeue/config"
 	observability "gitlab.com/prixfixe/prixfixe/internal/observability"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	routing "gitlab.com/prixfixe/prixfixe/internal/routing"
 	"gitlab.com/prixfixe/prixfixe/internal/search"
 	server "gitlab.com/prixfixe/prixfixe/internal/server"
-	auditservice "gitlab.com/prixfixe/prixfixe/internal/services/audit"
 	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
 	frontendservice "gitlab.com/prixfixe/prixfixe/internal/services/frontend"
-	invitationsservice "gitlab.com/prixfixe/prixfixe/internal/services/invitations"
+	householdsservice "gitlab.com/prixfixe/prixfixe/internal/services/households"
+	mealplanoptionsservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptions"
+	mealplanoptionvotesservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptionvotes"
+	mealplansservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplans"
 	recipesservice "gitlab.com/prixfixe/prixfixe/internal/services/recipes"
 	recipestepingredientsservice "gitlab.com/prixfixe/prixfixe/internal/services/recipestepingredients"
+	recipestepinstrumentsservice "gitlab.com/prixfixe/prixfixe/internal/services/recipestepinstruments"
 	recipestepproductsservice "gitlab.com/prixfixe/prixfixe/internal/services/recipestepproducts"
 	recipestepsservice "gitlab.com/prixfixe/prixfixe/internal/services/recipesteps"
-	reportsservice "gitlab.com/prixfixe/prixfixe/internal/services/reports"
 	validingredientpreparationsservice "gitlab.com/prixfixe/prixfixe/internal/services/validingredientpreparations"
 	validingredientsservice "gitlab.com/prixfixe/prixfixe/internal/services/validingredients"
 	validinstrumentsservice "gitlab.com/prixfixe/prixfixe/internal/services/validinstruments"
-	validpreparationinstrumentsservice "gitlab.com/prixfixe/prixfixe/internal/services/validpreparationinstruments"
 	validpreparationsservice "gitlab.com/prixfixe/prixfixe/internal/services/validpreparations"
 	webhooksservice "gitlab.com/prixfixe/prixfixe/internal/services/webhooks"
+	websocketsservice "gitlab.com/prixfixe/prixfixe/internal/services/websockets"
 	uploads "gitlab.com/prixfixe/prixfixe/internal/uploads"
-
-	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
@@ -48,14 +46,9 @@ const (
 	TestingRunMode runMode = "testing"
 	// ProductionRunMode is the run mode for a production environment.
 	ProductionRunMode runMode = "production"
-	// DefaultRunMode is the default run mode.
-	DefaultRunMode = DevelopmentRunMode
-	// DefaultStartupDeadline is the default amount of time we allow for server startup.
-	DefaultStartupDeadline = time.Minute
 )
 
 var (
-	errNilDatabaseConnection   = errors.New("nil DB connection provided")
 	errNilConfig               = errors.New("nil config provided")
 	errInvalidDatabaseProvider = errors.New("invalid database provider")
 )
@@ -66,33 +59,37 @@ type (
 
 	// ServicesConfigurations collects the various service configurations.
 	ServicesConfigurations struct {
+		_                           struct{}
 		ValidInstruments            validinstrumentsservice.Config            `json:"validInstruments" mapstructure:"valid_instruments" toml:"valid_instruments,omitempty"`
-		ValidPreparations           validpreparationsservice.Config           `json:"validPreparations" mapstructure:"valid_preparations" toml:"valid_preparations,omitempty"`
 		ValidIngredients            validingredientsservice.Config            `json:"validIngredients" mapstructure:"valid_ingredients" toml:"valid_ingredients,omitempty"`
-		Frontend                    frontendservice.Config                    `json:"frontend" mapstructure:"frontend" toml:"frontend,omitempty"`
-		ValidPreparationInstruments validpreparationinstrumentsservice.Config `json:"validPreparationInstruments" mapstructure:"valid_preparation_instruments" toml:"valid_preparation_instruments,omitempty"`
+		ValidPreparations           validpreparationsservice.Config           `json:"validPreparations" mapstructure:"valid_preparations" toml:"valid_preparations,omitempty"`
+		MealPlanOptionVotes         mealplanoptionvotesservice.Config         `json:"mealPlanOptionVotes" mapstructure:"meal_plan_option_votes" toml:"meal_plan_option_votes,omitempty"`
+		ValidIngredientPreparations validingredientpreparationsservice.Config `json:"validIngredientPreparations" mapstructure:"valid_ingredient_preparations" toml:"valid_ingredient_preparations,omitempty"`
 		Recipes                     recipesservice.Config                     `json:"recipes" mapstructure:"recipes" toml:"recipes,omitempty"`
 		RecipeSteps                 recipestepsservice.Config                 `json:"recipeSteps" mapstructure:"recipe_steps" toml:"recipe_steps,omitempty"`
-		ValidIngredientPreparations validingredientpreparationsservice.Config `json:"validIngredientPreparations" mapstructure:"valid_ingredient_preparations" toml:"valid_ingredient_preparations,omitempty"`
-		RecipeStepProducts          recipestepproductsservice.Config          `json:"recipeStepProducts" mapstructure:"recipe_step_products" toml:"recipe_step_products,omitempty"`
-		Invitations                 invitationsservice.Config                 `json:"invitations" mapstructure:"invitations" toml:"invitations,omitempty"`
-		Reports                     reportsservice.Config                     `json:"reports" mapstructure:"reports" toml:"reports,omitempty"`
+		RecipeStepInstruments       recipestepinstrumentsservice.Config       `json:"recipeStepInstruments" mapstructure:"recipe_step_instruments" toml:"recipe_step_instruments,omitempty"`
 		RecipeStepIngredients       recipestepingredientsservice.Config       `json:"recipeStepIngredients" mapstructure:"recipe_step_ingredients" toml:"recipe_step_ingredients,omitempty"`
-		Auth                        authservice.Config                        `json:"auth" mapstructure:"auth" toml:"auth,omitempty"`
+		MealPlans                   mealplansservice.Config                   `json:"mealPlans" mapstructure:"meal_plans" toml:"meal_plans,omitempty"`
+		MealPlanOptions             mealplanoptionsservice.Config             `json:"mealPlanOptions" mapstructure:"meal_plan_options" toml:"meal_plan_options,omitempty"`
+		RecipeStepProducts          recipestepproductsservice.Config          `json:"recipeStepProducts" mapstructure:"recipe_step_products" toml:"recipe_step_products,omitempty"`
+		Households                  householdsservice.Config                  `json:"households" mapstructure:"households" toml:"households,omitempty"`
+		Websockets                  websocketsservice.Config                  `json:"websockets" mapstructure:"websockets" toml:"websockets,omitempty"`
 		Webhooks                    webhooksservice.Config                    `json:"webhooks" mapstructure:"webhooks" toml:"webhooks,omitempty"`
-		AuditLog                    auditservice.Config                       `json:"auditLog" mapstructure:"audit_log" toml:"audit_log,omitempty"`
+		Frontend                    frontendservice.Config                    `json:"frontend" mapstructure:"frontend" toml:"frontend,omitempty"`
+		Auth                        authservice.Config                        `json:"auth" mapstructure:"auth" toml:"auth,omitempty"`
 	}
 
 	// InstanceConfig configures an instance of the service. It is composed of all the other setting structs.
 	InstanceConfig struct {
+		_             struct{}
+		Events        msgconfig.Config       `json:"events" mapstructure:"events" toml:"events,omitempty"`
 		Search        search.Config          `json:"search" mapstructure:"search" toml:"search,omitempty"`
 		Encoding      encoding.Config        `json:"encoding" mapstructure:"encoding" toml:"encoding,omitempty"`
 		Uploads       uploads.Config         `json:"uploads" mapstructure:"uploads" toml:"uploads,omitempty"`
 		Observability observability.Config   `json:"observability" mapstructure:"observability" toml:"observability,omitempty"`
 		Routing       routing.Config         `json:"routing" mapstructure:"routing" toml:"routing,omitempty"`
-		Capitalism    capitalism.Config      `json:"capitalism" mapstructure:"capitalism" toml:"capitalism,omitempty"`
-		Meta          MetaSettings           `json:"meta" mapstructure:"meta" toml:"meta,omitempty"`
 		Database      dbconfig.Config        `json:"database" mapstructure:"database" toml:"database,omitempty"`
+		Meta          MetaSettings           `json:"meta" mapstructure:"meta" toml:"meta,omitempty"`
 		Services      ServicesConfigurations `json:"services" mapstructure:"services" toml:"services,omitempty"`
 		Server        server.Config          `json:"server" mapstructure:"server" toml:"server,omitempty"`
 	}
@@ -128,10 +125,6 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context) error {
 		return fmt.Errorf("error validating Meta portion of config: %w", err)
 	}
 
-	if err := cfg.Capitalism.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating Capitalism portion of config: %w", err)
-	}
-
 	if err := cfg.Encoding.ValidateWithContext(ctx); err != nil {
 		return fmt.Errorf("error validating Encoding portion of config: %w", err)
 	}
@@ -152,10 +145,6 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context) error {
 		return fmt.Errorf("error validating HTTPServer portion of config: %w", err)
 	}
 
-	if err := cfg.Services.AuditLog.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating AuditLog portion of config: %w", err)
-	}
-
 	if err := cfg.Services.Auth.ValidateWithContext(ctx); err != nil {
 		return fmt.Errorf("error validating Auth service portion of config: %w", err)
 	}
@@ -172,20 +161,16 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context) error {
 		return fmt.Errorf("error validating ValidInstruments service portion of config: %w", err)
 	}
 
-	if err := cfg.Services.ValidPreparations.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating ValidPreparations service portion of config: %w", err)
-	}
-
 	if err := cfg.Services.ValidIngredients.ValidateWithContext(ctx); err != nil {
 		return fmt.Errorf("error validating ValidIngredients service portion of config: %w", err)
 	}
 
-	if err := cfg.Services.ValidIngredientPreparations.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating ValidIngredientPreparations service portion of config: %w", err)
+	if err := cfg.Services.ValidPreparations.ValidateWithContext(ctx); err != nil {
+		return fmt.Errorf("error validating ValidPreparations service portion of config: %w", err)
 	}
 
-	if err := cfg.Services.ValidPreparationInstruments.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating ValidPreparationInstruments service portion of config: %w", err)
+	if err := cfg.Services.ValidIngredientPreparations.ValidateWithContext(ctx); err != nil {
+		return fmt.Errorf("error validating ValidIngredientPreparations service portion of config: %w", err)
 	}
 
 	if err := cfg.Services.Recipes.ValidateWithContext(ctx); err != nil {
@@ -196,6 +181,10 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context) error {
 		return fmt.Errorf("error validating RecipeSteps service portion of config: %w", err)
 	}
 
+	if err := cfg.Services.RecipeStepInstruments.ValidateWithContext(ctx); err != nil {
+		return fmt.Errorf("error validating RecipeStepInstruments service portion of config: %w", err)
+	}
+
 	if err := cfg.Services.RecipeStepIngredients.ValidateWithContext(ctx); err != nil {
 		return fmt.Errorf("error validating RecipeStepIngredients service portion of config: %w", err)
 	}
@@ -204,12 +193,16 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context) error {
 		return fmt.Errorf("error validating RecipeStepProducts service portion of config: %w", err)
 	}
 
-	if err := cfg.Services.Invitations.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating Invitations service portion of config: %w", err)
+	if err := cfg.Services.MealPlans.ValidateWithContext(ctx); err != nil {
+		return fmt.Errorf("error validating MealPlans service portion of config: %w", err)
 	}
 
-	if err := cfg.Services.Reports.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating Reports service portion of config: %w", err)
+	if err := cfg.Services.MealPlanOptions.ValidateWithContext(ctx); err != nil {
+		return fmt.Errorf("error validating MealPlanOptions service portion of config: %w", err)
+	}
+
+	if err := cfg.Services.MealPlanOptionVotes.ValidateWithContext(ctx); err != nil {
+		return fmt.Errorf("error validating MealPlanOptionVotes service portion of config: %w", err)
 	}
 
 	return nil
@@ -217,24 +210,17 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context) error {
 
 // ProvideDatabaseClient provides a database implementation dependent on the configuration.
 // NOTE: you may be tempted to move this to the database/config package. This is a fool's errand.
-func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, rawDB *sql.DB, cfg *InstanceConfig) (database.DataManager, error) {
-	if rawDB == nil {
-		return nil, errNilDatabaseConnection
-	}
-
+func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, cfg *InstanceConfig) (database.DataManager, error) {
 	if cfg == nil {
 		return nil, errNilConfig
 	}
 
-	var qb querybuilding.SQLQueryBuilder
 	shouldCreateTestUser := cfg.Meta.RunMode != ProductionRunMode
 
 	switch strings.ToLower(strings.TrimSpace(cfg.Database.Provider)) {
-	case "postgres":
-		qb = postgres.ProvidePostgres(logger)
+	case dbconfig.PostgresProvider:
+		return postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, shouldCreateTestUser)
 	default:
 		return nil, fmt.Errorf("%w: %q", errInvalidDatabaseProvider, cfg.Database.Provider)
 	}
-
-	return querier.ProvideDatabaseClient(ctx, logger, rawDB, &cfg.Database, qb, shouldCreateTestUser)
 }

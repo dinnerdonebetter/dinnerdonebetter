@@ -1,12 +1,14 @@
 package validinstruments
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
+	publishers "gitlab.com/prixfixe/prixfixe/internal/messagequeue/publishers"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	routing "gitlab.com/prixfixe/prixfixe/internal/routing"
 	"gitlab.com/prixfixe/prixfixe/internal/search"
@@ -15,9 +17,7 @@ import (
 )
 
 const (
-	counterName        metrics.CounterName = "valid_instruments"
-	counterDescription string              = "the number of valid instruments managed by the valid instruments service"
-	serviceName        string              = "valid_instruments_service"
+	serviceName string = "valid_instruments_service"
 )
 
 var _ types.ValidInstrumentDataService = (*service)(nil)
@@ -30,9 +30,11 @@ type (
 	service struct {
 		logger                     logging.Logger
 		validInstrumentDataManager types.ValidInstrumentDataManager
-		validInstrumentIDFetcher   func(*http.Request) uint64
+		validInstrumentIDFetcher   func(*http.Request) string
 		sessionContextDataFetcher  func(*http.Request) (*types.SessionContextData, error)
-		validInstrumentCounter     metrics.UnitCounter
+		preWritesPublisher         publishers.Publisher
+		preUpdatesPublisher        publishers.Publisher
+		preArchivesPublisher       publishers.Publisher
 		encoderDecoder             encoding.ServerEncoderDecoder
 		tracer                     tracing.Tracer
 		search                     SearchIndex
@@ -41,26 +43,46 @@ type (
 
 // ProvideService builds a new ValidInstrumentsService.
 func ProvideService(
+	ctx context.Context,
 	logger logging.Logger,
-	cfg Config,
+	cfg *Config,
 	validInstrumentDataManager types.ValidInstrumentDataManager,
 	encoder encoding.ServerEncoderDecoder,
-	counterProvider metrics.UnitCounterProvider,
 	searchIndexProvider search.IndexManagerProvider,
 	routeParamManager routing.RouteParamManager,
+	publisherProvider publishers.PublisherProvider,
 ) (types.ValidInstrumentDataService, error) {
-	searchIndexManager, err := searchIndexProvider(search.IndexPath(cfg.SearchIndexPath), "valid_instruments", logger)
+	client := &http.Client{Transport: tracing.BuildTracedHTTPTransport(time.Second)}
+
+	searchIndexManager, err := searchIndexProvider(ctx, logger, client, search.IndexPath(cfg.SearchIndexPath), "valid_instruments", "name", "variant", "description", "icon")
 	if err != nil {
-		return nil, fmt.Errorf("setting up search index: %w", err)
+		return nil, fmt.Errorf("setting up valid instrument search index: %w", err)
+	}
+
+	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up valid instrument queue pre-writes publisher: %w", err)
+	}
+
+	preUpdatesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreUpdatesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up valid instrument queue pre-updates publisher: %w", err)
+	}
+
+	preArchivesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreArchivesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up valid instrument queue pre-archives publisher: %w", err)
 	}
 
 	svc := &service{
 		logger:                     logging.EnsureLogger(logger).WithName(serviceName),
-		validInstrumentIDFetcher:   routeParamManager.BuildRouteParamIDFetcher(logger, ValidInstrumentIDURIParamKey, "valid_instrument"),
+		validInstrumentIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(ValidInstrumentIDURIParamKey),
 		sessionContextDataFetcher:  authservice.FetchContextFromRequest,
 		validInstrumentDataManager: validInstrumentDataManager,
+		preWritesPublisher:         preWritesPublisher,
+		preUpdatesPublisher:        preUpdatesPublisher,
+		preArchivesPublisher:       preArchivesPublisher,
 		encoderDecoder:             encoder,
-		validInstrumentCounter:     metrics.EnsureUnitCounter(counterProvider, logger, counterName, counterDescription),
 		search:                     searchIndexManager,
 		tracer:                     tracing.NewTracer(serviceName),
 	}

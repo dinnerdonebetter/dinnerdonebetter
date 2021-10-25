@@ -9,40 +9,14 @@ import (
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
-// ValidInstrumentExists retrieves whether a valid instrument exists.
-func (c *Client) ValidInstrumentExists(ctx context.Context, validInstrumentID uint64) (bool, error) {
-	ctx, span := c.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := c.logger
-
-	if validInstrumentID == 0 {
-		return false, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
-	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
-
-	req, err := c.requestBuilder.BuildValidInstrumentExistsRequest(ctx, validInstrumentID)
-	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "building valid instrument existence request")
-	}
-
-	exists, err := c.responseIsOK(ctx, req)
-	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "checking existence for valid instrument #%d", validInstrumentID)
-	}
-
-	return exists, nil
-}
-
 // GetValidInstrument gets a valid instrument.
-func (c *Client) GetValidInstrument(ctx context.Context, validInstrumentID uint64) (*types.ValidInstrument, error) {
+func (c *Client) GetValidInstrument(ctx context.Context, validInstrumentID string) (*types.ValidInstrument, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger
 
-	if validInstrumentID == 0 {
+	if validInstrumentID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
@@ -113,31 +87,31 @@ func (c *Client) GetValidInstruments(ctx context.Context, filter *types.QueryFil
 }
 
 // CreateValidInstrument creates a valid instrument.
-func (c *Client) CreateValidInstrument(ctx context.Context, input *types.ValidInstrumentCreationInput) (*types.ValidInstrument, error) {
+func (c *Client) CreateValidInstrument(ctx context.Context, input *types.ValidInstrumentCreationRequestInput) (string, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger
 
 	if input == nil {
-		return nil, ErrNilInputProvided
+		return "", ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return "", observability.PrepareError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateValidInstrumentRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building create valid instrument request")
+		return "", observability.PrepareError(err, logger, span, "building create valid instrument request")
 	}
 
-	var validInstrument *types.ValidInstrument
-	if err = c.fetchAndUnmarshal(ctx, req, &validInstrument); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating valid instrument")
+	var pwr *types.PreWriteResponse
+	if err = c.fetchAndUnmarshal(ctx, req, &pwr); err != nil {
+		return "", observability.PrepareError(err, logger, span, "creating valid instrument")
 	}
 
-	return validInstrument, nil
+	return pwr.ID, nil
 }
 
 // UpdateValidInstrument updates a valid instrument.
@@ -159,20 +133,20 @@ func (c *Client) UpdateValidInstrument(ctx context.Context, validInstrument *typ
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, &validInstrument); err != nil {
-		return observability.PrepareError(err, logger, span, "updating valid instrument #%d", validInstrument.ID)
+		return observability.PrepareError(err, logger, span, "updating valid instrument %s", validInstrument.ID)
 	}
 
 	return nil
 }
 
 // ArchiveValidInstrument archives a valid instrument.
-func (c *Client) ArchiveValidInstrument(ctx context.Context, validInstrumentID uint64) error {
+func (c *Client) ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger
 
-	if validInstrumentID == 0 {
+	if validInstrumentID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
@@ -184,34 +158,8 @@ func (c *Client) ArchiveValidInstrument(ctx context.Context, validInstrumentID u
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "archiving valid instrument #%d", validInstrumentID)
+		return observability.PrepareError(err, logger, span, "archiving valid instrument %s", validInstrumentID)
 	}
 
 	return nil
-}
-
-// GetAuditLogForValidInstrument retrieves a list of audit log entries pertaining to a valid instrument.
-func (c *Client) GetAuditLogForValidInstrument(ctx context.Context, validInstrumentID uint64) ([]*types.AuditLogEntry, error) {
-	ctx, span := c.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := c.logger
-
-	if validInstrumentID == 0 {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
-	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
-
-	req, err := c.requestBuilder.BuildGetAuditLogForValidInstrumentRequest(ctx, validInstrumentID)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building get audit log entries for valid instrument request")
-	}
-
-	var entries []*types.AuditLogEntry
-	if err = c.fetchAndUnmarshal(ctx, req, &entries); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "retrieving plan")
-	}
-
-	return entries, nil
 }
