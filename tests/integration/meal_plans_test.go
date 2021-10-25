@@ -1,8 +1,11 @@
 package integration
 
 import (
+	"context"
 	"testing"
 	"time"
+
+	"gitlab.com/prixfixe/prixfixe/pkg/client/httpclient"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -33,6 +36,63 @@ func convertMealPlanToMealPlanUpdateInput(x *types.MealPlan) *types.MealPlanUpda
 	}
 }
 
+func createMealPlanWithNotificationChannel(ctx context.Context, t *testing.T, notificationsChan chan *types.DataChangeMessage, client *httpclient.Client) *types.MealPlan {
+	t.Helper()
+
+	var n *types.DataChangeMessage
+
+	t.Log("creating meal plan")
+	exampleMealPlan := fakes.BuildFakeMealPlan()
+	for i := range exampleMealPlan.Options {
+		_, _, createdRecipe := createRecipeWithNotificationChannel(ctx, t, notificationsChan, client)
+		exampleMealPlan.Options[i].RecipeID = createdRecipe.ID
+	}
+
+	exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
+	createdMealPlanID, err := client.CreateMealPlan(ctx, exampleMealPlanInput)
+	require.NoError(t, err)
+	t.Logf("meal plan %q created", createdMealPlanID)
+
+	n = <-notificationsChan
+	assert.Equal(t, n.DataType, types.MealPlanDataType)
+	require.NotNil(t, n.MealPlan)
+	checkMealPlanEquality(t, exampleMealPlan, n.MealPlan)
+
+	createdMealPlan, err := client.GetMealPlan(ctx, createdMealPlanID)
+	requireNotNilAndNoProblems(t, createdMealPlan, err)
+	checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
+
+	return createdMealPlan
+}
+
+func createMealPlanWhilePolling(ctx context.Context, t *testing.T, client *httpclient.Client) *types.MealPlan {
+	t.Helper()
+
+	var checkFunc func() bool
+
+	t.Log("creating meal plan")
+	exampleMealPlan := fakes.BuildFakeMealPlan()
+	for i := range exampleMealPlan.Options {
+		_, _, createdRecipe := createRecipeWithPolling(ctx, t, client)
+		exampleMealPlan.Options[i].RecipeID = createdRecipe.ID
+	}
+
+	exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
+	createdMealPlanID, err := client.CreateMealPlan(ctx, exampleMealPlanInput)
+	require.NoError(t, err)
+	t.Logf("meal plan %q created", createdMealPlanID)
+
+	var createdMealPlan *types.MealPlan
+	checkFunc = func() bool {
+		createdMealPlan, err = client.GetMealPlan(ctx, createdMealPlanID)
+		return assert.NotNil(t, createdMealPlan) && assert.NoError(t, err)
+	}
+	assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
+	checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
+
+	return createdMealPlan
+}
+
 func (s *TestSuite) TestMealPlans_CompleteLifecycle() {
 	s.runForCookieClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -48,25 +108,11 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycle() {
 
 			var n *types.DataChangeMessage
 
-			t.Log("creating meal plan")
-			exampleMealPlan := fakes.BuildFakeMealPlan()
-			exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
-			createdMealPlanID, err := testClients.main.CreateMealPlan(ctx, exampleMealPlanInput)
-			require.NoError(t, err)
-			t.Logf("meal plan %q created", createdMealPlanID)
-
-			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.MealPlanDataType)
-			require.NotNil(t, n.MealPlan)
-			checkMealPlanEquality(t, exampleMealPlan, n.MealPlan)
-
-			createdMealPlan, err := testClients.main.GetMealPlan(ctx, createdMealPlanID)
-			requireNotNilAndNoProblems(t, createdMealPlan, err)
-
-			checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
+			createdMealPlan := createMealPlanWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
 
 			t.Log("changing meal plan")
 			newMealPlan := fakes.BuildFakeMealPlan()
+			newMealPlan.Options = createdMealPlan.Options
 			createdMealPlan.Update(convertMealPlanToMealPlanUpdateInput(newMealPlan))
 			assert.NoError(t, testClients.main.UpdateMealPlan(ctx, createdMealPlan))
 
@@ -74,7 +120,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycle() {
 			assert.Equal(t, n.DataType, types.MealPlanDataType)
 
 			t.Log("fetching changed meal plan")
-			actual, err := testClients.main.GetMealPlan(ctx, createdMealPlanID)
+			actual, err := testClients.main.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert meal plan equality
@@ -82,7 +128,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedOn)
 
 			t.Log("cleaning up meal plan")
-			assert.NoError(t, testClients.main.ArchiveMealPlan(ctx, createdMealPlanID))
+			assert.NoError(t, testClients.main.ArchiveMealPlan(ctx, createdMealPlan.ID))
 		}
 	})
 
@@ -94,35 +140,23 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating meal plan")
-			exampleMealPlan := fakes.BuildFakeMealPlan()
-			exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
-			createdMealPlanID, err := testClients.main.CreateMealPlan(ctx, exampleMealPlanInput)
-			require.NoError(t, err)
-			t.Logf("meal plan %q created", createdMealPlanID)
-
-			var createdMealPlan *types.MealPlan
-			checkFunc = func() bool {
-				createdMealPlan, err = testClients.main.GetMealPlan(ctx, createdMealPlanID)
-				return assert.NotNil(t, createdMealPlan) && assert.NoError(t, err)
-			}
-			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
-			checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
-
-			// assert meal plan equality
-			checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
+			createdMealPlan := createMealPlanWhilePolling(ctx, t, testClients.main)
 
 			// change meal plan
 			newMealPlan := fakes.BuildFakeMealPlan()
+			newMealPlan.Options = createdMealPlan.Options
 			createdMealPlan.Update(convertMealPlanToMealPlanUpdateInput(newMealPlan))
 			assert.NoError(t, testClients.main.UpdateMealPlan(ctx, createdMealPlan))
 
 			time.Sleep(time.Second)
 
 			// retrieve changed meal plan
-			var actual *types.MealPlan
+			var (
+				actual *types.MealPlan
+				err    error
+			)
 			checkFunc = func() bool {
-				actual, err = testClients.main.GetMealPlan(ctx, createdMealPlanID)
+				actual, err = testClients.main.GetMealPlan(ctx, createdMealPlan.ID)
 				return assert.NotNil(t, createdMealPlan) && assert.NoError(t, err)
 			}
 			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
@@ -134,7 +168,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedOn)
 
 			t.Log("cleaning up meal plan")
-			assert.NoError(t, testClients.main.ArchiveMealPlan(ctx, createdMealPlanID))
+			assert.NoError(t, testClients.main.ArchiveMealPlan(ctx, createdMealPlan.ID))
 		}
 	})
 }
@@ -152,25 +186,10 @@ func (s *TestSuite) TestMealPlans_Listing() {
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
-			var n *types.DataChangeMessage
-
 			t.Log("creating meal plans")
 			var expected []*types.MealPlan
 			for i := 0; i < 5; i++ {
-				exampleMealPlan := fakes.BuildFakeMealPlan()
-				exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
-				createdMealPlanID, err := testClients.main.CreateMealPlan(ctx, exampleMealPlanInput)
-				require.NoError(t, err)
-				t.Logf("meal plan %q created", createdMealPlanID)
-
-				n = <-notificationsChan
-				assert.Equal(t, n.DataType, types.MealPlanDataType)
-				require.NotNil(t, n.MealPlan)
-				checkMealPlanEquality(t, exampleMealPlan, n.MealPlan)
-
-				createdMealPlan, err := testClients.main.GetMealPlan(ctx, createdMealPlanID)
-				requireNotNilAndNoProblems(t, createdMealPlan, err)
-
+				createdMealPlan := createMealPlanWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
 				expected = append(expected, createdMealPlan)
 			}
 
@@ -196,26 +215,13 @@ func (s *TestSuite) TestMealPlans_Listing() {
 		return func() {
 			t := s.T()
 
-			var checkFunc func() bool
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
 			t.Log("creating meal plans")
 			var expected []*types.MealPlan
 			for i := 0; i < 5; i++ {
-				exampleMealPlan := fakes.BuildFakeMealPlan()
-				exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
-				createdMealPlanID, mealPlanErr := testClients.main.CreateMealPlan(ctx, exampleMealPlanInput)
-				require.NoError(t, mealPlanErr)
-
-				var createdMealPlan *types.MealPlan
-				checkFunc = func() bool {
-					createdMealPlan, mealPlanErr = testClients.main.GetMealPlan(ctx, createdMealPlanID)
-					return assert.NotNil(t, createdMealPlan) && assert.NoError(t, mealPlanErr)
-				}
-				assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
-				checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
-
+				createdMealPlan := createMealPlanWhilePolling(ctx, t, testClients.main)
 				expected = append(expected, createdMealPlan)
 			}
 

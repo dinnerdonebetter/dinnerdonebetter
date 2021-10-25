@@ -65,6 +65,11 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := types.MealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVoteCreationInput(providedInput)
 	input.ID = ksuid.New().String()
 
+	// determine meal plan ID.
+	mealPlanID := s.mealPlanIDFetcher(req)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+
 	// determine meal plan option ID.
 	mealPlanOptionID := s.mealPlanOptionIDFetcher(req)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
@@ -76,6 +81,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	// create meal plan option vote in database.
 	preWrite := &types.PreWriteMessage{
 		DataType:                  types.MealPlanOptionVoteDataType,
+		MealPlanID:                mealPlanID,
 		MealPlanOptionID:          mealPlanOptionID,
 		MealPlanOptionVote:        input,
 		AttributableToUserID:      sessionCtxData.Requester.UserID,
@@ -254,6 +260,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	pum := &types.PreUpdateMessage{
 		DataType:                  types.MealPlanOptionVoteDataType,
+		MealPlanID:                mealPlanID,
 		MealPlanOptionID:          mealPlanOptionID,
 		MealPlanOptionVote:        mealPlanOptionVote,
 		AttributableToUserID:      sessionCtxData.Requester.UserID,
@@ -315,6 +322,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	pam := &types.PreArchiveMessage{
 		DataType:                  types.MealPlanOptionVoteDataType,
+		MealPlanID:                mealPlanID,
 		MealPlanOptionID:          mealPlanOptionID,
 		MealPlanOptionVoteID:      mealPlanOptionVoteID,
 		AttributableToUserID:      sessionCtxData.Requester.UserID,

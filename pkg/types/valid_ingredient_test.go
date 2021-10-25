@@ -15,10 +15,10 @@ func TestValidIngredientCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidIngredientCreationRequestInput{
-			Name:              fake.Word(),
-			Variant:           fake.Word(),
-			Description:       fake.Word(),
-			Warning:           fake.Word(),
+			Name:              fake.LoremIpsumSentence(exampleQuantity),
+			Variant:           fake.LoremIpsumSentence(exampleQuantity),
+			Description:       fake.LoremIpsumSentence(exampleQuantity),
+			Warning:           fake.LoremIpsumSentence(exampleQuantity),
 			ContainsEgg:       fake.Bool(),
 			ContainsDairy:     fake.Bool(),
 			ContainsPeanut:    fake.Bool(),
@@ -32,7 +32,7 @@ func TestValidIngredientCreationRequestInput_Validate(T *testing.T) {
 			AnimalFlesh:       fake.Bool(),
 			AnimalDerived:     fake.Bool(),
 			Volumetric:        fake.Bool(),
-			IconPath:          fake.Word(),
+			IconPath:          fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -56,10 +56,10 @@ func TestValidIngredientUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidIngredientUpdateRequestInput{
-			Name:              fake.Word(),
-			Variant:           fake.Word(),
-			Description:       fake.Word(),
-			Warning:           fake.Word(),
+			Name:              fake.LoremIpsumSentence(exampleQuantity),
+			Variant:           fake.LoremIpsumSentence(exampleQuantity),
+			Description:       fake.LoremIpsumSentence(exampleQuantity),
+			Warning:           fake.LoremIpsumSentence(exampleQuantity),
 			ContainsEgg:       fake.Bool(),
 			ContainsDairy:     fake.Bool(),
 			ContainsPeanut:    fake.Bool(),
@@ -73,7 +73,7 @@ func TestValidIngredientUpdateRequestInput_Validate(T *testing.T) {
 			AnimalFlesh:       fake.Bool(),
 			AnimalDerived:     fake.Bool(),
 			Volumetric:        fake.Bool(),
-			IconPath:          fake.Word(),
+			IconPath:          fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

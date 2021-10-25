@@ -15,8 +15,8 @@ func TestRecipeStepProductCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepProductCreationRequestInput{
-			Name:         fake.Word(),
-			RecipeStepID: fake.Word(),
+			Name:         fake.LoremIpsumSentence(exampleQuantity),
+			RecipeStepID: fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -40,8 +40,8 @@ func TestRecipeStepProductUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepProductUpdateRequestInput{
-			Name:         fake.Word(),
-			RecipeStepID: fake.Word(),
+			Name:         fake.LoremIpsumSentence(exampleQuantity),
+			RecipeStepID: fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

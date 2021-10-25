@@ -15,12 +15,12 @@ func TestRecipeStepIngredientCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepIngredientCreationRequestInput{
-			IngredientID:    func(x string) *string { return &x }(fake.Word()),
-			QuantityType:    fake.Word(),
+			IngredientID:    func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
+			QuantityType:    fake.LoremIpsumSentence(exampleQuantity),
 			QuantityValue:   fake.Float32(),
-			QuantityNotes:   fake.Word(),
+			QuantityNotes:   fake.LoremIpsumSentence(exampleQuantity),
 			ProductOfRecipe: fake.Bool(),
-			IngredientNotes: fake.Word(),
+			IngredientNotes: fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -44,12 +44,12 @@ func TestRecipeStepIngredientUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepIngredientUpdateRequestInput{
-			IngredientID:    func(x string) *string { return &x }(fake.Word()),
-			QuantityType:    fake.Word(),
+			IngredientID:    func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
+			QuantityType:    fake.LoremIpsumSentence(exampleQuantity),
 			QuantityValue:   fake.Float32(),
-			QuantityNotes:   fake.Word(),
+			QuantityNotes:   fake.LoremIpsumSentence(exampleQuantity),
 			ProductOfRecipe: fake.Bool(),
-			IngredientNotes: fake.Word(),
+			IngredientNotes: fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

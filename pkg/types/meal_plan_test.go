@@ -15,7 +15,7 @@ func TestMealPlanCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanCreationRequestInput{
-			State:    fake.Word(),
+			State:    fake.LoremIpsumSentence(exampleQuantity),
 			StartsAt: uint64(fake.Uint32()),
 			EndsAt:   uint64(fake.Uint32()),
 		}
@@ -41,7 +41,7 @@ func TestMealPlanUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanUpdateRequestInput{
-			State:    fake.Word(),
+			State:    fake.LoremIpsumSentence(exampleQuantity),
 			StartsAt: uint64(fake.Uint32()),
 			EndsAt:   uint64(fake.Uint32()),
 		}

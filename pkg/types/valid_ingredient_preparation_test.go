@@ -15,9 +15,9 @@ func TestValidIngredientPreparationCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidIngredientPreparationCreationRequestInput{
-			Notes:              fake.Word(),
-			ValidPreparationID: fake.Word(),
-			ValidIngredientID:  fake.Word(),
+			Notes:              fake.LoremIpsumSentence(exampleQuantity),
+			ValidPreparationID: fake.LoremIpsumSentence(exampleQuantity),
+			ValidIngredientID:  fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -41,9 +41,9 @@ func TestValidIngredientPreparationUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidIngredientPreparationUpdateRequestInput{
-			Notes:              fake.Word(),
-			ValidPreparationID: fake.Word(),
-			ValidIngredientID:  fake.Word(),
+			Notes:              fake.LoremIpsumSentence(exampleQuantity),
+			ValidPreparationID: fake.LoremIpsumSentence(exampleQuantity),
+			ValidIngredientID:  fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

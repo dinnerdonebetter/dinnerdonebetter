@@ -471,7 +471,12 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 
 		// MealPlanOptions
 		mealPlanOptionPath := "meal_plan_options"
-		mealPlanOptionsRouteWithPrefix := fmt.Sprintf("/%s", mealPlanOptionPath)
+		mealPlanOptionsRoute := path.Join(
+			mealPlanPath,
+			mealPlanIDRouteParam,
+			mealPlanOptionPath,
+		)
+		mealPlanOptionsRouteWithPrefix := fmt.Sprintf("/%s", mealPlanOptionsRoute)
 		mealPlanOptionIDRouteParam := buildURLVarChunk(mealplanoptionsservice.MealPlanOptionIDURIParamKey, "")
 		v1Router.Route(mealPlanOptionsRouteWithPrefix, func(mealPlanOptionsRouter routing.Router) {
 			mealPlanOptionsRouter.
@@ -496,7 +501,14 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 
 		// MealPlanOptionVotes
 		mealPlanOptionVotePath := "meal_plan_option_votes"
-		mealPlanOptionVotesRouteWithPrefix := fmt.Sprintf("/%s", mealPlanOptionVotePath)
+		mealPlanOptionVotesRoute := path.Join(
+			mealPlanPath,
+			mealPlanIDRouteParam,
+			mealPlanOptionPath,
+			mealPlanOptionIDRouteParam,
+			mealPlanOptionVotePath,
+		)
+		mealPlanOptionVotesRouteWithPrefix := fmt.Sprintf("/%s", mealPlanOptionVotesRoute)
 		mealPlanOptionVoteIDRouteParam := buildURLVarChunk(mealplanoptionvotesservice.MealPlanOptionVoteIDURIParamKey, "")
 		v1Router.Route(mealPlanOptionVotesRouteWithPrefix, func(mealPlanOptionVotesRouter routing.Router) {
 			mealPlanOptionVotesRouter.

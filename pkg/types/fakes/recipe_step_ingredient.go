@@ -27,11 +27,11 @@ func BuildFakeFullRecipeStepIngredient() *types.FullRecipeStepIngredient {
 	return &types.FullRecipeStepIngredient{
 		ID:                  ksuid.New().String(),
 		Ingredient:          *BuildFakeValidIngredient(),
-		QuantityType:        fake.Word(),
+		QuantityType:        fake.LoremIpsumSentence(exampleQuantity),
 		QuantityValue:       float32(fake.Uint32()),
-		QuantityNotes:       fake.Word(),
+		QuantityNotes:       fake.LoremIpsumSentence(exampleQuantity),
 		ProductOfRecipeStep: fake.Bool(),
-		IngredientNotes:     fake.Word(),
+		IngredientNotes:     fake.LoremIpsumSentence(exampleQuantity),
 		CreatedOn:           uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipeStep: ksuid.New().String(),
 	}

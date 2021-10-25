@@ -17,7 +17,7 @@ func TestMealPlanOptionVoteCreationRequestInput_Validate(T *testing.T) {
 		x := &MealPlanOptionVoteCreationRequestInput{
 			Points:  fake.Int16(),
 			Abstain: fake.Bool(),
-			Notes:   fake.Word(),
+			Notes:   fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -43,7 +43,7 @@ func TestMealPlanOptionVoteUpdateRequestInput_Validate(T *testing.T) {
 		x := &MealPlanOptionVoteUpdateRequestInput{
 			Points:  fake.Int16(),
 			Abstain: fake.Bool(),
-			Notes:   fake.Word(),
+			Notes:   fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

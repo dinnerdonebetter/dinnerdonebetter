@@ -13,7 +13,7 @@ func BuildFakeMealPlanOptionVote() *types.MealPlanOptionVote {
 		ID:                      ksuid.New().String(),
 		Points:                  fake.Int16(),
 		Abstain:                 fake.Bool(),
-		Notes:                   fake.Word(),
+		Notes:                   fake.LoremIpsumSentence(exampleQuantity),
 		CreatedOn:               uint64(uint32(fake.Date().Unix())),
 		BelongsToMealPlanOption: fake.UUID(),
 	}

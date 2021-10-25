@@ -15,10 +15,10 @@ func TestValidInstrumentCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidInstrumentCreationRequestInput{
-			Name:        fake.Word(),
-			Variant:     fake.Word(),
-			Description: fake.Word(),
-			IconPath:    fake.Word(),
+			Name:        fake.LoremIpsumSentence(exampleQuantity),
+			Variant:     fake.LoremIpsumSentence(exampleQuantity),
+			Description: fake.LoremIpsumSentence(exampleQuantity),
+			IconPath:    fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -42,10 +42,10 @@ func TestValidInstrumentUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidInstrumentUpdateRequestInput{
-			Name:        fake.Word(),
-			Variant:     fake.Word(),
-			Description: fake.Word(),
-			IconPath:    fake.Word(),
+			Name:        fake.LoremIpsumSentence(exampleQuantity),
+			Variant:     fake.LoremIpsumSentence(exampleQuantity),
+			Description: fake.LoremIpsumSentence(exampleQuantity),
+			IconPath:    fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

@@ -291,8 +291,13 @@ func (q *SQLQuerier) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 		input.BelongsToHousehold,
 	}
 
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "beginning transaction")
+	}
+
 	// create the meal plan.
-	if err := q.performWriteQuery(ctx, q.db, "meal plan creation", mealPlanCreationQuery, args); err != nil {
+	if err := q.performWriteQuery(ctx, tx, "meal plan creation", mealPlanCreationQuery, args); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "creating meal plan")
 	}
 
@@ -304,6 +309,20 @@ func (q *SQLQuerier) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 		EndsAt:             input.EndsAt,
 		BelongsToHousehold: input.BelongsToHousehold,
 		CreatedOn:          q.currentTime(),
+	}
+
+	for _, option := range input.Options {
+		option.BelongsToMealPlan = x.ID
+		opt, createErr := q.createMealPlanOption(ctx, tx, option)
+		if createErr != nil {
+			q.rollbackTransaction(ctx, tx)
+			return nil, observability.PrepareError(createErr, logger, span, "creating meal plan option for meal plan")
+		}
+		x.Options = append(x.Options, opt)
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "committing transaction")
 	}
 
 	tracing.AttachMealPlanIDToSpan(span, x.ID)

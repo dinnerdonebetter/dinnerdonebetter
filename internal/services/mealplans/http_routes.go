@@ -65,6 +65,10 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := types.MealPlanDatabaseCreationInputFromMealPlanCreationInput(providedInput)
 	input.ID = ksuid.New().String()
 
+	for i := range input.Options {
+		input.Options[i].ID = ksuid.New().String()
+	}
+
 	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 	tracing.AttachMealPlanIDToSpan(span, input.ID)
 

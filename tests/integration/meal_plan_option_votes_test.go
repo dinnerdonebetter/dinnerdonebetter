@@ -64,6 +64,7 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 			t.Log("creating prerequisite meal plan option")
 			exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 			exampleMealPlanOption.BelongsToMealPlan = createdMealPlan.ID
+			//exampleMealPlanOption.RecipeID = createdRecipe.ID
 			exampleMealPlanOptionInput := fakes.BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(exampleMealPlanOption)
 			createdMealPlanOptionID, err := testClients.main.CreateMealPlanOption(ctx, exampleMealPlanOptionInput)
 			require.NoError(t, err)
@@ -132,6 +133,8 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			_, _, createdRecipe := createRecipeWithPolling(ctx, t, testClients.main)
+
 			t.Log("creating prerequisite meal plan")
 			exampleMealPlan := fakes.BuildFakeMealPlan()
 			exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
@@ -150,6 +153,7 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 			t.Log("creating prerequisite meal plan option")
 			exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 			exampleMealPlanOption.BelongsToMealPlan = createdMealPlan.ID
+			exampleMealPlanOption.RecipeID = createdRecipe.ID
 			exampleMealPlanOptionInput := fakes.BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(exampleMealPlanOption)
 			createdMealPlanOptionID, err := testClients.main.CreateMealPlanOption(ctx, exampleMealPlanOptionInput)
 			require.NoError(t, err)

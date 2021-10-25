@@ -302,8 +302,8 @@ func (q *SQLQuerier) GetMealPlanOptionsWithIDs(ctx context.Context, mealPlanID s
 
 const mealPlanOptionCreationQuery = "INSERT INTO meal_plan_options (id,day_of_week,recipe_id,notes,belongs_to_meal_plan) VALUES ($1,$2,$3,$4,$5)"
 
-// CreateMealPlanOption creates a meal plan option in the database.
-func (q *SQLQuerier) CreateMealPlanOption(ctx context.Context, input *types.MealPlanOptionDatabaseCreationInput) (*types.MealPlanOption, error) {
+// createMealPlanOption creates a meal plan option in the database.
+func (q *SQLQuerier) createMealPlanOption(ctx context.Context, db database.SQLQueryExecutor, input *types.MealPlanOptionDatabaseCreationInput) (*types.MealPlanOption, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -322,7 +322,7 @@ func (q *SQLQuerier) CreateMealPlanOption(ctx context.Context, input *types.Meal
 	}
 
 	// create the meal plan option.
-	if err := q.performWriteQuery(ctx, q.db, "meal plan option creation", mealPlanOptionCreationQuery, args); err != nil {
+	if err := q.performWriteQuery(ctx, db, "meal plan option creation", mealPlanOptionCreationQuery, args); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "creating meal plan option")
 	}
 
@@ -339,6 +339,11 @@ func (q *SQLQuerier) CreateMealPlanOption(ctx context.Context, input *types.Meal
 	logger.Info("meal plan option created")
 
 	return x, nil
+}
+
+// CreateMealPlanOption creates a meal plan option in the database.
+func (q *SQLQuerier) CreateMealPlanOption(ctx context.Context, input *types.MealPlanOptionDatabaseCreationInput) (*types.MealPlanOption, error) {
+	return q.createMealPlanOption(ctx, q.db, input)
 }
 
 const updateMealPlanOptionQuery = "UPDATE meal_plan_options SET day_of_week = $1, recipe_id = $2, notes = $3, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_meal_plan = $4 AND id = $5"

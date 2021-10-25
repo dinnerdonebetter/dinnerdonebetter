@@ -65,6 +65,11 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := types.RecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredientCreationInput(providedInput)
 	input.ID = ksuid.New().String()
 
+	// determine recipe ID.
+	recipeID := s.recipeIDFetcher(req)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+
 	// determine recipe step ID.
 	recipeStepID := s.recipeStepIDFetcher(req)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
@@ -76,6 +81,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	// create recipe step ingredient in database.
 	preWrite := &types.PreWriteMessage{
 		DataType:                  types.RecipeStepIngredientDataType,
+		RecipeID:                  recipeID,
 		RecipeStepID:              recipeStepID,
 		RecipeStepIngredient:      input,
 		AttributableToUserID:      sessionCtxData.Requester.UserID,
@@ -254,6 +260,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	pum := &types.PreUpdateMessage{
 		DataType:                  types.RecipeStepIngredientDataType,
+		RecipeID:                  recipeID,
 		RecipeStepID:              recipeStepID,
 		RecipeStepIngredient:      recipeStepIngredient,
 		AttributableToUserID:      sessionCtxData.Requester.UserID,
@@ -315,6 +322,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	pam := &types.PreArchiveMessage{
 		DataType:                  types.RecipeStepIngredientDataType,
+		RecipeID:                  recipeID,
 		RecipeStepID:              recipeStepID,
 		RecipeStepIngredientID:    recipeStepIngredientID,
 		AttributableToUserID:      sessionCtxData.Requester.UserID,

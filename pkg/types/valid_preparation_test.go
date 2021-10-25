@@ -15,9 +15,9 @@ func TestValidPreparationCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidPreparationCreationRequestInput{
-			Name:        fake.Word(),
-			Description: fake.Word(),
-			IconPath:    fake.Word(),
+			Name:        fake.LoremIpsumSentence(exampleQuantity),
+			Description: fake.LoremIpsumSentence(exampleQuantity),
+			IconPath:    fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -41,9 +41,9 @@ func TestValidPreparationUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidPreparationUpdateRequestInput{
-			Name:        fake.Word(),
-			Description: fake.Word(),
-			IconPath:    fake.Word(),
+			Name:        fake.LoremIpsumSentence(exampleQuantity),
+			Description: fake.LoremIpsumSentence(exampleQuantity),
+			IconPath:    fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

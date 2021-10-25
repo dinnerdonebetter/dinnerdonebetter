@@ -20,7 +20,7 @@ const (
 	pasetoAuthType = "PASETO"
 
 	creationTimeout = 10 * time.Second
-	waitPeriod      = 100 * time.Millisecond
+	waitPeriod      = 1000 * time.Millisecond
 )
 
 var (

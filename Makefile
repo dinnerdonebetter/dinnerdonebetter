@@ -226,6 +226,9 @@ deploy_base_infra:
 .PHONY: lintegration_tests # this is just a handy lil' helper I use sometimes
 lintegration_tests: lint clear integration-tests
 
+.PHONY: integration_tests
+integration_tests: integration-tests-postgres
+
 .PHONY: integration-tests
 integration-tests: integration-tests-postgres
 

@@ -56,7 +56,7 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 
 			var n *types.DataChangeMessage
 
-			createdValidIngredient, createdValidPreparation, createdRecipe := createRecipeWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
+			createdValidIngredients, createdValidPreparation, createdRecipe := createRecipeWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
 
 			var createdRecipeStep *types.RecipeStep
 			for _, step := range createdRecipe.Steps {
@@ -69,7 +69,7 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 			newRecipeStep.BelongsToRecipe = createdRecipe.ID
 			newRecipeStep.PreparationID = createdValidPreparation.ID
 			for j := range newRecipeStep.Ingredients {
-				newRecipeStep.Ingredients[j].IngredientID = stringPointer(createdValidIngredient.ID)
+				newRecipeStep.Ingredients[j].IngredientID = stringPointer(createdValidIngredients[j].ID)
 			}
 
 			createdRecipeStep.Update(convertRecipeStepToRecipeStepUpdateInput(newRecipeStep))
@@ -102,7 +102,7 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidIngredient, createdValidPreparation, createdRecipe := createRecipeWithPolling(ctx, t, testClients.main)
+			createdValidIngredients, createdValidPreparation, createdRecipe := createRecipeWithPolling(ctx, t, testClients.main)
 
 			var createdRecipeStep *types.RecipeStep
 			for _, step := range createdRecipe.Steps {
@@ -115,7 +115,7 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 			newRecipeStep.BelongsToRecipe = createdRecipe.ID
 			newRecipeStep.PreparationID = createdValidPreparation.ID
 			for j := range newRecipeStep.Ingredients {
-				newRecipeStep.Ingredients[j].IngredientID = stringPointer(createdValidIngredient.ID)
+				newRecipeStep.Ingredients[j].IngredientID = stringPointer(createdValidIngredients[j].ID)
 			}
 
 			createdRecipeStep.Update(convertRecipeStepToRecipeStepUpdateInput(newRecipeStep))
@@ -163,7 +163,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 
 			var n *types.DataChangeMessage
 
-			createdValidIngredient, createdValidPreparation, createdRecipe := createRecipeWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
+			createdValidIngredients, createdValidPreparation, createdRecipe := createRecipeWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
 
 			t.Log("creating recipe steps")
 			var expected []*types.RecipeStep
@@ -172,7 +172,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 				exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
 				exampleRecipeStep.PreparationID = createdValidPreparation.ID
 				for j := range exampleRecipeStep.Ingredients {
-					exampleRecipeStep.Ingredients[j].IngredientID = stringPointer(createdValidIngredient.ID)
+					exampleRecipeStep.Ingredients[j].IngredientID = stringPointer(createdValidIngredients[j].ID)
 				}
 
 				exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationRequestInputFromRecipeStep(exampleRecipeStep)
@@ -221,7 +221,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidIngredient, createdValidPreparation, createdRecipe := createRecipeWithPolling(ctx, t, testClients.main)
+			createdValidIngredients, createdValidPreparation, createdRecipe := createRecipeWithPolling(ctx, t, testClients.main)
 
 			t.Log("creating recipe steps")
 			var expected []*types.RecipeStep
@@ -230,7 +230,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 				exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
 				exampleRecipeStep.PreparationID = createdValidPreparation.ID
 				for j := range exampleRecipeStep.Ingredients {
-					exampleRecipeStep.Ingredients[j].IngredientID = stringPointer(createdValidIngredient.ID)
+					exampleRecipeStep.Ingredients[j].IngredientID = stringPointer(createdValidIngredients[j].ID)
 				}
 
 				exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationRequestInputFromRecipeStep(exampleRecipeStep)

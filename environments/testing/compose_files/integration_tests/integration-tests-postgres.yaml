@@ -15,6 +15,8 @@ services:
     prixfixe_api_server:
         hostname: api_server
         container_name: integration_tests_server
+#        logging:
+#            driver: none
         depends_on:
             - workers
         links:
