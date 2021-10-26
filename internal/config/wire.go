@@ -18,6 +18,7 @@ var (
 			"Search",
 			"Events",
 			"Server",
+			"Routing",
 			"Services",
 		),
 		wire.FieldsOf(

@@ -123,6 +123,7 @@ import format from "string-format";
 import {ValidIngredient} from "../../../models";
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {backendRoutes} from "../../../constants";
+import {settings} from "../../../settings/settings";
 
 export default defineComponent({
     data() {
@@ -169,7 +170,7 @@ export default defineComponent({
           });
       },
       saveIngredient(): void {
-        const path = this.creationMode ? backendRoutes.VALID_INGREDIENTS : this.ingredientAPIPath;
+        const path = this.creationMode ? `${settings.API_SERVER_URL}${backendRoutes.VALID_INGREDIENTS}` : this.ingredientAPIPath;
         const requestPromise = this.creationMode ? axios.post(path, this.ingredient) : axios.put(path, this.ingredient)
 
         requestPromise
@@ -191,7 +192,7 @@ export default defineComponent({
 
       if (ingredientID) {
         this.creationMode = false;
-        this.ingredientAPIPath = format(backendRoutes.VALID_INGREDIENT, ingredientID.toString());
+        this.ingredientAPIPath = format(`${settings.API_SERVER_URL}${backendRoutes.VALID_INGREDIENT}`, ingredientID.toString());
 
         axios.get(this.ingredientAPIPath)
             .then((res: AxiosResponse<ValidIngredient>) => {

@@ -13,12 +13,13 @@
 </template>
 
 <script lang="ts">
+import axios, {AxiosError, AxiosResponse} from "axios";
+import format from "string-format";
 import { defineComponent} from "vue";
 
 import {backendRoutes} from "../../constants";
-import axios, {AxiosError, AxiosResponse} from "axios";
 import {FullRecipe} from "../../models";
-import format from "string-format";
+import { settings } from "../../settings/settings";
 
 export default defineComponent({
   data() {
@@ -31,7 +32,7 @@ export default defineComponent({
     const recipeID = this.$route.params.recipeID;
 
     if (recipeID) {
-      this.recipeAPIPath = format(backendRoutes.RECIPE, recipeID.toString());
+      this.recipeAPIPath = format(`${settings.API_SERVER_URL}${backendRoutes.RECIPE}`, recipeID.toString());
 
       axios.get(this.recipeAPIPath)
         .then((res: AxiosResponse<FullRecipe>) => {

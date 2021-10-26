@@ -11,17 +11,17 @@ import (
 
 	"gitlab.com/prixfixe/prixfixe/internal/authentication"
 	"gitlab.com/prixfixe/prixfixe/internal/config"
-	database "gitlab.com/prixfixe/prixfixe/internal/database"
+	"gitlab.com/prixfixe/prixfixe/internal/database"
 	dbconfig "gitlab.com/prixfixe/prixfixe/internal/database/config"
 	"gitlab.com/prixfixe/prixfixe/internal/encoding"
 	msgconfig "gitlab.com/prixfixe/prixfixe/internal/messagequeue/config"
-	observability "gitlab.com/prixfixe/prixfixe/internal/observability"
+	"gitlab.com/prixfixe/prixfixe/internal/observability"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/internal/search"
 	"gitlab.com/prixfixe/prixfixe/internal/secrets"
-	server "gitlab.com/prixfixe/prixfixe/internal/server"
+	"gitlab.com/prixfixe/prixfixe/internal/server"
 	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
 	frontendservice "gitlab.com/prixfixe/prixfixe/internal/services/frontend"
 	householdsservice "gitlab.com/prixfixe/prixfixe/internal/services/households"
@@ -39,8 +39,8 @@ import (
 	validpreparationsservice "gitlab.com/prixfixe/prixfixe/internal/services/validpreparations"
 	webhooksservice "gitlab.com/prixfixe/prixfixe/internal/services/webhooks"
 	websocketsservice "gitlab.com/prixfixe/prixfixe/internal/services/websockets"
-	storage "gitlab.com/prixfixe/prixfixe/internal/storage"
-	uploads "gitlab.com/prixfixe/prixfixe/internal/uploads"
+	"gitlab.com/prixfixe/prixfixe/internal/storage"
+	"gitlab.com/prixfixe/prixfixe/internal/uploads"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
@@ -84,9 +84,11 @@ var (
 	}
 
 	localServer = server.Config{
-		Debug:           true,
-		HTTPPort:        defaultPort,
-		StartupDeadline: time.Minute,
+		Debug:                   true,
+		HTTPPort:                defaultPort,
+		StartupDeadline:         time.Minute,
+		HTTPSCertificateFile:    "/etc/certs/cert.pem",
+		HTTPSCertificateKeyFile: "/etc/certs/key.pem",
 	}
 
 	localCookies = authservice.CookieConfig{
@@ -95,7 +97,7 @@ var (
 		HashKey:    debugCookieSecret,
 		SigningKey: debugCookieSecret,
 		Lifetime:   authservice.DefaultCookieLifetime,
-		SecureOnly: false,
+		SecureOnly: true,
 	}
 
 	localTracingConfig = tracing.Config{

@@ -8,6 +8,7 @@ import (
 
 	"gitlab.com/prixfixe/prixfixe/internal/authorization"
 	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
+	"gitlab.com/prixfixe/prixfixe/internal/routing"
 	"gitlab.com/prixfixe/prixfixe/internal/routing/chi"
 	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
 )
@@ -38,7 +39,7 @@ func TestService_SetupRoutes(T *testing.T) {
 		).Return(http.Handler(obligatoryHandler))
 		s.service.authService = authService
 
-		router := chi.NewRouter(logging.NewNoopLogger())
+		router := chi.NewRouter(logging.NewNoopLogger(), &routing.Config{})
 
 		s.service.SetupRoutes(router)
 	})

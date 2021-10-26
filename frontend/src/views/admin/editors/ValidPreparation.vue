@@ -39,6 +39,7 @@ import format from "string-format";
 import {ValidPreparation} from "../../../models";
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {backendRoutes} from "../../../constants";
+import {settings} from "../../../settings/settings";
 
 export default defineComponent({
   data() {
@@ -70,7 +71,7 @@ export default defineComponent({
           });
     },
     savePreparation(): void {
-      const path = this.creationMode ? backendRoutes.VALID_PREPARATIONS : this.preparationAPIPath;
+      const path = this.creationMode ? `${settings.API_SERVER_URL}${backendRoutes.VALID_PREPARATIONS}` : this.preparationAPIPath;
       const requestPromise = this.creationMode ? axios.post(path, this.preparation) : axios.put(path, this.preparation)
 
       requestPromise
@@ -92,7 +93,7 @@ export default defineComponent({
 
     if (preparationID) {
       this.creationMode = false;
-      this.preparationAPIPath = format(backendRoutes.VALID_PREPARATION, preparationID.toString());
+      this.preparationAPIPath = format(`${settings.API_SERVER_URL}${backendRoutes.VALID_PREPARATION}`, preparationID.toString());
 
       axios.get(this.preparationAPIPath)
           .then((res: AxiosResponse<ValidPreparation>) => {

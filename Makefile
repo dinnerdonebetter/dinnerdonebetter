@@ -13,6 +13,7 @@ TEST_ENVIRONMENT_DIR          := $(ENVIRONMENTS_DIR)/testing
 TEST_DOCKER_COMPOSE_FILES_DIR := $(TEST_ENVIRONMENT_DIR)/compose_files
 FRONTEND_DIR                  := frontend
 FRONTEND_TOOL                 := pnpm
+DEFAULT_CERT_TARGETS          := prixfixe.local localhost 127.0.0.1 ::1
 
 ## non-PHONY folders/files
 
@@ -35,7 +36,7 @@ clean-search-indices:
 	@rm -rf $(SEARCH_INDICES_DIR)
 
 .PHONY: setup
-setup: $(ARTIFACTS_DIR) $(SEARCH_INDICES_DIR) revendor frontend_vendor rewire configs
+setup: $(ARTIFACTS_DIR) $(SEARCH_INDICES_DIR) revendor rewire configs
 
 .PHONY: configs
 configs:
@@ -75,7 +76,19 @@ vendor:
 	go mod vendor
 
 .PHONY: revendor
-revendor: clean_vendor vendor # frontend_vendor
+revendor: clean_vendor vendor
+
+.PHONY: clean_certs
+clean_certs:
+	rm -rf environments/local/certificates
+	rm -rf environments/testing/certificates
+	rm -rf frontend/certificates
+
+.PHONY: create_certs
+create_certs: clean_certs
+	(mkdir -p environments/local/certificates && cd environments/local/certificates && mkcert -client -cert-file cert.pem -key-file key.pem api.prixfixe.local $(DEFAULT_CERT_TARGETS))
+	(mkdir -p environments/testing/certificates && cd environments/testing/certificates && mkcert -client -cert-file cert.pem -key-file key.pem api.prixfixe.local $(DEFAULT_CERT_TARGETS))
+	(mkdir -p frontend/certificates && cd frontend/certificates && mkcert -client -cert-file cert.pem -key-file key.pem www.prixfixe.local $(DEFAULT_CERT_TARGETS))
 
 ## dependency injection
 
@@ -92,23 +105,10 @@ rewire: ensure_wire_installed clean_wire wire
 
 ## Frontend stuff
 
-.PHONY: clean_frontend
-clean_frontend:
-	@(cd $(FRONTEND_DIR) && rm -rf dist/build/)
-
-.PHONY: frontend_vendor
-frontend_vendor:
-	@(cd $(FRONTEND_DIR) && $(FRONTEND_TOOL) install)
-
 .PHONY: dev_frontend
-dev_frontend: ensure_pnpm_installed clean-frontend
-	@(cd $(FRONTEND_DIR) && $(FRONTEND_TOOL) run autobuild)
-
-# frontend-only runs a simple static server that powers the frontend of the application. In this mode, all API calls are
-# skipped, and data on the page is faked. This is useful for making changes that don't require running the entire service.
-.PHONY: frontend_only
-frontend_only: ensure_pnpm_installed clean-frontend
-	@(cd $(FRONTEND_DIR) && $(FRONTEND_TOOL) run start:frontend-only)
+dev_frontend: ensure_pnpm_installed
+	docker build --tag frontend:dev_latest --file frontend/app.Dockerfile frontend
+	docker run --interactive --tty --rm --network=host frontend:dev_latest
 
 ## formatting
 
@@ -238,8 +238,8 @@ integration_tests_postgres: integration-tests-postgres
 .PHONY: integration-tests-
 integration-tests-%:
 	docker-compose \
-	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration_tests/integration-tests-base.yaml \
-	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration_tests/integration-tests-$*.yaml up \
+	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests-base.yaml \
+	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests-$*.yaml up \
 	--build \
 	--force-recreate \
 	--remove-orphans \

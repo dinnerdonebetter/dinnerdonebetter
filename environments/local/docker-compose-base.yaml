@@ -31,13 +31,13 @@ services:
         logging:
             driver: none
         ports:
-            - "5775:5775/udp"
-            - "6831:6831/udp"
-            - "6832:6832/udp"
-            - "5778:5778"
-            - "16686:16686"
-            - "14268:14268"
-            - "9411:9411"
+          - "16686:16686"
+          - "14268:14268"
+          # - "5775:5775/udp"
+          # - "6831:6831/udp"
+          # - "6832:6832/udp"
+          # - "5778:5778"
+          # - "9411:9411"
     prometheus:
         image: quay.io/prometheus/prometheus:v2.25.0
         command: '--config.file=/etc/prometheus/config.yaml --storage.tsdb.path=/prometheus --log.level=debug'
@@ -74,7 +74,7 @@ services:
     loki:
       image: grafana/loki:v1.3.0
       volumes:
-        - source: '../../../../environments/local/loki/config.yaml'
+        - source: '../../environments/local/loki/config.yaml'
           target: '/etc/config/loki.yaml'
           type: 'bind'
       entrypoint:
@@ -85,6 +85,8 @@ services:
     cadvisor:
       image: google/cadvisor:latest
       container_name: mon_cadvisor
+      ports:
+        - "10000:8080"
       restart: always
       volumes:
         - /etc/localtime:/etc/localtime:ro

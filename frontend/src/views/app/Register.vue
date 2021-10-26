@@ -97,6 +97,8 @@
 <script lang="ts">
 import axios, {AxiosError, AxiosResponse} from "axios";
 import { defineComponent } from "vue";
+import {settings} from "../../settings/settings";
+import {backendRoutes} from "../../constants";
 
 interface registrationResponse {
   qrCode: string;
@@ -121,7 +123,7 @@ export default defineComponent({
         password: this.password,
       }
 
-      axios.post("/users", registrationBody)
+      axios.post(`${settings.API_SERVER_URL}${backendRoutes.USER_REGISTRATION}`, registrationBody)
         .then((result: AxiosResponse<registrationResponse>) => {
           this.registrationVerificationQRCode = result.data.qrCode;
           this.createdUserID = result.data.createdUserID;
@@ -136,7 +138,7 @@ export default defineComponent({
         userID: this.createdUserID,
       }
 
-      axios.post("/users/totp_secret/verify", confirmationBody)
+      axios.post(`${settings.API_SERVER_URL}${backendRoutes.VERIFY_2FA_SECRET}`, confirmationBody)
           .then(() => {
             this.$router.push("/login");
           })

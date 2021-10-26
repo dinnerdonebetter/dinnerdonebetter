@@ -13,12 +13,13 @@
 </template>
 
 <script lang="ts">
+import axios, {AxiosError, AxiosResponse} from "axios";
 import { defineComponent } from "vue";
 
 import DataTable from "../../../components/admin/DataTable.vue";
 import {backendRoutes} from "../../../constants";
 import {QueryFilter, Recipe, RecipeList} from "../../../models";
-import axios, {AxiosError, AxiosResponse} from "axios";
+import {settings} from "../../../settings/settings";
 
 function filterRecipeFields(input: Recipe): string[] {
   return [
@@ -75,7 +76,7 @@ export default defineComponent({
     fetchRecipesFromAPI(): void {
       this.loading = true;
       const u = new URL(
-          `${location.protocol}//${location.host}${backendRoutes.RECIPES}${location.search}`,
+          `${settings.API_SERVER_URL}${backendRoutes.RECIPES}${location.search}`,
       );
       const qf = new QueryFilter(u.searchParams);
       qf.page = this.currentPage;
@@ -104,7 +105,7 @@ export default defineComponent({
       }
 
       const u = new URL(
-          `${location.protocol}//${location.host}${backendRoutes.RECIPES_SEARCH}?q=${encodeURIComponent(this.searchQuery)}`,
+          `${settings.API_SERVER_URL}${backendRoutes.RECIPES_SEARCH}?q=${encodeURIComponent(this.searchQuery)}`,
       );
 
       axios.get(u.toString())

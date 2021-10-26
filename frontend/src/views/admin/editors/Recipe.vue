@@ -107,6 +107,7 @@ import { useRouter } from "vue-router";
 
 import { Recipe, RecipeStep, RecipeStepIngredient } from "../../../models";
 import {backendRoutes} from "../../../constants";
+import {settings} from "../../../settings/settings";
 
 class SearchSuggestion {
     name: string;
@@ -170,7 +171,7 @@ export default defineComponent({
       queryForValidPreparation(stepIndex: number) {
           let query = this.preparationQueries[stepIndex].trim();
 
-          const searchURL = `${backendRoutes.VALID_PREPARATIONS_SEARCH}?q=${encodeURIComponent(query)}`;
+          const searchURL = `${settings.API_SERVER_URL}${backendRoutes.VALID_PREPARATIONS_SEARCH}?q=${encodeURIComponent(query)}`;
 
           if (query.length > 1) {
             axios.get(searchURL)
@@ -214,7 +215,7 @@ export default defineComponent({
           this.validIngredientSuggestions[stepIndex][ingredientIndex] = [];
       },
       submitRecipe() {
-        axios.post(backendRoutes.RECIPES, this.recipe)
+        axios.post(`${settings.API_SERVER_URL}${backendRoutes.RECIPES}`, this.recipe)
         .then((res: AxiosResponse<Recipe>) => {
           console.dir(res.data);
         })

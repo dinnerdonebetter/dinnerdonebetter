@@ -82,6 +82,7 @@ type (
 	// InstanceConfig configures an instance of the service. It is composed of all the other setting structs.
 	InstanceConfig struct {
 		_             struct{}
+		Server        server.Config          `json:"server" mapstructure:"server" toml:"server,omitempty"`
 		Events        msgconfig.Config       `json:"events" mapstructure:"events" toml:"events,omitempty"`
 		Search        search.Config          `json:"search" mapstructure:"search" toml:"search,omitempty"`
 		Encoding      encoding.Config        `json:"encoding" mapstructure:"encoding" toml:"encoding,omitempty"`
@@ -91,7 +92,6 @@ type (
 		Database      dbconfig.Config        `json:"database" mapstructure:"database" toml:"database,omitempty"`
 		Meta          MetaSettings           `json:"meta" mapstructure:"meta" toml:"meta,omitempty"`
 		Services      ServicesConfigurations `json:"services" mapstructure:"services" toml:"services,omitempty"`
-		Server        server.Config          `json:"server" mapstructure:"server" toml:"server,omitempty"`
 	}
 )
 

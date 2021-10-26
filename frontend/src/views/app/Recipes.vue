@@ -56,6 +56,7 @@ import { defineComponent} from "vue";
 import {backendRoutes} from "../../constants";
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {Recipe, RecipeList} from "../../models";
+import {settings} from "../../settings/settings";
 
 export default defineComponent({
   data() {
@@ -64,7 +65,7 @@ export default defineComponent({
     }
   },
   beforeMount: function () {
-    axios.get(backendRoutes.RECIPES)
+    axios.get(`${settings.API_SERVER_URL}${backendRoutes.RECIPES}`)
       .then((res: AxiosResponse<RecipeList>) => {
         this.recipes = res.data.recipes;
         console.dir(this.recipes);

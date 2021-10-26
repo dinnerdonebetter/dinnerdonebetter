@@ -3,3 +3,9 @@ declare module '*.vue' {
   const Component: ReturnType<typeof defineComponent>;
   export default Component;
 }
+
+interface ImportMeta {
+  env: {
+    VITE_API_SERVER_URL?: string;
+  };
+}

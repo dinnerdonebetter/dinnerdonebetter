@@ -41,6 +41,7 @@ import format from "string-format";
 import {ValidInstrument} from "../../../models";
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {backendRoutes} from "../../../constants";
+import {settings} from "../../../settings/settings";
 
 export default defineComponent({
   data() {
@@ -73,7 +74,7 @@ export default defineComponent({
           });
     },
     saveInstrument(): void {
-      const path = this.creationMode ? backendRoutes.VALID_INSTRUMENTS : this.instrumentAPIPath;
+      const path = this.creationMode ? `${settings.API_SERVER_URL}${backendRoutes.VALID_INSTRUMENTS}` : this.instrumentAPIPath;
       const requestPromise = this.creationMode ? axios.post(path, this.instrument) : axios.put(path, this.instrument)
 
       requestPromise
@@ -95,7 +96,7 @@ export default defineComponent({
 
     if (instrumentID) {
       this.creationMode = false;
-      this.instrumentAPIPath = format(backendRoutes.VALID_INSTRUMENT, instrumentID.toString());
+      this.instrumentAPIPath = format(`${settings.API_SERVER_URL}${backendRoutes.VALID_INSTRUMENT}`, instrumentID.toString());
 
       axios.get(this.instrumentAPIPath)
           .then((res: AxiosResponse<ValidInstrument>) => {

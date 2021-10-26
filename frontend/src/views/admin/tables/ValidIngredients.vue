@@ -20,6 +20,7 @@ import DataTable from "../../../components/admin/DataTable.vue";
 import {backendRoutes} from "../../../constants";
 import {QueryFilter, ValidIngredient, ValidIngredientList} from "../../../models";
 import axios, {AxiosError, AxiosResponse} from "axios";
+import {settings} from "../../../settings/settings";
 
 function filterIngredientFields(input: ValidIngredient): string[] {
   return [
@@ -80,7 +81,7 @@ export default defineComponent({
     fetchValidIngredientsFromAPI(): void {
       this.loading = true;
       const u = new URL(
-          `${location.protocol}//${location.host}${backendRoutes.VALID_INGREDIENTS}${location.search}`,
+          `${settings.API_SERVER_URL}${backendRoutes.USERS_SEARCH}${backendRoutes.VALID_INGREDIENTS}${location.search}`,
       );
       const qf = new QueryFilter(u.searchParams);
       qf.page = this.currentPage;
@@ -109,7 +110,7 @@ export default defineComponent({
       }
 
       const u = new URL(
-          `${location.protocol}//${location.host}${backendRoutes.VALID_INGREDIENTS_SEARCH}?q=${encodeURIComponent(searchQuery)}`,
+          `${settings.API_SERVER_URL}${backendRoutes.USERS_SEARCH}${backendRoutes.VALID_INGREDIENTS_SEARCH}?q=${encodeURIComponent(searchQuery)}`,
       );
 
       axios.get(u.toString())

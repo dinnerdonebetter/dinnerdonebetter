@@ -72,8 +72,11 @@
 
 <script lang="ts">
 import axios, {AxiosError, AxiosResponse} from "axios";
-import { defineComponent} from "vue";
+import { defineComponent } from "vue";
+
 import { authenticationState, setAuthState } from "../../auth";
+import { settings } from "../../settings/settings";
+import {backendRoutes} from "../../constants";
 
 export default defineComponent({
   data() {
@@ -91,7 +94,7 @@ export default defineComponent({
         "totpToken": this.totpToken,
       }
 
-      axios.post("/users/login", loginBody)
+      axios.post(`${settings.API_SERVER_URL}${backendRoutes.LOGIN}`, loginBody)
           .then((result: AxiosResponse<authenticationState>) => {
             setAuthState(result.data);
             this.$router.push(result.data.userIsServiceAdmin ? "/admin/dashboard" : "/home");

@@ -16,7 +16,7 @@ import (
 )
 
 func buildRouterForTest() routing.Router {
-	return NewRouter(logging.NewNoopLogger())
+	return NewRouter(logging.NewNoopLogger(), &routing.Config{})
 }
 
 func TestNewRouter(T *testing.T) {
@@ -25,7 +25,7 @@ func TestNewRouter(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		assert.NotNil(t, NewRouter(logging.NewNoopLogger()))
+		assert.NotNil(t, NewRouter(logging.NewNoopLogger(), &routing.Config{}))
 	})
 }
 
@@ -35,7 +35,7 @@ func Test_buildChiMux(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		assert.NotNil(t, buildChiMux(logging.NewNoopLogger()))
+		assert.NotNil(t, buildChiMux(logging.NewNoopLogger(), &routing.Config{}))
 	})
 }
 
@@ -271,7 +271,7 @@ func Test_router_clone(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		r := buildRouter(nil, nil)
+		r := buildRouter(nil, nil, &routing.Config{})
 
 		assert.NotNil(t, r.clone())
 	})
@@ -283,7 +283,7 @@ func Test_router_BuildRouteParamIDFetcher(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		r := buildRouter(nil, nil)
+		r := buildRouter(nil, nil, &routing.Config{})
 		l := logging.NewNoopLogger()
 		ctx := context.Background()
 		exampleKey := "blah"
@@ -311,7 +311,7 @@ func Test_router_BuildRouteParamIDFetcher(T *testing.T) {
 	T.Run("without appropriate value attached to context", func(t *testing.T) {
 		t.Parallel()
 
-		r := buildRouter(nil, nil)
+		r := buildRouter(nil, nil, &routing.Config{})
 		l := logging.NewNoopLogger()
 		ctx := context.Background()
 		exampleKey := "blah"
@@ -334,7 +334,7 @@ func Test_router_BuildRouteParamStringIDFetcher(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		r := buildRouter(nil, nil)
+		r := buildRouter(nil, nil, &routing.Config{})
 		ctx := context.Background()
 		exampleKey := "blah"
 

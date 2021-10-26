@@ -8,7 +8,6 @@ package server
 
 import (
 	"context"
-
 	"gitlab.com/prixfixe/prixfixe/internal/authentication"
 	"gitlab.com/prixfixe/prixfixe/internal/config"
 	"gitlab.com/prixfixe/prixfixe/internal/database"
@@ -197,7 +196,8 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	frontendConfig := &servicesConfigurations.Frontend
 	frontendAuthService := frontend.ProvideAuthService(authService)
 	service := frontend.ProvideService(frontendConfig, logger, frontendAuthService)
-	router := chi.NewRouter(logger)
+	routingConfig := &cfg.Routing
+	router := chi.NewRouter(logger, routingConfig)
 	httpServer, err := server.ProvideHTTPServer(ctx, serverConfig, instrumentationHandler, authService, userDataService, householdDataService, apiClientDataService, websocketDataService, validInstrumentDataService, validIngredientDataService, validPreparationDataService, validIngredientPreparationDataService, recipeDataService, recipeStepDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, recipeStepProductDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, webhookDataService, adminService, service, logger, serverEncoderDecoder, router)
 	if err != nil {
 		return nil, err
