@@ -18,7 +18,6 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/internal/panicking"
 	"gitlab.com/prixfixe/prixfixe/internal/routing"
-	"gitlab.com/prixfixe/prixfixe/internal/services/frontend"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
@@ -32,7 +31,6 @@ type (
 	HTTPServer struct {
 		authService                        types.AuthService
 		householdsService                  types.HouseholdDataService
-		frontendService                    frontend.Service
 		usersService                       types.UserDataService
 		adminService                       types.AdminService
 		apiClientsService                  types.APIClientDataService
@@ -54,8 +52,9 @@ type (
 		logger                             logging.Logger
 		router                             routing.Router
 		tracer                             tracing.Tracer
-		httpServer                         *http.Server
 		panicker                           panicking.Panicker
+		httpServer                         *http.Server
+		config                             Config
 	}
 )
 
@@ -83,12 +82,13 @@ func ProvideHTTPServer(
 	mealPlanOptionVotesService types.MealPlanOptionVoteDataService,
 	webhooksService types.WebhookDataService,
 	adminService types.AdminService,
-	frontendService frontend.Service,
 	logger logging.Logger,
 	encoder encoding.ServerEncoderDecoder,
 	router routing.Router,
 ) (*HTTPServer, error) {
 	srv := &HTTPServer{
+		config: serverSettings,
+
 		// infra things,
 		tracer:     tracing.NewTracer(loggerName),
 		encoder:    encoder,
@@ -99,7 +99,6 @@ func ProvideHTTPServer(
 		// services,
 		adminService:                       adminService,
 		webhooksService:                    webhooksService,
-		frontendService:                    frontendService,
 		usersService:                       usersService,
 		householdsService:                  householdsService,
 		authService:                        authService,
@@ -144,14 +143,27 @@ func (s *HTTPServer) Serve() {
 
 	s.logger.WithValue("listening_on", s.httpServer.Addr).Debug("Listening for HTTP requests")
 
-	// returns ErrServerClosed on graceful close.
-	if err := s.httpServer.ListenAndServe(); err != nil {
-		s.logger.Error(err, "server shutting down")
+	if s.config.HTTPSCertificateFile != "" && s.config.HTTPSCertificateKeyFile != "" {
+		// returns ErrServerClosed on graceful close.
+		if err := s.httpServer.ListenAndServeTLS(s.config.HTTPSCertificateFile, s.config.HTTPSCertificateKeyFile); err != nil {
+			s.logger.Error(err, "server shutting down")
 
-		if errors.Is(err, http.ErrServerClosed) {
-			// NOTE: there is a chance that next line won't have time to run,
-			// as main() doesn't wait for this goroutine to stop.
-			os.Exit(0)
+			if errors.Is(err, http.ErrServerClosed) {
+				// NOTE: there is a chance that next line won't have time to run,
+				// as main() doesn't wait for this goroutine to stop.
+				os.Exit(0)
+			}
+		}
+	} else {
+		// returns ErrServerClosed on graceful close.
+		if err := s.httpServer.ListenAndServe(); err != nil {
+			s.logger.Error(err, "server shutting down")
+
+			if errors.Is(err, http.ErrServerClosed) {
+				// NOTE: there is a chance that next line won't have time to run,
+				// as main() doesn't wait for this goroutine to stop.
+				os.Exit(0)
+			}
 		}
 	}
 }

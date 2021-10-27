@@ -8,7 +8,6 @@ package server
 
 import (
 	"context"
-
 	"gitlab.com/prixfixe/prixfixe/internal/authentication"
 	"gitlab.com/prixfixe/prixfixe/internal/config"
 	"gitlab.com/prixfixe/prixfixe/internal/database"
@@ -23,7 +22,6 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/services/admin"
 	"gitlab.com/prixfixe/prixfixe/internal/services/apiclients"
 	authentication2 "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
-	"gitlab.com/prixfixe/prixfixe/internal/services/frontend"
 	"gitlab.com/prixfixe/prixfixe/internal/services/households"
 	"gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptions"
 	"gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptionvotes"
@@ -194,11 +192,9 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	}
 	adminUserDataManager := database.ProvideAdminUserDataManager(dataManager)
 	adminService := admin.ProvideService(logger, authenticationConfig, authenticator, adminUserDataManager, sessionManager, serverEncoderDecoder, routeParamManager)
-	frontendConfig := &servicesConfigurations.Frontend
-	frontendAuthService := frontend.ProvideAuthService(authService)
-	service := frontend.ProvideService(frontendConfig, logger, frontendAuthService)
-	router := chi.NewRouter(logger)
-	httpServer, err := server.ProvideHTTPServer(ctx, serverConfig, instrumentationHandler, authService, userDataService, householdDataService, apiClientDataService, websocketDataService, validInstrumentDataService, validIngredientDataService, validPreparationDataService, validIngredientPreparationDataService, recipeDataService, recipeStepDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, recipeStepProductDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, webhookDataService, adminService, service, logger, serverEncoderDecoder, router)
+	routingConfig := &cfg.Routing
+	router := chi.NewRouter(logger, routingConfig)
+	httpServer, err := server.ProvideHTTPServer(ctx, serverConfig, instrumentationHandler, authService, userDataService, householdDataService, apiClientDataService, websocketDataService, validInstrumentDataService, validIngredientDataService, validPreparationDataService, validIngredientPreparationDataService, recipeDataService, recipeStepDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, recipeStepProductDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, webhookDataService, adminService, logger, serverEncoderDecoder, router)
 	if err != nil {
 		return nil, err
 	}

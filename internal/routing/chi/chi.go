@@ -32,14 +32,17 @@ var _ routing.Router = (*router)(nil)
 
 type router struct {
 	router chi.Router
+	cfg    *routing.Config
 	tracer tracing.Tracer
 	logger logging.Logger
 }
 
-func buildChiMux(logger logging.Logger) chi.Router {
+func buildChiMux(logger logging.Logger, _ *routing.Config) chi.Router {
 	ch := cors.New(cors.Options{
 		// AllowedOrigins: []string{"https://foo.com"}, // Use this to allow specific origin hosts,
-		AllowedOrigins: []string{"*"},
+		AllowedOrigins: []string{
+			"https://localhost",
+		},
 		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
 		AllowedMethods: []string{
 			http.MethodGet,
@@ -48,13 +51,8 @@ func buildChiMux(logger logging.Logger) chi.Router {
 			http.MethodDelete,
 			http.MethodOptions,
 		},
-		AllowedHeaders: []string{
-			"Accept",
-			"Authorization",
-			"RawHTML-Provider",
-			"X-CSRF-Token",
-		},
-		ExposedHeaders:   []string{"Link"},
+		AllowedHeaders:   []string{},
+		ExposedHeaders:   []string{"Set-Cookie"},
 		AllowCredentials: true,
 		MaxAge:           maxCORSAge,
 	})
@@ -101,12 +99,12 @@ func buildChiMux(logger logging.Logger) chi.Router {
 	return mux
 }
 
-func buildRouter(mux chi.Router, logger logging.Logger) *router {
+func buildRouter(mux chi.Router, logger logging.Logger, cfg *routing.Config) *router {
 	logger = logging.EnsureLogger(logger)
 
 	if mux == nil {
 		logger.Info("starting with a new mux")
-		mux = buildChiMux(logger)
+		mux = buildChiMux(logger, cfg)
 	}
 
 	r := &router{
@@ -131,12 +129,12 @@ func convertMiddleware(in ...routing.Middleware) []func(handler http.Handler) ht
 }
 
 // NewRouter constructs a new router.
-func NewRouter(logger logging.Logger) routing.Router {
-	return buildRouter(nil, logger)
+func NewRouter(logger logging.Logger, cfg *routing.Config) routing.Router {
+	return buildRouter(nil, logger, cfg)
 }
 
 func (r *router) clone() *router {
-	return buildRouter(r.router, r.logger)
+	return buildRouter(r.router, r.logger, r.cfg)
 }
 
 // WithMiddleware returns a router with certain middleware applied.
@@ -165,7 +163,7 @@ func (r *router) LogRoutes() {
 // Route lets you apply a set of routes to a subrouter with a provided pattern.
 func (r *router) Route(pattern string, fn func(r routing.Router)) routing.Router {
 	r.router.Route(pattern, func(subrouter chi.Router) {
-		fn(buildRouter(subrouter, r.logger))
+		fn(buildRouter(subrouter, r.logger, r.cfg))
 	})
 
 	return r

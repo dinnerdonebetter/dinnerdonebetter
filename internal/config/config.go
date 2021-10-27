@@ -20,7 +20,6 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/search"
 	server "gitlab.com/prixfixe/prixfixe/internal/server"
 	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
-	frontendservice "gitlab.com/prixfixe/prixfixe/internal/services/frontend"
 	householdsservice "gitlab.com/prixfixe/prixfixe/internal/services/households"
 	mealplanoptionsservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptionvotes"
@@ -75,13 +74,13 @@ type (
 		Households                  householdsservice.Config                  `json:"households" mapstructure:"households" toml:"households,omitempty"`
 		Websockets                  websocketsservice.Config                  `json:"websockets" mapstructure:"websockets" toml:"websockets,omitempty"`
 		Webhooks                    webhooksservice.Config                    `json:"webhooks" mapstructure:"webhooks" toml:"webhooks,omitempty"`
-		Frontend                    frontendservice.Config                    `json:"frontend" mapstructure:"frontend" toml:"frontend,omitempty"`
 		Auth                        authservice.Config                        `json:"auth" mapstructure:"auth" toml:"auth,omitempty"`
 	}
 
 	// InstanceConfig configures an instance of the service. It is composed of all the other setting structs.
 	InstanceConfig struct {
 		_             struct{}
+		Server        server.Config          `json:"server" mapstructure:"server" toml:"server,omitempty"`
 		Events        msgconfig.Config       `json:"events" mapstructure:"events" toml:"events,omitempty"`
 		Search        search.Config          `json:"search" mapstructure:"search" toml:"search,omitempty"`
 		Encoding      encoding.Config        `json:"encoding" mapstructure:"encoding" toml:"encoding,omitempty"`
@@ -91,7 +90,6 @@ type (
 		Database      dbconfig.Config        `json:"database" mapstructure:"database" toml:"database,omitempty"`
 		Meta          MetaSettings           `json:"meta" mapstructure:"meta" toml:"meta,omitempty"`
 		Services      ServicesConfigurations `json:"services" mapstructure:"services" toml:"services,omitempty"`
-		Server        server.Config          `json:"server" mapstructure:"server" toml:"server,omitempty"`
 	}
 )
 
@@ -147,10 +145,6 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context) error {
 
 	if err := cfg.Services.Auth.ValidateWithContext(ctx); err != nil {
 		return fmt.Errorf("error validating Auth service portion of config: %w", err)
-	}
-
-	if err := cfg.Services.Frontend.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating Frontend service portion of config: %w", err)
 	}
 
 	if err := cfg.Services.Webhooks.ValidateWithContext(ctx); err != nil {

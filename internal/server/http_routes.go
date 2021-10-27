@@ -57,9 +57,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		router.HandleFunc("/metrics", metricsHandler.ServeHTTP)
 	}
 
-	// Frontend routes.
-	s.frontendService.SetupRoutes(router)
-
 	router.Post("/paseto", s.authService.PASETOHandler)
 
 	authenticatedRouter := router.WithMiddleware(s.authService.UserAttributionMiddleware)

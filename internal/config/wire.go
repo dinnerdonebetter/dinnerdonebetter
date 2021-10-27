@@ -18,12 +18,12 @@ var (
 			"Search",
 			"Events",
 			"Server",
+			"Routing",
 			"Services",
 		),
 		wire.FieldsOf(
 			new(*ServicesConfigurations),
 			"Auth",
-			"Frontend",
 			"Webhooks",
 			"Websockets",
 			"Households",
