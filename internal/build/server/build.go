@@ -12,7 +12,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/config"
 	database "github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
-	"github.com/prixfixeco/api_server/internal/encoding"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	observability "github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -55,7 +54,7 @@ func Build(
 		config.Providers,
 		database.Providers,
 		dbconfig.Providers,
-		encoding.Providers,
+		//encoding.Providers,
 		msgconfig.Providers,
 		server.Providers,
 		metrics.Providers,

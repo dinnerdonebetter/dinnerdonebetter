@@ -1,7 +1,7 @@
 on: [pull_request]
 name: golangci-lint
 jobs:
-  golangci:
+  lint:
     name: lint
     runs-on: ubuntu-latest
     steps:
