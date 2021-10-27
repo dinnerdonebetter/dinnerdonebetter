@@ -23,7 +23,6 @@ import (
 	adminservice "gitlab.com/prixfixe/prixfixe/internal/services/admin"
 	apiclientsservice "gitlab.com/prixfixe/prixfixe/internal/services/apiclients"
 	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
-	frontendservice "gitlab.com/prixfixe/prixfixe/internal/services/frontend"
 	householdsservice "gitlab.com/prixfixe/prixfixe/internal/services/households"
 	mealplanoptionsservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptionvotes"
@@ -73,7 +72,6 @@ func Build(
 		webhooksservice.Providers,
 		websocketsservice.Providers,
 		adminservice.Providers,
-		frontendservice.Providers,
 		validinstrumentsservice.Providers,
 		validingredientsservice.Providers,
 		validpreparationsservice.Providers,

@@ -18,7 +18,6 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
 	"gitlab.com/prixfixe/prixfixe/internal/panicking"
 	"gitlab.com/prixfixe/prixfixe/internal/routing"
-	"gitlab.com/prixfixe/prixfixe/internal/services/frontend"
 	"gitlab.com/prixfixe/prixfixe/pkg/types"
 )
 
@@ -32,7 +31,6 @@ type (
 	HTTPServer struct {
 		authService                        types.AuthService
 		householdsService                  types.HouseholdDataService
-		frontendService                    frontend.Service
 		usersService                       types.UserDataService
 		adminService                       types.AdminService
 		apiClientsService                  types.APIClientDataService
@@ -84,7 +82,6 @@ func ProvideHTTPServer(
 	mealPlanOptionVotesService types.MealPlanOptionVoteDataService,
 	webhooksService types.WebhookDataService,
 	adminService types.AdminService,
-	frontendService frontend.Service,
 	logger logging.Logger,
 	encoder encoding.ServerEncoderDecoder,
 	router routing.Router,
@@ -102,7 +99,6 @@ func ProvideHTTPServer(
 		// services,
 		adminService:                       adminService,
 		webhooksService:                    webhooksService,
-		frontendService:                    frontendService,
 		usersService:                       usersService,
 		householdsService:                  householdsService,
 		authService:                        authService,

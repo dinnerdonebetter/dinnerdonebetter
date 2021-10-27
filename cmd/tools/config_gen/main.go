@@ -23,7 +23,6 @@ import (
 	"gitlab.com/prixfixe/prixfixe/internal/secrets"
 	"gitlab.com/prixfixe/prixfixe/internal/server"
 	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
-	frontendservice "gitlab.com/prixfixe/prixfixe/internal/services/frontend"
 	householdsservice "gitlab.com/prixfixe/prixfixe/internal/services/households"
 	mealplanoptionsservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptionvotes"
@@ -153,10 +152,6 @@ var files = map[string]configFunc{
 	"environments/testing/config_files/integration-tests-postgres.config": buildIntegrationTestForDBImplementation(postgres, devPostgresDBConnDetails),
 }
 
-func buildLocalFrontendServiceConfig() frontendservice.Config {
-	return frontendservice.Config{}
-}
-
 func mustHashPass(password string) string {
 	hashed, err := authentication.ProvideArgon2Authenticator(logging.NewNoopLogger()).
 		HashPassword(context.Background(), password)
@@ -248,7 +243,6 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 				MinimumUsernameLength: 4,
 				MinimumPasswordLength: 8,
 			},
-			Frontend: buildLocalFrontendServiceConfig(),
 			Webhooks: webhooksservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
@@ -448,7 +442,6 @@ func frontendTestsConfig(ctx context.Context, filePath string) error {
 				MinimumUsernameLength: 4,
 				MinimumPasswordLength: 8,
 			},
-			Frontend: buildLocalFrontendServiceConfig(),
 			Webhooks: webhooksservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
@@ -669,7 +662,6 @@ func buildIntegrationTestForDBImplementation(dbVendor, dbDetails string) configF
 					MinimumUsernameLength: 4,
 					MinimumPasswordLength: 8,
 				},
-				Frontend: buildLocalFrontendServiceConfig(),
 				Webhooks: webhooksservice.Config{
 					PreWritesTopicName:   preWritesTopicName,
 					PreArchivesTopicName: preArchivesTopicName,

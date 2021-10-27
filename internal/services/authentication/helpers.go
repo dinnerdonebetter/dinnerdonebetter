@@ -130,7 +130,7 @@ func (s *service) buildCookie(value string, expiry time.Time) (*http.Cookie, err
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   s.config.Cookies.SecureOnly,
-		Domain:   s.config.Cookies.Domain,
+		Domain:   "prixfixe.local",
 		Expires:  expiry,
 		SameSite: http.SameSiteStrictMode,
 		MaxAge:   int(time.Until(expiry).Seconds()),
