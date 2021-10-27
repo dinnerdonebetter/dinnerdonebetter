@@ -8,8 +8,8 @@ jobs:
       - name: Run the integration tests
         run: |
           docker-compose \
-          --file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests-base.yaml \
-          --file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests-postgres.yaml up \
+          --file environments/testing/compose_files/integration-tests-base.yaml \
+          --file environments/testing/compose_files/integration-tests-postgres.yaml up \
           --build \
           --force-recreate \
           --remove-orphans \
