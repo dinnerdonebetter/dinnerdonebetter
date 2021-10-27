@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 var _ PaymentManager = (*NoopPaymentManager)(nil)

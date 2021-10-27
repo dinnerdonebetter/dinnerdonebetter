@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"gitlab.com/prixfixe/prixfixe/internal/authorization"
+	"github.com/prixfixeco/api_server/internal/authorization"
 )
 
 func TestAddUserToHouseholdInput_ValidateWithContext(T *testing.T) {

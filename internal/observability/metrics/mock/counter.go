@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
+	"github.com/prixfixeco/api_server/internal/observability/metrics"
 )
 
 var _ metrics.UnitCounter = (*UnitCounter)(nil)

@@ -8,7 +8,7 @@ stages:
 before_script:
   - mkdir -p /go/src/gitlab.com/prixfixe/
   - cp -rf /builds/prixfixe/prixfixe /go/src/gitlab.com/prixfixe/
-  - cd /go/src/gitlab.com/prixfixe/prixfixe
+  - cd /go/src/github.com/prixfixeco/api_server
 
 coverage:
   stage: quality

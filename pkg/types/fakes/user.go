@@ -10,8 +10,8 @@ import (
 	"github.com/pquerna/otp/totp"
 	"github.com/segmentio/ksuid"
 
-	"gitlab.com/prixfixe/prixfixe/internal/authorization"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"github.com/prixfixeco/api_server/internal/authorization"
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 // BuildFakeUser builds a faked User.

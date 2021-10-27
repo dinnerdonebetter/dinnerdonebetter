@@ -10,13 +10,13 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/prixfixe/prixfixe/internal/encoding"
-	mockencoding "gitlab.com/prixfixe/prixfixe/internal/encoding/mock"
-	mockconsumers "gitlab.com/prixfixe/prixfixe/internal/messagequeue/consumers/mock"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
-	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
+	"github.com/prixfixeco/api_server/internal/encoding"
+	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
+	mockconsumers "github.com/prixfixeco/api_server/internal/messagequeue/consumers/mock"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 func buildTestService() *service {

@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/observability/metrics"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
 
 func TestConfig_ValidateWithContext(T *testing.T) {

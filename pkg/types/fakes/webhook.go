@@ -6,7 +6,7 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/segmentio/ksuid"
 
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 // BuildFakeWebhook builds a faked Webhook.

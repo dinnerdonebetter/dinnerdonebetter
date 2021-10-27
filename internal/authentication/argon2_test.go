@@ -8,8 +8,8 @@ import (
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/assert"
 
-	"gitlab.com/prixfixe/prixfixe/internal/authentication"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/authentication"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
 
 const (

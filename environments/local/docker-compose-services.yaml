@@ -7,7 +7,7 @@ services:
               target: '/etc/service.config'
               type: 'bind'
             - source: '../../'
-              target: '/go/src/gitlab.com/prixfixe/prixfixe/cmd/workers'
+              target: '/go/src/github.com/prixfixeco/api_server/cmd/workers'
               type: 'bind'
         build:
             context: '../../'
@@ -33,7 +33,7 @@ services:
               target: '/etc/service.config'
               type: 'bind'
             - source: '../../'
-              target: '/go/src/gitlab.com/prixfixe/prixfixe'
+              target: '/go/src/github.com/prixfixeco/api_server'
               type: 'bind'
         build:
             context: '../../'

@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/keys"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 var urlToUse string

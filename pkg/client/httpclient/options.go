@@ -6,9 +6,9 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"gitlab.com/prixfixe/prixfixe/internal/encoding"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/pkg/client/httpclient/requests"
+	"github.com/prixfixeco/api_server/internal/encoding"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/pkg/client/httpclient/requests"
 )
 
 type option func(*Client) error

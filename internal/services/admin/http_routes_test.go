@@ -12,12 +12,12 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/prixfixe/prixfixe/internal/authorization"
-	"gitlab.com/prixfixe/prixfixe/internal/encoding"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
-	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
+	"github.com/prixfixeco/api_server/internal/authorization"
+	"github.com/prixfixeco/api_server/internal/encoding"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/pkg/types"
+	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {

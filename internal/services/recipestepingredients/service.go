@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"net/http"
 
-	"gitlab.com/prixfixe/prixfixe/internal/encoding"
-	publishers "gitlab.com/prixfixe/prixfixe/internal/messagequeue/publishers"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-	routing "gitlab.com/prixfixe/prixfixe/internal/routing"
-	"gitlab.com/prixfixe/prixfixe/internal/search"
-	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
-	recipesservice "gitlab.com/prixfixe/prixfixe/internal/services/recipes"
-	recipestepsservice "gitlab.com/prixfixe/prixfixe/internal/services/recipesteps"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"github.com/prixfixeco/api_server/internal/encoding"
+	publishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	routing "github.com/prixfixeco/api_server/internal/routing"
+	"github.com/prixfixeco/api_server/internal/search"
+	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
+	recipesservice "github.com/prixfixeco/api_server/internal/services/recipes"
+	recipestepsservice "github.com/prixfixeco/api_server/internal/services/recipesteps"
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 const (

@@ -10,7 +10,7 @@ const (
 	runtimeFrameBuffer = 3
 	counterBuffer      = 2
 
-	this = "gitlab.com/prixfixe/prixfixe/"
+	this = "github.com/prixfixeco/api_server/"
 )
 
 // GetCallerName is largely (and respectfully) inspired by/copied from https://stackoverflow.com/a/35213181

@@ -5,7 +5,7 @@ COVERAGE_OUT                  := $(ARTIFACTS_DIR)/coverage.out
 SEARCH_INDICES_DIR            := $(ARTIFACTS_DIR)/search_indices
 GO                            := docker run --interactive --tty --volume $(PWD):$(PWD) --workdir $(PWD) --user $(shell id -u):$(shell id -g) golang:1.17-stretch go
 GO_FORMAT                     := gofmt -s -w
-THIS                          := gitlab.com/prixfixe/prixfixe
+THIS                          := github.com/prixfixeco/api_server
 TOTAL_PACKAGE_LIST            := `go list $(THIS)/...`
 TESTABLE_PACKAGE_LIST         := `go list $(THIS)/... | grep -Ev '(cmd|tests|testutil|mock|fake)'`
 ENVIRONMENTS_DIR              := environments
@@ -233,13 +233,10 @@ integration_tests: integration-tests-postgres
 integration-tests: integration-tests-postgres
 
 .PHONY: integration_tests_postgres
-integration_tests_postgres: integration-tests-postgres
-
-.PHONY: integration-tests-
-integration-tests-%:
+integration_tests_postgres:
 	docker-compose \
 	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests-base.yaml \
-	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests-$*.yaml up \
+	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests-postgres.yaml up \
 	--build \
 	--force-recreate \
 	--remove-orphans \

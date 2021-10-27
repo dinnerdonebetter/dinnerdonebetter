@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 
-	"gitlab.com/prixfixe/prixfixe/internal/messagequeue/publishers"
+	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 )
 
 var _ publishers.Publisher = (*Publisher)(nil)

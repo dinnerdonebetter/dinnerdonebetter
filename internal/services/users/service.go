@@ -3,17 +3,17 @@ package users
 import (
 	"net/http"
 
-	"gitlab.com/prixfixe/prixfixe/internal/authentication"
-	"gitlab.com/prixfixe/prixfixe/internal/encoding"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-	"gitlab.com/prixfixe/prixfixe/internal/random"
-	"gitlab.com/prixfixe/prixfixe/internal/routing"
-	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
-	"gitlab.com/prixfixe/prixfixe/internal/uploads"
-	"gitlab.com/prixfixe/prixfixe/internal/uploads/images"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"github.com/prixfixeco/api_server/internal/authentication"
+	"github.com/prixfixeco/api_server/internal/encoding"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/metrics"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/random"
+	"github.com/prixfixeco/api_server/internal/routing"
+	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
+	"github.com/prixfixeco/api_server/internal/uploads"
+	"github.com/prixfixeco/api_server/internal/uploads/images"
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 const (

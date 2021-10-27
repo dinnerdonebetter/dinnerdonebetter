@@ -11,11 +11,11 @@ import (
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	flag "github.com/spf13/pflag"
 
-	"gitlab.com/prixfixe/prixfixe/internal/build/server"
-	"gitlab.com/prixfixe/prixfixe/internal/config"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-	"gitlab.com/prixfixe/prixfixe/internal/secrets"
+	"github.com/prixfixeco/api_server/internal/build/server"
+	"github.com/prixfixeco/api_server/internal/config"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/secrets"
 )
 
 const (

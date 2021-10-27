@@ -7,17 +7,17 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	mockauthn "gitlab.com/prixfixe/prixfixe/internal/authentication/mock"
-	"gitlab.com/prixfixe/prixfixe/internal/database"
-	mockencoding "gitlab.com/prixfixe/prixfixe/internal/encoding/mock"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
-	mockmetrics "gitlab.com/prixfixe/prixfixe/internal/observability/metrics/mock"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-	mockrandom "gitlab.com/prixfixe/prixfixe/internal/random/mock"
-	mockrouting "gitlab.com/prixfixe/prixfixe/internal/routing/mock"
-	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
-	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
+	mockauthn "github.com/prixfixeco/api_server/internal/authentication/mock"
+	"github.com/prixfixeco/api_server/internal/database"
+	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/metrics"
+	mockmetrics "github.com/prixfixeco/api_server/internal/observability/metrics/mock"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	mockrandom "github.com/prixfixeco/api_server/internal/random/mock"
+	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
+	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
+	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
 )
 
 func buildTestService(t *testing.T) *service {

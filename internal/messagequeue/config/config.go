@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"gitlab.com/prixfixe/prixfixe/internal/messagequeue/consumers"
-	"gitlab.com/prixfixe/prixfixe/internal/messagequeue/publishers"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/messagequeue/consumers"
+	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
 
 const (

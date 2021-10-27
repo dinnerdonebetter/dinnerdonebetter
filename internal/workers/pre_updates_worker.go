@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"net/http"
 
-	database "gitlab.com/prixfixe/prixfixe/internal/database"
-	"gitlab.com/prixfixe/prixfixe/internal/encoding"
-	publishers "gitlab.com/prixfixe/prixfixe/internal/messagequeue/publishers"
-	observability "gitlab.com/prixfixe/prixfixe/internal/observability"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-	"gitlab.com/prixfixe/prixfixe/internal/search"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	database "github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/encoding"
+	publishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers"
+	observability "github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/search"
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 // PreUpdatesWorker updates data from the pending updates topic to the database.

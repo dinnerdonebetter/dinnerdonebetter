@@ -1,6 +1,6 @@
 FROM golang:1.17-stretch
 
-WORKDIR /go/src/gitlab.com/prixfixe/prixfixe
+WORKDIR /go/src/github.com/prixfixeco/api_server
 
 RUN apt-get update -y && apt-get install -y make git gcc musl-dev
 

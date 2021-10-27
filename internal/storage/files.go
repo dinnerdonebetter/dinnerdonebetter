@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 
-	"gitlab.com/prixfixe/prixfixe/internal/encoding"
+	"github.com/prixfixeco/api_server/internal/encoding"
 )
 
 // SaveFile saves a file to the blob.

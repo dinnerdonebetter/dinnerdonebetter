@@ -3,8 +3,8 @@ package websockets
 import (
 	"net/http"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
 
 // SubscribeHandler is our subscription route.

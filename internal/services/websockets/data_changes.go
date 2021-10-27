@@ -7,9 +7,9 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/keys"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 func (s *service) handleDataChange(ctx context.Context, payload []byte) error {

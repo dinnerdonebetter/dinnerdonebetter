@@ -9,7 +9,7 @@ import (
 
 	"github.com/alexedwards/scs/v2"
 
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 var (

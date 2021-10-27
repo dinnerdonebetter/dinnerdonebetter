@@ -13,15 +13,15 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/prixfixe/prixfixe/internal/encoding"
-	mockencoding "gitlab.com/prixfixe/prixfixe/internal/encoding/mock"
-	mockpublishers "gitlab.com/prixfixe/prixfixe/internal/messagequeue/publishers/mock"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	mocksearch "gitlab.com/prixfixe/prixfixe/internal/search/mock"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
-	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
+	"github.com/prixfixeco/api_server/internal/encoding"
+	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
+	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	mocksearch "github.com/prixfixeco/api_server/internal/search/mock"
+	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
+	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 func TestParseBool(t *testing.T) {

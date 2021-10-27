@@ -3,7 +3,7 @@ package stripe
 import (
 	"testing"
 
-	"gitlab.com/prixfixe/prixfixe/internal/capitalism"
+	"github.com/prixfixeco/api_server/internal/capitalism"
 
 	"github.com/stretchr/testify/assert"
 )

@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	random "gitlab.com/prixfixe/prixfixe/internal/random"
+	random "github.com/prixfixeco/api_server/internal/random"
 )
 
 func TestConfig_Validate(T *testing.T) {

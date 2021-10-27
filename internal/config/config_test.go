@@ -11,17 +11,17 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	database "gitlab.com/prixfixe/prixfixe/internal/database"
-	dbconfig "gitlab.com/prixfixe/prixfixe/internal/database/config"
-	"gitlab.com/prixfixe/prixfixe/internal/encoding"
-	observability "gitlab.com/prixfixe/prixfixe/internal/observability"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
-	server "gitlab.com/prixfixe/prixfixe/internal/server"
-	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
-	validingredientsservice "gitlab.com/prixfixe/prixfixe/internal/services/validingredients"
-	validinstrumentsservice "gitlab.com/prixfixe/prixfixe/internal/services/validinstruments"
-	validpreparationsservice "gitlab.com/prixfixe/prixfixe/internal/services/validpreparations"
+	database "github.com/prixfixeco/api_server/internal/database"
+	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
+	"github.com/prixfixeco/api_server/internal/encoding"
+	observability "github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/metrics"
+	server "github.com/prixfixeco/api_server/internal/server"
+	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
+	validingredientsservice "github.com/prixfixeco/api_server/internal/services/validingredients"
+	validinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validinstruments"
+	validpreparationsservice "github.com/prixfixeco/api_server/internal/services/validpreparations"
 )
 
 func TestServerConfig_EncodeToFile(T *testing.T) {

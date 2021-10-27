@@ -11,14 +11,14 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	database "gitlab.com/prixfixe/prixfixe/internal/database"
-	mockpublishers "gitlab.com/prixfixe/prixfixe/internal/messagequeue/publishers/mock"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/search"
-	mocksearch "gitlab.com/prixfixe/prixfixe/internal/search/mock"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
+	database "github.com/prixfixeco/api_server/internal/database"
+	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/search"
+	mocksearch "github.com/prixfixeco/api_server/internal/search/mock"
+	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 func TestProvidePreUpdatesWorker(T *testing.T) {

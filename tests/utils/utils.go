@@ -16,8 +16,8 @@ import (
 	"github.com/brianvoe/gofakeit/v5"
 	"github.com/pquerna/otp/totp"
 
-	"gitlab.com/prixfixe/prixfixe/pkg/client/httpclient"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/client/httpclient"
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 var (

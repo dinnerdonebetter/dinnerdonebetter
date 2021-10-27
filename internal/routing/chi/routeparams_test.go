@@ -8,8 +8,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 func TestNewRouteParamManager(T *testing.T) {
