@@ -233,13 +233,10 @@ integration_tests: integration-tests-postgres
 integration-tests: integration-tests-postgres
 
 .PHONY: integration_tests_postgres
-integration_tests_postgres: integration-tests-postgres
-
-.PHONY: integration-tests-
-integration-tests-%:
+integration_tests_postgres:
 	docker-compose \
 	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests-base.yaml \
-	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests-$*.yaml up \
+	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests-postgres.yaml up \
 	--build \
 	--force-recreate \
 	--remove-orphans \

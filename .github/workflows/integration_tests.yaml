@@ -1,0 +1,17 @@
+on: [pull_request]
+name: Tests
+jobs:
+  integration_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run the integration tests
+        run: |
+          docker-compose \
+          --file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests-base.yaml \
+          --file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests-postgres.yaml up \
+          --build \
+          --force-recreate \
+          --remove-orphans \
+          --renew-anon-volumes \
+          --always-recreate-deps $(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(LET_HANG)),, --abort-on-container-exit)
