@@ -24,7 +24,6 @@ var (
 		wire.FieldsOf(
 			new(*ServicesConfigurations),
 			"Auth",
-			"Frontend",
 			"Webhooks",
 			"Websockets",
 			"Households",
