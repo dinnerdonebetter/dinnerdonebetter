@@ -9,10 +9,10 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/keys"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
 )
 
-const here = "gitlab.com/prixfixe/prixfixe/"
+const here = "github.com/prixfixeco/api_server/"
 
 func init() {
 	zerolog.CallerSkipFrameCount += 2

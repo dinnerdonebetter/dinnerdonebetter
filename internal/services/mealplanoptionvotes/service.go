@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"net/http"
 
-	"gitlab.com/prixfixe/prixfixe/internal/encoding"
-	publishers "gitlab.com/prixfixe/prixfixe/internal/messagequeue/publishers"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-	routing "gitlab.com/prixfixe/prixfixe/internal/routing"
-	"gitlab.com/prixfixe/prixfixe/internal/search"
-	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
-	mealplanoptionsservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptions"
-	mealplansservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplans"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"github.com/prixfixeco/api_server/internal/encoding"
+	publishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	routing "github.com/prixfixeco/api_server/internal/routing"
+	"github.com/prixfixeco/api_server/internal/search"
+	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
+	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
+	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 const (

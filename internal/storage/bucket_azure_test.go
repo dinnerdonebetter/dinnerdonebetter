@@ -9,7 +9,7 @@ import (
 	"github.com/Azure/azure-pipeline-go/pipeline"
 	"github.com/stretchr/testify/assert"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
 
 func TestAzureConfig_ValidateWithContext(T *testing.T) {

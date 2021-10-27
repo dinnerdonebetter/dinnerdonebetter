@@ -3,7 +3,7 @@ package elasticsearch
 import (
 	"github.com/google/wire"
 
-	"gitlab.com/prixfixe/prixfixe/internal/search"
+	"github.com/prixfixeco/api_server/internal/search"
 )
 
 var (

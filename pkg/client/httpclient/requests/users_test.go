@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
 func TestBuilder_BuildGetUserRequest(T *testing.T) {

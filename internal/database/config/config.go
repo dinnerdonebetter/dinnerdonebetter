@@ -7,9 +7,9 @@ import (
 	"github.com/alexedwards/scs/v2"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
-	database "gitlab.com/prixfixe/prixfixe/internal/database"
-	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	database "github.com/prixfixeco/api_server/internal/database"
+	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 const (

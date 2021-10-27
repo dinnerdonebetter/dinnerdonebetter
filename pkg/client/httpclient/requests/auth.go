@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/keys"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 const (

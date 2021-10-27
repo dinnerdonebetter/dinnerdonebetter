@@ -4,7 +4,7 @@
     <working_directory value="$PROJECT_DIR$/pkg" />
     <root_directory value="$PROJECT_DIR$" />
     <kind value="DIRECTORY" />
-    <package value="gitlab.com/prixfixe/prixfixe" />
+    <package value="github.com/prixfixeco/api_server" />
     <directory value="$PROJECT_DIR$/pkg" />
     <filePath value="$PROJECT_DIR$" />
     <framework value="gotest" />

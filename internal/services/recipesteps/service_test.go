@@ -9,13 +9,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	mockencoding "gitlab.com/prixfixe/prixfixe/internal/encoding/mock"
-	mockpublishers "gitlab.com/prixfixe/prixfixe/internal/messagequeue/publishers/mock"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-	mockrouting "gitlab.com/prixfixe/prixfixe/internal/routing/mock"
-	recipesservice "gitlab.com/prixfixe/prixfixe/internal/services/recipes"
-	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
+	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
+	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
+	recipesservice "github.com/prixfixeco/api_server/internal/services/recipes"
+	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
 )
 
 func buildTestService() *service {

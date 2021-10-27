@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 
-	"gitlab.com/prixfixe/prixfixe/internal/authentication"
+	"github.com/prixfixeco/api_server/internal/authentication"
 )
 
 var _ authentication.Authenticator = (*Authenticator)(nil)

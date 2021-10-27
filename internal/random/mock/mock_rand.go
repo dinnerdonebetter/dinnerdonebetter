@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 
-	"gitlab.com/prixfixe/prixfixe/internal/random"
+	"github.com/prixfixeco/api_server/internal/random"
 )
 
 var _ random.Generator = (*Generator)(nil)

@@ -20,7 +20,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 func newAvatarUploadRequest(t *testing.T, filename string, avatar io.Reader) *http.Request {

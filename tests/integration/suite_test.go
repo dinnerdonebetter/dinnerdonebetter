@@ -11,9 +11,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-	"gitlab.com/prixfixe/prixfixe/pkg/client/httpclient"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/pkg/client/httpclient"
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 const (

@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 
-	"gitlab.com/prixfixe/prixfixe/internal/messagequeue/consumers"
+	"github.com/prixfixeco/api_server/internal/messagequeue/consumers"
 )
 
 var _ consumers.ConsumerProvider = (*ConsumerProvider)(nil)

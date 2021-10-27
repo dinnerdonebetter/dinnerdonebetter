@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
 var defaultBrowserWaitTime = time.Second / 2

@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
 func TestBuilder_BuildGetAPIClientRequest(T *testing.T) {

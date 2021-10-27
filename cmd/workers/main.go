@@ -9,13 +9,13 @@ import (
 	"syscall"
 	"time"
 
-	"gitlab.com/prixfixe/prixfixe/internal/config"
-	msgconfig "gitlab.com/prixfixe/prixfixe/internal/messagequeue/config"
-	consumers "gitlab.com/prixfixe/prixfixe/internal/messagequeue/consumers"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/search/elasticsearch"
-	"gitlab.com/prixfixe/prixfixe/internal/secrets"
-	workers "gitlab.com/prixfixe/prixfixe/internal/workers"
+	"github.com/prixfixeco/api_server/internal/config"
+	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
+	consumers "github.com/prixfixeco/api_server/internal/messagequeue/consumers"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/search/elasticsearch"
+	"github.com/prixfixeco/api_server/internal/secrets"
+	workers "github.com/prixfixeco/api_server/internal/workers"
 )
 
 const (

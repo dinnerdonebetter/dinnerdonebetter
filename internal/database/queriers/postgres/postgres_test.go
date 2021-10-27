@@ -17,11 +17,11 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/prixfixe/prixfixe/internal/database"
-	"gitlab.com/prixfixe/prixfixe/internal/database/config"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
+	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/database/config"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
 type idMatcher struct{}

@@ -6,8 +6,8 @@ import (
 
 	"go.opentelemetry.io/otel/trace"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
 
 // PrepareError standardizes our error handling by logging, tracing, and formatting an error consistently.

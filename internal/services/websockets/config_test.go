@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
 
 func TestConfig_ValidateWithContext(T *testing.T) {

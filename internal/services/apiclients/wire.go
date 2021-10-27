@@ -3,7 +3,7 @@ package apiclients
 import (
 	"github.com/google/wire"
 
-	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
+	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 )
 
 var (

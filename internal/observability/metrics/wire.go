@@ -3,7 +3,7 @@ package metrics
 import (
 	"github.com/google/wire"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
 
 var (

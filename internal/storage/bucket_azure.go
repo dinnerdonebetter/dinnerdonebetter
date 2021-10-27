@@ -12,7 +12,7 @@ import (
 	"gocloud.dev/blob"
 	"gocloud.dev/blob/azureblob"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
 
 const (

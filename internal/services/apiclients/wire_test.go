@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	authservice "gitlab.com/prixfixe/prixfixe/internal/services/authentication"
+	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 )
 
 func TestProvideConfig(T *testing.T) {

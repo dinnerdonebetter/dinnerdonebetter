@@ -5,7 +5,7 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
-	"gitlab.com/prixfixe/prixfixe/internal/storage"
+	"github.com/prixfixeco/api_server/internal/storage"
 )
 
 // Config contains settings regarding search indices.

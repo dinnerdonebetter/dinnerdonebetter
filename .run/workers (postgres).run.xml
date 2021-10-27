@@ -7,7 +7,7 @@
       <env name="PRIXFIXE_WORKERS_LOCAL_CONFIG_STORE_KEY" value="SUFNQVdBUkVUSEFUVEhJU1NFQ1JFVElTVU5TRUNVUkU=" />
     </envs>
     <kind value="FILE" />
-    <package value="gitlab.com/prixfixe/prixfixe" />
+    <package value="github.com/prixfixeco/api_server" />
     <directory value="$PROJECT_DIR$" />
     <filePath value="$PROJECT_DIR$/cmd/workers/main.go" />
     <method v="2" />

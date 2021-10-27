@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 
-	"gitlab.com/prixfixe/prixfixe/internal/encoding"
+	"github.com/prixfixeco/api_server/internal/encoding"
 )
 
 var _ ImageUploadProcessor = (*MockImageUploadProcessor)(nil)

@@ -11,8 +11,8 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 type mockMessagePublisher struct {

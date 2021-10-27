@@ -12,17 +12,17 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	mockauthn "gitlab.com/prixfixe/prixfixe/internal/authentication/mock"
-	"gitlab.com/prixfixe/prixfixe/internal/database"
-	"gitlab.com/prixfixe/prixfixe/internal/encoding"
-	mockencoding "gitlab.com/prixfixe/prixfixe/internal/encoding/mock"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	mockmetrics "gitlab.com/prixfixe/prixfixe/internal/observability/metrics/mock"
-	mockrandom "gitlab.com/prixfixe/prixfixe/internal/random/mock"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
-	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
+	mockauthn "github.com/prixfixeco/api_server/internal/authentication/mock"
+	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/encoding"
+	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	mockmetrics "github.com/prixfixeco/api_server/internal/observability/metrics/mock"
+	mockrandom "github.com/prixfixeco/api_server/internal/random/mock"
+	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
+	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 func TestAPIClientsService_ListHandler(T *testing.T) {

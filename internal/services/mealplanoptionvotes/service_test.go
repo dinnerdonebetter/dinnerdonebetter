@@ -9,14 +9,14 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	mockencoding "gitlab.com/prixfixe/prixfixe/internal/encoding/mock"
-	mockpublishers "gitlab.com/prixfixe/prixfixe/internal/messagequeue/publishers/mock"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-	mockrouting "gitlab.com/prixfixe/prixfixe/internal/routing/mock"
-	mealplanoptionsservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplanoptions"
-	mealplansservice "gitlab.com/prixfixe/prixfixe/internal/services/mealplans"
-	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
+	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
+	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
+	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
+	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
+	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
 )
 
 func buildTestService() *service {

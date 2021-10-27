@@ -13,9 +13,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"gocloud.dev/blob/memblob"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 func TestUploader_ReadFile(T *testing.T) {

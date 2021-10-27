@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 
-	"gitlab.com/prixfixe/prixfixe/internal/search"
+	"github.com/prixfixeco/api_server/internal/search"
 )
 
 var _ search.IndexManager = (*IndexManager)(nil)

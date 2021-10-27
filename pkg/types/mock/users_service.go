@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 // UsersService is a mock types.UsersService.

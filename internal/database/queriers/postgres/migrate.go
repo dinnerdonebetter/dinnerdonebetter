@@ -8,11 +8,11 @@ import (
 	"github.com/GuiaBolso/darwin"
 	"github.com/segmentio/ksuid"
 
-	"gitlab.com/prixfixe/prixfixe/internal/authorization"
-	"gitlab.com/prixfixe/prixfixe/internal/database"
-	"gitlab.com/prixfixe/prixfixe/internal/observability"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/keys"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"github.com/prixfixeco/api_server/internal/authorization"
+	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 const (

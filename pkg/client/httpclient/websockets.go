@@ -3,8 +3,8 @@ package httpclient
 import (
 	"context"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 // SubscribeToDataChangeNotifications subscribes to a websocket to receive DataChangeMessages.

@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
 
 func TestQueryFilter_AttachToLogger(T *testing.T) {

@@ -21,16 +21,16 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/prixfixe/prixfixe/internal/authentication"
-	mockauthn "gitlab.com/prixfixe/prixfixe/internal/authentication/mock"
-	"gitlab.com/prixfixe/prixfixe/internal/authorization"
-	"gitlab.com/prixfixe/prixfixe/internal/encoding"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/random"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
-	"gitlab.com/prixfixe/prixfixe/pkg/types/fakes"
-	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
-	testutils "gitlab.com/prixfixe/prixfixe/tests/utils"
+	"github.com/prixfixeco/api_server/internal/authentication"
+	mockauthn "github.com/prixfixeco/api_server/internal/authentication/mock"
+	"github.com/prixfixeco/api_server/internal/authorization"
+	"github.com/prixfixeco/api_server/internal/encoding"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/random"
+	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
+	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {

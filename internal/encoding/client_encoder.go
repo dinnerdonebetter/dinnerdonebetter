@@ -7,9 +7,9 @@ import (
 	"encoding/xml"
 	"io"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
 
 type (

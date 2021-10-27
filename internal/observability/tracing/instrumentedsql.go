@@ -5,7 +5,7 @@ import (
 
 	"github.com/luna-duclos/instrumentedsql"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
 
 // NewInstrumentedSQLTracer wraps a Tracer for instrumentedsql.

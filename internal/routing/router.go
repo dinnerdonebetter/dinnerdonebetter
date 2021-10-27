@@ -3,7 +3,7 @@ package routing
 import (
 	"net/http"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
 
 // all interfaces HEAVILY inspired by github.com/go-chi/chi.

@@ -8,10 +8,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	mockauthn "gitlab.com/prixfixe/prixfixe/internal/authentication/mock"
-	"gitlab.com/prixfixe/prixfixe/internal/encoding"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	mocktypes "gitlab.com/prixfixe/prixfixe/pkg/types/mock"
+	mockauthn "github.com/prixfixeco/api_server/internal/authentication/mock"
+	"github.com/prixfixeco/api_server/internal/encoding"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
 )
 
 func buildTestService(t *testing.T) *service {

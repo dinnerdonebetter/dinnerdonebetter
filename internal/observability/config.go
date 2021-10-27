@@ -5,8 +5,8 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/metrics"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/observability/metrics"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
 
 type (

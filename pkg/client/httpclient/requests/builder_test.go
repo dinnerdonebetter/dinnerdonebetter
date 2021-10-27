@@ -12,9 +12,9 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/prixfixe/prixfixe/internal/encoding"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	mockpanicking "gitlab.com/prixfixe/prixfixe/internal/panicking/mock"
+	"github.com/prixfixeco/api_server/internal/encoding"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	mockpanicking "github.com/prixfixeco/api_server/internal/panicking/mock"
 )
 
 type (

@@ -14,13 +14,13 @@ import (
 	"github.com/lib/pq"
 	"github.com/luna-duclos/instrumentedsql"
 
-	"gitlab.com/prixfixe/prixfixe/internal/database"
-	dbconfig "gitlab.com/prixfixe/prixfixe/internal/database/config"
-	"gitlab.com/prixfixe/prixfixe/internal/observability"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/keys"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"github.com/prixfixeco/api_server/internal/database"
+	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
+	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 const (

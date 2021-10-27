@@ -14,9 +14,9 @@ import (
 	"gocloud.dev/blob/memblob"
 	"gocloud.dev/blob/s3blob"
 
-	"gitlab.com/prixfixe/prixfixe/internal/observability/logging"
-	"gitlab.com/prixfixe/prixfixe/internal/observability/tracing"
-	"gitlab.com/prixfixe/prixfixe/internal/routing"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/routing"
 )
 
 const (

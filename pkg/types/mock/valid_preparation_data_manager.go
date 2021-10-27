@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 
-	"gitlab.com/prixfixe/prixfixe/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 var _ types.ValidPreparationDataManager = (*ValidPreparationDataManager)(nil)
