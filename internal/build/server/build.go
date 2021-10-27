@@ -10,15 +10,16 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/authentication"
 	"github.com/prixfixeco/api_server/internal/config"
-	database "github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
+	"github.com/prixfixeco/api_server/internal/encoding"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
-	observability "github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
-	chi "github.com/prixfixeco/api_server/internal/routing/chi"
+	"github.com/prixfixeco/api_server/internal/routing/chi"
 	"github.com/prixfixeco/api_server/internal/search/elasticsearch"
-	server "github.com/prixfixeco/api_server/internal/server"
+	"github.com/prixfixeco/api_server/internal/server"
 	adminservice "github.com/prixfixeco/api_server/internal/services/admin"
 	apiclientsservice "github.com/prixfixeco/api_server/internal/services/apiclients"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
@@ -38,9 +39,9 @@ import (
 	validpreparationsservice "github.com/prixfixeco/api_server/internal/services/validpreparations"
 	webhooksservice "github.com/prixfixeco/api_server/internal/services/webhooks"
 	websocketsservice "github.com/prixfixeco/api_server/internal/services/websockets"
-	storage "github.com/prixfixeco/api_server/internal/storage"
-	uploads "github.com/prixfixeco/api_server/internal/uploads"
-	images "github.com/prixfixeco/api_server/internal/uploads/images"
+	"github.com/prixfixeco/api_server/internal/storage"
+	"github.com/prixfixeco/api_server/internal/uploads"
+	"github.com/prixfixeco/api_server/internal/uploads/images"
 )
 
 // Build builds a server.
@@ -54,7 +55,7 @@ func Build(
 		config.Providers,
 		database.Providers,
 		dbconfig.Providers,
-		//encoding.Providers,
+		encoding.Providers,
 		msgconfig.Providers,
 		server.Providers,
 		metrics.Providers,

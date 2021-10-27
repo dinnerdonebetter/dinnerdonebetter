@@ -1,5 +1,5 @@
 on: [pull_request]
-name: Unit Tests
+name: Tests
 jobs:
   unit_tests:
     strategy:
@@ -14,7 +14,7 @@ jobs:
           go-version: ${{ matrix.go-version }}
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Test
-        run: |
-          go build `go list ./... | grep -Ev '(cmd|tests|testutil|mock|fake)'`
-          go test -cover -shuffle=on -race -failfast `go list ./... | grep -Ev '(cmd|tests|testutil|mock|fake)'`
+      - name: Test build
+        run: go build `go list ./... | grep -Ev '(cmd|tests|testutil|mock|fake)'`
+      - name: Unit tests
+        run: go test -cover -shuffle=on -race -failfast `go list ./... | grep -Ev '(cmd|tests|testutil|mock|fake)'`
