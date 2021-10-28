@@ -123,9 +123,6 @@ func (x *ValidInstrumentCreationRequestInput) ValidateWithContext(ctx context.Co
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Variant, validation.Required),
-		validation.Field(&x.Description, validation.Required),
-		validation.Field(&x.IconPath, validation.Required),
 	)
 }
 
@@ -138,9 +135,6 @@ func (x *ValidInstrumentDatabaseCreationInput) ValidateWithContext(ctx context.C
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Variant, validation.Required),
-		validation.Field(&x.Description, validation.Required),
-		validation.Field(&x.IconPath, validation.Required),
 	)
 }
 
@@ -164,8 +158,5 @@ func (x *ValidInstrumentUpdateRequestInput) ValidateWithContext(ctx context.Cont
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Variant, validation.Required),
-		validation.Field(&x.Description, validation.Required),
-		validation.Field(&x.IconPath, validation.Required),
 	)
 }

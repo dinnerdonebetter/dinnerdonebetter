@@ -254,13 +254,9 @@ dev: $(ARTIFACTS_DIR) $(SEARCH_INDICES_DIR) deploy_base_infra
 	--renew-anon-volumes \
 	--detach
 
-.PHONY: dev_user
-dev_user:
-	go run $(THIS)/cmd/tools/data_scaffolder --url=http://localhost --count=1 --single-user-mode --debug
-
-.PHONY: load_data_for_admin
-load_data_for_admin:
-	go run $(THIS)/cmd/tools/data_scaffolder --url=http://localhost --count=5 --debug
+.PHONY: initialize_database
+initialize_database:
+	go run github.com/prixfixeco/api_server/cmd/tools/db_initializer --address=https://prixfixe.local:8888 --username=username --password=password --two-factor-secret="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
 
 ## misc
 
