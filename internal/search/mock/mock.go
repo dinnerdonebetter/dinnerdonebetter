@@ -23,7 +23,7 @@ func (m *IndexManager) Index(ctx context.Context, id string, value interface{}) 
 
 // Search implements our interface.
 func (m *IndexManager) Search(ctx context.Context, byField, query, householdID string) (ids []string, err error) {
-	args := m.Called(ctx, query, householdID)
+	args := m.Called(ctx, byField, query, householdID)
 	return args.Get(0).([]string), args.Error(1)
 }
 

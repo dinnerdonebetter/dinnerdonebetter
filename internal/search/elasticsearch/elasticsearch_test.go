@@ -356,7 +356,7 @@ func Test_indexManager_search(T *testing.T) {
 			logger:    logger,
 		}
 
-		results, err := im.search(ctx, "", t.Name(), t.Name())
+		results, err := im.search(ctx, t.Name(), "", t.Name())
 		assert.Nil(t, results)
 		assert.Error(t, err)
 	})

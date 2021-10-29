@@ -23,6 +23,17 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 			TemperatureInCelsius:      func(x uint16) *uint16 { return &x }(fake.Uint16()),
 			Notes:                     fake.LoremIpsumSentence(exampleQuantity),
 			RecipeID:                  fake.LoremIpsumSentence(exampleQuantity),
+			Ingredients: []*RecipeStepIngredientCreationRequestInput{
+				{
+					IngredientID:        func(s string) *string { return &s }(fake.LoremIpsumSentence(exampleQuantity)),
+					ID:                  fake.LoremIpsumSentence(exampleQuantity),
+					QuantityType:        fake.LoremIpsumSentence(exampleQuantity),
+					QuantityNotes:       fake.LoremIpsumSentence(exampleQuantity),
+					IngredientNotes:     fake.LoremIpsumSentence(exampleQuantity),
+					BelongsToRecipeStep: fake.LoremIpsumSentence(exampleQuantity),
+					QuantityValue:       1,
+				},
+			},
 		}
 
 		actual := x.ValidateWithContext(context.Background())

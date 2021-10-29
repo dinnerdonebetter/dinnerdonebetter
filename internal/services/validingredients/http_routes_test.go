@@ -413,8 +413,9 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 		indexManager.On(
 			"Search",
 			testutils.ContextMatcher,
+			"name",
 			exampleQuery,
-			helper.exampleHousehold.ID,
+			"",
 		).Return(exampleValidIngredientIDs, nil)
 		helper.service.search = indexManager
 
@@ -478,8 +479,9 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 		indexManager.On(
 			"Search",
 			testutils.ContextMatcher,
+			"name",
 			exampleQuery,
-			helper.exampleHousehold.ID,
+			"",
 		).Return([]string{}, errors.New("blah"))
 		helper.service.search = indexManager
 
@@ -512,8 +514,9 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 		indexManager.On(
 			"Search",
 			testutils.ContextMatcher,
+			"name",
 			exampleQuery,
-			helper.exampleHousehold.ID,
+			"",
 		).Return(exampleValidIngredientIDs, nil)
 		helper.service.search = indexManager
 
@@ -555,8 +558,9 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 		indexManager.On(
 			"Search",
 			testutils.ContextMatcher,
+			"name",
 			exampleQuery,
-			helper.exampleHousehold.ID,
+			"",
 		).Return(exampleValidIngredientIDs, nil)
 		helper.service.search = indexManager
 
