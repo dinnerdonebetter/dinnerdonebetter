@@ -148,9 +148,6 @@ func (x *RecipeCreationRequestInput) ValidateWithContext(ctx context.Context) er
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Source, validation.Required),
-		validation.Field(&x.Description, validation.Required),
-		validation.Field(&x.InspiredByRecipeID, validation.Required),
 		validation.Field(&x.Steps, validation.NilOrNotEmpty),
 	)
 }
@@ -164,9 +161,6 @@ func (x *RecipeDatabaseCreationInput) ValidateWithContext(ctx context.Context) e
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Source, validation.Required),
-		validation.Field(&x.Description, validation.Required),
-		validation.Field(&x.InspiredByRecipeID, validation.Required),
 		validation.Field(&x.BelongsToHousehold, validation.Required),
 	)
 }

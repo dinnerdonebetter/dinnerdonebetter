@@ -41,7 +41,9 @@ func buildChiMux(logger logging.Logger, _ *routing.Config) chi.Router {
 	ch := cors.New(cors.Options{
 		// AllowedOrigins: []string{"https://foo.com"}, // Use this to allow specific origin hosts,
 		AllowedOrigins: []string{
-			"https://localhost",
+			"https://www.prixfixe.local",
+			"https://api.prixfixe.local",
+			"https://admin.prixfixe.local",
 		},
 		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
 		AllowedMethods: []string{
@@ -51,7 +53,7 @@ func buildChiMux(logger logging.Logger, _ *routing.Config) chi.Router {
 			http.MethodDelete,
 			http.MethodOptions,
 		},
-		AllowedHeaders:   []string{},
+		AllowedHeaders:   []string{"Cookie"},
 		ExposedHeaders:   []string{"Set-Cookie"},
 		AllowCredentials: true,
 		MaxAge:           maxCORSAge,

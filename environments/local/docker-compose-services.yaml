@@ -2,12 +2,16 @@ version: "3.8"
 services:
     workers:
         container_name: workers
+        environment:
+            PRIXFIXE_WORKERS_LOCAL_CONFIG_STORE_KEY: 'SUFNQVdBUkVUSEFUVEhJU1NFQ1JFVElTVU5TRUNVUkU='
+            CONFIGURATION_FILEPATH: '/etc/service.config'
+            JAEGER_DISABLED: 'false'
         volumes:
-            - source: '../../environments/testing/config_files/integration-tests-postgres.config'
-              target: '/etc/service.config'
+            - source: '../..'
+              target: '/go/src/github.com/prixfixeco/api_server'
               type: 'bind'
-            - source: '../../'
-              target: '/go/src/github.com/prixfixeco/api_server/cmd/workers'
+            - source: '../../environments/local/service.config'
+              target: '/etc/service.config'
               type: 'bind'
         build:
             context: '../../'

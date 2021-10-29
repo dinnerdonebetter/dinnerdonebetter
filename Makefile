@@ -13,7 +13,7 @@ TEST_ENVIRONMENT_DIR          := $(ENVIRONMENTS_DIR)/testing
 TEST_DOCKER_COMPOSE_FILES_DIR := $(TEST_ENVIRONMENT_DIR)/compose_files
 FRONTEND_DIR                  := frontend
 FRONTEND_TOOL                 := pnpm
-DEFAULT_CERT_TARGETS          := prixfixe.local localhost 127.0.0.1 ::1
+DEFAULT_CERT_TARGETS          := api.prixfixe.local prixfixe.local localhost 127.0.0.1 ::1
 
 ## non-PHONY folders/files
 
@@ -84,11 +84,10 @@ clean_certs:
 	rm -rf environments/testing/certificates
 	rm -rf frontend/certificates
 
-.PHONY: create_certs
-create_certs: clean_certs
+.PHONY: certs
+certs: clean_certs
 	(mkdir -p environments/local/certificates && cd environments/local/certificates && mkcert -client -cert-file cert.pem -key-file key.pem api.prixfixe.local $(DEFAULT_CERT_TARGETS))
 	(mkdir -p environments/testing/certificates && cd environments/testing/certificates && mkcert -client -cert-file cert.pem -key-file key.pem api.prixfixe.local $(DEFAULT_CERT_TARGETS))
-	(mkdir -p frontend/certificates && cd frontend/certificates && mkcert -client -cert-file cert.pem -key-file key.pem www.prixfixe.local $(DEFAULT_CERT_TARGETS))
 
 ## dependency injection
 
@@ -256,7 +255,7 @@ dev: $(ARTIFACTS_DIR) $(SEARCH_INDICES_DIR) deploy_base_infra
 
 .PHONY: initialize_database
 initialize_database:
-	go run github.com/prixfixeco/api_server/cmd/tools/db_initializer --address=https://prixfixe.local:8888 --username=username --password=password --two-factor-secret="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+	go run github.com/prixfixeco/api_server/cmd/tools/db_initializer --address=https://api.prixfixe.local:8888 --username=username --password=password --two-factor-secret="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
 
 ## misc
 
