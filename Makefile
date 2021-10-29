@@ -2,7 +2,6 @@ PWD                           := $(shell pwd)
 GOPATH                        := $(GOPATH)
 ARTIFACTS_DIR                 := artifacts
 COVERAGE_OUT                  := $(ARTIFACTS_DIR)/coverage.out
-SEARCH_INDICES_DIR            := $(ARTIFACTS_DIR)/search_indices
 GO                            := docker run --interactive --tty --volume $(PWD):$(PWD) --workdir $(PWD) --user $(shell id -u):$(shell id -g) golang:1.17-stretch go
 GO_FORMAT                     := gofmt -s -w
 THIS                          := github.com/prixfixeco/api_server
@@ -11,9 +10,8 @@ TESTABLE_PACKAGE_LIST         := `go list $(THIS)/... | grep -Ev '(cmd|tests|tes
 ENVIRONMENTS_DIR              := environments
 TEST_ENVIRONMENT_DIR          := $(ENVIRONMENTS_DIR)/testing
 TEST_DOCKER_COMPOSE_FILES_DIR := $(TEST_ENVIRONMENT_DIR)/compose_files
-FRONTEND_DIR                  := frontend
-FRONTEND_TOOL                 := pnpm
-DEFAULT_CERT_TARGETS          := api.prixfixe.local prixfixe.local localhost 127.0.0.1 ::1
+LOCAL_ADDRESS                 := api.prixfixe.local
+DEFAULT_CERT_TARGETS          := $(LOCAL_ADDRESS) prixfixe.local localhost 127.0.0.1 ::1
 
 ## non-PHONY folders/files
 
@@ -29,14 +27,8 @@ $(ARTIFACTS_DIR):
 clean-$(ARTIFACTS_DIR):
 	@rm -rf $(ARTIFACTS_DIR)
 
-$(SEARCH_INDICES_DIR):
-	@mkdir --parents $(SEARCH_INDICES_DIR)
-
-clean-search-indices:
-	@rm -rf $(SEARCH_INDICES_DIR)
-
 .PHONY: setup
-setup: $(ARTIFACTS_DIR) $(SEARCH_INDICES_DIR) revendor rewire configs
+setup: $(ARTIFACTS_DIR) revendor rewire configs
 
 .PHONY: configs
 configs:
@@ -67,6 +59,11 @@ ifndef $(shell command -v pnpm 2> /dev/null)
 	$(shell npm install -g pnpm)
 endif
 
+.PHONY: ensure_hosts
+ensure_hosts:
+	if [ `cat /etc/hosts | grep api.prixfixe.local | wc -l` -ne 1 ]; then sudo -- sh -c "echo \"127.0.0.1       api.prixfixe.local\" >> /etc/hosts"; fi
+	
+
 .PHONY: clean_vendor
 clean_vendor:
 	rm -rf vendor go.sum
@@ -82,7 +79,6 @@ revendor: clean_vendor vendor
 clean_certs:
 	rm -rf environments/local/certificates
 	rm -rf environments/testing/certificates
-	rm -rf frontend/certificates
 
 .PHONY: certs
 certs: clean_certs
@@ -102,40 +98,19 @@ wire: ensure_wire_installed vendor
 .PHONY: rewire
 rewire: ensure_wire_installed clean_wire wire
 
-## Frontend stuff
-
-.PHONY: dev_frontend
-dev_frontend: ensure_pnpm_installed
-	docker build --tag frontend:dev_latest --file frontend/app.Dockerfile frontend
-	docker run --interactive --tty --rm --network=host frontend:dev_latest
-
 ## formatting
 
-.PHONY: format_frontend
-format_frontend:
-	(cd $(FRONTEND_DIR) && $(FRONTEND_TOOL) run format)
-
-.PHONY: format_backend
-format_backend:
+.PHONY: format
+format:
 	for file in `find $(PWD) -name '*.go'`; do $(GO_FORMAT) $$file; done
 
 .PHONY: fmt
 fmt: format
 
-.PHONY: format
-format: format_backend format_frontend
-
-.PHONY: check_backend_formatting
-check_backend_formatting: vendor
+.PHONY: check_formatting
+check_formatting: vendor
 	docker build --tag check_formatting --file environments/testing/dockerfiles/formatting.Dockerfile .
 	docker run --interactive --tty --rm check_formatting
-
-.PHONY: check-frontend-formatting
-check-frontend-formatting:
-	(cd $(FRONTEND_DIR) && $(FRONTEND_TOOL) run format:check)
-
-.PHONY: check_formatting
-check_formatting: check_backend_formatting check-frontend-formatting
 
 ## Testing things
 
@@ -245,7 +220,7 @@ integration_tests_postgres:
 ## Running
 
 .PHONY: dev
-dev: $(ARTIFACTS_DIR) $(SEARCH_INDICES_DIR) deploy_base_infra
+dev: $(ARTIFACTS_DIR) deploy_base_infra
 	docker-compose --file $(ENVIRONMENTS_DIR)/local/docker-compose-services.yaml up \
 	--quiet-pull \
 	--build \

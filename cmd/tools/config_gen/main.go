@@ -83,11 +83,11 @@ var (
 	}
 
 	localServer = server.Config{
-		Debug:                   true,
-		HTTPPort:                defaultPort,
-		StartupDeadline:         time.Minute,
-		HTTPSCertificateFile:    "/etc/certs/cert.pem",
-		HTTPSCertificateKeyFile: "/etc/certs/key.pem",
+		Debug:           true,
+		HTTPPort:        defaultPort,
+		StartupDeadline: time.Minute,
+		// HTTPSCertificateFile:    "/etc/certs/cert.pem",
+		// HTTPSCertificateKeyFile: "/etc/certs/key.pem",
 	}
 
 	localCookies = authservice.CookieConfig{
@@ -139,6 +139,7 @@ func encryptAndSaveConfig(ctx context.Context, outputPath string, cfg *config.In
 
 	if err = os.MkdirAll(filepath.Dir(outputPath), 0777); err != nil {
 		// that's okay
+		_ = err
 	}
 
 	return os.WriteFile(outputPath, []byte(output), 0644)
