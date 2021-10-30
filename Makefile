@@ -201,10 +201,10 @@ deploy_base_infra:
 lintegration_tests: lint clear integration-tests
 
 .PHONY: integration_tests
-integration_tests: integration-tests-postgres
+integration_tests: integration_tests_postgres
 
 .PHONY: integration-tests
-integration-tests: integration-tests-postgres
+integration-tests: integration_tests_postgres
 
 .PHONY: integration_tests_postgres
 integration_tests_postgres:
