@@ -150,6 +150,9 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 		return
 	}
 
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
 	input := new(types.ChangeActiveHouseholdInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
@@ -195,8 +198,8 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 	res.WriteHeader(http.StatusAccepted)
 }
 
-// LogoutUser ends a user's session.  TODO: see if this can be eliminated.
-func (s *service) LogoutUser(ctx context.Context, sessionCtxData *types.SessionContextData, req *http.Request, res http.ResponseWriter) error {
+// LogoutUser ends a user's session.
+func (s *service) LogoutUser(ctx context.Context, req *http.Request, res http.ResponseWriter) error {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -221,14 +224,6 @@ func (s *service) LogoutUser(ctx context.Context, sessionCtxData *types.SessionC
 	newCookie.MaxAge = -1
 	http.SetCookie(res, newCookie)
 
-	newWebsocketsCookie, websocketsCookieBuildingErr := s.buildCookie("deleted", time.Time{})
-	if websocketsCookieBuildingErr != nil || newCookie == nil {
-		return observability.PrepareError(websocketsCookieBuildingErr, logger, span, "building cookie")
-	}
-
-	newWebsocketsCookie.MaxAge = -1
-	http.SetCookie(res, newWebsocketsCookie)
-
 	logger.Debug("user logged out")
 
 	return nil
@@ -250,7 +245,10 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 		return
 	}
 
-	if err = s.LogoutUser(ctx, sessionCtxData, req, res); err != nil {
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	if err = s.LogoutUser(ctx, req, res); err != nil {
 		observability.AcknowledgeError(err, logger, span, "logging out user")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
@@ -275,6 +273,8 @@ func (s *service) StatusHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 
 	statusResponse = &types.UserStatusResponse{
 		ActiveHousehold:           sessionCtxData.ActiveHouseholdID,
@@ -460,6 +460,9 @@ func (s *service) CycleCookieSecretHandler(res http.ResponseWriter, req *http.Re
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
 		return
 	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
 
 	if !sessionCtxData.Requester.ServicePermissions.CanCycleCookieSecrets() {
 		logger.Debug("invalid permissions")

@@ -83,6 +83,9 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
 	// fetch creation input from session context data.
 	input := new(types.APIClientCreationInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {

@@ -75,6 +75,9 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
 	// check session context data for parsed input struct.
 	input := new(types.HouseholdCreationInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
@@ -170,6 +173,9 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
 		return
 	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
 
 	input := new(types.HouseholdUpdateInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
@@ -278,6 +284,9 @@ func (s *service) AddMemberHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
 	// check session context data for parsed input struct.
 	input := new(types.AddUserToHouseholdInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
@@ -334,6 +343,9 @@ func (s *service) ModifyMemberPermissionsHandler(res http.ResponseWriter, req *h
 		return
 	}
 
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
 	// check session context data for parsed input struct.
 	input := new(types.ModifyUserPermissionsInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
@@ -385,6 +397,9 @@ func (s *service) TransferHouseholdOwnershipHandler(res http.ResponseWriter, req
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
 		return
 	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
 
 	// check session context data for parsed input struct.
 	input := new(types.HouseholdOwnershipTransferInput)

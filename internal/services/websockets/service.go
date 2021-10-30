@@ -36,11 +36,11 @@ type (
 		tracer                      tracing.Tracer
 		connections                 map[string][]websocketConnection
 		sessionContextDataFetcher   func(*http.Request) (*types.SessionContextData, error)
+		authConfig                  *authservice.Config
 		websocketConnectionUpgrader websocket.Upgrader
 		websocketDeadline           time.Duration
 		pollDuration                time.Duration
 		connectionsHat              sync.RWMutex
-		authConfig                  *authservice.Config
 	}
 )
 
