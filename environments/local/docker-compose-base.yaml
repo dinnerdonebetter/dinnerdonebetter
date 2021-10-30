@@ -16,7 +16,7 @@ services:
         logging:
             driver: none
         ports:
-            - '2345:5432'
+            - '5432:5432'
     elasticsearch:
       image: elasticsearch:7.14.1
       ports:

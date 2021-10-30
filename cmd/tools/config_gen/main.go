@@ -45,8 +45,9 @@ import (
 
 const (
 	defaultPort              = 8888
-	defaultCookieDomain      = "localhost"
+	defaultCookieDomain      = ".prixfixe.local"
 	debugCookieSecret        = "HEREISA32CHARSECRETWHICHISMADEUP"
+	debugCookieSigningKey    = "DIFFERENT32CHARSECRETTHATIMADEUP"
 	devPostgresDBConnDetails = "postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable"
 	defaultCookieName        = authservice.DefaultCookieName
 
@@ -94,7 +95,7 @@ var (
 		Name:       defaultCookieName,
 		Domain:     defaultCookieDomain,
 		HashKey:    debugCookieSecret,
-		SigningKey: debugCookieSecret,
+		SigningKey: debugCookieSigningKey,
 		Lifetime:   authservice.DefaultCookieLifetime,
 		SecureOnly: true,
 	}
@@ -654,7 +655,8 @@ func buildIntegrationTestForDBImplementation(dbVendor, dbDetails string) configF
 					Cookies: authservice.CookieConfig{
 						Name:       defaultCookieName,
 						Domain:     defaultCookieDomain,
-						SigningKey: debugCookieSecret,
+						HashKey:    debugCookieSecret,
+						SigningKey: debugCookieSigningKey,
 						Lifetime:   authservice.DefaultCookieLifetime,
 						SecureOnly: false,
 					},

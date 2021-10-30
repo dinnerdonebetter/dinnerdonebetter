@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="unit tests (pkg)" type="GoTestRunConfiguration" factoryName="Go Test">
-    <module name="prixfixe" />
+    <module name="api_server" />
     <working_directory value="$PROJECT_DIR$/pkg" />
     <root_directory value="$PROJECT_DIR$" />
     <kind value="DIRECTORY" />

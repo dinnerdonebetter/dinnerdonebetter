@@ -26,11 +26,16 @@ func (s *service) SubscribeHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	cookie, err := req.Cookie(s.cookieName)
+	cookie, err := req.Cookie(s.authConfig.Cookies.Name)
 	if err != nil {
 		logger.Error(err, "checking websocket subscription request for cookies")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
 	}
+
+	// we have to amend the cookie here, lest it get set to an invalid path and domain.
+	cookie.Domain = s.authConfig.Cookies.Domain
+	cookie.Path = "/"
 
 	wsHeader := http.Header{}
 	wsHeader.Add("Set-Cookie", cookie.String())

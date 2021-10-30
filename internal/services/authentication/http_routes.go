@@ -221,6 +221,14 @@ func (s *service) LogoutUser(ctx context.Context, sessionCtxData *types.SessionC
 	newCookie.MaxAge = -1
 	http.SetCookie(res, newCookie)
 
+	newWebsocketsCookie, websocketsCookieBuildingErr := s.buildCookie("deleted", time.Time{})
+	if websocketsCookieBuildingErr != nil || newCookie == nil {
+		return observability.PrepareError(websocketsCookieBuildingErr, logger, span, "building cookie")
+	}
+
+	newWebsocketsCookie.MaxAge = -1
+	http.SetCookie(res, newWebsocketsCookie)
+
 	logger.Debug("user logged out")
 
 	return nil
