@@ -230,7 +230,7 @@ dev: $(ARTIFACTS_DIR) deploy_base_infra
 
 .PHONY: initialize_database
 initialize_database:
-	go run github.com/prixfixeco/api_server/cmd/tools/db_initializer --address=https://api.prixfixe.local:8888 --username=username --password=password --two-factor-secret="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+	go run github.com/prixfixeco/api_server/cmd/tools/db_initializer --address=https://api.prixfixe.local --username=username --password=password --two-factor-secret="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
 
 ## misc
 

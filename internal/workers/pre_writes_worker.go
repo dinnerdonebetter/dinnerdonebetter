@@ -161,6 +161,7 @@ func (w *PreWritesWorker) HandleMessage(ctx context.Context, message []byte) err
 		if w.postWritesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "validInstrumentCreated",
 				ValidInstrument:           validInstrument,
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
@@ -183,6 +184,7 @@ func (w *PreWritesWorker) HandleMessage(ctx context.Context, message []byte) err
 		if w.postWritesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "validIngredientCreated",
 				ValidIngredient:           validIngredient,
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
@@ -205,6 +207,7 @@ func (w *PreWritesWorker) HandleMessage(ctx context.Context, message []byte) err
 		if w.postWritesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "validPreparationCreated",
 				ValidPreparation:          validPreparation,
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
@@ -227,6 +230,7 @@ func (w *PreWritesWorker) HandleMessage(ctx context.Context, message []byte) err
 		if w.postWritesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                   msg.DataType,
+				MessageType:                "validIngredientPreparationCreated",
 				ValidIngredientPreparation: validIngredientPreparation,
 				AttributableToUserID:       msg.AttributableToUserID,
 				AttributableToHouseholdID:  msg.AttributableToHouseholdID,
@@ -249,6 +253,7 @@ func (w *PreWritesWorker) HandleMessage(ctx context.Context, message []byte) err
 		if w.postWritesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "recipeCreated",
 				Recipe:                    recipe,
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
@@ -271,6 +276,7 @@ func (w *PreWritesWorker) HandleMessage(ctx context.Context, message []byte) err
 		if w.postWritesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "recipeStepCreated",
 				RecipeStep:                recipeStep,
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
@@ -293,6 +299,7 @@ func (w *PreWritesWorker) HandleMessage(ctx context.Context, message []byte) err
 		if w.postWritesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "recipeStepInstrumentCreated",
 				RecipeStepInstrument:      recipeStepInstrument,
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
@@ -315,6 +322,7 @@ func (w *PreWritesWorker) HandleMessage(ctx context.Context, message []byte) err
 		if w.postWritesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "recipeStepIngredientCreated",
 				RecipeStepIngredient:      recipeStepIngredient,
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
@@ -337,6 +345,7 @@ func (w *PreWritesWorker) HandleMessage(ctx context.Context, message []byte) err
 		if w.postWritesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "recipeStepProductCreated",
 				RecipeStepProduct:         recipeStepProduct,
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
@@ -359,6 +368,7 @@ func (w *PreWritesWorker) HandleMessage(ctx context.Context, message []byte) err
 		if w.postWritesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "mealPlanCreated",
 				MealPlan:                  mealPlan,
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
@@ -381,6 +391,7 @@ func (w *PreWritesWorker) HandleMessage(ctx context.Context, message []byte) err
 		if w.postWritesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "mealPlanOptionCreated",
 				MealPlanOption:            mealPlanOption,
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
@@ -403,6 +414,7 @@ func (w *PreWritesWorker) HandleMessage(ctx context.Context, message []byte) err
 		if w.postWritesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "mealPlanOptionVoteCreated",
 				MealPlanOptionVote:        mealPlanOptionVote,
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
@@ -421,6 +433,7 @@ func (w *PreWritesWorker) HandleMessage(ctx context.Context, message []byte) err
 		if w.postWritesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "webhookCreated",
 				Webhook:                   webhook,
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
@@ -438,6 +451,7 @@ func (w *PreWritesWorker) HandleMessage(ctx context.Context, message []byte) err
 		if w.postWritesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "userMembershipCreated",
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}

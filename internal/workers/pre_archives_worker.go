@@ -159,6 +159,7 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "validInstrumentArchived",
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
@@ -179,6 +180,7 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "validIngredientArchived",
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
@@ -199,6 +201,7 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "validPreparationArchived",
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
@@ -219,6 +222,7 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "validIngredientPreparationArchived",
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
@@ -239,6 +243,7 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "recipeArchived",
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
@@ -259,6 +264,7 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "recipeStepArchived",
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
@@ -279,6 +285,7 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "recipeStepInstrumentArchived",
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
@@ -299,6 +306,7 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "recipeStepIngredientArchived",
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
@@ -319,6 +327,7 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "recipeStepProductArchived",
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
@@ -339,6 +348,7 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "mealPlanArchived",
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
@@ -359,6 +369,7 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "mealPlanOptionArchived",
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
@@ -379,6 +390,7 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "mealPlanOptionVoteArchived",
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}
@@ -395,6 +407,7 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 		if w.postArchivesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
+				MessageType:               "webhookArchived",
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,
 			}

@@ -281,6 +281,7 @@ func (s *TestSuite) TestValidIngredients_Searching() {
 			t.Log("creating valid ingredients")
 			var expected []*types.ValidIngredient
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
+			exampleValidIngredient.Name = "example"
 			searchQuery := exampleValidIngredient.Name
 			for i := 0; i < 5; i++ {
 				exampleValidIngredient.Name = fmt.Sprintf("%s %d", searchQuery, i)
@@ -334,6 +335,7 @@ func (s *TestSuite) TestValidIngredients_Searching() {
 			t.Log("creating valid ingredients")
 			var expected []*types.ValidIngredient
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
+			exampleValidIngredient.Name = "example"
 			searchQuery := exampleValidIngredient.Name
 			for i := 0; i < 5; i++ {
 				exampleValidIngredient.Name = fmt.Sprintf("%s %d", searchQuery, i)
