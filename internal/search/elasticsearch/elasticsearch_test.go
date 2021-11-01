@@ -337,7 +337,7 @@ func Test_indexManager_search(T *testing.T) {
 			logger:    logger,
 		}
 
-		results, err := im.search(ctx, t.Name(), t.Name())
+		results, err := im.search(ctx, t.Name(), t.Name(), t.Name())
 		assert.NotNil(t, results)
 		assert.NoError(t, err)
 
@@ -356,7 +356,7 @@ func Test_indexManager_search(T *testing.T) {
 			logger:    logger,
 		}
 
-		results, err := im.search(ctx, "", t.Name())
+		results, err := im.search(ctx, t.Name(), "", t.Name())
 		assert.Nil(t, results)
 		assert.Error(t, err)
 	})
@@ -392,7 +392,7 @@ func Test_indexManager_search(T *testing.T) {
 			logger:    logger,
 		}
 
-		results, err := im.search(ctx, t.Name(), t.Name())
+		results, err := im.search(ctx, t.Name(), t.Name(), t.Name())
 		assert.Nil(t, results)
 		assert.Error(t, err)
 
@@ -451,7 +451,7 @@ func Test_indexManager_search(T *testing.T) {
 			logger:    logger,
 		}
 
-		results, err := im.search(ctx, t.Name(), t.Name())
+		results, err := im.search(ctx, t.Name(), t.Name(), t.Name())
 		assert.Nil(t, results)
 		assert.Error(t, err)
 
@@ -508,7 +508,7 @@ func Test_indexManager_Search(T *testing.T) {
 			logger:    logger,
 		}
 
-		results, err := im.Search(ctx, t.Name(), t.Name())
+		results, err := im.Search(ctx, "", t.Name(), t.Name())
 		assert.NotNil(t, results)
 		assert.NoError(t, err)
 

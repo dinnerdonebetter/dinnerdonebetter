@@ -54,7 +54,7 @@ func ProvideService(
 ) (types.ValidPreparationDataService, error) {
 	client := &http.Client{Transport: tracing.BuildTracedHTTPTransport(time.Second)}
 
-	searchIndexManager, err := searchIndexProvider(ctx, logger, client, search.IndexPath(cfg.SearchIndexPath), "valid_preparations", "name", "description", "icon")
+	searchIndexManager, err := searchIndexProvider(ctx, logger, client, search.IndexPath(cfg.SearchIndexPath), "valid_preparations", "name", "description")
 	if err != nil {
 		return nil, fmt.Errorf("setting up valid preparation search index: %w", err)
 	}

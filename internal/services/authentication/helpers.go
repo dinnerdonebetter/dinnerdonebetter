@@ -114,6 +114,43 @@ func (s *service) validateLogin(ctx context.Context, user *types.User, loginInpu
 	return loginValid, nil
 }
 
+func (s *service) issueSessionManagedCookie(ctx context.Context, householdID, requesterID string) (cookie *http.Cookie, err error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger
+
+	ctx, err = s.sessionManager.Load(ctx, "")
+	if err != nil {
+		// this will never happen while token is empty.
+		observability.AcknowledgeError(err, logger, span, "loading token")
+		return nil, err
+	}
+
+	if err = s.sessionManager.RenewToken(ctx); err != nil {
+		observability.AcknowledgeError(err, logger, span, "renewing token")
+		return nil, err
+	}
+
+	s.sessionManager.Put(ctx, householdIDContextKey, householdID)
+	s.sessionManager.Put(ctx, userIDContextKey, requesterID)
+
+	token, expiry, err := s.sessionManager.Commit(ctx)
+	if err != nil {
+		// this branch cannot be tested because I cannot anticipate what the values committed will be
+		observability.AcknowledgeError(err, logger, span, "writing to session store")
+		return nil, err
+	}
+
+	cookie, err = s.buildCookie(token, expiry)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "building cookie")
+		return nil, err
+	}
+
+	return cookie, nil
+}
+
 // buildCookie provides a consistent way of constructing an HTTP cookie.
 func (s *service) buildCookie(value string, expiry time.Time) (*http.Cookie, error) {
 	encoded, err := s.cookieManager.Encode(s.config.Cookies.Name, value)
@@ -130,9 +167,9 @@ func (s *service) buildCookie(value string, expiry time.Time) (*http.Cookie, err
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   s.config.Cookies.SecureOnly,
-		Domain:   "prixfixe.local",
+		Domain:   s.config.Cookies.Domain,
 		Expires:  expiry,
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteNoneMode,
 		MaxAge:   int(time.Until(expiry).Seconds()),
 	}
 

@@ -159,11 +159,7 @@ var (
 )
 
 // search executes search queries.
-func (sm *indexManager) search(
-	ctx context.Context,
-	query,
-	householdID string,
-) (ids []string, err error) {
+func (sm *indexManager) search(ctx context.Context, byField, query, householdID string) (ids []string, err error) {
 	_, span := sm.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -174,7 +170,7 @@ func (sm *indexManager) search(
 		return nil, ErrEmptyQueryProvided
 	}
 
-	baseQuery := elastic.NewMultiMatchQuery(query, sm.searchFields...)
+	baseQuery := elastic.NewWildcardQuery(byField, fmt.Sprintf("*%s*", query))
 
 	var q elastic.Query
 	if householdID == "" {
@@ -202,8 +198,8 @@ func (sm *indexManager) search(
 }
 
 // Search implements our IndexManager interface.
-func (sm *indexManager) Search(ctx context.Context, query, householdID string) (ids []string, err error) {
-	return sm.search(ctx, query, householdID)
+func (sm *indexManager) Search(ctx context.Context, byField, query, householdID string) (ids []string, err error) {
+	return sm.search(ctx, byField, query, householdID)
 }
 
 // Delete implements our IndexManager interface.

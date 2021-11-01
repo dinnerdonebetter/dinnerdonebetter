@@ -1,9 +1,9 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="server (postgres)" type="GoApplicationRunConfiguration" factoryName="Go Application">
-    <module name="prixfixe" />
+    <module name="api_server" />
     <working_directory value="$PROJECT_DIR$" />
     <envs>
-      <env name="CONFIGURATION_FILEPATH" value="./environments/testing/config_files/integration-tests-postgres.config" />
+      <env name="CONFIGURATION_FILEPATH" value="./environments/local/service.config" />
       <env name="PRIXFIXE_SERVER_LOCAL_CONFIG_STORE_KEY" value="SUFNQVdBUkVUSEFUVEhJU1NFQ1JFVElTVU5TRUNVUkU=" />
     </envs>
     <kind value="FILE" />

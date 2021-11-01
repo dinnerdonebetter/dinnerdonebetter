@@ -257,6 +257,7 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 			t.Log("creating valid instruments")
 			var expected []*types.ValidInstrument
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
+			exampleValidInstrument.Name = "example"
 			searchQuery := exampleValidInstrument.Name
 			for i := 0; i < 5; i++ {
 				exampleValidInstrument.Name = fmt.Sprintf("%s %d", searchQuery, i)
@@ -310,6 +311,7 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 			t.Log("creating valid instruments")
 			var expected []*types.ValidInstrument
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
+			exampleValidInstrument.Name = "example"
 			searchQuery := exampleValidInstrument.Name
 			for i := 0; i < 5; i++ {
 				exampleValidInstrument.Name = fmt.Sprintf("%s %d", searchQuery, i)

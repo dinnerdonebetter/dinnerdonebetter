@@ -190,7 +190,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	relevantIDs, err := s.search.Search(ctx, query, sessionCtxData.ActiveHouseholdID)
+	relevantIDs, err := s.search.Search(ctx, "name", query, "")
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "executing valid ingredient search query")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)

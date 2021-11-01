@@ -182,14 +182,8 @@ func (x *RecipeStepCreationRequestInput) ValidateWithContext(ctx context.Context
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.Index, validation.Required),
 		validation.Field(&x.PreparationID, validation.Required),
-		validation.Field(&x.PrerequisiteStep, validation.Required),
-		validation.Field(&x.MinEstimatedTimeInSeconds, validation.Required),
-		validation.Field(&x.MaxEstimatedTimeInSeconds, validation.Required),
-		validation.Field(&x.TemperatureInCelsius, validation.Required),
-		validation.Field(&x.Notes, validation.Required),
-		validation.Field(&x.RecipeID, validation.Required),
+		validation.Field(&x.Ingredients, validation.Required),
 	)
 }
 
@@ -201,13 +195,7 @@ func (x *RecipeStepDatabaseCreationInput) ValidateWithContext(ctx context.Contex
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
-		validation.Field(&x.Index, validation.Required),
 		validation.Field(&x.PreparationID, validation.Required),
-		validation.Field(&x.PrerequisiteStep, validation.Required),
-		validation.Field(&x.MinEstimatedTimeInSeconds, validation.Required),
-		validation.Field(&x.MaxEstimatedTimeInSeconds, validation.Required),
-		validation.Field(&x.TemperatureInCelsius, validation.Required),
-		validation.Field(&x.Notes, validation.Required),
 		validation.Field(&x.RecipeID, validation.Required),
 	)
 }

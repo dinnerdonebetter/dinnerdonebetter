@@ -45,8 +45,9 @@ import (
 
 const (
 	defaultPort              = 8888
-	defaultCookieDomain      = "localhost"
+	defaultCookieDomain      = ".prixfixe.local"
 	debugCookieSecret        = "HEREISA32CHARSECRETWHICHISMADEUP"
+	debugCookieSigningKey    = "DIFFERENT32CHARSECRETTHATIMADEUP"
 	devPostgresDBConnDetails = "postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable"
 	defaultCookieName        = authservice.DefaultCookieName
 
@@ -83,18 +84,18 @@ var (
 	}
 
 	localServer = server.Config{
-		Debug:                   true,
-		HTTPPort:                defaultPort,
-		StartupDeadline:         time.Minute,
-		HTTPSCertificateFile:    "/etc/certs/cert.pem",
-		HTTPSCertificateKeyFile: "/etc/certs/key.pem",
+		Debug:           true,
+		HTTPPort:        defaultPort,
+		StartupDeadline: time.Minute,
+		// HTTPSCertificateFile:    "/etc/certs/cert.pem",
+		// HTTPSCertificateKeyFile: "/etc/certs/key.pem",
 	}
 
 	localCookies = authservice.CookieConfig{
 		Name:       defaultCookieName,
 		Domain:     defaultCookieDomain,
 		HashKey:    debugCookieSecret,
-		SigningKey: debugCookieSecret,
+		SigningKey: debugCookieSigningKey,
 		Lifetime:   authservice.DefaultCookieLifetime,
 		SecureOnly: true,
 	}
@@ -139,6 +140,7 @@ func encryptAndSaveConfig(ctx context.Context, outputPath string, cfg *config.In
 
 	if err = os.MkdirAll(filepath.Dir(outputPath), 0777); err != nil {
 		// that's okay
+		_ = err
 	}
 
 	return os.WriteFile(outputPath, []byte(output), 0644)
@@ -653,7 +655,8 @@ func buildIntegrationTestForDBImplementation(dbVendor, dbDetails string) configF
 					Cookies: authservice.CookieConfig{
 						Name:       defaultCookieName,
 						Domain:     defaultCookieDomain,
-						SigningKey: debugCookieSecret,
+						HashKey:    debugCookieSecret,
+						SigningKey: debugCookieSigningKey,
 						Lifetime:   authservice.DefaultCookieLifetime,
 						SecureOnly: false,
 					},

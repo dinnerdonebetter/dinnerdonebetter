@@ -251,6 +251,7 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 			t.Log("creating valid preparations")
 			var expected []*types.ValidPreparation
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparation.Name = "example"
 			searchQuery := exampleValidPreparation.Name
 			for i := 0; i < 5; i++ {
 				exampleValidPreparation.Name = fmt.Sprintf("%s %d", searchQuery, i)
@@ -304,6 +305,7 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 			t.Log("creating valid preparations")
 			var expected []*types.ValidPreparation
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparation.Name = "example"
 			searchQuery := exampleValidPreparation.Name
 			for i := 0; i < 5; i++ {
 				exampleValidPreparation.Name = fmt.Sprintf("%s %d", searchQuery, i)

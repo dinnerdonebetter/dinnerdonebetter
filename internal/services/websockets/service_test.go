@@ -21,11 +21,15 @@ import (
 
 func buildTestService() *service {
 	return &service{
-		cookieName:     "testing",
 		logger:         logging.NewNoopLogger(),
 		encoderDecoder: mockencoding.NewMockEncoderDecoder(),
 		tracer:         tracing.NewTracer("test"),
 		connections:    map[string][]websocketConnection{},
+		authConfig: &authservice.Config{
+			Cookies: authservice.CookieConfig{
+				Name: "cookie",
+			},
+		},
 	}
 }
 

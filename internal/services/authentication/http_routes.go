@@ -22,43 +22,6 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-func (s *service) issueSessionManagedCookie(ctx context.Context, householdID, requesterID string) (cookie *http.Cookie, err error) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger
-
-	ctx, err = s.sessionManager.Load(ctx, "")
-	if err != nil {
-		// this will never happen while token is empty.
-		observability.AcknowledgeError(err, logger, span, "loading token")
-		return nil, err
-	}
-
-	if err = s.sessionManager.RenewToken(ctx); err != nil {
-		observability.AcknowledgeError(err, logger, span, "renewing token")
-		return nil, err
-	}
-
-	s.sessionManager.Put(ctx, householdIDContextKey, householdID)
-	s.sessionManager.Put(ctx, userIDContextKey, requesterID)
-
-	token, expiry, err := s.sessionManager.Commit(ctx)
-	if err != nil {
-		// this branch cannot be tested because I cannot anticipate what the values committed will be
-		observability.AcknowledgeError(err, logger, span, "writing to session store")
-		return nil, err
-	}
-
-	cookie, err = s.buildCookie(token, expiry)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "building cookie")
-		return nil, err
-	}
-
-	return cookie, nil
-}
-
 var (
 	// ErrUserNotFound indicates a user was not located.
 	ErrUserNotFound = errors.New("user not found")
@@ -120,7 +83,7 @@ func (s *service) AuthenticateUser(ctx context.Context, loginData *types.UserLog
 	return user, cookie, nil
 }
 
-// LoginHandler is our login route.
+// BeginSessionHandler is our login route.
 func (s *service) BeginSessionHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -187,6 +150,9 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 		return
 	}
 
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
 	input := new(types.ChangeActiveHouseholdInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
@@ -232,7 +198,8 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 	res.WriteHeader(http.StatusAccepted)
 }
 
-func (s *service) LogoutUser(ctx context.Context, sessionCtxData *types.SessionContextData, req *http.Request, res http.ResponseWriter) error {
+// LogoutUser ends a user's session.
+func (s *service) LogoutUser(ctx context.Context, req *http.Request, res http.ResponseWriter) error {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -262,7 +229,7 @@ func (s *service) LogoutUser(ctx context.Context, sessionCtxData *types.SessionC
 	return nil
 }
 
-// LogoutHandler is our logout route.
+// EndSessionHandler is our logout route.
 func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -278,7 +245,10 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 		return
 	}
 
-	if err = s.LogoutUser(ctx, sessionCtxData, req, res); err != nil {
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	if err = s.LogoutUser(ctx, req, res); err != nil {
 		observability.AcknowledgeError(err, logger, span, "logging out user")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
@@ -303,6 +273,8 @@ func (s *service) StatusHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 
 	statusResponse = &types.UserStatusResponse{
 		ActiveHousehold:           sessionCtxData.ActiveHouseholdID,
@@ -488,6 +460,9 @@ func (s *service) CycleCookieSecretHandler(res http.ResponseWriter, req *http.Re
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
 		return
 	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
 
 	if !sessionCtxData.Requester.ServicePermissions.CanCycleCookieSecrets() {
 		logger.Debug("invalid permissions")

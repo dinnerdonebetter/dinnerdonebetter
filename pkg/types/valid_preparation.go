@@ -115,8 +115,6 @@ func (x *ValidPreparationCreationRequestInput) ValidateWithContext(ctx context.C
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Description, validation.Required),
-		validation.Field(&x.IconPath, validation.Required),
 	)
 }
 
@@ -129,8 +127,6 @@ func (x *ValidPreparationDatabaseCreationInput) ValidateWithContext(ctx context.
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Description, validation.Required),
-		validation.Field(&x.IconPath, validation.Required),
 	)
 }
 
@@ -153,7 +149,5 @@ func (x *ValidPreparationUpdateRequestInput) ValidateWithContext(ctx context.Con
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Description, validation.Required),
-		validation.Field(&x.IconPath, validation.Required),
 	)
 }

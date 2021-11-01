@@ -36,8 +36,8 @@ type (
 		tracer                      tracing.Tracer
 		connections                 map[string][]websocketConnection
 		sessionContextDataFetcher   func(*http.Request) (*types.SessionContextData, error)
+		authConfig                  *authservice.Config
 		websocketConnectionUpgrader websocket.Upgrader
-		cookieName                  string
 		websocketDeadline           time.Duration
 		pollDuration                time.Duration
 		connectionsHat              sync.RWMutex
@@ -62,10 +62,10 @@ func ProvideService(
 		sessionContextDataFetcher:   authservice.FetchContextFromRequest,
 		encoderDecoder:              encoder,
 		websocketConnectionUpgrader: upgrader,
-		cookieName:                  authCfg.Cookies.Name,
 		connections:                 map[string][]websocketConnection{},
 		websocketDeadline:           5 * time.Second,
 		pollDuration:                10 * time.Second,
+		authConfig:                  authCfg,
 		tracer:                      tracing.NewTracer(serviceName),
 	}
 

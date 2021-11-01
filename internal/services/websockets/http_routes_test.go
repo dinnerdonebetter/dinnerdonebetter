@@ -84,7 +84,7 @@ func TestWebsocketsService_SubscribeHandler(T *testing.T) {
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
 		cookie := &http.Cookie{
-			Name: helper.service.cookieName,
+			Name: helper.service.authConfig.Cookies.Name,
 		}
 		helper.req.AddCookie(cookie)
 
@@ -106,7 +106,7 @@ func TestWebsocketsService_SubscribeHandler(T *testing.T) {
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
 		cookie := &http.Cookie{
-			Name: helper.service.cookieName,
+			Name: helper.service.authConfig.Cookies.Name,
 		}
 		helper.req.AddCookie(cookie)
 
@@ -162,7 +162,7 @@ func TestWebsocketsService_SubscribeHandler(T *testing.T) {
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
 		cookie := &http.Cookie{
-			Name: helper.service.cookieName,
+			Name: helper.service.authConfig.Cookies.Name,
 		}
 		helper.req.AddCookie(cookie)
 

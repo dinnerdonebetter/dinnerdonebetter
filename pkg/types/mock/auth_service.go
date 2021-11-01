@@ -95,6 +95,6 @@ func (m *AuthService) AuthenticateUser(ctx context.Context, loginData *types.Use
 }
 
 // LogoutUser satisfies our interface contract.
-func (m *AuthService) LogoutUser(ctx context.Context, sessionCtxData *types.SessionContextData, req *http.Request, res http.ResponseWriter) error {
-	return m.Called(ctx, sessionCtxData, req, res).Error(0)
+func (m *AuthService) LogoutUser(ctx context.Context, req *http.Request, res http.ResponseWriter) error {
+	return m.Called(ctx, req, res).Error(0)
 }

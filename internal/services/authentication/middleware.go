@@ -138,6 +138,7 @@ func (s *service) AuthorizationMiddleware(next http.Handler) http.Handler {
 
 		// UserAttributionMiddleware should be called before this middleware.
 		if sessionCtxData, err := s.sessionContextDataFetcher(req); err == nil && sessionCtxData != nil {
+			tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 			logger = sessionCtxData.AttachToLogger(logger)
 
 			if sessionCtxData.Requester.Reputation == types.BannedUserHouseholdStatus || sessionCtxData.Requester.Reputation == types.TerminatedUserReputation {
@@ -221,6 +222,7 @@ func (s *service) ServiceAdminMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
+		tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 		logger = sessionCtxData.AttachToLogger(logger)
 
 		if !sessionCtxData.Requester.ServicePermissions.IsServiceAdmin() {

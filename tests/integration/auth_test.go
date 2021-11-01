@@ -40,7 +40,7 @@ func (s *TestSuite) TestLogin() {
 		assert.NotZero(t, cookie.MaxAge)
 		assert.True(t, cookie.HttpOnly)
 		assert.Equal(t, "/", cookie.Path)
-		assert.Equal(t, http.SameSiteStrictMode, cookie.SameSite)
+		assert.Equal(t, http.SameSiteNoneMode, cookie.SameSite)
 
 		assert.NoError(t, testClient.EndSession(ctx))
 	})

@@ -54,7 +54,7 @@ func ProvideService(
 ) (types.ValidInstrumentDataService, error) {
 	client := &http.Client{Transport: tracing.BuildTracedHTTPTransport(time.Second)}
 
-	searchIndexManager, err := searchIndexProvider(ctx, logger, client, search.IndexPath(cfg.SearchIndexPath), "valid_instruments", "name", "variant", "description", "icon")
+	searchIndexManager, err := searchIndexProvider(ctx, logger, client, search.IndexPath(cfg.SearchIndexPath), "valid_instruments", "name", "variant", "description")
 	if err != nil {
 		return nil, fmt.Errorf("setting up valid instrument search index: %w", err)
 	}
