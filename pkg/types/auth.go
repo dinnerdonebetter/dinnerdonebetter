@@ -20,8 +20,6 @@ const (
 	UserIDContextKey ContextKey = "user_id"
 	// HouseholdIDContextKey is the non-string type we use for referencing SessionContextData structs.
 	HouseholdIDContextKey ContextKey = "household_id"
-	// UserLoginInputContextKey is the non-string type we use for referencing SessionContextData structs.
-	UserLoginInputContextKey ContextKey = "user_login_input"
 	// UserRegistrationInputContextKey is the non-string type we use for referencing SessionContextData structs.
 	UserRegistrationInputContextKey ContextKey = "user_registration_input"
 )

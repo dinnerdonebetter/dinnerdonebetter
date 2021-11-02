@@ -40,7 +40,6 @@ import (
 	websocketsservice "github.com/prixfixeco/api_server/internal/services/websockets"
 	"github.com/prixfixeco/api_server/internal/storage"
 	"github.com/prixfixeco/api_server/internal/uploads"
-	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 const (
@@ -196,12 +195,6 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 			MaxPingAttempts:   maxAttempts,
 			Provider:          postgres,
 			ConnectionDetails: devPostgresDBConnDetails,
-			CreateTestUser: &types.TestUserCreationConfig{
-				Username:       "username",
-				Password:       defaultPassword,
-				HashedPassword: mustHashPass(defaultPassword),
-				IsServiceAdmin: true,
-			},
 		},
 		Observability: observability.Config{
 			Metrics: metrics.Config{
@@ -613,12 +606,6 @@ func buildIntegrationTestForDBImplementation(dbVendor, dbDetails string) configF
 				Provider:          dbVendor,
 				MaxPingAttempts:   maxAttempts,
 				ConnectionDetails: database.ConnectionDetails(dbDetails),
-				CreateTestUser: &types.TestUserCreationConfig{
-					Username:       "exampleUser",
-					Password:       "integration-tests-are-cool",
-					HashedPassword: mustHashPass("integration-tests-are-cool"),
-					IsServiceAdmin: true,
-				},
 			},
 			Observability: observability.Config{
 				Metrics: metrics.Config{

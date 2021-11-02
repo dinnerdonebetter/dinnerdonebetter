@@ -7,7 +7,6 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"github.com/stretchr/testify/mock"
 
-	"github.com/prixfixeco/api_server/pkg/types"
 	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
 )
 
@@ -67,8 +66,8 @@ func (m *MockDatabase) ProvideSessionStore() scs.Store {
 }
 
 // Migrate satisfies the DataManager interface.
-func (m *MockDatabase) Migrate(ctx context.Context, maxAttempts uint8, ucc *types.TestUserCreationConfig) error {
-	return m.Called(ctx, maxAttempts, ucc).Error(0)
+func (m *MockDatabase) Migrate(ctx context.Context, maxAttempts uint8) error {
+	return m.Called(ctx, maxAttempts).Error(0)
 }
 
 // IsReady satisfies the DataManager interface.
