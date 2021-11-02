@@ -47,6 +47,12 @@ func init() {
 
 	logger := logging.ProvideLogger(logging.Config{Provider: logging.ProviderZerolog})
 
+	parsedURLToUse = testutils.DetermineServiceURL()
+	urlToUse = parsedURLToUse.String()
+
+	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
+	testutils.EnsureServerIsUp(ctx, urlToUse)
+
 	dbAddr := os.Getenv("DATABASE_ADDRESS")
 	if dbAddr == "" {
 		panic("empty database address provided")
@@ -89,12 +95,6 @@ func init() {
 	if _, err = db.Exec(`UPDATE users SET service_roles = $1 WHERE id = $2`, authorization.ServiceAdminRole.String(), premadeAdminUser.ID); err != nil {
 		panic(err)
 	}
-
-	parsedURLToUse = testutils.DetermineServiceURL()
-	urlToUse = parsedURLToUse.String()
-
-	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
-	testutils.EnsureServerIsUp(ctx, urlToUse)
 
 	fiftySpaces := strings.Repeat("\n", 50)
 	fmt.Printf("%s\tRunning tests%s", fiftySpaces, fiftySpaces)
