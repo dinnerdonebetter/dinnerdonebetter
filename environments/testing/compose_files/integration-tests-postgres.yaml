@@ -45,6 +45,7 @@ services:
     test:
         environment:
             TARGET_ADDRESS: 'http://api_server:8888'
+            DATABASE_ADDRESS: 'postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable'
         depends_on:
             - workers
         links:

@@ -9,7 +9,6 @@ import (
 
 	database "github.com/prixfixeco/api_server/internal/database"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
-	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 const (
@@ -22,12 +21,11 @@ type (
 	Config struct {
 		_ struct{}
 
-		CreateTestUser    *types.TestUserCreationConfig `json:"createTestUser" mapstructure:"create_test_user" toml:"create_test_user,omitempty"`
-		Provider          string                        `json:"provider" mapstructure:"provider" toml:"provider,omitempty"`
-		ConnectionDetails database.ConnectionDetails    `json:"connectionDetails" mapstructure:"connection_details" toml:"connection_details,omitempty"`
-		Debug             bool                          `json:"debug" mapstructure:"debug" toml:"debug,omitempty"`
-		RunMigrations     bool                          `json:"runMigrations" mapstructure:"run_migrations" toml:"run_migrations,omitempty"`
-		MaxPingAttempts   uint8                         `json:"maxPingAttempts" mapstructure:"max_ping_attempts" toml:"max_ping_attempts,omitempty"`
+		Provider          string                     `json:"provider" mapstructure:"provider" toml:"provider,omitempty"`
+		ConnectionDetails database.ConnectionDetails `json:"connectionDetails" mapstructure:"connection_details" toml:"connection_details,omitempty"`
+		Debug             bool                       `json:"debug" mapstructure:"debug" toml:"debug,omitempty"`
+		RunMigrations     bool                       `json:"runMigrations" mapstructure:"run_migrations" toml:"run_migrations,omitempty"`
+		MaxPingAttempts   uint8                      `json:"maxPingAttempts" mapstructure:"max_ping_attempts" toml:"max_ping_attempts,omitempty"`
 	}
 )
 
@@ -40,7 +38,6 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 		cfg,
 		validation.Field(&cfg.ConnectionDetails, validation.Required),
 		validation.Field(&cfg.Provider, validation.In(PostgresProvider)),
-		validation.Field(&cfg.CreateTestUser, validation.When(cfg.CreateTestUser != nil, validation.Required).Else(validation.Nil)),
 	)
 }
 

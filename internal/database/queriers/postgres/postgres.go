@@ -20,7 +20,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 const (
@@ -90,12 +89,7 @@ func ProvideDatabaseClient(
 	if cfg.RunMigrations {
 		c.logger.Debug("migrating querier")
 
-		var testUser *types.TestUserCreationConfig
-		if shouldCreateTestUser {
-			testUser = cfg.CreateTestUser
-		}
-
-		if err = c.Migrate(ctx, cfg.MaxPingAttempts, testUser); err != nil {
+		if err = c.Migrate(ctx, cfg.MaxPingAttempts); err != nil {
 			return nil, observability.PrepareError(err, logger, span, "migrating database")
 		}
 

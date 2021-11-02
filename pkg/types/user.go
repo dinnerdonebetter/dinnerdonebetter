@@ -48,17 +48,6 @@ type (
 		RequiresPasswordChange    bool            `json:"requiresPasswordChange"`
 	}
 
-	// TestUserCreationConfig is here because of cyclical imports.
-	TestUserCreationConfig struct {
-		_ struct{}
-
-		ID             string
-		Username       string `json:"username" mapstructure:"username" toml:"username,omitempty"`
-		Password       string `json:"password" mapstructure:"password" toml:"password,omitempty"`
-		HashedPassword string `json:"hashed_password" mapstructure:"hashed_password" toml:"hashed_password,omitempty"`
-		IsServiceAdmin bool   `json:"is_site_admin" mapstructure:"is_site_admin" toml:"is_site_admin,omitempty"`
-	}
-
 	// UserList represents a list of users.
 	UserList struct {
 		_ struct{}
