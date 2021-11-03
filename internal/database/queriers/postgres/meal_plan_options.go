@@ -211,17 +211,7 @@ func (q *SQLQuerier) GetMealPlanOptions(ctx context.Context, mealPlanID string, 
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildListQuery(
-		ctx,
-		"meal_plan_options",
-		getMealPlanOptionsJoins,
-		nil,
-		householdOwnershipColumn,
-		mealPlanOptionsTableColumns,
-		"",
-		false,
-		filter,
-	)
+	query, args := q.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, nil, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "mealPlanOptions", query, args)
 	if err != nil {

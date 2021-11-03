@@ -64,12 +64,12 @@ func (q *SQLQuerier) scanRecipe(ctx context.Context, scan database.Scanner, incl
 }
 
 // scanFullRecipe takes a database Scanner (i.e. *sql.Row) and scans the result into a full recipe struct.
-func (q *SQLQuerier) scanFullRecipe(ctx context.Context, scan database.Scanner) (*types.FullRecipe, *types.FullRecipeStep, *types.RecipeStepIngredient, error) {
+func (q *SQLQuerier) scanFullRecipe(ctx context.Context, scan database.Scanner) (*types.FullRecipe, *types.RecipeStep, *types.RecipeStepIngredient, error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	recipe := &types.FullRecipe{Steps: []*types.FullRecipeStep{}}
-	recipeStep := &types.FullRecipeStep{Ingredients: []*types.RecipeStepIngredient{}}
+	recipe := &types.FullRecipe{Steps: []*types.RecipeStep{}}
+	recipeStep := &types.RecipeStep{Ingredients: []*types.RecipeStepIngredient{}}
 	recipeStepIngredient := &types.RecipeStepIngredient{}
 
 	targetVars := []interface{}{
@@ -456,17 +456,7 @@ func (q *SQLQuerier) GetRecipes(ctx context.Context, filter *types.QueryFilter) 
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildListQuery(
-		ctx,
-		"recipes",
-		nil,
-		nil,
-		"",
-		recipesTableColumns,
-		"",
-		false,
-		filter,
-	)
+	query, args := q.buildListQuery(ctx, "recipes", nil, nil, nil, "", recipesTableColumns, "", false, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "recipes", query, args)
 	if err != nil {

@@ -125,7 +125,8 @@ func (q *SQLQuerier) buildFilteredCountQuery(ctx context.Context, tableName stri
 func (q *SQLQuerier) buildListQuery(
 	ctx context.Context,
 	tableName string,
-	joins []string,
+	joins,
+	groupBys []string,
 	where squirrel.Eq,
 	ownershipColumn string,
 	columns []string,
@@ -173,7 +174,12 @@ func (q *SQLQuerier) buildListQuery(
 		builder = builder.Where(where)
 	}
 
-	builder = builder.GroupBy(fmt.Sprintf("%s.%s", tableName, "id"))
+	actualGroupBys := []string{fmt.Sprintf("%s.%s", tableName, "id")}
+	if groupBys != nil {
+		actualGroupBys = append(actualGroupBys, groupBys...)
+	}
+
+	builder = builder.GroupBy(actualGroupBys...)
 	builder = builder.OrderBy(fmt.Sprintf("%s.%s", tableName, "id"))
 
 	if filter != nil {

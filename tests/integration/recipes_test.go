@@ -62,7 +62,6 @@ func createRecipeWithNotificationChannel(ctx context.Context, t *testing.T, noti
 
 	createdValidIngredients := []*types.ValidIngredient{}
 	for i, recipeStep := range exampleRecipe.Steps {
-		exampleRecipe.Steps[i].PreparationID = createdValidPreparation.ID
 		for j := range recipeStep.Ingredients {
 			t.Log("creating prerequisite valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
@@ -87,6 +86,10 @@ func createRecipeWithNotificationChannel(ctx context.Context, t *testing.T, noti
 	}
 
 	exampleRecipeInput := fakes.BuildFakeRecipeCreationRequestInputFromRecipe(exampleRecipe)
+	for i := range exampleRecipeInput.Steps {
+		exampleRecipeInput.Steps[i].PreparationID = createdValidPreparation.ID
+	}
+
 	createdRecipeID, err := client.CreateRecipe(ctx, exampleRecipeInput)
 	require.NoError(t, err)
 	t.Logf("recipe %q created", createdRecipeID)
@@ -130,7 +133,6 @@ func createRecipeWhilePolling(ctx context.Context, t *testing.T, client *httpcli
 
 	createdValidIngredients := []*types.ValidIngredient{}
 	for i, recipeStep := range exampleRecipe.Steps {
-		exampleRecipe.Steps[i].PreparationID = createdValidPreparation.ID
 		for j := range recipeStep.Ingredients {
 			t.Log("creating valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
@@ -155,6 +157,10 @@ func createRecipeWhilePolling(ctx context.Context, t *testing.T, client *httpcli
 	}
 
 	exampleRecipeInput := fakes.BuildFakeRecipeCreationRequestInputFromRecipe(exampleRecipe)
+	for i := range exampleRecipeInput.Steps {
+		exampleRecipeInput.Steps[i].PreparationID = createdValidPreparation.ID
+	}
+
 	createdRecipeID, err := client.CreateRecipe(ctx, exampleRecipeInput)
 	require.NoError(t, err)
 

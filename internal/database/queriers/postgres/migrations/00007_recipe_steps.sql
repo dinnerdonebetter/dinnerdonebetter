@@ -8,7 +8,6 @@
 	"temperature_in_celsius" INTEGER,
     "why" TEXT NOT NULL,
     "notes" TEXT NOT NULL,
-	"recipe_id" TEXT NOT NULL,
 	"created_on" BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 	"last_updated_on" BIGINT DEFAULT NULL,
 	"archived_on" BIGINT DEFAULT NULL,

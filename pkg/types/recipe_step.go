@@ -27,31 +27,9 @@ type (
 		ArchivedOn                *uint64                 `json:"archivedOn"`
 		TemperatureInCelsius      *uint16                 `json:"temperatureInCelsius"`
 		LastUpdatedOn             *uint64                 `json:"lastUpdatedOn"`
-		BelongsToRecipe           string                  `json:"belongsToRecipe"`
-		ID                        string                  `json:"id"`
-		PreparationID             string                  `json:"preparationID"`
-		Notes                     string                  `json:"notes"`
-		Why                       string                  `json:"why"`
-		RecipeID                  string                  `json:"recipeID"`
-		Ingredients               []*RecipeStepIngredient `json:"ingredients"`
-		PrerequisiteStep          uint64                  `json:"prerequisiteStep"`
-		Index                     uint                    `json:"index"`
-		CreatedOn                 uint64                  `json:"createdOn"`
-		MinEstimatedTimeInSeconds uint32                  `json:"minEstimatedTimeInSeconds"`
-		MaxEstimatedTimeInSeconds uint32                  `json:"maxEstimatedTimeInSeconds"`
-	}
-
-	// FullRecipeStep represents a recipe step.
-	FullRecipeStep struct {
-		_                         struct{}
-		ArchivedOn                *uint64                 `json:"archivedOn"`
-		TemperatureInCelsius      *uint16                 `json:"temperatureInCelsius"`
-		LastUpdatedOn             *uint64                 `json:"lastUpdatedOn"`
 		Why                       string                  `json:"why"`
 		ID                        string                  `json:"id"`
-		PreparationID             string                  `json:"preparationID"`
 		Notes                     string                  `json:"notes"`
-		RecipeID                  string                  `json:"recipeID"`
 		BelongsToRecipe           string                  `json:"belongsToRecipe"`
 		Preparation               ValidPreparation        `json:"preparation"`
 		Ingredients               []*RecipeStepIngredient `json:"ingredients"`
@@ -77,7 +55,6 @@ type (
 		Why                       string                                      `json:"why"`
 		PreparationID             string                                      `json:"preparationID"`
 		BelongsToRecipe           string                                      `json:"-"`
-		RecipeID                  string                                      `json:"recipeID"`
 		ID                        string                                      `json:"-"`
 		Ingredients               []*RecipeStepIngredientCreationRequestInput `json:"ingredients"`
 		Index                     uint                                        `json:"index"`
@@ -94,7 +71,6 @@ type (
 		Why                       string                                       `json:"why"`
 		PreparationID             string                                       `json:"preparationID"`
 		BelongsToRecipe           string                                       `json:"belongsToRecipe"`
-		RecipeID                  string                                       `json:"recipeID"`
 		ID                        string                                       `json:"id"`
 		Ingredients               []*RecipeStepIngredientDatabaseCreationInput `json:"ingredients"`
 		Index                     uint                                         `json:"index"`
@@ -106,16 +82,15 @@ type (
 	// RecipeStepUpdateRequestInput represents what a user could set as input for updating recipe steps.
 	RecipeStepUpdateRequestInput struct {
 		_                         struct{}
-		TemperatureInCelsius      *uint16 `json:"temperatureInCelsius"`
-		Notes                     string  `json:"notes"`
-		Why                       string  `json:"why"`
-		PreparationID             string  `json:"preparationID"`
-		BelongsToRecipe           string  `json:"belongsToRecipe"`
-		RecipeID                  string  `json:"recipeID"`
-		Index                     uint    `json:"index"`
-		PrerequisiteStep          uint64  `json:"prerequisiteStep"`
-		MinEstimatedTimeInSeconds uint32  `json:"minEstimatedTimeInSeconds"`
-		MaxEstimatedTimeInSeconds uint32  `json:"maxEstimatedTimeInSeconds"`
+		TemperatureInCelsius      *uint16          `json:"temperatureInCelsius"`
+		Notes                     string           `json:"notes"`
+		Why                       string           `json:"why"`
+		BelongsToRecipe           string           `json:"belongsToRecipe"`
+		Preparation               ValidPreparation `json:"preparation"`
+		Index                     uint             `json:"index"`
+		PrerequisiteStep          uint64           `json:"prerequisiteStep"`
+		MinEstimatedTimeInSeconds uint32           `json:"minEstimatedTimeInSeconds"`
+		MaxEstimatedTimeInSeconds uint32           `json:"maxEstimatedTimeInSeconds"`
 	}
 
 	// RecipeStepDataManager describes a structure capable of storing recipe steps permanently.
@@ -146,8 +121,16 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
 		x.Index = input.Index
 	}
 
-	if input.PreparationID != "" && input.PreparationID != x.PreparationID {
-		x.PreparationID = input.PreparationID
+	if input.Preparation.Name != "" && input.Preparation.Name != x.Preparation.Name {
+		x.Preparation.Name = input.Preparation.Name
+	}
+
+	if input.Preparation.Description != "" && input.Preparation.Description != x.Preparation.Description {
+		x.Preparation.Description = input.Preparation.Description
+	}
+
+	if input.Preparation.IconPath != "" && input.Preparation.IconPath != x.Preparation.IconPath {
+		x.Preparation.IconPath = input.Preparation.IconPath
 	}
 
 	if input.PrerequisiteStep != 0 && input.PrerequisiteStep != x.PrerequisiteStep {
@@ -168,10 +151,6 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
 
 	if input.Notes != "" && input.Notes != x.Notes {
 		x.Notes = input.Notes
-	}
-
-	if input.RecipeID != "" && input.RecipeID != x.RecipeID {
-		x.RecipeID = input.RecipeID
 	}
 }
 
@@ -196,7 +175,6 @@ func (x *RecipeStepDatabaseCreationInput) ValidateWithContext(ctx context.Contex
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.PreparationID, validation.Required),
-		validation.Field(&x.RecipeID, validation.Required),
 	)
 }
 
@@ -215,7 +193,6 @@ func RecipeStepDatabaseCreationInputFromRecipeStepCreationInput(input *RecipeSte
 		MaxEstimatedTimeInSeconds: input.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      input.TemperatureInCelsius,
 		Notes:                     input.Notes,
-		RecipeID:                  input.RecipeID,
 		Ingredients:               ingredients,
 	}
 
@@ -230,12 +207,11 @@ func (x *RecipeStepUpdateRequestInput) ValidateWithContext(ctx context.Context) 
 		ctx,
 		x,
 		validation.Field(&x.Index, validation.Required),
-		validation.Field(&x.PreparationID, validation.Required),
+		validation.Field(&x.Preparation, validation.Required),
 		validation.Field(&x.PrerequisiteStep, validation.Required),
 		validation.Field(&x.MinEstimatedTimeInSeconds, validation.Required),
 		validation.Field(&x.MaxEstimatedTimeInSeconds, validation.Required),
 		validation.Field(&x.TemperatureInCelsius, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
-		validation.Field(&x.RecipeID, validation.Required),
 	)
 }

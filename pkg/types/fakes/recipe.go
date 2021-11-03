@@ -9,6 +9,11 @@ import (
 
 // BuildFakeRecipe builds a faked recipe.
 func BuildFakeRecipe() *types.Recipe {
+	var steps []*types.RecipeStep
+	for i := 0; i < exampleQuantity; i++ {
+		steps = append(steps, BuildFakeRecipeStep())
+	}
+
 	return &types.Recipe{
 		ID:                 ksuid.New().String(),
 		Name:               fake.LoremIpsumSentence(exampleQuantity),
@@ -17,15 +22,15 @@ func BuildFakeRecipe() *types.Recipe {
 		InspiredByRecipeID: func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
 		CreatedOn:          uint64(uint32(fake.Date().Unix())),
 		CreatedByUser:      fake.UUID(),
-		Steps:              BuildFakeRecipeStepList().RecipeSteps,
+		Steps:              steps,
 	}
 }
 
 // BuildFakeFullRecipe builds a faked recipe.
 func BuildFakeFullRecipe() *types.FullRecipe {
-	var steps []*types.FullRecipeStep
+	var steps []*types.RecipeStep
 	for i := 0; i < exampleQuantity; i++ {
-		steps = append(steps, BuildFakeFullRecipeStep())
+		steps = append(steps, BuildFakeRecipeStep())
 	}
 
 	return &types.FullRecipe{

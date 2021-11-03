@@ -386,10 +386,10 @@ func TestQuerier_GetFullRecipe(T *testing.T) {
 
 		exampleRecipe := fakes.BuildFakeFullRecipe()
 
-		exampleRecipe.Steps = []*types.FullRecipeStep{
-			fakes.BuildFakeFullRecipeStep(),
-			fakes.BuildFakeFullRecipeStep(),
-			fakes.BuildFakeFullRecipeStep(),
+		exampleRecipe.Steps = []*types.RecipeStep{
+			fakes.BuildFakeRecipeStep(),
+			fakes.BuildFakeRecipeStep(),
+			fakes.BuildFakeRecipeStep(),
 		}
 
 		for i, step := range exampleRecipe.Steps {
@@ -589,17 +589,7 @@ func TestQuerier_GetRecipes(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(
-			ctx,
-			"recipes",
-			nil,
-			nil,
-			householdOwnershipColumn,
-			recipesTableColumns,
-			"",
-			false,
-			filter,
-		)
+		query, args := c.buildListQuery(ctx, "recipes", nil, nil, nil, householdOwnershipColumn, recipesTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -626,17 +616,7 @@ func TestQuerier_GetRecipes(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(
-			ctx,
-			"recipes",
-			nil,
-			nil,
-			householdOwnershipColumn,
-			recipesTableColumns,
-			"",
-			false,
-			filter,
-		)
+		query, args := c.buildListQuery(ctx, "recipes", nil, nil, nil, householdOwnershipColumn, recipesTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -657,17 +637,7 @@ func TestQuerier_GetRecipes(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(
-			ctx,
-			"recipes",
-			nil,
-			nil,
-			householdOwnershipColumn,
-			recipesTableColumns,
-			"",
-			false,
-			filter,
-		)
+		query, args := c.buildListQuery(ctx, "recipes", nil, nil, nil, householdOwnershipColumn, recipesTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -688,17 +658,7 @@ func TestQuerier_GetRecipes(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(
-			ctx,
-			"recipes",
-			nil,
-			nil,
-			householdOwnershipColumn,
-			recipesTableColumns,
-			"",
-			false,
-			filter,
-		)
+		query, args := c.buildListQuery(ctx, "recipes", nil, nil, nil, householdOwnershipColumn, recipesTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -821,6 +781,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		for i, step := range exampleRecipe.Steps {
 			exampleRecipe.Steps[i].ID = "2"
 			exampleRecipe.Steps[i].BelongsToRecipe = "1"
+			exampleRecipe.Steps[i].Preparation = types.ValidPreparation{}
 			for j := range step.Ingredients {
 				exampleRecipe.Steps[i].Ingredients[j].ID = "3"
 				exampleRecipe.Steps[i].Ingredients[j].BelongsToRecipeStep = "2"
@@ -859,7 +820,6 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 				step.TemperatureInCelsius,
 				step.Notes,
 				step.Why,
-				step.RecipeID,
 				step.BelongsToRecipe,
 			}
 

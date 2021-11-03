@@ -41,16 +41,16 @@ type (
 	FullRecipe struct {
 		_ struct{}
 
-		LastUpdatedOn      *uint64           `json:"lastUpdatedOn"`
-		ArchivedOn         *uint64           `json:"archivedOn"`
-		InspiredByRecipeID *string           `json:"inspiredByRecipeID"`
-		Source             string            `json:"source"`
-		Description        string            `json:"description"`
-		ID                 string            `json:"id"`
-		Name               string            `json:"name"`
-		CreatedByUser      string            `json:"belongsToUser"`
-		Steps              []*FullRecipeStep `json:"steps"`
-		CreatedOn          uint64            `json:"createdOn"`
+		LastUpdatedOn      *uint64       `json:"lastUpdatedOn"`
+		ArchivedOn         *uint64       `json:"archivedOn"`
+		InspiredByRecipeID *string       `json:"inspiredByRecipeID"`
+		Source             string        `json:"source"`
+		Description        string        `json:"description"`
+		ID                 string        `json:"id"`
+		Name               string        `json:"name"`
+		CreatedByUser      string        `json:"belongsToUser"`
+		Steps              []*RecipeStep `json:"steps"`
+		CreatedOn          uint64        `json:"createdOn"`
 	}
 
 	// RecipeList represents a list of recipes.
