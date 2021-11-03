@@ -16,7 +16,7 @@ func BuildFakeRecipe() *types.Recipe {
 		Description:        fake.LoremIpsumSentence(exampleQuantity),
 		InspiredByRecipeID: func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
 		CreatedOn:          uint64(uint32(fake.Date().Unix())),
-		BelongsToHousehold: fake.UUID(),
+		CreatedByUser:      fake.UUID(),
 		Steps:              BuildFakeRecipeStepList().RecipeSteps,
 	}
 }
@@ -35,7 +35,7 @@ func BuildFakeFullRecipe() *types.FullRecipe {
 		Description:        fake.LoremIpsumSentence(exampleQuantity),
 		InspiredByRecipeID: func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
 		CreatedOn:          uint64(uint32(fake.Date().Unix())),
-		BelongsToHousehold: ksuid.New().String(),
+		CreatedByUser:      ksuid.New().String(),
 		Steps:              steps,
 	}
 }
@@ -66,7 +66,7 @@ func BuildFakeRecipeUpdateRequestInput() *types.RecipeUpdateRequestInput {
 		Source:             recipe.Source,
 		Description:        recipe.Description,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
-		BelongsToHousehold: recipe.BelongsToHousehold,
+		CreatedByUser:      recipe.CreatedByUser,
 	}
 }
 
@@ -77,7 +77,7 @@ func BuildFakeRecipeUpdateRequestInputFromRecipe(recipe *types.Recipe) *types.Re
 		Source:             recipe.Source,
 		Description:        recipe.Description,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
-		BelongsToHousehold: recipe.BelongsToHousehold,
+		CreatedByUser:      recipe.CreatedByUser,
 	}
 }
 
@@ -100,7 +100,7 @@ func BuildFakeRecipeCreationRequestInputFromRecipe(recipe *types.Recipe) *types.
 		Source:             recipe.Source,
 		Description:        recipe.Description,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
-		BelongsToHousehold: recipe.BelongsToHousehold,
+		CreatedByUser:      recipe.CreatedByUser,
 		Steps:              steps,
 	}
 }
@@ -124,7 +124,7 @@ func BuildFakeRecipeDatabaseCreationInputFromRecipe(recipe *types.Recipe) *types
 		Source:             recipe.Source,
 		Description:        recipe.Description,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
-		BelongsToHousehold: recipe.BelongsToHousehold,
+		CreatedByUser:      recipe.CreatedByUser,
 		Steps:              steps,
 	}
 }

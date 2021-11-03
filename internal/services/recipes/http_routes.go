@@ -72,7 +72,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
+	input.CreatedByUser = sessionCtxData.Requester.UserID
 	tracing.AttachRecipeIDToSpan(span, input.ID)
 
 	// create recipe in database.
@@ -203,7 +203,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
 	}
-	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
+	input.CreatedByUser = sessionCtxData.Requester.UserID
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)

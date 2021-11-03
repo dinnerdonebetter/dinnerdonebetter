@@ -7,5 +7,5 @@ CREATE TABLE IF NOT EXISTS recipes (
 	"created_on" BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 	"last_updated_on" BIGINT DEFAULT NULL,
 	"archived_on" BIGINT DEFAULT NULL,
-	"belongs_to_household" CHAR(27) NOT NULL REFERENCES households("id") ON DELETE CASCADE
+	"created_by_user" CHAR(27) NOT NULL REFERENCES users("id") ON DELETE CASCADE
 );
