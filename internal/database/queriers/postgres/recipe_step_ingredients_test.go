@@ -228,6 +228,7 @@ func TestQuerier_GetRecipeStepIngredient(T *testing.T) {
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepID := fakes.BuildFakeID()
 		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
+		exampleRecipeStepIngredient.Ingredient = types.ValidIngredient{}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -375,6 +376,10 @@ func TestQuerier_GetRecipeStepIngredients(T *testing.T) {
 		exampleRecipeStepID := fakes.BuildFakeID()
 		exampleRecipeStepIngredientList := fakes.BuildFakeRecipeStepIngredientList()
 
+		for i := range exampleRecipeStepIngredientList.RecipeStepIngredients {
+			exampleRecipeStepIngredientList.RecipeStepIngredients[i].Ingredient = types.ValidIngredient{}
+		}
+
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
@@ -438,6 +443,9 @@ func TestQuerier_GetRecipeStepIngredients(T *testing.T) {
 		exampleRecipeStepIngredientList := fakes.BuildFakeRecipeStepIngredientList()
 		exampleRecipeStepIngredientList.Page = 0
 		exampleRecipeStepIngredientList.Limit = 0
+		for i := range exampleRecipeStepIngredientList.RecipeStepIngredients {
+			exampleRecipeStepIngredientList.RecipeStepIngredients[i].Ingredient = types.ValidIngredient{}
+		}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -542,8 +550,9 @@ func TestQuerier_GetRecipeStepIngredientsWithIDs(T *testing.T) {
 		exampleRecipeStepIngredientList := fakes.BuildFakeRecipeStepIngredientList()
 
 		var exampleIDs []string
-		for _, x := range exampleRecipeStepIngredientList.RecipeStepIngredients {
+		for i, x := range exampleRecipeStepIngredientList.RecipeStepIngredients {
 			exampleIDs = append(exampleIDs, x.ID)
+			exampleRecipeStepIngredientList.RecipeStepIngredients[i].Ingredient = types.ValidIngredient{}
 		}
 
 		ctx := context.Background()
@@ -653,6 +662,7 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 
 		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 		exampleRecipeStepIngredient.ID = "1"
+		exampleRecipeStepIngredient.Ingredient = types.ValidIngredient{}
 		exampleInput := fakes.BuildFakeRecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
 
 		ctx := context.Background()

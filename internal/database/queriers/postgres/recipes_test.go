@@ -392,11 +392,13 @@ func TestQuerier_GetFullRecipe(T *testing.T) {
 			fakes.BuildFakeFullRecipeStep(),
 		}
 
-		for _, step := range exampleRecipe.Steps {
-			step.Ingredients = []*types.FullRecipeStepIngredient{
-				fakes.BuildFakeFullRecipeStepIngredient(),
-				fakes.BuildFakeFullRecipeStepIngredient(),
-				fakes.BuildFakeFullRecipeStepIngredient(),
+		for i, step := range exampleRecipe.Steps {
+			exampleRecipe.Steps[i].Ingredients = []*types.RecipeStepIngredient{}
+			for j := 0; j < 3; j++ {
+				ingredient := fakes.BuildFakeRecipeStepIngredient()
+				ingredient.IngredientID = nil
+
+				exampleRecipe.Steps[i].Ingredients = append(step.Ingredients, ingredient)
 			}
 		}
 
@@ -822,6 +824,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			for j := range step.Ingredients {
 				exampleRecipe.Steps[i].Ingredients[j].ID = "3"
 				exampleRecipe.Steps[i].Ingredients[j].BelongsToRecipeStep = "2"
+				exampleRecipe.Steps[i].Ingredients[j].Ingredient = types.ValidIngredient{}
 			}
 		}
 

@@ -44,22 +44,22 @@ type (
 	// FullRecipeStep represents a recipe step.
 	FullRecipeStep struct {
 		_                         struct{}
-		ArchivedOn                *uint64                     `json:"archivedOn"`
-		TemperatureInCelsius      *uint16                     `json:"temperatureInCelsius"`
-		LastUpdatedOn             *uint64                     `json:"lastUpdatedOn"`
-		Why                       string                      `json:"why"`
-		ID                        string                      `json:"id"`
-		PreparationID             string                      `json:"preparationID"`
-		Notes                     string                      `json:"notes"`
-		RecipeID                  string                      `json:"recipeID"`
-		BelongsToRecipe           string                      `json:"belongsToRecipe"`
-		Preparation               ValidPreparation            `json:"preparation"`
-		Ingredients               []*FullRecipeStepIngredient `json:"ingredients"`
-		Index                     uint                        `json:"index"`
-		CreatedOn                 uint64                      `json:"createdOn"`
-		PrerequisiteStep          uint64                      `json:"prerequisiteStep"`
-		MinEstimatedTimeInSeconds uint32                      `json:"minEstimatedTimeInSeconds"`
-		MaxEstimatedTimeInSeconds uint32                      `json:"maxEstimatedTimeInSeconds"`
+		ArchivedOn                *uint64                 `json:"archivedOn"`
+		TemperatureInCelsius      *uint16                 `json:"temperatureInCelsius"`
+		LastUpdatedOn             *uint64                 `json:"lastUpdatedOn"`
+		Why                       string                  `json:"why"`
+		ID                        string                  `json:"id"`
+		PreparationID             string                  `json:"preparationID"`
+		Notes                     string                  `json:"notes"`
+		RecipeID                  string                  `json:"recipeID"`
+		BelongsToRecipe           string                  `json:"belongsToRecipe"`
+		Preparation               ValidPreparation        `json:"preparation"`
+		Ingredients               []*RecipeStepIngredient `json:"ingredients"`
+		Index                     uint                    `json:"index"`
+		CreatedOn                 uint64                  `json:"createdOn"`
+		PrerequisiteStep          uint64                  `json:"prerequisiteStep"`
+		MinEstimatedTimeInSeconds uint32                  `json:"minEstimatedTimeInSeconds"`
+		MaxEstimatedTimeInSeconds uint32                  `json:"maxEstimatedTimeInSeconds"`
 	}
 
 	// RecipeStepList represents a list of recipe steps.

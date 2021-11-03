@@ -64,13 +64,13 @@ func (q *SQLQuerier) scanRecipe(ctx context.Context, scan database.Scanner, incl
 }
 
 // scanFullRecipe takes a database Scanner (i.e. *sql.Row) and scans the result into a full recipe struct.
-func (q *SQLQuerier) scanFullRecipe(ctx context.Context, scan database.Scanner) (*types.FullRecipe, *types.FullRecipeStep, *types.FullRecipeStepIngredient, error) {
+func (q *SQLQuerier) scanFullRecipe(ctx context.Context, scan database.Scanner) (*types.FullRecipe, *types.FullRecipeStep, *types.RecipeStepIngredient, error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	recipe := &types.FullRecipe{Steps: []*types.FullRecipeStep{}}
-	recipeStep := &types.FullRecipeStep{Ingredients: []*types.FullRecipeStepIngredient{}}
-	recipeStepIngredient := &types.FullRecipeStepIngredient{}
+	recipeStep := &types.FullRecipeStep{Ingredients: []*types.RecipeStepIngredient{}}
+	recipeStepIngredient := &types.RecipeStepIngredient{}
 
 	targetVars := []interface{}{
 		&recipe.ID,

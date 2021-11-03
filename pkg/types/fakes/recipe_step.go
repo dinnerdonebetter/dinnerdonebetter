@@ -33,9 +33,9 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 
 // BuildFakeFullRecipeStep builds a faked recipe step.
 func BuildFakeFullRecipeStep() *types.FullRecipeStep {
-	var ingredients []*types.FullRecipeStepIngredient
+	var ingredients []*types.RecipeStepIngredient
 	for i := 0; i < exampleQuantity; i++ {
-		ingredients = append(ingredients, BuildFakeFullRecipeStepIngredient())
+		ingredients = append(ingredients, BuildFakeRecipeStepIngredient())
 	}
 
 	return &types.FullRecipeStep{

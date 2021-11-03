@@ -295,6 +295,7 @@ func (s *service) AddMemberHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	input.ID = ksuid.New().String()
+	input.HouseholdRoles = []string{}
 
 	if err = input.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
