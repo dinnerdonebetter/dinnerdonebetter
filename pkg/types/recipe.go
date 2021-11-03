@@ -32,7 +32,7 @@ type (
 		Description        string        `json:"description"`
 		ID                 string        `json:"id"`
 		Name               string        `json:"name"`
-		BelongsToHousehold string        `json:"belongsToHousehold"`
+		CreatedByUser      string        `json:"belongsToUser"`
 		Steps              []*RecipeStep `json:"steps"`
 		CreatedOn          uint64        `json:"createdOn"`
 	}
@@ -48,7 +48,7 @@ type (
 		Description        string            `json:"description"`
 		ID                 string            `json:"id"`
 		Name               string            `json:"name"`
-		BelongsToHousehold string            `json:"belongsToHousehold"`
+		CreatedByUser      string            `json:"belongsToUser"`
 		Steps              []*FullRecipeStep `json:"steps"`
 		CreatedOn          uint64            `json:"createdOn"`
 	}
@@ -70,7 +70,7 @@ type (
 		Name               string                            `json:"name"`
 		Source             string                            `json:"source"`
 		Description        string                            `json:"description"`
-		BelongsToHousehold string                            `json:"-"`
+		CreatedByUser      string                            `json:"-"`
 		Steps              []*RecipeStepCreationRequestInput `json:"steps"`
 	}
 
@@ -83,7 +83,7 @@ type (
 		Name               string                             `json:"name"`
 		Source             string                             `json:"source"`
 		Description        string                             `json:"description"`
-		BelongsToHousehold string                             `json:"belongsToHousehold"`
+		CreatedByUser      string                             `json:"belongsToHousehold"`
 		Steps              []*RecipeStepDatabaseCreationInput `json:"steps"`
 	}
 
@@ -95,7 +95,7 @@ type (
 		Source             string  `json:"source"`
 		Description        string  `json:"description"`
 		InspiredByRecipeID *string `json:"inspiredByRecipeID"`
-		BelongsToHousehold string  `json:"-"`
+		CreatedByUser      string  `json:"-"`
 	}
 
 	// RecipeDataManager describes a structure capable of storing recipes permanently.
@@ -105,10 +105,10 @@ type (
 		GetFullRecipe(ctx context.Context, recipeID string) (*FullRecipe, error)
 		GetTotalRecipeCount(ctx context.Context) (uint64, error)
 		GetRecipes(ctx context.Context, filter *QueryFilter) (*RecipeList, error)
-		GetRecipesWithIDs(ctx context.Context, householdID string, limit uint8, ids []string) ([]*Recipe, error)
+		GetRecipesWithIDs(ctx context.Context, userID string, limit uint8, ids []string) ([]*Recipe, error)
 		CreateRecipe(ctx context.Context, input *RecipeDatabaseCreationInput) (*Recipe, error)
 		UpdateRecipe(ctx context.Context, updated *Recipe) error
-		ArchiveRecipe(ctx context.Context, recipeID, householdID string) error
+		ArchiveRecipe(ctx context.Context, recipeID, userID string) error
 	}
 
 	// RecipeDataService describes a structure capable of serving traffic related to recipes.
@@ -161,7 +161,7 @@ func (x *RecipeDatabaseCreationInput) ValidateWithContext(ctx context.Context) e
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.BelongsToHousehold, validation.Required),
+		validation.Field(&x.CreatedByUser, validation.Required),
 	)
 }
 

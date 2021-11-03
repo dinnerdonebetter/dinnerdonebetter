@@ -37,7 +37,7 @@ func buildMockRowsFromRecipes(includeCounts bool, filteredCount uint64, recipes 
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,
-			x.BelongsToHousehold,
+			x.CreatedByUser,
 		}
 
 		if includeCounts {
@@ -64,7 +64,7 @@ func buildMockFullRowsFromRecipe(recipe *types.FullRecipe) *sqlmock.Rows {
 				&recipe.CreatedOn,
 				&recipe.LastUpdatedOn,
 				&recipe.ArchivedOn,
-				&recipe.BelongsToHousehold,
+				&recipe.CreatedByUser,
 				&step.ID,
 				&step.Index,
 				&step.Preparation.ID,
@@ -838,7 +838,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleRecipe.Source,
 			exampleRecipe.Description,
 			exampleRecipe.InspiredByRecipeID,
-			exampleRecipe.BelongsToHousehold,
+			exampleRecipe.CreatedByUser,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(recipeCreationQuery)).
@@ -966,7 +966,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleInput.Source,
 			exampleInput.Description,
 			exampleInput.InspiredByRecipeID,
-			exampleInput.BelongsToHousehold,
+			exampleInput.CreatedByUser,
 		}
 
 		db.ExpectBegin()
@@ -1006,7 +1006,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleInput.Source,
 			exampleInput.Description,
 			exampleInput.InspiredByRecipeID,
-			exampleInput.BelongsToHousehold,
+			exampleInput.CreatedByUser,
 		}
 
 		db.ExpectBegin()
@@ -1045,7 +1045,7 @@ func TestQuerier_UpdateRecipe(T *testing.T) {
 			exampleRecipe.Source,
 			exampleRecipe.Description,
 			exampleRecipe.InspiredByRecipeID,
-			exampleRecipe.BelongsToHousehold,
+			exampleRecipe.CreatedByUser,
 			exampleRecipe.ID,
 		}
 
@@ -1080,7 +1080,7 @@ func TestQuerier_UpdateRecipe(T *testing.T) {
 			exampleRecipe.Source,
 			exampleRecipe.Description,
 			exampleRecipe.InspiredByRecipeID,
-			exampleRecipe.BelongsToHousehold,
+			exampleRecipe.CreatedByUser,
 			exampleRecipe.ID,
 		}
 

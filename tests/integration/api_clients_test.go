@@ -18,7 +18,7 @@ func checkAPIClientEquality(t *testing.T, expected, actual *types.APIClient) {
 	assert.Equal(t, expected.Name, actual.Name, "expected LabelName for API client %s to be %q, but it was %q ", actual.ID, expected.Name, actual.Name)
 	assert.NotEmpty(t, actual.ClientID, "expected ClientID for API client %s to not be empty, but it was", actual.ID)
 	assert.Empty(t, actual.ClientSecret, "expected ClientSecret for API client %s to not be empty, but it was", actual.ID)
-	assert.NotZero(t, actual.BelongsToUser, "expected BelongsToUser for API client %s to not be zero, but it was", actual.ID)
+	assert.NotZero(t, actual.BelongsToUser, "expected CreatedByUser for API client %s to not be zero, but it was", actual.ID)
 	assert.NotZero(t, actual.CreatedOn)
 }
 

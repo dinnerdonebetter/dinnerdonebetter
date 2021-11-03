@@ -38,7 +38,7 @@ func buildTestHelper(t *testing.T) *recipeStepsServiceHTTPRoutesTestHelper {
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 	helper.exampleRecipe = fakes.BuildFakeRecipe()
-	helper.exampleRecipe.BelongsToHousehold = helper.exampleHousehold.ID
+	helper.exampleRecipe.CreatedByUser = helper.exampleHousehold.ID
 	helper.exampleRecipeStep = fakes.BuildFakeRecipeStep()
 	helper.exampleRecipeStep.BelongsToRecipe = helper.exampleRecipe.ID
 	helper.exampleCreationInput = fakes.BuildFakeRecipeStepCreationRequestInputFromRecipeStep(helper.exampleRecipeStep)
