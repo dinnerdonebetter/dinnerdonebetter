@@ -63,14 +63,14 @@ func (q *SQLQuerier) scanRecipe(ctx context.Context, scan database.Scanner, incl
 	return x, filteredCount, totalCount, nil
 }
 
-// scanFullRecipe takes a database Scanner (i.e. *sql.Row) and scans the result into a full recipe struct.
-func (q *SQLQuerier) scanFullRecipe(ctx context.Context, scan database.Scanner) (*types.FullRecipe, *types.FullRecipeStep, *types.FullRecipeStepIngredient, error) {
+// scanCompleteRecipe takes a database Scanner (i.e. *sql.Row) and scans the result into a full recipe struct.
+func (q *SQLQuerier) scanCompleteRecipe(ctx context.Context, scan database.Scanner) (*types.Recipe, *types.RecipeStep, *types.RecipeStepIngredient, error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	recipe := &types.FullRecipe{Steps: []*types.FullRecipeStep{}}
-	recipeStep := &types.FullRecipeStep{Ingredients: []*types.FullRecipeStepIngredient{}}
-	recipeStepIngredient := &types.FullRecipeStepIngredient{}
+	recipe := &types.Recipe{Steps: []*types.RecipeStep{}}
+	recipeStep := &types.RecipeStep{Ingredients: []*types.RecipeStepIngredient{}}
+	recipeStepIngredient := &types.RecipeStepIngredient{}
 
 	targetVars := []interface{}{
 		&recipe.ID,
@@ -202,36 +202,7 @@ func (q *SQLQuerier) RecipeExists(ctx context.Context, recipeID string) (exists 
 	return result, nil
 }
 
-const getRecipeQuery = "SELECT recipes.id, recipes.name, recipes.source, recipes.description, recipes.inspired_by_recipe_id, recipes.created_on, recipes.last_updated_on, recipes.archived_on, recipes.created_by_user FROM recipes WHERE recipes.archived_on IS NULL AND recipes.id = $1"
-
-// GetRecipe fetches a recipe from the database.
-func (q *SQLQuerier) GetRecipe(ctx context.Context, recipeID string) (*types.Recipe, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger
-
-	if recipeID == "" {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
-
-	args := []interface{}{
-		recipeID,
-	}
-
-	row := q.getOneRow(ctx, q.db, "recipe", getRecipeQuery, args)
-
-	recipe, _, _, err := q.scanRecipe(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning recipe")
-	}
-
-	return recipe, nil
-}
-
-var fullRecipeColumns = []string{
+var completeRecipeColumns = []string{
 	"recipes.id",
 	"recipes.name",
 	"recipes.source",
@@ -294,7 +265,7 @@ var fullRecipeColumns = []string{
 	"recipe_step_ingredients.belongs_to_recipe_step",
 }
 
-const getFullRecipeQuery = `SELECT 
+const getCompleteRecipeQuery = `SELECT 
 	recipes.id,
 	recipes.name,
 	recipes.source,
@@ -367,8 +338,8 @@ WHERE recipe_step_ingredients.archived_on IS NULL
 	AND recipes.id = $2
 `
 
-// GetFullRecipe fetches a recipe from the database.
-func (q *SQLQuerier) GetFullRecipe(ctx context.Context, recipeID string) (*types.FullRecipe, error) {
+// GetRecipe fetches a recipe from the database.
+func (q *SQLQuerier) GetRecipe(ctx context.Context, recipeID string) (*types.Recipe, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -385,18 +356,18 @@ func (q *SQLQuerier) GetFullRecipe(ctx context.Context, recipeID string) (*types
 		recipeID,
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "recipe", getFullRecipeQuery, args)
+	rows, err := q.performReadQuery(ctx, q.db, "recipe", getCompleteRecipeQuery, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "executing full recipe retrieval query")
 	}
 
 	var (
-		recipe           *types.FullRecipe
+		recipe           *types.Recipe
 		currentStepIndex = 0
 	)
 
 	for rows.Next() {
-		rowRecipe, rowRecipeStep, rowRecipeStepIngredient, scanErr := q.scanFullRecipe(ctx, rows)
+		rowRecipe, rowRecipeStep, rowRecipeStepIngredient, scanErr := q.scanCompleteRecipe(ctx, rows)
 		if scanErr != nil {
 			return nil, scanErr
 		}
@@ -456,17 +427,7 @@ func (q *SQLQuerier) GetRecipes(ctx context.Context, filter *types.QueryFilter) 
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildListQuery(
-		ctx,
-		"recipes",
-		nil,
-		nil,
-		"",
-		recipesTableColumns,
-		"",
-		false,
-		filter,
-	)
+	query, args := q.buildListQuery(ctx, "recipes", nil, nil, nil, "", recipesTableColumns, "", false, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "recipes", query, args)
 	if err != nil {

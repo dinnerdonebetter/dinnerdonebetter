@@ -236,17 +236,7 @@ func (q *SQLQuerier) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mea
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildListQuery(
-		ctx,
-		"meal_plan_option_votes",
-		getMealPlanOptionVotesJoins,
-		nil,
-		householdOwnershipColumn,
-		mealPlanOptionVotesTableColumns,
-		"",
-		false,
-		filter,
-	)
+	query, args := q.buildListQuery(ctx, "meal_plan_option_votes", getMealPlanOptionVotesJoins, nil, nil, householdOwnershipColumn, mealPlanOptionVotesTableColumns, "", false, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "mealPlanOptionVotes", query, args)
 	if err != nil {

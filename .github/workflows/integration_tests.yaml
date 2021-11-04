@@ -1,4 +1,4 @@
-on: [pull_request]
+on: [release]
 name: Tests
 jobs:
   integration_tests:

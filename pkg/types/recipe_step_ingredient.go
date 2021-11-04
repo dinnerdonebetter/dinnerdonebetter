@@ -24,22 +24,6 @@ type (
 	// RecipeStepIngredient represents a recipe step ingredient.
 	RecipeStepIngredient struct {
 		_                   struct{}
-		IngredientID        *string `json:"ingredientID"`
-		LastUpdatedOn       *uint64 `json:"lastUpdatedOn"`
-		ArchivedOn          *uint64 `json:"archivedOn"`
-		ID                  string  `json:"id"`
-		QuantityNotes       string  `json:"quantityNotes"`
-		IngredientNotes     string  `json:"ingredientNotes"`
-		QuantityType        string  `json:"quantityType"`
-		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
-		CreatedOn           uint64  `json:"createdOn"`
-		QuantityValue       float32 `json:"quantityValue"`
-		ProductOfRecipeStep bool    `json:"productOfRecipe"`
-	}
-
-	// FullRecipeStepIngredient represents a recipe step ingredient.
-	FullRecipeStepIngredient struct {
-		_                   struct{}
 		IngredientID        *string         `json:"ingredientID"`
 		LastUpdatedOn       *uint64         `json:"lastUpdatedOn"`
 		ArchivedOn          *uint64         `json:"archivedOn"`

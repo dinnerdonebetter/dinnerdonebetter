@@ -11,7 +11,7 @@ import (
 func BuildFakeMealPlanOption() *types.MealPlanOption {
 	return &types.MealPlanOption{
 		ID:                ksuid.New().String(),
-		DayOfWeek:         fake.Uint8(),
+		DayOfWeek:         fake.Uint8() + 1,
 		RecipeID:          fake.LoremIpsumSentence(exampleQuantity),
 		Notes:             fake.LoremIpsumSentence(exampleQuantity),
 		CreatedOn:         uint64(uint32(fake.Date().Unix())),

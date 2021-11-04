@@ -263,17 +263,7 @@ func (q *SQLQuerier) GetRecipeStepIngredients(ctx context.Context, recipeID, rec
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildListQuery(
-		ctx,
-		"recipe_step_ingredients",
-		getRecipeStepIngredientsJoins,
-		nil,
-		householdOwnershipColumn,
-		recipeStepIngredientsTableColumns,
-		"",
-		false,
-		filter,
-	)
+	query, args := q.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, nil, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "recipeStepIngredients", query, args)
 	if err != nil {

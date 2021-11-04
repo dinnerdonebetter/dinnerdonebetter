@@ -9,26 +9,12 @@ import (
 
 // BuildFakeRecipe builds a faked recipe.
 func BuildFakeRecipe() *types.Recipe {
-	return &types.Recipe{
-		ID:                 ksuid.New().String(),
-		Name:               fake.LoremIpsumSentence(exampleQuantity),
-		Source:             fake.LoremIpsumSentence(exampleQuantity),
-		Description:        fake.LoremIpsumSentence(exampleQuantity),
-		InspiredByRecipeID: func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
-		CreatedOn:          uint64(uint32(fake.Date().Unix())),
-		CreatedByUser:      fake.UUID(),
-		Steps:              BuildFakeRecipeStepList().RecipeSteps,
-	}
-}
-
-// BuildFakeFullRecipe builds a faked recipe.
-func BuildFakeFullRecipe() *types.FullRecipe {
-	var steps []*types.FullRecipeStep
+	var steps []*types.RecipeStep
 	for i := 0; i < exampleQuantity; i++ {
-		steps = append(steps, BuildFakeFullRecipeStep())
+		steps = append(steps, BuildFakeRecipeStep())
 	}
 
-	return &types.FullRecipe{
+	return &types.Recipe{
 		ID:                 ksuid.New().String(),
 		Name:               fake.LoremIpsumSentence(exampleQuantity),
 		Source:             fake.LoremIpsumSentence(exampleQuantity),

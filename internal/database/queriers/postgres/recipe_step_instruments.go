@@ -234,17 +234,7 @@ func (q *SQLQuerier) GetRecipeStepInstruments(ctx context.Context, recipeID, rec
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildListQuery(
-		ctx,
-		"recipe_step_instruments",
-		getRecipeStepInstrumentsJoins,
-		nil,
-		householdOwnershipColumn,
-		recipeStepInstrumentsTableColumns,
-		"",
-		false,
-		filter,
-	)
+	query, args := q.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepInstrumentsJoins, nil, nil, householdOwnershipColumn, recipeStepInstrumentsTableColumns, "", false, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "recipeStepInstruments", query, args)
 	if err != nil {

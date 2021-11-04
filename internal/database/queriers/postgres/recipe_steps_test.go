@@ -29,14 +29,19 @@ func buildMockRowsFromRecipeSteps(includeCounts bool, filteredCount uint64, reci
 		rowValues := []driver.Value{
 			x.ID,
 			x.Index,
-			x.PreparationID,
+			x.Preparation.ID,
+			x.Preparation.Name,
+			x.Preparation.Description,
+			x.Preparation.IconPath,
+			x.Preparation.CreatedOn,
+			x.Preparation.LastUpdatedOn,
+			x.Preparation.ArchivedOn,
 			x.PrerequisiteStep,
 			x.MinEstimatedTimeInSeconds,
 			x.MaxEstimatedTimeInSeconds,
 			x.TemperatureInCelsius,
 			x.Notes,
 			x.Why,
-			x.RecipeID,
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,
@@ -337,17 +342,7 @@ func TestQuerier_GetRecipeSteps(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(
-			ctx,
-			"recipe_steps",
-			getRecipeStepsJoins,
-			nil,
-			householdOwnershipColumn,
-			recipeStepsTableColumns,
-			"",
-			false,
-			filter,
-		)
+		query, args := c.buildListQuery(ctx, "recipe_steps", getRecipeStepsJoins, []string{"valid_preparations.id"}, nil, householdOwnershipColumn, recipeStepsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -388,17 +383,7 @@ func TestQuerier_GetRecipeSteps(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(
-			ctx,
-			"recipe_steps",
-			getRecipeStepsJoins,
-			nil,
-			householdOwnershipColumn,
-			recipeStepsTableColumns,
-			"",
-			false,
-			filter,
-		)
+		query, args := c.buildListQuery(ctx, "recipe_steps", getRecipeStepsJoins, []string{"valid_preparations.id"}, nil, householdOwnershipColumn, recipeStepsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -420,17 +405,7 @@ func TestQuerier_GetRecipeSteps(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(
-			ctx,
-			"recipe_steps",
-			getRecipeStepsJoins,
-			nil,
-			householdOwnershipColumn,
-			recipeStepsTableColumns,
-			"",
-			false,
-			filter,
-		)
+		query, args := c.buildListQuery(ctx, "recipe_steps", getRecipeStepsJoins, []string{"valid_preparations.id"}, nil, householdOwnershipColumn, recipeStepsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -452,17 +427,7 @@ func TestQuerier_GetRecipeSteps(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(
-			ctx,
-			"recipe_steps",
-			getRecipeStepsJoins,
-			nil,
-			householdOwnershipColumn,
-			recipeStepsTableColumns,
-			"",
-			false,
-			filter,
-		)
+		query, args := c.buildListQuery(ctx, "recipe_steps", getRecipeStepsJoins, []string{"valid_preparations.id"}, nil, householdOwnershipColumn, recipeStepsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -599,6 +564,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 		exampleRecipeStep := fakes.BuildFakeRecipeStep()
 		exampleRecipeStep.ID = "1"
 		exampleRecipeStep.Ingredients = nil
+		exampleRecipeStep.Preparation = types.ValidPreparation{}
 		exampleInput := fakes.BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(exampleRecipeStep)
 
 		ctx := context.Background()
@@ -614,7 +580,6 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 			exampleInput.TemperatureInCelsius,
 			exampleInput.Notes,
 			exampleInput.Why,
-			exampleInput.RecipeID,
 			exampleInput.BelongsToRecipe,
 		}
 
@@ -664,7 +629,6 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 			exampleInput.TemperatureInCelsius,
 			exampleInput.Notes,
 			exampleInput.Why,
-			exampleInput.RecipeID,
 			exampleInput.BelongsToRecipe,
 		}
 
@@ -698,14 +662,13 @@ func TestQuerier_UpdateRecipeStep(T *testing.T) {
 
 		args := []interface{}{
 			exampleRecipeStep.Index,
-			exampleRecipeStep.PreparationID,
+			exampleRecipeStep.Preparation.ID,
 			exampleRecipeStep.PrerequisiteStep,
 			exampleRecipeStep.MinEstimatedTimeInSeconds,
 			exampleRecipeStep.MaxEstimatedTimeInSeconds,
 			exampleRecipeStep.TemperatureInCelsius,
 			exampleRecipeStep.Notes,
 			exampleRecipeStep.Why,
-			exampleRecipeStep.RecipeID,
 			exampleRecipeStep.BelongsToRecipe,
 			exampleRecipeStep.ID,
 		}
@@ -738,14 +701,13 @@ func TestQuerier_UpdateRecipeStep(T *testing.T) {
 
 		args := []interface{}{
 			exampleRecipeStep.Index,
-			exampleRecipeStep.PreparationID,
+			exampleRecipeStep.Preparation.ID,
 			exampleRecipeStep.PrerequisiteStep,
 			exampleRecipeStep.MinEstimatedTimeInSeconds,
 			exampleRecipeStep.MaxEstimatedTimeInSeconds,
 			exampleRecipeStep.TemperatureInCelsius,
 			exampleRecipeStep.Notes,
 			exampleRecipeStep.Why,
-			exampleRecipeStep.RecipeID,
 			exampleRecipeStep.BelongsToRecipe,
 			exampleRecipeStep.ID,
 		}

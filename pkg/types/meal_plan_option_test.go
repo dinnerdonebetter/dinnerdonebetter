@@ -16,7 +16,7 @@ func TestMealPlanOptionCreationRequestInput_Validate(T *testing.T) {
 
 		x := &MealPlanOptionCreationRequestInput{
 			BelongsToMealPlan: fake.LoremIpsumSentence(exampleQuantity),
-			DayOfWeek:         fake.Uint8(),
+			DayOfWeek:         fake.Uint8() + 1,
 			RecipeID:          fake.LoremIpsumSentence(exampleQuantity),
 			Notes:             fake.LoremIpsumSentence(exampleQuantity),
 		}
@@ -43,7 +43,7 @@ func TestMealPlanOptionUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &MealPlanOptionUpdateRequestInput{
 			BelongsToMealPlan: fake.LoremIpsumSentence(exampleQuantity),
-			DayOfWeek:         fake.Uint8(),
+			DayOfWeek:         fake.Uint8() + 1,
 			RecipeID:          fake.LoremIpsumSentence(exampleQuantity),
 			Notes:             fake.LoremIpsumSentence(exampleQuantity),
 		}

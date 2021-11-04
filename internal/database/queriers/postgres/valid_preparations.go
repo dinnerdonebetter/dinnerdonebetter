@@ -13,6 +13,10 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
+const (
+	validPreparationsOnRecipeStepsJoinClause = "valid_preparations ON recipe_steps.preparation_id=valid_preparations.id"
+)
+
 var (
 	_ types.ValidPreparationDataManager = (*SQLQuerier)(nil)
 
@@ -179,17 +183,7 @@ func (q *SQLQuerier) GetValidPreparations(ctx context.Context, filter *types.Que
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildListQuery(
-		ctx,
-		"valid_preparations",
-		nil,
-		nil,
-		householdOwnershipColumn,
-		validPreparationsTableColumns,
-		"",
-		false,
-		filter,
-	)
+	query, args := q.buildListQuery(ctx, "valid_preparations", nil, nil, nil, householdOwnershipColumn, validPreparationsTableColumns, "", false, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "validPreparations", query, args)
 	if err != nil {

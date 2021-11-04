@@ -17,30 +17,6 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 	return &types.RecipeStep{
 		ID:                        ksuid.New().String(),
 		Index:                     uint(fake.Uint32()),
-		PreparationID:             fake.LoremIpsumSentence(exampleQuantity),
-		PrerequisiteStep:          uint64(fake.Uint32()),
-		MinEstimatedTimeInSeconds: fake.Uint32(),
-		MaxEstimatedTimeInSeconds: fake.Uint32(),
-		TemperatureInCelsius:      func(x uint16) *uint16 { return &x }(fake.Uint16()),
-		Why:                       fake.LoremIpsumSentence(exampleQuantity),
-		Notes:                     fake.LoremIpsumSentence(exampleQuantity),
-		RecipeID:                  fake.LoremIpsumSentence(exampleQuantity),
-		CreatedOn:                 uint64(uint32(fake.Date().Unix())),
-		BelongsToRecipe:           fake.UUID(),
-		Ingredients:               ingredients,
-	}
-}
-
-// BuildFakeFullRecipeStep builds a faked recipe step.
-func BuildFakeFullRecipeStep() *types.FullRecipeStep {
-	var ingredients []*types.FullRecipeStepIngredient
-	for i := 0; i < exampleQuantity; i++ {
-		ingredients = append(ingredients, BuildFakeFullRecipeStepIngredient())
-	}
-
-	return &types.FullRecipeStep{
-		ID:                        ksuid.New().String(),
-		Index:                     uint(fake.Uint32()),
 		Preparation:               *BuildFakeValidPreparation(),
 		PrerequisiteStep:          uint64(fake.Uint32()),
 		MinEstimatedTimeInSeconds: fake.Uint32(),
@@ -77,14 +53,13 @@ func BuildFakeRecipeStepUpdateRequestInput() *types.RecipeStepUpdateRequestInput
 	recipeStep := BuildFakeRecipeStep()
 	return &types.RecipeStepUpdateRequestInput{
 		Index:                     recipeStep.Index,
-		PreparationID:             recipeStep.PreparationID,
+		Preparation:               recipeStep.Preparation,
 		PrerequisiteStep:          recipeStep.PrerequisiteStep,
 		MinEstimatedTimeInSeconds: recipeStep.MinEstimatedTimeInSeconds,
 		MaxEstimatedTimeInSeconds: recipeStep.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,
 		Notes:                     recipeStep.Notes,
 		Why:                       recipeStep.Why,
-		RecipeID:                  recipeStep.RecipeID,
 		BelongsToRecipe:           recipeStep.BelongsToRecipe,
 	}
 }
@@ -94,13 +69,12 @@ func BuildFakeRecipeStepUpdateRequestInputFromRecipeStep(recipeStep *types.Recip
 	return &types.RecipeStepUpdateRequestInput{
 		Why:                       recipeStep.Why,
 		Index:                     recipeStep.Index,
-		PreparationID:             recipeStep.PreparationID,
+		Preparation:               recipeStep.Preparation,
 		PrerequisiteStep:          recipeStep.PrerequisiteStep,
 		MinEstimatedTimeInSeconds: recipeStep.MinEstimatedTimeInSeconds,
 		MaxEstimatedTimeInSeconds: recipeStep.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,
 		Notes:                     recipeStep.Notes,
-		RecipeID:                  recipeStep.RecipeID,
 		BelongsToRecipe:           recipeStep.BelongsToRecipe,
 	}
 }
@@ -122,13 +96,12 @@ func BuildFakeRecipeStepCreationRequestInputFromRecipeStep(recipeStep *types.Rec
 		ID:                        recipeStep.ID,
 		Why:                       recipeStep.Why,
 		Index:                     recipeStep.Index,
-		PreparationID:             recipeStep.PreparationID,
+		PreparationID:             recipeStep.Preparation.ID,
 		PrerequisiteStep:          recipeStep.PrerequisiteStep,
 		MinEstimatedTimeInSeconds: recipeStep.MinEstimatedTimeInSeconds,
 		MaxEstimatedTimeInSeconds: recipeStep.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,
 		Notes:                     recipeStep.Notes,
-		RecipeID:                  recipeStep.RecipeID,
 		BelongsToRecipe:           recipeStep.BelongsToRecipe,
 		Ingredients:               ingredients,
 	}
@@ -150,14 +123,13 @@ func BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(recipeStep *types.Re
 	return &types.RecipeStepDatabaseCreationInput{
 		ID:                        recipeStep.ID,
 		Index:                     recipeStep.Index,
+		PreparationID:             recipeStep.Preparation.ID,
 		Why:                       recipeStep.Why,
-		PreparationID:             recipeStep.PreparationID,
 		PrerequisiteStep:          recipeStep.PrerequisiteStep,
 		MinEstimatedTimeInSeconds: recipeStep.MinEstimatedTimeInSeconds,
 		MaxEstimatedTimeInSeconds: recipeStep.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,
 		Notes:                     recipeStep.Notes,
-		RecipeID:                  recipeStep.RecipeID,
 		Ingredients:               ingredients,
 		BelongsToRecipe:           recipeStep.BelongsToRecipe,
 	}

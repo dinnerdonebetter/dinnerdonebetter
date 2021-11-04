@@ -278,17 +278,7 @@ func TestQuerier_GetValidIngredientPreparations(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(
-			ctx,
-			"valid_ingredient_preparations",
-			nil,
-			nil,
-			householdOwnershipColumn,
-			validIngredientPreparationsTableColumns,
-			"",
-			false,
-			filter,
-		)
+		query, args := c.buildListQuery(ctx, "valid_ingredient_preparations", nil, nil, nil, householdOwnershipColumn, validIngredientPreparationsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -312,17 +302,7 @@ func TestQuerier_GetValidIngredientPreparations(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(
-			ctx,
-			"valid_ingredient_preparations",
-			nil,
-			nil,
-			householdOwnershipColumn,
-			validIngredientPreparationsTableColumns,
-			"",
-			false,
-			filter,
-		)
+		query, args := c.buildListQuery(ctx, "valid_ingredient_preparations", nil, nil, nil, householdOwnershipColumn, validIngredientPreparationsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -343,17 +323,7 @@ func TestQuerier_GetValidIngredientPreparations(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(
-			ctx,
-			"valid_ingredient_preparations",
-			nil,
-			nil,
-			householdOwnershipColumn,
-			validIngredientPreparationsTableColumns,
-			"",
-			false,
-			filter,
-		)
+		query, args := c.buildListQuery(ctx, "valid_ingredient_preparations", nil, nil, nil, householdOwnershipColumn, validIngredientPreparationsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -374,17 +344,7 @@ func TestQuerier_GetValidIngredientPreparations(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(
-			ctx,
-			"valid_ingredient_preparations",
-			nil,
-			nil,
-			householdOwnershipColumn,
-			validIngredientPreparationsTableColumns,
-			"",
-			false,
-			filter,
-		)
+		query, args := c.buildListQuery(ctx, "valid_ingredient_preparations", nil, nil, nil, householdOwnershipColumn, validIngredientPreparationsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
