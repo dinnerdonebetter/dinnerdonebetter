@@ -50,8 +50,8 @@ func buildMockRowsFromRecipes(includeCounts bool, filteredCount uint64, recipes 
 	return exampleRows
 }
 
-func buildMockFullRowsFromRecipe(recipe *types.FullRecipe) *sqlmock.Rows {
-	exampleRows := sqlmock.NewRows(fullRecipeColumns)
+func buildMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
+	exampleRows := sqlmock.NewRows(completeRecipeColumns)
 
 	for _, step := range recipe.Steps {
 		for _, ingredient := range step.Ingredients {
@@ -124,7 +124,7 @@ func buildMockFullRowsFromRecipe(recipe *types.FullRecipe) *sqlmock.Rows {
 }
 
 func buildInvalidMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
-	columns := fullRecipeColumns
+	columns := completeRecipeColumns
 	exampleRows := sqlmock.NewRows(columns)
 
 	for _, step := range recipe.Steps {
@@ -322,69 +322,6 @@ func TestQuerier_GetRecipe(T *testing.T) {
 		t.Parallel()
 
 		exampleRecipe := fakes.BuildFakeRecipe()
-		exampleRecipe.Steps = nil
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []interface{}{
-			exampleRecipe.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getRecipeQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipes(false, 0, exampleRecipe))
-
-		actual, err := c.GetRecipe(ctx, exampleRecipe.ID)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipe, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with invalid recipe ID", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, _ := buildTestClient(t)
-
-		actual, err := c.GetRecipe(ctx, "")
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipe := fakes.BuildFakeRecipe()
-		exampleRecipe.Steps = nil
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []interface{}{
-			exampleRecipe.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getRecipeQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetRecipe(ctx, exampleRecipe.ID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
-func TestQuerier_GetFullRecipe(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipe := fakes.BuildFakeFullRecipe()
 
 		exampleRecipe.Steps = []*types.RecipeStep{
 			fakes.BuildFakeRecipeStep(),
@@ -410,11 +347,11 @@ func TestQuerier_GetFullRecipe(T *testing.T) {
 			exampleRecipe.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getFullRecipeQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getCompleteRecipeQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockFullRowsFromRecipe(exampleRecipe))
 
-		actual, err := c.GetFullRecipe(ctx, exampleRecipe.ID)
+		actual, err := c.GetRecipe(ctx, exampleRecipe.ID)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleRecipe, actual)
 
@@ -427,7 +364,7 @@ func TestQuerier_GetFullRecipe(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetFullRecipe(ctx, "")
+		actual, err := c.GetRecipe(ctx, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -444,11 +381,11 @@ func TestQuerier_GetFullRecipe(T *testing.T) {
 			exampleRecipe.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getFullRecipeQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getCompleteRecipeQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.GetFullRecipe(ctx, exampleRecipe.ID)
+		actual, err := c.GetRecipe(ctx, exampleRecipe.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -482,11 +419,11 @@ func TestQuerier_GetFullRecipe(T *testing.T) {
 			exampleRecipe.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getFullRecipeQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getCompleteRecipeQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildInvalidMockFullRowsFromRecipe(exampleRecipe))
 
-		actual, err := c.GetFullRecipe(ctx, exampleRecipe.ID)
+		actual, err := c.GetRecipe(ctx, exampleRecipe.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -520,11 +457,11 @@ func TestQuerier_GetFullRecipe(T *testing.T) {
 			exampleRecipe.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getFullRecipeQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getCompleteRecipeQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(sqlmock.NewRows([]string{"things"}))
 
-		actual, err := c.GetFullRecipe(ctx, exampleRecipe.ID)
+		actual, err := c.GetRecipe(ctx, exampleRecipe.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 		assert.True(t, errors.Is(err, sql.ErrNoRows))

@@ -37,22 +37,6 @@ type (
 		CreatedOn          uint64        `json:"createdOn"`
 	}
 
-	// FullRecipe represents a recipe.
-	FullRecipe struct {
-		_ struct{}
-
-		LastUpdatedOn      *uint64       `json:"lastUpdatedOn"`
-		ArchivedOn         *uint64       `json:"archivedOn"`
-		InspiredByRecipeID *string       `json:"inspiredByRecipeID"`
-		Source             string        `json:"source"`
-		Description        string        `json:"description"`
-		ID                 string        `json:"id"`
-		Name               string        `json:"name"`
-		CreatedByUser      string        `json:"belongsToUser"`
-		Steps              []*RecipeStep `json:"steps"`
-		CreatedOn          uint64        `json:"createdOn"`
-	}
-
 	// RecipeList represents a list of recipes.
 	RecipeList struct {
 		_ struct{}
@@ -102,7 +86,6 @@ type (
 	RecipeDataManager interface {
 		RecipeExists(ctx context.Context, recipeID string) (bool, error)
 		GetRecipe(ctx context.Context, recipeID string) (*Recipe, error)
-		GetFullRecipe(ctx context.Context, recipeID string) (*FullRecipe, error)
 		GetTotalRecipeCount(ctx context.Context) (uint64, error)
 		GetRecipes(ctx context.Context, filter *QueryFilter) (*RecipeList, error)
 		GetRecipesWithIDs(ctx context.Context, userID string, limit uint8, ids []string) ([]*Recipe, error)

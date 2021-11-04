@@ -21,25 +21,6 @@ func BuildFakeRecipe() *types.Recipe {
 		Description:        fake.LoremIpsumSentence(exampleQuantity),
 		InspiredByRecipeID: func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
 		CreatedOn:          uint64(uint32(fake.Date().Unix())),
-		CreatedByUser:      fake.UUID(),
-		Steps:              steps,
-	}
-}
-
-// BuildFakeFullRecipe builds a faked recipe.
-func BuildFakeFullRecipe() *types.FullRecipe {
-	var steps []*types.RecipeStep
-	for i := 0; i < exampleQuantity; i++ {
-		steps = append(steps, BuildFakeRecipeStep())
-	}
-
-	return &types.FullRecipe{
-		ID:                 ksuid.New().String(),
-		Name:               fake.LoremIpsumSentence(exampleQuantity),
-		Source:             fake.LoremIpsumSentence(exampleQuantity),
-		Description:        fake.LoremIpsumSentence(exampleQuantity),
-		InspiredByRecipeID: func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
-		CreatedOn:          uint64(uint32(fake.Date().Unix())),
 		CreatedByUser:      ksuid.New().String(),
 		Steps:              steps,
 	}

@@ -118,7 +118,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// fetch recipe from database.
-	x, err := s.recipeDataManager.GetFullRecipe(ctx, recipeID)
+	x, err := s.recipeDataManager.GetRecipe(ctx, recipeID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
