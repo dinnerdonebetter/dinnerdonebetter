@@ -38,7 +38,7 @@ func BuildFakeHouseholdUserMembershipList() *types.HouseholdUserMembershipList {
 	}
 }
 
-// BuildFakeHouseholdUserMembershipUpdateInputFromHouseholdUserMembership builds a faked HouseholdUserMembershipUpdateInput from an household user membership.
+// BuildFakeHouseholdUserMembershipUpdateInputFromHouseholdUserMembership builds a faked HouseholdUserMembershipUpdateInput from a household user membership.
 func BuildFakeHouseholdUserMembershipUpdateInputFromHouseholdUserMembership(householdUserMembership *types.HouseholdUserMembership) *types.HouseholdUserMembershipUpdateInput {
 	return &types.HouseholdUserMembershipUpdateInput{
 		BelongsToUser:      householdUserMembership.BelongsToUser,
@@ -51,7 +51,7 @@ func BuildFakeHouseholdUserMembershipCreationInput() *types.HouseholdUserMembers
 	return BuildFakeHouseholdUserMembershipCreationInputFromHouseholdUserMembership(BuildFakeHouseholdUserMembership())
 }
 
-// BuildFakeHouseholdUserMembershipCreationInputFromHouseholdUserMembership builds a faked HouseholdUserMembershipCreationInput from an household user membership.
+// BuildFakeHouseholdUserMembershipCreationInputFromHouseholdUserMembership builds a faked HouseholdUserMembershipCreationInput from a household user membership.
 func BuildFakeHouseholdUserMembershipCreationInputFromHouseholdUserMembership(householdUserMembership *types.HouseholdUserMembership) *types.HouseholdUserMembershipCreationInput {
 	return &types.HouseholdUserMembershipCreationInput{
 		ID:                 householdUserMembership.ID,

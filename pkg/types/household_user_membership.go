@@ -12,7 +12,7 @@ const (
 )
 
 type (
-	// HouseholdUserMembership defines a relationship between a user and an household.
+	// HouseholdUserMembership defines a relationship between a user and a household.
 	HouseholdUserMembership struct {
 		_ struct{}
 

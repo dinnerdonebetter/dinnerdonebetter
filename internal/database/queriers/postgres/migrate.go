@@ -54,16 +54,16 @@ var (
 	//go:embed migrations/00009_recipe_step_ingredients.sql
 	recipeStepIngredientsMigration string
 
-	//go:embed migrations/000010_recipe_step_products.sql
+	//go:embed migrations/00010_recipe_step_products.sql
 	recipeStepProductsMigration string
 
-	//go:embed migrations/000011_meal_plans.sql
+	//go:embed migrations/00011_meal_plans.sql
 	mealPlansMigration string
 
-	//go:embed migrations/000012_meal_plan_options.sql
+	//go:embed migrations/00012_meal_plan_options.sql
 	mealPlanOptionsMigration string
 
-	//go:embed migrations/000013_meal_plan_option_votes.sql
+	//go:embed migrations/00013_meal_plan_option_votes.sql
 	mealPlanOptionVotesMigration string
 
 	migrations = []darwin.Migration{

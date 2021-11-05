@@ -56,7 +56,7 @@ type (
 		Pagination
 	}
 
-	// UserRegistrationInput represents the input required from users to register an household.
+	// UserRegistrationInput represents the input required from users to register a household.
 	UserRegistrationInput struct {
 		_ struct{}
 

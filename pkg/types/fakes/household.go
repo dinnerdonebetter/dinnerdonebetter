@@ -50,7 +50,7 @@ func BuildFakeHouseholdList() *types.HouseholdList {
 	}
 }
 
-// BuildFakeHouseholdUpdateInput builds a faked HouseholdUpdateInput from an household.
+// BuildFakeHouseholdUpdateInput builds a faked HouseholdUpdateInput from a household.
 func BuildFakeHouseholdUpdateInput() *types.HouseholdUpdateInput {
 	household := BuildFakeHousehold()
 	return &types.HouseholdUpdateInput{
@@ -59,7 +59,7 @@ func BuildFakeHouseholdUpdateInput() *types.HouseholdUpdateInput {
 	}
 }
 
-// BuildFakeHouseholdUpdateInputFromHousehold builds a faked HouseholdUpdateInput from an household.
+// BuildFakeHouseholdUpdateInputFromHousehold builds a faked HouseholdUpdateInput from a household.
 func BuildFakeHouseholdUpdateInputFromHousehold(household *types.Household) *types.HouseholdUpdateInput {
 	return &types.HouseholdUpdateInput{
 		Name:          household.Name,
@@ -73,7 +73,7 @@ func BuildFakeHouseholdCreationInput() *types.HouseholdCreationInput {
 	return BuildFakeHouseholdCreationInputFromHousehold(household)
 }
 
-// BuildFakeHouseholdCreationInputFromHousehold builds a faked HouseholdCreationInput from an household.
+// BuildFakeHouseholdCreationInputFromHousehold builds a faked HouseholdCreationInput from a household.
 func BuildFakeHouseholdCreationInputFromHousehold(household *types.Household) *types.HouseholdCreationInput {
 	return &types.HouseholdCreationInput{
 		ID:            ksuid.New().String(),

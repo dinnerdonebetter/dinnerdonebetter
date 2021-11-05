@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	// PaidHouseholdBillingStatus indicates an household is fully paid.
+	// PaidHouseholdBillingStatus indicates a household is fully paid.
 	PaidHouseholdBillingStatus HouseholdBillingStatus = "paid"
-	// UnpaidHouseholdBillingStatus indicates an household is not paid.
+	// UnpaidHouseholdBillingStatus indicates a household is not paid.
 	UnpaidHouseholdBillingStatus HouseholdBillingStatus = "unpaid"
 )
 
@@ -19,7 +19,7 @@ type (
 	// HouseholdBillingStatus is the type to use/compare against when checking billing status.
 	HouseholdBillingStatus string
 
-	// Household represents an household.
+	// Household represents a household.
 	Household struct {
 		_ struct{}
 
@@ -92,7 +92,7 @@ type (
 	}
 )
 
-// Update merges an HouseholdUpdateInput with an household.
+// Update merges a householdUpdateInput with a household.
 func (x *Household) Update(input *HouseholdUpdateInput) {
 	if input.Name != "" && input.Name != x.Name {
 		x.Name = input.Name

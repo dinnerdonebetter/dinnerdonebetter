@@ -7,7 +7,7 @@ import (
 )
 
 type (
-	// HouseholdRole describes a role a user has for an Household context.
+	// HouseholdRole describes a role a user has for a household context.
 	HouseholdRole role
 
 	// HouseholdRolePermissionsChecker checks permissions for one or more household Roles.
@@ -32,7 +32,7 @@ type (
 const (
 	// HouseholdMemberRole is a role for a plain household participant.
 	HouseholdMemberRole HouseholdRole = iota
-	// HouseholdAdminRole is a role for someone who can manipulate the specifics of an household.
+	// HouseholdAdminRole is a role for someone who can manipulate the specifics of a household.
 	HouseholdAdminRole HouseholdRole = iota
 
 	householdAdminRoleName  = "household_admin"
@@ -95,7 +95,7 @@ func (r householdRoleCollection) CanRemoveMemberFromHouseholds() bool {
 	return hasPermission(RemoveMemberHouseholdPermission, r.Roles...)
 }
 
-// CanTransferHouseholdToNewOwner returns whether a user can transfer an household to a new owner or not.
+// CanTransferHouseholdToNewOwner returns whether a user can transfer a household to a new owner or not.
 func (r householdRoleCollection) CanTransferHouseholdToNewOwner() bool {
 	return hasPermission(TransferHouseholdPermission, r.Roles...)
 }

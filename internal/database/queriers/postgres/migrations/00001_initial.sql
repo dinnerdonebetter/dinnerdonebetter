@@ -40,6 +40,20 @@ CREATE TABLE IF NOT EXISTS households (
     UNIQUE("belongs_to_user", "name")
 );
 
+CREATE TYPE invitation_state AS ENUM ('pending', 'accepted', 'rejected');
+
+CREATE TABLE IF NOT EXISTS household_invitations (
+    "id" CHAR(27) NOT NULL PRIMARY KEY,
+    "destination_household" CHAR(27) NOT NULL REFERENCES households("id") ON DELETE CASCADE,
+    "to_user" CHAR(27) NOT NULL REFERENCES users("id") ON DELETE CASCADE,
+    "from_user" CHAR(27) NOT NULL REFERENCES users("id") ON DELETE CASCADE,
+    "status" invitation_state NOT NULL DEFAULT 'pending',
+    "created_on" BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
+    "last_updated_on" BIGINT DEFAULT NULL,
+    "archived_on" BIGINT DEFAULT NULL,
+    UNIQUE("to_user", "from_user", "destination_household")
+);
+
 CREATE TABLE IF NOT EXISTS household_user_memberships (
     "id" CHAR(27) NOT NULL PRIMARY KEY,
     "belongs_to_household" CHAR(27) NOT NULL REFERENCES households("id") ON DELETE CASCADE,

@@ -119,7 +119,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, household, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns an household.
+// ReadHandler returns a GET handler that returns a household.
 func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -158,7 +158,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, household)
 }
 
-// UpdateHandler returns a handler that updates an household.
+// UpdateHandler returns a handler that updates a household.
 func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -225,7 +225,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, household)
 }
 
-// ArchiveHandler returns a handler that archives an household.
+// ArchiveHandler returns a handler that archives a household.
 func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()

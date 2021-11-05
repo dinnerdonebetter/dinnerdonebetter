@@ -37,7 +37,7 @@ func (c *Client) SwitchActiveHousehold(ctx context.Context, householdID string) 
 	return nil
 }
 
-// GetHousehold retrieves an household.
+// GetHousehold retrieves a household.
 func (c *Client) GetHousehold(ctx context.Context, householdID string) (*types.Household, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -84,7 +84,7 @@ func (c *Client) GetHouseholds(ctx context.Context, filter *types.QueryFilter) (
 	return households, nil
 }
 
-// CreateHousehold creates an household.
+// CreateHousehold creates a household.
 func (c *Client) CreateHousehold(ctx context.Context, input *types.HouseholdCreationInput) (*types.Household, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -112,7 +112,7 @@ func (c *Client) CreateHousehold(ctx context.Context, input *types.HouseholdCrea
 	return household, nil
 }
 
-// UpdateHousehold updates an household.
+// UpdateHousehold updates a household.
 func (c *Client) UpdateHousehold(ctx context.Context, household *types.Household) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -136,7 +136,7 @@ func (c *Client) UpdateHousehold(ctx context.Context, household *types.Household
 	return nil
 }
 
-// ArchiveHousehold archives an household.
+// ArchiveHousehold archives a household.
 func (c *Client) ArchiveHousehold(ctx context.Context, householdID string) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -160,7 +160,7 @@ func (c *Client) ArchiveHousehold(ctx context.Context, householdID string) error
 	return nil
 }
 
-// AddUserToHousehold adds a user to an household.
+// AddUserToHousehold adds a user to a household.
 func (c *Client) AddUserToHousehold(ctx context.Context, input *types.AddUserToHouseholdInput) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -213,7 +213,7 @@ func (c *Client) MarkAsDefault(ctx context.Context, householdID string) error {
 	return nil
 }
 
-// RemoveUserFromHousehold removes a user from an household.
+// RemoveUserFromHousehold removes a user from a household.
 func (c *Client) RemoveUserFromHousehold(ctx context.Context, householdID, userID string) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -279,7 +279,7 @@ func (c *Client) ModifyMemberPermissions(ctx context.Context, householdID, userI
 	return nil
 }
 
-// TransferHouseholdOwnership transfers ownership of an household to a given user.
+// TransferHouseholdOwnership transfers ownership of a household to a given user.
 func (c *Client) TransferHouseholdOwnership(ctx context.Context, householdID string, input *types.HouseholdOwnershipTransferInput) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()

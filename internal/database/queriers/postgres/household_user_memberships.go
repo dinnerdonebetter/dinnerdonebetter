@@ -39,7 +39,7 @@ const (
 	householdMemberRolesSeparator = commaSeparator
 )
 
-// scanHouseholdUserMembership takes a database Scanner (i.e. *sql.Row) and scans the result into an HouseholdUserMembership struct.
+// scanHouseholdUserMembership takes a database Scanner (i.e. *sql.Row) and scans the result into a householdUserMembership struct.
 func (q *SQLQuerier) scanHouseholdUserMembership(ctx context.Context, scan database.Scanner) (x *types.HouseholdUserMembership, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -431,7 +431,7 @@ const removeUserFromHouseholdQuery = `
 	AND household_user_memberships.belongs_to_user = $2
 `
 
-// RemoveUserFromHousehold removes a user's membership to an household.
+// RemoveUserFromHousehold removes a user's membership to a household.
 func (q *SQLQuerier) RemoveUserFromHousehold(ctx context.Context, userID, householdID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

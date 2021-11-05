@@ -99,7 +99,7 @@ func (s *TestSuite) TestHouseholds_Reading_Returns404ForNonexistentHousehold() {
 }
 
 func (s *TestSuite) TestHouseholds_Reading() {
-	s.runForEachClientExcept("should be possible to read an household", func(testClients *testClientWrapper) func() {
+	s.runForEachClientExcept("should be possible to read a household", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -141,7 +141,7 @@ func (s *TestSuite) TestHouseholds_Updating_Returns404ForNonexistentHousehold() 
 	})
 }
 
-// convertHouseholdToHouseholdUpdateInput creates an HouseholdUpdateInput struct from an household.
+// convertHouseholdToHouseholdUpdateInput creates a householdUpdateInput struct from a household.
 func convertHouseholdToHouseholdUpdateInput(x *types.Household) *types.HouseholdUpdateInput {
 	return &types.HouseholdUpdateInput{
 		Name:          x.Name,
@@ -150,7 +150,7 @@ func convertHouseholdToHouseholdUpdateInput(x *types.Household) *types.Household
 }
 
 func (s *TestSuite) TestHouseholds_Updating() {
-	s.runForEachClientExcept("should be possible to update an household", func(testClients *testClientWrapper) func() {
+	s.runForEachClientExcept("should be possible to update a household", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -195,7 +195,7 @@ func (s *TestSuite) TestHouseholds_Archiving_Returns404ForNonexistentHousehold()
 }
 
 func (s *TestSuite) TestHouseholds_Archiving() {
-	s.runForEachClientExcept("should be possible to archive an household", func(testClients *testClientWrapper) func() {
+	s.runForEachClientExcept("should be possible to archive a household", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -215,7 +215,7 @@ func (s *TestSuite) TestHouseholds_Archiving() {
 }
 
 func (s *TestSuite) TestHouseholds_ChangingMemberships() {
-	s.runForCookieClient("should be possible to change members of an household", func(testClients *testClientWrapper) func() {
+	s.runForCookieClient("should be possible to change members of a household", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -347,7 +347,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 		}
 	})
 
-	s.runForPASETOClient("should be possible to change members of an household", func(testClients *testClientWrapper) func() {
+	s.runForPASETOClient("should be possible to change members of a household", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -478,7 +478,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 }
 
 func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
-	s.runForCookieClient("should be possible to transfer ownership of an household", func(testClients *testClientWrapper) func() {
+	s.runForCookieClient("should be possible to transfer ownership of a household", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -559,7 +559,7 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 		}
 	})
 
-	s.runForPASETOClient("should be possible to transfer ownership of an household", func(testClients *testClientWrapper) func() {
+	s.runForPASETOClient("should be possible to transfer ownership of a household", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 

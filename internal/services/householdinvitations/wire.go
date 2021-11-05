@@ -1,4 +1,4 @@
-package mealplans
+package householdinvitations
 
 import (
 	"github.com/google/wire"
