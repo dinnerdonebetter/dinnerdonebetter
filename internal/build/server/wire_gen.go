@@ -92,12 +92,13 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	uploadManager := uploads.ProvideUploadManager(uploader)
 	userDataService := users.ProvideUsersService(authenticationConfig, logger, userDataManager, householdDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, imageUploadProcessor, uploadManager, routeParamManager)
 	householdsConfig := servicesConfigurations.Households
+	householdInvitationDataManager := database.ProvideHouseholdInvitationDataManager(dataManager)
 	configConfig := &cfg.Events
 	publisherProvider, err := config3.ProvidePublisherProvider(logger, configConfig)
 	if err != nil {
 		return nil, err
 	}
-	householdDataService, err := households.ProvideService(logger, householdsConfig, householdDataManager, householdUserMembershipDataManager, serverEncoderDecoder, unitCounterProvider, routeParamManager, publisherProvider)
+	householdDataService, err := households.ProvideService(logger, householdsConfig, householdDataManager, householdInvitationDataManager, householdUserMembershipDataManager, serverEncoderDecoder, unitCounterProvider, routeParamManager, publisherProvider)
 	if err != nil {
 		return nil, err
 	}

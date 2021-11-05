@@ -31,6 +31,7 @@ type (
 	service struct {
 		logger                         logging.Logger
 		householdDataManager           types.HouseholdDataManager
+		householdInvitationDataManager types.HouseholdInvitationDataManager
 		householdMembershipDataManager types.HouseholdUserMembershipDataManager
 		tracer                         tracing.Tracer
 		householdCounter               metrics.UnitCounter
@@ -47,6 +48,7 @@ func ProvideService(
 	logger logging.Logger,
 	cfg Config,
 	householdDataManager types.HouseholdDataManager,
+	householdInvitationDataManager types.HouseholdInvitationDataManager,
 	householdMembershipDataManager types.HouseholdUserMembershipDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	counterProvider metrics.UnitCounterProvider,
@@ -64,6 +66,7 @@ func ProvideService(
 		userIDFetcher:                  routeParamManager.BuildRouteParamStringIDFetcher(UserIDURIParamKey),
 		sessionContextDataFetcher:      authservice.FetchContextFromRequest,
 		householdDataManager:           householdDataManager,
+		householdInvitationDataManager: householdInvitationDataManager,
 		householdMembershipDataManager: householdMembershipDataManager,
 		encoderDecoder:                 encoder,
 		preWritesPublisher:             preWritesPublisher,

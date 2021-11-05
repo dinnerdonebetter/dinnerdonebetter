@@ -16,6 +16,7 @@ var _ DataManager = (*MockDatabase)(nil)
 func BuildMockDatabase() *MockDatabase {
 	return &MockDatabase{
 		HouseholdDataManager:                  &mocktypes.HouseholdDataManager{},
+		HouseholdInvitationDataManager:        &mocktypes.HouseholdInvitationDataManager{},
 		HouseholdUserMembershipDataManager:    &mocktypes.HouseholdUserMembershipDataManager{},
 		ValidInstrumentDataManager:            &mocktypes.ValidInstrumentDataManager{},
 		ValidIngredientDataManager:            &mocktypes.ValidIngredientDataManager{},
@@ -57,6 +58,7 @@ type MockDatabase struct {
 	*mocktypes.APIClientDataManager
 	*mocktypes.WebhookDataManager
 	*mocktypes.HouseholdDataManager
+	*mocktypes.HouseholdInvitationDataManager
 	mock.Mock
 }
 
