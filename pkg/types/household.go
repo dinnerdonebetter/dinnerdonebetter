@@ -45,8 +45,19 @@ type (
 		Pagination
 	}
 
-	// HouseholdCreationInput represents what a User could set as input for creating households.
-	HouseholdCreationInput struct {
+	// HouseholdCreationRequestInput represents what a User could set as input for creating households.
+	HouseholdCreationRequestInput struct {
+		_ struct{}
+
+		ID            string `json:"-"`
+		Name          string `json:"name"`
+		ContactEmail  string `json:"contactEmail"`
+		ContactPhone  string `json:"contactPhone"`
+		BelongsToUser string `json:"-"`
+	}
+
+	// HouseholdDatabaseCreationInput represents what a User could set as input for creating households.
+	HouseholdDatabaseCreationInput struct {
 		_ struct{}
 
 		ID            string `json:"-"`
@@ -72,7 +83,7 @@ type (
 		GetAllHouseholdsCount(ctx context.Context) (uint64, error)
 		GetHouseholds(ctx context.Context, userID string, filter *QueryFilter) (*HouseholdList, error)
 		GetHouseholdsForAdmin(ctx context.Context, filter *QueryFilter) (*HouseholdList, error)
-		CreateHousehold(ctx context.Context, input *HouseholdCreationInput) (*Household, error)
+		CreateHousehold(ctx context.Context, input *HouseholdDatabaseCreationInput) (*Household, error)
 		UpdateHousehold(ctx context.Context, updated *Household) error
 		ArchiveHousehold(ctx context.Context, householdID string, userID string) error
 	}
@@ -84,7 +95,7 @@ type (
 		ReadHandler(res http.ResponseWriter, req *http.Request)
 		UpdateHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
-		AddMemberHandler(res http.ResponseWriter, req *http.Request)
+		InviteMemberHandler(res http.ResponseWriter, req *http.Request)
 		RemoveMemberHandler(res http.ResponseWriter, req *http.Request)
 		MarkAsDefaultHouseholdHandler(res http.ResponseWriter, req *http.Request)
 		ModifyMemberPermissionsHandler(res http.ResponseWriter, req *http.Request)
@@ -99,10 +110,10 @@ func (x *Household) Update(input *HouseholdUpdateInput) {
 	}
 }
 
-var _ validation.ValidatableWithContext = (*HouseholdCreationInput)(nil)
+var _ validation.ValidatableWithContext = (*HouseholdCreationRequestInput)(nil)
 
-// ValidateWithContext validates a HouseholdCreationInput.
-func (x *HouseholdCreationInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a HouseholdCreationRequestInput.
+func (x *HouseholdCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, x,
 		validation.Field(&x.Name, validation.Required),
 	)
@@ -118,9 +129,22 @@ func (x *HouseholdUpdateInput) ValidateWithContext(ctx context.Context) error {
 }
 
 // HouseholdCreationInputForNewUser creates a new HouseholdInputCreation struct for a given user.
-func HouseholdCreationInputForNewUser(u *User) *HouseholdCreationInput {
-	return &HouseholdCreationInput{
+func HouseholdCreationInputForNewUser(u *User) *HouseholdCreationRequestInput {
+	return &HouseholdCreationRequestInput{
 		Name:          fmt.Sprintf("%s_default", u.Username),
 		BelongsToUser: u.ID,
 	}
+}
+
+// HouseholdDatabaseCreationInputFromHouseholdCreationInput creates a DatabaseCreationInput from a CreationInput.
+func HouseholdDatabaseCreationInputFromHouseholdCreationInput(input *HouseholdCreationRequestInput) *HouseholdDatabaseCreationInput {
+	x := &HouseholdDatabaseCreationInput{
+		ID:            input.ID,
+		Name:          input.Name,
+		ContactEmail:  input.ContactEmail,
+		ContactPhone:  input.ContactPhone,
+		BelongsToUser: input.BelongsToUser,
+	}
+
+	return x
 }

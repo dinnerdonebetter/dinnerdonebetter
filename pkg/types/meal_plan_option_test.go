@@ -2,6 +2,7 @@ package types
 
 import (
 	"context"
+	"math"
 	"testing"
 
 	fake "github.com/brianvoe/gofakeit/v5"
@@ -16,7 +17,7 @@ func TestMealPlanOptionCreationRequestInput_Validate(T *testing.T) {
 
 		x := &MealPlanOptionCreationRequestInput{
 			BelongsToMealPlan: fake.LoremIpsumSentence(exampleQuantity),
-			DayOfWeek:         fake.Uint8() + 1,
+			DayOfWeek:         uint8(fake.Number(1, math.MaxUint8)),
 			RecipeID:          fake.LoremIpsumSentence(exampleQuantity),
 			Notes:             fake.LoremIpsumSentence(exampleQuantity),
 		}
@@ -43,7 +44,7 @@ func TestMealPlanOptionUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &MealPlanOptionUpdateRequestInput{
 			BelongsToMealPlan: fake.LoremIpsumSentence(exampleQuantity),
-			DayOfWeek:         fake.Uint8() + 1,
+			DayOfWeek:         uint8(fake.Number(1, math.MaxUint8)),
 			RecipeID:          fake.LoremIpsumSentence(exampleQuantity),
 			Notes:             fake.LoremIpsumSentence(exampleQuantity),
 		}

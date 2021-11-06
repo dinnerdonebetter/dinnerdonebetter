@@ -2919,7 +2919,7 @@ func TestPreWritesWorker_HandleMessage(T *testing.T) {
 
 		dbManager := database.BuildMockDatabase()
 		dbManager.HouseholdUserMembershipDataManager.On(
-			"AddUserToHousehold",
+			"InviteUserToHousehold",
 			testutils.ContextMatcher,
 			body.UserMembership,
 		).Return(nil)
@@ -2969,7 +2969,7 @@ func TestPreWritesWorker_HandleMessage(T *testing.T) {
 
 		dbManager := database.BuildMockDatabase()
 		dbManager.HouseholdUserMembershipDataManager.On(
-			"AddUserToHousehold",
+			"InviteUserToHousehold",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(input *types.AddUserToHouseholdInput) bool { return true }),
 		).Return(errors.New("blah"))
@@ -3014,7 +3014,7 @@ func TestPreWritesWorker_HandleMessage(T *testing.T) {
 
 		dbManager := database.BuildMockDatabase()
 		dbManager.HouseholdUserMembershipDataManager.On(
-			"AddUserToHousehold",
+			"InviteUserToHousehold",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(input *types.AddUserToHouseholdInput) bool { return true }),
 		).Return(nil)

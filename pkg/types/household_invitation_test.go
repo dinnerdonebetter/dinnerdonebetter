@@ -14,8 +14,8 @@ func TestHouseholdInvitationCreationInput_ValidateWithContext(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		x := &HouseholdInvitationCreationInput{
-			ToUser:               t.Name(),
+		x := &HouseholdInvitationCreationRequestInput{
+			ToEmail:              t.Name(),
 			FromUser:             t.Name(),
 			DestinationHousehold: t.Name(),
 		}

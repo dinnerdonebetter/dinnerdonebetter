@@ -491,7 +491,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		exampleHousehold.ID = ""
 		exampleHousehold.BelongsToUser = exampleUserID
 		exampleHousehold.Members = []*types.HouseholdUserMembership(nil)
-		exampleInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
+		exampleInput := fakes.BuildFakeHouseholdDatabaseCreationInputFromHousehold(exampleHousehold)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -557,7 +557,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		exampleHousehold.ID = ""
 		exampleHousehold.BelongsToUser = exampleUserID
 		exampleHousehold.Members = []*types.HouseholdUserMembership(nil)
-		exampleCreationInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
+		exampleCreationInput := fakes.BuildFakeHouseholdDatabaseCreationInputFromHousehold(exampleHousehold)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -579,7 +579,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		exampleHousehold.ID = ""
 		exampleHousehold.BelongsToUser = exampleUserID
 		exampleHousehold.Members = []*types.HouseholdUserMembership{}
-		exampleInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
+		exampleInput := fakes.BuildFakeHouseholdDatabaseCreationInputFromHousehold(exampleHousehold)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -620,7 +620,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		exampleHousehold.ID = ""
 		exampleHousehold.BelongsToUser = exampleUserID
 		exampleHousehold.Members = []*types.HouseholdUserMembership(nil)
-		exampleInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
+		exampleInput := fakes.BuildFakeHouseholdDatabaseCreationInputFromHousehold(exampleHousehold)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -671,7 +671,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		exampleHousehold.ID = ""
 		exampleHousehold.BelongsToUser = exampleUserID
 		exampleHousehold.Members = []*types.HouseholdUserMembership(nil)
-		exampleInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
+		exampleInput := fakes.BuildFakeHouseholdDatabaseCreationInputFromHousehold(exampleHousehold)
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

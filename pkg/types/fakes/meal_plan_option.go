@@ -3,6 +3,7 @@ package fakes
 import (
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/segmentio/ksuid"
+	"math"
 
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -11,7 +12,7 @@ import (
 func BuildFakeMealPlanOption() *types.MealPlanOption {
 	return &types.MealPlanOption{
 		ID:                ksuid.New().String(),
-		DayOfWeek:         fake.Uint8() + 1,
+		DayOfWeek:         uint8(fake.Number(1, math.MaxUint8)),
 		RecipeID:          fake.LoremIpsumSentence(exampleQuantity),
 		Notes:             fake.LoremIpsumSentence(exampleQuantity),
 		CreatedOn:         uint64(uint32(fake.Date().Unix())),
@@ -30,8 +31,8 @@ func BuildFakeMealPlanOptionList() *types.MealPlanOptionList {
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
-			FilteredCount: exampleQuantity / 2,
-			TotalCount:    exampleQuantity,
+			FilteredCount: exampleQuantity,
+			TotalCount:    exampleQuantity * 2,
 		},
 		MealPlanOptions: examples,
 	}

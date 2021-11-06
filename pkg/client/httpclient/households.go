@@ -85,7 +85,7 @@ func (c *Client) GetHouseholds(ctx context.Context, filter *types.QueryFilter) (
 }
 
 // CreateHousehold creates a household.
-func (c *Client) CreateHousehold(ctx context.Context, input *types.HouseholdCreationInput) (*types.Household, error) {
+func (c *Client) CreateHousehold(ctx context.Context, input *types.HouseholdCreationRequestInput) (*types.Household, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -160,8 +160,8 @@ func (c *Client) ArchiveHousehold(ctx context.Context, householdID string) error
 	return nil
 }
 
-// AddUserToHousehold adds a user to a household.
-func (c *Client) AddUserToHousehold(ctx context.Context, input *types.AddUserToHouseholdInput) error {
+// InviteUserToHousehold adds a user to a household.
+func (c *Client) InviteUserToHousehold(ctx context.Context, input *types.AddUserToHouseholdInput) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -177,7 +177,7 @@ func (c *Client) AddUserToHousehold(ctx context.Context, input *types.AddUserToH
 		return observability.PrepareError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildAddUserRequest(ctx, input)
+	req, err := c.requestBuilder.BuildInviteUserToHouseholdRequest(ctx, input)
 	if err != nil {
 		return observability.PrepareError(err, logger, span, "building add user to household request")
 	}

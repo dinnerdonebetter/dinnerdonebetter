@@ -52,7 +52,7 @@ func (m *HouseholdDataManager) GetHouseholdsForAdmin(ctx context.Context, filter
 }
 
 // CreateHousehold is a mock function.
-func (m *HouseholdDataManager) CreateHousehold(ctx context.Context, input *types.HouseholdCreationInput) (*types.Household, error) {
+func (m *HouseholdDataManager) CreateHousehold(ctx context.Context, input *types.HouseholdDatabaseCreationInput) (*types.Household, error) {
 	args := m.Called(ctx, input)
 	return args.Get(0).(*types.Household), args.Error(1)
 }

@@ -31,7 +31,7 @@ func (s *TestSuite) TestHouseholds_Creating() {
 
 			// Create household.
 			exampleHousehold := fakes.BuildFakeHousehold()
-			exampleHouseholdInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
+			exampleHouseholdInput := fakes.BuildFakeHouseholdCreationRequestInputFromHousehold(exampleHousehold)
 			createdHousehold, err := testClients.main.CreateHousehold(ctx, exampleHouseholdInput)
 			requireNotNilAndNoProblems(t, createdHousehold, err)
 
@@ -57,7 +57,7 @@ func (s *TestSuite) TestHouseholds_Listing() {
 			for i := 0; i < 5; i++ {
 				// Create household.
 				exampleHousehold := fakes.BuildFakeHousehold()
-				exampleHouseholdInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
+				exampleHouseholdInput := fakes.BuildFakeHouseholdCreationRequestInputFromHousehold(exampleHousehold)
 				createdHousehold, householdCreationErr := testClients.main.CreateHousehold(ctx, exampleHouseholdInput)
 				requireNotNilAndNoProblems(t, createdHousehold, householdCreationErr)
 
@@ -108,7 +108,7 @@ func (s *TestSuite) TestHouseholds_Reading() {
 
 			// Create household.
 			exampleHousehold := fakes.BuildFakeHousehold()
-			exampleHouseholdInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
+			exampleHouseholdInput := fakes.BuildFakeHouseholdCreationRequestInputFromHousehold(exampleHousehold)
 			createdHousehold, err := testClients.main.CreateHousehold(ctx, exampleHouseholdInput)
 			requireNotNilAndNoProblems(t, createdHousehold, err)
 
@@ -159,7 +159,7 @@ func (s *TestSuite) TestHouseholds_Updating() {
 
 			// Create household.
 			exampleHousehold := fakes.BuildFakeHousehold()
-			exampleHouseholdInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
+			exampleHouseholdInput := fakes.BuildFakeHouseholdCreationRequestInputFromHousehold(exampleHousehold)
 			createdHousehold, err := testClients.main.CreateHousehold(ctx, exampleHouseholdInput)
 			requireNotNilAndNoProblems(t, createdHousehold, err)
 
@@ -204,7 +204,7 @@ func (s *TestSuite) TestHouseholds_Archiving() {
 
 			// Create household.
 			exampleHousehold := fakes.BuildFakeHousehold()
-			exampleHouseholdInput := fakes.BuildFakeHouseholdCreationInputFromHousehold(exampleHousehold)
+			exampleHouseholdInput := fakes.BuildFakeHouseholdCreationRequestInputFromHousehold(exampleHousehold)
 			createdHousehold, err := testClients.main.CreateHousehold(ctx, exampleHouseholdInput)
 			requireNotNilAndNoProblems(t, createdHousehold, err)
 
@@ -229,7 +229,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 			t.Logf("initial household is %s; initial user ID is %s", currentStatus.ActiveHousehold, s.user.ID)
 
 			// fetch household data
-			householdCreationInput := &types.HouseholdCreationInput{
+			householdCreationInput := &types.HouseholdCreationRequestInput{
 				Name: fakes.BuildFakeHousehold().Name,
 			}
 			household, householdCreationErr := testClients.main.CreateHousehold(ctx, householdCreationInput)
@@ -290,7 +290,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 			// add them to the household
 			for i := 0; i < userCount; i++ {
 				t.Logf("adding user %q to household %s", users[i].ID, household.ID)
-				require.NoError(t, testClients.main.AddUserToHousehold(ctx, &types.AddUserToHouseholdInput{
+				require.NoError(t, testClients.main.InviteUserToHousehold(ctx, &types.AddUserToHouseholdInput{
 					UserID:         users[i].ID,
 					HouseholdID:    household.ID,
 					Reason:         t.Name(),
@@ -361,7 +361,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 			t.Logf("initial household is %s; initial user ID is %s", currentStatus.ActiveHousehold, s.user.ID)
 
 			// fetch household data
-			householdCreationInput := &types.HouseholdCreationInput{
+			householdCreationInput := &types.HouseholdCreationRequestInput{
 				Name: fakes.BuildFakeHousehold().Name,
 			}
 			household, householdCreationErr := testClients.main.CreateHousehold(ctx, householdCreationInput)
@@ -419,7 +419,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 			// add them to the household
 			for i := 0; i < userCount; i++ {
 				t.Logf("adding user %q to household %s", users[i].ID, household.ID)
-				require.NoError(t, testClients.main.AddUserToHousehold(ctx, &types.AddUserToHouseholdInput{
+				require.NoError(t, testClients.main.InviteUserToHousehold(ctx, &types.AddUserToHouseholdInput{
 					UserID:         users[i].ID,
 					HouseholdID:    household.ID,
 					Reason:         t.Name(),
@@ -489,7 +489,7 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 			futureOwner, _, _, futureOwnerClient := createUserAndClientForTest(ctx, t)
 
 			// fetch household data
-			householdCreationInput := &types.HouseholdCreationInput{
+			householdCreationInput := &types.HouseholdCreationRequestInput{
 				Name: fakes.BuildFakeHousehold().Name,
 			}
 			household, householdCreationErr := testClients.main.CreateHousehold(ctx, householdCreationInput)
@@ -570,7 +570,7 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 			futureOwner, _, _, futureOwnerClient := createUserAndClientForTest(ctx, t)
 
 			// fetch household data
-			householdCreationInput := &types.HouseholdCreationInput{
+			householdCreationInput := &types.HouseholdCreationRequestInput{
 				Name: fakes.BuildFakeHousehold().Name,
 			}
 			household, householdCreationErr := testClients.main.CreateHousehold(ctx, householdCreationInput)

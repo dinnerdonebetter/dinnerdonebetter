@@ -163,7 +163,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		householdDataManager.On(
 			"CreateHousehold",
 			testutils.ContextMatcher,
-			mock.IsType(&types.HouseholdCreationInput{}),
+			mock.IsType(&types.HouseholdCreationRequestInput{}),
 		).Return(helper.exampleHousehold, nil)
 		helper.service.householdDataManager = householdDataManager
 
@@ -221,7 +221,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := &types.HouseholdCreationInput{}
+		exampleCreationInput := &types.HouseholdCreationRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -252,7 +252,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		householdDataManager.On(
 			"CreateHousehold",
 			testutils.ContextMatcher,
-			mock.IsType(&types.HouseholdCreationInput{}),
+			mock.IsType(&types.HouseholdCreationRequestInput{}),
 		).Return((*types.Household)(nil), errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
 
@@ -705,7 +705,7 @@ func TestHouseholdsService_AddMemberHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.preWritesPublisher = mockEventProducer
 
-		helper.service.AddMemberHandler(helper.res, helper.req)
+		helper.service.InviteMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
@@ -728,7 +728,7 @@ func TestHouseholdsService_AddMemberHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.AddMemberHandler(helper.res, helper.req)
+		helper.service.InviteMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
@@ -744,7 +744,7 @@ func TestHouseholdsService_AddMemberHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.AddMemberHandler(helper.res, helper.req)
+		helper.service.InviteMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 	})
@@ -763,7 +763,7 @@ func TestHouseholdsService_AddMemberHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.AddMemberHandler(helper.res, helper.req)
+		helper.service.InviteMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 	})
@@ -790,7 +790,7 @@ func TestHouseholdsService_AddMemberHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.preWritesPublisher = mockEventProducer
 
-		helper.service.AddMemberHandler(helper.res, helper.req)
+		helper.service.InviteMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 

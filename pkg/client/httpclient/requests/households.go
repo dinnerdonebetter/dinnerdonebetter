@@ -83,7 +83,7 @@ func (b *Builder) BuildGetHouseholdsRequest(ctx context.Context, filter *types.Q
 }
 
 // BuildCreateHouseholdRequest builds an HTTP request for creating a household.
-func (b *Builder) BuildCreateHouseholdRequest(ctx context.Context, input *types.HouseholdCreationInput) (*http.Request, error) {
+func (b *Builder) BuildCreateHouseholdRequest(ctx context.Context, input *types.HouseholdCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -150,8 +150,8 @@ func (b *Builder) BuildArchiveHouseholdRequest(ctx context.Context, householdID 
 	return req, nil
 }
 
-// BuildAddUserRequest builds a request that adds a user to a household.
-func (b *Builder) BuildAddUserRequest(ctx context.Context, input *types.AddUserToHouseholdInput) (*http.Request, error) {
+// BuildInviteUserToHouseholdRequest builds a request that adds a user to a household.
+func (b *Builder) BuildInviteUserToHouseholdRequest(ctx context.Context, input *types.AddUserToHouseholdInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -165,7 +165,7 @@ func (b *Builder) BuildAddUserRequest(ctx context.Context, input *types.AddUserT
 		return nil, observability.PrepareError(err, logger, span, "validating input")
 	}
 
-	uri := b.BuildURL(ctx, nil, householdsBasePath, input.HouseholdID, "member")
+	uri := b.BuildURL(ctx, nil, householdsBasePath, input.HouseholdID, "invite")
 	tracing.AttachRequestURIToSpan(span, uri)
 
 	return b.buildDataRequest(ctx, http.MethodPost, uri, input)

@@ -56,12 +56,14 @@ type (
 		Pagination
 	}
 
-	// UserRegistrationInput represents the input required from users to register a household.
+	// UserRegistrationInput represents the input required from users to register an account.
 	UserRegistrationInput struct {
 		_ struct{}
 
-		Username string `json:"username"`
-		Password string `json:"password"`
+		Username             string `json:"username"`
+		Password             string `json:"password"`
+		InvitationToken      string `json:"invitationToken"`
+		DestinationHousehold string `json:"destinationHousehold"`
 	}
 
 	// UserDataStoreCreationInput is used by the User creation route to communicate with the data store.

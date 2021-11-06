@@ -29,8 +29,8 @@ func BuildFakeRecipeStepProductList() *types.RecipeStepProductList {
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
-			FilteredCount: exampleQuantity / 2,
-			TotalCount:    exampleQuantity,
+			FilteredCount: exampleQuantity,
+			TotalCount:    exampleQuantity * 2,
 		},
 		RecipeStepProducts: examples,
 	}

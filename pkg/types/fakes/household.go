@@ -43,8 +43,8 @@ func BuildFakeHouseholdList() *types.HouseholdList {
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
-			FilteredCount: exampleQuantity / 2,
-			TotalCount:    exampleQuantity,
+			FilteredCount: exampleQuantity,
+			TotalCount:    exampleQuantity * 2,
 		},
 		Households: examples,
 	}
@@ -67,16 +67,27 @@ func BuildFakeHouseholdUpdateInputFromHousehold(household *types.Household) *typ
 	}
 }
 
-// BuildFakeHouseholdCreationInput builds a faked HouseholdCreationInput.
-func BuildFakeHouseholdCreationInput() *types.HouseholdCreationInput {
+// BuildFakeHouseholdCreationInput builds a faked HouseholdCreationRequestInput.
+func BuildFakeHouseholdCreationInput() *types.HouseholdCreationRequestInput {
 	household := BuildFakeHousehold()
-	return BuildFakeHouseholdCreationInputFromHousehold(household)
+	return BuildFakeHouseholdCreationRequestInputFromHousehold(household)
 }
 
-// BuildFakeHouseholdCreationInputFromHousehold builds a faked HouseholdCreationInput from a household.
-func BuildFakeHouseholdCreationInputFromHousehold(household *types.Household) *types.HouseholdCreationInput {
-	return &types.HouseholdCreationInput{
+// BuildFakeHouseholdCreationRequestInputFromHousehold builds a faked HouseholdCreationRequestInput from a household.
+func BuildFakeHouseholdCreationRequestInputFromHousehold(household *types.Household) *types.HouseholdCreationRequestInput {
+	return &types.HouseholdCreationRequestInput{
 		ID:            ksuid.New().String(),
+		Name:          household.Name,
+		ContactEmail:  household.ContactEmail,
+		ContactPhone:  household.ContactPhone,
+		BelongsToUser: household.BelongsToUser,
+	}
+}
+
+// BuildFakeHouseholdDatabaseCreationInputFromHousehold builds a faked HouseholdCreationRequestInput.
+func BuildFakeHouseholdDatabaseCreationInputFromHousehold(household *types.Household) *types.HouseholdDatabaseCreationInput {
+	return &types.HouseholdDatabaseCreationInput{
+		ID:            household.ID,
 		Name:          household.Name,
 		ContactEmail:  household.ContactEmail,
 		ContactPhone:  household.ContactPhone,

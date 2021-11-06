@@ -357,7 +357,7 @@ const addUserToHouseholdDuringCreationQuery = `
 `
 
 // CreateHousehold creates a household in the database.
-func (q *SQLQuerier) CreateHousehold(ctx context.Context, input *types.HouseholdCreationInput) (*types.Household, error) {
+func (q *SQLQuerier) CreateHousehold(ctx context.Context, input *types.HouseholdDatabaseCreationInput) (*types.Household, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

@@ -8,8 +8,11 @@ import (
 )
 
 const (
-	// PendingHouseholdBillingStatus indicates a household invitation is pending.
-	PendingHouseholdBillingStatus HouseholdInvitationStatus = "pending"
+	// HouseholdInvitationDataType indicates an event is related to a household invitation.
+	HouseholdInvitationDataType dataType = "household_invitation"
+
+	// PendingHouseholdInvitationStatus indicates a household invitation is pending.
+	PendingHouseholdInvitationStatus HouseholdInvitationStatus = "pending"
 	// AcceptedHouseholdInvitationStatus indicates a household invitation was accepted.
 	AcceptedHouseholdInvitationStatus HouseholdInvitationStatus = "accepted"
 	// RejectedHouseholdInvitationStatus indicates a household invitation was rejected.
@@ -17,16 +20,44 @@ const (
 )
 
 type (
-	// HouseholdInvitationStatus is the type to use/compare against when checking billing status.
+	// HouseholdInvitationStatus is the type to use/compare against when checking invitation status.
 	HouseholdInvitationStatus string
 
-	// HouseholdInvitation represents a household.
+	// HouseholdInvitationCreationRequestInput represents what a User could set as input for creating household invitations.
+	HouseholdInvitationCreationRequestInput struct {
+		_ struct{}
+
+		ID                   string `json:"-"`
+		FromUser             string `json:"fromUser"`
+		Note                 string `json:"note"`
+		ToEmail              string `json:"toEmail"`
+		DestinationHousehold string `json:"destinationHousehold"`
+	}
+
+	// HouseholdInvitationDatabaseCreationInput represents what a User could set as input for creating household invitations.
+	HouseholdInvitationDatabaseCreationInput struct {
+		_ struct{}
+
+		ID                   string  `json:"-"`
+		FromUser             string  `json:"fromUser"`
+		ToUser               *string `json:"toUser"`
+		Note                 string  `json:"note"`
+		ToEmail              string  `json:"toEmail"`
+		Token                string  `json:"token"`
+		DestinationHousehold string  `json:"destinationHousehold"`
+	}
+
+	// HouseholdInvitation represents a household invitation.
 	HouseholdInvitation struct {
-		_                    struct{}
+		_ struct{}
+
 		LastUpdatedOn        *uint64                   `json:"lastUpdatedOn"`
 		ArchivedOn           *uint64                   `json:"archivedOn"`
 		FromUser             string                    `json:"fromUser"`
-		ToUser               string                    `json:"toUser"`
+		ToEmail              string                    `json:"toEmail"`
+		ToUser               *string                   `json:"toUser"`
+		Note                 string                    `json:"note"`
+		Token                string                    `json:"token"`
 		DestinationHousehold string                    `json:"destinationHousehold"`
 		ID                   string                    `json:"id"`
 		Status               HouseholdInvitationStatus `json:"status"`
@@ -37,47 +68,56 @@ type (
 	HouseholdInvitationList struct {
 		_ struct{}
 
-		HouseholdInvitations []*HouseholdInvitation `json:"households"`
+		HouseholdInvitations []*HouseholdInvitation `json:"householdInvitations"`
 		Pagination
 	}
 
-	// HouseholdInvitationCreationInput represents what a User could set as input for creating households.
-	HouseholdInvitationCreationInput struct {
-		_ struct{}
-
-		ID                   string                    `json:"-"`
-		Status               HouseholdInvitationStatus `json:"status"`
-		FromUser             string                    `json:"fromUser"`
-		ToUser               string                    `json:"toUser"`
-		DestinationHousehold string                    `json:"destinationHousehold"`
-		BelongsToUser        string                    `json:"-"`
-	}
-
-	// HouseholdInvitationDataManager describes a structure capable of storing households permanently.
+	// HouseholdInvitationDataManager describes a structure capable of storing household invitations permanently.
 	HouseholdInvitationDataManager interface {
-		GetHouseholdInvitation(ctx context.Context, householdID, userID string) (*HouseholdInvitation, error)
+		HouseholdInvitationExists(ctx context.Context, householdID, householdInvitationID string) (bool, error)
+		GetHouseholdInvitation(ctx context.Context, householdID, householdInvitationID string) (*HouseholdInvitation, error)
 		GetAllHouseholdInvitationsCount(ctx context.Context) (uint64, error)
-		GetHouseholdInvitations(ctx context.Context, userID string, filter *QueryFilter) (*HouseholdInvitationList, error)
-		CreateHouseholdInvitation(ctx context.Context, input *HouseholdInvitationCreationInput) (*HouseholdInvitation, error)
-		ArchiveHouseholdInvitation(ctx context.Context, householdID string, userID string) error
+		GetSentPendingHouseholdInvitations(ctx context.Context, userID string, filter *QueryFilter) ([]*HouseholdInvitation, error)
+		GetReceivedPendingHouseholdInvitations(ctx context.Context, userID string, filter *QueryFilter) ([]*HouseholdInvitation, error)
+		CreateHouseholdInvitation(ctx context.Context, input *HouseholdInvitationDatabaseCreationInput) (*HouseholdInvitation, error)
+		CancelHouseholdInvitation(ctx context.Context, invitationID string) error
+		AcceptHouseholdInvitation(ctx context.Context, invitationID string) error
+		RejectHouseholdInvitation(ctx context.Context, invitationID string) error
 	}
 
-	// HouseholdInvitationDataService describes a structure capable of serving traffic related to households.
+	// HouseholdInvitationDataService describes a structure capable of serving traffic related to household invitations.
 	HouseholdInvitationDataService interface {
-		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
 		ReadHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
+		InboundInvitesHandler(res http.ResponseWriter, req *http.Request)
+		OutboundInvitesHandler(res http.ResponseWriter, req *http.Request)
+		CancelInviteHandler(res http.ResponseWriter, req *http.Request)
+		AcceptInviteHandler(res http.ResponseWriter, req *http.Request)
+		RejectInviteHandler(res http.ResponseWriter, req *http.Request)
+		LeaveHouseholdHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 
-var _ validation.ValidatableWithContext = (*HouseholdInvitationCreationInput)(nil)
+var _ validation.ValidatableWithContext = (*HouseholdInvitationCreationRequestInput)(nil)
 
-// ValidateWithContext validates a HouseholdCreationInput.
-func (x *HouseholdInvitationCreationInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a HouseholdCreationRequestInput.
+func (x *HouseholdInvitationCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, x,
-		validation.Field(&x.ToUser, validation.Required),
+		validation.Field(&x.ToEmail, validation.Required),
 		validation.Field(&x.FromUser, validation.Required),
 		validation.Field(&x.DestinationHousehold, validation.Required),
 	)
+}
+
+// HouseholdInvitationDatabaseCreationInputFromHouseholdInvitationCreationInput creates a DatabaseCreationInput from a CreationInput.
+func HouseholdInvitationDatabaseCreationInputFromHouseholdInvitationCreationInput(input *HouseholdInvitationCreationRequestInput) *HouseholdInvitationDatabaseCreationInput {
+	x := &HouseholdInvitationDatabaseCreationInput{
+		ID:                   input.ID,
+		FromUser:             input.FromUser,
+		ToEmail:              input.ToEmail,
+		DestinationHousehold: input.DestinationHousehold,
+	}
+
+	return x
 }
