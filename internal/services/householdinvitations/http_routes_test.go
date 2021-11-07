@@ -27,8 +27,8 @@ func TestHouseholdInvitationsService_ReadHandler(T *testing.T) {
 		wd.On(
 			"GetHouseholdInvitationByHouseholdAndID",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.ID,
 			helper.exampleHousehold.ID,
+			helper.exampleHouseholdInvitation.ID,
 		).Return(helper.exampleHouseholdInvitation, nil)
 		helper.service.householdInvitationDataManager = wd
 
@@ -67,8 +67,8 @@ func TestHouseholdInvitationsService_ReadHandler(T *testing.T) {
 		wd.On(
 			"GetHouseholdInvitationByHouseholdAndID",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.ID,
 			helper.exampleHousehold.ID,
+			helper.exampleHouseholdInvitation.ID,
 		).Return((*types.HouseholdInvitation)(nil), sql.ErrNoRows)
 		helper.service.householdInvitationDataManager = wd
 
@@ -95,8 +95,8 @@ func TestHouseholdInvitationsService_ReadHandler(T *testing.T) {
 		wd.On(
 			"GetHouseholdInvitationByHouseholdAndID",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.ID,
 			helper.exampleHousehold.ID,
+			helper.exampleHouseholdInvitation.ID,
 		).Return((*types.HouseholdInvitation)(nil), errors.New("blah"))
 		helper.service.householdInvitationDataManager = wd
 

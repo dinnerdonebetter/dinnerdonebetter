@@ -128,3 +128,14 @@ func HouseholdInvitationDatabaseCreationInputFromHouseholdInvitationCreationInpu
 
 	return x
 }
+
+var _ validation.ValidatableWithContext = (*HouseholdInvitationUpdateRequestInput)(nil)
+
+// ValidateWithContext validates a RecipeCreationRequestInput.
+func (x *HouseholdInvitationUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(
+		ctx,
+		x,
+		// no real validation happening here yet
+	)
+}
