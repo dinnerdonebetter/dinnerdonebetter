@@ -12,7 +12,7 @@ jobs:
           chmod 755 ./opa
       - name: Test
         run: |
-          ./opa test --policy docker_security.rego `find . -type f -name "*.Dockerfile"`
+          ./opa test docker_security.rego `find . -type f -name "*.Dockerfile"`
   formatting:
     runs-on: ubuntu-latest
     steps:
