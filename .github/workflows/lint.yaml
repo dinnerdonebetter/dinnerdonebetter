@@ -1,6 +1,29 @@
 on: [pull_request]
 name: Lint
 jobs:
+  opa:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Download OPA Binary
+        run: |
+          curl -L -o opa https://openpolicyagent.org/downloads/latest/opa_linux_amd64
+          chmod 755 ./opa
+      - name: Test
+        run: |
+          ./opa test --policy docker_security.rego `find . -type f -name "*.Dockerfile"`
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: check formatting
+        run: if [ $(gofmt -l . | grep -Ev '^vendor\/' | head -c1 | wc -c) -ne 0 ]; then exit 1; fi
   lint:
     runs-on: ubuntu-latest
     steps:
