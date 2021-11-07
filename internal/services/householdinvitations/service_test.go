@@ -13,6 +13,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
+	householdsservice "github.com/prixfixeco/api_server/internal/services/households"
 	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
 )
 
@@ -35,6 +36,10 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
+			householdsservice.HouseholdIDURIParamKey,
+		).Return(func(*http.Request) string { return "" })
+		rpm.On(
+			"BuildRouteParamStringIDFetcher",
 			HouseholdInvitationIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
@@ -50,6 +55,7 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 		actual, err := ProvideHouseholdInvitationsService(
 			logging.NewNoopLogger(),
 			cfg,
+			&mocktypes.UserDataManager{},
 			&mocktypes.HouseholdInvitationDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
@@ -76,6 +82,7 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 		actual, err := ProvideHouseholdInvitationsService(
 			logging.NewNoopLogger(),
 			cfg,
+			&mocktypes.UserDataManager{},
 			&mocktypes.HouseholdInvitationDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
@@ -103,6 +110,7 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 		actual, err := ProvideHouseholdInvitationsService(
 			logging.NewNoopLogger(),
 			cfg,
+			&mocktypes.UserDataManager{},
 			&mocktypes.HouseholdInvitationDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,

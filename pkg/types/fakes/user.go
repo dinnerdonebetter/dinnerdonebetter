@@ -17,8 +17,9 @@ import (
 // BuildFakeUser builds a faked User.
 func BuildFakeUser() *types.User {
 	return &types.User{
-		ID:       ksuid.New().String(),
-		Username: fake.Password(true, true, true, false, false, 32),
+		ID:           ksuid.New().String(),
+		EmailAddress: fake.Email(),
+		Username:     fake.Password(true, true, true, false, false, 32),
 		// HashedPassword: "",
 		// Salt:           []byte(fakes.LoremIpsumSentence(exampleQuantity)),
 		ServiceHouseholdStatus:    types.GoodStandingHouseholdStatus,
@@ -49,8 +50,8 @@ func BuildFakeUserList() *types.UserList {
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
-			FilteredCount: exampleQuantity,
-			TotalCount:    exampleQuantity * 2,
+			FilteredCount: exampleQuantity / 2,
+			TotalCount:    exampleQuantity,
 		},
 		Users: examples,
 	}
@@ -78,6 +79,7 @@ func BuildFakeUserRegistrationInputFromUser(user *types.User) *types.UserRegistr
 func BuildFakeUserDataStoreCreationInputFromUser(user *types.User) *types.UserDataStoreCreationInput {
 	return &types.UserDataStoreCreationInput{
 		ID:              user.ID,
+		EmailAddress:    user.EmailAddress,
 		Username:        user.Username,
 		HashedPassword:  user.HashedPassword,
 		TwoFactorSecret: user.TwoFactorSecret,

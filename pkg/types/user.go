@@ -39,6 +39,7 @@ type (
 		AvatarSrc                 *string         `json:"avatar"`
 		ServiceHouseholdStatus    householdStatus `json:"reputation"`
 		ReputationExplanation     string          `json:"reputationExplanation"`
+		EmailAddress              string          `json:"emailAddress"`
 		Username                  string          `json:"username"`
 		TwoFactorSecret           string          `json:"-"`
 		HashedPassword            string          `json:"-"`
@@ -62,8 +63,9 @@ type (
 
 		Username             string `json:"username"`
 		Password             string `json:"password"`
-		InvitationToken      string `json:"invitationToken"`
-		DestinationHousehold string `json:"destinationHousehold"`
+		EmailAddress         string `json:"emailAddress"`
+		InvitationToken      string `json:"invitationToken,omitempty"`
+		DestinationHousehold string `json:"destinationHousehold,omitempty"`
 	}
 
 	// UserDataStoreCreationInput is used by the User creation route to communicate with the data store.
@@ -72,6 +74,7 @@ type (
 
 		ID              string `json:"-"`
 		Username        string `json:"-"`
+		EmailAddress    string `json:"emailAddress"`
 		HashedPassword  string `json:"-"`
 		TwoFactorSecret string `json:"-"`
 	}
@@ -82,6 +85,7 @@ type (
 
 		ID              string          `json:"id"`
 		Username        string          `json:"username"`
+		EmailAddress    string          `json:"emailAddress"`
 		HouseholdStatus householdStatus `json:"householdStatus"`
 		TwoFactorSecret string          `json:"twoFactorSecret"`
 		TwoFactorQRCode string          `json:"qrCode"`
@@ -143,6 +147,7 @@ type (
 		UserHasStatus(ctx context.Context, userID string, statuses ...string) (bool, error)
 		GetUser(ctx context.Context, userID string) (*User, error)
 		GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, userID string) (*User, error)
+		GetUserIDByEmail(ctx context.Context, email string) (string, error)
 		MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID string) error
 		GetUserByUsername(ctx context.Context, username string) (*User, error)
 		SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*User, error)

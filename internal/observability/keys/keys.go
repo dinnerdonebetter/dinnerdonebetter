@@ -11,10 +11,14 @@ const (
 	HouseholdIDKey = "household.id"
 	// HouseholdInvitationIDKey is the standard key for referring to a household ID.
 	HouseholdInvitationIDKey = "household_invitation.id"
+	// HouseholdInvitationTokenKey is the standard key for referring to a household ID.
+	HouseholdInvitationTokenKey = "household_invitation.token"
 	// ActiveHouseholdIDKey is the standard key for referring to an active household ID.
 	ActiveHouseholdIDKey = "active_household_id"
 	// UserIDKey is the standard key for referring to a user ID.
 	UserIDKey = "user.id"
+	// UserEmailAddressKey is the standard key for referring to a user's email address.
+	UserEmailAddressKey = "user.email_address"
 	// UserIsServiceAdminKey is the standard key for referring to a user's admin status.
 	UserIsServiceAdminKey = "user.is_admin"
 	// UsernameKey is the standard key for referring to a username.

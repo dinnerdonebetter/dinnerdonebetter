@@ -80,7 +80,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	// check session context data for parsed input struct.
+	// read parsed input struct from request body.
 	providedInput := new(types.HouseholdCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
@@ -271,129 +271,6 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	res.WriteHeader(http.StatusNoContent)
 }
 
-// AddMemberHandler is our household creation route.
-func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-	tracing.AttachRequestToSpan(span, req)
-
-	// determine user ID.
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
-		return
-	}
-
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = sessionCtxData.AttachToLogger(logger)
-
-	// check session context data for parsed input struct.
-	input := new(types.AddUserToHouseholdInput)
-	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
-		observability.AcknowledgeError(err, logger, span, "decoding request body")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
-		return
-	}
-	input.ID = ksuid.New().String()
-	input.HouseholdRoles = []string{}
-
-	if err = input.ValidateWithContext(ctx); err != nil {
-		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	requester := sessionCtxData.Requester.UserID
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = logger.WithValue(keys.RequesterIDKey, requester)
-
-	householdID := s.householdIDFetcher(req)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-
-	preWrite := &types.PreWriteMessage{
-		DataType:                  types.UserMembershipDataType,
-		UserMembership:            input,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: householdID,
-	}
-	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing household write message")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
-	}
-
-	pwr := types.PreWriteResponse{ID: input.ID}
-
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusAccepted)
-}
-
-func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-	tracing.AttachRequestToSpan(span, req)
-
-	// determine user ID.
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
-		return
-	}
-
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = sessionCtxData.AttachToLogger(logger)
-
-	//
-}
-
-func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-	tracing.AttachRequestToSpan(span, req)
-
-	// determine user ID.
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
-		return
-	}
-
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = sessionCtxData.AttachToLogger(logger)
-
-	//
-}
-
-func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-	tracing.AttachRequestToSpan(span, req)
-
-	// determine user ID.
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
-		return
-	}
-
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = sessionCtxData.AttachToLogger(logger)
-
-	//
-}
-
 func (s *service) LeaveHouseholdHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -412,7 +289,7 @@ func (s *service) LeaveHouseholdHandler(res http.ResponseWriter, req *http.Reque
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	//
+	logger.Debug("not used lol")
 }
 
 // ModifyMemberPermissionsHandler is our household creation route.
@@ -434,7 +311,7 @@ func (s *service) ModifyMemberPermissionsHandler(res http.ResponseWriter, req *h
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	// check session context data for parsed input struct.
+	// read parsed input struct from request body.
 	input := new(types.ModifyUserPermissionsInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
@@ -489,7 +366,7 @@ func (s *service) TransferHouseholdOwnershipHandler(res http.ResponseWriter, req
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	// check session context data for parsed input struct.
+	// read parsed input struct from request body.
 	input := new(types.HouseholdOwnershipTransferInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
@@ -529,7 +406,7 @@ func (s *service) RemoveMemberHandler(res http.ResponseWriter, req *http.Request
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
-	// check session context data for parsed input struct.
+	// read parsed input struct from request body.
 	reason := req.URL.Query().Get("reason")
 	logger = logger.WithValue(keys.ReasonKey, reason)
 

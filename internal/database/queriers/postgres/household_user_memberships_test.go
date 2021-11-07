@@ -734,7 +734,7 @@ func TestQuerier_AddUserToHousehold(T *testing.T) {
 		exampleHouseholdUserMembership := fakes.BuildFakeHouseholdUserMembership()
 		exampleHouseholdUserMembership.BelongsToHousehold = exampleHousehold.ID
 
-		exampleInput := &types.AddUserToHouseholdInput{
+		exampleInput := &types.HouseholdUserMembershipDatabaseCreationInput{
 			Reason:         t.Name(),
 			HouseholdID:    exampleHousehold.ID,
 			UserID:         exampleHousehold.BelongsToUser,
@@ -780,7 +780,7 @@ func TestQuerier_AddUserToHousehold(T *testing.T) {
 		exampleHouseholdUserMembership := fakes.BuildFakeHouseholdUserMembership()
 		exampleHouseholdUserMembership.BelongsToHousehold = exampleHousehold.ID
 
-		exampleInput := &types.AddUserToHouseholdInput{
+		exampleInput := &types.HouseholdUserMembershipDatabaseCreationInput{
 			Reason:         t.Name(),
 			HouseholdID:    exampleHousehold.ID,
 			UserID:         exampleHousehold.BelongsToUser,

@@ -488,7 +488,6 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleHousehold.BillingStatus = types.UnpaidHouseholdBillingStatus
 		exampleHousehold.PaymentProcessorCustomerID = ""
-		exampleHousehold.ID = ""
 		exampleHousehold.BelongsToUser = exampleUserID
 		exampleHousehold.Members = []*types.HouseholdUserMembership(nil)
 		exampleInput := fakes.BuildFakeHouseholdDatabaseCreationInputFromHousehold(exampleHousehold)
@@ -531,7 +530,6 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		actual, err := c.CreateHousehold(ctx, exampleInput)
 		assert.NoError(t, err)
 		assert.NotEmpty(t, actual.ID)
-		actual.ID = ""
 
 		assert.Equal(t, exampleHousehold, actual)
 
@@ -617,7 +615,6 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 
 		exampleUserID := fakes.BuildFakeID()
 		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.ID = ""
 		exampleHousehold.BelongsToUser = exampleUserID
 		exampleHousehold.Members = []*types.HouseholdUserMembership(nil)
 		exampleInput := fakes.BuildFakeHouseholdDatabaseCreationInputFromHousehold(exampleHousehold)
@@ -668,7 +665,6 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 
 		exampleUserID := fakes.BuildFakeID()
 		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.ID = ""
 		exampleHousehold.BelongsToUser = exampleUserID
 		exampleHousehold.Members = []*types.HouseholdUserMembership(nil)
 		exampleInput := fakes.BuildFakeHouseholdDatabaseCreationInputFromHousehold(exampleHousehold)

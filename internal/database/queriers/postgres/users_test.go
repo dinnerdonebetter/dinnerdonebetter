@@ -32,6 +32,7 @@ func buildMockRowsFromUsers(includeCounts bool, filteredCount uint64, users ...*
 		rowValues := []driver.Value{
 			user.ID,
 			user.Username,
+			user.EmailAddress,
 			user.AvatarSrc,
 			user.HashedPassword,
 			user.RequiresPasswordChange,
@@ -337,6 +338,30 @@ func TestQuerier_GetUserWithUnverifiedTwoFactorSecret(T *testing.T) {
 		actual, err := c.GetUserWithUnverifiedTwoFactorSecret(ctx, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
+	})
+}
+
+func TestQuerier_GetUserIDByEmail(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleUser := fakes.BuildFakeUser()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{exampleUser.EmailAddress}
+		db.ExpectQuery(formatQueryForSQLMock(getUserByEmailQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(newDatabaseIDResponse(exampleUser.ID))
+
+		actual, err := c.GetUserIDByEmail(ctx, exampleUser.EmailAddress)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleUser.ID, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
@@ -1008,6 +1033,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		userCreationArgs := []interface{}{
 			exampleUserCreationInput.ID,
 			exampleUserCreationInput.Username,
+			exampleUserCreationInput.EmailAddress,
 			exampleUserCreationInput.HashedPassword,
 			exampleUserCreationInput.TwoFactorSecret,
 			types.UnverifiedHouseholdStatus,

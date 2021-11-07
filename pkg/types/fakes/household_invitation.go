@@ -2,6 +2,7 @@ package fakes
 
 import (
 	fake "github.com/brianvoe/gofakeit/v5"
+
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
@@ -12,6 +13,7 @@ func BuildFakeHouseholdInvitation() *types.HouseholdInvitation {
 		ToEmail:              fake.LoremIpsumSentence(exampleQuantity),
 		ToUser:               func(s string) *string { return &s }(fake.LoremIpsumSentence(exampleQuantity)),
 		Note:                 fake.LoremIpsumSentence(exampleQuantity),
+		StatusNote:           fake.LoremIpsumSentence(exampleQuantity),
 		Token:                fake.UUID(),
 		DestinationHousehold: fake.LoremIpsumSentence(exampleQuantity),
 		ID:                   fake.LoremIpsumSentence(exampleQuantity),
@@ -31,8 +33,8 @@ func BuildFakeHouseholdInvitationList() *types.HouseholdInvitationList {
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
-			FilteredCount: exampleQuantity,
-			TotalCount:    exampleQuantity * 2,
+			FilteredCount: exampleQuantity / 2,
+			TotalCount:    exampleQuantity,
 		},
 		HouseholdInvitations: examples,
 	}

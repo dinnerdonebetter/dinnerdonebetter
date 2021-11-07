@@ -2,15 +2,16 @@ package householdinvitations
 
 import (
 	"fmt"
-	householdsservice "github.com/prixfixeco/api_server/internal/services/households"
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/random"
 	"github.com/prixfixeco/api_server/internal/routing"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
+	householdsservice "github.com/prixfixeco/api_server/internal/services/households"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
@@ -26,9 +27,11 @@ type (
 	// service handles webhooks.
 	service struct {
 		logger                         logging.Logger
+		userDataManager                types.UserDataManager
 		householdInvitationDataManager types.HouseholdInvitationDataManager
 		tracer                         tracing.Tracer
 		encoderDecoder                 encoding.ServerEncoderDecoder
+		secretGenerator                random.Generator
 		preWritesPublisher             publishers.Publisher
 		preArchivesPublisher           publishers.Publisher
 		householdIDFetcher             func(*http.Request) string
@@ -41,6 +44,7 @@ type (
 func ProvideHouseholdInvitationsService(
 	logger logging.Logger,
 	cfg *Config,
+	userDataManager types.UserDataManager,
 	householdInvitationDataManager types.HouseholdInvitationDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
@@ -58,9 +62,11 @@ func ProvideHouseholdInvitationsService(
 
 	s := &service{
 		logger:                         logging.EnsureLogger(logger).WithName(serviceName),
+		userDataManager:                userDataManager,
 		householdInvitationDataManager: householdInvitationDataManager,
 		encoderDecoder:                 encoder,
 		preWritesPublisher:             preWritesPublisher,
+		secretGenerator:                random.NewGenerator(logger),
 		preArchivesPublisher:           preArchivesPublisher,
 		sessionContextDataFetcher:      authservice.FetchContextFromRequest,
 		householdIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(householdsservice.HouseholdIDURIParamKey),

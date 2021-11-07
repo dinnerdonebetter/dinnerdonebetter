@@ -34,7 +34,7 @@ func (s *service) UserReputationChangeHandler(res http.ResponseWriter, req *http
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	// check session context data for parsed input struct.
+	// read parsed input struct from request body.
 	input := new(types.UserReputationUpdateInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")

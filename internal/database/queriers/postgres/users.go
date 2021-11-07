@@ -24,6 +24,7 @@ var (
 	usersTableColumns = []string{
 		"users.id",
 		"users.username",
+		"users.email_address",
 		"users.avatar_src",
 		"users.hashed_password",
 		"users.requires_password_change",
@@ -57,6 +58,7 @@ func (q *SQLQuerier) scanUser(ctx context.Context, scan database.Scanner, includ
 	targetVars := []interface{}{
 		&user.ID,
 		&user.Username,
+		&user.EmailAddress,
 		&user.AvatarSrc,
 		&user.HashedPassword,
 		&user.RequiresPasswordChange,
@@ -121,6 +123,7 @@ const getUserQuery = `
 	SELECT
 		users.id,
 		users.username,
+		users.email_address,
 		users.avatar_src,
 		users.hashed_password,
 		users.requires_password_change,
@@ -143,6 +146,7 @@ const getUserWithUnverifiedTwoFactorQuery = `
 	SELECT
 		users.id,
 		users.username,
+		users.email_address,
 		users.avatar_src,
 		users.hashed_password,
 		users.requires_password_change,
@@ -331,6 +335,7 @@ const getUserByUsernameQuery = `
 	SELECT
 		users.id,
 		users.username,
+		users.email_address,
 		users.avatar_src,
 		users.hashed_password,
 		users.requires_password_change,
@@ -377,8 +382,41 @@ func (q *SQLQuerier) GetUserByUsername(ctx context.Context, username string) (*t
 	return u, nil
 }
 
+const getUserByEmailQuery = `
+	SELECT
+		users.id
+	FROM users
+	WHERE users.archived_on IS NULL
+	AND users.email_address = $1
+	AND users.two_factor_secret_verified_on IS NOT NULL
+`
+
+// GetUserIDByEmail fetches a user by their email.
+func (q *SQLQuerier) GetUserIDByEmail(ctx context.Context, email string) (string, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if email == "" {
+		return "", ErrEmptyInputProvided
+	}
+
+	tracing.AttachEmailAddressToSpan(span, email)
+	logger := q.logger.WithValue(keys.UserEmailAddressKey, email)
+
+	args := []interface{}{email}
+
+	row := q.getOneRow(ctx, q.db, "user", getUserByEmailQuery, args)
+
+	var userID string
+	if err := row.Scan(&userID); err != nil {
+		return "", observability.PrepareError(err, logger, span, "scanning user ID")
+	}
+
+	return userID, nil
+}
+
 const searchForUserByUsernameQuery = `
-	SELECT users.id, users.username, users.avatar_src, users.hashed_password, users.requires_password_change, users.password_last_changed_on, users.two_factor_secret, users.two_factor_secret_verified_on, users.service_roles, users.reputation, users.reputation_explanation, users.created_on, users.last_updated_on, users.archived_on FROM users WHERE users.username ILIKE $1 AND users.archived_on IS NULL AND users.two_factor_secret_verified_on IS NOT NULL
+	SELECT users.id, users.username, users.email_address, users.avatar_src, users.hashed_password, users.requires_password_change, users.password_last_changed_on, users.two_factor_secret, users.two_factor_secret_verified_on, users.service_roles, users.reputation, users.reputation_explanation, users.created_on, users.last_updated_on, users.archived_on FROM users WHERE users.username ILIKE $1 AND users.archived_on IS NULL AND users.two_factor_secret_verified_on IS NOT NULL
 `
 
 // SearchForUsersByUsername fetches a list of users whose usernames begin with a given query.
@@ -460,7 +498,7 @@ func (q *SQLQuerier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x
 }
 
 const userCreationQuery = `
-	INSERT INTO users (id,username,hashed_password,two_factor_secret,reputation,service_roles) VALUES ($1,$2,$3,$4,$5,$6)
+	INSERT INTO users (id,username,email_address,hashed_password,two_factor_secret,reputation,service_roles) VALUES ($1,$2,$3,$4,$5,$6,$7)
 `
 
 // CreateUser creates a user.
@@ -478,6 +516,7 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDataStoreC
 	userCreationArgs := []interface{}{
 		input.ID,
 		input.Username,
+		input.EmailAddress,
 		input.HashedPassword,
 		input.TwoFactorSecret,
 		types.UnverifiedHouseholdStatus,
@@ -487,6 +526,7 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDataStoreC
 	user := &types.User{
 		ID:              input.ID,
 		Username:        input.Username,
+		EmailAddress:    input.EmailAddress,
 		HashedPassword:  input.HashedPassword,
 		TwoFactorSecret: input.TwoFactorSecret,
 		ServiceRoles:    []string{authorization.ServiceUserRole.String()},

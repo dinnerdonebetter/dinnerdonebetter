@@ -391,7 +391,7 @@ const addUserToHouseholdQuery = `
 `
 
 // AddUserToHousehold does a thing.
-func (q *SQLQuerier) AddUserToHousehold(ctx context.Context, input *types.AddUserToHouseholdInput) error {
+func (q *SQLQuerier) AddUserToHousehold(ctx context.Context, input *types.HouseholdUserMembershipDatabaseCreationInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

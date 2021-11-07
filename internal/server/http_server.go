@@ -31,6 +31,7 @@ type (
 	HTTPServer struct {
 		authService                        types.AuthService
 		householdsService                  types.HouseholdDataService
+		householdInvitationsService        types.HouseholdInvitationDataService
 		usersService                       types.UserDataService
 		adminService                       types.AdminService
 		apiClientsService                  types.APIClientDataService
@@ -66,6 +67,7 @@ func ProvideHTTPServer(
 	authService types.AuthService,
 	usersService types.UserDataService,
 	householdsService types.HouseholdDataService,
+	householdInvitationsService types.HouseholdInvitationDataService,
 	apiClientsService types.APIClientDataService,
 	websocketsService types.WebsocketDataService,
 	validInstrumentsService types.ValidInstrumentDataService,
@@ -101,6 +103,7 @@ func ProvideHTTPServer(
 		webhooksService:                    webhooksService,
 		usersService:                       usersService,
 		householdsService:                  householdsService,
+		householdInvitationsService:        householdInvitationsService,
 		authService:                        authService,
 		websocketsService:                  websocketsService,
 		validInstrumentsService:            validInstrumentsService,

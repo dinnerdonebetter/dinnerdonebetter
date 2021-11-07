@@ -443,6 +443,24 @@ func (w *PreWritesWorker) HandleMessage(ctx context.Context, message []byte) err
 				return observability.PrepareError(err, logger, span, "publishing data change message")
 			}
 		}
+	case types.HouseholdInvitationDataType:
+		householdInvitation, err := w.dataManager.CreateHouseholdInvitation(ctx, msg.HouseholdInvitation)
+		if err != nil {
+			return observability.PrepareError(err, logger, span, "creating user membership")
+		}
+
+		if w.postWritesPublisher != nil {
+			dcm := &types.DataChangeMessage{
+				DataType:                  msg.DataType,
+				MessageType:               "userMembershipCreated",
+				HouseholdInvitation:       householdInvitation,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
+			}
+			if err = w.postWritesPublisher.Publish(ctx, dcm); err != nil {
+				return observability.PrepareError(err, logger, span, "publishing data change message")
+			}
+		}
 	case types.UserMembershipDataType:
 		if err := w.dataManager.AddUserToHousehold(ctx, msg.UserMembership); err != nil {
 			return observability.PrepareError(err, logger, span, "creating user membership")

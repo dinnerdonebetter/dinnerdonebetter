@@ -14,12 +14,14 @@ import (
 )
 
 const (
-	// HouseholdInvitationIDURIParamKey is a standard string that we'll use to refer to webhook IDs with.
+	// HouseholdInvitationIDURIParamKey is a standard string that we'll use to refer to household invitation IDs with.
 	HouseholdInvitationIDURIParamKey = "householdInvitationID"
 )
 
-// CreateHandler is our webhook creation route.
-func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+var _ types.HouseholdInvitationDataService = (*service)(nil)
+
+// InviteMemberHandler is our household creation route.
+func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -29,7 +31,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "fetching session context data")
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
 		return
 	}
@@ -37,41 +39,70 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
+	requester := sessionCtxData.Requester.UserID
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = logger.WithValue(keys.RequesterIDKey, requester)
+
+	householdID := s.householdIDFetcher(req)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+
+	// read parsed input struct from request body.
 	providedInput := new(types.HouseholdInvitationCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
 		return
 	}
+	providedInput.ID = ksuid.New().String()
+	providedInput.DestinationHousehold = householdID
+	providedInput.FromUser = requester
 
 	if err = providedInput.ValidateWithContext(ctx); err != nil {
-		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	input := types.HouseholdInvitationDatabaseCreationInputFromHouseholdInvitationCreationInput(providedInput)
-	input.ID = ksuid.New().String()
-	tracing.AttachHouseholdInvitationIDToSpan(span, input.ID)
+
+	token, err := s.secretGenerator.GenerateRawBytes(ctx, 32)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "generating invitation token")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+	input.Token = string(token)
+
+	userID, err := s.userDataManager.GetUserIDByEmail(ctx, input.ToEmail)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		observability.AcknowledgeError(err, logger, span, "fetching user ID by email")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	if userID != "" {
+		input.ToUser = &userID
+	}
 
 	preWrite := &types.PreWriteMessage{
 		DataType:                  types.HouseholdInvitationDataType,
 		HouseholdInvitation:       input,
 		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+		AttributableToHouseholdID: householdID,
 	}
 	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing household invitation write message")
+		observability.AcknowledgeError(err, logger, span, "publishing household write message")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	pwr := types.PreWriteResponse{ID: input.ID}
+	pwr := types.PreWriteResponse{ID: providedInput.ID}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusCreated)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusAccepted)
 }
 
-// ReadHandler returns a GET handler that returns an webhook.
+// ReadHandler returns a GET handler that returns a household invitation.
 func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -90,7 +121,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	// determine relevant webhook ID.
+	// determine relevant household invitation ID.
 	householdInvitationID := s.householdInvitationIDFetcher(req)
 	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
@@ -98,8 +129,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachHouseholdIDToSpan(span, sessionCtxData.ActiveHouseholdID)
 	logger = logger.WithValue(keys.HouseholdIDKey, sessionCtxData.ActiveHouseholdID)
 
-	// fetch the webhook from the database.
-	householdInvitation, err := s.householdInvitationDataManager.GetHouseholdInvitation(ctx, householdInvitationID, sessionCtxData.ActiveHouseholdID)
+	// fetch the household invitation from the database.
+	householdInvitation, err := s.householdInvitationDataManager.GetHouseholdInvitationByHouseholdAndID(ctx, householdInvitationID, sessionCtxData.ActiveHouseholdID)
 	if errors.Is(err, sql.ErrNoRows) {
 		logger.Debug("No rows found in household invitation database")
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
@@ -112,59 +143,6 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// encode the response.
 	s.encoderDecoder.RespondWithData(ctx, res, householdInvitation)
-}
-
-// ArchiveHandler returns a handler that archives an webhook.
-func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-	tracing.AttachRequestToSpan(span, req)
-
-	// determine relevant user ID.
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "fetching session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
-		return
-	}
-
-	userID := sessionCtxData.Requester.UserID
-	logger = logger.WithValue(keys.UserIDKey, userID)
-
-	householdID := sessionCtxData.ActiveHouseholdID
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-
-	// determine relevant webhook ID.
-	householdInvitationID := s.householdInvitationIDFetcher(req)
-	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
-	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
-
-	exists, householdInvitationExistenceCheckErr := s.householdInvitationDataManager.HouseholdInvitationExists(ctx, householdID, householdInvitationID)
-	if householdInvitationExistenceCheckErr != nil && !errors.Is(householdInvitationExistenceCheckErr, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		observability.AcknowledgeError(householdInvitationExistenceCheckErr, logger, span, "checking item existence")
-		return
-	} else if !exists || errors.Is(householdInvitationExistenceCheckErr, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
-		return
-	}
-
-	pam := &types.PreArchiveMessage{
-		DataType:                  types.HouseholdInvitationDataType,
-		HouseholdInvitationID:     householdInvitationID,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing household invitation archive message")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
-	}
-
-	// let everybody go home.
-	res.WriteHeader(http.StatusNoContent)
 }
 
 func (s *service) InboundInvitesHandler(res http.ResponseWriter, req *http.Request) {
@@ -183,10 +161,14 @@ func (s *service) InboundInvitesHandler(res http.ResponseWriter, req *http.Reque
 	}
 
 	userID := sessionCtxData.Requester.UserID
+	tracing.AttachUserIDToSpan(span, userID)
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
-	householdID := sessionCtxData.ActiveHouseholdID
+	householdID := s.householdIDFetcher(req)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+
+	logger.Debug("not used lol")
 }
 
 func (s *service) OutboundInvitesHandler(res http.ResponseWriter, req *http.Request) {
@@ -205,10 +187,14 @@ func (s *service) OutboundInvitesHandler(res http.ResponseWriter, req *http.Requ
 	}
 
 	userID := sessionCtxData.Requester.UserID
+	tracing.AttachUserIDToSpan(span, userID)
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
-	householdID := sessionCtxData.ActiveHouseholdID
+	householdID := s.householdIDFetcher(req)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+
+	logger.Debug("not used lol")
 }
 
 func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request) {
@@ -227,10 +213,24 @@ func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	userID := sessionCtxData.Requester.UserID
+	tracing.AttachUserIDToSpan(span, userID)
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
-	householdID := sessionCtxData.ActiveHouseholdID
+	householdID := s.householdIDFetcher(req)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+
+	householdInvitationID := s.householdInvitationIDFetcher(req)
+	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
+	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
+
+	if err = s.householdInvitationDataManager.CancelHouseholdInvitation(ctx, householdID, householdInvitationID, ""); err != nil {
+		observability.AcknowledgeError(err, logger, span, "fetching session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	res.WriteHeader(http.StatusAccepted)
 }
 
 func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request) {
@@ -251,8 +251,21 @@ func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request
 	userID := sessionCtxData.Requester.UserID
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
-	householdID := sessionCtxData.ActiveHouseholdID
+	householdID := s.householdIDFetcher(req)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+
+	householdInvitationID := s.householdInvitationIDFetcher(req)
+	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
+	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
+
+	if err = s.householdInvitationDataManager.AcceptHouseholdInvitation(ctx, householdID, householdInvitationID, ""); err != nil {
+		observability.AcknowledgeError(err, logger, span, "fetching session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	res.WriteHeader(http.StatusAccepted)
 }
 
 func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request) {
@@ -273,28 +286,19 @@ func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request
 	userID := sessionCtxData.Requester.UserID
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
-	householdID := sessionCtxData.ActiveHouseholdID
+	householdID := s.householdIDFetcher(req)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-}
 
-func (s *service) LeaveHouseholdHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
+	householdInvitationID := s.householdInvitationIDFetcher(req)
+	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
+	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
 
-	logger := s.logger.WithRequest(req)
-	tracing.AttachRequestToSpan(span, req)
-
-	// determine relevant user ID.
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
+	if err = s.householdInvitationDataManager.RejectHouseholdInvitation(ctx, householdID, householdInvitationID, ""); err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching session context data")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
 		return
 	}
 
-	userID := sessionCtxData.Requester.UserID
-	logger = logger.WithValue(keys.UserIDKey, userID)
-
-	householdID := sessionCtxData.ActiveHouseholdID
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	res.WriteHeader(http.StatusAccepted)
 }

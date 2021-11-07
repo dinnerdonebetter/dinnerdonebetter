@@ -1,9 +1,10 @@
 package fakes
 
 import (
+	"math"
+
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/segmentio/ksuid"
-	"math"
 
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -31,8 +32,8 @@ func BuildFakeMealPlanOptionList() *types.MealPlanOptionList {
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         20,
-			FilteredCount: exampleQuantity,
-			TotalCount:    exampleQuantity * 2,
+			FilteredCount: exampleQuantity / 2,
+			TotalCount:    exampleQuantity,
 		},
 		MealPlanOptions: examples,
 	}

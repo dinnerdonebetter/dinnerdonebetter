@@ -27,6 +27,7 @@ var (
 			"Webhooks",
 			"Websockets",
 			"Households",
+			"HouseholdInvitations",
 			"ValidInstruments",
 			"ValidIngredients",
 			"ValidPreparations",

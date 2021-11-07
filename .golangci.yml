@@ -115,9 +115,6 @@ linters-settings:
   gocyclo:
     # minimal code complexity to report, 30 by default (but we recommend 10-20)
     min-complexity: 20
-  gosec:
-    exclude:
-      - G304
   maligned:
     # print struct with more effective memory layout or not, false by default
     suggest-new: true
@@ -140,8 +137,9 @@ linters-settings:
     # Default is to use a neutral variety of English.
     # Setting locale to US will correct the British spelling of 'colour' to 'color'.
     locale: US
-    # ignore-words:
-    #   - someword
+    ignore-words:
+      - cancelled
+      - cancelling
   nestif:
     min-complexity: 8
   wsl:

@@ -16,14 +16,20 @@ type HouseholdInvitationDataManager struct {
 }
 
 // HouseholdInvitationExists is a mock function.
-func (m *HouseholdInvitationDataManager) HouseholdInvitationExists(ctx context.Context, householdID, householdInvitationID string) (bool, error) {
-	args := m.Called(ctx, householdID, householdInvitationID)
+func (m *HouseholdInvitationDataManager) HouseholdInvitationExists(ctx context.Context, householdInvitationID string) (bool, error) {
+	args := m.Called(ctx, householdInvitationID)
 	return args.Bool(0), args.Error(1)
 }
 
-// GetHouseholdInvitation is a mock function.
-func (m *HouseholdInvitationDataManager) GetHouseholdInvitation(ctx context.Context, householdID, userID string) (*types.HouseholdInvitation, error) {
+// GetHouseholdInvitationByHouseholdAndID is a mock function.
+func (m *HouseholdInvitationDataManager) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, householdID, userID string) (*types.HouseholdInvitation, error) {
 	args := m.Called(ctx, householdID, userID)
+	return args.Get(0).(*types.HouseholdInvitation), args.Error(1)
+}
+
+// GetHouseholdInvitationByEmailAndToken is a mock function.
+func (m *HouseholdInvitationDataManager) GetHouseholdInvitationByEmailAndToken(ctx context.Context, emailAddress, token string) (*types.HouseholdInvitation, error) {
+	args := m.Called(ctx, emailAddress, token)
 	return args.Get(0).(*types.HouseholdInvitation), args.Error(1)
 }
 
@@ -33,14 +39,16 @@ func (m *HouseholdInvitationDataManager) GetAllHouseholdInvitationsCount(ctx con
 	return args.Get(0).(uint64), args.Error(1)
 }
 
-func (m *HouseholdInvitationDataManager) GetSentPendingHouseholdInvitations(ctx context.Context, userID string, filter *types.QueryFilter) ([]*types.HouseholdInvitation, error) {
+// GetPendingHouseholdInvitationsFromUser is a mock function.
+func (m *HouseholdInvitationDataManager) GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.HouseholdInvitationList, error) {
 	args := m.Called(ctx, userID, filter)
-	return args.Get(0).([]*types.HouseholdInvitation), args.Error(1)
+	return args.Get(0).(*types.HouseholdInvitationList), args.Error(1)
 }
 
-func (m *HouseholdInvitationDataManager) GetReceivedPendingHouseholdInvitations(ctx context.Context, userID string, filter *types.QueryFilter) ([]*types.HouseholdInvitation, error) {
+// GetPendingHouseholdInvitationsForUser is a mock function.
+func (m *HouseholdInvitationDataManager) GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.HouseholdInvitationList, error) {
 	args := m.Called(ctx, userID, filter)
-	return args.Get(0).([]*types.HouseholdInvitation), args.Error(1)
+	return args.Get(0).(*types.HouseholdInvitationList), args.Error(1)
 }
 
 // CreateHouseholdInvitation is a mock function.
@@ -49,18 +57,21 @@ func (m *HouseholdInvitationDataManager) CreateHouseholdInvitation(ctx context.C
 	return args.Get(0).(*types.HouseholdInvitation), args.Error(1)
 }
 
-func (m *HouseholdInvitationDataManager) CancelHouseholdInvitation(ctx context.Context, invitationID string) error {
-	args := m.Called(ctx, invitationID)
+// CancelHouseholdInvitation is a mock function.
+func (m *HouseholdInvitationDataManager) CancelHouseholdInvitation(ctx context.Context, householdID, householdInvitationID, note string) error {
+	args := m.Called(ctx, householdID, householdInvitationID, note)
 	return args.Error(0)
 }
 
-func (m *HouseholdInvitationDataManager) AcceptHouseholdInvitation(ctx context.Context, invitationID string) error {
-	args := m.Called(ctx, invitationID)
+// AcceptHouseholdInvitation is a mock function.
+func (m *HouseholdInvitationDataManager) AcceptHouseholdInvitation(ctx context.Context, householdID, householdInvitationID, note string) error {
+	args := m.Called(ctx, householdID, householdInvitationID, note)
 	return args.Error(0)
 }
 
-func (m *HouseholdInvitationDataManager) RejectHouseholdInvitation(ctx context.Context, invitationID string) error {
-	args := m.Called(ctx, invitationID)
+// RejectHouseholdInvitation is a mock function.
+func (m *HouseholdInvitationDataManager) RejectHouseholdInvitation(ctx context.Context, householdID, householdInvitationID, note string) error {
+	args := m.Called(ctx, householdID, householdInvitationID, note)
 	return args.Error(0)
 }
 

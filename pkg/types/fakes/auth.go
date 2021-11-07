@@ -46,13 +46,31 @@ func BuildFakeSessionContextDataForHousehold(household *types.Household) *types.
 	}
 }
 
-// BuildFakeAddUserToHouseholdInput builds a faked AddUserToHouseholdInput.
-func BuildFakeAddUserToHouseholdInput() *types.AddUserToHouseholdInput {
-	return &types.AddUserToHouseholdInput{
+// BuildFakeHouseholdUserMembershipCreationRequestInput builds a faked HouseholdUserMembershipCreationRequestInput.
+func BuildFakeHouseholdUserMembershipCreationRequestInput() *types.HouseholdUserMembershipCreationRequestInput {
+	return &types.HouseholdUserMembershipCreationRequestInput{
 		Reason:         fake.Sentence(10),
 		UserID:         ksuid.New().String(),
 		HouseholdID:    ksuid.New().String(),
 		HouseholdRoles: []string{authorization.HouseholdMemberRole.String()},
+	}
+}
+
+// BuildFakeHouseholdUserMembershipDatabaseCreationInput builds a faked HouseholdUserMembershipCreationRequestInput.
+func BuildFakeHouseholdUserMembershipDatabaseCreationInput() *types.HouseholdUserMembershipDatabaseCreationInput {
+	input := BuildFakeHouseholdUserMembershipCreationRequestInput()
+
+	return BuildFakeHouseholdUserMembershipDatabaseCreationInputFromHouseholdUserMembershipCreationRequestInput(input)
+}
+
+// BuildFakeHouseholdUserMembershipDatabaseCreationInputFromHouseholdUserMembershipCreationRequestInput builds a faked HouseholdUserMembershipCreationRequestInput.
+func BuildFakeHouseholdUserMembershipDatabaseCreationInputFromHouseholdUserMembershipCreationRequestInput(input *types.HouseholdUserMembershipCreationRequestInput) *types.HouseholdUserMembershipDatabaseCreationInput {
+	return &types.HouseholdUserMembershipDatabaseCreationInput{
+		ID:             input.ID,
+		Reason:         input.Reason,
+		UserID:         input.UserID,
+		HouseholdID:    input.HouseholdID,
+		HouseholdRoles: input.HouseholdRoles,
 	}
 }
 

@@ -161,7 +161,7 @@ func (c *Client) ArchiveHousehold(ctx context.Context, householdID string) error
 }
 
 // InviteUserToHousehold adds a user to a household.
-func (c *Client) InviteUserToHousehold(ctx context.Context, input *types.AddUserToHouseholdInput) error {
+func (c *Client) InviteUserToHousehold(ctx context.Context, input *types.HouseholdInvitationCreationRequestInput) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -169,9 +169,8 @@ func (c *Client) InviteUserToHousehold(ctx context.Context, input *types.AddUser
 		return ErrNilInputProvided
 	}
 
-	logger := c.logger.WithValue(keys.HouseholdIDKey, input.HouseholdID).WithValue(keys.UserIDKey, input.UserID)
-	tracing.AttachHouseholdIDToSpan(span, input.HouseholdID)
-	tracing.AttachUserIDToSpan(span, input.UserID)
+	logger := c.logger.WithValue(keys.HouseholdIDKey, input.DestinationHousehold)
+	tracing.AttachHouseholdIDToSpan(span, input.DestinationHousehold)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return observability.PrepareError(err, logger, span, "validating input")

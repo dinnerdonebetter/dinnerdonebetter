@@ -398,7 +398,7 @@ func (q *SQLQuerier) CreateHousehold(ctx context.Context, input *types.Household
 		CreatedOn:     q.currentTime(),
 	}
 
-	addInput := &types.AddUserToHouseholdInput{
+	addInput := &types.HouseholdUserMembershipCreationRequestInput{
 		ID:             ksuid.New().String(),
 		UserID:         input.BelongsToUser,
 		HouseholdID:    household.ID,

@@ -13,6 +13,8 @@ const (
 
 	// PendingHouseholdInvitationStatus indicates a household invitation is pending.
 	PendingHouseholdInvitationStatus HouseholdInvitationStatus = "pending"
+	// CancelledHouseholdInvitationStatus indicates a household invitation was accepted.
+	CancelledHouseholdInvitationStatus HouseholdInvitationStatus = "cancelled"
 	// AcceptedHouseholdInvitationStatus indicates a household invitation was accepted.
 	AcceptedHouseholdInvitationStatus HouseholdInvitationStatus = "accepted"
 	// RejectedHouseholdInvitationStatus indicates a household invitation was rejected.
@@ -28,10 +30,10 @@ type (
 		_ struct{}
 
 		ID                   string `json:"-"`
-		FromUser             string `json:"fromUser"`
+		FromUser             string `json:"-"`
 		Note                 string `json:"note"`
 		ToEmail              string `json:"toEmail"`
-		DestinationHousehold string `json:"destinationHousehold"`
+		DestinationHousehold string `json:"-"`
 	}
 
 	// HouseholdInvitationDatabaseCreationInput represents what a User could set as input for creating household invitations.
@@ -57,6 +59,7 @@ type (
 		ToEmail              string                    `json:"toEmail"`
 		ToUser               *string                   `json:"toUser"`
 		Note                 string                    `json:"note"`
+		StatusNote           string                    `json:"statusNote"`
 		Token                string                    `json:"token"`
 		DestinationHousehold string                    `json:"destinationHousehold"`
 		ID                   string                    `json:"id"`
@@ -74,28 +77,27 @@ type (
 
 	// HouseholdInvitationDataManager describes a structure capable of storing household invitations permanently.
 	HouseholdInvitationDataManager interface {
-		HouseholdInvitationExists(ctx context.Context, householdID, householdInvitationID string) (bool, error)
-		GetHouseholdInvitation(ctx context.Context, householdID, householdInvitationID string) (*HouseholdInvitation, error)
+		HouseholdInvitationExists(ctx context.Context, householdInvitationID string) (bool, error)
+		GetHouseholdInvitationByHouseholdAndID(ctx context.Context, householdID, householdInvitationID string) (*HouseholdInvitation, error)
+		GetHouseholdInvitationByEmailAndToken(ctx context.Context, emailAddress, token string) (*HouseholdInvitation, error)
 		GetAllHouseholdInvitationsCount(ctx context.Context) (uint64, error)
-		GetSentPendingHouseholdInvitations(ctx context.Context, userID string, filter *QueryFilter) ([]*HouseholdInvitation, error)
-		GetReceivedPendingHouseholdInvitations(ctx context.Context, userID string, filter *QueryFilter) ([]*HouseholdInvitation, error)
+		GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *QueryFilter) (*HouseholdInvitationList, error)
+		GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *QueryFilter) (*HouseholdInvitationList, error)
 		CreateHouseholdInvitation(ctx context.Context, input *HouseholdInvitationDatabaseCreationInput) (*HouseholdInvitation, error)
-		CancelHouseholdInvitation(ctx context.Context, invitationID string) error
-		AcceptHouseholdInvitation(ctx context.Context, invitationID string) error
-		RejectHouseholdInvitation(ctx context.Context, invitationID string) error
+		CancelHouseholdInvitation(ctx context.Context, householdID, householdInvitationID, note string) error
+		AcceptHouseholdInvitation(ctx context.Context, householdID, householdInvitationID, note string) error
+		RejectHouseholdInvitation(ctx context.Context, householdID, householdInvitationID, note string) error
 	}
 
 	// HouseholdInvitationDataService describes a structure capable of serving traffic related to household invitations.
 	HouseholdInvitationDataService interface {
-		CreateHandler(res http.ResponseWriter, req *http.Request)
 		ReadHandler(res http.ResponseWriter, req *http.Request)
-		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 		InboundInvitesHandler(res http.ResponseWriter, req *http.Request)
 		OutboundInvitesHandler(res http.ResponseWriter, req *http.Request)
+		InviteMemberHandler(res http.ResponseWriter, req *http.Request)
 		CancelInviteHandler(res http.ResponseWriter, req *http.Request)
 		AcceptInviteHandler(res http.ResponseWriter, req *http.Request)
 		RejectInviteHandler(res http.ResponseWriter, req *http.Request)
-		LeaveHouseholdHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 

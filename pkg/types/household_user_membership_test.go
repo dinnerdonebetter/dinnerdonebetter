@@ -16,7 +16,7 @@ func TestAddUserToHouseholdInput_ValidateWithContext(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		x := &AddUserToHouseholdInput{
+		x := &HouseholdUserMembershipCreationRequestInput{
 			UserID: "123",
 		}
 

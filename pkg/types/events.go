@@ -25,7 +25,7 @@ type (
 		MealPlanOptionID           string                                           `json:"mealPlanOptionID"`
 		MealPlanOptionVote         *MealPlanOptionVoteDatabaseCreationInput         `json:"mealPlanOptionVote,omitempty"`
 		Webhook                    *WebhookDatabaseCreationInput                    `json:"webhook,omitempty"`
-		UserMembership             *AddUserToHouseholdInput                         `json:"userMembership,omitempty"`
+		UserMembership             *HouseholdUserMembershipDatabaseCreationInput    `json:"userMembership,omitempty"`
 		HouseholdInvitation        *HouseholdInvitationDatabaseCreationInput        `json:"householdInvitation,omitempty"`
 		AttributableToUserID       string                                           `json:"attributableToUserID"`
 		AttributableToHouseholdID  string                                           `json:"attributableToHouseholdID"`

@@ -214,6 +214,32 @@ func (s *TestSuite) TestHouseholds_Archiving() {
 	})
 }
 
+func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
+	// create initial user
+
+	// determine household ID
+
+	// create user to invite
+
+	// invite user to household
+
+	// have invited user accept invitation
+
+	// assert that the invited user is a member of the household
+}
+
+func (s *TestSuite) TestHouseholds_InvitingNewUser() {
+	// create initial user
+
+	// create user to invite
+
+	// invite user to household
+
+	// register new user with token
+
+	// assert that the invited user is a member of the household
+}
+
 func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 	s.runForCookieClient("should be possible to change members of a household", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -290,11 +316,10 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 			// add them to the household
 			for i := 0; i < userCount; i++ {
 				t.Logf("adding user %q to household %s", users[i].ID, household.ID)
-				require.NoError(t, testClients.main.InviteUserToHousehold(ctx, &types.AddUserToHouseholdInput{
-					UserID:         users[i].ID,
-					HouseholdID:    household.ID,
-					Reason:         t.Name(),
-					HouseholdRoles: []string{authorization.HouseholdAdminRole.String()},
+				require.NoError(t, testClients.main.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
+					ToEmail:              users[i].EmailAddress,
+					DestinationHousehold: household.ID,
+					Note:                 t.Name(),
 				}))
 
 				n := <-notificationsChan
@@ -322,8 +347,8 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 			// check that each user can see the webhook
 			for i := 0; i < userCount; i++ {
 				t.Logf("checking if user %q CAN now see webhook %s belonging to household %s", users[i].ID, createdWebhook.ID, createdWebhook.BelongsToHousehold)
-				webhook, err := clients[i].GetWebhook(ctx, createdWebhook.ID)
-				requireNotNilAndNoProblems(t, webhook, err)
+				webhook, webhookRetrievalError := clients[i].GetWebhook(ctx, createdWebhook.ID)
+				requireNotNilAndNoProblems(t, webhook, webhookRetrievalError)
 			}
 
 			// remove users from household
@@ -333,9 +358,9 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 
 			// check that each user cannot see the webhook
 			for i := 0; i < userCount; i++ {
-				webhook, err := clients[i].GetWebhook(ctx, createdWebhook.ID)
+				webhook, webhookRetrievalError := clients[i].GetWebhook(ctx, createdWebhook.ID)
 				require.Nil(t, webhook)
-				require.Error(t, err)
+				require.Error(t, webhookRetrievalError)
 			}
 
 			// Clean up.
@@ -419,11 +444,10 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 			// add them to the household
 			for i := 0; i < userCount; i++ {
 				t.Logf("adding user %q to household %s", users[i].ID, household.ID)
-				require.NoError(t, testClients.main.InviteUserToHousehold(ctx, &types.AddUserToHouseholdInput{
-					UserID:         users[i].ID,
-					HouseholdID:    household.ID,
-					Reason:         t.Name(),
-					HouseholdRoles: []string{authorization.HouseholdAdminRole.String()},
+				require.NoError(t, testClients.main.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
+					ToEmail:              users[i].EmailAddress,
+					DestinationHousehold: household.ID,
+					Note:                 t.Name(),
 				}))
 				t.Logf("added user %q to household %s", users[i].ID, household.ID)
 
@@ -451,8 +475,8 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 			// check that each user can see the webhook
 			for i := 0; i < userCount; i++ {
 				t.Logf("checking if user %q CAN now see webhook %s belonging to household %s", users[i].ID, createdWebhook.ID, createdWebhook.BelongsToHousehold)
-				webhook, err := clients[i].GetWebhook(ctx, createdWebhook.ID)
-				requireNotNilAndNoProblems(t, webhook, err)
+				webhook, webhookRetrievalError := clients[i].GetWebhook(ctx, createdWebhook.ID)
+				requireNotNilAndNoProblems(t, webhook, webhookRetrievalError)
 			}
 
 			// remove users from household
@@ -462,9 +486,9 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 
 			// check that each user cannot see the webhook
 			for i := 0; i < userCount; i++ {
-				webhook, err := clients[i].GetWebhook(ctx, createdWebhook.ID)
+				webhook, webhookRetrievalError := clients[i].GetWebhook(ctx, createdWebhook.ID)
 				require.Nil(t, webhook)
-				require.Error(t, err)
+				require.Error(t, webhookRetrievalError)
 			}
 
 			// Clean up.

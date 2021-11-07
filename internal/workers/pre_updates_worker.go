@@ -411,7 +411,9 @@ func (w *PreUpdatesWorker) HandleMessage(ctx context.Context, message []byte) er
 				return observability.PrepareError(err, logger, span, "publishing data change message")
 			}
 		}
-	case types.UserMembershipDataType, types.WebhookDataType:
+	case types.UserMembershipDataType,
+		types.WebhookDataType,
+		types.HouseholdInvitationDataType:
 		break
 	}
 

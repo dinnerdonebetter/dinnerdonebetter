@@ -2912,14 +2912,14 @@ func TestPreWritesWorker_HandleMessage(T *testing.T) {
 
 		body := &types.PreWriteMessage{
 			DataType:       types.UserMembershipDataType,
-			UserMembership: fakes.BuildFakeAddUserToHouseholdInput(),
+			UserMembership: fakes.BuildFakeHouseholdUserMembershipDatabaseCreationInput(),
 		}
 		examplePayload, err := json.Marshal(body)
 		require.NoError(t, err)
 
 		dbManager := database.BuildMockDatabase()
 		dbManager.HouseholdUserMembershipDataManager.On(
-			"InviteUserToHousehold",
+			"AddUserToHousehold",
 			testutils.ContextMatcher,
 			body.UserMembership,
 		).Return(nil)
@@ -2962,16 +2962,16 @@ func TestPreWritesWorker_HandleMessage(T *testing.T) {
 
 		body := &types.PreWriteMessage{
 			DataType:       types.UserMembershipDataType,
-			UserMembership: fakes.BuildFakeAddUserToHouseholdInput(),
+			UserMembership: fakes.BuildFakeHouseholdUserMembershipDatabaseCreationInput(),
 		}
 		examplePayload, err := json.Marshal(body)
 		require.NoError(t, err)
 
 		dbManager := database.BuildMockDatabase()
 		dbManager.HouseholdUserMembershipDataManager.On(
-			"InviteUserToHousehold",
+			"AddUserToHousehold",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(input *types.AddUserToHouseholdInput) bool { return true }),
+			mock.MatchedBy(func(input *types.HouseholdUserMembershipDatabaseCreationInput) bool { return true }),
 		).Return(errors.New("blah"))
 
 		searchIndexLocation := search.IndexPath(t.Name())
@@ -3007,16 +3007,16 @@ func TestPreWritesWorker_HandleMessage(T *testing.T) {
 
 		body := &types.PreWriteMessage{
 			DataType:       types.UserMembershipDataType,
-			UserMembership: fakes.BuildFakeAddUserToHouseholdInput(),
+			UserMembership: fakes.BuildFakeHouseholdUserMembershipDatabaseCreationInput(),
 		}
 		examplePayload, err := json.Marshal(body)
 		require.NoError(t, err)
 
 		dbManager := database.BuildMockDatabase()
 		dbManager.HouseholdUserMembershipDataManager.On(
-			"InviteUserToHousehold",
+			"AddUserToHousehold",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(input *types.AddUserToHouseholdInput) bool { return true }),
+			mock.MatchedBy(func(input *types.HouseholdUserMembershipDatabaseCreationInput) bool { return true }),
 		).Return(nil)
 
 		searchIndexLocation := search.IndexPath(t.Name())

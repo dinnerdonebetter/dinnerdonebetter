@@ -3,6 +3,8 @@ package postgres
 import (
 	"context"
 
+	"github.com/Masterminds/squirrel"
+
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
@@ -22,6 +24,7 @@ var (
 		"household_invitations.from_user",
 		"household_invitations.status",
 		"household_invitations.note",
+		"household_invitations.status_note",
 		"household_invitations.token",
 		"household_invitations.created_on",
 		"household_invitations.last_updated_on",
@@ -29,7 +32,7 @@ var (
 	}
 )
 
-// scanHouseholdInvitation is a consistent way to turn a *sql.Row into a webhook struct.
+// scanHouseholdInvitation is a consistent way to turn a *sql.Row into an invitation struct.
 func (q *SQLQuerier) scanHouseholdInvitation(ctx context.Context, scan database.Scanner, includeCounts bool) (householdInvitation *types.HouseholdInvitation, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -45,6 +48,7 @@ func (q *SQLQuerier) scanHouseholdInvitation(ctx context.Context, scan database.
 		&householdInvitation.FromUser,
 		&householdInvitation.Status,
 		&householdInvitation.Note,
+		&householdInvitation.StatusNote,
 		&householdInvitation.Token,
 		&householdInvitation.CreatedOn,
 		&householdInvitation.LastUpdatedOn,
@@ -89,30 +93,24 @@ func (q *SQLQuerier) scanHouseholdInvitations(ctx context.Context, rows database
 	}
 
 	if err = rows.Err(); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "fetching webhook from database")
+		return nil, 0, 0, observability.PrepareError(err, logger, span, "fetching household invitation from database")
 	}
 
 	if err = rows.Close(); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "fetching webhook from database")
+		return nil, 0, 0, observability.PrepareError(err, logger, span, "fetching household invitation from database")
 	}
 
 	return householdInvitations, filteredCount, totalCount, nil
 }
 
-const householdInvitationExistenceQuery = "SELECT EXISTS ( SELECT household_invitations.id FROM household_invitations WHERE household_invitations.archived_on IS NULL AND household_invitations.id = $1 AND household_invitations.destination_household = $2 )"
+const householdInvitationExistenceQuery = "SELECT EXISTS ( SELECT household_invitations.id FROM household_invitations WHERE household_invitations.archived_on IS NULL AND household_invitations.id = $1 )"
 
 // HouseholdInvitationExists fetches whether a household invitation exists from the database.
-func (q *SQLQuerier) HouseholdInvitationExists(ctx context.Context, householdID, householdInvitationID string) (bool, error) {
+func (q *SQLQuerier) HouseholdInvitationExists(ctx context.Context, householdInvitationID string) (bool, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger
-
-	if householdID == "" {
-		return false, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	if householdInvitationID == "" {
 		return false, ErrInvalidIDProvided
@@ -122,18 +120,17 @@ func (q *SQLQuerier) HouseholdInvitationExists(ctx context.Context, householdID,
 
 	args := []interface{}{
 		householdInvitationID,
-		householdID,
 	}
 
 	result, err := q.performBooleanQuery(ctx, q.db, householdInvitationExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "performing webhook existence check")
+		return false, observability.PrepareError(err, logger, span, "performing household invitation existence check")
 	}
 
 	return result, nil
 }
 
-const getHouseholdInvitationQuery = `
+const getHouseholdInvitationByHouseholdAndIDQuery = `
 SELECT
 	household_invitations.id,
 	household_invitations.destination_household,
@@ -142,17 +139,19 @@ SELECT
 	household_invitations.from_user,
 	household_invitations.status,
 	household_invitations.note,
+	household_invitations.status_note,
 	household_invitations.token,
 	household_invitations.created_on,
 	household_invitations.last_updated_on,
 	household_invitations.archived_on
 FROM household_invitations 
 WHERE household_invitations.archived_on IS NULL
-AND household_invitations.id = $1
+AND household_invitations.destination_household = $1
+AND household_invitations.id = $2
 `
 
-// GetHouseholdInvitation fetches a webhook from the database.
-func (q *SQLQuerier) GetHouseholdInvitation(ctx context.Context, householdID, householdInvitationID string) (*types.HouseholdInvitation, error) {
+// GetHouseholdInvitationByHouseholdAndID fetches an invitation from the database.
+func (q *SQLQuerier) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, householdID, householdInvitationID string) (*types.HouseholdInvitation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -171,17 +170,73 @@ func (q *SQLQuerier) GetHouseholdInvitation(ctx context.Context, householdID, ho
 	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
 
 	args := []interface{}{
+		householdID,
 		householdInvitationID,
 	}
 
-	row := q.getOneRow(ctx, q.db, "webhook", getHouseholdInvitationQuery, args)
+	row := q.getOneRow(ctx, q.db, "household invitation", getHouseholdInvitationByHouseholdAndIDQuery, args)
 
-	webhook, _, _, err := q.scanHouseholdInvitation(ctx, row, false)
+	householdInvitation, _, _, err := q.scanHouseholdInvitation(ctx, row, false)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning webhook")
+		return nil, observability.PrepareError(err, logger, span, "scanning household invitation")
 	}
 
-	return webhook, nil
+	return householdInvitation, nil
+}
+
+/* #nosec */
+const getHouseholdInvitationByEmailAndTokenQuery = `
+SELECT
+	household_invitations.id,
+	household_invitations.destination_household,
+	household_invitations.to_email,
+	household_invitations.to_user,
+	household_invitations.from_user,
+	household_invitations.status,
+	household_invitations.note,
+	household_invitations.status_note,
+	household_invitations.token,
+	household_invitations.created_on,
+	household_invitations.last_updated_on,
+	household_invitations.archived_on
+FROM household_invitations 
+WHERE household_invitations.archived_on IS NULL 
+AND household_invitations.to_email = $1
+AND household_invitations.token = $2
+`
+
+// GetHouseholdInvitationByEmailAndToken fetches an invitation from the database.
+func (q *SQLQuerier) GetHouseholdInvitationByEmailAndToken(ctx context.Context, emailAddress, token string) (*types.HouseholdInvitation, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger
+
+	if emailAddress == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.UserEmailAddressKey, emailAddress)
+	tracing.AttachEmailAddressToSpan(span, emailAddress)
+
+	if token == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.HouseholdInvitationTokenKey, token)
+	tracing.AttachHouseholdInvitationTokenToSpan(span, token)
+
+	args := []interface{}{
+		emailAddress,
+		token,
+	}
+
+	row := q.getOneRow(ctx, q.db, "household invitation", getHouseholdInvitationByEmailAndTokenQuery, args)
+
+	invitation, _, _, err := q.scanHouseholdInvitation(ctx, row, false)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "scanning invitation")
+	}
+
+	return invitation, nil
 }
 
 const getAllHouseholdInvitationsCountQuery = `
@@ -203,43 +258,11 @@ func (q *SQLQuerier) GetAllHouseholdInvitationsCount(ctx context.Context) (uint6
 	return count, nil
 }
 
-// GetHouseholdInvitations fetches a list of household invitations from the database that meet a particular filter.
-func (q *SQLQuerier) GetHouseholdInvitations(ctx context.Context, householdInvitationID string, filter *types.QueryFilter) (*types.HouseholdInvitationList, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	if householdInvitationID == "" {
-		return nil, ErrInvalidIDProvided
-	}
-
-	logger := q.logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
-	tracing.AttachHouseholdIDToSpan(span, householdInvitationID)
-	tracing.AttachQueryFilterToSpan(span, filter)
-
-	x := &types.HouseholdInvitationList{}
-	if filter != nil {
-		x.Page, x.Limit = filter.Page, filter.Limit
-	}
-
-	query, args := q.buildListQuery(ctx, "household_invitations", nil, nil, nil, "belongs_to_household", householdInvitationsTableColumns, householdInvitationID, false, filter)
-
-	rows, err := q.performReadQuery(ctx, q.db, "household invitations", query, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching webhook from database")
-	}
-
-	if x.HouseholdInvitations, x.FilteredCount, x.TotalCount, err = q.scanHouseholdInvitations(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning database response")
-	}
-
-	return x, nil
-}
-
 const createHouseholdInvitationQuery = `
 	INSERT INTO household_invitations (id,from_user,to_user,note,to_email,token,destination_household) VALUES ($1,$2,$3,$4,$5,$6,$7)
 `
 
-// CreateHouseholdInvitation creates a webhook in a database.
+// CreateHouseholdInvitation creates an invitation in a database.
 func (q *SQLQuerier) CreateHouseholdInvitation(ctx context.Context, input *types.HouseholdInvitationDatabaseCreationInput) (*types.HouseholdInvitation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -260,46 +283,161 @@ func (q *SQLQuerier) CreateHouseholdInvitation(ctx context.Context, input *types
 		input.DestinationHousehold,
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "webhook creation", createHouseholdInvitationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "performing webhook creation query")
+	if err := q.performWriteQuery(ctx, q.db, "household invitation creation", createHouseholdInvitationQuery, args); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "performing household invitation creation query")
 	}
 
 	x := &types.HouseholdInvitation{
-		ID:        input.ID,
-		CreatedOn: q.currentTime(),
+		ID:                   input.ID,
+		FromUser:             input.FromUser,
+		ToUser:               input.ToUser,
+		Note:                 input.Note,
+		ToEmail:              input.ToEmail,
+		Token:                input.Token,
+		StatusNote:           "",
+		Status:               types.PendingHouseholdInvitationStatus,
+		DestinationHousehold: input.DestinationHousehold,
+		CreatedOn:            q.currentTime(),
 	}
 
 	tracing.AttachHouseholdInvitationIDToSpan(span, x.ID)
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, x.ID)
 
-	logger.Info("webhook created")
+	logger.Info("household invitation created")
 
 	return x, nil
 }
 
-func (q *SQLQuerier) GetSentPendingHouseholdInvitations(ctx context.Context, userID string, filter *types.QueryFilter) ([]*types.HouseholdInvitation, error) {
-	return nil, nil
+// BuildGetPendingHouseholdInvitationsFromUserQuery builds a query for fetching pending household invitations sent by a given user.
+func (q *SQLQuerier) BuildGetPendingHouseholdInvitationsFromUserQuery(ctx context.Context, userID string, filter *types.QueryFilter) (query string, args []interface{}) {
+	_, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	queryBuilder := q.sqlBuilder.Select(householdInvitationsTableColumns...).
+		From("household_invitations").
+		Where(squirrel.Eq{
+			"household_invitations.from_user":   userID,
+			"household_invitations.archived_on": nil,
+			"household_invitations.status":      types.PendingHouseholdInvitationStatus,
+		})
+
+	queryBuilder = applyFilterToQueryBuilder(filter, "household_invitations", queryBuilder)
+
+	query, args, err := queryBuilder.ToSql()
+	q.logQueryBuildingError(span, err)
+
+	return query, args
 }
 
-func (q *SQLQuerier) GetReceivedPendingHouseholdInvitations(ctx context.Context, userID string, filter *types.QueryFilter) ([]*types.HouseholdInvitation, error) {
-	return nil, nil
+// GetPendingHouseholdInvitationsFromUser fetches pending household invitations sent from a given user.
+func (q *SQLQuerier) GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.HouseholdInvitationList, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.WithValue(keys.UserIDKey, userID)
+	filter.AttachToLogger(logger)
+
+	query, args := q.BuildGetPendingHouseholdInvitationsFromUserQuery(ctx, userID, filter)
+
+	rows, err := q.performReadQuery(ctx, q.db, "household invitations from user", query, args)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "reading household invitations from user")
+	}
+
+	householdInvitations, fc, tc, err := q.scanHouseholdInvitations(ctx, rows, true)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "reading household invitations from user")
+	}
+
+	returnList := &types.HouseholdInvitationList{
+		Pagination: types.Pagination{
+			Page:          filter.Page,
+			Limit:         filter.Limit,
+			FilteredCount: fc,
+			TotalCount:    tc,
+		},
+		HouseholdInvitations: householdInvitations,
+	}
+
+	return returnList, nil
 }
 
-const cancelHouseholdInvitationQuery = `
+// BuildGetPendingHouseholdInvitationsForUserQuery builds a query for fetching pending household invitations sent to a given user.
+func (q *SQLQuerier) BuildGetPendingHouseholdInvitationsForUserQuery(ctx context.Context, userID string, filter *types.QueryFilter) (query string, args []interface{}) {
+	_, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	queryBuilder := q.sqlBuilder.Select(householdInvitationsTableColumns...).
+		From("household_invitations").
+		Where(squirrel.Eq{
+			"household_invitations.to_user":     userID,
+			"household_invitations.archived_on": nil,
+			"household_invitations.status":      types.PendingHouseholdInvitationStatus,
+		})
+
+	queryBuilder = applyFilterToQueryBuilder(filter, "household_invitations", queryBuilder)
+
+	query, args, err := queryBuilder.ToSql()
+	q.logQueryBuildingError(span, err)
+
+	return query, args
+}
+
+// GetPendingHouseholdInvitationsForUser fetches pending household invitations sent to a given user.
+func (q *SQLQuerier) GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.HouseholdInvitationList, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.WithValue(keys.UserIDKey, userID)
+	filter.AttachToLogger(logger)
+
+	query, args := q.BuildGetPendingHouseholdInvitationsForUserQuery(ctx, userID, filter)
+
+	rows, err := q.performReadQuery(ctx, q.db, "household invitations from user", query, args)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "reading household invitations from user")
+	}
+
+	householdInvitations, fc, tc, err := q.scanHouseholdInvitations(ctx, rows, true)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "reading household invitations from user")
+	}
+
+	returnList := &types.HouseholdInvitationList{
+		Pagination: types.Pagination{
+			Page:          filter.Page,
+			Limit:         filter.Limit,
+			FilteredCount: fc,
+			TotalCount:    tc,
+		},
+		HouseholdInvitations: householdInvitations,
+	}
+
+	return returnList, nil
+}
+
+const setInvitationStatusQuery = `
 UPDATE household_invitations SET
-	status = 'cancelled',
+	status = $1,
+	status_note = $2,
 	last_updated_on = extract(epoch FROM NOW()), 
 	archived_on = extract(epoch FROM NOW())
 WHERE archived_on IS NULL 
-AND belongs_to_household = $1
-AND id = $2
+AND destination_household = $3
+AND id = $4
 `
 
-func (q *SQLQuerier) CancelHouseholdInvitation(ctx context.Context, householdInvitationID string) error {
+func (q *SQLQuerier) setInvitationStatus(ctx context.Context, householdID, householdInvitationID, note string, status types.HouseholdInvitationStatus) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger
+
+	if householdID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	if householdInvitationID == "" {
 		return ErrInvalidIDProvided
@@ -307,9 +445,14 @@ func (q *SQLQuerier) CancelHouseholdInvitation(ctx context.Context, householdInv
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
 	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
 
-	args := []interface{}{householdInvitationID}
+	args := []interface{}{
+		status,
+		note,
+		householdID,
+		householdInvitationID,
+	}
 
-	if err := q.performWriteQuery(ctx, q.db, "household invitation cancel", cancelHouseholdInvitationQuery, args); err != nil {
+	if err := q.performWriteQuery(ctx, q.db, "household invitation cancel", setInvitationStatusQuery, args); err != nil {
 		return observability.PrepareError(err, logger, span, "cancelling household invitation")
 	}
 
@@ -318,68 +461,17 @@ func (q *SQLQuerier) CancelHouseholdInvitation(ctx context.Context, householdInv
 	return nil
 }
 
-const acceptHouseholdInvitationQuery = `
-UPDATE household_invitations SET
-	status = 'accepted',
-	last_updated_on = extract(epoch FROM NOW()), 
-	archived_on = extract(epoch FROM NOW())
-WHERE archived_on IS NULL 
-AND belongs_to_household = $1
-AND id = $2
-`
-
-func (q *SQLQuerier) AcceptHouseholdInvitation(ctx context.Context, householdInvitationID string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger
-
-	if householdInvitationID == "" {
-		return ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
-	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
-
-	args := []interface{}{householdInvitationID}
-
-	if err := q.performWriteQuery(ctx, q.db, "household invitation accept", acceptHouseholdInvitationQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "accepting household invitation")
-	}
-
-	logger.Info("household invitation accepted")
-
-	return nil
+// CancelHouseholdInvitation cancels a household invitation by its ID with a note.
+func (q *SQLQuerier) CancelHouseholdInvitation(ctx context.Context, householdID, householdInvitationID, note string) error {
+	return q.setInvitationStatus(ctx, householdID, householdInvitationID, note, types.CancelledHouseholdInvitationStatus)
 }
 
-const rejectHouseholdInvitationQuery = `
-UPDATE household_invitations SET
-	status = 'rejected',
-	last_updated_on = extract(epoch FROM NOW()), 
-	archived_on = extract(epoch FROM NOW())
-WHERE archived_on IS NULL 
-AND belongs_to_household = $1
-AND id = $2
-`
+// AcceptHouseholdInvitation accepts a household invitation by its ID with a note.
+func (q *SQLQuerier) AcceptHouseholdInvitation(ctx context.Context, householdID, householdInvitationID, note string) error {
+	return q.setInvitationStatus(ctx, householdID, householdInvitationID, note, types.AcceptedHouseholdInvitationStatus)
+}
 
-func (q *SQLQuerier) RejectHouseholdInvitation(ctx context.Context, householdInvitationID string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger
-
-	if householdInvitationID == "" {
-		return ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
-	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
-
-	args := []interface{}{householdInvitationID}
-
-	if err := q.performWriteQuery(ctx, q.db, "household invitation reject", rejectHouseholdInvitationQuery, args); err != nil {
-		return observability.PrepareError(err, logger, span, "rejecting household invitation")
-	}
-
-	logger.Info("household invitation rejected")
-
-	return nil
+// RejectHouseholdInvitation rejects a household invitation by its ID with a note.
+func (q *SQLQuerier) RejectHouseholdInvitation(ctx context.Context, householdID, householdInvitationID, note string) error {
+	return q.setInvitationStatus(ctx, householdID, householdInvitationID, note, types.RejectedHouseholdInvitationStatus)
 }

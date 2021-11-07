@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
     "id" CHAR(27) NOT NULL PRIMARY KEY,
     "username" TEXT NOT NULL,
     "avatar_src" TEXT,
+    "email_address" TEXT NOT NULL,
     "hashed_password" TEXT NOT NULL,
     "password_last_changed_on" INTEGER,
     "requires_password_change" BOOLEAN NOT NULL DEFAULT 'false',
