@@ -152,6 +152,9 @@ func (s *service) InboundInvitesHandler(res http.ResponseWriter, req *http.Reque
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	filter := types.ExtractQueryFilter(req)
+	filter.AttachToLogger(logger)
+
 	// determine relevant user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
@@ -168,7 +171,14 @@ func (s *service) InboundInvitesHandler(res http.ResponseWriter, req *http.Reque
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
-	logger.Debug("not used lol")
+	invitations, err := s.householdInvitationDataManager.GetPendingHouseholdInvitationsForUser(ctx, userID, filter)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "fetching outbound invites")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	s.encoderDecoder.RespondWithData(ctx, res, invitations)
 }
 
 func (s *service) OutboundInvitesHandler(res http.ResponseWriter, req *http.Request) {
@@ -178,6 +188,9 @@ func (s *service) OutboundInvitesHandler(res http.ResponseWriter, req *http.Requ
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	filter := types.ExtractQueryFilter(req)
+	filter.AttachToLogger(logger)
+
 	// determine relevant user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
@@ -194,7 +207,14 @@ func (s *service) OutboundInvitesHandler(res http.ResponseWriter, req *http.Requ
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
-	logger.Debug("not used lol")
+	invitations, err := s.householdInvitationDataManager.GetPendingHouseholdInvitationsFromUser(ctx, userID, filter)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "fetching outbound invites")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	s.encoderDecoder.RespondWithData(ctx, res, invitations)
 }
 
 func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request) {

@@ -75,6 +75,11 @@ type (
 		Pagination
 	}
 
+	// HouseholdInvitationUpdateRequestInput is used by users to update the status of a given household invitation.
+	HouseholdInvitationUpdateRequestInput struct {
+		Note string `json:"note"`
+	}
+
 	// HouseholdInvitationDataManager describes a structure capable of storing household invitations permanently.
 	HouseholdInvitationDataManager interface {
 		HouseholdInvitationExists(ctx context.Context, householdInvitationID string) (bool, error)
