@@ -313,8 +313,8 @@ func (s *householdsTestSuite) TestClient_AddUserToHousehold() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeHouseholdUserMembershipCreationRequestInput()
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, exampleInput.HouseholdID)
+		exampleInput := fakes.BuildFakeHouseholdInvitationCreationInput()
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, exampleInput.DestinationHousehold)
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
 
 		assert.NoError(t, c.InviteUserToHousehold(s.ctx, exampleInput))
@@ -333,14 +333,14 @@ func (s *householdsTestSuite) TestClient_AddUserToHousehold() {
 
 		c, _ := buildSimpleTestClient(t)
 
-		assert.Error(t, c.InviteUserToHousehold(s.ctx, &types.HouseholdUserMembershipCreationRequestInput{}))
+		assert.Error(t, c.InviteUserToHousehold(s.ctx, &types.HouseholdInvitationCreationRequestInput{}))
 	})
 
 	s.Run("with error building request", func() {
 		t := s.T()
 
 		c := buildTestClientWithInvalidURL(t)
-		exampleInput := fakes.BuildFakeHouseholdUserMembershipCreationRequestInput()
+		exampleInput := fakes.BuildFakeHouseholdInvitationCreationInput()
 
 		assert.Error(t, c.InviteUserToHousehold(s.ctx, exampleInput))
 	})
@@ -348,7 +348,7 @@ func (s *householdsTestSuite) TestClient_AddUserToHousehold() {
 	s.Run("with error executing request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeHouseholdUserMembershipCreationRequestInput()
+		exampleInput := fakes.BuildFakeHouseholdInvitationCreationInput()
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		assert.Error(t, c.InviteUserToHousehold(s.ctx, exampleInput))

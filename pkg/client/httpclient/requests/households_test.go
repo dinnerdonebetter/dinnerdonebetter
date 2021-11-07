@@ -277,8 +277,8 @@ func TestBuilder_BuildAddUserRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		exampleInput := fakes.BuildFakeHouseholdUserMembershipCreationRequestInput()
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, exampleInput.HouseholdID)
+		exampleInput := fakes.BuildFakeHouseholdInvitationCreationInput()
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, exampleInput.DestinationHousehold)
 
 		actual, err := helper.builder.BuildInviteUserToHouseholdRequest(helper.ctx, exampleInput)
 		assert.NoError(t, err)
@@ -301,7 +301,7 @@ func TestBuilder_BuildAddUserRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildInviteUserToHouseholdRequest(helper.ctx, &types.HouseholdUserMembershipCreationRequestInput{})
+		actual, err := helper.builder.BuildInviteUserToHouseholdRequest(helper.ctx, &types.HouseholdInvitationCreationRequestInput{})
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -312,7 +312,7 @@ func TestBuilder_BuildAddUserRequest(T *testing.T) {
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
-		exampleInput := fakes.BuildFakeHouseholdUserMembershipCreationRequestInput()
+		exampleInput := fakes.BuildFakeHouseholdInvitationCreationInput()
 
 		actual, err := helper.builder.BuildInviteUserToHouseholdRequest(helper.ctx, exampleInput)
 		assert.Nil(t, actual)
