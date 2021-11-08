@@ -151,7 +151,7 @@ func (q *SQLQuerier) checkRowsForErrorAndClose(ctx context.Context, rows databas
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if err := rows.Err(); err != nil {
 		q.logger.Error(err, "row error")
@@ -275,6 +275,8 @@ func (q *SQLQuerier) performWriteQuery(ctx context.Context, querier database.SQL
 
 		return sql.ErrNoRows
 	}
+
+	logger.Debug("query executed")
 
 	return nil
 }

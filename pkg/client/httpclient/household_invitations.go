@@ -13,7 +13,7 @@ func (c *Client) GetHouseholdInvitation(ctx context.Context, householdID, househ
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if householdID == "" {
 		return nil, ErrInvalidIDProvided
@@ -43,7 +43,7 @@ func (c *Client) GetPendingHouseholdInvitationsFromUser(ctx context.Context, fil
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 	filter.AttachToLogger(logger)
 
 	req, err := c.requestBuilder.BuildGetPendingHouseholdInvitationsFromUserRequest(ctx, filter)
@@ -64,7 +64,7 @@ func (c *Client) GetPendingHouseholdInvitationsForUser(ctx context.Context, filt
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 	filter.AttachToLogger(logger)
 
 	req, err := c.requestBuilder.BuildGetPendingHouseholdInvitationsForUserRequest(ctx, filter)
@@ -85,7 +85,7 @@ func (c *Client) CancelHouseholdInvitation(ctx context.Context, householdID, hou
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if householdID == "" {
 		return ErrInvalidIDProvided
@@ -114,7 +114,7 @@ func (c *Client) AcceptHouseholdInvitation(ctx context.Context, householdID, hou
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if householdID == "" {
 		return ErrInvalidIDProvided
@@ -143,7 +143,7 @@ func (c *Client) RejectHouseholdInvitation(ctx context.Context, householdID, hou
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if householdID == "" {
 		return ErrInvalidIDProvided

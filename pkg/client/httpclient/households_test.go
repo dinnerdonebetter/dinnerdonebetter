@@ -307,7 +307,7 @@ func (s *householdsTestSuite) TestClient_ArchiveHousehold() {
 	})
 }
 
-func (s *householdsTestSuite) TestClient_AddUserToHousehold() {
+func (s *householdsTestSuite) TestClient_InviteUserToHousehold() {
 	const expectedPathFormat = "/api/v1/households/%s/invite"
 
 	s.Run("standard", func() {
@@ -315,9 +315,11 @@ func (s *householdsTestSuite) TestClient_AddUserToHousehold() {
 
 		exampleInput := fakes.BuildFakeHouseholdInvitationCreationInput()
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, exampleInput.DestinationHousehold)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, &types.PreWriteResponse{ID: t.Name()})
 
-		assert.NoError(t, c.InviteUserToHousehold(s.ctx, exampleInput))
+		householdInviteID, err := c.InviteUserToHousehold(s.ctx, exampleInput)
+		assert.NotEmpty(t, householdInviteID)
+		assert.NoError(t, err)
 	})
 
 	s.Run("with nil input", func() {
@@ -325,7 +327,9 @@ func (s *householdsTestSuite) TestClient_AddUserToHousehold() {
 
 		c, _ := buildSimpleTestClient(t)
 
-		assert.Error(t, c.InviteUserToHousehold(s.ctx, nil))
+		householdInviteID, err := c.InviteUserToHousehold(s.ctx, nil)
+		assert.Empty(t, householdInviteID)
+		assert.Error(t, err)
 	})
 
 	s.Run("with invalid input", func() {
@@ -333,7 +337,9 @@ func (s *householdsTestSuite) TestClient_AddUserToHousehold() {
 
 		c, _ := buildSimpleTestClient(t)
 
-		assert.Error(t, c.InviteUserToHousehold(s.ctx, &types.HouseholdInvitationCreationRequestInput{}))
+		householdInviteID, err := c.InviteUserToHousehold(s.ctx, &types.HouseholdInvitationCreationRequestInput{})
+		assert.Empty(t, householdInviteID)
+		assert.Error(t, err)
 	})
 
 	s.Run("with error building request", func() {
@@ -342,7 +348,9 @@ func (s *householdsTestSuite) TestClient_AddUserToHousehold() {
 		c := buildTestClientWithInvalidURL(t)
 		exampleInput := fakes.BuildFakeHouseholdInvitationCreationInput()
 
-		assert.Error(t, c.InviteUserToHousehold(s.ctx, exampleInput))
+		householdInviteID, err := c.InviteUserToHousehold(s.ctx, exampleInput)
+		assert.Empty(t, householdInviteID)
+		assert.Error(t, err)
 	})
 
 	s.Run("with error executing request", func() {
@@ -351,7 +359,9 @@ func (s *householdsTestSuite) TestClient_AddUserToHousehold() {
 		exampleInput := fakes.BuildFakeHouseholdInvitationCreationInput()
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
-		assert.Error(t, c.InviteUserToHousehold(s.ctx, exampleInput))
+		householdInviteID, err := c.InviteUserToHousehold(s.ctx, exampleInput)
+		assert.Empty(t, householdInviteID)
+		assert.Error(t, err)
 	})
 }
 

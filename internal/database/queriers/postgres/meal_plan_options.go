@@ -108,7 +108,7 @@ func (q *SQLQuerier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealP
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
 		return false, ErrInvalidIDProvided
@@ -143,7 +143,7 @@ func (q *SQLQuerier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlan
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
@@ -180,7 +180,7 @@ func (q *SQLQuerier) GetTotalMealPlanOptionCount(ctx context.Context) (uint64, e
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	count, err := q.performCountQuery(ctx, q.db, getTotalMealPlanOptionsCountQuery, "fetching count of meal plan options")
 	if err != nil {
@@ -195,7 +195,7 @@ func (q *SQLQuerier) GetMealPlanOptions(ctx context.Context, mealPlanID string, 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
@@ -254,7 +254,7 @@ func (q *SQLQuerier) GetMealPlanOptionsWithIDs(ctx context.Context, mealPlanID s
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
@@ -374,7 +374,7 @@ func (q *SQLQuerier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, meal
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
 		return ErrInvalidIDProvided

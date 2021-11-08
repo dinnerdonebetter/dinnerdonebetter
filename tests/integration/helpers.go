@@ -42,7 +42,7 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T) (user *types.
 	user, err := testutils.CreateServiceUser(ctx, urlToUse, fakes.BuildFakeUser().Username)
 	require.NoError(t, err)
 
-	t.Logf("created user %q: %q", user.ID, user.Username)
+	t.Logf("created user %q with email address %s: %q", user.ID, user.EmailAddress, user.Username)
 
 	cookie, err = testutils.GetLoginCookie(ctx, urlToUse, user)
 	require.NoError(t, err)

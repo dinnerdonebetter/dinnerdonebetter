@@ -33,7 +33,6 @@ type (
 		encoderDecoder                 encoding.ServerEncoderDecoder
 		secretGenerator                random.Generator
 		preWritesPublisher             publishers.Publisher
-		preArchivesPublisher           publishers.Publisher
 		householdIDFetcher             func(*http.Request) string
 		householdInvitationIDFetcher   func(*http.Request) string
 		sessionContextDataFetcher      func(*http.Request) (*types.SessionContextData, error)
@@ -55,11 +54,6 @@ func ProvideHouseholdInvitationsService(
 		return nil, fmt.Errorf("setting up pre-writes producer: %w", err)
 	}
 
-	preArchivesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreArchivesTopicName)
-	if err != nil {
-		return nil, fmt.Errorf("setting up pre-archives producer: %w", err)
-	}
-
 	s := &service{
 		logger:                         logging.EnsureLogger(logger).WithName(serviceName),
 		userDataManager:                userDataManager,
@@ -67,7 +61,6 @@ func ProvideHouseholdInvitationsService(
 		encoderDecoder:                 encoder,
 		preWritesPublisher:             preWritesPublisher,
 		secretGenerator:                random.NewGenerator(logger),
-		preArchivesPublisher:           preArchivesPublisher,
 		sessionContextDataFetcher:      authservice.FetchContextFromRequest,
 		householdIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(householdsservice.HouseholdIDURIParamKey),
 		householdInvitationIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(HouseholdInvitationIDURIParamKey),

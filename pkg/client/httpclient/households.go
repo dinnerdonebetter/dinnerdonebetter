@@ -161,31 +161,32 @@ func (c *Client) ArchiveHousehold(ctx context.Context, householdID string) error
 }
 
 // InviteUserToHousehold adds a user to a household.
-func (c *Client) InviteUserToHousehold(ctx context.Context, input *types.HouseholdInvitationCreationRequestInput) error {
+func (c *Client) InviteUserToHousehold(ctx context.Context, input *types.HouseholdInvitationCreationRequestInput) (string, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
-		return ErrNilInputProvided
+		return "", ErrNilInputProvided
 	}
 
 	logger := c.logger.WithValue(keys.HouseholdIDKey, input.DestinationHousehold)
 	tracing.AttachHouseholdIDToSpan(span, input.DestinationHousehold)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return observability.PrepareError(err, logger, span, "validating input")
+		return "", observability.PrepareError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildInviteUserToHouseholdRequest(ctx, input)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building add user to household request")
+		return "", observability.PrepareError(err, logger, span, "building add user to household request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, logger, span, "adding user to household")
+	var pwr *types.PreWriteResponse
+	if err = c.fetchAndUnmarshal(ctx, req, &pwr); err != nil {
+		return "", observability.PrepareError(err, logger, span, "adding user to household")
 	}
 
-	return nil
+	return pwr.ID, nil
 }
 
 // MarkAsDefault marks a given household as the default for a given user.

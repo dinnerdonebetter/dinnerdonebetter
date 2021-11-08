@@ -102,7 +102,7 @@ func (q *SQLQuerier) ValidPreparationExists(ctx context.Context, validPreparatio
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if validPreparationID == "" {
 		return false, ErrInvalidIDProvided
@@ -129,7 +129,7 @@ func (q *SQLQuerier) GetValidPreparation(ctx context.Context, validPreparationID
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if validPreparationID == "" {
 		return nil, ErrInvalidIDProvided
@@ -158,7 +158,7 @@ func (q *SQLQuerier) GetTotalValidPreparationCount(ctx context.Context) (uint64,
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	count, err := q.performCountQuery(ctx, q.db, getTotalValidPreparationsCountQuery, "fetching count of valid preparations")
 	if err != nil {
@@ -173,7 +173,7 @@ func (q *SQLQuerier) GetValidPreparations(ctx context.Context, filter *types.Que
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	x = &types.ValidPreparationList{}
 	logger = filter.AttachToLogger(logger)
@@ -225,7 +225,7 @@ func (q *SQLQuerier) GetValidPreparationsWithIDs(ctx context.Context, limit uint
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if ids == nil {
 		return nil, ErrNilInputProvided
@@ -331,7 +331,7 @@ func (q *SQLQuerier) ArchiveValidPreparation(ctx context.Context, validPreparati
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if validPreparationID == "" {
 		return ErrInvalidIDProvided

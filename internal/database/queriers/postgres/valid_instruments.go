@@ -100,7 +100,7 @@ func (q *SQLQuerier) ValidInstrumentExists(ctx context.Context, validInstrumentI
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if validInstrumentID == "" {
 		return false, ErrInvalidIDProvided
@@ -127,7 +127,7 @@ func (q *SQLQuerier) GetValidInstrument(ctx context.Context, validInstrumentID s
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if validInstrumentID == "" {
 		return nil, ErrInvalidIDProvided
@@ -156,7 +156,7 @@ func (q *SQLQuerier) GetTotalValidInstrumentCount(ctx context.Context) (uint64, 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	count, err := q.performCountQuery(ctx, q.db, getTotalValidInstrumentsCountQuery, "fetching count of valid instruments")
 	if err != nil {
@@ -171,7 +171,7 @@ func (q *SQLQuerier) GetValidInstruments(ctx context.Context, filter *types.Quer
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	x = &types.ValidInstrumentList{}
 	logger = filter.AttachToLogger(logger)
@@ -223,7 +223,7 @@ func (q *SQLQuerier) GetValidInstrumentsWithIDs(ctx context.Context, limit uint8
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if ids == nil {
 		return nil, ErrNilInputProvided
@@ -332,7 +332,7 @@ func (q *SQLQuerier) ArchiveValidInstrument(ctx context.Context, validInstrument
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if validInstrumentID == "" {
 		return ErrInvalidIDProvided

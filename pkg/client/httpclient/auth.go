@@ -15,7 +15,7 @@ func (c *Client) UserStatus(ctx context.Context) (*types.UserStatusResponse, err
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	req, err := c.requestBuilder.BuildUserStatusRequest(ctx)
 	if err != nil {
@@ -68,7 +68,7 @@ func (c *Client) EndSession(ctx context.Context) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	req, err := c.requestBuilder.BuildLogoutRequest(ctx)
 	if err != nil {
@@ -101,7 +101,7 @@ func (c *Client) ChangePassword(ctx context.Context, cookie *http.Cookie, input 
 
 	// validating here requires settings knowledge, so we do not do it.
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	req, err := c.requestBuilder.BuildChangePasswordRequest(ctx, cookie, input)
 	if err != nil {
@@ -135,7 +135,7 @@ func (c *Client) CycleTwoFactorSecret(ctx context.Context, cookie *http.Cookie, 
 		return nil, ErrNilInputProvided
 	}
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "validating input")

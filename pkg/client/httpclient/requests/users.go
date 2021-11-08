@@ -148,7 +148,7 @@ func (b *Builder) BuildAvatarUploadRequest(ctx context.Context, avatar []byte, e
 		return nil, fmt.Errorf("%s: %w", extension, ErrInvalidPhotoEncodingForUpload)
 	}
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)

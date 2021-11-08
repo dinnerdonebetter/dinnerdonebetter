@@ -202,7 +202,7 @@ func (c *Client) IsUp(ctx context.Context) bool {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	req, err := c.requestBuilder.BuildHealthCheckRequest(ctx)
 	if err != nil {

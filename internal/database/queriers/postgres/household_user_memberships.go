@@ -80,7 +80,7 @@ func (q *SQLQuerier) scanHouseholdUserMemberships(ctx context.Context, rows data
 	defer span.End()
 
 	householdRolesMap = map[string][]string{}
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	for rows.Next() {
 		x, scanErr := q.scanHouseholdUserMembership(ctx, rows)
@@ -390,8 +390,8 @@ const addUserToHouseholdQuery = `
 	VALUES ($1,$2,$3,$4)
 `
 
-// AddUserToHousehold does a thing.
-func (q *SQLQuerier) AddUserToHousehold(ctx context.Context, input *types.HouseholdUserMembershipDatabaseCreationInput) error {
+// addUserToHousehold does a thing.
+func (q *SQLQuerier) addUserToHousehold(ctx context.Context, querier database.SQLQueryExecutor, input *types.HouseholdUserMembershipDatabaseCreationInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -415,13 +415,18 @@ func (q *SQLQuerier) AddUserToHousehold(ctx context.Context, input *types.Househ
 	}
 
 	// create the membership.
-	if err := q.performWriteQuery(ctx, q.db, "user household membership creation", addUserToHouseholdQuery, addUserToHouseholdArgs); err != nil {
+	if err := q.performWriteQuery(ctx, querier, "user household membership creation", addUserToHouseholdQuery, addUserToHouseholdArgs); err != nil {
 		return observability.PrepareError(err, logger, span, "performing user household membership creation query")
 	}
 
 	logger.Info("user added to household")
 
 	return nil
+}
+
+// AddUserToHousehold does a thing.
+func (q *SQLQuerier) AddUserToHousehold(ctx context.Context, input *types.HouseholdUserMembershipDatabaseCreationInput) error {
+	return q.addUserToHousehold(ctx, q.db, input)
 }
 
 const removeUserFromHouseholdQuery = `

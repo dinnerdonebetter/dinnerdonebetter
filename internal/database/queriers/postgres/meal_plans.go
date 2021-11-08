@@ -143,7 +143,7 @@ func (q *SQLQuerier) MealPlanExists(ctx context.Context, mealPlanID string) (exi
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
 		return false, ErrInvalidIDProvided
@@ -192,7 +192,7 @@ func (q *SQLQuerier) GetMealPlan(ctx context.Context, mealPlanID string) (*types
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
@@ -235,7 +235,7 @@ func (q *SQLQuerier) GetTotalMealPlanCount(ctx context.Context) (uint64, error) 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	count, err := q.performCountQuery(ctx, q.db, getTotalMealPlansCountQuery, "fetching count of meal plans")
 	if err != nil {
@@ -250,7 +250,7 @@ func (q *SQLQuerier) GetMealPlans(ctx context.Context, filter *types.QueryFilter
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	x = &types.MealPlanList{}
 	logger = filter.AttachToLogger(logger)
@@ -306,7 +306,7 @@ func (q *SQLQuerier) GetMealPlansWithIDs(ctx context.Context, householdID string
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if ids == nil {
 		return nil, ErrNilInputProvided
@@ -439,7 +439,7 @@ func (q *SQLQuerier) ArchiveMealPlan(ctx context.Context, mealPlanID, householdI
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
 		return ErrInvalidIDProvided

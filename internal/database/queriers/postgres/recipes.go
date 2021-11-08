@@ -182,7 +182,7 @@ func (q *SQLQuerier) RecipeExists(ctx context.Context, recipeID string) (exists 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if recipeID == "" {
 		return false, ErrInvalidIDProvided
@@ -343,7 +343,7 @@ func (q *SQLQuerier) GetRecipe(ctx context.Context, recipeID string) (*types.Rec
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
@@ -402,7 +402,7 @@ func (q *SQLQuerier) GetTotalRecipeCount(ctx context.Context) (uint64, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	count, err := q.performCountQuery(ctx, q.db, getTotalRecipesCountQuery, "fetching count of recipes")
 	if err != nil {
@@ -417,7 +417,7 @@ func (q *SQLQuerier) GetRecipes(ctx context.Context, filter *types.QueryFilter) 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	x = &types.RecipeList{}
 	logger = filter.AttachToLogger(logger)
@@ -473,7 +473,7 @@ func (q *SQLQuerier) GetRecipesWithIDs(ctx context.Context, userID string, limit
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if ids == nil {
 		return nil, ErrNilInputProvided
@@ -606,7 +606,7 @@ func (q *SQLQuerier) ArchiveRecipe(ctx context.Context, recipeID, userID string)
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if recipeID == "" {
 		return ErrInvalidIDProvided

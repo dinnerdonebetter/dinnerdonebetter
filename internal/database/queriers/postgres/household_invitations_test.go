@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
+	"strings"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -689,7 +690,7 @@ func TestSQLQuerier_setInvitationStatus(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult(exampleHouseholdInvitation.ID))
 
-		err := c.setInvitationStatus(ctx, exampleHouseholdID, exampleHouseholdInvitation.ID, exampleHouseholdInvitation.Note, exampleHouseholdInvitation.Status)
+		err := c.setInvitationStatus(ctx, c.db, exampleHouseholdID, exampleHouseholdInvitation.ID, exampleHouseholdInvitation.Note, exampleHouseholdInvitation.Status)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, db)
@@ -702,8 +703,9 @@ func TestSQLQuerier_setInvitationStatus(T *testing.T) {
 		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
 
 		c, _ := buildTestClient(t)
+		queryExecutor := &database.MockQueryExecutor{}
 
-		err := c.setInvitationStatus(ctx, "", exampleHouseholdInvitation.ID, exampleHouseholdInvitation.Note, exampleHouseholdInvitation.Status)
+		err := c.setInvitationStatus(ctx, queryExecutor, "", exampleHouseholdInvitation.ID, exampleHouseholdInvitation.Note, exampleHouseholdInvitation.Status)
 		assert.Error(t, err)
 	})
 
@@ -716,7 +718,7 @@ func TestSQLQuerier_setInvitationStatus(T *testing.T) {
 
 		c, _ := buildTestClient(t)
 
-		err := c.setInvitationStatus(ctx, exampleHouseholdID, "", exampleHouseholdInvitation.Note, exampleHouseholdInvitation.Status)
+		err := c.setInvitationStatus(ctx, c.db, exampleHouseholdID, "", exampleHouseholdInvitation.Note, exampleHouseholdInvitation.Status)
 		assert.Error(t, err)
 	})
 
@@ -740,7 +742,7 @@ func TestSQLQuerier_setInvitationStatus(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		err := c.setInvitationStatus(ctx, exampleHouseholdID, exampleHouseholdInvitation.ID, exampleHouseholdInvitation.Note, exampleHouseholdInvitation.Status)
+		err := c.setInvitationStatus(ctx, c.db, exampleHouseholdID, exampleHouseholdInvitation.ID, exampleHouseholdInvitation.Note, exampleHouseholdInvitation.Status)
 		assert.Error(t, err)
 
 		mock.AssertExpectationsForObjects(t, db)
@@ -789,6 +791,8 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
+		db.ExpectBegin()
+
 		args := []interface{}{
 			types.AcceptedHouseholdInvitationStatus,
 			exampleHouseholdInvitation.Note,
@@ -799,6 +803,27 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 		db.ExpectExec(formatQueryForSQLMock(setInvitationStatusQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult(exampleHouseholdInvitation.ID))
+
+		invitationLookupArgs := []interface{}{
+			exampleHouseholdID,
+			exampleHouseholdInvitation.ID,
+		}
+		db.ExpectQuery(formatQueryForSQLMock(getHouseholdInvitationByHouseholdAndIDQuery)).
+			WithArgs(interfaceToDriverValue(invitationLookupArgs)...).
+			WillReturnRows(buildMockRowsFromHouseholdInvitations(false, 0, exampleHouseholdInvitation))
+
+		addUserToHouseholdArgs := []interface{}{
+			&idMatcher{},
+			*exampleHouseholdInvitation.ToUser,
+			exampleHouseholdID,
+			strings.Join([]string{}, householdMemberRolesSeparator),
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(addUserToHouseholdQuery)).
+			WithArgs(interfaceToDriverValue(addUserToHouseholdArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult(exampleHouseholdInvitation.ID))
+
+		db.ExpectCommit()
 
 		err := c.AcceptHouseholdInvitation(ctx, exampleHouseholdID, exampleHouseholdInvitation.ID, exampleHouseholdInvitation.Note)
 		assert.NoError(t, err)

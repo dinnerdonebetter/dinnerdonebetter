@@ -66,13 +66,13 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 
 	input := types.HouseholdInvitationDatabaseCreationInputFromHouseholdInvitationCreationInput(providedInput)
 
-	token, err := s.secretGenerator.GenerateRawBytes(ctx, 32)
+	token, err := s.secretGenerator.GenerateBase64EncodedString(ctx, 64)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "generating invitation token")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
-	input.Token = string(token)
+	input.Token = token
 
 	userID, err := s.userDataManager.GetUserIDByEmail(ctx, input.ToEmail)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {

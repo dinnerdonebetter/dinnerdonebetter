@@ -14,7 +14,7 @@ func (c *Client) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanOpti
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
@@ -73,7 +73,7 @@ func (c *Client) CreateMealPlanOption(ctx context.Context, input *types.MealPlan
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if input == nil {
 		return "", ErrNilInputProvided
@@ -101,7 +101,7 @@ func (c *Client) UpdateMealPlanOption(ctx context.Context, mealPlanOption *types
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if mealPlanOption == nil {
 		return ErrNilInputProvided
@@ -126,7 +126,7 @@ func (c *Client) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlan
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if mealPlanID == "" {
 		return ErrInvalidIDProvided

@@ -459,7 +459,7 @@ func (q *SQLQuerier) GetAllUsersCount(ctx context.Context) (uint64, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	count, err := q.performCountQuery(ctx, q.db, getAllUsersCountQuery, "fetching count of users")
 	if err != nil {

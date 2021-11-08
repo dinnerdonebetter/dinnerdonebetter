@@ -19,7 +19,7 @@ func (b *Builder) BuildGetMealPlanRequest(ctx context.Context, mealPlanID string
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
@@ -71,7 +71,7 @@ func (b *Builder) BuildCreateMealPlanRequest(ctx context.Context, input *types.M
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -101,7 +101,7 @@ func (b *Builder) BuildUpdateMealPlanRequest(ctx context.Context, mealPlan *type
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	if mealPlan == nil {
 		return nil, ErrNilInputProvided
@@ -131,7 +131,7 @@ func (b *Builder) BuildArchiveMealPlanRequest(ctx context.Context, mealPlanID st
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided

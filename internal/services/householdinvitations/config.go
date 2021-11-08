@@ -10,11 +10,10 @@ import (
 
 // Config represents our database configuration.
 type Config struct {
-	_                    struct{}
-	Logging              logging.Config `json:"logging" mapstructure:"logging" toml:"logging,omitempty"`
-	PreWritesTopicName   string         `json:"pre_writes_topic_name" mapstructure:"pre_writes_topic_name" toml:"pre_writes_topic_name,omitempty"`
-	PreArchivesTopicName string         `json:"pre_archives_topic_name" mapstructure:"pre_archives_topic_name" toml:"pre_archives_topic_name,omitempty"`
-	Debug                bool           `json:"debug" mapstructure:"debug" toml:"debug,omitempty"`
+	_                  struct{}
+	Logging            logging.Config `json:"logging" mapstructure:"logging" toml:"logging,omitempty"`
+	PreWritesTopicName string         `json:"pre_writes_topic_name" mapstructure:"pre_writes_topic_name" toml:"pre_writes_topic_name,omitempty"`
+	Debug              bool           `json:"debug" mapstructure:"debug" toml:"debug,omitempty"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

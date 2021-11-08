@@ -452,7 +452,7 @@ func (w *PreWritesWorker) HandleMessage(ctx context.Context, message []byte) err
 		if w.postWritesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  msg.DataType,
-				MessageType:               "userMembershipCreated",
+				MessageType:               "householdInvitationCreated",
 				HouseholdInvitation:       householdInvitation,
 				AttributableToUserID:      msg.AttributableToUserID,
 				AttributableToHouseholdID: msg.AttributableToHouseholdID,

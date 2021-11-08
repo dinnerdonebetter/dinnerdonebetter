@@ -16,7 +16,7 @@ func (c *Client) SubscribeToDataChangeNotifications(ctx context.Context, stopCha
 		stopChan = make(chan bool)
 	}
 
-	logger := c.logger
+	logger := c.logger.Clone()
 	uri := c.requestBuilder.BuildSubscribeToDataChangesWebsocketURL(ctx)
 
 	header, err := c.authHeaderBuilder.BuildRequestHeaders(ctx)

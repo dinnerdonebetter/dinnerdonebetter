@@ -203,7 +203,7 @@ func (s *service) LogoutUser(ctx context.Context, req *http.Request, res http.Re
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger
+	logger := s.logger.Clone()
 	tracing.AttachRequestToSpan(span, req)
 
 	ctx, loadErr := s.sessionManager.Load(ctx, "")

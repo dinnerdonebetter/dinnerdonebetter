@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"fmt"
+	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
 	"log"
 	"os"
 	"path/filepath"
@@ -56,9 +57,6 @@ const (
 
 	// database providers.
 	postgres = "postgres"
-
-	// test user stuff.
-	defaultPassword = "password"
 
 	localElasticsearchLocation = "http://elasticsearch:9200"
 
@@ -224,6 +222,9 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 		},
 		Services: config.ServicesConfigurations{
 			Households: householdsservice.Config{
+				PreWritesTopicName: preWritesTopicName,
+			},
+			HouseholdInvitations: householdinvitationsservice.Config{
 				PreWritesTopicName: preWritesTopicName,
 			},
 			Auth: authservice.Config{
@@ -423,6 +424,9 @@ func frontendTestsConfig(ctx context.Context, filePath string) error {
 		},
 		Services: config.ServicesConfigurations{
 			Households: householdsservice.Config{
+				PreWritesTopicName: preWritesTopicName,
+			},
+			HouseholdInvitations: householdinvitationsservice.Config{
 				PreWritesTopicName: preWritesTopicName,
 			},
 			Auth: authservice.Config{
@@ -631,6 +635,9 @@ func buildIntegrationTestForDBImplementation(dbVendor, dbDetails string) configF
 			},
 			Services: config.ServicesConfigurations{
 				Households: householdsservice.Config{
+					PreWritesTopicName: preWritesTopicName,
+				},
+				HouseholdInvitations: householdinvitationsservice.Config{
 					PreWritesTopicName: preWritesTopicName,
 				},
 				Auth: authservice.Config{

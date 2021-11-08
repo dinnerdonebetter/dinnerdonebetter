@@ -146,7 +146,7 @@ func (c *Client) UploadNewAvatar(ctx context.Context, avatar []byte, extension s
 		return fmt.Errorf("%w: %d", ErrInvalidAvatarSize, len(avatar))
 	}
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	ex := strings.ToLower(strings.TrimSpace(extension))
 	if ex != jpeg && ex != png && ex != gif {

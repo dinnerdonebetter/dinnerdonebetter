@@ -48,7 +48,7 @@ func (b *Builder) BuildGetPendingHouseholdInvitationsFromUserRequest(ctx context
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	uri := b.BuildURL(ctx, filter.ToValues(), "household_invitations", "sent")
 
@@ -65,7 +65,7 @@ func (b *Builder) BuildGetPendingHouseholdInvitationsForUserRequest(ctx context.
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	uri := b.BuildURL(ctx, filter.ToValues(), "household_invitations", "received")
 
@@ -82,7 +82,7 @@ func (b *Builder) BuildCancelHouseholdInvitationRequest(ctx context.Context, hou
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	uri := b.BuildURL(
 		ctx,
@@ -91,6 +91,7 @@ func (b *Builder) BuildCancelHouseholdInvitationRequest(ctx context.Context, hou
 		householdID,
 		invitationsBasePath,
 		invitationID,
+		"cancel",
 	)
 	logger = logger.WithValue(keys.URLKey, uri)
 
@@ -108,7 +109,7 @@ func (b *Builder) BuildAcceptHouseholdInvitationRequest(ctx context.Context, hou
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	uri := b.BuildURL(
 		ctx,
@@ -117,6 +118,7 @@ func (b *Builder) BuildAcceptHouseholdInvitationRequest(ctx context.Context, hou
 		householdID,
 		invitationsBasePath,
 		invitationID,
+		"accept",
 	)
 	logger = logger.WithValue(keys.URLKey, uri)
 
@@ -134,7 +136,7 @@ func (b *Builder) BuildRejectHouseholdInvitationRequest(ctx context.Context, hou
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	uri := b.BuildURL(
 		ctx,
@@ -143,6 +145,7 @@ func (b *Builder) BuildRejectHouseholdInvitationRequest(ctx context.Context, hou
 		householdID,
 		invitationsBasePath,
 		invitationID,
+		"reject",
 	)
 	logger = logger.WithValue(keys.URLKey, uri)
 

@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS household_invitations (
     "from_user" CHAR(27) NOT NULL REFERENCES users("id") ON DELETE CASCADE,
     "status" invitation_state NOT NULL DEFAULT 'pending',
     "note" TEXT NOT NULL DEFAULT '',
+    "status_note" TEXT NOT NULL DEFAULT '',
     "token" TEXT NOT NULL,
     "created_on" BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
     "last_updated_on" BIGINT DEFAULT NULL,

@@ -14,7 +14,7 @@ func (c *Client) GetValidIngredientPreparation(ctx context.Context, validIngredi
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if validIngredientPreparationID == "" {
 		return nil, ErrInvalidIDProvided
@@ -61,7 +61,7 @@ func (c *Client) CreateValidIngredientPreparation(ctx context.Context, input *ty
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if input == nil {
 		return "", ErrNilInputProvided
@@ -89,7 +89,7 @@ func (c *Client) UpdateValidIngredientPreparation(ctx context.Context, validIngr
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if validIngredientPreparation == nil {
 		return ErrNilInputProvided
@@ -114,7 +114,7 @@ func (c *Client) ArchiveValidIngredientPreparation(ctx context.Context, validIng
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if validIngredientPreparationID == "" {
 		return ErrInvalidIDProvided

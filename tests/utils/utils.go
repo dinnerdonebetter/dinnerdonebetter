@@ -45,8 +45,9 @@ func CreateServiceUser(ctx context.Context, address, username string) (*types.Us
 	}
 
 	in := &types.UserRegistrationInput{
-		Username: username,
-		Password: gofakeit.Password(true, true, true, true, true, 64),
+		EmailAddress: gofakeit.Email(),
+		Username:     username,
+		Password:     gofakeit.Password(true, true, true, true, true, 64),
 	}
 
 	ucr, err := c.CreateUser(ctx, in)
@@ -64,12 +65,13 @@ func CreateServiceUser(ctx context.Context, address, username string) (*types.Us
 	}
 
 	u := &types.User{
-		ID:       ucr.CreatedUserID,
-		Username: ucr.Username,
-		// this is a dirty trick to reuse most of this model,
-		HashedPassword:  in.Password,
+		ID:              ucr.CreatedUserID,
+		Username:        ucr.Username,
+		EmailAddress:    ucr.EmailAddress,
 		TwoFactorSecret: ucr.TwoFactorSecret,
 		CreatedOn:       ucr.CreatedOn,
+		// this is a dirty trick to reuse most of this model,
+		HashedPassword: in.Password,
 	}
 
 	return u, nil
