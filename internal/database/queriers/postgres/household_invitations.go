@@ -64,7 +64,7 @@ func (q *SQLQuerier) scanHouseholdInvitation(ctx context.Context, scan database.
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "scanning householdInvitation")
+		return nil, 0, 0, observability.PrepareError(err, logger, span, "scanning household invitation")
 	}
 
 	return householdInvitation, filteredCount, totalCount, nil
@@ -317,20 +317,31 @@ func (q *SQLQuerier) BuildGetPendingHouseholdInvitationsFromUserQuery(ctx contex
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	queryBuilder := q.sqlBuilder.Select(householdInvitationsTableColumns...).
+	where := squirrel.Eq{
+		"household_invitations.from_user":   userID,
+		"household_invitations.archived_on": nil,
+		"household_invitations.status":      types.PendingHouseholdInvitationStatus,
+	}
+
+	filteredCountQuery, filteredCountQueryArgs := q.buildFilteredCountQuery(ctx, "household_invitations", nil, where, "", "", false, false, filter)
+	totalCountQuery, totalCountQueryArgs := q.buildTotalCountQuery(ctx, "household_invitations", nil, where, "", "", false, false)
+
+	queryBuilder := q.sqlBuilder.Select(
+		append(
+			householdInvitationsTableColumns,
+			fmt.Sprintf("(%s) as total_count", totalCountQuery),
+			fmt.Sprintf("(%s) as filtered_count", filteredCountQuery),
+		)...,
+	).
 		From("household_invitations").
-		Where(squirrel.Eq{
-			"household_invitations.from_user":   userID,
-			"household_invitations.archived_on": nil,
-			"household_invitations.status":      types.PendingHouseholdInvitationStatus,
-		})
+		Where(where)
 
 	queryBuilder = applyFilterToQueryBuilder(filter, "household_invitations", queryBuilder)
 
 	query, args, err := queryBuilder.ToSql()
 	q.logQueryBuildingError(span, err)
 
-	return query, args
+	return query, append(append(filteredCountQueryArgs, totalCountQueryArgs...), args...)
 }
 
 // GetPendingHouseholdInvitationsFromUser fetches pending household invitations sent from a given user.
@@ -371,20 +382,31 @@ func (q *SQLQuerier) BuildGetPendingHouseholdInvitationsForUserQuery(ctx context
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	queryBuilder := q.sqlBuilder.Select(householdInvitationsTableColumns...).
+	where := squirrel.Eq{
+		"household_invitations.to_user":     userID,
+		"household_invitations.archived_on": nil,
+		"household_invitations.status":      types.PendingHouseholdInvitationStatus,
+	}
+
+	filteredCountQuery, filteredCountQueryArgs := q.buildFilteredCountQuery(ctx, "household_invitations", nil, where, "", "", false, false, filter)
+	totalCountQuery, totalCountQueryArgs := q.buildTotalCountQuery(ctx, "household_invitations", nil, where, "", "", false, false)
+
+	queryBuilder := q.sqlBuilder.Select(
+		append(
+			householdInvitationsTableColumns,
+			fmt.Sprintf("(%s) as total_count", totalCountQuery),
+			fmt.Sprintf("(%s) as filtered_count", filteredCountQuery),
+		)...,
+	).
 		From("household_invitations").
-		Where(squirrel.Eq{
-			"household_invitations.to_user":     userID,
-			"household_invitations.archived_on": nil,
-			"household_invitations.status":      types.PendingHouseholdInvitationStatus,
-		})
+		Where(where)
 
 	queryBuilder = applyFilterToQueryBuilder(filter, "household_invitations", queryBuilder)
 
 	query, args, err := queryBuilder.ToSql()
 	q.logQueryBuildingError(span, err)
 
-	return query, args
+	return query, append(append(filteredCountQueryArgs, totalCountQueryArgs...), args...)
 }
 
 // GetPendingHouseholdInvitationsForUser fetches pending household invitations sent to a given user.

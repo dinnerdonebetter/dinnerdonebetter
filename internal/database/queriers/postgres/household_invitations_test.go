@@ -483,8 +483,12 @@ func TestSQLQuerier_BuildGetPendingHouseholdInvitationsFromUserQuery(T *testing.
 		userID := fakes.BuildFakeID()
 		filter := types.DefaultQueryFilter()
 
-		expectedQuery := "SELECT household_invitations.id, household_invitations.destination_household, household_invitations.to_email, household_invitations.to_user, household_invitations.from_user, household_invitations.status, household_invitations.note, household_invitations.status_note, household_invitations.token, household_invitations.created_on, household_invitations.last_updated_on, household_invitations.archived_on FROM household_invitations WHERE household_invitations.archived_on IS NULL AND household_invitations.from_user = $1 AND household_invitations.status = $2 LIMIT 20"
+		expectedQuery := "SELECT household_invitations.id, household_invitations.destination_household, household_invitations.to_email, household_invitations.to_user, household_invitations.from_user, household_invitations.status, household_invitations.note, household_invitations.status_note, household_invitations.token, household_invitations.created_on, household_invitations.last_updated_on, household_invitations.archived_on, (SELECT COUNT(household_invitations.id) FROM household_invitations WHERE household_invitations.archived_on IS NULL AND household_invitations.from_user = $1 AND household_invitations.status = $2) as total_count, (SELECT COUNT(household_invitations.id) FROM household_invitations WHERE household_invitations.archived_on IS NULL AND household_invitations.from_user = $3 AND household_invitations.status = $4) as filtered_count FROM household_invitations WHERE household_invitations.archived_on IS NULL AND household_invitations.from_user = $5 AND household_invitations.status = $6 LIMIT 20"
 		expectedArgs := []interface{}{
+			userID,
+			types.PendingHouseholdInvitationStatus,
+			userID,
+			types.PendingHouseholdInvitationStatus,
 			userID,
 			types.PendingHouseholdInvitationStatus,
 		}
@@ -580,8 +584,12 @@ func TestSQLQuerier_BuildGetPendingHouseholdInvitationsForUserQuery(T *testing.T
 		userID := fakes.BuildFakeID()
 		filter := types.DefaultQueryFilter()
 
-		expectedQuery := "SELECT household_invitations.id, household_invitations.destination_household, household_invitations.to_email, household_invitations.to_user, household_invitations.from_user, household_invitations.status, household_invitations.note, household_invitations.status_note, household_invitations.token, household_invitations.created_on, household_invitations.last_updated_on, household_invitations.archived_on FROM household_invitations WHERE household_invitations.archived_on IS NULL AND household_invitations.status = $1 AND household_invitations.to_user = $2 LIMIT 20"
+		expectedQuery := "SELECT household_invitations.id, household_invitations.destination_household, household_invitations.to_email, household_invitations.to_user, household_invitations.from_user, household_invitations.status, household_invitations.note, household_invitations.status_note, household_invitations.token, household_invitations.created_on, household_invitations.last_updated_on, household_invitations.archived_on, (SELECT COUNT(household_invitations.id) FROM household_invitations WHERE household_invitations.archived_on IS NULL AND household_invitations.status = $1 AND household_invitations.to_user = $2) as total_count, (SELECT COUNT(household_invitations.id) FROM household_invitations WHERE household_invitations.archived_on IS NULL AND household_invitations.status = $3 AND household_invitations.to_user = $4) as filtered_count FROM household_invitations WHERE household_invitations.archived_on IS NULL AND household_invitations.status = $5 AND household_invitations.to_user = $6 LIMIT 20"
 		expectedArgs := []interface{}{
+			types.PendingHouseholdInvitationStatus,
+			userID,
+			types.PendingHouseholdInvitationStatus,
+			userID,
 			types.PendingHouseholdInvitationStatus,
 			userID,
 		}
