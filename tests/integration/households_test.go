@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/brianvoe/gofakeit/v5"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -318,17 +319,22 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 			require.Equal(t, relevantHouseholdID, createdWebhook.BelongsToHousehold)
 
-			t.Logf("creating user to invite")
-			u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
-
 			t.Logf("inviting user")
-			invitationID, err := testClients.main.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
+			inviteReq := &types.HouseholdInvitationCreationRequestInput{
 				FromUser:             s.user.ID,
 				Note:                 t.Name(),
-				ToEmail:              u.EmailAddress,
+				ToEmail:              gofakeit.Email(),
 				DestinationHousehold: relevantHouseholdID,
-			})
+			}
+			invitationID, err := testClients.main.InviteUserToHousehold(ctx, inviteReq)
 			require.NoError(t, err)
+
+			t.Logf("creating user to invite")
+			_, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
+				EmailAddress: inviteReq.ToEmail,
+				Username:     fakes.BuildFakeUser().Username,
+				Password:     gofakeit.Password(true, true, true, true, true, 64),
+			})
 
 			n = <-notificationsChan
 			assert.Equal(t, n.DataType, types.HouseholdInvitationDataType)
