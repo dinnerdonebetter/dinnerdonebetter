@@ -23,8 +23,8 @@ const (
 	UpdateHouseholdPermission Permission = "update.household"
 	// ArchiveHouseholdPermission is a household admin permission.
 	ArchiveHouseholdPermission Permission = "archive.household"
-	// AddMemberHouseholdPermission is a household admin permission.
-	AddMemberHouseholdPermission Permission = "household.add.member"
+	// InviteUserToHouseholdPermission is a household admin permission.
+	InviteUserToHouseholdPermission Permission = "household.add.member"
 	// ModifyMemberPermissionsForHouseholdPermission is a household admin permission.
 	ModifyMemberPermissionsForHouseholdPermission Permission = "household.membership.modify"
 	// RemoveMemberHouseholdPermission is a household admin permission.
@@ -202,7 +202,7 @@ var (
 	householdAdminPermissions = map[string]gorbac.Permission{
 		UpdateHouseholdPermission.ID():                     UpdateHouseholdPermission,
 		ArchiveHouseholdPermission.ID():                    ArchiveHouseholdPermission,
-		AddMemberHouseholdPermission.ID():                  AddMemberHouseholdPermission,
+		InviteUserToHouseholdPermission.ID():               InviteUserToHouseholdPermission,
 		ModifyMemberPermissionsForHouseholdPermission.ID(): ModifyMemberPermissionsForHouseholdPermission,
 		RemoveMemberHouseholdPermission.ID():               RemoveMemberHouseholdPermission,
 		TransferHouseholdPermission.ID():                   TransferHouseholdPermission,
@@ -213,10 +213,7 @@ var (
 		CreateAPIClientsPermission.ID():                    CreateAPIClientsPermission,
 		ReadAPIClientsPermission.ID():                      ReadAPIClientsPermission,
 		ArchiveAPIClientsPermission.ID():                   ArchiveAPIClientsPermission,
-	}
 
-	// household member permissions.
-	householdMemberPermissions = map[string]gorbac.Permission{
 		CreateValidInstrumentsPermission.ID():  CreateValidInstrumentsPermission,
 		ReadValidInstrumentsPermission.ID():    ReadValidInstrumentsPermission,
 		SearchValidInstrumentsPermission.ID():  SearchValidInstrumentsPermission,
@@ -240,6 +237,11 @@ var (
 		SearchValidIngredientPreparationsPermission.ID():  SearchValidIngredientPreparationsPermission,
 		UpdateValidIngredientPreparationsPermission.ID():  UpdateValidIngredientPreparationsPermission,
 		ArchiveValidIngredientPreparationsPermission.ID(): ArchiveValidIngredientPreparationsPermission,
+	}
+
+	// household member permissions.
+	householdMemberPermissions = map[string]gorbac.Permission{
+		ReadWebhooksPermission.ID(): ReadWebhooksPermission,
 
 		CreateRecipesPermission.ID():  CreateRecipesPermission,
 		ReadRecipesPermission.ID():    ReadRecipesPermission,

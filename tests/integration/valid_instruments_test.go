@@ -43,7 +43,7 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.admin.SubscribeToDataChangeNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -52,7 +52,7 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			t.Log("creating valid instrument")
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
 			exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
-			createdValidInstrumentID, err := testClients.main.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+			createdValidInstrumentID, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 			require.NoError(t, err)
 			t.Logf("valid instrument %q created", createdValidInstrumentID)
 
@@ -61,7 +61,7 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			require.NotNil(t, n.ValidInstrument)
 			checkValidInstrumentEquality(t, exampleValidInstrument, n.ValidInstrument)
 
-			createdValidInstrument, err := testClients.main.GetValidInstrument(ctx, createdValidInstrumentID)
+			createdValidInstrument, err := testClients.admin.GetValidInstrument(ctx, createdValidInstrumentID)
 			requireNotNilAndNoProblems(t, createdValidInstrument, err)
 
 			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
@@ -69,13 +69,13 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			t.Log("changing valid instrument")
 			newValidInstrument := fakes.BuildFakeValidInstrument()
 			createdValidInstrument.Update(convertValidInstrumentToValidInstrumentUpdateInput(newValidInstrument))
-			assert.NoError(t, testClients.main.UpdateValidInstrument(ctx, createdValidInstrument))
+			assert.NoError(t, testClients.admin.UpdateValidInstrument(ctx, createdValidInstrument))
 
 			n = <-notificationsChan
 			assert.Equal(t, n.DataType, types.ValidInstrumentDataType)
 
 			t.Log("fetching changed valid instrument")
-			actual, err := testClients.main.GetValidInstrument(ctx, createdValidInstrumentID)
+			actual, err := testClients.admin.GetValidInstrument(ctx, createdValidInstrumentID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert valid instrument equality
@@ -83,7 +83,7 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedOn)
 
 			t.Log("cleaning up valid instrument")
-			assert.NoError(t, testClients.main.ArchiveValidInstrument(ctx, createdValidInstrumentID))
+			assert.NoError(t, testClients.admin.ArchiveValidInstrument(ctx, createdValidInstrumentID))
 		}
 	})
 
@@ -98,13 +98,13 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			t.Log("creating valid instrument")
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
 			exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
-			createdValidInstrumentID, err := testClients.main.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+			createdValidInstrumentID, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 			require.NoError(t, err)
 			t.Logf("valid instrument %q created", createdValidInstrumentID)
 
 			var createdValidInstrument *types.ValidInstrument
 			checkFunc = func() bool {
-				createdValidInstrument, err = testClients.main.GetValidInstrument(ctx, createdValidInstrumentID)
+				createdValidInstrument, err = testClients.admin.GetValidInstrument(ctx, createdValidInstrumentID)
 				return assert.NotNil(t, createdValidInstrument) && assert.NoError(t, err)
 			}
 			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
@@ -116,14 +116,14 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			// change valid instrument
 			newValidInstrument := fakes.BuildFakeValidInstrument()
 			createdValidInstrument.Update(convertValidInstrumentToValidInstrumentUpdateInput(newValidInstrument))
-			assert.NoError(t, testClients.main.UpdateValidInstrument(ctx, createdValidInstrument))
+			assert.NoError(t, testClients.admin.UpdateValidInstrument(ctx, createdValidInstrument))
 
 			time.Sleep(2 * time.Second)
 
 			// retrieve changed valid instrument
 			var actual *types.ValidInstrument
 			checkFunc = func() bool {
-				actual, err = testClients.main.GetValidInstrument(ctx, createdValidInstrumentID)
+				actual, err = testClients.admin.GetValidInstrument(ctx, createdValidInstrumentID)
 				return assert.NotNil(t, createdValidInstrument) && assert.NoError(t, err)
 			}
 			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
@@ -135,7 +135,7 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedOn)
 
 			t.Log("cleaning up valid instrument")
-			assert.NoError(t, testClients.main.ArchiveValidInstrument(ctx, createdValidInstrumentID))
+			assert.NoError(t, testClients.admin.ArchiveValidInstrument(ctx, createdValidInstrumentID))
 		}
 	})
 }
@@ -149,7 +149,7 @@ func (s *TestSuite) TestValidInstruments_Listing() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.admin.SubscribeToDataChangeNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -160,7 +160,7 @@ func (s *TestSuite) TestValidInstruments_Listing() {
 			for i := 0; i < 5; i++ {
 				exampleValidInstrument := fakes.BuildFakeValidInstrument()
 				exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
-				createdValidInstrumentID, createdValidInstrumentErr := testClients.main.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+				createdValidInstrumentID, createdValidInstrumentErr := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 				require.NoError(t, createdValidInstrumentErr)
 				t.Logf("valid instrument %q created", createdValidInstrumentID)
 
@@ -169,14 +169,14 @@ func (s *TestSuite) TestValidInstruments_Listing() {
 				require.NotNil(t, n.ValidInstrument)
 				checkValidInstrumentEquality(t, exampleValidInstrument, n.ValidInstrument)
 
-				createdValidInstrument, createdValidInstrumentErr := testClients.main.GetValidInstrument(ctx, createdValidInstrumentID)
+				createdValidInstrument, createdValidInstrumentErr := testClients.admin.GetValidInstrument(ctx, createdValidInstrumentID)
 				requireNotNilAndNoProblems(t, createdValidInstrument, createdValidInstrumentErr)
 
 				expected = append(expected, createdValidInstrument)
 			}
 
 			// assert valid instrument list equality
-			actual, err := testClients.main.GetValidInstruments(ctx, nil)
+			actual, err := testClients.admin.GetValidInstruments(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -188,7 +188,7 @@ func (s *TestSuite) TestValidInstruments_Listing() {
 
 			t.Log("cleaning up")
 			for _, createdValidInstrument := range expected {
-				assert.NoError(t, testClients.main.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
+				assert.NoError(t, testClients.admin.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
 			}
 		}
 	})
@@ -206,12 +206,12 @@ func (s *TestSuite) TestValidInstruments_Listing() {
 			for i := 0; i < 5; i++ {
 				exampleValidInstrument := fakes.BuildFakeValidInstrument()
 				exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
-				createdValidInstrumentID, err := testClients.main.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+				createdValidInstrumentID, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 				require.NoError(t, err)
 
 				var createdValidInstrument *types.ValidInstrument
 				checkFunc = func() bool {
-					createdValidInstrument, err = testClients.main.GetValidInstrument(ctx, createdValidInstrumentID)
+					createdValidInstrument, err = testClients.admin.GetValidInstrument(ctx, createdValidInstrumentID)
 					return assert.NotNil(t, createdValidInstrument) && assert.NoError(t, err)
 				}
 				assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
@@ -221,7 +221,7 @@ func (s *TestSuite) TestValidInstruments_Listing() {
 			}
 
 			// assert valid instrument list equality
-			actual, err := testClients.main.GetValidInstruments(ctx, nil)
+			actual, err := testClients.admin.GetValidInstruments(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -233,7 +233,7 @@ func (s *TestSuite) TestValidInstruments_Listing() {
 
 			t.Log("cleaning up")
 			for _, createdValidInstrument := range expected {
-				assert.NoError(t, testClients.main.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
+				assert.NoError(t, testClients.admin.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
 			}
 		}
 	})
@@ -248,7 +248,7 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.admin.SubscribeToDataChangeNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -262,7 +262,7 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 			for i := 0; i < 5; i++ {
 				exampleValidInstrument.Name = fmt.Sprintf("%s %d", searchQuery, i)
 				exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
-				createdValidInstrumentID, createdValidInstrumentErr := testClients.main.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+				createdValidInstrumentID, createdValidInstrumentErr := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 				require.NoError(t, createdValidInstrumentErr)
 				t.Logf("valid instrument %q created", createdValidInstrumentID)
 
@@ -271,7 +271,7 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 				require.NotNil(t, n.ValidInstrument)
 				checkValidInstrumentEquality(t, exampleValidInstrument, n.ValidInstrument)
 
-				createdValidInstrument, createdValidInstrumentErr := testClients.main.GetValidInstrument(ctx, createdValidInstrumentID)
+				createdValidInstrument, createdValidInstrumentErr := testClients.admin.GetValidInstrument(ctx, createdValidInstrumentID)
 				requireNotNilAndNoProblems(t, createdValidInstrument, createdValidInstrumentErr)
 
 				expected = append(expected, createdValidInstrument)
@@ -283,7 +283,7 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 			time.Sleep(3 * time.Second)
 
 			// assert valid instrument list equality
-			actual, err := testClients.main.SearchValidInstruments(ctx, searchQuery, exampleLimit)
+			actual, err := testClients.admin.SearchValidInstruments(ctx, searchQuery, exampleLimit)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -295,7 +295,7 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 
 			t.Log("cleaning up")
 			for _, createdValidInstrument := range expected {
-				assert.NoError(t, testClients.main.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
+				assert.NoError(t, testClients.admin.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
 			}
 		}
 	})
@@ -316,13 +316,13 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 			for i := 0; i < 5; i++ {
 				exampleValidInstrument.Name = fmt.Sprintf("%s %d", searchQuery, i)
 				exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
-				createdValidInstrumentID, err := testClients.main.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+				createdValidInstrumentID, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 				require.NoError(t, err)
 				t.Logf("valid instrument %q created", createdValidInstrumentID)
 
 				var createdValidInstrument *types.ValidInstrument
 				checkFunc = func() bool {
-					createdValidInstrument, err = testClients.main.GetValidInstrument(ctx, createdValidInstrumentID)
+					createdValidInstrument, err = testClients.admin.GetValidInstrument(ctx, createdValidInstrumentID)
 					return assert.NotNil(t, createdValidInstrument) && assert.NoError(t, err)
 				}
 				assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
@@ -335,7 +335,7 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 			time.Sleep(2 * time.Second) // give the index a moment
 
 			// assert valid instrument list equality
-			actual, err := testClients.main.SearchValidInstruments(ctx, searchQuery, exampleLimit)
+			actual, err := testClients.admin.SearchValidInstruments(ctx, searchQuery, exampleLimit)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -347,7 +347,7 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 
 			t.Log("cleaning up")
 			for _, createdValidInstrument := range expected {
-				assert.NoError(t, testClients.main.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
+				assert.NoError(t, testClients.admin.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
 			}
 		}
 	})

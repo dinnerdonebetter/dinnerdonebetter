@@ -129,7 +129,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.RemoveMemberHouseholdPermission)).
 					Delete("/members"+singleUserRoute, s.householdsService.RemoveMemberHandler)
 				singleHouseholdRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.AddMemberHouseholdPermission)).
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.InviteUserToHouseholdPermission)).
 					Post("/invite", s.householdInvitationsService.InviteMemberHandler)
 				singleHouseholdRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ModifyMemberPermissionsForHouseholdPermission)).

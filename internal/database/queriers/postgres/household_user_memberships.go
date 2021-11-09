@@ -424,11 +424,6 @@ func (q *SQLQuerier) addUserToHousehold(ctx context.Context, querier database.SQ
 	return nil
 }
 
-// AddUserToHousehold does a thing.
-func (q *SQLQuerier) AddUserToHousehold(ctx context.Context, input *types.HouseholdUserMembershipDatabaseCreationInput) error {
-	return q.addUserToHousehold(ctx, q.db, input)
-}
-
 const removeUserFromHouseholdQuery = `
 	DELETE FROM household_user_memberships 
 	WHERE household_user_memberships.archived_on IS NULL

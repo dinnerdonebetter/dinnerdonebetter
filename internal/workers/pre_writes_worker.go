@@ -462,21 +462,7 @@ func (w *PreWritesWorker) HandleMessage(ctx context.Context, message []byte) err
 			}
 		}
 	case types.UserMembershipDataType:
-		if err := w.dataManager.AddUserToHousehold(ctx, msg.UserMembership); err != nil {
-			return observability.PrepareError(err, logger, span, "creating user membership")
-		}
-
-		if w.postWritesPublisher != nil {
-			dcm := &types.DataChangeMessage{
-				DataType:                  msg.DataType,
-				MessageType:               "userMembershipCreated",
-				AttributableToUserID:      msg.AttributableToUserID,
-				AttributableToHouseholdID: msg.AttributableToHouseholdID,
-			}
-			if err := w.postWritesPublisher.Publish(ctx, dcm); err != nil {
-				return observability.PrepareError(err, logger, span, "publishing data change message")
-			}
-		}
+		break
 	default:
 		return observability.PrepareError(fmt.Errorf("invalid message type: %q", msg.DataType), logger, span, "handling message")
 	}

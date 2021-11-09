@@ -223,12 +223,28 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 			t.Logf("determining household ID")
 			currentStatus, statusErr := testClients.main.UserStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
-			t.Logf("initial household is %s; initial user ID is %s", currentStatus.ActiveHousehold, s.user.ID)
+			relevantHouseholdID := currentStatus.ActiveHousehold
+			t.Logf("initial household is %s; initial user ID is %s", relevantHouseholdID, s.user.ID)
 
 			stopChan := make(chan bool, 1)
 			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
+
+			// Create webhook.
+			exampleWebhook := fakes.BuildFakeWebhook()
+			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
+			createdWebhookID, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			require.NoError(t, err)
+
+			n := <-notificationsChan
+			assert.Equal(t, n.DataType, types.WebhookDataType)
+			require.NotNil(t, n.Webhook)
+			checkWebhookEquality(t, exampleWebhook, n.Webhook)
+
+			createdWebhook, err := testClients.main.GetWebhook(ctx, createdWebhookID)
+			requireNotNilAndNoProblems(t, createdWebhook, err)
+			require.Equal(t, relevantHouseholdID, createdWebhook.BelongsToHousehold)
 
 			t.Logf("creating user to invite")
 			u, _, c, _ := createUserAndClientForTest(ctx, t)
@@ -238,15 +254,15 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 				FromUser:             s.user.ID,
 				Note:                 t.Name(),
 				ToEmail:              u.EmailAddress,
-				DestinationHousehold: currentStatus.ActiveHousehold,
+				DestinationHousehold: relevantHouseholdID,
 			})
 			require.NoError(t, err)
 
-			n := <-notificationsChan
+			n = <-notificationsChan
 			assert.Equal(t, n.DataType, types.HouseholdInvitationDataType)
 
 			t.Logf("accepting invitation")
-			err = c.AcceptHouseholdInvitation(ctx, currentStatus.ActiveHousehold, invitationID, t.Name())
+			err = c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitationID, t.Name())
 			require.NoError(t, err)
 
 			t.Logf("fetching households")
@@ -255,11 +271,15 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 			var found bool
 			for _, household := range households.Households {
 				if !found {
-					found = household.ID == currentStatus.ActiveHousehold
+					found = household.ID == relevantHouseholdID
 				}
 			}
 
-			require.True(t, found, "household not found in %+v", households.Households[0])
+			require.True(t, found)
+			require.NoError(t, c.SwitchActiveHousehold(ctx, relevantHouseholdID))
+
+			_, err = c.GetWebhook(ctx, createdWebhook.ID)
+			require.NoError(t, err)
 		}
 	})
 }

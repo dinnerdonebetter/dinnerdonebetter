@@ -41,7 +41,7 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.admin.SubscribeToDataChangeNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -50,7 +50,7 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			t.Log("creating valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
 			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparationID, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			createdValidPreparationID, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
 			t.Logf("valid preparation %q created", createdValidPreparationID)
 
@@ -59,20 +59,20 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			require.NotNil(t, n.ValidPreparation)
 			checkValidPreparationEquality(t, exampleValidPreparation, n.ValidPreparation)
 
-			createdValidPreparation, err := testClients.main.GetValidPreparation(ctx, createdValidPreparationID)
+			createdValidPreparation, err := testClients.admin.GetValidPreparation(ctx, createdValidPreparationID)
 			requireNotNilAndNoProblems(t, createdValidPreparation, err)
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
 			t.Log("changing valid preparation")
 			newValidPreparation := fakes.BuildFakeValidPreparation()
 			createdValidPreparation.Update(convertValidPreparationToValidPreparationUpdateInput(newValidPreparation))
-			assert.NoError(t, testClients.main.UpdateValidPreparation(ctx, createdValidPreparation))
+			assert.NoError(t, testClients.admin.UpdateValidPreparation(ctx, createdValidPreparation))
 
 			n = <-notificationsChan
 			assert.Equal(t, n.DataType, types.ValidPreparationDataType)
 
 			t.Log("fetching changed valid preparation")
-			actual, err := testClients.main.GetValidPreparation(ctx, createdValidPreparationID)
+			actual, err := testClients.admin.GetValidPreparation(ctx, createdValidPreparationID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert valid preparation equality
@@ -80,7 +80,7 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedOn)
 
 			t.Log("cleaning up valid preparation")
-			assert.NoError(t, testClients.main.ArchiveValidPreparation(ctx, createdValidPreparationID))
+			assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparationID))
 		}
 	})
 
@@ -95,13 +95,13 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			t.Log("creating valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
 			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparationID, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			createdValidPreparationID, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
 			t.Logf("valid preparation %q created", createdValidPreparationID)
 
 			var createdValidPreparation *types.ValidPreparation
 			checkFunc = func() bool {
-				createdValidPreparation, err = testClients.main.GetValidPreparation(ctx, createdValidPreparationID)
+				createdValidPreparation, err = testClients.admin.GetValidPreparation(ctx, createdValidPreparationID)
 				return assert.NotNil(t, createdValidPreparation) && assert.NoError(t, err)
 			}
 			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
@@ -110,14 +110,14 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			// change valid preparation
 			newValidPreparation := fakes.BuildFakeValidPreparation()
 			createdValidPreparation.Update(convertValidPreparationToValidPreparationUpdateInput(newValidPreparation))
-			assert.NoError(t, testClients.main.UpdateValidPreparation(ctx, createdValidPreparation))
+			assert.NoError(t, testClients.admin.UpdateValidPreparation(ctx, createdValidPreparation))
 
 			time.Sleep(2 * time.Second)
 
 			// retrieve changed valid preparation
 			var actual *types.ValidPreparation
 			checkFunc = func() bool {
-				actual, err = testClients.main.GetValidPreparation(ctx, createdValidPreparationID)
+				actual, err = testClients.admin.GetValidPreparation(ctx, createdValidPreparationID)
 				return assert.NotNil(t, createdValidPreparation) && assert.NoError(t, err)
 			}
 			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
@@ -129,7 +129,7 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedOn)
 
 			t.Log("cleaning up valid preparation")
-			assert.NoError(t, testClients.main.ArchiveValidPreparation(ctx, createdValidPreparationID))
+			assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparationID))
 		}
 	})
 }
@@ -143,7 +143,7 @@ func (s *TestSuite) TestValidPreparations_Listing() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.admin.SubscribeToDataChangeNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -154,7 +154,7 @@ func (s *TestSuite) TestValidPreparations_Listing() {
 			for i := 0; i < 5; i++ {
 				exampleValidPreparation := fakes.BuildFakeValidPreparation()
 				exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
-				createdValidPreparationID, createdValidPreparationErr := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+				createdValidPreparationID, createdValidPreparationErr := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 				require.NoError(t, createdValidPreparationErr)
 				t.Logf("valid preparation %q created", createdValidPreparationID)
 
@@ -163,14 +163,14 @@ func (s *TestSuite) TestValidPreparations_Listing() {
 				require.NotNil(t, n.ValidPreparation)
 				checkValidPreparationEquality(t, exampleValidPreparation, n.ValidPreparation)
 
-				createdValidPreparation, createdValidPreparationErr := testClients.main.GetValidPreparation(ctx, createdValidPreparationID)
+				createdValidPreparation, createdValidPreparationErr := testClients.admin.GetValidPreparation(ctx, createdValidPreparationID)
 				requireNotNilAndNoProblems(t, createdValidPreparation, createdValidPreparationErr)
 
 				expected = append(expected, createdValidPreparation)
 			}
 
 			// assert valid preparation list equality
-			actual, err := testClients.main.GetValidPreparations(ctx, nil)
+			actual, err := testClients.admin.GetValidPreparations(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -182,7 +182,7 @@ func (s *TestSuite) TestValidPreparations_Listing() {
 
 			t.Log("cleaning up")
 			for _, createdValidPreparation := range expected {
-				assert.NoError(t, testClients.main.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
+				assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
 			}
 		}
 	})
@@ -200,12 +200,12 @@ func (s *TestSuite) TestValidPreparations_Listing() {
 			for i := 0; i < 5; i++ {
 				exampleValidPreparation := fakes.BuildFakeValidPreparation()
 				exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
-				createdValidPreparationID, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+				createdValidPreparationID, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 				require.NoError(t, err)
 
 				var createdValidPreparation *types.ValidPreparation
 				checkFunc = func() bool {
-					createdValidPreparation, err = testClients.main.GetValidPreparation(ctx, createdValidPreparationID)
+					createdValidPreparation, err = testClients.admin.GetValidPreparation(ctx, createdValidPreparationID)
 					return assert.NotNil(t, createdValidPreparation) && assert.NoError(t, err)
 				}
 				assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
@@ -215,7 +215,7 @@ func (s *TestSuite) TestValidPreparations_Listing() {
 			}
 
 			// assert valid preparation list equality
-			actual, err := testClients.main.GetValidPreparations(ctx, nil)
+			actual, err := testClients.admin.GetValidPreparations(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -227,7 +227,7 @@ func (s *TestSuite) TestValidPreparations_Listing() {
 
 			t.Log("cleaning up")
 			for _, createdValidPreparation := range expected {
-				assert.NoError(t, testClients.main.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
+				assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
 			}
 		}
 	})
@@ -242,7 +242,7 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.admin.SubscribeToDataChangeNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -256,7 +256,7 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 			for i := 0; i < 5; i++ {
 				exampleValidPreparation.Name = fmt.Sprintf("%s %d", searchQuery, i)
 				exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
-				createdValidPreparationID, createdValidPreparationErr := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+				createdValidPreparationID, createdValidPreparationErr := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 				require.NoError(t, createdValidPreparationErr)
 				t.Logf("valid preparation %q created", createdValidPreparationID)
 
@@ -265,7 +265,7 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 				require.NotNil(t, n.ValidPreparation)
 				checkValidPreparationEquality(t, exampleValidPreparation, n.ValidPreparation)
 
-				createdValidPreparation, createdValidPreparationErr := testClients.main.GetValidPreparation(ctx, createdValidPreparationID)
+				createdValidPreparation, createdValidPreparationErr := testClients.admin.GetValidPreparation(ctx, createdValidPreparationID)
 				requireNotNilAndNoProblems(t, createdValidPreparation, createdValidPreparationErr)
 
 				expected = append(expected, createdValidPreparation)
@@ -277,7 +277,7 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 			time.Sleep(3 * time.Second)
 
 			// assert valid preparation list equality
-			actual, err := testClients.main.SearchValidPreparations(ctx, searchQuery, exampleLimit)
+			actual, err := testClients.admin.SearchValidPreparations(ctx, searchQuery, exampleLimit)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -289,7 +289,7 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 
 			t.Log("cleaning up")
 			for _, createdValidPreparation := range expected {
-				assert.NoError(t, testClients.main.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
+				assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
 			}
 		}
 	})
@@ -310,13 +310,13 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 			for i := 0; i < 5; i++ {
 				exampleValidPreparation.Name = fmt.Sprintf("%s %d", searchQuery, i)
 				exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
-				createdValidPreparationID, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+				createdValidPreparationID, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 				require.NoError(t, err)
 				t.Logf("valid preparation %q created", createdValidPreparationID)
 
 				var createdValidPreparation *types.ValidPreparation
 				checkFunc = func() bool {
-					createdValidPreparation, err = testClients.main.GetValidPreparation(ctx, createdValidPreparationID)
+					createdValidPreparation, err = testClients.admin.GetValidPreparation(ctx, createdValidPreparationID)
 					return assert.NotNil(t, createdValidPreparation) && assert.NoError(t, err)
 				}
 				assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
@@ -329,7 +329,7 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 			time.Sleep(2 * time.Second) // give the index a moment
 
 			// assert valid preparation list equality
-			actual, err := testClients.main.SearchValidPreparations(ctx, searchQuery, exampleLimit)
+			actual, err := testClients.admin.SearchValidPreparations(ctx, searchQuery, exampleLimit)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -341,7 +341,7 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 
 			t.Log("cleaning up")
 			for _, createdValidPreparation := range expected {
-				assert.NoError(t, testClients.main.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
+				assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
 			}
 		}
 	})

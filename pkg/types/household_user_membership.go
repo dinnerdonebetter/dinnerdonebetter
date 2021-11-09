@@ -98,7 +98,6 @@ type (
 		UserIsMemberOfHousehold(ctx context.Context, userID, householdID string) (bool, error)
 		ModifyUserPermissions(ctx context.Context, householdID, userID string, input *ModifyUserPermissionsInput) error
 		TransferHouseholdOwnership(ctx context.Context, householdID string, input *HouseholdOwnershipTransferInput) error
-		AddUserToHousehold(ctx context.Context, input *HouseholdUserMembershipDatabaseCreationInput) error
 		RemoveUserFromHousehold(ctx context.Context, userID, householdID string) error
 	}
 )

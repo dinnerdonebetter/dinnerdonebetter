@@ -816,7 +816,7 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 			&idMatcher{},
 			*exampleHouseholdInvitation.ToUser,
 			exampleHouseholdID,
-			strings.Join([]string{}, householdMemberRolesSeparator),
+			strings.Join([]string{"household_member"}, householdMemberRolesSeparator),
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(addUserToHouseholdQuery)).

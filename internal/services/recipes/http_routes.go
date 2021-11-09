@@ -203,7 +203,6 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
 	}
-	input.CreatedByUser = sessionCtxData.Requester.UserID
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
@@ -211,7 +210,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// fetch recipe from database.
-	recipe, err := s.recipeDataManager.GetRecipe(ctx, recipeID)
+	recipe, err := s.recipeDataManager.GetRecipeByIDAndUser(ctx, recipeID, sessionCtxData.Requester.UserID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return

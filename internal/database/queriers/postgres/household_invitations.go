@@ -458,7 +458,7 @@ func (q *SQLQuerier) setInvitationStatus(ctx context.Context, querier database.S
 		return observability.PrepareError(err, logger, span, "changing household invitation status")
 	}
 
-	logger.Info("household invitation cancelled")
+	logger.Debug("household invitation updated")
 
 	return nil
 }
@@ -506,7 +506,7 @@ func (q *SQLQuerier) AcceptHouseholdInvitation(ctx context.Context, householdID,
 		Reason:         fmt.Sprintf("accepted household invitation %q", householdInvitationID),
 		UserID:         *invitation.ToUser,
 		HouseholdID:    householdID,
-		HouseholdRoles: nil,
+		HouseholdRoles: []string{"household_member"},
 	}); err != nil {
 		return observability.PrepareError(err, logger, span, "adding user to household")
 	}

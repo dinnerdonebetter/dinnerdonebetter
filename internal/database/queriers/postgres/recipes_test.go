@@ -347,7 +347,7 @@ func TestQuerier_GetRecipe(T *testing.T) {
 			exampleRecipe.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getCompleteRecipeQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getCompleteRecipeByIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockFullRowsFromRecipe(exampleRecipe))
 
@@ -381,7 +381,7 @@ func TestQuerier_GetRecipe(T *testing.T) {
 			exampleRecipe.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getCompleteRecipeQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getCompleteRecipeByIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
@@ -419,7 +419,7 @@ func TestQuerier_GetRecipe(T *testing.T) {
 			exampleRecipe.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getCompleteRecipeQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getCompleteRecipeByIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildInvalidMockFullRowsFromRecipe(exampleRecipe))
 
@@ -457,11 +457,183 @@ func TestQuerier_GetRecipe(T *testing.T) {
 			exampleRecipe.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getCompleteRecipeQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getCompleteRecipeByIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(sqlmock.NewRows([]string{"things"}))
 
 		actual, err := c.GetRecipe(ctx, exampleRecipe.ID)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+		assert.True(t, errors.Is(err, sql.ErrNoRows))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_GetRecipeByUser(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipe := fakes.BuildFakeRecipe()
+
+		exampleRecipe.Steps = []*types.RecipeStep{
+			fakes.BuildFakeRecipeStep(),
+			fakes.BuildFakeRecipeStep(),
+			fakes.BuildFakeRecipeStep(),
+		}
+
+		for i, step := range exampleRecipe.Steps {
+			exampleRecipe.Steps[i].Ingredients = []*types.RecipeStepIngredient{}
+			for j := 0; j < 3; j++ {
+				ingredient := fakes.BuildFakeRecipeStepIngredient()
+				ingredient.IngredientID = nil
+
+				exampleRecipe.Steps[i].Ingredients = append(step.Ingredients, ingredient)
+			}
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{
+			exampleRecipe.ID,
+			exampleRecipe.ID,
+			exampleRecipe.CreatedByUser,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getCompleteRecipeByIDAndAuthorIDQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockFullRowsFromRecipe(exampleRecipe))
+
+		actual, err := c.GetRecipeByIDAndUser(ctx, exampleRecipe.ID, exampleRecipe.CreatedByUser)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleRecipe, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid recipe ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+		exampleUserID := fakes.BuildFakeID()
+
+		actual, err := c.GetRecipeByIDAndUser(ctx, "", exampleUserID)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+	})
+
+	T.Run("with invalid user ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+		exampleRecipeID := fakes.BuildFakeID()
+
+		actual, err := c.GetRecipeByIDAndUser(ctx, exampleRecipeID, "")
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipe := fakes.BuildFakeRecipe()
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{
+			exampleRecipe.ID,
+			exampleRecipe.ID,
+			exampleRecipe.CreatedByUser,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getCompleteRecipeByIDAndAuthorIDQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.GetRecipeByIDAndUser(ctx, exampleRecipe.ID, exampleRecipe.CreatedByUser)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error scanning response from database", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipe := fakes.BuildFakeRecipe()
+
+		exampleRecipe.Steps = []*types.RecipeStep{
+			fakes.BuildFakeRecipeStep(),
+			fakes.BuildFakeRecipeStep(),
+			fakes.BuildFakeRecipeStep(),
+		}
+
+		for _, step := range exampleRecipe.Steps {
+			step.Ingredients = []*types.RecipeStepIngredient{
+				fakes.BuildFakeRecipeStepIngredient(),
+				fakes.BuildFakeRecipeStepIngredient(),
+				fakes.BuildFakeRecipeStepIngredient(),
+			}
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{
+			exampleRecipe.ID,
+			exampleRecipe.ID,
+			exampleRecipe.CreatedByUser,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getCompleteRecipeByIDAndAuthorIDQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildInvalidMockFullRowsFromRecipe(exampleRecipe))
+
+		actual, err := c.GetRecipeByIDAndUser(ctx, exampleRecipe.ID, exampleRecipe.CreatedByUser)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with no results returned", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipe := fakes.BuildFakeRecipe()
+
+		exampleRecipe.Steps = []*types.RecipeStep{
+			fakes.BuildFakeRecipeStep(),
+			fakes.BuildFakeRecipeStep(),
+			fakes.BuildFakeRecipeStep(),
+		}
+
+		for _, step := range exampleRecipe.Steps {
+			step.Ingredients = []*types.RecipeStepIngredient{
+				fakes.BuildFakeRecipeStepIngredient(),
+				fakes.BuildFakeRecipeStepIngredient(),
+				fakes.BuildFakeRecipeStepIngredient(),
+			}
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{
+			exampleRecipe.ID,
+			exampleRecipe.ID,
+			exampleRecipe.CreatedByUser,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getCompleteRecipeByIDAndAuthorIDQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(sqlmock.NewRows([]string{"things"}))
+
+		actual, err := c.GetRecipeByIDAndUser(ctx, exampleRecipe.ID, exampleRecipe.CreatedByUser)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 		assert.True(t, errors.Is(err, sql.ErrNoRows))

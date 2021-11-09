@@ -438,7 +438,7 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 			testutils.HTTPRequestMatcher,
 		).Return()
 
-		helper.service.PermissionFilterMiddleware(authorization.AddMemberHouseholdPermission)(mockHandler).ServeHTTP(helper.res, helper.req)
+		helper.service.PermissionFilterMiddleware(authorization.InviteUserToHouseholdPermission)(mockHandler).ServeHTTP(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
@@ -457,7 +457,7 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 			return nil, errors.New("blah")
 		}
 
-		helper.service.PermissionFilterMiddleware(authorization.AddMemberHouseholdPermission)(nil).ServeHTTP(helper.res, helper.req)
+		helper.service.PermissionFilterMiddleware(authorization.InviteUserToHouseholdPermission)(nil).ServeHTTP(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 	})
@@ -486,7 +486,7 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 			return sessionCtxData, nil
 		}
 
-		helper.service.PermissionFilterMiddleware(authorization.AddMemberHouseholdPermission)(nil).ServeHTTP(helper.res, helper.req)
+		helper.service.PermissionFilterMiddleware(authorization.InviteUserToHouseholdPermission)(nil).ServeHTTP(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 	})
@@ -504,11 +504,11 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 				UserID:                helper.exampleUser.ID,
 				Reputation:            helper.exampleUser.ServiceHouseholdStatus,
 				ReputationExplanation: helper.exampleUser.ReputationExplanation,
-				ServicePermissions:    authorization.NewServiceRolePermissionChecker(authorization.AddMemberHouseholdPermission.ID()),
+				ServicePermissions:    authorization.NewServiceRolePermissionChecker(authorization.InviteUserToHouseholdPermission.ID()),
 			},
 			ActiveHouseholdID: helper.exampleHousehold.ID,
 			HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
-				helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.AddMemberHouseholdPermission.ID()),
+				helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.InviteUserToHouseholdPermission.ID()),
 			},
 		}
 

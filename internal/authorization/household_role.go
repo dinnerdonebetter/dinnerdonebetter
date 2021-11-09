@@ -87,7 +87,7 @@ func (r householdRoleCollection) CanDeleteHouseholds() bool {
 
 // CanAddMemberToHouseholds returns whether a user can add members to households or not.
 func (r householdRoleCollection) CanAddMemberToHouseholds() bool {
-	return hasPermission(AddMemberHouseholdPermission, r.Roles...)
+	return hasPermission(InviteUserToHouseholdPermission, r.Roles...)
 }
 
 // CanRemoveMemberFromHouseholds returns whether a user can remove members from households or not.

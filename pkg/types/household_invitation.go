@@ -40,7 +40,7 @@ type (
 	HouseholdInvitationDatabaseCreationInput struct {
 		_ struct{}
 
-		ID                   string  `json:"-"`
+		ID                   string  `json:"id"`
 		FromUser             string  `json:"fromUser"`
 		ToUser               *string `json:"toUser"`
 		Note                 string  `json:"note"`
