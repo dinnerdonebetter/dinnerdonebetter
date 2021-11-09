@@ -262,6 +262,11 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 			n = <-notificationsChan
 			assert.Equal(t, n.DataType, types.HouseholdInvitationDataType)
 
+			t.Logf("checking for invitation")
+			invitations, err := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
+			requireNotNilAndNoProblems(t, invitations, err)
+			assert.NotEmpty(t, invitations.HouseholdInvitations)
+
 			t.Logf("accepting invitation")
 			err = c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitationID, t.Name())
 			require.NoError(t, err)
@@ -329,6 +334,9 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 			invitationID, err := testClients.main.InviteUserToHousehold(ctx, inviteReq)
 			require.NoError(t, err)
 
+			n = <-notificationsChan
+			assert.Equal(t, n.DataType, types.HouseholdInvitationDataType)
+
 			t.Logf("creating user to invite")
 			_, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
 				EmailAddress: inviteReq.ToEmail,
@@ -336,8 +344,10 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 				Password:     gofakeit.Password(true, true, true, true, true, 64),
 			})
 
-			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.HouseholdInvitationDataType)
+			t.Logf("checking for invitation")
+			invitations, err := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
+			requireNotNilAndNoProblems(t, invitations, err)
+			assert.NotEmpty(t, invitations.HouseholdInvitations)
 
 			t.Logf("accepting invitation")
 			err = c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitationID, t.Name())
