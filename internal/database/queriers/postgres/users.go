@@ -258,6 +258,12 @@ func (q *SQLQuerier) createUser(ctx context.Context, user *types.User, household
 		return observability.PrepareError(err, logger, span, "writing household user membership")
 	}
 
+	if err = q.attachInvitationsToUser(ctx, tx, user.EmailAddress, user.ID); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		logger = logger.WithValue("email_address", user.EmailAddress).WithValue("user_id", user.ID)
+		return observability.PrepareError(err, logger, span, "writing household user membership")
+	}
+
 	if err = tx.Commit(); err != nil {
 		return observability.PrepareError(err, logger, span, "committing transaction")
 	}

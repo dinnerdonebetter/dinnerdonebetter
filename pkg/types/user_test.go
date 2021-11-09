@@ -108,8 +108,9 @@ func TestUserCreationInput_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		x := &UserRegistrationInput{
-			Username: t.Name(),
-			Password: t.Name(),
+			Username:     t.Name(),
+			EmailAddress: t.Name(),
+			Password:     t.Name(),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx, 1, 1))

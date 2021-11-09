@@ -36,6 +36,7 @@ var (
 	premadeAdminUser = &types.User{
 		ID:              ksuid.New().String(),
 		TwoFactorSecret: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+		EmailAddress:    "integration_tests@prixfixe.email",
 		Username:        "exampleUser",
 		HashedPassword:  "integration-tests-are-cool",
 	}
@@ -79,6 +80,7 @@ func init() {
 	dbmanager.CreateUser(ctx, &types.UserDataStoreCreationInput{
 		ID:              premadeAdminUser.ID,
 		Username:        premadeAdminUser.Username,
+		EmailAddress:    premadeAdminUser.EmailAddress,
 		HashedPassword:  actuallyHashedPass,
 		TwoFactorSecret: premadeAdminUser.TwoFactorSecret,
 	})

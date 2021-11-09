@@ -2,6 +2,8 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
@@ -501,13 +503,17 @@ func (q *SQLQuerier) AcceptHouseholdInvitation(ctx context.Context, householdID,
 		return observability.PrepareError(err, logger, span, "fetching household invitation")
 	}
 
-	if err = q.addUserToHousehold(ctx, tx, &types.HouseholdUserMembershipDatabaseCreationInput{
+	input := &types.HouseholdUserMembershipDatabaseCreationInput{
 		ID:             ksuid.New().String(),
 		Reason:         fmt.Sprintf("accepted household invitation %q", householdInvitationID),
-		UserID:         *invitation.ToUser,
 		HouseholdID:    householdID,
 		HouseholdRoles: []string{"household_member"},
-	}); err != nil {
+	}
+	if invitation.ToUser != nil {
+		input.UserID = *invitation.ToUser
+	}
+
+	if err = q.addUserToHousehold(ctx, tx, input); err != nil {
 		return observability.PrepareError(err, logger, span, "adding user to household")
 	}
 
@@ -521,4 +527,41 @@ func (q *SQLQuerier) AcceptHouseholdInvitation(ctx context.Context, householdID,
 // RejectHouseholdInvitation rejects a household invitation by its ID with a note.
 func (q *SQLQuerier) RejectHouseholdInvitation(ctx context.Context, householdID, householdInvitationID, note string) error {
 	return q.setInvitationStatus(ctx, q.db, householdID, householdInvitationID, note, types.RejectedHouseholdInvitationStatus)
+}
+
+const attachInvitationsToUserIDQuery = `
+UPDATE household_invitations SET
+	to_user = $1,
+	last_updated_on = extract(epoch FROM NOW())
+WHERE archived_on IS NULL 
+AND to_email = $2
+`
+
+func (q *SQLQuerier) attachInvitationsToUser(ctx context.Context, querier database.SQLQueryExecutor, userEmail, userID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger
+
+	if userEmail == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.UserEmailAddressKey, userEmail)
+	tracing.AttachHouseholdIDToSpan(span, userEmail)
+
+	if userID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.UserIDKey, userID)
+	tracing.AttachHouseholdInvitationIDToSpan(span, userID)
+
+	args := []interface{}{userID, userEmail}
+
+	if err := q.performWriteQuery(ctx, querier, "invitation attachment", attachInvitationsToUserIDQuery, args); err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return observability.PrepareError(err, logger, span, "attaching invitations to user")
+	}
+
+	logger.Info("webhook archived")
+
+	return nil
 }

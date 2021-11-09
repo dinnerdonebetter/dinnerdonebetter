@@ -74,7 +74,7 @@ type (
 
 		ID              string `json:"-"`
 		Username        string `json:"-"`
-		EmailAddress    string `json:"emailAddress"`
+		EmailAddress    string `json:"-"`
 		HashedPassword  string `json:"-"`
 		TwoFactorSecret string `json:"-"`
 	}
@@ -213,6 +213,7 @@ func (u *User) IsBanned() bool {
 // ValidateWithContext ensures our provided UserRegistrationInput meets expectations.
 func (i *UserRegistrationInput) ValidateWithContext(ctx context.Context, minUsernameLength, minPasswordLength uint8) error {
 	return validation.ValidateStructWithContext(ctx, i,
+		validation.Field(&i.EmailAddress, validation.Required),
 		validation.Field(&i.Username, validation.Required, validation.Length(int(minUsernameLength), math.MaxInt8)),
 		validation.Field(&i.Password, validation.Required, validation.Length(int(minPasswordLength), math.MaxInt8)),
 	)
