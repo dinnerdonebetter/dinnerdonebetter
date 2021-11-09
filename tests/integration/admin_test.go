@@ -44,9 +44,9 @@ func (s *TestSuite) TestAdmin_BanningUsers() {
 
 			switch testClients.authType {
 			case cookieAuthType:
-				user, _, userClient, _ = createUserAndClientForTest(ctx, t)
+				user, _, userClient, _ = createUserAndClientForTest(ctx, t, nil)
 			case pasetoAuthType:
-				user, _, _, userClient = createUserAndClientForTest(ctx, t)
+				user, _, _, userClient = createUserAndClientForTest(ctx, t, nil)
 			default:
 				log.Panicf("invalid auth type: %q", testClients.authType)
 			}

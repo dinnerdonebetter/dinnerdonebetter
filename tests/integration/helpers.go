@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"github.com/brianvoe/gofakeit/v5"
 	"net/http"
 	"testing"
 	"time"
@@ -36,10 +37,18 @@ func requireNotNilAndNoProblems(t *testing.T, i interface{}, err error) {
 	require.NotNil(t, i)
 }
 
-func createUserAndClientForTest(ctx context.Context, t *testing.T) (user *types.User, cookie *http.Cookie, cookieClient, pasetoClient *httpclient.Client) {
+func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.UserRegistrationInput) (user *types.User, cookie *http.Cookie, cookieClient, pasetoClient *httpclient.Client) {
 	t.Helper()
 
-	user, err := testutils.CreateServiceUser(ctx, urlToUse, fakes.BuildFakeUser().Username)
+	if input == nil {
+		input = &types.UserRegistrationInput{
+			EmailAddress: gofakeit.Email(),
+			Username:     fakes.BuildFakeUser().Username,
+			Password:     gofakeit.Password(true, true, true, true, true, 64),
+		}
+	}
+
+	user, err := testutils.CreateServiceUser(ctx, urlToUse, input)
 	require.NoError(t, err)
 
 	t.Logf("created user %q with email address %s: %q", user.ID, user.EmailAddress, user.Username)

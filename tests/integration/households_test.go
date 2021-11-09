@@ -247,7 +247,7 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 			require.Equal(t, relevantHouseholdID, createdWebhook.BelongsToHousehold)
 
 			t.Logf("creating user to invite")
-			u, _, c, _ := createUserAndClientForTest(ctx, t)
+			u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
 
 			t.Logf("inviting user")
 			invitationID, err := testClients.main.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
@@ -285,19 +285,75 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 }
 
 func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
-	// create inviting user
+	s.runForCookieClient("should be possible to change members of a household", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
 
-	// determine household ID
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
 
-	// invite user to household
+			t.Logf("determining household ID")
+			currentStatus, statusErr := testClients.main.UserStatus(s.ctx)
+			requireNotNilAndNoProblems(t, currentStatus, statusErr)
+			relevantHouseholdID := currentStatus.ActiveHousehold
+			t.Logf("initial household is %s; initial user ID is %s", relevantHouseholdID, s.user.ID)
 
-	// create user
+			stopChan := make(chan bool, 1)
+			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			require.NotNil(t, notificationsChan)
+			require.NoError(t, err)
 
-	// assert that the invited user can see the invitation
+			// Create webhook.
+			exampleWebhook := fakes.BuildFakeWebhook()
+			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
+			createdWebhookID, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			require.NoError(t, err)
 
-	// have invited user accept invitation
+			n := <-notificationsChan
+			assert.Equal(t, n.DataType, types.WebhookDataType)
+			require.NotNil(t, n.Webhook)
+			checkWebhookEquality(t, exampleWebhook, n.Webhook)
 
-	// assert that the invited user is a member of the household
+			createdWebhook, err := testClients.main.GetWebhook(ctx, createdWebhookID)
+			requireNotNilAndNoProblems(t, createdWebhook, err)
+			require.Equal(t, relevantHouseholdID, createdWebhook.BelongsToHousehold)
+
+			t.Logf("creating user to invite")
+			u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
+
+			t.Logf("inviting user")
+			invitationID, err := testClients.main.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
+				FromUser:             s.user.ID,
+				Note:                 t.Name(),
+				ToEmail:              u.EmailAddress,
+				DestinationHousehold: relevantHouseholdID,
+			})
+			require.NoError(t, err)
+
+			n = <-notificationsChan
+			assert.Equal(t, n.DataType, types.HouseholdInvitationDataType)
+
+			t.Logf("accepting invitation")
+			err = c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitationID, t.Name())
+			require.NoError(t, err)
+
+			t.Logf("fetching households")
+			households, err := c.GetHouseholds(ctx, nil)
+
+			var found bool
+			for _, household := range households.Households {
+				if !found {
+					found = household.ID == relevantHouseholdID
+				}
+			}
+
+			require.True(t, found)
+			require.NoError(t, c.SwitchActiveHousehold(ctx, relevantHouseholdID))
+
+			_, err = c.GetWebhook(ctx, createdWebhook.ID)
+			require.NoError(t, err)
+		}
+	})
 }
 
 func (s *TestSuite) TestHouseholds_InvitingNewUser() {
@@ -582,7 +638,7 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 			defer span.End()
 
 			// create users
-			futureOwner, _, _, futureOwnerClient := createUserAndClientForTest(ctx, t)
+			futureOwner, _, _, futureOwnerClient := createUserAndClientForTest(ctx, t, nil)
 
 			// fetch household data
 			householdCreationInput := &types.HouseholdCreationRequestInput{
@@ -663,7 +719,7 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 			defer span.End()
 
 			// create users
-			futureOwner, _, _, futureOwnerClient := createUserAndClientForTest(ctx, t)
+			futureOwner, _, _, futureOwnerClient := createUserAndClientForTest(ctx, t, nil)
 
 			// fetch household data
 			householdCreationInput := &types.HouseholdCreationRequestInput{

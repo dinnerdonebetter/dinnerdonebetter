@@ -2,6 +2,7 @@ package integration
 
 import (
 	"fmt"
+	"github.com/brianvoe/gofakeit/v5"
 	"strings"
 	"testing"
 
@@ -77,7 +78,7 @@ func (s *TestSuite) TestUsers_Reading() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			user, _, _, _ := createUserAndClientForTest(ctx, t)
+			user, _, _, _ := createUserAndClientForTest(ctx, t, nil)
 
 			actual, err := testClients.admin.GetUser(ctx, user.ID)
 			if err != nil {
@@ -138,7 +139,12 @@ func (s *TestSuite) TestUsers_Searching() {
 			// create users
 			createdUserIDs := []string{}
 			for i := 0; i < 5; i++ {
-				user, err := testutils.CreateServiceUser(ctx, urlToUse, fmt.Sprintf("%s%d", exampleUsername, i))
+				in := &types.UserRegistrationInput{
+					EmailAddress: gofakeit.Email(),
+					Username:     fmt.Sprintf("%s%d", exampleUsername, i),
+					Password:     gofakeit.Password(true, true, true, true, true, 64),
+				}
+				user, err := testutils.CreateServiceUser(ctx, urlToUse, in)
 				require.NoError(t, err)
 				createdUserIDs = append(createdUserIDs, user.ID)
 			}
