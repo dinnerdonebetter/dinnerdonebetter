@@ -124,11 +124,13 @@ func (s *service) RegisterUser(ctx context.Context, registrationInput *types.Use
 	}
 
 	input := &types.UserDataStoreCreationInput{
-		ID:              ksuid.New().String(),
-		Username:        registrationInput.Username,
-		EmailAddress:    registrationInput.EmailAddress,
-		HashedPassword:  hp,
-		TwoFactorSecret: "",
+		ID:                   ksuid.New().String(),
+		Username:             registrationInput.Username,
+		EmailAddress:         registrationInput.EmailAddress,
+		HashedPassword:       hp,
+		TwoFactorSecret:      "",
+		InvitationToken:      registrationInput.InvitationToken,
+		DestinationHousehold: registrationInput.DestinationHousehold,
 	}
 
 	// generate a two factor secret.

@@ -62,8 +62,9 @@ func BuildFakeUserCreationInput() *types.UserRegistrationInput {
 	exampleUser := BuildFakeUser()
 
 	return &types.UserRegistrationInput{
-		Username: exampleUser.Username,
-		Password: fake.Password(true, true, true, true, true, 32),
+		Username:     exampleUser.Username,
+		EmailAddress: fake.Email(),
+		Password:     fake.Password(true, true, true, true, true, 32),
 	}
 }
 

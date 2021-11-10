@@ -207,12 +207,8 @@ var (
 		RemoveMemberHouseholdPermission.ID():               RemoveMemberHouseholdPermission,
 		TransferHouseholdPermission.ID():                   TransferHouseholdPermission,
 		CreateWebhooksPermission.ID():                      CreateWebhooksPermission,
-		ReadWebhooksPermission.ID():                        ReadWebhooksPermission,
 		UpdateWebhooksPermission.ID():                      UpdateWebhooksPermission,
 		ArchiveWebhooksPermission.ID():                     ArchiveWebhooksPermission,
-		CreateAPIClientsPermission.ID():                    CreateAPIClientsPermission,
-		ReadAPIClientsPermission.ID():                      ReadAPIClientsPermission,
-		ArchiveAPIClientsPermission.ID():                   ArchiveAPIClientsPermission,
 
 		CreateValidInstrumentsPermission.ID():  CreateValidInstrumentsPermission,
 		ReadValidInstrumentsPermission.ID():    ReadValidInstrumentsPermission,
@@ -241,7 +237,10 @@ var (
 
 	// household member permissions.
 	householdMemberPermissions = map[string]gorbac.Permission{
-		ReadWebhooksPermission.ID(): ReadWebhooksPermission,
+		ReadWebhooksPermission.ID():      ReadWebhooksPermission,
+		CreateAPIClientsPermission.ID():  CreateAPIClientsPermission,
+		ReadAPIClientsPermission.ID():    ReadAPIClientsPermission,
+		ArchiveAPIClientsPermission.ID(): ArchiveAPIClientsPermission,
 
 		CreateRecipesPermission.ID():  CreateRecipesPermission,
 		ReadRecipesPermission.ID():    ReadRecipesPermission,
