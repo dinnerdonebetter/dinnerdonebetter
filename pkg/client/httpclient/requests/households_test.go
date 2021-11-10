@@ -296,16 +296,6 @@ func TestBuilder_BuildAddUserRequest(T *testing.T) {
 		assert.Error(t, err)
 	})
 
-	T.Run("with invalid input", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper()
-
-		actual, err := helper.builder.BuildInviteUserToHouseholdRequest(helper.ctx, &types.HouseholdInvitationCreationRequestInput{})
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-	})
-
 	T.Run("with invalid request builder", func(t *testing.T) {
 		t.Parallel()
 

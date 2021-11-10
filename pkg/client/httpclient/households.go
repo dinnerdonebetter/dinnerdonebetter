@@ -172,9 +172,7 @@ func (c *Client) InviteUserToHousehold(ctx context.Context, input *types.Househo
 	logger := c.logger.WithValue(keys.HouseholdIDKey, input.DestinationHousehold)
 	tracing.AttachHouseholdIDToSpan(span, input.DestinationHousehold)
 
-	if err := input.ValidateWithContext(ctx); err != nil {
-		return "", observability.PrepareError(err, logger, span, "validating input")
-	}
+	// we don't validate here because it needs to have the user ID
 
 	req, err := c.requestBuilder.BuildInviteUserToHouseholdRequest(ctx, input)
 	if err != nil {

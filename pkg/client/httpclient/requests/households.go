@@ -159,11 +159,7 @@ func (b *Builder) BuildInviteUserToHouseholdRequest(ctx context.Context, input *
 		return nil, ErrNilInputProvided
 	}
 
-	logger := b.logger.WithValue(keys.UserIDKey, input.DestinationHousehold)
-
-	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
-	}
+	// we don't validate here because it needs to have the user ID
 
 	uri := b.BuildURL(ctx, nil, householdsBasePath, input.DestinationHousehold, "invite")
 	tracing.AttachRequestURIToSpan(span, uri)
