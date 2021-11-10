@@ -118,7 +118,7 @@ func (s *service) issueSessionManagedCookie(ctx context.Context, householdID, re
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger
+	logger := s.logger.Clone()
 
 	ctx, err = s.sessionManager.Load(ctx, "")
 	if err != nil {

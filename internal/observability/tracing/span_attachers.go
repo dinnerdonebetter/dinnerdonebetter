@@ -56,12 +56,27 @@ func AttachFilterToSpan(span trace.Span, page uint64, limit uint8, sortBy string
 	attachStringToSpan(span, keys.FilterSortByKey, sortBy)
 }
 
-// AttachHouseholdIDToSpan provides a consistent way to attach an household's ID to a span.
+// AttachEmailAddressToSpan provides a consistent way to attach a household's ID to a span.
+func AttachEmailAddressToSpan(span trace.Span, emailAddress string) {
+	attachStringToSpan(span, keys.UserEmailAddressKey, emailAddress)
+}
+
+// AttachHouseholdIDToSpan provides a consistent way to attach a household's ID to a span.
 func AttachHouseholdIDToSpan(span trace.Span, householdID string) {
 	attachStringToSpan(span, keys.HouseholdIDKey, householdID)
 }
 
-// AttachActiveHouseholdIDToSpan provides a consistent way to attach an household's ID to a span.
+// AttachHouseholdInvitationIDToSpan provides a consistent way to attach a household's ID to a span.
+func AttachHouseholdInvitationIDToSpan(span trace.Span, householdInvitationID string) {
+	attachStringToSpan(span, keys.HouseholdInvitationIDKey, householdInvitationID)
+}
+
+// AttachHouseholdInvitationTokenToSpan provides a consistent way to attach a household's ID to a span.
+func AttachHouseholdInvitationTokenToSpan(span trace.Span, householdInvitationTokenID string) {
+	attachStringToSpan(span, keys.HouseholdInvitationTokenKey, householdInvitationTokenID)
+}
+
+// AttachActiveHouseholdIDToSpan provides a consistent way to attach a household's ID to a span.
 func AttachActiveHouseholdIDToSpan(span trace.Span, householdID string) {
 	attachStringToSpan(span, keys.ActiveHouseholdIDKey, householdID)
 }

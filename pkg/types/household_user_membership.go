@@ -12,7 +12,7 @@ const (
 )
 
 type (
-	// HouseholdUserMembership defines a relationship between a user and an household.
+	// HouseholdUserMembership defines a relationship between a user and a household.
 	HouseholdUserMembership struct {
 		_ struct{}
 
@@ -51,15 +51,26 @@ type (
 		BelongsToHousehold string `json:"belongsToHousehold"`
 	}
 
-	// AddUserToHouseholdInput represents what a User could set as input for updating household user memberships.
-	AddUserToHouseholdInput struct {
+	// HouseholdUserMembershipCreationRequestInput represents what a User could set as input for updating household user memberships.
+	HouseholdUserMembershipCreationRequestInput struct {
+		_ struct{}
+
+		ID             string   `json:"-"`
+		Reason         string   `json:"reason"`
+		UserID         string   `json:"userID"`
+		HouseholdID    string   `json:"-"`
+		HouseholdRoles []string `json:"-"`
+	}
+
+	// HouseholdUserMembershipDatabaseCreationInput represents what a User could set as input for updating household user memberships.
+	HouseholdUserMembershipDatabaseCreationInput struct {
 		_ struct{}
 
 		ID             string   `json:"-"`
 		Reason         string   `json:"reason"`
 		UserID         string   `json:"userID"`
 		HouseholdID    string   `json:"householdID"`
-		HouseholdRoles []string `json:"householdRole"`
+		HouseholdRoles []string `json:"householdRoles"`
 	}
 
 	// HouseholdOwnershipTransferInput represents what a User could set as input for updating household user memberships.
@@ -87,15 +98,14 @@ type (
 		UserIsMemberOfHousehold(ctx context.Context, userID, householdID string) (bool, error)
 		ModifyUserPermissions(ctx context.Context, householdID, userID string, input *ModifyUserPermissionsInput) error
 		TransferHouseholdOwnership(ctx context.Context, householdID string, input *HouseholdOwnershipTransferInput) error
-		AddUserToHousehold(ctx context.Context, input *AddUserToHouseholdInput) error
 		RemoveUserFromHousehold(ctx context.Context, userID, householdID string) error
 	}
 )
 
-var _ validation.ValidatableWithContext = (*AddUserToHouseholdInput)(nil)
+var _ validation.ValidatableWithContext = (*HouseholdUserMembershipCreationRequestInput)(nil)
 
-// ValidateWithContext validates an AddUserToHouseholdInput.
-func (x *AddUserToHouseholdInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates an HouseholdUserMembershipCreationRequestInput.
+func (x *HouseholdUserMembershipCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, x,
 		validation.Field(&x.UserID, validation.Required),
 	)

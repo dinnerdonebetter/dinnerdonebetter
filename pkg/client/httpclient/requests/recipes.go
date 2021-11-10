@@ -19,7 +19,7 @@ func (b *Builder) BuildGetRecipeRequest(ctx context.Context, recipeID string) (*
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
@@ -71,7 +71,7 @@ func (b *Builder) BuildCreateRecipeRequest(ctx context.Context, input *types.Rec
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -101,7 +101,7 @@ func (b *Builder) BuildUpdateRecipeRequest(ctx context.Context, recipe *types.Re
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	if recipe == nil {
 		return nil, ErrNilInputProvided
@@ -131,7 +131,7 @@ func (b *Builder) BuildArchiveRecipeRequest(ctx context.Context, recipeID string
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided

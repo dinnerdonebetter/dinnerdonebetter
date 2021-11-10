@@ -192,7 +192,7 @@ func (q *SQLQuerier) GetTotalAPIClientCount(ctx context.Context) (uint64, error)
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	count, err := q.performCountQuery(ctx, q.db, getTotalAPIClientCountQuery, "fetching count of API clients")
 	if err != nil {

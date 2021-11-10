@@ -14,7 +14,7 @@ func (c *Client) GetValidPreparation(ctx context.Context, validPreparationID str
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if validPreparationID == "" {
 		return nil, ErrInvalidIDProvided
@@ -40,7 +40,7 @@ func (c *Client) SearchValidPreparations(ctx context.Context, query string, limi
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if query == "" {
 		return nil, ErrEmptyQueryProvided
@@ -91,7 +91,7 @@ func (c *Client) CreateValidPreparation(ctx context.Context, input *types.ValidP
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if input == nil {
 		return "", ErrNilInputProvided
@@ -119,7 +119,7 @@ func (c *Client) UpdateValidPreparation(ctx context.Context, validPreparation *t
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if validPreparation == nil {
 		return ErrNilInputProvided
@@ -144,7 +144,7 @@ func (c *Client) ArchiveValidPreparation(ctx context.Context, validPreparationID
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if validPreparationID == "" {
 		return ErrInvalidIDProvided

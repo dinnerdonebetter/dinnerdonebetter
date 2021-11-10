@@ -21,7 +21,7 @@ func (b *Builder) BuildGetValidIngredientRequest(ctx context.Context, validIngre
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	if validIngredientID == "" {
 		return nil, ErrInvalidIDProvided
@@ -100,7 +100,7 @@ func (b *Builder) BuildCreateValidIngredientRequest(ctx context.Context, input *
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -130,7 +130,7 @@ func (b *Builder) BuildUpdateValidIngredientRequest(ctx context.Context, validIn
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	if validIngredient == nil {
 		return nil, ErrNilInputProvided
@@ -160,7 +160,7 @@ func (b *Builder) BuildArchiveValidIngredientRequest(ctx context.Context, validI
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	if validIngredientID == "" {
 		return nil, ErrInvalidIDProvided

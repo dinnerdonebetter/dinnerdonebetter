@@ -14,7 +14,7 @@ func (c *Client) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlan
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
@@ -85,7 +85,7 @@ func (c *Client) CreateMealPlanOptionVote(ctx context.Context, mealPlanID string
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if mealPlanID == "" {
 		return "", ErrInvalidIDProvided
@@ -119,7 +119,7 @@ func (c *Client) UpdateMealPlanOptionVote(ctx context.Context, mealPlanID string
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if mealPlanID == "" {
 		return ErrInvalidIDProvided
@@ -150,7 +150,7 @@ func (c *Client) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, meal
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if mealPlanID == "" {
 		return ErrInvalidIDProvided

@@ -111,7 +111,7 @@ func (q *SQLQuerier) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, m
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
 		return false, ErrInvalidIDProvided
@@ -154,7 +154,7 @@ func (q *SQLQuerier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, meal
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
@@ -199,7 +199,7 @@ func (q *SQLQuerier) GetTotalMealPlanOptionVoteCount(ctx context.Context) (uint6
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	count, err := q.performCountQuery(ctx, q.db, getTotalMealPlanOptionVotesCountQuery, "fetching count of meal plan option votes")
 	if err != nil {
@@ -214,7 +214,7 @@ func (q *SQLQuerier) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mea
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
@@ -279,7 +279,7 @@ func (q *SQLQuerier) GetMealPlanOptionVotesWithIDs(ctx context.Context, mealPlan
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if mealPlanOptionID == "" {
 		return nil, ErrInvalidIDProvided
@@ -397,7 +397,7 @@ func (q *SQLQuerier) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanOpti
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if mealPlanOptionID == "" {
 		return ErrInvalidIDProvided

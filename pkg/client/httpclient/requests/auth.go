@@ -20,7 +20,7 @@ func (b *Builder) BuildUserStatusRequest(ctx context.Context) (*http.Request, er
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 	uri := b.buildUnversionedURL(ctx, nil, authBasePath, "status")
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
@@ -100,7 +100,7 @@ func (b *Builder) BuildCycleTwoFactorSecretRequest(ctx context.Context, cookie *
 		return nil, ErrNilInputProvided
 	}
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "validating input")

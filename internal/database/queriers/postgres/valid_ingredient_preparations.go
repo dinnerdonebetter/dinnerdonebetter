@@ -98,7 +98,7 @@ func (q *SQLQuerier) ValidIngredientPreparationExists(ctx context.Context, valid
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if validIngredientPreparationID == "" {
 		return false, ErrInvalidIDProvided
@@ -125,7 +125,7 @@ func (q *SQLQuerier) GetValidIngredientPreparation(ctx context.Context, validIng
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if validIngredientPreparationID == "" {
 		return nil, ErrInvalidIDProvided
@@ -154,7 +154,7 @@ func (q *SQLQuerier) GetTotalValidIngredientPreparationCount(ctx context.Context
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	count, err := q.performCountQuery(ctx, q.db, getTotalValidIngredientPreparationsCountQuery, "fetching count of valid ingredient preparations")
 	if err != nil {
@@ -169,7 +169,7 @@ func (q *SQLQuerier) GetValidIngredientPreparations(ctx context.Context, filter 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	x = &types.ValidIngredientPreparationList{}
 	logger = filter.AttachToLogger(logger)
@@ -221,7 +221,7 @@ func (q *SQLQuerier) GetValidIngredientPreparationsWithIDs(ctx context.Context, 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if ids == nil {
 		return nil, ErrNilInputProvided
@@ -327,7 +327,7 @@ func (q *SQLQuerier) ArchiveValidIngredientPreparation(ctx context.Context, vali
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if validIngredientPreparationID == "" {
 		return ErrInvalidIDProvided

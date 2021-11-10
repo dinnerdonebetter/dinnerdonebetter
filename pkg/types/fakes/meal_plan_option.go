@@ -1,6 +1,8 @@
 package fakes
 
 import (
+	"math"
+
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/segmentio/ksuid"
 
@@ -11,7 +13,7 @@ import (
 func BuildFakeMealPlanOption() *types.MealPlanOption {
 	return &types.MealPlanOption{
 		ID:                ksuid.New().String(),
-		DayOfWeek:         fake.Uint8() + 1,
+		DayOfWeek:         uint8(fake.Number(1, math.MaxUint8)),
 		RecipeID:          fake.LoremIpsumSentence(exampleQuantity),
 		Notes:             fake.LoremIpsumSentence(exampleQuantity),
 		CreatedOn:         uint64(uint32(fake.Date().Unix())),

@@ -115,7 +115,7 @@ func (q *SQLQuerier) RecipeStepIngredientExists(ctx context.Context, recipeID, r
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if recipeID == "" {
 		return false, ErrInvalidIDProvided
@@ -181,7 +181,7 @@ func (q *SQLQuerier) GetRecipeStepIngredient(ctx context.Context, recipeID, reci
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
@@ -226,7 +226,7 @@ func (q *SQLQuerier) GetTotalRecipeStepIngredientCount(ctx context.Context) (uin
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	count, err := q.performCountQuery(ctx, q.db, getTotalRecipeStepIngredientsCountQuery, "fetching count of recipe step ingredients")
 	if err != nil {
@@ -241,7 +241,7 @@ func (q *SQLQuerier) GetRecipeStepIngredients(ctx context.Context, recipeID, rec
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
@@ -306,7 +306,7 @@ func (q *SQLQuerier) GetRecipeStepIngredientsWithIDs(ctx context.Context, recipe
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if recipeStepID == "" {
 		return nil, ErrInvalidIDProvided
@@ -435,7 +435,7 @@ func (q *SQLQuerier) ArchiveRecipeStepIngredient(ctx context.Context, recipeStep
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if recipeStepID == "" {
 		return ErrInvalidIDProvided

@@ -11,6 +11,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/routing"
 	apiclientsservice "github.com/prixfixeco/api_server/internal/services/apiclients"
+	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
 	householdsservice "github.com/prixfixeco/api_server/internal/services/households"
 	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "github.com/prixfixeco/api_server/internal/services/mealplanoptionvotes"
@@ -128,13 +129,30 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.RemoveMemberHouseholdPermission)).
 					Delete("/members"+singleUserRoute, s.householdsService.RemoveMemberHandler)
 				singleHouseholdRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.AddMemberHouseholdPermission)).
-					Post("/member", s.householdsService.AddMemberHandler)
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.InviteUserToHouseholdPermission)).
+					Post("/invite", s.householdInvitationsService.InviteMemberHandler)
 				singleHouseholdRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ModifyMemberPermissionsForHouseholdPermission)).
 					Patch("/members"+singleUserRoute+"/permissions", s.householdsService.ModifyMemberPermissionsHandler)
 				singleHouseholdRouter.Post("/transfer", s.householdsService.TransferHouseholdOwnershipHandler)
+
+				singleHouseholdRouter.Route("/invitations", func(invitationsRouter routing.Router) {
+					invitationsRouter.Post(root, s.householdInvitationsService.InviteMemberHandler)
+
+					singleHouseholdInvitationRoute := buildURLVarChunk(householdinvitationsservice.HouseholdInvitationIDURIParamKey, "")
+					invitationsRouter.Route(singleHouseholdInvitationRoute, func(singleHouseholdInvitationRouter routing.Router) {
+						singleHouseholdInvitationRouter.Get(root, s.householdInvitationsService.ReadHandler)
+						singleHouseholdInvitationRouter.Put("/cancel", s.householdInvitationsService.CancelInviteHandler)
+						singleHouseholdInvitationRouter.Put("/accept", s.householdInvitationsService.AcceptInviteHandler)
+						singleHouseholdInvitationRouter.Put("/reject", s.householdInvitationsService.RejectInviteHandler)
+					})
+				})
 			})
+		})
+
+		v1Router.Route("/household_invitations", func(householdInvitationsRouter routing.Router) {
+			householdInvitationsRouter.Get("/sent", s.householdInvitationsService.OutboundInvitesHandler)
+			householdInvitationsRouter.Get("/received", s.householdInvitationsService.InboundInvitesHandler)
 		})
 
 		// API Clients

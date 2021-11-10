@@ -124,10 +124,13 @@ func (s *service) RegisterUser(ctx context.Context, registrationInput *types.Use
 	}
 
 	input := &types.UserDataStoreCreationInput{
-		ID:              ksuid.New().String(),
-		Username:        registrationInput.Username,
-		HashedPassword:  hp,
-		TwoFactorSecret: "",
+		ID:                   ksuid.New().String(),
+		Username:             registrationInput.Username,
+		EmailAddress:         registrationInput.EmailAddress,
+		HashedPassword:       hp,
+		TwoFactorSecret:      "",
+		InvitationToken:      registrationInput.InvitationToken,
+		DestinationHousehold: registrationInput.DestinationHousehold,
 	}
 
 	// generate a two factor secret.
@@ -149,6 +152,7 @@ func (s *service) RegisterUser(ctx context.Context, registrationInput *types.Use
 	ucr := &types.UserCreationResponse{
 		CreatedUserID:   user.ID,
 		Username:        user.Username,
+		EmailAddress:    user.EmailAddress,
 		CreatedOn:       user.CreatedOn,
 		TwoFactorSecret: user.TwoFactorSecret,
 		TwoFactorQRCode: s.buildQRCode(ctx, user.Username, user.TwoFactorSecret),

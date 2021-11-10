@@ -24,6 +24,7 @@ var (
 	usersTableColumns = []string{
 		"users.id",
 		"users.username",
+		"users.email_address",
 		"users.avatar_src",
 		"users.hashed_password",
 		"users.requires_password_change",
@@ -57,6 +58,7 @@ func (q *SQLQuerier) scanUser(ctx context.Context, scan database.Scanner, includ
 	targetVars := []interface{}{
 		&user.ID,
 		&user.Username,
+		&user.EmailAddress,
 		&user.AvatarSrc,
 		&user.HashedPassword,
 		&user.RequiresPasswordChange,
@@ -121,6 +123,7 @@ const getUserQuery = `
 	SELECT
 		users.id,
 		users.username,
+		users.email_address,
 		users.avatar_src,
 		users.hashed_password,
 		users.requires_password_change,
@@ -143,6 +146,7 @@ const getUserWithUnverifiedTwoFactorQuery = `
 	SELECT
 		users.id,
 		users.username,
+		users.email_address,
 		users.avatar_src,
 		users.hashed_password,
 		users.requires_password_change,
@@ -190,80 +194,6 @@ func (q *SQLQuerier) getUser(ctx context.Context, userID string, withVerifiedTOT
 	}
 
 	return u, nil
-}
-
-const createHouseholdMembershipForNewUserQuery = `
-	INSERT INTO household_user_memberships (id,belongs_to_user,belongs_to_household,default_household,household_roles)
-	VALUES ($1,$2,$3,$4,$5)
-`
-
-// createUser creates a user. The `user` and `household` parameters are meant to be filled out.
-func (q *SQLQuerier) createUser(ctx context.Context, user *types.User, household *types.Household, userCreationQuery string, userCreationArgs []interface{}) error {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.WithValue("username", user.Username)
-
-	if user.ID == "" {
-		return ErrEmptyInputProvided
-	}
-	household.BelongsToUser = user.ID
-	logger = logger.WithValue(keys.UserIDKey, user.ID)
-
-	// begin user creation transaction
-	tx, err := q.db.BeginTx(ctx, nil)
-	if err != nil {
-		return observability.PrepareError(err, logger, span, "beginning transaction")
-	}
-
-	if writeErr := q.performWriteQuery(ctx, tx, "user creation", userCreationQuery, userCreationArgs); writeErr != nil {
-		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(writeErr, logger, span, "creating user")
-	}
-
-	// create the household.
-	householdCreationInput := types.HouseholdCreationInputForNewUser(user)
-	householdCreationInput.ID = household.ID
-
-	householdCreationArgs := []interface{}{
-		householdCreationInput.ID,
-		householdCreationInput.Name,
-		types.UnpaidHouseholdBillingStatus,
-		householdCreationInput.ContactEmail,
-		householdCreationInput.ContactPhone,
-		householdCreationInput.BelongsToUser,
-	}
-
-	if writeErr := q.performWriteQuery(ctx, tx, "household creation", householdCreationQuery, householdCreationArgs); writeErr != nil {
-		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(writeErr, logger, span, "create household")
-	}
-
-	logger = logger.WithValue(keys.HouseholdIDKey, household.ID)
-
-	createHouseholdMembershipForNewUserArgs := []interface{}{
-		ksuid.New().String(),
-		user.ID,
-		household.ID,
-		true,
-		authorization.HouseholdAdminRole.String(),
-	}
-
-	if err = q.performWriteQuery(ctx, tx, "household user membership creation", createHouseholdMembershipForNewUserQuery, createHouseholdMembershipForNewUserArgs); err != nil {
-		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, logger, span, "writing household user membership")
-	}
-
-	if err = tx.Commit(); err != nil {
-		return observability.PrepareError(err, logger, span, "committing transaction")
-	}
-
-	tracing.AttachUserIDToSpan(span, user.ID)
-	tracing.AttachHouseholdIDToSpan(span, household.ID)
-
-	logger.Info("user and household created")
-
-	return nil
 }
 
 const userHasStatusQuery = `
@@ -331,6 +261,7 @@ const getUserByUsernameQuery = `
 	SELECT
 		users.id,
 		users.username,
+		users.email_address,
 		users.avatar_src,
 		users.hashed_password,
 		users.requires_password_change,
@@ -377,8 +308,41 @@ func (q *SQLQuerier) GetUserByUsername(ctx context.Context, username string) (*t
 	return u, nil
 }
 
+const getUserByEmailQuery = `
+	SELECT
+		users.id
+	FROM users
+	WHERE users.archived_on IS NULL
+	AND users.email_address = $1
+	AND users.two_factor_secret_verified_on IS NOT NULL
+`
+
+// GetUserIDByEmail fetches a user by their email.
+func (q *SQLQuerier) GetUserIDByEmail(ctx context.Context, email string) (string, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if email == "" {
+		return "", ErrEmptyInputProvided
+	}
+
+	tracing.AttachEmailAddressToSpan(span, email)
+	logger := q.logger.WithValue(keys.UserEmailAddressKey, email)
+
+	args := []interface{}{email}
+
+	row := q.getOneRow(ctx, q.db, "user", getUserByEmailQuery, args)
+
+	var userID string
+	if err := row.Scan(&userID); err != nil {
+		return "", observability.PrepareError(err, logger, span, "scanning user ID")
+	}
+
+	return userID, nil
+}
+
 const searchForUserByUsernameQuery = `
-	SELECT users.id, users.username, users.avatar_src, users.hashed_password, users.requires_password_change, users.password_last_changed_on, users.two_factor_secret, users.two_factor_secret_verified_on, users.service_roles, users.reputation, users.reputation_explanation, users.created_on, users.last_updated_on, users.archived_on FROM users WHERE users.username ILIKE $1 AND users.archived_on IS NULL AND users.two_factor_secret_verified_on IS NOT NULL
+	SELECT users.id, users.username, users.email_address, users.avatar_src, users.hashed_password, users.requires_password_change, users.password_last_changed_on, users.two_factor_secret, users.two_factor_secret_verified_on, users.service_roles, users.reputation, users.reputation_explanation, users.created_on, users.last_updated_on, users.archived_on FROM users WHERE users.username ILIKE $1 AND users.archived_on IS NULL AND users.two_factor_secret_verified_on IS NOT NULL
 `
 
 // SearchForUsersByUsername fetches a list of users whose usernames begin with a given query.
@@ -421,7 +385,7 @@ func (q *SQLQuerier) GetAllUsersCount(ctx context.Context) (uint64, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	count, err := q.performCountQuery(ctx, q.db, getAllUsersCountQuery, "fetching count of users")
 	if err != nil {
@@ -460,7 +424,12 @@ func (q *SQLQuerier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x
 }
 
 const userCreationQuery = `
-	INSERT INTO users (id,username,hashed_password,two_factor_secret,reputation,service_roles) VALUES ($1,$2,$3,$4,$5,$6)
+	INSERT INTO users (id,username,email_address,hashed_password,two_factor_secret,reputation,service_roles) VALUES ($1,$2,$3,$4,$5,$6,$7)
+`
+
+const createHouseholdMembershipForNewUserQuery = `
+	INSERT INTO household_user_memberships (id,belongs_to_user,belongs_to_household,default_household,household_roles)
+	VALUES ($1,$2,$3,$4,$5)
 `
 
 // CreateUser creates a user.
@@ -478,6 +447,7 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDataStoreC
 	userCreationArgs := []interface{}{
 		input.ID,
 		input.Username,
+		input.EmailAddress,
 		input.HashedPassword,
 		input.TwoFactorSecret,
 		types.UnverifiedHouseholdStatus,
@@ -487,23 +457,92 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDataStoreC
 	user := &types.User{
 		ID:              input.ID,
 		Username:        input.Username,
+		EmailAddress:    input.EmailAddress,
 		HashedPassword:  input.HashedPassword,
 		TwoFactorSecret: input.TwoFactorSecret,
 		ServiceRoles:    []string{authorization.ServiceUserRole.String()},
 		CreatedOn:       q.currentTime(),
 	}
+	logger = logger.WithValue(keys.UserIDKey, user.ID)
+	tracing.AttachUserIDToSpan(span, user.ID)
 
-	household := &types.Household{
-		ID:                 ksuid.New().String(),
-		Name:               input.Username,
-		SubscriptionPlanID: nil,
-		CreatedOn:          q.currentTime(),
+	householdID := ksuid.New().String()
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
+
+	// begin user creation transaction
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "beginning transaction")
 	}
 
-	// create the user.
-	if err := q.createUser(ctx, user, household, userCreationQuery, userCreationArgs); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "performing user creation query")
+	if writeErr := q.performWriteQuery(ctx, tx, "user creation", userCreationQuery, userCreationArgs); writeErr != nil {
+		q.rollbackTransaction(ctx, tx)
+		return nil, observability.PrepareError(writeErr, logger, span, "creating user")
 	}
+
+	if input.InvitationToken != "" && input.DestinationHousehold != "" {
+		if _, tokenCheckErr := q.GetHouseholdInvitationByEmailAndToken(ctx, input.EmailAddress, input.InvitationToken); tokenCheckErr != nil {
+			q.rollbackTransaction(ctx, tx)
+			return nil, observability.PrepareError(tokenCheckErr, logger, span, "creating user")
+		}
+
+		createHouseholdMembershipForNewUserArgs := []interface{}{
+			ksuid.New().String(),
+			user.ID,
+			input.DestinationHousehold,
+			true,
+			authorization.HouseholdMemberRole.String(),
+		}
+
+		if err = q.performWriteQuery(ctx, tx, "household user membership creation", createHouseholdMembershipForNewUserQuery, createHouseholdMembershipForNewUserArgs); err != nil {
+			q.rollbackTransaction(ctx, tx)
+			return nil, observability.PrepareError(err, logger, span, "writing household user membership")
+		}
+	} else {
+		// standard registration: we need to create the household
+		householdCreationInput := types.HouseholdCreationInputForNewUser(user)
+		householdCreationInput.ID = householdID
+
+		householdCreationArgs := []interface{}{
+			householdCreationInput.ID,
+			householdCreationInput.Name,
+			types.UnpaidHouseholdBillingStatus,
+			householdCreationInput.ContactEmail,
+			householdCreationInput.ContactPhone,
+			householdCreationInput.BelongsToUser,
+		}
+
+		if writeErr := q.performWriteQuery(ctx, tx, "household creation", householdCreationQuery, householdCreationArgs); writeErr != nil {
+			q.rollbackTransaction(ctx, tx)
+			return nil, observability.PrepareError(writeErr, logger, span, "create household")
+		}
+
+		createHouseholdMembershipForNewUserArgs := []interface{}{
+			ksuid.New().String(),
+			user.ID,
+			householdID,
+			true,
+			authorization.HouseholdAdminRole.String(),
+		}
+
+		if err = q.performWriteQuery(ctx, tx, "household user membership creation", createHouseholdMembershipForNewUserQuery, createHouseholdMembershipForNewUserArgs); err != nil {
+			q.rollbackTransaction(ctx, tx)
+			return nil, observability.PrepareError(err, logger, span, "writing household user membership")
+		}
+	}
+
+	if err = q.attachInvitationsToUser(ctx, tx, user.EmailAddress, user.ID); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		logger = logger.WithValue("email_address", user.EmailAddress).WithValue("user_id", user.ID)
+		return nil, observability.PrepareError(err, logger, span, "writing household user membership")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "committing transaction")
+	}
+
+	logger.Debug("user and household created")
 
 	return user, nil
 }

@@ -9,17 +9,18 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
-	database "github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
 	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
-	observability "github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
-	routing "github.com/prixfixeco/api_server/internal/routing"
+	"github.com/prixfixeco/api_server/internal/routing"
 	"github.com/prixfixeco/api_server/internal/search"
-	server "github.com/prixfixeco/api_server/internal/server"
+	"github.com/prixfixeco/api_server/internal/server"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
+	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
 	householdsservice "github.com/prixfixeco/api_server/internal/services/households"
 	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "github.com/prixfixeco/api_server/internal/services/mealplanoptionvotes"
@@ -35,7 +36,7 @@ import (
 	validpreparationsservice "github.com/prixfixeco/api_server/internal/services/validpreparations"
 	webhooksservice "github.com/prixfixeco/api_server/internal/services/webhooks"
 	websocketsservice "github.com/prixfixeco/api_server/internal/services/websockets"
-	uploads "github.com/prixfixeco/api_server/internal/uploads"
+	"github.com/prixfixeco/api_server/internal/uploads"
 )
 
 const (
@@ -72,6 +73,7 @@ type (
 		MealPlanOptions             mealplanoptionsservice.Config             `json:"mealPlanOptions" mapstructure:"meal_plan_options" toml:"meal_plan_options,omitempty"`
 		RecipeStepProducts          recipestepproductsservice.Config          `json:"recipeStepProducts" mapstructure:"recipe_step_products" toml:"recipe_step_products,omitempty"`
 		Households                  householdsservice.Config                  `json:"households" mapstructure:"households" toml:"households,omitempty"`
+		HouseholdInvitations        householdinvitationsservice.Config        `json:"householdInvitations" mapstructure:"household_invitations" toml:"household_invitations,omitempty"`
 		Websockets                  websocketsservice.Config                  `json:"websockets" mapstructure:"websockets" toml:"websockets,omitempty"`
 		Webhooks                    webhooksservice.Config                    `json:"webhooks" mapstructure:"webhooks" toml:"webhooks,omitempty"`
 		Auth                        authservice.Config                        `json:"auth" mapstructure:"auth" toml:"auth,omitempty"`

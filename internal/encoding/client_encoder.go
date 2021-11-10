@@ -54,7 +54,7 @@ func (e *clientEncoder) Encode(ctx context.Context, dest io.Writer, data interfa
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := e.logger
+	logger := e.logger.Clone()
 	var err error
 
 	switch e.contentType {

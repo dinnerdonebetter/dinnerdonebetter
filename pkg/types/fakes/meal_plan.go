@@ -9,6 +9,11 @@ import (
 
 // BuildFakeMealPlan builds a faked meal plan.
 func BuildFakeMealPlan() *types.MealPlan {
+	var options []*types.MealPlanOption
+	for i := 0; i < exampleQuantity; i++ {
+		options = append(options, BuildFakeMealPlanOption())
+	}
+
 	return &types.MealPlan{
 		ID:                 ksuid.New().String(),
 		Notes:              fake.LoremIpsumSentence(exampleQuantity),
@@ -17,7 +22,7 @@ func BuildFakeMealPlan() *types.MealPlan {
 		EndsAt:             uint64(fake.Uint32()),
 		CreatedOn:          uint64(uint32(fake.Date().Unix())),
 		BelongsToHousehold: fake.UUID(),
-		Options:            BuildFakeMealPlanOptionList().MealPlanOptions,
+		Options:            options,
 	}
 }
 

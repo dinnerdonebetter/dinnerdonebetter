@@ -59,7 +59,7 @@ func (s *TestSuite) SetupTest() {
 	defer span.End()
 
 	s.ctx, _ = tracing.StartCustomSpan(ctx, testName)
-	s.user, s.cookie, s.cookieClient, s.pasetoClient = createUserAndClientForTest(s.ctx, t)
+	s.user, s.cookie, s.cookieClient, s.pasetoClient = createUserAndClientForTest(s.ctx, t, nil)
 	s.adminCookieClient, s.adminPASETOClient = buildAdminCookieAndPASETOClients(s.ctx, t)
 }
 

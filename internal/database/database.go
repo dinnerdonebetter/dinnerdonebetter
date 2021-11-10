@@ -52,6 +52,7 @@ type (
 
 		types.AdminUserDataManager
 		types.HouseholdDataManager
+		types.HouseholdInvitationDataManager
 		types.HouseholdUserMembershipDataManager
 		types.UserDataManager
 		types.APIClientDataManager

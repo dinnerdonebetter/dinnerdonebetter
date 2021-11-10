@@ -13,7 +13,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/brianvoe/gofakeit/v5"
 	"github.com/pquerna/otp/totp"
 
 	"github.com/prixfixeco/api_server/pkg/client/httpclient"
@@ -25,11 +24,7 @@ var (
 )
 
 // CreateServiceUser creates a user.
-func CreateServiceUser(ctx context.Context, address, username string) (*types.User, error) {
-	if username == "" {
-		username = gofakeit.Password(true, true, true, false, false, 32)
-	}
-
+func CreateServiceUser(ctx context.Context, address string, in *types.UserRegistrationInput) (*types.User, error) {
 	if address == "" {
 		return nil, errEmptyAddressUnallowed
 	}
@@ -42,11 +37,6 @@ func CreateServiceUser(ctx context.Context, address, username string) (*types.Us
 	c, err := httpclient.NewClient(parsedAddress)
 	if err != nil {
 		return nil, fmt.Errorf("initializing client: %w", err)
-	}
-
-	in := &types.UserRegistrationInput{
-		Username: username,
-		Password: gofakeit.Password(true, true, true, true, true, 64),
 	}
 
 	ucr, err := c.CreateUser(ctx, in)
@@ -64,12 +54,13 @@ func CreateServiceUser(ctx context.Context, address, username string) (*types.Us
 	}
 
 	u := &types.User{
-		ID:       ucr.CreatedUserID,
-		Username: ucr.Username,
-		// this is a dirty trick to reuse most of this model,
-		HashedPassword:  in.Password,
+		ID:              ucr.CreatedUserID,
+		Username:        ucr.Username,
+		EmailAddress:    ucr.EmailAddress,
 		TwoFactorSecret: ucr.TwoFactorSecret,
 		CreatedOn:       ucr.CreatedOn,
+		// this is a dirty trick to reuse most of this model,
+		HashedPassword: in.Password,
 	}
 
 	return u, nil

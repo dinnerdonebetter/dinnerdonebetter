@@ -39,6 +39,7 @@ type (
 		AvatarSrc                 *string         `json:"avatar"`
 		ServiceHouseholdStatus    householdStatus `json:"reputation"`
 		ReputationExplanation     string          `json:"reputationExplanation"`
+		EmailAddress              string          `json:"emailAddress"`
 		Username                  string          `json:"username"`
 		TwoFactorSecret           string          `json:"-"`
 		HashedPassword            string          `json:"-"`
@@ -56,22 +57,28 @@ type (
 		Pagination
 	}
 
-	// UserRegistrationInput represents the input required from users to register an household.
+	// UserRegistrationInput represents the input required from users to register an account.
 	UserRegistrationInput struct {
 		_ struct{}
 
-		Username string `json:"username"`
-		Password string `json:"password"`
+		Username             string `json:"username"`
+		Password             string `json:"password"`
+		EmailAddress         string `json:"emailAddress"`
+		InvitationToken      string `json:"invitationToken,omitempty"`
+		DestinationHousehold string `json:"destinationHousehold,omitempty"`
 	}
 
 	// UserDataStoreCreationInput is used by the User creation route to communicate with the data store.
 	UserDataStoreCreationInput struct {
 		_ struct{}
 
-		ID              string `json:"-"`
-		Username        string `json:"-"`
-		HashedPassword  string `json:"-"`
-		TwoFactorSecret string `json:"-"`
+		ID                   string `json:"-"`
+		Username             string `json:"-"`
+		EmailAddress         string `json:"-"`
+		HashedPassword       string `json:"-"`
+		TwoFactorSecret      string `json:"-"`
+		InvitationToken      string `json:"-"`
+		DestinationHousehold string `json:"-"`
 	}
 
 	// UserCreationResponse is a response structure for Users that doesn't contain passwords fields, but does contain the two factor secret.
@@ -80,6 +87,7 @@ type (
 
 		ID              string          `json:"id"`
 		Username        string          `json:"username"`
+		EmailAddress    string          `json:"emailAddress"`
 		HouseholdStatus householdStatus `json:"householdStatus"`
 		TwoFactorSecret string          `json:"twoFactorSecret"`
 		TwoFactorQRCode string          `json:"qrCode"`
@@ -141,6 +149,7 @@ type (
 		UserHasStatus(ctx context.Context, userID string, statuses ...string) (bool, error)
 		GetUser(ctx context.Context, userID string) (*User, error)
 		GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, userID string) (*User, error)
+		GetUserIDByEmail(ctx context.Context, email string) (string, error)
 		MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID string) error
 		GetUserByUsername(ctx context.Context, username string) (*User, error)
 		SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*User, error)
@@ -206,6 +215,7 @@ func (u *User) IsBanned() bool {
 // ValidateWithContext ensures our provided UserRegistrationInput meets expectations.
 func (i *UserRegistrationInput) ValidateWithContext(ctx context.Context, minUsernameLength, minPasswordLength uint8) error {
 	return validation.ValidateStructWithContext(ctx, i,
+		validation.Field(&i.EmailAddress, validation.Required),
 		validation.Field(&i.Username, validation.Required, validation.Length(int(minUsernameLength), math.MaxInt8)),
 		validation.Field(&i.Password, validation.Required, validation.Length(int(minPasswordLength), math.MaxInt8)),
 	)

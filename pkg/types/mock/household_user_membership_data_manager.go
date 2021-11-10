@@ -42,7 +42,7 @@ func (m *HouseholdUserMembershipDataManager) UserIsMemberOfHousehold(ctx context
 }
 
 // AddUserToHousehold implements the interface.
-func (m *HouseholdUserMembershipDataManager) AddUserToHousehold(ctx context.Context, input *types.AddUserToHouseholdInput) error {
+func (m *HouseholdUserMembershipDataManager) AddUserToHousehold(ctx context.Context, input *types.HouseholdUserMembershipDatabaseCreationInput) error {
 	return m.Called(ctx, input).Error(0)
 }
 

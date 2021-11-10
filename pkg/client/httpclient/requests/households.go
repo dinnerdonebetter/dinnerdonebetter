@@ -35,7 +35,7 @@ func (b *Builder) BuildSwitchActiveHouseholdRequest(ctx context.Context, househo
 	return b.buildDataRequest(ctx, http.MethodPost, uri, input)
 }
 
-// BuildGetHouseholdRequest builds an HTTP request for fetching an household.
+// BuildGetHouseholdRequest builds an HTTP request for fetching a household.
 func (b *Builder) BuildGetHouseholdRequest(ctx context.Context, householdID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
@@ -82,8 +82,8 @@ func (b *Builder) BuildGetHouseholdsRequest(ctx context.Context, filter *types.Q
 	return req, nil
 }
 
-// BuildCreateHouseholdRequest builds an HTTP request for creating an household.
-func (b *Builder) BuildCreateHouseholdRequest(ctx context.Context, input *types.HouseholdCreationInput) (*http.Request, error) {
+// BuildCreateHouseholdRequest builds an HTTP request for creating a household.
+func (b *Builder) BuildCreateHouseholdRequest(ctx context.Context, input *types.HouseholdCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -103,7 +103,7 @@ func (b *Builder) BuildCreateHouseholdRequest(ctx context.Context, input *types.
 	return b.buildDataRequest(ctx, http.MethodPost, uri, input)
 }
 
-// BuildUpdateHouseholdRequest builds an HTTP request for updating an household.
+// BuildUpdateHouseholdRequest builds an HTTP request for updating a household.
 func (b *Builder) BuildUpdateHouseholdRequest(ctx context.Context, household *types.Household) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
@@ -123,7 +123,7 @@ func (b *Builder) BuildUpdateHouseholdRequest(ctx context.Context, household *ty
 	return b.buildDataRequest(ctx, http.MethodPut, uri, household)
 }
 
-// BuildArchiveHouseholdRequest builds an HTTP request for archiving an household.
+// BuildArchiveHouseholdRequest builds an HTTP request for archiving a household.
 func (b *Builder) BuildArchiveHouseholdRequest(ctx context.Context, householdID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
@@ -150,8 +150,8 @@ func (b *Builder) BuildArchiveHouseholdRequest(ctx context.Context, householdID 
 	return req, nil
 }
 
-// BuildAddUserRequest builds a request that adds a user to an household.
-func (b *Builder) BuildAddUserRequest(ctx context.Context, input *types.AddUserToHouseholdInput) (*http.Request, error) {
+// BuildInviteUserToHouseholdRequest builds a request that adds a user to a household.
+func (b *Builder) BuildInviteUserToHouseholdRequest(ctx context.Context, input *types.HouseholdInvitationCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -159,13 +159,9 @@ func (b *Builder) BuildAddUserRequest(ctx context.Context, input *types.AddUserT
 		return nil, ErrNilInputProvided
 	}
 
-	logger := b.logger.WithValue(keys.UserIDKey, input.UserID)
+	// we don't validate here because it needs to have the user ID
 
-	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
-	}
-
-	uri := b.BuildURL(ctx, nil, householdsBasePath, input.HouseholdID, "member")
+	uri := b.BuildURL(ctx, nil, householdsBasePath, input.DestinationHousehold, "invite")
 	tracing.AttachRequestURIToSpan(span, uri)
 
 	return b.buildDataRequest(ctx, http.MethodPost, uri, input)
@@ -193,7 +189,7 @@ func (b *Builder) BuildMarkAsDefaultRequest(ctx context.Context, householdID str
 	return req, nil
 }
 
-// BuildRemoveUserRequest builds a request that removes a user from an household.
+// BuildRemoveUserRequest builds a request that removes a user from a household.
 func (b *Builder) BuildRemoveUserRequest(ctx context.Context, householdID, userID, reason string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
@@ -249,7 +245,7 @@ func (b *Builder) BuildModifyMemberPermissionsRequest(ctx context.Context, house
 	return b.buildDataRequest(ctx, http.MethodPatch, uri, input)
 }
 
-// BuildTransferHouseholdOwnershipRequest builds a request that transfers ownership of an household to a given user.
+// BuildTransferHouseholdOwnershipRequest builds a request that transfers ownership of a household to a given user.
 func (b *Builder) BuildTransferHouseholdOwnershipRequest(ctx context.Context, householdID string, input *types.HouseholdOwnershipTransferInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()

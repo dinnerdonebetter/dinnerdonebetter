@@ -29,7 +29,7 @@ func init() {
 }
 
 type (
-	// UserHouseholdMembershipInfo represents key information about an household membership.
+	// UserHouseholdMembershipInfo represents key information about a household membership.
 	UserHouseholdMembershipInfo struct {
 		_ struct{}
 

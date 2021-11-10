@@ -50,7 +50,7 @@ func BuildFakeHouseholdList() *types.HouseholdList {
 	}
 }
 
-// BuildFakeHouseholdUpdateInput builds a faked HouseholdUpdateInput from an household.
+// BuildFakeHouseholdUpdateInput builds a faked HouseholdUpdateInput from a household.
 func BuildFakeHouseholdUpdateInput() *types.HouseholdUpdateInput {
 	household := BuildFakeHousehold()
 	return &types.HouseholdUpdateInput{
@@ -59,7 +59,7 @@ func BuildFakeHouseholdUpdateInput() *types.HouseholdUpdateInput {
 	}
 }
 
-// BuildFakeHouseholdUpdateInputFromHousehold builds a faked HouseholdUpdateInput from an household.
+// BuildFakeHouseholdUpdateInputFromHousehold builds a faked HouseholdUpdateInput from a household.
 func BuildFakeHouseholdUpdateInputFromHousehold(household *types.Household) *types.HouseholdUpdateInput {
 	return &types.HouseholdUpdateInput{
 		Name:          household.Name,
@@ -67,16 +67,27 @@ func BuildFakeHouseholdUpdateInputFromHousehold(household *types.Household) *typ
 	}
 }
 
-// BuildFakeHouseholdCreationInput builds a faked HouseholdCreationInput.
-func BuildFakeHouseholdCreationInput() *types.HouseholdCreationInput {
+// BuildFakeHouseholdCreationInput builds a faked HouseholdCreationRequestInput.
+func BuildFakeHouseholdCreationInput() *types.HouseholdCreationRequestInput {
 	household := BuildFakeHousehold()
-	return BuildFakeHouseholdCreationInputFromHousehold(household)
+	return BuildFakeHouseholdCreationRequestInputFromHousehold(household)
 }
 
-// BuildFakeHouseholdCreationInputFromHousehold builds a faked HouseholdCreationInput from an household.
-func BuildFakeHouseholdCreationInputFromHousehold(household *types.Household) *types.HouseholdCreationInput {
-	return &types.HouseholdCreationInput{
+// BuildFakeHouseholdCreationRequestInputFromHousehold builds a faked HouseholdCreationRequestInput from a household.
+func BuildFakeHouseholdCreationRequestInputFromHousehold(household *types.Household) *types.HouseholdCreationRequestInput {
+	return &types.HouseholdCreationRequestInput{
 		ID:            ksuid.New().String(),
+		Name:          household.Name,
+		ContactEmail:  household.ContactEmail,
+		ContactPhone:  household.ContactPhone,
+		BelongsToUser: household.BelongsToUser,
+	}
+}
+
+// BuildFakeHouseholdDatabaseCreationInputFromHousehold builds a faked HouseholdCreationRequestInput.
+func BuildFakeHouseholdDatabaseCreationInputFromHousehold(household *types.Household) *types.HouseholdDatabaseCreationInput {
+	return &types.HouseholdDatabaseCreationInput{
+		ID:            household.ID,
 		Name:          household.Name,
 		ContactEmail:  household.ContactEmail,
 		ContactPhone:  household.ContactPhone,

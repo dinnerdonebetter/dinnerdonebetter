@@ -25,7 +25,7 @@ func TestHouseholdCreationInput_ValidateWithContext(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		x := &HouseholdCreationInput{
+		x := &HouseholdCreationRequestInput{
 			Name: t.Name(),
 		}
 

@@ -60,7 +60,7 @@ func (a *Argon2Authenticator) ValidateLogin(ctx context.Context, hash, password,
 	_, span := a.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := a.logger
+	logger := a.logger.Clone()
 
 	passwordMatches, err := argon2id.ComparePasswordAndHash(password, hash)
 	if err != nil {

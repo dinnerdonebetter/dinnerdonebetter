@@ -21,7 +21,7 @@ func (b *Builder) BuildGetValidInstrumentRequest(ctx context.Context, validInstr
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	if validInstrumentID == "" {
 		return nil, ErrInvalidIDProvided
@@ -100,7 +100,7 @@ func (b *Builder) BuildCreateValidInstrumentRequest(ctx context.Context, input *
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -130,7 +130,7 @@ func (b *Builder) BuildUpdateValidInstrumentRequest(ctx context.Context, validIn
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	if validInstrument == nil {
 		return nil, ErrNilInputProvided
@@ -160,7 +160,7 @@ func (b *Builder) BuildArchiveValidInstrumentRequest(ctx context.Context, validI
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	if validInstrumentID == "" {
 		return nil, ErrInvalidIDProvided

@@ -39,7 +39,7 @@ const (
 	householdMemberRolesSeparator = commaSeparator
 )
 
-// scanHouseholdUserMembership takes a database Scanner (i.e. *sql.Row) and scans the result into an HouseholdUserMembership struct.
+// scanHouseholdUserMembership takes a database Scanner (i.e. *sql.Row) and scans the result into a householdUserMembership struct.
 func (q *SQLQuerier) scanHouseholdUserMembership(ctx context.Context, scan database.Scanner) (x *types.HouseholdUserMembership, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -80,7 +80,7 @@ func (q *SQLQuerier) scanHouseholdUserMemberships(ctx context.Context, rows data
 	defer span.End()
 
 	householdRolesMap = map[string][]string{}
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	for rows.Next() {
 		x, scanErr := q.scanHouseholdUserMembership(ctx, rows)
@@ -390,8 +390,8 @@ const addUserToHouseholdQuery = `
 	VALUES ($1,$2,$3,$4)
 `
 
-// AddUserToHousehold does a thing.
-func (q *SQLQuerier) AddUserToHousehold(ctx context.Context, input *types.AddUserToHouseholdInput) error {
+// addUserToHousehold does a thing.
+func (q *SQLQuerier) addUserToHousehold(ctx context.Context, querier database.SQLQueryExecutor, input *types.HouseholdUserMembershipDatabaseCreationInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -415,7 +415,7 @@ func (q *SQLQuerier) AddUserToHousehold(ctx context.Context, input *types.AddUse
 	}
 
 	// create the membership.
-	if err := q.performWriteQuery(ctx, q.db, "user household membership creation", addUserToHouseholdQuery, addUserToHouseholdArgs); err != nil {
+	if err := q.performWriteQuery(ctx, querier, "user household membership creation", addUserToHouseholdQuery, addUserToHouseholdArgs); err != nil {
 		return observability.PrepareError(err, logger, span, "performing user household membership creation query")
 	}
 
@@ -431,7 +431,7 @@ const removeUserFromHouseholdQuery = `
 	AND household_user_memberships.belongs_to_user = $2
 `
 
-// RemoveUserFromHousehold removes a user's membership to an household.
+// RemoveUserFromHousehold removes a user's membership to a household.
 func (q *SQLQuerier) RemoveUserFromHousehold(ctx context.Context, userID, householdID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

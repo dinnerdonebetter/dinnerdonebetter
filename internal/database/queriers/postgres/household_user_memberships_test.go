@@ -9,7 +9,6 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 
 	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/internal/database"
@@ -721,89 +720,6 @@ func TestQuerier_TransferHouseholdOwnership(T *testing.T) {
 		db.ExpectCommit().WillReturnError(errors.New("blah"))
 
 		assert.Error(t, c.TransferHouseholdOwnership(ctx, exampleHouseholdID, exampleInput))
-	})
-}
-
-func TestQuerier_AddUserToHousehold(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHouseholdUserMembership := fakes.BuildFakeHouseholdUserMembership()
-		exampleHouseholdUserMembership.BelongsToHousehold = exampleHousehold.ID
-
-		exampleInput := &types.AddUserToHouseholdInput{
-			Reason:         t.Name(),
-			HouseholdID:    exampleHousehold.ID,
-			UserID:         exampleHousehold.BelongsToUser,
-			HouseholdRoles: []string{householdMemberRolesSeparator},
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		addUserToHouseholdArgs := []interface{}{
-			exampleInput.ID,
-			exampleInput.UserID,
-			exampleInput.HouseholdID,
-			strings.Join(exampleInput.HouseholdRoles, householdMemberRolesSeparator),
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(addUserToHouseholdQuery)).
-			WithArgs(interfaceToDriverValue(addUserToHouseholdArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleHouseholdUserMembership.ID))
-
-		assert.NoError(t, c.AddUserToHousehold(ctx, exampleInput))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with nil input", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHouseholdUserMembership := fakes.BuildFakeHouseholdUserMembership()
-		exampleHouseholdUserMembership.BelongsToHousehold = exampleHousehold.ID
-
-		ctx := context.Background()
-		c, _ := buildTestClient(t)
-
-		assert.Error(t, c.AddUserToHousehold(ctx, nil))
-	})
-
-	T.Run("with error writing add query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHouseholdUserMembership := fakes.BuildFakeHouseholdUserMembership()
-		exampleHouseholdUserMembership.BelongsToHousehold = exampleHousehold.ID
-
-		exampleInput := &types.AddUserToHouseholdInput{
-			Reason:         t.Name(),
-			HouseholdID:    exampleHousehold.ID,
-			UserID:         exampleHousehold.BelongsToUser,
-			HouseholdRoles: []string{householdMemberRolesSeparator},
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		addUserToHouseholdArgs := []interface{}{
-			exampleInput.ID,
-			exampleInput.UserID,
-			exampleInput.HouseholdID,
-			strings.Join(exampleInput.HouseholdRoles, householdMemberRolesSeparator),
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(addUserToHouseholdQuery)).
-			WithArgs(interfaceToDriverValue(addUserToHouseholdArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.AddUserToHousehold(ctx, exampleInput))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

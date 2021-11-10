@@ -63,8 +63,8 @@ func (q *SQLQuerier) scanRecipe(ctx context.Context, scan database.Scanner, incl
 	return x, filteredCount, totalCount, nil
 }
 
-// scanCompleteRecipe takes a database Scanner (i.e. *sql.Row) and scans the result into a full recipe struct.
-func (q *SQLQuerier) scanCompleteRecipe(ctx context.Context, scan database.Scanner) (*types.Recipe, *types.RecipeStep, *types.RecipeStepIngredient, error) {
+// scanCompleteRecipeRow takes a database Scanner (i.e. *sql.Row) and scans the result into a full recipe struct.
+func (q *SQLQuerier) scanCompleteRecipeRow(ctx context.Context, scan database.Scanner) (*types.Recipe, *types.RecipeStep, *types.RecipeStepIngredient, error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -142,6 +142,41 @@ func (q *SQLQuerier) scanCompleteRecipe(ctx context.Context, scan database.Scann
 	return recipe, recipeStep, recipeStepIngredient, nil
 }
 
+func (q *SQLQuerier) scanCompleteRecipe(ctx context.Context, rows database.ResultIterator) (*types.Recipe, error) {
+	var (
+		recipe           *types.Recipe
+		currentStepIndex = 0
+	)
+
+	for rows.Next() {
+		rowRecipe, rowRecipeStep, rowRecipeStepIngredient, scanErr := q.scanCompleteRecipeRow(ctx, rows)
+		if scanErr != nil {
+			return nil, scanErr
+		}
+
+		if recipe == nil {
+			recipe = rowRecipe
+		}
+
+		if len(recipe.Steps) == 0 && currentStepIndex == 0 {
+			recipe.Steps = append(recipe.Steps, rowRecipeStep)
+		}
+
+		if recipe.Steps[currentStepIndex].ID != rowRecipeStep.ID {
+			currentStepIndex++
+			recipe.Steps = append(recipe.Steps, rowRecipeStep)
+		}
+
+		recipe.Steps[currentStepIndex].Ingredients = append(recipe.Steps[currentStepIndex].Ingredients, rowRecipeStepIngredient)
+	}
+
+	if recipe == nil {
+		return nil, sql.ErrNoRows
+	}
+
+	return recipe, nil
+}
+
 // scanRecipes takes some database rows and turns them into a slice of recipes.
 func (q *SQLQuerier) scanRecipes(ctx context.Context, rows database.ResultIterator, includeCounts bool) (recipes []*types.Recipe, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
@@ -182,7 +217,7 @@ func (q *SQLQuerier) RecipeExists(ctx context.Context, recipeID string) (exists 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if recipeID == "" {
 		return false, ErrInvalidIDProvided
@@ -265,7 +300,7 @@ var completeRecipeColumns = []string{
 	"recipe_step_ingredients.belongs_to_recipe_step",
 }
 
-const getCompleteRecipeQuery = `SELECT 
+const getCompleteRecipeByIDQuery = `SELECT 
 	recipes.id,
 	recipes.name,
 	recipes.source,
@@ -343,7 +378,7 @@ func (q *SQLQuerier) GetRecipe(ctx context.Context, recipeID string) (*types.Rec
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
@@ -356,43 +391,119 @@ func (q *SQLQuerier) GetRecipe(ctx context.Context, recipeID string) (*types.Rec
 		recipeID,
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "recipe", getCompleteRecipeQuery, args)
+	rows, err := q.performReadQuery(ctx, q.db, "recipe", getCompleteRecipeByIDQuery, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "executing full recipe retrieval query")
 	}
 
-	var (
-		recipe           *types.Recipe
-		currentStepIndex = 0
-	)
+	return q.scanCompleteRecipe(ctx, rows)
+}
 
-	for rows.Next() {
-		rowRecipe, rowRecipeStep, rowRecipeStepIngredient, scanErr := q.scanCompleteRecipe(ctx, rows)
-		if scanErr != nil {
-			return nil, scanErr
-		}
+const getCompleteRecipeByIDAndAuthorIDQuery = `SELECT 
+	recipes.id,
+	recipes.name,
+	recipes.source,
+	recipes.description,
+	recipes.inspired_by_recipe_id,
+	recipes.created_on,
+	recipes.last_updated_on,
+	recipes.archived_on,
+	recipes.created_by_user,
+	recipe_steps.id,
+	recipe_steps.index,
+	valid_preparations.id,
+	valid_preparations.name,
+	valid_preparations.description,
+	valid_preparations.icon_path,
+	valid_preparations.created_on,
+	valid_preparations.last_updated_on,
+	valid_preparations.archived_on,
+	recipe_steps.prerequisite_step,
+	recipe_steps.min_estimated_time_in_seconds,
+	recipe_steps.max_estimated_time_in_seconds,
+	recipe_steps.temperature_in_celsius,
+	recipe_steps.notes,
+	recipe_steps.why,
+	recipe_steps.created_on,
+	recipe_steps.last_updated_on,
+	recipe_steps.archived_on,
+	recipe_steps.belongs_to_recipe,
+	recipe_step_ingredients.id,
+	valid_ingredients.id,
+	valid_ingredients.name,
+	valid_ingredients.variant,
+	valid_ingredients.description,
+	valid_ingredients.warning,
+	valid_ingredients.contains_egg,
+	valid_ingredients.contains_dairy,
+	valid_ingredients.contains_peanut,
+	valid_ingredients.contains_tree_nut,
+	valid_ingredients.contains_soy,
+	valid_ingredients.contains_wheat,
+	valid_ingredients.contains_shellfish,
+	valid_ingredients.contains_sesame,
+	valid_ingredients.contains_fish,
+	valid_ingredients.contains_gluten,
+	valid_ingredients.animal_flesh,
+	valid_ingredients.animal_derived,
+	valid_ingredients.volumetric,
+	valid_ingredients.icon_path,
+	valid_ingredients.created_on,
+	valid_ingredients.last_updated_on,
+	valid_ingredients.archived_on,
+	recipe_step_ingredients.quantity_type,
+	recipe_step_ingredients.quantity_value,
+	recipe_step_ingredients.quantity_notes,
+	recipe_step_ingredients.product_of_recipe_step,
+	recipe_step_ingredients.ingredient_notes,
+	recipe_step_ingredients.created_on,
+	recipe_step_ingredients.last_updated_on,
+	recipe_step_ingredients.archived_on,
+	recipe_step_ingredients.belongs_to_recipe_step
+FROM recipe_step_ingredients
+	FULL OUTER JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id
+	FULL OUTER JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+	FULL OUTER JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id=valid_ingredients.id
+	FULL OUTER JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
+WHERE recipe_step_ingredients.archived_on IS NULL
+	AND recipe_steps.archived_on IS NULL
+	AND recipe_steps.belongs_to_recipe = $1
+	AND recipes.archived_on IS NULL
+	AND recipes.id = $2
+	AND recipes.created_by_user = $3
+`
 
-		if recipe == nil {
-			recipe = rowRecipe
-		}
+// GetRecipeByIDAndUser fetches a recipe from the database.
+func (q *SQLQuerier) GetRecipeByIDAndUser(ctx context.Context, recipeID, userID string) (*types.Recipe, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
 
-		if len(recipe.Steps) == 0 && currentStepIndex == 0 {
-			recipe.Steps = append(recipe.Steps, rowRecipeStep)
-		}
+	logger := q.logger.Clone()
 
-		if recipe.Steps[currentStepIndex].ID != rowRecipeStep.ID {
-			currentStepIndex++
-			recipe.Steps = append(recipe.Steps, rowRecipeStep)
-		}
+	if recipeID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-		recipe.Steps[currentStepIndex].Ingredients = append(recipe.Steps[currentStepIndex].Ingredients, rowRecipeStepIngredient)
+	if userID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.UserIDKey, userID)
+	tracing.AttachUserIDToSpan(span, userID)
+
+	args := []interface{}{
+		recipeID,
+		recipeID,
+		userID,
 	}
 
-	if recipe == nil {
-		return nil, sql.ErrNoRows
+	rows, err := q.performReadQuery(ctx, q.db, "recipe", getCompleteRecipeByIDAndAuthorIDQuery, args)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "executing full recipe retrieval query")
 	}
 
-	return recipe, nil
+	return q.scanCompleteRecipe(ctx, rows)
 }
 
 const getTotalRecipesCountQuery = "SELECT COUNT(recipes.id) FROM recipes WHERE recipes.archived_on IS NULL"
@@ -402,7 +513,7 @@ func (q *SQLQuerier) GetTotalRecipeCount(ctx context.Context) (uint64, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	count, err := q.performCountQuery(ctx, q.db, getTotalRecipesCountQuery, "fetching count of recipes")
 	if err != nil {
@@ -417,7 +528,7 @@ func (q *SQLQuerier) GetRecipes(ctx context.Context, filter *types.QueryFilter) 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	x = &types.RecipeList{}
 	logger = filter.AttachToLogger(logger)
@@ -473,7 +584,7 @@ func (q *SQLQuerier) GetRecipesWithIDs(ctx context.Context, userID string, limit
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if ids == nil {
 		return nil, ErrNilInputProvided
@@ -606,7 +717,7 @@ func (q *SQLQuerier) ArchiveRecipe(ctx context.Context, recipeID, userID string)
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if recipeID == "" {
 		return ErrInvalidIDProvided

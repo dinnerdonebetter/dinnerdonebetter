@@ -14,7 +14,7 @@ func (c *Client) GetRecipeStep(ctx context.Context, recipeID, recipeStepID strin
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
@@ -73,7 +73,7 @@ func (c *Client) CreateRecipeStep(ctx context.Context, input *types.RecipeStepCr
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if input == nil {
 		return "", ErrNilInputProvided
@@ -101,7 +101,7 @@ func (c *Client) UpdateRecipeStep(ctx context.Context, recipeStep *types.RecipeS
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if recipeStep == nil {
 		return ErrNilInputProvided
@@ -126,7 +126,7 @@ func (c *Client) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID s
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if recipeID == "" {
 		return ErrInvalidIDProvided

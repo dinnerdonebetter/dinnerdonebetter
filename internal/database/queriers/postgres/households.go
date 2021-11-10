@@ -42,7 +42,7 @@ var (
 	}
 )
 
-// scanHousehold takes a database Scanner (i.e. *sql.Row) and scans the result into an Household struct.
+// scanHousehold takes a database Scanner (i.e. *sql.Row) and scans the result into a Household struct.
 func (q *SQLQuerier) scanHousehold(ctx context.Context, scan database.Scanner, includeCounts bool) (household *types.Household, membership *types.HouseholdUserMembership, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -168,7 +168,7 @@ const getHouseholdQuery = `
 	AND households.id = $2
 `
 
-// GetHousehold fetches an household from the database.
+// GetHousehold fetches a household from the database.
 func (q *SQLQuerier) GetHousehold(ctx context.Context, householdID, userID string) (*types.Household, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -221,7 +221,7 @@ func (q *SQLQuerier) GetAllHouseholdsCount(ctx context.Context) (uint64, error) 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	count, err := q.performCountQuery(ctx, q.db, getAllHouseholdsCountQuery, "fetching count of all households")
 	if err != nil {
@@ -265,7 +265,7 @@ func (q *SQLQuerier) buildGetHouseholdsQuery(ctx context.Context, userID string,
 		}
 
 		if userID != "" {
-			where["households.belongs_to_user"] = userID
+			where["household_user_memberships.belongs_to_user"] = userID
 		}
 
 		builder = builder.Where(where)
@@ -356,8 +356,8 @@ const addUserToHouseholdDuringCreationQuery = `
 	VALUES ($1,$2,$3,$4)
 `
 
-// CreateHousehold creates an household in the database.
-func (q *SQLQuerier) CreateHousehold(ctx context.Context, input *types.HouseholdCreationInput) (*types.Household, error) {
+// CreateHousehold creates a household in the database.
+func (q *SQLQuerier) CreateHousehold(ctx context.Context, input *types.HouseholdDatabaseCreationInput) (*types.Household, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -398,7 +398,7 @@ func (q *SQLQuerier) CreateHousehold(ctx context.Context, input *types.Household
 		CreatedOn:     q.currentTime(),
 	}
 
-	addInput := &types.AddUserToHouseholdInput{
+	addInput := &types.HouseholdUserMembershipCreationRequestInput{
 		ID:             ksuid.New().String(),
 		UserID:         input.BelongsToUser,
 		HouseholdID:    household.ID,
@@ -464,7 +464,7 @@ const archiveHouseholdQuery = `
 	UPDATE households SET last_updated_on = extract(epoch FROM NOW()), archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_user = $1 AND id = $2
 `
 
-// ArchiveHousehold archives an household from the database by its ID.
+// ArchiveHousehold archives a household from the database by its ID.
 func (q *SQLQuerier) ArchiveHousehold(ctx context.Context, householdID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

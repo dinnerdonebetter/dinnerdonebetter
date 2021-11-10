@@ -7,6 +7,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -95,8 +96,15 @@ func (b *Builder) BuildCreateUserRequest(ctx context.Context, input *types.UserR
 
 	tracing.AttachUsernameToSpan(span, input.Username)
 
+	qp := url.Values{}
+	if input.DestinationHousehold != "" && input.InvitationToken != "" {
+		qp.Set("dh", input.DestinationHousehold)
+		qp.Set("t", input.InvitationToken)
+	}
+
 	// deliberately not validating here
-	uri := b.buildUnversionedURL(ctx, nil, usersBasePath)
+	uri := b.buildUnversionedURL(ctx, qp, usersBasePath)
+
 	tracing.AttachRequestURIToSpan(span, uri)
 
 	return b.buildDataRequest(ctx, http.MethodPost, uri, input)
@@ -148,7 +156,7 @@ func (b *Builder) BuildAvatarUploadRequest(ctx context.Context, avatar []byte, e
 		return nil, fmt.Errorf("%s: %w", extension, ErrInvalidPhotoEncodingForUpload)
 	}
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)

@@ -22,6 +22,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/services/admin"
 	"github.com/prixfixeco/api_server/internal/services/apiclients"
 	authentication2 "github.com/prixfixeco/api_server/internal/services/authentication"
+	"github.com/prixfixeco/api_server/internal/services/householdinvitations"
 	"github.com/prixfixeco/api_server/internal/services/households"
 	"github.com/prixfixeco/api_server/internal/services/mealplanoptions"
 	"github.com/prixfixeco/api_server/internal/services/mealplanoptionvotes"
@@ -92,12 +93,18 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	uploadManager := uploads.ProvideUploadManager(uploader)
 	userDataService := users.ProvideUsersService(authenticationConfig, logger, userDataManager, householdDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, imageUploadProcessor, uploadManager, routeParamManager)
 	householdsConfig := servicesConfigurations.Households
+	householdInvitationDataManager := database.ProvideHouseholdInvitationDataManager(dataManager)
 	configConfig := &cfg.Events
 	publisherProvider, err := config3.ProvidePublisherProvider(logger, configConfig)
 	if err != nil {
 		return nil, err
 	}
-	householdDataService, err := households.ProvideService(logger, householdsConfig, householdDataManager, householdUserMembershipDataManager, serverEncoderDecoder, unitCounterProvider, routeParamManager, publisherProvider)
+	householdDataService, err := households.ProvideService(logger, householdsConfig, householdDataManager, householdInvitationDataManager, householdUserMembershipDataManager, serverEncoderDecoder, unitCounterProvider, routeParamManager, publisherProvider)
+	if err != nil {
+		return nil, err
+	}
+	householdinvitationsConfig := &servicesConfigurations.HouseholdInvitations
+	householdInvitationDataService, err := householdinvitations.ProvideHouseholdInvitationsService(logger, householdinvitationsConfig, userDataManager, householdInvitationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -194,7 +201,7 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	adminService := admin.ProvideService(logger, authenticationConfig, authenticator, adminUserDataManager, sessionManager, serverEncoderDecoder, routeParamManager)
 	routingConfig := &cfg.Routing
 	router := chi.NewRouter(logger, routingConfig)
-	httpServer, err := server.ProvideHTTPServer(ctx, serverConfig, instrumentationHandler, authService, userDataService, householdDataService, apiClientDataService, websocketDataService, validInstrumentDataService, validIngredientDataService, validPreparationDataService, validIngredientPreparationDataService, recipeDataService, recipeStepDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, recipeStepProductDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, webhookDataService, adminService, logger, serverEncoderDecoder, router)
+	httpServer, err := server.ProvideHTTPServer(ctx, serverConfig, instrumentationHandler, authService, userDataService, householdDataService, householdInvitationDataService, apiClientDataService, websocketDataService, validInstrumentDataService, validIngredientDataService, validPreparationDataService, validIngredientPreparationDataService, recipeDataService, recipeStepDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, recipeStepProductDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, webhookDataService, adminService, logger, serverEncoderDecoder, router)
 	if err != nil {
 		return nil, err
 	}

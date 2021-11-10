@@ -17,8 +17,9 @@ import (
 // BuildFakeUser builds a faked User.
 func BuildFakeUser() *types.User {
 	return &types.User{
-		ID:       ksuid.New().String(),
-		Username: fake.Password(true, true, true, false, false, 32),
+		ID:           ksuid.New().String(),
+		EmailAddress: fake.Email(),
+		Username:     fake.Password(true, true, true, false, false, 32),
 		// HashedPassword: "",
 		// Salt:           []byte(fakes.LoremIpsumSentence(exampleQuantity)),
 		ServiceHouseholdStatus:    types.GoodStandingHouseholdStatus,
@@ -61,16 +62,18 @@ func BuildFakeUserCreationInput() *types.UserRegistrationInput {
 	exampleUser := BuildFakeUser()
 
 	return &types.UserRegistrationInput{
-		Username: exampleUser.Username,
-		Password: fake.Password(true, true, true, true, true, 32),
+		Username:     exampleUser.Username,
+		EmailAddress: fake.Email(),
+		Password:     fake.Password(true, true, true, true, true, 32),
 	}
 }
 
 // BuildFakeUserRegistrationInputFromUser builds a faked UserRegistrationInput.
 func BuildFakeUserRegistrationInputFromUser(user *types.User) *types.UserRegistrationInput {
 	return &types.UserRegistrationInput{
-		Username: user.Username,
-		Password: fake.Password(true, true, true, true, true, 32),
+		Username:     user.Username,
+		EmailAddress: user.EmailAddress,
+		Password:     fake.Password(true, true, true, true, true, 32),
 	}
 }
 
@@ -78,6 +81,7 @@ func BuildFakeUserRegistrationInputFromUser(user *types.User) *types.UserRegistr
 func BuildFakeUserDataStoreCreationInputFromUser(user *types.User) *types.UserDataStoreCreationInput {
 	return &types.UserDataStoreCreationInput{
 		ID:              user.ID,
+		EmailAddress:    user.EmailAddress,
 		Username:        user.Username,
 		HashedPassword:  user.HashedPassword,
 		TwoFactorSecret: user.TwoFactorSecret,

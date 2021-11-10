@@ -25,7 +25,8 @@ type (
 		MealPlanOptionID           string                                           `json:"mealPlanOptionID"`
 		MealPlanOptionVote         *MealPlanOptionVoteDatabaseCreationInput         `json:"mealPlanOptionVote,omitempty"`
 		Webhook                    *WebhookDatabaseCreationInput                    `json:"webhook,omitempty"`
-		UserMembership             *AddUserToHouseholdInput                         `json:"userMembership,omitempty"`
+		UserMembership             *HouseholdUserMembershipDatabaseCreationInput    `json:"userMembership,omitempty"`
+		HouseholdInvitation        *HouseholdInvitationDatabaseCreationInput        `json:"householdInvitation,omitempty"`
 		AttributableToUserID       string                                           `json:"attributableToUserID"`
 		AttributableToHouseholdID  string                                           `json:"attributableToHouseholdID"`
 	}
@@ -51,6 +52,7 @@ type (
 		MealPlanOption             *MealPlanOption             `json:"mealPlanOption,omitempty"`
 		MealPlanOptionID           string                      `json:"mealPlanOptionID"`
 		MealPlanOptionVote         *MealPlanOptionVote         `json:"mealPlanOptionVote,omitempty"`
+		HouseholdInvitation        *HouseholdInvitation        `json:"householdInvitation,omitempty"`
 		AttributableToUserID       string                      `json:"attributableToUserID"`
 		AttributableToHouseholdID  string                      `json:"attributableToHouseholdID"`
 	}
@@ -73,6 +75,7 @@ type (
 		MealPlanOptionID             string   `json:"mealPlanOptionID"`
 		MealPlanOptionVoteID         string   `json:"mealPlanOptionVoteID"`
 		WebhookID                    string   `json:"webhookID"`
+		HouseholdInvitationID        string   `json:"HouseholdInvitationID"`
 		AttributableToUserID         string   `json:"attributableToUserID"`
 		AttributableToHouseholdID    string   `json:"attributableToHouseholdID"`
 	}
@@ -100,6 +103,7 @@ type (
 		MealPlanOptionID           string                      `json:"mealPlanOptionID"`
 		MealPlanOptionVote         *MealPlanOptionVote         `json:"mealPlanOptionVote,omitempty"`
 		Webhook                    *Webhook                    `json:"webhook,omitempty"`
+		HouseholdInvitation        *HouseholdInvitation        `json:"householdInvitation,omitempty"`
 		UserMembership             *HouseholdUserMembership    `json:"userMembership,omitempty"`
 		Context                    map[string]string           `json:"context,omitempty"`
 		AttributableToUserID       string                      `json:"attributableToUserID"`

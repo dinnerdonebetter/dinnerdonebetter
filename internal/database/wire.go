@@ -9,6 +9,9 @@ import (
 var (
 	// Providers represents what we provide to dependency injectors.
 	Providers = wire.NewSet(
+		ProvideHouseholdDataManager,
+		ProvideHouseholdInvitationDataManager,
+		ProvideHouseholdUserMembershipDataManager,
 		ProvideValidInstrumentDataManager,
 		ProvideValidIngredientDataManager,
 		ProvideValidPreparationDataManager,
@@ -23,8 +26,6 @@ var (
 		ProvideMealPlanOptionVoteDataManager,
 		ProvideUserDataManager,
 		ProvideAdminUserDataManager,
-		ProvideHouseholdDataManager,
-		ProvideHouseholdUserMembershipDataManager,
 		ProvideAPIClientDataManager,
 		ProvideWebhookDataManager,
 	)
@@ -32,6 +33,11 @@ var (
 
 // ProvideHouseholdDataManager is an arbitrary function for dependency injection's sake.
 func ProvideHouseholdDataManager(db DataManager) types.HouseholdDataManager {
+	return db
+}
+
+// ProvideHouseholdInvitationDataManager is an arbitrary function for dependency injection's sake.
+func ProvideHouseholdInvitationDataManager(db DataManager) types.HouseholdInvitationDataManager {
 	return db
 }
 

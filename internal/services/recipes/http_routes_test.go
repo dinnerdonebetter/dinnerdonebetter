@@ -413,9 +413,10 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 
 		recipeDataManager := &mocktypes.RecipeDataManager{}
 		recipeDataManager.On(
-			"GetRecipe",
+			"GetRecipeByIDAndUser",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
+			helper.exampleUser.ID,
 		).Return(helper.exampleRecipe, nil)
 		helper.service.recipeDataManager = recipeDataManager
 
@@ -496,9 +497,10 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 
 		recipeDataManager := &mocktypes.RecipeDataManager{}
 		recipeDataManager.On(
-			"GetRecipe",
+			"GetRecipeByIDAndUser",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
+			helper.exampleUser.ID,
 		).Return((*types.Recipe)(nil), sql.ErrNoRows)
 		helper.service.recipeDataManager = recipeDataManager
 
@@ -525,9 +527,10 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 
 		recipeDataManager := &mocktypes.RecipeDataManager{}
 		recipeDataManager.On(
-			"GetRecipe",
+			"GetRecipeByIDAndUser",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
+			helper.exampleUser.ID,
 		).Return((*types.Recipe)(nil), errors.New("blah"))
 		helper.service.recipeDataManager = recipeDataManager
 
@@ -554,9 +557,10 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 
 		recipeDataManager := &mocktypes.RecipeDataManager{}
 		recipeDataManager.On(
-			"GetRecipe",
+			"GetRecipeByIDAndUser",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
+			helper.exampleUser.ID,
 		).Return(helper.exampleRecipe, nil)
 		helper.service.recipeDataManager = recipeDataManager
 

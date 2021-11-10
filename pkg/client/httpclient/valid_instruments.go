@@ -14,7 +14,7 @@ func (c *Client) GetValidInstrument(ctx context.Context, validInstrumentID strin
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if validInstrumentID == "" {
 		return nil, ErrInvalidIDProvided
@@ -40,7 +40,7 @@ func (c *Client) SearchValidInstruments(ctx context.Context, query string, limit
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if query == "" {
 		return nil, ErrEmptyQueryProvided
@@ -91,7 +91,7 @@ func (c *Client) CreateValidInstrument(ctx context.Context, input *types.ValidIn
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if input == nil {
 		return "", ErrNilInputProvided
@@ -119,7 +119,7 @@ func (c *Client) UpdateValidInstrument(ctx context.Context, validInstrument *typ
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if validInstrument == nil {
 		return ErrNilInputProvided
@@ -144,7 +144,7 @@ func (c *Client) ArchiveValidInstrument(ctx context.Context, validInstrumentID s
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if validInstrumentID == "" {
 		return ErrInvalidIDProvided

@@ -15,7 +15,6 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/encoding"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
-	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	mockmetrics "github.com/prixfixeco/api_server/internal/observability/metrics/mock"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -163,7 +162,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		householdDataManager.On(
 			"CreateHousehold",
 			testutils.ContextMatcher,
-			mock.IsType(&types.HouseholdCreationInput{}),
+			mock.IsType(&types.HouseholdDatabaseCreationInput{}),
 		).Return(helper.exampleHousehold, nil)
 		helper.service.householdDataManager = householdDataManager
 
@@ -221,7 +220,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := &types.HouseholdCreationInput{}
+		exampleCreationInput := &types.HouseholdCreationRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -252,7 +251,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		householdDataManager.On(
 			"CreateHousehold",
 			testutils.ContextMatcher,
-			mock.IsType(&types.HouseholdCreationInput{}),
+			mock.IsType(&types.HouseholdDatabaseCreationInput{}),
 		).Return((*types.Household)(nil), errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
 
@@ -677,124 +676,6 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, householdDataManager, encoderDecoder)
-	})
-}
-
-func TestHouseholdsService_AddMemberHandler(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
-
-		exampleInput := fakes.BuildFakeAddUserToHouseholdInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
-			"Publish",
-			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.PreWriteMessageMatcher),
-		).Return(nil)
-		helper.service.preWritesPublisher = mockEventProducer
-
-		helper.service.AddMemberHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, mockEventProducer)
-	})
-
-	T.Run("with error retrieving session context data", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
-
-		exampleInput := fakes.BuildFakeAddUserToHouseholdInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
-
-		helper.service.AddMemberHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-	})
-
-	T.Run("with missing input", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		helper.service.AddMemberHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-	})
-
-	T.Run("with invalid input", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
-
-		exampleInput := &types.AddUserToHouseholdInput{}
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		helper.service.AddMemberHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-	})
-
-	T.Run("with error publishing to event queue", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
-
-		exampleInput := fakes.BuildFakeAddUserToHouseholdInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
-			"Publish",
-			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.PreWriteMessageMatcher),
-		).Return(errors.New("blah"))
-		helper.service.preWritesPublisher = mockEventProducer
-
-		helper.service.AddMemberHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, mockEventProducer)
 	})
 }
 

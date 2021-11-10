@@ -416,7 +416,8 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 				return observability.PrepareError(err, logger, span, "publishing data change message")
 			}
 		}
-	case types.UserMembershipDataType:
+	case types.UserMembershipDataType,
+		types.HouseholdInvitationDataType:
 		break
 	}
 

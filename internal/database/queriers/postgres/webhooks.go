@@ -23,7 +23,7 @@ const (
 var (
 	_ types.WebhookDataManager = (*SQLQuerier)(nil)
 
-	// webhooksTableColumns are the columns for the webhooks table.
+	// householdInvitationsTableColumns are the columns for the webhooks table.
 	webhooksTableColumns = []string{
 		"webhooks.id",
 		"webhooks.name",
@@ -136,7 +136,7 @@ func (q *SQLQuerier) WebhookExists(ctx context.Context, webhookID, householdID s
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	if webhookID == "" {
 		return false, ErrInvalidIDProvided
@@ -208,7 +208,7 @@ func (q *SQLQuerier) GetAllWebhooksCount(ctx context.Context) (uint64, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := q.logger.Clone()
 
 	count, err := q.performCountQuery(ctx, q.db, getAllWebhooksCountQuery, "fetching count of webhooks")
 	if err != nil {

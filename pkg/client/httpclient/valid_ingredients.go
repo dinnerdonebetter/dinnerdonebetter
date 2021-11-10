@@ -14,7 +14,7 @@ func (c *Client) GetValidIngredient(ctx context.Context, validIngredientID strin
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if validIngredientID == "" {
 		return nil, ErrInvalidIDProvided
@@ -40,7 +40,7 @@ func (c *Client) SearchValidIngredients(ctx context.Context, query string, limit
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if query == "" {
 		return nil, ErrEmptyQueryProvided
@@ -91,7 +91,7 @@ func (c *Client) CreateValidIngredient(ctx context.Context, input *types.ValidIn
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if input == nil {
 		return "", ErrNilInputProvided
@@ -119,7 +119,7 @@ func (c *Client) UpdateValidIngredient(ctx context.Context, validIngredient *typ
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if validIngredient == nil {
 		return ErrNilInputProvided
@@ -144,7 +144,7 @@ func (c *Client) ArchiveValidIngredient(ctx context.Context, validIngredientID s
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger
+	logger := c.logger.Clone()
 
 	if validIngredientID == "" {
 		return ErrInvalidIDProvided

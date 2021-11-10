@@ -23,6 +23,7 @@ import (
 	adminservice "github.com/prixfixeco/api_server/internal/services/admin"
 	apiclientsservice "github.com/prixfixeco/api_server/internal/services/apiclients"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
+	householdinvitationssservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
 	householdsservice "github.com/prixfixeco/api_server/internal/services/households"
 	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "github.com/prixfixeco/api_server/internal/services/mealplanoptionvotes"
@@ -68,6 +69,7 @@ func Build(
 		authservice.Providers,
 		usersservice.Providers,
 		householdsservice.Providers,
+		householdinvitationssservice.Providers,
 		apiclientsservice.Providers,
 		webhooksservice.Providers,
 		websocketsservice.Providers,

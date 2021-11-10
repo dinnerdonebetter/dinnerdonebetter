@@ -120,7 +120,7 @@ pre_lint:
 
 .PHONY: docker_lint
 docker_lint:
-	@docker pull openpolicyagent/conftest:v0.21.0
+	@docker pull openpolicyagent/conftest:v0.28.3
 	docker run --interactive --tty --rm --volume $(PWD):$(PWD) --workdir=$(PWD) openpolicyagent/conftest:v0.21.0 test --policy docker_security.rego `find . -type f -name "*.Dockerfile"`
 
 .PHONY: lint

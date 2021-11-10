@@ -21,7 +21,7 @@ func (b *Builder) BuildGetValidPreparationRequest(ctx context.Context, validPrep
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	if validPreparationID == "" {
 		return nil, ErrInvalidIDProvided
@@ -100,7 +100,7 @@ func (b *Builder) BuildCreateValidPreparationRequest(ctx context.Context, input 
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -130,7 +130,7 @@ func (b *Builder) BuildUpdateValidPreparationRequest(ctx context.Context, validP
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	if validPreparation == nil {
 		return nil, ErrNilInputProvided
@@ -160,7 +160,7 @@ func (b *Builder) BuildArchiveValidPreparationRequest(ctx context.Context, valid
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := b.logger
+	logger := b.logger.Clone()
 
 	if validPreparationID == "" {
 		return nil, ErrInvalidIDProvided

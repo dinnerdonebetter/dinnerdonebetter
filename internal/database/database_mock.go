@@ -16,6 +16,7 @@ var _ DataManager = (*MockDatabase)(nil)
 func BuildMockDatabase() *MockDatabase {
 	return &MockDatabase{
 		HouseholdDataManager:                  &mocktypes.HouseholdDataManager{},
+		HouseholdInvitationDataManager:        &mocktypes.HouseholdInvitationDataManager{},
 		HouseholdUserMembershipDataManager:    &mocktypes.HouseholdUserMembershipDataManager{},
 		ValidInstrumentDataManager:            &mocktypes.ValidInstrumentDataManager{},
 		ValidIngredientDataManager:            &mocktypes.ValidIngredientDataManager{},
@@ -57,6 +58,7 @@ type MockDatabase struct {
 	*mocktypes.APIClientDataManager
 	*mocktypes.WebhookDataManager
 	*mocktypes.HouseholdDataManager
+	*mocktypes.HouseholdInvitationDataManager
 	mock.Mock
 }
 
@@ -116,13 +118,36 @@ type MockSQLResult struct {
 // LastInsertId implements our interface.
 func (m *MockSQLResult) LastInsertId() (int64, error) {
 	args := m.Called()
-
 	return args.Get(0).(int64), args.Error(1)
 }
 
 // RowsAffected implements our interface.
 func (m *MockSQLResult) RowsAffected() (int64, error) {
 	args := m.Called()
-
 	return args.Get(0).(int64), args.Error(1)
+}
+
+var _ SQLQueryExecutor = (*MockQueryExecutor)(nil)
+
+// MockQueryExecutor mocks a sql.Tx|DB.
+type MockQueryExecutor struct {
+	mock.Mock
+}
+
+// ExecContext is a mock function.
+func (m *MockQueryExecutor) ExecContext(ctx context.Context, query string, queryArgs ...interface{}) (sql.Result, error) {
+	args := m.Called(ctx, query, queryArgs)
+	return args.Get(0).(sql.Result), args.Error(1)
+}
+
+// QueryContext is a mock function.
+func (m *MockQueryExecutor) QueryContext(ctx context.Context, query string, queryArgs ...interface{}) (*sql.Rows, error) {
+	args := m.Called(ctx, query, queryArgs)
+	return args.Get(0).(*sql.Rows), args.Error(1)
+}
+
+// QueryRowContext is a mock function.
+func (m *MockQueryExecutor) QueryRowContext(ctx context.Context, query string, queryArgs ...interface{}) *sql.Row {
+	args := m.Called(ctx, query, queryArgs)
+	return args.Get(0).(*sql.Row)
 }
