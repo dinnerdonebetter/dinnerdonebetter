@@ -29,7 +29,8 @@ func buildMockRowsFromMealPlans(includeCounts bool, filteredCount uint64, mealPl
 		rowValues := []driver.Value{
 			x.ID,
 			x.Notes,
-			x.State,
+			x.Status,
+			x.VotingDeadline,
 			x.StartsAt,
 			x.EndsAt,
 			x.CreatedOn,
@@ -52,7 +53,8 @@ func buildMockRowsFromFullMealPlans(includeCounts bool, filteredCount uint64, me
 	columns := []string{
 		"meal_plans.id",
 		"meal_plans.notes",
-		"meal_plans.state",
+		"meal_plans.status",
+		"meal_plans.voting_deadline",
 		"meal_plans.starts_at",
 		"meal_plans.ends_at",
 		"meal_plans.created_on",
@@ -80,7 +82,8 @@ func buildMockRowsFromFullMealPlans(includeCounts bool, filteredCount uint64, me
 			rowValues := []driver.Value{
 				x.ID,
 				x.Notes,
-				x.State,
+				x.Status,
+				x.VotingDeadline,
 				x.StartsAt,
 				x.EndsAt,
 				x.CreatedOn,
@@ -547,7 +550,8 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 		args := []interface{}{
 			exampleInput.ID,
 			exampleInput.Notes,
-			exampleInput.State,
+			exampleInput.Status,
+			exampleInput.VotingDeadline,
 			exampleInput.StartsAt,
 			exampleInput.EndsAt,
 			exampleInput.BelongsToHousehold,
@@ -613,7 +617,8 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 		args := []interface{}{
 			exampleInput.ID,
 			exampleInput.Notes,
-			exampleInput.State,
+			exampleInput.Status,
+			exampleInput.VotingDeadline,
 			exampleInput.StartsAt,
 			exampleInput.EndsAt,
 			exampleInput.BelongsToHousehold,
@@ -653,7 +658,8 @@ func TestQuerier_UpdateMealPlan(T *testing.T) {
 
 		args := []interface{}{
 			exampleMealPlan.Notes,
-			exampleMealPlan.State,
+			exampleMealPlan.Status,
+			exampleMealPlan.VotingDeadline,
 			exampleMealPlan.StartsAt,
 			exampleMealPlan.EndsAt,
 			exampleMealPlan.BelongsToHousehold,
@@ -688,7 +694,8 @@ func TestQuerier_UpdateMealPlan(T *testing.T) {
 
 		args := []interface{}{
 			exampleMealPlan.Notes,
-			exampleMealPlan.State,
+			exampleMealPlan.Status,
+			exampleMealPlan.VotingDeadline,
 			exampleMealPlan.StartsAt,
 			exampleMealPlan.EndsAt,
 			exampleMealPlan.BelongsToHousehold,

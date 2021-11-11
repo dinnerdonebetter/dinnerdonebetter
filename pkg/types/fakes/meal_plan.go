@@ -1,6 +1,8 @@
 package fakes
 
 import (
+	"time"
+
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/segmentio/ksuid"
 
@@ -17,7 +19,8 @@ func BuildFakeMealPlan() *types.MealPlan {
 	return &types.MealPlan{
 		ID:                 ksuid.New().String(),
 		Notes:              fake.LoremIpsumSentence(exampleQuantity),
-		State:              fake.LoremIpsumSentence(exampleQuantity),
+		Status:             types.AwaitingVotesMealPlanStatus,
+		VotingDeadline:     uint64(uint32(time.Now().Add(time.Minute).Unix())),
 		StartsAt:           uint64(fake.Uint32()),
 		EndsAt:             uint64(fake.Uint32()),
 		CreatedOn:          uint64(uint32(fake.Date().Unix())),
@@ -49,7 +52,8 @@ func BuildFakeMealPlanUpdateRequestInput() *types.MealPlanUpdateRequestInput {
 	mealPlan := BuildFakeMealPlan()
 	return &types.MealPlanUpdateRequestInput{
 		Notes:              mealPlan.Notes,
-		State:              mealPlan.State,
+		Status:             mealPlan.Status,
+		VotingDeadline:     mealPlan.VotingDeadline,
 		StartsAt:           mealPlan.StartsAt,
 		EndsAt:             mealPlan.EndsAt,
 		BelongsToHousehold: mealPlan.BelongsToHousehold,
@@ -60,7 +64,8 @@ func BuildFakeMealPlanUpdateRequestInput() *types.MealPlanUpdateRequestInput {
 func BuildFakeMealPlanUpdateRequestInputFromMealPlan(mealPlan *types.MealPlan) *types.MealPlanUpdateRequestInput {
 	return &types.MealPlanUpdateRequestInput{
 		Notes:              mealPlan.Notes,
-		State:              mealPlan.State,
+		Status:             mealPlan.Status,
+		VotingDeadline:     mealPlan.VotingDeadline,
 		StartsAt:           mealPlan.StartsAt,
 		EndsAt:             mealPlan.EndsAt,
 		BelongsToHousehold: mealPlan.BelongsToHousehold,
@@ -83,7 +88,7 @@ func BuildFakeMealPlanCreationRequestInputFromMealPlan(mealPlan *types.MealPlan)
 	return &types.MealPlanCreationRequestInput{
 		ID:                 mealPlan.ID,
 		Notes:              mealPlan.Notes,
-		State:              mealPlan.State,
+		VotingDeadline:     mealPlan.VotingDeadline,
 		StartsAt:           mealPlan.StartsAt,
 		EndsAt:             mealPlan.EndsAt,
 		Options:            options,
@@ -107,7 +112,8 @@ func BuildFakeMealPlanDatabaseCreationInputFromMealPlan(mealPlan *types.MealPlan
 	return &types.MealPlanDatabaseCreationInput{
 		ID:                 mealPlan.ID,
 		Notes:              mealPlan.Notes,
-		State:              mealPlan.State,
+		VotingDeadline:     mealPlan.VotingDeadline,
+		Status:             mealPlan.Status,
 		StartsAt:           mealPlan.StartsAt,
 		EndsAt:             mealPlan.EndsAt,
 		Options:            options,

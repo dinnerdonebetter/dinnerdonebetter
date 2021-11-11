@@ -20,7 +20,8 @@ var (
 	mealPlansTableColumns = []string{
 		"meal_plans.id",
 		"meal_plans.notes",
-		"meal_plans.state",
+		"meal_plans.status",
+		"meal_plans.voting_deadline",
 		"meal_plans.starts_at",
 		"meal_plans.ends_at",
 		"meal_plans.created_on",
@@ -42,7 +43,8 @@ func (q *SQLQuerier) scanMealPlan(ctx context.Context, scan database.Scanner, in
 	targetVars := []interface{}{
 		&x.ID,
 		&x.Notes,
-		&x.State,
+		&x.Status,
+		&x.VotingDeadline,
 		&x.StartsAt,
 		&x.EndsAt,
 		&x.CreatedOn,
@@ -75,7 +77,8 @@ func (q *SQLQuerier) scanMealPlanWithOptions(ctx context.Context, scan database.
 	targetVars := []interface{}{
 		&mealPlan.ID,
 		&mealPlan.Notes,
-		&mealPlan.State,
+		&mealPlan.Status,
+		&mealPlan.VotingDeadline,
 		&mealPlan.StartsAt,
 		&mealPlan.EndsAt,
 		&mealPlan.CreatedOn,
@@ -166,7 +169,8 @@ func (q *SQLQuerier) MealPlanExists(ctx context.Context, mealPlanID string) (exi
 const getMealPlanQuery = `SELECT
 	meal_plans.id,
 	meal_plans.notes,
-	meal_plans.state,
+	meal_plans.status,
+	meal_plans.voting_deadline,
 	meal_plans.starts_at,
 	meal_plans.ends_at,
 	meal_plans.created_on,
@@ -213,9 +217,9 @@ func (q *SQLQuerier) GetMealPlan(ctx context.Context, mealPlanID string) (*types
 		mealPlan *types.MealPlan
 	)
 	for rows.Next() {
-		rowMealPlan, rowMealPlanOption, _, _, err := q.scanMealPlanWithOptions(ctx, rows, false)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "scanning mealPlan")
+		rowMealPlan, rowMealPlanOption, _, _, scanErr := q.scanMealPlanWithOptions(ctx, rows, false)
+		if scanErr != nil {
+			return nil, observability.PrepareError(scanErr, logger, span, "scanning mealPlan")
 		}
 
 		if mealPlan == nil {
@@ -336,7 +340,7 @@ func (q *SQLQuerier) GetMealPlansWithIDs(ctx context.Context, householdID string
 	return mealPlans, nil
 }
 
-const mealPlanCreationQuery = "INSERT INTO meal_plans (id,notes,state,starts_at,ends_at,belongs_to_household) VALUES ($1,$2,$3,$4,$5,$6)"
+const mealPlanCreationQuery = "INSERT INTO meal_plans (id,notes,status,voting_deadline,starts_at,ends_at,belongs_to_household) VALUES ($1,$2,$3,$4,$5,$6,$7)"
 
 // CreateMealPlan creates a meal plan in the database.
 func (q *SQLQuerier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatabaseCreationInput) (*types.MealPlan, error) {
@@ -352,7 +356,8 @@ func (q *SQLQuerier) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 	args := []interface{}{
 		input.ID,
 		input.Notes,
-		input.State,
+		input.Status,
+		input.VotingDeadline,
 		input.StartsAt,
 		input.EndsAt,
 		input.BelongsToHousehold,
@@ -372,7 +377,8 @@ func (q *SQLQuerier) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 	x := &types.MealPlan{
 		ID:                 input.ID,
 		Notes:              input.Notes,
-		State:              input.State,
+		Status:             input.Status,
+		VotingDeadline:     input.VotingDeadline,
 		StartsAt:           input.StartsAt,
 		EndsAt:             input.EndsAt,
 		BelongsToHousehold: input.BelongsToHousehold,
@@ -399,7 +405,7 @@ func (q *SQLQuerier) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 	return x, nil
 }
 
-const updateMealPlanQuery = "UPDATE meal_plans SET notes = $1, state = $2, starts_at = $3, ends_at = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_household = $5 AND id = $6"
+const updateMealPlanQuery = "UPDATE meal_plans SET notes = $1, status = $2, voting_deadline = $3, starts_at = $4, ends_at = $5, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_household = $6 AND id = $7"
 
 // UpdateMealPlan updates a particular meal plan.
 func (q *SQLQuerier) UpdateMealPlan(ctx context.Context, updated *types.MealPlan) error {
@@ -416,7 +422,8 @@ func (q *SQLQuerier) UpdateMealPlan(ctx context.Context, updated *types.MealPlan
 
 	args := []interface{}{
 		updated.Notes,
-		updated.State,
+		updated.Status,
+		updated.VotingDeadline,
 		updated.StartsAt,
 		updated.EndsAt,
 		updated.BelongsToHousehold,

@@ -20,7 +20,7 @@ func checkMealPlanEquality(t *testing.T, expected, actual *types.MealPlan) {
 
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for meal plan %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
-	assert.Equal(t, expected.State, actual.State, "expected State for meal plan %s to be %v, but it was %v", expected.ID, expected.State, actual.State)
+	assert.Equal(t, expected.Status, actual.Status, "expected Status for meal plan %s to be %v, but it was %v", expected.ID, expected.Status, actual.Status)
 	assert.Equal(t, expected.StartsAt, actual.StartsAt, "expected StartsAt for meal plan %s to be %v, but it was %v", expected.ID, expected.StartsAt, actual.StartsAt)
 	assert.Equal(t, expected.EndsAt, actual.EndsAt, "expected EndsAt for meal plan %s to be %v, but it was %v", expected.ID, expected.EndsAt, actual.EndsAt)
 	assert.NotZero(t, actual.CreatedOn)
@@ -30,7 +30,7 @@ func checkMealPlanEquality(t *testing.T, expected, actual *types.MealPlan) {
 func convertMealPlanToMealPlanUpdateInput(x *types.MealPlan) *types.MealPlanUpdateRequestInput {
 	return &types.MealPlanUpdateRequestInput{
 		Notes:    x.Notes,
-		State:    x.State,
+		Status:   x.Status,
 		StartsAt: x.StartsAt,
 		EndsAt:   x.EndsAt,
 	}
