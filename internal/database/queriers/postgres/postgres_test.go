@@ -182,29 +182,13 @@ func TestProvideDatabaseClient(T *testing.T) {
 		ctx := context.Background()
 
 		exampleConfig := &config.Config{
-			Debug:           true,
-			RunMigrations:   false,
-			MaxPingAttempts: 1,
-		}
-
-		actual, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), exampleConfig, true)
-		assert.NotNil(t, actual)
-		assert.NoError(t, err)
-	})
-
-	T.Run("with PostgresProvider", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleConfig := &config.Config{
 			Provider:        config.PostgresProvider,
 			Debug:           true,
 			RunMigrations:   false,
 			MaxPingAttempts: 1,
 		}
 
-		actual, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), exampleConfig, true)
+		actual, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), exampleConfig)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 	})

@@ -51,7 +51,7 @@ type (
 		BelongsToMealPlan string                `json:"belongsToMealPlan"`
 		Votes             []*MealPlanOptionVote `json:"votes"`
 		CreatedOn         uint64                `json:"createdOn"`
-		Day               time.Weekday          `json:"dayOfWeek"`
+		Day               time.Weekday          `json:"day"`
 	}
 
 	// MealPlanOptionList represents a list of meal plan options.
@@ -68,7 +68,7 @@ type (
 		RecipeID          string       `json:"recipeID"`
 		Notes             string       `json:"notes"`
 		BelongsToMealPlan string       `json:"-"`
-		Day               time.Weekday `json:"dayOfWeek"`
+		Day               time.Weekday `json:"day"`
 	}
 
 	// MealPlanOptionDatabaseCreationInput represents what a user could set as input for creating meal plan options.
@@ -78,7 +78,7 @@ type (
 		RecipeID          string       `json:"recipeID"`
 		Notes             string       `json:"notes"`
 		BelongsToMealPlan string       `json:"belongsToMealPlan"`
-		Day               time.Weekday `json:"dayOfWeek"`
+		Day               time.Weekday `json:"day"`
 	}
 
 	// MealPlanOptionUpdateRequestInput represents what a user could set as input for updating meal plan options.
@@ -87,7 +87,7 @@ type (
 		RecipeID          string       `json:"recipeID"`
 		Notes             string       `json:"notes"`
 		BelongsToMealPlan string       `json:"-"`
-		Day               time.Weekday `json:"dayOfWeek"`
+		Day               time.Weekday `json:"day"`
 	}
 
 	// MealPlanOptionDataManager describes a structure capable of storing meal plan options permanently.

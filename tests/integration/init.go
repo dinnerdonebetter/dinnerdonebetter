@@ -66,7 +66,7 @@ func init() {
 		RunMigrations:     false,
 		MaxPingAttempts:   50,
 	}
-	dbmanager, err := postgres.ProvideDatabaseClient(ctx, logger, cfg, false)
+	dbmanager, err := postgres.ProvideDatabaseClient(ctx, logger, cfg)
 	if err != nil {
 		panic(err)
 	}

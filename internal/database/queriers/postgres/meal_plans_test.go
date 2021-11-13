@@ -62,7 +62,7 @@ func buildMockRowsFromFullMealPlans(includeCounts bool, filteredCount uint64, me
 		"meal_plans.archived_on",
 		"meal_plans.belongs_to_household",
 		"meal_plan_options.id",
-		"meal_plan_options.day_of_week",
+		"meal_plan_options.day",
 		"meal_plan_options.recipe_id",
 		"meal_plan_options.notes",
 		"meal_plan_options.created_on",
