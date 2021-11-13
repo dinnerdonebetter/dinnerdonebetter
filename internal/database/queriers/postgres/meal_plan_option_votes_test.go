@@ -28,7 +28,7 @@ func buildMockRowsFromMealPlanOptionVotes(includeCounts bool, filteredCount uint
 	for _, x := range mealPlanOptionVotes {
 		rowValues := []driver.Value{
 			x.ID,
-			x.Points,
+			x.Rank,
 			x.Abstain,
 			x.Notes,
 			x.ByUser,
@@ -618,7 +618,7 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 
 		args := []interface{}{
 			exampleInput.ID,
-			exampleInput.Points,
+			exampleInput.Rank,
 			exampleInput.Abstain,
 			exampleInput.Notes,
 			exampleInput.ByUser,
@@ -663,7 +663,7 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 
 		args := []interface{}{
 			exampleInput.ID,
-			exampleInput.Points,
+			exampleInput.Rank,
 			exampleInput.Abstain,
 			exampleInput.Notes,
 			exampleInput.ByUser,
@@ -699,7 +699,7 @@ func TestQuerier_UpdateMealPlanOptionVote(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleMealPlanOptionVote.Points,
+			exampleMealPlanOptionVote.Rank,
 			exampleMealPlanOptionVote.Abstain,
 			exampleMealPlanOptionVote.Notes,
 			exampleMealPlanOptionVote.ByUser,
@@ -734,7 +734,7 @@ func TestQuerier_UpdateMealPlanOptionVote(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleMealPlanOptionVote.Points,
+			exampleMealPlanOptionVote.Rank,
 			exampleMealPlanOptionVote.Abstain,
 			exampleMealPlanOptionVote.Notes,
 			exampleMealPlanOptionVote.ByUser,

@@ -15,7 +15,7 @@ func TestMealPlanOptionVoteCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionVoteCreationRequestInput{
-			Points:  fake.Int16(),
+			Rank:    fake.Uint8(),
 			Abstain: fake.Bool(),
 			Notes:   fake.LoremIpsumSentence(exampleQuantity),
 		}
@@ -41,7 +41,7 @@ func TestMealPlanOptionVoteUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionVoteUpdateRequestInput{
-			Points:  fake.Int16(),
+			Rank:    fake.Uint8(),
 			Abstain: fake.Bool(),
 			Notes:   fake.LoremIpsumSentence(exampleQuantity),
 		}

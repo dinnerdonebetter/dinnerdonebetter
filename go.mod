@@ -53,6 +53,7 @@ require (
 	golang.org/x/net v0.0.0-20210614182718-04defd469f4e
 	golang.org/x/oauth2 v0.0.0-20210427180440-81ed05c6b58c
 	gopkg.in/mikespook/gorbac.v2 v2.1.0
+	resenje.org/schulze v0.2.0
 )
 
 require (

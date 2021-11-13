@@ -50,7 +50,7 @@ func (q *SQLQuerier) scanMealPlanOptionVote(ctx context.Context, scan database.S
 
 	targetVars := []interface{}{
 		&x.ID,
-		&x.Points,
+		&x.Rank,
 		&x.Abstain,
 		&x.Notes,
 		&x.ByUser,
@@ -330,7 +330,7 @@ func (q *SQLQuerier) CreateMealPlanOptionVote(ctx context.Context, input *types.
 
 	args := []interface{}{
 		input.ID,
-		input.Points,
+		input.Rank,
 		input.Abstain,
 		input.Notes,
 		input.ByUser,
@@ -344,7 +344,7 @@ func (q *SQLQuerier) CreateMealPlanOptionVote(ctx context.Context, input *types.
 
 	x := &types.MealPlanOptionVote{
 		ID:                      input.ID,
-		Points:                  input.Points,
+		Rank:                    input.Rank,
 		Abstain:                 input.Abstain,
 		Notes:                   input.Notes,
 		ByUser:                  input.ByUser,
@@ -373,7 +373,7 @@ func (q *SQLQuerier) UpdateMealPlanOptionVote(ctx context.Context, updated *type
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, updated.ID)
 
 	args := []interface{}{
-		updated.Points,
+		updated.Rank,
 		updated.Abstain,
 		updated.Notes,
 		updated.ByUser,

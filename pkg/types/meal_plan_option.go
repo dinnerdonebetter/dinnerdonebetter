@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/gob"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -11,6 +12,19 @@ import (
 const (
 	// MealPlanOptionDataType indicates an event is related to a meal plan option.
 	MealPlanOptionDataType dataType = "meal_plan_option"
+
+	// BreakfastMealName represents breakfast.
+	BreakfastMealName MealName = "breakfast"
+	// SecondBreakfastMealName represents second breakfast.
+	SecondBreakfastMealName MealName = "second_breakfast"
+	// BrunchMealName represents brunch.
+	BrunchMealName MealName = "brunch"
+	// LunchMealName represents lunch.
+	LunchMealName MealName = "lunch"
+	// SupperMealName represents supper.
+	SupperMealName MealName = "supper"
+	// DinnerMealName represents dinner.
+	DinnerMealName MealName = "dinner"
 )
 
 func init() {
@@ -21,17 +35,23 @@ func init() {
 }
 
 type (
+	// MealName is an enumeration for meal names.
+	MealName string
+
 	// MealPlanOption represents a meal plan option.
 	MealPlanOption struct {
 		_                 struct{}
-		LastUpdatedOn     *uint64 `json:"lastUpdatedOn"`
-		ArchivedOn        *uint64 `json:"archivedOn"`
-		RecipeID          string  `json:"recipeID"`
-		Notes             string  `json:"notes"`
-		ID                string  `json:"id"`
-		BelongsToMealPlan string  `json:"belongsToMealPlan"`
-		CreatedOn         uint64  `json:"createdOn"`
-		DayOfWeek         uint8   `json:"dayOfWeek"`
+		LastUpdatedOn     *uint64               `json:"lastUpdatedOn"`
+		ArchivedOn        *uint64               `json:"archivedOn"`
+		RecipeID          string                `json:"recipeID"`
+		Notes             string                `json:"notes"`
+		ID                string                `json:"id"`
+		Chosen            bool                  `json:"chosen"`
+		MealName          MealName              `json:"mealName"`
+		BelongsToMealPlan string                `json:"belongsToMealPlan"`
+		Votes             []*MealPlanOptionVote `json:"votes"`
+		CreatedOn         uint64                `json:"createdOn"`
+		DayOfWeek         time.Weekday          `json:"dayOfWeek"`
 	}
 
 	// MealPlanOptionList represents a list of meal plan options.
@@ -44,30 +64,30 @@ type (
 	// MealPlanOptionCreationRequestInput represents what a user could set as input for creating meal plan options.
 	MealPlanOptionCreationRequestInput struct {
 		_                 struct{}
-		ID                string `json:"-"`
-		RecipeID          string `json:"recipeID"`
-		Notes             string `json:"notes"`
-		BelongsToMealPlan string `json:"-"`
-		DayOfWeek         uint8  `json:"dayOfWeek"`
+		ID                string       `json:"-"`
+		RecipeID          string       `json:"recipeID"`
+		Notes             string       `json:"notes"`
+		BelongsToMealPlan string       `json:"-"`
+		DayOfWeek         time.Weekday `json:"dayOfWeek"`
 	}
 
 	// MealPlanOptionDatabaseCreationInput represents what a user could set as input for creating meal plan options.
 	MealPlanOptionDatabaseCreationInput struct {
 		_                 struct{}
-		ID                string `json:"id"`
-		RecipeID          string `json:"recipeID"`
-		Notes             string `json:"notes"`
-		BelongsToMealPlan string `json:"belongsToMealPlan"`
-		DayOfWeek         uint8  `json:"dayOfWeek"`
+		ID                string       `json:"id"`
+		RecipeID          string       `json:"recipeID"`
+		Notes             string       `json:"notes"`
+		BelongsToMealPlan string       `json:"belongsToMealPlan"`
+		DayOfWeek         time.Weekday `json:"dayOfWeek"`
 	}
 
 	// MealPlanOptionUpdateRequestInput represents what a user could set as input for updating meal plan options.
 	MealPlanOptionUpdateRequestInput struct {
 		_                 struct{}
-		RecipeID          string `json:"recipeID"`
-		Notes             string `json:"notes"`
-		BelongsToMealPlan string `json:"-"`
-		DayOfWeek         uint8  `json:"dayOfWeek"`
+		RecipeID          string       `json:"recipeID"`
+		Notes             string       `json:"notes"`
+		BelongsToMealPlan string       `json:"-"`
+		DayOfWeek         time.Weekday `json:"dayOfWeek"`
 	}
 
 	// MealPlanOptionDataManager describes a structure capable of storing meal plan options permanently.

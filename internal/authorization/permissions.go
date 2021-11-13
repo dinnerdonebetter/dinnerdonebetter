@@ -233,6 +233,18 @@ var (
 		SearchValidIngredientPreparationsPermission.ID():  SearchValidIngredientPreparationsPermission,
 		UpdateValidIngredientPreparationsPermission.ID():  UpdateValidIngredientPreparationsPermission,
 		ArchiveValidIngredientPreparationsPermission.ID(): ArchiveValidIngredientPreparationsPermission,
+
+		CreateMealPlansPermission.ID():  CreateMealPlansPermission,
+		ReadMealPlansPermission.ID():    ReadMealPlansPermission,
+		SearchMealPlansPermission.ID():  SearchMealPlansPermission,
+		UpdateMealPlansPermission.ID():  UpdateMealPlansPermission,
+		ArchiveMealPlansPermission.ID(): ArchiveMealPlansPermission,
+
+		CreateMealPlanOptionsPermission.ID():  CreateMealPlanOptionsPermission,
+		ReadMealPlanOptionsPermission.ID():    ReadMealPlanOptionsPermission,
+		SearchMealPlanOptionsPermission.ID():  SearchMealPlanOptionsPermission,
+		UpdateMealPlanOptionsPermission.ID():  UpdateMealPlanOptionsPermission,
+		ArchiveMealPlanOptionsPermission.ID(): ArchiveMealPlanOptionsPermission,
 	}
 
 	// household member permissions.
@@ -271,18 +283,6 @@ var (
 		SearchRecipeStepProductsPermission.ID():  SearchRecipeStepProductsPermission,
 		UpdateRecipeStepProductsPermission.ID():  UpdateRecipeStepProductsPermission,
 		ArchiveRecipeStepProductsPermission.ID(): ArchiveRecipeStepProductsPermission,
-
-		CreateMealPlansPermission.ID():  CreateMealPlansPermission,
-		ReadMealPlansPermission.ID():    ReadMealPlansPermission,
-		SearchMealPlansPermission.ID():  SearchMealPlansPermission,
-		UpdateMealPlansPermission.ID():  UpdateMealPlansPermission,
-		ArchiveMealPlansPermission.ID(): ArchiveMealPlansPermission,
-
-		CreateMealPlanOptionsPermission.ID():  CreateMealPlanOptionsPermission,
-		ReadMealPlanOptionsPermission.ID():    ReadMealPlanOptionsPermission,
-		SearchMealPlanOptionsPermission.ID():  SearchMealPlanOptionsPermission,
-		UpdateMealPlanOptionsPermission.ID():  UpdateMealPlanOptionsPermission,
-		ArchiveMealPlanOptionsPermission.ID(): ArchiveMealPlanOptionsPermission,
 
 		CreateMealPlanOptionVotesPermission.ID():  CreateMealPlanOptionVotesPermission,
 		ReadMealPlanOptionVotesPermission.ID():    ReadMealPlanOptionVotesPermission,

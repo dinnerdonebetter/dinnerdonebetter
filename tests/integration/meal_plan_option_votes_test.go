@@ -16,7 +16,7 @@ func checkMealPlanOptionVoteEquality(t *testing.T, expected, actual *types.MealP
 	t.Helper()
 
 	assert.NotZero(t, actual.ID)
-	assert.Equal(t, expected.Points, actual.Points, "expected Points for meal plan option vote %s to be %v, but it was %v", expected.ID, expected.Points, actual.Points)
+	assert.Equal(t, expected.Rank, actual.Rank, "expected Rank for meal plan option vote %s to be %v, but it was %v", expected.ID, expected.Rank, actual.Rank)
 	assert.Equal(t, expected.Abstain, actual.Abstain, "expected Abstain for meal plan option vote %s to be %v, but it was %v", expected.ID, expected.Abstain, actual.Abstain)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for meal plan option vote %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.NotZero(t, actual.CreatedOn)
@@ -25,7 +25,7 @@ func checkMealPlanOptionVoteEquality(t *testing.T, expected, actual *types.MealP
 // convertMealPlanOptionVoteToMealPlanOptionVoteUpdateInput creates an MealPlanOptionVoteUpdateRequestInput struct from a meal plan option vote.
 func convertMealPlanOptionVoteToMealPlanOptionVoteUpdateInput(x *types.MealPlanOptionVote) *types.MealPlanOptionVoteUpdateRequestInput {
 	return &types.MealPlanOptionVoteUpdateRequestInput{
-		Points:  x.Points,
+		Rank:    x.Rank,
 		Abstain: x.Abstain,
 		Notes:   x.Notes,
 	}
