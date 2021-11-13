@@ -18,7 +18,7 @@ func BuildFakeMealPlanOption() *types.MealPlanOption {
 
 	return &types.MealPlanOption{
 		ID:                ksuid.New().String(),
-		DayOfWeek:         time.Monday,
+		Day:               time.Monday,
 		RecipeID:          fake.LoremIpsumSentence(exampleQuantity),
 		MealName:          types.SecondBreakfastMealName,
 		Votes:             examples,
@@ -51,7 +51,7 @@ func BuildFakeMealPlanOptionList() *types.MealPlanOptionList {
 func BuildFakeMealPlanOptionUpdateRequestInput() *types.MealPlanOptionUpdateRequestInput {
 	mealPlanOption := BuildFakeMealPlanOption()
 	return &types.MealPlanOptionUpdateRequestInput{
-		DayOfWeek:         mealPlanOption.DayOfWeek,
+		Day:               mealPlanOption.Day,
 		RecipeID:          mealPlanOption.RecipeID,
 		Notes:             mealPlanOption.Notes,
 		BelongsToMealPlan: mealPlanOption.BelongsToMealPlan,
@@ -61,7 +61,7 @@ func BuildFakeMealPlanOptionUpdateRequestInput() *types.MealPlanOptionUpdateRequ
 // BuildFakeMealPlanOptionUpdateRequestInputFromMealPlanOption builds a faked MealPlanOptionUpdateRequestInput from a meal plan option.
 func BuildFakeMealPlanOptionUpdateRequestInputFromMealPlanOption(mealPlanOption *types.MealPlanOption) *types.MealPlanOptionUpdateRequestInput {
 	return &types.MealPlanOptionUpdateRequestInput{
-		DayOfWeek:         mealPlanOption.DayOfWeek,
+		Day:               mealPlanOption.Day,
 		RecipeID:          mealPlanOption.RecipeID,
 		Notes:             mealPlanOption.Notes,
 		BelongsToMealPlan: mealPlanOption.BelongsToMealPlan,
@@ -78,7 +78,7 @@ func BuildFakeMealPlanOptionCreationRequestInput() *types.MealPlanOptionCreation
 func BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(mealPlanOption *types.MealPlanOption) *types.MealPlanOptionCreationRequestInput {
 	return &types.MealPlanOptionCreationRequestInput{
 		ID:                mealPlanOption.ID,
-		DayOfWeek:         mealPlanOption.DayOfWeek,
+		Day:               mealPlanOption.Day,
 		RecipeID:          mealPlanOption.RecipeID,
 		Notes:             mealPlanOption.Notes,
 		BelongsToMealPlan: mealPlanOption.BelongsToMealPlan,
@@ -95,7 +95,7 @@ func BuildFakeMealPlanOptionDatabaseCreationInput() *types.MealPlanOptionDatabas
 func BuildFakeMealPlanOptionDatabaseCreationInputFromMealPlanOption(mealPlanOption *types.MealPlanOption) *types.MealPlanOptionDatabaseCreationInput {
 	return &types.MealPlanOptionDatabaseCreationInput{
 		ID:                mealPlanOption.ID,
-		DayOfWeek:         mealPlanOption.DayOfWeek,
+		Day:               mealPlanOption.Day,
 		RecipeID:          mealPlanOption.RecipeID,
 		Notes:             mealPlanOption.Notes,
 		BelongsToMealPlan: mealPlanOption.BelongsToMealPlan,

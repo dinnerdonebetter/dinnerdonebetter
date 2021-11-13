@@ -86,7 +86,7 @@ func (q *SQLQuerier) scanMealPlanWithOptions(ctx context.Context, scan database.
 		&mealPlan.ArchivedOn,
 		&mealPlan.BelongsToHousehold,
 		&mealPlanOption.ID,
-		&mealPlanOption.DayOfWeek,
+		&mealPlanOption.Day,
 		&mealPlanOption.RecipeID,
 		&mealPlanOption.Notes,
 		&mealPlanOption.CreatedOn,

@@ -91,7 +91,7 @@ func buildMockRowsFromFullMealPlans(includeCounts bool, filteredCount uint64, me
 				x.ArchivedOn,
 				x.BelongsToHousehold,
 				opt.ID,
-				opt.DayOfWeek,
+				opt.Day,
 				opt.RecipeID,
 				opt.Notes,
 				opt.CreatedOn,
@@ -564,7 +564,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 		for _, option := range exampleInput.Options {
 			optionArgs := []interface{}{
 				option.ID,
-				option.DayOfWeek,
+				option.Day,
 				option.RecipeID,
 				option.Notes,
 				option.BelongsToMealPlan,

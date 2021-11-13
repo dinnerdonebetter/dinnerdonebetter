@@ -48,7 +48,7 @@ func (q *SQLQuerier) scanMealPlanOption(ctx context.Context, scan database.Scann
 
 	targetVars := []interface{}{
 		&x.ID,
-		&x.DayOfWeek,
+		&x.Day,
 		&x.RecipeID,
 		&x.Notes,
 		&x.CreatedOn,
@@ -305,7 +305,7 @@ func (q *SQLQuerier) createMealPlanOption(ctx context.Context, db database.SQLQu
 
 	args := []interface{}{
 		input.ID,
-		input.DayOfWeek,
+		input.Day,
 		input.RecipeID,
 		input.Notes,
 		input.BelongsToMealPlan,
@@ -318,7 +318,7 @@ func (q *SQLQuerier) createMealPlanOption(ctx context.Context, db database.SQLQu
 
 	x := &types.MealPlanOption{
 		ID:                input.ID,
-		DayOfWeek:         input.DayOfWeek,
+		Day:               input.Day,
 		RecipeID:          input.RecipeID,
 		Notes:             input.Notes,
 		BelongsToMealPlan: input.BelongsToMealPlan,
@@ -351,7 +351,7 @@ func (q *SQLQuerier) UpdateMealPlanOption(ctx context.Context, updated *types.Me
 	tracing.AttachMealPlanOptionIDToSpan(span, updated.ID)
 
 	args := []interface{}{
-		updated.DayOfWeek,
+		updated.Day,
 		updated.RecipeID,
 		updated.Notes,
 		updated.BelongsToMealPlan,
