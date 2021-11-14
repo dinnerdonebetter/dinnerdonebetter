@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math/rand"
 	"time"
 
 	"resenje.org/schulze"
@@ -9,12 +10,46 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
-func finalizeMealPlan(option *types.MealPlan) error {
-	candidateMap := map[string]struct{}{}
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
 
+func determineWinner(winners []schulze.Score) string {
+	var (
+		highestScore int
+		scoreWinners []string
+	)
+
+	for _, winner := range winners {
+		if winner.Wins == highestScore {
+			scoreWinners = append(scoreWinners, winner.Choice)
+		} else if winner.Wins > highestScore {
+			highestScore = winner.Wins
+			scoreWinners = []string{winner.Choice}
+		}
+	}
+
+	return scoreWinners[rand.Intn(len(scoreWinners))]
+}
+
+func byDayAndMeal(l []*types.MealPlanOption, day time.Weekday, meal types.MealName) []*types.MealPlanOption {
+	out := []*types.MealPlanOption{}
+
+	for _, o := range l {
+		if o.Day == day && o.MealName == meal {
+			out = append(out, o)
+		}
+	}
+
+	return out
+}
+
+func decideOptionWinner(options []*types.MealPlanOption) (string, bool, error) {
+	candidateMap := map[string]struct{}{}
 	votesByUser := map[string]schulze.Ballot{}
-	for _, o := range option.Options {
-		for _, v := range o.Votes {
+
+	for _, option := range options {
+		for _, v := range option.Votes {
 			if votesByUser[v.ByUser] == nil {
 				votesByUser[v.ByUser] = schulze.Ballot{}
 			}
@@ -35,16 +70,75 @@ func finalizeMealPlan(option *types.MealPlan) error {
 	e := schulze.NewVoting(candidates...)
 	for _, vote := range votesByUser {
 		if err := e.Vote(vote); err != nil {
-			return err
+			return "", false, err
 		}
 	}
 
+	var (
+		winner    string
+		tiebroken bool
+	)
+
 	winners, tie := e.Compute()
+
 	if tie {
-		println(winners)
+		winner = determineWinner(winners)
+		tiebroken = true
+	} else {
+		winner = winners[0].Choice
+	}
+	_, _ = winner, tiebroken
+
+	return winner, tiebroken, nil
+}
+
+var allDays = []time.Weekday{
+	time.Monday,
+	time.Tuesday,
+	time.Wednesday,
+	time.Thursday,
+	time.Friday,
+	time.Saturday,
+	time.Sunday,
+}
+
+var allNames = []types.MealName{
+	types.BreakfastMealName,
+	types.SecondBreakfastMealName,
+	types.BrunchMealName,
+	types.LunchMealName,
+	types.SupperMealName,
+	types.DinnerMealName,
+}
+
+func finalizeMealPlan(plan *types.MealPlan) ([]string, error) {
+	winners := []string{}
+	tiebrokenWinners := map[string]bool{}
+
+	for _, day := range allDays {
+		for _, name := range allNames {
+			options := byDayAndMeal(plan.Options, day, name)
+			if len(options) > 0 {
+				winner, tiebroken, err := decideOptionWinner(options)
+				if err != nil {
+					return nil, err
+				}
+				winners = append(winners, winner)
+				tiebrokenWinners[winner] = tiebroken
+			}
+		}
 	}
 
-	return nil
+	for _, winner := range winners {
+		for i, opt := range plan.Options {
+			if opt.ID == winner {
+				plan.Options[i].Chosen = true
+				plan.Options[i].TieBroken = tiebrokenWinners[winner]
+			}
+		}
+	}
+
+	return winners, nil
 }
 
 func main() {
@@ -52,6 +146,9 @@ func main() {
 		optionA = "eggs benedict"
 		optionB = "scrambled eggs"
 		optionC = "buttered toast"
+		optionD = "quesadilla"
+		optionE = "croque monsieur"
+		optionF = "pizza bagel"
 	)
 
 	var (
@@ -145,10 +242,95 @@ func main() {
 					},
 				},
 			},
+
+			//
+
+			{
+				ID:       optionD,
+				Day:      time.Monday,
+				MealName: types.LunchMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionD,
+						Rank:                    0,
+						ByUser:                  userID1,
+					},
+					//{
+					//	BelongsToMealPlanOption: optionD,
+					//	Rank:                    0,
+					//	ByUser:                  userID2,
+					//},
+					//{
+					//	BelongsToMealPlanOption: optionD,
+					//	Rank:                    1,
+					//	ByUser:                  userID3,
+					//},
+					//{
+					//	BelongsToMealPlanOption: optionD,
+					//	Rank:                    2,
+					//	ByUser:                  userID4,
+					//},
+				},
+			},
+			{
+				ID:       optionE,
+				Day:      time.Monday,
+				MealName: types.LunchMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionE,
+						Rank:                    0,
+						ByUser:                  userID3,
+					},
+					//{
+					//	BelongsToMealPlanOption: optionE,
+					//	Rank:                    1,
+					//	ByUser:                  userID2,
+					//},
+					//{
+					//	BelongsToMealPlanOption: optionE,
+					//	Rank:                    1,
+					//	ByUser:                  userID4,
+					//},
+					//{
+					//	BelongsToMealPlanOption: optionE,
+					//	Rank:                    2,
+					//	ByUser:                  userID1,
+					//},
+				},
+			},
+			//{
+			//	ID:       optionF,
+			//	Day:      time.Monday,
+			//	MealName: types.LunchMealName,
+			//	Votes: []*types.MealPlanOptionVote{
+			//		{
+			//			BelongsToMealPlanOption: optionF,
+			//			Rank:                    0,
+			//			ByUser:                  userID4,
+			//		},
+			//
+			//		{
+			//			BelongsToMealPlanOption: optionF,
+			//			Rank:                    1,
+			//			ByUser:                  userID1,
+			//		},
+			//		{
+			//			BelongsToMealPlanOption: optionF,
+			//			Rank:                    2,
+			//			ByUser:                  userID2,
+			//		},
+			//		{
+			//			BelongsToMealPlanOption: optionF,
+			//			Rank:                    2,
+			//			ByUser:                  userID3,
+			//		},
+			//	},
+			//},
 		},
 	}
 
-	if err := finalizeMealPlan(mealPlan); err != nil {
+	if _, err := finalizeMealPlan(mealPlan); err != nil {
 		panic(err)
 	}
 }
