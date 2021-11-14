@@ -17,10 +17,17 @@ func BuildFakeMealPlanOption() *types.MealPlanOption {
 	}
 
 	return &types.MealPlanOption{
-		ID:                ksuid.New().String(),
-		Day:               time.Monday,
-		RecipeID:          fake.LoremIpsumSentence(exampleQuantity),
-		MealName:          types.SecondBreakfastMealName,
+		ID:       ksuid.New().String(),
+		Day:      time.Monday,
+		RecipeID: fake.LoremIpsumSentence(exampleQuantity),
+		MealName: types.MealName(fake.RandomString([]string{
+			string(types.BreakfastMealName),
+			string(types.SecondBreakfastMealName),
+			string(types.BrunchMealName),
+			string(types.LunchMealName),
+			string(types.SupperMealName),
+			string(types.DinnerMealName),
+		})),
 		Votes:             examples,
 		Chosen:            false,
 		Notes:             fake.LoremIpsumSentence(exampleQuantity),
@@ -54,6 +61,7 @@ func BuildFakeMealPlanOptionUpdateRequestInput() *types.MealPlanOptionUpdateRequ
 		Day:               mealPlanOption.Day,
 		RecipeID:          mealPlanOption.RecipeID,
 		Notes:             mealPlanOption.Notes,
+		MealName:          mealPlanOption.MealName,
 		BelongsToMealPlan: mealPlanOption.BelongsToMealPlan,
 	}
 }
@@ -64,6 +72,7 @@ func BuildFakeMealPlanOptionUpdateRequestInputFromMealPlanOption(mealPlanOption 
 		Day:               mealPlanOption.Day,
 		RecipeID:          mealPlanOption.RecipeID,
 		Notes:             mealPlanOption.Notes,
+		MealName:          mealPlanOption.MealName,
 		BelongsToMealPlan: mealPlanOption.BelongsToMealPlan,
 	}
 }
@@ -81,6 +90,7 @@ func BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(mealPlanOptio
 		Day:               mealPlanOption.Day,
 		RecipeID:          mealPlanOption.RecipeID,
 		Notes:             mealPlanOption.Notes,
+		MealName:          mealPlanOption.MealName,
 		BelongsToMealPlan: mealPlanOption.BelongsToMealPlan,
 	}
 }
@@ -97,6 +107,7 @@ func BuildFakeMealPlanOptionDatabaseCreationInputFromMealPlanOption(mealPlanOpti
 		ID:                mealPlanOption.ID,
 		Day:               mealPlanOption.Day,
 		RecipeID:          mealPlanOption.RecipeID,
+		MealName:          mealPlanOption.MealName,
 		Notes:             mealPlanOption.Notes,
 		BelongsToMealPlan: mealPlanOption.BelongsToMealPlan,
 	}

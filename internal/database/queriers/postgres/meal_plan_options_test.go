@@ -29,6 +29,9 @@ func buildMockRowsFromMealPlanOptions(includeCounts bool, filteredCount uint64, 
 		rowValues := []driver.Value{
 			x.ID,
 			x.Day,
+			x.MealName,
+			x.Chosen,
+			x.TieBroken,
 			x.RecipeID,
 			x.Notes,
 			x.CreatedOn,
@@ -198,6 +201,7 @@ func TestQuerier_GetMealPlanOption(T *testing.T) {
 
 		exampleMealPlanID := fakes.BuildFakeID()
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
+		exampleMealPlanOption.Votes = []*types.MealPlanOptionVote{}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -323,6 +327,10 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 		exampleMealPlanID := fakes.BuildFakeID()
 		exampleMealPlanOptionList := fakes.BuildFakeMealPlanOptionList()
 
+		for i := range exampleMealPlanOptionList.MealPlanOptions {
+			exampleMealPlanOptionList.MealPlanOptions[i].Votes = []*types.MealPlanOptionVote{}
+		}
+
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
@@ -360,6 +368,10 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 		exampleMealPlanOptionList := fakes.BuildFakeMealPlanOptionList()
 		exampleMealPlanOptionList.Page = 0
 		exampleMealPlanOptionList.Limit = 0
+
+		for i := range exampleMealPlanOptionList.MealPlanOptions {
+			exampleMealPlanOptionList.MealPlanOptions[i].Votes = []*types.MealPlanOptionVote{}
+		}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -430,6 +442,9 @@ func TestQuerier_GetMealPlanOptionsWithIDs(T *testing.T) {
 
 		exampleMealPlanID := fakes.BuildFakeID()
 		exampleMealPlanOptionList := fakes.BuildFakeMealPlanOptionList()
+		for i := range exampleMealPlanOptionList.MealPlanOptions {
+			exampleMealPlanOptionList.MealPlanOptions[i].Votes = []*types.MealPlanOptionVote{}
+		}
 
 		var exampleIDs []string
 		for _, x := range exampleMealPlanOptionList.MealPlanOptions {
@@ -543,6 +558,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 		exampleMealPlanOption.ID = "1"
+		exampleMealPlanOption.Votes = []*types.MealPlanOptionVote{}
 		exampleInput := fakes.BuildFakeMealPlanOptionDatabaseCreationInputFromMealPlanOption(exampleMealPlanOption)
 
 		ctx := context.Background()
@@ -551,6 +567,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 		args := []interface{}{
 			exampleInput.ID,
 			exampleInput.Day,
+			exampleInput.MealName,
 			exampleInput.RecipeID,
 			exampleInput.Notes,
 			exampleInput.BelongsToMealPlan,
@@ -595,6 +612,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 		args := []interface{}{
 			exampleInput.ID,
 			exampleInput.Day,
+			exampleInput.MealName,
 			exampleInput.RecipeID,
 			exampleInput.Notes,
 			exampleInput.BelongsToMealPlan,
@@ -631,6 +649,7 @@ func TestQuerier_UpdateMealPlanOption(T *testing.T) {
 		args := []interface{}{
 			exampleMealPlanOption.Day,
 			exampleMealPlanOption.RecipeID,
+			exampleMealPlanOption.MealName,
 			exampleMealPlanOption.Notes,
 			exampleMealPlanOption.BelongsToMealPlan,
 			exampleMealPlanOption.ID,
@@ -665,6 +684,7 @@ func TestQuerier_UpdateMealPlanOption(T *testing.T) {
 		args := []interface{}{
 			exampleMealPlanOption.Day,
 			exampleMealPlanOption.RecipeID,
+			exampleMealPlanOption.MealName,
 			exampleMealPlanOption.Notes,
 			exampleMealPlanOption.BelongsToMealPlan,
 			exampleMealPlanOption.ID,

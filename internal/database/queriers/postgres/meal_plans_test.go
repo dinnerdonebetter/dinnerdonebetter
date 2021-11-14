@@ -63,6 +63,9 @@ func buildMockRowsFromFullMealPlans(includeCounts bool, filteredCount uint64, me
 		"meal_plans.belongs_to_household",
 		"meal_plan_options.id",
 		"meal_plan_options.day",
+		"meal_plan_options.meal_name",
+		"meal_plan_options.chosen",
+		"meal_plan_options.tiebroken",
 		"meal_plan_options.recipe_id",
 		"meal_plan_options.notes",
 		"meal_plan_options.created_on",
@@ -92,6 +95,9 @@ func buildMockRowsFromFullMealPlans(includeCounts bool, filteredCount uint64, me
 				x.BelongsToHousehold,
 				opt.ID,
 				opt.Day,
+				opt.MealName,
+				opt.Chosen,
+				opt.TieBroken,
 				opt.RecipeID,
 				opt.Notes,
 				opt.CreatedOn,
@@ -236,6 +242,9 @@ func TestQuerier_GetMealPlan(T *testing.T) {
 		t.Parallel()
 
 		exampleMealPlan := fakes.BuildFakeMealPlan()
+		for i := range exampleMealPlan.Options {
+			exampleMealPlan.Options[i].Votes = nil
+		}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -539,6 +548,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 			exampleMealPlan.Options[i].ID = "2"
 			exampleMealPlan.Options[i].BelongsToMealPlan = "1"
 			exampleMealPlan.Options[i].CreatedOn = exampleMealPlan.CreatedOn
+			exampleMealPlan.Options[i].Votes = []*types.MealPlanOptionVote{}
 		}
 		exampleInput := fakes.BuildFakeMealPlanDatabaseCreationInputFromMealPlan(exampleMealPlan)
 
@@ -565,6 +575,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 			optionArgs := []interface{}{
 				option.ID,
 				option.Day,
+				option.MealName,
 				option.RecipeID,
 				option.Notes,
 				option.BelongsToMealPlan,

@@ -3,6 +3,7 @@ package integration
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"net/url"
 	"os"
@@ -54,7 +55,7 @@ func init() {
 	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
 	testutils.EnsureServerIsUp(ctx, urlToUse)
 
-	dbAddr := os.Getenv("DATABASE_ADDRESS")
+	dbAddr := os.Getenv("TARGET_DATABASE")
 	if dbAddr == "" {
 		panic("empty database address provided")
 	}
@@ -85,7 +86,7 @@ func init() {
 		TwoFactorSecret: premadeAdminUser.TwoFactorSecret,
 	})
 
-	if err = dbmanager.MarkUserTwoFactorSecretAsVerified(ctx, premadeAdminUser.ID); err != nil {
+	if err = dbmanager.MarkUserTwoFactorSecretAsVerified(ctx, premadeAdminUser.ID); err != nil && !errors.Is(err, sql.ErrNoRows) {
 		panic(err)
 	}
 

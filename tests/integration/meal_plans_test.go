@@ -50,13 +50,14 @@ func createMealPlanWithNotificationChannel(ctx context.Context, t *testing.T, no
 
 	exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
 	createdMealPlanID, err := client.CreateMealPlan(ctx, exampleMealPlanInput)
+	require.NotEmpty(t, createdMealPlanID)
 	require.NoError(t, err)
-	t.Logf("meal plan %q created", createdMealPlanID)
 
 	n = <-notificationsChan
 	assert.Equal(t, n.DataType, types.MealPlanDataType)
 	require.NotNil(t, n.MealPlan)
 	checkMealPlanEquality(t, exampleMealPlan, n.MealPlan)
+	t.Logf("meal plan %q created", createdMealPlanID)
 
 	createdMealPlan, err := client.GetMealPlan(ctx, createdMealPlanID)
 	requireNotNilAndNoProblems(t, createdMealPlan, err)

@@ -41,17 +41,18 @@ type (
 	// MealPlanOption represents a meal plan option.
 	MealPlanOption struct {
 		_                 struct{}
-		LastUpdatedOn     *uint64               `json:"lastUpdatedOn"`
 		ArchivedOn        *uint64               `json:"archivedOn"`
+		LastUpdatedOn     *uint64               `json:"lastUpdatedOn"`
+		ID                string                `json:"id"`
 		RecipeID          string                `json:"recipeID"`
 		Notes             string                `json:"notes"`
-		ID                string                `json:"id"`
-		Chosen            bool                  `json:"chosen"`
 		MealName          MealName              `json:"mealName"`
 		BelongsToMealPlan string                `json:"belongsToMealPlan"`
 		Votes             []*MealPlanOptionVote `json:"votes"`
 		CreatedOn         uint64                `json:"createdOn"`
 		Day               time.Weekday          `json:"day"`
+		Chosen            bool                  `json:"chosen"`
+		TieBroken         bool                  `json:"tieBroken"`
 	}
 
 	// MealPlanOptionList represents a list of meal plan options.
@@ -67,6 +68,7 @@ type (
 		ID                string       `json:"-"`
 		RecipeID          string       `json:"recipeID"`
 		Notes             string       `json:"notes"`
+		MealName          MealName     `json:"mealName"`
 		BelongsToMealPlan string       `json:"-"`
 		Day               time.Weekday `json:"day"`
 	}
@@ -77,6 +79,7 @@ type (
 		ID                string       `json:"id"`
 		RecipeID          string       `json:"recipeID"`
 		Notes             string       `json:"notes"`
+		MealName          MealName     `json:"mealName"`
 		BelongsToMealPlan string       `json:"belongsToMealPlan"`
 		Day               time.Weekday `json:"day"`
 	}
@@ -86,6 +89,7 @@ type (
 		_                 struct{}
 		RecipeID          string       `json:"recipeID"`
 		Notes             string       `json:"notes"`
+		MealName          MealName     `json:"mealName"`
 		BelongsToMealPlan string       `json:"-"`
 		Day               time.Weekday `json:"day"`
 	}
@@ -134,7 +138,8 @@ func (x *MealPlanOptionCreationRequestInput) ValidateWithContext(ctx context.Con
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.Day, validation.Required),
+		// if we try to validate Day here, it can fail because 0 is a valid day, but not by the validator's standards.
+		validation.Field(&x.MealName, validation.Required),
 		validation.Field(&x.RecipeID, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
 	)
@@ -148,7 +153,9 @@ func (x *MealPlanOptionDatabaseCreationInput) ValidateWithContext(ctx context.Co
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
-		validation.Field(&x.Day, validation.Required),
+		// if we try to validate Day here, it can fail because 0 is a valid day, but not by the validator's standards.
+		validation.Field(&x.BelongsToMealPlan, validation.Required),
+		validation.Field(&x.MealName, validation.Required),
 		validation.Field(&x.RecipeID, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
 	)
@@ -159,6 +166,7 @@ func MealPlanOptionDatabaseCreationInputFromMealPlanOptionCreationInput(input *M
 	x := &MealPlanOptionDatabaseCreationInput{
 		BelongsToMealPlan: input.BelongsToMealPlan,
 		Day:               input.Day,
+		MealName:          input.MealName,
 		RecipeID:          input.RecipeID,
 		Notes:             input.Notes,
 	}
@@ -173,8 +181,10 @@ func (x *MealPlanOptionUpdateRequestInput) ValidateWithContext(ctx context.Conte
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.Day, validation.Required),
+		// if we try to validate Day here, it can fail because 0 is a valid day, but not by the validator's standards.
 		validation.Field(&x.RecipeID, validation.Required),
+		validation.Field(&x.BelongsToMealPlan, validation.Required),
+		validation.Field(&x.MealName, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
 		validation.Field(&x.BelongsToMealPlan, validation.Required),
 	)

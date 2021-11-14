@@ -6,9 +6,9 @@ import (
 
 	"github.com/Masterminds/squirrel"
 
-	database "github.com/prixfixeco/api_server/internal/database"
-	observability "github.com/prixfixeco/api_server/internal/observability"
-	keys "github.com/prixfixeco/api_server/internal/observability/keys"
+	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -87,6 +87,9 @@ func (q *SQLQuerier) scanMealPlanWithOptions(ctx context.Context, scan database.
 		&mealPlan.BelongsToHousehold,
 		&mealPlanOption.ID,
 		&mealPlanOption.Day,
+		&mealPlanOption.MealName,
+		&mealPlanOption.Chosen,
+		&mealPlanOption.TieBroken,
 		&mealPlanOption.RecipeID,
 		&mealPlanOption.Notes,
 		&mealPlanOption.CreatedOn,
@@ -179,6 +182,9 @@ const getMealPlanQuery = `SELECT
 	meal_plans.belongs_to_household,
     meal_plan_options.id,
     meal_plan_options.day,
+    meal_plan_options.meal_name,
+    meal_plan_options.chosen,
+    meal_plan_options.tiebroken,
     meal_plan_options.recipe_id,
     meal_plan_options.notes,
     meal_plan_options.created_on,
