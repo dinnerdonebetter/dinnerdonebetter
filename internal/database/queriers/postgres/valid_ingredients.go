@@ -6,9 +6,9 @@ import (
 
 	"github.com/Masterminds/squirrel"
 
-	database "github.com/prixfixeco/api_server/internal/database"
-	observability "github.com/prixfixeco/api_server/internal/observability"
-	keys "github.com/prixfixeco/api_server/internal/observability/keys"
+	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )

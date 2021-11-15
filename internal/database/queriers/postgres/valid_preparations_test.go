@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	database "github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
@@ -470,7 +470,7 @@ func TestQuerier_CreateValidPreparation(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(validPreparationCreationQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleValidPreparation.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
 			return exampleValidPreparation.CreatedOn
@@ -548,7 +548,7 @@ func TestQuerier_UpdateValidPreparation(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(updateValidPreparationQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleValidPreparation.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.UpdateValidPreparation(ctx, exampleValidPreparation))
 
@@ -606,7 +606,7 @@ func TestQuerier_ArchiveValidPreparation(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(archiveValidPreparationQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleValidPreparation.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.ArchiveValidPreparation(ctx, exampleValidPreparation.ID))
 

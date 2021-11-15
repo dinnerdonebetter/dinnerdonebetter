@@ -59,11 +59,7 @@ func newDatabaseIDResponse(id string) *sqlmock.Rows {
 	return sqlmock.NewRows([]string{"id"}).AddRow(id)
 }
 
-func newSuccessfulDatabaseResult(returnID uint64) driver.Result {
-	return sqlmock.NewResult(int64(returnID), 1)
-}
-
-func newArbitraryDatabaseResult(_ string) driver.Result {
+func newArbitraryDatabaseResult() driver.Result {
 	return sqlmock.NewResult(1, 1)
 }
 
@@ -308,7 +304,7 @@ func TestQuerier_performCreateQueryIgnoringReturn(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(1))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		err := c.performWriteQuery(ctx, c.db, "example", fakeQuery, fakeArgs)
 
@@ -329,7 +325,7 @@ func TestQuerier_performCreateQuery(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(1))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		err := c.performWriteQuery(ctx, c.db, "example", fakeQuery, fakeArgs)
 

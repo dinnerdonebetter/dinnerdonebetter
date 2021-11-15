@@ -3,12 +3,14 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"math/rand"
 
 	"github.com/Masterminds/squirrel"
+	"resenje.org/schulze"
 
-	database "github.com/prixfixeco/api_server/internal/database"
-	observability "github.com/prixfixeco/api_server/internal/observability"
-	keys "github.com/prixfixeco/api_server/internal/observability/keys"
+	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -412,4 +414,66 @@ func (q *SQLQuerier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, meal
 	logger.Info("meal plan option archived")
 
 	return nil
+}
+
+func (q *SQLQuerier) determineWinner(winners []schulze.Score) string {
+	var (
+		highestScore int
+		scoreWinners []string
+	)
+
+	for _, winner := range winners {
+		if winner.Wins == highestScore {
+			scoreWinners = append(scoreWinners, winner.Choice)
+		} else if winner.Wins > highestScore {
+			highestScore = winner.Wins
+			scoreWinners = []string{winner.Choice}
+		}
+	}
+
+	/* #nosec: G404 */
+	return scoreWinners[rand.Intn(len(scoreWinners))]
+}
+
+func (q *SQLQuerier) decideOptionWinner(options []*types.MealPlanOption) (winner string, tiebroken bool) {
+	candidateMap := map[string]struct{}{}
+	votesByUser := map[string]schulze.Ballot{}
+
+	for _, option := range options {
+		for _, v := range option.Votes {
+			if votesByUser[v.ByUser] == nil {
+				votesByUser[v.ByUser] = schulze.Ballot{}
+			}
+
+			if !v.Abstain {
+				votesByUser[v.ByUser][v.BelongsToMealPlanOption] = int(v.Rank)
+			}
+
+			candidateMap[v.BelongsToMealPlanOption] = struct{}{}
+		}
+	}
+
+	candidates := []string{}
+	for c := range candidateMap {
+		candidates = append(candidates, c)
+	}
+
+	e := schulze.NewVoting(candidates...)
+	for _, vote := range votesByUser {
+		if voteErr := e.Vote(vote); voteErr != nil {
+			// this actually can never happen, lol
+			q.logger.Error(voteErr, "an invalid vote occurred")
+		}
+	}
+
+	winners, tie := e.Compute()
+	if tie {
+		return q.determineWinner(winners), true
+	}
+
+	if len(winners) > 0 {
+		winner = winners[0].Choice
+	}
+
+	return winner, false
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	database "github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
@@ -641,7 +641,7 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(recipeStepIngredientCreationQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleRecipeStepIngredient.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
 			return exampleRecipeStepIngredient.CreatedOn
@@ -703,6 +703,49 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 	})
 }
 
+func TestSQLQuerier_createRecipeStepIngredient(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
+		exampleRecipeStepIngredient.ID = "3"
+		exampleRecipeStepIngredient.BelongsToRecipeStep = "2"
+		exampleRecipeStepIngredient.Ingredient = types.ValidIngredient{}
+
+		exampleInput := fakes.BuildFakeRecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		recipeStepIngredientCreationArgs := []interface{}{
+			exampleInput.ID,
+			exampleInput.IngredientID,
+			exampleInput.QuantityType,
+			exampleInput.QuantityValue,
+			exampleInput.QuantityNotes,
+			exampleInput.ProductOfRecipe,
+			exampleInput.IngredientNotes,
+			exampleInput.BelongsToRecipeStep,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(recipeStepIngredientCreationQuery)).
+			WithArgs(interfaceToDriverValue(recipeStepIngredientCreationArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		c.timeFunc = func() uint64 {
+			return exampleRecipeStepIngredient.CreatedOn
+		}
+
+		actual, err := c.createRecipeStepIngredient(ctx, c.db, exampleInput)
+		assert.NoError(t, err)
+		assert.NotNil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 	T.Parallel()
 
@@ -727,7 +770,7 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(updateRecipeStepIngredientQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleRecipeStepIngredient.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.UpdateRecipeStepIngredient(ctx, exampleRecipeStepIngredient))
 
@@ -791,7 +834,7 @@ func TestQuerier_ArchiveRecipeStepIngredient(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(archiveRecipeStepIngredientQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleRecipeStepIngredient.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.ArchiveRecipeStepIngredient(ctx, exampleRecipeStepID, exampleRecipeStepIngredient.ID))
 

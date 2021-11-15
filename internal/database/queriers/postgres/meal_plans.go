@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/Masterminds/squirrel"
 
@@ -478,4 +479,62 @@ func (q *SQLQuerier) ArchiveMealPlan(ctx context.Context, mealPlanID, householdI
 	logger.Info("meal plan archived")
 
 	return nil
+}
+
+var allDays = []time.Weekday{
+	time.Monday,
+	time.Tuesday,
+	time.Wednesday,
+	time.Thursday,
+	time.Friday,
+	time.Saturday,
+	time.Sunday,
+}
+
+var allMealNames = []types.MealName{
+	types.BreakfastMealName,
+	types.SecondBreakfastMealName,
+	types.BrunchMealName,
+	types.LunchMealName,
+	types.SupperMealName,
+	types.DinnerMealName,
+}
+
+func byDayAndMeal(l []*types.MealPlanOption, day time.Weekday, meal types.MealName) []*types.MealPlanOption {
+	out := []*types.MealPlanOption{}
+
+	for _, o := range l {
+		if o.Day == day && o.MealName == meal {
+			out = append(out, o)
+		}
+	}
+
+	return out
+}
+
+func (q *SQLQuerier) finalizeMealPlan(plan *types.MealPlan) []string {
+	winners := []string{}
+	tiebrokenWinners := map[string]bool{}
+
+	for _, day := range allDays {
+		for _, mealName := range allMealNames {
+			options := byDayAndMeal(plan.Options, day, mealName)
+			if len(options) > 0 {
+				winner, tiebroken := q.decideOptionWinner(options)
+				winners = append(winners, winner)
+				tiebrokenWinners[winner] = tiebroken
+			}
+		}
+	}
+
+	for _, winner := range winners {
+		for i, opt := range plan.Options {
+			if opt.ID == winner {
+				plan.Options[i].Chosen = true
+				plan.Options[i].TieBroken = tiebrokenWinners[winner]
+			}
+		}
+	}
+
+	return winners
 }

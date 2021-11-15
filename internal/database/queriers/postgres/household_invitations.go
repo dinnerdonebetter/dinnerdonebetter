@@ -188,7 +188,7 @@ func (q *SQLQuerier) GetHouseholdInvitationByHouseholdAndID(ctx context.Context,
 	return householdInvitation, nil
 }
 
-/* #nosec */
+/* #nosec G101 */
 const getHouseholdInvitationByEmailAndTokenQuery = `
 SELECT
 	household_invitations.id,
@@ -517,11 +517,13 @@ func (q *SQLQuerier) AcceptHouseholdInvitation(ctx context.Context, householdID,
 	}
 
 	if err = q.setInvitationStatus(ctx, tx, householdID, householdInvitationID, note, types.AcceptedHouseholdInvitationStatus); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, logger, span, "accepting household invitation")
 	}
 
 	invitation, err := q.GetHouseholdInvitationByHouseholdAndID(ctx, householdID, householdInvitationID)
 	if err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, logger, span, "fetching household invitation")
 	}
 
@@ -536,6 +538,7 @@ func (q *SQLQuerier) AcceptHouseholdInvitation(ctx context.Context, householdID,
 	}
 
 	if err = q.addUserToHousehold(ctx, tx, input); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, logger, span, "adding user to household")
 	}
 
@@ -583,7 +586,7 @@ func (q *SQLQuerier) attachInvitationsToUser(ctx context.Context, querier databa
 		return observability.PrepareError(err, logger, span, "attaching invitations to user")
 	}
 
-	logger.Info("webhook archived")
+	logger.Info("invitations associated with user")
 
 	return nil
 }

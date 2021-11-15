@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	database "github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
@@ -627,7 +627,7 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(mealPlanOptionVoteCreationQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleMealPlanOptionVote.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
 			return exampleMealPlanOptionVote.CreatedOn
@@ -709,7 +709,7 @@ func TestQuerier_UpdateMealPlanOptionVote(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(updateMealPlanOptionVoteQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleMealPlanOptionVote.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.UpdateMealPlanOptionVote(ctx, exampleMealPlanOptionVote))
 
@@ -771,7 +771,7 @@ func TestQuerier_ArchiveMealPlanOptionVote(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(archiveMealPlanOptionVoteQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleMealPlanOptionVote.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.ArchiveMealPlanOptionVote(ctx, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID))
 

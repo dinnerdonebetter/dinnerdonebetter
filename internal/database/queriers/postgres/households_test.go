@@ -508,7 +508,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(householdCreationQuery)).
 			WithArgs(interfaceToDriverValue(householdCreationArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleHousehold.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		addUserToHouseholdArgs := []interface{}{
 			&idMatcher{},
@@ -519,7 +519,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(addUserToHouseholdDuringCreationQuery)).
 			WithArgs(interfaceToDriverValue(addUserToHouseholdArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleHousehold.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		db.ExpectCommit()
 
@@ -634,7 +634,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(householdCreationQuery)).
 			WithArgs(interfaceToDriverValue(householdCreationArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleHousehold.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		addUserToHouseholdArgs := []interface{}{
 			&idMatcher{},
@@ -684,7 +684,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(householdCreationQuery)).
 			WithArgs(interfaceToDriverValue(householdCreationArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleHousehold.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		addUserToHouseholdArgs := []interface{}{
 			&idMatcher{},
@@ -695,7 +695,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(addUserToHouseholdDuringCreationQuery)).
 			WithArgs(interfaceToDriverValue(addUserToHouseholdArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleHousehold.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		db.ExpectCommit().WillReturnError(errors.New("blah"))
 
@@ -734,7 +734,7 @@ func TestQuerier_UpdateHousehold(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(updateHouseholdQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleHousehold.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.UpdateHousehold(ctx, exampleHousehold))
 
@@ -801,7 +801,7 @@ func TestQuerier_ArchiveHousehold(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(archiveHouseholdQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleHouseholdID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.ArchiveHousehold(ctx, exampleHouseholdID, exampleUserID))
 

@@ -2,14 +2,13 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
 
-	database "github.com/prixfixeco/api_server/internal/database"
-	observability "github.com/prixfixeco/api_server/internal/observability"
-	keys "github.com/prixfixeco/api_server/internal/observability/keys"
+	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -390,9 +389,6 @@ func (q *SQLQuerier) createRecipeStep(ctx context.Context, db database.SQLQueryE
 		ingredientInput.BelongsToRecipeStep = x.ID
 		ingredient, createErr := q.createRecipeStepIngredient(ctx, db, ingredientInput)
 		if createErr != nil {
-			if tx, ok := db.(*sql.Tx); ok {
-				q.rollbackTransaction(ctx, tx)
-			}
 			return nil, observability.PrepareError(createErr, logger, span, "creating recipe step ingredient")
 		}
 

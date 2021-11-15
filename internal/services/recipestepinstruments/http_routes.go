@@ -8,8 +8,8 @@ import (
 
 	"github.com/segmentio/ksuid"
 
-	observability "github.com/prixfixeco/api_server/internal/observability"
-	keys "github.com/prixfixeco/api_server/internal/observability/keys"
+	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )

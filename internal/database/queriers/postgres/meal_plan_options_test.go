@@ -6,12 +6,14 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"resenje.org/schulze"
 
-	database "github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
@@ -575,7 +577,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(mealPlanOptionCreationQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleMealPlanOption.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
 			return exampleMealPlanOption.CreatedOn
@@ -657,7 +659,7 @@ func TestQuerier_UpdateMealPlanOption(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(updateMealPlanOptionQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleMealPlanOption.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.UpdateMealPlanOption(ctx, exampleMealPlanOption))
 
@@ -719,7 +721,7 @@ func TestQuerier_ArchiveMealPlanOption(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(archiveMealPlanOptionQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleMealPlanOption.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.ArchiveMealPlanOption(ctx, exampleMealPlanID, exampleMealPlanOption.ID))
 
@@ -769,5 +771,226 @@ func TestQuerier_ArchiveMealPlanOption(T *testing.T) {
 		assert.Error(t, c.ArchiveMealPlanOption(ctx, exampleMealPlanID, exampleMealPlanOption.ID))
 
 		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func Test_determineWinner(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		c, _ := buildTestClient(t)
+
+		expected := "blah blah blah"
+		exampleWinners := []schulze.Score{
+			{
+				Choice: t.Name(),
+				Wins:   1,
+			},
+			{
+				Choice: "",
+				Wins:   2,
+			},
+			{
+				Choice: expected,
+				Wins:   3,
+			},
+		}
+
+		actual := c.determineWinner(exampleWinners)
+
+		assert.Equal(t, expected, actual)
+	})
+
+	T.Run("with tie", func(t *testing.T) {
+		t.Parallel()
+
+		c, _ := buildTestClient(t)
+
+		expectedA := "blah blah blah"
+		expectedB := "beeble beeble"
+		exampleWinners := []schulze.Score{
+			{
+				Choice: expectedA,
+				Wins:   3,
+			},
+			{
+				Choice: "",
+				Wins:   1,
+			},
+			{
+				Choice: expectedB,
+				Wins:   3,
+			},
+		}
+
+		actual := c.determineWinner(exampleWinners)
+
+		assert.True(t, expectedA == actual || expectedB == actual)
+	})
+}
+
+func Test_decideOptionWinner(T *testing.T) {
+	T.Parallel()
+
+	optionA := "eggs benedict"
+	optionB := "scrambled eggs"
+	optionC := "buttered toast"
+	userID1 := fakes.BuildFakeID()
+	userID2 := fakes.BuildFakeID()
+	userID3 := fakes.BuildFakeID()
+	userID4 := fakes.BuildFakeID()
+
+	T.Run("with clear winner", func(t *testing.T) {
+		t.Parallel()
+
+		c, _ := buildTestClient(t)
+
+		expected := optionA
+		exampleOptions := []*types.MealPlanOption{
+			{
+				ID:       optionA,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    0,
+						ByUser:                  userID1,
+					},
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    0,
+						ByUser:                  userID2,
+					},
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    1,
+						ByUser:                  userID3,
+					},
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    2,
+						ByUser:                  userID4,
+					},
+				},
+			},
+			{
+				ID:       optionB,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    0,
+						ByUser:                  userID3,
+					},
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    1,
+						ByUser:                  userID2,
+					},
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    1,
+						ByUser:                  userID4,
+					},
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    2,
+						ByUser:                  userID1,
+					},
+				},
+			},
+			{
+				ID:       optionC,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    0,
+						ByUser:                  userID4,
+					},
+
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    1,
+						ByUser:                  userID1,
+					},
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    2,
+						ByUser:                  userID2,
+					},
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    2,
+						ByUser:                  userID3,
+					},
+				},
+			},
+		}
+
+		actual, tiebroken := c.decideOptionWinner(exampleOptions)
+		assert.Equal(t, expected, actual)
+		assert.False(t, tiebroken)
+	})
+
+	T.Run("with tie", func(t *testing.T) {
+		t.Parallel()
+
+		c, _ := buildTestClient(t)
+
+		exampleOptions := []*types.MealPlanOption{
+			{
+				ID:       optionA,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    0,
+						ByUser:                  userID1,
+					},
+				},
+			},
+			{
+				ID:       optionB,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    0,
+						ByUser:                  userID2,
+					},
+				},
+			},
+		}
+
+		actual, tiebroken := c.decideOptionWinner(exampleOptions)
+		assert.NotEmpty(t, actual)
+		assert.True(t, tiebroken)
+	})
+
+	T.Run("without enough votes", func(t *testing.T) {
+		t.Parallel()
+
+		c, _ := buildTestClient(t)
+
+		exampleOptions := []*types.MealPlanOption{
+			{
+				ID:       optionA,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes:    nil,
+			},
+		}
+
+		actual, tiebroken := c.decideOptionWinner(exampleOptions)
+		assert.Empty(t, actual)
+		assert.False(t, tiebroken)
 	})
 }

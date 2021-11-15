@@ -582,7 +582,7 @@ func (q *SQLQuerier) UpdateUser(ctx context.Context, updated *types.User) error 
 	return nil
 }
 
-/* #nosec */
+/* #nosec G101 */
 const updateUserPasswordQuery = `
 	UPDATE users SET hashed_password = $1, requires_password_change = $2, password_last_changed_on = extract(epoch FROM NOW()), last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $3
 `
@@ -618,7 +618,7 @@ func (q *SQLQuerier) UpdateUserPassword(ctx context.Context, userID, newHash str
 	return nil
 }
 
-/* #nosec */
+/* #nosec G101 */
 const updateUserTwoFactorSecretQuery = `
 	query := "UPDATE users SET two_factor_secret_verified_on = $1, two_factor_secret = $2 WHERE archived_on IS NULL AND id = $3"
 `
@@ -653,7 +653,7 @@ func (q *SQLQuerier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newS
 	return nil
 }
 
-/* #nosec */
+/* #nosec G101 */
 const markUserTwoFactorSecretAsVerified = `
 	UPDATE users SET two_factor_secret_verified_on = extract(epoch FROM NOW()), reputation = $1 WHERE archived_on IS NULL AND id = $2
 `

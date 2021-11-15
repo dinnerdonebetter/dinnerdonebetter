@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	database "github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
@@ -623,7 +623,7 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(recipeStepProductCreationQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleRecipeStepProduct.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
 			return exampleRecipeStepProduct.CreatedOn
@@ -701,7 +701,7 @@ func TestQuerier_UpdateRecipeStepProduct(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(updateRecipeStepProductQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleRecipeStepProduct.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.UpdateRecipeStepProduct(ctx, exampleRecipeStepProduct))
 
@@ -761,7 +761,7 @@ func TestQuerier_ArchiveRecipeStepProduct(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(archiveRecipeStepProductQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleRecipeStepProduct.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.ArchiveRecipeStepProduct(ctx, exampleRecipeStepID, exampleRecipeStepProduct.ID))
 
