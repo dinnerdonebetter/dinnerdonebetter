@@ -123,7 +123,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	preWritesWorker, err := workers.ProvidePreWritesWorker(ctx, logger, client, dataManager, postWritesPublisher, cfg.Search.Address, elasticsearch.NewIndexManager)
+	preWritesWorker, err := workers.ProvideWritesWorker(ctx, logger, client, dataManager, postWritesPublisher, cfg.Search.Address, elasticsearch.NewIndexManager)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -142,7 +142,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	preUpdatesWorker, err := workers.ProvidePreUpdatesWorker(ctx, logger, client, dataManager, postUpdatesPublisher, cfg.Search.Address, elasticsearch.NewIndexManager)
+	preUpdatesWorker, err := workers.ProvideUpdatesWorker(ctx, logger, client, dataManager, postUpdatesPublisher, cfg.Search.Address, elasticsearch.NewIndexManager)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -161,7 +161,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	preArchivesWorker, err := workers.ProvidePreArchivesWorker(ctx, logger, client, dataManager, postArchivesPublisher, cfg.Search.Address, elasticsearch.NewIndexManager)
+	preArchivesWorker, err := workers.ProvideArchivesWorker(ctx, logger, client, dataManager, postArchivesPublisher, cfg.Search.Address, elasticsearch.NewIndexManager)
 	if err != nil {
 		logger.Fatal(err)
 	}

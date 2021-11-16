@@ -15,8 +15,8 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-// PreArchivesWorker archives data from the pending archives topic to the database.
-type PreArchivesWorker struct {
+// ArchivesWorker archives data from the pending archives topic to the database.
+type ArchivesWorker struct {
 	logger                                  logging.Logger
 	tracer                                  tracing.Tracer
 	encoder                                 encoding.ClientEncoder
@@ -27,17 +27,10 @@ type PreArchivesWorker struct {
 	validPreparationsIndexManager           search.IndexManager
 	validIngredientPreparationsIndexManager search.IndexManager
 	recipesIndexManager                     search.IndexManager
-	recipeStepsIndexManager                 search.IndexManager
-	recipeStepInstrumentsIndexManager       search.IndexManager
-	recipeStepIngredientsIndexManager       search.IndexManager
-	recipeStepProductsIndexManager          search.IndexManager
-	mealPlansIndexManager                   search.IndexManager
-	mealPlanOptionsIndexManager             search.IndexManager
-	mealPlanOptionVotesIndexManager         search.IndexManager
 }
 
-// ProvidePreArchivesWorker provides a PreArchivesWorker.
-func ProvidePreArchivesWorker(
+// ProvideArchivesWorker provides an ArchivesWorker.
+func ProvideArchivesWorker(
 	ctx context.Context,
 	logger logging.Logger,
 	client *http.Client,
@@ -45,7 +38,7 @@ func ProvidePreArchivesWorker(
 	postArchivesPublisher publishers.Publisher,
 	searchIndexLocation search.IndexPath,
 	searchIndexProvider search.IndexManagerProvider,
-) (*PreArchivesWorker, error) {
+) (*ArchivesWorker, error) {
 	const name = "pre_archives"
 
 	validInstrumentsIndexManager, err := searchIndexProvider(ctx, logger, client, searchIndexLocation, "valid_instruments", "name", "variant", "description", "icon")
@@ -73,42 +66,7 @@ func ProvidePreArchivesWorker(
 		return nil, fmt.Errorf("setting up recipes search index manager: %w", err)
 	}
 
-	recipeStepsIndexManager, err := searchIndexProvider(ctx, logger, client, searchIndexLocation, "recipe_steps", "preparationID", "notes", "recipeID")
-	if err != nil {
-		return nil, fmt.Errorf("setting up recipe steps search index manager: %w", err)
-	}
-
-	recipeStepInstrumentsIndexManager, err := searchIndexProvider(ctx, logger, client, searchIndexLocation, "recipe_step_instruments", "instrumentID", "recipeStepID", "notes")
-	if err != nil {
-		return nil, fmt.Errorf("setting up recipe step instruments search index manager: %w", err)
-	}
-
-	recipeStepIngredientsIndexManager, err := searchIndexProvider(ctx, logger, client, searchIndexLocation, "recipe_step_ingredients", "ingredientID", "quantityType", "quantityNotes", "ingredientNotes")
-	if err != nil {
-		return nil, fmt.Errorf("setting up recipe step ingredients search index manager: %w", err)
-	}
-
-	recipeStepProductsIndexManager, err := searchIndexProvider(ctx, logger, client, searchIndexLocation, "recipe_step_products", "name", "recipeStepID")
-	if err != nil {
-		return nil, fmt.Errorf("setting up recipe step products search index manager: %w", err)
-	}
-
-	mealPlansIndexManager, err := searchIndexProvider(ctx, logger, client, searchIndexLocation, "meal_plans", "state")
-	if err != nil {
-		return nil, fmt.Errorf("setting up meal plans search index manager: %w", err)
-	}
-
-	mealPlanOptionsIndexManager, err := searchIndexProvider(ctx, logger, client, searchIndexLocation, "meal_plan_options", "mealPlanID", "recipeID", "notes")
-	if err != nil {
-		return nil, fmt.Errorf("setting up meal plan options search index manager: %w", err)
-	}
-
-	mealPlanOptionVotesIndexManager, err := searchIndexProvider(ctx, logger, client, searchIndexLocation, "meal_plan_option_votes", "mealPlanOptionID", "notes")
-	if err != nil {
-		return nil, fmt.Errorf("setting up meal plan option votes search index manager: %w", err)
-	}
-
-	w := &PreArchivesWorker{
+	w := &ArchivesWorker{
 		logger:                                  logging.EnsureLogger(logger).WithName(name).WithValue("topic", name),
 		tracer:                                  tracing.NewTracer(name),
 		encoder:                                 encoding.ProvideClientEncoder(logger, encoding.ContentTypeJSON),
@@ -119,20 +77,40 @@ func ProvidePreArchivesWorker(
 		validPreparationsIndexManager:           validPreparationsIndexManager,
 		validIngredientPreparationsIndexManager: validIngredientPreparationsIndexManager,
 		recipesIndexManager:                     recipesIndexManager,
-		recipeStepsIndexManager:                 recipeStepsIndexManager,
-		recipeStepInstrumentsIndexManager:       recipeStepInstrumentsIndexManager,
-		recipeStepIngredientsIndexManager:       recipeStepIngredientsIndexManager,
-		recipeStepProductsIndexManager:          recipeStepProductsIndexManager,
-		mealPlansIndexManager:                   mealPlansIndexManager,
-		mealPlanOptionsIndexManager:             mealPlanOptionsIndexManager,
-		mealPlanOptionVotesIndexManager:         mealPlanOptionVotesIndexManager,
 	}
 
 	return w, nil
 }
 
+func (w *ArchivesWorker) determineArchiveMessageHandler(msg *types.PreArchiveMessage) func(context.Context, *types.PreArchiveMessage) error {
+	funcMap := map[string]func(context.Context, *types.PreArchiveMessage) error{
+		string(types.ValidInstrumentDataType):            w.archiveValidInstrument,
+		string(types.ValidIngredientDataType):            w.archiveValidIngredient,
+		string(types.ValidPreparationDataType):           w.archiveValidPreparation,
+		string(types.ValidIngredientPreparationDataType): w.archiveValidIngredientPreparation,
+		string(types.RecipeDataType):                     w.archiveRecipe,
+		string(types.RecipeStepDataType):                 w.archiveRecipeStep,
+		string(types.RecipeStepInstrumentDataType):       w.archiveRecipeStepInstrument,
+		string(types.RecipeStepIngredientDataType):       w.archiveRecipeStepIngredient,
+		string(types.RecipeStepProductDataType):          w.archiveRecipeStepProduct,
+		string(types.MealPlanDataType):                   w.archiveMealPlan,
+		string(types.MealPlanOptionDataType):             w.archiveMealPlanOption,
+		string(types.MealPlanOptionVoteDataType):         w.archiveMealPlanOptionVote,
+		string(types.WebhookDataType):                    w.archiveWebhook,
+		string(types.UserMembershipDataType):             func(context.Context, *types.PreArchiveMessage) error { return nil },
+		string(types.HouseholdInvitationDataType):        func(context.Context, *types.PreArchiveMessage) error { return nil },
+	}
+
+	f, ok := funcMap[string(msg.DataType)]
+	if ok {
+		return f
+	}
+
+	return nil
+}
+
 // HandleMessage handles a pending archive.
-func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) error {
+func (w *ArchivesWorker) HandleMessage(ctx context.Context, message []byte) error {
 	ctx, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -146,280 +124,11 @@ func (w *PreArchivesWorker) HandleMessage(ctx context.Context, message []byte) e
 
 	logger.Debug("message read")
 
-	switch msg.DataType {
-	case types.ValidInstrumentDataType:
-		if err := w.dataManager.ArchiveValidInstrument(ctx, msg.ValidInstrumentID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "archiving valid instrument")
-		}
+	f := w.determineArchiveMessageHandler(msg)
 
-		if err := w.validInstrumentsIndexManager.Delete(ctx, msg.ValidInstrumentID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "removing valid instrument from index")
-		}
-
-		if w.postArchivesPublisher != nil {
-			dcm := &types.DataChangeMessage{
-				DataType:                  msg.DataType,
-				MessageType:               "validInstrumentArchived",
-				AttributableToUserID:      msg.AttributableToUserID,
-				AttributableToHouseholdID: msg.AttributableToHouseholdID,
-			}
-
-			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
-				return observability.PrepareError(err, logger, span, "publishing data change message")
-			}
-		}
-	case types.ValidIngredientDataType:
-		if err := w.dataManager.ArchiveValidIngredient(ctx, msg.ValidIngredientID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "archiving valid ingredient")
-		}
-
-		if err := w.validIngredientsIndexManager.Delete(ctx, msg.ValidIngredientID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "removing valid ingredient from index")
-		}
-
-		if w.postArchivesPublisher != nil {
-			dcm := &types.DataChangeMessage{
-				DataType:                  msg.DataType,
-				MessageType:               "validIngredientArchived",
-				AttributableToUserID:      msg.AttributableToUserID,
-				AttributableToHouseholdID: msg.AttributableToHouseholdID,
-			}
-
-			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
-				return observability.PrepareError(err, logger, span, "publishing data change message")
-			}
-		}
-	case types.ValidPreparationDataType:
-		if err := w.dataManager.ArchiveValidPreparation(ctx, msg.ValidPreparationID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "archiving valid preparation")
-		}
-
-		if err := w.validPreparationsIndexManager.Delete(ctx, msg.ValidPreparationID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "removing valid preparation from index")
-		}
-
-		if w.postArchivesPublisher != nil {
-			dcm := &types.DataChangeMessage{
-				DataType:                  msg.DataType,
-				MessageType:               "validPreparationArchived",
-				AttributableToUserID:      msg.AttributableToUserID,
-				AttributableToHouseholdID: msg.AttributableToHouseholdID,
-			}
-
-			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
-				return observability.PrepareError(err, logger, span, "publishing data change message")
-			}
-		}
-	case types.ValidIngredientPreparationDataType:
-		if err := w.dataManager.ArchiveValidIngredientPreparation(ctx, msg.ValidIngredientPreparationID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "archiving valid ingredient preparation")
-		}
-
-		if err := w.validIngredientPreparationsIndexManager.Delete(ctx, msg.ValidIngredientPreparationID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "removing valid ingredient preparation from index")
-		}
-
-		if w.postArchivesPublisher != nil {
-			dcm := &types.DataChangeMessage{
-				DataType:                  msg.DataType,
-				MessageType:               "validIngredientPreparationArchived",
-				AttributableToUserID:      msg.AttributableToUserID,
-				AttributableToHouseholdID: msg.AttributableToHouseholdID,
-			}
-
-			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
-				return observability.PrepareError(err, logger, span, "publishing data change message")
-			}
-		}
-	case types.RecipeDataType:
-		if err := w.dataManager.ArchiveRecipe(ctx, msg.RecipeID, msg.AttributableToHouseholdID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "archiving recipe")
-		}
-
-		if err := w.recipesIndexManager.Delete(ctx, msg.RecipeID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "removing recipe from index")
-		}
-
-		if w.postArchivesPublisher != nil {
-			dcm := &types.DataChangeMessage{
-				DataType:                  msg.DataType,
-				MessageType:               "recipeArchived",
-				AttributableToUserID:      msg.AttributableToUserID,
-				AttributableToHouseholdID: msg.AttributableToHouseholdID,
-			}
-
-			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
-				return observability.PrepareError(err, logger, span, "publishing data change message")
-			}
-		}
-	case types.RecipeStepDataType:
-		if err := w.dataManager.ArchiveRecipeStep(ctx, msg.RecipeID, msg.RecipeStepID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "archiving recipe step")
-		}
-
-		if err := w.recipeStepsIndexManager.Delete(ctx, msg.RecipeStepID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "removing recipe step from index")
-		}
-
-		if w.postArchivesPublisher != nil {
-			dcm := &types.DataChangeMessage{
-				DataType:                  msg.DataType,
-				MessageType:               "recipeStepArchived",
-				AttributableToUserID:      msg.AttributableToUserID,
-				AttributableToHouseholdID: msg.AttributableToHouseholdID,
-			}
-
-			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
-				return observability.PrepareError(err, logger, span, "publishing data change message")
-			}
-		}
-	case types.RecipeStepInstrumentDataType:
-		if err := w.dataManager.ArchiveRecipeStepInstrument(ctx, msg.RecipeStepID, msg.RecipeStepInstrumentID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "archiving recipe step instrument")
-		}
-
-		if err := w.recipeStepInstrumentsIndexManager.Delete(ctx, msg.RecipeStepInstrumentID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "removing recipe step instrument from index")
-		}
-
-		if w.postArchivesPublisher != nil {
-			dcm := &types.DataChangeMessage{
-				DataType:                  msg.DataType,
-				MessageType:               "recipeStepInstrumentArchived",
-				AttributableToUserID:      msg.AttributableToUserID,
-				AttributableToHouseholdID: msg.AttributableToHouseholdID,
-			}
-
-			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
-				return observability.PrepareError(err, logger, span, "publishing data change message")
-			}
-		}
-	case types.RecipeStepIngredientDataType:
-		if err := w.dataManager.ArchiveRecipeStepIngredient(ctx, msg.RecipeStepID, msg.RecipeStepIngredientID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "archiving recipe step ingredient")
-		}
-
-		if err := w.recipeStepIngredientsIndexManager.Delete(ctx, msg.RecipeStepIngredientID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "removing recipe step ingredient from index")
-		}
-
-		if w.postArchivesPublisher != nil {
-			dcm := &types.DataChangeMessage{
-				DataType:                  msg.DataType,
-				MessageType:               "recipeStepIngredientArchived",
-				AttributableToUserID:      msg.AttributableToUserID,
-				AttributableToHouseholdID: msg.AttributableToHouseholdID,
-			}
-
-			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
-				return observability.PrepareError(err, logger, span, "publishing data change message")
-			}
-		}
-	case types.RecipeStepProductDataType:
-		if err := w.dataManager.ArchiveRecipeStepProduct(ctx, msg.RecipeStepID, msg.RecipeStepProductID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "archiving recipe step product")
-		}
-
-		if err := w.recipeStepProductsIndexManager.Delete(ctx, msg.RecipeStepProductID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "removing recipe step product from index")
-		}
-
-		if w.postArchivesPublisher != nil {
-			dcm := &types.DataChangeMessage{
-				DataType:                  msg.DataType,
-				MessageType:               "recipeStepProductArchived",
-				AttributableToUserID:      msg.AttributableToUserID,
-				AttributableToHouseholdID: msg.AttributableToHouseholdID,
-			}
-
-			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
-				return observability.PrepareError(err, logger, span, "publishing data change message")
-			}
-		}
-	case types.MealPlanDataType:
-		if err := w.dataManager.ArchiveMealPlan(ctx, msg.MealPlanID, msg.AttributableToHouseholdID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "archiving meal plan")
-		}
-
-		if err := w.mealPlansIndexManager.Delete(ctx, msg.MealPlanID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "removing meal plan from index")
-		}
-
-		if w.postArchivesPublisher != nil {
-			dcm := &types.DataChangeMessage{
-				DataType:                  msg.DataType,
-				MessageType:               "mealPlanArchived",
-				AttributableToUserID:      msg.AttributableToUserID,
-				AttributableToHouseholdID: msg.AttributableToHouseholdID,
-			}
-
-			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
-				return observability.PrepareError(err, logger, span, "publishing data change message")
-			}
-		}
-	case types.MealPlanOptionDataType:
-		if err := w.dataManager.ArchiveMealPlanOption(ctx, msg.MealPlanID, msg.MealPlanOptionID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "archiving meal plan option")
-		}
-
-		if err := w.mealPlanOptionsIndexManager.Delete(ctx, msg.MealPlanOptionID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "removing meal plan option from index")
-		}
-
-		if w.postArchivesPublisher != nil {
-			dcm := &types.DataChangeMessage{
-				DataType:                  msg.DataType,
-				MessageType:               "mealPlanOptionArchived",
-				AttributableToUserID:      msg.AttributableToUserID,
-				AttributableToHouseholdID: msg.AttributableToHouseholdID,
-			}
-
-			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
-				return observability.PrepareError(err, logger, span, "publishing data change message")
-			}
-		}
-	case types.MealPlanOptionVoteDataType:
-		if err := w.dataManager.ArchiveMealPlanOptionVote(ctx, msg.MealPlanOptionID, msg.MealPlanOptionVoteID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "archiving meal plan option vote")
-		}
-
-		if err := w.mealPlanOptionVotesIndexManager.Delete(ctx, msg.MealPlanOptionVoteID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "removing meal plan option vote from index")
-		}
-
-		if w.postArchivesPublisher != nil {
-			dcm := &types.DataChangeMessage{
-				DataType:                  msg.DataType,
-				MessageType:               "mealPlanOptionVoteArchived",
-				AttributableToUserID:      msg.AttributableToUserID,
-				AttributableToHouseholdID: msg.AttributableToHouseholdID,
-			}
-
-			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
-				return observability.PrepareError(err, logger, span, "publishing data change message")
-			}
-		}
-	case types.WebhookDataType:
-		if err := w.dataManager.ArchiveWebhook(ctx, msg.WebhookID, msg.AttributableToHouseholdID); err != nil {
-			return observability.PrepareError(err, w.logger, span, "creating webhook")
-		}
-
-		if w.postArchivesPublisher != nil {
-			dcm := &types.DataChangeMessage{
-				DataType:                  msg.DataType,
-				MessageType:               "webhookArchived",
-				AttributableToUserID:      msg.AttributableToUserID,
-				AttributableToHouseholdID: msg.AttributableToHouseholdID,
-			}
-
-			if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
-				return observability.PrepareError(err, logger, span, "publishing data change message")
-			}
-		}
-	case types.UserMembershipDataType,
-		types.HouseholdInvitationDataType:
-		break
+	if f == nil {
+		return fmt.Errorf("no handler assigned to message type %q", msg.DataType)
 	}
 
-	return nil
+	return f(ctx, msg)
 }

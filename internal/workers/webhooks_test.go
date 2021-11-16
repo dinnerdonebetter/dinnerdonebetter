@@ -2,7 +2,6 @@ package workers
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"net/http"
 	"testing"
@@ -17,9 +16,11 @@ import (
 	"github.com/prixfixeco/api_server/internal/search"
 	mocksearch "github.com/prixfixeco/api_server/internal/search/mock"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
-func TestProvidePreArchivesWorker(T *testing.T) {
+func TestWritesWorker_createWebhook(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -28,14 +29,34 @@ func TestProvidePreArchivesWorker(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		client := &http.Client{}
-		dbManager := &database.MockDatabase{}
-		postArchivesPublisher := &mockpublishers.Publisher{}
+
+		body := &types.PreWriteMessage{
+			DataType: types.WebhookDataType,
+			Webhook:  fakes.BuildFakeWebhookDatabaseCreationInput(),
+		}
+
+		expectedWebhook := fakes.BuildFakeWebhook()
+
+		dbManager := database.BuildMockDatabase()
+		dbManager.WebhookDataManager.On(
+			"CreateWebhook",
+			testutils.ContextMatcher,
+			body.Webhook,
+		).Return(expectedWebhook, nil)
+
 		searchIndexLocation := search.IndexPath(t.Name())
 		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
 			return nil, nil
 		}
 
-		actual, err := ProvideArchivesWorker(
+		postArchivesPublisher := &mockpublishers.Publisher{}
+		postArchivesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+		).Return(nil)
+
+		worker, err := ProvideWritesWorker(
 			ctx,
 			logger,
 			client,
@@ -44,27 +65,41 @@ func TestProvidePreArchivesWorker(T *testing.T) {
 			searchIndexLocation,
 			searchIndexProvider,
 		)
-		assert.NotNil(t, actual)
-		assert.NoError(t, err)
+		require.NotNil(t, worker)
+		require.NoError(t, err)
+
+		assert.NoError(t, worker.createWebhook(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
 	})
 
-	T.Run("with error providing the first search index", func(t *testing.T) {
+	T.Run("with error writing", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		client := &http.Client{}
-		dbManager := &database.MockDatabase{}
-		postArchivesPublisher := &mockpublishers.Publisher{}
+
+		body := &types.PreWriteMessage{
+			DataType: types.WebhookDataType,
+			Webhook:  fakes.BuildFakeWebhookDatabaseCreationInput(),
+		}
+
+		dbManager := database.BuildMockDatabase()
+		dbManager.WebhookDataManager.On(
+			"CreateWebhook",
+			testutils.ContextMatcher,
+			body.Webhook,
+		).Return((*types.Webhook)(nil), errors.New("blah"))
 
 		searchIndexLocation := search.IndexPath(t.Name())
 		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return nil, errors.New("blah")
+			return nil, nil
 		}
 
-		actual, err := ProvideArchivesWorker(
+		postArchivesPublisher := &mockpublishers.Publisher{}
+
+		worker, err := ProvideWritesWorker(
 			ctx,
 			logger,
 			client,
@@ -73,33 +108,48 @@ func TestProvidePreArchivesWorker(T *testing.T) {
 			searchIndexLocation,
 			searchIndexProvider,
 		)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
+		require.NotNil(t, worker)
+		require.NoError(t, err)
+
+		assert.Error(t, worker.createWebhook(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
 	})
 
-	T.Run("with error providing the second search index", func(t *testing.T) {
+	T.Run("with error publishing data change message", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		client := &http.Client{}
-		dbManager := &database.MockDatabase{}
-		postArchivesPublisher := &mockpublishers.Publisher{}
 
-		searchProviderInvocationCount := 0
+		body := &types.PreWriteMessage{
+			DataType: types.WebhookDataType,
+			Webhook:  fakes.BuildFakeWebhookDatabaseCreationInput(),
+		}
+
+		expectedWebhook := fakes.BuildFakeWebhook()
+
+		dbManager := database.BuildMockDatabase()
+		dbManager.WebhookDataManager.On(
+			"CreateWebhook",
+			testutils.ContextMatcher,
+			body.Webhook,
+		).Return(expectedWebhook, nil)
 
 		searchIndexLocation := search.IndexPath(t.Name())
 		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			searchProviderInvocationCount++
-			if searchProviderInvocationCount == 2 {
-				return nil, errors.New("blah")
-			}
-			return &mocksearch.IndexManager{}, nil
+			return nil, nil
 		}
 
-		actual, err := ProvideArchivesWorker(
+		postArchivesPublisher := &mockpublishers.Publisher{}
+		postArchivesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+		).Return(errors.New("blah"))
+
+		worker, err := ProvideWritesWorker(
 			ctx,
 			logger,
 			client,
@@ -108,150 +158,17 @@ func TestProvidePreArchivesWorker(T *testing.T) {
 			searchIndexLocation,
 			searchIndexProvider,
 		)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
+		require.NotNil(t, worker)
+		require.NoError(t, err)
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
-	})
-
-	T.Run("with error providing the third search index", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
-		dbManager := &database.MockDatabase{}
-		postArchivesPublisher := &mockpublishers.Publisher{}
-
-		searchProviderInvocationCount := 0
-
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			searchProviderInvocationCount++
-			if searchProviderInvocationCount == 3 {
-				return nil, errors.New("blah")
-			}
-			return &mocksearch.IndexManager{}, nil
-		}
-
-		actual, err := ProvideArchivesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-		)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
-	})
-
-	T.Run("with error providing the fourth search index", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
-		dbManager := &database.MockDatabase{}
-		postArchivesPublisher := &mockpublishers.Publisher{}
-
-		searchProviderInvocationCount := 0
-
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			searchProviderInvocationCount++
-			if searchProviderInvocationCount == 4 {
-				return nil, errors.New("blah")
-			}
-			return &mocksearch.IndexManager{}, nil
-		}
-
-		actual, err := ProvideArchivesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-		)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
-
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
-	})
-
-	T.Run("with error providing the fifth search index", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
-		dbManager := &database.MockDatabase{}
-		postArchivesPublisher := &mockpublishers.Publisher{}
-
-		searchProviderInvocationCount := 0
-
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			searchProviderInvocationCount++
-			if searchProviderInvocationCount == 5 {
-				return nil, errors.New("blah")
-			}
-			return &mocksearch.IndexManager{}, nil
-		}
-
-		actual, err := ProvideArchivesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-		)
-		assert.Nil(t, actual)
-		assert.Error(t, err)
+		assert.Error(t, worker.createWebhook(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
 	})
 }
 
-func TestArchivesWorker_HandleMessage(T *testing.T) {
+func TestWritesWorker_archiveWebhook(T *testing.T) {
 	T.Parallel()
-
-	T.Run("with invalid input", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
-		dbManager := database.BuildMockDatabase()
-		postArchivesPublisher := &mockpublishers.Publisher{}
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return nil, nil
-		}
-
-		worker, err := ProvideArchivesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
-
-		assert.Error(t, worker.HandleMessage(ctx, []byte("} bad JSON lol")))
-
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
-	})
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -259,8 +176,26 @@ func TestArchivesWorker_HandleMessage(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		client := &http.Client{}
+
+		body := &types.PreArchiveMessage{
+			DataType: types.WebhookDataType,
+		}
+
 		dbManager := database.BuildMockDatabase()
+		dbManager.WebhookDataManager.On(
+			"ArchiveWebhook",
+			testutils.ContextMatcher,
+			body.WebhookID,
+			body.AttributableToHouseholdID,
+		).Return(nil)
+
 		postArchivesPublisher := &mockpublishers.Publisher{}
+		postArchivesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+		).Return(nil)
+
 		searchIndexLocation := search.IndexPath(t.Name())
 		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
 			return nil, nil
@@ -278,13 +213,99 @@ func TestArchivesWorker_HandleMessage(T *testing.T) {
 		require.NotNil(t, worker)
 		require.NoError(t, err)
 
+		assert.NoError(t, worker.archiveWebhook(ctx, body))
+
+		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+	})
+
+	T.Run("with error archiving", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		logger := logging.NewNoopLogger()
+		client := &http.Client{}
+
 		body := &types.PreArchiveMessage{
-			DataType: types.UserMembershipDataType,
+			DataType: types.WebhookDataType,
 		}
-		examplePayload, err := json.Marshal(body)
+
+		dbManager := database.BuildMockDatabase()
+		dbManager.WebhookDataManager.On(
+			"ArchiveWebhook",
+			testutils.ContextMatcher,
+			body.WebhookID,
+			body.AttributableToHouseholdID,
+		).Return(errors.New("blah"))
+
+		postArchivesPublisher := &mockpublishers.Publisher{}
+		searchIndexManager := &mocksearch.IndexManager{}
+
+		searchIndexLocation := search.IndexPath(t.Name())
+		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
+			return searchIndexManager, nil
+		}
+
+		worker, err := ProvideArchivesWorker(
+			ctx,
+			logger,
+			client,
+			dbManager,
+			postArchivesPublisher,
+			searchIndexLocation,
+			searchIndexProvider,
+		)
+		require.NotNil(t, worker)
 		require.NoError(t, err)
 
-		assert.NoError(t, worker.HandleMessage(ctx, examplePayload))
+		assert.Error(t, worker.archiveWebhook(ctx, body))
+
+		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher, searchIndexManager)
+	})
+
+	T.Run("with error publishing post-archive message", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		logger := logging.NewNoopLogger()
+		client := &http.Client{}
+
+		body := &types.PreArchiveMessage{
+			DataType: types.WebhookDataType,
+		}
+
+		dbManager := database.BuildMockDatabase()
+		dbManager.WebhookDataManager.On(
+			"ArchiveWebhook",
+			testutils.ContextMatcher,
+			body.WebhookID,
+			body.AttributableToHouseholdID,
+		).Return(nil)
+
+		postArchivesPublisher := &mockpublishers.Publisher{}
+		postArchivesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+		).Return(errors.New("blah"))
+
+		searchIndexLocation := search.IndexPath(t.Name())
+		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
+			return nil, nil
+		}
+
+		worker, err := ProvideArchivesWorker(
+			ctx,
+			logger,
+			client,
+			dbManager,
+			postArchivesPublisher,
+			searchIndexLocation,
+			searchIndexProvider,
+		)
+		require.NotNil(t, worker)
+		require.NoError(t, err)
+
+		assert.Error(t, worker.archiveWebhook(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
 	})
