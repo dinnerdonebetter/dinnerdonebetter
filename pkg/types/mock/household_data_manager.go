@@ -27,6 +27,12 @@ func (m *HouseholdDataManager) GetHousehold(ctx context.Context, householdID, us
 	return args.Get(0).(*types.Household), args.Error(1)
 }
 
+// GetHouseholdByID is a mock function.
+func (m *HouseholdDataManager) GetHouseholdByID(ctx context.Context, householdID string) (*types.Household, error) {
+	args := m.Called(ctx, householdID)
+	return args.Get(0).(*types.Household), args.Error(1)
+}
+
 // GetAllHouseholdsCount is a mock function.
 func (m *HouseholdDataManager) GetAllHouseholdsCount(ctx context.Context) (uint64, error) {
 	args := m.Called(ctx)

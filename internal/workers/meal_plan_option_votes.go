@@ -32,6 +32,10 @@ func (w *WritesWorker) createMealPlanOptionVote(ctx context.Context, msg *types.
 		}
 	}
 
+	// have all votes been received for an option? if so, finalize it and fire event
+
+	// have all options for the meal plan been selected? if so, finalize it and fire event
+
 	return nil
 }
 

@@ -212,6 +212,71 @@ func (q *SQLQuerier) GetHousehold(ctx context.Context, householdID, userID strin
 	return household, nil
 }
 
+const getHouseholdByIDQuery = `
+	SELECT
+		households.id,
+		households.name,
+		households.billing_status,
+		households.contact_email,
+		households.contact_phone,
+		households.payment_processor_customer_id,
+		households.subscription_plan_id,
+		households.created_on,
+		households.last_updated_on,
+		households.archived_on,
+		households.belongs_to_user,
+		household_user_memberships.id,
+		household_user_memberships.belongs_to_user,
+		household_user_memberships.belongs_to_household,
+		household_user_memberships.household_roles,
+		household_user_memberships.default_household,
+		household_user_memberships.created_on,
+		household_user_memberships.last_updated_on,
+		household_user_memberships.archived_on
+	FROM households
+	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
+	WHERE households.archived_on IS NULL
+	AND households.id = $1
+`
+
+// GetHouseholdByID fetches a household from the database by its ID.
+func (q *SQLQuerier) GetHouseholdByID(ctx context.Context, householdID string) (*types.Household, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if householdID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	tracing.AttachHouseholdIDToSpan(span, householdID)
+
+	logger := q.logger.WithValue(keys.HouseholdIDKey, householdID)
+
+	args := []interface{}{
+		householdID,
+	}
+
+	rows, err := q.performReadQuery(ctx, q.db, "household", getHouseholdQuery, args)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "executing households list retrieval query")
+	}
+
+	households, _, _, err := q.scanHouseholds(ctx, rows, false)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "beginning transaction")
+	}
+
+	var household *types.Household
+	if len(households) > 0 {
+		household = households[0]
+	}
+
+	if household == nil {
+		return nil, sql.ErrNoRows
+	}
+
+	return household, nil
+}
+
 const getAllHouseholdsCountQuery = `
 	SELECT COUNT(households.id) FROM households WHERE households.archived_on IS NULL
 `
