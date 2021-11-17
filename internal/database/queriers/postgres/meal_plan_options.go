@@ -478,8 +478,12 @@ func (q *SQLQuerier) decideOptionWinner(options []*types.MealPlanOption) (winner
 	return winner, false
 }
 
-// MealPlanOptionCanBeFinalized archives a meal plan option vote from the database by its ID.
-func (q *SQLQuerier) MealPlanOptionCanBeFinalized(ctx context.Context, mealPlanID, mealPlanOptionID string) (bool, error) {
+const finalizeMealPlanOptionQuery = `
+	UPDATE meal_plan_options SET chosen = (belongs_to_meal_plan = $1 AND id = $2), tiebroken = $3 WHERE archived_on IS NULL AND belongs_to_meal_plan = $1 AND id = $2
+`
+
+// FinalizeMealPlanOption archives a meal plan option vote from the database by its ID.
+func (q *SQLQuerier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) (changed bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -515,9 +519,11 @@ func (q *SQLQuerier) MealPlanOptionCanBeFinalized(ctx context.Context, mealPlanI
 		return false, observability.PrepareError(err, logger, span, "fetching household")
 	}
 
+	relevantOptions := byDayAndMeal(mealPlan.Options, mealPlanOption.Day, mealPlanOption.MealName)
+
 	// go through all the votes for this meal plan option and determine if they're all there
 	for _, member := range household.Members {
-		for _, option := range byDayAndMeal(mealPlan.Options, mealPlanOption.Day, mealPlanOption.MealName) {
+		for _, option := range relevantOptions {
 			memberVoteFound := false
 			for _, vote := range option.Votes {
 				if vote.ByUser == member.BelongsToUser {
@@ -530,6 +536,18 @@ func (q *SQLQuerier) MealPlanOptionCanBeFinalized(ctx context.Context, mealPlanI
 				return false, nil
 			}
 		}
+	}
+
+	winner, tiebroken := q.decideOptionWinner(relevantOptions)
+
+	args := []interface{}{
+		mealPlanID,
+		winner,
+		tiebroken,
+	}
+
+	if err = q.performWriteQuery(ctx, q.db, "meal plan option finalization", finalizeMealPlanOptionQuery, args); err != nil {
+		return false, observability.PrepareError(err, logger, span, "finalizing meal plan option")
 	}
 
 	return true, nil

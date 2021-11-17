@@ -998,6 +998,14 @@ func Test_decideOptionWinner(T *testing.T) {
 func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 	T.Parallel()
 
+	optionA := "eggs benedict"
+	optionB := "scrambled eggs"
+	optionC := "buttered toast"
+	userID1 := fakes.BuildFakeID()
+	userID2 := fakes.BuildFakeID()
+	userID3 := fakes.BuildFakeID()
+	userID4 := fakes.BuildFakeID()
+
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
@@ -1006,22 +1014,22 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 		exampleHousehold.Members = []*types.HouseholdUserMembership{
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      fakes.BuildFakeID(),
+				BelongsToUser:      userID1,
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      fakes.BuildFakeID(),
+				BelongsToUser:      userID2,
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      fakes.BuildFakeID(),
+				BelongsToUser:      userID3,
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      fakes.BuildFakeID(),
+				BelongsToUser:      userID4,
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 		}
@@ -1030,71 +1038,84 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 		exampleMealPlan.BelongsToHousehold = exampleHousehold.ID
 		exampleMealPlan.Options = []*types.MealPlanOption{
 			{
-				ID:       fakes.BuildFakeID(),
+				ID:       optionA,
 				Day:      time.Monday,
-				MealName: types.SecondBreakfastMealName,
+				MealName: types.BreakfastMealName,
 				Votes: []*types.MealPlanOptionVote{
 					{
-						ID:     fakes.BuildFakeID(),
-						ByUser: exampleHousehold.Members[0].BelongsToUser,
+						BelongsToMealPlanOption: optionA,
+						Rank:                    0,
+						ByUser:                  userID1,
 					},
 					{
-						ID:     fakes.BuildFakeID(),
-						ByUser: exampleHousehold.Members[1].BelongsToUser,
+						BelongsToMealPlanOption: optionA,
+						Rank:                    0,
+						ByUser:                  userID2,
 					},
 					{
-						ID:     fakes.BuildFakeID(),
-						ByUser: exampleHousehold.Members[2].BelongsToUser,
+						BelongsToMealPlanOption: optionA,
+						Rank:                    1,
+						ByUser:                  userID3,
 					},
 					{
-						ID:     fakes.BuildFakeID(),
-						ByUser: exampleHousehold.Members[3].BelongsToUser,
+						BelongsToMealPlanOption: optionA,
+						Rank:                    2,
+						ByUser:                  userID4,
 					},
 				},
 			},
 			{
-				ID:       fakes.BuildFakeID(),
+				ID:       optionB,
 				Day:      time.Monday,
-				MealName: types.SecondBreakfastMealName,
+				MealName: types.BreakfastMealName,
 				Votes: []*types.MealPlanOptionVote{
 					{
-						ID:     fakes.BuildFakeID(),
-						ByUser: exampleHousehold.Members[0].BelongsToUser,
+						BelongsToMealPlanOption: optionB,
+						Rank:                    0,
+						ByUser:                  userID3,
 					},
 					{
-						ID:     fakes.BuildFakeID(),
-						ByUser: exampleHousehold.Members[1].BelongsToUser,
+						BelongsToMealPlanOption: optionB,
+						Rank:                    1,
+						ByUser:                  userID2,
 					},
 					{
-						ID:     fakes.BuildFakeID(),
-						ByUser: exampleHousehold.Members[2].BelongsToUser,
+						BelongsToMealPlanOption: optionB,
+						Rank:                    1,
+						ByUser:                  userID4,
 					},
 					{
-						ID:     fakes.BuildFakeID(),
-						ByUser: exampleHousehold.Members[3].BelongsToUser,
+						BelongsToMealPlanOption: optionB,
+						Rank:                    2,
+						ByUser:                  userID1,
 					},
 				},
 			},
 			{
-				ID:       fakes.BuildFakeID(),
+				ID:       optionC,
 				Day:      time.Monday,
-				MealName: types.SecondBreakfastMealName,
+				MealName: types.BreakfastMealName,
 				Votes: []*types.MealPlanOptionVote{
 					{
-						ID:     fakes.BuildFakeID(),
-						ByUser: exampleHousehold.Members[0].BelongsToUser,
+						BelongsToMealPlanOption: optionC,
+						Rank:                    0,
+						ByUser:                  userID4,
+					},
+
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    1,
+						ByUser:                  userID1,
 					},
 					{
-						ID:     fakes.BuildFakeID(),
-						ByUser: exampleHousehold.Members[1].BelongsToUser,
+						BelongsToMealPlanOption: optionC,
+						Rank:                    2,
+						ByUser:                  userID2,
 					},
 					{
-						ID:     fakes.BuildFakeID(),
-						ByUser: exampleHousehold.Members[2].BelongsToUser,
-					},
-					{
-						ID:     fakes.BuildFakeID(),
-						ByUser: exampleHousehold.Members[3].BelongsToUser,
+						BelongsToMealPlanOption: optionC,
+						Rank:                    2,
+						ByUser:                  userID3,
 					},
 				},
 			},
@@ -1128,7 +1149,17 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getHouseholdArgs)...).
 			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
 
-		actual, err := c.MealPlanOptionCanBeFinalized(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID)
+		finalizeOptionsArgs := []interface{}{
+			exampleMealPlan.ID,
+			exampleMealPlan.Options[0].ID,
+			false,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(finalizeMealPlanOptionQuery)).
+			WithArgs(interfaceToDriverValue(finalizeOptionsArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID)
 		assert.True(t, actual)
 		assert.NoError(t, err)
 	})
@@ -1141,22 +1172,22 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 		exampleHousehold.Members = []*types.HouseholdUserMembership{
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      fakes.BuildFakeID(),
+				BelongsToUser:      userID1,
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      fakes.BuildFakeID(),
+				BelongsToUser:      userID2,
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      fakes.BuildFakeID(),
+				BelongsToUser:      userID3,
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      fakes.BuildFakeID(),
+				BelongsToUser:      userID4,
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 		}
@@ -1165,55 +1196,53 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 		exampleMealPlan.BelongsToHousehold = exampleHousehold.ID
 		exampleMealPlan.Options = []*types.MealPlanOption{
 			{
-				ID:       fakes.BuildFakeID(),
+				ID:       optionA,
 				Day:      time.Monday,
-				MealName: types.SecondBreakfastMealName,
+				MealName: types.BreakfastMealName,
 				Votes: []*types.MealPlanOptionVote{
 					{
-						ID:     fakes.BuildFakeID(),
-						ByUser: exampleHousehold.Members[0].BelongsToUser,
+						BelongsToMealPlanOption: optionA,
+						Rank:                    0,
+						ByUser:                  userID1,
 					},
 					{
-						ID:     fakes.BuildFakeID(),
-						ByUser: exampleHousehold.Members[1].BelongsToUser,
+						BelongsToMealPlanOption: optionA,
+						Rank:                    0,
+						ByUser:                  userID2,
 					},
 				},
 			},
 			{
-				ID:       fakes.BuildFakeID(),
+				ID:       optionB,
 				Day:      time.Monday,
-				MealName: types.SecondBreakfastMealName,
+				MealName: types.BreakfastMealName,
 				Votes: []*types.MealPlanOptionVote{
 					{
-						ID:     fakes.BuildFakeID(),
-						ByUser: exampleHousehold.Members[0].BelongsToUser,
+						BelongsToMealPlanOption: optionB,
+						Rank:                    0,
+						ByUser:                  userID3,
 					},
 					{
-						ID:     fakes.BuildFakeID(),
-						ByUser: exampleHousehold.Members[1].BelongsToUser,
-					},
-					{
-						ID:     fakes.BuildFakeID(),
-						ByUser: exampleHousehold.Members[2].BelongsToUser,
+						BelongsToMealPlanOption: optionB,
+						Rank:                    2,
+						ByUser:                  userID1,
 					},
 				},
 			},
 			{
-				ID:       fakes.BuildFakeID(),
+				ID:       optionC,
 				Day:      time.Monday,
-				MealName: types.SecondBreakfastMealName,
+				MealName: types.BreakfastMealName,
 				Votes: []*types.MealPlanOptionVote{
 					{
-						ID:     fakes.BuildFakeID(),
-						ByUser: exampleHousehold.Members[1].BelongsToUser,
+						BelongsToMealPlanOption: optionC,
+						Rank:                    2,
+						ByUser:                  userID2,
 					},
 					{
-						ID:     fakes.BuildFakeID(),
-						ByUser: exampleHousehold.Members[2].BelongsToUser,
-					},
-					{
-						ID:     fakes.BuildFakeID(),
-						ByUser: exampleHousehold.Members[3].BelongsToUser,
+						BelongsToMealPlanOption: optionC,
+						Rank:                    2,
+						ByUser:                  userID3,
 					},
 				},
 			},
@@ -1247,7 +1276,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getHouseholdArgs)...).
 			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
 
-		actual, err := c.MealPlanOptionCanBeFinalized(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID)
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID)
 		assert.False(t, actual)
 		assert.NoError(t, err)
 	})
@@ -1260,7 +1289,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.MealPlanOptionCanBeFinalized(ctx, "", exampleMealPlanOptionID)
+		actual, err := c.FinalizeMealPlanOption(ctx, "", exampleMealPlanOptionID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})
@@ -1273,7 +1302,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.MealPlanOptionCanBeFinalized(ctx, exampleMealPlanID, "")
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlanID, "")
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})
@@ -1294,7 +1323,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.MealPlanOptionCanBeFinalized(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID)
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})
@@ -1325,7 +1354,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getMealPlanOptionArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.MealPlanOptionCanBeFinalized(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID)
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})
@@ -1365,7 +1394,165 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getHouseholdArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.MealPlanOptionCanBeFinalized(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID)
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID)
+		assert.False(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with error finalizing option", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.Members = []*types.HouseholdUserMembership{
+			{
+				ID:                 fakes.BuildFakeID(),
+				BelongsToUser:      userID1,
+				BelongsToHousehold: exampleHousehold.ID,
+			},
+			{
+				ID:                 fakes.BuildFakeID(),
+				BelongsToUser:      userID2,
+				BelongsToHousehold: exampleHousehold.ID,
+			},
+			{
+				ID:                 fakes.BuildFakeID(),
+				BelongsToUser:      userID3,
+				BelongsToHousehold: exampleHousehold.ID,
+			},
+			{
+				ID:                 fakes.BuildFakeID(),
+				BelongsToUser:      userID4,
+				BelongsToHousehold: exampleHousehold.ID,
+			},
+		}
+
+		exampleMealPlan := fakes.BuildFakeMealPlan()
+		exampleMealPlan.BelongsToHousehold = exampleHousehold.ID
+		exampleMealPlan.Options = []*types.MealPlanOption{
+			{
+				ID:       optionA,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    0,
+						ByUser:                  userID1,
+					},
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    0,
+						ByUser:                  userID2,
+					},
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    1,
+						ByUser:                  userID3,
+					},
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    2,
+						ByUser:                  userID4,
+					},
+				},
+			},
+			{
+				ID:       optionB,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    0,
+						ByUser:                  userID3,
+					},
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    1,
+						ByUser:                  userID2,
+					},
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    1,
+						ByUser:                  userID4,
+					},
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    2,
+						ByUser:                  userID1,
+					},
+				},
+			},
+			{
+				ID:       optionC,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    0,
+						ByUser:                  userID4,
+					},
+
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    1,
+						ByUser:                  userID1,
+					},
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    2,
+						ByUser:                  userID2,
+					},
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    2,
+						ByUser:                  userID3,
+					},
+				},
+			},
+		}
+
+		c, db := buildTestClient(t)
+
+		getMealPlanArgs := []interface{}{
+			exampleMealPlan.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
+			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
+			WillReturnRows(buildMockRowsFromFullMealPlans(false, 0, exampleMealPlan))
+
+		getMealPlanOptionArgs := []interface{}{
+			exampleMealPlan.ID,
+			exampleMealPlan.Options[0].ID,
+			exampleMealPlan.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionQuery)).
+			WithArgs(interfaceToDriverValue(getMealPlanOptionArgs)...).
+			WillReturnRows(buildMockRowsFromMealPlanOptions(false, 0, exampleMealPlan.Options[0]))
+
+		getHouseholdArgs := []interface{}{
+			exampleHousehold.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
+			WithArgs(interfaceToDriverValue(getHouseholdArgs)...).
+			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
+
+		finalizeOptionsArgs := []interface{}{
+			exampleMealPlan.ID,
+			exampleMealPlan.Options[0].ID,
+			false,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(finalizeMealPlanOptionQuery)).
+			WithArgs(interfaceToDriverValue(finalizeOptionsArgs)...).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})
