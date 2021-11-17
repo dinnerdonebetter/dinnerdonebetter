@@ -11,13 +11,17 @@ import (
 
 // BuildFakeMealPlan builds a faked meal plan.
 func BuildFakeMealPlan() *types.MealPlan {
+	mealPlanID := ksuid.New().String()
+
 	var options []*types.MealPlanOption
 	for i := 0; i < exampleQuantity; i++ {
-		options = append(options, BuildFakeMealPlanOption())
+		option := BuildFakeMealPlanOption()
+		option.BelongsToMealPlan = mealPlanID
+		options = append(options, option)
 	}
 
 	return &types.MealPlan{
-		ID:                 ksuid.New().String(),
+		ID:                 mealPlanID,
 		Notes:              fake.LoremIpsumSentence(exampleQuantity),
 		Status:             types.AwaitingVotesMealPlanStatus,
 		VotingDeadline:     uint64(uint32(time.Now().Add(time.Minute).Unix())),

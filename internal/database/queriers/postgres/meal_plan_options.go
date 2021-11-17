@@ -477,3 +477,60 @@ func (q *SQLQuerier) decideOptionWinner(options []*types.MealPlanOption) (winner
 
 	return winner, false
 }
+
+// MealPlanOptionCanBeFinalized archives a meal plan option vote from the database by its ID.
+func (q *SQLQuerier) MealPlanOptionCanBeFinalized(ctx context.Context, mealPlanID, mealPlanOptionID string) (bool, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if mealPlanID == "" {
+		return false, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if mealPlanOptionID == "" {
+		return false, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
+	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+
+	// fetch meal plan
+	mealPlan, err := q.GetMealPlan(ctx, mealPlanID)
+	if err != nil {
+		return false, observability.PrepareError(err, logger, span, "fetching meal plan")
+	}
+
+	// fetch meal plan option
+	mealPlanOption, err := q.GetMealPlanOption(ctx, mealPlan.ID, mealPlanOptionID)
+	if err != nil {
+		return false, observability.PrepareError(err, logger, span, "fetching meal plan option")
+	}
+
+	// fetch household data
+	household, err := q.GetHouseholdByID(ctx, mealPlan.BelongsToHousehold)
+	if err != nil {
+		return false, observability.PrepareError(err, logger, span, "fetching household")
+	}
+
+	// go through all the votes for this meal plan option and determine if they're all there
+	for _, member := range household.Members {
+		for _, option := range byDayAndMeal(mealPlan.Options, mealPlanOption.Day, mealPlanOption.MealName) {
+			memberVoteFound := false
+			for _, vote := range option.Votes {
+				if vote.ByUser == member.BelongsToUser {
+					memberVoteFound = true
+					break
+				}
+			}
+
+			if !memberVoteFound {
+				return false, nil
+			}
+		}
+	}
+
+	return true, nil
+}

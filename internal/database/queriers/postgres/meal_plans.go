@@ -65,38 +65,57 @@ func (q *SQLQuerier) scanMealPlan(ctx context.Context, scan database.Scanner, in
 	return x, filteredCount, totalCount, nil
 }
 
-// scanMealPlanWithOptions takes a database Scanner (i.e. *sql.Row) and scans the result into a meal plan struct.
-func (q *SQLQuerier) scanMealPlanWithOptions(ctx context.Context, scan database.Scanner, includeCounts bool) (mealPlan *types.MealPlan, mealPlanOption *types.MealPlanOption, filteredCount, totalCount uint64, err error) {
+type scannedMealPlan struct {
+	mealPlan           *types.MealPlan
+	mealPlanOption     *types.MealPlanOption
+	mealPlanOptionVote *types.MealPlanOptionVote
+}
+
+// scanMealPlanWithOptionsAndVotes takes a database Scanner (i.e. *sql.Row) and scans the result into a meal plan struct.
+func (q *SQLQuerier) scanMealPlanWithOptionsAndVotes(ctx context.Context, scan database.Scanner, includeCounts bool) (result *scannedMealPlan, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.WithValue("include_counts", includeCounts)
 
-	mealPlan = &types.MealPlan{}
-	mealPlanOption = &types.MealPlanOption{}
+	result = &scannedMealPlan{
+		mealPlan:       &types.MealPlan{},
+		mealPlanOption: &types.MealPlanOption{},
+	}
+
+	nmpov := &nullableMealPlanOptionVote{}
 
 	targetVars := []interface{}{
-		&mealPlan.ID,
-		&mealPlan.Notes,
-		&mealPlan.Status,
-		&mealPlan.VotingDeadline,
-		&mealPlan.StartsAt,
-		&mealPlan.EndsAt,
-		&mealPlan.CreatedOn,
-		&mealPlan.LastUpdatedOn,
-		&mealPlan.ArchivedOn,
-		&mealPlan.BelongsToHousehold,
-		&mealPlanOption.ID,
-		&mealPlanOption.Day,
-		&mealPlanOption.MealName,
-		&mealPlanOption.Chosen,
-		&mealPlanOption.TieBroken,
-		&mealPlanOption.RecipeID,
-		&mealPlanOption.Notes,
-		&mealPlanOption.CreatedOn,
-		&mealPlanOption.LastUpdatedOn,
-		&mealPlanOption.ArchivedOn,
-		&mealPlanOption.BelongsToMealPlan,
+		&result.mealPlan.ID,
+		&result.mealPlan.Notes,
+		&result.mealPlan.Status,
+		&result.mealPlan.VotingDeadline,
+		&result.mealPlan.StartsAt,
+		&result.mealPlan.EndsAt,
+		&result.mealPlan.CreatedOn,
+		&result.mealPlan.LastUpdatedOn,
+		&result.mealPlan.ArchivedOn,
+		&result.mealPlan.BelongsToHousehold,
+		&result.mealPlanOption.ID,
+		&result.mealPlanOption.Day,
+		&result.mealPlanOption.MealName,
+		&result.mealPlanOption.Chosen,
+		&result.mealPlanOption.TieBroken,
+		&result.mealPlanOption.RecipeID,
+		&result.mealPlanOption.Notes,
+		&result.mealPlanOption.CreatedOn,
+		&result.mealPlanOption.LastUpdatedOn,
+		&result.mealPlanOption.ArchivedOn,
+		&result.mealPlanOption.BelongsToMealPlan,
+		&nmpov.ID,
+		&nmpov.Rank,
+		&nmpov.Abstain,
+		&nmpov.Notes,
+		&nmpov.ByUser,
+		&nmpov.CreatedOn,
+		&nmpov.LastUpdatedOn,
+		&nmpov.ArchivedOn,
+		&nmpov.BelongsToMealPlanOption,
 	}
 
 	if includeCounts {
@@ -104,10 +123,24 @@ func (q *SQLQuerier) scanMealPlanWithOptions(ctx context.Context, scan database.
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
-		return nil, nil, 0, 0, observability.PrepareError(err, logger, span, "")
+		return nil, 0, 0, observability.PrepareError(err, logger, span, "")
 	}
 
-	return mealPlan, mealPlanOption, filteredCount, totalCount, nil
+	if nmpov.ID != nil {
+		result.mealPlanOptionVote = &types.MealPlanOptionVote{
+			LastUpdatedOn:           nmpov.LastUpdatedOn,
+			ArchivedOn:              nmpov.ArchivedOn,
+			ID:                      *nmpov.ID,
+			Notes:                   *nmpov.Notes,
+			BelongsToMealPlanOption: *nmpov.BelongsToMealPlanOption,
+			ByUser:                  *nmpov.ByUser,
+			CreatedOn:               *nmpov.CreatedOn,
+			Rank:                    *nmpov.Rank,
+			Abstain:                 *nmpov.Abstain,
+		}
+	}
+
+	return result, filteredCount, totalCount, nil
 }
 
 // scanMealPlans takes some database rows and turns them into a slice of meal plans.
@@ -191,9 +224,19 @@ const getMealPlanQuery = `SELECT
     meal_plan_options.created_on,
     meal_plan_options.last_updated_on,
 	meal_plan_options.archived_on,
-    meal_plan_options.belongs_to_meal_plan
+    meal_plan_options.belongs_to_meal_plan,
+	meal_plan_option_votes.id,
+	meal_plan_option_votes.rank,
+	meal_plan_option_votes.abstain,
+	meal_plan_option_votes.notes,
+	meal_plan_option_votes.by_user,
+	meal_plan_option_votes.created_on,
+	meal_plan_option_votes.last_updated_on,
+	meal_plan_option_votes.archived_on,
+	meal_plan_option_votes.belongs_to_meal_plan_option
 FROM meal_plans 
 	FULL OUTER JOIN meal_plan_options ON meal_plan_options.belongs_to_meal_plan=meal_plans.id
+	FULL OUTER JOIN meal_plan_option_votes ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id
 WHERE meal_plans.archived_on IS NULL 
 AND meal_plans.id = $1
 `
@@ -221,19 +264,31 @@ func (q *SQLQuerier) GetMealPlan(ctx context.Context, mealPlanID string) (*types
 	}
 
 	var (
-		mealPlan *types.MealPlan
+		mealPlan           *types.MealPlan
+		currentOptionIndex = 0
 	)
 	for rows.Next() {
-		rowMealPlan, rowMealPlanOption, _, _, scanErr := q.scanMealPlanWithOptions(ctx, rows, false)
+		result, _, _, scanErr := q.scanMealPlanWithOptionsAndVotes(ctx, rows, false)
 		if scanErr != nil {
 			return nil, observability.PrepareError(scanErr, logger, span, "scanning mealPlan")
 		}
 
 		if mealPlan == nil {
-			mealPlan = rowMealPlan
+			mealPlan = result.mealPlan
 		}
 
-		mealPlan.Options = append(mealPlan.Options, rowMealPlanOption)
+		if len(mealPlan.Options) == 0 && currentOptionIndex == 0 {
+			mealPlan.Options = append(mealPlan.Options, result.mealPlanOption)
+		}
+
+		if mealPlan.Options[currentOptionIndex].ID != result.mealPlanOption.ID {
+			currentOptionIndex++
+			mealPlan.Options = append(mealPlan.Options, result.mealPlanOption)
+		}
+
+		if result.mealPlanOptionVote != nil {
+			mealPlan.Options[currentOptionIndex].Votes = append(mealPlan.Options[currentOptionIndex].Votes, result.mealPlanOptionVote)
+		}
 	}
 
 	return mealPlan, nil

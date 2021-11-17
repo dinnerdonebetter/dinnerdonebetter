@@ -255,7 +255,7 @@ func (q *SQLQuerier) GetHouseholdByID(ctx context.Context, householdID string) (
 		householdID,
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "household", getHouseholdQuery, args)
+	rows, err := q.performReadQuery(ctx, q.db, "household", getHouseholdByIDQuery, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "executing households list retrieval query")
 	}

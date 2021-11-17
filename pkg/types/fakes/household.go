@@ -9,8 +9,17 @@ import (
 
 // BuildFakeHousehold builds a faked household.
 func BuildFakeHousehold() *types.Household {
+	householdID := ksuid.New().String()
+
+	var memberships []*types.HouseholdUserMembership
+	for i := 0; i < exampleQuantity; i++ {
+		membership := BuildFakeHouseholdUserMembership()
+		membership.BelongsToHousehold = householdID
+		memberships = append(memberships, membership)
+	}
+
 	return &types.Household{
-		ID:                         ksuid.New().String(),
+		ID:                         householdID,
 		Name:                       fake.UUID(),
 		BillingStatus:              types.PaidHouseholdBillingStatus,
 		ContactEmail:               fake.Email(),
@@ -18,7 +27,7 @@ func BuildFakeHousehold() *types.Household {
 		PaymentProcessorCustomerID: fake.UUID(),
 		CreatedOn:                  uint64(uint32(fake.Date().Unix())),
 		BelongsToUser:              fake.UUID(),
-		Members:                    BuildFakeHouseholdUserMembershipList().HouseholdUserMemberships,
+		Members:                    memberships,
 	}
 }
 

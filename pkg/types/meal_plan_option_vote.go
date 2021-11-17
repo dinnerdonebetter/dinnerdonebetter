@@ -31,7 +31,7 @@ type (
 		BelongsToMealPlanOption string  `json:"belongsToMealPlanOption"`
 		ByUser                  string  `json:"byUser"`
 		CreatedOn               uint64  `json:"createdOn"`
-		Rank                    uint8   `json:"points"`
+		Rank                    uint8   `json:"rank"`
 		Abstain                 bool    `json:"abstain"`
 	}
 
@@ -49,7 +49,7 @@ type (
 		Notes                   string `json:"notes"`
 		ByUser                  string `json:"-"`
 		BelongsToMealPlanOption string `json:"-"`
-		Rank                    uint8  `json:"points"`
+		Rank                    uint8  `json:"rank"`
 		Abstain                 bool   `json:"abstain"`
 	}
 
@@ -60,7 +60,7 @@ type (
 		Notes                   string `json:"notes"`
 		ByUser                  string `json:"byUser"`
 		BelongsToMealPlanOption string `json:"belongsToMealPlanOption"`
-		Rank                    uint8  `json:"points"`
+		Rank                    uint8  `json:"rank"`
 		Abstain                 bool   `json:"abstain"`
 	}
 
@@ -69,7 +69,7 @@ type (
 		_                       struct{}
 		Notes                   string `json:"notes"`
 		BelongsToMealPlanOption string `json:"belongsToMealPlanOption"`
-		Rank                    uint8  `json:"points"`
+		Rank                    uint8  `json:"rank"`
 		Abstain                 bool   `json:"abstain"`
 	}
 

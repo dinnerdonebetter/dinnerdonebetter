@@ -1,6 +1,8 @@
 package fakes
 
 import (
+	"math"
+
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/segmentio/ksuid"
 
@@ -11,7 +13,7 @@ import (
 func BuildFakeMealPlanOptionVote() *types.MealPlanOptionVote {
 	return &types.MealPlanOptionVote{
 		ID:                      ksuid.New().String(),
-		Rank:                    fake.Uint8(),
+		Rank:                    uint8(fake.Number(1, math.MaxUint8)),
 		Abstain:                 fake.Bool(),
 		Notes:                   fake.LoremIpsumSentence(exampleQuantity),
 		CreatedOn:               uint64(uint32(fake.Date().Unix())),

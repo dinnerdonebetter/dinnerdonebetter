@@ -73,6 +73,15 @@ func buildMockRowsFromFullMealPlans(includeCounts bool, filteredCount uint64, me
 		"meal_plan_options.last_updated_on",
 		"meal_plan_options.archived_on",
 		"meal_plan_options.belongs_to_meal_plan",
+		"meal_plan_option_votes.id",
+		"meal_plan_option_votes.rank",
+		"meal_plan_option_votes.abstain",
+		"meal_plan_option_votes.notes",
+		"meal_plan_option_votes.by_user",
+		"meal_plan_option_votes.created_on",
+		"meal_plan_option_votes.last_updated_on",
+		"meal_plan_option_votes.archived_on",
+		"meal_plan_option_votes.belongs_to_meal_plan_option",
 	}
 
 	if includeCounts {
@@ -83,103 +92,46 @@ func buildMockRowsFromFullMealPlans(includeCounts bool, filteredCount uint64, me
 
 	for _, x := range mealPlans {
 		for _, opt := range x.Options {
-			rowValues := []driver.Value{
-				x.ID,
-				x.Notes,
-				x.Status,
-				x.VotingDeadline,
-				x.StartsAt,
-				x.EndsAt,
-				x.CreatedOn,
-				x.LastUpdatedOn,
-				x.ArchivedOn,
-				x.BelongsToHousehold,
-				opt.ID,
-				opt.Day,
-				opt.MealName,
-				opt.Chosen,
-				opt.TieBroken,
-				opt.RecipeID,
-				opt.Notes,
-				opt.CreatedOn,
-				opt.LastUpdatedOn,
-				opt.ArchivedOn,
-				opt.BelongsToMealPlan,
+			for _, vote := range opt.Votes {
+				rowValues := []driver.Value{
+					x.ID,
+					x.Notes,
+					x.Status,
+					x.VotingDeadline,
+					x.StartsAt,
+					x.EndsAt,
+					x.CreatedOn,
+					x.LastUpdatedOn,
+					x.ArchivedOn,
+					x.BelongsToHousehold,
+					opt.ID,
+					opt.Day,
+					opt.MealName,
+					opt.Chosen,
+					opt.TieBroken,
+					opt.RecipeID,
+					opt.Notes,
+					opt.CreatedOn,
+					opt.LastUpdatedOn,
+					opt.ArchivedOn,
+					opt.BelongsToMealPlan,
+					vote.ID,
+					vote.Rank,
+					vote.Abstain,
+					vote.Notes,
+					vote.ByUser,
+					vote.CreatedOn,
+					vote.LastUpdatedOn,
+					vote.ArchivedOn,
+					vote.BelongsToMealPlanOption,
+				}
+
+				if includeCounts {
+					rowValues = append(rowValues, filteredCount, len(mealPlans))
+				}
+
+				exampleRows.AddRow(rowValues...)
 			}
-
-			if includeCounts {
-				rowValues = append(rowValues, filteredCount, len(mealPlans))
-			}
-
-			exampleRows.AddRow(rowValues...)
-		}
-	}
-
-	return exampleRows
-}
-
-func buildErroneousMockRowsFromFullMealPlans(includeCounts bool, filteredCount uint64, mealPlans ...*types.MealPlan) *sqlmock.Rows {
-	columns := []string{
-		"meal_plans.id",
-		"meal_plans.notes",
-		"meal_plans.status",
-		"meal_plans.voting_deadline",
-		"meal_plans.starts_at",
-		"meal_plans.ends_at",
-		"meal_plans.created_on",
-		"meal_plans.last_updated_on",
-		"meal_plans.archived_on",
-		"meal_plans.belongs_to_household",
-		"meal_plan_options.id",
-		"meal_plan_options.day",
-		"meal_plan_options.meal_name",
-		"meal_plan_options.chosen",
-		"meal_plan_options.tiebroken",
-		"meal_plan_options.recipe_id",
-		"meal_plan_options.notes",
-		"meal_plan_options.created_on",
-		"meal_plan_options.last_updated_on",
-		"meal_plan_options.archived_on",
-		"meal_plan_options.belongs_to_meal_plan",
-	}
-
-	if includeCounts {
-		columns = append(columns, "filtered_count", "total_count")
-	}
-
-	exampleRows := sqlmock.NewRows(columns)
-
-	for _, x := range mealPlans {
-		for _, opt := range x.Options {
-			rowValues := []driver.Value{
-				x.ID,
-				x.Notes,
-				x.Status,
-				x.VotingDeadline,
-				x.StartsAt,
-				x.EndsAt,
-				x.CreatedOn,
-				x.LastUpdatedOn,
-				x.ArchivedOn,
-				x.BelongsToHousehold,
-				opt.TieBroken,
-				opt.ID,
-				opt.Day,
-				opt.MealName,
-				opt.Chosen,
-				opt.RecipeID,
-				opt.Notes,
-				opt.CreatedOn,
-				opt.LastUpdatedOn,
-				opt.ArchivedOn,
-				opt.BelongsToMealPlan,
-			}
-
-			if includeCounts {
-				rowValues = append(rowValues, filteredCount, len(mealPlans))
-			}
-
-			exampleRows.AddRow(rowValues...)
 		}
 	}
 
@@ -311,9 +263,6 @@ func TestQuerier_GetMealPlan(T *testing.T) {
 		t.Parallel()
 
 		exampleMealPlan := fakes.BuildFakeMealPlan()
-		for i := range exampleMealPlan.Options {
-			exampleMealPlan.Options[i].Votes = nil
-		}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -371,9 +320,6 @@ func TestQuerier_GetMealPlan(T *testing.T) {
 		t.Parallel()
 
 		exampleMealPlan := fakes.BuildFakeMealPlan()
-		for i := range exampleMealPlan.Options {
-			exampleMealPlan.Options[i].Votes = nil
-		}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -384,7 +330,7 @@ func TestQuerier_GetMealPlan(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRowsFromFullMealPlans(false, 0, exampleMealPlan))
+			WillReturnRows(buildErroneousMockRow())
 
 		actual, err := c.GetMealPlan(ctx, exampleMealPlan.ID)
 		assert.Error(t, err)
