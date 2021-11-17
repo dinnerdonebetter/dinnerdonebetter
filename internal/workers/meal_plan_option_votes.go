@@ -32,9 +32,18 @@ func (w *WritesWorker) createMealPlanOptionVote(ctx context.Context, msg *types.
 		}
 	}
 
-	// have all votes been received for an option? if so, finalize it and fire event
+	// have all votes been received for an option? if so, finalize it
+	finalized, err := w.dataManager.FinalizeMealPlanOption(ctx, msg.MealPlanID, mealPlanOptionVote.BelongsToMealPlanOption)
+	if err != nil {
+		return observability.PrepareError(err, logger, span, "finalizing meal plan option")
+	}
 
-	// have all options for the meal plan been selected? if so, finalize it and fire event
+	// fire event
+
+	// have all options for the meal plan been selected? if so, finalize the meal plan and fire event
+	if finalized {
+		logger.Debug("meal plan finalized")
+	}
 
 	return nil
 }
