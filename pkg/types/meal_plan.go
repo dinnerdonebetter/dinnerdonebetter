@@ -98,6 +98,7 @@ type (
 		CreateMealPlan(ctx context.Context, input *MealPlanDatabaseCreationInput) (*MealPlan, error)
 		UpdateMealPlan(ctx context.Context, updated *MealPlan) error
 		ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error
+		FinalizeMealPlan(ctx context.Context, mealPlanID string) (changed bool, err error)
 	}
 
 	// MealPlanDataService describes a structure capable of serving traffic related to meal plans.

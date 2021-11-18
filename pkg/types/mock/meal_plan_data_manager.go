@@ -60,3 +60,9 @@ func (m *MealPlanDataManager) UpdateMealPlan(ctx context.Context, updated *types
 func (m *MealPlanDataManager) ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error {
 	return m.Called(ctx, mealPlanID, householdID).Error(0)
 }
+
+// FinalizeMealPlan is a mock function.
+func (m *MealPlanDataManager) FinalizeMealPlan(ctx context.Context, mealPlanID string) (changed bool, err error) {
+	args := m.Called(ctx, mealPlanID)
+	return args.Bool(0), args.Error(1)
+}

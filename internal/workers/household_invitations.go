@@ -18,7 +18,7 @@ func (w *WritesWorker) createHouseholdInvitation(ctx context.Context, msg *types
 		return observability.PrepareError(err, logger, span, "creating user membership")
 	}
 
-	if w.postWritesPublisher != nil {
+	if w.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  msg.DataType,
 			MessageType:               "householdInvitationCreated",
@@ -26,7 +26,7 @@ func (w *WritesWorker) createHouseholdInvitation(ctx context.Context, msg *types
 			AttributableToUserID:      msg.AttributableToUserID,
 			AttributableToHouseholdID: msg.AttributableToHouseholdID,
 		}
-		if err = w.postWritesPublisher.Publish(ctx, dcm); err != nil {
+		if err = w.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			return observability.PrepareError(err, logger, span, "publishing data change message")
 		}
 	}

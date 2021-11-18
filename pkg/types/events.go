@@ -102,6 +102,7 @@ type (
 		MealPlanOption             *MealPlanOption             `json:"mealPlanOption,omitempty"`
 		MealPlanOptionID           string                      `json:"mealPlanOptionID"`
 		MealPlanOptionVote         *MealPlanOptionVote         `json:"mealPlanOptionVote,omitempty"`
+		MealPlanOptionVoteID       string                      `json:"mealPlanOptionVoteID"`
 		Webhook                    *Webhook                    `json:"webhook,omitempty"`
 		HouseholdInvitation        *HouseholdInvitation        `json:"householdInvitation,omitempty"`
 		UserMembership             *HouseholdUserMembership    `json:"userMembership,omitempty"`

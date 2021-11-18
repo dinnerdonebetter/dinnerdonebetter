@@ -80,6 +80,9 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 			assert.NoError(t, testClients.main.UpdateMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOptionVote))
 
 			n = <-notificationsChan
+			assert.Equal(t, n.DataType, types.MealPlanOptionDataType)
+
+			n = <-notificationsChan
 			assert.Equal(t, n.DataType, types.MealPlanOptionVoteDataType)
 
 			t.Log("fetching changed meal plan option vote")

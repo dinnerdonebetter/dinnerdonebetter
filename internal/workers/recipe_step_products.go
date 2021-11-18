@@ -18,7 +18,7 @@ func (w *WritesWorker) createRecipeStepProduct(ctx context.Context, msg *types.P
 		return observability.PrepareError(err, logger, span, "creating recipe step product")
 	}
 
-	if w.postWritesPublisher != nil {
+	if w.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  msg.DataType,
 			MessageType:               "recipeStepProductCreated",
@@ -27,7 +27,7 @@ func (w *WritesWorker) createRecipeStepProduct(ctx context.Context, msg *types.P
 			AttributableToHouseholdID: msg.AttributableToHouseholdID,
 		}
 
-		if err = w.postWritesPublisher.Publish(ctx, dcm); err != nil {
+		if err = w.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			return observability.PrepareError(err, logger, span, "publishing to post-writes topic")
 		}
 	}

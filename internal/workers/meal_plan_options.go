@@ -18,7 +18,7 @@ func (w *WritesWorker) createMealPlanOption(ctx context.Context, msg *types.PreW
 		return observability.PrepareError(err, logger, span, "creating meal plan option")
 	}
 
-	if w.postWritesPublisher != nil {
+	if w.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  msg.DataType,
 			MessageType:               "mealPlanOptionCreated",
@@ -27,7 +27,7 @@ func (w *WritesWorker) createMealPlanOption(ctx context.Context, msg *types.PreW
 			AttributableToHouseholdID: msg.AttributableToHouseholdID,
 		}
 
-		if err = w.postWritesPublisher.Publish(ctx, dcm); err != nil {
+		if err = w.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			return observability.PrepareError(err, logger, span, "publishing to post-writes topic")
 		}
 	}

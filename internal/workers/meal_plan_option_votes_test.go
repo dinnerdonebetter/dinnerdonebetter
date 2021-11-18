@@ -50,11 +50,13 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			return &mocksearch.IndexManager{}, nil
 		}
 
-		postArchivesPublisher := &mockpublishers.Publisher{}
-		postArchivesPublisher.On(
+		postWritesPublisher := &mockpublishers.Publisher{}
+		postWritesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(func(message *types.DataChangeMessage) bool {
+				return message.DataType == types.MealPlanOptionVoteDataType
+			}),
 		).Return(nil)
 
 		dbManager.MealPlanOptionDataManager.On(
@@ -64,12 +66,28 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			expectedMealPlanOptionVote.BelongsToMealPlanOption,
 		).Return(true, nil)
 
+		postWritesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher, mock.MatchedBy(func(message *types.DataChangeMessage) bool { return message.DataType == types.MealPlanOptionDataType }),
+		).Return(nil)
+
+		dbManager.MealPlanDataManager.On(
+			"FinalizeMealPlan",
+			testutils.ContextMatcher,
+			body.MealPlanID,
+		).Return(true, nil)
+
+		postWritesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher, mock.MatchedBy(func(message *types.DataChangeMessage) bool { return message.DataType == types.MealPlanDataType }),
+		).Return(nil)
+
 		worker, err := ProvideWritesWorker(
 			ctx,
 			logger,
 			client,
 			dbManager,
-			postArchivesPublisher,
+			postWritesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
 		)
@@ -78,10 +96,10 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 
 		assert.NoError(t, worker.createMealPlanOptionVote(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, postWritesPublisher)
 	})
 
-	T.Run("with error writing", func(t *testing.T) {
+	T.Run("with error writing vote", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -105,14 +123,14 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			return nil, nil
 		}
 
-		postArchivesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher := &mockpublishers.Publisher{}
 
 		worker, err := ProvideWritesWorker(
 			ctx,
 			logger,
 			client,
 			dbManager,
-			postArchivesPublisher,
+			dataChangesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
 		)
@@ -121,7 +139,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 
 		assert.Error(t, worker.createMealPlanOptionVote(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 
 	T.Run("with error publishing data change message", func(t *testing.T) {
@@ -150,11 +168,13 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			return &mocksearch.IndexManager{}, nil
 		}
 
-		postArchivesPublisher := &mockpublishers.Publisher{}
-		postArchivesPublisher.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(func(message *types.DataChangeMessage) bool {
+				return message.DataType == types.MealPlanOptionVoteDataType
+			}),
 		).Return(errors.New("blah"))
 
 		worker, err := ProvideWritesWorker(
@@ -162,7 +182,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			logger,
 			client,
 			dbManager,
-			postArchivesPublisher,
+			dataChangesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
 		)
@@ -171,7 +191,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 
 		assert.Error(t, worker.createMealPlanOptionVote(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 
 	T.Run("with error finalizing meal plan option", func(t *testing.T) {
@@ -201,11 +221,13 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			return &mocksearch.IndexManager{}, nil
 		}
 
-		postArchivesPublisher := &mockpublishers.Publisher{}
-		postArchivesPublisher.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(func(message *types.DataChangeMessage) bool {
+				return message.DataType == types.MealPlanOptionVoteDataType
+			}),
 		).Return(nil)
 
 		dbManager.MealPlanOptionDataManager.On(
@@ -220,7 +242,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			logger,
 			client,
 			dbManager,
-			postArchivesPublisher,
+			dataChangesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
 		)
@@ -229,7 +251,221 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 
 		assert.Error(t, worker.createMealPlanOptionVote(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+	})
+
+	T.Run("with error publishing message about meal plan option finalization", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		logger := logging.NewNoopLogger()
+		client := &http.Client{}
+
+		body := &types.PreWriteMessage{
+			DataType:           types.MealPlanOptionVoteDataType,
+			MealPlanID:         fakes.BuildFakeID(),
+			MealPlanOptionVote: fakes.BuildFakeMealPlanOptionVoteDatabaseCreationInput(),
+		}
+
+		expectedMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
+
+		dbManager := database.BuildMockDatabase()
+		dbManager.MealPlanOptionVoteDataManager.On(
+			"CreateMealPlanOptionVote",
+			testutils.ContextMatcher,
+			body.MealPlanOptionVote,
+		).Return(expectedMealPlanOptionVote, nil)
+
+		searchIndexLocation := search.IndexPath(t.Name())
+		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
+			return &mocksearch.IndexManager{}, nil
+		}
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(message *types.DataChangeMessage) bool {
+				return message.DataType == types.MealPlanOptionVoteDataType
+			}),
+		).Return(nil)
+
+		dbManager.MealPlanOptionDataManager.On(
+			"FinalizeMealPlanOption",
+			testutils.ContextMatcher,
+			body.MealPlanID,
+			expectedMealPlanOptionVote.BelongsToMealPlanOption,
+		).Return(true, nil)
+
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher, mock.MatchedBy(func(message *types.DataChangeMessage) bool { return message.DataType == types.MealPlanOptionDataType }),
+		).Return(errors.New("blah"))
+
+		worker, err := ProvideWritesWorker(
+			ctx,
+			logger,
+			client,
+			dbManager,
+			dataChangesPublisher,
+			searchIndexLocation,
+			searchIndexProvider,
+		)
+		require.NotNil(t, worker)
+		require.NoError(t, err)
+
+		assert.Error(t, worker.createMealPlanOptionVote(ctx, body))
+
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+	})
+
+	T.Run("with error finalizing meal plan", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		logger := logging.NewNoopLogger()
+		client := &http.Client{}
+
+		body := &types.PreWriteMessage{
+			DataType:           types.MealPlanOptionVoteDataType,
+			MealPlanID:         fakes.BuildFakeID(),
+			MealPlanOptionVote: fakes.BuildFakeMealPlanOptionVoteDatabaseCreationInput(),
+		}
+
+		expectedMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
+
+		dbManager := database.BuildMockDatabase()
+		dbManager.MealPlanOptionVoteDataManager.On(
+			"CreateMealPlanOptionVote",
+			testutils.ContextMatcher,
+			body.MealPlanOptionVote,
+		).Return(expectedMealPlanOptionVote, nil)
+
+		searchIndexLocation := search.IndexPath(t.Name())
+		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
+			return &mocksearch.IndexManager{}, nil
+		}
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(message *types.DataChangeMessage) bool {
+				return message.DataType == types.MealPlanOptionVoteDataType
+			}),
+		).Return(nil)
+
+		dbManager.MealPlanOptionDataManager.On(
+			"FinalizeMealPlanOption",
+			testutils.ContextMatcher,
+			body.MealPlanID,
+			expectedMealPlanOptionVote.BelongsToMealPlanOption,
+		).Return(true, nil)
+
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher, mock.MatchedBy(func(message *types.DataChangeMessage) bool { return message.DataType == types.MealPlanOptionDataType }),
+		).Return(nil)
+
+		dbManager.MealPlanDataManager.On(
+			"FinalizeMealPlan",
+			testutils.ContextMatcher,
+			body.MealPlanID,
+		).Return(false, errors.New("blah"))
+
+		worker, err := ProvideWritesWorker(
+			ctx,
+			logger,
+			client,
+			dbManager,
+			dataChangesPublisher,
+			searchIndexLocation,
+			searchIndexProvider,
+		)
+		require.NotNil(t, worker)
+		require.NoError(t, err)
+
+		assert.Error(t, worker.createMealPlanOptionVote(ctx, body))
+
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+	})
+
+	T.Run("with error publishing message about meal plan finalization", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		logger := logging.NewNoopLogger()
+		client := &http.Client{}
+
+		body := &types.PreWriteMessage{
+			DataType:           types.MealPlanOptionVoteDataType,
+			MealPlanID:         fakes.BuildFakeID(),
+			MealPlanOptionVote: fakes.BuildFakeMealPlanOptionVoteDatabaseCreationInput(),
+		}
+
+		expectedMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
+
+		dbManager := database.BuildMockDatabase()
+		dbManager.MealPlanOptionVoteDataManager.On(
+			"CreateMealPlanOptionVote",
+			testutils.ContextMatcher,
+			body.MealPlanOptionVote,
+		).Return(expectedMealPlanOptionVote, nil)
+
+		searchIndexLocation := search.IndexPath(t.Name())
+		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
+			return &mocksearch.IndexManager{}, nil
+		}
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(message *types.DataChangeMessage) bool {
+				return message.DataType == types.MealPlanOptionVoteDataType
+			}),
+		).Return(nil)
+
+		dbManager.MealPlanOptionDataManager.On(
+			"FinalizeMealPlanOption",
+			testutils.ContextMatcher,
+			body.MealPlanID,
+			expectedMealPlanOptionVote.BelongsToMealPlanOption,
+		).Return(true, nil)
+
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return message.DataType == types.MealPlanOptionDataType }),
+		).Return(nil)
+
+		dbManager.MealPlanDataManager.On(
+			"FinalizeMealPlan",
+			testutils.ContextMatcher,
+			body.MealPlanID,
+		).Return(true, nil)
+
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return message.DataType == types.MealPlanDataType }),
+		).Return(errors.New("blah"))
+
+		worker, err := ProvideWritesWorker(
+			ctx,
+			logger,
+			client,
+			dbManager,
+			dataChangesPublisher,
+			searchIndexLocation,
+			searchIndexProvider,
+		)
+		require.NotNil(t, worker)
+		require.NoError(t, err)
+
+		assert.Error(t, worker.createMealPlanOptionVote(ctx, body))
+
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
@@ -260,8 +496,8 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 			return &mocksearch.IndexManager{}, nil
 		}
 
-		postArchivesPublisher := &mockpublishers.Publisher{}
-		postArchivesPublisher.On(
+		postUpdatesPublisher := &mockpublishers.Publisher{}
+		postUpdatesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
@@ -272,7 +508,7 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 			logger,
 			client,
 			dbManager,
-			postArchivesPublisher,
+			postUpdatesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
 		)
@@ -281,7 +517,7 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 
 		assert.NoError(t, worker.updateMealPlanOptionVote(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, postUpdatesPublisher)
 	})
 
 	T.Run("with error updating meal plan option vote", func(t *testing.T) {
@@ -308,14 +544,14 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 			return nil, nil
 		}
 
-		postArchivesPublisher := &mockpublishers.Publisher{}
+		postUpdatesPublisher := &mockpublishers.Publisher{}
 
 		worker, err := ProvideUpdatesWorker(
 			ctx,
 			logger,
 			client,
 			dbManager,
-			postArchivesPublisher,
+			postUpdatesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
 		)
@@ -324,7 +560,7 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 
 		assert.Error(t, worker.updateMealPlanOptionVote(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, postUpdatesPublisher)
 	})
 
 	T.Run("with error publishing data change event", func(t *testing.T) {
@@ -351,8 +587,8 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 			return &mocksearch.IndexManager{}, nil
 		}
 
-		postArchivesPublisher := &mockpublishers.Publisher{}
-		postArchivesPublisher.On(
+		postUpdatesPublisher := &mockpublishers.Publisher{}
+		postUpdatesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
@@ -363,7 +599,7 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 			logger,
 			client,
 			dbManager,
-			postArchivesPublisher,
+			postUpdatesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
 		)
@@ -372,7 +608,7 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 
 		assert.Error(t, worker.updateMealPlanOptionVote(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, postUpdatesPublisher)
 	})
 }
 

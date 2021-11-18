@@ -20,7 +20,7 @@ type WritesWorker struct {
 	logger                                  logging.Logger
 	tracer                                  tracing.Tracer
 	encoder                                 encoding.ClientEncoder
-	postWritesPublisher                     publishers.Publisher
+	dataChangesPublisher                    publishers.Publisher
 	dataManager                             database.DataManager
 	validInstrumentsIndexManager            search.IndexManager
 	validIngredientsIndexManager            search.IndexManager
@@ -70,7 +70,7 @@ func ProvideWritesWorker(
 		logger:                                  logging.EnsureLogger(logger).WithName(name).WithValue("topic", name),
 		tracer:                                  tracing.NewTracer(name),
 		encoder:                                 encoding.ProvideClientEncoder(logger, encoding.ContentTypeJSON),
-		postWritesPublisher:                     postWritesPublisher,
+		dataChangesPublisher:                    postWritesPublisher,
 		dataManager:                             dataManager,
 		validInstrumentsIndexManager:            validInstrumentsIndexManager,
 		validIngredientsIndexManager:            validIngredientsIndexManager,

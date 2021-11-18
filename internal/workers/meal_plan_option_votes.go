@@ -18,31 +18,63 @@ func (w *WritesWorker) createMealPlanOptionVote(ctx context.Context, msg *types.
 		return observability.PrepareError(err, logger, span, "creating meal plan option vote")
 	}
 
-	if w.postWritesPublisher != nil {
+	if w.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  msg.DataType,
 			MessageType:               "mealPlanOptionVoteCreated",
+			MealPlanID:                msg.MealPlanID,
 			MealPlanOptionVote:        mealPlanOptionVote,
 			AttributableToUserID:      msg.AttributableToUserID,
 			AttributableToHouseholdID: msg.AttributableToHouseholdID,
 		}
 
-		if err = w.postWritesPublisher.Publish(ctx, dcm); err != nil {
-			return observability.PrepareError(err, logger, span, "publishing to post-writes topic")
+		if err = w.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			return observability.PrepareError(err, logger, span, "publishing data change message about meal plan option vote")
 		}
 	}
 
 	// have all votes been received for an option? if so, finalize it
-	finalized, err := w.dataManager.FinalizeMealPlanOption(ctx, msg.MealPlanID, mealPlanOptionVote.BelongsToMealPlanOption)
+	mealPlanOptionFinalized, err := w.dataManager.FinalizeMealPlanOption(ctx, msg.MealPlanID, mealPlanOptionVote.BelongsToMealPlanOption)
 	if err != nil {
 		return observability.PrepareError(err, logger, span, "finalizing meal plan option")
 	}
 
 	// fire event
+	dcm := &types.DataChangeMessage{
+		DataType:                  types.MealPlanOptionDataType,
+		MessageType:               "meal_plan_option_finalized",
+		MealPlanID:                msg.MealPlanID,
+		MealPlanOptionVoteID:      mealPlanOptionVote.ID,
+		AttributableToUserID:      msg.AttributableToUserID,
+		AttributableToHouseholdID: msg.AttributableToHouseholdID,
+	}
+	if err = w.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		return observability.PrepareError(err, logger, span, "publishing data change message about meal plan option finalization")
+	}
 
 	// have all options for the meal plan been selected? if so, finalize the meal plan and fire event
-	if finalized {
-		logger.Debug("meal plan finalized")
+	if mealPlanOptionFinalized {
+		logger.Debug("meal plan option finalized")
+		mealPlanFinalized, finalizationErr := w.dataManager.FinalizeMealPlan(ctx, msg.MealPlanID)
+		if finalizationErr != nil {
+			return observability.PrepareError(finalizationErr, logger, span, "finalizing meal plan option")
+		}
+
+		if mealPlanFinalized {
+			logger.Debug("meal plan finalized")
+			// fire event
+			dcm = &types.DataChangeMessage{
+				DataType:                  types.MealPlanDataType,
+				MessageType:               "meal_plan_finalized",
+				MealPlanID:                msg.MealPlanID,
+				MealPlanOptionID:          msg.MealPlanOptionID,
+				AttributableToUserID:      msg.AttributableToUserID,
+				AttributableToHouseholdID: msg.AttributableToHouseholdID,
+			}
+			if err = w.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+				return observability.PrepareError(err, logger, span, "publishing data change message about meal plan finalization")
+			}
+		}
 	}
 
 	return nil

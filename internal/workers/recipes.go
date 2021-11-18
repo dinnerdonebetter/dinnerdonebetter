@@ -22,7 +22,7 @@ func (w *WritesWorker) createRecipe(ctx context.Context, msg *types.PreWriteMess
 		return observability.PrepareError(err, logger, span, "indexing the recipe")
 	}
 
-	if w.postWritesPublisher != nil {
+	if w.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  msg.DataType,
 			MessageType:               "recipeCreated",
@@ -31,7 +31,7 @@ func (w *WritesWorker) createRecipe(ctx context.Context, msg *types.PreWriteMess
 			AttributableToHouseholdID: msg.AttributableToHouseholdID,
 		}
 
-		if err = w.postWritesPublisher.Publish(ctx, dcm); err != nil {
+		if err = w.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			return observability.PrepareError(err, logger, span, "publishing to post-writes topic")
 		}
 	}

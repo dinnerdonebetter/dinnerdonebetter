@@ -593,3 +593,56 @@ func (q *SQLQuerier) finalizeMealPlan(plan *types.MealPlan) []string {
 
 	return winners
 }
+
+const finalizeMealPlanQuery = `
+	UPDATE meal_plans SET status = $1 WHERE archived_on IS NULL AND id = $2
+`
+
+// FinalizeMealPlan finalizes a meal plan if all of its options have a selection.
+func (q *SQLQuerier) FinalizeMealPlan(ctx context.Context, mealPlanID string) (changed bool, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if mealPlanID == "" {
+		return false, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	// fetch meal plan
+	mealPlan, err := q.GetMealPlan(ctx, mealPlanID)
+	if err != nil {
+		return false, observability.PrepareError(err, logger, span, "fetching meal plan")
+	}
+
+	for _, day := range allDays {
+		for _, mealName := range allMealNames {
+			winnerChosen := false
+			options := byDayAndMeal(mealPlan.Options, day, mealName)
+			if len(options) > 0 {
+				for _, opt := range options {
+					if opt.Chosen {
+						winnerChosen = true
+					}
+				}
+
+				if !winnerChosen {
+					return false, nil
+				}
+			}
+		}
+	}
+
+	args := []interface{}{
+		types.FinalizedMealPlanStatus,
+		mealPlanID,
+	}
+
+	if err = q.performWriteQuery(ctx, q.db, "meal plan option finalization", finalizeMealPlanQuery, args); err != nil {
+		return false, observability.PrepareError(err, logger, span, "finalizing meal plan option")
+	}
+
+	return true, nil
+}

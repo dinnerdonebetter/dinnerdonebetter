@@ -22,7 +22,7 @@ func (w *WritesWorker) createValidIngredient(ctx context.Context, msg *types.Pre
 		return observability.PrepareError(err, logger, span, "indexing the valid ingredient")
 	}
 
-	if w.postWritesPublisher != nil {
+	if w.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  msg.DataType,
 			MessageType:               "validIngredientCreated",
@@ -31,7 +31,7 @@ func (w *WritesWorker) createValidIngredient(ctx context.Context, msg *types.Pre
 			AttributableToHouseholdID: msg.AttributableToHouseholdID,
 		}
 
-		if err = w.postWritesPublisher.Publish(ctx, dcm); err != nil {
+		if err = w.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			return observability.PrepareError(err, logger, span, "publishing to post-writes topic")
 		}
 	}

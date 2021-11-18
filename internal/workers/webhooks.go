@@ -18,7 +18,7 @@ func (w *WritesWorker) createWebhook(ctx context.Context, msg *types.PreWriteMes
 		return observability.PrepareError(err, logger, span, "creating webhook")
 	}
 
-	if w.postWritesPublisher != nil {
+	if w.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  msg.DataType,
 			MessageType:               "webhook_created",
@@ -27,7 +27,7 @@ func (w *WritesWorker) createWebhook(ctx context.Context, msg *types.PreWriteMes
 			AttributableToHouseholdID: msg.AttributableToHouseholdID,
 		}
 
-		if err = w.postWritesPublisher.Publish(ctx, dcm); err != nil {
+		if err = w.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			return observability.PrepareError(err, logger, span, "publishing data change message")
 		}
 	}
