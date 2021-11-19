@@ -173,6 +173,17 @@ func main() {
 
 	go preArchivesConsumer.Consume(nil, nil)
 
+	everySecond := time.Tick(time.Second)
+	choresWorker := workers.ProvideChoresWorker(logger, dataManager, postUpdatesPublisher)
+
+	go func() {
+		for range everySecond {
+			if handleErr := choresWorker.HandleMessage(ctx, []byte(`{"choreType":"finalize_meal_plans_with_expired_voting_periods"}`)); handleErr != nil {
+				logger.Error(err, "handling chore message")
+			}
+		}
+	}()
+
 	logger.Info("working...")
 
 	// wait for signal to exit

@@ -1,5 +1,10 @@
 package types
 
+const (
+	// FinalizeMealPlansWithExpiredVotingPeriodsChoreType asks the worker to finalize meal plans with expired voting periods.
+	FinalizeMealPlansWithExpiredVotingPeriodsChoreType choreType = "finalize_meal_plans_with_expired_voting_periods"
+)
+
 type (
 	dataType string
 
@@ -109,5 +114,14 @@ type (
 		Context                    map[string]string           `json:"context,omitempty"`
 		AttributableToUserID       string                      `json:"attributableToUserID"`
 		AttributableToHouseholdID  string                      `json:"attributableToHouseholdID"`
+	}
+
+	choreType string
+
+	// ChoreMessage represents an event that asks a worker to perform a chore.
+	ChoreMessage struct {
+		_ struct{}
+
+		ChoreType choreType `json:"choreType"`
 	}
 )

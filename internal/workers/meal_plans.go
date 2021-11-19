@@ -87,3 +87,14 @@ func (w *ArchivesWorker) archiveMealPlan(ctx context.Context, msg *types.PreArch
 
 	return nil
 }
+
+func (w *ChoresWorker) finalizeMealPlan(ctx context.Context, msg *types.ChoreMessage) error {
+	_, span := w.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := w.logger.WithValue("chore_type", msg.ChoreType)
+
+	logger.Debug("finalize meal plan chore invoked")
+
+	return nil
+}
