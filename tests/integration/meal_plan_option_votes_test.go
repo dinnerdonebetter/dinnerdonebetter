@@ -40,7 +40,7 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -64,7 +64,7 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 			t.Logf("meal plan option vote %q created", createdMealPlanOptionVoteID)
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.MealPlanOptionVoteDataType)
+			assert.Equal(t, types.MealPlanOptionVoteDataType, n.DataType)
 			require.NotNil(t, n.MealPlanOptionVote)
 			checkMealPlanOptionVoteEquality(t, exampleMealPlanOptionVote, n.MealPlanOptionVote)
 
@@ -80,10 +80,7 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 			assert.NoError(t, testClients.main.UpdateMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOptionVote))
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.MealPlanOptionDataType)
-
-			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.MealPlanOptionVoteDataType)
+			assert.Equal(t, types.MealPlanOptionVoteDataType, n.DataType)
 
 			t.Log("fetching changed meal plan option vote")
 			actual, err := testClients.main.GetMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVoteID)
@@ -180,7 +177,7 @@ func (s *TestSuite) TestMealPlanOptionVotes_Listing() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -204,7 +201,7 @@ func (s *TestSuite) TestMealPlanOptionVotes_Listing() {
 			t.Logf("meal plan option vote %q created", createdMealPlanOptionVoteID)
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.MealPlanOptionVoteDataType)
+			assert.Equal(t, types.MealPlanOptionVoteDataType, n.DataType)
 			require.NotNil(t, n.MealPlanOptionVote)
 			checkMealPlanOptionVoteEquality(t, exampleMealPlanOptionVote, n.MealPlanOptionVote)
 

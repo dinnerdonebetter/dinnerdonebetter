@@ -169,6 +169,7 @@ func TestMealPlansService_ReadHandler(T *testing.T) {
 			"GetMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleHousehold.ID,
 		).Return(helper.exampleMealPlan, nil)
 		helper.service.mealPlanDataManager = mealPlanDataManager
 
@@ -222,6 +223,7 @@ func TestMealPlansService_ReadHandler(T *testing.T) {
 			"GetMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleHousehold.ID,
 		).Return((*types.MealPlan)(nil), sql.ErrNoRows)
 		helper.service.mealPlanDataManager = mealPlanDataManager
 
@@ -250,6 +252,7 @@ func TestMealPlansService_ReadHandler(T *testing.T) {
 			"GetMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleHousehold.ID,
 		).Return((*types.MealPlan)(nil), errors.New("blah"))
 		helper.service.mealPlanDataManager = mealPlanDataManager
 
@@ -407,6 +410,7 @@ func TestMealPlansService_UpdateHandler(T *testing.T) {
 			"GetMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleHousehold.ID,
 		).Return(helper.exampleMealPlan, nil)
 		helper.service.mealPlanDataManager = mealPlanDataManager
 
@@ -490,6 +494,7 @@ func TestMealPlansService_UpdateHandler(T *testing.T) {
 			"GetMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleHousehold.ID,
 		).Return((*types.MealPlan)(nil), sql.ErrNoRows)
 		helper.service.mealPlanDataManager = mealPlanDataManager
 
@@ -519,6 +524,7 @@ func TestMealPlansService_UpdateHandler(T *testing.T) {
 			"GetMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleHousehold.ID,
 		).Return((*types.MealPlan)(nil), errors.New("blah"))
 		helper.service.mealPlanDataManager = mealPlanDataManager
 
@@ -548,6 +554,7 @@ func TestMealPlansService_UpdateHandler(T *testing.T) {
 			"GetMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleHousehold.ID,
 		).Return(helper.exampleMealPlan, nil)
 		helper.service.mealPlanDataManager = mealPlanDataManager
 
@@ -580,6 +587,7 @@ func TestMealPlansService_ArchiveHandler(T *testing.T) {
 			"MealPlanExists",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleHousehold.ID,
 		).Return(true, nil)
 		helper.service.mealPlanDataManager = mealPlanDataManager
 
@@ -632,6 +640,7 @@ func TestMealPlansService_ArchiveHandler(T *testing.T) {
 			"MealPlanExists",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleHousehold.ID,
 		).Return(false, nil)
 		helper.service.mealPlanDataManager = mealPlanDataManager
 
@@ -660,6 +669,7 @@ func TestMealPlansService_ArchiveHandler(T *testing.T) {
 			"MealPlanExists",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleHousehold.ID,
 		).Return(false, errors.New("blah"))
 		helper.service.mealPlanDataManager = mealPlanDataManager
 
@@ -680,6 +690,7 @@ func TestMealPlansService_ArchiveHandler(T *testing.T) {
 			"MealPlanExists",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
+			helper.exampleHousehold.ID,
 		).Return(true, nil)
 		helper.service.mealPlanDataManager = mealPlanDataManager
 

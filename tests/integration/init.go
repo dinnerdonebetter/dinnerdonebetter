@@ -33,6 +33,7 @@ const (
 var (
 	urlToUse       string
 	parsedURLToUse *url.URL
+	dbmanager      database.DataManager
 
 	premadeAdminUser = &types.User{
 		ID:              ksuid.New().String(),
@@ -67,10 +68,13 @@ func init() {
 		RunMigrations:     false,
 		MaxPingAttempts:   50,
 	}
-	dbmanager, err := postgres.ProvideDatabaseClient(ctx, logger, cfg)
+
+	dbm, err := postgres.ProvideDatabaseClient(ctx, logger, cfg)
 	if err != nil {
 		panic(err)
 	}
+
+	dbmanager = dbm
 
 	hasher := authentication.ProvideArgon2Authenticator(logger)
 	actuallyHashedPass, err := hasher.HashPassword(ctx, premadeAdminUser.HashedPassword)
@@ -78,13 +82,18 @@ func init() {
 		panic(err)
 	}
 
-	dbmanager.CreateUser(ctx, &types.UserDataStoreCreationInput{
-		ID:              premadeAdminUser.ID,
-		Username:        premadeAdminUser.Username,
-		EmailAddress:    premadeAdminUser.EmailAddress,
-		HashedPassword:  actuallyHashedPass,
-		TwoFactorSecret: premadeAdminUser.TwoFactorSecret,
-	})
+	if _, err = dbmanager.GetUserByUsername(ctx, premadeAdminUser.Username); err != nil {
+		_, creationErr := dbmanager.CreateUser(ctx, &types.UserDataStoreCreationInput{
+			ID:              premadeAdminUser.ID,
+			Username:        premadeAdminUser.Username,
+			EmailAddress:    premadeAdminUser.EmailAddress,
+			HashedPassword:  actuallyHashedPass,
+			TwoFactorSecret: premadeAdminUser.TwoFactorSecret,
+		})
+		if creationErr != nil {
+			panic(creationErr)
+		}
+	}
 
 	if err = dbmanager.MarkUserTwoFactorSecretAsVerified(ctx, premadeAdminUser.ID); err != nil && !errors.Is(err, sql.ErrNoRows) {
 		panic(err)

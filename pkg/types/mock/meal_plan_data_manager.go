@@ -16,14 +16,14 @@ type MealPlanDataManager struct {
 }
 
 // MealPlanExists is a mock function.
-func (m *MealPlanDataManager) MealPlanExists(ctx context.Context, mealPlanID string) (bool, error) {
-	args := m.Called(ctx, mealPlanID)
+func (m *MealPlanDataManager) MealPlanExists(ctx context.Context, mealPlanID, householdID string) (bool, error) {
+	args := m.Called(ctx, mealPlanID, householdID)
 	return args.Bool(0), args.Error(1)
 }
 
 // GetMealPlan is a mock function.
-func (m *MealPlanDataManager) GetMealPlan(ctx context.Context, mealPlanID string) (*types.MealPlan, error) {
-	args := m.Called(ctx, mealPlanID)
+func (m *MealPlanDataManager) GetMealPlan(ctx context.Context, mealPlanID, householdID string) (*types.MealPlan, error) {
+	args := m.Called(ctx, mealPlanID, householdID)
 	return args.Get(0).(*types.MealPlan), args.Error(1)
 }
 
@@ -62,7 +62,7 @@ func (m *MealPlanDataManager) ArchiveMealPlan(ctx context.Context, mealPlanID, h
 }
 
 // FinalizeMealPlan is a mock function.
-func (m *MealPlanDataManager) FinalizeMealPlan(ctx context.Context, mealPlanID string) (changed bool, err error) {
-	args := m.Called(ctx, mealPlanID)
+func (m *MealPlanDataManager) FinalizeMealPlan(ctx context.Context, mealPlanID, householdID string) (changed bool, err error) {
+	args := m.Called(ctx, mealPlanID, householdID)
 	return args.Bool(0), args.Error(1)
 }

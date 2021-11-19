@@ -40,7 +40,7 @@ func (s *TestSuite) TestMealPlanOptions_CompleteLifecycle() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -63,7 +63,7 @@ func (s *TestSuite) TestMealPlanOptions_CompleteLifecycle() {
 			assert.NoError(t, testClients.main.UpdateMealPlanOption(ctx, createdMealPlanOption))
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.MealPlanOptionDataType)
+			assert.Equal(t, types.MealPlanOptionDataType, n.DataType)
 
 			t.Log("fetching changed meal plan option")
 			actual, err := testClients.main.GetMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanOption.ID)
@@ -142,7 +142,7 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -165,7 +165,7 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 				t.Logf("meal plan option %q created", createdMealPlanOptionID)
 
 				n = <-notificationsChan
-				assert.Equal(t, n.DataType, types.MealPlanOptionDataType)
+				assert.Equal(t, types.MealPlanOptionDataType, n.DataType)
 				require.NotNil(t, n.MealPlanOption)
 				checkMealPlanOptionEquality(t, exampleMealPlanOption, n.MealPlanOption)
 

@@ -38,7 +38,7 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -63,7 +63,7 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 			t.Logf("recipe step product %q created", createdRecipeStepProductID)
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.RecipeStepProductDataType)
+			assert.Equal(t, types.RecipeStepProductDataType, n.DataType)
 			require.NotNil(t, n.RecipeStepProduct)
 			checkRecipeStepProductEquality(t, exampleRecipeStepProduct, n.RecipeStepProduct)
 
@@ -79,7 +79,7 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 			assert.NoError(t, testClients.main.UpdateRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepProduct))
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.RecipeStepProductDataType)
+			assert.Equal(t, types.RecipeStepProductDataType, n.DataType)
 
 			t.Log("fetching changed recipe step product")
 			actual, err := testClients.main.GetRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProductID)
@@ -180,7 +180,7 @@ func (s *TestSuite) TestRecipeStepProducts_Listing() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -207,7 +207,7 @@ func (s *TestSuite) TestRecipeStepProducts_Listing() {
 				t.Logf("recipe step product %q created", createdRecipeStepProductID)
 
 				n = <-notificationsChan
-				assert.Equal(t, n.DataType, types.RecipeStepProductDataType)
+				assert.Equal(t, types.RecipeStepProductDataType, n.DataType)
 				require.NotNil(t, n.RecipeStepProduct)
 				checkRecipeStepProductEquality(t, exampleRecipeStepProduct, n.RecipeStepProduct)
 

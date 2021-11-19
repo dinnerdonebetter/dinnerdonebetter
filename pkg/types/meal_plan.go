@@ -90,15 +90,15 @@ type (
 
 	// MealPlanDataManager describes a structure capable of storing meal plans permanently.
 	MealPlanDataManager interface {
-		MealPlanExists(ctx context.Context, mealPlanID string) (bool, error)
-		GetMealPlan(ctx context.Context, mealPlanID string) (*MealPlan, error)
+		MealPlanExists(ctx context.Context, mealPlanID, householdID string) (bool, error)
+		GetMealPlan(ctx context.Context, mealPlanID, householdID string) (*MealPlan, error)
 		GetTotalMealPlanCount(ctx context.Context) (uint64, error)
 		GetMealPlans(ctx context.Context, filter *QueryFilter) (*MealPlanList, error)
 		GetMealPlansWithIDs(ctx context.Context, householdID string, limit uint8, ids []string) ([]*MealPlan, error)
 		CreateMealPlan(ctx context.Context, input *MealPlanDatabaseCreationInput) (*MealPlan, error)
 		UpdateMealPlan(ctx context.Context, updated *MealPlan) error
 		ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error
-		FinalizeMealPlan(ctx context.Context, mealPlanID string) (changed bool, err error)
+		FinalizeMealPlan(ctx context.Context, mealPlanID, householdID string) (changed bool, err error)
 	}
 
 	// MealPlanDataService describes a structure capable of serving traffic related to meal plans.

@@ -115,7 +115,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	// fetch meal plan from database.
-	x, err := s.mealPlanDataManager.GetMealPlan(ctx, mealPlanID)
+	x, err := s.mealPlanDataManager.GetMealPlan(ctx, mealPlanID, sessionCtxData.ActiveHouseholdID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -208,7 +208,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	// fetch meal plan from database.
-	mealPlan, err := s.mealPlanDataManager.GetMealPlan(ctx, mealPlanID)
+	mealPlan, err := s.mealPlanDataManager.GetMealPlan(ctx, mealPlanID, sessionCtxData.ActiveHouseholdID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -261,7 +261,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
-	exists, existenceCheckErr := s.mealPlanDataManager.MealPlanExists(ctx, mealPlanID)
+	exists, existenceCheckErr := s.mealPlanDataManager.MealPlanExists(ctx, mealPlanID, sessionCtxData.ActiveHouseholdID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
 		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking meal plan existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)

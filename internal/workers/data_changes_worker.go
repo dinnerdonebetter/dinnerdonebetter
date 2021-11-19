@@ -40,7 +40,7 @@ func (w *DataChangesWorker) HandleMessage(ctx context.Context, message []byte) e
 	}
 
 	tracing.AttachUserIDToSpan(span, msg.AttributableToUserID)
-	w.logger.WithValue("message", message).Info("message received")
+	w.logger.WithValue("message", msg).Info("message received")
 
 	return nil
 }

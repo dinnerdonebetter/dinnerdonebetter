@@ -49,7 +49,7 @@ func createRecipeWithNotificationChannel(ctx context.Context, t *testing.T, noti
 	t.Logf("valid preparation %q created", createdValidPreparationID)
 
 	n = <-notificationsChan
-	assert.Equal(t, n.DataType, types.ValidPreparationDataType)
+	assert.Equal(t, types.ValidPreparationDataType, n.DataType)
 	require.NotNil(t, n.ValidPreparation)
 	checkValidPreparationEquality(t, exampleValidPreparation, n.ValidPreparation)
 
@@ -70,7 +70,7 @@ func createRecipeWithNotificationChannel(ctx context.Context, t *testing.T, noti
 			require.NoError(t, err)
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.ValidIngredientDataType)
+			assert.Equal(t, types.ValidIngredientDataType, n.DataType)
 			require.NotNil(t, n.ValidIngredient)
 			checkValidIngredientEquality(t, exampleValidIngredient, n.ValidIngredient)
 
@@ -95,7 +95,7 @@ func createRecipeWithNotificationChannel(ctx context.Context, t *testing.T, noti
 	t.Logf("recipe %q created", createdRecipeID)
 
 	n = <-notificationsChan
-	assert.Equal(t, n.DataType, types.RecipeDataType)
+	assert.Equal(t, types.RecipeDataType, n.DataType)
 	require.NotNil(t, n.Recipe)
 	checkRecipeEquality(t, exampleRecipe, n.Recipe)
 
@@ -185,7 +185,7 @@ func (s *TestSuite) TestRecipes_CompleteLifecycle() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -199,7 +199,7 @@ func (s *TestSuite) TestRecipes_CompleteLifecycle() {
 			assert.NoError(t, testClients.main.UpdateRecipe(ctx, createdRecipe))
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.RecipeDataType)
+			assert.Equal(t, types.RecipeDataType, n.DataType)
 
 			t.Log("fetching changed recipe")
 			actual, err := testClients.main.GetRecipe(ctx, createdRecipe.ID)
@@ -259,7 +259,7 @@ func (s *TestSuite) TestRecipes_Listing() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -273,7 +273,7 @@ func (s *TestSuite) TestRecipes_Listing() {
 			t.Logf("valid ingredient %q created", createdValidIngredientID)
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.ValidIngredientDataType)
+			assert.Equal(t, types.ValidIngredientDataType, n.DataType)
 			require.NotNil(t, n.ValidIngredient)
 			checkValidIngredientEquality(t, exampleValidIngredient, n.ValidIngredient)
 
@@ -289,7 +289,7 @@ func (s *TestSuite) TestRecipes_Listing() {
 			t.Logf("valid preparation %q created", createdValidPreparationID)
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.ValidPreparationDataType)
+			assert.Equal(t, types.ValidPreparationDataType, n.DataType)
 			require.NotNil(t, n.ValidPreparation)
 			checkValidPreparationEquality(t, exampleValidPreparation, n.ValidPreparation)
 

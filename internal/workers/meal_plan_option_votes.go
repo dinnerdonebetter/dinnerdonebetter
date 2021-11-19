@@ -34,28 +34,28 @@ func (w *WritesWorker) createMealPlanOptionVote(ctx context.Context, msg *types.
 	}
 
 	// have all votes been received for an option? if so, finalize it
-	mealPlanOptionFinalized, err := w.dataManager.FinalizeMealPlanOption(ctx, msg.MealPlanID, mealPlanOptionVote.BelongsToMealPlanOption)
+	mealPlanOptionFinalized, err := w.dataManager.FinalizeMealPlanOption(ctx, msg.MealPlanID, mealPlanOptionVote.BelongsToMealPlanOption, msg.AttributableToHouseholdID)
 	if err != nil {
 		return observability.PrepareError(err, logger, span, "finalizing meal plan option")
-	}
-
-	// fire event
-	dcm := &types.DataChangeMessage{
-		DataType:                  types.MealPlanOptionDataType,
-		MessageType:               "meal_plan_option_finalized",
-		MealPlanID:                msg.MealPlanID,
-		MealPlanOptionVoteID:      mealPlanOptionVote.ID,
-		AttributableToUserID:      msg.AttributableToUserID,
-		AttributableToHouseholdID: msg.AttributableToHouseholdID,
-	}
-	if err = w.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		return observability.PrepareError(err, logger, span, "publishing data change message about meal plan option finalization")
 	}
 
 	// have all options for the meal plan been selected? if so, finalize the meal plan and fire event
 	if mealPlanOptionFinalized {
 		logger.Debug("meal plan option finalized")
-		mealPlanFinalized, finalizationErr := w.dataManager.FinalizeMealPlan(ctx, msg.MealPlanID)
+		// fire event
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.MealPlanOptionDataType,
+			MessageType:               "meal_plan_option_finalized",
+			MealPlanID:                msg.MealPlanID,
+			MealPlanOptionVoteID:      mealPlanOptionVote.ID,
+			AttributableToUserID:      msg.AttributableToUserID,
+			AttributableToHouseholdID: msg.AttributableToHouseholdID,
+		}
+		if err = w.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			return observability.PrepareError(err, logger, span, "publishing data change message about meal plan option finalization")
+		}
+
+		mealPlanFinalized, finalizationErr := w.dataManager.FinalizeMealPlan(ctx, msg.MealPlanID, msg.AttributableToHouseholdID)
 		if finalizationErr != nil {
 			return observability.PrepareError(finalizationErr, logger, span, "finalizing meal plan option")
 		}

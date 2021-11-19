@@ -64,6 +64,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			testutils.ContextMatcher,
 			body.MealPlanID,
 			expectedMealPlanOptionVote.BelongsToMealPlanOption,
+			body.AttributableToHouseholdID,
 		).Return(true, nil)
 
 		postWritesPublisher.On(
@@ -75,6 +76,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			"FinalizeMealPlan",
 			testutils.ContextMatcher,
 			body.MealPlanID,
+			body.AttributableToHouseholdID,
 		).Return(true, nil)
 
 		postWritesPublisher.On(
@@ -235,6 +237,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			testutils.ContextMatcher,
 			body.MealPlanID,
 			expectedMealPlanOptionVote.BelongsToMealPlanOption,
+			body.AttributableToHouseholdID,
 		).Return(false, errors.New("blah"))
 
 		worker, err := ProvideWritesWorker(
@@ -295,6 +298,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			testutils.ContextMatcher,
 			body.MealPlanID,
 			expectedMealPlanOptionVote.BelongsToMealPlanOption,
+			body.AttributableToHouseholdID,
 		).Return(true, nil)
 
 		dataChangesPublisher.On(
@@ -360,6 +364,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			testutils.ContextMatcher,
 			body.MealPlanID,
 			expectedMealPlanOptionVote.BelongsToMealPlanOption,
+			body.AttributableToHouseholdID,
 		).Return(true, nil)
 
 		dataChangesPublisher.On(
@@ -371,6 +376,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			"FinalizeMealPlan",
 			testutils.ContextMatcher,
 			body.MealPlanID,
+			body.AttributableToHouseholdID,
 		).Return(false, errors.New("blah"))
 
 		worker, err := ProvideWritesWorker(
@@ -431,6 +437,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			testutils.ContextMatcher,
 			body.MealPlanID,
 			expectedMealPlanOptionVote.BelongsToMealPlanOption,
+			body.AttributableToHouseholdID,
 		).Return(true, nil)
 
 		dataChangesPublisher.On(
@@ -443,6 +450,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			"FinalizeMealPlan",
 			testutils.ContextMatcher,
 			body.MealPlanID,
+			body.AttributableToHouseholdID,
 		).Return(true, nil)
 
 		dataChangesPublisher.On(

@@ -40,7 +40,7 @@ func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -54,7 +54,7 @@ func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
 			t.Logf("valid preparation %q created", createdValidPreparationID)
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.ValidPreparationDataType)
+			assert.Equal(t, types.ValidPreparationDataType, n.DataType)
 			require.NotNil(t, n.ValidPreparation)
 			checkValidPreparationEquality(t, exampleValidPreparation, n.ValidPreparation)
 
@@ -69,7 +69,7 @@ func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
 			require.NoError(t, err)
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.ValidIngredientDataType)
+			assert.Equal(t, types.ValidIngredientDataType, n.DataType)
 			require.NotNil(t, n.ValidIngredient)
 			checkValidIngredientEquality(t, exampleValidIngredient, n.ValidIngredient)
 
@@ -88,7 +88,7 @@ func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
 			t.Logf("valid ingredient preparation %q created", createdValidIngredientPreparationID)
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.ValidIngredientPreparationDataType)
+			assert.Equal(t, types.ValidIngredientPreparationDataType, n.DataType)
 			require.NotNil(t, n.ValidIngredientPreparation)
 			checkValidIngredientPreparationEquality(t, exampleValidIngredientPreparation, n.ValidIngredientPreparation)
 
@@ -105,7 +105,7 @@ func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
 			assert.NoError(t, testClients.main.UpdateValidIngredientPreparation(ctx, createdValidIngredientPreparation))
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.ValidIngredientPreparationDataType)
+			assert.Equal(t, types.ValidIngredientPreparationDataType, n.DataType)
 
 			t.Log("fetching changed valid ingredient preparation")
 			actual, err := testClients.main.GetValidIngredientPreparation(ctx, createdValidIngredientPreparationID)
@@ -220,7 +220,7 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -237,7 +237,7 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing() {
 				t.Logf("valid preparation %q created", createdValidPreparationID)
 
 				n = <-notificationsChan
-				assert.Equal(t, n.DataType, types.ValidPreparationDataType)
+				assert.Equal(t, types.ValidPreparationDataType, n.DataType)
 				require.NotNil(t, n.ValidPreparation)
 				checkValidPreparationEquality(t, exampleValidPreparation, n.ValidPreparation)
 
@@ -252,7 +252,7 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing() {
 				require.NoError(t, err)
 
 				n = <-notificationsChan
-				assert.Equal(t, n.DataType, types.ValidIngredientDataType)
+				assert.Equal(t, types.ValidIngredientDataType, n.DataType)
 				require.NotNil(t, n.ValidIngredient)
 				checkValidIngredientEquality(t, exampleValidIngredient, n.ValidIngredient)
 
@@ -269,7 +269,7 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing() {
 				require.NoError(t, createdValidIngredientPreparationErr)
 
 				n = <-notificationsChan
-				assert.Equal(t, n.DataType, types.ValidIngredientPreparationDataType)
+				assert.Equal(t, types.ValidIngredientPreparationDataType, n.DataType)
 				require.NotNil(t, n.ValidIngredientPreparation)
 				checkValidIngredientPreparationEquality(t, exampleValidIngredientPreparation, n.ValidIngredientPreparation)
 

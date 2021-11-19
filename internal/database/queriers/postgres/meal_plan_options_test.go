@@ -1125,6 +1125,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 
 		getMealPlanArgs := []interface{}{
 			exampleMealPlan.ID,
+			exampleHousehold.ID,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
@@ -1159,7 +1160,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 			WithArgs(interfaceToDriverValue(finalizeOptionsArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID)
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID)
 		assert.True(t, actual)
 		assert.NoError(t, err)
 	})
@@ -1252,6 +1253,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 
 		getMealPlanArgs := []interface{}{
 			exampleMealPlan.ID,
+			exampleHousehold.ID,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
@@ -1276,7 +1278,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getHouseholdArgs)...).
 			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
 
-		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID)
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID)
 		assert.False(t, actual)
 		assert.NoError(t, err)
 	})
@@ -1285,11 +1287,12 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleMealPlanOptionID := fakes.BuildFakeID()
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.FinalizeMealPlanOption(ctx, "", exampleMealPlanOptionID)
+		actual, err := c.FinalizeMealPlanOption(ctx, "", exampleMealPlanOptionID, exampleHouseholdID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})
@@ -1298,11 +1301,12 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
+		exampleHouseholdID := fakes.BuildFakeID()
 		exampleMealPlanID := fakes.BuildFakeID()
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlanID, "")
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlanID, "", exampleHouseholdID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})
@@ -1311,19 +1315,21 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
+		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 
 		c, db := buildTestClient(t)
 
 		getMealPlanArgs := []interface{}{
 			exampleMealPlan.ID,
+			exampleHousehold.ID,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
 			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID)
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})
@@ -1332,12 +1338,14 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
+		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 
 		c, db := buildTestClient(t)
 
 		getMealPlanArgs := []interface{}{
 			exampleMealPlan.ID,
+			exampleHousehold.ID,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
@@ -1354,7 +1362,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getMealPlanOptionArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID)
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})
@@ -1370,6 +1378,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 
 		getMealPlanArgs := []interface{}{
 			exampleMealPlan.ID,
+			exampleHousehold.ID,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
@@ -1394,7 +1403,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getHouseholdArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID)
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})
@@ -1518,6 +1527,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 
 		getMealPlanArgs := []interface{}{
 			exampleMealPlan.ID,
+			exampleHousehold.ID,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
@@ -1552,7 +1562,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 			WithArgs(interfaceToDriverValue(finalizeOptionsArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID)
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})

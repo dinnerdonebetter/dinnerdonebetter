@@ -86,25 +86,6 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 	})
 
-	T.Run("with invalid input attached", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := &types.MealPlanOptionVoteCreationRequestInput{}
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		helper.service.CreateHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-	})
-
 	T.Run("with error retrieving session context data", func(t *testing.T) {
 		t.Parallel()
 

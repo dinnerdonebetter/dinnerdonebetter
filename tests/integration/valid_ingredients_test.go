@@ -71,7 +71,7 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -85,7 +85,7 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 			t.Logf("valid ingredient %q created", createdValidIngredientID)
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.ValidIngredientDataType)
+			assert.Equal(t, types.ValidIngredientDataType, n.DataType)
 			require.NotNil(t, n.ValidIngredient)
 			checkValidIngredientEquality(t, exampleValidIngredient, n.ValidIngredient)
 
@@ -99,7 +99,7 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 			assert.NoError(t, testClients.admin.UpdateValidIngredient(ctx, createdValidIngredient))
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.ValidIngredientDataType)
+			assert.Equal(t, types.ValidIngredientDataType, n.DataType)
 
 			t.Log("fetching changed valid ingredient")
 			actual, err := testClients.admin.GetValidIngredient(ctx, createdValidIngredientID)
@@ -173,7 +173,7 @@ func (s *TestSuite) TestValidIngredients_Listing() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -189,7 +189,7 @@ func (s *TestSuite) TestValidIngredients_Listing() {
 				t.Logf("valid ingredient %q created", createdValidIngredientID)
 
 				n = <-notificationsChan
-				assert.Equal(t, n.DataType, types.ValidIngredientDataType)
+				assert.Equal(t, types.ValidIngredientDataType, n.DataType)
 				require.NotNil(t, n.ValidIngredient)
 				checkValidIngredientEquality(t, exampleValidIngredient, n.ValidIngredient)
 
@@ -272,7 +272,7 @@ func (s *TestSuite) TestValidIngredients_Searching() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -291,7 +291,7 @@ func (s *TestSuite) TestValidIngredients_Searching() {
 				t.Logf("valid ingredient %q created", createdValidIngredientID)
 
 				n = <-notificationsChan
-				assert.Equal(t, n.DataType, types.ValidIngredientDataType)
+				assert.Equal(t, types.ValidIngredientDataType, n.DataType)
 				require.NotNil(t, n.ValidIngredient)
 				checkValidIngredientEquality(t, exampleValidIngredient, n.ValidIngredient)
 

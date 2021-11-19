@@ -7,8 +7,8 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-// SubscribeToDataChangeNotifications subscribes to a websocket to receive DataChangeMessages.
-func (c *Client) SubscribeToDataChangeNotifications(ctx context.Context, stopChan <-chan bool) (chan *types.DataChangeMessage, error) {
+// SubscribeToNotifications subscribes to a websocket to receive DataChangeMessages.
+func (c *Client) SubscribeToNotifications(ctx context.Context, stopChan <-chan bool) (chan *types.DataChangeMessage, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 

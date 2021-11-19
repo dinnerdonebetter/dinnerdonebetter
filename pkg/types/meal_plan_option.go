@@ -104,7 +104,7 @@ type (
 		CreateMealPlanOption(ctx context.Context, input *MealPlanOptionDatabaseCreationInput) (*MealPlanOption, error)
 		UpdateMealPlanOption(ctx context.Context, updated *MealPlanOption) error
 		ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) error
-		FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) (changed bool, err error)
+		FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID, householdID string) (changed bool, err error)
 	}
 
 	// MealPlanOptionDataService describes a structure capable of serving traffic related to meal plan options.
@@ -139,10 +139,17 @@ func (x *MealPlanOptionCreationRequestInput) ValidateWithContext(ctx context.Con
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		// if we try to validate Day here, it can fail because 0 is a valid day, but not by the validator's standards.
 		validation.Field(&x.MealName, validation.Required),
 		validation.Field(&x.RecipeID, validation.Required),
-		validation.Field(&x.Notes, validation.Required),
+		validation.Field(&x.Day, validation.In(
+			time.Monday,
+			time.Tuesday,
+			time.Wednesday,
+			time.Thursday,
+			time.Friday,
+			time.Saturday,
+			time.Sunday,
+		)),
 	)
 }
 
@@ -154,11 +161,18 @@ func (x *MealPlanOptionDatabaseCreationInput) ValidateWithContext(ctx context.Co
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
-		// if we try to validate Day here, it can fail because 0 is a valid day, but not by the validator's standards.
 		validation.Field(&x.BelongsToMealPlan, validation.Required),
 		validation.Field(&x.MealName, validation.Required),
 		validation.Field(&x.RecipeID, validation.Required),
-		validation.Field(&x.Notes, validation.Required),
+		validation.Field(&x.Day, validation.In(
+			time.Monday,
+			time.Tuesday,
+			time.Wednesday,
+			time.Thursday,
+			time.Friday,
+			time.Saturday,
+			time.Sunday,
+		)),
 	)
 }
 
@@ -182,11 +196,19 @@ func (x *MealPlanOptionUpdateRequestInput) ValidateWithContext(ctx context.Conte
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		// if we try to validate Day here, it can fail because 0 is a valid day, but not by the validator's standards.
 		validation.Field(&x.RecipeID, validation.Required),
 		validation.Field(&x.BelongsToMealPlan, validation.Required),
 		validation.Field(&x.MealName, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
 		validation.Field(&x.BelongsToMealPlan, validation.Required),
+		validation.Field(&x.Day, validation.In(
+			time.Monday,
+			time.Tuesday,
+			time.Wednesday,
+			time.Thursday,
+			time.Friday,
+			time.Saturday,
+			time.Sunday,
+		)),
 	)
 }

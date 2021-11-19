@@ -483,7 +483,7 @@ const finalizeMealPlanOptionQuery = `
 `
 
 // FinalizeMealPlanOption archives a meal plan option vote from the database by its ID.
-func (q *SQLQuerier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) (changed bool, err error) {
+func (q *SQLQuerier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID, householdID string) (changed bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -501,8 +501,14 @@ func (q *SQLQuerier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mea
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
+	if householdID == "" {
+		return false, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
+
 	// fetch meal plan
-	mealPlan, err := q.GetMealPlan(ctx, mealPlanID)
+	mealPlan, err := q.GetMealPlan(ctx, mealPlanID, householdID)
 	if err != nil {
 		return false, observability.PrepareError(err, logger, span, "fetching meal plan")
 	}
@@ -519,20 +525,27 @@ func (q *SQLQuerier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mea
 		return false, observability.PrepareError(err, logger, span, "fetching household")
 	}
 
+	logger = logger.WithValue("total_option_count", len(mealPlan.Options))
 	relevantOptions := byDayAndMeal(mealPlan.Options, mealPlanOption.Day, mealPlanOption.MealName)
+	logger = logger.WithValue("relevant_option_count", len(relevantOptions))
 
 	// go through all the votes for this meal plan option and determine if they're all there
 	for _, member := range household.Members {
+		logger.WithValue("member.id", member.BelongsToUser).Debug("checking for votes for household member")
 		for _, option := range relevantOptions {
 			memberVoteFound := false
+			logger.WithValue("member.id", member.BelongsToUser).WithValue("vote_count", len(option.Votes)).Debug("checking to see if user has voted for this option")
 			for _, vote := range option.Votes {
 				if vote.ByUser == member.BelongsToUser {
+					logger.WithValue("vote.id", vote.ID).WithValue("member.id", member.BelongsToUser).Debug("vote found for household member")
 					memberVoteFound = true
 					break
 				}
+				logger.WithValue("vote.id", vote.ID).WithValue("member.id", member.BelongsToUser).Debug("vote did not belong to user")
 			}
 
 			if !memberVoteFound {
+				logger.WithValue("member.id", member.BelongsToUser).Debug("member has not submitted enough votes")
 				return false, nil
 			}
 		}
@@ -549,6 +562,8 @@ func (q *SQLQuerier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mea
 	if err = q.performWriteQuery(ctx, q.db, "meal plan option finalization", finalizeMealPlanOptionQuery, args); err != nil {
 		return false, observability.PrepareError(err, logger, span, "finalizing meal plan option")
 	}
+
+	logger.Debug("finalized meal plan option")
 
 	return true, nil
 }
