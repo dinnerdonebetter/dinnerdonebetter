@@ -88,7 +88,7 @@ func (w *ArchivesWorker) archiveMealPlan(ctx context.Context, msg *types.PreArch
 	return nil
 }
 
-func (w *ChoresWorker) finalizeMealPlan(ctx context.Context, msg *types.ChoreMessage) error {
+func (w *ChoresWorker) finalizeMealPlans(ctx context.Context, msg *types.ChoreMessage) error {
 	_, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
