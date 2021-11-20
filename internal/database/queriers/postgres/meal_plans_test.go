@@ -1398,7 +1398,7 @@ func TestQuerier_FinalizeMealPlan(T *testing.T) {
 			WithArgs(interfaceToDriverValue(finalizeOptionsArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		actual, err := c.FinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID, true)
+		actual, err := c.AttemptToFinalizeCompleteMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
 		assert.True(t, actual)
 		assert.NoError(t, err)
 
@@ -1413,7 +1413,7 @@ func TestQuerier_FinalizeMealPlan(T *testing.T) {
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.FinalizeMealPlan(ctx, "", exampleHousehold.ID, true)
+		actual, err := c.AttemptToFinalizeCompleteMealPlan(ctx, "", exampleHousehold.ID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})
@@ -1426,7 +1426,7 @@ func TestQuerier_FinalizeMealPlan(T *testing.T) {
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.FinalizeMealPlan(ctx, exampleMealPlan.ID, "", true)
+		actual, err := c.AttemptToFinalizeCompleteMealPlan(ctx, exampleMealPlan.ID, "")
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})
@@ -1557,7 +1557,7 @@ func TestQuerier_FinalizeMealPlan(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
 			WillReturnRows(buildMockRowsFromFullMealPlans(false, 0, exampleMealPlan))
 
-		actual, err := c.FinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID, true)
+		actual, err := c.AttemptToFinalizeCompleteMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
 		assert.False(t, actual)
 		assert.NoError(t, err)
 
@@ -1691,7 +1691,7 @@ func TestQuerier_FinalizeMealPlan(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.FinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID, true)
+		actual, err := c.AttemptToFinalizeCompleteMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 
@@ -1834,7 +1834,7 @@ func TestQuerier_FinalizeMealPlan(T *testing.T) {
 			WithArgs(interfaceToDriverValue(finalizeOptionsArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.FinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID, true)
+		actual, err := c.AttemptToFinalizeCompleteMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 

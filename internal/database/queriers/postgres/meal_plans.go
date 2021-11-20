@@ -568,39 +568,12 @@ func byDayAndMeal(l []*types.MealPlanOption, day time.Weekday, meal types.MealNa
 	return out
 }
 
-func (q *SQLQuerier) finalizeMealPlan(plan *types.MealPlan) []string {
-	winners := []string{}
-	tiebrokenWinners := map[string]bool{}
-
-	for _, day := range allDays {
-		for _, mealName := range allMealNames {
-			options := byDayAndMeal(plan.Options, day, mealName)
-			if len(options) > 0 {
-				winner, tiebroken := q.decideOptionWinner(options)
-				winners = append(winners, winner)
-				tiebrokenWinners[winner] = tiebroken
-			}
-		}
-	}
-
-	for _, winner := range winners {
-		for i, opt := range plan.Options {
-			if opt.ID == winner {
-				plan.Options[i].Chosen = true
-				plan.Options[i].TieBroken = tiebrokenWinners[winner]
-			}
-		}
-	}
-
-	return winners
-}
-
 const finalizeMealPlanQuery = `
 	UPDATE meal_plans SET status = $1 WHERE archived_on IS NULL AND id = $2
 `
 
-// FinalizeMealPlan finalizes a meal plan if all of its options have a selection.
-func (q *SQLQuerier) FinalizeMealPlan(ctx context.Context, mealPlanID, householdID string, winnerRequired bool) (changed bool, err error) {
+// AttemptToFinalizeCompleteMealPlan finalizes a meal plan if all of its options have a selection.
+func (q *SQLQuerier) AttemptToFinalizeCompleteMealPlan(ctx context.Context, mealPlanID, householdID string) (changed bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -635,9 +608,96 @@ func (q *SQLQuerier) FinalizeMealPlan(ctx context.Context, mealPlanID, household
 					}
 				}
 
-				if !winnerChosen && winnerRequired {
+				if !winnerChosen {
 					return false, nil
 				}
+			}
+		}
+	}
+
+	args := []interface{}{
+		types.FinalizedMealPlanStatus,
+		mealPlanID,
+	}
+
+	if err = q.performWriteQuery(ctx, q.db, "meal plan option finalization", finalizeMealPlanQuery, args); err != nil {
+		return false, observability.PrepareError(err, logger, span, "finalizing meal plan option")
+	}
+
+	logger.Debug("finalized meal plan")
+
+	return true, nil
+}
+
+func (q *SQLQuerier) finalizeMealPlan(plan *types.MealPlan) []string {
+	winners := []string{}
+	tiebrokenWinners := map[string]bool{}
+
+	for _, day := range allDays {
+		for _, mealName := range allMealNames {
+			options := byDayAndMeal(plan.Options, day, mealName)
+			if len(options) > 0 {
+				winner, tiebroken := q.decideOptionWinner(options)
+				winners = append(winners, winner)
+				tiebrokenWinners[winner] = tiebroken
+			}
+		}
+	}
+
+	for _, winner := range winners {
+		for i, opt := range plan.Options {
+			if opt.ID == winner {
+				plan.Options[i].Chosen = true
+				plan.Options[i].TieBroken = tiebrokenWinners[winner]
+			}
+		}
+	}
+
+	return winners
+}
+
+// FinalizeMealPlanWithExpiredVotingPeriod finalizes a meal plan if all of its options have a selection.
+func (q *SQLQuerier) FinalizeMealPlanWithExpiredVotingPeriod(ctx context.Context, mealPlanID, householdID string) (changed bool, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if mealPlanID == "" {
+		return false, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	if householdID == "" {
+		return false, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
+
+	// fetch meal plan
+	mealPlan, err := q.GetMealPlan(ctx, mealPlanID, householdID)
+	if err != nil {
+		return false, observability.PrepareError(err, logger, span, "fetching meal plan")
+	}
+
+	for _, day := range allDays {
+		for _, mealName := range allMealNames {
+			options := byDayAndMeal(mealPlan.Options, day, mealName)
+			if len(options) > 0 {
+				winner, tiebroken := q.decideOptionWinner(options)
+
+				args := []interface{}{
+					mealPlanID,
+					winner,
+					tiebroken,
+				}
+
+				if err = q.performWriteQuery(ctx, q.db, "meal plan option finalization", finalizeMealPlanOptionQuery, args); err != nil {
+					return false, observability.PrepareError(err, logger, span, "finalizing meal plan option")
+				}
+
+				logger.Debug("finalized meal plan option")
 			}
 		}
 	}

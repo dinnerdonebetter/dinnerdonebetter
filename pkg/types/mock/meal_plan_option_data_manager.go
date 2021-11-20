@@ -62,8 +62,8 @@ func (m *MealPlanOptionDataManager) ArchiveMealPlanOption(ctx context.Context, m
 }
 
 // FinalizeMealPlanOption is a mock function.
-func (m *MealPlanOptionDataManager) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID, householdID string, winnerRequired bool) (bool, error) {
-	args := m.Called(ctx, mealPlanID, mealPlanOptionID, householdID, winnerRequired)
+func (m *MealPlanOptionDataManager) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID, householdID string) (bool, error) {
+	args := m.Called(ctx, mealPlanID, mealPlanOptionID, householdID)
 
 	return args.Bool(0), args.Error(1)
 }

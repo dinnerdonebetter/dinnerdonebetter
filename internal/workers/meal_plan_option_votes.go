@@ -34,7 +34,7 @@ func (w *WritesWorker) createMealPlanOptionVote(ctx context.Context, msg *types.
 	}
 
 	// have all votes been received for an option? if so, finalize it
-	mealPlanOptionFinalized, err := w.dataManager.FinalizeMealPlanOption(ctx, msg.MealPlanID, mealPlanOptionVote.BelongsToMealPlanOption, msg.AttributableToHouseholdID, true)
+	mealPlanOptionFinalized, err := w.dataManager.FinalizeMealPlanOption(ctx, msg.MealPlanID, mealPlanOptionVote.BelongsToMealPlanOption, msg.AttributableToHouseholdID)
 	if err != nil {
 		return observability.PrepareError(err, logger, span, "finalizing meal plan option")
 	}
@@ -55,7 +55,7 @@ func (w *WritesWorker) createMealPlanOptionVote(ctx context.Context, msg *types.
 			return observability.PrepareError(err, logger, span, "publishing data change message about meal plan option finalization")
 		}
 
-		mealPlanFinalized, finalizationErr := w.dataManager.FinalizeMealPlan(ctx, msg.MealPlanID, msg.AttributableToHouseholdID, true)
+		mealPlanFinalized, finalizationErr := w.dataManager.AttemptToFinalizeCompleteMealPlan(ctx, msg.MealPlanID, msg.AttributableToHouseholdID)
 		if finalizationErr != nil {
 			return observability.PrepareError(finalizationErr, logger, span, "finalizing meal plan option")
 		}

@@ -41,7 +41,7 @@ func ProvideChoresWorker(
 
 func (w *ChoresWorker) determineChoreHandler(msg *types.ChoreMessage) func(context.Context, *types.ChoreMessage) error {
 	funcMap := map[string]func(context.Context, *types.ChoreMessage) error{
-		string(types.FinalizeMealPlansWithExpiredVotingPeriodsChoreType): w.finalizeMealPlans,
+		string(types.FinalizeMealPlansWithExpiredVotingPeriodsChoreType): w.finalizeExpiredMealPlans,
 	}
 
 	f, ok := funcMap[string(msg.ChoreType)]

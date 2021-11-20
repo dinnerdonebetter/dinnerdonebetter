@@ -1160,7 +1160,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 			WithArgs(interfaceToDriverValue(finalizeOptionsArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID, true)
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID)
 		assert.True(t, actual)
 		assert.NoError(t, err)
 	})
@@ -1278,7 +1278,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getHouseholdArgs)...).
 			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
 
-		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID, true)
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID)
 		assert.False(t, actual)
 		assert.NoError(t, err)
 	})
@@ -1292,7 +1292,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.FinalizeMealPlanOption(ctx, "", exampleMealPlanOptionID, exampleHouseholdID, true)
+		actual, err := c.FinalizeMealPlanOption(ctx, "", exampleMealPlanOptionID, exampleHouseholdID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})
@@ -1306,7 +1306,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlanID, "", exampleHouseholdID, true)
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlanID, "", exampleHouseholdID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})
@@ -1329,7 +1329,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID, true)
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})
@@ -1362,7 +1362,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getMealPlanOptionArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID, true)
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})
@@ -1403,7 +1403,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getHouseholdArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID, true)
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})
@@ -1562,7 +1562,7 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 			WithArgs(interfaceToDriverValue(finalizeOptionsArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID, true)
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})

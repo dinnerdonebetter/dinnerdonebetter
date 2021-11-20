@@ -65,7 +65,6 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			body.MealPlanID,
 			expectedMealPlanOptionVote.BelongsToMealPlanOption,
 			body.AttributableToHouseholdID,
-			true,
 		).Return(true, nil)
 
 		postWritesPublisher.On(
@@ -74,11 +73,10 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 		).Return(nil)
 
 		dbManager.MealPlanDataManager.On(
-			"FinalizeMealPlan",
+			"AttemptToFinalizeCompleteMealPlan",
 			testutils.ContextMatcher,
 			body.MealPlanID,
 			body.AttributableToHouseholdID,
-			true,
 		).Return(true, nil)
 
 		postWritesPublisher.On(
@@ -240,7 +238,6 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			body.MealPlanID,
 			expectedMealPlanOptionVote.BelongsToMealPlanOption,
 			body.AttributableToHouseholdID,
-			true,
 		).Return(false, errors.New("blah"))
 
 		worker, err := ProvideWritesWorker(
@@ -302,7 +299,6 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			body.MealPlanID,
 			expectedMealPlanOptionVote.BelongsToMealPlanOption,
 			body.AttributableToHouseholdID,
-			true,
 		).Return(true, nil)
 
 		dataChangesPublisher.On(
@@ -369,7 +365,6 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			body.MealPlanID,
 			expectedMealPlanOptionVote.BelongsToMealPlanOption,
 			body.AttributableToHouseholdID,
-			true,
 		).Return(true, nil)
 
 		dataChangesPublisher.On(
@@ -378,11 +373,10 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 		).Return(nil)
 
 		dbManager.MealPlanDataManager.On(
-			"FinalizeMealPlan",
+			"AttemptToFinalizeCompleteMealPlan",
 			testutils.ContextMatcher,
 			body.MealPlanID,
 			body.AttributableToHouseholdID,
-			true,
 		).Return(false, errors.New("blah"))
 
 		worker, err := ProvideWritesWorker(
@@ -444,7 +438,6 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			body.MealPlanID,
 			expectedMealPlanOptionVote.BelongsToMealPlanOption,
 			body.AttributableToHouseholdID,
-			true,
 		).Return(true, nil)
 
 		dataChangesPublisher.On(
@@ -454,11 +447,10 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 		).Return(nil)
 
 		dbManager.MealPlanDataManager.On(
-			"FinalizeMealPlan",
+			"AttemptToFinalizeCompleteMealPlan",
 			testutils.ContextMatcher,
 			body.MealPlanID,
 			body.AttributableToHouseholdID,
-			true,
 		).Return(true, nil)
 
 		dataChangesPublisher.On(

@@ -565,6 +565,22 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			createdMealPlan, err = testClients.main.GetMealPlan(ctx, createdMealPlanID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			assert.Equal(t, types.FinalizedMealPlanStatus, createdMealPlan.Status)
+
+			for _, day := range allDays {
+				for _, mealName := range allMealNames {
+					options := byDayAndMeal(createdMealPlan.Options, day, mealName)
+					if len(options) > 0 {
+						selectionMade := false
+						for _, opt := range options {
+							if opt.Chosen {
+								selectionMade = true
+								break
+							}
+						}
+						require.True(t, selectionMade)
+					}
+				}
+			}
 		}
 	})
 }

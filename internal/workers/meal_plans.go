@@ -89,7 +89,7 @@ func (w *ArchivesWorker) archiveMealPlan(ctx context.Context, msg *types.PreArch
 	return nil
 }
 
-func (w *ChoresWorker) finalizeMealPlans(ctx context.Context, msg *types.ChoreMessage) error {
+func (w *ChoresWorker) finalizeExpiredMealPlans(ctx context.Context, msg *types.ChoreMessage) error {
 	_, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -101,7 +101,7 @@ func (w *ChoresWorker) finalizeMealPlans(ctx context.Context, msg *types.ChoreMe
 
 	logger.Debug("finalize meal plan chore invoked")
 
-	changed, err := w.dataManager.FinalizeMealPlan(ctx, msg.MealPlanID, msg.AttributableToHouseholdID, false)
+	changed, err := w.dataManager.FinalizeMealPlanWithExpiredVotingPeriod(ctx, msg.MealPlanID, msg.AttributableToHouseholdID)
 	if err != nil {
 		return observability.PrepareError(err, logger, span, "finalizing meal plan")
 	}

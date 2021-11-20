@@ -57,11 +57,10 @@ func TestChoresWorker_HandleMessage(T *testing.T) {
 		require.NoError(t, err)
 
 		dbm.MealPlanDataManager.On(
-			"FinalizeMealPlan",
+			"FinalizeMealPlanWithExpiredVotingPeriod",
 			testutils.ContextMatcher,
 			exampleInput.MealPlanID,
 			exampleInput.AttributableToHouseholdID,
-			false,
 		).Return(true, nil)
 
 		assert.NoError(t, actual.HandleMessage(ctx, body))

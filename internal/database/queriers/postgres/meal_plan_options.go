@@ -483,7 +483,7 @@ const finalizeMealPlanOptionQuery = `
 `
 
 // FinalizeMealPlanOption archives a meal plan option vote from the database by its ID.
-func (q *SQLQuerier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID, householdID string, winnerRequired bool) (changed bool, err error) {
+func (q *SQLQuerier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID, householdID string) (changed bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -538,7 +538,7 @@ func (q *SQLQuerier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mea
 				}
 			}
 
-			if !memberVoteFound && winnerRequired {
+			if !memberVoteFound {
 				return false, nil
 			}
 		}
