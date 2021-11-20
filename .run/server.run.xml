@@ -3,7 +3,7 @@
     <module name="api_server" />
     <working_directory value="$PROJECT_DIR$" />
     <envs>
-      <env name="CONFIGURATION_FILEPATH" value="./environments/local/service.config" />
+      <env name="CONFIGURATION_FILEPATH" value="./environments/testing/config_files/integration-tests-local.config" />
       <env name="PRIXFIXE_SERVER_LOCAL_CONFIG_STORE_KEY" value="SUFNQVdBUkVUSEFUVEhJU1NFQ1JFVElTVU5TRUNVUkU=" />
     </envs>
     <kind value="FILE" />

@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	database "github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
@@ -472,7 +472,7 @@ func TestQuerier_CreateValidInstrument(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(validInstrumentCreationQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleValidInstrument.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
 			return exampleValidInstrument.CreatedOn
@@ -552,7 +552,7 @@ func TestQuerier_UpdateValidInstrument(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(updateValidInstrumentQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleValidInstrument.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.UpdateValidInstrument(ctx, exampleValidInstrument))
 
@@ -611,7 +611,7 @@ func TestQuerier_ArchiveValidInstrument(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(archiveValidInstrumentQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleValidInstrument.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.ArchiveValidInstrument(ctx, exampleValidInstrument.ID))
 

@@ -7,7 +7,7 @@ import (
 	"github.com/alexedwards/scs/v2"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
-	database "github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/database"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 )
 

@@ -40,7 +40,7 @@ func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -63,7 +63,7 @@ func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 			t.Logf("recipe step instrument %q created", createdRecipeStepInstrumentID)
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.RecipeStepInstrumentDataType)
+			assert.Equal(t, types.RecipeStepInstrumentDataType, n.DataType)
 			require.NotNil(t, n.RecipeStepInstrument)
 			checkRecipeStepInstrumentEquality(t, exampleRecipeStepInstrument, n.RecipeStepInstrument)
 
@@ -80,7 +80,7 @@ func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 			assert.NoError(t, testClients.main.UpdateRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepInstrument))
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.RecipeStepInstrumentDataType)
+			assert.Equal(t, types.RecipeStepInstrumentDataType, n.DataType)
 
 			t.Log("fetching changed recipe step instrument")
 			actual, err := testClients.main.GetRecipeStepInstrument(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepInstrumentID)
@@ -180,7 +180,7 @@ func (s *TestSuite) TestRecipeStepInstruments_Listing() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -205,7 +205,7 @@ func (s *TestSuite) TestRecipeStepInstruments_Listing() {
 				t.Logf("recipe step instrument %q created", createdRecipeStepInstrumentID)
 
 				n = <-notificationsChan
-				assert.Equal(t, n.DataType, types.RecipeStepInstrumentDataType)
+				assert.Equal(t, types.RecipeStepInstrumentDataType, n.DataType)
 				require.NotNil(t, n.RecipeStepInstrument)
 				checkRecipeStepInstrumentEquality(t, exampleRecipeStepInstrument, n.RecipeStepInstrument)
 

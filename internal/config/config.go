@@ -211,11 +211,9 @@ func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, cfg *Inst
 		return nil, errNilConfig
 	}
 
-	shouldCreateTestUser := cfg.Meta.RunMode != ProductionRunMode
-
 	switch strings.ToLower(strings.TrimSpace(cfg.Database.Provider)) {
 	case dbconfig.PostgresProvider:
-		return postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, shouldCreateTestUser)
+		return postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database)
 	default:
 		return nil, fmt.Errorf("%w: %q", errInvalidDatabaseProvider, cfg.Database.Provider)
 	}

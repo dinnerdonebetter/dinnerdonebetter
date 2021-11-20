@@ -6,9 +6,9 @@ import (
 
 	"github.com/Masterminds/squirrel"
 
-	database "github.com/prixfixeco/api_server/internal/database"
-	observability "github.com/prixfixeco/api_server/internal/observability"
-	keys "github.com/prixfixeco/api_server/internal/observability/keys"
+	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -23,7 +23,7 @@ var (
 	// mealPlanOptionVotesTableColumns are the columns for the meal_plan_option_votes table.
 	mealPlanOptionVotesTableColumns = []string{
 		"meal_plan_option_votes.id",
-		"meal_plan_option_votes.points",
+		"meal_plan_option_votes.rank",
 		"meal_plan_option_votes.abstain",
 		"meal_plan_option_votes.notes",
 		"meal_plan_option_votes.by_user",
@@ -39,6 +39,19 @@ var (
 	}
 )
 
+type nullableMealPlanOptionVote struct {
+	_                       struct{}
+	LastUpdatedOn           *uint64
+	ArchivedOn              *uint64
+	ID                      *string
+	Notes                   *string
+	BelongsToMealPlanOption *string
+	ByUser                  *string
+	CreatedOn               *uint64
+	Rank                    *uint8
+	Abstain                 *bool
+}
+
 // scanMealPlanOptionVote takes a database Scanner (i.e. *sql.Row) and scans the result into a meal plan option vote struct.
 func (q *SQLQuerier) scanMealPlanOptionVote(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.MealPlanOptionVote, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
@@ -50,7 +63,7 @@ func (q *SQLQuerier) scanMealPlanOptionVote(ctx context.Context, scan database.S
 
 	targetVars := []interface{}{
 		&x.ID,
-		&x.Points,
+		&x.Rank,
 		&x.Abstain,
 		&x.Notes,
 		&x.ByUser,
@@ -147,7 +160,7 @@ func (q *SQLQuerier) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, m
 	return result, nil
 }
 
-const getMealPlanOptionVoteQuery = "SELECT meal_plan_option_votes.id, meal_plan_option_votes.points, meal_plan_option_votes.abstain, meal_plan_option_votes.notes, meal_plan_option_votes.by_user, meal_plan_option_votes.created_on, meal_plan_option_votes.last_updated_on, meal_plan_option_votes.archived_on, meal_plan_option_votes.belongs_to_meal_plan_option FROM meal_plan_option_votes JOIN meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id WHERE meal_plan_option_votes.archived_on IS NULL AND meal_plan_option_votes.belongs_to_meal_plan_option = $1 AND meal_plan_option_votes.id = $2 AND meal_plan_options.archived_on IS NULL AND meal_plan_options.belongs_to_meal_plan = $3 AND meal_plan_options.id = $4 AND meal_plans.archived_on IS NULL AND meal_plans.id = $5"
+const getMealPlanOptionVoteQuery = "SELECT meal_plan_option_votes.id, meal_plan_option_votes.rank, meal_plan_option_votes.abstain, meal_plan_option_votes.notes, meal_plan_option_votes.by_user, meal_plan_option_votes.created_on, meal_plan_option_votes.last_updated_on, meal_plan_option_votes.archived_on, meal_plan_option_votes.belongs_to_meal_plan_option FROM meal_plan_option_votes JOIN meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id WHERE meal_plan_option_votes.archived_on IS NULL AND meal_plan_option_votes.belongs_to_meal_plan_option = $1 AND meal_plan_option_votes.id = $2 AND meal_plan_options.archived_on IS NULL AND meal_plan_options.belongs_to_meal_plan = $3 AND meal_plan_options.id = $4 AND meal_plans.archived_on IS NULL AND meal_plans.id = $5"
 
 // GetMealPlanOptionVote fetches a meal plan option vote from the database.
 func (q *SQLQuerier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID string) (*types.MealPlanOptionVote, error) {
@@ -315,7 +328,7 @@ func (q *SQLQuerier) GetMealPlanOptionVotesWithIDs(ctx context.Context, mealPlan
 	return mealPlanOptionVotes, nil
 }
 
-const mealPlanOptionVoteCreationQuery = "INSERT INTO meal_plan_option_votes (id,points,abstain,notes,by_user,belongs_to_meal_plan_option) VALUES ($1,$2,$3,$4,$5,$6)"
+const mealPlanOptionVoteCreationQuery = "INSERT INTO meal_plan_option_votes (id,rank,abstain,notes,by_user,belongs_to_meal_plan_option) VALUES ($1,$2,$3,$4,$5,$6)"
 
 // CreateMealPlanOptionVote creates a meal plan option vote in the database.
 func (q *SQLQuerier) CreateMealPlanOptionVote(ctx context.Context, input *types.MealPlanOptionVoteDatabaseCreationInput) (*types.MealPlanOptionVote, error) {
@@ -330,7 +343,7 @@ func (q *SQLQuerier) CreateMealPlanOptionVote(ctx context.Context, input *types.
 
 	args := []interface{}{
 		input.ID,
-		input.Points,
+		input.Rank,
 		input.Abstain,
 		input.Notes,
 		input.ByUser,
@@ -344,7 +357,7 @@ func (q *SQLQuerier) CreateMealPlanOptionVote(ctx context.Context, input *types.
 
 	x := &types.MealPlanOptionVote{
 		ID:                      input.ID,
-		Points:                  input.Points,
+		Rank:                    input.Rank,
 		Abstain:                 input.Abstain,
 		Notes:                   input.Notes,
 		ByUser:                  input.ByUser,
@@ -358,7 +371,7 @@ func (q *SQLQuerier) CreateMealPlanOptionVote(ctx context.Context, input *types.
 	return x, nil
 }
 
-const updateMealPlanOptionVoteQuery = "UPDATE meal_plan_option_votes SET points = $1, abstain = $2, notes = $3, by_user = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_meal_plan_option = $5 AND id = $6"
+const updateMealPlanOptionVoteQuery = "UPDATE meal_plan_option_votes SET rank = $1, abstain = $2, notes = $3, by_user = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_meal_plan_option = $5 AND id = $6"
 
 // UpdateMealPlanOptionVote updates a particular meal plan option vote.
 func (q *SQLQuerier) UpdateMealPlanOptionVote(ctx context.Context, updated *types.MealPlanOptionVote) error {
@@ -373,7 +386,7 @@ func (q *SQLQuerier) UpdateMealPlanOptionVote(ctx context.Context, updated *type
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, updated.ID)
 
 	args := []interface{}{
-		updated.Points,
+		updated.Rank,
 		updated.Abstain,
 		updated.Notes,
 		updated.ByUser,

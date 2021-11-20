@@ -39,7 +39,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		exampleTOTPToken := "123456"
 		examplePassword := "password"
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -79,7 +79,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		exampleTOTPToken := "123456"
 		examplePassword := "password"
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -108,7 +108,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		exampleTOTPToken := "123456"
 		examplePassword := "password"
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -137,7 +137,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		exampleTOTPToken := "123456"
 		examplePassword := "password"
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -177,7 +177,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		exampleTOTPToken := "123456"
 		examplePassword := "password"
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -220,7 +220,7 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 
 		exampleUserList := fakes.BuildFakeUserList()
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"SearchForUsersByUsername",
 			testutils.ContextMatcher,
@@ -253,7 +253,7 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"SearchForUsersByUsername",
 			testutils.ContextMatcher,
@@ -291,7 +291,7 @@ func TestService_ListHandler(T *testing.T) {
 
 		exampleUserList := fakes.BuildFakeUserList()
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUsers",
 			testutils.ContextMatcher,
@@ -320,7 +320,7 @@ func TestService_ListHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUsers",
 			testutils.ContextMatcher,
@@ -372,7 +372,7 @@ func TestService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleUser.HashedPassword, nil)
 		helper.service.authenticator = auth
 
-		db := database.BuildMockDatabase()
+		db := database.NewMockDatabase()
 		db.UserDataManager.On(
 			"CreateUser",
 			testutils.ContextMatcher,
@@ -551,7 +551,7 @@ func TestService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleUser.HashedPassword, nil)
 		helper.service.authenticator = auth
 
-		db := database.BuildMockDatabase()
+		db := database.NewMockDatabase()
 		db.UserDataManager.On(
 			"CreateUser",
 			testutils.ContextMatcher,
@@ -605,7 +605,7 @@ func TestService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleUser.HashedPassword, nil)
 		helper.service.authenticator = auth
 
-		db := database.BuildMockDatabase()
+		db := database.NewMockDatabase()
 		db.UserDataManager.On(
 			"CreateUser",
 			testutils.ContextMatcher,
@@ -653,7 +653,7 @@ func TestService_SelfHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -703,7 +703,7 @@ func TestService_SelfHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -731,7 +731,7 @@ func TestService_SelfHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -763,7 +763,7 @@ func TestService_ReadHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -792,7 +792,7 @@ func TestService_ReadHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -820,7 +820,7 @@ func TestService_ReadHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -863,7 +863,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 
 		helper.exampleUser.TwoFactorSecretVerifiedOn = nil
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUserWithUnverifiedTwoFactorSecret",
 			testutils.ContextMatcher,
@@ -917,7 +917,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 
 		helper.exampleUser.TwoFactorSecretVerifiedOn = nil
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUserWithUnverifiedTwoFactorSecret",
 			testutils.ContextMatcher,
@@ -948,7 +948,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 
 		helper.exampleUser.TwoFactorSecretVerifiedOn = nil
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUserWithUnverifiedTwoFactorSecret",
 			testutils.ContextMatcher,
@@ -978,7 +978,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUserWithUnverifiedTwoFactorSecret",
 			testutils.ContextMatcher,
@@ -1016,7 +1016,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUserWithUnverifiedTwoFactorSecret",
 			testutils.ContextMatcher,
@@ -1048,7 +1048,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 
 		helper.exampleUser.TwoFactorSecretVerifiedOn = nil
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUserWithUnverifiedTwoFactorSecret",
 			testutils.ContextMatcher,
@@ -1079,7 +1079,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 
 		helper.exampleUser.TwoFactorSecretVerifiedOn = nil
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUserWithUnverifiedTwoFactorSecret",
 			testutils.ContextMatcher,
@@ -1117,7 +1117,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -1218,7 +1218,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -1263,7 +1263,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -1316,7 +1316,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -1365,7 +1365,7 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -1472,7 +1472,7 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -1519,7 +1519,7 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -1559,7 +1559,7 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -1610,7 +1610,7 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -1658,7 +1658,7 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -1725,7 +1725,7 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -1753,7 +1753,7 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -1788,7 +1788,7 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -1835,7 +1835,7 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -1891,7 +1891,7 @@ func TestService_ArchiveHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"ArchiveUser",
 			testutils.ContextMatcher,
@@ -1915,7 +1915,7 @@ func TestService_ArchiveHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"ArchiveUser",
 			testutils.ContextMatcher,
@@ -1935,7 +1935,7 @@ func TestService_ArchiveHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"ArchiveUser",
 			testutils.ContextMatcher,

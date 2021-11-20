@@ -7,7 +7,7 @@ import (
 	memstore "github.com/alexedwards/scs/v2/memstore"
 	"github.com/stretchr/testify/assert"
 
-	database "github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/database"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 )
 

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
-	observability "github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -40,7 +40,7 @@ func (w *DataChangesWorker) HandleMessage(ctx context.Context, message []byte) e
 	}
 
 	tracing.AttachUserIDToSpan(span, msg.AttributableToUserID)
-	w.logger.WithValue("message", message).Info("message received")
+	w.logger.WithValue("message", msg).Info("message received")
 
 	return nil
 }

@@ -2,8 +2,8 @@ package types
 
 import (
 	"context"
-	"math"
 	"testing"
+	"time"
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
@@ -17,9 +17,25 @@ func TestMealPlanOptionCreationRequestInput_Validate(T *testing.T) {
 
 		x := &MealPlanOptionCreationRequestInput{
 			BelongsToMealPlan: fake.LoremIpsumSentence(exampleQuantity),
-			DayOfWeek:         uint8(fake.Number(1, math.MaxUint8)),
-			RecipeID:          fake.LoremIpsumSentence(exampleQuantity),
-			Notes:             fake.LoremIpsumSentence(exampleQuantity),
+			Day: time.Weekday(fake.RandomInt([]int{
+				int(time.Monday),
+				int(time.Tuesday),
+				int(time.Wednesday),
+				int(time.Thursday),
+				int(time.Friday),
+				int(time.Saturday),
+				int(time.Sunday),
+			})),
+			MealName: MealName(fake.RandomString([]string{
+				string(BreakfastMealName),
+				string(SecondBreakfastMealName),
+				string(BrunchMealName),
+				string(LunchMealName),
+				string(SupperMealName),
+				string(DinnerMealName),
+			})),
+			RecipeID: fake.LoremIpsumSentence(exampleQuantity),
+			Notes:    fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -44,9 +60,25 @@ func TestMealPlanOptionUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &MealPlanOptionUpdateRequestInput{
 			BelongsToMealPlan: fake.LoremIpsumSentence(exampleQuantity),
-			DayOfWeek:         uint8(fake.Number(1, math.MaxUint8)),
-			RecipeID:          fake.LoremIpsumSentence(exampleQuantity),
-			Notes:             fake.LoremIpsumSentence(exampleQuantity),
+			Day: time.Weekday(fake.RandomInt([]int{
+				int(time.Monday),
+				int(time.Tuesday),
+				int(time.Wednesday),
+				int(time.Thursday),
+				int(time.Friday),
+				int(time.Saturday),
+				int(time.Sunday),
+			})),
+			MealName: MealName(fake.RandomString([]string{
+				string(BreakfastMealName),
+				string(SecondBreakfastMealName),
+				string(BrunchMealName),
+				string(LunchMealName),
+				string(SupperMealName),
+				string(DinnerMealName),
+			})),
+			RecipeID: fake.LoremIpsumSentence(exampleQuantity),
+			Notes:    fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

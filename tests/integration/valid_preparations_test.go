@@ -41,7 +41,7 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -55,7 +55,7 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			t.Logf("valid preparation %q created", createdValidPreparationID)
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.ValidPreparationDataType)
+			assert.Equal(t, types.ValidPreparationDataType, n.DataType)
 			require.NotNil(t, n.ValidPreparation)
 			checkValidPreparationEquality(t, exampleValidPreparation, n.ValidPreparation)
 
@@ -69,7 +69,7 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			assert.NoError(t, testClients.admin.UpdateValidPreparation(ctx, createdValidPreparation))
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.ValidPreparationDataType)
+			assert.Equal(t, types.ValidPreparationDataType, n.DataType)
 
 			t.Log("fetching changed valid preparation")
 			actual, err := testClients.admin.GetValidPreparation(ctx, createdValidPreparationID)
@@ -143,7 +143,7 @@ func (s *TestSuite) TestValidPreparations_Listing() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -159,7 +159,7 @@ func (s *TestSuite) TestValidPreparations_Listing() {
 				t.Logf("valid preparation %q created", createdValidPreparationID)
 
 				n = <-notificationsChan
-				assert.Equal(t, n.DataType, types.ValidPreparationDataType)
+				assert.Equal(t, types.ValidPreparationDataType, n.DataType)
 				require.NotNil(t, n.ValidPreparation)
 				checkValidPreparationEquality(t, exampleValidPreparation, n.ValidPreparation)
 
@@ -242,7 +242,7 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -261,7 +261,7 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 				t.Logf("valid preparation %q created", createdValidPreparationID)
 
 				n = <-notificationsChan
-				assert.Equal(t, n.DataType, types.ValidPreparationDataType)
+				assert.Equal(t, types.ValidPreparationDataType, n.DataType)
 				require.NotNil(t, n.ValidPreparation)
 				checkValidPreparationEquality(t, exampleValidPreparation, n.ValidPreparation)
 

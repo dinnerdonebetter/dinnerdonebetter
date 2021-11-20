@@ -36,7 +36,7 @@ func TestQuerier_UpdateUserReputation(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(setUserReputationQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleUser.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.UpdateUserReputation(ctx, exampleUser.ID, exampleInput))
 

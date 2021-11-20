@@ -31,13 +31,14 @@ var _ database.DataManager = (*SQLQuerier)(nil)
 
 // SQLQuerier is the primary database querying client. All tracing/logging/query execution happens here. Query building generally happens elsewhere.
 type SQLQuerier struct {
-	config      *dbconfig.Config
-	db          *sql.DB
-	timeFunc    func() uint64
+	tracer      tracing.Tracer
 	sqlBuilder  squirrel.StatementBuilderType
 	logger      logging.Logger
-	tracer      tracing.Tracer
+	db          *sql.DB
+	timeFunc    func() uint64
+	config      *dbconfig.Config
 	migrateOnce sync.Once
+	logQueries  bool
 }
 
 var instrumentedDriverRegistration sync.Once
@@ -47,7 +48,6 @@ func ProvideDatabaseClient(
 	ctx context.Context,
 	logger logging.Logger,
 	cfg *dbconfig.Config,
-	shouldCreateTestUser bool,
 ) (database.DataManager, error) {
 	tracer := tracing.NewTracer(tracingName)
 
@@ -77,6 +77,7 @@ func ProvideDatabaseClient(
 		db:         db,
 		config:     cfg,
 		tracer:     tracer,
+		logQueries: true,
 		timeFunc:   defaultTimeFunc,
 		logger:     logging.EnsureLogger(logger),
 		sqlBuilder: squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
@@ -186,7 +187,9 @@ func (q *SQLQuerier) getOneRow(ctx context.Context, querier database.SQLQueryExe
 
 	row := querier.QueryRowContext(ctx, query, args...)
 
-	logger.Debug("single row query performed")
+	if q.logQueries {
+		logger.Debug("single row query performed")
+	}
 
 	return row
 }
@@ -208,7 +211,9 @@ func (q *SQLQuerier) performReadQuery(ctx context.Context, querier database.SQLQ
 		return nil, observability.PrepareError(rowsErr, logger, span, "scanning results")
 	}
 
-	logger.Debug("read query performed")
+	if q.logQueries {
+		logger.Debug("read query performed")
+	}
 
 	return rows, nil
 }
@@ -226,7 +231,9 @@ func (q *SQLQuerier) performCountQuery(ctx context.Context, querier database.SQL
 		return 0, observability.PrepareError(err, logger, span, "executing count query")
 	}
 
-	logger.Debug("count query performed")
+	if q.logQueries {
+		logger.Debug("count query performed")
+	}
 
 	return count, nil
 }
@@ -248,7 +255,9 @@ func (q *SQLQuerier) performBooleanQuery(ctx context.Context, querier database.S
 		return false, observability.PrepareError(err, logger, span, "executing boolean query")
 	}
 
-	logger.Debug("boolean query performed")
+	if q.logQueries {
+		logger.Debug("boolean query performed")
+	}
 
 	return exists, nil
 }
@@ -276,7 +285,9 @@ func (q *SQLQuerier) performWriteQuery(ctx context.Context, querier database.SQL
 		return sql.ErrNoRows
 	}
 
-	logger.Debug("query executed")
+	if q.logQueries {
+		logger.Debug("query executed")
+	}
 
 	return nil
 }

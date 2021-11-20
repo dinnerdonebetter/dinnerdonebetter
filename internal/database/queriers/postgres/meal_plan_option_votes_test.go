@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	database "github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
@@ -28,7 +28,7 @@ func buildMockRowsFromMealPlanOptionVotes(includeCounts bool, filteredCount uint
 	for _, x := range mealPlanOptionVotes {
 		rowValues := []driver.Value{
 			x.ID,
-			x.Points,
+			x.Rank,
 			x.Abstain,
 			x.Notes,
 			x.ByUser,
@@ -618,7 +618,7 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 
 		args := []interface{}{
 			exampleInput.ID,
-			exampleInput.Points,
+			exampleInput.Rank,
 			exampleInput.Abstain,
 			exampleInput.Notes,
 			exampleInput.ByUser,
@@ -627,7 +627,7 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(mealPlanOptionVoteCreationQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleMealPlanOptionVote.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
 			return exampleMealPlanOptionVote.CreatedOn
@@ -663,7 +663,7 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 
 		args := []interface{}{
 			exampleInput.ID,
-			exampleInput.Points,
+			exampleInput.Rank,
 			exampleInput.Abstain,
 			exampleInput.Notes,
 			exampleInput.ByUser,
@@ -699,7 +699,7 @@ func TestQuerier_UpdateMealPlanOptionVote(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleMealPlanOptionVote.Points,
+			exampleMealPlanOptionVote.Rank,
 			exampleMealPlanOptionVote.Abstain,
 			exampleMealPlanOptionVote.Notes,
 			exampleMealPlanOptionVote.ByUser,
@@ -709,7 +709,7 @@ func TestQuerier_UpdateMealPlanOptionVote(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(updateMealPlanOptionVoteQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleMealPlanOptionVote.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.UpdateMealPlanOptionVote(ctx, exampleMealPlanOptionVote))
 
@@ -734,7 +734,7 @@ func TestQuerier_UpdateMealPlanOptionVote(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleMealPlanOptionVote.Points,
+			exampleMealPlanOptionVote.Rank,
 			exampleMealPlanOptionVote.Abstain,
 			exampleMealPlanOptionVote.Notes,
 			exampleMealPlanOptionVote.ByUser,
@@ -771,7 +771,7 @@ func TestQuerier_ArchiveMealPlanOptionVote(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(archiveMealPlanOptionVoteQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleMealPlanOptionVote.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.ArchiveMealPlanOptionVote(ctx, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID))
 

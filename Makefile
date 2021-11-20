@@ -209,13 +209,16 @@ integration-tests: integration_tests_postgres
 .PHONY: integration_tests_postgres
 integration_tests_postgres:
 	docker-compose \
-	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests-base.yaml \
-	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests-postgres.yaml up \
+	$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(LOCAL)),, --file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests-base.yaml) \
+	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests.yaml \
+	$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(LOCAL)), --file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests-local.override.yaml,) \
+	up \
 	--build \
 	--force-recreate \
 	--remove-orphans \
 	--renew-anon-volumes \
-	--always-recreate-deps $(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(LET_HANG)),, --abort-on-container-exit)
+	$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(LET_HANG)),, --abort-on-container-exit) \
+	--always-recreate-deps
 
 ## Running
 

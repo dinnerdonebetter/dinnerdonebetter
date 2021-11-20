@@ -46,7 +46,7 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -73,7 +73,7 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 			assert.NoError(t, testClients.main.UpdateRecipeStep(ctx, createdRecipeStep))
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.RecipeStepDataType)
+			assert.Equal(t, types.RecipeStepDataType, n.DataType)
 
 			t.Log("fetching changed recipe step")
 			actual, err := testClients.main.GetRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID)
@@ -155,7 +155,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -179,7 +179,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 				t.Logf("recipe step %q created", createdRecipeStepID)
 
 				n = <-notificationsChan
-				assert.Equal(t, n.DataType, types.RecipeStepDataType)
+				assert.Equal(t, types.RecipeStepDataType, n.DataType)
 				require.NotNil(t, n.RecipeStep)
 				checkRecipeStepEquality(t, exampleRecipeStep, n.RecipeStep)
 

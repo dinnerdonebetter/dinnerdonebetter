@@ -16,14 +16,14 @@ type MealPlanDataManager struct {
 }
 
 // MealPlanExists is a mock function.
-func (m *MealPlanDataManager) MealPlanExists(ctx context.Context, mealPlanID string) (bool, error) {
-	args := m.Called(ctx, mealPlanID)
+func (m *MealPlanDataManager) MealPlanExists(ctx context.Context, mealPlanID, householdID string) (bool, error) {
+	args := m.Called(ctx, mealPlanID, householdID)
 	return args.Bool(0), args.Error(1)
 }
 
 // GetMealPlan is a mock function.
-func (m *MealPlanDataManager) GetMealPlan(ctx context.Context, mealPlanID string) (*types.MealPlan, error) {
-	args := m.Called(ctx, mealPlanID)
+func (m *MealPlanDataManager) GetMealPlan(ctx context.Context, mealPlanID, householdID string) (*types.MealPlan, error) {
+	args := m.Called(ctx, mealPlanID, householdID)
 	return args.Get(0).(*types.MealPlan), args.Error(1)
 }
 
@@ -59,4 +59,22 @@ func (m *MealPlanDataManager) UpdateMealPlan(ctx context.Context, updated *types
 // ArchiveMealPlan is a mock function.
 func (m *MealPlanDataManager) ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error {
 	return m.Called(ctx, mealPlanID, householdID).Error(0)
+}
+
+// AttemptToFinalizeCompleteMealPlan is a mock function.
+func (m *MealPlanDataManager) AttemptToFinalizeCompleteMealPlan(ctx context.Context, mealPlanID, householdID string) (changed bool, err error) {
+	args := m.Called(ctx, mealPlanID, householdID)
+	return args.Bool(0), args.Error(1)
+}
+
+// FinalizeMealPlanWithExpiredVotingPeriod is a mock function.
+func (m *MealPlanDataManager) FinalizeMealPlanWithExpiredVotingPeriod(ctx context.Context, mealPlanID, householdID string) (changed bool, err error) {
+	args := m.Called(ctx, mealPlanID, householdID)
+	return args.Bool(0), args.Error(1)
+}
+
+// GetUnfinalizedMealPlansWithExpiredVotingPeriods is a mock function.
+func (m *MealPlanDataManager) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Context) ([]*types.MealPlan, error) {
+	args := m.Called(ctx)
+	return args.Get(0).([]*types.MealPlan), args.Error(1)
 }

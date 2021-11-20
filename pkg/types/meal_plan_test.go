@@ -3,6 +3,7 @@ package types
 import (
 	"context"
 	"testing"
+	"time"
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
@@ -15,9 +16,9 @@ func TestMealPlanCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanCreationRequestInput{
-			State:    fake.LoremIpsumSentence(exampleQuantity),
-			StartsAt: uint64(fake.Uint32()),
-			EndsAt:   uint64(fake.Uint32()),
+			VotingDeadline: uint64(time.Now().Unix()),
+			StartsAt:       uint64(fake.Uint32()),
+			EndsAt:         uint64(fake.Uint32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -41,9 +42,10 @@ func TestMealPlanUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanUpdateRequestInput{
-			State:    fake.LoremIpsumSentence(exampleQuantity),
-			StartsAt: uint64(fake.Uint32()),
-			EndsAt:   uint64(fake.Uint32()),
+			Status:         AwaitingVotesMealPlanStatus,
+			VotingDeadline: uint64(time.Now().Unix()),
+			StartsAt:       uint64(fake.Uint32()),
+			EndsAt:         uint64(fake.Uint32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

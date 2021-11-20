@@ -24,7 +24,7 @@ func buildTestService(t *testing.T) *service {
 	t.Helper()
 
 	return &service{
-		apiClientDataManager:      database.BuildMockDatabase(),
+		apiClientDataManager:      database.NewMockDatabase(),
 		logger:                    logging.NewNoopLogger(),
 		encoderDecoder:            mockencoding.NewMockEncoderDecoder(),
 		authenticator:             &mockauthn.Authenticator{},

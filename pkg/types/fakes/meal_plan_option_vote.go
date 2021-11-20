@@ -1,6 +1,8 @@
 package fakes
 
 import (
+	"math"
+
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/segmentio/ksuid"
 
@@ -11,7 +13,7 @@ import (
 func BuildFakeMealPlanOptionVote() *types.MealPlanOptionVote {
 	return &types.MealPlanOptionVote{
 		ID:                      ksuid.New().String(),
-		Points:                  fake.Int16(),
+		Rank:                    uint8(fake.Number(1, math.MaxUint8)),
 		Abstain:                 fake.Bool(),
 		Notes:                   fake.LoremIpsumSentence(exampleQuantity),
 		CreatedOn:               uint64(uint32(fake.Date().Unix())),
@@ -41,7 +43,7 @@ func BuildFakeMealPlanOptionVoteList() *types.MealPlanOptionVoteList {
 func BuildFakeMealPlanOptionVoteUpdateRequestInput() *types.MealPlanOptionVoteUpdateRequestInput {
 	mealPlanOptionVote := BuildFakeMealPlanOptionVote()
 	return &types.MealPlanOptionVoteUpdateRequestInput{
-		Points:                  mealPlanOptionVote.Points,
+		Rank:                    mealPlanOptionVote.Rank,
 		Abstain:                 mealPlanOptionVote.Abstain,
 		Notes:                   mealPlanOptionVote.Notes,
 		BelongsToMealPlanOption: mealPlanOptionVote.BelongsToMealPlanOption,
@@ -51,7 +53,7 @@ func BuildFakeMealPlanOptionVoteUpdateRequestInput() *types.MealPlanOptionVoteUp
 // BuildFakeMealPlanOptionVoteUpdateRequestInputFromMealPlanOptionVote builds a faked MealPlanOptionVoteUpdateRequestInput from a meal plan option vote.
 func BuildFakeMealPlanOptionVoteUpdateRequestInputFromMealPlanOptionVote(mealPlanOptionVote *types.MealPlanOptionVote) *types.MealPlanOptionVoteUpdateRequestInput {
 	return &types.MealPlanOptionVoteUpdateRequestInput{
-		Points:                  mealPlanOptionVote.Points,
+		Rank:                    mealPlanOptionVote.Rank,
 		Abstain:                 mealPlanOptionVote.Abstain,
 		Notes:                   mealPlanOptionVote.Notes,
 		BelongsToMealPlanOption: mealPlanOptionVote.BelongsToMealPlanOption,
@@ -68,7 +70,7 @@ func BuildFakeMealPlanOptionVoteCreationRequestInput() *types.MealPlanOptionVote
 func BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(mealPlanOptionVote *types.MealPlanOptionVote) *types.MealPlanOptionVoteCreationRequestInput {
 	return &types.MealPlanOptionVoteCreationRequestInput{
 		ID:                      mealPlanOptionVote.ID,
-		Points:                  mealPlanOptionVote.Points,
+		Rank:                    mealPlanOptionVote.Rank,
 		Abstain:                 mealPlanOptionVote.Abstain,
 		Notes:                   mealPlanOptionVote.Notes,
 		BelongsToMealPlanOption: mealPlanOptionVote.BelongsToMealPlanOption,
@@ -85,7 +87,7 @@ func BuildFakeMealPlanOptionVoteDatabaseCreationInput() *types.MealPlanOptionVot
 func BuildFakeMealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVote(mealPlanOptionVote *types.MealPlanOptionVote) *types.MealPlanOptionVoteDatabaseCreationInput {
 	return &types.MealPlanOptionVoteDatabaseCreationInput{
 		ID:                      mealPlanOptionVote.ID,
-		Points:                  mealPlanOptionVote.Points,
+		Rank:                    mealPlanOptionVote.Rank,
 		Abstain:                 mealPlanOptionVote.Abstain,
 		Notes:                   mealPlanOptionVote.Notes,
 		BelongsToMealPlanOption: mealPlanOptionVote.BelongsToMealPlanOption,

@@ -9,6 +9,7 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 
 	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/internal/database"
@@ -348,7 +349,7 @@ func TestQuerier_MarkHouseholdAsUserDefault(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(markHouseholdAsUserDefaultQuery)).
 			WithArgs(interfaceToDriverValue(markHouseholdAsUserDefaultArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleHouseholdID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.MarkHouseholdAsUserDefault(ctx, exampleUserID, exampleHouseholdID))
 	})
@@ -496,7 +497,7 @@ func TestQuerier_ModifyUserPermissions(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(modifyUserPermissionsQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleHouseholdID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.ModifyUserPermissions(ctx, exampleHouseholdID, exampleUserID, exampleInput))
 	})
@@ -571,7 +572,7 @@ func TestQuerier_TransferHouseholdOwnership(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(transferHouseholdOwnershipQuery)).
 			WithArgs(interfaceToDriverValue(fakeHouseholdTransferArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleHouseholdID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		fakeHouseholdMembershipsTransferArgs := []interface{}{
 			exampleInput.NewOwner,
@@ -581,7 +582,7 @@ func TestQuerier_TransferHouseholdOwnership(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(transferHouseholdMembershipQuery)).
 			WithArgs(interfaceToDriverValue(fakeHouseholdMembershipsTransferArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleHouseholdID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		db.ExpectCommit()
 
@@ -669,7 +670,7 @@ func TestQuerier_TransferHouseholdOwnership(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(transferHouseholdOwnershipQuery)).
 			WithArgs(interfaceToDriverValue(fakeHouseholdTransferArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleHouseholdID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		fakeHouseholdMembershipsTransferArgs := []interface{}{
 			exampleInput.NewOwner,
@@ -705,7 +706,7 @@ func TestQuerier_TransferHouseholdOwnership(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(transferHouseholdOwnershipQuery)).
 			WithArgs(interfaceToDriverValue(fakeHouseholdTransferArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleHouseholdID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		fakeHouseholdMembershipsTransferArgs := []interface{}{
 			exampleInput.NewOwner,
@@ -715,11 +716,53 @@ func TestQuerier_TransferHouseholdOwnership(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(transferHouseholdMembershipQuery)).
 			WithArgs(interfaceToDriverValue(fakeHouseholdMembershipsTransferArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleHouseholdID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		db.ExpectCommit().WillReturnError(errors.New("blah"))
 
 		assert.Error(t, c.TransferHouseholdOwnership(ctx, exampleHouseholdID, exampleInput))
+	})
+}
+
+func TestSQLQuerier_addUserToHousehold(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleInput := fakes.BuildFakeHouseholdUserMembershipDatabaseCreationInput()
+
+		c, db := buildTestClient(t)
+
+		addUserToHouseholdArgs := []interface{}{
+			exampleInput.ID,
+			exampleInput.UserID,
+			exampleInput.HouseholdID,
+			strings.Join(exampleInput.HouseholdRoles, householdMemberRolesSeparator),
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(addUserToHouseholdQuery)).
+			WithArgs(interfaceToDriverValue(addUserToHouseholdArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		err := c.addUserToHousehold(ctx, c.db, exampleInput)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid input", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		c, db := buildTestClient(t)
+
+		err := c.addUserToHousehold(ctx, c.db, nil)
+		assert.Error(t, err)
+
+		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
@@ -742,7 +785,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(removeUserFromHouseholdQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleHouseholdID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.RemoveUserFromHousehold(ctx, exampleUserID, exampleHouseholdID))
 	})

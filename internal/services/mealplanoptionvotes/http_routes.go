@@ -8,8 +8,8 @@ import (
 
 	"github.com/segmentio/ksuid"
 
-	observability "github.com/prixfixeco/api_server/internal/observability"
-	keys "github.com/prixfixeco/api_server/internal/observability/keys"
+	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -48,24 +48,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	// read parsed input struct from request body.
-	providedInput := new(types.MealPlanOptionVoteCreationRequestInput)
-	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
-		observability.AcknowledgeError(err, logger, span, "decoding request")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
-		return
-	}
-
-	if err = providedInput.ValidateWithContext(ctx); err != nil {
-		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	input := types.MealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVoteCreationInput(providedInput)
-	input.ID = ksuid.New().String()
-	tracing.AttachMealPlanOptionVoteIDToSpan(span, input.ID)
-
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
@@ -76,8 +58,26 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 
-	input.BelongsToMealPlanOption = mealPlanOptionID
+	// read parsed input struct from request body.
+	providedInput := new(types.MealPlanOptionVoteCreationRequestInput)
+	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
+		observability.AcknowledgeError(err, logger, span, "decoding request")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		return
+	}
+	providedInput.BelongsToMealPlanOption = mealPlanOptionID
+	providedInput.ByUser = sessionCtxData.Requester.UserID
+
+	if err = providedInput.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	input := types.MealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVoteCreationInput(providedInput)
+	input.ID = ksuid.New().String()
 	input.ByUser = sessionCtxData.Requester.UserID
+	tracing.AttachMealPlanOptionVoteIDToSpan(span, input.ID)
 
 	// create meal plan option vote in database.
 	preWrite := &types.PreWriteMessage{

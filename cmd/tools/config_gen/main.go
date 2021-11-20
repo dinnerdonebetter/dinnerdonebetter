@@ -4,15 +4,16 @@ import (
 	"context"
 	"crypto/rand"
 	"fmt"
+	"github.com/prixfixeco/api_server/internal/database"
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/prixfixeco/api_server/internal/authentication"
 	"github.com/prixfixeco/api_server/internal/config"
-	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
@@ -146,9 +147,10 @@ func encryptAndSaveConfig(ctx context.Context, outputPath string, cfg *config.In
 type configFunc func(ctx context.Context, filePath string) error
 
 var files = map[string]configFunc{
-	"environments/local/service.config":                                   localDevelopmentConfig,
-	"environments/testing/config_files/frontend-tests.config":             frontendTestsConfig,
-	"environments/testing/config_files/integration-tests-postgres.config": buildIntegrationTestForDBImplementation(postgres, devPostgresDBConnDetails),
+	"environments/local/service.config":                                localDevelopmentConfig,
+	"environments/testing/config_files/frontend-tests.config":          frontendTestsConfig,
+	"environments/testing/config_files/integration-tests.config":       integrationTestConfig,
+	"environments/testing/config_files/integration-tests-local.config": localIntegrationTestConfig,
 }
 
 func mustHashPass(password string) string {
@@ -581,223 +583,237 @@ func frontendTestsConfig(ctx context.Context, filePath string) error {
 	return encryptAndSaveConfig(ctx, filePath, cfg)
 }
 
-func buildIntegrationTestForDBImplementation(dbVendor, dbDetails string) configFunc {
-	return func(ctx context.Context, filePath string) error {
-		startupDeadline := time.Minute
-
-		cfg := &config.InstanceConfig{
-			Meta: config.MetaSettings{
-				Debug:   false,
-				RunMode: testingEnv,
+func buildIntegrationTestsConfig() *config.InstanceConfig {
+	return &config.InstanceConfig{
+		Meta: config.MetaSettings{
+			Debug:   false,
+			RunMode: testingEnv,
+		},
+		Events: msgconfig.Config{
+			Provider: msgconfig.ProviderRedis,
+			RedisConfig: msgconfig.RedisConfig{
+				QueueAddress: workerQueueAddress,
 			},
-			Events: msgconfig.Config{
-				Provider: msgconfig.ProviderRedis,
-				RedisConfig: msgconfig.RedisConfig{
-					QueueAddress: workerQueueAddress,
-				},
+		},
+		Encoding: encoding.Config{
+			ContentType: contentTypeJSON,
+		},
+		Server: server.Config{
+			Debug:           false,
+			HTTPPort:        defaultPort,
+			StartupDeadline: time.Minute,
+		},
+		Database: dbconfig.Config{
+			Debug:             false,
+			RunMigrations:     true,
+			Provider:          "postgres",
+			MaxPingAttempts:   maxAttempts,
+			ConnectionDetails: devPostgresDBConnDetails,
+		},
+		Observability: observability.Config{
+			Metrics: metrics.Config{
+				Provider:                         "",
+				RouteToken:                       "",
+				RuntimeMetricsCollectionInterval: time.Second,
 			},
-			Encoding: encoding.Config{
-				ContentType: contentTypeJSON,
+			Tracing: localTracingConfig,
+		},
+		Uploads: uploads.Config{
+			Debug: false,
+			Storage: storage.Config{
+				Provider:    "memory",
+				BucketName:  "avatars",
+				AzureConfig: nil,
+				GCSConfig:   nil,
+				S3Config:    nil,
 			},
-			Server: server.Config{
-				Debug:           false,
-				HTTPPort:        defaultPort,
-				StartupDeadline: startupDeadline,
+		},
+		Search: search.Config{
+			Provider: search.ElasticsearchProvider,
+			Address:  localElasticsearchLocation,
+		},
+		Services: config.ServicesConfigurations{
+			Households: householdsservice.Config{
+				PreWritesTopicName: preWritesTopicName,
 			},
-			Database: dbconfig.Config{
-				Debug:             false,
-				RunMigrations:     true,
-				Provider:          dbVendor,
-				MaxPingAttempts:   maxAttempts,
-				ConnectionDetails: database.ConnectionDetails(dbDetails),
+			HouseholdInvitations: householdinvitationsservice.Config{
+				PreWritesTopicName: preWritesTopicName,
 			},
-			Observability: observability.Config{
-				Metrics: metrics.Config{
-					Provider:                         "",
-					RouteToken:                       "",
-					RuntimeMetricsCollectionInterval: time.Second,
+			Auth: authservice.Config{
+				PASETO: authservice.PASETOConfig{
+					Issuer:       "prixfixe_service",
+					Lifetime:     defaultPASETOLifetime,
+					LocalModeKey: examplePASETOKey,
 				},
-				Tracing: localTracingConfig,
+				Cookies: authservice.CookieConfig{
+					Name:       defaultCookieName,
+					Domain:     defaultCookieDomain,
+					HashKey:    debugCookieSecret,
+					SigningKey: debugCookieSigningKey,
+					Lifetime:   authservice.DefaultCookieLifetime,
+					SecureOnly: false,
+				},
+				Debug:                 false,
+				EnableUserSignup:      true,
+				MinimumUsernameLength: 4,
+				MinimumPasswordLength: 8,
 			},
-			Uploads: uploads.Config{
-				Debug: false,
-				Storage: storage.Config{
-					Provider:    "memory",
-					BucketName:  "avatars",
-					AzureConfig: nil,
-					GCSConfig:   nil,
-					S3Config:    nil,
-				},
+			Webhooks: webhooksservice.Config{
+				PreWritesTopicName:   preWritesTopicName,
+				PreArchivesTopicName: preArchivesTopicName,
 			},
-			Search: search.Config{
-				Provider: search.ElasticsearchProvider,
-				Address:  localElasticsearchLocation,
-			},
-			Services: config.ServicesConfigurations{
-				Households: householdsservice.Config{
-					PreWritesTopicName: preWritesTopicName,
-				},
-				HouseholdInvitations: householdinvitationsservice.Config{
-					PreWritesTopicName: preWritesTopicName,
-				},
-				Auth: authservice.Config{
-					PASETO: authservice.PASETOConfig{
-						Issuer:       "prixfixe_service",
-						Lifetime:     defaultPASETOLifetime,
-						LocalModeKey: examplePASETOKey,
-					},
-					Cookies: authservice.CookieConfig{
-						Name:       defaultCookieName,
-						Domain:     defaultCookieDomain,
-						HashKey:    debugCookieSecret,
-						SigningKey: debugCookieSigningKey,
-						Lifetime:   authservice.DefaultCookieLifetime,
-						SecureOnly: false,
-					},
-					Debug:                 false,
-					EnableUserSignup:      true,
-					MinimumUsernameLength: 4,
-					MinimumPasswordLength: 8,
-				},
-				Webhooks: webhooksservice.Config{
-					PreWritesTopicName:   preWritesTopicName,
-					PreArchivesTopicName: preArchivesTopicName,
-				},
-				Websockets: websocketsservice.Config{
-					Logging: logging.Config{
-						Name:     "webhook",
-						Level:    logging.InfoLevel,
-						Provider: logging.ProviderZerolog,
-					},
-				},
-				ValidInstruments: validinstrumentsservice.Config{
-					SearchIndexPath:      localElasticsearchLocation,
-					PreWritesTopicName:   preWritesTopicName,
-					PreUpdatesTopicName:  preUpdatesTopicName,
-					PreArchivesTopicName: preArchivesTopicName,
-					Logging: logging.Config{
-						Name:     "valid_instruments",
-						Level:    logging.InfoLevel,
-						Provider: logging.ProviderZerolog,
-					},
-				},
-				ValidIngredients: validingredientsservice.Config{
-					SearchIndexPath:      localElasticsearchLocation,
-					PreWritesTopicName:   preWritesTopicName,
-					PreUpdatesTopicName:  preUpdatesTopicName,
-					PreArchivesTopicName: preArchivesTopicName,
-					Logging: logging.Config{
-						Name:     "valid_ingredients",
-						Level:    logging.InfoLevel,
-						Provider: logging.ProviderZerolog,
-					},
-				},
-				ValidPreparations: validpreparationsservice.Config{
-					SearchIndexPath:      localElasticsearchLocation,
-					PreWritesTopicName:   preWritesTopicName,
-					PreUpdatesTopicName:  preUpdatesTopicName,
-					PreArchivesTopicName: preArchivesTopicName,
-					Logging: logging.Config{
-						Name:     "valid_preparations",
-						Level:    logging.InfoLevel,
-						Provider: logging.ProviderZerolog,
-					},
-				},
-				ValidIngredientPreparations: validingredientpreparationsservice.Config{
-					PreWritesTopicName:   preWritesTopicName,
-					PreUpdatesTopicName:  preUpdatesTopicName,
-					PreArchivesTopicName: preArchivesTopicName,
-					Logging: logging.Config{
-						Name:     "valid_ingredient_preparations",
-						Level:    logging.InfoLevel,
-						Provider: logging.ProviderZerolog,
-					},
-				},
-				Recipes: recipesservice.Config{
-					PreWritesTopicName:   preWritesTopicName,
-					PreUpdatesTopicName:  preUpdatesTopicName,
-					PreArchivesTopicName: preArchivesTopicName,
-					Logging: logging.Config{
-						Name:     "recipes",
-						Level:    logging.InfoLevel,
-						Provider: logging.ProviderZerolog,
-					},
-				},
-				RecipeSteps: recipestepsservice.Config{
-					PreWritesTopicName:   preWritesTopicName,
-					PreUpdatesTopicName:  preUpdatesTopicName,
-					PreArchivesTopicName: preArchivesTopicName,
-					Logging: logging.Config{
-						Name:     "recipe_steps",
-						Level:    logging.InfoLevel,
-						Provider: logging.ProviderZerolog,
-					},
-				},
-				RecipeStepInstruments: recipestepinstrumentsservice.Config{
-					PreWritesTopicName:   preWritesTopicName,
-					PreUpdatesTopicName:  preUpdatesTopicName,
-					PreArchivesTopicName: preArchivesTopicName,
-					Logging: logging.Config{
-						Name:     "recipe_step_instruments",
-						Level:    logging.InfoLevel,
-						Provider: logging.ProviderZerolog,
-					},
-				},
-				RecipeStepIngredients: recipestepingredientsservice.Config{
-					PreWritesTopicName:   preWritesTopicName,
-					PreUpdatesTopicName:  preUpdatesTopicName,
-					PreArchivesTopicName: preArchivesTopicName,
-					Logging: logging.Config{
-						Name:     "recipe_step_ingredients",
-						Level:    logging.InfoLevel,
-						Provider: logging.ProviderZerolog,
-					},
-				},
-				RecipeStepProducts: recipestepproductsservice.Config{
-					PreWritesTopicName:   preWritesTopicName,
-					PreUpdatesTopicName:  preUpdatesTopicName,
-					PreArchivesTopicName: preArchivesTopicName,
-					Logging: logging.Config{
-						Name:     "recipe_step_products",
-						Level:    logging.InfoLevel,
-						Provider: logging.ProviderZerolog,
-					},
-				},
-				MealPlans: mealplansservice.Config{
-					PreWritesTopicName:   preWritesTopicName,
-					PreUpdatesTopicName:  preUpdatesTopicName,
-					PreArchivesTopicName: preArchivesTopicName,
-					Logging: logging.Config{
-						Name:     "meal_plans",
-						Level:    logging.InfoLevel,
-						Provider: logging.ProviderZerolog,
-					},
-				},
-				MealPlanOptions: mealplanoptionsservice.Config{
-					PreWritesTopicName:   preWritesTopicName,
-					PreUpdatesTopicName:  preUpdatesTopicName,
-					PreArchivesTopicName: preArchivesTopicName,
-					Logging: logging.Config{
-						Name:     "meal_plan_options",
-						Level:    logging.InfoLevel,
-						Provider: logging.ProviderZerolog,
-					},
-				},
-				MealPlanOptionVotes: mealplanoptionvotesservice.Config{
-					PreWritesTopicName:   preWritesTopicName,
-					PreUpdatesTopicName:  preUpdatesTopicName,
-					PreArchivesTopicName: preArchivesTopicName,
-					Logging: logging.Config{
-						Name:     "meal_plan_option_votes",
-						Level:    logging.InfoLevel,
-						Provider: logging.ProviderZerolog,
-					},
+			Websockets: websocketsservice.Config{
+				Logging: logging.Config{
+					Name:     "webhook",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
 				},
 			},
-		}
-
-		return encryptAndSaveConfig(ctx, filePath, cfg)
+			ValidInstruments: validinstrumentsservice.Config{
+				SearchIndexPath:      localElasticsearchLocation,
+				PreWritesTopicName:   preWritesTopicName,
+				PreUpdatesTopicName:  preUpdatesTopicName,
+				PreArchivesTopicName: preArchivesTopicName,
+				Logging: logging.Config{
+					Name:     "valid_instruments",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			ValidIngredients: validingredientsservice.Config{
+				SearchIndexPath:      localElasticsearchLocation,
+				PreWritesTopicName:   preWritesTopicName,
+				PreUpdatesTopicName:  preUpdatesTopicName,
+				PreArchivesTopicName: preArchivesTopicName,
+				Logging: logging.Config{
+					Name:     "valid_ingredients",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			ValidPreparations: validpreparationsservice.Config{
+				SearchIndexPath:      localElasticsearchLocation,
+				PreWritesTopicName:   preWritesTopicName,
+				PreUpdatesTopicName:  preUpdatesTopicName,
+				PreArchivesTopicName: preArchivesTopicName,
+				Logging: logging.Config{
+					Name:     "valid_preparations",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			ValidIngredientPreparations: validingredientpreparationsservice.Config{
+				PreWritesTopicName:   preWritesTopicName,
+				PreUpdatesTopicName:  preUpdatesTopicName,
+				PreArchivesTopicName: preArchivesTopicName,
+				Logging: logging.Config{
+					Name:     "valid_ingredient_preparations",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			Recipes: recipesservice.Config{
+				PreWritesTopicName:   preWritesTopicName,
+				PreUpdatesTopicName:  preUpdatesTopicName,
+				PreArchivesTopicName: preArchivesTopicName,
+				Logging: logging.Config{
+					Name:     "recipes",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			RecipeSteps: recipestepsservice.Config{
+				PreWritesTopicName:   preWritesTopicName,
+				PreUpdatesTopicName:  preUpdatesTopicName,
+				PreArchivesTopicName: preArchivesTopicName,
+				Logging: logging.Config{
+					Name:     "recipe_steps",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			RecipeStepInstruments: recipestepinstrumentsservice.Config{
+				PreWritesTopicName:   preWritesTopicName,
+				PreUpdatesTopicName:  preUpdatesTopicName,
+				PreArchivesTopicName: preArchivesTopicName,
+				Logging: logging.Config{
+					Name:     "recipe_step_instruments",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			RecipeStepIngredients: recipestepingredientsservice.Config{
+				PreWritesTopicName:   preWritesTopicName,
+				PreUpdatesTopicName:  preUpdatesTopicName,
+				PreArchivesTopicName: preArchivesTopicName,
+				Logging: logging.Config{
+					Name:     "recipe_step_ingredients",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			RecipeStepProducts: recipestepproductsservice.Config{
+				PreWritesTopicName:   preWritesTopicName,
+				PreUpdatesTopicName:  preUpdatesTopicName,
+				PreArchivesTopicName: preArchivesTopicName,
+				Logging: logging.Config{
+					Name:     "recipe_step_products",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			MealPlans: mealplansservice.Config{
+				PreWritesTopicName:   preWritesTopicName,
+				PreUpdatesTopicName:  preUpdatesTopicName,
+				PreArchivesTopicName: preArchivesTopicName,
+				Logging: logging.Config{
+					Name:     "meal_plans",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			MealPlanOptions: mealplanoptionsservice.Config{
+				PreWritesTopicName:   preWritesTopicName,
+				PreUpdatesTopicName:  preUpdatesTopicName,
+				PreArchivesTopicName: preArchivesTopicName,
+				Logging: logging.Config{
+					Name:     "meal_plan_options",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			MealPlanOptionVotes: mealplanoptionvotesservice.Config{
+				PreWritesTopicName:   preWritesTopicName,
+				PreUpdatesTopicName:  preUpdatesTopicName,
+				PreArchivesTopicName: preArchivesTopicName,
+				Logging: logging.Config{
+					Name:     "meal_plan_option_votes",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+		},
 	}
+}
+
+func integrationTestConfig(ctx context.Context, filePath string) error {
+	cfg := buildIntegrationTestsConfig()
+
+	return encryptAndSaveConfig(ctx, filePath, cfg)
+}
+
+func localIntegrationTestConfig(ctx context.Context, filePath string) error {
+	cfg := buildIntegrationTestsConfig()
+
+	cfg.Events.RedisConfig.QueueAddress = msgconfig.MessageQueueAddress(strings.ReplaceAll(workerQueueAddress, "worker_queue", "localhost"))
+	cfg.Search.Address = search.IndexPath(strings.ReplaceAll(localElasticsearchLocation, "elasticsearch", "localhost"))
+	cfg.Database.ConnectionDetails = database.ConnectionDetails(strings.ReplaceAll(devPostgresDBConnDetails, "pgdatabase", "localhost"))
+
+	cfg.Services.ValidInstruments.SearchIndexPath = strings.ReplaceAll(localElasticsearchLocation, "elasticsearch", "localhost")
+	cfg.Services.ValidIngredients.SearchIndexPath = strings.ReplaceAll(localElasticsearchLocation, "elasticsearch", "localhost")
+	cfg.Services.ValidPreparations.SearchIndexPath = strings.ReplaceAll(localElasticsearchLocation, "elasticsearch", "localhost")
+
+	return encryptAndSaveConfig(ctx, filePath, cfg)
 }
 
 func main() {

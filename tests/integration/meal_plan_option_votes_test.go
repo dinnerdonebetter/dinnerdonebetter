@@ -16,7 +16,7 @@ func checkMealPlanOptionVoteEquality(t *testing.T, expected, actual *types.MealP
 	t.Helper()
 
 	assert.NotZero(t, actual.ID)
-	assert.Equal(t, expected.Points, actual.Points, "expected Points for meal plan option vote %s to be %v, but it was %v", expected.ID, expected.Points, actual.Points)
+	assert.Equal(t, expected.Rank, actual.Rank, "expected Rank for meal plan option vote %s to be %v, but it was %v", expected.ID, expected.Rank, actual.Rank)
 	assert.Equal(t, expected.Abstain, actual.Abstain, "expected Abstain for meal plan option vote %s to be %v, but it was %v", expected.ID, expected.Abstain, actual.Abstain)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for meal plan option vote %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.NotZero(t, actual.CreatedOn)
@@ -25,9 +25,10 @@ func checkMealPlanOptionVoteEquality(t *testing.T, expected, actual *types.MealP
 // convertMealPlanOptionVoteToMealPlanOptionVoteUpdateInput creates an MealPlanOptionVoteUpdateRequestInput struct from a meal plan option vote.
 func convertMealPlanOptionVoteToMealPlanOptionVoteUpdateInput(x *types.MealPlanOptionVote) *types.MealPlanOptionVoteUpdateRequestInput {
 	return &types.MealPlanOptionVoteUpdateRequestInput{
-		Points:  x.Points,
-		Abstain: x.Abstain,
-		Notes:   x.Notes,
+		Rank:                    x.Rank,
+		Abstain:                 x.Abstain,
+		Notes:                   x.Notes,
+		BelongsToMealPlanOption: x.BelongsToMealPlanOption,
 	}
 }
 
@@ -40,7 +41,7 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -64,7 +65,7 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 			t.Logf("meal plan option vote %q created", createdMealPlanOptionVoteID)
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.MealPlanOptionVoteDataType)
+			assert.Equal(t, types.MealPlanOptionVoteDataType, n.DataType)
 			require.NotNil(t, n.MealPlanOptionVote)
 			checkMealPlanOptionVoteEquality(t, exampleMealPlanOptionVote, n.MealPlanOptionVote)
 
@@ -79,8 +80,11 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 			createdMealPlanOptionVote.Update(convertMealPlanOptionVoteToMealPlanOptionVoteUpdateInput(newMealPlanOptionVote))
 			assert.NoError(t, testClients.main.UpdateMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOptionVote))
 
+			// one for the option vote
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.MealPlanOptionVoteDataType)
+			// one for the option
+			n = <-notificationsChan
+			// can't predict which order :'(
 
 			t.Log("fetching changed meal plan option vote")
 			actual, err := testClients.main.GetMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVoteID)
@@ -177,7 +181,7 @@ func (s *TestSuite) TestMealPlanOptionVotes_Listing() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -201,7 +205,7 @@ func (s *TestSuite) TestMealPlanOptionVotes_Listing() {
 			t.Logf("meal plan option vote %q created", createdMealPlanOptionVoteID)
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.MealPlanOptionVoteDataType)
+			assert.Equal(t, types.MealPlanOptionVoteDataType, n.DataType)
 			require.NotNil(t, n.MealPlanOptionVote)
 			checkMealPlanOptionVoteEquality(t, exampleMealPlanOptionVote, n.MealPlanOptionVote)
 

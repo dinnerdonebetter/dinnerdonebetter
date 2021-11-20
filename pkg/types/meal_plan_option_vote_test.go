@@ -2,6 +2,7 @@ package types
 
 import (
 	"context"
+	"math"
 	"testing"
 
 	fake "github.com/brianvoe/gofakeit/v5"
@@ -15,9 +16,10 @@ func TestMealPlanOptionVoteCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionVoteCreationRequestInput{
-			Points:  fake.Int16(),
-			Abstain: fake.Bool(),
-			Notes:   fake.LoremIpsumSentence(exampleQuantity),
+			Abstain:                 fake.Bool(),
+			Rank:                    uint8(fake.Number(1, math.MaxUint8)),
+			Notes:                   fake.LoremIpsumSentence(exampleQuantity),
+			BelongsToMealPlanOption: t.Name(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -41,9 +43,10 @@ func TestMealPlanOptionVoteUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionVoteUpdateRequestInput{
-			Points:  fake.Int16(),
-			Abstain: fake.Bool(),
-			Notes:   fake.LoremIpsumSentence(exampleQuantity),
+			Rank:                    uint8(fake.Number(1, math.MaxUint8)),
+			Abstain:                 fake.Bool(),
+			Notes:                   fake.LoremIpsumSentence(exampleQuantity),
+			BelongsToMealPlanOption: t.Name(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

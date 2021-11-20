@@ -447,7 +447,7 @@ func TestQuerier_CreateAPIClient(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(createAPIClientQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleAPIClient.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
 			return exampleAPIClient.CreatedOn
@@ -535,7 +535,7 @@ func TestQuerier_ArchiveAPIClient(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(archiveAPIClientQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleAPIClientID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.ArchiveAPIClient(ctx, exampleAPIClientID, exampleUserID))
 

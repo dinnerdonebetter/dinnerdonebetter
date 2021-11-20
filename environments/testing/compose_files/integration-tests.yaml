@@ -9,7 +9,7 @@ services:
             CONFIGURATION_FILEPATH: '/etc/service.config'
             PRIXFIXE_WORKERS_LOCAL_CONFIG_STORE_KEY: 'SUFNQVdBUkVUSEFUVEhJU1NFQ1JFVElTVU5TRUNVUkU='
         volumes:
-            - source: '../../../environments/testing/config_files/integration-tests-postgres.config'
+            - source: '../../../environments/testing/config_files/integration-tests.config'
               target: '/etc/service.config'
               type: 'bind'
     prixfixe_api_server:
@@ -19,10 +19,6 @@ services:
 #            driver: none
         depends_on:
             - workers
-        links:
-            - redis
-            - postgres
-            - elasticsearch
         environment:
             USE_NOOP_LOGGER: 'nope'
             CONFIGURATION_FILEPATH: '/etc/service.config'
@@ -39,13 +35,13 @@ services:
             - source: '../../../environments/local/certificates/key.pem'
               target: '/etc/certs/key.pem'
               type: 'bind'
-            - source: '../../../environments/testing/config_files/integration-tests-postgres.config'
+            - source: '../../../environments/testing/config_files/integration-tests.config'
               target: '/etc/service.config'
               type: 'bind'
     test:
         environment:
             TARGET_ADDRESS: 'http://api_server:8888'
-            DATABASE_ADDRESS: 'postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable'
+            TARGET_DATABASE: 'postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable'
         depends_on:
             - workers
         links:

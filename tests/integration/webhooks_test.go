@@ -31,7 +31,7 @@ func (s *TestSuite) TestWebhooks_Creating() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -42,7 +42,7 @@ func (s *TestSuite) TestWebhooks_Creating() {
 			require.NoError(t, err)
 
 			n := <-notificationsChan
-			assert.Equal(t, n.DataType, types.WebhookDataType)
+			assert.Equal(t, types.WebhookDataType, n.DataType)
 			require.NotNil(t, n.Webhook)
 			checkWebhookEquality(t, exampleWebhook, n.Webhook)
 
@@ -118,7 +118,7 @@ func (s *TestSuite) TestWebhooks_Listing() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -132,7 +132,7 @@ func (s *TestSuite) TestWebhooks_Listing() {
 				require.NoError(t, webhookCreationErr)
 
 				n := <-notificationsChan
-				assert.Equal(t, n.DataType, types.WebhookDataType)
+				assert.Equal(t, types.WebhookDataType, n.DataType)
 				require.NotNil(t, n.Webhook)
 				checkWebhookEquality(t, exampleWebhook, n.Webhook)
 

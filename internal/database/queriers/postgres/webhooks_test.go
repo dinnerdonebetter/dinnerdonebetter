@@ -323,6 +323,23 @@ func TestQuerier_GetAllWebhooksCount(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		db.ExpectQuery(formatQueryForSQLMock(getAllWebhooksCountQuery)).
+			WithArgs().
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.GetAllWebhooksCount(ctx)
+		assert.Error(t, err)
+		assert.Zero(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
 }
 
 func TestQuerier_GetWebhooks(T *testing.T) {
@@ -465,7 +482,7 @@ func TestQuerier_CreateWebhook(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(createWebhookQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleWebhook.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
 			return exampleWebhook.CreatedOn
@@ -542,7 +559,7 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(archiveWebhookQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleWebhookID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		actual := c.ArchiveWebhook(ctx, exampleWebhookID, exampleHouseholdID)
 		assert.NoError(t, actual)

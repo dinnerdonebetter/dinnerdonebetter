@@ -24,14 +24,14 @@ type (
 	// MealPlanOptionVote represents a meal plan option vote.
 	MealPlanOptionVote struct {
 		_                       struct{}
-		ArchivedOn              *uint64 `json:"archivedOn"`
 		LastUpdatedOn           *uint64 `json:"lastUpdatedOn"`
-		BelongsToMealPlanOption string  `json:"belongsToMealPlanOption"`
-		Notes                   string  `json:"notes"`
+		ArchivedOn              *uint64 `json:"archivedOn"`
 		ID                      string  `json:"id"`
+		Notes                   string  `json:"notes"`
+		BelongsToMealPlanOption string  `json:"belongsToMealPlanOption"`
 		ByUser                  string  `json:"byUser"`
 		CreatedOn               uint64  `json:"createdOn"`
-		Points                  int16   `json:"points"`
+		Rank                    uint8   `json:"rank"`
 		Abstain                 bool    `json:"abstain"`
 	}
 
@@ -49,7 +49,7 @@ type (
 		Notes                   string `json:"notes"`
 		ByUser                  string `json:"-"`
 		BelongsToMealPlanOption string `json:"-"`
-		Points                  int16  `json:"points"`
+		Rank                    uint8  `json:"rank"`
 		Abstain                 bool   `json:"abstain"`
 	}
 
@@ -60,7 +60,7 @@ type (
 		Notes                   string `json:"notes"`
 		ByUser                  string `json:"byUser"`
 		BelongsToMealPlanOption string `json:"belongsToMealPlanOption"`
-		Points                  int16  `json:"points"`
+		Rank                    uint8  `json:"rank"`
 		Abstain                 bool   `json:"abstain"`
 	}
 
@@ -69,7 +69,7 @@ type (
 		_                       struct{}
 		Notes                   string `json:"notes"`
 		BelongsToMealPlanOption string `json:"belongsToMealPlanOption"`
-		Points                  int16  `json:"points"`
+		Rank                    uint8  `json:"rank"`
 		Abstain                 bool   `json:"abstain"`
 	}
 
@@ -97,8 +97,8 @@ type (
 
 // Update merges an MealPlanOptionVoteUpdateRequestInput with a meal plan option vote.
 func (x *MealPlanOptionVote) Update(input *MealPlanOptionVoteUpdateRequestInput) {
-	if input.Points != 0 && input.Points != x.Points {
-		x.Points = input.Points
+	if input.Rank != 0 && input.Rank != x.Rank {
+		x.Rank = input.Rank
 	}
 
 	if input.Abstain != x.Abstain {
@@ -117,8 +117,8 @@ func (x *MealPlanOptionVoteCreationRequestInput) ValidateWithContext(ctx context
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.Points, validation.Required),
-		validation.Field(&x.Notes, validation.Required),
+		validation.Field(&x.BelongsToMealPlanOption, validation.Required),
+		// we cannot validate rank because zero is a valid value.
 	)
 }
 
@@ -130,19 +130,20 @@ func (x *MealPlanOptionVoteDatabaseCreationInput) ValidateWithContext(ctx contex
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
-		validation.Field(&x.Points, validation.Required),
+		validation.Field(&x.BelongsToMealPlanOption, validation.Required),
+		// we cannot validate rank because zero is a valid value.
 		validation.Field(&x.ByUser, validation.Required),
-		validation.Field(&x.Notes, validation.Required),
 	)
 }
 
 // MealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVoteCreationInput creates a DatabaseCreationInput from a CreationInput.
 func MealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVoteCreationInput(input *MealPlanOptionVoteCreationRequestInput) *MealPlanOptionVoteDatabaseCreationInput {
 	x := &MealPlanOptionVoteDatabaseCreationInput{
-		Points:  input.Points,
-		Abstain: input.Abstain,
-		ByUser:  input.ByUser,
-		Notes:   input.Notes,
+		Notes:                   input.Notes,
+		ByUser:                  input.ByUser,
+		BelongsToMealPlanOption: input.BelongsToMealPlanOption,
+		Rank:                    input.Rank,
+		Abstain:                 input.Abstain,
 	}
 
 	return x
@@ -155,7 +156,7 @@ func (x *MealPlanOptionVoteUpdateRequestInput) ValidateWithContext(ctx context.C
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.Points, validation.Required),
-		validation.Field(&x.Notes, validation.Required),
+		// we cannot validate rank because zero is a valid value.
+		validation.Field(&x.BelongsToMealPlanOption, validation.Required),
 	)
 }

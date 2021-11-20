@@ -12,8 +12,8 @@ import (
 
 var _ DataManager = (*MockDatabase)(nil)
 
-// BuildMockDatabase builds a mock database.
-func BuildMockDatabase() *MockDatabase {
+// NewMockDatabase builds a mock database.
+func NewMockDatabase() *MockDatabase {
 	return &MockDatabase{
 		HouseholdDataManager:                  &mocktypes.HouseholdDataManager{},
 		HouseholdInvitationDataManager:        &mocktypes.HouseholdInvitationDataManager{},

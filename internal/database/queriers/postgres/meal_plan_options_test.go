@@ -6,12 +6,14 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"resenje.org/schulze"
 
-	database "github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
@@ -28,7 +30,10 @@ func buildMockRowsFromMealPlanOptions(includeCounts bool, filteredCount uint64, 
 	for _, x := range mealPlanOptions {
 		rowValues := []driver.Value{
 			x.ID,
-			x.DayOfWeek,
+			x.Day,
+			x.MealName,
+			x.Chosen,
+			x.TieBroken,
 			x.RecipeID,
 			x.Notes,
 			x.CreatedOn,
@@ -198,6 +203,7 @@ func TestQuerier_GetMealPlanOption(T *testing.T) {
 
 		exampleMealPlanID := fakes.BuildFakeID()
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
+		exampleMealPlanOption.Votes = []*types.MealPlanOptionVote{}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -323,6 +329,10 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 		exampleMealPlanID := fakes.BuildFakeID()
 		exampleMealPlanOptionList := fakes.BuildFakeMealPlanOptionList()
 
+		for i := range exampleMealPlanOptionList.MealPlanOptions {
+			exampleMealPlanOptionList.MealPlanOptions[i].Votes = []*types.MealPlanOptionVote{}
+		}
+
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
@@ -360,6 +370,10 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 		exampleMealPlanOptionList := fakes.BuildFakeMealPlanOptionList()
 		exampleMealPlanOptionList.Page = 0
 		exampleMealPlanOptionList.Limit = 0
+
+		for i := range exampleMealPlanOptionList.MealPlanOptions {
+			exampleMealPlanOptionList.MealPlanOptions[i].Votes = []*types.MealPlanOptionVote{}
+		}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -430,6 +444,9 @@ func TestQuerier_GetMealPlanOptionsWithIDs(T *testing.T) {
 
 		exampleMealPlanID := fakes.BuildFakeID()
 		exampleMealPlanOptionList := fakes.BuildFakeMealPlanOptionList()
+		for i := range exampleMealPlanOptionList.MealPlanOptions {
+			exampleMealPlanOptionList.MealPlanOptions[i].Votes = []*types.MealPlanOptionVote{}
+		}
 
 		var exampleIDs []string
 		for _, x := range exampleMealPlanOptionList.MealPlanOptions {
@@ -543,6 +560,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 		exampleMealPlanOption.ID = "1"
+		exampleMealPlanOption.Votes = []*types.MealPlanOptionVote{}
 		exampleInput := fakes.BuildFakeMealPlanOptionDatabaseCreationInputFromMealPlanOption(exampleMealPlanOption)
 
 		ctx := context.Background()
@@ -550,7 +568,8 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 
 		args := []interface{}{
 			exampleInput.ID,
-			exampleInput.DayOfWeek,
+			exampleInput.Day,
+			exampleInput.MealName,
 			exampleInput.RecipeID,
 			exampleInput.Notes,
 			exampleInput.BelongsToMealPlan,
@@ -558,7 +577,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(mealPlanOptionCreationQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleMealPlanOption.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() uint64 {
 			return exampleMealPlanOption.CreatedOn
@@ -594,7 +613,8 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 
 		args := []interface{}{
 			exampleInput.ID,
-			exampleInput.DayOfWeek,
+			exampleInput.Day,
+			exampleInput.MealName,
 			exampleInput.RecipeID,
 			exampleInput.Notes,
 			exampleInput.BelongsToMealPlan,
@@ -629,8 +649,9 @@ func TestQuerier_UpdateMealPlanOption(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleMealPlanOption.DayOfWeek,
+			exampleMealPlanOption.Day,
 			exampleMealPlanOption.RecipeID,
+			exampleMealPlanOption.MealName,
 			exampleMealPlanOption.Notes,
 			exampleMealPlanOption.BelongsToMealPlan,
 			exampleMealPlanOption.ID,
@@ -638,7 +659,7 @@ func TestQuerier_UpdateMealPlanOption(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(updateMealPlanOptionQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleMealPlanOption.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.UpdateMealPlanOption(ctx, exampleMealPlanOption))
 
@@ -663,8 +684,9 @@ func TestQuerier_UpdateMealPlanOption(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleMealPlanOption.DayOfWeek,
+			exampleMealPlanOption.Day,
 			exampleMealPlanOption.RecipeID,
+			exampleMealPlanOption.MealName,
 			exampleMealPlanOption.Notes,
 			exampleMealPlanOption.BelongsToMealPlan,
 			exampleMealPlanOption.ID,
@@ -699,7 +721,7 @@ func TestQuerier_ArchiveMealPlanOption(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(archiveMealPlanOptionQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult(exampleMealPlanOption.ID))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		assert.NoError(t, c.ArchiveMealPlanOption(ctx, exampleMealPlanID, exampleMealPlanOption.ID))
 
@@ -749,5 +771,799 @@ func TestQuerier_ArchiveMealPlanOption(T *testing.T) {
 		assert.Error(t, c.ArchiveMealPlanOption(ctx, exampleMealPlanID, exampleMealPlanOption.ID))
 
 		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func Test_determineWinner(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		c, _ := buildTestClient(t)
+
+		expected := "blah blah blah"
+		exampleWinners := []schulze.Score{
+			{
+				Choice: t.Name(),
+				Wins:   1,
+			},
+			{
+				Choice: "",
+				Wins:   2,
+			},
+			{
+				Choice: expected,
+				Wins:   3,
+			},
+		}
+
+		actual := c.determineWinner(exampleWinners)
+
+		assert.Equal(t, expected, actual)
+	})
+
+	T.Run("with tie", func(t *testing.T) {
+		t.Parallel()
+
+		c, _ := buildTestClient(t)
+
+		expectedA := "blah blah blah"
+		expectedB := "beeble beeble"
+		exampleWinners := []schulze.Score{
+			{
+				Choice: expectedA,
+				Wins:   3,
+			},
+			{
+				Choice: "",
+				Wins:   1,
+			},
+			{
+				Choice: expectedB,
+				Wins:   3,
+			},
+		}
+
+		actual := c.determineWinner(exampleWinners)
+
+		assert.True(t, expectedA == actual || expectedB == actual)
+	})
+}
+
+func Test_decideOptionWinner(T *testing.T) {
+	T.Parallel()
+
+	optionA := "eggs benedict"
+	optionB := "scrambled eggs"
+	optionC := "buttered toast"
+	userID1 := fakes.BuildFakeID()
+	userID2 := fakes.BuildFakeID()
+	userID3 := fakes.BuildFakeID()
+	userID4 := fakes.BuildFakeID()
+
+	T.Run("with clear winner", func(t *testing.T) {
+		t.Parallel()
+
+		c, _ := buildTestClient(t)
+
+		expected := optionA
+		exampleOptions := []*types.MealPlanOption{
+			{
+				ID:       optionA,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    0,
+						ByUser:                  userID1,
+					},
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    0,
+						ByUser:                  userID2,
+					},
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    1,
+						ByUser:                  userID3,
+					},
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    2,
+						ByUser:                  userID4,
+					},
+				},
+			},
+			{
+				ID:       optionB,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    0,
+						ByUser:                  userID3,
+					},
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    1,
+						ByUser:                  userID2,
+					},
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    1,
+						ByUser:                  userID4,
+					},
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    2,
+						ByUser:                  userID1,
+					},
+				},
+			},
+			{
+				ID:       optionC,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    0,
+						ByUser:                  userID4,
+					},
+
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    1,
+						ByUser:                  userID1,
+					},
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    2,
+						ByUser:                  userID2,
+					},
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    2,
+						ByUser:                  userID3,
+					},
+				},
+			},
+		}
+
+		actual, tiebroken := c.decideOptionWinner(exampleOptions)
+		assert.Equal(t, expected, actual)
+		assert.False(t, tiebroken)
+	})
+
+	T.Run("with tie", func(t *testing.T) {
+		t.Parallel()
+
+		c, _ := buildTestClient(t)
+
+		exampleOptions := []*types.MealPlanOption{
+			{
+				ID:       optionA,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    0,
+						ByUser:                  userID1,
+					},
+				},
+			},
+			{
+				ID:       optionB,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    0,
+						ByUser:                  userID2,
+					},
+				},
+			},
+		}
+
+		actual, tiebroken := c.decideOptionWinner(exampleOptions)
+		assert.NotEmpty(t, actual)
+		assert.True(t, tiebroken)
+	})
+
+	T.Run("without enough votes", func(t *testing.T) {
+		t.Parallel()
+
+		c, _ := buildTestClient(t)
+
+		exampleOptions := []*types.MealPlanOption{
+			{
+				ID:       optionA,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes:    nil,
+			},
+		}
+
+		actual, tiebroken := c.decideOptionWinner(exampleOptions)
+		assert.Empty(t, actual)
+		assert.False(t, tiebroken)
+	})
+}
+
+func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
+	T.Parallel()
+
+	optionA := "eggs benedict"
+	optionB := "scrambled eggs"
+	optionC := "buttered toast"
+	userID1 := fakes.BuildFakeID()
+	userID2 := fakes.BuildFakeID()
+	userID3 := fakes.BuildFakeID()
+	userID4 := fakes.BuildFakeID()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.Members = []*types.HouseholdUserMembership{
+			{
+				ID:                 fakes.BuildFakeID(),
+				BelongsToUser:      userID1,
+				BelongsToHousehold: exampleHousehold.ID,
+			},
+			{
+				ID:                 fakes.BuildFakeID(),
+				BelongsToUser:      userID2,
+				BelongsToHousehold: exampleHousehold.ID,
+			},
+			{
+				ID:                 fakes.BuildFakeID(),
+				BelongsToUser:      userID3,
+				BelongsToHousehold: exampleHousehold.ID,
+			},
+			{
+				ID:                 fakes.BuildFakeID(),
+				BelongsToUser:      userID4,
+				BelongsToHousehold: exampleHousehold.ID,
+			},
+		}
+
+		exampleMealPlan := fakes.BuildFakeMealPlan()
+		exampleMealPlan.BelongsToHousehold = exampleHousehold.ID
+		exampleMealPlan.Options = []*types.MealPlanOption{
+			{
+				ID:       optionA,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    0,
+						ByUser:                  userID1,
+					},
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    0,
+						ByUser:                  userID2,
+					},
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    1,
+						ByUser:                  userID3,
+					},
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    2,
+						ByUser:                  userID4,
+					},
+				},
+			},
+			{
+				ID:       optionB,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    0,
+						ByUser:                  userID3,
+					},
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    1,
+						ByUser:                  userID2,
+					},
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    1,
+						ByUser:                  userID4,
+					},
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    2,
+						ByUser:                  userID1,
+					},
+				},
+			},
+			{
+				ID:       optionC,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    0,
+						ByUser:                  userID4,
+					},
+
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    1,
+						ByUser:                  userID1,
+					},
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    2,
+						ByUser:                  userID2,
+					},
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    2,
+						ByUser:                  userID3,
+					},
+				},
+			},
+		}
+
+		c, db := buildTestClient(t)
+
+		getMealPlanArgs := []interface{}{
+			exampleMealPlan.ID,
+			exampleHousehold.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
+			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
+			WillReturnRows(buildMockRowsFromFullMealPlans(false, 0, exampleMealPlan))
+
+		getMealPlanOptionArgs := []interface{}{
+			exampleMealPlan.ID,
+			exampleMealPlan.Options[0].ID,
+			exampleMealPlan.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionQuery)).
+			WithArgs(interfaceToDriverValue(getMealPlanOptionArgs)...).
+			WillReturnRows(buildMockRowsFromMealPlanOptions(false, 0, exampleMealPlan.Options[0]))
+
+		getHouseholdArgs := []interface{}{
+			exampleHousehold.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
+			WithArgs(interfaceToDriverValue(getHouseholdArgs)...).
+			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
+
+		finalizeOptionsArgs := []interface{}{
+			exampleMealPlan.ID,
+			exampleMealPlan.Options[0].ID,
+			false,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(finalizeMealPlanOptionQuery)).
+			WithArgs(interfaceToDriverValue(finalizeOptionsArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID)
+		assert.True(t, actual)
+		assert.NoError(t, err)
+	})
+
+	T.Run("with missing votes", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.Members = []*types.HouseholdUserMembership{
+			{
+				ID:                 fakes.BuildFakeID(),
+				BelongsToUser:      userID1,
+				BelongsToHousehold: exampleHousehold.ID,
+			},
+			{
+				ID:                 fakes.BuildFakeID(),
+				BelongsToUser:      userID2,
+				BelongsToHousehold: exampleHousehold.ID,
+			},
+			{
+				ID:                 fakes.BuildFakeID(),
+				BelongsToUser:      userID3,
+				BelongsToHousehold: exampleHousehold.ID,
+			},
+			{
+				ID:                 fakes.BuildFakeID(),
+				BelongsToUser:      userID4,
+				BelongsToHousehold: exampleHousehold.ID,
+			},
+		}
+
+		exampleMealPlan := fakes.BuildFakeMealPlan()
+		exampleMealPlan.BelongsToHousehold = exampleHousehold.ID
+		exampleMealPlan.Options = []*types.MealPlanOption{
+			{
+				ID:       optionA,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    0,
+						ByUser:                  userID1,
+					},
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    0,
+						ByUser:                  userID2,
+					},
+				},
+			},
+			{
+				ID:       optionB,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    0,
+						ByUser:                  userID3,
+					},
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    2,
+						ByUser:                  userID1,
+					},
+				},
+			},
+			{
+				ID:       optionC,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    2,
+						ByUser:                  userID2,
+					},
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    2,
+						ByUser:                  userID3,
+					},
+				},
+			},
+		}
+
+		c, db := buildTestClient(t)
+
+		getMealPlanArgs := []interface{}{
+			exampleMealPlan.ID,
+			exampleHousehold.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
+			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
+			WillReturnRows(buildMockRowsFromFullMealPlans(false, 0, exampleMealPlan))
+
+		getMealPlanOptionArgs := []interface{}{
+			exampleMealPlan.ID,
+			exampleMealPlan.Options[0].ID,
+			exampleMealPlan.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionQuery)).
+			WithArgs(interfaceToDriverValue(getMealPlanOptionArgs)...).
+			WillReturnRows(buildMockRowsFromMealPlanOptions(false, 0, exampleMealPlan.Options[0]))
+
+		getHouseholdArgs := []interface{}{
+			exampleHousehold.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
+			WithArgs(interfaceToDriverValue(getHouseholdArgs)...).
+			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
+
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID)
+		assert.False(t, actual)
+		assert.NoError(t, err)
+	})
+
+	T.Run("with invalid meal plan ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleHouseholdID := fakes.BuildFakeID()
+		exampleMealPlanOptionID := fakes.BuildFakeID()
+
+		c, _ := buildTestClient(t)
+
+		actual, err := c.FinalizeMealPlanOption(ctx, "", exampleMealPlanOptionID, exampleHouseholdID)
+		assert.False(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid meal plan option ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleHouseholdID := fakes.BuildFakeID()
+		exampleMealPlanID := fakes.BuildFakeID()
+
+		c, _ := buildTestClient(t)
+
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlanID, "", exampleHouseholdID)
+		assert.False(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with error fetching meal plan", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleMealPlan := fakes.BuildFakeMealPlan()
+
+		c, db := buildTestClient(t)
+
+		getMealPlanArgs := []interface{}{
+			exampleMealPlan.ID,
+			exampleHousehold.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
+			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID)
+		assert.False(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with error fetching meal plan option", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleMealPlan := fakes.BuildFakeMealPlan()
+
+		c, db := buildTestClient(t)
+
+		getMealPlanArgs := []interface{}{
+			exampleMealPlan.ID,
+			exampleHousehold.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
+			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
+			WillReturnRows(buildMockRowsFromFullMealPlans(false, 0, exampleMealPlan))
+
+		getMealPlanOptionArgs := []interface{}{
+			exampleMealPlan.ID,
+			exampleMealPlan.Options[0].ID,
+			exampleMealPlan.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionQuery)).
+			WithArgs(interfaceToDriverValue(getMealPlanOptionArgs)...).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID)
+		assert.False(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with error fetching household", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleMealPlan := fakes.BuildFakeMealPlan()
+
+		c, db := buildTestClient(t)
+
+		getMealPlanArgs := []interface{}{
+			exampleMealPlan.ID,
+			exampleHousehold.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
+			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
+			WillReturnRows(buildMockRowsFromFullMealPlans(false, 0, exampleMealPlan))
+
+		getMealPlanOptionArgs := []interface{}{
+			exampleMealPlan.ID,
+			exampleMealPlan.Options[0].ID,
+			exampleMealPlan.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionQuery)).
+			WithArgs(interfaceToDriverValue(getMealPlanOptionArgs)...).
+			WillReturnRows(buildMockRowsFromMealPlanOptions(false, 0, exampleMealPlan.Options[0]))
+
+		getHouseholdArgs := []interface{}{
+			exampleHousehold.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
+			WithArgs(interfaceToDriverValue(getHouseholdArgs)...).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID)
+		assert.False(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with error finalizing option", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.Members = []*types.HouseholdUserMembership{
+			{
+				ID:                 fakes.BuildFakeID(),
+				BelongsToUser:      userID1,
+				BelongsToHousehold: exampleHousehold.ID,
+			},
+			{
+				ID:                 fakes.BuildFakeID(),
+				BelongsToUser:      userID2,
+				BelongsToHousehold: exampleHousehold.ID,
+			},
+			{
+				ID:                 fakes.BuildFakeID(),
+				BelongsToUser:      userID3,
+				BelongsToHousehold: exampleHousehold.ID,
+			},
+			{
+				ID:                 fakes.BuildFakeID(),
+				BelongsToUser:      userID4,
+				BelongsToHousehold: exampleHousehold.ID,
+			},
+		}
+
+		exampleMealPlan := fakes.BuildFakeMealPlan()
+		exampleMealPlan.BelongsToHousehold = exampleHousehold.ID
+		exampleMealPlan.Options = []*types.MealPlanOption{
+			{
+				ID:       optionA,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    0,
+						ByUser:                  userID1,
+					},
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    0,
+						ByUser:                  userID2,
+					},
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    1,
+						ByUser:                  userID3,
+					},
+					{
+						BelongsToMealPlanOption: optionA,
+						Rank:                    2,
+						ByUser:                  userID4,
+					},
+				},
+			},
+			{
+				ID:       optionB,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    0,
+						ByUser:                  userID3,
+					},
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    1,
+						ByUser:                  userID2,
+					},
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    1,
+						ByUser:                  userID4,
+					},
+					{
+						BelongsToMealPlanOption: optionB,
+						Rank:                    2,
+						ByUser:                  userID1,
+					},
+				},
+			},
+			{
+				ID:       optionC,
+				Day:      time.Monday,
+				MealName: types.BreakfastMealName,
+				Votes: []*types.MealPlanOptionVote{
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    0,
+						ByUser:                  userID4,
+					},
+
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    1,
+						ByUser:                  userID1,
+					},
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    2,
+						ByUser:                  userID2,
+					},
+					{
+						BelongsToMealPlanOption: optionC,
+						Rank:                    2,
+						ByUser:                  userID3,
+					},
+				},
+			},
+		}
+
+		c, db := buildTestClient(t)
+
+		getMealPlanArgs := []interface{}{
+			exampleMealPlan.ID,
+			exampleHousehold.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getMealPlanQuery)).
+			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
+			WillReturnRows(buildMockRowsFromFullMealPlans(false, 0, exampleMealPlan))
+
+		getMealPlanOptionArgs := []interface{}{
+			exampleMealPlan.ID,
+			exampleMealPlan.Options[0].ID,
+			exampleMealPlan.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionQuery)).
+			WithArgs(interfaceToDriverValue(getMealPlanOptionArgs)...).
+			WillReturnRows(buildMockRowsFromMealPlanOptions(false, 0, exampleMealPlan.Options[0]))
+
+		getHouseholdArgs := []interface{}{
+			exampleHousehold.ID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getHouseholdByIDQuery)).
+			WithArgs(interfaceToDriverValue(getHouseholdArgs)...).
+			WillReturnRows(buildMockRowsFromHouseholds(false, 0, exampleHousehold))
+
+		finalizeOptionsArgs := []interface{}{
+			exampleMealPlan.ID,
+			exampleMealPlan.Options[0].ID,
+			false,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(finalizeMealPlanOptionQuery)).
+			WithArgs(interfaceToDriverValue(finalizeOptionsArgs)...).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlan.ID, exampleMealPlan.Options[0].ID, exampleHousehold.ID)
+		assert.False(t, actual)
+		assert.Error(t, err)
 	})
 }

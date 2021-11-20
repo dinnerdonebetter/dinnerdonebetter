@@ -43,7 +43,7 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -57,7 +57,7 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			t.Logf("valid instrument %q created", createdValidInstrumentID)
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.ValidInstrumentDataType)
+			assert.Equal(t, types.ValidInstrumentDataType, n.DataType)
 			require.NotNil(t, n.ValidInstrument)
 			checkValidInstrumentEquality(t, exampleValidInstrument, n.ValidInstrument)
 
@@ -72,7 +72,7 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			assert.NoError(t, testClients.admin.UpdateValidInstrument(ctx, createdValidInstrument))
 
 			n = <-notificationsChan
-			assert.Equal(t, n.DataType, types.ValidInstrumentDataType)
+			assert.Equal(t, types.ValidInstrumentDataType, n.DataType)
 
 			t.Log("fetching changed valid instrument")
 			actual, err := testClients.admin.GetValidInstrument(ctx, createdValidInstrumentID)
@@ -149,7 +149,7 @@ func (s *TestSuite) TestValidInstruments_Listing() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -165,7 +165,7 @@ func (s *TestSuite) TestValidInstruments_Listing() {
 				t.Logf("valid instrument %q created", createdValidInstrumentID)
 
 				n = <-notificationsChan
-				assert.Equal(t, n.DataType, types.ValidInstrumentDataType)
+				assert.Equal(t, types.ValidInstrumentDataType, n.DataType)
 				require.NotNil(t, n.ValidInstrument)
 				checkValidInstrumentEquality(t, exampleValidInstrument, n.ValidInstrument)
 
@@ -248,7 +248,7 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 			defer span.End()
 
 			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToDataChangeNotifications(ctx, stopChan)
+			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
 			require.NotNil(t, notificationsChan)
 			require.NoError(t, err)
 
@@ -267,7 +267,7 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 				t.Logf("valid instrument %q created", createdValidInstrumentID)
 
 				n = <-notificationsChan
-				assert.Equal(t, n.DataType, types.ValidInstrumentDataType)
+				assert.Equal(t, types.ValidInstrumentDataType, n.DataType)
 				require.NotNil(t, n.ValidInstrument)
 				checkValidInstrumentEquality(t, exampleValidInstrument, n.ValidInstrument)
 

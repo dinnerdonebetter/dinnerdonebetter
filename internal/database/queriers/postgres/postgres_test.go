@@ -59,11 +59,7 @@ func newDatabaseIDResponse(id string) *sqlmock.Rows {
 	return sqlmock.NewRows([]string{"id"}).AddRow(id)
 }
 
-func newSuccessfulDatabaseResult(returnID uint64) driver.Result {
-	return sqlmock.NewResult(int64(returnID), 1)
-}
-
-func newArbitraryDatabaseResult(_ string) driver.Result {
+func newArbitraryDatabaseResult() driver.Result {
 	return sqlmock.NewResult(1, 1)
 }
 
@@ -92,6 +88,16 @@ func interfaceToDriverValue(in []interface{}) []driver.Value {
 	}
 
 	return out
+}
+
+func buildInvalidMockRowsFromListOfIDs(ids []string) *sqlmock.Rows {
+	exampleRows := sqlmock.NewRows([]string{"id"})
+
+	for range ids {
+		exampleRows.AddRow(nil)
+	}
+
+	return exampleRows
 }
 
 type sqlmockExpecterWrapper struct {
@@ -182,29 +188,13 @@ func TestProvideDatabaseClient(T *testing.T) {
 		ctx := context.Background()
 
 		exampleConfig := &config.Config{
-			Debug:           true,
-			RunMigrations:   false,
-			MaxPingAttempts: 1,
-		}
-
-		actual, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), exampleConfig, true)
-		assert.NotNil(t, actual)
-		assert.NoError(t, err)
-	})
-
-	T.Run("with PostgresProvider", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleConfig := &config.Config{
 			Provider:        config.PostgresProvider,
 			Debug:           true,
 			RunMigrations:   false,
 			MaxPingAttempts: 1,
 		}
 
-		actual, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), exampleConfig, true)
+		actual, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), exampleConfig)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 	})
@@ -324,7 +314,7 @@ func TestQuerier_performCreateQueryIgnoringReturn(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(1))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		err := c.performWriteQuery(ctx, c.db, "example", fakeQuery, fakeArgs)
 
@@ -345,7 +335,7 @@ func TestQuerier_performCreateQuery(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
 			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(newSuccessfulDatabaseResult(1))
+			WillReturnResult(newArbitraryDatabaseResult())
 
 		err := c.performWriteQuery(ctx, c.db, "example", fakeQuery, fakeArgs)
 
