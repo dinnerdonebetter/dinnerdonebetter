@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/gob"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -98,7 +99,8 @@ type (
 		CreateMealPlan(ctx context.Context, input *MealPlanDatabaseCreationInput) (*MealPlan, error)
 		UpdateMealPlan(ctx context.Context, updated *MealPlan) error
 		ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error
-		FinalizeMealPlan(ctx context.Context, mealPlanID, householdID string) (changed bool, err error)
+		FinalizeMealPlan(ctx context.Context, mealPlanID, householdID string, winnerRequired bool) (changed bool, err error)
+		FetchExpiredAndUnresolvedMealPlanIDs(ctx context.Context) ([]string, error)
 	}
 
 	// MealPlanDataService describes a structure capable of serving traffic related to meal plans.
@@ -137,7 +139,7 @@ func (x *MealPlanCreationRequestInput) ValidateWithContext(ctx context.Context) 
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.VotingDeadline, validation.Required),
+		validation.Field(&x.VotingDeadline, validation.Min(uint64(time.Now().Add(-time.Hour).Unix()))),
 		validation.Field(&x.StartsAt, validation.Required),
 		validation.Field(&x.EndsAt, validation.Required),
 		validation.Field(&x.Options, validation.NilOrNotEmpty),

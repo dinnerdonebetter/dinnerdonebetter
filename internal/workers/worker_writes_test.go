@@ -236,7 +236,7 @@ func TestWritesWorker_HandleMessage(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		client := &http.Client{}
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		postArchivesPublisher := &mockpublishers.Publisher{}
 		searchIndexLocation := search.IndexPath(t.Name())
 		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
@@ -276,7 +276,7 @@ func TestWritesWorker_HandleMessage(T *testing.T) {
 
 		expectedWebhook := fakes.BuildFakeWebhook()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.WebhookDataManager.On(
 			"CreateWebhook",
 			testutils.ContextMatcher,

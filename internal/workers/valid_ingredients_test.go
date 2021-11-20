@@ -37,7 +37,7 @@ func TestWritesWorker_createValidIngredient(T *testing.T) {
 
 		expectedValidIngredient := fakes.BuildFakeValidIngredient()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientDataManager.On(
 			"CreateValidIngredient",
 			testutils.ContextMatcher,
@@ -93,7 +93,7 @@ func TestWritesWorker_createValidIngredient(T *testing.T) {
 			ValidIngredient: fakes.BuildFakeValidIngredientDatabaseCreationInput(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientDataManager.On(
 			"CreateValidIngredient",
 			testutils.ContextMatcher,
@@ -138,7 +138,7 @@ func TestWritesWorker_createValidIngredient(T *testing.T) {
 
 		expectedValidIngredient := fakes.BuildFakeValidIngredient()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientDataManager.On(
 			"CreateValidIngredient",
 			testutils.ContextMatcher,
@@ -191,7 +191,7 @@ func TestWritesWorker_createValidIngredient(T *testing.T) {
 
 		expectedValidIngredient := fakes.BuildFakeValidIngredient()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientDataManager.On(
 			"CreateValidIngredient",
 			testutils.ContextMatcher,
@@ -251,7 +251,7 @@ func TestWritesWorker_updateValidIngredient(T *testing.T) {
 			ValidIngredient: fakes.BuildFakeValidIngredient(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientDataManager.On(
 			"UpdateValidIngredient",
 			testutils.ContextMatcher,
@@ -307,7 +307,7 @@ func TestWritesWorker_updateValidIngredient(T *testing.T) {
 			ValidIngredient: fakes.BuildFakeValidIngredient(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientDataManager.On(
 			"UpdateValidIngredient",
 			testutils.ContextMatcher,
@@ -350,7 +350,7 @@ func TestWritesWorker_updateValidIngredient(T *testing.T) {
 			ValidIngredient: fakes.BuildFakeValidIngredient(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientDataManager.On(
 			"UpdateValidIngredient",
 			testutils.ContextMatcher,
@@ -401,7 +401,7 @@ func TestWritesWorker_updateValidIngredient(T *testing.T) {
 			ValidIngredient: fakes.BuildFakeValidIngredient(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientDataManager.On(
 			"UpdateValidIngredient",
 			testutils.ContextMatcher,
@@ -460,7 +460,7 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 			DataType: types.ValidIngredientDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientDataManager.On(
 			"ArchiveValidIngredient",
 			testutils.ContextMatcher,
@@ -514,7 +514,7 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 			DataType: types.ValidIngredientDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientDataManager.On(
 			"ArchiveValidIngredient",
 			testutils.ContextMatcher,
@@ -555,7 +555,7 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 			DataType: types.ValidIngredientDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientDataManager.On(
 			"ArchiveValidIngredient",
 			testutils.ContextMatcher,
@@ -604,7 +604,7 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 			DataType: types.ValidIngredientDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientDataManager.On(
 			"ArchiveValidIngredient",
 			testutils.ContextMatcher,

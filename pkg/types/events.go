@@ -122,6 +122,8 @@ type (
 	ChoreMessage struct {
 		_ struct{}
 
-		ChoreType choreType `json:"choreType"`
+		ChoreType                 choreType `json:"choreType"`
+		MealPlanID                string    `json:"mealPlanID"`
+		AttributableToHouseholdID string    `json:"attributableToHouseholdID"`
 	}
 )

@@ -35,7 +35,7 @@ func TestAPIClientsService_ListHandler(T *testing.T) {
 
 		exampleAPIClientList := fakes.BuildFakeAPIClientList()
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.APIClientDataManager.On(
 			"GetAPIClients",
 			testutils.ContextMatcher,
@@ -87,7 +87,7 @@ func TestAPIClientsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.APIClientDataManager.On(
 			"GetAPIClients",
 			testutils.ContextMatcher,
@@ -117,7 +117,7 @@ func TestAPIClientsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.APIClientDataManager.On(
 			"GetAPIClients",
 			testutils.ContextMatcher,
@@ -162,7 +162,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -269,7 +269,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -297,7 +297,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 
 		mockDB.UserDataManager.On(
 			"GetUser",
@@ -343,7 +343,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -388,7 +388,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -442,7 +442,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,
@@ -500,7 +500,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockDB := database.BuildMockDatabase()
+		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManager.On(
 			"GetUser",
 			testutils.ContextMatcher,

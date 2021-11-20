@@ -37,7 +37,7 @@ func TestWritesWorker_createRecipe(T *testing.T) {
 
 		expectedRecipe := fakes.BuildFakeRecipe()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeDataManager.On(
 			"CreateRecipe",
 			testutils.ContextMatcher,
@@ -93,7 +93,7 @@ func TestWritesWorker_createRecipe(T *testing.T) {
 			Recipe:   fakes.BuildFakeRecipeDatabaseCreationInput(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeDataManager.On(
 			"CreateRecipe",
 			testutils.ContextMatcher,
@@ -138,7 +138,7 @@ func TestWritesWorker_createRecipe(T *testing.T) {
 
 		expectedRecipe := fakes.BuildFakeRecipe()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeDataManager.On(
 			"CreateRecipe",
 			testutils.ContextMatcher,
@@ -191,7 +191,7 @@ func TestWritesWorker_createRecipe(T *testing.T) {
 
 		expectedRecipe := fakes.BuildFakeRecipe()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeDataManager.On(
 			"CreateRecipe",
 			testutils.ContextMatcher,
@@ -251,7 +251,7 @@ func TestWritesWorker_updateRecipe(T *testing.T) {
 			Recipe:   fakes.BuildFakeRecipe(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeDataManager.On(
 			"UpdateRecipe",
 			testutils.ContextMatcher,
@@ -307,7 +307,7 @@ func TestWritesWorker_updateRecipe(T *testing.T) {
 			Recipe:   fakes.BuildFakeRecipe(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeDataManager.On(
 			"UpdateRecipe",
 			testutils.ContextMatcher,
@@ -350,7 +350,7 @@ func TestWritesWorker_updateRecipe(T *testing.T) {
 			Recipe:   fakes.BuildFakeRecipe(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeDataManager.On(
 			"UpdateRecipe",
 			testutils.ContextMatcher,
@@ -401,7 +401,7 @@ func TestWritesWorker_updateRecipe(T *testing.T) {
 			Recipe:   fakes.BuildFakeRecipe(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeDataManager.On(
 			"UpdateRecipe",
 			testutils.ContextMatcher,
@@ -460,7 +460,7 @@ func TestWritesWorker_archiveRecipe(T *testing.T) {
 			DataType: types.RecipeDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeDataManager.On(
 			"ArchiveRecipe",
 			testutils.ContextMatcher,
@@ -515,7 +515,7 @@ func TestWritesWorker_archiveRecipe(T *testing.T) {
 			DataType: types.RecipeDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeDataManager.On(
 			"ArchiveRecipe",
 			testutils.ContextMatcher,
@@ -557,7 +557,7 @@ func TestWritesWorker_archiveRecipe(T *testing.T) {
 			DataType: types.RecipeDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeDataManager.On(
 			"ArchiveRecipe",
 			testutils.ContextMatcher,
@@ -607,7 +607,7 @@ func TestWritesWorker_archiveRecipe(T *testing.T) {
 			DataType: types.RecipeDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeDataManager.On(
 			"ArchiveRecipe",
 			testutils.ContextMatcher,

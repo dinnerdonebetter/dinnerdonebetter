@@ -37,7 +37,7 @@ func TestWritesWorker_createRecipeStepIngredient(T *testing.T) {
 
 		expectedRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepIngredientDataManager.On(
 			"CreateRecipeStepIngredient",
 			testutils.ContextMatcher,
@@ -85,7 +85,7 @@ func TestWritesWorker_createRecipeStepIngredient(T *testing.T) {
 			RecipeStepIngredient: fakes.BuildFakeRecipeStepIngredientDatabaseCreationInput(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepIngredientDataManager.On(
 			"CreateRecipeStepIngredient",
 			testutils.ContextMatcher,
@@ -130,7 +130,7 @@ func TestWritesWorker_createRecipeStepIngredient(T *testing.T) {
 
 		expectedRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepIngredientDataManager.On(
 			"CreateRecipeStepIngredient",
 			testutils.ContextMatcher,
@@ -182,7 +182,7 @@ func TestWritesWorker_updateRecipeStepIngredient(T *testing.T) {
 			RecipeStepIngredient: fakes.BuildFakeRecipeStepIngredient(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepIngredientDataManager.On(
 			"UpdateRecipeStepIngredient",
 			testutils.ContextMatcher,
@@ -230,7 +230,7 @@ func TestWritesWorker_updateRecipeStepIngredient(T *testing.T) {
 			RecipeStepIngredient: fakes.BuildFakeRecipeStepIngredient(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepIngredientDataManager.On(
 			"UpdateRecipeStepIngredient",
 			testutils.ContextMatcher,
@@ -273,7 +273,7 @@ func TestWritesWorker_updateRecipeStepIngredient(T *testing.T) {
 			RecipeStepIngredient: fakes.BuildFakeRecipeStepIngredient(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepIngredientDataManager.On(
 			"UpdateRecipeStepIngredient",
 			testutils.ContextMatcher,
@@ -324,7 +324,7 @@ func TestWritesWorker_archiveRecipeStepIngredient(T *testing.T) {
 			DataType: types.RecipeStepIngredientDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepIngredientDataManager.On(
 			"ArchiveRecipeStepIngredient",
 			testutils.ContextMatcher,
@@ -372,7 +372,7 @@ func TestWritesWorker_archiveRecipeStepIngredient(T *testing.T) {
 			DataType: types.RecipeStepIngredientDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepIngredientDataManager.On(
 			"ArchiveRecipeStepIngredient",
 			testutils.ContextMatcher,
@@ -415,7 +415,7 @@ func TestWritesWorker_archiveRecipeStepIngredient(T *testing.T) {
 			DataType: types.RecipeStepIngredientDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepIngredientDataManager.On(
 			"ArchiveRecipeStepIngredient",
 			testutils.ContextMatcher,

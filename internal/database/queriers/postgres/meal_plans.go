@@ -231,9 +231,7 @@ FROM meal_plans
 	FULL OUTER JOIN meal_plan_option_votes ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id
 WHERE meal_plans.archived_on IS NULL 
 AND meal_plans.id = $1
-AND meal_plans.status = 'awaiting_votes'
 AND meal_plans.belongs_to_household = $2
-AND to_timestamp(voting_deadline)::date > now()
 ORDER BY meal_plan_options.id
 `
 
@@ -602,7 +600,7 @@ const finalizeMealPlanQuery = `
 `
 
 // FinalizeMealPlan finalizes a meal plan if all of its options have a selection.
-func (q *SQLQuerier) FinalizeMealPlan(ctx context.Context, mealPlanID, householdID string) (changed bool, err error) {
+func (q *SQLQuerier) FinalizeMealPlan(ctx context.Context, mealPlanID, householdID string, winnerRequired bool) (changed bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -628,19 +626,16 @@ func (q *SQLQuerier) FinalizeMealPlan(ctx context.Context, mealPlanID, household
 
 	for _, day := range allDays {
 		for _, mealName := range allMealNames {
-			logger.WithValue("day", day.String()).WithValue("meal_name", mealName).Debug("checking for meals options")
 			winnerChosen := false
 			options := byDayAndMeal(mealPlan.Options, day, mealName)
 			if len(options) > 0 {
-				logger.WithValue("day", day.String()).WithValue("meal_name", mealName).WithValue("option_count", len(options)).Debug("found options")
 				for _, opt := range options {
 					if opt.Chosen {
 						winnerChosen = true
 					}
 				}
 
-				if !winnerChosen {
-					logger.WithValue("day", day.String()).WithValue("meal_name", mealName).Debug("winner not chosen for day")
+				if !winnerChosen && winnerRequired {
 					return false, nil
 				}
 			}
@@ -661,91 +656,39 @@ func (q *SQLQuerier) FinalizeMealPlan(ctx context.Context, mealPlanID, household
 	return true, nil
 }
 
-const getUnfinalizedMealPlansWithExpiredVotingDeadlinesQuery = `SELECT
-	meal_plans.id,
-	meal_plans.notes,
-	meal_plans.status,
-	meal_plans.voting_deadline,
-	meal_plans.starts_at,
-	meal_plans.ends_at,
-	meal_plans.created_on,
-	meal_plans.last_updated_on,
-	meal_plans.archived_on,
-	meal_plans.belongs_to_household,
-    meal_plan_options.id,
-    meal_plan_options.day,
-    meal_plan_options.meal_name,
-    meal_plan_options.chosen,
-    meal_plan_options.tiebroken,
-    meal_plan_options.recipe_id,
-    meal_plan_options.notes,
-    meal_plan_options.created_on,
-    meal_plan_options.last_updated_on,
-	meal_plan_options.archived_on,
-    meal_plan_options.belongs_to_meal_plan,
-	meal_plan_option_votes.id,
-	meal_plan_option_votes.rank,
-	meal_plan_option_votes.abstain,
-	meal_plan_option_votes.notes,
-	meal_plan_option_votes.by_user,
-	meal_plan_option_votes.created_on,
-	meal_plan_option_votes.last_updated_on,
-	meal_plan_option_votes.archived_on,
-	meal_plan_option_votes.belongs_to_meal_plan_option
-FROM meal_plans 
-	FULL OUTER JOIN meal_plan_options ON meal_plan_options.belongs_to_meal_plan=meal_plans.id
-	FULL OUTER JOIN meal_plan_option_votes ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id
+const getExpiredAndUnresolvedMealPlanIDsQuery = `
+SELECT meal_plans.id
+FROM meal_plans
 WHERE meal_plans.archived_on IS NULL 
 AND meal_plans.status = 'awaiting_votes'
-AND to_timestamp(voting_deadline)::date < now()
-ORDER BY meal_plan_options.id
+AND to_timestamp(voting_deadline)::date > now()
+ORDER BY meal_plans.id
 `
 
-// GetUnfinalizedMealPlansWithExpiredVotingDeadlines gets unfinalized meal plans with expired voting deadlines.
-func (q *SQLQuerier) GetUnfinalizedMealPlansWithExpiredVotingDeadlines(ctx context.Context) ([]*types.MealPlan, error) {
+// FetchExpiredAndUnresolvedMealPlanIDs gets unfinalized meal plans with expired voting deadlines.
+func (q *SQLQuerier) FetchExpiredAndUnresolvedMealPlanIDs(ctx context.Context) ([]string, error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger
 
-	rows, err := q.performReadQuery(ctx, q.db, "meal plan", getUnfinalizedMealPlansWithExpiredVotingDeadlinesQuery, nil)
+	rows, err := q.performReadQuery(ctx, q.db, "meal plan", getExpiredAndUnresolvedMealPlanIDsQuery, nil)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "executing meal plan with options retrieval query")
 	}
 
-	mealPlans := []*types.MealPlan{}
-	var (
-		mealPlan           *types.MealPlan
-		currentOptionIndex = 0
-	)
+	mealPlanIDs := []string{}
 	for rows.Next() {
-		rowMealPlan, rowMealPlanOption, rowMealPlanOptionVote, scanErr := q.scanMealPlanWithOptionsAndVotesRow(ctx, rows)
-		if scanErr != nil {
+		var id string
+		if scanErr := rows.Scan(&id); scanErr != nil {
 			return nil, scanErr
 		}
-
-		if mealPlan == nil {
-			mealPlan = rowMealPlan
-		}
-
-		if mealPlan.ID != rowMealPlan.ID {
-			mealPlans = append(mealPlans, mealPlan)
-			mealPlan = rowMealPlan
-		}
-
-		if len(mealPlan.Options) == 0 && currentOptionIndex == 0 {
-			mealPlan.Options = append(mealPlan.Options, rowMealPlanOption)
-		}
-
-		if mealPlan.Options[currentOptionIndex].ID != rowMealPlanOption.ID {
-			currentOptionIndex++
-			mealPlan.Options = append(mealPlan.Options, rowMealPlanOption)
-		}
-
-		if rowMealPlanOptionVote != nil {
-			mealPlan.Options[currentOptionIndex].Votes = append(mealPlan.Options[currentOptionIndex].Votes, rowMealPlanOptionVote)
-		}
+		mealPlanIDs = append(mealPlanIDs, id)
 	}
 
-	return mealPlans, nil
+	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "closing rows")
+	}
+
+	return mealPlanIDs, nil
 }

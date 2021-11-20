@@ -104,7 +104,7 @@ type (
 		CreateMealPlanOption(ctx context.Context, input *MealPlanOptionDatabaseCreationInput) (*MealPlanOption, error)
 		UpdateMealPlanOption(ctx context.Context, updated *MealPlanOption) error
 		ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) error
-		FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID, householdID string) (changed bool, err error)
+		FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID, householdID string, winnerRequired bool) (changed bool, err error)
 	}
 
 	// MealPlanOptionDataService describes a structure capable of serving traffic related to meal plan options.

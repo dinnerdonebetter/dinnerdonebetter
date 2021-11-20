@@ -37,7 +37,7 @@ func TestWritesWorker_createValidInstrument(T *testing.T) {
 
 		expectedValidInstrument := fakes.BuildFakeValidInstrument()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidInstrumentDataManager.On(
 			"CreateValidInstrument",
 			testutils.ContextMatcher,
@@ -93,7 +93,7 @@ func TestWritesWorker_createValidInstrument(T *testing.T) {
 			ValidInstrument: fakes.BuildFakeValidInstrumentDatabaseCreationInput(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidInstrumentDataManager.On(
 			"CreateValidInstrument",
 			testutils.ContextMatcher,
@@ -138,7 +138,7 @@ func TestWritesWorker_createValidInstrument(T *testing.T) {
 
 		expectedValidInstrument := fakes.BuildFakeValidInstrument()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidInstrumentDataManager.On(
 			"CreateValidInstrument",
 			testutils.ContextMatcher,
@@ -191,7 +191,7 @@ func TestWritesWorker_createValidInstrument(T *testing.T) {
 
 		expectedValidInstrument := fakes.BuildFakeValidInstrument()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidInstrumentDataManager.On(
 			"CreateValidInstrument",
 			testutils.ContextMatcher,
@@ -251,7 +251,7 @@ func TestWritesWorker_updateValidInstrument(T *testing.T) {
 			ValidInstrument: fakes.BuildFakeValidInstrument(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidInstrumentDataManager.On(
 			"UpdateValidInstrument",
 			testutils.ContextMatcher,
@@ -307,7 +307,7 @@ func TestWritesWorker_updateValidInstrument(T *testing.T) {
 			ValidInstrument: fakes.BuildFakeValidInstrument(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidInstrumentDataManager.On(
 			"UpdateValidInstrument",
 			testutils.ContextMatcher,
@@ -350,7 +350,7 @@ func TestWritesWorker_updateValidInstrument(T *testing.T) {
 			ValidInstrument: fakes.BuildFakeValidInstrument(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidInstrumentDataManager.On(
 			"UpdateValidInstrument",
 			testutils.ContextMatcher,
@@ -401,7 +401,7 @@ func TestWritesWorker_updateValidInstrument(T *testing.T) {
 			ValidInstrument: fakes.BuildFakeValidInstrument(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidInstrumentDataManager.On(
 			"UpdateValidInstrument",
 			testutils.ContextMatcher,
@@ -460,7 +460,7 @@ func TestWritesWorker_archiveValidInstrument(T *testing.T) {
 			DataType: types.ValidInstrumentDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidInstrumentDataManager.On(
 			"ArchiveValidInstrument",
 			testutils.ContextMatcher,
@@ -514,7 +514,7 @@ func TestWritesWorker_archiveValidInstrument(T *testing.T) {
 			DataType: types.ValidInstrumentDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidInstrumentDataManager.On(
 			"ArchiveValidInstrument",
 			testutils.ContextMatcher,
@@ -555,7 +555,7 @@ func TestWritesWorker_archiveValidInstrument(T *testing.T) {
 			DataType: types.ValidInstrumentDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidInstrumentDataManager.On(
 			"ArchiveValidInstrument",
 			testutils.ContextMatcher,
@@ -604,7 +604,7 @@ func TestWritesWorker_archiveValidInstrument(T *testing.T) {
 			DataType: types.ValidInstrumentDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidInstrumentDataManager.On(
 			"ArchiveValidInstrument",
 			testutils.ContextMatcher,

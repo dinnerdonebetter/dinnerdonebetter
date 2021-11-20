@@ -90,6 +90,26 @@ func interfaceToDriverValue(in []interface{}) []driver.Value {
 	return out
 }
 
+func buildMockRowsFromListOfIDs(ids []string) *sqlmock.Rows {
+	exampleRows := sqlmock.NewRows([]string{"id"})
+
+	for _, x := range ids {
+		exampleRows.AddRow(x)
+	}
+
+	return exampleRows
+}
+
+func buildInvalidMockRowsFromListOfIDs(ids []string) *sqlmock.Rows {
+	exampleRows := sqlmock.NewRows([]string{"id"})
+
+	for range ids {
+		exampleRows.AddRow(nil)
+	}
+
+	return exampleRows
+}
+
 type sqlmockExpecterWrapper struct {
 	sqlmock.Sqlmock
 }

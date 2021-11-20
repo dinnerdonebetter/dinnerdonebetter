@@ -37,7 +37,7 @@ func TestWritesWorker_createHouseholdInvitation(T *testing.T) {
 
 		expectedHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.HouseholdInvitationDataManager.On(
 			"CreateHouseholdInvitation",
 			testutils.ContextMatcher,
@@ -85,7 +85,7 @@ func TestWritesWorker_createHouseholdInvitation(T *testing.T) {
 			HouseholdInvitation: fakes.BuildFakeHouseholdInvitationDatabaseCreationInput(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.HouseholdInvitationDataManager.On(
 			"CreateHouseholdInvitation",
 			testutils.ContextMatcher,
@@ -130,7 +130,7 @@ func TestWritesWorker_createHouseholdInvitation(T *testing.T) {
 
 		expectedHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.HouseholdInvitationDataManager.On(
 			"CreateHouseholdInvitation",
 			testutils.ContextMatcher,

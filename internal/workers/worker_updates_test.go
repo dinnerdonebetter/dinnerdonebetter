@@ -218,13 +218,50 @@ func TestProvidePreUpdatesWorker(T *testing.T) {
 func TestUpdatesWorker_HandleMessage(T *testing.T) {
 	T.Parallel()
 
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		logger := logging.NewNoopLogger()
+		client := &http.Client{}
+
+		body := &types.PreUpdateMessage{
+			DataType: types.UserMembershipDataType,
+		}
+		examplePayload, err := json.Marshal(body)
+		require.NoError(t, err)
+
+		dbManager := database.NewMockDatabase()
+		searchIndexLocation := search.IndexPath(t.Name())
+		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
+			return nil, nil
+		}
+		postArchivesPublisher := &mockpublishers.Publisher{}
+
+		worker, err := ProvideUpdatesWorker(
+			ctx,
+			logger,
+			client,
+			dbManager,
+			postArchivesPublisher,
+			searchIndexLocation,
+			searchIndexProvider,
+		)
+		require.NotNil(t, worker)
+		require.NoError(t, err)
+
+		assert.NoError(t, worker.HandleMessage(ctx, examplePayload))
+
+		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+	})
+
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		client := &http.Client{}
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		postArchivesPublisher := &mockpublishers.Publisher{}
 		searchIndexLocation := search.IndexPath(t.Name())
 		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
@@ -244,80 +281,6 @@ func TestUpdatesWorker_HandleMessage(T *testing.T) {
 		require.NoError(t, err)
 
 		assert.Error(t, worker.HandleMessage(ctx, []byte("} bad JSON lol")))
-
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
-	})
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
-
-		body := &types.PreUpdateMessage{
-			DataType: types.UserMembershipDataType,
-		}
-		examplePayload, err := json.Marshal(body)
-		require.NoError(t, err)
-
-		dbManager := database.BuildMockDatabase()
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return nil, nil
-		}
-		postArchivesPublisher := &mockpublishers.Publisher{}
-
-		worker, err := ProvideUpdatesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
-
-		assert.NoError(t, worker.HandleMessage(ctx, examplePayload))
-
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
-	})
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
-
-		body := &types.PreUpdateMessage{
-			DataType: types.WebhookDataType,
-		}
-		examplePayload, err := json.Marshal(body)
-		require.NoError(t, err)
-
-		dbManager := database.BuildMockDatabase()
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return nil, nil
-		}
-		postArchivesPublisher := &mockpublishers.Publisher{}
-
-		worker, err := ProvideUpdatesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
-
-		assert.NoError(t, worker.HandleMessage(ctx, examplePayload))
 
 		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
 	})

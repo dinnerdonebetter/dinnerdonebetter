@@ -37,7 +37,7 @@ func TestWritesWorker_createMealPlan(T *testing.T) {
 
 		expectedMealPlan := fakes.BuildFakeMealPlan()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanDataManager.On(
 			"CreateMealPlan",
 			testutils.ContextMatcher,
@@ -85,7 +85,7 @@ func TestWritesWorker_createMealPlan(T *testing.T) {
 			MealPlan: fakes.BuildFakeMealPlanDatabaseCreationInput(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanDataManager.On(
 			"CreateMealPlan",
 			testutils.ContextMatcher,
@@ -130,7 +130,7 @@ func TestWritesWorker_createMealPlan(T *testing.T) {
 
 		expectedMealPlan := fakes.BuildFakeMealPlan()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanDataManager.On(
 			"CreateMealPlan",
 			testutils.ContextMatcher,
@@ -182,7 +182,7 @@ func TestWritesWorker_updateMealPlan(T *testing.T) {
 			MealPlan: fakes.BuildFakeMealPlan(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanDataManager.On(
 			"UpdateMealPlan",
 			testutils.ContextMatcher,
@@ -230,7 +230,7 @@ func TestWritesWorker_updateMealPlan(T *testing.T) {
 			MealPlan: fakes.BuildFakeMealPlan(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanDataManager.On(
 			"UpdateMealPlan",
 			testutils.ContextMatcher,
@@ -273,7 +273,7 @@ func TestWritesWorker_updateMealPlan(T *testing.T) {
 			MealPlan: fakes.BuildFakeMealPlan(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanDataManager.On(
 			"UpdateMealPlan",
 			testutils.ContextMatcher,
@@ -324,7 +324,7 @@ func TestWritesWorker_archiveMealPlan(T *testing.T) {
 			DataType: types.MealPlanDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanDataManager.On(
 			"ArchiveMealPlan",
 			testutils.ContextMatcher,
@@ -372,7 +372,7 @@ func TestWritesWorker_archiveMealPlan(T *testing.T) {
 			DataType: types.MealPlanDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanDataManager.On(
 			"ArchiveMealPlan",
 			testutils.ContextMatcher,
@@ -415,7 +415,7 @@ func TestWritesWorker_archiveMealPlan(T *testing.T) {
 			DataType: types.MealPlanDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanDataManager.On(
 			"ArchiveMealPlan",
 			testutils.ContextMatcher,

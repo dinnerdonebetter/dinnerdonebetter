@@ -300,6 +300,18 @@ func TestQuerier_GetMealPlan(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
+	T.Run("with invalid household ID", func(t *testing.T) {
+		t.Parallel()
+
+		exampleMealPlanID := fakes.BuildFakeID()
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		actual, err := c.GetMealPlan(ctx, exampleMealPlanID, "")
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+	})
+
 	T.Run("with error executing query", func(t *testing.T) {
 		t.Parallel()
 
@@ -1386,7 +1398,7 @@ func TestQuerier_FinalizeMealPlan(T *testing.T) {
 			WithArgs(interfaceToDriverValue(finalizeOptionsArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		actual, err := c.FinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
+		actual, err := c.FinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID, true)
 		assert.True(t, actual)
 		assert.NoError(t, err)
 
@@ -1401,7 +1413,20 @@ func TestQuerier_FinalizeMealPlan(T *testing.T) {
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.FinalizeMealPlan(ctx, "", exampleHousehold.ID)
+		actual, err := c.FinalizeMealPlan(ctx, "", exampleHousehold.ID, true)
+		assert.False(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid household ID", func(t *testing.T) {
+		t.Parallel()
+
+		exampleMealPlan := fakes.BuildFakeMealPlan()
+		ctx := context.Background()
+
+		c, _ := buildTestClient(t)
+
+		actual, err := c.FinalizeMealPlan(ctx, exampleMealPlan.ID, "", true)
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})
@@ -1532,7 +1557,7 @@ func TestQuerier_FinalizeMealPlan(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
 			WillReturnRows(buildMockRowsFromFullMealPlans(false, 0, exampleMealPlan))
 
-		actual, err := c.FinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
+		actual, err := c.FinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID, true)
 		assert.False(t, actual)
 		assert.NoError(t, err)
 
@@ -1666,7 +1691,7 @@ func TestQuerier_FinalizeMealPlan(T *testing.T) {
 			WithArgs(interfaceToDriverValue(getMealPlanArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.FinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
+		actual, err := c.FinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID, true)
 		assert.False(t, actual)
 		assert.Error(t, err)
 
@@ -1809,9 +1834,99 @@ func TestQuerier_FinalizeMealPlan(T *testing.T) {
 			WithArgs(interfaceToDriverValue(finalizeOptionsArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.FinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID)
+		actual, err := c.FinalizeMealPlan(ctx, exampleMealPlan.ID, exampleHousehold.ID, true)
 		assert.False(t, actual)
 		assert.Error(t, err)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_FetchExpiredAndUnresolvedMealPlanIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		expected := []string{}
+		exampleMealPlanList := fakes.BuildFakeMealPlanList()
+		for _, plan := range exampleMealPlanList.MealPlans {
+			expected = append(expected, plan.ID)
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		db.ExpectQuery(formatQueryForSQLMock(getExpiredAndUnresolvedMealPlanIDsQuery)).
+			WithArgs().
+			WillReturnRows(buildMockRowsFromListOfIDs(expected))
+
+		actual, err := c.FetchExpiredAndUnresolvedMealPlanIDs(ctx)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error performing query", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		db.ExpectQuery(formatQueryForSQLMock(getExpiredAndUnresolvedMealPlanIDsQuery)).
+			WithArgs().
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.FetchExpiredAndUnresolvedMealPlanIDs(ctx)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error scanning response", func(t *testing.T) {
+		t.Parallel()
+
+		expected := []string{}
+		exampleMealPlanList := fakes.BuildFakeMealPlanList()
+		for _, plan := range exampleMealPlanList.MealPlans {
+			expected = append(expected, plan.ID)
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		db.ExpectQuery(formatQueryForSQLMock(getExpiredAndUnresolvedMealPlanIDsQuery)).
+			WithArgs().
+			WillReturnRows(buildInvalidMockRowsFromListOfIDs(expected))
+
+		actual, err := c.FetchExpiredAndUnresolvedMealPlanIDs(ctx)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error closing rows", func(t *testing.T) {
+		t.Parallel()
+
+		expected := []string{}
+		exampleMealPlanList := fakes.BuildFakeMealPlanList()
+		for _, plan := range exampleMealPlanList.MealPlans {
+			expected = append(expected, plan.ID)
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		db.ExpectQuery(formatQueryForSQLMock(getExpiredAndUnresolvedMealPlanIDsQuery)).
+			WithArgs().
+			WillReturnRows(buildMockRowsFromListOfIDs(expected).RowError(0, errors.New("blah")))
+
+		actual, err := c.FetchExpiredAndUnresolvedMealPlanIDs(ctx)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

@@ -37,7 +37,7 @@ func TestWritesWorker_createWebhook(T *testing.T) {
 
 		expectedWebhook := fakes.BuildFakeWebhook()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.WebhookDataManager.On(
 			"CreateWebhook",
 			testutils.ContextMatcher,
@@ -85,7 +85,7 @@ func TestWritesWorker_createWebhook(T *testing.T) {
 			Webhook:  fakes.BuildFakeWebhookDatabaseCreationInput(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.WebhookDataManager.On(
 			"CreateWebhook",
 			testutils.ContextMatcher,
@@ -130,7 +130,7 @@ func TestWritesWorker_createWebhook(T *testing.T) {
 
 		expectedWebhook := fakes.BuildFakeWebhook()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.WebhookDataManager.On(
 			"CreateWebhook",
 			testutils.ContextMatcher,
@@ -181,7 +181,7 @@ func TestWritesWorker_archiveWebhook(T *testing.T) {
 			DataType: types.WebhookDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.WebhookDataManager.On(
 			"ArchiveWebhook",
 			testutils.ContextMatcher,
@@ -229,7 +229,7 @@ func TestWritesWorker_archiveWebhook(T *testing.T) {
 			DataType: types.WebhookDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.WebhookDataManager.On(
 			"ArchiveWebhook",
 			testutils.ContextMatcher,
@@ -273,7 +273,7 @@ func TestWritesWorker_archiveWebhook(T *testing.T) {
 			DataType: types.WebhookDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.WebhookDataManager.On(
 			"ArchiveWebhook",
 			testutils.ContextMatcher,

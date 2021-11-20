@@ -229,7 +229,7 @@ func TestArchivesWorker_HandleMessage(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		client := &http.Client{}
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		postArchivesPublisher := &mockpublishers.Publisher{}
 		searchIndexLocation := search.IndexPath(t.Name())
 		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
@@ -259,7 +259,7 @@ func TestArchivesWorker_HandleMessage(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		client := &http.Client{}
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		postArchivesPublisher := &mockpublishers.Publisher{}
 		searchIndexLocation := search.IndexPath(t.Name())
 		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {

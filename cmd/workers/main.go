@@ -11,11 +11,12 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/config"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
-	consumers "github.com/prixfixeco/api_server/internal/messagequeue/consumers"
+	"github.com/prixfixeco/api_server/internal/messagequeue/consumers"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/search/elasticsearch"
 	"github.com/prixfixeco/api_server/internal/secrets"
-	workers "github.com/prixfixeco/api_server/internal/workers"
+	"github.com/prixfixeco/api_server/internal/workers"
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 const (
@@ -23,6 +24,7 @@ const (
 	dataChangesTopicName = "data_changes"
 	preUpdatesTopicName  = "pre_updates"
 	preArchivesTopicName = "pre_archives"
+	choresTopicName      = "chores"
 
 	configFilepathEnvVar = "CONFIGURATION_FILEPATH"
 	configStoreEnvVarKey = "PRIXFIXE_WORKERS_LOCAL_CONFIG_STORE_KEY"
@@ -176,10 +178,32 @@ func main() {
 	everySecond := time.Tick(time.Second)
 	choresWorker := workers.ProvideChoresWorker(logger, dataManager, postUpdatesPublisher)
 
+	choresConsumer, err := consumerProvider.ProviderConsumer(ctx, choresTopicName, choresWorker.HandleMessage)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	go choresConsumer.Consume(nil, nil)
+
+	choresPublisher, err := publisherProvider.ProviderPublisher(choresTopicName)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
 	go func() {
 		for range everySecond {
-			if handleErr := choresWorker.HandleMessage(ctx, []byte(`{"choreType":"finalize_meal_plans_with_expired_voting_periods"}`)); handleErr != nil {
-				logger.Error(err, "handling chore message")
+			mealPlanIDs, err := dataManager.FetchExpiredAndUnresolvedMealPlanIDs(ctx)
+			if err != nil {
+				logger.Fatal(err)
+			}
+
+			for _, mealPlanID := range mealPlanIDs {
+				if err = choresPublisher.Publish(ctx, &types.ChoreMessage{
+					ChoreType:  types.FinalizeMealPlansWithExpiredVotingPeriodsChoreType,
+					MealPlanID: mealPlanID,
+				}); err != nil {
+					logger.Fatal(err)
+				}
 			}
 		}
 	}()

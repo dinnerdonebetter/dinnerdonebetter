@@ -37,7 +37,7 @@ func TestWritesWorker_createValidPreparation(T *testing.T) {
 
 		expectedValidPreparation := fakes.BuildFakeValidPreparation()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidPreparationDataManager.On(
 			"CreateValidPreparation",
 			testutils.ContextMatcher,
@@ -93,7 +93,7 @@ func TestWritesWorker_createValidPreparation(T *testing.T) {
 			ValidPreparation: fakes.BuildFakeValidPreparationDatabaseCreationInput(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidPreparationDataManager.On(
 			"CreateValidPreparation",
 			testutils.ContextMatcher,
@@ -138,7 +138,7 @@ func TestWritesWorker_createValidPreparation(T *testing.T) {
 
 		expectedValidPreparation := fakes.BuildFakeValidPreparation()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidPreparationDataManager.On(
 			"CreateValidPreparation",
 			testutils.ContextMatcher,
@@ -191,7 +191,7 @@ func TestWritesWorker_createValidPreparation(T *testing.T) {
 
 		expectedValidPreparation := fakes.BuildFakeValidPreparation()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidPreparationDataManager.On(
 			"CreateValidPreparation",
 			testutils.ContextMatcher,
@@ -251,7 +251,7 @@ func TestWritesWorker_updateValidPreparation(T *testing.T) {
 			ValidPreparation: fakes.BuildFakeValidPreparation(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidPreparationDataManager.On(
 			"UpdateValidPreparation",
 			testutils.ContextMatcher,
@@ -307,7 +307,7 @@ func TestWritesWorker_updateValidPreparation(T *testing.T) {
 			ValidPreparation: fakes.BuildFakeValidPreparation(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidPreparationDataManager.On(
 			"UpdateValidPreparation",
 			testutils.ContextMatcher,
@@ -350,7 +350,7 @@ func TestWritesWorker_updateValidPreparation(T *testing.T) {
 			ValidPreparation: fakes.BuildFakeValidPreparation(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidPreparationDataManager.On(
 			"UpdateValidPreparation",
 			testutils.ContextMatcher,
@@ -401,7 +401,7 @@ func TestWritesWorker_updateValidPreparation(T *testing.T) {
 			ValidPreparation: fakes.BuildFakeValidPreparation(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidPreparationDataManager.On(
 			"UpdateValidPreparation",
 			testutils.ContextMatcher,
@@ -460,7 +460,7 @@ func TestWritesWorker_archiveValidPreparation(T *testing.T) {
 			DataType: types.ValidPreparationDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidPreparationDataManager.On(
 			"ArchiveValidPreparation",
 			testutils.ContextMatcher,
@@ -514,7 +514,7 @@ func TestWritesWorker_archiveValidPreparation(T *testing.T) {
 			DataType: types.ValidPreparationDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidPreparationDataManager.On(
 			"ArchiveValidPreparation",
 			testutils.ContextMatcher,
@@ -555,7 +555,7 @@ func TestWritesWorker_archiveValidPreparation(T *testing.T) {
 			DataType: types.ValidPreparationDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidPreparationDataManager.On(
 			"ArchiveValidPreparation",
 			testutils.ContextMatcher,
@@ -604,7 +604,7 @@ func TestWritesWorker_archiveValidPreparation(T *testing.T) {
 			DataType: types.ValidPreparationDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidPreparationDataManager.On(
 			"ArchiveValidPreparation",
 			testutils.ContextMatcher,

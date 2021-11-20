@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
@@ -92,9 +93,22 @@ func (w *ChoresWorker) finalizeMealPlans(ctx context.Context, msg *types.ChoreMe
 	_, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := w.logger.WithValue("chore_type", msg.ChoreType)
+	logger := w.logger.WithValues(map[string]interface{}{
+		"chore.type":        msg.ChoreType,
+		keys.MealPlanIDKey:  msg.MealPlanID,
+		keys.HouseholdIDKey: msg.AttributableToHouseholdID,
+	})
 
 	logger.Debug("finalize meal plan chore invoked")
+
+	changed, err := w.dataManager.FinalizeMealPlan(ctx, msg.MealPlanID, msg.AttributableToHouseholdID, false)
+	if err != nil {
+		return observability.PrepareError(err, logger, span, "finalizing meal plan")
+	}
+
+	if !changed {
+		logger.Error(nil, "meal plan was not changed")
+	}
 
 	return nil
 }

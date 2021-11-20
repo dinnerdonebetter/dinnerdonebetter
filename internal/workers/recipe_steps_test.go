@@ -37,7 +37,7 @@ func TestWritesWorker_createRecipeStep(T *testing.T) {
 
 		expectedRecipeStep := fakes.BuildFakeRecipeStep()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepDataManager.On(
 			"CreateRecipeStep",
 			testutils.ContextMatcher,
@@ -85,7 +85,7 @@ func TestWritesWorker_createRecipeStep(T *testing.T) {
 			RecipeStep: fakes.BuildFakeRecipeStepDatabaseCreationInput(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepDataManager.On(
 			"CreateRecipeStep",
 			testutils.ContextMatcher,
@@ -130,7 +130,7 @@ func TestWritesWorker_createRecipeStep(T *testing.T) {
 
 		expectedRecipeStep := fakes.BuildFakeRecipeStep()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepDataManager.On(
 			"CreateRecipeStep",
 			testutils.ContextMatcher,
@@ -182,7 +182,7 @@ func TestWritesWorker_updateRecipeStep(T *testing.T) {
 			RecipeStep: fakes.BuildFakeRecipeStep(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepDataManager.On(
 			"UpdateRecipeStep",
 			testutils.ContextMatcher,
@@ -230,7 +230,7 @@ func TestWritesWorker_updateRecipeStep(T *testing.T) {
 			RecipeStep: fakes.BuildFakeRecipeStep(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepDataManager.On(
 			"UpdateRecipeStep",
 			testutils.ContextMatcher,
@@ -273,7 +273,7 @@ func TestWritesWorker_updateRecipeStep(T *testing.T) {
 			RecipeStep: fakes.BuildFakeRecipeStep(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepDataManager.On(
 			"UpdateRecipeStep",
 			testutils.ContextMatcher,
@@ -324,7 +324,7 @@ func TestWritesWorker_archiveRecipeStep(T *testing.T) {
 			DataType: types.RecipeStepDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepDataManager.On(
 			"ArchiveRecipeStep",
 			testutils.ContextMatcher,
@@ -372,7 +372,7 @@ func TestWritesWorker_archiveRecipeStep(T *testing.T) {
 			DataType: types.RecipeStepDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepDataManager.On(
 			"ArchiveRecipeStep",
 			testutils.ContextMatcher,
@@ -415,7 +415,7 @@ func TestWritesWorker_archiveRecipeStep(T *testing.T) {
 			DataType: types.RecipeStepDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepDataManager.On(
 			"ArchiveRecipeStep",
 			testutils.ContextMatcher,

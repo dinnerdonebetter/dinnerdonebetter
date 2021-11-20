@@ -37,7 +37,7 @@ func TestWritesWorker_createValidIngredientPreparation(T *testing.T) {
 
 		expectedValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientPreparationDataManager.On(
 			"CreateValidIngredientPreparation",
 			testutils.ContextMatcher,
@@ -93,7 +93,7 @@ func TestWritesWorker_createValidIngredientPreparation(T *testing.T) {
 			ValidIngredientPreparation: fakes.BuildFakeValidIngredientPreparationDatabaseCreationInput(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientPreparationDataManager.On(
 			"CreateValidIngredientPreparation",
 			testutils.ContextMatcher,
@@ -138,7 +138,7 @@ func TestWritesWorker_createValidIngredientPreparation(T *testing.T) {
 
 		expectedValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientPreparationDataManager.On(
 			"CreateValidIngredientPreparation",
 			testutils.ContextMatcher,
@@ -191,7 +191,7 @@ func TestWritesWorker_createValidIngredientPreparation(T *testing.T) {
 
 		expectedValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientPreparationDataManager.On(
 			"CreateValidIngredientPreparation",
 			testutils.ContextMatcher,
@@ -251,7 +251,7 @@ func TestWritesWorker_updateValidIngredientPreparation(T *testing.T) {
 			ValidIngredientPreparation: fakes.BuildFakeValidIngredientPreparation(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientPreparationDataManager.On(
 			"UpdateValidIngredientPreparation",
 			testutils.ContextMatcher,
@@ -307,7 +307,7 @@ func TestWritesWorker_updateValidIngredientPreparation(T *testing.T) {
 			ValidIngredientPreparation: fakes.BuildFakeValidIngredientPreparation(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientPreparationDataManager.On(
 			"UpdateValidIngredientPreparation",
 			testutils.ContextMatcher,
@@ -350,7 +350,7 @@ func TestWritesWorker_updateValidIngredientPreparation(T *testing.T) {
 			ValidIngredientPreparation: fakes.BuildFakeValidIngredientPreparation(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientPreparationDataManager.On(
 			"UpdateValidIngredientPreparation",
 			testutils.ContextMatcher,
@@ -401,7 +401,7 @@ func TestWritesWorker_updateValidIngredientPreparation(T *testing.T) {
 			ValidIngredientPreparation: fakes.BuildFakeValidIngredientPreparation(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientPreparationDataManager.On(
 			"UpdateValidIngredientPreparation",
 			testutils.ContextMatcher,
@@ -460,7 +460,7 @@ func TestWritesWorker_archiveValidIngredientPreparation(T *testing.T) {
 			DataType: types.ValidIngredientPreparationDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientPreparationDataManager.On(
 			"ArchiveValidIngredientPreparation",
 			testutils.ContextMatcher,
@@ -514,7 +514,7 @@ func TestWritesWorker_archiveValidIngredientPreparation(T *testing.T) {
 			DataType: types.ValidIngredientPreparationDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientPreparationDataManager.On(
 			"ArchiveValidIngredientPreparation",
 			testutils.ContextMatcher,
@@ -555,7 +555,7 @@ func TestWritesWorker_archiveValidIngredientPreparation(T *testing.T) {
 			DataType: types.ValidIngredientPreparationDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientPreparationDataManager.On(
 			"ArchiveValidIngredientPreparation",
 			testutils.ContextMatcher,
@@ -604,7 +604,7 @@ func TestWritesWorker_archiveValidIngredientPreparation(T *testing.T) {
 			DataType: types.ValidIngredientPreparationDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientPreparationDataManager.On(
 			"ArchiveValidIngredientPreparation",
 			testutils.ContextMatcher,

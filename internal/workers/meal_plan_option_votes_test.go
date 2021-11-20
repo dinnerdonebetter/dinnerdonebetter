@@ -38,7 +38,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 
 		expectedMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
@@ -65,6 +65,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			body.MealPlanID,
 			expectedMealPlanOptionVote.BelongsToMealPlanOption,
 			body.AttributableToHouseholdID,
+			true,
 		).Return(true, nil)
 
 		postWritesPublisher.On(
@@ -77,6 +78,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			testutils.ContextMatcher,
 			body.MealPlanID,
 			body.AttributableToHouseholdID,
+			true,
 		).Return(true, nil)
 
 		postWritesPublisher.On(
@@ -113,7 +115,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			MealPlanOptionVote: fakes.BuildFakeMealPlanOptionVoteDatabaseCreationInput(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
@@ -158,7 +160,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 
 		expectedMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
@@ -211,7 +213,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 
 		expectedMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
@@ -238,6 +240,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			body.MealPlanID,
 			expectedMealPlanOptionVote.BelongsToMealPlanOption,
 			body.AttributableToHouseholdID,
+			true,
 		).Return(false, errors.New("blah"))
 
 		worker, err := ProvideWritesWorker(
@@ -272,7 +275,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 
 		expectedMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
@@ -299,6 +302,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			body.MealPlanID,
 			expectedMealPlanOptionVote.BelongsToMealPlanOption,
 			body.AttributableToHouseholdID,
+			true,
 		).Return(true, nil)
 
 		dataChangesPublisher.On(
@@ -338,7 +342,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 
 		expectedMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
@@ -365,6 +369,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			body.MealPlanID,
 			expectedMealPlanOptionVote.BelongsToMealPlanOption,
 			body.AttributableToHouseholdID,
+			true,
 		).Return(true, nil)
 
 		dataChangesPublisher.On(
@@ -377,6 +382,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			testutils.ContextMatcher,
 			body.MealPlanID,
 			body.AttributableToHouseholdID,
+			true,
 		).Return(false, errors.New("blah"))
 
 		worker, err := ProvideWritesWorker(
@@ -411,7 +417,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 
 		expectedMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"CreateMealPlanOptionVote",
 			testutils.ContextMatcher,
@@ -438,6 +444,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			body.MealPlanID,
 			expectedMealPlanOptionVote.BelongsToMealPlanOption,
 			body.AttributableToHouseholdID,
+			true,
 		).Return(true, nil)
 
 		dataChangesPublisher.On(
@@ -451,6 +458,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			testutils.ContextMatcher,
 			body.MealPlanID,
 			body.AttributableToHouseholdID,
+			true,
 		).Return(true, nil)
 
 		dataChangesPublisher.On(
@@ -492,7 +500,7 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 			MealPlanOptionVote: fakes.BuildFakeMealPlanOptionVote(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"UpdateMealPlanOptionVote",
 			testutils.ContextMatcher,
@@ -540,7 +548,7 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 			MealPlanOptionVote: fakes.BuildFakeMealPlanOptionVote(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"UpdateMealPlanOptionVote",
 			testutils.ContextMatcher,
@@ -583,7 +591,7 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 			MealPlanOptionVote: fakes.BuildFakeMealPlanOptionVote(),
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"UpdateMealPlanOptionVote",
 			testutils.ContextMatcher,
@@ -634,7 +642,7 @@ func TestWritesWorker_archiveMealPlanOptionVote(T *testing.T) {
 			DataType: types.MealPlanOptionVoteDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"ArchiveMealPlanOptionVote",
 			testutils.ContextMatcher,
@@ -682,7 +690,7 @@ func TestWritesWorker_archiveMealPlanOptionVote(T *testing.T) {
 			DataType: types.MealPlanOptionVoteDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"ArchiveMealPlanOptionVote",
 			testutils.ContextMatcher,
@@ -724,7 +732,7 @@ func TestWritesWorker_archiveMealPlanOptionVote(T *testing.T) {
 			DataType: types.MealPlanOptionVoteDataType,
 		}
 
-		dbManager := database.BuildMockDatabase()
+		dbManager := database.NewMockDatabase()
 		dbManager.MealPlanOptionVoteDataManager.On(
 			"ArchiveMealPlanOptionVote",
 			testutils.ContextMatcher,
