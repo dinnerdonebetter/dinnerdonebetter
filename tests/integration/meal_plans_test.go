@@ -557,6 +557,10 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 				checkMealPlanOptionVoteEquality(t, vote, createdMealPlanOptionVote)
 			}
 
+			createdMealPlan, err = testClients.main.GetMealPlan(ctx, createdMealPlanID)
+			requireNotNilAndNoProblems(t, createdMealPlan, err)
+			assert.Equal(t, types.AwaitingVotesMealPlanStatus, createdMealPlan.Status)
+
 			createdMealPlan.VotingDeadline = uint64(time.Now().Add(-10 * time.Hour).Unix())
 			require.NoError(t, dbmanager.UpdateMealPlan(ctx, createdMealPlan))
 
