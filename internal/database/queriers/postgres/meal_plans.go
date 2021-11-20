@@ -657,16 +657,27 @@ func (q *SQLQuerier) FinalizeMealPlan(ctx context.Context, mealPlanID, household
 }
 
 const getExpiredAndUnresolvedMealPlanIDsQuery = `
-SELECT meal_plans.id
+SELECT
+	meal_plans.id,
+	meal_plans.notes,
+	meal_plans.status,
+	meal_plans.voting_deadline,
+	meal_plans.starts_at,
+	meal_plans.ends_at,
+	meal_plans.created_on,
+	meal_plans.last_updated_on,
+	meal_plans.archived_on,
+	meal_plans.belongs_to_household
 FROM meal_plans
 WHERE meal_plans.archived_on IS NULL 
-AND meal_plans.status = 'awaiting_votes'
-AND to_timestamp(voting_deadline)::date > now()
+	AND meal_plans.status = 'awaiting_votes'
+	AND to_timestamp(voting_deadline)::date < now()
+GROUP BY meal_plans.id
 ORDER BY meal_plans.id
 `
 
-// FetchExpiredAndUnresolvedMealPlanIDs gets unfinalized meal plans with expired voting deadlines.
-func (q *SQLQuerier) FetchExpiredAndUnresolvedMealPlanIDs(ctx context.Context) ([]string, error) {
+// GetUnfinalizedMealPlansWithExpiredVotingPeriods gets unfinalized meal plans with expired voting deadlines.
+func (q *SQLQuerier) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Context) ([]*types.MealPlan, error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -677,18 +688,20 @@ func (q *SQLQuerier) FetchExpiredAndUnresolvedMealPlanIDs(ctx context.Context) (
 		return nil, observability.PrepareError(err, logger, span, "executing meal plan with options retrieval query")
 	}
 
-	mealPlanIDs := []string{}
+	mealPlans := []*types.MealPlan{}
 	for rows.Next() {
-		var id string
-		if scanErr := rows.Scan(&id); scanErr != nil {
-			return nil, scanErr
+		mp, _, _, scanErr := q.scanMealPlan(ctx, rows, false)
+		if scanErr != nil {
+			return nil, observability.PrepareError(scanErr, logger, span, "scanning meal plan response")
 		}
-		mealPlanIDs = append(mealPlanIDs, id)
+		mealPlans = append(mealPlans, mp)
 	}
 
 	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "closing rows")
 	}
 
-	return mealPlanIDs, nil
+	logger.WithValue("newly_expired_meal_plans", len(mealPlans)).Debug("retrieved expired and unfinalized meal plans")
+
+	return mealPlans, nil
 }

@@ -100,7 +100,7 @@ type (
 		UpdateMealPlan(ctx context.Context, updated *MealPlan) error
 		ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error
 		FinalizeMealPlan(ctx context.Context, mealPlanID, householdID string, winnerRequired bool) (changed bool, err error)
-		FetchExpiredAndUnresolvedMealPlanIDs(ctx context.Context) ([]string, error)
+		GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Context) ([]*MealPlan, error)
 	}
 
 	// MealPlanDataService describes a structure capable of serving traffic related to meal plans.

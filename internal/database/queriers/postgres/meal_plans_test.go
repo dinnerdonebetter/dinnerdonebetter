@@ -1848,10 +1848,11 @@ func TestQuerier_FetchExpiredAndUnresolvedMealPlanIDs(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		expected := []string{}
+		expected := []*types.MealPlan{}
 		exampleMealPlanList := fakes.BuildFakeMealPlanList()
-		for _, plan := range exampleMealPlanList.MealPlans {
-			expected = append(expected, plan.ID)
+		for _, mp := range exampleMealPlanList.MealPlans {
+			mp.Options = nil
+			expected = append(expected, mp)
 		}
 
 		ctx := context.Background()
@@ -1859,9 +1860,9 @@ func TestQuerier_FetchExpiredAndUnresolvedMealPlanIDs(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(getExpiredAndUnresolvedMealPlanIDsQuery)).
 			WithArgs().
-			WillReturnRows(buildMockRowsFromListOfIDs(expected))
+			WillReturnRows(buildMockRowsFromMealPlans(false, exampleMealPlanList.FilteredCount, exampleMealPlanList.MealPlans...))
 
-		actual, err := c.FetchExpiredAndUnresolvedMealPlanIDs(ctx)
+		actual, err := c.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -1878,7 +1879,7 @@ func TestQuerier_FetchExpiredAndUnresolvedMealPlanIDs(T *testing.T) {
 			WithArgs().
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.FetchExpiredAndUnresolvedMealPlanIDs(ctx)
+		actual, err := c.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -1888,10 +1889,9 @@ func TestQuerier_FetchExpiredAndUnresolvedMealPlanIDs(T *testing.T) {
 	T.Run("with error scanning response", func(t *testing.T) {
 		t.Parallel()
 
-		expected := []string{}
 		exampleMealPlanList := fakes.BuildFakeMealPlanList()
-		for _, plan := range exampleMealPlanList.MealPlans {
-			expected = append(expected, plan.ID)
+		for _, mp := range exampleMealPlanList.MealPlans {
+			mp.Options = nil
 		}
 
 		ctx := context.Background()
@@ -1899,9 +1899,9 @@ func TestQuerier_FetchExpiredAndUnresolvedMealPlanIDs(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(getExpiredAndUnresolvedMealPlanIDsQuery)).
 			WithArgs().
-			WillReturnRows(buildInvalidMockRowsFromListOfIDs(expected))
+			WillReturnRows(buildInvalidMockRowsFromListOfIDs([]string{"things", "and", "stuff"}))
 
-		actual, err := c.FetchExpiredAndUnresolvedMealPlanIDs(ctx)
+		actual, err := c.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -1911,10 +1911,9 @@ func TestQuerier_FetchExpiredAndUnresolvedMealPlanIDs(T *testing.T) {
 	T.Run("with error closing rows", func(t *testing.T) {
 		t.Parallel()
 
-		expected := []string{}
 		exampleMealPlanList := fakes.BuildFakeMealPlanList()
-		for _, plan := range exampleMealPlanList.MealPlans {
-			expected = append(expected, plan.ID)
+		for _, mp := range exampleMealPlanList.MealPlans {
+			mp.Options = nil
 		}
 
 		ctx := context.Background()
@@ -1922,9 +1921,9 @@ func TestQuerier_FetchExpiredAndUnresolvedMealPlanIDs(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(getExpiredAndUnresolvedMealPlanIDsQuery)).
 			WithArgs().
-			WillReturnRows(buildMockRowsFromListOfIDs(expected).RowError(0, errors.New("blah")))
+			WillReturnRows(buildMockRowsFromMealPlans(false, exampleMealPlanList.FilteredCount, exampleMealPlanList.MealPlans...).RowError(0, errors.New("blah")))
 
-		actual, err := c.FetchExpiredAndUnresolvedMealPlanIDs(ctx)
+		actual, err := c.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 

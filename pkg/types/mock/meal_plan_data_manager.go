@@ -67,8 +67,8 @@ func (m *MealPlanDataManager) FinalizeMealPlan(ctx context.Context, mealPlanID, 
 	return args.Bool(0), args.Error(1)
 }
 
-// FetchExpiredAndUnresolvedMealPlanIDs is a mock function.
-func (m *MealPlanDataManager) FetchExpiredAndUnresolvedMealPlanIDs(ctx context.Context) ([]string, error) {
+// GetUnfinalizedMealPlansWithExpiredVotingPeriods is a mock function.
+func (m *MealPlanDataManager) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Context) ([]*types.MealPlan, error) {
 	args := m.Called(ctx)
-	return args.Get(0).([]string), args.Error(1)
+	return args.Get(0).([]*types.MealPlan), args.Error(1)
 }
