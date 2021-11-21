@@ -9,6 +9,7 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
+	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
 	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
@@ -61,17 +62,18 @@ type (
 	// InstanceConfig configures an instance of the service. It is composed of all the other setting structs.
 	InstanceConfig struct {
 		_             struct{}
-		Server        server.Config          `json:"server" mapstructure:"server" toml:"server,omitempty"`
-		Events        msgconfig.Config       `json:"events" mapstructure:"events" toml:"events,omitempty"`
-		Search        search.Config          `json:"search" mapstructure:"search" toml:"search,omitempty"`
-		Email         emailconfig.Config     `json:"email" mapstructure:"email" toml:"email,omitempty"`
-		Encoding      encoding.Config        `json:"encoding" mapstructure:"encoding" toml:"encoding,omitempty"`
-		Uploads       uploads.Config         `json:"uploads" mapstructure:"uploads" toml:"uploads,omitempty"`
-		Observability observability.Config   `json:"observability" mapstructure:"observability" toml:"observability,omitempty"`
-		Routing       routing.Config         `json:"routing" mapstructure:"routing" toml:"routing,omitempty"`
-		Database      dbconfig.Config        `json:"database" mapstructure:"database" toml:"database,omitempty"`
-		Meta          MetaSettings           `json:"meta" mapstructure:"meta" toml:"meta,omitempty"`
-		Services      ServicesConfigurations `json:"services" mapstructure:"services" toml:"services,omitempty"`
+		Server        server.Config             `json:"server" mapstructure:"server" toml:"server,omitempty"`
+		Events        msgconfig.Config          `json:"events" mapstructure:"events" toml:"events,omitempty"`
+		Search        search.Config             `json:"search" mapstructure:"search" toml:"search,omitempty"`
+		Email         emailconfig.Config        `json:"email" mapstructure:"email" toml:"email,omitempty"`
+		CustomerData  customerdataconfig.Config `json:"customerData" mapstructure:"customer_data" toml:"customer_data,omitempty"`
+		Encoding      encoding.Config           `json:"encoding" mapstructure:"encoding" toml:"encoding,omitempty"`
+		Uploads       uploads.Config            `json:"uploads" mapstructure:"uploads" toml:"uploads,omitempty"`
+		Observability observability.Config      `json:"observability" mapstructure:"observability" toml:"observability,omitempty"`
+		Routing       routing.Config            `json:"routing" mapstructure:"routing" toml:"routing,omitempty"`
+		Database      dbconfig.Config           `json:"database" mapstructure:"database" toml:"database,omitempty"`
+		Meta          MetaSettings              `json:"meta" mapstructure:"meta" toml:"meta,omitempty"`
+		Services      ServicesConfigurations    `json:"services" mapstructure:"services" toml:"services,omitempty"`
 	}
 
 	// ServicesConfigurations collects the various service configurations.
@@ -131,8 +133,8 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context) error {
 		return fmt.Errorf("error validating Encoding portion of config: %w", err)
 	}
 
-	if err := cfg.Encoding.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating Encoding portion of config: %w", err)
+	if err := cfg.CustomerData.ValidateWithContext(ctx); err != nil {
+		return fmt.Errorf("error validating CustomerData portion of config: %w", err)
 	}
 
 	if err := cfg.Observability.ValidateWithContext(ctx); err != nil {
@@ -144,11 +146,11 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context) error {
 	}
 
 	if err := cfg.Server.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating HTTPServer portion of config: %w", err)
+		return fmt.Errorf("error validating Server portion of config: %w", err)
 	}
 
 	if err := cfg.Email.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating Search portion of config: %w", err)
+		return fmt.Errorf("error validating Email portion of config: %w", err)
 	}
 
 	if err := cfg.Services.Auth.ValidateWithContext(ctx); err != nil {

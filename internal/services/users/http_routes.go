@@ -107,7 +107,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, users)
 }
 
-func (s *service) RegisterUser(ctx context.Context, registrationInput *types.UserRegistrationInput) (*types.UserCreationResponse, error) {
+func (s *service) registerUser(ctx context.Context, registrationInput *types.UserRegistrationInput) (*types.UserCreationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -204,11 +204,15 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	ucr, err := s.RegisterUser(ctx, userInput)
+	ucr, err := s.registerUser(ctx, userInput)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating user")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	if err = s.customerDataCollector.Identify(ctx, ucr.CreatedUserID, map[string]interface{}{}); err != nil {
+		logger.Error(err, "identifying user")
 	}
 
 	// encode and peace.

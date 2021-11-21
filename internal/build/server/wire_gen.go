@@ -10,10 +10,11 @@ import (
 	"context"
 	"github.com/prixfixeco/api_server/internal/authentication"
 	"github.com/prixfixeco/api_server/internal/config"
+	config3 "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database"
 	config2 "github.com/prixfixeco/api_server/internal/database/config"
 	"github.com/prixfixeco/api_server/internal/encoding"
-	config3 "github.com/prixfixeco/api_server/internal/messagequeue/config"
+	config4 "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/routing/chi"
@@ -91,11 +92,16 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 		return nil, err
 	}
 	uploadManager := uploads.ProvideUploadManager(uploader)
-	userDataService := users.ProvideUsersService(authenticationConfig, logger, userDataManager, householdDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, imageUploadProcessor, uploadManager, routeParamManager)
+	configConfig := &cfg.CustomerData
+	collector, err := config3.ProvideCollector(configConfig, logger)
+	if err != nil {
+		return nil, err
+	}
+	userDataService := users.ProvideUsersService(authenticationConfig, logger, userDataManager, householdDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, imageUploadProcessor, uploadManager, routeParamManager, collector)
 	householdsConfig := servicesConfigurations.Households
 	householdInvitationDataManager := database.ProvideHouseholdInvitationDataManager(dataManager)
-	configConfig := &cfg.Events
-	publisherProvider, err := config3.ProvidePublisherProvider(logger, configConfig)
+	config5 := &cfg.Events
+	publisherProvider, err := config4.ProvidePublisherProvider(logger, config5)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +116,7 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	}
 	apiclientsConfig := apiclients.ProvideConfig(authenticationConfig)
 	apiClientDataService := apiclients.ProvideAPIClientsService(logger, apiClientDataManager, userDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, routeParamManager, apiclientsConfig)
-	consumerProvider, err := config3.ProvideConsumerProvider(logger, configConfig)
+	consumerProvider, err := config4.ProvideConsumerProvider(logger, config5)
 	if err != nil {
 		return nil, err
 	}

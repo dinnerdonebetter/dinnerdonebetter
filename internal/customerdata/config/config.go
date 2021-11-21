@@ -2,18 +2,17 @@ package config
 
 import (
 	"context"
-	"net/http"
 	"strings"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
-	"github.com/prixfixeco/api_server/internal/email"
-	"github.com/prixfixeco/api_server/internal/email/sendgrid"
+	"github.com/prixfixeco/api_server/internal/customerdata"
+	"github.com/prixfixeco/api_server/internal/customerdata/segment"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
 
 const (
-	providerSegment = "sendgrid"
+	providerSegment = "segment"
 )
 
 type (
@@ -33,12 +32,12 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	)
 }
 
-// ProvideEmailer provides an emailer.
-func (cfg *Config) ProvideEmailer(logger logging.Logger, client *http.Client) (email.Emailer, error) {
+// ProvideCollector provides a collector.
+func (cfg *Config) ProvideCollector(logger logging.Logger) (customerdata.Collector, error) {
 	switch strings.ToLower(strings.TrimSpace(cfg.Provider)) {
 	case providerSegment:
-		return sendgrid.NewSendGridEmailer(cfg.APIToken, logger, client)
+		return segment.NewSegmentCustomerDataCollector(logger, cfg.APIToken)
 	default:
-		return email.NewNoopEmailer()
+		return customerdata.NewNoopCollector()
 	}
 }

@@ -15,6 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	mockauthn "github.com/prixfixeco/api_server/internal/authentication/mock"
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
@@ -384,6 +385,15 @@ func TestService_CreateHandler(T *testing.T) {
 		unitCounter.On("Increment", testutils.ContextMatcher).Return()
 		helper.service.userCounter = unitCounter
 
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"Identify",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+			map[string]interface{}{},
+		).Return(nil)
+		helper.service.customerDataCollector = cdc
+
 		helper.req = helper.req.WithContext(
 			context.WithValue(
 				helper.req.Context(),
@@ -397,7 +407,7 @@ func TestService_CreateHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, auth, db, unitCounter)
+		mock.AssertExpectationsForObjects(t, auth, db, unitCounter, cdc)
 	})
 
 	T.Run("with user creation disabled", func(t *testing.T) {
@@ -627,6 +637,68 @@ func TestService_CreateHandler(T *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, auth, db)
+	})
+
+	T.Run("with error informing customer data platform", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeUserRegistrationInputFromUser(helper.exampleUser)
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = helper.exampleUser.ID
+
+		auth := &mockauthn.Authenticator{}
+		auth.On(
+			"HashPassword",
+			testutils.ContextMatcher,
+			exampleInput.Password,
+		).Return(helper.exampleUser.HashedPassword, nil)
+		helper.service.authenticator = auth
+
+		db := database.NewMockDatabase()
+		db.UserDataManager.On(
+			"CreateUser",
+			testutils.ContextMatcher,
+			mock.IsType(&types.UserDataStoreCreationInput{}),
+		).Return(helper.exampleUser, nil)
+		helper.service.userDataManager = db
+
+		unitCounter := &mockmetrics.UnitCounter{}
+		unitCounter.On("Increment", testutils.ContextMatcher).Return()
+		helper.service.userCounter = unitCounter
+
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"Identify",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+			map[string]interface{}{},
+		).Return(errors.New("blah"))
+		helper.service.customerDataCollector = cdc
+
+		helper.req = helper.req.WithContext(
+			context.WithValue(
+				helper.req.Context(),
+				types.UserRegistrationInputContextKey,
+				exampleInput,
+			),
+		)
+
+		helper.service.authSettings.EnableUserSignup = true
+		helper.service.CreateHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusCreated, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, auth, db, unitCounter, cdc)
 	})
 }
 

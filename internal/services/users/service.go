@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/authentication"
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
@@ -44,6 +45,7 @@ type (
 		secretGenerator           random.Generator
 		imageUploadProcessor      images.ImageUploadProcessor
 		uploadManager             uploads.UploadManager
+		customerDataCollector     customerdata.Collector
 		tracer                    tracing.Tracer
 	}
 )
@@ -60,6 +62,7 @@ func ProvideUsersService(
 	imageUploadProcessor images.ImageUploadProcessor,
 	uploadManager uploads.UploadManager,
 	routeParamManager routing.RouteParamManager,
+	customerDataCollector customerdata.Collector,
 ) types.UserDataService {
 	return &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
@@ -75,5 +78,6 @@ func ProvideUsersService(
 		tracer:                    tracing.NewTracer(serviceName),
 		imageUploadProcessor:      imageUploadProcessor,
 		uploadManager:             uploadManager,
+		customerDataCollector:     customerDataCollector,
 	}
 }
