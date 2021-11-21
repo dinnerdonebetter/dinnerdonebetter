@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/email"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/search"
@@ -92,6 +93,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			postWritesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&email.MockEmailer{},
 		)
 		require.NotNil(t, worker)
 		require.NoError(t, err)
@@ -135,6 +137,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			dataChangesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&email.MockEmailer{},
 		)
 		require.NotNil(t, worker)
 		require.NoError(t, err)
@@ -187,6 +190,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			dataChangesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&email.MockEmailer{},
 		)
 		require.NotNil(t, worker)
 		require.NoError(t, err)
@@ -248,6 +252,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			dataChangesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&email.MockEmailer{},
 		)
 		require.NotNil(t, worker)
 		require.NoError(t, err)
@@ -314,6 +319,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			dataChangesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&email.MockEmailer{},
 		)
 		require.NotNil(t, worker)
 		require.NoError(t, err)
@@ -387,6 +393,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			dataChangesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&email.MockEmailer{},
 		)
 		require.NotNil(t, worker)
 		require.NoError(t, err)
@@ -467,6 +474,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			dataChangesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&email.MockEmailer{},
 		)
 		require.NotNil(t, worker)
 		require.NoError(t, err)
@@ -519,6 +527,7 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 			postUpdatesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&email.MockEmailer{},
 		)
 		require.NotNil(t, worker)
 		require.NoError(t, err)
@@ -562,6 +571,7 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 			postUpdatesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&email.MockEmailer{},
 		)
 		require.NotNil(t, worker)
 		require.NoError(t, err)
@@ -610,6 +620,7 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 			postUpdatesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&email.MockEmailer{},
 		)
 		require.NotNil(t, worker)
 		require.NoError(t, err)

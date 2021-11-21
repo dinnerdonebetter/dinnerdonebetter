@@ -629,33 +629,6 @@ func (q *SQLQuerier) AttemptToFinalizeCompleteMealPlan(ctx context.Context, meal
 	return true, nil
 }
 
-func (q *SQLQuerier) finalizeMealPlan(plan *types.MealPlan) []string {
-	winners := []string{}
-	tiebrokenWinners := map[string]bool{}
-
-	for _, day := range allDays {
-		for _, mealName := range allMealNames {
-			options := byDayAndMeal(plan.Options, day, mealName)
-			if len(options) > 0 {
-				winner, tiebroken := q.decideOptionWinner(options)
-				winners = append(winners, winner)
-				tiebrokenWinners[winner] = tiebroken
-			}
-		}
-	}
-
-	for _, winner := range winners {
-		for i, opt := range plan.Options {
-			if opt.ID == winner {
-				plan.Options[i].Chosen = true
-				plan.Options[i].TieBroken = tiebrokenWinners[winner]
-			}
-		}
-	}
-
-	return winners
-}
-
 // FinalizeMealPlanWithExpiredVotingPeriod finalizes a meal plan if all of its options have a selection.
 func (q *SQLQuerier) FinalizeMealPlanWithExpiredVotingPeriod(ctx context.Context, mealPlanID, householdID string) (changed bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -681,6 +654,11 @@ func (q *SQLQuerier) FinalizeMealPlanWithExpiredVotingPeriod(ctx context.Context
 		return false, observability.PrepareError(err, logger, span, "fetching meal plan")
 	}
 
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return false, observability.PrepareError(err, logger, span, "beginning transaction")
+	}
+
 	for _, day := range allDays {
 		for _, mealName := range allMealNames {
 			options := byDayAndMeal(mealPlan.Options, day, mealName)
@@ -693,7 +671,8 @@ func (q *SQLQuerier) FinalizeMealPlanWithExpiredVotingPeriod(ctx context.Context
 					tiebroken,
 				}
 
-				if err = q.performWriteQuery(ctx, q.db, "meal plan option finalization", finalizeMealPlanOptionQuery, args); err != nil {
+				if err = q.performWriteQuery(ctx, tx, "meal plan option finalization", finalizeMealPlanOptionQuery, args); err != nil {
+					q.rollbackTransaction(ctx, tx)
 					return false, observability.PrepareError(err, logger, span, "finalizing meal plan option")
 				}
 
@@ -707,8 +686,13 @@ func (q *SQLQuerier) FinalizeMealPlanWithExpiredVotingPeriod(ctx context.Context
 		mealPlanID,
 	}
 
-	if err = q.performWriteQuery(ctx, q.db, "meal plan option finalization", finalizeMealPlanQuery, args); err != nil {
+	if err = q.performWriteQuery(ctx, tx, "meal plan option finalization", finalizeMealPlanQuery, args); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return false, observability.PrepareError(err, logger, span, "finalizing meal plan option")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return false, observability.PrepareError(err, logger, span, "committing transaction")
 	}
 
 	logger.Debug("finalized meal plan")

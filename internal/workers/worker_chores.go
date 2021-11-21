@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -20,6 +21,7 @@ type ChoresWorker struct {
 	encoder              encoding.ClientEncoder
 	dataManager          database.DataManager
 	postUpdatesPublisher publishers.Publisher
+	emailSender          email.Emailer
 }
 
 // ProvideChoresWorker provides a ChoresWorker.
@@ -27,6 +29,7 @@ func ProvideChoresWorker(
 	logger logging.Logger,
 	dataManager database.DataManager,
 	postUpdatesPublisher publishers.Publisher,
+	emailSender email.Emailer,
 ) *ChoresWorker {
 	name := "chores"
 
@@ -36,6 +39,7 @@ func ProvideChoresWorker(
 		encoder:              encoding.ProvideClientEncoder(logger, encoding.ContentTypeJSON),
 		dataManager:          dataManager,
 		postUpdatesPublisher: postUpdatesPublisher,
+		emailSender:          emailSender,
 	}
 }
 

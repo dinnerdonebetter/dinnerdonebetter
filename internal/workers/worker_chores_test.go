@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/email"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -27,6 +28,7 @@ func TestProvideChoresWorker(T *testing.T) {
 			logging.NewZerologLogger(),
 			&database.MockDatabase{},
 			&mockpublishers.Publisher{},
+			&email.MockEmailer{},
 		)
 		assert.NotNil(t, actual)
 	})
@@ -44,6 +46,7 @@ func TestChoresWorker_HandleMessage(T *testing.T) {
 			logging.NewZerologLogger(),
 			dbm,
 			&mockpublishers.Publisher{},
+			&email.MockEmailer{},
 		)
 		assert.NotNil(t, actual)
 
@@ -75,6 +78,7 @@ func TestChoresWorker_HandleMessage(T *testing.T) {
 			logging.NewZerologLogger(),
 			&database.MockDatabase{},
 			&mockpublishers.Publisher{},
+			&email.MockEmailer{},
 		)
 		assert.NotNil(t, actual)
 

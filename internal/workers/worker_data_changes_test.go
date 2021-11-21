@@ -6,6 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
+	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
 
@@ -15,7 +16,7 @@ func TestProvideDataChangesWorker(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		actual := ProvideDataChangesWorker(logging.NewZerologLogger())
+		actual := ProvideDataChangesWorker(logging.NewZerologLogger(), &email.MockEmailer{})
 		assert.NotNil(t, actual)
 	})
 }
@@ -26,7 +27,7 @@ func TestDataChangesWorker_HandleMessage(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		actual := ProvideDataChangesWorker(logging.NewZerologLogger())
+		actual := ProvideDataChangesWorker(logging.NewZerologLogger(), &email.MockEmailer{})
 		assert.NotNil(t, actual)
 
 		ctx := context.Background()
@@ -36,7 +37,7 @@ func TestDataChangesWorker_HandleMessage(T *testing.T) {
 	T.Run("invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		actual := ProvideDataChangesWorker(logging.NewZerologLogger())
+		actual := ProvideDataChangesWorker(logging.NewZerologLogger(), &email.MockEmailer{})
 		assert.NotNil(t, actual)
 
 		ctx := context.Background()
