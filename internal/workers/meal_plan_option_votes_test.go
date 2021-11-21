@@ -3,19 +3,13 @@ package workers
 import (
 	"context"
 	"errors"
-	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/database"
-	"github.com/prixfixeco/api_server/internal/email"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/search"
-	mocksearch "github.com/prixfixeco/api_server/internal/search/mock"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
@@ -28,8 +22,6 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreWriteMessage{
 			DataType:           types.MealPlanOptionVoteDataType,
@@ -46,13 +38,8 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			body.MealPlanOptionVote,
 		).Return(expectedMealPlanOptionVote, nil)
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return &mocksearch.IndexManager{}, nil
-		}
-
-		postWritesPublisher := &mockpublishers.Publisher{}
-		postWritesPublisher.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool {
@@ -68,7 +55,7 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			body.AttributableToHouseholdID,
 		).Return(true, nil)
 
-		postWritesPublisher.On(
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher, mock.MatchedBy(func(message *types.DataChangeMessage) bool { return message.DataType == types.MealPlanOptionDataType }),
 		).Return(nil)
@@ -80,35 +67,24 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			body.AttributableToHouseholdID,
 		).Return(true, nil)
 
-		postWritesPublisher.On(
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher, mock.MatchedBy(func(message *types.DataChangeMessage) bool { return message.DataType == types.MealPlanDataType }),
 		).Return(nil)
 
-		worker, err := ProvideWritesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postWritesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-			&email.MockEmailer{},
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestWritesWorker(t)
+		worker.dataManager = dbManager
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.NoError(t, worker.createMealPlanOptionVote(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postWritesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 
 	T.Run("with error writing vote", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreWriteMessage{
 			DataType:           types.MealPlanOptionVoteDataType,
@@ -122,25 +98,11 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			body.MealPlanOptionVote,
 		).Return((*types.MealPlanOptionVote)(nil), errors.New("blah"))
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return nil, nil
-		}
-
 		dataChangesPublisher := &mockpublishers.Publisher{}
 
-		worker, err := ProvideWritesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			dataChangesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-			&email.MockEmailer{},
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestWritesWorker(t)
+		worker.dataManager = dbManager
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.Error(t, worker.createMealPlanOptionVote(ctx, body))
 
@@ -151,8 +113,6 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreWriteMessage{
 			DataType:           types.MealPlanOptionVoteDataType,
@@ -168,11 +128,6 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			body.MealPlanOptionVote,
 		).Return(expectedMealPlanOptionVote, nil)
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return &mocksearch.IndexManager{}, nil
-		}
-
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
@@ -182,18 +137,9 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			}),
 		).Return(errors.New("blah"))
 
-		worker, err := ProvideWritesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			dataChangesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-			&email.MockEmailer{},
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestWritesWorker(t)
+		worker.dataManager = dbManager
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.Error(t, worker.createMealPlanOptionVote(ctx, body))
 
@@ -204,8 +150,6 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreWriteMessage{
 			DataType:           types.MealPlanOptionVoteDataType,
@@ -221,11 +165,6 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			testutils.ContextMatcher,
 			body.MealPlanOptionVote,
 		).Return(expectedMealPlanOptionVote, nil)
-
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return &mocksearch.IndexManager{}, nil
-		}
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -244,18 +183,9 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			body.AttributableToHouseholdID,
 		).Return(false, errors.New("blah"))
 
-		worker, err := ProvideWritesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			dataChangesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-			&email.MockEmailer{},
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestWritesWorker(t)
+		worker.dataManager = dbManager
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.Error(t, worker.createMealPlanOptionVote(ctx, body))
 
@@ -266,8 +196,6 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreWriteMessage{
 			DataType:           types.MealPlanOptionVoteDataType,
@@ -283,11 +211,6 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			testutils.ContextMatcher,
 			body.MealPlanOptionVote,
 		).Return(expectedMealPlanOptionVote, nil)
-
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return &mocksearch.IndexManager{}, nil
-		}
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -311,18 +234,9 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			testutils.ContextMatcher, mock.MatchedBy(func(message *types.DataChangeMessage) bool { return message.DataType == types.MealPlanOptionDataType }),
 		).Return(errors.New("blah"))
 
-		worker, err := ProvideWritesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			dataChangesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-			&email.MockEmailer{},
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestWritesWorker(t)
+		worker.dataManager = dbManager
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.Error(t, worker.createMealPlanOptionVote(ctx, body))
 
@@ -333,8 +247,6 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreWriteMessage{
 			DataType:           types.MealPlanOptionVoteDataType,
@@ -350,11 +262,6 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			testutils.ContextMatcher,
 			body.MealPlanOptionVote,
 		).Return(expectedMealPlanOptionVote, nil)
-
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return &mocksearch.IndexManager{}, nil
-		}
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -385,18 +292,9 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			body.AttributableToHouseholdID,
 		).Return(false, errors.New("blah"))
 
-		worker, err := ProvideWritesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			dataChangesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-			&email.MockEmailer{},
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestWritesWorker(t)
+		worker.dataManager = dbManager
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.Error(t, worker.createMealPlanOptionVote(ctx, body))
 
@@ -407,8 +305,6 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreWriteMessage{
 			DataType:           types.MealPlanOptionVoteDataType,
@@ -424,11 +320,6 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			testutils.ContextMatcher,
 			body.MealPlanOptionVote,
 		).Return(expectedMealPlanOptionVote, nil)
-
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return &mocksearch.IndexManager{}, nil
-		}
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -466,18 +357,9 @@ func TestWritesWorker_createMealPlanOptionVote(T *testing.T) {
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return message.DataType == types.MealPlanDataType }),
 		).Return(errors.New("blah"))
 
-		worker, err := ProvideWritesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			dataChangesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-			&email.MockEmailer{},
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestWritesWorker(t)
+		worker.dataManager = dbManager
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.Error(t, worker.createMealPlanOptionVote(ctx, body))
 
@@ -492,8 +374,6 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreUpdateMessage{
 			DataType:           types.MealPlanOptionVoteDataType,
@@ -507,11 +387,6 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 			body.MealPlanOptionVote,
 		).Return(nil)
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return &mocksearch.IndexManager{}, nil
-		}
-
 		postUpdatesPublisher := &mockpublishers.Publisher{}
 		postUpdatesPublisher.On(
 			"Publish",
@@ -519,18 +394,9 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
 		).Return(nil)
 
-		worker, err := ProvideUpdatesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postUpdatesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-			&email.MockEmailer{},
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestUpdatesWorker(t)
+		worker.dataManager = dbManager
+		worker.postUpdatesPublisher = postUpdatesPublisher
 
 		assert.NoError(t, worker.updateMealPlanOptionVote(ctx, body))
 
@@ -541,8 +407,6 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreUpdateMessage{
 			DataType:           types.MealPlanOptionVoteDataType,
@@ -556,25 +420,11 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 			body.MealPlanOptionVote,
 		).Return(errors.New("blah"))
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return nil, nil
-		}
-
 		postUpdatesPublisher := &mockpublishers.Publisher{}
 
-		worker, err := ProvideUpdatesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postUpdatesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-			&email.MockEmailer{},
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestUpdatesWorker(t)
+		worker.dataManager = dbManager
+		worker.postUpdatesPublisher = postUpdatesPublisher
 
 		assert.Error(t, worker.updateMealPlanOptionVote(ctx, body))
 
@@ -585,8 +435,6 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreUpdateMessage{
 			DataType:           types.MealPlanOptionVoteDataType,
@@ -600,11 +448,6 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 			body.MealPlanOptionVote,
 		).Return(nil)
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return &mocksearch.IndexManager{}, nil
-		}
-
 		postUpdatesPublisher := &mockpublishers.Publisher{}
 		postUpdatesPublisher.On(
 			"Publish",
@@ -612,18 +455,9 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
 		).Return(errors.New("blah"))
 
-		worker, err := ProvideUpdatesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postUpdatesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-			&email.MockEmailer{},
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestUpdatesWorker(t)
+		worker.dataManager = dbManager
+		worker.postUpdatesPublisher = postUpdatesPublisher
 
 		assert.Error(t, worker.updateMealPlanOptionVote(ctx, body))
 
@@ -638,8 +472,6 @@ func TestWritesWorker_archiveMealPlanOptionVote(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreArchiveMessage{
 			DataType: types.MealPlanOptionVoteDataType,
@@ -660,22 +492,9 @@ func TestWritesWorker_archiveMealPlanOptionVote(T *testing.T) {
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
 		).Return(nil)
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return &mocksearch.IndexManager{}, nil
-		}
-
-		worker, err := ProvideArchivesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestArchivesWorker(t)
+		worker.dataManager = dbManager
+		worker.postArchivesPublisher = postArchivesPublisher
 
 		assert.NoError(t, worker.archiveMealPlanOptionVote(ctx, body))
 
@@ -686,8 +505,6 @@ func TestWritesWorker_archiveMealPlanOptionVote(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreArchiveMessage{
 			DataType: types.MealPlanOptionVoteDataType,
@@ -702,22 +519,9 @@ func TestWritesWorker_archiveMealPlanOptionVote(T *testing.T) {
 		).Return(errors.New("blah"))
 
 		postArchivesPublisher := &mockpublishers.Publisher{}
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return nil, nil
-		}
-
-		worker, err := ProvideArchivesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestArchivesWorker(t)
+		worker.dataManager = dbManager
+		worker.postArchivesPublisher = postArchivesPublisher
 
 		assert.Error(t, worker.archiveMealPlanOptionVote(ctx, body))
 
@@ -728,8 +532,6 @@ func TestWritesWorker_archiveMealPlanOptionVote(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreArchiveMessage{
 			DataType: types.MealPlanOptionVoteDataType,
@@ -750,22 +552,9 @@ func TestWritesWorker_archiveMealPlanOptionVote(T *testing.T) {
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
 		).Return(errors.New("blah"))
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return &mocksearch.IndexManager{}, nil
-		}
-
-		worker, err := ProvideArchivesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestArchivesWorker(t)
+		worker.dataManager = dbManager
+		worker.postArchivesPublisher = postArchivesPublisher
 
 		assert.Error(t, worker.archiveMealPlanOptionVote(ctx, body))
 

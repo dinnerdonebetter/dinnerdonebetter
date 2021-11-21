@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/prixfixeco/api_server/internal/config"
+	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/messagequeue/consumers"
@@ -102,6 +103,11 @@ func main() {
 		logger.Fatal(err)
 	}
 
+	cdp, err := customerdataconfig.ProvideCollector(&cfg.CustomerData, logger)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
 	dataManager, err := config.ProvideDatabaseClient(ctx, logger, cfg)
 	if err != nil {
 		logger.Fatal(err)
@@ -116,7 +122,11 @@ func main() {
 
 	// post-writes worker
 
-	postWritesWorker := workers.ProvideDataChangesWorker(logger, emailer)
+	postWritesWorker := workers.ProvideDataChangesWorker(
+		logger,
+		emailer,
+		cdp,
+	)
 	postWritesConsumer, err := consumerProvider.ProviderConsumer(ctx, dataChangesTopicName, postWritesWorker.HandleMessage)
 	if err != nil {
 		logger.Fatal(err)
@@ -131,7 +141,17 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	preWritesWorker, err := workers.ProvideWritesWorker(ctx, logger, client, dataManager, postWritesPublisher, cfg.Search.Address, elasticsearch.NewIndexManager, emailer)
+	preWritesWorker, err := workers.ProvideWritesWorker(
+		ctx,
+		logger,
+		client,
+		dataManager,
+		postWritesPublisher,
+		cfg.Search.Address,
+		elasticsearch.NewIndexManager,
+		emailer,
+		cdp,
+	)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -150,7 +170,17 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	preUpdatesWorker, err := workers.ProvideUpdatesWorker(ctx, logger, client, dataManager, postUpdatesPublisher, cfg.Search.Address, elasticsearch.NewIndexManager, emailer)
+	preUpdatesWorker, err := workers.ProvideUpdatesWorker(
+		ctx,
+		logger,
+		client,
+		dataManager,
+		postUpdatesPublisher,
+		cfg.Search.Address,
+		elasticsearch.NewIndexManager,
+		emailer,
+		cdp,
+	)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -169,7 +199,16 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	preArchivesWorker, err := workers.ProvideArchivesWorker(ctx, logger, client, dataManager, postArchivesPublisher, cfg.Search.Address, elasticsearch.NewIndexManager)
+	preArchivesWorker, err := workers.ProvideArchivesWorker(
+		ctx,
+		logger,
+		client,
+		dataManager,
+		postArchivesPublisher,
+		cfg.Search.Address,
+		elasticsearch.NewIndexManager,
+		cdp,
+	)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -182,7 +221,13 @@ func main() {
 	go preArchivesConsumer.Consume(nil, nil)
 
 	everySecond := time.Tick(time.Second)
-	choresWorker := workers.ProvideChoresWorker(logger, dataManager, postUpdatesPublisher, emailer)
+	choresWorker := workers.ProvideChoresWorker(
+		logger,
+		dataManager,
+		postUpdatesPublisher,
+		emailer,
+		cdp,
+	)
 
 	choresConsumer, err := consumerProvider.ProviderConsumer(ctx, choresTopicName, choresWorker.HandleMessage)
 	if err != nil {

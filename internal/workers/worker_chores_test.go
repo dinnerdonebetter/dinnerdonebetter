@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/email"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
@@ -29,6 +30,7 @@ func TestProvideChoresWorker(T *testing.T) {
 			&database.MockDatabase{},
 			&mockpublishers.Publisher{},
 			&email.MockEmailer{},
+			&customerdata.MockCollector{},
 		)
 		assert.NotNil(t, actual)
 	})
@@ -40,16 +42,6 @@ func TestChoresWorker_HandleMessage(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		dbm := database.NewMockDatabase()
-
-		actual := ProvideChoresWorker(
-			logging.NewZerologLogger(),
-			dbm,
-			&mockpublishers.Publisher{},
-			&email.MockEmailer{},
-		)
-		assert.NotNil(t, actual)
-
 		ctx := context.Background()
 		exampleInput := &types.ChoreMessage{
 			ChoreType:                 types.FinalizeMealPlansWithExpiredVotingPeriodsChoreType,
@@ -59,6 +51,7 @@ func TestChoresWorker_HandleMessage(T *testing.T) {
 		body, err := json.Marshal(exampleInput)
 		require.NoError(t, err)
 
+		dbm := database.NewMockDatabase()
 		dbm.MealPlanDataManager.On(
 			"FinalizeMealPlanWithExpiredVotingPeriod",
 			testutils.ContextMatcher,
@@ -66,7 +59,10 @@ func TestChoresWorker_HandleMessage(T *testing.T) {
 			exampleInput.AttributableToHouseholdID,
 		).Return(true, nil)
 
-		assert.NoError(t, actual.HandleMessage(ctx, body))
+		worker := newTestChoresWorker(t)
+		worker.dataManager = dbm
+
+		assert.NoError(t, worker.HandleMessage(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbm)
 	})
@@ -74,15 +70,9 @@ func TestChoresWorker_HandleMessage(T *testing.T) {
 	T.Run("invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		actual := ProvideChoresWorker(
-			logging.NewZerologLogger(),
-			&database.MockDatabase{},
-			&mockpublishers.Publisher{},
-			&email.MockEmailer{},
-		)
-		assert.NotNil(t, actual)
+		worker := newTestChoresWorker(t)
 
 		ctx := context.Background()
-		assert.Error(t, actual.HandleMessage(ctx, []byte("} bad JSON lol")))
+		assert.Error(t, worker.HandleMessage(ctx, []byte("} bad JSON lol")))
 	})
 }

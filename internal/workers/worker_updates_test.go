@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/email"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
@@ -45,6 +46,7 @@ func TestProvidePreUpdatesWorker(T *testing.T) {
 			searchIndexLocation,
 			searchIndexProvider,
 			&email.MockEmailer{},
+			&customerdata.MockCollector{},
 		)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
@@ -74,6 +76,7 @@ func TestProvidePreUpdatesWorker(T *testing.T) {
 			searchIndexLocation,
 			searchIndexProvider,
 			&email.MockEmailer{},
+			&customerdata.MockCollector{},
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -109,6 +112,7 @@ func TestProvidePreUpdatesWorker(T *testing.T) {
 			searchIndexLocation,
 			searchIndexProvider,
 			&email.MockEmailer{},
+			&customerdata.MockCollector{},
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -144,6 +148,7 @@ func TestProvidePreUpdatesWorker(T *testing.T) {
 			searchIndexLocation,
 			searchIndexProvider,
 			&email.MockEmailer{},
+			&customerdata.MockCollector{},
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -179,6 +184,7 @@ func TestProvidePreUpdatesWorker(T *testing.T) {
 			searchIndexLocation,
 			searchIndexProvider,
 			&email.MockEmailer{},
+			&customerdata.MockCollector{},
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -214,6 +220,7 @@ func TestProvidePreUpdatesWorker(T *testing.T) {
 			searchIndexLocation,
 			searchIndexProvider,
 			&email.MockEmailer{},
+			&customerdata.MockCollector{},
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -229,8 +236,6 @@ func TestUpdatesWorker_HandleMessage(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreUpdateMessage{
 			DataType: types.UserMembershipDataType,
@@ -239,24 +244,10 @@ func TestUpdatesWorker_HandleMessage(T *testing.T) {
 		require.NoError(t, err)
 
 		dbManager := database.NewMockDatabase()
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return nil, nil
-		}
 		postArchivesPublisher := &mockpublishers.Publisher{}
 
-		worker, err := ProvideUpdatesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-			&email.MockEmailer{},
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestUpdatesWorker(t)
+		worker.dataManager = dbManager
 
 		assert.NoError(t, worker.HandleMessage(ctx, examplePayload))
 
@@ -267,27 +258,11 @@ func TestUpdatesWorker_HandleMessage(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 		dbManager := database.NewMockDatabase()
 		postArchivesPublisher := &mockpublishers.Publisher{}
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return nil, nil
-		}
 
-		worker, err := ProvideUpdatesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-			&email.MockEmailer{},
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestUpdatesWorker(t)
+		worker.dataManager = dbManager
 
 		assert.Error(t, worker.HandleMessage(ctx, []byte("} bad JSON lol")))
 

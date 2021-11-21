@@ -6,6 +6,7 @@ import (
 	"github.com/alexedwards/scs/v2"
 
 	"github.com/prixfixeco/api_server/internal/authentication"
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -30,6 +31,7 @@ type (
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
 		userIDFetcher             func(*http.Request) string
 		tracer                    tracing.Tracer
+		customerDataCollector     customerdata.Collector
 	}
 )
 
@@ -42,6 +44,7 @@ func ProvideService(
 	sessionManager *scs.SessionManager,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
+	customerDataCollector customerdata.Collector,
 ) types.AdminService {
 	svc := &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
@@ -53,6 +56,7 @@ func ProvideService(
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		userIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(UserIDURIParamKey),
 		tracer:                    tracing.NewTracer(serviceName),
+		customerDataCollector:     customerDataCollector,
 	}
 	svc.sessionManager.Lifetime = cfg.Cookies.Lifetime
 
