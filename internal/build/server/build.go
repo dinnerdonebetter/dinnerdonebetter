@@ -12,7 +12,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/config"
 	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
-	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -61,7 +60,6 @@ func Build(
 		msgconfig.Providers,
 		server.Providers,
 		metrics.Providers,
-		emailconfig.Providers,
 		images.Providers,
 		uploads.Providers,
 		observability.Providers,
