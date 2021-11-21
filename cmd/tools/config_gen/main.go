@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"github.com/prixfixeco/api_server/internal/database"
+	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
 	"log"
 	"os"
@@ -106,6 +107,11 @@ var (
 			ServiceName:       "prixfixe_service",
 		},
 	}
+
+	localEmailConfig = emailconfig.Config{
+		Provider: "",
+		APIToken: "",
+	}
 )
 
 func initializeLocalSecretManager(ctx context.Context) secrets.SecretManager {
@@ -188,6 +194,7 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 				QueueAddress: workerQueueAddress,
 			},
 		},
+		Email:  localEmailConfig,
 		Server: localServer,
 		Database: dbconfig.Config{
 			Debug:             true,
@@ -396,6 +403,7 @@ func frontendTestsConfig(ctx context.Context, filePath string) error {
 				QueueAddress: workerQueueAddress,
 			},
 		},
+		Email:  localEmailConfig,
 		Server: localServer,
 		Database: dbconfig.Config{
 			Debug:             true,
@@ -598,6 +606,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 		Encoding: encoding.Config{
 			ContentType: contentTypeJSON,
 		},
+		Email: localEmailConfig,
 		Server: server.Config{
 			Debug:           false,
 			HTTPPort:        defaultPort,

@@ -6,8 +6,9 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/encoding"
-	publishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers"
+	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -27,6 +28,7 @@ type UpdatesWorker struct {
 	validPreparationsIndexManager           search.IndexManager
 	validIngredientPreparationsIndexManager search.IndexManager
 	recipesIndexManager                     search.IndexManager
+	emailSender                             email.Emailer
 }
 
 // ProvideUpdatesWorker provides a UpdatesWorker.
@@ -38,6 +40,7 @@ func ProvideUpdatesWorker(
 	postUpdatesPublisher publishers.Publisher,
 	searchIndexLocation search.IndexPath,
 	searchIndexProvider search.IndexManagerProvider,
+	emailSender email.Emailer,
 ) (*UpdatesWorker, error) {
 	const name = "pre_updates"
 
@@ -77,6 +80,7 @@ func ProvideUpdatesWorker(
 		validPreparationsIndexManager:           validPreparationsIndexManager,
 		validIngredientPreparationsIndexManager: validIngredientPreparationsIndexManager,
 		recipesIndexManager:                     recipesIndexManager,
+		emailSender:                             emailSender,
 	}
 
 	return w, nil

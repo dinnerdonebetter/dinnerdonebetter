@@ -1311,6 +1311,20 @@ func TestQuerier_MealPlanOptionCanBeFinalized(T *testing.T) {
 		assert.Error(t, err)
 	})
 
+	T.Run("with invalid household ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanOptionID := fakes.BuildFakeID()
+
+		c, _ := buildTestClient(t)
+
+		actual, err := c.FinalizeMealPlanOption(ctx, exampleMealPlanID, exampleMealPlanOptionID, "")
+		assert.False(t, actual)
+		assert.Error(t, err)
+	})
+
 	T.Run("with error fetching meal plan", func(t *testing.T) {
 		t.Parallel()
 

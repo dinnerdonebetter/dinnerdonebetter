@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
-	publishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers"
+	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	routing "github.com/prixfixeco/api_server/internal/routing"

@@ -36,6 +36,7 @@ require (
 	github.com/pquerna/otp v1.3.0
 	github.com/rs/zerolog v1.21.0
 	github.com/segmentio/ksuid v1.0.4
+	github.com/sendgrid/sendgrid-go v3.10.3+incompatible
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.7.0
 	github.com/stripe/stripe-go/v72 v72.72.0
@@ -97,6 +98,7 @@ require (
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.15.0 // indirect
 	github.com/prometheus/procfs v0.2.0 // indirect
+	github.com/sendgrid/rest v2.6.5+incompatible // indirect
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/tkuchiki/go-timezone v0.2.0 // indirect

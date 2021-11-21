@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/email"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/search"
@@ -43,6 +44,7 @@ func TestProvidePreUpdatesWorker(T *testing.T) {
 			postArchivesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&email.MockEmailer{},
 		)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
@@ -71,6 +73,7 @@ func TestProvidePreUpdatesWorker(T *testing.T) {
 			postArchivesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&email.MockEmailer{},
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -105,6 +108,7 @@ func TestProvidePreUpdatesWorker(T *testing.T) {
 			postArchivesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&email.MockEmailer{},
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -139,6 +143,7 @@ func TestProvidePreUpdatesWorker(T *testing.T) {
 			postArchivesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&email.MockEmailer{},
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -173,6 +178,7 @@ func TestProvidePreUpdatesWorker(T *testing.T) {
 			postArchivesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&email.MockEmailer{},
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -207,6 +213,7 @@ func TestProvidePreUpdatesWorker(T *testing.T) {
 			postArchivesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&email.MockEmailer{},
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -246,6 +253,7 @@ func TestUpdatesWorker_HandleMessage(T *testing.T) {
 			postArchivesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&email.MockEmailer{},
 		)
 		require.NotNil(t, worker)
 		require.NoError(t, err)
@@ -276,6 +284,7 @@ func TestUpdatesWorker_HandleMessage(T *testing.T) {
 			postArchivesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&email.MockEmailer{},
 		)
 		require.NotNil(t, worker)
 		require.NoError(t, err)
