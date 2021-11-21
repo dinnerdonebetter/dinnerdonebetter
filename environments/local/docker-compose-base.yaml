@@ -41,7 +41,7 @@ services:
         ports:
             - '9090:9090'
         volumes:
-            - source: "../../environments/local/prometheus/config.yaml"
+            - source: "../../environments/local/config_files/prometheus/config.yaml"
               target: "/etc/prometheus/config.yaml"
               type: 'bind'
     grafana:
@@ -53,16 +53,16 @@ services:
       links:
         - prometheus
       volumes:
-        - source: '../../environments/local/grafana/grafana.ini'
+        - source: '../../environments/local/config_files/grafana/grafana.ini'
           target: '/etc/grafana/grafana.ini'
           type: 'bind'
-        - source: '../../environments/local/grafana/datasources.yaml'
+        - source: '../../environments/local/config_files/grafana/datasources.yaml'
           target: '/etc/grafana/provisioning/datasources/datasources.yml'
           type: 'bind'
-        - source: '../../environments/local/grafana/dashboards.yaml'
+        - source: '../../environments/local/config_files/grafana/dashboards.yaml'
           target: '/etc/grafana/provisioning/dashboards/dashboards.yml'
           type: 'bind'
-        - source: '../../environments/local/grafana/dashboards'
+        - source: '../../environments/local/config_files/grafana/dashboards'
           target: '/etc/grafana/provisioning/dashboards/dashboards'
           type: 'bind'
     cadvisor:
