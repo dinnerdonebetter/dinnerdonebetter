@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/authentication"
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
@@ -40,6 +41,7 @@ type (
 		apiClientCounter          metrics.UnitCounter
 		secretGenerator           random.Generator
 		tracer                    tracing.Tracer
+		customerDataCollector     customerdata.Collector
 	}
 )
 
@@ -53,6 +55,7 @@ func ProvideAPIClientsService(
 	counterProvider metrics.UnitCounterProvider,
 	routeParamManager routing.RouteParamManager,
 	cfg *config,
+	customerDataCollector customerdata.Collector,
 ) types.APIClientDataService {
 	return &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
@@ -66,5 +69,6 @@ func ProvideAPIClientsService(
 		apiClientCounter:          metrics.EnsureUnitCounter(counterProvider, logger, counterName, counterDescription),
 		secretGenerator:           random.NewGenerator(logger),
 		tracer:                    tracing.NewTracer(serviceName),
+		customerDataCollector:     customerDataCollector,
 	}
 }

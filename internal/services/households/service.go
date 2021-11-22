@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -40,6 +41,7 @@ type (
 		sessionContextDataFetcher      func(*http.Request) (*types.SessionContextData, error)
 		userIDFetcher                  func(*http.Request) string
 		householdIDFetcher             func(*http.Request) string
+		customerDataCollector          customerdata.Collector
 	}
 )
 
@@ -54,6 +56,7 @@ func ProvideService(
 	counterProvider metrics.UnitCounterProvider,
 	routeParamManager routing.RouteParamManager,
 	publisherProvider publishers.PublisherProvider,
+	customerDataCollector customerdata.Collector,
 ) (types.HouseholdDataService, error) {
 	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
 	if err != nil {
@@ -72,6 +75,7 @@ func ProvideService(
 		preWritesPublisher:             preWritesPublisher,
 		householdCounter:               metrics.EnsureUnitCounter(counterProvider, logger, counterName, counterDescription),
 		tracer:                         tracing.NewTracer(serviceName),
+		customerDataCollector:          customerDataCollector,
 	}
 
 	return s, nil

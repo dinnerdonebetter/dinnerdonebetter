@@ -11,9 +11,11 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
@@ -62,6 +64,16 @@ func TestRecipesService_CreateHandler(T *testing.T) {
 			mock.MatchedBy(testutils.PreWriteMessageMatcher),
 		).Return(nil)
 		helper.service.preWritesPublisher = mockEventProducer
+
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"recipe_created",
+			helper.exampleUser.ID,
+			testutils.MapOfStringToInterfaceMatcher,
+		).Return(nil)
+		helper.service.customerDataCollector = cdc
 
 		helper.service.CreateHandler(helper.res, helper.req)
 
@@ -151,6 +163,45 @@ func TestRecipesService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockEventProducer)
+	})
+
+	T.Run("with error writing to customer data platform", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+
+		exampleCreationInput := fakes.BuildFakeRecipeDatabaseCreationInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(testutils.PreWriteMessageMatcher),
+		).Return(nil)
+		helper.service.preWritesPublisher = mockEventProducer
+
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"recipe_created",
+			helper.exampleUser.ID,
+			testutils.MapOfStringToInterfaceMatcher,
+		).Return(errors.New("blah"))
+		helper.service.customerDataCollector = cdc
+
+		helper.service.CreateHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mockEventProducer)
 	})
@@ -428,11 +479,24 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.preUpdatesPublisher = mockEventProducer
 
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"recipe_updated",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				keys.HouseholdIDKey: helper.exampleHousehold.ID,
+				keys.RecipeIDKey:    helper.exampleRecipe.ID,
+			},
+		).Return(nil)
+		helper.service.customerDataCollector = cdc
+
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, recipeDataManager, mockEventProducer)
+		mock.AssertExpectationsForObjects(t, recipeDataManager, mockEventProducer, cdc)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -578,6 +642,57 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager, mockEventProducer)
 	})
+
+	T.Run("with error writing to customer data platform", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+
+		exampleCreationInput := fakes.BuildFakeRecipeUpdateRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager.On(
+			"GetRecipeByIDAndUser",
+			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
+			helper.exampleUser.ID,
+		).Return(helper.exampleRecipe, nil)
+		helper.service.recipeDataManager = recipeDataManager
+
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(testutils.PreUpdateMessageMatcher),
+		).Return(nil)
+		helper.service.preUpdatesPublisher = mockEventProducer
+
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"recipe_updated",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				keys.HouseholdIDKey: helper.exampleHousehold.ID,
+				keys.RecipeIDKey:    helper.exampleRecipe.ID,
+			},
+		).Return(errors.New("blah"))
+		helper.service.customerDataCollector = cdc
+
+		helper.service.UpdateHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager, mockEventProducer, cdc)
+	})
 }
 
 func TestRecipesService_ArchiveHandler(T *testing.T) {
@@ -604,11 +719,24 @@ func TestRecipesService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.preArchivesPublisher = mockEventProducer
 
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"recipe_archived",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				keys.HouseholdIDKey: helper.exampleHousehold.ID,
+				keys.RecipeIDKey:    helper.exampleRecipe.ID,
+			},
+		).Return(nil)
+		helper.service.customerDataCollector = cdc
+
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, recipeDataManager, mockEventProducer)
+		mock.AssertExpectationsForObjects(t, recipeDataManager, mockEventProducer, cdc)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -709,5 +837,46 @@ func TestRecipesService_ArchiveHandler(T *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager, mockEventProducer)
+	})
+
+	T.Run("with error writing to customer data platform", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager.On(
+			"RecipeExists",
+			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
+		).Return(true, nil)
+		helper.service.recipeDataManager = recipeDataManager
+
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(testutils.PreArchiveMessageMatcher),
+		).Return(nil)
+		helper.service.preArchivesPublisher = mockEventProducer
+
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"recipe_archived",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				keys.HouseholdIDKey: helper.exampleHousehold.ID,
+				keys.RecipeIDKey:    helper.exampleRecipe.ID,
+			},
+		).Return(errors.New("blah"))
+		helper.service.customerDataCollector = cdc
+
+		helper.service.ArchiveHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusNoContent, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager, mockEventProducer, cdc)
 	})
 }

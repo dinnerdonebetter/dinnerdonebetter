@@ -88,6 +88,13 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	if err = s.customerDataCollector.EventOccurred(ctx, "recipe_created", sessionCtxData.Requester.UserID, map[string]interface{}{
+		keys.HouseholdIDKey: sessionCtxData.ActiveHouseholdID,
+		keys.RecipeIDKey:    input.ID,
+	}); err != nil {
+		logger.Error(err, "notifying customer data platform")
+	}
+
 	pwr := types.PreWriteResponse{ID: input.ID}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusAccepted)
@@ -235,6 +242,13 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	if err = s.customerDataCollector.EventOccurred(ctx, "recipe_updated", sessionCtxData.Requester.UserID, map[string]interface{}{
+		keys.HouseholdIDKey: sessionCtxData.ActiveHouseholdID,
+		keys.RecipeIDKey:    recipeID,
+	}); err != nil {
+		logger.Error(err, "notifying customer data platform")
+	}
+
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, recipe)
 }
@@ -283,6 +297,13 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing recipe archive message")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	if err = s.customerDataCollector.EventOccurred(ctx, "recipe_archived", sessionCtxData.Requester.UserID, map[string]interface{}{
+		keys.HouseholdIDKey: sessionCtxData.ActiveHouseholdID,
+		keys.RecipeIDKey:    recipeID,
+	}); err != nil {
+		logger.Error(err, "notifying customer data platform")
 	}
 
 	// encode our response and peace.

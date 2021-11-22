@@ -85,7 +85,6 @@ type (
 	UserCreationResponse struct {
 		_ struct{}
 
-		ID              string          `json:"id"`
 		Username        string          `json:"username"`
 		EmailAddress    string          `json:"emailAddress"`
 		HouseholdStatus householdStatus `json:"householdStatus"`
@@ -173,9 +172,6 @@ type (
 		UpdatePasswordHandler(res http.ResponseWriter, req *http.Request)
 		AvatarUploadHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
-
-		RegisterUser(ctx context.Context, registrationInput *UserRegistrationInput) (*UserCreationResponse, error)
-		VerifyUserTwoFactorSecret(ctx context.Context, input *TOTPSecretVerificationInput) error
 	}
 )
 

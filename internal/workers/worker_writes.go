@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/encoding"
@@ -29,6 +30,7 @@ type WritesWorker struct {
 	validIngredientPreparationsIndexManager search.IndexManager
 	recipesIndexManager                     search.IndexManager
 	emailSender                             email.Emailer
+	customerDataCollector                   customerdata.Collector
 }
 
 // ProvideWritesWorker provides a WritesWorker.
@@ -41,6 +43,7 @@ func ProvideWritesWorker(
 	searchIndexLocation search.IndexPath,
 	searchIndexProvider search.IndexManagerProvider,
 	emailSender email.Emailer,
+	customerDataCollector customerdata.Collector,
 ) (*WritesWorker, error) {
 	const name = "pre_writes"
 
@@ -81,6 +84,7 @@ func ProvideWritesWorker(
 		validIngredientPreparationsIndexManager: validIngredientPreparationsIndexManager,
 		recipesIndexManager:                     recipesIndexManager,
 		emailSender:                             emailSender,
+		customerDataCollector:                   customerDataCollector,
 	}
 
 	return w, nil

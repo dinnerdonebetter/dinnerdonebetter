@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/encoding"
@@ -29,6 +30,7 @@ type UpdatesWorker struct {
 	validIngredientPreparationsIndexManager search.IndexManager
 	recipesIndexManager                     search.IndexManager
 	emailSender                             email.Emailer
+	customerDataCollector                   customerdata.Collector
 }
 
 // ProvideUpdatesWorker provides a UpdatesWorker.
@@ -41,6 +43,7 @@ func ProvideUpdatesWorker(
 	searchIndexLocation search.IndexPath,
 	searchIndexProvider search.IndexManagerProvider,
 	emailSender email.Emailer,
+	customerDataCollector customerdata.Collector,
 ) (*UpdatesWorker, error) {
 	const name = "pre_updates"
 
@@ -81,6 +84,7 @@ func ProvideUpdatesWorker(
 		validIngredientPreparationsIndexManager: validIngredientPreparationsIndexManager,
 		recipesIndexManager:                     recipesIndexManager,
 		emailSender:                             emailSender,
+		customerDataCollector:                   customerDataCollector,
 	}
 
 	return w, nil

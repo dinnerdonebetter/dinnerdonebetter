@@ -8,9 +8,12 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
 	"github.com/prixfixeco/api_server/internal/email"
-	"github.com/prixfixeco/api_server/internal/email/noop"
 	"github.com/prixfixeco/api_server/internal/email/sendgrid"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+)
+
+const (
+	providerSegment = "sendgrid"
 )
 
 type (
@@ -26,16 +29,16 @@ var _ validation.ValidatableWithContext = (*Config)(nil)
 // ValidateWithContext validates a Config struct.
 func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, cfg,
-		validation.Field(&cfg.APIToken, validation.When(strings.EqualFold(strings.TrimSpace(cfg.Provider), "sendgrid"), validation.Required)),
+		validation.Field(&cfg.APIToken, validation.When(strings.EqualFold(strings.TrimSpace(cfg.Provider), providerSegment), validation.Required)),
 	)
 }
 
 // ProvideEmailer provides an emailer.
 func (cfg *Config) ProvideEmailer(logger logging.Logger, client *http.Client) (email.Emailer, error) {
 	switch strings.ToLower(strings.TrimSpace(cfg.Provider)) {
-	case "sendgrid":
+	case providerSegment:
 		return sendgrid.NewSendGridEmailer(cfg.APIToken, logger, client)
 	default:
-		return noop.NewNoopEmailer(), nil
+		return email.NewNoopEmailer()
 	}
 }

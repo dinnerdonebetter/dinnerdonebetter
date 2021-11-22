@@ -616,3 +616,32 @@ func TestAuthenticationService_AdminMiddleware(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, mockHandler)
 	})
 }
+
+func TestFetchContextFromRequest(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.WithValue(context.Background(), types.SessionContextDataKey, &types.SessionContextData{})
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/", nil)
+		require.NoError(t, err)
+		require.NotNil(t, req)
+
+		actual, err := FetchContextFromRequest(req)
+		require.NoError(t, err)
+		require.NotNil(t, actual)
+	})
+
+	T.Run("missing data", func(t *testing.T) {
+		t.Parallel()
+
+		req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "/", nil)
+		require.NoError(t, err)
+		require.NotNil(t, req)
+
+		actual, err := FetchContextFromRequest(req)
+		require.Error(t, err)
+		require.Nil(t, actual)
+	})
+}

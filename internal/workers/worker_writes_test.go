@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/email"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
@@ -47,6 +48,7 @@ func TestProvideWritesWorker(T *testing.T) {
 			searchIndexLocation,
 			searchIndexProvider,
 			&email.MockEmailer{},
+			&customerdata.MockCollector{},
 		)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
@@ -83,6 +85,7 @@ func TestProvideWritesWorker(T *testing.T) {
 			searchIndexLocation,
 			searchIndexProvider,
 			&email.MockEmailer{},
+			&customerdata.MockCollector{},
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -119,6 +122,7 @@ func TestProvideWritesWorker(T *testing.T) {
 			searchIndexLocation,
 			searchIndexProvider,
 			&email.MockEmailer{},
+			&customerdata.MockCollector{},
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -155,6 +159,7 @@ func TestProvideWritesWorker(T *testing.T) {
 			searchIndexLocation,
 			searchIndexProvider,
 			&email.MockEmailer{},
+			&customerdata.MockCollector{},
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -190,6 +195,7 @@ func TestProvideWritesWorker(T *testing.T) {
 			searchIndexLocation,
 			searchIndexProvider,
 			&email.MockEmailer{},
+			&customerdata.MockCollector{},
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -226,6 +232,7 @@ func TestProvideWritesWorker(T *testing.T) {
 			searchIndexLocation,
 			searchIndexProvider,
 			&email.MockEmailer{},
+			&customerdata.MockCollector{},
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -241,39 +248,15 @@ func TestWritesWorker_HandleMessage(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
-		dbManager := database.NewMockDatabase()
-		postArchivesPublisher := &mockpublishers.Publisher{}
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return nil, nil
-		}
-
-		worker, err := ProvideWritesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-			&email.MockEmailer{},
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestWritesWorker(t)
 
 		assert.Error(t, worker.HandleMessage(ctx, []byte("} bad JSON lol")))
-
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
 	})
 
 	T.Run("with WebhookDataType", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreWriteMessage{
 			DataType: types.WebhookDataType,
@@ -291,33 +274,19 @@ func TestWritesWorker_HandleMessage(T *testing.T) {
 			body.Webhook,
 		).Return(expectedWebhook, nil)
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return nil, nil
-		}
-
-		postArchivesPublisher := &mockpublishers.Publisher{}
-		postArchivesPublisher.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
 		).Return(nil)
 
-		worker, err := ProvideWritesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-			&email.MockEmailer{},
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestWritesWorker(t)
+		worker.dataManager = dbManager
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.NoError(t, worker.HandleMessage(ctx, examplePayload))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }

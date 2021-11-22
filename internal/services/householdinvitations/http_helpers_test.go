@@ -38,6 +38,9 @@ func newTestHelper(t *testing.T) *householdInvitationsServiceHTTPRoutesTestHelpe
 	helper.exampleHouseholdInvitation = fakes.BuildFakeHouseholdInvitation()
 	helper.exampleCreationInput = fakes.BuildFakeHouseholdInvitationCreationInputFromHouseholdInvitation(helper.exampleHouseholdInvitation)
 
+	helper.service.householdIDFetcher = func(*http.Request) string {
+		return helper.exampleHousehold.ID
+	}
 	helper.service.householdInvitationIDFetcher = func(*http.Request) string {
 		return helper.exampleHouseholdInvitation.ID
 	}

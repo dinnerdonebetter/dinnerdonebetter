@@ -13,8 +13,10 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	mockmetrics "github.com/prixfixeco/api_server/internal/observability/metrics/mock"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -170,11 +172,23 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		unitCounter.On("Increment", testutils.ContextMatcher).Return()
 		helper.service.householdCounter = unitCounter
 
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"household_created",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				keys.HouseholdIDKey: helper.exampleHousehold.ID,
+			},
+		).Return(nil)
+		helper.service.customerDataCollector = cdc
+
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, unitCounter)
+		mock.AssertExpectationsForObjects(t, householdDataManager, unitCounter, cdc)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -260,6 +274,51 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, householdDataManager)
+	})
+
+	T.Run("with error writing to customer data platform", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+
+		exampleCreationInput := fakes.BuildFakeHouseholdCreationInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager.On(
+			"CreateHousehold",
+			testutils.ContextMatcher,
+			mock.IsType(&types.HouseholdDatabaseCreationInput{}),
+		).Return(helper.exampleHousehold, nil)
+		helper.service.householdDataManager = householdDataManager
+
+		unitCounter := &mockmetrics.UnitCounter{}
+		unitCounter.On("Increment", testutils.ContextMatcher).Return()
+		helper.service.householdCounter = unitCounter
+
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"household_created",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				keys.HouseholdIDKey: helper.exampleHousehold.ID,
+			},
+		).Return(errors.New("blah"))
+		helper.service.customerDataCollector = cdc
+
+		helper.service.CreateHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusCreated, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, householdDataManager, unitCounter, cdc)
 	})
 }
 
@@ -409,11 +468,23 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.householdDataManager = householdDataManager
 
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"household_updated",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				keys.HouseholdIDKey: helper.exampleHousehold.ID,
+			},
+		).Return(nil)
+		helper.service.customerDataCollector = cdc
+
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager)
+		mock.AssertExpectationsForObjects(t, householdDataManager, cdc)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -567,6 +638,53 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, householdDataManager)
 	})
+
+	T.Run("with error writing to customer data platform", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+
+		exampleCreationInput := fakes.BuildFakeHouseholdUpdateInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager.On(
+			"GetHousehold",
+			testutils.ContextMatcher,
+			helper.exampleHousehold.ID,
+			helper.exampleUser.ID,
+		).Return(helper.exampleHousehold, nil)
+		householdDataManager.On(
+			"UpdateHousehold",
+			testutils.ContextMatcher,
+			mock.IsType(&types.Household{}),
+		).Return(nil)
+		helper.service.householdDataManager = householdDataManager
+
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"household_updated",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				keys.HouseholdIDKey: helper.exampleHousehold.ID,
+			},
+		).Return(errors.New("blah"))
+		helper.service.customerDataCollector = cdc
+
+		helper.service.UpdateHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, householdDataManager, cdc)
+	})
 }
 
 func TestHouseholdsService_ArchiveHandler(T *testing.T) {
@@ -590,11 +708,23 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 		unitCounter.On("Decrement", testutils.ContextMatcher).Return()
 		helper.service.householdCounter = unitCounter
 
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"household_archived",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				keys.HouseholdIDKey: helper.exampleHousehold.ID,
+			},
+		).Return(nil)
+		helper.service.customerDataCollector = cdc
+
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, unitCounter)
+		mock.AssertExpectationsForObjects(t, householdDataManager, unitCounter, cdc)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -677,6 +807,43 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, householdDataManager, encoderDecoder)
 	})
+
+	T.Run("with error writing to customer data platform", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager.On(
+			"ArchiveHousehold",
+			testutils.ContextMatcher,
+			helper.exampleHousehold.ID,
+			helper.exampleUser.ID,
+		).Return(nil)
+		helper.service.householdDataManager = householdDataManager
+
+		unitCounter := &mockmetrics.UnitCounter{}
+		unitCounter.On("Decrement", testutils.ContextMatcher).Return()
+		helper.service.householdCounter = unitCounter
+
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"household_archived",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				keys.HouseholdIDKey: helper.exampleHousehold.ID,
+			},
+		).Return(errors.New("blah"))
+		helper.service.customerDataCollector = cdc
+
+		helper.service.ArchiveHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusNoContent, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, householdDataManager, unitCounter, cdc)
+	})
 }
 
 func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
@@ -706,11 +873,25 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.householdMembershipDataManager = householdMembershipDataManager
 
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"user_permissions_modified",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				keys.HouseholdIDKey: helper.exampleHousehold.ID,
+				"new_permissions":   exampleInput.NewRoles,
+				keys.ReasonKey:      exampleInput.Reason,
+			},
+		).Return(nil)
+		helper.service.customerDataCollector = cdc
+
 		helper.service.ModifyMemberPermissionsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdMembershipDataManager)
+		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, cdc)
 	})
 
 	T.Run("with missing input", func(t *testing.T) {
@@ -797,6 +978,51 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, householdMembershipDataManager)
+	})
+
+	T.Run("with error writing to customer data platform", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeUserPermissionModificationInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipDataManager.On(
+			"ModifyUserPermissions",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+			helper.exampleHousehold.ID,
+			exampleInput,
+		).Return(nil)
+		helper.service.householdMembershipDataManager = householdMembershipDataManager
+
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"user_permissions_modified",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				keys.HouseholdIDKey: helper.exampleHousehold.ID,
+				"new_permissions":   exampleInput.NewRoles,
+				keys.ReasonKey:      exampleInput.Reason,
+			},
+		).Return(errors.New("blah"))
+		helper.service.customerDataCollector = cdc
+
+		helper.service.ModifyMemberPermissionsHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, cdc)
 	})
 }
 

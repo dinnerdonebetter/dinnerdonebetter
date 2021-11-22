@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -36,6 +37,7 @@ type (
 		householdIDFetcher             func(*http.Request) string
 		householdInvitationIDFetcher   func(*http.Request) string
 		sessionContextDataFetcher      func(*http.Request) (*types.SessionContextData, error)
+		customerDataCollector          customerdata.Collector
 	}
 )
 
@@ -48,6 +50,7 @@ func ProvideHouseholdInvitationsService(
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
 	publisherProvider publishers.PublisherProvider,
+	customerDataCollector customerdata.Collector,
 ) (types.HouseholdInvitationDataService, error) {
 	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
 	if err != nil {
@@ -65,6 +68,7 @@ func ProvideHouseholdInvitationsService(
 		householdIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(householdsservice.HouseholdIDURIParamKey),
 		householdInvitationIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(HouseholdInvitationIDURIParamKey),
 		tracer:                         tracing.NewTracer(serviceName),
+		customerDataCollector:          customerDataCollector,
 	}
 
 	return s, nil

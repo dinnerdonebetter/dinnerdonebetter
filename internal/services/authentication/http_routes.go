@@ -31,7 +31,7 @@ var (
 	ErrInvalidCredentials = errors.New("invalid credentials")
 )
 
-func (s *service) AuthenticateUser(ctx context.Context, loginData *types.UserLoginInput) (*types.User, *http.Cookie, error) {
+func (s *service) authenticateUser(ctx context.Context, loginData *types.UserLoginInput) (*types.User, *http.Cookie, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -106,7 +106,7 @@ func (s *service) BeginSessionHandler(res http.ResponseWriter, req *http.Request
 
 	logger = logger.WithValue(keys.UsernameKey, loginData.Username)
 
-	user, cookie, err := s.AuthenticateUser(ctx, loginData)
+	user, cookie, err := s.authenticateUser(ctx, loginData)
 	if err != nil {
 		switch {
 		case errors.Is(err, ErrUserNotFound):
@@ -120,6 +120,10 @@ func (s *service) BeginSessionHandler(res http.ResponseWriter, req *http.Request
 			s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
 		}
 		return
+	}
+
+	if err = s.customerDataCollector.EventOccurred(ctx, "logged_in", user.ID, map[string]interface{}{}); err != nil {
+		logger.Error(err, "notifying customer data platform of login")
 	}
 
 	http.SetCookie(res, cookie)
@@ -192,41 +196,17 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 		return
 	}
 
+	if err = s.customerDataCollector.EventOccurred(ctx, "changed_active_household", requesterID, map[string]interface{}{
+		"old_household_id":        sessionCtxData.ActiveHouseholdID,
+		keys.ActiveHouseholdIDKey: householdID,
+	}); err != nil {
+		logger.Error(err, "notifying customer data platform of login")
+	}
+
 	logger.Info("successfully changed active session household")
 	http.SetCookie(res, cookie)
 
 	res.WriteHeader(http.StatusAccepted)
-}
-
-// LogoutUser ends a user's session.
-func (s *service) LogoutUser(ctx context.Context, req *http.Request, res http.ResponseWriter) error {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger.Clone()
-	tracing.AttachRequestToSpan(span, req)
-
-	ctx, loadErr := s.sessionManager.Load(ctx, "")
-	if loadErr != nil {
-		// this can literally never happen in this version of scs, because the token is empty
-		return observability.PrepareError(loadErr, logger, span, "loading token")
-	}
-
-	if destroyErr := s.sessionManager.Destroy(ctx); destroyErr != nil {
-		return observability.PrepareError(destroyErr, logger, span, "destroying user session")
-	}
-
-	newCookie, cookieBuildingErr := s.buildCookie("deleted", time.Time{})
-	if cookieBuildingErr != nil || newCookie == nil {
-		return observability.PrepareError(cookieBuildingErr, logger, span, "building cookie")
-	}
-
-	newCookie.MaxAge = -1
-	http.SetCookie(res, newCookie)
-
-	logger.Debug("user logged out")
-
-	return nil
 }
 
 // EndSessionHandler is our logout route.
@@ -248,11 +228,35 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	if err = s.LogoutUser(ctx, req, res); err != nil {
-		observability.AcknowledgeError(err, logger, span, "logging out user")
+	ctx, loadErr := s.sessionManager.Load(ctx, "")
+	if loadErr != nil {
+		// this can literally never happen in this version of scs, because the token is empty
+		observability.AcknowledgeError(err, logger, span, "loading token")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
+
+	if destroyErr := s.sessionManager.Destroy(ctx); destroyErr != nil {
+		observability.AcknowledgeError(err, logger, span, "destroying session")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	newCookie, cookieBuildingErr := s.buildCookie("deleted", time.Time{})
+	if cookieBuildingErr != nil || newCookie == nil {
+		observability.AcknowledgeError(err, logger, span, "building cookie")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	newCookie.MaxAge = -1
+	http.SetCookie(res, newCookie)
+
+	if err = s.customerDataCollector.EventOccurred(ctx, "logged_out", sessionCtxData.Requester.UserID, map[string]interface{}{}); err != nil {
+		logger.Error(err, "notifying customer data platform of login")
+	}
+
+	logger.Debug("user logged out")
 
 	http.Redirect(res, req, "/", http.StatusSeeOther)
 }

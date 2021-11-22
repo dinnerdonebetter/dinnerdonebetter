@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -43,6 +44,7 @@ func TestProvidePreArchivesWorker(T *testing.T) {
 			postArchivesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&customerdata.MockCollector{},
 		)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
@@ -72,6 +74,7 @@ func TestProvidePreArchivesWorker(T *testing.T) {
 			postArchivesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&customerdata.MockCollector{},
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -107,6 +110,7 @@ func TestProvidePreArchivesWorker(T *testing.T) {
 			postArchivesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&customerdata.MockCollector{},
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -142,6 +146,7 @@ func TestProvidePreArchivesWorker(T *testing.T) {
 			postArchivesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&customerdata.MockCollector{},
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -177,6 +182,7 @@ func TestProvidePreArchivesWorker(T *testing.T) {
 			postArchivesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&customerdata.MockCollector{},
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -212,6 +218,7 @@ func TestProvidePreArchivesWorker(T *testing.T) {
 			postArchivesPublisher,
 			searchIndexLocation,
 			searchIndexProvider,
+			&customerdata.MockCollector{},
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -227,26 +234,11 @@ func TestArchivesWorker_HandleMessage(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 		dbManager := database.NewMockDatabase()
 		postArchivesPublisher := &mockpublishers.Publisher{}
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return nil, nil
-		}
 
-		worker, err := ProvideArchivesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestArchivesWorker(t)
+		worker.dataManager = dbManager
 
 		assert.Error(t, worker.HandleMessage(ctx, []byte("} bad JSON lol")))
 
@@ -257,26 +249,11 @@ func TestArchivesWorker_HandleMessage(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 		dbManager := database.NewMockDatabase()
 		postArchivesPublisher := &mockpublishers.Publisher{}
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return nil, nil
-		}
 
-		worker, err := ProvideArchivesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestArchivesWorker(t)
+		worker.dataManager = dbManager
 
 		body := &types.PreArchiveMessage{
 			DataType: types.UserMembershipDataType,

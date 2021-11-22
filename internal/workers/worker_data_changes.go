@@ -3,6 +3,7 @@ package workers
 import (
 	"context"
 
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -13,21 +14,27 @@ import (
 
 // DataChangesWorker observes data changes in the database.
 type DataChangesWorker struct {
-	logger      logging.Logger
-	tracer      tracing.Tracer
-	encoder     encoding.ClientEncoder
-	emailSender email.Emailer
+	logger                logging.Logger
+	tracer                tracing.Tracer
+	encoder               encoding.ClientEncoder
+	emailSender           email.Emailer
+	customerDataCollector customerdata.Collector
 }
 
 // ProvideDataChangesWorker provides a DataChangesWorker.
-func ProvideDataChangesWorker(logger logging.Logger, emailSender email.Emailer) *DataChangesWorker {
+func ProvideDataChangesWorker(
+	logger logging.Logger,
+	emailSender email.Emailer,
+	customerDataCollector customerdata.Collector,
+) *DataChangesWorker {
 	name := "post_writes"
 
 	return &DataChangesWorker{
-		logger:      logging.EnsureLogger(logger).WithName(name),
-		tracer:      tracing.NewTracer(name),
-		encoder:     encoding.ProvideClientEncoder(logger, encoding.ContentTypeJSON),
-		emailSender: emailSender,
+		logger:                logging.EnsureLogger(logger).WithName(name),
+		tracer:                tracing.NewTracer(name),
+		encoder:               encoding.ProvideClientEncoder(logger, encoding.ContentTypeJSON),
+		emailSender:           emailSender,
+		customerDataCollector: customerDataCollector,
 	}
 }
 

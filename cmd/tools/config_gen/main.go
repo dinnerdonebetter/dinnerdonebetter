@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"fmt"
+	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
@@ -112,6 +113,11 @@ var (
 		Provider: "",
 		APIToken: "",
 	}
+
+	localCustomerDataPlatformConfig = customerdataconfig.Config{
+		Provider: "",
+		APIToken: "",
+	}
 )
 
 func initializeLocalSecretManager(ctx context.Context) secrets.SecretManager {
@@ -153,7 +159,7 @@ func encryptAndSaveConfig(ctx context.Context, outputPath string, cfg *config.In
 type configFunc func(ctx context.Context, filePath string) error
 
 var files = map[string]configFunc{
-	"environments/local/service.config":                                localDevelopmentConfig,
+	"environments/local/config_files/service.config":                   localDevelopmentConfig,
 	"environments/testing/config_files/frontend-tests.config":          frontendTestsConfig,
 	"environments/testing/config_files/integration-tests.config":       integrationTestConfig,
 	"environments/testing/config_files/integration-tests-local.config": localIntegrationTestConfig,
@@ -194,8 +200,9 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 				QueueAddress: workerQueueAddress,
 			},
 		},
-		Email:  localEmailConfig,
-		Server: localServer,
+		Email:        localEmailConfig,
+		CustomerData: localCustomerDataPlatformConfig,
+		Server:       localServer,
 		Database: dbconfig.Config{
 			Debug:             true,
 			RunMigrations:     true,
@@ -403,8 +410,9 @@ func frontendTestsConfig(ctx context.Context, filePath string) error {
 				QueueAddress: workerQueueAddress,
 			},
 		},
-		Email:  localEmailConfig,
-		Server: localServer,
+		Email:        localEmailConfig,
+		CustomerData: localCustomerDataPlatformConfig,
+		Server:       localServer,
 		Database: dbconfig.Config{
 			Debug:             true,
 			RunMigrations:     true,
@@ -606,7 +614,8 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 		Encoding: encoding.Config{
 			ContentType: contentTypeJSON,
 		},
-		Email: localEmailConfig,
+		Email:        localEmailConfig,
+		CustomerData: localCustomerDataPlatformConfig,
 		Server: server.Config{
 			Debug:           false,
 			HTTPPort:        defaultPort,

@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	mockauthn "github.com/prixfixeco/api_server/internal/authentication/mock"
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -47,6 +48,7 @@ func buildTestService(t *testing.T) *service {
 		&images.MockImageUploadProcessor{},
 		&mockuploads.UploadManager{},
 		chi.NewRouteParamManager(),
+		&customerdata.MockCollector{},
 	)
 
 	mock.AssertExpectationsForObjects(t, mockDB, uc)
@@ -79,6 +81,7 @@ func TestProvideUsersService(T *testing.T) {
 			&images.MockImageUploadProcessor{},
 			&mockuploads.UploadManager{},
 			rpm,
+			&customerdata.MockCollector{},
 		)
 
 		assert.NotNil(t, s)

@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	routing "github.com/prixfixeco/api_server/internal/routing"
+	"github.com/prixfixeco/api_server/internal/routing"
 	"github.com/prixfixeco/api_server/internal/search"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -36,18 +37,20 @@ type (
 		preArchivesPublisher      publishers.Publisher
 		encoderDecoder            encoding.ServerEncoderDecoder
 		tracer                    tracing.Tracer
+		customerDataCollector     customerdata.Collector
 	}
 )
 
 // ProvideService builds a new MealPlansService.
 func ProvideService(
-	ctx context.Context,
+	_ context.Context,
 	logger logging.Logger,
 	cfg *Config,
 	mealPlanDataManager types.MealPlanDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
 	publisherProvider publishers.PublisherProvider,
+	customerDataCollector customerdata.Collector,
 ) (types.MealPlanDataService, error) {
 	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
 	if err != nil {
@@ -74,6 +77,7 @@ func ProvideService(
 		preArchivesPublisher:      preArchivesPublisher,
 		encoderDecoder:            encoder,
 		tracer:                    tracing.NewTracer(serviceName),
+		customerDataCollector:     customerDataCollector,
 	}
 
 	return svc, nil

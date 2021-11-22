@@ -16,6 +16,13 @@ var ContextMatcher interface{} = mock.MatchedBy(func(context.Context) bool {
 	return true
 })
 
+// MapOfStringToInterfaceMatcher is a matcher for use with testify/mock's MatchBy function. It provides some level of type
+// safety reassurance over mock.Anything, in that the resulting function will panic if anything other than
+// a context.Context.
+var MapOfStringToInterfaceMatcher interface{} = mock.MatchedBy(func(map[string]interface{}) bool {
+	return true
+})
+
 // HTTPRequestMatcher is a matcher for use with testify/mock's MatchBy function. It provides some level of type
 // safety reassurance over mock.Anything, in that the resulting function will panic if anything other than
 // a *http.Request.

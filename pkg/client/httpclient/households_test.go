@@ -313,7 +313,7 @@ func (s *householdsTestSuite) TestClient_InviteUserToHousehold() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationCreationInput()
+		exampleInput := fakes.BuildFakeHouseholdInvitationCreationRequestInput()
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, exampleInput.DestinationHousehold)
 		c, _ := buildTestClientWithJSONResponse(t, spec, &types.PreWriteResponse{ID: t.Name()})
 
@@ -346,7 +346,7 @@ func (s *householdsTestSuite) TestClient_InviteUserToHousehold() {
 		t := s.T()
 
 		c := buildTestClientWithInvalidURL(t)
-		exampleInput := fakes.BuildFakeHouseholdInvitationCreationInput()
+		exampleInput := fakes.BuildFakeHouseholdInvitationCreationRequestInput()
 
 		householdInviteID, err := c.InviteUserToHousehold(s.ctx, exampleInput)
 		assert.Empty(t, householdInviteID)
@@ -356,7 +356,7 @@ func (s *householdsTestSuite) TestClient_InviteUserToHousehold() {
 	s.Run("with error executing request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationCreationInput()
+		exampleInput := fakes.BuildFakeHouseholdInvitationCreationRequestInput()
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		householdInviteID, err := c.InviteUserToHousehold(s.ctx, exampleInput)

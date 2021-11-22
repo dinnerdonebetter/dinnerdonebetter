@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/securecookie"
 
 	"github.com/prixfixeco/api_server/internal/authentication"
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -42,6 +43,7 @@ type (
 		sessionManager             sessionManager
 		sessionContextDataFetcher  func(*http.Request) (*types.SessionContextData, error)
 		tracer                     tracing.Tracer
+		customerDataCollector      customerdata.Collector
 	}
 )
 
@@ -55,6 +57,7 @@ func ProvideService(
 	householdMembershipManager types.HouseholdUserMembershipDataManager,
 	sessionManager *scs.SessionManager,
 	encoder encoding.ServerEncoderDecoder,
+	customerDataCollector customerdata.Collector,
 ) (types.AuthService, error) {
 	hashKey := []byte(cfg.Cookies.HashKey)
 	if len(hashKey) == 0 {
@@ -73,6 +76,7 @@ func ProvideService(
 		sessionContextDataFetcher:  FetchContextFromRequest,
 		cookieManager:              securecookie.New(hashKey, []byte(cfg.Cookies.SigningKey)),
 		tracer:                     tracing.NewTracer(serviceName),
+		customerDataCollector:      customerDataCollector,
 	}
 
 	if _, err := svc.cookieManager.Encode(cfg.Cookies.Name, "blah"); err != nil {

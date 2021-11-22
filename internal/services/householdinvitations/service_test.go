@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -58,6 +59,7 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
+			&customerdata.MockCollector{},
 		)
 
 		assert.NotNil(t, actual)
@@ -84,6 +86,7 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,
+			&customerdata.MockCollector{},
 		)
 
 		assert.Nil(t, actual)

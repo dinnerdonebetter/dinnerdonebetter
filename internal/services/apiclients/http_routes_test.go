@@ -13,9 +13,11 @@ import (
 	"github.com/stretchr/testify/require"
 
 	mockauthn "github.com/prixfixeco/api_server/internal/authentication/mock"
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	mockmetrics "github.com/prixfixeco/api_server/internal/observability/metrics/mock"
 	mockrandom "github.com/prixfixeco/api_server/internal/random/mock"
@@ -205,10 +207,23 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		uc.On("Increment", testutils.ContextMatcher).Return()
 		helper.service.apiClientCounter = uc
 
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"api_client_created",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				keys.APIClientDatabaseIDKey: helper.exampleAPIClient.ID,
+				"api_client.name":           helper.exampleAPIClient.Name,
+			},
+		).Return(nil)
+		helper.service.customerDataCollector = cdc
+
 		helper.service.CreateHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, a, sg, uc)
+		mock.AssertExpectationsForObjects(t, mockDB, a, sg, uc, cdc)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -545,6 +560,81 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, mockDB, a, sg)
 	})
+
+	T.Run("with error writing to customer data platform", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.UserDataManager.On(
+			"GetUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleUser, nil)
+		helper.service.userDataManager = mockDB
+
+		a := &mockauthn.Authenticator{}
+		a.On(
+			"ValidateLogin",
+			testutils.ContextMatcher,
+			helper.exampleUser.HashedPassword,
+			helper.exampleInput.Password,
+			helper.exampleUser.TwoFactorSecret,
+			helper.exampleInput.TOTPToken,
+		).Return(true, nil)
+		helper.service.authenticator = a
+
+		sg := &mockrandom.Generator{}
+		sg.On(
+			"GenerateBase64EncodedString",
+			testutils.ContextMatcher,
+			clientIDSize,
+		).Return(helper.exampleAPIClient.ClientID, nil)
+		sg.On(
+			"GenerateRawBytes",
+			testutils.ContextMatcher,
+			clientSecretSize,
+		).Return(helper.exampleAPIClient.ClientSecret, nil)
+		helper.service.secretGenerator = sg
+
+		mockDB.APIClientDataManager.On(
+			"CreateAPIClient",
+			testutils.ContextMatcher,
+			apiClientCreationInputMatcher,
+		).Return(helper.exampleAPIClient, nil)
+		helper.service.apiClientDataManager = mockDB
+
+		uc := &mockmetrics.UnitCounter{}
+		uc.On("Increment", testutils.ContextMatcher).Return()
+		helper.service.apiClientCounter = uc
+
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"api_client_created",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				keys.APIClientDatabaseIDKey: helper.exampleAPIClient.ID,
+				"api_client.name":           helper.exampleAPIClient.Name,
+			},
+		).Return(errors.New("blah"))
+		helper.service.customerDataCollector = cdc
+
+		helper.service.CreateHandler(helper.res, helper.req)
+		assert.Equal(t, http.StatusCreated, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, a, sg, uc, cdc)
+	})
 }
 
 func TestAPIClientsService_ReadHandler(T *testing.T) {
@@ -683,11 +773,23 @@ func TestAPIClientsService_ArchiveHandler(T *testing.T) {
 		unitCounter.On("Decrement", testutils.ContextMatcher).Return()
 		helper.service.apiClientCounter = unitCounter
 
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"api_client_archived",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				keys.APIClientDatabaseIDKey: helper.exampleAPIClient.ID,
+			},
+		).Return(nil)
+		helper.service.customerDataCollector = cdc
+
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, apiClientDataManager, unitCounter)
+		mock.AssertExpectationsForObjects(t, apiClientDataManager, unitCounter, cdc)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -769,5 +871,42 @@ func TestAPIClientsService_ArchiveHandler(T *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, apiClientDataManager, encoderDecoder)
+	})
+
+	T.Run("with error writing to customer data platform", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		apiClientDataManager := &mocktypes.APIClientDataManager{}
+		apiClientDataManager.On(
+			"ArchiveAPIClient",
+			testutils.ContextMatcher,
+			helper.exampleAPIClient.ID,
+			helper.exampleUser.ID,
+		).Return(nil)
+		helper.service.apiClientDataManager = apiClientDataManager
+
+		unitCounter := &mockmetrics.UnitCounter{}
+		unitCounter.On("Decrement", testutils.ContextMatcher).Return()
+		helper.service.apiClientCounter = unitCounter
+
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"api_client_archived",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				keys.APIClientDatabaseIDKey: helper.exampleAPIClient.ID,
+			},
+		).Return(errors.New("blah"))
+		helper.service.customerDataCollector = cdc
+
+		helper.service.ArchiveHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusNoContent, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, apiClientDataManager, unitCounter, cdc)
 	})
 }

@@ -97,7 +97,6 @@ type (
 		UpdateHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 		RemoveMemberHandler(res http.ResponseWriter, req *http.Request)
-		LeaveHouseholdHandler(res http.ResponseWriter, req *http.Request)
 		MarkAsDefaultHouseholdHandler(res http.ResponseWriter, req *http.Request)
 		ModifyMemberPermissionsHandler(res http.ResponseWriter, req *http.Request)
 		TransferHouseholdOwnershipHandler(res http.ResponseWriter, req *http.Request)

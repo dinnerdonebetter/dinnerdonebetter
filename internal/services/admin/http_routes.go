@@ -58,22 +58,6 @@ func (s *service) UserReputationChangeHandler(res http.ResponseWriter, req *http
 
 	requester := sessionCtxData.Requester.UserID
 	logger = logger.WithValue("ban_giver", requester)
-
-	var allowed bool
-
-	switch input.NewReputation {
-	case types.BannedUserHouseholdStatus, types.TerminatedUserReputation:
-		allowed = sessionCtxData.Requester.ServicePermissions.CanUpdateUserReputations()
-	case types.GoodStandingHouseholdStatus, types.UnverifiedHouseholdStatus:
-		allowed = true
-	}
-
-	if !allowed {
-		logger.Info("ban attempt made by admin without appropriate permissions")
-		s.encoderDecoder.EncodeInvalidPermissionsResponse(ctx, res)
-		return
-	}
-
 	logger = logger.WithValue("status_change_recipient", input.TargetUserID)
 
 	if err = s.userDB.UpdateUserReputation(ctx, input.TargetUserID, input); err != nil {

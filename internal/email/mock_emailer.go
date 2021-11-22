@@ -6,6 +6,8 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+var _ Emailer = (*MockEmailer)(nil)
+
 type (
 	// MockEmailer represents a service that can send emails.
 	MockEmailer struct {

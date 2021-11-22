@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	mockauthn "github.com/prixfixeco/api_server/internal/authentication/mock"
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
@@ -39,6 +40,7 @@ func buildTestService(t *testing.T) *service {
 		&mocktypes.HouseholdUserMembershipDataManager{},
 		scs.New(),
 		encoderDecoder,
+		&customerdata.MockCollector{},
 	)
 	require.NoError(t, err)
 
@@ -67,6 +69,7 @@ func TestProvideService(T *testing.T) {
 			&mocktypes.HouseholdUserMembershipDataManager{},
 			scs.New(),
 			encoderDecoder,
+			&customerdata.MockCollector{},
 		)
 
 		assert.NotNil(t, s)
@@ -92,6 +95,7 @@ func TestProvideService(T *testing.T) {
 			&mocktypes.HouseholdUserMembershipDataManager{},
 			scs.New(),
 			encoderDecoder,
+			&customerdata.MockCollector{},
 		)
 
 		assert.Nil(t, s)

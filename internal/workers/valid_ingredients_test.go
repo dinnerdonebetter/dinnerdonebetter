@@ -3,18 +3,13 @@ package workers
 import (
 	"context"
 	"errors"
-	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/database"
-	"github.com/prixfixeco/api_server/internal/email"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/search"
 	mocksearch "github.com/prixfixeco/api_server/internal/search/mock"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
@@ -28,8 +23,6 @@ func TestWritesWorker_createValidIngredient(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreWriteMessage{
 			DataType:        types.ValidIngredientDataType,
@@ -53,42 +46,31 @@ func TestWritesWorker_createValidIngredient(T *testing.T) {
 			expectedValidIngredient,
 		).Return(nil)
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return searchIndexManager, nil
-		}
-
-		postArchivesPublisher := &mockpublishers.Publisher{}
-		postArchivesPublisher.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
 		).Return(nil)
 
-		worker, err := ProvideWritesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-			&email.MockEmailer{},
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestWritesWorker(t)
+		worker.dataManager = dbManager
+		worker.validIngredientsIndexManager = searchIndexManager
+		worker.dataChangesPublisher = dataChangesPublisher
+
+		worker.dataManager = dbManager
+		worker.validIngredientsIndexManager = searchIndexManager
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.NoError(t, worker.createValidIngredient(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher, searchIndexManager)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher, searchIndexManager)
 	})
 
 	T.Run("with error writing", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreWriteMessage{
 			DataType:        types.ValidIngredientDataType,
@@ -102,37 +84,18 @@ func TestWritesWorker_createValidIngredient(T *testing.T) {
 			body.ValidIngredient,
 		).Return((*types.ValidIngredient)(nil), errors.New("blah"))
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return nil, nil
-		}
-
-		postArchivesPublisher := &mockpublishers.Publisher{}
-
-		worker, err := ProvideWritesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-			&email.MockEmailer{},
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestWritesWorker(t)
+		worker.dataManager = dbManager
 
 		assert.Error(t, worker.createValidIngredient(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager)
 	})
 
 	T.Run("with error updating search index", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreWriteMessage{
 			DataType:        types.ValidIngredientDataType,
@@ -156,37 +119,19 @@ func TestWritesWorker_createValidIngredient(T *testing.T) {
 			expectedValidIngredient,
 		).Return(errors.New("blah"))
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return searchIndexManager, nil
-		}
-
-		postArchivesPublisher := &mockpublishers.Publisher{}
-
-		worker, err := ProvideWritesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-			&email.MockEmailer{},
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestWritesWorker(t)
+		worker.dataManager = dbManager
+		worker.validIngredientsIndexManager = searchIndexManager
 
 		assert.Error(t, worker.createValidIngredient(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher, searchIndexManager)
+		mock.AssertExpectationsForObjects(t, dbManager, searchIndexManager)
 	})
 
 	T.Run("with error publishing data change message", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreWriteMessage{
 			DataType:        types.ValidIngredientDataType,
@@ -210,34 +155,21 @@ func TestWritesWorker_createValidIngredient(T *testing.T) {
 			expectedValidIngredient,
 		).Return(nil)
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return searchIndexManager, nil
-		}
-
-		postArchivesPublisher := &mockpublishers.Publisher{}
-		postArchivesPublisher.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
 		).Return(errors.New("blah"))
 
-		worker, err := ProvideWritesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-			&email.MockEmailer{},
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestWritesWorker(t)
+		worker.dataManager = dbManager
+		worker.validIngredientsIndexManager = searchIndexManager
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.Error(t, worker.createValidIngredient(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher, searchIndexManager)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher, searchIndexManager)
 	})
 }
 
@@ -248,8 +180,6 @@ func TestWritesWorker_updateValidIngredient(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreUpdateMessage{
 			DataType:        types.ValidIngredientDataType,
@@ -271,42 +201,27 @@ func TestWritesWorker_updateValidIngredient(T *testing.T) {
 			body.ValidIngredient,
 		).Return(nil)
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return searchIndexManager, nil
-		}
-
-		postArchivesPublisher := &mockpublishers.Publisher{}
-		postArchivesPublisher.On(
+		postUpdatesPublisher := &mockpublishers.Publisher{}
+		postUpdatesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
 		).Return(nil)
 
-		worker, err := ProvideUpdatesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-			&email.MockEmailer{},
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestUpdatesWorker(t)
+		worker.dataManager = dbManager
+		worker.validIngredientsIndexManager = searchIndexManager
+		worker.postUpdatesPublisher = postUpdatesPublisher
 
 		assert.NoError(t, worker.updateValidIngredient(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher, searchIndexManager)
+		mock.AssertExpectationsForObjects(t, dbManager, postUpdatesPublisher, searchIndexManager)
 	})
 
 	T.Run("with error updating valid ingredient", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreUpdateMessage{
 			DataType:        types.ValidIngredientDataType,
@@ -320,37 +235,18 @@ func TestWritesWorker_updateValidIngredient(T *testing.T) {
 			body.ValidIngredient,
 		).Return(errors.New("blah"))
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return nil, nil
-		}
-
-		postArchivesPublisher := &mockpublishers.Publisher{}
-
-		worker, err := ProvideUpdatesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-			&email.MockEmailer{},
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestUpdatesWorker(t)
+		worker.dataManager = dbManager
 
 		assert.Error(t, worker.updateValidIngredient(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager)
 	})
 
 	T.Run("with error updating search index", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreUpdateMessage{
 			DataType:        types.ValidIngredientDataType,
@@ -372,37 +268,19 @@ func TestWritesWorker_updateValidIngredient(T *testing.T) {
 			body.ValidIngredient,
 		).Return(errors.New("blah"))
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return searchIndexManager, nil
-		}
-
-		postArchivesPublisher := &mockpublishers.Publisher{}
-
-		worker, err := ProvideUpdatesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-			&email.MockEmailer{},
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestUpdatesWorker(t)
+		worker.dataManager = dbManager
+		worker.validIngredientsIndexManager = searchIndexManager
 
 		assert.Error(t, worker.updateValidIngredient(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher, searchIndexManager)
+		mock.AssertExpectationsForObjects(t, dbManager, searchIndexManager)
 	})
 
 	T.Run("with error publishing data change event", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreUpdateMessage{
 			DataType:        types.ValidIngredientDataType,
@@ -424,34 +302,21 @@ func TestWritesWorker_updateValidIngredient(T *testing.T) {
 			body.ValidIngredient,
 		).Return(nil)
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return searchIndexManager, nil
-		}
-
-		postArchivesPublisher := &mockpublishers.Publisher{}
-		postArchivesPublisher.On(
+		postUpdatesPublisher := &mockpublishers.Publisher{}
+		postUpdatesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
 		).Return(errors.New("blah"))
 
-		worker, err := ProvideUpdatesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-			&email.MockEmailer{},
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestUpdatesWorker(t)
+		worker.dataManager = dbManager
+		worker.validIngredientsIndexManager = searchIndexManager
+		worker.postUpdatesPublisher = postUpdatesPublisher
 
 		assert.Error(t, worker.updateValidIngredient(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher, searchIndexManager)
+		mock.AssertExpectationsForObjects(t, dbManager, postUpdatesPublisher, searchIndexManager)
 	})
 }
 
@@ -462,8 +327,6 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreArchiveMessage{
 			DataType: types.ValidIngredientDataType,
@@ -490,22 +353,10 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 			body.ValidIngredientID,
 		).Return(nil)
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return searchIndexManager, nil
-		}
-
-		worker, err := ProvideArchivesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestArchivesWorker(t)
+		worker.dataManager = dbManager
+		worker.validIngredientsIndexManager = searchIndexManager
+		worker.postArchivesPublisher = postArchivesPublisher
 
 		assert.NoError(t, worker.archiveValidIngredient(ctx, body))
 
@@ -516,8 +367,6 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreArchiveMessage{
 			DataType: types.ValidIngredientDataType,
@@ -530,35 +379,18 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 			body.ValidIngredientID,
 		).Return(errors.New("blah"))
 
-		postArchivesPublisher := &mockpublishers.Publisher{}
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return nil, nil
-		}
-
-		worker, err := ProvideArchivesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestArchivesWorker(t)
+		worker.dataManager = dbManager
 
 		assert.Error(t, worker.archiveValidIngredient(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager)
 	})
 
 	T.Run("with error removing from search index", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreArchiveMessage{
 			DataType: types.ValidIngredientDataType,
@@ -578,36 +410,19 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 			body.ValidIngredientID,
 		).Return(errors.New("blah"))
 
-		postArchivesPublisher := &mockpublishers.Publisher{}
-
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return searchIndexManager, nil
-		}
-
-		worker, err := ProvideArchivesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestArchivesWorker(t)
+		worker.dataManager = dbManager
+		worker.validIngredientsIndexManager = searchIndexManager
 
 		assert.Error(t, worker.archiveValidIngredient(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher, searchIndexManager)
+		mock.AssertExpectationsForObjects(t, dbManager, searchIndexManager)
 	})
 
 	T.Run("with error publishing post-archive message", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 
 		body := &types.PreArchiveMessage{
 			DataType: types.ValidIngredientDataType,
@@ -634,22 +449,10 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 			body.ValidIngredientID,
 		).Return(nil)
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return searchIndexManager, nil
-		}
-
-		worker, err := ProvideArchivesWorker(
-			ctx,
-			logger,
-			client,
-			dbManager,
-			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
-		)
-		require.NotNil(t, worker)
-		require.NoError(t, err)
+		worker := newTestArchivesWorker(t)
+		worker.dataManager = dbManager
+		worker.validIngredientsIndexManager = searchIndexManager
+		worker.postArchivesPublisher = postArchivesPublisher
 
 		assert.Error(t, worker.archiveValidIngredient(ctx, body))
 

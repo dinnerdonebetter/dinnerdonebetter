@@ -15,6 +15,8 @@ var (
 			"Meta",
 			"Encoding",
 			"Uploads",
+			"Email",
+			"CustomerData",
 			"Search",
 			"Events",
 			"Server",

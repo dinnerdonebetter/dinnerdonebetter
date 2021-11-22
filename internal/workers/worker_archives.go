@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
@@ -27,6 +28,7 @@ type ArchivesWorker struct {
 	validPreparationsIndexManager           search.IndexManager
 	validIngredientPreparationsIndexManager search.IndexManager
 	recipesIndexManager                     search.IndexManager
+	customerDataCollector                   customerdata.Collector
 }
 
 // ProvideArchivesWorker provides an ArchivesWorker.
@@ -38,6 +40,7 @@ func ProvideArchivesWorker(
 	postArchivesPublisher publishers.Publisher,
 	searchIndexLocation search.IndexPath,
 	searchIndexProvider search.IndexManagerProvider,
+	customerDataCollector customerdata.Collector,
 ) (*ArchivesWorker, error) {
 	const name = "pre_archives"
 
@@ -77,6 +80,7 @@ func ProvideArchivesWorker(
 		validPreparationsIndexManager:           validPreparationsIndexManager,
 		validIngredientPreparationsIndexManager: validIngredientPreparationsIndexManager,
 		recipesIndexManager:                     recipesIndexManager,
+		customerDataCollector:                   customerDataCollector,
 	}
 
 	return w, nil

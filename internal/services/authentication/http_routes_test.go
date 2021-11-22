@@ -24,7 +24,9 @@ import (
 	"github.com/prixfixeco/api_server/internal/authentication"
 	mockauthn "github.com/prixfixeco/api_server/internal/authentication/mock"
 	"github.com/prixfixeco/api_server/internal/authorization"
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/random"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -144,7 +146,7 @@ func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {
 	})
 }
 
-func TestAuthenticationService_LoginHandler(T *testing.T) {
+func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -187,12 +189,22 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 		).Return(helper.exampleHousehold.ID, nil)
 		helper.service.householdMembershipManager = membershipDB
 
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"logged_in",
+			helper.exampleUser.ID,
+			map[string]interface{}{},
+		).Return(nil)
+		helper.service.customerDataCollector = cdc
+
 		helper.service.BeginSessionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB)
+		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB, cdc)
 	})
 
 	T.Run("with missing login data", func(t *testing.T) {
@@ -802,6 +814,64 @@ func TestAuthenticationService_LoginHandler(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, cb, userDataManager, authenticator, membershipDB)
 	})
+
+	T.Run("with error writing to customer data platform", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleLoginInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager.On(
+			"GetUserByUsername",
+			testutils.ContextMatcher,
+			helper.exampleUser.Username,
+		).Return(helper.exampleUser, nil)
+		helper.service.userDataManager = userDataManager
+
+		authenticator := &mockauthn.Authenticator{}
+		authenticator.On(
+			"ValidateLogin",
+			testutils.ContextMatcher,
+			helper.exampleUser.HashedPassword,
+			helper.exampleLoginInput.Password,
+			helper.exampleUser.TwoFactorSecret,
+			helper.exampleLoginInput.TOTPToken,
+		).Return(true, nil)
+		helper.service.authenticator = authenticator
+
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB.On(
+			"GetDefaultHouseholdIDForUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleHousehold.ID, nil)
+		helper.service.householdMembershipManager = membershipDB
+
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"logged_in",
+			helper.exampleUser.ID,
+			map[string]interface{}{},
+		).Return(errors.New("blah"))
+		helper.service.customerDataCollector = cdc
+
+		helper.service.BeginSessionHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
+
+		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB, cdc)
+	})
 }
 
 func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
@@ -830,12 +900,25 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.householdMembershipManager = householdMembershipManager
 
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"changed_active_household",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				"old_household_id":        helper.exampleHousehold.ID,
+				keys.ActiveHouseholdIDKey: exampleInput.HouseholdID,
+			},
+		).Return(nil)
+		helper.service.customerDataCollector = cdc
+
 		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, householdMembershipManager)
+		mock.AssertExpectationsForObjects(t, householdMembershipManager, cdc)
 	})
 
 	T.Run("with error fetching session context data", func(t *testing.T) {
@@ -1134,9 +1217,53 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, householdMembershipManager)
 	})
+
+	T.Run("with error writing to customer data platform", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeChangeActiveHouseholdInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager.On(
+			"UserIsMemberOfHousehold",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+			exampleInput.HouseholdID,
+		).Return(true, nil)
+		helper.service.householdMembershipManager = householdMembershipManager
+
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"changed_active_household",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				"old_household_id":        helper.exampleHousehold.ID,
+				keys.ActiveHouseholdIDKey: exampleInput.HouseholdID,
+			},
+		).Return(errors.New("blah"))
+		helper.service.customerDataCollector = cdc
+
+		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
+
+		mock.AssertExpectationsForObjects(t, householdMembershipManager, cdc)
+	})
 }
 
-func TestAuthenticationService_LogoutHandler(T *testing.T) {
+func TestAuthenticationService_EndSessionHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -1146,11 +1273,23 @@ func TestAuthenticationService_LogoutHandler(T *testing.T) {
 
 		helper.ctx, helper.req, _ = attachCookieToRequestForTest(t, helper.service, helper.req, helper.exampleUser)
 
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"logged_out",
+			helper.exampleUser.ID,
+			map[string]interface{}{},
+		).Return(nil)
+		helper.service.customerDataCollector = cdc
+
 		helper.service.EndSessionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusSeeOther, helper.res.Code)
 		actualCookie := helper.res.Header().Get("Set-Cookie")
 		assert.Contains(t, actualCookie, "Max-Age=0")
+
+		mock.AssertExpectationsForObjects(t, cdc)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -1217,6 +1356,32 @@ func TestAuthenticationService_LogoutHandler(T *testing.T) {
 		helper.service.EndSessionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+	})
+
+	T.Run("with error writing to customer data platform", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		helper.ctx, helper.req, _ = attachCookieToRequestForTest(t, helper.service, helper.req, helper.exampleUser)
+
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"logged_out",
+			helper.exampleUser.ID,
+			map[string]interface{}{},
+		).Return(errors.New("blah"))
+		helper.service.customerDataCollector = cdc
+
+		helper.service.EndSessionHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusSeeOther, helper.res.Code)
+		actualCookie := helper.res.Header().Get("Set-Cookie")
+		assert.Contains(t, actualCookie, "Max-Age=0")
+
+		mock.AssertExpectationsForObjects(t, cdc)
 	})
 }
 
