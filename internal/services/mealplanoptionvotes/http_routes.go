@@ -68,11 +68,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	providedInput.BelongsToMealPlanOption = mealPlanOptionID
 	providedInput.ByUser = sessionCtxData.Requester.UserID
 
-	if err = providedInput.ValidateWithContext(ctx); err != nil {
-		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
-		return
-	}
+	// note, this is where you would call providedInput.ValidateWithContext, if that currently had any effect.
 
 	input := types.MealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVoteCreationInput(providedInput)
 	input.ID = ksuid.New().String()
@@ -95,6 +91,14 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	pwr := types.PreWriteResponse{ID: input.ID}
+
+	if err = s.customerDataCollector.EventOccurred(ctx, "meal_plan_option_vote_created", sessionCtxData.Requester.UserID, map[string]interface{}{
+		keys.MealPlanIDKey:       mealPlanID,
+		keys.MealPlanOptionIDKey: mealPlanOptionID,
+		keys.HouseholdIDKey:      sessionCtxData.ActiveHouseholdID,
+	}); err != nil {
+		logger.Error(err, "notifying customer data platform")
+	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusAccepted)
 }
@@ -273,6 +277,14 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	if err = s.customerDataCollector.EventOccurred(ctx, "meal_plan_option_vote_updated", sessionCtxData.Requester.UserID, map[string]interface{}{
+		keys.MealPlanIDKey:       mealPlanID,
+		keys.MealPlanOptionIDKey: mealPlanOptionID,
+		keys.HouseholdIDKey:      sessionCtxData.ActiveHouseholdID,
+	}); err != nil {
+		logger.Error(err, "notifying customer data platform")
+	}
+
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, mealPlanOptionVote)
 }
@@ -333,6 +345,14 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing meal plan option vote archive message")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	if err = s.customerDataCollector.EventOccurred(ctx, "meal_plan_option_vote_archived", sessionCtxData.Requester.UserID, map[string]interface{}{
+		keys.MealPlanIDKey:       mealPlanID,
+		keys.MealPlanOptionIDKey: mealPlanOptionID,
+		keys.HouseholdIDKey:      sessionCtxData.ActiveHouseholdID,
+	}); err != nil {
+		logger.Error(err, "notifying customer data platform")
 	}
 
 	// encode our response and peace.

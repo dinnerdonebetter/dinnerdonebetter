@@ -163,6 +163,13 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachAPIClientDatabaseIDToSpan(span, client.ID)
 	s.apiClientCounter.Increment(ctx)
 
+	if err = s.customerDataCollector.EventOccurred(ctx, "api_client_created", user.ID, map[string]interface{}{
+		keys.APIClientDatabaseIDKey: client.ID,
+		"api_client.name":           client.Name,
+	}); err != nil {
+		logger.Error(err, "notifying customer data platform")
+	}
+
 	resObj := &types.APIClientCreationResponse{
 		ID:           client.ID,
 		ClientID:     client.ClientID,
@@ -249,6 +256,11 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// notify relevant parties.
 	s.apiClientCounter.Decrement(ctx)
+	if err = s.customerDataCollector.EventOccurred(ctx, "api_client_archived", sessionCtxData.Requester.UserID, map[string]interface{}{
+		keys.APIClientDatabaseIDKey: apiClientID,
+	}); err != nil {
+		logger.Error(err, "notifying customer data platform")
+	}
 
 	// encode our response and peace.
 	res.WriteHeader(http.StatusNoContent)

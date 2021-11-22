@@ -53,6 +53,35 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, userDataManager)
 	})
 
+	T.Run("without adequate permission", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		sessionCtxData := &types.SessionContextData{
+			Requester: types.RequesterInfo{
+				ServicePermissions: authorization.NewServiceRolePermissionChecker(),
+			},
+			HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{},
+		}
+		helper.service.sessionContextDataFetcher = func(*http.Request) (*types.SessionContextData, error) {
+			return sessionCtxData, nil
+		}
+
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+
+		helper.exampleInput.NewReputation = types.BannedUserHouseholdStatus
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://prixfixe.verygoodsoftwarenotvirus.ru", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		helper.service.UserReputationChangeHandler(helper.res, helper.req)
+		assert.Equal(t, http.StatusForbidden, helper.res.Code)
+	})
+
 	T.Run("back in good standing", func(t *testing.T) {
 		t.Parallel()
 

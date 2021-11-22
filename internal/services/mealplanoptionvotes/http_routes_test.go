@@ -11,9 +11,11 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
@@ -63,11 +65,25 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.preWritesPublisher = mockEventProducer
 
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"meal_plan_option_vote_created",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				keys.HouseholdIDKey:      helper.exampleHousehold.ID,
+				keys.MealPlanIDKey:       helper.exampleMealPlan.ID,
+				keys.MealPlanOptionIDKey: helper.exampleMealPlanOption.ID,
+			},
+		).Return(nil)
+		helper.service.customerDataCollector = cdc
+
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockEventProducer)
+		mock.AssertExpectationsForObjects(t, mockEventProducer, cdc)
 	})
 
 	T.Run("without input attached", func(t *testing.T) {
@@ -134,6 +150,49 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mockEventProducer)
+	})
+
+	T.Run("with error writing to customer data platform", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+
+		exampleCreationInput := fakes.BuildFakeMealPlanOptionVoteDatabaseCreationInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(testutils.PreWriteMessageMatcher),
+		).Return(nil)
+		helper.service.preWritesPublisher = mockEventProducer
+
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"meal_plan_option_vote_created",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				keys.HouseholdIDKey:      helper.exampleHousehold.ID,
+				keys.MealPlanIDKey:       helper.exampleMealPlan.ID,
+				keys.MealPlanOptionIDKey: helper.exampleMealPlanOption.ID,
+			},
+		).Return(errors.New("blah"))
+		helper.service.customerDataCollector = cdc
+
+		helper.service.CreateHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockEventProducer, cdc)
 	})
 }
 
@@ -413,11 +472,25 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.preUpdatesPublisher = mockEventProducer
 
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"meal_plan_option_vote_updated",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				keys.HouseholdIDKey:      helper.exampleHousehold.ID,
+				keys.MealPlanIDKey:       helper.exampleMealPlan.ID,
+				keys.MealPlanOptionIDKey: helper.exampleMealPlanOption.ID,
+			},
+		).Return(nil)
+		helper.service.customerDataCollector = cdc
+
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealPlanOptionVoteDataManager, mockEventProducer)
+		mock.AssertExpectationsForObjects(t, mealPlanOptionVoteDataManager, mockEventProducer, cdc)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -566,6 +639,59 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, mealPlanOptionVoteDataManager, mockEventProducer)
 	})
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+
+		exampleCreationInput := fakes.BuildFakeMealPlanOptionVoteUpdateRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mealPlanOptionVoteDataManager := &mocktypes.MealPlanOptionVoteDataManager{}
+		mealPlanOptionVoteDataManager.On(
+			"GetMealPlanOptionVote",
+			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanOption.ID,
+			helper.exampleMealPlanOptionVote.ID,
+		).Return(helper.exampleMealPlanOptionVote, nil)
+		helper.service.mealPlanOptionVoteDataManager = mealPlanOptionVoteDataManager
+
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(testutils.PreUpdateMessageMatcher),
+		).Return(nil)
+		helper.service.preUpdatesPublisher = mockEventProducer
+
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"meal_plan_option_vote_updated",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				keys.HouseholdIDKey:      helper.exampleHousehold.ID,
+				keys.MealPlanIDKey:       helper.exampleMealPlan.ID,
+				keys.MealPlanOptionIDKey: helper.exampleMealPlanOption.ID,
+			},
+		).Return(errors.New("blah"))
+		helper.service.customerDataCollector = cdc
+
+		helper.service.UpdateHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mealPlanOptionVoteDataManager, mockEventProducer, cdc)
+	})
 }
 
 func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
@@ -594,11 +720,25 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.preArchivesPublisher = mockEventProducer
 
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"meal_plan_option_vote_archived",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				keys.HouseholdIDKey:      helper.exampleHousehold.ID,
+				keys.MealPlanIDKey:       helper.exampleMealPlan.ID,
+				keys.MealPlanOptionIDKey: helper.exampleMealPlanOption.ID,
+			},
+		).Return(nil)
+		helper.service.customerDataCollector = cdc
+
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealPlanOptionVoteDataManager, mockEventProducer)
+		mock.AssertExpectationsForObjects(t, mealPlanOptionVoteDataManager, mockEventProducer, cdc)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -705,5 +845,49 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mealPlanOptionVoteDataManager, mockEventProducer)
+	})
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		mealPlanOptionVoteDataManager := &mocktypes.MealPlanOptionVoteDataManager{}
+		mealPlanOptionVoteDataManager.On(
+			"MealPlanOptionVoteExists",
+			testutils.ContextMatcher,
+			helper.exampleMealPlan.ID,
+			helper.exampleMealPlanOption.ID,
+			helper.exampleMealPlanOptionVote.ID,
+		).Return(true, nil)
+		helper.service.mealPlanOptionVoteDataManager = mealPlanOptionVoteDataManager
+
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(testutils.PreArchiveMessageMatcher),
+		).Return(nil)
+		helper.service.preArchivesPublisher = mockEventProducer
+
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"meal_plan_option_vote_archived",
+			helper.exampleUser.ID,
+			map[string]interface{}{
+				keys.HouseholdIDKey:      helper.exampleHousehold.ID,
+				keys.MealPlanIDKey:       helper.exampleMealPlan.ID,
+				keys.MealPlanOptionIDKey: helper.exampleMealPlanOption.ID,
+			},
+		).Return(errors.New("blah"))
+		helper.service.customerDataCollector = cdc
+
+		helper.service.ArchiveHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusNoContent, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mealPlanOptionVoteDataManager, mockEventProducer, cdc)
 	})
 }

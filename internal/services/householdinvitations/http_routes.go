@@ -97,6 +97,15 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 		return
 	}
 
+	if err = s.customerDataCollector.EventOccurred(ctx, "household_invitation_created", requester, map[string]interface{}{
+		keys.HouseholdInvitationIDKey: input.ID,
+		keys.HouseholdIDKey:           householdID,
+		"from_user":                   input.FromUser,
+		"to_user":                     input.ToUser,
+	}); err != nil {
+		logger.Error(err, "notifying customer data platform")
+	}
+
 	pwr := types.PreWriteResponse{ID: providedInput.ID}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusAccepted)
@@ -240,11 +249,7 @@ func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	if err = providedInput.ValidateWithContext(ctx); err != nil {
-		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
-		return
-	}
+	// note, this is where you would call providedInput.ValidateWithContext, if that currently had any effect.
 
 	userID := sessionCtxData.Requester.UserID
 	tracing.AttachUserIDToSpan(span, userID)
@@ -259,9 +264,16 @@ func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
 
 	if err = s.householdInvitationDataManager.CancelHouseholdInvitation(ctx, householdID, householdInvitationID, providedInput.Note); err != nil {
-		observability.AcknowledgeError(err, logger, span, "fetching session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		observability.AcknowledgeError(err, logger, span, "cancelling invitation")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "error cancelling invitation", http.StatusInternalServerError)
 		return
+	}
+
+	if err = s.customerDataCollector.EventOccurred(ctx, "household_invitation_cancelled", userID, map[string]interface{}{
+		keys.HouseholdInvitationIDKey: householdInvitationID,
+		keys.HouseholdIDKey:           householdID,
+	}); err != nil {
+		logger.Error(err, "notifying customer data platform")
 	}
 
 	res.WriteHeader(http.StatusAccepted)
@@ -290,11 +302,7 @@ func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	if err = providedInput.ValidateWithContext(ctx); err != nil {
-		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
-		return
-	}
+	// note, this is where you would call providedInput.ValidateWithContext, if that currently had any effect.
 
 	userID := sessionCtxData.Requester.UserID
 	logger = logger.WithValue(keys.UserIDKey, userID)
@@ -308,9 +316,16 @@ func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
 
 	if err = s.householdInvitationDataManager.AcceptHouseholdInvitation(ctx, householdID, householdInvitationID, providedInput.Note); err != nil {
-		observability.AcknowledgeError(err, logger, span, "fetching session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		observability.AcknowledgeError(err, logger, span, "accepting invitation")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "error accepting invitation", http.StatusInternalServerError)
 		return
+	}
+
+	if err = s.customerDataCollector.EventOccurred(ctx, "household_invitation_accepted", userID, map[string]interface{}{
+		keys.HouseholdInvitationIDKey: householdInvitationID,
+		keys.HouseholdIDKey:           householdID,
+	}); err != nil {
+		logger.Error(err, "notifying customer data platform")
 	}
 
 	res.WriteHeader(http.StatusAccepted)
@@ -339,11 +354,7 @@ func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	if err = providedInput.ValidateWithContext(ctx); err != nil {
-		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
-		return
-	}
+	// note, this is where you would call providedInput.ValidateWithContext, if that currently had any effect.
 
 	userID := sessionCtxData.Requester.UserID
 	logger = logger.WithValue(keys.UserIDKey, userID)
@@ -357,9 +368,16 @@ func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
 
 	if err = s.householdInvitationDataManager.RejectHouseholdInvitation(ctx, householdID, householdInvitationID, providedInput.Note); err != nil {
-		observability.AcknowledgeError(err, logger, span, "fetching session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		observability.AcknowledgeError(err, logger, span, "rejecting invitation")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "error rejecting invitation", http.StatusInternalServerError)
 		return
+	}
+
+	if err = s.customerDataCollector.EventOccurred(ctx, "household_invitation_rejected", userID, map[string]interface{}{
+		keys.HouseholdIDKey:           householdID,
+		keys.HouseholdInvitationIDKey: householdInvitationID,
+	}); err != nil {
+		logger.Error(err, "notifying customer data platform")
 	}
 
 	res.WriteHeader(http.StatusAccepted)

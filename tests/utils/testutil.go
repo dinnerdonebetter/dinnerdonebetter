@@ -3,12 +3,10 @@ package testutils
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"image"
 	"image/color"
 	"image/png"
-	"io"
 	"math"
 	"net/http"
 	"testing"
@@ -31,16 +29,6 @@ var errArbitrary = errors.New("blah")
 // BrokenSessionContextDataFetcher is a deliberately broken sessionContextDataFetcher.
 func BrokenSessionContextDataFetcher(*http.Request) (*types.SessionContextData, error) {
 	return nil, errArbitrary
-}
-
-// CreateBodyFromStruct takes any value in and returns an io.ReadCloser for an http.Request's body.
-func CreateBodyFromStruct(t *testing.T, in interface{}) io.ReadCloser {
-	t.Helper()
-
-	out, err := json.Marshal(in)
-	require.NoError(t, err)
-
-	return io.NopCloser(bytes.NewReader(out))
 }
 
 // BuildArbitraryImage builds an image with a bunch of colors in it.

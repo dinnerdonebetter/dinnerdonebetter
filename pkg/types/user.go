@@ -172,7 +172,6 @@ type (
 		UpdatePasswordHandler(res http.ResponseWriter, req *http.Request)
 		AvatarUploadHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
-		VerifyUserTwoFactorSecret(ctx context.Context, input *TOTPSecretVerificationInput) error
 	}
 )
 

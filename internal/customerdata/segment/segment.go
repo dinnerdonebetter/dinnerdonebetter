@@ -2,6 +2,7 @@ package segment
 
 import (
 	"context"
+	"errors"
 
 	"gopkg.in/segmentio/analytics-go.v3"
 
@@ -11,6 +12,11 @@ import (
 
 const (
 	name = "segment_collector"
+)
+
+var (
+	// ErrEmptyAPIToken indicates an empty API token was provided.
+	ErrEmptyAPIToken = errors.New("empty API token")
 )
 
 type (
@@ -24,6 +30,10 @@ type (
 
 // NewSegmentCustomerDataCollector returns a new Segment-backed CustomerDataCollector.
 func NewSegmentCustomerDataCollector(logger logging.Logger, apiKey string) (*CustomerDataCollector, error) {
+	if apiKey == "" {
+		return nil, ErrEmptyAPIToken
+	}
+
 	c := &CustomerDataCollector{
 		tracer: tracing.NewTracer(name),
 		logger: logging.EnsureLogger(logger).WithName(name),
@@ -38,8 +48,8 @@ func (c *CustomerDataCollector) Close() error {
 	return c.client.Close()
 }
 
-// Identify upsert's a user's identity.
-func (c *CustomerDataCollector) Identify(ctx context.Context, userID string, properties map[string]interface{}) error {
+// AddUser upsert's a user's identity.
+func (c *CustomerDataCollector) AddUser(ctx context.Context, userID string, properties map[string]interface{}) error {
 	_, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -57,8 +67,8 @@ func (c *CustomerDataCollector) Identify(ctx context.Context, userID string, pro
 	})
 }
 
-// Track associates events with a user.
-func (c *CustomerDataCollector) Track(ctx context.Context, event, userID string, properties map[string]interface{}) error {
+// EventOccurred associates events with a user.
+func (c *CustomerDataCollector) EventOccurred(ctx context.Context, event, userID string, properties map[string]interface{}) error {
 	_, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 

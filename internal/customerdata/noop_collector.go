@@ -18,17 +18,17 @@ func NewNoopCollector() (*NoopCollector, error) {
 	return c, nil
 }
 
-// Close wraps the internal client's Close method.
+// Close does nothing.
 func (c *NoopCollector) Close() error {
 	return nil
 }
 
-// Identify upsert's a user's identity.
-func (c *NoopCollector) Identify(context.Context, string, map[string]interface{}) error {
+// AddUser does nothing.
+func (c *NoopCollector) AddUser(context.Context, string, map[string]interface{}) error {
 	return nil
 }
 
-// Track associates events with a user.
-func (c *NoopCollector) Track(context.Context, string, string, map[string]interface{}) error {
+// EventOccurred does nothing.
+func (c *NoopCollector) EventOccurred(context.Context, string, string, map[string]interface{}) error {
 	return nil
 }

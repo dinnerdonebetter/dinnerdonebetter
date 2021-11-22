@@ -1,7 +1,6 @@
 package mocktypes
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/stretchr/testify/mock"
@@ -85,16 +84,4 @@ func (m *AuthService) PASETOCreationInputMiddleware(next http.Handler) http.Hand
 // ChangeActiveHouseholdInputMiddleware satisfies our interface contract.
 func (m *AuthService) ChangeActiveHouseholdInputMiddleware(next http.Handler) http.Handler {
 	return m.Called(next).Get(0).(http.Handler)
-}
-
-// AuthenticateUser satisfies our interface contract.
-func (m *AuthService) AuthenticateUser(ctx context.Context, loginData *types.UserLoginInput) (*types.User, *http.Cookie, error) {
-	returnValues := m.Called(ctx, loginData)
-
-	return returnValues.Get(0).(*types.User), returnValues.Get(1).(*http.Cookie), returnValues.Error(2)
-}
-
-// LogoutUser satisfies our interface contract.
-func (m *AuthService) LogoutUser(ctx context.Context, req *http.Request, res http.ResponseWriter) error {
-	return m.Called(ctx, req, res).Error(0)
 }

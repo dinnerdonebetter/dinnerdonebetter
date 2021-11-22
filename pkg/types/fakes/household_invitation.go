@@ -40,16 +40,22 @@ func BuildFakeHouseholdInvitationList() *types.HouseholdInvitationList {
 	}
 }
 
-// BuildFakeHouseholdInvitationCreationInput builds a faked HouseholdInvitationCreationRequestInput from a webhook.
-func BuildFakeHouseholdInvitationCreationInput() *types.HouseholdInvitationCreationRequestInput {
-	webhook := BuildFakeHouseholdInvitation()
-	return BuildFakeHouseholdInvitationCreationInputFromHouseholdInvitation(webhook)
+// BuildFakeHouseholdInvitationCreationRequestInput builds a faked HouseholdInvitationCreationRequestInput from a webhook.
+func BuildFakeHouseholdInvitationCreationRequestInput() *types.HouseholdInvitationCreationRequestInput {
+	invitation := BuildFakeHouseholdInvitation()
+	return BuildFakeHouseholdInvitationCreationInputFromHouseholdInvitation(invitation)
+}
+
+// BuildFakeHouseholdInvitationUpdateRequestInput builds a faked HouseholdInvitationUpdateRequestInput from a webhook.
+func BuildFakeHouseholdInvitationUpdateRequestInput() *types.HouseholdInvitationUpdateRequestInput {
+	invitation := BuildFakeHouseholdInvitation()
+	return BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation(invitation)
 }
 
 // BuildFakeHouseholdInvitationDatabaseCreationInput builds a faked HouseholdInvitationCreationRequestInput from a webhook.
 func BuildFakeHouseholdInvitationDatabaseCreationInput() *types.HouseholdInvitationDatabaseCreationInput {
-	webhook := BuildFakeHouseholdInvitation()
-	return BuildFakeHouseholdInvitationDatabaseCreationInputFromHouseholdInvitation(webhook)
+	invitation := BuildFakeHouseholdInvitation()
+	return BuildFakeHouseholdInvitationDatabaseCreationInputFromHouseholdInvitation(invitation)
 }
 
 // BuildFakeHouseholdInvitationCreationInputFromHouseholdInvitation builds a faked HouseholdInvitationCreationRequestInput.
@@ -60,6 +66,13 @@ func BuildFakeHouseholdInvitationCreationInputFromHouseholdInvitation(householdI
 		Note:                 householdInvitation.Note,
 		ToEmail:              householdInvitation.ToEmail,
 		DestinationHousehold: householdInvitation.DestinationHousehold,
+	}
+}
+
+// BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation builds a faked HouseholdInvitationUpdateRequestInput.
+func BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation(householdInvitation *types.HouseholdInvitation) *types.HouseholdInvitationUpdateRequestInput {
+	return &types.HouseholdInvitationUpdateRequestInput{
+		Note: householdInvitation.Note,
 	}
 }
 

@@ -119,6 +119,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	logger.Debug("created household")
 	s.householdCounter.Increment(ctx)
 
+	if err = s.customerDataCollector.EventOccurred(ctx, "household_created", requester, map[string]interface{}{
+		keys.HouseholdIDKey: household.ID,
+	}); err != nil {
+		logger.Error(err, "notifying customer data platform")
+	}
+
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, household, http.StatusCreated)
 }
 
@@ -224,6 +230,12 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	if err = s.customerDataCollector.EventOccurred(ctx, "household_updated", requester, map[string]interface{}{
+		keys.HouseholdIDKey: household.ID,
+	}); err != nil {
+		logger.Error(err, "notifying customer data platform")
+	}
+
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, household)
 }
@@ -266,30 +278,14 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// notify relevant parties.
 	s.householdCounter.Decrement(ctx)
+	if err = s.customerDataCollector.EventOccurred(ctx, "household_archived", requester, map[string]interface{}{
+		keys.HouseholdIDKey: householdID,
+	}); err != nil {
+		logger.Error(err, "notifying customer data platform")
+	}
 
 	// encode our response and peace.
 	res.WriteHeader(http.StatusNoContent)
-}
-
-func (s *service) LeaveHouseholdHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-	tracing.AttachRequestToSpan(span, req)
-
-	// determine user ID.
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
-		return
-	}
-
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = sessionCtxData.AttachToLogger(logger)
-
-	logger.Debug("not used lol")
 }
 
 // ModifyMemberPermissionsHandler is our household creation route.
@@ -342,6 +338,14 @@ func (s *service) ModifyMemberPermissionsHandler(res http.ResponseWriter, req *h
 		observability.AcknowledgeError(err, logger, span, "modifying user permissions")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	if err = s.customerDataCollector.EventOccurred(ctx, "user_permissions_modified", requester, map[string]interface{}{
+		keys.HouseholdIDKey: householdID,
+		"new_permissions":   input.NewRoles,
+		keys.ReasonKey:      input.Reason,
+	}); err != nil {
+		logger.Error(err, "notifying customer data platform")
 	}
 
 	res.WriteHeader(http.StatusAccepted)

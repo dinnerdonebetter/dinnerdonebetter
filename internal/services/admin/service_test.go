@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	mockauthn "github.com/prixfixeco/api_server/internal/authentication/mock"
-	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
@@ -37,7 +36,6 @@ func buildTestService(t *testing.T) *service {
 		scs.New(),
 		encoding.ProvideServerEncoderDecoder(logger, encoding.ContentTypeJSON),
 		rpm,
-		&customerdata.MockCollector{},
 	)
 
 	mock.AssertExpectationsForObjects(t, rpm)
@@ -70,7 +68,6 @@ func TestProvideAdminService(T *testing.T) {
 			scs.New(),
 			encoding.ProvideServerEncoderDecoder(logger, encoding.ContentTypeJSON),
 			rpm,
-			&customerdata.MockCollector{},
 		)
 
 		assert.NotNil(t, s)

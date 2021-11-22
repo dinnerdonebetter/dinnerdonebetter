@@ -7,6 +7,10 @@ func must(err error) {
 }
 
 func hasPermission(p Permission, roles ...string) bool {
+	if len(roles) == 0 {
+		return false
+	}
+
 	for _, r := range roles {
 		if !globalAuthorizer.IsGranted(r, p, nil) {
 			return false

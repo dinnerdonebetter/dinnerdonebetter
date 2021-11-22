@@ -387,7 +387,7 @@ func TestService_CreateHandler(T *testing.T) {
 
 		cdc := &customerdata.MockCollector{}
 		cdc.On(
-			"Identify",
+			"AddUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			map[string]interface{}{},
@@ -678,7 +678,7 @@ func TestService_CreateHandler(T *testing.T) {
 
 		cdc := &customerdata.MockCollector{}
 		cdc.On(
-			"Identify",
+			"AddUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			map[string]interface{}{},
@@ -948,11 +948,21 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.userDataManager = mockDB
 
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"two_factor_secret_verified",
+			helper.exampleUser.ID,
+			testutils.MapOfStringToInterfaceMatcher,
+		).Return(nil)
+		helper.service.customerDataCollector = cdc
+
 		helper.service.TOTPSecretVerificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB)
+		mock.AssertExpectationsForObjects(t, mockDB, cdc)
 	})
 
 	T.Run("without input attached to request", func(t *testing.T) {
@@ -1169,6 +1179,52 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+
+	T.Run("with error writing to customer data platform", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeTOTPSecretVerificationInputForUser(helper.exampleUser)
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		helper.exampleUser.TwoFactorSecretVerifiedOn = nil
+
+		mockDB := database.NewMockDatabase()
+		mockDB.UserDataManager.On(
+			"GetUserWithUnverifiedTwoFactorSecret",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleUser, nil)
+		mockDB.UserDataManager.On(
+			"MarkUserTwoFactorSecretAsVerified",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(nil)
+		helper.service.userDataManager = mockDB
+
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"two_factor_secret_verified",
+			helper.exampleUser.ID,
+			testutils.MapOfStringToInterfaceMatcher,
+		).Return(errors.New("blah"))
+		helper.service.customerDataCollector = cdc
+
+		helper.service.TOTPSecretVerificationHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, cdc)
 	})
 }
 

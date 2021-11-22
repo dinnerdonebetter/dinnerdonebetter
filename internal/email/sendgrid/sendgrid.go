@@ -21,6 +21,13 @@ const (
 
 var _ email.Emailer = (*Emailer)(nil)
 
+var (
+	// ErrEmptyAPIToken indicates an empty API token was provided.
+	ErrEmptyAPIToken = errors.New("empty API token")
+	// ErrNilHTTPClient indicates a nil HTTP client was provided.
+	ErrNilHTTPClient = errors.New("nil HTTP client")
+)
+
 type (
 	// Emailer uses SendGrid to send email.
 	Emailer struct {
@@ -32,6 +39,14 @@ type (
 
 // NewSendGridEmailer returns a new SendGrid-backed Emailer.
 func NewSendGridEmailer(apiToken string, logger logging.Logger, client *http.Client) (*Emailer, error) {
+	if apiToken == "" {
+		return nil, ErrEmptyAPIToken
+	}
+
+	if client == nil {
+		return nil, ErrNilHTTPClient
+	}
+
 	sendgrid.DefaultClient = &rest.Client{HTTPClient: client}
 	c := sendgrid.NewSendClient(apiToken)
 

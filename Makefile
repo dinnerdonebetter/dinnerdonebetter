@@ -241,6 +241,6 @@ initialize_database:
 tree:
 	tree -d -I vendor
 
-.PHONY: cloc
-cloc: ensure_scc_installed
+.PHONY: line_count
+line_count: ensure_scc_installed
 	@scc --include-ext go --exclude-dir vendor

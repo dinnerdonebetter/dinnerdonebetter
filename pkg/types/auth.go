@@ -106,9 +106,6 @@ type (
 		UserAttributionMiddleware(next http.Handler) http.Handler
 		AuthorizationMiddleware(next http.Handler) http.Handler
 		ServiceAdminMiddleware(next http.Handler) http.Handler
-
-		AuthenticateUser(ctx context.Context, loginData *UserLoginInput) (*User, *http.Cookie, error)
-		LogoutUser(ctx context.Context, req *http.Request, res http.ResponseWriter) error
 	}
 )
 
