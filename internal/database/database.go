@@ -61,6 +61,7 @@ type (
 		types.ValidIngredientDataManager
 		types.ValidPreparationDataManager
 		types.ValidIngredientPreparationDataManager
+		types.MealDataManager
 		types.RecipeDataManager
 		types.RecipeStepDataManager
 		types.RecipeStepInstrumentDataManager

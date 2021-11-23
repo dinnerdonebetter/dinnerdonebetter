@@ -92,6 +92,7 @@ func (w *ArchivesWorker) determineArchiveMessageHandler(msg *types.PreArchiveMes
 		string(types.ValidIngredientDataType):            w.archiveValidIngredient,
 		string(types.ValidPreparationDataType):           w.archiveValidPreparation,
 		string(types.ValidIngredientPreparationDataType): w.archiveValidIngredientPreparation,
+		string(types.MealDataType):                       w.archiveMeal,
 		string(types.RecipeDataType):                     w.archiveRecipe,
 		string(types.RecipeStepDataType):                 w.archiveRecipeStep,
 		string(types.RecipeStepInstrumentDataType):       w.archiveRecipeStepInstrument,

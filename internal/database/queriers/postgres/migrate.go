@@ -66,6 +66,9 @@ var (
 	//go:embed migrations/00013_meal_plan_option_votes.sql
 	mealPlanOptionVotesMigration string
 
+	//go:embed migrations/000014_meals.sql
+	mealsMigration string
+
 	migrations = []darwin.Migration{
 		{
 			Version:     0.01,
@@ -131,6 +134,11 @@ var (
 			Version:     0.13,
 			Description: "create meal plan option votes table",
 			Script:      mealPlanOptionVotesMigration,
+		},
+		{
+			Version:     0.14,
+			Description: "create meals table",
+			Script:      mealsMigration,
 		},
 	}
 )

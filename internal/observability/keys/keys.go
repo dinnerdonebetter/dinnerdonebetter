@@ -98,6 +98,9 @@ const (
 	// ValidIngredientPreparationIDKey is the standard key for referring to a valid ingredient preparation ID.
 	ValidIngredientPreparationIDKey = "valid_ingredient_preparation_id"
 
+	// MealIDKey is the standard key for referring to a meal ID.
+	MealIDKey = "meal_id"
+
 	// RecipeIDKey is the standard key for referring to a recipe ID.
 	RecipeIDKey = "recipe_id"
 

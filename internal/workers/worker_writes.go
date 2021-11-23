@@ -96,6 +96,7 @@ func (w *WritesWorker) determineWriteMessageHandler(msg *types.PreWriteMessage) 
 		string(types.ValidIngredientDataType):            w.createValidIngredient,
 		string(types.ValidPreparationDataType):           w.createValidPreparation,
 		string(types.ValidIngredientPreparationDataType): w.createValidIngredientPreparation,
+		string(types.MealDataType):                       w.createMeal,
 		string(types.RecipeDataType):                     w.createRecipe,
 		string(types.RecipeStepDataType):                 w.createRecipeStep,
 		string(types.RecipeStepInstrumentDataType):       w.createRecipeStepInstrument,

@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	// MealDataType indicates an event is related to a recipe.
-	MealDataType dataType = "recipe"
+	// MealDataType indicates an event is related to a meal.
+	MealDataType dataType = "meal"
 )
 
 func init() {
@@ -21,7 +21,7 @@ func init() {
 }
 
 type (
-	// Meal represents a recipe.
+	// Meal represents a meal.
 	Meal struct {
 		_             struct{}
 		ArchivedOn    *uint64   `json:"archivedOn"`
@@ -30,19 +30,19 @@ type (
 		Description   string    `json:"description"`
 		CreatedByUser string    `json:"createdByUser"`
 		Name          string    `json:"name"`
-		Recipes       []*Recipe `json:"recipes"`
+		Recipes       []*Recipe `json:"meals"`
 		CreatedOn     uint64    `json:"createdOn"`
 	}
 
-	// MealList represents a list of recipes.
+	// MealList represents a list of meals.
 	MealList struct {
 		_ struct{}
 
-		Meals []*Meal `json:"recipes"`
+		Meals []*Meal `json:"meals"`
 		Pagination
 	}
 
-	// MealCreationRequestInput represents what a user could set as input for creating recipes.
+	// MealCreationRequestInput represents what a user could set as input for creating meals.
 	MealCreationRequestInput struct {
 		_ struct{}
 
@@ -50,10 +50,10 @@ type (
 		Name          string   `json:"name"`
 		Description   string   `json:"description"`
 		CreatedByUser string   `json:"-"`
-		Recipes       []string `json:"recipes"`
+		Recipes       []string `json:"meals"`
 	}
 
-	// MealDatabaseCreationInput represents what a user could set as input for creating recipes.
+	// MealDatabaseCreationInput represents what a user could set as input for creating meals.
 	MealDatabaseCreationInput struct {
 		_ struct{}
 
@@ -61,42 +61,39 @@ type (
 		Name          string   `json:"name"`
 		Description   string   `json:"description"`
 		CreatedByUser string   `json:"belongsToHousehold"`
-		Recipes       []string `json:"recipes"`
+		Recipes       []string `json:"meals"`
 	}
 
-	// MealUpdateRequestInput represents what a user could set as input for updating recipes.
+	// MealUpdateRequestInput represents what a user could set as input for updating meals.
 	MealUpdateRequestInput struct {
 		_             struct{}
 		Name          string   `json:"name"`
 		Description   string   `json:"description"`
 		CreatedByUser string   `json:"-"`
-		Recipes       []string `json:"recipes"`
+		Recipes       []string `json:"meals"`
 	}
 
-	// MealDataManager describes a structure capable of storing recipes permanently.
+	// MealDataManager describes a structure capable of storing meals permanently.
 	MealDataManager interface {
-		MealExists(ctx context.Context, recipeID string) (bool, error)
-		GetMeal(ctx context.Context, recipeID string) (*Meal, error)
-		GetMealByIDAndUser(ctx context.Context, recipeID, userID string) (*Meal, error)
+		MealExists(ctx context.Context, mealID string) (bool, error)
+		GetMeal(ctx context.Context, mealID string) (*Meal, error)
 		GetTotalMealCount(ctx context.Context) (uint64, error)
 		GetMeals(ctx context.Context, filter *QueryFilter) (*MealList, error)
 		GetMealsWithIDs(ctx context.Context, userID string, limit uint8, ids []string) ([]*Meal, error)
 		CreateMeal(ctx context.Context, input *MealDatabaseCreationInput) (*Meal, error)
-		UpdateMeal(ctx context.Context, updated *Meal) error
-		ArchiveMeal(ctx context.Context, recipeID, userID string) error
+		ArchiveMeal(ctx context.Context, mealID, userID string) error
 	}
 
-	// MealDataService describes a structure capable of serving traffic related to recipes.
+	// MealDataService describes a structure capable of serving traffic related to meals.
 	MealDataService interface {
 		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
 		ReadHandler(res http.ResponseWriter, req *http.Request)
-		UpdateHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 
-// Update merges an MealUpdateRequestInput with a recipe.
+// Update merges an MealUpdateRequestInput with a meal.
 func (x *Meal) Update(input *MealUpdateRequestInput) {
 	if input.Name != "" && input.Name != x.Name {
 		x.Name = input.Name

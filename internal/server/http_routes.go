@@ -16,6 +16,7 @@ import (
 	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "github.com/prixfixeco/api_server/internal/services/mealplanoptionvotes"
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
+	mealsservice "github.com/prixfixeco/api_server/internal/services/meals"
 	recipesservice "github.com/prixfixeco/api_server/internal/services/recipes"
 	recipestepingredientsservice "github.com/prixfixeco/api_server/internal/services/recipestepingredients"
 	recipestepinstrumentsservice "github.com/prixfixeco/api_server/internal/services/recipestepinstruments"
@@ -305,6 +306,28 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				singleValidIngredientPreparationRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidIngredientPreparationsPermission)).
 					Put(root, s.validIngredientPreparationsService.UpdateHandler)
+			})
+		})
+
+		// Meals
+		mealPath := "meals"
+		mealsRouteWithPrefix := fmt.Sprintf("/%s", mealPath)
+		mealIDRouteParam := buildURLVarChunk(mealsservice.MealIDURIParamKey, "")
+		v1Router.Route(mealsRouteWithPrefix, func(mealsRouter routing.Router) {
+			mealsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealsPermission)).
+				Post(root, s.mealsService.CreateHandler)
+			mealsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealsPermission)).
+				Get(root, s.mealsService.ListHandler)
+
+			mealsRouter.Route(mealIDRouteParam, func(singleMealRouter routing.Router) {
+				singleMealRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealsPermission)).
+					Get(root, s.mealsService.ReadHandler)
+				singleMealRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealsPermission)).
+					Delete(root, s.mealsService.ArchiveHandler)
 			})
 		})
 
