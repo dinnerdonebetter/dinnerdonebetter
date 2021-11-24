@@ -17,9 +17,9 @@ func BuildFakeMealPlanOption() *types.MealPlanOption {
 	}
 
 	return &types.MealPlanOption{
-		ID:       ksuid.New().String(),
-		Day:      time.Monday,
-		RecipeID: fake.LoremIpsumSentence(exampleQuantity),
+		ID:     ksuid.New().String(),
+		Day:    time.Monday,
+		MealID: fake.LoremIpsumSentence(exampleQuantity),
 		MealName: types.MealName(fake.RandomString([]string{
 			string(types.BreakfastMealName),
 			string(types.SecondBreakfastMealName),
@@ -59,7 +59,7 @@ func BuildFakeMealPlanOptionUpdateRequestInput() *types.MealPlanOptionUpdateRequ
 	mealPlanOption := BuildFakeMealPlanOption()
 	return &types.MealPlanOptionUpdateRequestInput{
 		Day:               mealPlanOption.Day,
-		RecipeID:          mealPlanOption.RecipeID,
+		MealID:            mealPlanOption.MealID,
 		Notes:             mealPlanOption.Notes,
 		MealName:          mealPlanOption.MealName,
 		BelongsToMealPlan: mealPlanOption.BelongsToMealPlan,
@@ -70,7 +70,7 @@ func BuildFakeMealPlanOptionUpdateRequestInput() *types.MealPlanOptionUpdateRequ
 func BuildFakeMealPlanOptionUpdateRequestInputFromMealPlanOption(mealPlanOption *types.MealPlanOption) *types.MealPlanOptionUpdateRequestInput {
 	return &types.MealPlanOptionUpdateRequestInput{
 		Day:               mealPlanOption.Day,
-		RecipeID:          mealPlanOption.RecipeID,
+		MealID:            mealPlanOption.MealID,
 		Notes:             mealPlanOption.Notes,
 		MealName:          mealPlanOption.MealName,
 		BelongsToMealPlan: mealPlanOption.BelongsToMealPlan,
@@ -88,7 +88,7 @@ func BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(mealPlanOptio
 	return &types.MealPlanOptionCreationRequestInput{
 		ID:                mealPlanOption.ID,
 		Day:               mealPlanOption.Day,
-		RecipeID:          mealPlanOption.RecipeID,
+		MealID:            mealPlanOption.MealID,
 		Notes:             mealPlanOption.Notes,
 		MealName:          mealPlanOption.MealName,
 		BelongsToMealPlan: mealPlanOption.BelongsToMealPlan,
@@ -106,7 +106,7 @@ func BuildFakeMealPlanOptionDatabaseCreationInputFromMealPlanOption(mealPlanOpti
 	return &types.MealPlanOptionDatabaseCreationInput{
 		ID:                mealPlanOption.ID,
 		Day:               mealPlanOption.Day,
-		RecipeID:          mealPlanOption.RecipeID,
+		MealID:            mealPlanOption.MealID,
 		MealName:          mealPlanOption.MealName,
 		Notes:             mealPlanOption.Notes,
 		BelongsToMealPlan: mealPlanOption.BelongsToMealPlan,

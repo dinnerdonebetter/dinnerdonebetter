@@ -34,8 +34,8 @@ func TestMealPlanOptionCreationRequestInput_Validate(T *testing.T) {
 				string(SupperMealName),
 				string(DinnerMealName),
 			})),
-			RecipeID: fake.LoremIpsumSentence(exampleQuantity),
-			Notes:    fake.LoremIpsumSentence(exampleQuantity),
+			MealID: fake.LoremIpsumSentence(exampleQuantity),
+			Notes:  fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -77,8 +77,8 @@ func TestMealPlanOptionUpdateRequestInput_Validate(T *testing.T) {
 				string(SupperMealName),
 				string(DinnerMealName),
 			})),
-			RecipeID: fake.LoremIpsumSentence(exampleQuantity),
-			Notes:    fake.LoremIpsumSentence(exampleQuantity),
+			MealID: fake.LoremIpsumSentence(exampleQuantity),
+			Notes:  fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

@@ -57,19 +57,18 @@ var (
 	//go:embed migrations/00010_recipe_step_products.sql
 	recipeStepProductsMigration string
 
-	//go:embed migrations/00011_meal_plans.sql
-	mealPlansMigration string
-
-	//go:embed migrations/00012_meal_plan_options.sql
-	mealPlanOptionsMigration string
-
-	//go:embed migrations/00013_meal_plan_option_votes.sql
-	mealPlanOptionVotesMigration string
-
-	//go:embed migrations/000014_meals.sql
+	//go:embed migrations/00011_meals.sql
 	mealsMigration string
 
-	migrations = []darwin.Migration{
+	//go:embed migrations/00012_meal_plans.sql
+	mealPlansMigration string
+
+	//go:embed migrations/00013_meal_plan_options.sql
+	mealPlanOptionsMigration string
+
+	//go:embed migrations/00014_meal_plan_option_votes.sql
+	mealPlanOptionVotesMigration string
+	migrations                   = []darwin.Migration{
 		{
 			Version:     0.01,
 			Description: "basic infrastructural tables",
@@ -122,23 +121,23 @@ var (
 		},
 		{
 			Version:     0.11,
+			Description: "create meals table",
+			Script:      mealsMigration,
+		},
+		{
+			Version:     0.12,
 			Description: "create meal plans table",
 			Script:      mealPlansMigration,
 		},
 		{
-			Version:     0.12,
+			Version:     0.13,
 			Description: "create meal plan options table",
 			Script:      mealPlanOptionsMigration,
 		},
 		{
-			Version:     0.13,
+			Version:     0.14,
 			Description: "create meal plan option votes table",
 			Script:      mealPlanOptionVotesMigration,
-		},
-		{
-			Version:     0.14,
-			Description: "create meals table",
-			Script:      mealsMigration,
 		},
 	}
 )
