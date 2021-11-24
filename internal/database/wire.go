@@ -21,6 +21,7 @@ var (
 		ProvideRecipeStepInstrumentDataManager,
 		ProvideRecipeStepIngredientDataManager,
 		ProvideRecipeStepProductDataManager,
+		ProvideMealDataManager,
 		ProvideMealPlanDataManager,
 		ProvideMealPlanOptionDataManager,
 		ProvideMealPlanOptionVoteDataManager,
@@ -88,6 +89,11 @@ func ProvideRecipeStepIngredientDataManager(db DataManager) types.RecipeStepIngr
 
 // ProvideRecipeStepProductDataManager is an arbitrary function for dependency injection's sake.
 func ProvideRecipeStepProductDataManager(db DataManager) types.RecipeStepProductDataManager {
+	return db
+}
+
+// ProvideMealDataManager is an arbitrary function for dependency injection's sake.
+func ProvideMealDataManager(db DataManager) types.MealDataManager {
 	return db
 }
 

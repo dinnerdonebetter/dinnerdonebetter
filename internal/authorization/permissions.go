@@ -90,6 +90,15 @@ const (
 	// ArchiveValidIngredientPreparationsPermission is a household user permission.
 	ArchiveValidIngredientPreparationsPermission Permission = "archive.valid_ingredient_preparations"
 
+	// CreateMealsPermission is a household user permission.
+	CreateMealsPermission Permission = "create.mealss"
+	// ReadMealsPermission is a household user permission.
+	ReadMealsPermission Permission = "read.meals"
+	// UpdateMealsPermission is a household user permission.
+	UpdateMealsPermission Permission = "update.meals"
+	// ArchiveMealsPermission is a household user permission.
+	ArchiveMealsPermission Permission = "archive.meals"
+
 	// CreateRecipesPermission is a household user permission.
 	CreateRecipesPermission Permission = "create.recipes"
 	// ReadRecipesPermission is a household user permission.
@@ -253,6 +262,11 @@ var (
 		CreateAPIClientsPermission.ID():  CreateAPIClientsPermission,
 		ReadAPIClientsPermission.ID():    ReadAPIClientsPermission,
 		ArchiveAPIClientsPermission.ID(): ArchiveAPIClientsPermission,
+
+		CreateMealsPermission.ID():  CreateMealsPermission,
+		ReadMealsPermission.ID():    ReadMealsPermission,
+		UpdateMealsPermission.ID():  UpdateMealsPermission,
+		ArchiveMealsPermission.ID(): ArchiveMealsPermission,
 
 		CreateRecipesPermission.ID():  CreateRecipesPermission,
 		ReadRecipesPermission.ID():    ReadRecipesPermission,

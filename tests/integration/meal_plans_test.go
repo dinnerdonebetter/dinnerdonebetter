@@ -26,16 +26,6 @@ func checkMealPlanEquality(t *testing.T, expected, actual *types.MealPlan) {
 	assert.NotZero(t, actual.CreatedOn)
 }
 
-// convertMealPlanToMealPlanUpdateInput creates an MealPlanUpdateRequestInput struct from a meal plan.
-func convertMealPlanToMealPlanUpdateInput(x *types.MealPlan) *types.MealPlanUpdateRequestInput {
-	return &types.MealPlanUpdateRequestInput{
-		Notes:    x.Notes,
-		Status:   x.Status,
-		StartsAt: x.StartsAt,
-		EndsAt:   x.EndsAt,
-	}
-}
-
 func createMealPlanWithNotificationChannel(ctx context.Context, t *testing.T, notificationsChan chan *types.DataChangeMessage, client *httpclient.Client) *types.MealPlan {
 	t.Helper()
 
@@ -44,8 +34,8 @@ func createMealPlanWithNotificationChannel(ctx context.Context, t *testing.T, no
 	t.Log("creating meal plan")
 	exampleMealPlan := fakes.BuildFakeMealPlan()
 	for i := range exampleMealPlan.Options {
-		_, _, createdRecipe := createRecipeWithNotificationChannel(ctx, t, notificationsChan, client)
-		exampleMealPlan.Options[i].RecipeID = createdRecipe.ID
+		createdMeal := createMealWithNotificationChannel(ctx, t, notificationsChan, client)
+		exampleMealPlan.Options[i].MealID = createdMeal.ID
 	}
 
 	exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
@@ -61,34 +51,6 @@ func createMealPlanWithNotificationChannel(ctx context.Context, t *testing.T, no
 
 	createdMealPlan, err := client.GetMealPlan(ctx, createdMealPlanID)
 	requireNotNilAndNoProblems(t, createdMealPlan, err)
-	checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
-
-	return createdMealPlan
-}
-
-func createMealPlanWhilePolling(ctx context.Context, t *testing.T, client *httpclient.Client) *types.MealPlan {
-	t.Helper()
-
-	var checkFunc func() bool
-
-	t.Log("creating meal plan")
-	exampleMealPlan := fakes.BuildFakeMealPlan()
-	for i := range exampleMealPlan.Options {
-		_, _, createdRecipe := createRecipeWhilePolling(ctx, t, client)
-		exampleMealPlan.Options[i].RecipeID = createdRecipe.ID
-	}
-
-	exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
-	createdMealPlanID, err := client.CreateMealPlan(ctx, exampleMealPlanInput)
-	require.NoError(t, err)
-	t.Logf("meal plan %q created", createdMealPlanID)
-
-	var createdMealPlan *types.MealPlan
-	checkFunc = func() bool {
-		createdMealPlan, err = client.GetMealPlan(ctx, createdMealPlanID)
-		return assert.NotNil(t, createdMealPlan) && assert.NoError(t, err)
-	}
-	assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
 	checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
 
 	return createdMealPlan
@@ -192,10 +154,10 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			}
 
 			// create recipes for meal plan
-			createdRecipes := []*types.Recipe{}
+			createdMeals := []*types.Meal{}
 			for i := 0; i < 3; i++ {
-				_, _, createdRecipe := createRecipeWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
-				createdRecipes = append(createdRecipes, createdRecipe)
+				createdMeal := createMealWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
+				createdMeals = append(createdMeals, createdMeal)
 			}
 
 			t.Log("creating meal plan")
@@ -207,19 +169,19 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 				VotingDeadline: uint64(time.Now().Add(10 * time.Minute).Unix()),
 				Options: []*types.MealPlanOption{
 					{
-						RecipeID: createdRecipes[0].ID,
+						MealID:   createdMeals[0].ID,
 						Notes:    "option A",
 						MealName: types.BreakfastMealName,
 						Day:      time.Monday,
 					},
 					{
-						RecipeID: createdRecipes[1].ID,
+						MealID:   createdMeals[1].ID,
 						Notes:    "option B",
 						MealName: types.BreakfastMealName,
 						Day:      time.Monday,
 					},
 					{
-						RecipeID: createdRecipes[2].ID,
+						MealID:   createdMeals[2].ID,
 						Notes:    "option C",
 						MealName: types.BreakfastMealName,
 						Day:      time.Monday,
@@ -441,10 +403,10 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			}
 
 			// create recipes for meal plan
-			createdRecipes := []*types.Recipe{}
+			createdMeals := []*types.Meal{}
 			for i := 0; i < 3; i++ {
-				_, _, createdRecipe := createRecipeWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
-				createdRecipes = append(createdRecipes, createdRecipe)
+				createdMeal := createMealWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
+				createdMeals = append(createdMeals, createdMeal)
 			}
 
 			t.Log("creating meal plan")
@@ -456,19 +418,19 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 				VotingDeadline: uint64(time.Now().Add(10 * time.Minute).Unix()),
 				Options: []*types.MealPlanOption{
 					{
-						RecipeID: createdRecipes[0].ID,
+						MealID:   createdMeals[0].ID,
 						Notes:    "option A",
 						MealName: types.BreakfastMealName,
 						Day:      time.Monday,
 					},
 					{
-						RecipeID: createdRecipes[1].ID,
+						MealID:   createdMeals[1].ID,
 						Notes:    "option B",
 						MealName: types.BreakfastMealName,
 						Day:      time.Monday,
 					},
 					{
-						RecipeID: createdRecipes[2].ID,
+						MealID:   createdMeals[2].ID,
 						Notes:    "option C",
 						MealName: types.BreakfastMealName,
 						Day:      time.Monday,
@@ -606,38 +568,6 @@ func (s *TestSuite) TestMealPlans_Listing() {
 			var expected []*types.MealPlan
 			for i := 0; i < 5; i++ {
 				createdMealPlan := createMealPlanWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
-				expected = append(expected, createdMealPlan)
-			}
-
-			// assert meal plan list equality
-			actual, err := testClients.main.GetMealPlans(ctx, nil)
-			requireNotNilAndNoProblems(t, actual, err)
-			assert.True(
-				t,
-				len(expected) <= len(actual.MealPlans),
-				"expected %d to be <= %d",
-				len(expected),
-				len(actual.MealPlans),
-			)
-
-			t.Log("cleaning up")
-			for _, createdMealPlan := range expected {
-				assert.NoError(t, testClients.main.ArchiveMealPlan(ctx, createdMealPlan.ID))
-			}
-		}
-	})
-
-	s.runForPASETOClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			t.Log("creating meal plans")
-			var expected []*types.MealPlan
-			for i := 0; i < 5; i++ {
-				createdMealPlan := createMealPlanWhilePolling(ctx, t, testClients.main)
 				expected = append(expected, createdMealPlan)
 			}
 

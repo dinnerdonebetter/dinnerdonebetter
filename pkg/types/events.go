@@ -17,6 +17,8 @@ type (
 		ValidIngredient            *ValidIngredientDatabaseCreationInput            `json:"validIngredient,omitempty"`
 		ValidPreparation           *ValidPreparationDatabaseCreationInput           `json:"validPreparation,omitempty"`
 		ValidIngredientPreparation *ValidIngredientPreparationDatabaseCreationInput `json:"validIngredientPreparation,omitempty"`
+		MealID                     string                                           `json:"mealID"`
+		Meal                       *MealDatabaseCreationInput                       `json:"meal,omitempty"`
 		RecipeID                   string                                           `json:"recipeID"`
 		Recipe                     *RecipeDatabaseCreationInput                     `json:"recipe,omitempty"`
 		RecipeStepID               string                                           `json:"recipeStepID"`
@@ -45,6 +47,8 @@ type (
 		ValidIngredient            *ValidIngredient            `json:"validIngredient,omitempty"`
 		ValidPreparation           *ValidPreparation           `json:"validPreparation,omitempty"`
 		ValidIngredientPreparation *ValidIngredientPreparation `json:"validIngredientPreparation,omitempty"`
+		MealID                     string                      `json:"mealID"`
+		Meal                       *Meal                       `json:"meal,omitempty"`
 		RecipeID                   string                      `json:"recipeID"`
 		Recipe                     *Recipe                     `json:"recipe,omitempty"`
 		RecipeStepID               string                      `json:"recipeStepID"`
@@ -71,6 +75,7 @@ type (
 		ValidIngredientID            string   `json:"validIngredientID"`
 		ValidPreparationID           string   `json:"validPreparationID"`
 		ValidIngredientPreparationID string   `json:"validIngredientPreparationID"`
+		MealID                       string   `json:"mealID"`
 		RecipeID                     string   `json:"recipeID"`
 		RecipeStepID                 string   `json:"recipeStepID"`
 		RecipeStepInstrumentID       string   `json:"recipeStepInstrumentID"`
@@ -95,6 +100,8 @@ type (
 		ValidIngredient            *ValidIngredient            `json:"validIngredient,omitempty"`
 		ValidPreparation           *ValidPreparation           `json:"validPreparation,omitempty"`
 		ValidIngredientPreparation *ValidIngredientPreparation `json:"validIngredientPreparation,omitempty"`
+		MealID                     string                      `json:"mealID"`
+		Meal                       *Meal                       `json:"meal,omitempty"`
 		RecipeID                   string                      `json:"recipeID"`
 		Recipe                     *Recipe                     `json:"recipe,omitempty"`
 		RecipeStepID               string                      `json:"recipeStepID"`

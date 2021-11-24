@@ -44,7 +44,7 @@ type (
 		ArchivedOn        *uint64               `json:"archivedOn"`
 		LastUpdatedOn     *uint64               `json:"lastUpdatedOn"`
 		ID                string                `json:"id"`
-		RecipeID          string                `json:"recipeID"`
+		MealID            string                `json:"mealID"`
 		Notes             string                `json:"notes"`
 		MealName          MealName              `json:"mealName"`
 		BelongsToMealPlan string                `json:"belongsToMealPlan"`
@@ -66,7 +66,7 @@ type (
 	MealPlanOptionCreationRequestInput struct {
 		_                 struct{}
 		ID                string       `json:"-"`
-		RecipeID          string       `json:"recipeID"`
+		MealID            string       `json:"mealID"`
 		Notes             string       `json:"notes"`
 		MealName          MealName     `json:"mealName"`
 		BelongsToMealPlan string       `json:"-"`
@@ -77,7 +77,7 @@ type (
 	MealPlanOptionDatabaseCreationInput struct {
 		_                 struct{}
 		ID                string       `json:"id"`
-		RecipeID          string       `json:"recipeID"`
+		MealID            string       `json:"mealID"`
 		Notes             string       `json:"notes"`
 		MealName          MealName     `json:"mealName"`
 		BelongsToMealPlan string       `json:"belongsToMealPlan"`
@@ -87,7 +87,7 @@ type (
 	// MealPlanOptionUpdateRequestInput represents what a user could set as input for updating meal plan options.
 	MealPlanOptionUpdateRequestInput struct {
 		_                 struct{}
-		RecipeID          string       `json:"recipeID"`
+		MealID            string       `json:"mealID"`
 		Notes             string       `json:"notes"`
 		MealName          MealName     `json:"mealName"`
 		BelongsToMealPlan string       `json:"-"`
@@ -123,8 +123,8 @@ func (x *MealPlanOption) Update(input *MealPlanOptionUpdateRequestInput) {
 		x.Day = input.Day
 	}
 
-	if input.RecipeID != "" && input.RecipeID != x.RecipeID {
-		x.RecipeID = input.RecipeID
+	if input.MealID != "" && input.MealID != x.MealID {
+		x.MealID = input.MealID
 	}
 
 	if input.Notes != "" && input.Notes != x.Notes {
@@ -140,7 +140,7 @@ func (x *MealPlanOptionCreationRequestInput) ValidateWithContext(ctx context.Con
 		ctx,
 		x,
 		validation.Field(&x.MealName, validation.Required),
-		validation.Field(&x.RecipeID, validation.Required),
+		validation.Field(&x.MealID, validation.Required),
 		validation.Field(&x.Day, validation.In(
 			time.Monday,
 			time.Tuesday,
@@ -163,7 +163,7 @@ func (x *MealPlanOptionDatabaseCreationInput) ValidateWithContext(ctx context.Co
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.BelongsToMealPlan, validation.Required),
 		validation.Field(&x.MealName, validation.Required),
-		validation.Field(&x.RecipeID, validation.Required),
+		validation.Field(&x.MealID, validation.Required),
 		validation.Field(&x.Day, validation.In(
 			time.Monday,
 			time.Tuesday,
@@ -182,7 +182,7 @@ func MealPlanOptionDatabaseCreationInputFromMealPlanOptionCreationInput(input *M
 		BelongsToMealPlan: input.BelongsToMealPlan,
 		Day:               input.Day,
 		MealName:          input.MealName,
-		RecipeID:          input.RecipeID,
+		MealID:            input.MealID,
 		Notes:             input.Notes,
 	}
 
@@ -196,7 +196,7 @@ func (x *MealPlanOptionUpdateRequestInput) ValidateWithContext(ctx context.Conte
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.RecipeID, validation.Required),
+		validation.Field(&x.MealID, validation.Required),
 		validation.Field(&x.BelongsToMealPlan, validation.Required),
 		validation.Field(&x.MealName, validation.Required),
 		validation.Field(&x.Notes, validation.Required),

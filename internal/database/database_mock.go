@@ -22,6 +22,7 @@ func NewMockDatabase() *MockDatabase {
 		ValidIngredientDataManager:            &mocktypes.ValidIngredientDataManager{},
 		ValidPreparationDataManager:           &mocktypes.ValidPreparationDataManager{},
 		ValidIngredientPreparationDataManager: &mocktypes.ValidIngredientPreparationDataManager{},
+		MealDataManager:                       &mocktypes.MealDataManager{},
 		RecipeDataManager:                     &mocktypes.RecipeDataManager{},
 		RecipeStepDataManager:                 &mocktypes.RecipeStepDataManager{},
 		RecipeStepInstrumentDataManager:       &mocktypes.RecipeStepInstrumentDataManager{},
@@ -46,6 +47,7 @@ type MockDatabase struct {
 	*mocktypes.ValidIngredientDataManager
 	*mocktypes.ValidPreparationDataManager
 	*mocktypes.ValidIngredientPreparationDataManager
+	*mocktypes.MealDataManager
 	*mocktypes.RecipeDataManager
 	*mocktypes.RecipeStepDataManager
 	*mocktypes.RecipeStepInstrumentDataManager
