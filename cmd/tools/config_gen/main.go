@@ -8,6 +8,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/database"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
+	mealsservice "github.com/prixfixeco/api_server/internal/services/meals"
 	"log"
 	"os"
 	"path/filepath"
@@ -309,6 +310,16 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 					Provider: logging.ProviderZerolog,
 				},
 			},
+			Meals: mealsservice.Config{
+				PreWritesTopicName:   preWritesTopicName,
+				PreUpdatesTopicName:  preUpdatesTopicName,
+				PreArchivesTopicName: preArchivesTopicName,
+				Logging: logging.Config{
+					Name:     "recipes",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
 			Recipes: recipesservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
@@ -509,6 +520,16 @@ func frontendTestsConfig(ctx context.Context, filePath string) error {
 				PreArchivesTopicName: preArchivesTopicName,
 				Logging: logging.Config{
 					Name:     "valid_ingredient_preparations",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			Meals: mealsservice.Config{
+				PreWritesTopicName:   preWritesTopicName,
+				PreUpdatesTopicName:  preUpdatesTopicName,
+				PreArchivesTopicName: preArchivesTopicName,
+				Logging: logging.Config{
+					Name:     "recipes",
 					Level:    logging.InfoLevel,
 					Provider: logging.ProviderZerolog,
 				},
@@ -726,6 +747,16 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				PreArchivesTopicName: preArchivesTopicName,
 				Logging: logging.Config{
 					Name:     "valid_ingredient_preparations",
+					Level:    logging.InfoLevel,
+					Provider: logging.ProviderZerolog,
+				},
+			},
+			Meals: mealsservice.Config{
+				PreWritesTopicName:   preWritesTopicName,
+				PreUpdatesTopicName:  preUpdatesTopicName,
+				PreArchivesTopicName: preArchivesTopicName,
+				Logging: logging.Config{
+					Name:     "recipes",
 					Level:    logging.InfoLevel,
 					Provider: logging.ProviderZerolog,
 				},

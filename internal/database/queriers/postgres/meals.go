@@ -325,7 +325,7 @@ func (q *SQLQuerier) GetMealsWithIDs(ctx context.Context, userID string, limit u
 	return meals, nil
 }
 
-const mealCreationQuery = "INSERT INTO meals (id,name,description,created_by_user) VALUES ($1,$2,$3,$4,$5,$6)"
+const mealCreationQuery = "INSERT INTO meals (id,name,description,created_by_user) VALUES ($1,$2,$3,$4)"
 
 // CreateMeal creates a meal in the database.
 func (q *SQLQuerier) CreateMeal(ctx context.Context, input *types.MealDatabaseCreationInput) (*types.Meal, error) {
