@@ -208,7 +208,6 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 			Debug:             true,
 			RunMigrations:     true,
 			MaxPingAttempts:   maxAttempts,
-			Provider:          postgres,
 			ConnectionDetails: devPostgresDBConnDetails,
 		},
 		Observability: observability.Config{
@@ -427,7 +426,6 @@ func frontendTestsConfig(ctx context.Context, filePath string) error {
 		Database: dbconfig.Config{
 			Debug:             true,
 			RunMigrations:     true,
-			Provider:          postgres,
 			ConnectionDetails: devPostgresDBConnDetails,
 			MaxPingAttempts:   maxAttempts,
 		},
@@ -645,7 +643,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 		Database: dbconfig.Config{
 			Debug:             false,
 			RunMigrations:     true,
-			Provider:          "postgres",
 			MaxPingAttempts:   maxAttempts,
 			ConnectionDetails: devPostgresDBConnDetails,
 		},

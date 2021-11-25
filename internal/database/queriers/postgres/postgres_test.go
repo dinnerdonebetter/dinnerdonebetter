@@ -188,7 +188,6 @@ func TestProvideDatabaseClient(T *testing.T) {
 		ctx := context.Background()
 
 		exampleConfig := &config.Config{
-			Provider:        config.PostgresProvider,
 			Debug:           true,
 			RunMigrations:   false,
 			MaxPingAttempts: 1,

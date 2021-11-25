@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strings"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
@@ -52,8 +51,7 @@ const (
 )
 
 var (
-	errNilConfig               = errors.New("nil config provided")
-	errInvalidDatabaseProvider = errors.New("invalid database provider")
+	errNilConfig = errors.New("nil config provided")
 )
 
 type (
@@ -221,10 +219,5 @@ func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, cfg *Inst
 		return nil, errNilConfig
 	}
 
-	switch strings.ToLower(strings.TrimSpace(cfg.Database.Provider)) {
-	case dbconfig.PostgresProvider:
-		return postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database)
-	default:
-		return nil, fmt.Errorf("%w: %q", errInvalidDatabaseProvider, cfg.Database.Provider)
-	}
+	return postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database)
 }

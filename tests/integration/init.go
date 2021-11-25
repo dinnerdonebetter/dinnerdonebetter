@@ -62,7 +62,6 @@ func init() {
 	}
 
 	cfg := &dbconfig.Config{
-		Provider:          dbconfig.PostgresProvider,
 		ConnectionDetails: database.ConnectionDetails(dbAddr),
 		Debug:             false,
 		RunMigrations:     false,

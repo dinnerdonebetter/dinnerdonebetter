@@ -11,6 +11,7 @@ require (
 	github.com/alexedwards/argon2id v0.0.0-20210326052512-e2135f7c9c77
 	github.com/alexedwards/scs/postgresstore v0.0.0-20210407073823-f445396108a4
 	github.com/alexedwards/scs/v2 v2.4.0
+	github.com/aws/aws-lambda-go v1.27.0
 	github.com/aws/aws-sdk-go v1.40.43
 	github.com/boombuler/barcode v1.0.1
 	github.com/brianvoe/gofakeit/v5 v5.11.2
@@ -123,5 +124,5 @@ require (
 	google.golang.org/grpc v1.37.0 // indirect
 	google.golang.org/protobuf v1.26.0 // indirect
 	gopkg.in/square/go-jose.v2 v2.5.1 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c // indirect
+	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 )

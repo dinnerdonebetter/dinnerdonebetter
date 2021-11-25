@@ -1,7 +1,6 @@
 package config
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
@@ -15,7 +14,6 @@ import (
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	server "github.com/prixfixeco/api_server/internal/server"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
@@ -71,7 +69,6 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 				},
 			},
 			Database: dbconfig.Config{
-				Provider:          "postgres",
 				Debug:             true,
 				RunMigrations:     true,
 				ConnectionDetails: database.ConnectionDetails("postgres://username:passwords@host/table"),
@@ -95,45 +92,5 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 		assert.Error(t, cfg.EncodeToFile(f.Name(), func(interface{}) ([]byte, error) {
 			return nil, errors.New("blah")
 		}))
-	})
-}
-
-func TestServerConfig_ProvideDatabaseClient(T *testing.T) {
-	T.Parallel()
-
-	T.Run("supported providers", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-
-		for _, provider := range []string{"postgres"} {
-			cfg := &InstanceConfig{
-				Database: dbconfig.Config{
-					Provider: provider,
-				},
-			}
-
-			x, err := ProvideDatabaseClient(ctx, logger, cfg)
-			assert.NotNil(t, x)
-			assert.NoError(t, err)
-		}
-	})
-
-	T.Run("with invalid provider", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-
-		cfg := &InstanceConfig{
-			Database: dbconfig.Config{
-				Provider: "provider",
-			},
-		}
-
-		x, err := ProvideDatabaseClient(ctx, logger, cfg)
-		assert.Nil(t, x)
-		assert.Error(t, err)
 	})
 }

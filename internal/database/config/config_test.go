@@ -19,7 +19,6 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
-			Provider:          PostgresProvider,
 			ConnectionDetails: "example_connection_string",
 		}
 
