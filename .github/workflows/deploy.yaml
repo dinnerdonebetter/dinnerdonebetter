@@ -46,31 +46,31 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: writer
-          path: writer_lambda.zip
+          path: ${{ github.workspace }}/environments/dev/terraform/writer_lambda.zip
 
       - name: Upload updater lambda
         uses: actions/upload-artifact@v2
         with:
           name: updater
-          path: updater_lambda.zip
+          path: ${{ github.workspace }}/environments/dev/terraform/updater_lambda.zip
 
       - name: Upload archiver lambda
         uses: actions/upload-artifact@v2
         with:
           name: archiver
-          path: archiver_lambda.zip
+          path: ${{ github.workspace }}/environments/dev/terraform/archiver_lambda.zip
 
       - name: Upload data changes lambda
         uses: actions/upload-artifact@v2
         with:
           name: data_changes
-          path: data_changes_lambda.zip
+          path: ${{ github.workspace }}/environments/dev/terraform/data_changes_lambda.zip
 
       - name: Upload chores lambda
         uses: actions/upload-artifact@v2
         with:
           name: chores
-          path: chores_lambda.zip
+          path: ${{ github.workspace }}/environments/dev/terraform/chores_lambda.zip
 
   deploy:
     needs: build
