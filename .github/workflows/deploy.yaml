@@ -4,46 +4,49 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Setup Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: '1.17.3'
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.17.3'
 
-    - name: Build writer lambda
-      run: go build github.com/prixfixeco/api_server/cmd/lambdas/writes -o writer_lambda
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Build updater lambda
-      run: go build github.com/prixfixeco/api_server/cmd/lambdas/updates -o updater_lambda
+      - name: Build writer lambda
+        run: go build github.com/prixfixeco/api_server/cmd/lambdas/writes -o writer_lambda
 
-    - name: Build archiver lambda
-      run: go build github.com/prixfixeco/api_server/cmd/lambdas/archives -o archiver_lambda
+      - name: Build updater lambda
+        run: go build github.com/prixfixeco/api_server/cmd/lambdas/updates -o updater_lambda
 
-    - name: Build writer lambda
-      run: go build github.com/prixfixeco/api_server/cmd/lambdas/data_changes -o data_changes_lambda
+      - name: Build archiver lambda
+        run: go build github.com/prixfixeco/api_server/cmd/lambdas/archives -o archiver_lambda
 
-    - name: Upload writer lambda
-      uses: actions/upload-artifact@v2
-      with:
-        name: writer
-        path: writer_lambda
+      - name: Build writer lambda
+        run: go build github.com/prixfixeco/api_server/cmd/lambdas/data_changes -o data_changes_lambda
 
-    - name: Upload updater lambda
-      uses: actions/upload-artifact@v2
-      with:
-        name: updater
-        path: updater_lambda
+      - name: Upload writer lambda
+        uses: actions/upload-artifact@v2
+        with:
+          name: writer
+          path: writer_lambda
 
-    - name: Upload archiver lambda
-      uses: actions/upload-artifact@v2
-      with:
-        name: archiver
-        path: archiver_lambda
+      - name: Upload updater lambda
+        uses: actions/upload-artifact@v2
+        with:
+          name: updater
+          path: updater_lambda
 
-    - name: Upload data changes lambda
-      uses: actions/upload-artifact@v2
-      with:
-        name: data_changes
-        path: data_changes_lambda
+      - name: Upload archiver lambda
+        uses: actions/upload-artifact@v2
+        with:
+          name: archiver
+          path: archiver_lambda
+
+      - name: Upload data changes lambda
+        uses: actions/upload-artifact@v2
+        with:
+          name: data_changes
+          path: data_changes_lambda
 
   deploy:
     needs: build
