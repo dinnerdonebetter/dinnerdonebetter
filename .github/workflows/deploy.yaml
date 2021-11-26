@@ -1,7 +1,16 @@
 on: [pull_request]
 name: Deploy
 jobs:
-  build:
+  build_lambdas:
+    strategy:
+      matrix:
+        lambda: [
+          writes,
+          updates,
+          archives,
+          data_changes,
+          chores
+        ]
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
@@ -12,69 +21,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build writer lambda
-        run: go build -o writer github.com/prixfixeco/api_server/cmd/workers/lambdas/writes
+      - name: Build ${{ matrix.lambda }} lambda
+        run: go build -o writer github.com/prixfixeco/api_server/cmd/workers/lambdas/${{ matrix.lambda }}
 
-      - name: Zip writer lambda
-        run: zip writer_lambda.zip writer
+      - name: Zip ${{ matrix.lambda }} lambda
+        run: zip ${{ matrix.lambda }}_lambda.zip ${{ matrix.lambda }}
 
-      - name: Upload writer lambda
+      - name: Upload ${{ matrix.lambda }} lambda
         uses: actions/upload-artifact@v2
         with:
-          name: writer
-          path: writer_lambda.zip
-
-      - name: Build updater lambda
-        run: go build -o updater github.com/prixfixeco/api_server/cmd/workers/lambdas/updates
-
-      - name: Zip updater lambda
-        run: zip updater_lambda.zip updater
-
-      - name: Upload updater lambda
-        uses: actions/upload-artifact@v2
-        with:
-          name: updater
-          path: updater_lambda.zip
-
-      - name: Build archiver lambda
-        run: go build -o archiver github.com/prixfixeco/api_server/cmd/workers/lambdas/archives
-
-      - name: Zip archiver lambda
-        run: zip archiver_lambda.zip archiver
-
-      - name: Upload archiver lambda
-        uses: actions/upload-artifact@v2
-        with:
-          name: archiver
-          path: archiver_lambda.zip
-
-      - name: Build data changes lambda
-        run: go build -o data_changes github.com/prixfixeco/api_server/cmd/workers/lambdas/data_changes
-
-      - name: Zip changes lambda
-        run: zip data_changes_lambda.zip data_changes
-
-      - name: Upload data changes lambda
-        uses: actions/upload-artifact@v2
-        with:
-          name: data_changes
-          path: data_changes_lambda.zip
-
-      - name: Build chores lambda
-        run: go build -o chores github.com/prixfixeco/api_server/cmd/workers/lambdas/chores
-
-      - name: Zip chores lambda
-        run: zip chores_lambda.zip chores
-
-      - name: Upload chores lambda
-        uses: actions/upload-artifact@v2
-        with:
-          name: chores
-          path: chores_lambda.zip
-          
+          name: ${{ matrix.lambda }}
+          path: ${{ matrix.lambda }}_lambda.zip
 
   deploy:
-    needs: build
+    needs: build_lambdas
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -90,24 +50,20 @@ jobs:
         id: fmt
         run: terraform fmt -check
 
-      - name: Terraform Init
-        id: init
-        run: terraform init
-
       - name: Download writer lambda
         uses: actions/download-artifact@v2
         with:
-          name: writer
+          name: writes
 
       - name: Download updater lambda
         uses: actions/download-artifact@v2
         with:
-          name: updater
+          name: updates
 
       - name: Download archiver lambda
         uses: actions/download-artifact@v2
         with:
-          name: archiver
+          name: archives
 
       - name: Download data changes lambda
         uses: actions/download-artifact@v2
@@ -118,6 +74,10 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: chores
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
 
       - name: Terraform Validate
         id: validate
@@ -161,3 +121,4 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve
+        working-directory: environments/dev/terraform
