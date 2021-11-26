@@ -19,12 +19,12 @@ import (
 	"github.com/prixfixeco/api_server/internal/workers"
 )
 
-func buildHandler(worker *workers.WritesWorker) func(ctx context.Context, sqsEvent events.SQSEvent) error {
+func buildHandler(worker *workers.UpdatesWorker) func(ctx context.Context, sqsEvent events.SQSEvent) error {
 	return func(ctx context.Context, sqsEvent events.SQSEvent) error {
 		for i := 0; i < len(sqsEvent.Records); i++ {
 			message := sqsEvent.Records[i]
 			if err := worker.HandleMessage(ctx, []byte(message.Body)); err != nil {
-				return observability.PrepareError(err, nil, nil, "handling writes message")
+				return observability.PrepareError(err, nil, nil, "handling updates message")
 			}
 		}
 
@@ -52,7 +52,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	postWritesPublisher, err := publisherProvider.ProviderPublisher("data_changes")
+	postUpdatesPublisher, err := publisherProvider.ProviderPublisher("data_changes")
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -67,12 +67,12 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	preWritesWorker, err := workers.ProvideWritesWorker(
+	preUpdatesWorker, err := workers.ProvideUpdatesWorker(
 		ctx,
 		logger,
 		client,
 		dataManager,
-		postWritesPublisher,
+		postUpdatesPublisher,
 		cfg.Search.Address,
 		elasticsearch.NewIndexManager,
 		emailer,
@@ -82,5 +82,5 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	lambda.Start(buildHandler(preWritesWorker))
+	lambda.Start(buildHandler(preUpdatesWorker))
 }

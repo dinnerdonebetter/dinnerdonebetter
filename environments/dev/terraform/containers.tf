@@ -5,4 +5,9 @@ resource "aws_ecr_repository" "dev_api_server" {
   image_scanning_configuration {
     scan_on_push = true
   }
+
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
+  }
 }

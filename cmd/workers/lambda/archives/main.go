@@ -11,7 +11,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
-	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -19,12 +18,12 @@ import (
 	"github.com/prixfixeco/api_server/internal/workers"
 )
 
-func buildHandler(worker *workers.WritesWorker) func(ctx context.Context, sqsEvent events.SQSEvent) error {
+func buildHandler(worker *workers.ArchivesWorker) func(ctx context.Context, sqsEvent events.SQSEvent) error {
 	return func(ctx context.Context, sqsEvent events.SQSEvent) error {
 		for i := 0; i < len(sqsEvent.Records); i++ {
 			message := sqsEvent.Records[i]
 			if err := worker.HandleMessage(ctx, []byte(message.Body)); err != nil {
-				return observability.PrepareError(err, nil, nil, "handling writes message")
+				return observability.PrepareError(err, nil, nil, "handling archives message")
 			}
 		}
 
@@ -52,12 +51,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	postWritesPublisher, err := publisherProvider.ProviderPublisher("data_changes")
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, client)
+	postArchivesPublisher, err := publisherProvider.ProviderPublisher("data_changes")
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -67,20 +61,19 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	preWritesWorker, err := workers.ProvideWritesWorker(
+	preArchivesWorker, err := workers.ProvideArchivesWorker(
 		ctx,
 		logger,
 		client,
 		dataManager,
-		postWritesPublisher,
+		postArchivesPublisher,
 		cfg.Search.Address,
 		elasticsearch.NewIndexManager,
-		emailer,
 		cdp,
 	)
 	if err != nil {
 		logger.Fatal(err)
 	}
 
-	lambda.Start(buildHandler(preWritesWorker))
+	lambda.Start(buildHandler(preArchivesWorker))
 }
