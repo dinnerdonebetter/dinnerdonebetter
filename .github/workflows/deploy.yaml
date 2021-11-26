@@ -43,9 +43,9 @@ jobs:
         run: zip data_changes_lambda.zip data_changes
 
       - name: Upload writer lambda
-        working-directory: environments/dev/terraform
         uses: actions/upload-artifact@v2
         with:
+          working-directory: environments/dev/terraform
           name: writer
           path: writer_lambda.zip
 
