@@ -6,8 +6,5 @@ resource "aws_elasticsearch_domain" "search" {
     instance_type = "t2.micro.search"
   }
 
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
+  tags = merge(var.default_tags, {})
 }

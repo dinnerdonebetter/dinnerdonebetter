@@ -17,3 +17,12 @@ terraform {
     }
   }
 }
+
+variable "default_tags" {
+  default = {
+    Environment = "dev"
+    Terraform   = "true"
+  }
+  description = "default resource tags"
+  type        = map(string)
+}

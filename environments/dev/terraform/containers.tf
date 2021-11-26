@@ -6,8 +6,5 @@ resource "aws_ecr_repository" "dev_api_server" {
     scan_on_push = true
   }
 
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
+  tags = merge(var.default_tags, {})
 }

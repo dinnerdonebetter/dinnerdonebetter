@@ -2,10 +2,7 @@ resource "aws_sqs_queue" "writes_queue" {
   name       = "writes.fifo"
   fifo_queue = true
 
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
+  tags = merge(var.default_tags, {})
 }
 
 resource "aws_ssm_parameter" "writes_queue_parameter" {
@@ -13,10 +10,7 @@ resource "aws_ssm_parameter" "writes_queue_parameter" {
   type  = "String"
   value = aws_sqs_queue.writes_queue.url
 
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
+  tags = merge(var.default_tags, {})
 }
 
 resource "aws_lambda_event_source_mapping" "writes_mapping" {
@@ -28,10 +22,7 @@ resource "aws_sqs_queue" "updates_queue" {
   name       = "updates.fifo"
   fifo_queue = true
 
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
+  tags = merge(var.default_tags, {})
 }
 
 resource "aws_ssm_parameter" "updates_queue_parameter" {
@@ -39,10 +30,7 @@ resource "aws_ssm_parameter" "updates_queue_parameter" {
   type  = "String"
   value = aws_sqs_queue.updates_queue.url
 
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
+  tags = merge(var.default_tags, {})
 }
 
 resource "aws_lambda_event_source_mapping" "updates_mapping" {
@@ -54,10 +42,7 @@ resource "aws_sqs_queue" "archives_queue" {
   name       = "archives.fifo"
   fifo_queue = true
 
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
+  tags = merge(var.default_tags, {})
 }
 
 resource "aws_ssm_parameter" "archives_queue_parameter" {
@@ -65,10 +50,7 @@ resource "aws_ssm_parameter" "archives_queue_parameter" {
   type  = "String"
   value = aws_sqs_queue.archives_queue.url
 
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
+  tags = merge(var.default_tags, {})
 }
 
 resource "aws_lambda_event_source_mapping" "archives_mapping" {
@@ -79,10 +61,7 @@ resource "aws_lambda_event_source_mapping" "archives_mapping" {
 resource "aws_sns_topic" "data_changes_queue" {
   name = "data_changes"
 
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
+  tags = merge(var.default_tags, {})
 }
 
 resource "aws_ssm_parameter" "data_changes_queue_parameter" {
@@ -90,10 +69,7 @@ resource "aws_ssm_parameter" "data_changes_queue_parameter" {
   type  = "String"
   value = aws_sns_topic.data_changes_queue.arn
 
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
+  tags = merge(var.default_tags, {})
 }
 
 resource "aws_lambda_event_source_mapping" "data_changes_mapping" {

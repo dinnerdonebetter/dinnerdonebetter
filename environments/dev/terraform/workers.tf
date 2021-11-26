@@ -37,10 +37,7 @@ resource "aws_lambda_function" "writes_worker_lambda" {
   source_code_hash = filebase64sha256("writer_lambda.zip")
 
 
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
+  tags = merge(var.default_tags, {})
 }
 
 resource "aws_lambda_function" "updates_worker_lambda" {
@@ -54,10 +51,7 @@ resource "aws_lambda_function" "updates_worker_lambda" {
   filename         = "updater_lambda.zip"
   source_code_hash = filebase64sha256("updater_lambda.zip")
 
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
+  tags = merge(var.default_tags, {})
 }
 
 resource "aws_lambda_function" "archives_worker_lambda" {
@@ -71,10 +65,7 @@ resource "aws_lambda_function" "archives_worker_lambda" {
   filename         = "archiver_lambda.zip"
   source_code_hash = filebase64sha256("archiver_lambda.zip")
 
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
+  tags = merge(var.default_tags, {})
 }
 
 resource "aws_lambda_function" "data_changes_worker_lambda" {
@@ -88,10 +79,7 @@ resource "aws_lambda_function" "data_changes_worker_lambda" {
   filename         = "data_changes_lambda.zip"
   source_code_hash = filebase64sha256("data_changes_lambda.zip")
 
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
+  tags = merge(var.default_tags, {})
 }
 
 resource "aws_lambda_function" "chores_worker_lambda" {
@@ -105,10 +93,7 @@ resource "aws_lambda_function" "chores_worker_lambda" {
   filename         = "chores_lambda.zip"
   source_code_hash = filebase64sha256("chores_lambda.zip")
 
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
+  tags = merge(var.default_tags, {})
 }
 
 resource "aws_cloudwatch_event_rule" "every_minute" {

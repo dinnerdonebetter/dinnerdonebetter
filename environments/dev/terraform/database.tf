@@ -19,10 +19,7 @@ resource "aws_rds_cluster" "api_database" {
   storage_encrypted       = true
   preferred_backup_window = "01:00-05:00"
 
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
+  tags = merge(var.default_tags, {})
 }
 
 resource "aws_ssm_parameter" "database_url" {
