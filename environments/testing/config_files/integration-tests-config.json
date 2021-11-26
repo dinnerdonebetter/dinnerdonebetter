@@ -1,0 +1,263 @@
+{
+	"server": {
+		"httpsCertificate": "",
+		"httpsCertificateKey": "",
+		"startup_deadline": 60000000000,
+		"http_port": 8888,
+		"debug": false
+	},
+	"events": {
+		"provider": "redis",
+		"redis": {
+			"message_queue_address": "worker_queue:6379"
+		},
+		"sqs": {
+			"message_queue_address": ""
+		}
+	},
+	"search": {
+		"provider": "elasticsearch",
+		"address": "http://elasticsearch:9200"
+	},
+	"email": {
+		"Provider": "",
+		"APIToken": ""
+	},
+	"customerData": {
+		"Provider": "",
+		"APIToken": ""
+	},
+	"encoding": {
+		"content_type": "application/json"
+	},
+	"uploads": {
+		"storage_config": {
+			"filesystem": null,
+			"azure": null,
+			"gcs": null,
+			"s3": null,
+			"bucket_name": "avatars",
+			"upload_filename_key": "",
+			"provider": "memory"
+		},
+		"debug": false
+	},
+	"observability": {
+		"tracing": {
+			"jaeger": {
+				"collector_endpoint": "http://localhost:14268/api/traces",
+				"service_name": "prixfixe_service"
+			},
+			"provider": "jaeger",
+			"span_collection_probability": 1
+		},
+		"metrics": {
+			"provider": "",
+			"route_token": "",
+			"runtime_metrics_collection_interval": 1000000000
+		}
+	},
+	"routing": {
+		"provider": "",
+		"allowed_origins": null,
+		"allowed_heade": null
+	},
+	"database": {
+		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable",
+		"debug": false,
+		"runMigrations": true,
+		"maxPingAttempts": 50
+	},
+	"meta": {
+		"run_mode": "testing",
+		"debug": false
+	},
+	"services": {
+		"validInstruments": {
+			"logging": {
+				"name": "valid_instruments",
+				"level": 0,
+				"provider": "zerolog"
+			},
+			"preWritesTopicName": "pre_writes",
+			"preUpdatesTopicName": "pre_updates",
+			"preArchivesTopicName": "pre_archives",
+			"searchIndexPath": "http://elasticsearch:9200"
+		},
+		"validIngredients": {
+			"logging": {
+				"name": "valid_ingredients",
+				"level": 0,
+				"provider": "zerolog"
+			},
+			"preWritesTopicName": "pre_writes",
+			"preUpdatesTopicName": "pre_updates",
+			"preArchivesTopicName": "pre_archives",
+			"searchIndexPath": "http://elasticsearch:9200"
+		},
+		"validPreparations": {
+			"logging": {
+				"name": "valid_preparations",
+				"level": 0,
+				"provider": "zerolog"
+			},
+			"preWritesTopicName": "pre_writes",
+			"preUpdatesTopicName": "pre_updates",
+			"preArchivesTopicName": "pre_archives",
+			"searchIndexPath": "http://elasticsearch:9200"
+		},
+		"mealPlanOptionVotes": {
+			"logging": {
+				"name": "meal_plan_option_votes",
+				"level": 0,
+				"provider": "zerolog"
+			},
+			"preWritesTopicName": "pre_writes",
+			"preUpdatesTopicName": "pre_updates",
+			"preArchivesTopicName": "pre_archives"
+		},
+		"validIngredientPreparations": {
+			"logging": {
+				"name": "valid_ingredient_preparations",
+				"level": 0,
+				"provider": "zerolog"
+			},
+			"preWritesTopicName": "pre_writes",
+			"preUpdatesTopicName": "pre_updates",
+			"preArchivesTopicName": "pre_archives"
+		},
+		"meals": {
+			"logging": {
+				"name": "recipes",
+				"level": 0,
+				"provider": "zerolog"
+			},
+			"preWritesTopicName": "pre_writes",
+			"preUpdatesTopicName": "pre_updates",
+			"preArchivesTopicName": "pre_archives"
+		},
+		"recipes": {
+			"logging": {
+				"name": "recipes",
+				"level": 0,
+				"provider": "zerolog"
+			},
+			"preWritesTopicName": "pre_writes",
+			"preUpdatesTopicName": "pre_updates",
+			"preArchivesTopicName": "pre_archives"
+		},
+		"recipeSteps": {
+			"logging": {
+				"name": "recipe_steps",
+				"level": 0,
+				"provider": "zerolog"
+			},
+			"preWritesTopicName": "pre_writes",
+			"preUpdatesTopicName": "pre_updates",
+			"preArchivesTopicName": "pre_archives"
+		},
+		"recipeStepInstruments": {
+			"logging": {
+				"name": "recipe_step_instruments",
+				"level": 0,
+				"provider": "zerolog"
+			},
+			"preWritesTopicName": "pre_writes",
+			"preUpdatesTopicName": "pre_updates",
+			"preArchivesTopicName": "pre_archives"
+		},
+		"recipeStepIngredients": {
+			"logging": {
+				"name": "recipe_step_ingredients",
+				"level": 0,
+				"provider": "zerolog"
+			},
+			"preWritesTopicName": "pre_writes",
+			"preUpdatesTopicName": "pre_updates",
+			"preArchivesTopicName": "pre_archives"
+		},
+		"mealPlans": {
+			"logging": {
+				"name": "meal_plans",
+				"level": 0,
+				"provider": "zerolog"
+			},
+			"preWritesTopicName": "pre_writes",
+			"preUpdatesTopicName": "pre_updates",
+			"preArchivesTopicName": "pre_archives"
+		},
+		"mealPlanOptions": {
+			"logging": {
+				"name": "meal_plan_options",
+				"level": 0,
+				"provider": "zerolog"
+			},
+			"preWritesTopicName": "pre_writes",
+			"preUpdatesTopicName": "pre_updates",
+			"preArchivesTopicName": "pre_archives"
+		},
+		"recipeStepProducts": {
+			"logging": {
+				"name": "recipe_step_products",
+				"level": 0,
+				"provider": "zerolog"
+			},
+			"preWritesTopicName": "pre_writes",
+			"preUpdatesTopicName": "pre_updates",
+			"preArchivesTopicName": "pre_archives"
+		},
+		"households": {
+			"logging": {
+				"name": "",
+				"level": null,
+				"provider": ""
+			},
+			"pre_writes_topic_name": "pre_writes"
+		},
+		"householdInvitations": {
+			"logging": {
+				"name": "",
+				"level": null,
+				"provider": ""
+			},
+			"pre_writes_topic_name": "pre_writes",
+			"debug": false
+		},
+		"websockets": {
+			"logging": {
+				"name": "webhook",
+				"level": 0,
+				"provider": "zerolog"
+			}
+		},
+		"webhooks": {
+			"logging": {
+				"name": "",
+				"level": null,
+				"provider": ""
+			},
+			"pre_writes_topic_name": "pre_writes",
+			"pre_archives_topic_name": "pre_archives",
+			"debug": false
+		},
+		"auth": {
+			"paseto": {
+				"issuer": "prixfixe_service",
+				"local_mode_key": "ZOtyuVVj4jyg26UVBwqa5gSKY6hI9vYxxhx0vjTlOVE=",
+				"lifetime": 60000000000
+			},
+			"cookies": {
+				"name": "prixfixecookie",
+				"domain": ".prixfixe.local",
+				"hash_key": "HEREISA32CHARSECRETWHICHISMADEUP",
+				"signing_key": "DIFFERENT32CHARSECRETTHATIMADEUP",
+				"lifetime": 86400000000000,
+				"secure_only": false
+			},
+			"debug": false,
+			"enable_user_signup": true,
+			"minimum_username_length": 4,
+			"minimum_password_length": 8
+		}
+	}
+}

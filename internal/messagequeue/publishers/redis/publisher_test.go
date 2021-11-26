@@ -1,4 +1,4 @@
-package publishers
+package redis
 
 import (
 	"context"

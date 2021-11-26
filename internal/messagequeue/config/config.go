@@ -6,12 +6,16 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/messagequeue/consumers"
 	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
+	"github.com/prixfixeco/api_server/internal/messagequeue/publishers/redis"
+	"github.com/prixfixeco/api_server/internal/messagequeue/publishers/sqs"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
 
 const (
 	// ProviderRedis is used to refer to redis.
 	ProviderRedis = "redis"
+	// ProviderSQS is used to refer to sqs.
+	ProviderSQS = "sqs"
 )
 
 type (
@@ -26,12 +30,18 @@ type (
 		QueueAddress MessageQueueAddress `json:"message_queue_address" mapstructure:"message_queue_address" toml:"message_queue_address,omitempty"`
 	}
 
+	// SQSConfig configures a SQS-backed consumer.
+	SQSConfig struct {
+		QueueAddress MessageQueueAddress `json:"message_queue_address" mapstructure:"message_queue_address" toml:"message_queue_address,omitempty"`
+	}
+
 	// Config is used to indicate how the messaging provider should be configured.
 	Config struct {
 		_ struct{}
 
 		Provider    Provider    `json:"provider" mapstructure:"provider" toml:"provider,omitempty"`
 		RedisConfig RedisConfig `json:"redis" mapstructure:"redis" toml:"redis,omitempty"`
+		SQSConfig   SQSConfig   `json:"sqs" mapstructure:"sqs" toml:"sqs,omitempty"`
 	}
 )
 
@@ -53,7 +63,9 @@ func ProvideConsumerProvider(logger logging.Logger, c *Config) (consumers.Consum
 func ProvidePublisherProvider(logger logging.Logger, c *Config) (publishers.PublisherProvider, error) {
 	switch cleanString(string(c.Provider)) {
 	case ProviderRedis:
-		return publishers.ProvideRedisPublisherProvider(logger, string(c.RedisConfig.QueueAddress)), nil
+		return redis.ProvideRedisPublisherProvider(logger, string(c.RedisConfig.QueueAddress)), nil
+	case ProviderSQS:
+		return sqs.ProvideSQSPublisherProvider(logger, string(c.SQSConfig.QueueAddress)), nil
 	default:
 		return nil, fmt.Errorf("invalid provider: %q", c.Provider)
 	}

@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -15,7 +17,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/config"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/internal/secrets"
 )
 
 const (
@@ -30,27 +31,6 @@ var (
 
 func init() {
 	flag.StringVarP(&configFilepath, "config", "c", "", "the config filepath")
-}
-
-func initializeLocalSecretManager(ctx context.Context) secrets.SecretManager {
-	logger := logging.NewNoopLogger()
-
-	cfg := &secrets.Config{
-		Provider: secrets.ProviderLocal,
-		Key:      os.Getenv("PRIXFIXE_SERVER_LOCAL_CONFIG_STORE_KEY"),
-	}
-
-	k, err := secrets.ProvideSecretKeeper(ctx, cfg)
-	if err != nil {
-		panic(err)
-	}
-
-	sm, err := secrets.ProvideSecretManager(logger, k)
-	if err != nil {
-		panic(err)
-	}
-
-	return sm
 }
 
 func main() {
@@ -83,10 +63,8 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	sm := initializeLocalSecretManager(ctx)
-
 	var cfg *config.InstanceConfig
-	if err = sm.Decrypt(ctx, string(configBytes), &cfg); err != nil || cfg == nil {
+	if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
 		logger.Fatal(err)
 	}
 

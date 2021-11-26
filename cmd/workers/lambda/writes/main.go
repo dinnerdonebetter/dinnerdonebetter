@@ -11,6 +11,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
+	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -46,7 +47,7 @@ func main() {
 		},
 	}
 
-	dataManager, err := config.ProvideDatabaseClient(ctx, logger, cfg)
+	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database)
 	if err != nil {
 		logger.Fatal(err)
 	}

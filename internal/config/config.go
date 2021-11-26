@@ -2,21 +2,17 @@ package config
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
-	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
-	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/routing"
 	"github.com/prixfixeco/api_server/internal/search"
 	"github.com/prixfixeco/api_server/internal/server"
@@ -48,10 +44,6 @@ const (
 	TestingRunMode runMode = "testing"
 	// ProductionRunMode is the run mode for a production environment.
 	ProductionRunMode runMode = "production"
-)
-
-var (
-	errNilConfig = errors.New("nil config provided")
 )
 
 type (
@@ -210,14 +202,4 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context) error {
 	}
 
 	return nil
-}
-
-// ProvideDatabaseClient provides a database implementation dependent on the configuration.
-// NOTE: you may be tempted to move this to the database/config package. This is a fool's errand.
-func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, cfg *InstanceConfig) (database.DataManager, error) {
-	if cfg == nil {
-		return nil, errNilConfig
-	}
-
-	return postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database)
 }

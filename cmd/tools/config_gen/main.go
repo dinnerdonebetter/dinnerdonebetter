@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"crypto/rand"
-	"fmt"
+	"encoding/json"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
@@ -15,7 +15,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/prixfixeco/api_server/internal/authentication"
 	"github.com/prixfixeco/api_server/internal/config"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
 	"github.com/prixfixeco/api_server/internal/encoding"
@@ -25,7 +24,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/search"
-	"github.com/prixfixeco/api_server/internal/secrets"
 	"github.com/prixfixeco/api_server/internal/server"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	householdsservice "github.com/prixfixeco/api_server/internal/services/households"
@@ -121,60 +119,27 @@ var (
 	}
 )
 
-func initializeLocalSecretManager(ctx context.Context) secrets.SecretManager {
-	logger := logging.NewNoopLogger()
-
-	cfg := &secrets.Config{
-		Provider: secrets.ProviderLocal,
-		Key:      "SUFNQVdBUkVUSEFUVEhJU1NFQ1JFVElTVU5TRUNVUkU=",
-	}
-
-	k, err := secrets.ProvideSecretKeeper(ctx, cfg)
-	if err != nil {
-		panic(err)
-	}
-
-	sm, err := secrets.ProvideSecretManager(logger, k)
-	if err != nil {
-		panic(err)
-	}
-
-	return sm
-}
-
-func encryptAndSaveConfig(ctx context.Context, outputPath string, cfg *config.InstanceConfig) error {
-	sm := initializeLocalSecretManager(ctx)
-	output, err := sm.Encrypt(ctx, cfg)
-	if err != nil {
-		return fmt.Errorf("encrypting config: %v", err)
-	}
-
-	if err = os.MkdirAll(filepath.Dir(outputPath), 0777); err != nil {
+func saveConfig(outputPath string, cfg *config.InstanceConfig) error {
+	if err := os.MkdirAll(filepath.Dir(outputPath), 0777); err != nil {
 		// that's okay
 		_ = err
 	}
 
-	return os.WriteFile(outputPath, []byte(output), 0644)
+	output, err := json.MarshalIndent(cfg, "", "\t")
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(outputPath, output, 0644)
 }
 
 type configFunc func(ctx context.Context, filePath string) error
 
 var files = map[string]configFunc{
-	"environments/local/config_files/service.config":                   localDevelopmentConfig,
-	"environments/testing/config_files/frontend-tests.config":          frontendTestsConfig,
-	"environments/testing/config_files/integration-tests.config":       integrationTestConfig,
-	"environments/testing/config_files/integration-tests-local.config": localIntegrationTestConfig,
-}
-
-func mustHashPass(password string) string {
-	hashed, err := authentication.ProvideArgon2Authenticator(logging.NewNoopLogger()).
-		HashPassword(context.Background(), password)
-
-	if err != nil {
-		panic(err)
-	}
-
-	return hashed
+	"environments/local/config_files/service-config.json":                   localDevelopmentConfig,
+	"environments/testing/config_files/frontend-tests-config.json":          frontendTestsConfig,
+	"environments/testing/config_files/integration-tests-config.json":       integrationTestConfig,
+	"environments/testing/config_files/integration-tests-local-config.json": localIntegrationTestConfig,
 }
 
 func generatePASETOKey() []byte {
@@ -402,7 +367,7 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 		},
 	}
 
-	return encryptAndSaveConfig(ctx, filePath, cfg)
+	return saveConfig(filePath, cfg)
 }
 
 func frontendTestsConfig(ctx context.Context, filePath string) error {
@@ -615,7 +580,7 @@ func frontendTestsConfig(ctx context.Context, filePath string) error {
 		},
 	}
 
-	return encryptAndSaveConfig(ctx, filePath, cfg)
+	return saveConfig(filePath, cfg)
 }
 
 func buildIntegrationTestsConfig() *config.InstanceConfig {
@@ -845,7 +810,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 func integrationTestConfig(ctx context.Context, filePath string) error {
 	cfg := buildIntegrationTestsConfig()
 
-	return encryptAndSaveConfig(ctx, filePath, cfg)
+	return saveConfig(filePath, cfg)
 }
 
 func localIntegrationTestConfig(ctx context.Context, filePath string) error {
@@ -859,7 +824,7 @@ func localIntegrationTestConfig(ctx context.Context, filePath string) error {
 	cfg.Services.ValidIngredients.SearchIndexPath = strings.ReplaceAll(localElasticsearchLocation, "elasticsearch", "localhost")
 	cfg.Services.ValidPreparations.SearchIndexPath = strings.ReplaceAll(localElasticsearchLocation, "elasticsearch", "localhost")
 
-	return encryptAndSaveConfig(ctx, filePath, cfg)
+	return saveConfig(filePath, cfg)
 }
 
 func main() {

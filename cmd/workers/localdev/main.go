@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"log"
 	"net/http"
 	"os"
@@ -11,12 +13,12 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
+	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/messagequeue/consumers"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/search/elasticsearch"
-	"github.com/prixfixeco/api_server/internal/secrets"
 	"github.com/prixfixeco/api_server/internal/workers"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -29,29 +31,7 @@ const (
 	choresTopicName      = "chores"
 
 	configFilepathEnvVar = "CONFIGURATION_FILEPATH"
-	configStoreEnvVarKey = "PRIXFIXE_WORKERS_LOCAL_CONFIG_STORE_KEY"
 )
-
-func initializeLocalSecretManager(ctx context.Context, envVarKey string) secrets.SecretManager {
-	logger := logging.NewNoopLogger()
-
-	cfg := &secrets.Config{
-		Provider: secrets.ProviderLocal,
-		Key:      os.Getenv(envVarKey),
-	}
-
-	k, err := secrets.ProvideSecretKeeper(ctx, cfg)
-	if err != nil {
-		panic(err)
-	}
-
-	sm, err := secrets.ProvideSecretManager(logger, k)
-	if err != nil {
-		panic(err)
-	}
-
-	return sm
-}
 
 func main() {
 	ctx := context.Background()
@@ -77,10 +57,8 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	sm := initializeLocalSecretManager(ctx, configStoreEnvVarKey)
-
 	var cfg *config.InstanceConfig
-	if err = sm.Decrypt(ctx, string(configBytes), &cfg); err != nil || cfg == nil {
+	if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
 		logger.Fatal(err)
 	}
 
@@ -108,7 +86,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	dataManager, err := config.ProvideDatabaseClient(ctx, logger, cfg)
+	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database)
 	if err != nil {
 		logger.Fatal(err)
 	}

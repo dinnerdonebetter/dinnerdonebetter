@@ -9,7 +9,7 @@ services:
             CONFIGURATION_FILEPATH: '/etc/service.config'
             PRIXFIXE_WORKERS_LOCAL_CONFIG_STORE_KEY: 'SUFNQVdBUkVUSEFUVEhJU1NFQ1JFVElTVU5TRUNVUkU='
         volumes:
-            - source: '../../../environments/testing/config_files/integration-tests.config'
+            - source: '../../../environments/testing/config_files/integration-tests-config.json'
               target: '/etc/service.config'
               type: 'bind'
     prixfixe_api_server:
@@ -35,7 +35,7 @@ services:
             - source: '../../../environments/local/certificates/key.pem'
               target: '/etc/certs/key.pem'
               type: 'bind'
-            - source: '../../../environments/testing/config_files/integration-tests.config'
+            - source: '../../../environments/testing/config_files/integration-tests-config.json'
               target: '/etc/service.config'
               type: 'bind'
     test:

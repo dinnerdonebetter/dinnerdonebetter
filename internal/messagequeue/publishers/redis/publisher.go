@@ -1,4 +1,4 @@
-package publishers
+package redis
 
 import (
 	"bytes"
@@ -9,6 +9,7 @@ import (
 	"github.com/go-redis/redis/v8"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
+	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -55,13 +56,13 @@ func provideRedisPublisher(logger logging.Logger, redisClient *redis.Client, top
 
 type publisherProvider struct {
 	logger            logging.Logger
-	publisherCache    map[string]Publisher
+	publisherCache    map[string]publishers.Publisher
 	redisClient       *redis.Client
 	publisherCacheHat sync.RWMutex
 }
 
 // ProvideRedisPublisherProvider returns a PublisherProvider for a given address.
-func ProvideRedisPublisherProvider(logger logging.Logger, address string) PublisherProvider {
+func ProvideRedisPublisherProvider(logger logging.Logger, address string) publishers.PublisherProvider {
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     address,
 		Password: "", // no password set
@@ -71,12 +72,12 @@ func ProvideRedisPublisherProvider(logger logging.Logger, address string) Publis
 	return &publisherProvider{
 		logger:         logging.EnsureLogger(logger),
 		redisClient:    redisClient,
-		publisherCache: map[string]Publisher{},
+		publisherCache: map[string]publishers.Publisher{},
 	}
 }
 
 // ProviderPublisher returns a Publisher for a given topic.
-func (p *publisherProvider) ProviderPublisher(topic string) (Publisher, error) {
+func (p *publisherProvider) ProviderPublisher(topic string) (publishers.Publisher, error) {
 	logger := logging.EnsureLogger(p.logger).WithValue("topic", topic)
 
 	p.publisherCacheHat.Lock()

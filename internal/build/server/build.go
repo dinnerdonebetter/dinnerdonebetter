@@ -13,6 +13,7 @@ import (
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
+	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -62,6 +63,7 @@ func Build(
 		encoding.Providers,
 		msgconfig.Providers,
 		server.Providers,
+		postgres.Providers,
 		metrics.Providers,
 		images.Providers,
 		uploads.Providers,

@@ -10,7 +10,7 @@ services:
             - source: '../..'
               target: '/go/src/github.com/prixfixeco/api_server'
               type: 'bind'
-            - source: '../../environments/local/config_files/service.config'
+            - source: '../../environments/local/config_files/service-config.json'
               target: '/etc/service.config'
               type: 'bind'
         build:
@@ -33,7 +33,7 @@ services:
             - source: '../../environments/local/certificates/key.pem'
               target: '/etc/certs/key.pem'
               type: 'bind'
-            - source: '../../environments/local/config_files/service.config'
+            - source: '../../environments/local/config_files/service-config.json'
               target: '/etc/service.config'
               type: 'bind'
             - source: '../../'

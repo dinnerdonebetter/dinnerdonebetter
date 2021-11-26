@@ -1,28 +1,33 @@
-module "aurora_postgresql" {
-  source = "terraform-aws-modules/rds-aurora/aws"
+locals {
+  database_username = "api"
+}
 
-  name              = "dev-api-database"
-  engine            = "aurora-postgresql"
-  engine_mode       = "serverless"
-  storage_encrypted = true
+resource "random_password" "database_password" {
+  length  = 64
+  special = true
+}
 
-  # create_security_group = true
+resource "aws_rds_cluster" "api_database" {
+  cluster_identifier      = "dev_database"
+  engine                  = "aurora-postgresql"
+  availability_zones      = ["us-east-1"]
+  database_name           = "prixfixe"
+  engine_mode             = "serverless"
+  master_username         = local.database_username
+  master_password         = random_password.database_password.result
+  backup_retention_period = 7
+  storage_encrypted       = true
+  preferred_backup_window = "01:00-05:00"
+}
 
-  monitoring_interval = 60
+resource "aws_ssm_parameter" "database_username" {
+  name  = "database_password"
+  type  = "String"
+  value = local.database_username
+}
 
-  apply_immediately   = true
-  skip_final_snapshot = true
-
-  scaling_configuration = {
-    auto_pause               = true
-    min_capacity             = 1
-    max_capacity             = 1
-    seconds_until_auto_pause = 300
-    timeout_action           = "ForceApplyCapacityChange"
-  }
-
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
+resource "aws_ssm_parameter" "database_password" {
+  name  = "database_password"
+  type  = "String"
+  value = random_password.database_password.result
 }
