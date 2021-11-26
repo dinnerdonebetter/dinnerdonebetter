@@ -12,7 +12,8 @@ import (
 )
 
 const (
-	providerSegment = "segment"
+	// ProviderSegment represents Segment.
+	ProviderSegment = "segment"
 )
 
 type (
@@ -28,14 +29,14 @@ var _ validation.ValidatableWithContext = (*Config)(nil)
 // ValidateWithContext validates a Config struct.
 func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, cfg,
-		validation.Field(&cfg.APIToken, validation.When(strings.EqualFold(strings.TrimSpace(cfg.Provider), providerSegment), validation.Required)),
+		validation.Field(&cfg.APIToken, validation.When(strings.EqualFold(strings.TrimSpace(cfg.Provider), ProviderSegment), validation.Required)),
 	)
 }
 
 // ProvideCollector provides a collector.
 func (cfg *Config) ProvideCollector(logger logging.Logger) (customerdata.Collector, error) {
 	switch strings.ToLower(strings.TrimSpace(cfg.Provider)) {
-	case providerSegment:
+	case ProviderSegment:
 		return segment.NewSegmentCustomerDataCollector(logger, cfg.APIToken)
 	default:
 		return customerdata.NewNoopCollector()

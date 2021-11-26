@@ -243,7 +243,7 @@
 		"auth": {
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"local_mode_key": "ZOtyuVVj4jyg26UVBwqa5gSKY6hI9vYxxhx0vjTlOVE=",
+				"local_mode_key": "5kNwz4OpctXYM7CLg06Hq5reiqhKPDihATQuV25PjJw=",
 				"lifetime": 60000000000
 			},
 			"cookies": {

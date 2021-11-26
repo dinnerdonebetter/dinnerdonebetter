@@ -26,4 +26,6 @@ resource "aws_ssm_parameter" "database_url" {
   name  = "PRIXFIXE_DATABASE_URL"
   type  = "String"
   value = format("postgres://%s:%s@%s:%d/prixfixe", local.database_username, random_password.database_password.result, aws_rds_cluster.api_database.endpoint, aws_rds_cluster.api_database.port)
+
+  tags = merge(var.default_tags, {})
 }

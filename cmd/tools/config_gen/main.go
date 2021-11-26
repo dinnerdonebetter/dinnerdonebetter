@@ -4,16 +4,17 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/json"
-	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
-	"github.com/prixfixeco/api_server/internal/database"
-	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
-	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
-	mealsservice "github.com/prixfixeco/api_server/internal/services/meals"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
+
+	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
+	"github.com/prixfixeco/api_server/internal/database"
+	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
+	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
+	mealsservice "github.com/prixfixeco/api_server/internal/services/meals"
 
 	"github.com/prixfixeco/api_server/internal/config"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
@@ -56,9 +57,6 @@ const (
 	// run modes.
 	developmentEnv = "development"
 	testingEnv     = "testing"
-
-	// database providers.
-	postgres = "postgres"
 
 	localElasticsearchLocation = "http://elasticsearch:9200"
 
@@ -119,13 +117,29 @@ var (
 	}
 )
 
-func saveConfig(outputPath string, cfg *config.InstanceConfig) error {
+func saveConfig(ctx context.Context, outputPath string, cfg *config.InstanceConfig, indent, validate bool) error {
 	if err := os.MkdirAll(filepath.Dir(outputPath), 0777); err != nil {
 		// that's okay
 		_ = err
 	}
 
-	output, err := json.MarshalIndent(cfg, "", "\t")
+	if validate {
+		if err := cfg.ValidateWithContext(ctx); err != nil {
+			return err
+		}
+	}
+
+	var (
+		output []byte
+		err    error
+	)
+
+	if indent {
+		output, err = json.MarshalIndent(cfg, "", "\t")
+	} else {
+		output, err = json.Marshal(cfg)
+	}
+
 	if err != nil {
 		return err
 	}
@@ -136,7 +150,7 @@ func saveConfig(outputPath string, cfg *config.InstanceConfig) error {
 type configFunc func(ctx context.Context, filePath string) error
 
 var files = map[string]configFunc{
-	"environments/dev/config_files/service-config.json":                     localDevelopmentConfig,
+	"environments/dev/config_files/service-config.json":                     devEnvironmentConfig,
 	"environments/local/config_files/service-config.json":                   localDevelopmentConfig,
 	"environments/testing/config_files/integration-tests-config.json":       integrationTestConfig,
 	"environments/testing/config_files/integration-tests-local-config.json": localIntegrationTestConfig,
@@ -149,6 +163,143 @@ func generatePASETOKey() []byte {
 	}
 
 	return b
+}
+
+func loggingConfigWithName(name string) logging.Config {
+	return logging.Config{
+		Name:     name,
+		Level:    logging.InfoLevel,
+		Provider: logging.ProviderZerolog,
+	}
+}
+
+func devEnvironmentConfig(ctx context.Context, filePath string) error {
+	cookieConfig := authservice.CookieConfig{
+		Name:       defaultCookieName,
+		Domain:     ".prixfixe.dev",
+		Lifetime:   authservice.DefaultCookieLifetime,
+		SecureOnly: true,
+	}
+
+	emailConfig := emailconfig.Config{
+		Provider: emailconfig.ProviderSendgrid,
+		APIToken: "",
+	}
+
+	customerDataPlatformConfig := customerdataconfig.Config{
+		Provider: customerdataconfig.ProviderSegment,
+		APIToken: "",
+	}
+
+	cfg := &config.InstanceConfig{
+		Meta: config.MetaSettings{
+			Debug:   true,
+			RunMode: developmentEnv,
+		},
+		Encoding: encoding.Config{
+			ContentType: contentTypeJSON,
+		},
+		Events: msgconfig.Config{
+			Provider: msgconfig.ProviderSQS,
+		},
+		Email:        emailConfig,
+		CustomerData: customerDataPlatformConfig,
+		Server:       localServer,
+		Database: dbconfig.Config{
+			Debug:           true,
+			RunMigrations:   true,
+			MaxPingAttempts: maxAttempts,
+		},
+		Observability: observability.Config{
+			Metrics: metrics.Config{
+				Provider:                         "prometheus",
+				RuntimeMetricsCollectionInterval: time.Second,
+			},
+			Tracing: noopTracingConfig,
+		},
+		Uploads: uploads.Config{
+			Debug: true,
+			Storage: storage.Config{
+				UploadFilenameKey: "avatar",
+				Provider:          "filesystem",
+				BucketName:        "avatars.prixfixe.dev",
+				S3Config:          nil,
+				FilesystemConfig: &storage.FilesystemConfig{
+					RootDirectory: "/avatars",
+				},
+			},
+		},
+		Search: search.Config{
+			Provider: search.ElasticsearchProvider,
+		},
+		Services: config.ServicesConfigurations{
+			Households: householdsservice.Config{
+				Logging: loggingConfigWithName("households"),
+			},
+			HouseholdInvitations: householdinvitationsservice.Config{
+				Logging: loggingConfigWithName("household_invitations"),
+			},
+			Auth: authservice.Config{
+				Logging: loggingConfigWithName("authentication"),
+				PASETO: authservice.PASETOConfig{
+					Issuer:   "prixfixe_service",
+					Lifetime: defaultPASETOLifetime,
+				},
+				Cookies:               cookieConfig,
+				Debug:                 true,
+				EnableUserSignup:      true,
+				MinimumUsernameLength: 4,
+				MinimumPasswordLength: 8,
+			},
+			Webhooks: webhooksservice.Config{
+				Logging: loggingConfigWithName("webhooks"),
+			},
+			Websockets: websocketsservice.Config{
+				Logging: loggingConfigWithName("websocket"),
+			},
+			ValidInstruments: validinstrumentsservice.Config{
+				Logging: loggingConfigWithName("valid_instruments"),
+			},
+			ValidIngredients: validingredientsservice.Config{
+				Logging: loggingConfigWithName("valid_ingredients"),
+			},
+			ValidPreparations: validpreparationsservice.Config{
+				Logging: loggingConfigWithName("valid_preparations"),
+			},
+			ValidIngredientPreparations: validingredientpreparationsservice.Config{
+				Logging: loggingConfigWithName("valid_ingredient_preparations"),
+			},
+			Meals: mealsservice.Config{
+				Logging: loggingConfigWithName("meals"),
+			},
+			Recipes: recipesservice.Config{
+				Logging: loggingConfigWithName("recipes"),
+			},
+			RecipeSteps: recipestepsservice.Config{
+				Logging: loggingConfigWithName("recipe_steps"),
+			},
+			RecipeStepInstruments: recipestepinstrumentsservice.Config{
+				Logging: loggingConfigWithName("recipe_step_instruments"),
+			},
+			RecipeStepIngredients: recipestepingredientsservice.Config{
+				Logging: loggingConfigWithName("recipe_step_ingredients"),
+			},
+			RecipeStepProducts: recipestepproductsservice.Config{
+				Logging: loggingConfigWithName("recipe_step_products"),
+			},
+			MealPlans: mealplansservice.Config{
+				Logging: loggingConfigWithName("meal_plans"),
+			},
+			MealPlanOptions: mealplanoptionsservice.Config{
+				Logging: loggingConfigWithName("meal_plan_options"),
+			},
+			MealPlanOptionVotes: mealplanoptionvotesservice.Config{
+				Logging: loggingConfigWithName("meal_plan_option_votes"),
+			},
+		},
+	}
+
+	return saveConfig(ctx, filePath, cfg, true, false)
 }
 
 func localDevelopmentConfig(ctx context.Context, filePath string) error {
@@ -188,7 +339,7 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 			Storage: storage.Config{
 				UploadFilenameKey: "avatar",
 				Provider:          "filesystem",
-				BucketName:        "avatars",
+				BucketName:        "avatars.prixfixe.dev",
 				AzureConfig:       nil,
 				GCSConfig:         nil,
 				S3Config:          nil,
@@ -367,7 +518,7 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 		},
 	}
 
-	return saveConfig(filePath, cfg)
+	return saveConfig(ctx, filePath, cfg, true, true)
 }
 
 func buildIntegrationTestsConfig() *config.InstanceConfig {
@@ -597,7 +748,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 func integrationTestConfig(ctx context.Context, filePath string) error {
 	cfg := buildIntegrationTestsConfig()
 
-	return saveConfig(filePath, cfg)
+	return saveConfig(ctx, filePath, cfg, true, true)
 }
 
 func localIntegrationTestConfig(ctx context.Context, filePath string) error {
@@ -611,7 +762,7 @@ func localIntegrationTestConfig(ctx context.Context, filePath string) error {
 	cfg.Services.ValidIngredients.SearchIndexPath = strings.ReplaceAll(localElasticsearchLocation, "elasticsearch", "localhost")
 	cfg.Services.ValidPreparations.SearchIndexPath = strings.ReplaceAll(localElasticsearchLocation, "elasticsearch", "localhost")
 
-	return saveConfig(filePath, cfg)
+	return saveConfig(ctx, filePath, cfg, true, true)
 }
 
 func main() {
