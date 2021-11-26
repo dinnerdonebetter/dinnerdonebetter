@@ -37,7 +37,7 @@ func main() {
 	logger := logging.NewZerologLogger()
 	client := &http.Client{Timeout: 10 * time.Second}
 
-	cfg, err := config.GetConfigFromParameterStore(ctx)
+	cfg, err := config.GetConfigFromParameterStore()
 	if err != nil {
 		logger.Fatal(err)
 	}

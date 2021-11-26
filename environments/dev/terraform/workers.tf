@@ -1,8 +1,8 @@
 locals {
   lambda_runtime = "go1.x"
-  lambda_handler  = "main"
-  memory_size = 1024
-  timeout = 30
+  lambda_handler = "main"
+  memory_size    = 1024
+  timeout        = 30
 }
 
 resource "aws_iam_role" "worker_lambda_role" {
@@ -28,10 +28,10 @@ EOF
 resource "aws_lambda_function" "writes_worker_lambda" {
   function_name = "writes_worker"
   role          = aws_iam_role.worker_lambda_role.arn
-  handler = local.lambda_handler
-  runtime = local.lambda_runtime
-  memory_size       = local.memory_size
-  timeout           = local.timeout
+  handler       = local.lambda_handler
+  runtime       = local.lambda_runtime
+  memory_size   = local.memory_size
+  timeout       = local.timeout
 
   tags = {
     Environment = "dev"
@@ -42,10 +42,10 @@ resource "aws_lambda_function" "writes_worker_lambda" {
 resource "aws_lambda_function" "updates_worker_lambda" {
   function_name = "updates_worker"
   role          = aws_iam_role.worker_lambda_role.arn
-  handler = local.lambda_handler
-  runtime = local.lambda_runtime
-  memory_size       = local.memory_size
-  timeout           = local.timeout
+  handler       = local.lambda_handler
+  runtime       = local.lambda_runtime
+  memory_size   = local.memory_size
+  timeout       = local.timeout
 
   tags = {
     Environment = "dev"
@@ -56,10 +56,10 @@ resource "aws_lambda_function" "updates_worker_lambda" {
 resource "aws_lambda_function" "archives_worker_lambda" {
   function_name = "archives_worker"
   role          = aws_iam_role.worker_lambda_role.arn
-  handler = local.lambda_handler
-  runtime = local.lambda_runtime
-  memory_size       = local.memory_size
-  timeout           = local.timeout
+  handler       = local.lambda_handler
+  runtime       = local.lambda_runtime
+  memory_size   = local.memory_size
+  timeout       = local.timeout
 
   tags = {
     Environment = "dev"
@@ -70,10 +70,10 @@ resource "aws_lambda_function" "archives_worker_lambda" {
 resource "aws_lambda_function" "data_changes_worker_lambda" {
   function_name = "data_changes_worker"
   role          = aws_iam_role.worker_lambda_role.arn
-  handler = local.lambda_handler
-  runtime = local.lambda_runtime
-  memory_size       = local.memory_size
-  timeout           = local.timeout
+  handler       = local.lambda_handler
+  runtime       = local.lambda_runtime
+  memory_size   = local.memory_size
+  timeout       = local.timeout
 
   tags = {
     Environment = "dev"

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	"net/http"
 	"time"
 
@@ -11,6 +10,7 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
+	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/workers"
@@ -30,11 +30,10 @@ func buildHandler(worker *workers.DataChangesWorker) func(ctx context.Context, s
 }
 
 func main() {
-	ctx := context.Background()
 	logger := logging.NewZerologLogger()
 	client := &http.Client{Timeout: 10 * time.Second}
 
-	cfg, err := config.GetConfigFromParameterStore(ctx)
+	cfg, err := config.GetConfigFromParameterStore()
 	if err != nil {
 		logger.Fatal(err)
 	}

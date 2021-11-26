@@ -25,24 +25,8 @@ resource "aws_rds_cluster" "api_database" {
   }
 }
 
-resource "aws_ssm_parameter" "database_username" {
-  name  = "PRIXFIXE_DATABASE_USERNAME"
+resource "aws_ssm_parameter" "database_url" {
+  name  = "PRIXFIXE_DATABASE_URL"
   type  = "String"
-  value = local.database_username
-
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
-}
-
-resource "aws_ssm_parameter" "database_password" {
-  name  = "PRIXFIXE_DATABASE_PASSWORD"
-  type  = "String"
-  value = random_password.database_password.result
-
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
+  value = format("postgres://%s:%s@%s:%d/prixfixe", local.database_username, random_password.database_password.result, aws_rds_cluster.api_database.endpoint, aws_rds_cluster.api_database.port)
 }
