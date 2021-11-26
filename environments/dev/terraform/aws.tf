@@ -1,8 +1,8 @@
-variable "aws_access_key" {}
-variable "aws_secret_access_key" {}
+variable "AWS_ACCESS_KEY" {}
+variable "AWS_SECRET_ACCESS_KEY" {}
 
 provider "aws" {
   region     = "us-east-1"
-  access_key = var.aws_access_key
-  secret_key = var.aws_secret_access_key
+  access_key = var.AWS_ACCESS_KEY
+  secret_key = var.AWS_SECRET_ACCESS_KEY
 }
