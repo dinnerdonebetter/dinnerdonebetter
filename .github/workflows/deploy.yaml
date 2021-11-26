@@ -99,9 +99,34 @@ jobs:
         id: fmt
         run: terraform fmt -check
 
-      - name: Download lambdas
+      - name: Download writer lambda
         uses: actions/download-artifact@v2
         with:
+          name: writer
+          path: environments/dev/terraform
+
+      - name: Download updater lambda
+        uses: actions/download-artifact@v2
+        with:
+          name: updater
+          path: environments/dev/terraform
+
+      - name: Download archiver lambda
+        uses: actions/download-artifact@v2
+        with:
+          name: archiver
+          path: environments/dev/terraform
+
+      - name: Download data changes lambda
+        uses: actions/download-artifact@v2
+        with:
+          name: data_changes
+          path: environments/dev/terraform
+
+      - name: Download chores lambda
+        uses: actions/download-artifact@v2
+        with:
+          name: chores
           path: environments/dev/terraform
 
       - name: DEBUG CHECK
