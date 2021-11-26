@@ -92,17 +92,17 @@ jobs:
       - name: Download writer lambda
         uses: actions/download-artifact@v2
         with:
-          name: writes
+          name: writer
 
       - name: Download updater lambda
         uses: actions/download-artifact@v2
         with:
-          name: updates
+          name: updater
 
       - name: Download archiver lambda
         uses: actions/download-artifact@v2
         with:
-          name: archives
+          name: archiver
 
       - name: Download data changes lambda
         uses: actions/download-artifact@v2
