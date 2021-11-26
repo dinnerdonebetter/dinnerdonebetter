@@ -75,6 +75,8 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    env:
+      working-directory: environments/dev/terraform
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -93,31 +95,31 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: writer
-          path: writer_lambda.zip
+          path: environments/dev/terraform/writer_lambda.zip
 
       - name: Download updater lambda
         uses: actions/download-artifact@v2
         with:
           name: updater
-          path: updater_lambda.zip
+          path: environments/dev/terraform/updater_lambda.zip
 
       - name: Download archiver lambda
         uses: actions/download-artifact@v2
         with:
           name: archiver
-          path: archiver_lambda.zip
+          path: environments/dev/terraform/archiver_lambda.zip
 
       - name: Download data changes lambda
         uses: actions/download-artifact@v2
         with:
           name: data_changes
-          path: data_changes_lambda.zip
+          path: environments/dev/terraform/data_changes_lambda.zip
 
       - name: Download chores lambda
         uses: actions/download-artifact@v2
         with:
           name: chores
-          path: chores_lambda.zip
+          path: environments/dev/terraform/chores_lambda.zip
 
       - name: Terraform Init
         id: init
