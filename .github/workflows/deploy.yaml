@@ -61,10 +61,10 @@ jobs:
           path: data_changes_lambda.zip
 
       - name: Build chores lambda
-        run: go build -o data_changes github.com/prixfixeco/api_server/cmd/workers/lambdas/chores
+        run: go build -o chores github.com/prixfixeco/api_server/cmd/workers/lambdas/chores
 
       - name: Zip chores lambda
-        run: zip data_changes_lambda.zip data_changes
+        run: zip chores_lambda.zip chores
 
       - name: Upload chores lambda
         uses: actions/upload-artifact@v2
