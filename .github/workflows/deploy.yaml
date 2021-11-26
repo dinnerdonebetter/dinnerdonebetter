@@ -90,6 +90,11 @@ jobs:
           # terraform_version: 0.13.0:
           cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
 
+      - name: Terraform Init
+        working-directory: environments/dev/terraform
+        id: init
+        run: terraform init
+
       - name: Terraform Format
         id: fmt
         run: terraform fmt -check
@@ -98,40 +103,35 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: writer
-          path: environments/dev/terraform/writer_lambda.zip
+          path: environments/dev/terraform
 
       - name: Download updater lambda
         uses: actions/download-artifact@v2
         with:
           name: updater
-          path: environments/dev/terraform/updater_lambda.zip
+          path: environments/dev/terraform
 
       - name: Download archiver lambda
         uses: actions/download-artifact@v2
         with:
           name: archiver
-          path: environments/dev/terraform/archiver_lambda.zip
+          path: environments/dev/terraform
 
       - name: Download data changes lambda
         uses: actions/download-artifact@v2
         with:
           name: data_changes
-          path: environments/dev/terraform/data_changes_lambda.zip
+          path: environments/dev/terraform
 
       - name: Download chores lambda
         uses: actions/download-artifact@v2
         with:
           name: chores
-          path: environments/dev/terraform/chores_lambda.zip
-
-      - name: Terraform Init
-        working-directory: environments/dev/terraform
-        id: init
-        run: terraform init
+          path: environments/dev/terraform
 
       - name: DEBUG CHECK
         working-directory: environments/dev/terraform
-        run: pwd && ls -lah archiver_lambda.zip chores_lambda.zip data_changes_lambda.zip updater_lambda.zip writer_lambda.zip
+        run: pwd && ls -lah
 
       - name: Terraform Validate
         working-directory: environments/dev/terraform
