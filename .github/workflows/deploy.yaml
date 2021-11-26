@@ -13,29 +13,34 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build writer lambda
-        run: 
-          - go build -o writer github.com/prixfixeco/api_server/cmd/workers/lambdas/writes
-          - zip writer_lambda.zip writer
+        run: go build -o writer github.com/prixfixeco/api_server/cmd/workers/lambdas/writes
+
+      - name: Zip writer lambda
+        run: zip writer_lambda.zip writer
 
       - name: Build updater lambda
-        run: 
-          - go build -o updater github.com/prixfixeco/api_server/cmd/workers/lambdas/updates
-          - zip updater_lambda.zip updater
+        run: go build -o updater github.com/prixfixeco/api_server/cmd/workers/lambdas/updates
+
+      - name: Zip updater lambda
+        run: zip updater_lambda.zip updater
 
       - name: Build archiver lambda
-        run: 
-          - go build -o archiver github.com/prixfixeco/api_server/cmd/workers/lambdas/archives
-          - zip archiver_lambda.zip archiver
+        run: go build -o archiver github.com/prixfixeco/api_server/cmd/workers/lambdas/archives
+
+      - name: Zip archiver lambda
+        run: zip archiver_lambda.zip archiver
 
       - name: Build data changes lambda
-        run: 
-          - go build -o data_changes github.com/prixfixeco/api_server/cmd/workers/lambdas/data_changes
-          - zip data_changes_lambda.zip data_changes
+        run: go build -o data_changes github.com/prixfixeco/api_server/cmd/workers/lambdas/data_changes
+
+      - name: Build Zip changes lambda
+        run: zip data_changes_lambda.zip data_changes
 
       - name: Build chores lambda
-        run: 
-          - go build -o data_changes github.com/prixfixeco/api_server/cmd/workers/lambdas/chores
-          - zip data_changes_lambda.zip data_changes
+        run: go build -o data_changes github.com/prixfixeco/api_server/cmd/workers/lambdas/chores
+
+      - name: Zip chores lambda
+        run: zip data_changes_lambda.zip data_changes
 
       - name: Upload writer lambda
         uses: actions/upload-artifact@v2
