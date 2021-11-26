@@ -2,15 +2,6 @@ on: [pull_request]
 name: Deploy
 jobs:
   build_lambdas:
-    strategy:
-      matrix:
-        lambda: [
-          writes,
-          updates,
-          archives,
-          data_changes,
-          chores
-        ]
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
@@ -21,17 +12,65 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build ${{ matrix.lambda }} lambda
-        run: go build -o writer github.com/prixfixeco/api_server/cmd/workers/lambdas/${{ matrix.lambda }}
+      - name: Build writer lambda
+        run: go build -o writer github.com/prixfixeco/api_server/cmd/workers/lambdas/writes
 
-      - name: Zip ${{ matrix.lambda }} lambda
-        run: zip ${{ matrix.lambda }}_lambda.zip ${{ matrix.lambda }}
+      - name: Zip writer lambda
+        run: zip writer_lambda.zip writer
 
-      - name: Upload ${{ matrix.lambda }} lambda
+      - name: Upload writer lambda
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ matrix.lambda }}
-          path: ${{ matrix.lambda }}_lambda.zip
+          name: writer
+          path: writer_lambda.zip
+
+      - name: Build updater lambda
+        run: go build -o updater github.com/prixfixeco/api_server/cmd/workers/lambdas/updates
+
+      - name: Zip updater lambda
+        run: zip updater_lambda.zip updater
+
+      - name: Upload updater lambda
+        uses: actions/upload-artifact@v2
+        with:
+          name: updater
+          path: updater_lambda.zip
+
+      - name: Build archiver lambda
+        run: go build -o archiver github.com/prixfixeco/api_server/cmd/workers/lambdas/archives
+
+      - name: Zip archiver lambda
+        run: zip archiver_lambda.zip archiver
+
+      - name: Upload archiver lambda
+        uses: actions/upload-artifact@v2
+        with:
+          name: archiver
+          path: archiver_lambda.zip
+
+      - name: Build data changes lambda
+        run: go build -o data_changes github.com/prixfixeco/api_server/cmd/workers/lambdas/data_changes
+
+      - name: Zip changes lambda
+        run: zip data_changes_lambda.zip data_changes
+
+      - name: Upload data changes lambda
+        uses: actions/upload-artifact@v2
+        with:
+          name: data_changes
+          path: data_changes_lambda.zip
+
+      - name: Build chores lambda
+        run: go build -o chores github.com/prixfixeco/api_server/cmd/workers/lambdas/chores
+
+      - name: Zip chores lambda
+        run: zip chores_lambda.zip chores
+
+      - name: Upload chores lambda
+        uses: actions/upload-artifact@v2
+        with:
+          name: chores
+          path: chores_lambda.zip
 
   deploy:
     needs: build_lambdas
