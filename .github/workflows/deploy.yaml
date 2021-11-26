@@ -98,7 +98,7 @@ jobs:
       - name: Download writer lambda
         uses: actions/download-artifact@v2
         with:
-          name: writer_lambda.zip
+          name: ${{ github.workspace }}/environments/dev/terraform/writer_lambda.zip
 
       - name: Download updater lambda
         uses: actions/download-artifact@v2
