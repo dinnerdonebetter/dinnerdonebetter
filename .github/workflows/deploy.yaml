@@ -95,11 +95,6 @@ jobs:
         run: terraform init
         working-directory: environments/dev/terraform
 
-      - name: Terraform Validate
-        id: validate
-        run: terraform validate -no-color
-        working-directory: environments/dev/terraform
-
       - name: Download writer lambda
         uses: actions/download-artifact@v2
         with:
@@ -124,6 +119,11 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: chores_lambda.zip  
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+        working-directory: environments/dev/terraform
 
       - name: Terraform Plan
         id: plan
