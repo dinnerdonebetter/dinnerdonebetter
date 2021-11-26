@@ -126,7 +126,7 @@ jobs:
         working-directory: environments/dev/terraform
         id: plan
         if: github.event_name == 'pull_request'
-        run: terraform plan -no-color
+        run: terraform init && terraform plan -no-color
         continue-on-error: true
 
 ###### source: https://github.com/hashicorp/learn-terraform-github-actions/blob/c34ebed8a1d373a992c44df2a5ba5a711df097aa/.github/workflows/terraform.yml
