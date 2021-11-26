@@ -13,40 +13,59 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build writer lambda
-        run: go build -o writer_lambda github.com/prixfixeco/api_server/cmd/workers/lambdas/writes
+        run: 
+          - go build -o writer github.com/prixfixeco/api_server/cmd/workers/lambdas/writes
+          - zip writer_lambda.zip writer
 
       - name: Build updater lambda
-        run: go build -o updater_lambda github.com/prixfixeco/api_server/cmd/workers/lambdas/updates
+        run: 
+          - go build -o updater github.com/prixfixeco/api_server/cmd/workers/lambdas/updates
+          - zip updater_lambda.zip updater
 
       - name: Build archiver lambda
-        run: go build -o archiver_lambda github.com/prixfixeco/api_server/cmd/workers/lambdas/archives
+        run: 
+          - go build -o archiver github.com/prixfixeco/api_server/cmd/workers/lambdas/archives
+          - zip archiver_lambda.zip archiver
 
-      - name: Build writer lambda
-        run: go build -o data_changes_lambda github.com/prixfixeco/api_server/cmd/workers/lambdas/data_changes
+      - name: Build data changes lambda
+        run: 
+          - go build -o data_changes github.com/prixfixeco/api_server/cmd/workers/lambdas/data_changes
+          - zip data_changes_lambda.zip data_changes
+
+      - name: Build chores lambda
+        run: 
+          - go build -o data_changes github.com/prixfixeco/api_server/cmd/workers/lambdas/chores
+          - zip data_changes_lambda.zip data_changes
 
       - name: Upload writer lambda
         uses: actions/upload-artifact@v2
         with:
           name: writer
-          path: writer_lambda
+          path: writer_lambda.zip
 
       - name: Upload updater lambda
         uses: actions/upload-artifact@v2
         with:
           name: updater
-          path: updater_lambda
+          path: updater_lambda.zip
 
       - name: Upload archiver lambda
         uses: actions/upload-artifact@v2
         with:
           name: archiver
-          path: archiver_lambda
+          path: archiver_lambda.zip
 
       - name: Upload data changes lambda
         uses: actions/upload-artifact@v2
         with:
           name: data_changes
-          path: data_changes_lambda
+          path: data_changes_lambda.zip
+
+      - name: Upload chores lambda
+        uses: actions/upload-artifact@v2
+        with:
+          name: chores
+          path: chores_lambda.zip
 
   deploy:
     needs: build
@@ -75,6 +94,31 @@ jobs:
         id: validate
         run: terraform validate -no-color
         working-directory: environments/dev/terraform
+
+      - name: Download writer lambda
+        uses: actions/download-artifact@v2
+        with:
+          name: writer_lambda.zip
+
+      - name: Download updater lambda
+        uses: actions/download-artifact@v2
+        with:
+          name: updater_lambda.zip
+
+      - name: Download archiver lambda
+        uses: actions/download-artifact@v2
+        with:
+          name: archiver_lambda.zip
+
+      - name: Download data changes lambda
+        uses: actions/download-artifact@v2
+        with:
+          name: data_changes_lambda.zip
+
+      - name: Download chores lambda
+        uses: actions/download-artifact@v2
+        with:
+          name: chores_lambda.zip  
 
       - name: Terraform Plan
         id: plan
