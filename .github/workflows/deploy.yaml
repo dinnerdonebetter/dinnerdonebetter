@@ -1,7 +1,7 @@
 on: [pull_request]
 name: Deploy
 jobs:
-  build_lambdas:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
@@ -73,7 +73,7 @@ jobs:
           path: chores_lambda.zip
 
   deploy:
-    needs: build_lambdas
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -93,26 +93,31 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: writer
+          path: writer_lambda.zip
 
       - name: Download updater lambda
         uses: actions/download-artifact@v2
         with:
           name: updater
+          path: updater_lambda.zip
 
       - name: Download archiver lambda
         uses: actions/download-artifact@v2
         with:
           name: archiver
+          path: archiver_lambda.zip
 
       - name: Download data changes lambda
         uses: actions/download-artifact@v2
         with:
           name: data_changes
+          path: data_changes_lambda.zip
 
       - name: Download chores lambda
         uses: actions/download-artifact@v2
         with:
           name: chores
+          path: chores_lambda.zip
 
       - name: Terraform Init
         id: init
