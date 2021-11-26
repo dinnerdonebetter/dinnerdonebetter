@@ -124,6 +124,10 @@ jobs:
         id: init
         run: terraform init
 
+      - name: DEBUG CHECK
+        working-directory: environments/dev/terraform
+        run: pwd && ls -lah
+
       - name: Terraform Validate
         working-directory: environments/dev/terraform
         id: validate
