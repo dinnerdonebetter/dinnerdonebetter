@@ -13,16 +13,16 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build writer lambda
-        run: go build github.com/prixfixeco/api_server/cmd/lambdas/writes -o writer_lambda
+        run: go build -o writer_lambda github.com/prixfixeco/api_server/cmd/workers/lambdas/writes
 
       - name: Build updater lambda
-        run: go build github.com/prixfixeco/api_server/cmd/lambdas/updates -o updater_lambda
+        run: go build -o updater_lambda github.com/prixfixeco/api_server/cmd/workers/lambdas/updates
 
       - name: Build archiver lambda
-        run: go build github.com/prixfixeco/api_server/cmd/lambdas/archives -o archiver_lambda
+        run: go build -o archiver_lambda github.com/prixfixeco/api_server/cmd/workers/lambdas/archives
 
       - name: Build writer lambda
-        run: go build github.com/prixfixeco/api_server/cmd/lambdas/data_changes -o data_changes_lambda
+        run: go build -o data_changes_lambda github.com/prixfixeco/api_server/cmd/workers/lambdas/data_changes
 
       - name: Upload writer lambda
         uses: actions/upload-artifact@v2
