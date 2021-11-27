@@ -2,10 +2,11 @@ package authentication
 
 import (
 	"context"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+
+	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
 
 const (

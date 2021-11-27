@@ -1,4 +1,4 @@
-package consumers
+package redis
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"github.com/go-redis/redis/v8"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
+	"github.com/prixfixeco/api_server/internal/messagequeue/consumers"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
@@ -27,9 +28,9 @@ type (
 		topic        string
 	}
 
-	// RedisConfig configures a Redis-backed consumer.
-	RedisConfig struct {
-		QueueAddress MessageQueueAddress `json:"message_queue_address" mapstructure:"message_queue_address" toml:"message_queue_address,omitempty"`
+	// Config configures a Redis-backed consumer.
+	Config struct {
+		QueueAddress consumers.MessageQueueAddress `json:"message_queue_address" mapstructure:"message_queue_address" toml:"message_queue_address,omitempty"`
 	}
 )
 
@@ -73,13 +74,13 @@ func (r *redisConsumer) Consume(stopChan chan bool, errors chan error) {
 
 type consumerProvider struct {
 	logger           logging.Logger
-	consumerCache    map[string]Consumer
+	consumerCache    map[string]consumers.Consumer
 	redisClient      *redis.Client
 	consumerCacheHat sync.RWMutex
 }
 
 // ProvideRedisConsumerProvider returns a ConsumerProvider for a given address.
-func ProvideRedisConsumerProvider(logger logging.Logger, queueAddress string) ConsumerProvider {
+func ProvideRedisConsumerProvider(logger logging.Logger, queueAddress string) consumers.ConsumerProvider {
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     queueAddress,
 		Password: "", // no password set
@@ -89,12 +90,12 @@ func ProvideRedisConsumerProvider(logger logging.Logger, queueAddress string) Co
 	return &consumerProvider{
 		logger:        logging.EnsureLogger(logger),
 		redisClient:   redisClient,
-		consumerCache: map[string]Consumer{},
+		consumerCache: map[string]consumers.Consumer{},
 	}
 }
 
 // ProviderConsumer returns a Consumer for a given topic.
-func (p *consumerProvider) ProviderConsumer(ctx context.Context, topic string, handlerFunc func(context.Context, []byte) error) (Consumer, error) {
+func (p *consumerProvider) ProviderConsumer(ctx context.Context, topic string, handlerFunc func(context.Context, []byte) error) (consumers.Consumer, error) {
 	logger := logging.EnsureLogger(p.logger).WithValue("topic", topic)
 
 	p.consumerCacheHat.Lock()

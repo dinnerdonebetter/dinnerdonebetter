@@ -16,7 +16,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
-	"github.com/prixfixeco/api_server/internal/messagequeue/consumers"
+	"github.com/prixfixeco/api_server/internal/messagequeue/consumers/redis"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/search/elasticsearch"
 	"github.com/prixfixeco/api_server/internal/workers"
@@ -91,7 +91,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	consumerProvider := consumers.ProvideRedisConsumerProvider(logger, string(cfg.Events.RedisConfig.QueueAddress))
+	consumerProvider := redis.ProvideRedisConsumerProvider(logger, string(cfg.Events.RedisConfig.QueueAddress))
 
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, &cfg.Events)
 	if err != nil {
