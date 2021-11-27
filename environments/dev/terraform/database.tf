@@ -12,6 +12,13 @@ resource "aws_rds_cluster" "api_database" {
   cluster_identifier = "dev-db"
   engine             = "aurora-postgresql"
   database_name      = "prixfixe"
+  enabled_cloudwatch_logs_exports = [
+    "audit",
+    "error",
+    "general",
+    "slowquery",
+    "postgresql",
+  ]
 
   engine_mode = "serverless"
   scaling_configuration {
@@ -37,4 +44,17 @@ resource "aws_ssm_parameter" "database_url" {
   value = format("postgres://%s:%s@%s:%d/prixfixe", local.database_username, random_password.database_password.result, aws_rds_cluster.api_database.endpoint, aws_rds_cluster.api_database.port)
 
   tags = merge(var.default_tags, {})
+}
+
+provider "postgresql" {
+  host            = aws_rds_cluster.api_database.endpoint
+  port            = aws_rds_cluster.api_database.port
+  username        = local.database_username
+  password        = random_password.database_password.result
+  sslmode         = "require"
+  connect_timeout = 15
+}
+
+resource "postgresql_database" "prixfixe" {
+  name = "prixfixe"
 }
