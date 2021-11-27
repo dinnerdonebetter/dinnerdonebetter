@@ -12,7 +12,16 @@ resource "aws_rds_cluster" "api_database" {
   cluster_identifier      = "dev-db"
   engine                  = "aurora-postgresql"
   database_name           = "prixfixe"
+
   engine_mode             = "serverless"
+  scaling_configuration {
+    auto_pause               = true
+    min_capacity             = 2
+    max_capacity             = 2
+    seconds_until_auto_pause = 300
+    timeout_action           = "ForceApplyCapacityChange"
+  }
+
   master_username         = local.database_username
   master_password         = random_password.database_password.result
   backup_retention_period = 7
