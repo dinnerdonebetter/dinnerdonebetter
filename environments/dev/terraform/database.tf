@@ -9,11 +9,11 @@ resource "random_password" "database_password" {
 }
 
 resource "aws_rds_cluster" "api_database" {
-  cluster_identifier      = "dev-db"
-  engine                  = "aurora-postgresql"
-  database_name           = "prixfixe"
+  cluster_identifier = "dev-db"
+  engine             = "aurora-postgresql"
+  database_name      = "prixfixe"
 
-  engine_mode             = "serverless"
+  engine_mode = "serverless"
   scaling_configuration {
     auto_pause               = true
     min_capacity             = 2
