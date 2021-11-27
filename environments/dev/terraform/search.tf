@@ -9,7 +9,7 @@ resource "aws_elasticsearch_domain" "search" {
   tags = merge(var.default_tags, {})
 }
 
-resource "aws_ssm_parameter" "service_config" {
+resource "aws_ssm_parameter" "search_url" {
   name  = "PRIXFIXE_ELASTICSEARCH_INSTANCE_URL"
   type  = "String"
   value = aws_elasticsearch_domain.search.arn
