@@ -13,6 +13,9 @@
        - name: check formatting
          run: if [ $(gofmt -l . | grep -Ev '^vendor\/' | head -c1 | wc -c) -ne 0 ]; then exit 1; fi
    lint:
+     strategy:
+       matrix:
+         version: [v1.42]
      runs-on: ubuntu-latest
      steps:
        - uses: actions/checkout@v2
@@ -20,7 +23,7 @@
          uses: golangci/golangci-lint-action@v2
          with:
            # Optional: version of golangci-lint to use in form of v1.2 or v1.2.3 or `latest` to use the latest version
-           version: v1.42
+           version: ${{ matrix.version }}
 
            # Optional: working directory, useful for monorepos
            # working-directory: somedir
