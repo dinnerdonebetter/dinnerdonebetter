@@ -58,21 +58,22 @@ resource "aws_lambda_event_source_mapping" "archives_mapping" {
   function_name    = aws_lambda_function.archives_worker_lambda.arn
 }
 
-resource "aws_sns_topic" "data_changes_queue" {
-  name = "data_changes"
+resource "aws_sqs_queue" "data_changes_queue" {
+  name       = "data_changes.fifo"
+  fifo_queue = true
 
   tags = merge(var.default_tags, {})
 }
 
 resource "aws_ssm_parameter" "data_changes_queue_parameter" {
-  name  = "PRIXFIXE_DATA_CHANGES_TOPIC_ID"
+  name  = "PRIXFIXE_DATA_CHANGES_QUEUE_URL"
   type  = "String"
-  value = aws_sns_topic.data_changes_queue.arn
+  value = aws_sqs_queue.data_changes_queue.arn
 
   tags = merge(var.default_tags, {})
 }
 
 resource "aws_lambda_event_source_mapping" "data_changes_mapping" {
-  event_source_arn = aws_sns_topic.data_changes_queue.arn
+  event_source_arn = aws_sqs_queue.data_changes_queue.arn
   function_name    = aws_lambda_function.data_changes_worker_lambda.arn
 }
