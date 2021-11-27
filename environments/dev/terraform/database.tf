@@ -1,5 +1,5 @@
 locals {
-  database_username = "api"
+  database_username = "prixfixe_api"
 }
 
 resource "random_password" "database_password" {
