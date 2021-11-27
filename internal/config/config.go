@@ -64,7 +64,7 @@ type (
 		Observability observability.Config      `json:"observability" mapstructure:"observability" toml:"observability,omitempty"`
 		Routing       routing.Config            `json:"routing" mapstructure:"routing" toml:"routing,omitempty"`
 		Database      dbconfig.Config           `json:"database" mapstructure:"database" toml:"database,omitempty"`
-		Logging       logging.Config            `json:"logging" mapstructure:"logging" toml:"logging,omitempty"`
+		Logging       logging.Config            `json:"logging,omitempty" mapstructure:"logging" toml:"logging,omitempty"`
 		Meta          MetaSettings              `json:"meta" mapstructure:"meta" toml:"meta,omitempty"`
 		Services      ServicesConfigurations    `json:"services" mapstructure:"services" toml:"services,omitempty"`
 	}

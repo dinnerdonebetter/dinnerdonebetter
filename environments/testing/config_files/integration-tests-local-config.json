@@ -1,9 +1,7 @@
 {
 	"server": {
-		"httpsCertificate": "",
-		"httpsCertificateKey": "",
-		"startup_deadline": 60000000000,
-		"http_port": 8888,
+		"startupDeadline": 60000000000,
+		"httpPort": 8888,
 		"debug": false
 	},
 	"events": {
@@ -11,33 +9,26 @@
 		"redis": {
 			"message_queue_address": "localhost:6379"
 		},
-		"sqs": {
-			"message_queue_address": ""
-		}
+		"sqs": {}
 	},
 	"search": {
 		"provider": "elasticsearch",
 		"address": "http://localhost:9200"
 	},
 	"email": {
-		"Provider": "",
-		"APIToken": ""
+		"provider": "",
+		"apiToken": ""
 	},
 	"customerData": {
-		"Provider": "",
-		"APIToken": ""
+		"provider": "",
+		"apiToken": ""
 	},
 	"encoding": {
-		"content_type": "application/json"
+		"contentType": "application/json"
 	},
 	"uploads": {
-		"storage_config": {
-			"filesystem": null,
-			"azure": null,
-			"gcs": null,
-			"s3": null,
-			"bucket_name": "avatars",
-			"upload_filename_key": "",
+		"storageConfig": {
+			"bucketName": "avatars",
 			"provider": "memory"
 		},
 		"debug": false
@@ -49,220 +40,122 @@
 				"service_name": "prixfixe_service"
 			},
 			"provider": "jaeger",
-			"span_collection_probability": 1
+			"spanCollectionProbability": 1
 		},
 		"metrics": {
-			"provider": "",
-			"route_token": "",
-			"runtime_metrics_collection_interval": 1000000000
+			"runtimeMetricsCollectionInterval": 1000000000
 		}
 	},
-	"routing": {
-		"provider": "",
-		"allowed_origins": null,
-		"allowed_heade": null
-	},
+	"routing": {},
 	"database": {
 		"connectionDetails": "postgres://dbuser:hunter2@localhost:5432/prixfixe?sslmode=disable",
 		"debug": false,
 		"runMigrations": true,
 		"maxPingAttempts": 50
 	},
+	"logging": {},
 	"meta": {
-		"run_mode": "testing",
+		"runMode": "testing",
 		"debug": false
 	},
 	"services": {
 		"validInstruments": {
-			"logging": {
-				"name": "valid_instruments",
-				"level": 0,
-				"provider": "zerolog"
-			},
-			"preWritesTopicName": "pre_writes",
-			"preUpdatesTopicName": "pre_updates",
-			"preArchivesTopicName": "pre_archives",
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives",
 			"searchIndexPath": "http://localhost:9200"
 		},
 		"validIngredients": {
-			"logging": {
-				"name": "valid_ingredients",
-				"level": 0,
-				"provider": "zerolog"
-			},
-			"preWritesTopicName": "pre_writes",
-			"preUpdatesTopicName": "pre_updates",
-			"preArchivesTopicName": "pre_archives",
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives",
 			"searchIndexPath": "http://localhost:9200"
 		},
 		"validPreparations": {
-			"logging": {
-				"name": "valid_preparations",
-				"level": 0,
-				"provider": "zerolog"
-			},
-			"preWritesTopicName": "pre_writes",
-			"preUpdatesTopicName": "pre_updates",
-			"preArchivesTopicName": "pre_archives",
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives",
 			"searchIndexPath": "http://localhost:9200"
 		},
 		"mealPlanOptionVotes": {
-			"logging": {
-				"name": "meal_plan_option_votes",
-				"level": 0,
-				"provider": "zerolog"
-			},
-			"preWritesTopicName": "pre_writes",
-			"preUpdatesTopicName": "pre_updates",
-			"preArchivesTopicName": "pre_archives"
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
 		},
 		"validIngredientPreparations": {
-			"logging": {
-				"name": "valid_ingredient_preparations",
-				"level": 0,
-				"provider": "zerolog"
-			},
-			"preWritesTopicName": "pre_writes",
-			"preUpdatesTopicName": "pre_updates",
-			"preArchivesTopicName": "pre_archives"
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
 		},
 		"meals": {
-			"logging": {
-				"name": "recipes",
-				"level": 0,
-				"provider": "zerolog"
-			},
-			"preWritesTopicName": "pre_writes",
-			"preUpdatesTopicName": "pre_updates",
-			"preArchivesTopicName": "pre_archives"
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
 		},
 		"recipes": {
-			"logging": {
-				"name": "recipes",
-				"level": 0,
-				"provider": "zerolog"
-			},
-			"preWritesTopicName": "pre_writes",
-			"preUpdatesTopicName": "pre_updates",
-			"preArchivesTopicName": "pre_archives"
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
 		},
 		"recipeSteps": {
-			"logging": {
-				"name": "recipe_steps",
-				"level": 0,
-				"provider": "zerolog"
-			},
-			"preWritesTopicName": "pre_writes",
-			"preUpdatesTopicName": "pre_updates",
-			"preArchivesTopicName": "pre_archives"
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
 		},
 		"recipeStepInstruments": {
-			"logging": {
-				"name": "recipe_step_instruments",
-				"level": 0,
-				"provider": "zerolog"
-			},
-			"preWritesTopicName": "pre_writes",
-			"preUpdatesTopicName": "pre_updates",
-			"preArchivesTopicName": "pre_archives"
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
 		},
 		"recipeStepIngredients": {
-			"logging": {
-				"name": "recipe_step_ingredients",
-				"level": 0,
-				"provider": "zerolog"
-			},
-			"preWritesTopicName": "pre_writes",
-			"preUpdatesTopicName": "pre_updates",
-			"preArchivesTopicName": "pre_archives"
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
 		},
 		"mealPlans": {
-			"logging": {
-				"name": "meal_plans",
-				"level": 0,
-				"provider": "zerolog"
-			},
-			"preWritesTopicName": "pre_writes",
-			"preUpdatesTopicName": "pre_updates",
-			"preArchivesTopicName": "pre_archives"
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
 		},
 		"mealPlanOptions": {
-			"logging": {
-				"name": "meal_plan_options",
-				"level": 0,
-				"provider": "zerolog"
-			},
-			"preWritesTopicName": "pre_writes",
-			"preUpdatesTopicName": "pre_updates",
-			"preArchivesTopicName": "pre_archives"
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
 		},
 		"recipeStepProducts": {
-			"logging": {
-				"name": "recipe_step_products",
-				"level": 0,
-				"provider": "zerolog"
-			},
-			"preWritesTopicName": "pre_writes",
-			"preUpdatesTopicName": "pre_updates",
-			"preArchivesTopicName": "pre_archives"
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
 		},
 		"households": {
-			"logging": {
-				"name": "",
-				"level": null,
-				"provider": ""
-			},
-			"pre_writes_topic_name": "pre_writes"
+			"writesTopicName": "pre_writes"
 		},
 		"householdInvitations": {
-			"logging": {
-				"name": "",
-				"level": null,
-				"provider": ""
-			},
-			"pre_writes_topic_name": "pre_writes",
+			"writesTopicName": "pre_writes",
 			"debug": false
 		},
-		"websockets": {
-			"logging": {
-				"name": "webhook",
-				"level": 0,
-				"provider": "zerolog"
-			}
-		},
+		"websockets": {},
 		"webhooks": {
-			"logging": {
-				"name": "",
-				"level": null,
-				"provider": ""
-			},
-			"pre_writes_topic_name": "pre_writes",
-			"pre_archives_topic_name": "pre_archives",
+			"writesTopicName": "pre_writes",
+			"archivesTopicName": "pre_archives",
 			"debug": false
 		},
 		"auth": {
-			"logging": {
-				"name": "",
-				"level": null,
-				"provider": ""
-			},
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"local_mode_key": "nLV1ZFWKnYxQlGwW5feVh9+kr4HgZ0IoWzdknDukFc0=",
+				"localModeKey": "NE569AEU3PDlIb/g3V93EQiBbYHVdUhOLwD2urESPdc=",
 				"lifetime": 60000000000
 			},
 			"cookies": {
 				"name": "prixfixecookie",
 				"domain": ".prixfixe.local",
-				"hash_key": "HEREISA32CHARSECRETWHICHISMADEUP",
-				"signing_key": "DIFFERENT32CHARSECRETTHATIMADEUP",
-				"lifetime": 86400000000000,
-				"secure_only": false
+				"hashKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+				"blockKey": "DIFFERENT32CHARSECRETTHATIMADEUP",
+				"lifetime": 86400000000000
 			},
-			"debug": false,
-			"enable_user_signup": true,
-			"minimum_username_length": 4,
-			"minimum_password_length": 8
+			"enableUserSignup": true,
+			"minimumUsernameLength": 4,
+			"minimumPasswordLength": 8
 		}
 	}
 }

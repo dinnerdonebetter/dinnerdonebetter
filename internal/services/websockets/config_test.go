@@ -5,8 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-
-	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
 
 func TestConfig_ValidateWithContext(T *testing.T) {
@@ -16,9 +14,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		cfg := &Config{
-			Logging: logging.Config{},
-		}
+		cfg := &Config{}
 
 		require.NoError(t, cfg.ValidateWithContext(ctx))
 	})

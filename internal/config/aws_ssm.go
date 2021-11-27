@@ -113,5 +113,5 @@ func GetConfigFromParameterStore() (*InstanceConfig, error) {
 		return nil, err
 	}
 
-	return nil, nil
+	return cfg, nil
 }

@@ -30,7 +30,7 @@ type (
 
 	// Config configures a Redis-backed consumer.
 	Config struct {
-		QueueAddress consumers.MessageQueueAddress `json:"message_queue_address" mapstructure:"message_queue_address" toml:"message_queue_address,omitempty"`
+		QueueAddress consumers.MessageQueueAddress `json:"messageQueueAddress" mapstructure:"message_queue_address" toml:"message_queue_address,omitempty"`
 	}
 )
 

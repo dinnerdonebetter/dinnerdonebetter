@@ -39,11 +39,9 @@ type (
 		_ struct{}
 
 		// Provider indicates where our metrics should go.
-		Provider string `json:"provider" mapstructure:"provider" toml:"provider,omitempty"`
-		// RouteToken indicates how the metrics route should be authenticated.
-		RouteToken string `json:"route_token" mapstructure:"route_token" toml:"route_token,omitempty"`
+		Provider string `json:"provider,omitempty" mapstructure:"provider" toml:"provider,omitempty"`
 		// RuntimeMetricsCollectionInterval  is the interval we collect runtime statistics at.
-		RuntimeMetricsCollectionInterval time.Duration `json:"runtime_metrics_collection_interval" mapstructure:"runtime_metrics_collection_interval" toml:"runtime_metrics_collection_interval,omitempty"`
+		RuntimeMetricsCollectionInterval time.Duration `json:"runtimeMetricsCollectionInterval,omitempty" mapstructure:"runtime_metrics_collection_interval" toml:"runtime_metrics_collection_interval,omitempty"`
 	}
 )
 

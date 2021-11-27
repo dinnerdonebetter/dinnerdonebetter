@@ -30,7 +30,7 @@ func buildTestService(t *testing.T) *service {
 
 	s := ProvideService(
 		logger,
-		&authservice.Config{Cookies: authservice.CookieConfig{SigningKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!"}},
+		&authservice.Config{Cookies: authservice.CookieConfig{BlockKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!"}},
 		&mockauthn.Authenticator{},
 		&mocktypes.AdminUserDataManager{},
 		scs.New(),
@@ -62,7 +62,7 @@ func TestProvideAdminService(T *testing.T) {
 
 		s := ProvideService(
 			logger,
-			&authservice.Config{Cookies: authservice.CookieConfig{SigningKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!"}},
+			&authservice.Config{Cookies: authservice.CookieConfig{BlockKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!"}},
 			&mockauthn.Authenticator{},
 			&mocktypes.AdminUserDataManager{},
 			scs.New(),

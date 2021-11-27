@@ -74,13 +74,13 @@ func ProvideService(
 		authenticator:              authenticator,
 		sessionManager:             sessionManager,
 		sessionContextDataFetcher:  FetchContextFromRequest,
-		cookieManager:              securecookie.New(hashKey, []byte(cfg.Cookies.SigningKey)),
+		cookieManager:              securecookie.New(hashKey, []byte(cfg.Cookies.BlockKey)),
 		tracer:                     tracing.NewTracer(serviceName),
 		customerDataCollector:      customerDataCollector,
 	}
 
 	if _, err := svc.cookieManager.Encode(cfg.Cookies.Name, "blah"); err != nil {
-		logger.WithValue("cookie_signing_key_length", len(cfg.Cookies.SigningKey)).Error(err, "building test cookie")
+		logger.WithValue("cookie_signing_key_length", len(cfg.Cookies.BlockKey)).Error(err, "building test cookie")
 		return nil, fmt.Errorf("building test cookie: %w", err)
 	}
 

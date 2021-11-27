@@ -12,7 +12,7 @@ import (
 type Config struct {
 	_ struct{}
 
-	Logging logging.Config `json:"logging" mapstructure:"logging" toml:"logging,omitempty"`
+	Logging *logging.Config `json:"logging,omitempty" mapstructure:"logging" toml:"logging,omitempty"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

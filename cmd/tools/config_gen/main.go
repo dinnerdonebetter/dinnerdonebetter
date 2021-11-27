@@ -21,7 +21,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/encoding"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/search"
@@ -71,6 +70,8 @@ const (
 
 	contentTypeJSON    = "application/json"
 	workerQueueAddress = "worker_queue:6379"
+
+	pasteoIssuer = "prixfixe_service"
 )
 
 var (
@@ -92,7 +93,7 @@ var (
 		Name:       defaultCookieName,
 		Domain:     defaultCookieDomain,
 		HashKey:    debugCookieSecret,
-		SigningKey: debugCookieSigningKey,
+		BlockKey:   debugCookieSigningKey,
 		Lifetime:   authservice.DefaultCookieLifetime,
 		SecureOnly: true,
 	}
@@ -165,14 +166,6 @@ func generatePASETOKey() []byte {
 	return b
 }
 
-func loggingConfigWithName(name string) logging.Config {
-	return logging.Config{
-		Name:     name,
-		Level:    logging.InfoLevel,
-		Provider: logging.ProviderZerolog,
-	}
-}
-
 func devEnvironmentConfig(ctx context.Context, filePath string) error {
 	cookieConfig := authservice.CookieConfig{
 		Name:       defaultCookieName,
@@ -233,16 +226,9 @@ func devEnvironmentConfig(ctx context.Context, filePath string) error {
 			Provider: search.ElasticsearchProvider,
 		},
 		Services: config.ServicesConfigurations{
-			Households: householdsservice.Config{
-				Logging: loggingConfigWithName("households"),
-			},
-			HouseholdInvitations: householdinvitationsservice.Config{
-				Logging: loggingConfigWithName("household_invitations"),
-			},
 			Auth: authservice.Config{
-				Logging: loggingConfigWithName("authentication"),
 				PASETO: authservice.PASETOConfig{
-					Issuer:   "prixfixe_service",
+					Issuer:   pasteoIssuer,
 					Lifetime: defaultPASETOLifetime,
 				},
 				Cookies:               cookieConfig,
@@ -250,51 +236,6 @@ func devEnvironmentConfig(ctx context.Context, filePath string) error {
 				EnableUserSignup:      true,
 				MinimumUsernameLength: 4,
 				MinimumPasswordLength: 8,
-			},
-			Webhooks: webhooksservice.Config{
-				Logging: loggingConfigWithName("webhooks"),
-			},
-			Websockets: websocketsservice.Config{
-				Logging: loggingConfigWithName("websocket"),
-			},
-			ValidInstruments: validinstrumentsservice.Config{
-				Logging: loggingConfigWithName("valid_instruments"),
-			},
-			ValidIngredients: validingredientsservice.Config{
-				Logging: loggingConfigWithName("valid_ingredients"),
-			},
-			ValidPreparations: validpreparationsservice.Config{
-				Logging: loggingConfigWithName("valid_preparations"),
-			},
-			ValidIngredientPreparations: validingredientpreparationsservice.Config{
-				Logging: loggingConfigWithName("valid_ingredient_preparations"),
-			},
-			Meals: mealsservice.Config{
-				Logging: loggingConfigWithName("meals"),
-			},
-			Recipes: recipesservice.Config{
-				Logging: loggingConfigWithName("recipes"),
-			},
-			RecipeSteps: recipestepsservice.Config{
-				Logging: loggingConfigWithName("recipe_steps"),
-			},
-			RecipeStepInstruments: recipestepinstrumentsservice.Config{
-				Logging: loggingConfigWithName("recipe_step_instruments"),
-			},
-			RecipeStepIngredients: recipestepingredientsservice.Config{
-				Logging: loggingConfigWithName("recipe_step_ingredients"),
-			},
-			RecipeStepProducts: recipestepproductsservice.Config{
-				Logging: loggingConfigWithName("recipe_step_products"),
-			},
-			MealPlans: mealplansservice.Config{
-				Logging: loggingConfigWithName("meal_plans"),
-			},
-			MealPlanOptions: mealplanoptionsservice.Config{
-				Logging: loggingConfigWithName("meal_plan_options"),
-			},
-			MealPlanOptionVotes: mealplanoptionvotesservice.Config{
-				Logging: loggingConfigWithName("meal_plan_option_votes"),
 			},
 		},
 	}
@@ -329,7 +270,6 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 		Observability: observability.Config{
 			Metrics: metrics.Config{
 				Provider:                         "prometheus",
-				RouteToken:                       "",
 				RuntimeMetricsCollectionInterval: time.Second,
 			},
 			Tracing: localTracingConfig,
@@ -361,7 +301,7 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 			},
 			Auth: authservice.Config{
 				PASETO: authservice.PASETOConfig{
-					Issuer:       "prixfixe_service",
+					Issuer:       pasteoIssuer,
 					Lifetime:     defaultPASETOLifetime,
 					LocalModeKey: examplePASETOKey,
 				},
@@ -375,145 +315,74 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 				PreWritesTopicName:   preWritesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
 			},
-			Websockets: websocketsservice.Config{
-				Logging: logging.Config{
-					Name:     "webhook",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
-			},
+			Websockets: websocketsservice.Config{},
 			ValidInstruments: validinstrumentsservice.Config{
 				SearchIndexPath:      localElasticsearchLocation,
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "valid_instruments",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			ValidIngredients: validingredientsservice.Config{
 				SearchIndexPath:      localElasticsearchLocation,
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "valid_ingredients",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			ValidPreparations: validpreparationsservice.Config{
 				SearchIndexPath:      localElasticsearchLocation,
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "valid_preparations",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			ValidIngredientPreparations: validingredientpreparationsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "valid_ingredient_preparations",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			Meals: mealsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "recipes",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			Recipes: recipesservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "recipes",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			RecipeSteps: recipestepsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "recipe_steps",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			RecipeStepInstruments: recipestepinstrumentsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "recipe_step_instruments",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			RecipeStepIngredients: recipestepingredientsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "recipe_step_ingredients",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			RecipeStepProducts: recipestepproductsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "recipe_step_products",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			MealPlans: mealplansservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "meal_plans",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			MealPlanOptions: mealplanoptionsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "meal_plan_options",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			MealPlanOptionVotes: mealplanoptionvotesservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "meal_plan_option_votes",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 		},
 	}
@@ -552,7 +421,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 		Observability: observability.Config{
 			Metrics: metrics.Config{
 				Provider:                         "",
-				RouteToken:                       "",
 				RuntimeMetricsCollectionInterval: time.Second,
 			},
 			Tracing: localTracingConfig,
@@ -580,7 +448,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			},
 			Auth: authservice.Config{
 				PASETO: authservice.PASETOConfig{
-					Issuer:       "prixfixe_service",
+					Issuer:       pasteoIssuer,
 					Lifetime:     defaultPASETOLifetime,
 					LocalModeKey: examplePASETOKey,
 				},
@@ -588,7 +456,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 					Name:       defaultCookieName,
 					Domain:     defaultCookieDomain,
 					HashKey:    debugCookieSecret,
-					SigningKey: debugCookieSigningKey,
+					BlockKey:   debugCookieSigningKey,
 					Lifetime:   authservice.DefaultCookieLifetime,
 					SecureOnly: false,
 				},
@@ -601,145 +469,74 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				PreWritesTopicName:   preWritesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
 			},
-			Websockets: websocketsservice.Config{
-				Logging: logging.Config{
-					Name:     "webhook",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
-			},
+			Websockets: websocketsservice.Config{},
 			ValidInstruments: validinstrumentsservice.Config{
 				SearchIndexPath:      localElasticsearchLocation,
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "valid_instruments",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			ValidIngredients: validingredientsservice.Config{
 				SearchIndexPath:      localElasticsearchLocation,
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "valid_ingredients",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			ValidPreparations: validpreparationsservice.Config{
 				SearchIndexPath:      localElasticsearchLocation,
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "valid_preparations",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			ValidIngredientPreparations: validingredientpreparationsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "valid_ingredient_preparations",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			Meals: mealsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "recipes",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			Recipes: recipesservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "recipes",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			RecipeSteps: recipestepsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "recipe_steps",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			RecipeStepInstruments: recipestepinstrumentsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "recipe_step_instruments",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			RecipeStepIngredients: recipestepingredientsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "recipe_step_ingredients",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			RecipeStepProducts: recipestepproductsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "recipe_step_products",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			MealPlans: mealplansservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "meal_plans",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			MealPlanOptions: mealplanoptionsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "meal_plan_options",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 			MealPlanOptionVotes: mealplanoptionvotesservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
-				Logging: logging.Config{
-					Name:     "meal_plan_option_votes",
-					Level:    logging.InfoLevel,
-					Provider: logging.ProviderZerolog,
-				},
 			},
 		},
 	}

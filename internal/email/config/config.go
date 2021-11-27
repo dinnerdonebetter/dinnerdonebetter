@@ -20,8 +20,8 @@ const (
 type (
 	// Config is the configuration structure.
 	Config struct {
-		Provider string
-		APIToken string
+		Provider string `json:"provider" mapstructure:"provider" toml:"provider,omitempty"`
+		APIToken string `json:"apiToken" mapstructure:"api_token" toml:"api_token,omitempty"`
 	}
 )
 

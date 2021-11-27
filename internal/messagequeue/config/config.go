@@ -28,21 +28,21 @@ type (
 
 	// RedisConfig configures a Redis-backed consumer.
 	RedisConfig struct {
-		QueueAddress MessageQueueAddress `json:"message_queue_address" mapstructure:"message_queue_address" toml:"message_queue_address,omitempty"`
+		QueueAddress MessageQueueAddress `json:"message_queue_address,omitempty" mapstructure:"message_queue_address" toml:"message_queue_address,omitempty"`
 	}
 
 	// SQSConfig configures a SQS-backed consumer.
 	SQSConfig struct {
-		QueueAddress MessageQueueAddress `json:"message_queue_address" mapstructure:"message_queue_address" toml:"message_queue_address,omitempty"`
+		QueueAddress MessageQueueAddress `json:"message_queue_address,omitempty" mapstructure:"message_queue_address" toml:"message_queue_address,omitempty"`
 	}
 
 	// Config is used to indicate how the messaging provider should be configured.
 	Config struct {
 		_ struct{}
 
-		Provider    Provider    `json:"provider" mapstructure:"provider" toml:"provider,omitempty"`
-		RedisConfig RedisConfig `json:"redis" mapstructure:"redis" toml:"redis,omitempty"`
-		SQSConfig   SQSConfig   `json:"sqs" mapstructure:"sqs" toml:"sqs,omitempty"`
+		Provider    Provider    `json:"provider,omitempty" mapstructure:"provider" toml:"provider,omitempty"`
+		RedisConfig RedisConfig `json:"redis,omitempty" mapstructure:"redis" toml:"redis,omitempty"`
+		SQSConfig   SQSConfig   `json:"sqs,omitempty" mapstructure:"sqs" toml:"sqs,omitempty"`
 	}
 )
 

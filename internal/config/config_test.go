@@ -43,7 +43,6 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 			Observability: observability.Config{
 				Metrics: metrics.Config{
 					Provider:                         "",
-					RouteToken:                       "",
 					RuntimeMetricsCollectionInterval: 2 * time.Second,
 				},
 			},

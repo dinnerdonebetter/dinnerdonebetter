@@ -25,8 +25,8 @@ func buildTestService(t *testing.T) *service {
 		logger,
 		&Config{
 			Cookies: CookieConfig{
-				Name:       DefaultCookieName,
-				SigningKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!",
+				Name:     DefaultCookieName,
+				BlockKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!",
 			},
 			PASETO: PASETOConfig{
 				Issuer:       "test",
@@ -59,8 +59,8 @@ func TestProvideService(T *testing.T) {
 			logger,
 			&Config{
 				Cookies: CookieConfig{
-					Name:       DefaultCookieName,
-					SigningKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!",
+					Name:     DefaultCookieName,
+					BlockKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!",
 				},
 			},
 			&mockauthn.Authenticator{},
@@ -85,8 +85,8 @@ func TestProvideService(T *testing.T) {
 			logger,
 			&Config{
 				Cookies: CookieConfig{
-					Name:       DefaultCookieName,
-					SigningKey: "BLAHBLAHBLAH",
+					Name:     DefaultCookieName,
+					BlockKey: "BLAHBLAHBLAH",
 				},
 			},
 			&mockauthn.Authenticator{},

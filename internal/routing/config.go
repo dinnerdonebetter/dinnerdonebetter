@@ -15,9 +15,9 @@ const (
 type Config struct {
 	_ struct{}
 
-	Provider       string   `json:"provider" mapstructure:"provider" toml:"provider,omitempty"`
-	AllowedOrigins []string `json:"allowed_origins" mapstructure:"allowed_origins" toml:"allowed_origins,omitempty"`
-	AllowedHeaders []string `json:"allowed_heade" mapstructure:"allowed_headers" toml:"allowed_headers,omitempty"`
+	Provider       string   `json:"provider,omitempty" mapstructure:"provider" toml:"provider,omitempty"`
+	AllowedOrigins []string `json:"allowedOrigins,omitempty" mapstructure:"allowed_origins" toml:"allowed_origins,omitempty"`
+	AllowedHeaders []string `json:"allowedHeaders,omitempty" mapstructure:"allowed_headers" toml:"allowed_headers,omitempty"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)
