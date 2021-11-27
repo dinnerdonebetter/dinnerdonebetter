@@ -299,7 +299,7 @@ func devEnvironmentConfig(ctx context.Context, filePath string) error {
 		},
 	}
 
-	return saveConfig(ctx, filePath, cfg, true, false)
+	return saveConfig(ctx, filePath, cfg, false, false)
 }
 
 func localDevelopmentConfig(ctx context.Context, filePath string) error {

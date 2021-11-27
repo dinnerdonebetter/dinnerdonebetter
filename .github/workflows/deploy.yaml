@@ -139,7 +139,7 @@ jobs:
 
       - name: DEBUG
         working-directory: environments/dev/terraform
-        run: ls -lah . ../ ../config_files
+        run: pwd && ls -lah . ../ ../config_files
 
       - name: DEBUG 2
         working-directory: environments/dev/terraform

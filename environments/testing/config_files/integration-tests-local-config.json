@@ -241,9 +241,14 @@
 			"debug": false
 		},
 		"auth": {
+			"logging": {
+				"name": "",
+				"level": null,
+				"provider": ""
+			},
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"local_mode_key": "5kNwz4OpctXYM7CLg06Hq5reiqhKPDihATQuV25PjJw=",
+				"local_mode_key": "nLV1ZFWKnYxQlGwW5feVh9+kr4HgZ0IoWzdknDukFc0=",
 				"lifetime": 60000000000
 			},
 			"cookies": {
