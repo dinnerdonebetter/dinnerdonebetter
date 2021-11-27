@@ -11,7 +11,8 @@ resource "aws_iam_role" "worker_lambda_role" {
   assume_role_policy = <<EOF
 {
 	"Version": "2012-10-17",
-	"Statement": [{
+	"Statement": [
+        {
 			"Action": "sts:AssumeRole",
 			"Principal": {
 				"Service": "lambda.amazonaws.com"
@@ -23,7 +24,7 @@ resource "aws_iam_role" "worker_lambda_role" {
 			"Sid": "",
 			"Effect": "Allow",
 			"Action": "lambda:InvokeFunction",
-			"Resource": "arn:aws:lambda:us-east-1:966107642521:function:*"
+			"Resource": "*"
 		},
 		{
 			"Sid": "",
