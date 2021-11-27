@@ -104,6 +104,10 @@ jobs:
         working-directory: environments/dev/terraform
         run:  touch writer_lambda.zip updater_lambda.zip archiver_lambda.zip data_changes_lambda.zip chores_lambda.zip
 
+      - name: copy config file
+        working-directory: environments/dev
+        run: cp config_files/service-config.json terraform/service-config.json
+
         # download lambdas, if these aren't there, then `terraform validate` fails
 
 #      - name: Download writer lambda
