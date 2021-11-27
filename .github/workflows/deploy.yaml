@@ -138,6 +138,7 @@ jobs:
         run: terraform validate -no-color
 
       - name: DEBUG
+        working-directory: environments/dev/terraform
         run: ls -lah . ../ ../config_files
 
       - name: Terraform Plan
