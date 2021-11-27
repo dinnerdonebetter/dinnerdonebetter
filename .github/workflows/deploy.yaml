@@ -146,7 +146,7 @@ jobs:
         id: plan
         if: github.event_name == 'pull_request'
         run: terraform plan -no-color
-#
+
 #      - name: Terraform Apply
 #        run: terraform apply
 #        working-directory: environments/dev/terraform
