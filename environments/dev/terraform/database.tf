@@ -9,16 +9,10 @@ resource "random_password" "database_password" {
 }
 
 resource "aws_rds_cluster" "api_database" {
-  cluster_identifier = "dev-db"
-  engine             = "aurora-postgresql"
-  database_name      = "prixfixe"
-  enabled_cloudwatch_logs_exports = [
-    "audit",
-    "error",
-    "general",
-    "slowquery",
-    "postgresql",
-  ]
+  cluster_identifier              = "dev-db"
+  engine                          = "aurora-postgresql"
+  database_name                   = "prixfixe"
+  enabled_cloudwatch_logs_exports = ["postgresql"]
 
   engine_mode = "serverless"
   scaling_configuration {
