@@ -5,7 +5,7 @@ locals {
 resource "random_password" "database_password" {
   length           = 64
   special          = true
-  override_special = "_@/"
+  override_special = "/@\" "
 }
 
 resource "aws_rds_cluster" "api_database" {
