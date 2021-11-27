@@ -49,6 +49,6 @@ provider "postgresql" {
   connect_timeout = 15
 }
 
-resource "postgresql_database" "prixfixe" {
-  name = "prixfixe"
-}
+# resource "postgresql_database" "prixfixe" {
+#   name = "prixfixe"
+# }
