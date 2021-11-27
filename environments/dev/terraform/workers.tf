@@ -41,7 +41,7 @@ resource "aws_iam_role" "worker_lambda_role" {
 			"Action": [
 				"sqs:ReceiveMessage",
 				"sqs:DeleteMessage",
-				"sqs:GetQueueAttributes",
+				"sqs:GetQueueAttributes"
 			],
 			"Resource": "*"
 		}
