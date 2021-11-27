@@ -3,8 +3,8 @@ locals {
 }
 
 resource "random_password" "database_password" {
-  length  = 64
-  special = true  
+  length           = 64
+  special          = true
   override_special = "_@/"
 }
 
