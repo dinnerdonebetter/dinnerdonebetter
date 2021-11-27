@@ -10,17 +10,42 @@ resource "aws_iam_role" "worker_lambda_role" {
 
   assume_role_policy = <<EOF
 {
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "lambda.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
-    }
-  ]
+	"Version": "2012-10-17",
+	"Statement": [{
+			"Action": "sts:AssumeRole",
+			"Principal": {
+				"Service": "lambda.amazonaws.com"
+			},
+			"Effect": "Allow",
+			"Sid": ""
+		},
+		{
+			"Sid": "",
+			"Effect": "Allow",
+			"Action": "lambda:InvokeFunction",
+			"Resource": "arn:aws:lambda:us-east-1:966107642521:function:*"
+		},
+		{
+			"Sid": "",
+			"Effect": "Allow",
+			"Action": [
+				"logs:PutLogEvents",
+				"logs:CreateLogStream",
+				"logs:CreateLogGroup"
+			],
+			"Resource": "*"
+		},
+		{
+			"Sid": "",
+			"Effect": "Allow",
+			"Action": [
+				"sqs:ReceiveMessage",
+				"sqs:DeleteMessage",
+				"sqs:GetQueueAttributes",
+			],
+			"Resource": "*"
+		}
+	]
 }
 EOF
 }
