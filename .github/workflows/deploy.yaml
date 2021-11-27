@@ -132,10 +132,22 @@ jobs:
           name: chores
           path: environments/dev/terraform
 
+      - name: copy config file
+        working-directory: environments/dev
+        run: cp config_files/service-config.json terraform/service-config.json
+
       - name: Terraform Validate
         working-directory: environments/dev/terraform
         id: validate
         run: terraform validate -no-color
+
+      - name: DEBUG
+        working-directory: environments/dev/terraform
+        run: pwd && ls -lah . ../ ../config_files
+
+      - name: DEBUG 2
+        working-directory: environments/dev/terraform
+        run: realpath ../config_files/service-config.json
 
       - name: Terraform Plan
         working-directory: environments/dev/terraform
