@@ -6,6 +6,11 @@ resource "aws_elasticsearch_domain" "search" {
     instance_type = "t2.micro.elasticsearch"
   }
 
+  ebs_options {
+    ebs_enabled = true
+    volume_size = 10
+  }
+
   tags = merge(var.default_tags, {})
 }
 

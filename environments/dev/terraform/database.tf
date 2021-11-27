@@ -10,7 +10,6 @@ resource "random_password" "database_password" {
 resource "aws_rds_cluster" "api_database" {
   cluster_identifier      = "dev-db"
   engine                  = "aurora-postgresql"
-  availability_zones      = ["us-east-1"]
   database_name           = "prixfixe"
   engine_mode             = "serverless"
   master_username         = local.database_username
