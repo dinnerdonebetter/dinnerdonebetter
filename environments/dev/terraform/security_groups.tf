@@ -1,3 +1,13 @@
+resource "aws_vpc" "main" {
+  cidr_block       = "10.0.0.0/16"
+  instance_tenancy = "default"
+
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+
+  tags = merge(var.default_tags, {})
+}
+
 resource "aws_security_group" "allow_postgres" {
   name        = "allow_postgres"
   description = "Allow Postgres inbound traffic"
