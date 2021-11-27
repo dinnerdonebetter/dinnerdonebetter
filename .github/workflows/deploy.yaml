@@ -1,81 +1,81 @@
 on: [pull_request]
 name: Deploy
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: '1.17.3'
-
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Build writer lambda
-        run: go build -o writer github.com/prixfixeco/api_server/cmd/workers/lambdas/writes
-
-      - name: Zip writer lambda
-        run: zip writer_lambda.zip writer
-
-      - name: Upload writer lambda
-        uses: actions/upload-artifact@v2
-        with:
-          name: writer
-          path: writer_lambda.zip
-          retention-days: 1
-
-      - name: Build updater lambda
-        run: go build -o updater github.com/prixfixeco/api_server/cmd/workers/lambdas/updates
-
-      - name: Zip updater lambda
-        run: zip updater_lambda.zip updater
-
-      - name: Upload updater lambda
-        uses: actions/upload-artifact@v2
-        with:
-          name: updater
-          path: updater_lambda.zip
-          retention-days: 1
-
-      - name: Build archiver lambda
-        run: go build -o archiver github.com/prixfixeco/api_server/cmd/workers/lambdas/archives
-
-      - name: Zip archiver lambda
-        run: zip archiver_lambda.zip archiver
-
-      - name: Upload archiver lambda
-        uses: actions/upload-artifact@v2
-        with:
-          name: archiver
-          path: archiver_lambda.zip
-          retention-days: 1
-
-      - name: Build data changes lambda
-        run: go build -o data_changes github.com/prixfixeco/api_server/cmd/workers/lambdas/data_changes
-
-      - name: Zip changes lambda
-        run: zip data_changes_lambda.zip data_changes
-
-      - name: Upload data changes lambda
-        uses: actions/upload-artifact@v2
-        with:
-          name: data_changes
-          path: data_changes_lambda.zip
-          retention-days: 1
-
-      - name: Build chores lambda
-        run: go build -o chores github.com/prixfixeco/api_server/cmd/workers/lambdas/chores
-
-      - name: Zip chores lambda
-        run: zip chores_lambda.zip chores
-
-      - name: Upload chores lambda
-        uses: actions/upload-artifact@v2
-        with:
-          name: chores
-          path: chores_lambda.zip
-          retention-days: 1
+#  build:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Install Go
+#        uses: actions/setup-go@v2
+#        with:
+#          go-version: '1.17.3'
+#
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#      - name: Build writer lambda
+#        run: go build -o writer github.com/prixfixeco/api_server/cmd/workers/lambdas/writes
+#
+#      - name: Zip writer lambda
+#        run: zip writer_lambda.zip writer
+#
+#      - name: Upload writer lambda
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: writer
+#          path: writer_lambda.zip
+#          retention-days: 1
+#
+#      - name: Build updater lambda
+#        run: go build -o updater github.com/prixfixeco/api_server/cmd/workers/lambdas/updates
+#
+#      - name: Zip updater lambda
+#        run: zip updater_lambda.zip updater
+#
+#      - name: Upload updater lambda
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: updater
+#          path: updater_lambda.zip
+#          retention-days: 1
+#
+#      - name: Build archiver lambda
+#        run: go build -o archiver github.com/prixfixeco/api_server/cmd/workers/lambdas/archives
+#
+#      - name: Zip archiver lambda
+#        run: zip archiver_lambda.zip archiver
+#
+#      - name: Upload archiver lambda
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: archiver
+#          path: archiver_lambda.zip
+#          retention-days: 1
+#
+#      - name: Build data changes lambda
+#        run: go build -o data_changes github.com/prixfixeco/api_server/cmd/workers/lambdas/data_changes
+#
+#      - name: Zip changes lambda
+#        run: zip data_changes_lambda.zip data_changes
+#
+#      - name: Upload data changes lambda
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: data_changes
+#          path: data_changes_lambda.zip
+#          retention-days: 1
+#
+#      - name: Build chores lambda
+#        run: go build -o chores github.com/prixfixeco/api_server/cmd/workers/lambdas/chores
+#
+#      - name: Zip chores lambda
+#        run: zip chores_lambda.zip chores
+#
+#      - name: Upload chores lambda
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: chores
+#          path: chores_lambda.zip
+#          retention-days: 1
 
   deploy:
     needs: build
@@ -100,37 +100,41 @@ jobs:
         id: fmt
         run: terraform fmt -check
 
+      - name: create dummy files
+        working-directory: environments/dev/terraform
+        run:  touch writer_lambda.zip updater_lambda.zip archiver_lambda.zip data_changes_lambda.zip chores_lambda.zip
+
         # download lambdas, if these aren't there, then `terraform validate` fails
 
-      - name: Download writer lambda
-        uses: actions/download-artifact@v2
-        with:
-          name: writer
-          path: environments/dev/terraform
-
-      - name: Download updater lambda
-        uses: actions/download-artifact@v2
-        with:
-          name: updater
-          path: environments/dev/terraform
-
-      - name: Download archiver lambda
-        uses: actions/download-artifact@v2
-        with:
-          name: archiver
-          path: environments/dev/terraform
-
-      - name: Download data changes lambda
-        uses: actions/download-artifact@v2
-        with:
-          name: data_changes
-          path: environments/dev/terraform
-
-      - name: Download chores lambda
-        uses: actions/download-artifact@v2
-        with:
-          name: chores
-          path: environments/dev/terraform
+#      - name: Download writer lambda
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: writer
+#          path: environments/dev/terraform
+#
+#      - name: Download updater lambda
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: updater
+#          path: environments/dev/terraform
+#
+#      - name: Download archiver lambda
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: archiver
+#          path: environments/dev/terraform
+#
+#      - name: Download data changes lambda
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: data_changes
+#          path: environments/dev/terraform
+#
+#      - name: Download chores lambda
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: chores
+#          path: environments/dev/terraform
 
       - name: Terraform Validate
         working-directory: environments/dev/terraform
