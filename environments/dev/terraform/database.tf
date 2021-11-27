@@ -29,6 +29,9 @@ resource "aws_rds_cluster" "api_database" {
   storage_encrypted       = true
   preferred_backup_window = "01:00-05:00"
 
+  enable_http_endpoint = true
+  vpc_security_group_ids = [ aws_security_group.allow_postgres.id ]
+
   tags = merge(var.default_tags, {})
 }
 
