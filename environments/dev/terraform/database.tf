@@ -8,6 +8,13 @@ resource "random_password" "database_password" {
   override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
+resource "aws_db_subnet_group" "default" {
+  name       = "main"
+  subnet_ids = [aws_subnet.main.id]
+
+  tags = merge(var.default_tags, {})
+}
+
 resource "aws_rds_cluster" "api_database" {
   cluster_identifier              = "dev-db"
   engine                          = "aurora-postgresql"
@@ -29,6 +36,8 @@ resource "aws_rds_cluster" "api_database" {
   storage_encrypted       = true
   preferred_backup_window = "01:00-05:00"
 
+  db_subnet_group_name = aws_db_subnet_group.default.name
+
   enable_http_endpoint = true
 
   tags = merge(var.default_tags, {})
@@ -41,16 +50,3 @@ resource "aws_ssm_parameter" "database_url" {
 
   tags = merge(var.default_tags, {})
 }
-
-provider "postgresql" {
-  host            = aws_rds_cluster.api_database.endpoint
-  port            = aws_rds_cluster.api_database.port
-  username        = local.database_username
-  password        = random_password.database_password.result
-  sslmode         = "require"
-  connect_timeout = 15
-}
-
-# resource "postgresql_database" "prixfixe" {
-#   name = "prixfixe"
-# }
