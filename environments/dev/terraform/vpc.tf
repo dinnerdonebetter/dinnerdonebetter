@@ -5,11 +5,11 @@ resource "aws_vpc" "main" {
 }
 
 variable "availability_zones" {
-    type = list(string)
-    default = {
-        "us-east-1a" = "10.0.1.0/26",
-        "us-east-1b" = "10.0.1.1/26",
-    }
+  type = list(string)
+  default = {
+    "us-east-1a" = "10.0.1.0/26",
+    "us-east-1b" = "10.0.1.1/26",
+  }
 }
 
 resource "aws_subnet" "public_subnets" {
