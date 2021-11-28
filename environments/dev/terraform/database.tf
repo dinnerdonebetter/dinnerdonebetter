@@ -18,10 +18,9 @@ resource "aws_db_subnet_group" "default" {
 }
 
 resource "aws_rds_cluster" "api_database" {
-  cluster_identifier              = "dev-db"
-  engine                          = "aurora-postgresql"
-  database_name                   = "prixfixe"
-  enabled_cloudwatch_logs_exports = ["postgresql"]
+  cluster_identifier = "dev-db"
+  engine             = "aurora-postgresql"
+  database_name      = "prixfixe"
 
   engine_mode = "serverless"
   scaling_configuration {
