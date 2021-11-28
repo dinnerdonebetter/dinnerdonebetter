@@ -10,7 +10,7 @@ resource "random_password" "database_password" {
 
 resource "aws_db_subnet_group" "default" {
   name       = "main"
-  subnet_ids = [aws_subnet.east1a.id, aws_subnet.east1b.id]
+  subnet_ids = [for x in aws_subnet.public_subnets : x.id]
 }
 
 resource "aws_rds_cluster" "api_database" {
@@ -34,6 +34,7 @@ resource "aws_rds_cluster" "api_database" {
   preferred_backup_window = "01:00-05:00"
 
   db_subnet_group_name = aws_db_subnet_group.default.name
+
   enable_http_endpoint = true
 }
 

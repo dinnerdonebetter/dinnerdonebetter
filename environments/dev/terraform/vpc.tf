@@ -13,7 +13,7 @@ variable "availability_zones" {
 }
 
 resource "aws_subnet" "public_subnets" {
-  for_each = toset(var.availability_zones)
+  for_each = var.availability_zones
 
   vpc_id            = aws_vpc.main.id
   cidr_block        = each.value
@@ -38,6 +38,8 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route_table_association" "PublicRTassociation" {
-  subnet_id      = aws_subnet.east1a.id
+  for_each = toset(aws_subnet.public_subnets)
+
+  subnet_id      = each.value.id
   route_table_id = aws_route_table.public.id
 }
