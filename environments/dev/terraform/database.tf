@@ -31,8 +31,8 @@ resource "aws_rds_cluster" "api_database" {
   # master_password              = random_password.database_password.result
   master_username              = "prixfixe_api"
   master_password              = "hunter2"
-  preferred_backup_window      = "01:00-05:00"
-  preferred_maintenance_window = "sat:01:00-sat:05:00"
+  preferred_backup_window      = "05:00-08:00"
+  preferred_maintenance_window = "sat:01:00-sat:04:00"
   apply_immediately            = true
   enable_http_endpoint         = true
   storage_encrypted            = true
