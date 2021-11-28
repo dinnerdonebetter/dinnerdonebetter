@@ -38,8 +38,8 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route_table_association" "public_route_table" {
-  for_each = var.availability_zones
+  for_each = aws_subnet.public_subnets
 
-  subnet_id      = each.value
+  subnet_id      = each.id
   route_table_id = aws_route_table.public.id
 }
