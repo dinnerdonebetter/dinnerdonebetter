@@ -1,5 +1,5 @@
-resource "aws_ecr_repository" "dev_api_server" {
-  name                 = "dev_api_server"
+resource "aws_ecr_repository" "dev-api-server" {
+  name                 = "dev-api-server"
   image_tag_mutability = "IMMUTABLE"
 
   image_scanning_configuration {
@@ -9,14 +9,14 @@ resource "aws_ecr_repository" "dev_api_server" {
   tags = merge(var.default_tags, {})
 }
 
-resource "aws_lb_target_group" "dev_api_server" {
+resource "aws_lb_target_group" "dev-api-server" {
   name     = "load_balancer"
   port     = 80
   protocol = "HTTP"
   vpc_id   = aws_vpc.main.id
 }
 
-resource "aws_ecs_cluster" "dev_api_server" {
+resource "aws_ecs_cluster" "dev-api-server" {
   name               = "dev"
   capacity_providers = "FARGATE"
 
@@ -32,12 +32,12 @@ resource "aws_ecs_cluster" "dev_api_server" {
   tags = merge(var.default_tags, {})
 }
 
-# resource "aws_ecs_task_definition" "dev_api_server" {
+# resource "aws_ecs_task_definition" "dev-api-server" {
 #   family = "service"
 #   container_definitions = jsonencode([
 #     {
 #       name      = "first"
-#       image     = "debugserver"
+#       image     = "dev_api_server"
 #       cpu       = 10
 #       memory    = 512
 #       essential = true
@@ -51,10 +51,10 @@ resource "aws_ecs_cluster" "dev_api_server" {
 #   ])
 # }
 
-# resource "aws_ecs_service" "dev_api_server" {
-#   name            = "dev_api_server"
-#   cluster         = aws_ecs_cluster.dev_api_server.id
-#   task_definition = aws_ecs_task_definition.dev_api_server.arn
+# resource "aws_ecs_service" "dev-api-server" {
+#   name            = "dev-api-server"
+#   cluster         = aws_ecs_cluster.dev-api-server.id
+#   task_definition = aws_ecs_task_definition.dev-api-server.arn
 #   desired_count   = 3
 #   iam_role        = data.aws_iam_role.worker_lambda_role.arn
 #   depends_on      = [aws_iam_role_policy.foo]
@@ -65,7 +65,7 @@ resource "aws_ecs_cluster" "dev_api_server" {
 #   }
 
 #   load_balancer {
-#     target_group_arn = aws_lb_target_group.dev_api_server.arn
+#     target_group_arn = aws_lb_target_group.dev-api-server.arn
 #     container_name   = "dev_api_server"
 #     container_port   = 8080
 #   }
