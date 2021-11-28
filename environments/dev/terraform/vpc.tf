@@ -26,6 +26,10 @@ resource "aws_subnet" "public_subnets" {
 
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "main_internet_gateway"
+  }
 }
 
 resource "aws_route_table" "public" {
