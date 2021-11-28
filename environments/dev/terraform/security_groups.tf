@@ -1,8 +1,8 @@
 variable "security_groups" {
   type = map(any)
   default = {
-    "http" = 80,
-    "https" = 443,
+    "http"     = 80,
+    "https"    = 443,
     "postgres" = 5432,
   }
 }
