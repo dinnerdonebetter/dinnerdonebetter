@@ -107,7 +107,7 @@ format:
 
 .PHONY: terraformat
 terraformat:
-	@(cd environments/dev/terraform && terraform fmt && terraform validate)
+	@(cd environments/dev/terraform && terraform fmt)
 
 .PHONY: fmt
 fmt: format terraformat
