@@ -29,7 +29,7 @@ resource "aws_rds_cluster" "api_database" {
   storage_encrypted       = true
   preferred_backup_window = "01:00-05:00"
 
-  enable_http_endpoint   = true
+  enable_http_endpoint = true
 
   tags = merge(var.default_tags, {})
 }
