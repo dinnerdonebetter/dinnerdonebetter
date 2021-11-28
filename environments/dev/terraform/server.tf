@@ -10,19 +10,21 @@ resource "aws_ecr_repository" "dev-api-server" {
 }
 
 resource "aws_lb_target_group" "dev-api-server" {
-  name     = "load_balancer"
+  name     = "dev-load-balancer"
   port     = 80
   protocol = "HTTP"
   vpc_id   = aws_vpc.main.id
 }
 
 resource "aws_ecs_cluster" "dev-api-server" {
-  name               = "dev"
-  capacity_providers = "FARGATE"
+  name               = "dev-ecs-cluster"
+  capacity_providers = ["FARGATE"]
 
-  configuration {
-    logging = "DEFAULT"
-  }
+  # configuration {
+  #     log_configuration {
+  #       cloud_watch_log_group_name     = aws_cloudwatch_log_group.example.name
+  #     }
+  # }
 
   setting {
     name  = "containerInsights"
