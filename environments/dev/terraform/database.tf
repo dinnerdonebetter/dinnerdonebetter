@@ -8,6 +8,15 @@ resource "random_password" "database_password" {
   override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
+resource "aws_db_subnet_group" "default" {
+  name       = "main"
+  subnet_ids = [aws_subnet.east1a.id, aws_subnet.east1b.id]
+
+  tags = {
+    Name = "dev DB subnet group"
+  }
+}
+
 resource "aws_rds_cluster" "api_database" {
   cluster_identifier              = "dev-db"
   engine                          = "aurora-postgresql"
@@ -29,6 +38,7 @@ resource "aws_rds_cluster" "api_database" {
   storage_encrypted       = true
   preferred_backup_window = "01:00-05:00"
 
+  db_subnet_group_name = aws_db_subnet_group.default.name
   enable_http_endpoint = true
 
   tags = merge(var.default_tags, {})
