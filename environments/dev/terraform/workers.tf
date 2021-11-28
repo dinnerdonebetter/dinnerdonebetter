@@ -5,9 +5,9 @@
 #   timeout        = 30
 # }
 
-# data "aws_iam_role" "worker_lambda_role" {
-#   name = "Workers"
-# }
+data "aws_iam_role" "worker_lambda_role" {
+  name = "Workers"
+}
 
 # resource "aws_lambda_function" "writes_worker_lambda" {
 #   function_name = "writes_worker"
@@ -20,8 +20,6 @@
 #   filename         = "writer_lambda.zip"
 #   source_code_hash = filebase64sha256("writer_lambda.zip")
 
-
-#   tags = merge(var.default_tags, {})
 # }
 
 # resource "aws_lambda_function" "updates_worker_lambda" {
@@ -34,8 +32,6 @@
 
 #   filename         = "updater_lambda.zip"
 #   source_code_hash = filebase64sha256("updater_lambda.zip")
-
-#   tags = merge(var.default_tags, {})
 # }
 
 # resource "aws_lambda_function" "archives_worker_lambda" {
@@ -48,8 +44,6 @@
 
 #   filename         = "archiver_lambda.zip"
 #   source_code_hash = filebase64sha256("archiver_lambda.zip")
-
-#   tags = merge(var.default_tags, {})
 # }
 
 # resource "aws_lambda_function" "data_changes_worker_lambda" {
@@ -62,8 +56,6 @@
 
 #   filename         = "data_changes_lambda.zip"
 #   source_code_hash = filebase64sha256("data_changes_lambda.zip")
-
-#   tags = merge(var.default_tags, {})
 # }
 
 # resource "aws_lambda_function" "chores_worker_lambda" {
@@ -76,8 +68,6 @@
 
 #   filename         = "chores_lambda.zip"
 #   source_code_hash = filebase64sha256("chores_lambda.zip")
-
-#   tags = merge(var.default_tags, {})
 # }
 
 # resource "aws_cloudwatch_event_rule" "every_minute" {

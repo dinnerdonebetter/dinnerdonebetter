@@ -11,10 +11,6 @@ resource "random_password" "database_password" {
 resource "aws_db_subnet_group" "default" {
   name       = "main"
   subnet_ids = [aws_subnet.east1a.id, aws_subnet.east1b.id]
-
-  tags = {
-    Name = "dev DB subnet group"
-  }
 }
 
 resource "aws_rds_cluster" "api_database" {
@@ -39,14 +35,10 @@ resource "aws_rds_cluster" "api_database" {
 
   db_subnet_group_name = aws_db_subnet_group.default.name
   enable_http_endpoint = true
-
-  tags = merge(var.default_tags, {})
 }
 
 resource "aws_ssm_parameter" "database_url" {
   name  = "PRIXFIXE_DATABASE_URL"
   type  = "String"
   value = format("postgres://%s:%s@%s:%d/prixfixe", local.database_username, random_password.database_password.result, aws_rds_cluster.api_database.endpoint, aws_rds_cluster.api_database.port)
-
-  tags = merge(var.default_tags, {})
 }

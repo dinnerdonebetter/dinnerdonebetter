@@ -1,16 +1,12 @@
 # resource "aws_sqs_queue" "writes_queue" {
 #   name       = "writes.fifo"
 #   fifo_queue = true
-
-#   tags = merge(var.default_tags, {})
 # }
 
 # resource "aws_ssm_parameter" "writes_queue_parameter" {
 #   name  = "PRIXFIXE_WRITES_QUEUE_URL"
 #   type  = "String"
 #   value = aws_sqs_queue.writes_queue.url
-
-#   tags = merge(var.default_tags, {})
 # }
 
 # resource "aws_lambda_event_source_mapping" "writes_mapping" {
@@ -21,16 +17,12 @@
 # resource "aws_sqs_queue" "updates_queue" {
 #   name       = "updates.fifo"
 #   fifo_queue = true
-
-#   tags = merge(var.default_tags, {})
 # }
 
 # resource "aws_ssm_parameter" "updates_queue_parameter" {
 #   name  = "PRIXFIXE_UPDATES_QUEUE_URL"
 #   type  = "String"
 #   value = aws_sqs_queue.updates_queue.url
-
-#   tags = merge(var.default_tags, {})
 # }
 
 # resource "aws_lambda_event_source_mapping" "updates_mapping" {
@@ -41,16 +33,12 @@
 # resource "aws_sqs_queue" "archives_queue" {
 #   name       = "archives.fifo"
 #   fifo_queue = true
-
-#   tags = merge(var.default_tags, {})
 # }
 
 # resource "aws_ssm_parameter" "archives_queue_parameter" {
 #   name  = "PRIXFIXE_ARCHIVES_QUEUE_URL"
 #   type  = "String"
 #   value = aws_sqs_queue.archives_queue.url
-
-#   tags = merge(var.default_tags, {})
 # }
 
 # resource "aws_lambda_event_source_mapping" "archives_mapping" {
@@ -61,16 +49,12 @@
 # resource "aws_sqs_queue" "data_changes_queue" {
 #   name       = "data_changes.fifo"
 #   fifo_queue = true
-
-#   tags = merge(var.default_tags, {})
 # }
 
 # resource "aws_ssm_parameter" "data_changes_queue_parameter" {
 #   name  = "PRIXFIXE_DATA_CHANGES_QUEUE_URL"
 #   type  = "String"
 #   value = aws_sqs_queue.data_changes_queue.arn
-
-#   tags = merge(var.default_tags, {})
 # }
 
 # resource "aws_lambda_event_source_mapping" "data_changes_mapping" {

@@ -19,18 +19,5 @@ terraform {
       source  = "cyrilgdn/postgresql"
       version = "~> 1.14"
     }
-    docker = {
-      source  = "kreuzwerker/docker"
-      version = "2.15.0"
-    }
   }
-}
-
-variable "default_tags" {
-  default = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
-  description = "default resource tags"
-  type        = map(string)
 }

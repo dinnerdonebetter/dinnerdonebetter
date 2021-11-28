@@ -1,7 +1,5 @@
 resource "aws_kms_key" "parameter_store_key" {
   description = "to encrypt parameter store secrets"
-
-  tags = merge(var.default_tags, {})
 }
 
 resource "random_string" "cookie_hash_key" {
@@ -14,8 +12,6 @@ resource "aws_ssm_parameter" "cookie_hash_key" {
   type   = "SecureString"
   value  = random_string.cookie_hash_key.result
   key_id = aws_kms_key.parameter_store_key.arn
-
-  tags = merge(var.default_tags, {})
 }
 
 resource "random_string" "cookie_block_key" {
@@ -28,6 +24,4 @@ resource "aws_ssm_parameter" "cookie_block_key" {
   type   = "SecureString"
   value  = random_string.cookie_block_key.result
   key_id = aws_kms_key.parameter_store_key.arn
-
-  tags = merge(var.default_tags, {})
 }

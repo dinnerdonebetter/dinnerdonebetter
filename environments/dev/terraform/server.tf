@@ -5,8 +5,6 @@ resource "aws_ecr_repository" "dev-api-server" {
   image_scanning_configuration {
     scan_on_push = true
   }
-
-  tags = merge(var.default_tags, {})
 }
 
 resource "aws_lb_target_group" "dev-api-server" {
@@ -30,8 +28,6 @@ resource "aws_ecs_cluster" "dev-api-server" {
     name  = "containerInsights"
     value = "enabled"
   }
-
-  tags = merge(var.default_tags, {})
 }
 
 # resource "aws_ecs_task_definition" "dev-api-server" {

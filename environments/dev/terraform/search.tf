@@ -10,8 +10,6 @@
 #     ebs_enabled = true
 #     volume_size = 10
 #   }
-
-#   tags = merge(var.default_tags, {})
 # }
 
 # resource "aws_ssm_parameter" "search_url" {
