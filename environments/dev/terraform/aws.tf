@@ -6,8 +6,11 @@ provider "aws" {
   access_key = var.AWS_ACCESS_KEY
   secret_key = var.AWS_SECRET_ACCESS_KEY
 
-  default_tags = {
+  default_tags {
+    tags = {
     Environment = "dev"
     Terraform   = "true"
   }
+  }
+  default_tags =
 }
