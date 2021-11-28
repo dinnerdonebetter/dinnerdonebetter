@@ -27,8 +27,10 @@ resource "aws_rds_cluster" "api_database" {
     timeout_action           = "ForceApplyCapacityChange"
   }
 
-  master_username              = local.database_username
-  master_password              = random_password.database_password.result
+  # master_username              = local.database_username
+  # master_password              = random_password.database_password.result
+  master_username              = "prixfixe_api"
+  master_password              = "hunter2"
   preferred_backup_window      = "01:00-05:00"
   preferred_maintenance_window = "01:00-05:00"
   apply_immediately            = true
