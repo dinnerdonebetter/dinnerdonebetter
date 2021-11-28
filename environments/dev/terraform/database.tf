@@ -14,9 +14,9 @@ resource "aws_db_subnet_group" "default" {
 }
 
 resource "aws_rds_cluster" "api_database" {
-  cluster_identifier = "dev-db"
-  engine             = "aurora-postgresql"
+  cluster_identifier = "api-database"
   database_name      = "prixfixe"
+  engine             = "aurora-postgresql"
 
   engine_mode = "serverless"
   scaling_configuration {
@@ -29,13 +29,13 @@ resource "aws_rds_cluster" "api_database" {
 
   master_username         = local.database_username
   master_password         = random_password.database_password.result
-  backup_retention_period = 7
-  storage_encrypted       = true
   preferred_backup_window = "01:00-05:00"
+  enable_http_endpoint    = true
+  storage_encrypted       = true
+  skip_final_snapshot     = true
+  backup_retention_period = 7
 
   db_subnet_group_name = aws_db_subnet_group.default.name
-
-  enable_http_endpoint = true
 }
 
 resource "aws_ssm_parameter" "database_url" {
