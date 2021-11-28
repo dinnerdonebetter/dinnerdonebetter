@@ -27,18 +27,19 @@ resource "aws_rds_cluster" "api_database" {
     timeout_action           = "ForceApplyCapacityChange"
   }
 
-  master_username         = local.database_username
-  master_password         = random_password.database_password.result
-  preferred_backup_window = "01:00-05:00"
-  enable_http_endpoint    = true
-  storage_encrypted       = true
-  skip_final_snapshot     = true
-  backup_retention_period = 7
+  master_username              = local.database_username
+  master_password              = random_password.database_password.result
+  preferred_backup_window      = "01:00-05:00"
+  preferred_maintenance_window = "01:00-05:00"
+  apply_immediately            = true
+  enable_http_endpoint         = true
+  storage_encrypted            = true
+  skip_final_snapshot          = true
+  copy_tags_to_snapshot        = true
+  backup_retention_period      = 7
 
   db_subnet_group_name = aws_db_subnet_group.default.name
   vpc_security_group_ids = [
-    aws_security_group.allow_https.id,
-    aws_security_group.allow_http.id,
     aws_security_group.allow_postgres.id,
   ]
 }
