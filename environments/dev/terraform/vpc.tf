@@ -5,7 +5,7 @@ resource "aws_vpc" "main" {
 }
 
 variable "availability_zones" {
-  type = map
+  type = map(any)
   default = {
     "us-east-1a" = "10.0.1.0/26",
     "us-east-1b" = "10.0.1.1/26",
