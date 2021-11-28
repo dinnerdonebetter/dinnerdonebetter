@@ -36,6 +36,11 @@ resource "aws_rds_cluster" "api_database" {
   backup_retention_period = 7
 
   db_subnet_group_name = aws_db_subnet_group.default.name
+  vpc_security_group_ids = [
+    aws_security_group.allow_https.id,
+    aws_security_group.allow_http.id,
+    aws_security_group.allow_postgres.id,
+  ]
 }
 
 resource "aws_ssm_parameter" "database_url" {
