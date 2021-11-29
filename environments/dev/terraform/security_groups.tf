@@ -1,5 +1,5 @@
-resource "aws_security_group" "allow_web_traffic" {
-  name        = "allow_web_traffic"
+resource "aws_security_group" "allow_https" {
+  name        = "allow_https"
   description = "Allow HTTP(S) inbound traffic"
   vpc_id      = aws_vpc.main.id
 
