@@ -36,9 +36,7 @@ resource "aws_ecs_service" "api" {
       aws_security_group.ingress_api.id,
     ]
 
-    subnets = [
-      aws_subnet.private.id,
-    ]
+    subnets = concat([for x in aws_subnet.public_subnets : x.id], [for x in aws_subnet.private_subnets : x.id])
   }
 }
 
