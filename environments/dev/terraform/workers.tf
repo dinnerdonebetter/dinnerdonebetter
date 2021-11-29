@@ -19,7 +19,6 @@ data "aws_iam_role" "worker_lambda_role" {
 
 #   filename         = "writer_lambda.zip"
 #   source_code_hash = filebase64sha256("writer_lambda.zip")
-
 # }
 
 # resource "aws_lambda_function" "updates_worker_lambda" {

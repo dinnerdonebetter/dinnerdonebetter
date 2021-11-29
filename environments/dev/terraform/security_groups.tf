@@ -12,16 +12,8 @@ resource "aws_security_group" "allow_web_traffic" {
     ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
   }
 
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
   tags = {
-    Name = "allow_https"
+    Name = "allow_inbound_https"
   }
 }
 
@@ -39,16 +31,8 @@ resource "aws_security_group" "allow_http" {
     ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
   }
 
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
   tags = {
-    Name = "allow_http"
+    Name = "allow_inbound_http"
   }
 }
 
@@ -66,6 +50,16 @@ resource "aws_security_group" "allow_postgres" {
     ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
   }
 
+  tags = {
+    Name = "allow_inbound_postgres"
+  }
+}
+
+resource "aws_security_group" "egress_all" {
+  name        = "egress-all"
+  description = "Allow all outbound traffic"
+  vpc_id      = aws_vpc.main.id
+
   egress {
     from_port        = 0
     to_port          = 0
@@ -75,6 +69,6 @@ resource "aws_security_group" "allow_postgres" {
   }
 
   tags = {
-    Name = "allow_postgres"
+    Name = "allow_inbound_postgres"
   }
 }
