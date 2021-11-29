@@ -31,8 +31,8 @@ resource "aws_subnet" "public_subnets" {
 variable "private_availability_zones" {
   type = map(any)
   default = {
-    "us-east-1a" = "10.1.1.0/26",
-    "us-east-1b" = "10.1.1.64/26",
+    "us-east-1a" = "10.0.129.0/26",
+    "us-east-1b" = "10.0.129.64/26",
   }
 }
 
