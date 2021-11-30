@@ -153,7 +153,7 @@ resource "aws_alb_listener" "api_https" {
 
 
 output "alb_url" {
-  value = "http://${aws_alb.sun_api.dns_name}"
+  value = "http://${aws_alb.api.dns_name}"
 }
 
 resource "aws_acm_certificate" "api" {
@@ -174,5 +174,5 @@ resource "aws_acm_certificate" "api" {
 }
 
 output "domain_validations" {
-  value = aws_acm_certificate.sun_api.domain_validation_options
+  value = aws_acm_certificate.api.domain_validation_options
 }
