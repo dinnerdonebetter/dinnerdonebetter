@@ -5,10 +5,6 @@
 #   timeout        = 30
 # }
 
-data "aws_iam_role" "worker_lambda_role" {
-  name = "Workers"
-}
-
 # resource "aws_lambda_function" "writes_worker_lambda" {
 #   function_name = "writes_worker"
 #   role          = data.aws_iam_role.worker_lambda_role.arn

@@ -1,16 +1,23 @@
 on: [pull_request]
 name: Deploy
 jobs:
-  # build:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Install Go
-  #       uses: actions/setup-go@v2
-  #       with:
-  #         go-version: '1.17.3'
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.17.3'
 
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials from Test account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::111111111111:role/my-github-actions-role-test
+          aws-region: us-east-1
+
 
   #     - name: Build writer lambda
   #       run: go build -o writer github.com/prixfixeco/api_server/cmd/workers/lambdas/writes
@@ -78,7 +85,7 @@ jobs:
   #         retention-days: 1
 
   deploy:
-    # needs: build
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
