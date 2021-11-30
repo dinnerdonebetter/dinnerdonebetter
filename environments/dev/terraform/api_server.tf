@@ -41,7 +41,7 @@ resource "aws_ecs_service" "api" {
   }
 
   depends_on = [
-    aws_alb_listener.api_https,
+    aws_alb_listener.api_http,
   ]
 }
 
