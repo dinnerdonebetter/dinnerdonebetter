@@ -2,16 +2,16 @@ locals {
   repository_url = "ghcr.io/prixfixeco/api_server"
 }
 
-resource "aws_ecs_cluster" "api" {
-  name = "api"
-}
-
-resource "aws_ecr_repository" "api" {
-  name = "api"
+resource "aws_ecr_repository" "api_server" {
+  name = "api_server"
 }
 
 resource "aws_cloudwatch_log_group" "api" {
   name = "/ecs/api"
+}
+
+resource "aws_ecs_cluster" "api" {
+  name = "api"
 }
 
 resource "aws_ecs_service" "api" {
@@ -53,7 +53,7 @@ resource "aws_ecs_task_definition" "api" {
   [
     {
       "name": "api",
-      "image": "${local.repository_url == "" ? aws_ecr_repository.api.repository_url : local.repository_url}:latest",
+      "image": "${aws_ecr_repository.api_server.repository_url}:latest",
       "portMappings": [
         {
           "containerPort": 8080
