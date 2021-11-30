@@ -37,7 +37,7 @@ resource "aws_ecs_service" "api" {
       aws_security_group.allow_https.id,
     ]
 
-    subnets = [for x in aws_subnet.private_subnets : x.id]
+    subnets = [for x in aws_subnet.public_subnets : x.id]
   }
 
   depends_on = [
