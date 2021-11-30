@@ -152,6 +152,10 @@ resource "aws_alb_listener" "api_https" {
 }
 
 
+output "alb_url" {
+  value = "http://${aws_alb.sun_api.dns_name}"
+}
+
 resource "aws_acm_certificate" "api" {
   domain_name       = "api.prixfixe.dev"
   validation_method = "DNS"
@@ -159,4 +163,16 @@ resource "aws_acm_certificate" "api" {
   options {
     certificate_transparency_logging_preference = "ENABLED"
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = {
+    Name = "dev_api"
+  }
+}
+
+output "domain_validations" {
+  value = aws_acm_certificate.sun_api.domain_validation_options
 }
