@@ -39,6 +39,10 @@ resource "aws_ecs_service" "api" {
 
     subnets = [for x in aws_subnet.private_subnets : x.id]
   }
+
+  depends_on = [
+    aws_alb_listener.api_https,
+  ]
 }
 
 # The task definition for our app.
