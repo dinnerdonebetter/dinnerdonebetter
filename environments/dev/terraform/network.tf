@@ -93,3 +93,72 @@ resource "aws_route" "public_igw" {
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.main.id
 }
+
+
+resource "aws_lb_target_group" "api" {
+  name        = "api"
+  port        = 8080
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = aws_vpc.main.id
+
+  health_check {
+    enabled = true
+    path    = "/health"
+  }
+
+  depends_on = [aws_alb.api]
+}
+
+resource "aws_alb" "api" {
+  name               = "api-lb"
+  internal           = false
+  load_balancer_type = "application"
+
+  subnets = concat([for x in aws_subnet.private_subnets : x.id], [for x in aws_subnet.public_subnets : x.id])
+
+  security_groups = [
+    aws_security_group.allow_http.id,
+    aws_security_group.allow_https.id,
+    aws_security_group.egress_all.id,
+  ]
+
+  depends_on = [aws_internet_gateway.main]
+}
+
+resource "aws_alb_listener" "api_http" {
+  load_balancer_arn = aws_alb.api.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
+
+resource "aws_alb_listener" "api_https" {
+  load_balancer_arn = aws_alb.api.arn
+  port              = "443"
+  protocol          = "HTTPS"
+  # certificate_arn   = aws_acm_certificate.api.arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.api.arn
+  }
+}
+
+output "alb_url" {
+  value = "http://${aws_alb.api.dns_name}"
+}
+
+resource "aws_acm_certificate" "api" {
+  domain_name       = "api.prixfixe.dev"
+  validation_method = "DNS"
+}
