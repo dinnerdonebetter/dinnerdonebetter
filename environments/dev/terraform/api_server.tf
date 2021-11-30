@@ -33,7 +33,8 @@ resource "aws_ecs_service" "api" {
 
     security_groups = [
       aws_security_group.egress_all.id,
-      aws_security_group.ingress_api.id,
+      aws_security_group.allow_http.id,
+      aws_security_group.allow_https.id,
     ]
 
     subnets = concat([for x in aws_subnet.public_subnets : x.id], [for x in aws_subnet.private_subnets : x.id])
