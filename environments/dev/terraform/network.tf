@@ -142,6 +142,7 @@ resource "aws_alb_listener" "api_https" {
   load_balancer_arn = aws_alb.api.arn
   port              = "443"
   protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
   certificate_arn   = aws_acm_certificate.api.arn
 
   default_action {
@@ -150,7 +151,12 @@ resource "aws_alb_listener" "api_https" {
   }
 }
 
+
 resource "aws_acm_certificate" "api" {
   domain_name       = "api.prixfixe.dev"
   validation_method = "DNS"
+
+  options {
+    certificate_transparency_logging_preference = "ENABLED"
+  }
 }
