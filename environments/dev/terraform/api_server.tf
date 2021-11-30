@@ -25,7 +25,7 @@ resource "aws_ecs_service" "api" {
   load_balancer {
     target_group_arn = aws_lb_target_group.api.arn
     container_name   = "api"
-    container_port   = "8080"
+    container_port   = 80
   }
 
   network_configuration {
@@ -56,7 +56,7 @@ resource "aws_ecs_task_definition" "api" {
       "image": "${data.aws_ecr_repository.api_server.repository_url}:latest",
       "portMappings": [
         {
-          "containerPort": 8080
+          "containerPort": 80
         }
       ],
       "logConfiguration": {
