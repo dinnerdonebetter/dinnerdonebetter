@@ -23,9 +23,9 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: copy Dockerfile
-        working-directory: environments/dev
-        run: cp dockerfiles/api_server.Dockerfile terraform/api_server.Dockerfile
+      - name: Ensure ECR exists
+        continue-on-error: true
+        run: aws ecr create-repository --repository-name api_server
 
       - name: Build, tag, and push image to Amazon ECR
         env:
