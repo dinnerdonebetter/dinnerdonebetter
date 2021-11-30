@@ -13,6 +13,6 @@ func main() {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	log.Println("handler invoked")
+	log.Printf("handler invoked for request: %q", r.URL.String())
 	fmt.Fprintf(w, "Hello, there\n")
 }
