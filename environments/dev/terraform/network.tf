@@ -121,8 +121,6 @@ resource "aws_alb" "api" {
   depends_on = [aws_internet_gateway.main]
 }
 
-
-
 resource "aws_alb_listener" "api_http" {
   load_balancer_arn = aws_alb.api.arn
   port              = "80"

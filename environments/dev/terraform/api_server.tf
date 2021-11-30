@@ -14,8 +14,8 @@ resource "aws_ecs_cluster" "api" {
   name = "api"
 }
 
-resource "aws_ecs_service" "api" {
-  name            = "api"
+resource "aws_ecs_service" "api_server" {
+  name            = "api_server"
   task_definition = aws_ecs_task_definition.api.arn
   cluster         = aws_ecs_cluster.api.id
   launch_type     = "FARGATE"
@@ -24,7 +24,7 @@ resource "aws_ecs_service" "api" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.api.arn
-    container_name   = "api"
+    container_name   = "api_server"
     container_port   = 80
   }
 
@@ -37,7 +37,7 @@ resource "aws_ecs_service" "api" {
       aws_security_group.allow_https.id,
     ]
 
-    subnets = [for x in aws_subnet.public_subnets : x.id]
+    subnets = [for x in aws_subnet.private_subnets : x.id]
   }
 
   depends_on = [
