@@ -94,6 +94,17 @@ resource "aws_route" "public_igw" {
   gateway_id             = aws_internet_gateway.main.id
 }
 
+
+resource "aws_lb_target_group" "api" {
+  name        = "api"
+  port        = 8080
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = aws_vpc.main.id
+
+  depends_on = [aws_alb.api]
+}
+
 resource "aws_alb" "api" {
   name               = "api-lb"
   internal           = false
@@ -111,16 +122,6 @@ resource "aws_alb" "api" {
 }
 
 
-resource "aws_lb_target_group" "api" {
-  name        = "api"
-  port        = 8080
-  protocol    = "HTTP"
-  target_type = "ip"
-  vpc_id      = aws_vpc.main.id
-
-  depends_on = [aws_alb.api]
-}
-
 
 resource "aws_alb_listener" "api_http" {
   load_balancer_arn = aws_alb.api.arn
@@ -128,51 +129,46 @@ resource "aws_alb_listener" "api_http" {
   protocol          = "HTTP"
 
   default_action {
-    type = "redirect"
-
-    redirect {
-      port        = "443"
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
-    }
-  }
-}
-
-resource "aws_alb_listener" "api_https" {
-  load_balancer_arn = aws_alb.api.arn
-  port              = "443"
-  protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = aws_acm_certificate.api.arn
-
-  default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.api.arn
   }
 }
 
-
 output "alb_url" {
   value = "http://${aws_alb.api.dns_name}"
 }
 
-resource "aws_acm_certificate" "api" {
-  domain_name       = "api.prixfixe.dev"
-  validation_method = "DNS"
 
-  options {
-    certificate_transparency_logging_preference = "ENABLED"
-  }
+# resource "aws_alb_listener" "api_https" {
+#   load_balancer_arn = aws_alb.api.arn
+#   port              = "443"
+#   protocol          = "HTTPS"
+#   ssl_policy        = "ELBSecurityPolicy-2016-08"
+#   certificate_arn   = aws_acm_certificate.api.arn
 
-  lifecycle {
-    create_before_destroy = true
-  }
+#   default_action {
+#     type             = "forward"
+#     target_group_arn = aws_lb_target_group.api.arn
+#   }
+# }
 
-  tags = {
-    Name = "dev_api"
-  }
-}
+# resource "aws_acm_certificate" "api" {
+#   domain_name       = "api.prixfixe.dev"
+#   validation_method = "DNS"
 
-output "domain_validations" {
-  value = aws_acm_certificate.api.domain_validation_options
-}
+#   options {
+#     certificate_transparency_logging_preference = "ENABLED"
+#   }
+
+#   lifecycle {
+#     create_before_destroy = true
+#   }
+
+#   tags = {
+#     Name = "dev_api"
+#   }
+# }
+
+# output "domain_validations" {
+#   value = aws_acm_certificate.api.domain_validation_options
+# }
