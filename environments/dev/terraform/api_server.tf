@@ -45,7 +45,7 @@ resource "aws_ecs_service" "api" {
   ]
 }
 
-# The task definition for our app.
+
 resource "aws_ecs_task_definition" "api" {
   family = "api"
 
