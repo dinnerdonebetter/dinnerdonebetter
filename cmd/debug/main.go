@@ -8,10 +8,11 @@ import (
 
 func main() {
 	http.HandleFunc("/", handler)
-	fmt.Println("Server started at port 8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	fmt.Println("Server started at port 80")
+	log.Fatal(http.ListenAndServe(":80", nil))
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
+	log.Println("handler invoked")
 	fmt.Fprintf(w, "Hello, there\n")
 }
