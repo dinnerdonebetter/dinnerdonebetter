@@ -46,7 +46,7 @@ EOF
 }
 
 resource "aws_ecs_cluster" "api" {
-  name = "api"
+  name = "api_servers"
 }
 
 resource "aws_ecs_service" "api_server" {
