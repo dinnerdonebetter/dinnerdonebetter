@@ -16,7 +16,7 @@ resource "aws_ecs_task_definition" "api_server" {
   container_definitions = <<EOF
   [
     {
-      "name": "api",
+      "name": "api_server",
       "image": "${aws_ecr_repository.api_server.repository_url}:latest",
       "portMappings": [
         {
