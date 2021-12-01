@@ -75,7 +75,7 @@ jobs:
         working-directory: environments/dev/terraform
         
   deploy:
-    depends-on: scaffold
+    needs: scaffold
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
