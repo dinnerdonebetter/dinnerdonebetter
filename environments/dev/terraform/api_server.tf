@@ -10,43 +10,7 @@ resource "aws_cloudwatch_log_group" "api" {
   name = "/ecs/api"
 }
 
-resource "aws_ecs_cluster" "api" {
-  name = "api"
-}
-
-resource "aws_ecs_service" "api_server" {
-  name            = "api_server"
-  task_definition = aws_ecs_task_definition.api.arn
-  cluster         = aws_ecs_cluster.api.id
-  launch_type     = "FARGATE"
-
-  desired_count = 1
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.api.arn
-    container_name   = "api_server"
-    container_port   = 80
-  }
-
-  network_configuration {
-    assign_public_ip = true
-
-    security_groups = [
-      aws_security_group.egress_all.id,
-      aws_security_group.allow_http.id,
-      aws_security_group.allow_https.id,
-    ]
-
-    subnets = [for x in aws_subnet.private_subnets : x.id]
-  }
-
-  depends_on = [
-    aws_alb_listener.api_http,
-  ]
-}
-
-
-resource "aws_ecs_task_definition" "api" {
+resource "aws_ecs_task_definition" "api_server" {
   family = "api"
 
   container_definitions = <<EOF
@@ -80,6 +44,42 @@ EOF
 
   network_mode = "awsvpc"
 }
+
+resource "aws_ecs_cluster" "api" {
+  name = "api"
+}
+
+resource "aws_ecs_service" "api_server" {
+  name            = "api_server"
+  task_definition = aws_ecs_task_definition.api_server.arn
+  cluster         = aws_ecs_cluster.api.id
+  launch_type     = "FARGATE"
+
+  desired_count = 1
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.api.arn
+    container_name   = "api_server"
+    container_port   = 80
+  }
+
+  network_configuration {
+    assign_public_ip = true
+
+    security_groups = [
+      aws_security_group.egress_all.id,
+      aws_security_group.allow_http.id,
+      aws_security_group.allow_https.id,
+    ]
+
+    subnets = [for x in aws_subnet.private_subnets : x.id]
+  }
+
+  depends_on = [
+    aws_alb_listener.api_http,
+  ]
+}
+
 resource "aws_iam_role" "api_task_execution_role" {
   name               = "api-task-execution-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json

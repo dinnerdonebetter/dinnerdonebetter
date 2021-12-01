@@ -1,7 +1,81 @@
 on: [pull_request]
 name: Deploy
 jobs:
-  build:
+  scaffold:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.11
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
+
+      - name: Terraform Init
+        working-directory: environments/dev/terraform
+        id: init
+        run: terraform init
+
+      - name: Terraform Format
+        working-directory: environments/dev/terraform
+        id: fmt
+        run: terraform fmt -check
+
+        # download lambdas, if these aren't there, then `terraform validate` fails
+
+      # - name: Download writer lambda
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: writer
+      #     path: environments/dev/terraform
+
+      # - name: Download updater lambda
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: updater
+      #     path: environments/dev/terraform
+
+      # - name: Download archiver lambda
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: archiver
+      #     path: environments/dev/terraform
+
+      # - name: Download data changes lambda
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: data_changes
+      #     path: environments/dev/terraform
+
+      # - name: Download chores lambda
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: chores
+      #     path: environments/dev/terraform
+
+      - name: copy config file
+        working-directory: environments/dev
+        run: cp config_files/service-config.json terraform/service-config.json
+
+      - name: Terraform Validate
+        working-directory: environments/dev/terraform
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Plan
+        working-directory: environments/dev/terraform
+        id: plan
+        if: github.event_name == 'pull_request'
+        run: terraform plan -no-color
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: environments/dev/terraform
+        
+  deploy:
+    depends-on: scaffold
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
@@ -22,10 +96,6 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Ensure ECR exists
-        continue-on-error: true
-        run: aws ecr create-repository --repository-name api_server
 
       - name: Build, tag, and push image to Amazon ECR
         env:
@@ -101,77 +171,3 @@ jobs:
   #         name: chores
   #         path: chores_lambda.zip
   #         retention-days: 1
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 1.0.11
-          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
-
-      - name: Terraform Init
-        working-directory: environments/dev/terraform
-        id: init
-        run: terraform init
-
-      - name: Terraform Format
-        working-directory: environments/dev/terraform
-        id: fmt
-        run: terraform fmt -check
-
-        # download lambdas, if these aren't there, then `terraform validate` fails
-
-      # - name: Download writer lambda
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: writer
-      #     path: environments/dev/terraform
-
-      # - name: Download updater lambda
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: updater
-      #     path: environments/dev/terraform
-
-      # - name: Download archiver lambda
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: archiver
-      #     path: environments/dev/terraform
-
-      # - name: Download data changes lambda
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: data_changes
-      #     path: environments/dev/terraform
-
-      # - name: Download chores lambda
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: chores
-      #     path: environments/dev/terraform
-
-      - name: copy config file
-        working-directory: environments/dev
-        run: cp config_files/service-config.json terraform/service-config.json
-
-      - name: Terraform Validate
-        working-directory: environments/dev/terraform
-        id: validate
-        run: terraform validate -no-color
-
-      - name: Terraform Plan
-        working-directory: environments/dev/terraform
-        id: plan
-        if: github.event_name == 'pull_request'
-        run: terraform plan -no-color
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
-        working-directory: environments/dev/terraform
