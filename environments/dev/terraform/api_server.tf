@@ -3,7 +3,12 @@ locals {
 }
 
 resource "aws_ecr_repository" "api_server" {
-  name = "api_server"
+  name                 = "api_server"
+  image_tag_mutability = "IMMUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
 }
 
 resource "aws_cloudwatch_log_group" "api" {
