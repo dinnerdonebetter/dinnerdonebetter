@@ -17,7 +17,7 @@ resource "aws_ecs_task_definition" "api_server" {
   [
     {
       "name": "api",
-      "image": "${data.aws_ecr_repository.api_server.repository_url}:latest",
+      "image": "${aws_ecr_repository.api_server.repository_url}:latest",
       "portMappings": [
         {
           "containerPort": 80
