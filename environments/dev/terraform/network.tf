@@ -77,7 +77,6 @@ resource "aws_route_table" "private" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.main.id
   }
 }
 
@@ -91,7 +90,6 @@ resource "aws_route_table_association" "private_subnets" {
 resource "aws_route" "public_igw" {
   route_table_id         = aws_route_table.public.id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.main.id
 }
 
 
