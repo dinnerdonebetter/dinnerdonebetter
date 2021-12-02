@@ -4,7 +4,7 @@ locals {
 
 resource "aws_ecr_repository" "api_server" {
   name = "api_server"
-  # image_tag_mutability = "IMMUTABLE"
+  # do not set image_tag_mutability to "IMMUTABLE", or else we cannot use :latest tags.
 
   image_scanning_configuration {
     scan_on_push = true
