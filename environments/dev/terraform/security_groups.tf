@@ -72,3 +72,44 @@ resource "aws_security_group" "egress_all" {
     Name = "allow_inbound_postgres"
   }
 }
+
+##############################################################3
+
+resource "aws_security_group" "http" {
+  name        = "http"
+  description = "HTTP traffic"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "https" {
+  name        = "https"
+  description = "HTTPS traffic"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "ingress_api" {
+  name        = "ingress-api"
+  description = "Allow ingress to API"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}

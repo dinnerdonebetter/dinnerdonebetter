@@ -90,8 +90,8 @@ resource "aws_route_table_association" "private_subnets" {
 resource "aws_route" "public_igw" {
   route_table_id         = aws_route_table.public.id
   destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.main.id
 }
-
 
 resource "aws_lb_target_group" "api" {
   name        = "api"
@@ -108,7 +108,7 @@ resource "aws_alb" "api" {
   internal           = false
   load_balancer_type = "application"
 
-  subnets = aws_subnet.public_subnets.*.id
+  subnets = [for x in aws_subnet.public_subnets : x.id]
 
   security_groups = [
     aws_security_group.allow_http.id,
