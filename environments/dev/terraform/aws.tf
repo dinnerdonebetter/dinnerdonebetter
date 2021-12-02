@@ -10,7 +10,6 @@ provider "aws" {
     tags = {
       Environment = "dev"
       CreatedVia  = "terraform"
-      CreatedAt   = timestamp()
     }
   }
 }
