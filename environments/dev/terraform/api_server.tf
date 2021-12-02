@@ -70,6 +70,7 @@ resource "aws_ecs_service" "api_server" {
 
   capacity_provider_strategy {
     capacity_provider = "FARGATE"
+    weight            = 100
   }
 
   network_configuration {
