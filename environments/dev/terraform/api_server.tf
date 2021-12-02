@@ -68,11 +68,6 @@ resource "aws_ecs_service" "api_server" {
     container_port   = 8080
   }
 
-  capacity_provider_strategy {
-    capacity_provider = "FARGATE"
-    weight            = 100
-  }
-
   network_configuration {
     assign_public_ip = true
 
