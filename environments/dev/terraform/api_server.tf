@@ -11,34 +11,32 @@ resource "aws_ecr_repository" "api_server" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "api" {
-  name = "/ecs/api"
+resource "aws_cloudwatch_log_group" "api_server" {
+  name = "/ecs/api_server"
 }
 
 resource "aws_ecs_task_definition" "api_server" {
-  family = "api"
+  family = "api_server"
 
-  container_definitions = <<EOF
-  [
+  container_definitions = jsonencode([
     {
-      "name": "api_server",
-      "image": "${aws_ecr_repository.api_server.repository_url}:latest",
-      "portMappings": [
+      name  = "api_server"
+      image = format("%s:latest", aws_ecr_repository.api_server.repository_url)
+      "portMappings" : [
         {
-          "containerPort": 8080
+          "containerPort" : 8080
         }
       ],
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-region": "us-east-1",
-          "awslogs-group": "/ecs/api",
-          "awslogs-stream-prefix": "ecs"
+      "logConfiguration" : {
+        "logDriver" : "awslogs",
+        "options" : {
+          "awslogs-region" : "us-east-1",
+          "awslogs-group" : "/ecs/api_server",
+          "awslogs-stream-prefix" : "ecs"
         }
       }
     }
-  ]
-EOF
+  ])
 
   execution_role_arn = aws_iam_role.api_task_execution_role.arn
 
