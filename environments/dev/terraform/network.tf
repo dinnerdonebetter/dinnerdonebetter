@@ -98,7 +98,7 @@ resource "aws_alb" "api" {
   internal           = false
   load_balancer_type = "application"
 
-  subnets = [for x in aws_subnet.public_subnets : x.id]
+  subnets = aws_subnet.public_subnets.*.id
 
   security_groups = [
     aws_security_group.allow_http.id,
