@@ -48,60 +48,50 @@ resource "aws_subnet" "private_subnets" {
   }
 }
 
-resource "aws_internet_gateway" "main" {
-  vpc_id = aws_vpc.main.id
+# resource "aws_internet_gateway" "main" {
+#   vpc_id = aws_vpc.main.id
 
-  tags = {
-    Name = "main_internet_gateway"
-  }
-}
+#   tags = {
+#     Name = "main_internet_gateway"
+#   }
+# }
 
-resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.main.id
+# resource "aws_route_table" "public" {
+#   vpc_id = aws_vpc.main.id
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.main.id
-  }
-}
+#   route {
+#     cidr_block = "0.0.0.0/0"
+#     gateway_id = aws_internet_gateway.main.id
+#   }
+# }
 
-resource "aws_route_table_association" "public_subnets" {
-  for_each = aws_subnet.public_subnets
+# resource "aws_route_table_association" "public_subnets" {
+#   for_each = aws_subnet.public_subnets
 
-  subnet_id      = each.value.id
-  route_table_id = aws_route_table.public.id
-}
+#   subnet_id      = each.value.id
+#   route_table_id = aws_route_table.public.id
+# }
 
-resource "aws_route_table" "private" {
-  vpc_id = aws_vpc.main.id
+# resource "aws_route_table" "private" {
+#   vpc_id = aws_vpc.main.id
 
-  route {
-    cidr_block = "0.0.0.0/0"
-  }
-}
+#   route {
+#     cidr_block = "0.0.0.0/0"
+#   }
+# }
 
-resource "aws_route_table_association" "private_subnets" {
-  for_each = aws_subnet.private_subnets
+# resource "aws_route_table_association" "private_subnets" {
+#   for_each = aws_subnet.private_subnets
 
-  subnet_id      = each.value.id
-  route_table_id = aws_route_table.private.id
-}
+#   subnet_id      = each.value.id
+#   route_table_id = aws_route_table.private.id
+# }
 
-resource "aws_route" "public_igw" {
-  route_table_id         = aws_route_table.public.id
-  destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.main.id
-}
-
-resource "aws_lb_target_group" "api" {
-  name        = "api"
-  port        = 8080
-  protocol    = "HTTP"
-  target_type = "ip"
-  vpc_id      = aws_vpc.main.id
-
-  depends_on = [aws_alb.api]
-}
+# resource "aws_route" "public_igw" {
+#   route_table_id         = aws_route_table.public.id
+#   destination_cidr_block = "0.0.0.0/0"
+#   gateway_id             = aws_internet_gateway.main.id
+# }
 
 resource "aws_alb" "api" {
   name               = "api-lb"
@@ -116,8 +106,19 @@ resource "aws_alb" "api" {
     aws_security_group.egress_all.id,
   ]
 
-  depends_on = [aws_internet_gateway.main]
+  # depends_on = [aws_internet_gateway.main]
 }
+
+resource "aws_lb_target_group" "api" {
+  name        = "api"
+  port        = 8080
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = aws_vpc.main.id
+
+  depends_on = [aws_alb.api]
+}
+
 
 resource "aws_alb_listener" "api_http" {
   load_balancer_arn = aws_alb.api.arn
