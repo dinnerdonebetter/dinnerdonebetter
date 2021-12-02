@@ -48,13 +48,13 @@ resource "aws_subnet" "private_subnets" {
   }
 }
 
-# resource "aws_internet_gateway" "main" {
-#   vpc_id = aws_vpc.main.id
+resource "aws_internet_gateway" "main" {
+  vpc_id = aws_vpc.main.id
 
-#   tags = {
-#     Name = "main_internet_gateway"
-#   }
-# }
+  tags = {
+    Name = "main_internet_gateway"
+  }
+}
 
 # resource "aws_route_table" "public" {
 #   vpc_id = aws_vpc.main.id
@@ -106,7 +106,7 @@ resource "aws_alb" "api" {
     aws_security_group.egress_all.id,
   ]
 
-  # depends_on = [aws_internet_gateway.main]
+  depends_on = [aws_internet_gateway.main]
 }
 
 resource "aws_lb_target_group" "api" {
