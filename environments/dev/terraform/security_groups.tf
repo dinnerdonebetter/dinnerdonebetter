@@ -18,7 +18,7 @@ resource "aws_security_group" "allow_postgres" {
 }
 
 resource "aws_security_group" "service" {
-  name        = "dev-http-in-all-out"
+  name        = "dev-service"
   description = "Allow HTTP in, all outbound traffic"
   vpc_id      = aws_vpc.main.id
 
@@ -40,7 +40,7 @@ resource "aws_security_group" "service" {
 }
 
 resource "aws_security_group" "load_balancer" {
-  name        = "dev-http-in-all-out"
+  name        = "dev-load-balancer"
   description = "Allow HTTP in, all outbound traffic"
   vpc_id      = aws_vpc.main.id
 
