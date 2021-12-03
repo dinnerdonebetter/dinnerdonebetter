@@ -1,5 +1,5 @@
 resource "aws_security_group" "allow_postgres" {
-  name        = "allow_postgres"
+  name        = "allow-postgres"
   description = "Allow Postgres traffic"
   vpc_id      = aws_vpc.main.id
 
@@ -37,6 +37,10 @@ resource "aws_security_group" "service" {
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
+
+  tags = {
+    Name = "dev_service"
+  }
 }
 
 resource "aws_security_group" "load_balancer" {
@@ -49,7 +53,7 @@ resource "aws_security_group" "load_balancer" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = [aws_vpc.main.cidr_block]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
@@ -57,7 +61,7 @@ resource "aws_security_group" "load_balancer" {
     from_port        = 80
     to_port          = 80
     protocol         = "tcp"
-    ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   egress {
@@ -66,5 +70,9 @@ resource "aws_security_group" "load_balancer" {
     protocol         = "-1"
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
+  }
+
+  tags = {
+    Name = "dev_load_balancer"
   }
 }
