@@ -56,42 +56,50 @@ resource "aws_internet_gateway" "main" {
   }
 }
 
-# resource "aws_route_table" "public" {
-#   vpc_id = aws_vpc.main.id
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
 
-#   route {
-#     cidr_block = "0.0.0.0/0"
-#     gateway_id = aws_internet_gateway.main.id
-#   }
-# }
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.main.id
+  }
 
-# resource "aws_route_table_association" "public_subnets" {
-#   for_each = aws_subnet.public_subnets
+  tags = {
+    Name = "dev-public"
+  }
+}
 
-#   subnet_id      = each.value.id
-#   route_table_id = aws_route_table.public.id
-# }
+resource "aws_route_table_association" "public_subnets" {
+  for_each = aws_subnet.public_subnets
 
-# resource "aws_route_table" "private" {
-#   vpc_id = aws_vpc.main.id
+  subnet_id      = each.value.id
+  route_table_id = aws_route_table.public.id
+}
 
-#   route {
-#     cidr_block = "0.0.0.0/0"
-#   }
-# }
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.main.id
 
-# resource "aws_route_table_association" "private_subnets" {
-#   for_each = aws_subnet.private_subnets
+  route {
+    cidr_block = "0.0.0.0/0"
+  }
 
-#   subnet_id      = each.value.id
-#   route_table_id = aws_route_table.private.id
-# }
+  tags = {
+    Name = "dev-private"
+  }
+}
 
-# resource "aws_route" "public_igw" {
-#   route_table_id         = aws_route_table.public.id
-#   destination_cidr_block = "0.0.0.0/0"
-#   gateway_id             = aws_internet_gateway.main.id
-# }
+resource "aws_route_table_association" "private_subnets" {
+  for_each = aws_subnet.private_subnets
+
+  subnet_id      = each.value.id
+  route_table_id = aws_route_table.private.id
+}
+
+resource "aws_route" "public_igw" {
+  route_table_id         = aws_route_table.public.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.main.id
+}
 
 resource "aws_alb" "api" {
   name               = "api-lb"
