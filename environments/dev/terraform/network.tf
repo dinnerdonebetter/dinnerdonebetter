@@ -108,9 +108,7 @@ resource "aws_alb" "api" {
   subnets = [for x in aws_subnet.public_subnets : x.id]
 
   security_groups = [
-    aws_security_group.allow_http.id,
-    aws_security_group.allow_https.id,
-    aws_security_group.egress_all.id,
+    aws_security.service_group.id,
   ]
 
   depends_on = [aws_internet_gateway.main]

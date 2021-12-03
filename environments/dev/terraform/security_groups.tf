@@ -1,41 +1,3 @@
-resource "aws_security_group" "allow_https" {
-  name        = "allow_https"
-  description = "Allow HTTP(S) inbound traffic"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    description      = "HTTPS from VPC"
-    from_port        = 443
-    to_port          = 443
-    protocol         = "tcp"
-    cidr_blocks      = [aws_vpc.main.cidr_block]
-    ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
-  }
-
-  tags = {
-    Name = "allow_inbound_https"
-  }
-}
-
-resource "aws_security_group" "allow_http" {
-  name        = "allow_http"
-  description = "Allow HTTP inbound traffic"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    description      = "HTTP from VPC"
-    from_port        = 80
-    to_port          = 80
-    protocol         = "tcp"
-    cidr_blocks      = [aws_vpc.main.cidr_block]
-    ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
-  }
-
-  tags = {
-    Name = "allow_inbound_http"
-  }
-}
-
 resource "aws_security_group" "allow_postgres" {
   name        = "allow_postgres"
   description = "Allow Postgres traffic"
@@ -55,10 +17,18 @@ resource "aws_security_group" "allow_postgres" {
   }
 }
 
-resource "aws_security_group" "egress_all" {
-  name        = "egress-all"
-  description = "Allow all outbound traffic"
+resource "aws_security_group" "service" {
+  name        = "dev-http-in-all-out"
+  description = "Allow HTTP in, all outbound traffic"
   vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description = "http in"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = [aws_vpc.main.cidr_block]
+  }
 
   egress {
     from_port        = 0
@@ -67,49 +37,35 @@ resource "aws_security_group" "egress_all" {
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
-
-  tags = {
-    Name = "allow_inbound_postgres"
-  }
 }
 
-##############################################################3
-
-resource "aws_security_group" "http" {
-  name        = "http"
-  description = "HTTP traffic"
+resource "aws_security_group" "load_balancer" {
+  name        = "dev-http-in-all-out"
+  description = "Allow HTTP in, all outbound traffic"
   vpc_id      = aws_vpc.main.id
 
   ingress {
+    description      = "http in v6"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = [aws_vpc.main.cidr_block]
+    ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
+  }
+
+  ingress {
+    description = "http in"
     from_port   = 80
     to_port     = 80
-    protocol    = "TCP"
-    cidr_blocks = ["0.0.0.0/0"]
+    protocol    = "tcp"
+    cidr_blocks = [aws_vpc.main.cidr_block]
   }
-}
 
-resource "aws_security_group" "https" {
-  name        = "https"
-  description = "HTTPS traffic"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "TCP"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-resource "aws_security_group" "ingress_api" {
-  name        = "ingress-api"
-  description = "Allow ingress to API"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "TCP"
-    cidr_blocks = ["0.0.0.0/0"]
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 }
