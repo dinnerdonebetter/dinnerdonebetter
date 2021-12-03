@@ -14,5 +14,5 @@ func main() {
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("handler invoked for request: %s %s", r.Method, r.URL.String())
-	fmt.Fprintf(w, "Hello, there\n")
+	fmt.Fprintf(w, "Hello, there!")
 }
