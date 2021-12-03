@@ -13,7 +13,7 @@ resource "aws_security_group" "allow_postgres" {
   }
 
   tags = {
-    Name = "allow_inbound_postgres"
+    Name = "allow_intra_vpc_postgres"
   }
 }
 
@@ -27,7 +27,7 @@ resource "aws_security_group" "service" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = [aws_vpc.main.cidr_block]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
