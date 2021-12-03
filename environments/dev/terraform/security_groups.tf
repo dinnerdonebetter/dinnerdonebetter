@@ -57,7 +57,7 @@ resource "aws_security_group" "load_balancer" {
   }
 
   ingress {
-    description      = "http in v6"
+    description      = "v6 http"
     from_port        = 80
     to_port          = 80
     protocol         = "tcp"
