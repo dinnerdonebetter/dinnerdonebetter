@@ -154,22 +154,22 @@ output "alb_url" {
 #   }
 # }
 
-# resource "aws_acm_certificate" "api" {
-#   domain_name       = "api.prixfixe.dev"
-#   validation_method = "DNS"
+resource "aws_acm_certificate" "api" {
+  domain_name       = "api.prixfixe.dev"
+  validation_method = "DNS"
 
-#   options {
-#     certificate_transparency_logging_preference = "ENABLED"
-#   }
+  options {
+    certificate_transparency_logging_preference = "ENABLED"
+  }
 
-#   lifecycle {
-#     create_before_destroy = true
-#   }
+  lifecycle {
+    create_before_destroy = true
+  }
 
-#   tags = {
-#     Name = "dev_api"
-#   }
-# }
+  tags = {
+    Name = "dev_api"
+  }
+}
 
 # output "domain_validations" {
 #   value = aws_acm_certificate.api.domain_validation_options
