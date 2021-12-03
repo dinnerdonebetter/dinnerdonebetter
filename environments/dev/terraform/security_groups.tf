@@ -45,20 +45,19 @@ resource "aws_security_group" "load_balancer" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description      = "http in v6"
-    from_port        = 80
-    to_port          = 80
-    protocol         = "tcp"
-    cidr_blocks      = [aws_vpc.main.cidr_block]
-    ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
-  }
-
-  ingress {
     description = "http in"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = [aws_vpc.main.cidr_block]
+  }
+
+  ingress {
+    description      = "http in v6"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
   }
 
   egress {
