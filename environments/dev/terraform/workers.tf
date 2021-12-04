@@ -5,24 +5,8 @@ locals {
   timeout        = 30
 }
 
-data "aws_ecr_repository" "writer_worker" {
-  name = "writer_worker"
-}
-
-data "aws_ecr_repository" "updater_worker" {
-  name = "updater_worker"
-}
-
-data "aws_ecr_repository" "archiver_worker" {
-  name = "archiver_worker"
-}
-
-data "aws_ecr_repository" "data_changes_worker" {
-  name = "data_changes_worker"
-}
-
-data "aws_ecr_repository" "chore_worker" {
-  name = "chore_worker"
+data "aws_ecr_repository" "writes_worker" {
+  name = "writes_worker"
 }
 
 resource "aws_lambda_function" "writes_worker_lambda" {
@@ -38,7 +22,13 @@ resource "aws_lambda_function" "writes_worker_lambda" {
     mode = "Active"
   }
 
-  image_uri = format("%s:latest", data.aws_ecr_repository.writer_worker.repository_url)
+  image_uri = format("%s:latest", data.aws_ecr_repository.writes_worker.repository_url)
+
+  depends_on = [data.aws_ecr_repository.writes_worker]
+}
+
+data "aws_ecr_repository" "updates_worker" {
+  name = "updates_worker"
 }
 
 resource "aws_lambda_function" "updates_worker_lambda" {
@@ -54,9 +44,13 @@ resource "aws_lambda_function" "updates_worker_lambda" {
     mode = "Active"
   }
 
-  image_uri = format("%s:latest", data.aws_ecr_repository.updater_worker.repository_url)
+  image_uri = format("%s:latest", data.aws_ecr_repository.updates_worker.repository_url)
 
-  depends_on = [aws_ecr_repository.updater_worker]
+  depends_on = [data.aws_ecr_repository.updates_worker]
+}
+
+data "aws_ecr_repository" "archives_worker" {
+  name = "archives_worker"
 }
 
 resource "aws_lambda_function" "archives_worker_lambda" {
@@ -72,9 +66,13 @@ resource "aws_lambda_function" "archives_worker_lambda" {
     mode = "Active"
   }
 
-  image_uri = format("%s:latest", data.aws_ecr_repository.archiver_worker.repository_url)
+  image_uri = format("%s:latest", data.aws_ecr_repository.archives_worker.repository_url)
 
-  depends_on = [aws_ecr_repository.archiver_worker]
+  depends_on = [data.aws_ecr_repository.archives_worker]
+}
+
+data "aws_ecr_repository" "data_changes_worker" {
+  name = "data_changes_worker"
 }
 
 resource "aws_lambda_function" "data_changes_worker_lambda" {
@@ -92,7 +90,11 @@ resource "aws_lambda_function" "data_changes_worker_lambda" {
 
   image_uri = format("%s:latest", data.aws_ecr_repository.data_changes_worker.repository_url)
 
-  depends_on = [aws_ecr_repository.data_changes_worker]
+  depends_on = [data.aws_ecr_repository.data_changes_worker]
+}
+
+data "aws_ecr_repository" "chores_worker" {
+  name = "chores_worker"
 }
 
 resource "aws_lambda_function" "chores_worker_lambda" {
@@ -108,9 +110,9 @@ resource "aws_lambda_function" "chores_worker_lambda" {
     mode = "Active"
   }
 
-  image_uri = format("%s:latest", data.aws_ecr_repository.chore_worker.repository_url)
+  image_uri = format("%s:latest", data.aws_ecr_repository.chores_worker.repository_url)
 
-  depends_on = [aws_ecr_repository.chore_worker]
+  depends_on = [data.aws_ecr_repository.chores_worker]
 }
 
 resource "aws_cloudwatch_event_rule" "every_minute" {
