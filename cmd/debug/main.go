@@ -13,9 +13,8 @@ import (
 )
 
 const (
-	dbURL = "postgres://prixfixe_api:password@api-database.cluster-ctj4wxgujo7g.us-east-1.rds.amazonaws.com:5432/prixfixe"
-	// queueURL = "https://sqs.us-east-1.amazonaws.com/966107642521/writes.fifo"
-	queueArn = "arn:aws:sqs:us-east-1:966107642521:writes.fifo"
+	dbURL    = "postgres://prixfixe_api:password@api-database.cluster-ctj4wxgujo7g.us-east-1.rds.amazonaws.com:5432/prixfixe"
+	queueURL = "https://sqs.us-east-1.amazonaws.com/966107642521/writes.fifo"
 )
 
 var (
@@ -59,7 +58,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			},
 		},
 		MessageBody: aws.String("just testin'"),
-		QueueUrl:    aws.String(queueArn),
+		QueueUrl:    aws.String(queueURL),
 	}); err != nil {
 		log.Printf("error writing message to queue: %v", err)
 		fmt.Fprintf(w, "Error: %s", err)
