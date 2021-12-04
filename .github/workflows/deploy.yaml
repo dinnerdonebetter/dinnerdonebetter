@@ -32,15 +32,15 @@ jobs:
         continue-on-error: true
 
       - name: ensure container repositories
-        run: aws ecr create-repository --repository-name writes_worker
+        run: aws ecr create-repository --repository-name writer_worker
         continue-on-error: true
 
       - name: ensure container repositories
-        run: aws ecr create-repository --repository-name updates_worker
+        run: aws ecr create-repository --repository-name updater_worker
         continue-on-error: true
 
       - name: ensure container repositories
-        run:  aws ecr create-repository --repository-name archives_worker
+        run:  aws ecr create-repository --repository-name archiver_worker
         continue-on-error: true
 
       - name: ensure container repositories
@@ -67,84 +67,54 @@ jobs:
           docker push $ECR_REGISTRY/api_server:$IMAGE_TAG
           docker push $ECR_REGISTRY/api_server:latest
 
-      - name: Build and tag writer worker image
+      - name: Build, tag, and push writer worker image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build --tag $ECR_REGISTRY/writes_worker:$IMAGE_TAG --file environments/dev/dockerfiles/writes_worker.Dockerfile .
-          docker build --tag $ECR_REGISTRY/writes_worker:latest --file environments/dev/dockerfiles/writes_worker.Dockerfile .
-          
-      - name: Push writer worker image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker push $ECR_REGISTRY/writes_worker:$IMAGE_TAG
-          docker push $ECR_REGISTRY/writes_worker:latest
+          docker build --tag $ECR_REGISTRY/writer_worker:$IMAGE_TAG --file environments/dev/dockerfiles/writer_worker.Dockerfile .
+          docker push $ECR_REGISTRY/writer_worker:$IMAGE_TAG
+          docker build --tag $ECR_REGISTRY/writer_worker:latest --file environments/dev/dockerfiles/writer_worker.Dockerfile .
+          docker push $ECR_REGISTRY/writer_worker:latest
 
-      - name: Build and tag updater worker image
+      - name: Build, tag, and push updater worker image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build --tag $ECR_REGISTRY/updates_worker:$IMAGE_TAG --file environments/dev/dockerfiles/updates_worker.Dockerfile .
-          docker build --tag $ECR_REGISTRY/updates_worker:latest --file environments/dev/dockerfiles/updates_worker.Dockerfile .
-       
-      - name: Push updater worker image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker push $ECR_REGISTRY/updates_worker:$IMAGE_TAG
-          docker push $ECR_REGISTRY/updates_worker:latest
+          docker build --tag $ECR_REGISTRY/updater_worker:$IMAGE_TAG --file environments/dev/dockerfiles/updater_worker.Dockerfile .
+          docker push $ECR_REGISTRY/updater_worker:$IMAGE_TAG
+          docker build --tag $ECR_REGISTRY/updater_worker:latest --file environments/dev/dockerfiles/updater_worker.Dockerfile .
+          docker push $ECR_REGISTRY/updater_worker:latest
 
-      - name: Build and tag archiver worker image
+      - name: Build, tag, and push archiver worker image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build --tag $ECR_REGISTRY/archives_worker:$IMAGE_TAG --file environments/dev/dockerfiles/archives_worker.Dockerfile .
-          docker build --tag $ECR_REGISTRY/archives_worker:latest --file environments/dev/dockerfiles/archives_worker.Dockerfile .
-        
-      - name: Push archiver worker image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker push $ECR_REGISTRY/archives_worker:$IMAGE_TAG
-          docker push $ECR_REGISTRY/archives_worker:latest
+          docker build --tag $ECR_REGISTRY/archiver_worker:$IMAGE_TAG --file environments/dev/dockerfiles/archiver_worker.Dockerfile .
+          docker push $ECR_REGISTRY/archiver_worker:$IMAGE_TAG
+          docker build --tag $ECR_REGISTRY/archiver_worker:latest --file environments/dev/dockerfiles/archiver_worker.Dockerfile .
+          docker push $ECR_REGISTRY/archiver_worker:latest
 
-      - name: Build and tag data changes worker image
+      - name: Build, tag, and push data changes worker image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build --tag $ECR_REGISTRY/data_changes_worker:$IMAGE_TAG --file environments/dev/dockerfiles/data_changes_worker.Dockerfile .
-          docker build --tag $ECR_REGISTRY/data_changes_worker:latest --file environments/dev/dockerfiles/data_changes_worker.Dockerfile .
-
-      - name: Push data changes worker image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
           docker push $ECR_REGISTRY/data_changes_worker:$IMAGE_TAG
+          docker build --tag $ECR_REGISTRY/data_changes_worker:latest --file environments/dev/dockerfiles/data_changes_worker.Dockerfile .
           docker push $ECR_REGISTRY/data_changes_worker:latest
 
-      - name: Build and tag chores worker image
+      - name: Build, tag, and push chores worker image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build --tag $ECR_REGISTRY/chores_worker:$IMAGE_TAG --file environments/dev/dockerfiles/chores_worker.Dockerfile .
-          docker build --tag $ECR_REGISTRY/chores_worker:latest --file environments/dev/dockerfiles/chores_worker.Dockerfile .
-          
-      - name: Push chores worker image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
           docker push $ECR_REGISTRY/chores_worker:$IMAGE_TAG
+          docker build --tag $ECR_REGISTRY/chores_worker:latest --file environments/dev/dockerfiles/chores_worker.Dockerfile .
           docker push $ECR_REGISTRY/chores_worker:latest
 
       # - name: Install Go
