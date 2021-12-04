@@ -12,6 +12,8 @@ RUN go build -trimpath -o /workers -v github.com/prixfixeco/api_server/cmd/worke
 # final stage
 FROM debian:bullseye
 
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
+
 COPY --from=build-stage /workers /workers
 
 ENTRYPOINT ["/workers"]

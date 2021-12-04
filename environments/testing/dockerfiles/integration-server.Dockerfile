@@ -12,6 +12,8 @@ RUN go build -trimpath -o /prixfixe -v github.com/prixfixeco/api_server/cmd/serv
 # final stage
 FROM debian:stretch
 
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
+
 COPY --from=build-stage /prixfixe /prixfixe
 
 ENTRYPOINT ["/prixfixe"]

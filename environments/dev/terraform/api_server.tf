@@ -122,9 +122,12 @@ data "aws_iam_policy_document" "ecs_task_assume_role" {
       "sqs:ReceiveMessage",
     ]
 
-    resources = [
-      aws_sqs_queue.writes_queue.arn,
-    ]
+    principals {
+      type = "Service"
+      identifiers = [
+        aws_sqs_queue.writes_queue.arn,
+      ]
+    }
   }
 }
 

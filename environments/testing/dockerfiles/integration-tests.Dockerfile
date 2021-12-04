@@ -1,6 +1,7 @@
 FROM golang:1.17-stretch
 
-RUN apt-get update -y && apt-get install -y make git gcc musl-dev
+
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates make git gcc musl-dev
 
 WORKDIR /go/src/github.com/prixfixeco/api_server
 
