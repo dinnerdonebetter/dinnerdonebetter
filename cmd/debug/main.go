@@ -57,10 +57,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				StringValue: aws.String("Stuff"),
 			},
 		},
-		MessageBody: aws.String("just testin'"),
-		QueueUrl:    aws.String(queueURL),
+		MessageGroupId: aws.String("writes"),
+		MessageBody:    aws.String("just testin'"),
+		QueueUrl:       aws.String(queueURL),
 	}); err != nil {
-		log.Printf("error writing message to queue: %v", err)
+		log.Printf("error writing message to queue: %v\n", err)
 		fmt.Fprintf(w, "Error: %s", err)
 	}
 
