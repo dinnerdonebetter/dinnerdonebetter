@@ -52,7 +52,7 @@ resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "main_internet_gateway"sts
+    Name = "main_internet_gateway"
 
   tags = {
     Name = "dev-public"
