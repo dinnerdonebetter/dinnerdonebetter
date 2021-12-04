@@ -1,7 +1,7 @@
 on: [pull_request]
 name: Deploy
 jobs:
-  build:
+  containers:
     runs-on: ubuntu-latest
     strategy:
       matrix:
