@@ -20,22 +20,9 @@ resource "aws_iam_role" "worker_lambda_role" {
       },
       {
         "Effect" : "Allow",
-        "Resource" : aws_sqs_queue.writes_queue.arn,
-        "Action" : "sts:AssumeRole"
-      },
-      {
-        "Effect" : "Allow",
-        "Resource" : aws_sqs_queue.updates_queue.arn,
-        "Action" : "sts:AssumeRole"
-      },
-      {
-        "Effect" : "Allow",
-        "Resource" : aws_sqs_queue.archives_queue.arn,
-        "Action" : "sts:AssumeRole"
-      },
-      {
-        "Effect" : "Allow",
-        "Resource" : aws_sqs_queue.data_changes_queue.arn,
+        "Principal" : {
+          "Service" : "sqs.amazonaws.com"
+        },
         "Action" : "sts:AssumeRole"
       },
     ]
