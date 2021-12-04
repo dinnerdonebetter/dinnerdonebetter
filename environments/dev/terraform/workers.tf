@@ -5,6 +5,10 @@ locals {
   timeout        = 30
 }
 
+module "containers" {
+  source = "./containers"
+}
+
 data "aws_ecr_repository" "writes_worker" {
   name = "writes_worker"
 }
