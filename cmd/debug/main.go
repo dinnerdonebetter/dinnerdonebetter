@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
 	_ "github.com/lib/pq"
+	"github.com/segmentio/ksuid"
 )
 
 const (
@@ -57,9 +58,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				StringValue: aws.String("Stuff"),
 			},
 		},
-		MessageGroupId: aws.String("writes"),
-		MessageBody:    aws.String("just testin'"),
-		QueueUrl:       aws.String(queueURL),
+		MessageDeduplicationId: aws.String(ksuid.New().String()),
+		MessageGroupId:         aws.String("writes"),
+		MessageBody:            aws.String("just testin'"),
+		QueueUrl:               aws.String(queueURL),
 	}); err != nil {
 		log.Printf("error writing message to queue: %v\n", err)
 		fmt.Fprintf(w, "Error: %s", err)
