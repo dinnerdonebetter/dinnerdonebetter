@@ -22,9 +22,5 @@ terraform {
       source  = "cyrilgdn/postgresql"
       version = "~> 1.14"
     }
-    docker = {
-      source  = "kreuzwerker/docker"
-      version = "2.15.0"
-    }
   }
 }
