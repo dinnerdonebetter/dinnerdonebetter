@@ -41,7 +41,7 @@ resource "aws_ecs_task_definition" "api_server" {
   ])
 
   execution_role_arn = aws_iam_role.api_task_execution_role.arn
-  task_role_arn      = aws_iam_role.api_task_execution_role.arn
+  task_role_arn      = aws_iam_role.api_task_role.arn
 
   # These are the minimum values for Fargate containers.
   cpu                      = 256
