@@ -53,6 +53,9 @@ resource "aws_internet_gateway" "main" {
 
   tags = {
     Name = "main_internet_gateway"
+
+  tags = {
+    Name = "dev-public"
   }
 }
 
