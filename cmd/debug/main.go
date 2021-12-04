@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -18,9 +17,9 @@ const (
 // dbURL = "postgres://prixfixe_api"
 )
 
-var (
-	db *sql.DB
-)
+// var (
+// 	db *sql.DB
+// )
 
 func main() {
 	http.HandleFunc("/", handler)
