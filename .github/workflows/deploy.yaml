@@ -1,43 +1,8 @@
 on: [pull_request]
 name: Deploy
 jobs:
-  ensure_container_repositories:
-    runs-on: ubuntu-latest
-    needs: scaffold
-    strategy:
-      matrix:
-        image: [
-          'api_server',
-          'writes_worker',
-          'updates_worker',
-          'archives_worker',
-          'data_changes_worker',
-          'chores_worker',
-        ]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      # we create all of these even though they likely already exist so that we can push to them
-      - name: ensure ${{ matrix.image }} repository exists
-        run: aws ecr create-repository --repository-name ${{ matrix.image }} || if [[ "$?" -eq 254 ]]; then echo "repository exists"; fi
-        continue-on-error: true
-
   scaffold:
     runs-on: ubuntu-latest
-    needs:
-      - ensure_container_repositories
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -79,8 +44,7 @@ jobs:
         
   deploy:
     runs-on: ubuntu-latest
-    needs: 
-      - scaffold
+    needs: scaffold
     strategy:
       matrix:
         image: [
@@ -94,6 +58,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.17.3'
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -105,6 +74,11 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+
+      # we create all of these even though they likely already exist so that we can push to them
+      - name: ensure ${{ matrix.image }} repository exists
+        run: aws ecr create-repository --repository-name ${{ matrix.image }}
+        continue-on-error: true
 
       - name: Build and tag ${{ matrix.image }} image
         env:
