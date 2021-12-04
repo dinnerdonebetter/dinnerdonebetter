@@ -123,8 +123,9 @@ data "aws_iam_policy_document" "ecs_task_assume_role" {
     ]
 
     principals {
-      type = "Service"
-      identifiers = [
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+      resources = [
         aws_sqs_queue.writes_queue.arn,
       ]
     }
