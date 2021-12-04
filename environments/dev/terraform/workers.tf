@@ -54,7 +54,7 @@ resource "aws_lambda_function" "updates_worker_lambda" {
     mode = "Active"
   }
 
-  image_uri = format("%s:latest", data.aws_ecr_repository.updater_worker.repository_url)
+  image_uri = format("%s:latest", aws_ecr_repository.updater_worker.repository_url)
 }
 
 resource "aws_lambda_function" "archives_worker_lambda" {
@@ -70,7 +70,7 @@ resource "aws_lambda_function" "archives_worker_lambda" {
     mode = "Active"
   }
 
-  image_uri = format("%s:latest", data.aws_ecr_repository.archiver_worker.repository_url)
+  image_uri = format("%s:latest", aws_ecr_repository.archiver_worker.repository_url)
 }
 
 resource "aws_lambda_function" "data_changes_worker_lambda" {
@@ -86,7 +86,7 @@ resource "aws_lambda_function" "data_changes_worker_lambda" {
     mode = "Active"
   }
 
-  image_uri = format("%s:latest", data.aws_ecr_repository.data_changes_worker.repository_url)
+  image_uri = format("%s:latest", aws_ecr_repository.data_changes_worker.repository_url)
 }
 
 resource "aws_lambda_function" "chores_worker_lambda" {
@@ -102,7 +102,7 @@ resource "aws_lambda_function" "chores_worker_lambda" {
     mode = "Active"
   }
 
-  image_uri = format("%s:latest", data.aws_ecr_repository.chore_worker.repository_url)
+  image_uri = format("%s:latest", aws_ecr_repository.chore_worker.repository_url)
 }
 
 resource "aws_cloudwatch_event_rule" "every_minute" {
