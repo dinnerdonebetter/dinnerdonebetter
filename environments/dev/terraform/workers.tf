@@ -21,6 +21,7 @@ resource "aws_lambda_function" "writes_worker_lambda" {
   runtime       = local.lambda_runtime
   memory_size   = local.memory_size
   timeout       = local.timeout
+  package_type  = "Image"
 
   image_uri = aws_ecr_repository.writer.repository_url
 }
@@ -41,6 +42,7 @@ resource "aws_lambda_function" "updates_worker_lambda" {
   runtime       = local.lambda_runtime
   memory_size   = local.memory_size
   timeout       = local.timeout
+  package_type  = "Image"
 
   image_uri = aws_ecr_repository.updater.repository_url
 }
@@ -61,6 +63,7 @@ resource "aws_lambda_function" "archives_worker_lambda" {
   runtime       = local.lambda_runtime
   memory_size   = local.memory_size
   timeout       = local.timeout
+  package_type  = "Image"
 
   image_uri = aws_ecr_repository.archiver.repository_url
 }
@@ -81,6 +84,7 @@ resource "aws_lambda_function" "data_changes_worker_lambda" {
   runtime       = local.lambda_runtime
   memory_size   = local.memory_size
   timeout       = local.timeout
+  package_type  = "Image"
 
   image_uri = aws_ecr_repository.data_change_observer.repository_url
 }
@@ -101,6 +105,7 @@ resource "aws_lambda_function" "chores_worker_lambda" {
   runtime       = local.lambda_runtime
   memory_size   = local.memory_size
   timeout       = local.timeout
+  package_type  = "Image"
 
   image_uri = aws_ecr_repository.chore_worker.repository_url
 }
