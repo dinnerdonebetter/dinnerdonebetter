@@ -93,19 +93,6 @@ data "aws_iam_policy_document" "ecs_task_execution_assume_role" {
       identifiers = ["ecs-tasks.amazonaws.com"]
     }
   }
-
-  statement {
-    actions = [
-      "sqs:SendMessage",
-      "sqs:ReceiveMessage",
-    ]
-    resources = [
-      aws_sqs_queue.writes_queue.arn,
-      aws_sqs_queue.updates_queue.arn,
-      aws_sqs_queue.archives_queue.arn,
-      aws_sqs_queue.data_changes_queue.arn,
-    ]
-  }
 }
 
 resource "aws_iam_role" "api_task_execution_role" {
