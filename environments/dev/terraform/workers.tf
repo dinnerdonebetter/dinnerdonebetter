@@ -36,7 +36,9 @@ resource "aws_lambda_function" "writes_worker_lambda" {
 
   tracing_config {
     mode = "Active"
-  }
+  }data "aws_ecr_repository" "api_server" {
+  name = "api_server"
+}
 
   image_uri = format("%s:latest", data.aws_ecr_repository.writer_worker.repository_url)
 }
