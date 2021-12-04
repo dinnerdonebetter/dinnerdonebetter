@@ -28,8 +28,7 @@ jobs:
 
       - name: ensure container repositories
         run: |
-          aws ecr create-repository --repository-name frankfurter
-          number="$?"; if [[ $number -eq 254 || $number -eq 0 ]]; then echo "it was 254 or 0"; else echo "it wasn't 254 or 0"; fi
+          aws ecr create-repository --repository-name frankfurter; number="$?"; if [[ $number -eq 254 || $number -eq 0 ]]; then echo "it was 254 or 0"; else echo "it wasn't 254 or 0"; fi
 
       - name: Build and tag API server image
         env:
