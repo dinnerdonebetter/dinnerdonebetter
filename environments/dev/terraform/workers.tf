@@ -5,26 +5,6 @@ locals {
   timeout        = 30
 }
 
-data "aws_ecr_repository" "writer_worker" {
-  name = "writer_worker"
-}
-
-resource "aws_ecr_repository" "updater_worker" {
-  name = "updater_worker"
-}
-
-resource "aws_ecr_repository" "archiver_worker" {
-  name = "archiver_worker"
-}
-
-resource "aws_ecr_repository" "data_changes_worker" {
-  name = "data_changes_worker"
-}
-
-resource "aws_ecr_repository" "chore_worker" {
-  name = "chore_worker"
-}
-
 resource "aws_lambda_function" "writes_worker_lambda" {
   function_name = "writes_worker"
   role          = aws_iam_role.worker_lambda_role.arn
@@ -36,9 +16,7 @@ resource "aws_lambda_function" "writes_worker_lambda" {
 
   tracing_config {
     mode = "Active"
-  }data "aws_ecr_repository" "api_server" {
-  name = "api_server"
-}
+  }
 
   image_uri = format("%s:latest", data.aws_ecr_repository.writer_worker.repository_url)
 }
