@@ -1,12 +1,21 @@
 on: [pull_request]
 name: Deploy
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:          
+  containers:
+    strategy:
+      matrix:
+        image: [
+          'api_server',
+          'writes_worker',
+          'updates_worker',
+          'archives_worker',
+          'data_changes_worker',
+          'chores_worker',
+        ]
+    steps:
       - name: Checkout
         uses: actions/checkout@v2
-
+        
       - name: Install Go
         uses: actions/setup-go@v2
         with:
@@ -27,198 +36,25 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       # we create all of these even though they likely already exist so that we can push to them
-      - name: ensure container repositories
-        run: aws ecr create-repository --repository-name api_server
+      - name: ensure ${{ matrix.image }} repository exists
+        run: aws ecr create-repository --repository-name ${{ matrix.image }}
         continue-on-error: true
 
-      - name: ensure container repositories
-        run: aws ecr create-repository --repository-name writes_worker
-        continue-on-error: true
-
-      - name: ensure container repositories
-        run: aws ecr create-repository --repository-name updates_worker
-        continue-on-error: true
-
-      - name: ensure container repositories
-        run:  aws ecr create-repository --repository-name archives_worker
-        continue-on-error: true
-
-      - name: ensure container repositories
-        run:  aws ecr create-repository --repository-name data_changes_worker
-        continue-on-error: true
-
-      - name: ensure container repositories
-        run: aws ecr create-repository --repository-name chores_worker
-        continue-on-error: true
-
-      - name: Build and tag API server image
+      - name: Build and tag ${{ matrix.image }} image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build --tag $ECR_REGISTRY/api_server:$IMAGE_TAG --file environments/dev/dockerfiles/api_server.Dockerfile .
-          docker build --tag $ECR_REGISTRY/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
+          docker build --tag $ECR_REGISTRY/${{ matrix.image }}:$IMAGE_TAG --file environments/dev/dockerfiles/${{ matrix.image }}.Dockerfile .
+          docker build --tag $ECR_REGISTRY/${{ matrix.image }}:latest --file environments/dev/dockerfiles/${{ matrix.image }}.Dockerfile .
           
       - name: Push API server image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker push $ECR_REGISTRY/api_server:$IMAGE_TAG
-          docker push $ECR_REGISTRY/api_server:latest
-
-      - name: Build and tag writer worker image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build --tag $ECR_REGISTRY/writes_worker:$IMAGE_TAG --file environments/dev/dockerfiles/writes_worker.Dockerfile .
-          docker build --tag $ECR_REGISTRY/writes_worker:latest --file environments/dev/dockerfiles/writes_worker.Dockerfile .
-          
-      - name: Push writer worker image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker push $ECR_REGISTRY/writes_worker:$IMAGE_TAG
-          docker push $ECR_REGISTRY/writes_worker:latest
-
-      - name: Build and tag updater worker image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build --tag $ECR_REGISTRY/updates_worker:$IMAGE_TAG --file environments/dev/dockerfiles/updates_worker.Dockerfile .
-          docker build --tag $ECR_REGISTRY/updates_worker:latest --file environments/dev/dockerfiles/updates_worker.Dockerfile .
-       
-      - name: Push updater worker image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker push $ECR_REGISTRY/updates_worker:$IMAGE_TAG
-          docker push $ECR_REGISTRY/updates_worker:latest
-
-      - name: Build and tag archiver worker image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build --tag $ECR_REGISTRY/archives_worker:$IMAGE_TAG --file environments/dev/dockerfiles/archives_worker.Dockerfile .
-          docker build --tag $ECR_REGISTRY/archives_worker:latest --file environments/dev/dockerfiles/archives_worker.Dockerfile .
-        
-      - name: Push archiver worker image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker push $ECR_REGISTRY/archives_worker:$IMAGE_TAG
-          docker push $ECR_REGISTRY/archives_worker:latest
-
-      - name: Build and tag data changes worker image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build --tag $ECR_REGISTRY/data_changes_worker:$IMAGE_TAG --file environments/dev/dockerfiles/data_changes_worker.Dockerfile .
-          docker build --tag $ECR_REGISTRY/data_changes_worker:latest --file environments/dev/dockerfiles/data_changes_worker.Dockerfile .
-
-      - name: Push data changes worker image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker push $ECR_REGISTRY/data_changes_worker:$IMAGE_TAG
-          docker push $ECR_REGISTRY/data_changes_worker:latest
-
-      - name: Build and tag chores worker image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build --tag $ECR_REGISTRY/chores_worker:$IMAGE_TAG --file environments/dev/dockerfiles/chores_worker.Dockerfile .
-          docker build --tag $ECR_REGISTRY/chores_worker:latest --file environments/dev/dockerfiles/chores_worker.Dockerfile .
-          
-      - name: Push chores worker image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker push $ECR_REGISTRY/chores_worker:$IMAGE_TAG
-          docker push $ECR_REGISTRY/chores_worker:latest
-
-      # - name: Install Go
-      #   uses: actions/setup-go@v2
-      #   with:
-      #     go-version: '1.17.3'
-
-      # - name: Install dependencies
-      #   run: go mod vendor
-
-      # - name: Build writer lambda
-      #   run: go build -o writer github.com/prixfixeco/api_server/cmd/workers/lambdas/writes
-
-      # - name: Zip writer lambda
-      #   run: zip writer_lambda.zip writer
-
-      # - name: Upload writer lambda
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: writer
-      #     path: writer_lambda.zip
-      #     retention-days: 1
-
-      # - name: Build updater lambda
-      #   run: go build -o updater github.com/prixfixeco/api_server/cmd/workers/lambdas/updates
-
-      # - name: Zip updater lambda
-      #   run: zip updater_lambda.zip updater
-
-      # - name: Upload updater lambda
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: updater
-      #     path: updater_lambda.zip
-      #     retention-days: 1
-
-      # - name: Build archiver lambda
-      #   run: go build -o archiver github.com/prixfixeco/api_server/cmd/workers/lambdas/archives
-
-      # - name: Zip archiver lambda
-      #   run: zip archiver_lambda.zip archiver
-
-      # - name: Upload archiver lambda
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: archiver
-      #     path: archiver_lambda.zip
-      #     retention-days: 1
-
-      # - name: Build data changes lambda
-      #   run: go build -o data_changes github.com/prixfixeco/api_server/cmd/workers/lambdas/data_changes
-
-      # - name: Zip changes lambda
-      #   run: zip data_changes_lambda.zip data_changes
-
-      # - name: Upload data changes lambda
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: data_changes
-      #     path: data_changes_lambda.zip
-      #     retention-days: 1
-
-      # - name: Build chores lambda
-      #   run: go build -o chores github.com/prixfixeco/api_server/cmd/workers/lambdas/chores
-
-      # - name: Zip chores lambda
-      #   run: zip chores_lambda.zip chores
-
-      # - name: Upload chores lambda
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: chores
-      #     path: chores_lambda.zip
-      #     retention-days: 1
+          docker push $ECR_REGISTRY/${{ matrix.image }}:$IMAGE_TAG
+          docker push $ECR_REGISTRY/${{ matrix.image }}:latest
 
   scaffold:
     runs-on: ubuntu-latest
@@ -243,38 +79,6 @@ jobs:
         id: fmt
         run: terraform fmt -check
 
-        # download lambdas, if these aren't there, then `terraform validate` fails
-
-      # - name: Download writer lambda
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: writer
-      #     path: environments/dev/terraform
-
-      # - name: Download updater lambda
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: updater
-      #     path: environments/dev/terraform
-
-      # - name: Download archiver lambda
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: archiver
-      #     path: environments/dev/terraform
-
-      # - name: Download data changes lambda
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: data_changes
-      #     path: environments/dev/terraform
-
-      # - name: Download chores lambda
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: chores
-      #     path: environments/dev/terraform
-
       - name: copy config file
         working-directory: environments/dev
         run: cp config_files/service-config.json terraform/service-config.json
@@ -294,30 +98,3 @@ jobs:
         run: terraform apply -auto-approve
         working-directory: environments/dev/terraform
         
-  deploy:
-    needs: scaffold
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-          
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build, tag, and push API server image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build --tag $ECR_REGISTRY/api_server:$IMAGE_TAG --file environments/dev/dockerfiles/api_server.Dockerfile .
-          docker push $ECR_REGISTRY/api_server:$IMAGE_TAG
-          docker build --tag $ECR_REGISTRY/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
-          docker push $ECR_REGISTRY/api_server:latest
