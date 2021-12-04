@@ -110,7 +110,6 @@ jobs:
 
   scaffold:
     runs-on: ubuntu-latest
-    depends-on: build
     steps:
       - name: Checkout
         uses: actions/checkout@v2
