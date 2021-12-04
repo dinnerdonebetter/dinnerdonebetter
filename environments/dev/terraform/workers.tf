@@ -1,21 +1,9 @@
-# locals {
-#   lambda_runtime = "go1.x"
-#   lambda_handler = "main"
-#   memory_size    = 1024
-#   timeout        = 30
-# }
-
-# resource "aws_lambda_function" "writes_worker_lambda" {
-#   function_name = "writes_worker"
-#   role          = data.aws_iam_role.worker_lambda_role.arn
-#   handler       = local.lambda_handler
-#   runtime       = local.lambda_runtime
-#   memory_size   = local.memory_size
-#   timeout       = local.timeout
-
-#   filename         = "writer_lambda.zip"
-#   source_code_hash = filebase64sha256("writer_lambda.zip")
-# }
+locals {
+  lambda_runtime = "go1.x"
+  lambda_handler = "main"
+  memory_size    = 1024
+  timeout        = 30
+}
 
 # resource "aws_lambda_function" "updates_worker_lambda" {
 #   function_name = "updates_worker"
