@@ -26,9 +26,17 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      # we create all of these even though they likely already exist so that we can push to them
       - name: ensure container repositories
         run: |
-          aws ecr create-repository --repository-name frankfurter; number="$?"; if [[ $number -eq 254 || $number -eq 0 ]]; then echo "it was 254 or 0"; else echo "it wasn't 254 or 0"; fi
+          aws ecr create-repository --repository-name api_server
+          aws ecr create-repository --repository-name writer_worker
+          aws ecr create-repository --repository-name updater_worker
+          aws ecr create-repository --repository-name archiver_worker
+          aws ecr create-repository --repository-name data_changes_worker
+          aws ecr create-repository --repository-name chores_worker
+        continue-on-error: true
+      
 
       - name: Build and tag API server image
         env:
