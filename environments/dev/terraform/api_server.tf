@@ -20,25 +20,28 @@ resource "aws_ecs_task_definition" "api_server" {
 
   container_definitions = jsonencode([
     {
-      name  = "api_server"
-      image = format("%s:latest", aws_ecr_repository.api_server.repository_url)
+      name  = "api_server",
+      image = format("%s:latest", aws_ecr_repository.api_server.repository_url),
       "portMappings" : [
         {
-          "containerPort" : 80
-        }
+          "containerPort" : 80,
+          "hostPort" : 80,
+          "protocol" : "tcp",
+        },
       ],
       "logConfiguration" : {
         "logDriver" : "awslogs",
         "options" : {
           "awslogs-region" : "us-east-1",
           "awslogs-group" : "/ecs/api_server",
-          "awslogs-stream-prefix" : "ecs"
-        }
-      }
-    }
+          "awslogs-stream-prefix" : "ecs",
+        },
+      },
+    },
   ])
 
   execution_role_arn = aws_iam_role.api_task_execution_role.arn
+  task_role_arn      = aws_iam_role.api_task_execution_role.arn
 
   # These are the minimum values for Fargate containers.
   cpu                      = 256
@@ -81,9 +84,26 @@ resource "aws_ecs_service" "api_server" {
   ]
 }
 
+data "aws_iam_policy_document" "ecs_task_execution_assume_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
+  }
+}
+
 resource "aws_iam_role" "api_task_execution_role" {
   name               = "api-task-execution-role"
-  assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_assume_role.json
+}
+
+# Normally we'd prefer not to hardcode an ARN in our Terraform, but since this is an AWS-managed policy, it's okay.
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
+  role       = aws_iam_role.api_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
 data "aws_iam_policy_document" "ecs_task_assume_role" {
@@ -97,12 +117,7 @@ data "aws_iam_policy_document" "ecs_task_assume_role" {
   }
 }
 
-# Normally we'd prefer not to hardcode an ARN in our Terraform, but since this is an AWS-managed policy, it's okay.
-data "aws_iam_policy" "ecs_task_execution_role" {
-  arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
-
-resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
-  role       = aws_iam_role.api_task_execution_role.name
-  policy_arn = data.aws_iam_policy.ecs_task_execution_role.arn
+resource "aws_iam_role" "api_task_role" {
+  name               = "api-task-role"
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
 }
