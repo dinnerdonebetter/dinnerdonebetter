@@ -108,23 +108,18 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
 
 data "aws_iam_policy_document" "ecs_task_assume_role" {
   statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
-    }
-  }
-
-  statement {
     actions = [
+      "sts:AssumeRole",
       "sqs:SendMessage",
       "sqs:ReceiveMessage",
     ]
 
     principals {
-      type        = "Service"
-      identifiers = ["sqs.amazonaws.com"]
+      type = "Service"
+      identifiers = [
+        "ecs-tasks.amazonaws.com",
+        "sqs.amazonaws.com",
+      ]
     }
   }
 }
