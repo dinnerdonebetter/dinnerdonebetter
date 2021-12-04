@@ -8,7 +8,6 @@ terraform {
       name = "dev-API"
     }
   }
-
   required_providers {
     cloudflare = {
       source  = "cloudflare/cloudflare"
