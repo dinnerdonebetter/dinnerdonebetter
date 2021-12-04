@@ -16,7 +16,7 @@ resource "aws_lambda_event_source_mapping" "writes_mapping" {
 
 resource "aws_sqs_queue" "updates_queue" {
   name       = "updates.fifo"
-  fifo_queue = trueconnect
+  fifo_queue = true
 }
 
 resource "aws_ssm_parameter" "updates_queue_parameter" {
