@@ -3,6 +3,7 @@ name: Deploy
 jobs:
   ensure_container_repositories:
     runs-on: ubuntu-latest
+    needs: scaffold
     strategy:
       matrix:
         image: [
