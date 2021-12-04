@@ -1,113 +1,6 @@
 on: [pull_request]
 name: Deploy
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:          
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build, tag, and push API server image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build --tag $ECR_REGISTRY/api_server:$IMAGE_TAG --file environments/dev/dockerfiles/api_server.Dockerfile .
-          docker push $ECR_REGISTRY/api_server:$IMAGE_TAG
-          docker build --tag $ECR_REGISTRY/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
-          docker push $ECR_REGISTRY/api_server:latest
-
-      - name: Build, tag, and push writer worker image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build --tag $ECR_REGISTRY/writer_worker:$IMAGE_TAG --file environments/dev/dockerfiles/writer_worker.Dockerfile .
-          docker push $ECR_REGISTRY/writer_worker:$IMAGE_TAG
-          docker build --tag $ECR_REGISTRY/writer_worker:latest --file environments/dev/dockerfiles/writer_worker.Dockerfile .
-          docker push $ECR_REGISTRY/writer_worker:latest
-
-      # - name: Install Go
-      #   uses: actions/setup-go@v2
-      #   with:
-      #     go-version: '1.17.3'
-
-      # - name: Install dependencies
-      #   run: go mod vendor
-
-      # - name: Build writer lambda
-      #   run: go build -o writer github.com/prixfixeco/api_server/cmd/workers/lambdas/writes
-
-      # - name: Zip writer lambda
-      #   run: zip writer_lambda.zip writer
-
-      # - name: Upload writer lambda
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: writer
-      #     path: writer_lambda.zip
-      #     retention-days: 1
-
-      # - name: Build updater lambda
-      #   run: go build -o updater github.com/prixfixeco/api_server/cmd/workers/lambdas/updates
-
-      # - name: Zip updater lambda
-      #   run: zip updater_lambda.zip updater
-
-      # - name: Upload updater lambda
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: updater
-      #     path: updater_lambda.zip
-      #     retention-days: 1
-
-      # - name: Build archiver lambda
-      #   run: go build -o archiver github.com/prixfixeco/api_server/cmd/workers/lambdas/archives
-
-      # - name: Zip archiver lambda
-      #   run: zip archiver_lambda.zip archiver
-
-      # - name: Upload archiver lambda
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: archiver
-      #     path: archiver_lambda.zip
-      #     retention-days: 1
-
-      # - name: Build data changes lambda
-      #   run: go build -o data_changes github.com/prixfixeco/api_server/cmd/workers/lambdas/data_changes
-
-      # - name: Zip changes lambda
-      #   run: zip data_changes_lambda.zip data_changes
-
-      # - name: Upload data changes lambda
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: data_changes
-      #     path: data_changes_lambda.zip
-      #     retention-days: 1
-
-      # - name: Build chores lambda
-      #   run: go build -o chores github.com/prixfixeco/api_server/cmd/workers/lambdas/chores
-
-      # - name: Zip chores lambda
-      #   run: zip chores_lambda.zip chores
-
-      # - name: Upload chores lambda
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: chores
-      #     path: chores_lambda.zip
-      #     retention-days: 1
-
   scaffold:
     runs-on: ubuntu-latest
     steps:
@@ -184,6 +77,12 @@ jobs:
   deploy:
     needs: scaffold
     runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.17.3'
+
       - name: Checkout code
         uses: actions/checkout@v2
           
@@ -198,7 +97,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, tag, and push API server image
+      - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
@@ -207,3 +106,68 @@ jobs:
           docker push $ECR_REGISTRY/api_server:$IMAGE_TAG
           docker build --tag $ECR_REGISTRY/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
           docker push $ECR_REGISTRY/api_server:latest
+
+  #     - name: Build writer lambda
+  #       run: go build -o writer github.com/prixfixeco/api_server/cmd/workers/lambdas/writes
+
+  #     - name: Zip writer lambda
+  #       run: zip writer_lambda.zip writer
+
+  #     - name: Upload writer lambda
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: writer
+  #         path: writer_lambda.zip
+  #         retention-days: 1
+
+  #     - name: Build updater lambda
+  #       run: go build -o updater github.com/prixfixeco/api_server/cmd/workers/lambdas/updates
+
+  #     - name: Zip updater lambda
+  #       run: zip updater_lambda.zip updater
+
+  #     - name: Upload updater lambda
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: updater
+  #         path: updater_lambda.zip
+  #         retention-days: 1
+
+  #     - name: Build archiver lambda
+  #       run: go build -o archiver github.com/prixfixeco/api_server/cmd/workers/lambdas/archives
+
+  #     - name: Zip archiver lambda
+  #       run: zip archiver_lambda.zip archiver
+
+  #     - name: Upload archiver lambda
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: archiver
+  #         path: archiver_lambda.zip
+  #         retention-days: 1
+
+  #     - name: Build data changes lambda
+  #       run: go build -o data_changes github.com/prixfixeco/api_server/cmd/workers/lambdas/data_changes
+
+  #     - name: Zip changes lambda
+  #       run: zip data_changes_lambda.zip data_changes
+
+  #     - name: Upload data changes lambda
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: data_changes
+  #         path: data_changes_lambda.zip
+  #         retention-days: 1
+
+  #     - name: Build chores lambda
+  #       run: go build -o chores github.com/prixfixeco/api_server/cmd/workers/lambdas/chores
+
+  #     - name: Zip chores lambda
+  #       run: zip chores_lambda.zip chores
+
+  #     - name: Upload chores lambda
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: chores
+  #         path: chores_lambda.zip
+  #         retention-days: 1

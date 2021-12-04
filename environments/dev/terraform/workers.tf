@@ -5,6 +5,15 @@ locals {
   timeout        = 30
 }
 
+resource "aws_ecr_repository" "writer" {
+  name = "writer"
+  # do not set image_tag_mutability to "IMMUTABLE", or else we cannot use :latest tags.
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
+
 resource "aws_lambda_function" "writes_worker_lambda" {
   function_name = "writes_worker"
   role          = aws_iam_role.worker_lambda_role.arn
@@ -14,11 +23,16 @@ resource "aws_lambda_function" "writes_worker_lambda" {
   timeout       = local.timeout
   package_type  = "Image"
 
-  tracing_config {
-    mode = "Active"
-  }
+  image_uri = aws_ecr_repository.writer.repository_url
+}
 
-  image_uri = format("%s:latest", aws_ecr_repository.writer.repository_url)
+resource "aws_ecr_repository" "updater" {
+  name = "updater"
+  # do not set image_tag_mutability to "IMMUTABLE", or else we cannot use :latest tags.
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
 }
 
 resource "aws_lambda_function" "updates_worker_lambda" {
@@ -30,11 +44,16 @@ resource "aws_lambda_function" "updates_worker_lambda" {
   timeout       = local.timeout
   package_type  = "Image"
 
-  tracing_config {
-    mode = "Active"
-  }
+  image_uri = aws_ecr_repository.updater.repository_url
+}
 
-  image_uri = format("%s:latest", aws_ecr_repository.updater.repository_url)
+resource "aws_ecr_repository" "archiver" {
+  name = "archiver"
+  # do not set image_tag_mutability to "IMMUTABLE", or else we cannot use :latest tags.
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
 }
 
 resource "aws_lambda_function" "archives_worker_lambda" {
@@ -46,11 +65,16 @@ resource "aws_lambda_function" "archives_worker_lambda" {
   timeout       = local.timeout
   package_type  = "Image"
 
-  tracing_config {
-    mode = "Active"
-  }
+  image_uri = aws_ecr_repository.archiver.repository_url
+}
 
-  image_uri = format("%s:latest", aws_ecr_repository.archiver.repository_url)
+resource "aws_ecr_repository" "data_change_observer" {
+  name = "data_change_observer"
+  # do not set image_tag_mutability to "IMMUTABLE", or else we cannot use :latest tags.
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
 }
 
 resource "aws_lambda_function" "data_changes_worker_lambda" {
@@ -62,11 +86,16 @@ resource "aws_lambda_function" "data_changes_worker_lambda" {
   timeout       = local.timeout
   package_type  = "Image"
 
-  tracing_config {
-    mode = "Active"
-  }
+  image_uri = aws_ecr_repository.data_change_observer.repository_url
+}
 
-  image_uri = format("%s:latest", aws_ecr_repository.data_change_observer.repository_url)
+resource "aws_ecr_repository" "chore_worker" {
+  name = "chore_worker"
+  # do not set image_tag_mutability to "IMMUTABLE", or else we cannot use :latest tags.
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
 }
 
 resource "aws_lambda_function" "chores_worker_lambda" {
@@ -78,11 +107,7 @@ resource "aws_lambda_function" "chores_worker_lambda" {
   timeout       = local.timeout
   package_type  = "Image"
 
-  tracing_config {
-    mode = "Active"
-  }
-
-  image_uri = format("%s:latest", aws_ecr_repository.chore_worker.repository_url)
+  image_uri = aws_ecr_repository.chore_worker.repository_url
 }
 
 resource "aws_cloudwatch_event_rule" "every_minute" {
