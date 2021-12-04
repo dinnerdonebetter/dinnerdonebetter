@@ -15,9 +15,6 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Debug
-        run: ls -Alh
-
       - name: Build, tag, and push API server image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
