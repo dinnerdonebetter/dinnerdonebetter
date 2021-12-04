@@ -17,7 +17,16 @@ resource "aws_iam_role" "worker_lambda_role" {
           "Service" : "lambda.amazonaws.com"
         },
         "Action" : "sts:AssumeRole"
-      }
+      },
+      {
+        Action : [
+          "sqs:SendMessage",
+          "sqs:SendMessageBatch",
+          "sqs:ReceiveMessage",
+        ]
+        Effect : "Allow"
+        Resource : aws_sqs_queue.writes_queue.arn
+      },
     ]
   })
 }
