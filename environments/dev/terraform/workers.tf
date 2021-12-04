@@ -13,8 +13,8 @@ resource "aws_lambda_function" "writes_worker_lambda" {
   memory_size   = local.memory_size
   timeout       = local.timeout
 
-  filename         = "writer_lambda.zip"
-  source_code_hash = filebase64sha256("writer_lambda.zip")
+  # filename         = "writer_lambda.zip"
+  # source_code_hash = filebase64sha256("writer_lambda.zip")
 }
 
 resource "aws_lambda_function" "updates_worker_lambda" {
@@ -25,8 +25,8 @@ resource "aws_lambda_function" "updates_worker_lambda" {
   memory_size   = local.memory_size
   timeout       = local.timeout
 
-  filename         = "updater_lambda.zip"
-  source_code_hash = filebase64sha256("updater_lambda.zip")
+  # filename         = "updater_lambda.zip"
+  # source_code_hash = filebase64sha256("updater_lambda.zip")
 }
 
 resource "aws_lambda_function" "archives_worker_lambda" {
@@ -37,8 +37,8 @@ resource "aws_lambda_function" "archives_worker_lambda" {
   memory_size   = local.memory_size
   timeout       = local.timeout
 
-  filename         = "archiver_lambda.zip"
-  source_code_hash = filebase64sha256("archiver_lambda.zip")
+  # filename         = "archiver_lambda.zip"
+  # source_code_hash = filebase64sha256("archiver_lambda.zip")
 }
 
 resource "aws_lambda_function" "data_changes_worker_lambda" {
@@ -49,8 +49,8 @@ resource "aws_lambda_function" "data_changes_worker_lambda" {
   memory_size   = local.memory_size
   timeout       = local.timeout
 
-  filename         = "data_changes_lambda.zip"
-  source_code_hash = filebase64sha256("data_changes_lambda.zip")
+  # filename         = "data_changes_lambda.zip"
+  # source_code_hash = filebase64sha256("data_changes_lambda.zip")
 }
 
 resource "aws_lambda_function" "chores_worker_lambda" {
@@ -61,8 +61,8 @@ resource "aws_lambda_function" "chores_worker_lambda" {
   memory_size   = local.memory_size
   timeout       = local.timeout
 
-  filename         = "chores_lambda.zip"
-  source_code_hash = filebase64sha256("chores_lambda.zip")
+  # filename         = "chores_lambda.zip"
+  # source_code_hash = filebase64sha256("chores_lambda.zip")
 }
 
 resource "aws_cloudwatch_event_rule" "every_minute" {
