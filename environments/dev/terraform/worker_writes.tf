@@ -10,11 +10,11 @@ resource "aws_ssm_parameter" "writes_queue_parameter" {
 }
 
 data "archive_file" "dummy" {
-  type = "zip"
+  type        = "zip"
   output_path = "${path.module}/writes_lambda.zip"
-  
+
   source {
-    content = "hello"
+    content  = "hello"
     filename = "dummy.txt"
   }
 }
