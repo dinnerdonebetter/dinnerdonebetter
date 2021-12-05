@@ -17,7 +17,7 @@ resource "aws_security_group" "allow_postgres" {
   }
 }
 
-resource "aws_security_group" "service" {
+resource "aws_security_group" "http_service" {
   name        = "dev-service"
   description = "Allow HTTP in, all outbound traffic"
   vpc_id      = aws_vpc.main.id
