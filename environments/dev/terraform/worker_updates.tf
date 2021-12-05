@@ -21,7 +21,7 @@ resource "aws_lambda_function" "updates_worker_lambda" {
     mode = "Active"
   }
 
-  #   filename = "updates_lambda.zip"
+  # filename = "updates_lambda.zip"
 }
 
 resource "aws_lambda_event_source_mapping" "updates_mapping" {

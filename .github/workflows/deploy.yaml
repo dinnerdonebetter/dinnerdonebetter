@@ -154,34 +154,46 @@ jobs:
           name: writer_lambda
           path: artifacts
 
-      - name: Debug
-        working-directory: artifacts
-        run: ls -AlhR
-
       - name: Deploy writer lambda
         working-directory: artifacts
         run: aws lambda update-function-code --function-name writes_worker --zip-file fileb://writer_lambda.zip
 
-      # - name: Download updater lambda
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: updater
-      #     path: environments/dev/terraform
+      - name: Download updater lambda
+        uses: actions/download-artifact@v2
+        with:
+          name: updater_lambda
+          path: artifacts
 
-      # - name: Download archiver lambda
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: archiver
-      #     path: environments/dev/terraform
+      - name: Deploy updater lambda
+        working-directory: artifacts
+        run: aws lambda update-function-code --function-name updates_worker --zip-file fileb://updater_lambda.zip
 
-      # - name: Download data changes lambda
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: data_changes
-      #     path: environments/dev/terraform
+      - name: Download archiver lambda
+        uses: actions/download-artifact@v2
+        with:
+          name: archiver_lambda
+          path: artifacts
 
-      # - name: Download chores lambda
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: chores
-      #     path: environments/dev/terraform
+      - name: Deploy archiver lambda
+        working-directory: artifacts
+        run: aws lambda update-function-code --function-name archives_worker --zip-file fileb://updater_lambda.zip
+
+      - name: Download data changes lambda
+        uses: actions/download-artifact@v2
+        with:
+          name: data_changes_lambda
+          path: artifacts
+
+      - name: Deploy data changes lambda
+        working-directory: artifacts
+        run: aws lambda update-function-code --function-name data_changes_worker --zip-file fileb://data_changes_lambda.zip
+
+      - name: Download chores lambda
+        uses: actions/download-artifact@v2
+        with:
+          name: chores_lambda
+          path: artifacts
+
+      - name: Deploy data changes lambda
+        working-directory: artifacts
+        run: aws lambda update-function-code --function-name data_changes_worker --zip-file fileb://chores_lambda.zip

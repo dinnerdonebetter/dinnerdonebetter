@@ -21,7 +21,7 @@ resource "aws_lambda_function" "data_changes_worker_lambda" {
     mode = "Active"
   }
 
-  #   filename = "data_changes_lambda.zip"
+  # filename = "data_changes_lambda.zip"
 }
 
 resource "aws_lambda_event_source_mapping" "data_changes_mapping" {
