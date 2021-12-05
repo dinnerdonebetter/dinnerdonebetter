@@ -197,7 +197,13 @@ func devEnvironmentConfig(ctx context.Context, filePath string) error {
 		},
 		Email:        emailConfig,
 		CustomerData: customerDataPlatformConfig,
-		Server:       localServer,
+		Server: server.Config{
+			Debug:           true,
+			HTTPPort:        80,
+			StartupDeadline: time.Minute,
+			// HTTPSCertificateFile:    "/etc/certs/cert.pem",
+			// HTTPSCertificateKeyFile: "/etc/certs/key.pem",
+		},
 		Database: dbconfig.Config{
 			Debug:           true,
 			RunMigrations:   true,
