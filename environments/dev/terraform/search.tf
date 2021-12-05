@@ -26,6 +26,11 @@ resource "aws_cloudwatch_log_resource_policy" "example" {
 CONFIG
 }
 
+resource "aws_iam_service_linked_role" "es" {
+  aws_service_name = "es.amazonaws.com"
+}
+
+
 resource "aws_elasticsearch_domain" "search" {
   domain_name           = "dev-search"
   elasticsearch_version = "2.3"
@@ -52,6 +57,8 @@ resource "aws_elasticsearch_domain" "search" {
       aws_security_group.http_service.id,
     ]
   }
+
+  depends_on = [aws_iam_service_linked_role.es]
 }
 
 resource "aws_ssm_parameter" "search_url" {
