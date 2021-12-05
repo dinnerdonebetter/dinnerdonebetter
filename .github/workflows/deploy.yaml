@@ -159,7 +159,7 @@ jobs:
 
       - name: Deploy writer lambda
         working-directory: artifacts
-        run: aws lambda update-function-code --function-name writer_lambda --zip-file fileb://writer_lambda.zip
+        run: aws lambda update-function-code --function-name writes_worker --zip-file fileb://writer_lambda.zip
 
       # - name: Download updater lambda
       #   uses: actions/download-artifact@v2
