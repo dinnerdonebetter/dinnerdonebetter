@@ -22,7 +22,6 @@
 #   }
 
 #   filename         = "writer_lambda.zip"
-#   source_code_hash = filebase64sha256("writer_lambda.zip")
 # }
 
 # resource "aws_lambda_event_source_mapping" "updates_mapping" {

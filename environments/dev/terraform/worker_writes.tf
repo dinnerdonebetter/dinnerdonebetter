@@ -21,8 +21,7 @@ resource "aws_lambda_function" "writes_worker_lambda" {
     mode = "Active"
   }
 
-  filename         = "writer_lambda.zip"
-  source_code_hash = filebase64sha256("writer_lambda.zip")
+  filename = "writer_lambda.zip"
 }
 
 resource "aws_lambda_event_source_mapping" "writes_mapping" {
