@@ -21,7 +21,7 @@ resource "aws_lambda_function" "archives_worker_lambda" {
     mode = "Active"
   }
 
-  # filename = "archives_lambda.zip"
+  filename = "archives_lambda.zip"
 }
 
 resource "aws_lambda_event_source_mapping" "archives_mapping" {

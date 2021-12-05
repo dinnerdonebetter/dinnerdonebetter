@@ -21,7 +21,7 @@ resource "aws_lambda_function" "chores_worker_lambda" {
     mode = "Active"
   }
 
-  # filename = "chores_lambda.zip"
+  filename = "chores_lambda.zip"
 }
 
 resource "aws_lambda_event_source_mapping" "chores_mapping" {
