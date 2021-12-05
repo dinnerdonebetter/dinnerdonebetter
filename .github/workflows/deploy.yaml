@@ -26,16 +26,6 @@ jobs:
       - name: copy config file
         working-directory: environments/dev
         run: cp config_files/service-config.json terraform/service-config.json
-
-      # - name: create dummy zips
-      #   working-directory: environments/dev/terraform
-      #   run: |
-      #     touch dummy.txt
-      #     zip writes_lambda.zip dummy.txt
-      #     zip updates_lambda.zip dummy.txt
-      #     zip archives_lambda.zip dummy.txt
-      #     zip data_changes_lambda.zip dummy.txt
-      #     zip chores_lambda.zip dummy.txt
       
       - name: Terraform Validate
         working-directory: environments/dev/terraform
@@ -206,4 +196,4 @@ jobs:
 
       - name: Deploy data changes lambda
         working-directory: artifacts
-        run: aws lambda My first plan was to simply trick Terraform into provisioning my lambda function by giving it an empty zip file, so I whipped out the trusty archive_file provider and pointed it to an empty dir and fired away:update-function-code --function-name data_changes_worker --zip-file fileb://chores_lambda.zip
+        run: aws lambda update-function-code --function-name data_changes_worker --zip-file fileb://chores_lambda.zip
