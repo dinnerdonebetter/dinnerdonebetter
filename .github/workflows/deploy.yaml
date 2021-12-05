@@ -27,6 +27,16 @@ jobs:
         working-directory: environments/dev
         run: cp config_files/service-config.json terraform/service-config.json
 
+      - name: create dummy zips
+        working-directory: environments/dev/terraform
+        run: |
+          touch dummy.txt
+          zip writes_lambda.zip dummy.txt
+          zip updates_lambda.zip dummy.txt
+          zip archives_lambda.zip dummy.txt
+          zip data_changes_lambda.zip dummy.txt
+          zip chores_lambda.zip dummy.txt
+      
       - name: Terraform Validate
         working-directory: environments/dev/terraform
         id: validate
