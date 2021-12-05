@@ -24,7 +24,7 @@ resource "aws_ecs_task_definition" "api_server" {
       image = format("%s:latest", aws_ecr_repository.api_server.repository_url),
       "portMappings" : [
         {
-          "containerPort" : 80,
+          "containerPort" : 8888,
           "hostPort" : 80,
           "protocol" : "tcp",
         },
