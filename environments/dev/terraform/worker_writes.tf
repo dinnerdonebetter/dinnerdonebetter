@@ -9,7 +9,7 @@ resource "aws_ssm_parameter" "writes_queue_parameter" {
   value = aws_sqs_queue.writes_queue.url
 }
 
-data "archive_file" "dummy" {
+data "archive_file" "writes_lambda_dummy" {
   type        = "zip"
   output_path = "${path.module}/writes_lambda.zip"
 
@@ -31,7 +31,7 @@ resource "aws_lambda_function" "writes_worker_lambda" {
     mode = "Active"
   }
 
-  filename = data.archive_file.dummy.output_path
+  filename = data.archive_file.writes_lambda_dummy.output_path
 }
 
 resource "aws_lambda_event_source_mapping" "writes_mapping" {

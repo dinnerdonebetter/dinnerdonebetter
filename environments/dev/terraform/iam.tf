@@ -11,8 +11,38 @@ resource "aws_iam_role" "worker_lambda_role" {
           Action = [
             "sqs:*",
           ],
-          Effect   = "Allow",
-          Resource = "*",
+          Effect = "Allow",
+          Resource = [
+            aws_sws_queue.writes_queue.arn,
+            aws_sws_queue.updates_queue.arn,
+            aws_sws_queue.archives_queue.arn,
+            aws_sws_queue.data_changes_queue.arn,
+            aws_sws_queue.chores_queue.arn,
+          ],
+        }
+      ]
+    })
+  }
+
+  inline_policy {
+    name = "allow ssm access"
+    policy = jsonencode({
+      Version = "2012-10-17",
+      Statement = [
+        {
+          Action = [
+            "ssm:GetParameter",
+          ],
+          Effect = "Allow",
+          Resource = [
+            aws_ssm_parameter.service_config.arn,
+            aws_ssm_parameter.writes_queue_parameter.arn,
+            aws_ssm_parameter.updates_queue_parameter.arn,
+            aws_ssm_parameter.archives_queue_parameter.arn,
+            aws_ssm_parameter.data_changes_queue_parameter.arn,
+            aws_ssm_parameter.chores_queue_parameter.arn,
+            aws_ssm_parameter.database_url.arn,
+          ],
         }
       ]
     })
