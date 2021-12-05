@@ -9,9 +9,7 @@ resource "aws_iam_role" "worker_lambda_role" {
       Statement = [
         {
           Action = [
-            "sqs:SendMessage",
-            "sqs:ReceiveMessage",
-            "sqs:DeleteMessage",
+            "sqs:*",
           ],
           Effect   = "Allow",
           Resource = "*",
@@ -49,9 +47,7 @@ resource "aws_iam_role" "server_lambda_role" {
       Statement = [
         {
           Action = [
-            "sqs:SendMessage",
-            "sqs:ReceiveMessage",
-            "sqs:DeleteMessage",
+            "sqs:*",
           ],
           Effect   = "Allow",
           Resource = "*",
