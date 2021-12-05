@@ -1,10 +1,10 @@
 data "aws_iam_policy_document" "allow_to_read_from_queues" {
   statement {
     effect = "Allow"
-    actions   = [
+    actions = [
       "sqs:*",
     ]
-    resources =  [
+    resources = [
       aws_sqs_queue.writes_queue.arn,
       aws_sqs_queue.updates_queue.arn,
       aws_sqs_queue.archives_queue.arn,
@@ -17,13 +17,13 @@ data "aws_iam_policy_document" "allow_to_read_from_queues" {
 data "aws_iam_policy_document" "allow_parameter_store_access" {
   statement {
     effect = "Allow"
-    actions   = [
+    actions = [
       "ssm:GetParameter",
       "ssm:GetParameters",
       "ssm:DescribeParameters",
       "ssm:GetParametersByPath",
     ]
-    resources =  [
+    resources = [
       aws_ssm_parameter.service_config.arn,
       aws_ssm_parameter.writes_queue_parameter.arn,
       aws_ssm_parameter.updates_queue_parameter.arn,
@@ -35,14 +35,16 @@ data "aws_iam_policy_document" "allow_parameter_store_access" {
   }
 }
 
-resource "aws_iam_role" "workeppler
+resource "aws_iam_role" "worker_lambda_role" {
+  name = "Worker"
+
   inline_policy {
-    name = "allow_sqs_queue_access"
+    name   = "allow_sqs_queue_access"
     policy = aws_iam_policy_document.allow_to_read_from_queues.json
   }
 
   inline_policy {
-    name = "allow_ssm_access"
+    name   = "allow_ssm_access"
     policy = aws_iam_policy_document.allow_parameter_store_access.json
   }
 
@@ -68,12 +70,12 @@ resource "aws_iam_role" "server_lambda_role" {
   name = "APIServer"
 
   inline_policy {
-    name = "allow_sqs_queue_access"
+    name   = "allow_sqs_queue_access"
     policy = aws_iam_policy_document.allow_to_read_from_queues.json
   }
 
   inline_policy {
-    name = "allow_ssm_access"
+    name   = "allow_ssm_access"
     policy = aws_iam_policy_document.allow_parameter_store_access.json
   }
 
