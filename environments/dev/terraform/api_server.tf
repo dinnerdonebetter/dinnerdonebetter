@@ -25,7 +25,6 @@ resource "aws_ecs_task_definition" "api_server" {
       "portMappings" : [
         {
           "containerPort" : 8888,
-          "hostPort" : 80,
           "protocol" : "tcp",
         },
       ],
