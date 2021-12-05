@@ -19,6 +19,10 @@ resource "aws_iam_role" "worker_lambda_role" {
     })
   }
 
+  managed_policy_arns = [
+    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+  ]
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
