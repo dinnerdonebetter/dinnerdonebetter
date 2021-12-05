@@ -13,11 +13,11 @@ resource "aws_iam_role" "worker_lambda_role" {
           ],
           Effect = "Allow",
           Resource = [
-            aws_sws_queue.writes_queue.arn,
-            aws_sws_queue.updates_queue.arn,
-            aws_sws_queue.archives_queue.arn,
-            aws_sws_queue.data_changes_queue.arn,
-            aws_sws_queue.chores_queue.arn,
+            aws_sqs_queue.writes_queue.arn,
+            aws_sqs_queue.updates_queue.arn,
+            aws_sqs_queue.archives_queue.arn,
+            aws_sqs_queue.data_changes_queue.arn,
+            aws_sqs_queue.chores_queue.arn,
           ],
         }
       ]
