@@ -27,12 +27,12 @@ resource "aws_iam_role" "worker_lambda_role" {
     Statement = [
       {
         Effect = "Allow",
+        Action = "sts:AssumeRole",
         Principal = {
           Service = "lambda.amazonaws.com",
         },
-        Action = "sts:AssumeRole",
       },
-    ]
+    ],
   })
 }
 
@@ -51,8 +51,8 @@ resource "aws_iam_role" "server_lambda_role" {
           ],
           Effect   = "Allow",
           Resource = "*",
-        }
-      ]
+        },
+      ],
     })
   }
 
@@ -60,19 +60,19 @@ resource "aws_iam_role" "server_lambda_role" {
     Version = "2012-10-17",
     Statement = [
       {
+        Action = "sts:AssumeRole",
         Effect = "Allow",
         Principal = {
           Service = "ec2.amazonaws.com",
         },
-        Action = "sts:AssumeRole",
       },
       {
+        Action = "sts:AssumeRole",
         Effect = "Allow",
         Principal = {
           Service = "lambda.amazonaws.com",
         },
-        Action = "sts:AssumeRole",
-      }
-    ]
+      },
+    ],
   })
 }
