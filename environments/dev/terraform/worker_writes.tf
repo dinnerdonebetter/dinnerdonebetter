@@ -17,6 +17,10 @@ resource "aws_lambda_function" "writes_worker_lambda" {
   memory_size   = local.memory_size
   timeout       = local.timeout
 
+  tracing_config {
+    mode = "Active"
+  }
+
   filename         = "writer_lambda.zip"
   source_code_hash = filebase64sha256("writer_lambda.zip")
 }
