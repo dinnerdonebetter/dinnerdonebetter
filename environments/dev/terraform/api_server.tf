@@ -66,7 +66,7 @@ resource "aws_ecs_service" "api_server" {
   load_balancer {
     target_group_arn = aws_lb_target_group.api.arn
     container_name   = "api_server"
-    container_port   = 80
+    container_port   = 8888
   }
 
   network_configuration {
@@ -119,7 +119,9 @@ data "aws_iam_policy_document" "ecs_task_assume_role" {
 
 resource "aws_iam_role" "api_task_role" {
   name               = "api-task-role"
+  
   assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
+  
   managed_policy_arns = [
     aws_iam_policy.api_service_policy.arn,
   ]
