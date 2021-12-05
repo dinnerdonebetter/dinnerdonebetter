@@ -25,7 +25,7 @@ resource "aws_iam_role" "worker_lambda_role" {
   }
 
   inline_policy {
-    name = "allow ssm access"
+    name = "allow_ssm_access"
     policy = jsonencode({
       Version = "2012-10-17",
       Statement = [
