@@ -19,10 +19,12 @@ variable "public_availability_zones" {
 resource "aws_subnet" "public_subnets" {
   for_each = var.public_availability_zones
 
-  vpc_id                          = aws_vpc.main.id
-  cidr_block                      = each.value
-  availability_zone               = each.key
-  assign_ipv6_address_on_creation = true
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = each.value
+  availability_zone = each.key
+
+  # ipv6_cidr_block                 = each.value
+  # assign_ipv6_address_on_creation = true
 
   tags = {
     Name = format("public-%s", each.key)
@@ -40,10 +42,12 @@ variable "private_availability_zones" {
 resource "aws_subnet" "private_subnets" {
   for_each = var.private_availability_zones
 
-  vpc_id                          = aws_vpc.main.id
-  cidr_block                      = each.value
-  availability_zone               = each.key
-  assign_ipv6_address_on_creation = true
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = each.value
+  availability_zone = each.key
+
+  # ipv6_cidr_block                 = each.value
+  # assign_ipv6_address_on_creation = true
 
   tags = {
     Name = format("private-%s", each.key)
