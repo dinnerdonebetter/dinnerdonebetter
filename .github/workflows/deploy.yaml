@@ -12,16 +12,16 @@ jobs:
         with:
           go-version: '1.17.3'
           
-      - name: Build writer lambda
-        run: go build -o writer github.com/prixfixeco/api_server/cmd/debug/worker
+      - name: Build writes worker lambda
+        run: go build -o writes_worker github.com/prixfixeco/api_server/cmd/debug/worker
 
       - name: Zip writer lambda
-        run: zip writer_lambda.zip writer
+        run: zip writer_lambda.zip writes_worker
 
       - name: Upload writer lambda
         uses: actions/upload-artifact@v2
         with:
-          name: writer
+          name: writer_lambda
           path: writer_lambda.zip
           retention-days: 1
 
@@ -53,7 +53,7 @@ jobs:
       - name: Download writer lambda
         uses: actions/download-artifact@v2
         with:
-          name: writer
+          name: writer_lambda
           path: environments/dev/terraform
 
       # - name: Download updater lambda

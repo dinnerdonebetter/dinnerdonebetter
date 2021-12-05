@@ -12,7 +12,7 @@ resource "aws_ssm_parameter" "writes_queue_parameter" {
 resource "aws_lambda_function" "writes_worker_lambda" {
   function_name = "writes_worker"
   role          = aws_iam_role.worker_lambda_role.arn
-  handler       = local.lambda_handler
+  handler       = "writes_worker"
   runtime       = local.lambda_runtime
   memory_size   = local.memory_size
   timeout       = local.timeout
