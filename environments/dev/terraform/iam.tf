@@ -10,7 +10,7 @@ data "aws_iam_policy_document" "allow_to_read_from_queues" {
       aws_sqs_queue.archives_queue.arn,
       aws_sqs_queue.data_changes_queue.arn,
       aws_sqs_queue.chores_queue.arn,
-    ],
+    ]
   }
 }
 
@@ -31,13 +31,11 @@ data "aws_iam_policy_document" "allow_parameter_store_access" {
       aws_ssm_parameter.data_changes_queue_parameter.arn,
       aws_ssm_parameter.chores_queue_parameter.arn,
       aws_ssm_parameter.database_url.arn,
-    ],
+    ]
   }
 }
 
-resource "aws_iam_role" "worker_lambda_role" {
-  name = "Worker"
-
+resource "aws_iam_role" "workeppler
   inline_policy {
     name = "allow_sqs_queue_access"
     policy = aws_iam_policy_document.allow_to_read_from_queues.json
