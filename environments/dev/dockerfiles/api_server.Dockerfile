@@ -5,7 +5,7 @@ WORKDIR /go/src/github.com/prixfixeco/api_server
 
 COPY . .
 
-RUN go build -trimpath -o /server -v github.com/prixfixeco/api_server/cmd/debug/server
+RUN go build -trimpath -o /server -v github.com/prixfixeco/api_server/cmd/server
 
 # final stage
 FROM debian:stretch
