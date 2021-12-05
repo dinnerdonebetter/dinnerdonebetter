@@ -26,6 +26,7 @@ jobs:
           retention-days: 1
 
   scaffold:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
