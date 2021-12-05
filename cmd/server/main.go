@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -26,7 +25,6 @@ const (
 
 var (
 	configFilepath string
-	errNoConfig    = errors.New("no configuration file provided")
 )
 
 func init() {
@@ -52,20 +50,28 @@ func main() {
 	}
 
 	// find and validate our configuration filepath.
-	if configFilepath == "" {
-		if configFilepath = os.Getenv(configFilepathEnvVar); configFilepath == "" {
-			logger.Fatal(errNoConfig)
+
+	var (
+		cfg *config.InstanceConfig
+		err error
+	)
+
+	// find and validate our configuration filepath.
+	configFilepath := os.Getenv(configFilepathEnvVar)
+	if configFilepath != "" {
+		configBytes, err := os.ReadFile(configFilepath)
+		if err != nil {
+			logger.Fatal(err)
 		}
-	}
 
-	configBytes, err := os.ReadFile(configFilepath)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	var cfg *config.InstanceConfig
-	if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
-		logger.Fatal(err)
+		if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
+			logger.Fatal(err)
+		}
+	} else {
+		cfg, err = config.GetConfigFromParameterStore()
+		if err != nil {
+			logger.Fatal(err)
+		}
 	}
 
 	flushFunc, initializeTracerErr := cfg.Observability.Tracing.Initialize(logger)
