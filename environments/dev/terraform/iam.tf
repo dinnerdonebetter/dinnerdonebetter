@@ -40,12 +40,12 @@ resource "aws_iam_role" "worker_lambda_role" {
 
   inline_policy {
     name   = "allow_sqs_queue_access"
-    policy = aws_iam_policy_document.allow_to_read_from_queues.json
+    policy = data.aws_iam_policy_document.allow_to_read_from_queues.json
   }
 
   inline_policy {
     name   = "allow_ssm_access"
-    policy = aws_iam_policy_document.allow_parameter_store_access.json
+    policy = data.aws_iam_policy_document.allow_parameter_store_access.json
   }
 
   managed_policy_arns = [
@@ -71,12 +71,12 @@ resource "aws_iam_role" "server_lambda_role" {
 
   inline_policy {
     name   = "allow_sqs_queue_access"
-    policy = aws_iam_policy_document.allow_to_read_from_queues.json
+    policy = data.aws_iam_policy_document.allow_to_read_from_queues.json
   }
 
   inline_policy {
     name   = "allow_ssm_access"
-    policy = aws_iam_policy_document.allow_parameter_store_access.json
+    policy = data.aws_iam_policy_document.allow_parameter_store_access.json
   }
 
   assume_role_policy = jsonencode({
