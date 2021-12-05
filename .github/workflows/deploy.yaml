@@ -27,15 +27,15 @@ jobs:
         working-directory: environments/dev
         run: cp config_files/service-config.json terraform/service-config.json
 
-      - name: create dummy zips
-        working-directory: environments/dev/terraform
-        run: |
-          touch dummy.txt
-          zip writes_lambda.zip dummy.txt
-          zip updates_lambda.zip dummy.txt
-          zip archives_lambda.zip dummy.txt
-          zip data_changes_lambda.zip dummy.txt
-          zip chores_lambda.zip dummy.txt
+      # - name: create dummy zips
+      #   working-directory: environments/dev/terraform
+      #   run: |
+      #     touch dummy.txt
+      #     zip writes_lambda.zip dummy.txt
+      #     zip updates_lambda.zip dummy.txt
+      #     zip archives_lambda.zip dummy.txt
+      #     zip data_changes_lambda.zip dummy.txt
+      #     zip chores_lambda.zip dummy.txt
       
       - name: Terraform Validate
         working-directory: environments/dev/terraform
@@ -174,36 +174,36 @@ jobs:
           name: updater_lambda
           path: artifacts
 
-      - name: Deploy updater lambda
-        working-directory: artifacts
-        run: aws lambda update-function-code --function-name updates_worker --zip-file fileb://updater_lambda.zip
+      # - name: Deploy updater lambda
+      #   working-directory: artifacts
+      #   run: aws lambda update-function-code --function-name updates_worker --zip-file fileb://updater_lambda.zip
 
-      - name: Download archiver lambda
-        uses: actions/download-artifact@v2
-        with:
-          name: archiver_lambda
-          path: artifacts
+      # - name: Download archiver lambda
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: archiver_lambda
+      #     path: artifacts
 
-      - name: Deploy archiver lambda
-        working-directory: artifacts
-        run: aws lambda update-function-code --function-name archives_worker --zip-file fileb://updater_lambda.zip
+      # - name: Deploy archiver lambda
+      #   working-directory: artifacts
+      #   run: aws lambda update-function-code --function-name archives_worker --zip-file fileb://updater_lambda.zip
 
-      - name: Download data changes lambda
-        uses: actions/download-artifact@v2
-        with:
-          name: data_changes_lambda
-          path: artifacts
+      # - name: Download data changes lambda
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: data_changes_lambda
+      #     path: artifacts
 
-      - name: Deploy data changes lambda
-        working-directory: artifacts
-        run: aws lambda update-function-code --function-name data_changes_worker --zip-file fileb://data_changes_lambda.zip
+      # - name: Deploy data changes lambda
+      #   working-directory: artifacts
+      #   run: aws lambda update-function-code --function-name data_changes_worker --zip-file fileb://data_changes_lambda.zip
 
-      - name: Download chores lambda
-        uses: actions/download-artifact@v2
-        with:
-          name: chores_lambda
-          path: artifacts
+      # - name: Download chores lambda
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: chores_lambda
+      #     path: artifacts
 
-      - name: Deploy data changes lambda
-        working-directory: artifacts
-        run: aws lambda update-function-code --function-name data_changes_worker --zip-file fileb://chores_lambda.zip
+      # - name: Deploy data changes lambda
+      #   working-directory: artifacts
+      #   run: aws lambda My first plan was to simply trick Terraform into provisioning my lambda function by giving it an empty zip file, so I whipped out the trusty archive_file provider and pointed it to an empty dir and fired away:update-function-code --function-name data_changes_worker --zip-file fileb://chores_lambda.zip
