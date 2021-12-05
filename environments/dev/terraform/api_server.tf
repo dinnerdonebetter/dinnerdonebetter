@@ -121,6 +121,16 @@ resource "aws_iam_role" "api_task_role" {
 
   assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
 
+  inline_policy {
+    name   = "allow_sqs_queue_access"
+    policy = data.aws_iam_policy_document.allow_to_read_from_queues.json
+  }
+
+  inline_policy {
+    name   = "allow_ssm_access"
+    policy = data.aws_iam_policy_document.allow_parameter_store_access.json
+  }
+
   managed_policy_arns = [
     aws_iam_policy.api_service_policy.arn,
   ]
@@ -129,18 +139,13 @@ resource "aws_iam_role" "api_task_role" {
 resource "aws_iam_policy" "api_service_policy" {
   name = "api_service_policy"
 
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = [
-          "sqs:SendMessage",
-          "sqs:SendMessageBatch",
-          "sqs:ReceiveMessage",
-        ]
-        Effect   = "Allow"
-        Resource = aws_sqs_queue.writes_queue.arn
-      },
-    ]
-  })
+  inline_policy {
+    name   = "allow_sqs_queue_access"
+    policy = data.aws_iam_policy_document.allow_to_read_from_queues.json
+  }
+
+  inline_policy {
+    name   = "allow_ssm_access"
+    policy = data.aws_iam_policy_document.allow_parameter_store_access.json
+  }
 }
