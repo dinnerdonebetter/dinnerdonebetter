@@ -1,30 +1,30 @@
-# resource "aws_sqs_queue" "chores_queue" {
-#   name       = "chores.fifo"
-#   fifo_queue = true
-# }
+resource "aws_sqs_queue" "chores_queue" {
+  name       = "chores.fifo"
+  fifo_queue = true
+}
 
-# resource "aws_ssm_parameter" "chores_queue_parameter" {
-#   name  = "PRIXFIXE_CHORES_QUEUE_URL"
-#   type  = "String"
-#   value = aws_sqs_queue.chores_queue.url
-# }
+resource "aws_ssm_parameter" "chores_queue_parameter" {
+  name  = "PRIXFIXE_CHORES_QUEUE_URL"
+  type  = "String"
+  value = aws_sqs_queue.chores_queue.url
+}
 
-# resource "aws_lambda_function" "chores_worker_lambda" {
-#   function_name = "chores_worker"
-#   handler       = "chores_worker"
-#   role          = aws_iam_role.worker_lambda_role.arn
-#   runtime       = local.lambda_runtime
-#   memory_size   = local.memory_size
-#   timeout       = local.timeout
+resource "aws_lambda_function" "chores_worker_lambda" {
+  function_name = "chores_worker"
+  handler       = "chores_worker"
+  role          = aws_iam_role.worker_lambda_role.arn
+  runtime       = local.lambda_runtime
+  memory_size   = local.memory_size
+  timeout       = local.timeout
 
-#   tracing_config {
-#     mode = "Active"
-#   }
+  tracing_config {
+    mode = "Active"
+  }
 
-#   filename         = "writer_lambda.zip"
-# }
+  #   filename = "chores_lambda.zip"
+}
 
-# resource "aws_lambda_event_source_mapping" "chores_mapping" {
-#   event_source_arn = aws_sqs_queue.chores_queue.arn
-#   function_name    = aws_lambda_function.chores_worker_lambda.arn
-# }
+resource "aws_lambda_event_source_mapping" "chores_mapping" {
+  event_source_arn = aws_sqs_queue.chores_queue.arn
+  function_name    = aws_lambda_function.chores_worker_lambda.arn
+}

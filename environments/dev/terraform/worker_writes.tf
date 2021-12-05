@@ -21,7 +21,7 @@ resource "aws_lambda_function" "writes_worker_lambda" {
     mode = "Active"
   }
 
-  filename = "writer_lambda.zip"
+  # filename = "writes_lambda.zip"
 }
 
 resource "aws_lambda_event_source_mapping" "writes_mapping" {
