@@ -15,14 +15,14 @@ data "aws_iam_policy_document" "allow_to_read_from_queues" {
 }
 
 data "aws_ssm_parameter" "sendgrid_token" {
-  name = "PRIXFIXE_SENDGRID_API_TOKEN"
-  type = "String"
+  name  = "PRIXFIXE_SENDGRID_API_TOKEN"
+  type  = "String"
   value = ""
 }
 
 data "aws_ssm_parameter" "segment_token" {
-  name = "PRIXFIXE_SEGMENT_API_TOKEN"
-  type = "String"
+  name  = "PRIXFIXE_SEGMENT_API_TOKEN"
+  type  = "String"
   value = ""
 }
 
