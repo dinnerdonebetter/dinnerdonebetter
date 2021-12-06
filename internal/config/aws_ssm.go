@@ -14,9 +14,9 @@ import (
 const (
 	baseConfigSSMKey               = "PRIXFIXE_BASE_CONFIG"
 	databaseConnectionURLSSMKey    = "PRIXFIXE_DATABASE_URL"
-	writesQueueNameSSMKey          = "PRIXFIXE_WRITES_QUEUE_NAME"
-	updatesQueueNameSSMKey         = "PRIXFIXE_UPDATES_QUEUE_NAME"
-	archivesQueueNameSSMKey        = "PRIXFIXE_ARCHIVES_QUEUE_NAME"
+	writesQueueNameSSMKey          = "PRIXFIXE_WRITES_QUEUE_URL"
+	updatesQueueNameSSMKey         = "PRIXFIXE_UPDATES_QUEUE_URL"
+	archivesQueueNameSSMKey        = "PRIXFIXE_ARCHIVES_QUEUE_URL"
 	elasticsearchInstanceURLSSMKEy = "PRIXFIXE_ELASTICSEARCH_INSTANCE_URL"
 	/* #nosec G101 */
 	sendgridAPITokenSSMKey = "PRIXFIXE_SENDGRID_API_TOKEN"
