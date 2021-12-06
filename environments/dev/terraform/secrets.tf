@@ -1,3 +1,6 @@
+variable "SEGMENT_API_TOKEN" {}
+variable "SENDGRID_API_TOKEN" {}
+
 resource "aws_kms_key" "parameter_store_key" {
   description = "to encrypt parameter store secrets"
 }
