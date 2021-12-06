@@ -17,13 +17,13 @@ data "aws_iam_policy_document" "allow_to_read_from_queues" {
 resource "aws_ssm_parameter" "sendgrid_token" {
   name  = "PRIXFIXE_SENDGRID_API_TOKEN"
   type  = "String"
-  value = ""
+  value = var.SENDGRID_API_TOKEN
 }
 
 resource "aws_ssm_parameter" "segment_token" {
   name  = "PRIXFIXE_SEGMENT_API_TOKEN"
   type  = "String"
-  value = ""
+  value = var.SEGMENT_API_TOKEN
 }
 
 data "aws_iam_policy_document" "allow_parameter_store_access" {
