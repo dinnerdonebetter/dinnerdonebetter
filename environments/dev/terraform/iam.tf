@@ -14,6 +14,18 @@ data "aws_iam_policy_document" "allow_to_read_from_queues" {
   }
 }
 
+data "aws_ssm_parameter" "sendgrid_token" {
+  name = "PRIXFIXE_SENDGRID_API_TOKEN"
+  type = "String"
+  value = ""
+}
+
+data "aws_ssm_parameter" "segment_token" {
+  name = "PRIXFIXE_SEGMENT_API_TOKEN"
+  type = "String"
+  value = ""
+}
+
 data "aws_iam_policy_document" "allow_parameter_store_access" {
   statement {
     effect = "Allow"
@@ -31,6 +43,8 @@ data "aws_iam_policy_document" "allow_parameter_store_access" {
       aws_ssm_parameter.data_changes_queue_parameter.arn,
       aws_ssm_parameter.chores_queue_parameter.arn,
       aws_ssm_parameter.database_url.arn,
+      data.aws_ssm_parameter.sendgrid_token.arn,
+      data.aws_ssm_parameter.segment_token.arn,
     ]
   }
 }
