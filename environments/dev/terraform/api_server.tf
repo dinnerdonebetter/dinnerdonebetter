@@ -130,22 +130,4 @@ resource "aws_iam_role" "api_task_role" {
     name   = "allow_ssm_access"
     policy = data.aws_iam_policy_document.allow_parameter_store_access.json
   }
-
-  managed_policy_arns = [
-    aws_iam_policy.api_service_policy.arn,
-  ]
-}
-
-resource "aws_iam_policy" "api_service_policy" {
-  name = "api_service_policy"
-
-  inline_policy {
-    name   = "allow_sqs_queue_access"
-    policy = data.aws_iam_policy_document.allow_to_read_from_queues.json
-  }
-
-  inline_policy {
-    name   = "allow_ssm_access"
-    policy = data.aws_iam_policy_document.allow_parameter_store_access.json
-  }
 }
