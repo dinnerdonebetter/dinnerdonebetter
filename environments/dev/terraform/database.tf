@@ -9,8 +9,9 @@ resource "random_password" "database_password" {
 }
 
 resource "aws_db_subnet_group" "private" {
-  name       = "main"
-  subnet_ids = [for x in aws_subnet.private_subnets : x.id]
+  name_prefix = "dev"
+  description = "dev environment database subnet group"
+  subnet_ids  = [for x in aws_subnet.private_subnets : x.id]
 }
 
 resource "aws_rds_cluster" "api_database" {

@@ -70,7 +70,7 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 			Database: dbconfig.Config{
 				Debug:             true,
 				RunMigrations:     true,
-				ConnectionDetails: database.ConnectionDetails("postgres://username:passwords@host/table"),
+				ConnectionDetails: database.ConnectionDetails("postgres://username:password@host/table"),
 			},
 		}
 
