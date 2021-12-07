@@ -23,9 +23,6 @@ resource "aws_subnet" "public_subnets" {
   cidr_block        = each.value
   availability_zone = each.key
 
-  # ipv6_cidr_block                 = each.value
-  # assign_ipv6_address_on_creation = true
-
   tags = {
     Name = format("public-%s", each.key)
   }
@@ -45,9 +42,6 @@ resource "aws_subnet" "private_subnets" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = each.value
   availability_zone = each.key
-
-  # ipv6_cidr_block                 = each.value
-  # assign_ipv6_address_on_creation = true
 
   tags = {
     Name = format("private-%s", each.key)
@@ -133,7 +127,7 @@ resource "aws_lb_target_group" "api" {
 
 resource "aws_alb_listener" "api_http" {
   load_balancer_arn = aws_alb.api.arn
-  port              = 80
+  port              = "80"
   protocol          = "HTTP"
 
   default_action {
