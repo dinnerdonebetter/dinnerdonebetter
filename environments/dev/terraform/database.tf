@@ -50,3 +50,20 @@ resource "aws_ssm_parameter" "database_url" {
   type  = "String"
   value = format("postgres://%s:%s@%s:%d/prixfixe", local.database_username, random_password.database_password.result, aws_rds_cluster.api_database.endpoint, aws_rds_cluster.api_database.port)
 }
+
+resource "aws_secretsmanager_secret" "dev_database" {
+  name = "database-query-credentials"
+}
+
+resource "aws_secretsmanager_secret_version" "dev_database" {
+  secret_id = aws_secretsmanager_secret.dev_database.id
+  secret_string = jsonencode({
+    dbInstanceIdentifier = "api-database",
+    engine               = aws_rds_cluster.api_database.engine, # "aurora-postgresql",
+    host                 = aws_rds_cluster.api_database.endpoint,
+    port                 = aws_rds_cluster.api_database.port,
+    resourceId           = aws_rds_cluster.api_database.cluster_identifier, # "cluster-YST4J7TUI7GDISO6O4BAF3PRTI",
+    username             = local.database_username,
+    password             = random_password.database_password.result
+  })
+}
