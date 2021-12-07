@@ -1,5 +1,5 @@
 
-data "aws_iam_policy_document" "allow_to_read_from_queues" {
+data "aws_iam_policy_document" "allow_to_manipulate_queues" {
   statement {
     effect = "Allow"
     actions = [
@@ -58,7 +58,7 @@ resource "aws_iam_role" "worker_lambda_role" {
 
   inline_policy {
     name   = "allow_sqs_queue_access"
-    policy = data.aws_iam_policy_document.allow_to_read_from_queues.json
+    policy = data.aws_iam_policy_document.allow_to_manipulate_queues.json
   }
 
   inline_policy {
@@ -94,7 +94,7 @@ resource "aws_iam_role" "server_lambda_role" {
 
   inline_policy {
     name   = "allow_sqs_queue_access"
-    policy = data.aws_iam_policy_document.allow_to_read_from_queues.json
+    policy = data.aws_iam_policy_document.allow_to_manipulate_queues.json
   }
 
   inline_policy {

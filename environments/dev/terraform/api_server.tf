@@ -25,6 +25,7 @@ resource "aws_ecs_task_definition" "api_server" {
       portMappings : [
         {
           "containerPort" : 80,
+          "hostPort" : 80,
           "protocol" : "tcp",
         },
       ],
@@ -127,7 +128,7 @@ resource "aws_iam_role" "api_task_role" {
 
   inline_policy {
     name   = "allow_sqs_queue_access"
-    policy = data.aws_iam_policy_document.allow_to_read_from_queues.json
+    policy = data.aws_iam_policy_document.allow_to_manipulate_queues.json
   }
 
   inline_policy {
