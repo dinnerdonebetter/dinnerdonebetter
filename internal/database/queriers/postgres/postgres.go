@@ -31,14 +31,15 @@ var _ database.DataManager = (*SQLQuerier)(nil)
 
 // SQLQuerier is the primary database querying client. All tracing/logging/query execution happens here. Query building generally happens elsewhere.
 type SQLQuerier struct {
-	tracer      tracing.Tracer
-	sqlBuilder  squirrel.StatementBuilderType
-	logger      logging.Logger
-	db          *sql.DB
-	timeFunc    func() uint64
-	config      *dbconfig.Config
-	migrateOnce sync.Once
-	logQueries  bool
+	tracer        tracing.Tracer
+	sqlBuilder    squirrel.StatementBuilderType
+	logger        logging.Logger
+	db            *sql.DB
+	connectionURL string
+	timeFunc      func() uint64
+	config        *dbconfig.Config
+	migrateOnce   sync.Once
+	logQueries    bool
 }
 
 var instrumentedDriverRegistration sync.Once
@@ -74,13 +75,14 @@ func ProvideDatabaseClient(
 	}
 
 	c := &SQLQuerier{
-		db:         db,
-		config:     cfg,
-		tracer:     tracer,
-		logQueries: true,
-		timeFunc:   defaultTimeFunc,
-		logger:     logging.EnsureLogger(logger),
-		sqlBuilder: squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
+		db:            db,
+		config:        cfg,
+		tracer:        tracer,
+		logQueries:    true,
+		timeFunc:      defaultTimeFunc,
+		connectionURL: string(cfg.ConnectionDetails),
+		logger:        logging.EnsureLogger(logger),
+		sqlBuilder:    squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
 	}
 
 	if cfg.Debug {
@@ -113,8 +115,9 @@ func (q *SQLQuerier) IsReady(ctx context.Context, maxAttempts uint8) (ready bool
 	attemptCount := 0
 
 	logger := q.logger.WithValues(map[string]interface{}{
-		"interval":     time.Second.String(),
-		"max_attempts": maxAttempts,
+		"interval":       time.Second.String(),
+		"max_attempts":   maxAttempts,
+		"connection_url": q.connectionURL,
 	})
 
 	for !ready {
