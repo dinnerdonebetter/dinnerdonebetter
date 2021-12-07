@@ -55,6 +55,7 @@ resource "aws_elasticsearch_domain" "search" {
 
     security_group_ids = [
       aws_security_group.http_service.id,
+      aws_security_group.search_service.id,
     ]
   }
 
