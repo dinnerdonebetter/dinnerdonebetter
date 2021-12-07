@@ -47,9 +47,7 @@ data "aws_iam_policy_document" "allow_to_decrypt_parameters" {
       "kms:Verify",
     ]
     resources = [
-      aws_ssm_parameter.cookie_hash_key.arn,
-      aws_ssm_parameter.cookie_block_key.arn,
-      aws_ssm_parameter.paseto_local_key.arn,
+      aws_kms_key.parameter_store_key.arn,
     ]
   }
 }
