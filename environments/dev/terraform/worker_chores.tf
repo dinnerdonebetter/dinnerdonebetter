@@ -40,5 +40,5 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_check_foo" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.chores_worker_lambda.function_name
   principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.run_chores_every_minute.arn
+  source_arn    = aws_cloudwatch_event_rule.every_minute.arn
 }
