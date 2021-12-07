@@ -18,6 +18,9 @@ const (
 	updatesQueueNameSSMKey         = "PRIXFIXE_UPDATES_QUEUE_URL"
 	archivesQueueNameSSMKey        = "PRIXFIXE_ARCHIVES_QUEUE_URL"
 	elasticsearchInstanceURLSSMKEy = "PRIXFIXE_ELASTICSEARCH_INSTANCE_URL"
+	cookieBlockKeySSMKey           = "PRIXFIXE_COOKIE_BLOCK_KEY"
+	cookieHashKeySSMKey            = "PRIXFIXE_COOKIE_HASH_KEY"
+
 	/* #nosec G101 */
 	sendgridAPITokenSSMKey = "PRIXFIXE_SENDGRID_API_TOKEN"
 	/* #nosec G101 */
@@ -52,6 +55,9 @@ func GetConfigFromParameterStore() (*InstanceConfig, error) {
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(mustGetParameter(svc, databaseConnectionURLSSMKey))
 	cfg.Email.APIToken = mustGetParameter(svc, sendgridAPITokenSSMKey)
 	cfg.CustomerData.APIToken = mustGetParameter(svc, segmentAPITokenSSMKey)
+
+	cfg.Services.Auth.Cookies.BlockKey = mustGetParameter(svc, cookieBlockKeySSMKey)
+	cfg.Services.Auth.Cookies.HashKey = mustGetParameter(svc, cookieHashKeySSMKey)
 
 	writesTopicName := mustGetParameter(svc, writesQueueNameSSMKey)
 	updatesTopicName := mustGetParameter(svc, updatesQueueNameSSMKey)
