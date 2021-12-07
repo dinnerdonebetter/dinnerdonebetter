@@ -1,6 +1,18 @@
 variable "SEGMENT_API_TOKEN" {}
 variable "SENDGRID_API_TOKEN" {}
 
+resource "aws_ssm_parameter" "sendgrid_token" {
+  name  = "PRIXFIXE_SENDGRID_API_TOKEN"
+  type  = "String"
+  value = var.SENDGRID_API_TOKEN
+}
+
+resource "aws_ssm_parameter" "segment_token" {
+  name  = "PRIXFIXE_SEGMENT_API_TOKEN"
+  type  = "String"
+  value = var.SEGMENT_API_TOKEN
+}
+
 resource "aws_kms_key" "parameter_store_key" {
   description = "to encrypt parameter store secrets"
 }

@@ -1,3 +1,4 @@
+
 data "aws_iam_policy_document" "allow_to_read_from_queues" {
   statement {
     effect = "Allow"
@@ -11,18 +12,6 @@ data "aws_iam_policy_document" "allow_to_read_from_queues" {
       aws_sqs_queue.data_changes_queue.arn,
     ]
   }
-}
-
-resource "aws_ssm_parameter" "sendgrid_token" {
-  name  = "PRIXFIXE_SENDGRID_API_TOKEN"
-  type  = "String"
-  value = var.SENDGRID_API_TOKEN
-}
-
-resource "aws_ssm_parameter" "segment_token" {
-  name  = "PRIXFIXE_SEGMENT_API_TOKEN"
-  type  = "String"
-  value = var.SEGMENT_API_TOKEN
 }
 
 data "aws_iam_policy_document" "allow_parameter_store_access" {
@@ -49,6 +38,19 @@ data "aws_iam_policy_document" "allow_parameter_store_access" {
     ]
   }
 }
+data "aws_iam_policy_document" "allow_to_decrypt_parameters" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt",
+    ]
+    resources = [
+      aws_ssm_parameter.cookie_hash_key.arn,
+      aws_ssm_parameter.cookie_block_key.arn,
+      aws_ssm_parameter.paseto_local_key.arn,
+    ]
+  }
+}
 
 resource "aws_iam_role" "worker_lambda_role" {
   name = "Worker"
@@ -61,6 +63,11 @@ resource "aws_iam_role" "worker_lambda_role" {
   inline_policy {
     name   = "allow_ssm_access"
     policy = data.aws_iam_policy_document.allow_parameter_store_access.json
+  }
+
+  inline_policy {
+    name   = "allow_decrypt_ssm_parameters"
+    policy = data.aws_iam_policy_document.allow_to_decrypt_parameters.json
   }
 
   managed_policy_arns = [
@@ -92,6 +99,11 @@ resource "aws_iam_role" "server_lambda_role" {
   inline_policy {
     name   = "allow_ssm_access"
     policy = data.aws_iam_policy_document.allow_parameter_store_access.json
+  }
+
+  inline_policy {
+    name   = "allow_decrypt_ssm_parameters"
+    policy = data.aws_iam_policy_document.allow_to_decrypt_parameters.json
   }
 
   assume_role_policy = jsonencode({
