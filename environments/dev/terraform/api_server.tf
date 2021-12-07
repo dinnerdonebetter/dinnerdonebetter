@@ -22,13 +22,13 @@ resource "aws_ecs_task_definition" "api_server" {
     {
       name  = "api_server",
       image = format("%s:latest", aws_ecr_repository.api_server.repository_url),
-      "portMappings" : [
+      portMappings : [
         {
           "containerPort" : 80,
           "protocol" : "tcp",
         },
       ],
-      "logConfiguration" : {
+      logConfiguration : {
         "logDriver" : "awslogs",
         "options" : {
           "awslogs-region" : "us-east-1",
@@ -133,5 +133,10 @@ resource "aws_iam_role" "api_task_role" {
   inline_policy {
     name   = "allow_ssm_access"
     policy = data.aws_iam_policy_document.allow_parameter_store_access.json
+  }
+
+  inline_policy {
+    name   = "allow_decrypt_ssm_parameters"
+    policy = data.aws_iam_policy_document.allow_to_decrypt_parameters.json
   }
 }

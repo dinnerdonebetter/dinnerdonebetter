@@ -15,6 +15,7 @@ resource "aws_ssm_parameter" "segment_token" {
 
 resource "aws_kms_key" "parameter_store_key" {
   description = "to encrypt parameter store secrets"
+  key_usage   = "ENCRYPT_DECRYPT"
 }
 
 resource "random_string" "cookie_hash_key" {

@@ -3,7 +3,8 @@ data "aws_iam_policy_document" "allow_to_read_from_queues" {
   statement {
     effect = "Allow"
     actions = [
-      "sqs:*",
+      "sqs:SendMessage",
+      "sqs:ReceiveMessage",
     ]
     resources = [
       aws_sqs_queue.writes_queue.arn,
@@ -43,6 +44,7 @@ data "aws_iam_policy_document" "allow_to_decrypt_parameters" {
     effect = "Allow"
     actions = [
       "kms:Decrypt",
+      "kms:Verify",
     ]
     resources = [
       aws_ssm_parameter.cookie_hash_key.arn,
