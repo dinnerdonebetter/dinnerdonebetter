@@ -116,7 +116,7 @@ resource "aws_alb" "api" {
 
 resource "aws_lb_target_group" "api" {
   name        = "api"
-  port        = 8080
+  port        = "80"
   protocol    = "HTTP"
   target_type = "ip"
   vpc_id      = aws_vpc.main.id
