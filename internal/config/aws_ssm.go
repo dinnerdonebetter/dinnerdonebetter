@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -20,6 +21,7 @@ const (
 	elasticsearchInstanceURLSSMKEy = "PRIXFIXE_ELASTICSEARCH_INSTANCE_URL"
 	cookieBlockKeySSMKey           = "PRIXFIXE_COOKIE_BLOCK_KEY"
 	cookieHashKeySSMKey            = "PRIXFIXE_COOKIE_HASH_KEY"
+	cookiePASETOLocalModeKeySSMKey = "PRIXFIXE_PASETO_LOCAL_MODE_KEY"
 
 	/* #nosec G101 */
 	sendgridAPITokenSSMKey = "PRIXFIXE_SENDGRID_API_TOKEN"
@@ -27,14 +29,26 @@ const (
 	segmentAPITokenSSMKey = "PRIXFIXE_SEGMENT_API_TOKEN"
 )
 
-func mustGetParameter(ps *ssm.SSM, paramName string) string {
-	input := &ssm.GetParameterInput{Name: aws.String(paramName)}
+func mustGetParameter(ps *ssm.SSM, paramName string, decrypt bool) string {
+	input := &ssm.GetParameterInput{
+		Name:           aws.String(paramName),
+		WithDecryption: aws.Bool(decrypt),
+	}
 	rawParam, err := ps.GetParameter(input)
 	if err != nil {
 		panic(err)
 	}
 
 	return *rawParam.Parameter.Value
+}
+
+func mustBase64DecodeString(param string) []byte {
+	x, err := base64.URLEncoding.DecodeString(param)
+	if err != nil {
+		panic(err)
+	}
+
+	return x
 }
 
 // GetConfigFromParameterStore fetches and InstanceConfig from AWS SSM Parameter Store.
@@ -44,7 +58,7 @@ func GetConfigFromParameterStore() (*InstanceConfig, error) {
 	}))
 	svc := ssm.New(sess)
 
-	rawPartialConfig := mustGetParameter(svc, baseConfigSSMKey)
+	rawPartialConfig := mustGetParameter(svc, baseConfigSSMKey, false)
 
 	var cfg *InstanceConfig
 	if err := json.Unmarshal([]byte(rawPartialConfig), &cfg); err != nil {
@@ -52,17 +66,18 @@ func GetConfigFromParameterStore() (*InstanceConfig, error) {
 	}
 
 	// fetch supplementary data from SSM
-	cfg.Database.ConnectionDetails = database.ConnectionDetails(mustGetParameter(svc, databaseConnectionURLSSMKey))
-	cfg.Email.APIToken = mustGetParameter(svc, sendgridAPITokenSSMKey)
-	cfg.CustomerData.APIToken = mustGetParameter(svc, segmentAPITokenSSMKey)
+	cfg.Database.ConnectionDetails = database.ConnectionDetails(mustGetParameter(svc, databaseConnectionURLSSMKey, false))
+	cfg.Email.APIToken = mustGetParameter(svc, sendgridAPITokenSSMKey, false)
+	cfg.CustomerData.APIToken = mustGetParameter(svc, segmentAPITokenSSMKey, false)
 
-	cfg.Services.Auth.Cookies.BlockKey = mustGetParameter(svc, cookieBlockKeySSMKey)
-	cfg.Services.Auth.Cookies.HashKey = mustGetParameter(svc, cookieHashKeySSMKey)
+	cfg.Services.Auth.Cookies.BlockKey = mustGetParameter(svc, cookieBlockKeySSMKey, true)
+	cfg.Services.Auth.Cookies.HashKey = mustGetParameter(svc, cookieHashKeySSMKey, true)
+	cfg.Services.Auth.PASETO.LocalModeKey = []byte(mustGetParameter(svc, cookiePASETOLocalModeKeySSMKey, true))
 
-	writesTopicName := mustGetParameter(svc, writesQueueNameSSMKey)
-	updatesTopicName := mustGetParameter(svc, updatesQueueNameSSMKey)
-	archivesTopicName := mustGetParameter(svc, archivesQueueNameSSMKey)
-	elasticsearchInstanceURL := mustGetParameter(svc, elasticsearchInstanceURLSSMKEy)
+	writesTopicName := mustGetParameter(svc, writesQueueNameSSMKey, false)
+	updatesTopicName := mustGetParameter(svc, updatesQueueNameSSMKey, false)
+	archivesTopicName := mustGetParameter(svc, archivesQueueNameSSMKey, false)
+	elasticsearchInstanceURL := mustGetParameter(svc, elasticsearchInstanceURLSSMKEy, false)
 
 	cfg.Services.ValidInstruments.PreWritesTopicName = writesTopicName
 	cfg.Services.ValidIngredients.PreWritesTopicName = writesTopicName
