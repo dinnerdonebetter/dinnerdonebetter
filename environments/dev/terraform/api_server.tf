@@ -73,6 +73,7 @@ resource "aws_ecs_service" "api_server" {
 
     security_groups = [
       aws_security_group.load_balancer.id,
+      aws_security_group.allow_postgres.id,
     ]
 
     subnets = [for x in aws_subnet.private_subnets : x.id]

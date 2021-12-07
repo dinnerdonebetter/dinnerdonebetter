@@ -8,9 +8,9 @@ resource "random_password" "database_password" {
   override_special = "#$*-_=+[]"
 }
 
-resource "aws_db_subnet_group" "default" {
+resource "aws_db_subnet_group" "private" {
   name       = "main"
-  subnet_ids = [for x in aws_subnet.public_subnets : x.id]
+  subnet_ids = [for x in aws_subnet.private_subnets : x.id]
 }
 
 resource "aws_rds_cluster" "api_database" {
@@ -38,7 +38,7 @@ resource "aws_rds_cluster" "api_database" {
   copy_tags_to_snapshot        = true
   backup_retention_period      = 7
 
-  db_subnet_group_name = aws_db_subnet_group.default.name
+  db_subnet_group_name = aws_db_subnet_group.private.name
   vpc_security_group_ids = [
     aws_security_group.allow_postgres.id,
   ]

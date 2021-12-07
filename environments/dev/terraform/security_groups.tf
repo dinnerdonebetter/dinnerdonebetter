@@ -11,7 +11,7 @@ resource "aws_security_group" "allow_postgres" {
     cidr_blocks      = [aws_vpc.main.cidr_block]
     ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
   }
-
+  
   tags = {
     Name = "allow_intra_vpc_postgres"
   }
