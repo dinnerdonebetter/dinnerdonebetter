@@ -62,7 +62,7 @@ resource "aws_secretsmanager_secret_version" "dev_database" {
     engine               = aws_rds_cluster.api_database.engine, # "aurora-postgresql",
     host                 = aws_rds_cluster.api_database.endpoint,
     port                 = aws_rds_cluster.api_database.port,
-    resourceId           = aws_rds_cluster.api_database.cluster_identifier, # "cluster-YST4J7TUI7GDISO6O4BAF3PRTI",
+    resourceId           = aws_rds_cluster.api_database.id, # "cluster-YST4J7TUI7GDISO6O4BAF3PRTI",
     username             = local.database_username,
     password             = random_password.database_password.result
   })
