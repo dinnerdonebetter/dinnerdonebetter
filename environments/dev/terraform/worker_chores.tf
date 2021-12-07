@@ -34,10 +34,10 @@ resource "aws_lambda_function" "chores_worker_lambda" {
   filename = data.archive_file.chores_dummy.output_path
 }
 
-resource "aws_lambda_event_source_mapping" "chores_mapping" {
-  event_source_arn = aws_sqs_queue.chores_queue.arn
-  function_name    = aws_lambda_function.chores_worker_lambda.arn
-}
+# resource "aws_lambda_event_source_mapping" "chores_mapping" {
+#   event_source_arn = aws_sqs_queue.chores_queue.arn
+#   function_name    = aws_lambda_function.chores_worker_lambda.arn
+# }
 
 resource "aws_cloudwatch_event_rule" "every_minute" {
   name                = "every-minute"
@@ -51,7 +51,7 @@ resource "aws_cloudwatch_event_target" "run_chores_every_minute" {
   arn       = aws_lambda_function.chores_worker_lambda.arn
 }
 
-resource "aws_lambda_permission" "allow_cloudwatch_to_call_check_foo" {
+resource "aws_lambda_permission" "allow_cloudwatch_to_call_chores_worker" {
   statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.chores_worker_lambda.function_name
