@@ -6,6 +6,7 @@ data "aws_iam_policy_document" "allow_to_manipulate_queues" {
       "sqs:SendMessage",
       "sqs:ReceiveMessage",
       "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes",
     ]
     resources = [
       aws_sqs_queue.writes_queue.arn,
