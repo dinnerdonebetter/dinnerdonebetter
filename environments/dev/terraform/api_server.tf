@@ -70,7 +70,6 @@ resource "aws_ecs_service" "api_server" {
 
     security_groups = [
       aws_security_group.load_balancer.id,
-      aws_security_group.allow_postgres.id,
     ]
 
     subnets = concat(
@@ -81,7 +80,6 @@ resource "aws_ecs_service" "api_server" {
 
   depends_on = [
     aws_alb_listener.api_http,
-    aws_elasticsearch_domain.search,
     aws_rds_cluster.api_database,
   ]
 }

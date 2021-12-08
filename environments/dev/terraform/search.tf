@@ -54,7 +54,6 @@ resource "aws_elasticsearch_domain" "search" {
     subnet_ids = [aws_subnet.private_subnets["us-east-1a"].id]
 
     security_group_ids = [
-      aws_security_group.http_service.id,
       aws_security_group.search_service.id,
     ]
   }
