@@ -86,6 +86,7 @@ resource "aws_ecs_service" "api_server" {
   depends_on = [
     aws_alb_listener.api_http,
     aws_elasticsearch_domain.search,
+    aws_rds_cluster.api_database,
   ]
 }
 

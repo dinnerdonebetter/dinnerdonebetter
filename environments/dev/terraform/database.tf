@@ -52,7 +52,7 @@ resource "aws_ssm_parameter" "database_url" {
 }
 
 resource "aws_secretsmanager_secret" "dev_database" {
-  name = "database-query-credentials"
+  name = format("rds-db-credentials/%s/", aws_rds_cluster.api_database.cluster_resource_id)
 }
 
 resource "aws_secretsmanager_secret_version" "dev_database" {
