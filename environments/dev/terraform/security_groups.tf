@@ -10,6 +10,9 @@ resource "aws_security_group" "allow_postgres" {
     protocol         = "tcp"
     cidr_blocks      = [aws_vpc.main.cidr_block]
     ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
+    security_groups = [
+      aws_security_group.load_balancer.id,
+    ]
   }
 
   tags = {
