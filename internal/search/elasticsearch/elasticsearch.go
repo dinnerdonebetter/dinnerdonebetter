@@ -86,9 +86,8 @@ func elasticsearchIsReady(
 	attemptCount := 0
 
 	logger := l.WithValues(map[string]interface{}{
-		"interval":     time.Second.String(),
-		"max_attempts": maxAttempts,
-		"address":      path,
+		"interval": time.Second.String(),
+		"address":  path,
 	})
 
 	for !ready {

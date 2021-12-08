@@ -1,50 +1,7 @@
 on: [pull_request]
 name: Deploy
 jobs:
-  scaffold:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 1.0.11
-          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
-
-      - name: Terraform Init
-        working-directory: environments/dev/terraform
-        id: init
-        run: terraform init
-
-      - name: Terraform Format
-        working-directory: environments/dev/terraform
-        id: fmt
-        run: terraform fmt -check
-
-      - name: copy config file
-        working-directory: environments/dev
-        run: cp config_files/service-config.json terraform/service-config.json
-      
-      - name: Terraform Validate
-        working-directory: environments/dev/terraform
-        id: validate
-        run: terraform validate -no-color
-
-      # - name: Terraform Plan
-      #   working-directory: environments/dev/terraform
-      #   id: plan
-      #   if: github.event_name == 'pull_request'
-      #   run: terraform plan -no-color
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
-        # if: github.event_name == 'release'
-        working-directory: environments/dev/terraform
-        
   build:
-    needs: scaffold
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -120,8 +77,53 @@ jobs:
           path: chores_lambda.zip
           retention-days: 1
 
+  scaffold:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.11
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
+
+      - name: Terraform Init
+        working-directory: environments/dev/terraform
+        id: init
+        run: terraform init
+
+      - name: Terraform Format
+        working-directory: environments/dev/terraform
+        id: fmt
+        run: terraform fmt -check
+
+      - name: copy config file
+        working-directory: environments/dev
+        run: cp config_files/service-config.json terraform/service-config.json
+      
+      - name: Terraform Validate
+        working-directory: environments/dev/terraform
+        id: validate
+        run: terraform validate -no-color
+
+      # - name: Terraform Plan
+      #   working-directory: environments/dev/terraform
+      #   id: plan
+      #   if: github.event_name == 'pull_request'
+      #   run: terraform plan -no-color
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        # if: github.event_name == 'release'
+        working-directory: environments/dev/terraform
+        
   deploy:
-    needs: build
+    needs: [
+      scaffold,
+      build,
+    ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

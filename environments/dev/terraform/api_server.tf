@@ -1,7 +1,3 @@
-locals {
-  repository_url = "ghcr.io/prixfixeco/api_server"
-}
-
 resource "aws_ecr_repository" "api_server" {
   name = "api_server"
   # do not set image_tag_mutability to "IMMUTABLE", or else we cannot use :latest tags.

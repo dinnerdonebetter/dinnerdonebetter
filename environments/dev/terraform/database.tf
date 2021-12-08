@@ -1,5 +1,6 @@
 locals {
   database_username = "prixfixe_api"
+  database_name     = "prixfixe"
 }
 
 resource "random_password" "database_password" {
@@ -9,14 +10,14 @@ resource "random_password" "database_password" {
 }
 
 resource "aws_db_subnet_group" "private" {
-  name_prefix = "dev"
+  name        = "dev"
   description = "dev environment database subnet group"
   subnet_ids  = [for x in aws_subnet.private_subnets : x.id]
 }
 
 resource "aws_rds_cluster" "api_database" {
   cluster_identifier = "api-database"
-  database_name      = "prixfixe"
+  database_name      = local.database_name
   engine             = "aurora-postgresql"
 
   engine_mode = "serverless"
@@ -48,11 +49,11 @@ resource "aws_rds_cluster" "api_database" {
 resource "aws_ssm_parameter" "database_url" {
   name  = "PRIXFIXE_DATABASE_URL"
   type  = "String"
-  value = format("postgres://%s:%s@%s:%d/prixfixe", local.database_username, random_password.database_password.result, aws_rds_cluster.api_database.endpoint, aws_rds_cluster.api_database.port)
+  value = format("postgres://%s:%s@%s:%d/%s", local.database_username, random_password.database_password.result, aws_rds_cluster.api_database.endpoint, aws_rds_cluster.api_database.port, local.database_name)
 }
 
 resource "aws_secretsmanager_secret" "dev_database" {
-  name = format("rds-db-credentials/%s/", aws_rds_cluster.api_database.cluster_resource_id)
+  name = format("rds-db-credentials/%s/%s", aws_rds_cluster.api_database.cluster_resource_id, local.database_username)
 }
 
 resource "aws_secretsmanager_secret_version" "dev_database" {

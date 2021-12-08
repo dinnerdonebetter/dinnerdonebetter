@@ -116,7 +116,6 @@ func (q *SQLQuerier) IsReady(ctx context.Context, maxAttempts uint8) (ready bool
 
 	logger := q.logger.WithValues(map[string]interface{}{
 		"interval":       time.Second.String(),
-		"max_attempts":   maxAttempts,
 		"connection_url": q.connectionURL,
 	})
 
