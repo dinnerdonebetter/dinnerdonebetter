@@ -41,22 +41,6 @@ resource "aws_security_group" "http_service" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
-  ingress {
-    description = "https in"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description      = "https in v6"
-    from_port        = 443
-    to_port          = 443
-    protocol         = "tcp"
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
   egress {
     from_port        = 0
     to_port          = 0
@@ -87,22 +71,6 @@ resource "aws_security_group" "load_balancer" {
     description      = "v6 http"
     from_port        = 80
     to_port          = 80
-    protocol         = "tcp"
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    description = "https in"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description      = "v6 https"
-    from_port        = 443
-    to_port          = 443
     protocol         = "tcp"
     ipv6_cidr_blocks = ["::/0"]
   }
