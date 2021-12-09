@@ -68,6 +68,6 @@ func ProvidePublisherProvider(logger logging.Logger, c *Config) (publishers.Publ
 	case ProviderSQS:
 		return sqs.ProvideSQSPublisherProvider(logger, string(c.SQSConfig.QueueAddress)), nil
 	default:
-		return nil, fmt.Errorf("invalid provider: %q", c.Provider)
+		return nil, fmt.Errorf("invalid publisher provider: %q", c.Provider)
 	}
 }
