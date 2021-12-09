@@ -105,7 +105,7 @@ func main() {
 		emailer,
 		cdp,
 	)
-	postWritesConsumer, err := consumerProvider.ProviderConsumer(ctx, dataChangesTopicName, postWritesWorker.HandleMessage)
+	postWritesConsumer, err := consumerProvider.ProvideConsumer(ctx, dataChangesTopicName, postWritesWorker.HandleMessage)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -134,7 +134,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	preWritesConsumer, err := consumerProvider.ProviderConsumer(ctx, preWritesTopicName, preWritesWorker.HandleMessage)
+	preWritesConsumer, err := consumerProvider.ProvideConsumer(ctx, preWritesTopicName, preWritesWorker.HandleMessage)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -163,7 +163,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	preUpdatesConsumer, err := consumerProvider.ProviderConsumer(ctx, preUpdatesTopicName, preUpdatesWorker.HandleMessage)
+	preUpdatesConsumer, err := consumerProvider.ProvideConsumer(ctx, preUpdatesTopicName, preUpdatesWorker.HandleMessage)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -191,7 +191,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	preArchivesConsumer, err := consumerProvider.ProviderConsumer(ctx, preArchivesTopicName, preArchivesWorker.HandleMessage)
+	preArchivesConsumer, err := consumerProvider.ProvideConsumer(ctx, preArchivesTopicName, preArchivesWorker.HandleMessage)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -207,7 +207,7 @@ func main() {
 		cdp,
 	)
 
-	choresConsumer, err := consumerProvider.ProviderConsumer(ctx, choresTopicName, choresWorker.HandleMessage)
+	choresConsumer, err := consumerProvider.ProvideConsumer(ctx, choresTopicName, choresWorker.HandleMessage)
 	if err != nil {
 		logger.Fatal(err)
 	}

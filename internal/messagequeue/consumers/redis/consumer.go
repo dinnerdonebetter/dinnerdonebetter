@@ -94,8 +94,8 @@ func ProvideRedisConsumerProvider(logger logging.Logger, queueAddress string) co
 	}
 }
 
-// ProviderConsumer returns a Consumer for a given topic.
-func (p *consumerProvider) ProviderConsumer(ctx context.Context, topic string, handlerFunc func(context.Context, []byte) error) (consumers.Consumer, error) {
+// ProvideConsumer returns a Consumer for a given topic.
+func (p *consumerProvider) ProvideConsumer(ctx context.Context, topic string, handlerFunc func(context.Context, []byte) error) (consumers.Consumer, error) {
 	logger := logging.EnsureLogger(p.logger).WithValue("topic", topic)
 
 	p.consumerCacheHat.Lock()

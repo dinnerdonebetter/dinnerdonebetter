@@ -22,7 +22,7 @@ resource "aws_rds_cluster" "api_database" {
 
   engine_mode = "serverless"
   scaling_configuration {
-    # auto_p//use               = true
+    auto_pause               = true
     min_capacity             = 2
     max_capacity             = 2
     seconds_until_auto_pause = 300

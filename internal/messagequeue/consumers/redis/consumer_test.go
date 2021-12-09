@@ -162,7 +162,7 @@ func Test_consumerProvider_ProviderConsumer(T *testing.T) {
 
 		ctx := context.Background()
 
-		actual, err := conPro.ProviderConsumer(ctx, t.Name(), nil)
+		actual, err := conPro.ProvideConsumer(ctx, t.Name(), nil)
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
 	})
@@ -178,11 +178,11 @@ func Test_consumerProvider_ProviderConsumer(T *testing.T) {
 
 		ctx := context.Background()
 
-		actual, err := conPro.ProviderConsumer(ctx, t.Name(), nil)
+		actual, err := conPro.ProvideConsumer(ctx, t.Name(), nil)
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
 
-		actual, err = conPro.ProviderConsumer(ctx, t.Name(), nil)
+		actual, err = conPro.ProvideConsumer(ctx, t.Name(), nil)
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
 	})

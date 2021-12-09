@@ -49,7 +49,7 @@ func TestProvideService(T *testing.T) {
 
 		consumerProvider := &mockconsumers.ConsumerProvider{}
 		consumerProvider.On(
-			"ProviderConsumer",
+			"ProvideConsumer",
 			testutils.ContextMatcher,
 			dataChangesTopicName,
 			mock.Anything,
@@ -79,7 +79,7 @@ func TestProvideService(T *testing.T) {
 
 		consumerProvider := &mockconsumers.ConsumerProvider{}
 		consumerProvider.On(
-			"ProviderConsumer",
+			"ProvideConsumer",
 			testutils.ContextMatcher,
 			dataChangesTopicName,
 			mock.Anything,

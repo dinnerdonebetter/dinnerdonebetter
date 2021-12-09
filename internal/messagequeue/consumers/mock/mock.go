@@ -15,8 +15,8 @@ type ConsumerProvider struct {
 	mock.Mock
 }
 
-// ProviderConsumer implements the interface.
-func (m *ConsumerProvider) ProviderConsumer(ctx context.Context, topic string, handlerFunc func(context.Context, []byte) error) (consumers.Consumer, error) {
+// ProvideConsumer implements the interface.
+func (m *ConsumerProvider) ProvideConsumer(ctx context.Context, topic string, handlerFunc func(context.Context, []byte) error) (consumers.Consumer, error) {
 	args := m.Called(ctx, topic, handlerFunc)
 
 	return args.Get(0).(consumers.Consumer), args.Error(1)

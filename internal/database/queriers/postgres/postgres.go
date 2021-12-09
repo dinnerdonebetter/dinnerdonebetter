@@ -35,9 +35,9 @@ type SQLQuerier struct {
 	sqlBuilder    squirrel.StatementBuilderType
 	logger        logging.Logger
 	db            *sql.DB
-	connectionURL string
 	timeFunc      func() uint64
 	config        *dbconfig.Config
+	connectionURL string
 	migrateOnce   sync.Once
 	logQueries    bool
 }

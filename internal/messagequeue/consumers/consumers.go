@@ -18,6 +18,6 @@ type (
 
 	// ConsumerProvider is a function that provides a Consumer for a given topic.
 	ConsumerProvider interface {
-		ProviderConsumer(ctx context.Context, topic string, handlerFunc func(context.Context, []byte) error) (Consumer, error)
+		ProvideConsumer(ctx context.Context, topic string, handlerFunc func(context.Context, []byte) error) (Consumer, error)
 	}
 )

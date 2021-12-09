@@ -6,9 +6,10 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/messagequeue/consumers"
 	redisconsumer "github.com/prixfixeco/api_server/internal/messagequeue/consumers/redis"
+	sqsconsumer "github.com/prixfixeco/api_server/internal/messagequeue/consumers/sqs"
 	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	redispublisher "github.com/prixfixeco/api_server/internal/messagequeue/publishers/redis"
-	"github.com/prixfixeco/api_server/internal/messagequeue/publishers/sqs"
+	sqspublisher "github.com/prixfixeco/api_server/internal/messagequeue/publishers/sqs"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
 
@@ -55,6 +56,8 @@ func ProvideConsumerProvider(logger logging.Logger, c *Config) (consumers.Consum
 	switch cleanString(string(c.Provider)) {
 	case ProviderRedis:
 		return redisconsumer.ProvideRedisConsumerProvider(logger, string(c.RedisConfig.QueueAddress)), nil
+	case ProviderSQS:
+		return sqsconsumer.ProvideSQSConsumerProvider(logger), nil
 	default:
 		return nil, fmt.Errorf("invalid provider: %q", c.Provider)
 	}
@@ -66,7 +69,7 @@ func ProvidePublisherProvider(logger logging.Logger, c *Config) (publishers.Publ
 	case ProviderRedis:
 		return redispublisher.ProvideRedisPublisherProvider(logger, string(c.RedisConfig.QueueAddress)), nil
 	case ProviderSQS:
-		return sqs.ProvideSQSPublisherProvider(logger, string(c.SQSConfig.QueueAddress)), nil
+		return sqspublisher.ProvideSQSPublisherProvider(logger, string(c.SQSConfig.QueueAddress)), nil
 	default:
 		return nil, fmt.Errorf("invalid publisher provider: %q", c.Provider)
 	}

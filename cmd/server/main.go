@@ -10,7 +10,6 @@ import (
 	"strconv"
 
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
-	flag "github.com/spf13/pflag"
 
 	"github.com/prixfixeco/api_server/internal/build/server"
 	"github.com/prixfixeco/api_server/internal/config"
@@ -23,17 +22,7 @@ const (
 	configFilepathEnvVar = "CONFIGURATION_FILEPATH"
 )
 
-var (
-	configFilepath string
-)
-
-func init() {
-	flag.StringVarP(&configFilepath, "config", "c", "", "the config filepath")
-}
-
 func main() {
-	flag.Parse()
-
 	var (
 		ctx    = context.Background()
 		logger = logging.ProvideLogger(logging.Config{Provider: logging.ProviderZerolog})
@@ -45,7 +34,7 @@ func main() {
 		return chimiddleware.GetReqID(req.Context())
 	})
 
-	if x, err := strconv.ParseBool(os.Getenv(useNoOpLoggerEnvVar)); x && err == nil {
+	if x, parseErr := strconv.ParseBool(os.Getenv(useNoOpLoggerEnvVar)); x && parseErr == nil {
 		logger = logging.NewNoopLogger()
 	}
 
@@ -57,11 +46,10 @@ func main() {
 	)
 
 	// find and validate our configuration filepath.
-	configFilepath := os.Getenv(configFilepathEnvVar)
-	if configFilepath != "" {
-		configBytes, err := os.ReadFile(configFilepath)
-		if err != nil {
-			logger.Fatal(err)
+	if configFilepath := os.Getenv(configFilepathEnvVar); configFilepath != "" {
+		configBytes, configReadErr := os.ReadFile(configFilepath)
+		if configReadErr != nil {
+			logger.Fatal(configReadErr)
 		}
 
 		if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
