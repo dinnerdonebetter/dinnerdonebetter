@@ -72,7 +72,10 @@ resource "aws_ecs_service" "api_server" {
       aws_security_group.api_service.id,
     ]
 
-    subnets = [for x in aws_subnet.private_subnets : x.id]
+    subnets = concat(
+      [for x in aws_subnet.public_subnets : x.id],
+      [for x in aws_subnet.private_subnets : x.id],
+    )
   }
 
   depends_on = [
