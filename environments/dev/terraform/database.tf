@@ -9,10 +9,10 @@ resource "random_password" "database_password" {
   override_special = "#$*-_=+[]"
 }
 
-resource "aws_db_subnet_group" "private" {
+resource "aws_db_subnet_group" "db_subnet" {
   name        = "dev"
   description = "dev environment database subnet group"
-  subnet_ids  = [for x in aws_subnet.private_subnets : x.id]
+  subnet_ids  = [for x in aws_subnet.public_subnets : x.id]
 }
 
 resource "aws_rds_cluster" "api_database" {
@@ -40,7 +40,7 @@ resource "aws_rds_cluster" "api_database" {
   copy_tags_to_snapshot        = true
   backup_retention_period      = 7
 
-  db_subnet_group_name = aws_db_subnet_group.private.name
+  db_subnet_group_name = aws_db_subnet_group.db_subnet.name
   vpc_security_group_ids = [
     aws_security_group.database.id,
   ]
