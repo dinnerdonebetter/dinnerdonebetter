@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	dbURL    = "user=prixfixe_api dbname=prixfixe password='F9F7[#v=hSWL6f-KT#z6b2[2RIjWMlW_NhUxVBCu5GicS1_Rj]dkia_NXUq]KC=d' host=api-database.cluster-ctj4wxgujo7g.us-east-1.rds.amazonaws.com"
+	dbURL    = "user=prixfixe_api dbname=prixfixe password='Hf#MN#qxZCKO-1FuMUqwCsg]WyVtD]$fSRt463Fi*YMYY5NSlPmX-dqqcg7xG4[m' host=api-database.cluster-ctj4wxgujo7g.us-east-1.rds.amazonaws.com port=5432"
 	queueURL = "https://sqs.us-east-1.amazonaws.com/966107642521/writes.fifo"
 )
 
