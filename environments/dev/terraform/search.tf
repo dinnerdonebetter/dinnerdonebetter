@@ -25,11 +25,11 @@ resource "aws_ssm_parameter" "search_url" {
 resource "aws_ssm_parameter" "search_username" {
   name  = "PRIXFIXE_ELASTICSEARCH_USERNAME"
   type  = "String"
-  value = ec_deployment.dev.elasticsearch[0].elasticsearch_username
+  value = ec_deployment.dev.elasticsearch_username
 }
 
 resource "aws_ssm_parameter" "search_password" {
   name  = "PRIXFIXE_ELASTICSEARCH_PASSWORD"
   type  = "String"
-  value = ec_deployment.dev.elasticsearch[0].elasticsearch_password
+  value = ec_deployment.dev.elasticsearch_password
 }
