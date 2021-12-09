@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	dbURL = "postgres://prixfixe_api:F9F7[#v=hSWL6f-KT#z6b2[2RIjWMlW_NhUxVBCu5GicS1_Rj]dkia_NXUq]KC=d@api-database.cluster-ctj4wxgujo7g.us-east-1.rds.amazonaws.com:5432/prixfixe"
+	dbURL = "user=prixfixe_api dbname=prixfixe password=F9F7[#v=hSWL6f-KT#z6b2[2RIjWMlW_NhUxVBCu5GicS1_Rj]dkia_NXUq]KC=d host=api-database.cluster-ctj4wxgujo7g.us-east-1.rds.amazonaws.com"
 	// queueURL = "https://sqs.us-east-1.amazonaws.com/966107642521/writes.fifo"
 )
 
