@@ -114,10 +114,7 @@ func (q *SQLQuerier) IsReady(ctx context.Context, maxAttempts uint8) (ready bool
 
 	attemptCount := 0
 
-	logger := q.logger.WithValues(map[string]interface{}{
-		"interval":       time.Second.String(),
-		"connection_url": q.connectionURL,
-	})
+	logger := q.logger.WithValue("connection_url", q.connectionURL)
 
 	for !ready {
 		err := q.db.PingContext(ctx)
