@@ -18,8 +18,7 @@ import (
 )
 
 const (
-	serviceName          = "websockets_service"
-	dataChangesTopicName = "data_changes"
+	serviceName = "websockets_service"
 )
 
 type (
@@ -48,6 +47,7 @@ type (
 func ProvideService(
 	ctx context.Context,
 	authCfg *authservice.Config,
+	cfg Config,
 	logger logging.Logger,
 	encoder encoding.ServerEncoderDecoder,
 	consumerProvider consumers.ConsumerProvider,
@@ -69,7 +69,7 @@ func ProvideService(
 		tracer:                      tracing.NewTracer(serviceName),
 	}
 
-	dataChangesConsumer, err := consumerProvider.ProvideConsumer(ctx, dataChangesTopicName, svc.handleDataChange)
+	dataChangesConsumer, err := consumerProvider.ProvideConsumer(ctx, cfg.DataChangesTopicName, svc.handleDataChange)
 	if err != nil {
 		return nil, fmt.Errorf("setting up event publisher: %w", err)
 	}

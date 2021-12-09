@@ -17,6 +17,7 @@ const (
 	writesQueueNameSSMKey          = "PRIXFIXE_WRITES_QUEUE_URL"
 	updatesQueueNameSSMKey         = "PRIXFIXE_UPDATES_QUEUE_URL"
 	archivesQueueNameSSMKey        = "PRIXFIXE_ARCHIVES_QUEUE_URL"
+	dataChangesQueueNameSSMKey     = "PRIXFIXE_DATA_CHANGES_QUEUE_URL"
 	elasticsearchInstanceURLSSMKEy = "PRIXFIXE_ELASTICSEARCH_INSTANCE_URL"
 	cookieBlockKeySSMKey           = "PRIXFIXE_COOKIE_BLOCK_KEY"
 	cookieHashKeySSMKey            = "PRIXFIXE_COOKIE_HASH_KEY"
@@ -67,6 +68,7 @@ func GetConfigFromParameterStore() (*InstanceConfig, error) {
 	writesTopicName := mustGetParameter(svc, writesQueueNameSSMKey)
 	updatesTopicName := mustGetParameter(svc, updatesQueueNameSSMKey)
 	archivesTopicName := mustGetParameter(svc, archivesQueueNameSSMKey)
+	dataChangesTopicName := mustGetParameter(svc, dataChangesQueueNameSSMKey)
 	elasticsearchInstanceURL := mustGetParameter(svc, elasticsearchInstanceURLSSMKEy)
 
 	cfg.Services.ValidInstruments.PreWritesTopicName = writesTopicName
@@ -118,6 +120,8 @@ func GetConfigFromParameterStore() (*InstanceConfig, error) {
 	cfg.Services.ValidInstruments.SearchIndexPath = elasticsearchInstanceURL
 	cfg.Services.ValidPreparations.SearchIndexPath = elasticsearchInstanceURL
 	cfg.Services.ValidIngredients.SearchIndexPath = elasticsearchInstanceURL
+
+	cfg.Services.Websockets.DataChangesTopicName = dataChangesTopicName
 
 	ctx := context.Background()
 	if err := cfg.ValidateWithContext(ctx); err != nil {

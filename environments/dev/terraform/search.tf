@@ -45,7 +45,7 @@ resource "aws_elasticsearch_domain" "search" {
   }
 
   vpc_options {
-    subnet_ids = [aws_subnet.private_subnets["us-east-1a"].id]
+    subnet_ids = [for x in aws_subnet.private_subnets : x.id]
 
     security_group_ids = [
       aws_security_group.search.id,
@@ -58,5 +58,5 @@ resource "aws_elasticsearch_domain" "search" {
 resource "aws_ssm_parameter" "search_url" {
   name  = "PRIXFIXE_ELASTICSEARCH_INSTANCE_URL"
   type  = "String"
-  value = aws_elasticsearch_domain.search.endpoint
+  value = format("http://%s", aws_elasticsearch_domain.search.endpoint)
 }

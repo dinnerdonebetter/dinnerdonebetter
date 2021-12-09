@@ -119,11 +119,12 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	}
 	apiclientsConfig := apiclients.ProvideConfig(authenticationConfig)
 	apiClientDataService := apiclients.ProvideAPIClientsService(logger, apiClientDataManager, userDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, routeParamManager, apiclientsConfig, collector)
+	websocketsConfig := servicesConfigurations.Websockets
 	consumerProvider, err := config4.ProvideConsumerProvider(logger, config6)
 	if err != nil {
 		return nil, err
 	}
-	websocketDataService, err := websockets.ProvideService(ctx, authenticationConfig, logger, serverEncoderDecoder, consumerProvider)
+	websocketDataService, err := websockets.ProvideService(ctx, authenticationConfig, websocketsConfig, logger, serverEncoderDecoder, consumerProvider)
 	if err != nil {
 		return nil, err
 	}
