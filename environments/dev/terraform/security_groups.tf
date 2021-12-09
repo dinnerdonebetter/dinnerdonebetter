@@ -1,7 +1,7 @@
 resource "aws_security_group" "allow_ssh" {
   name        = "allow_all"
   description = "Allow inbound SSH traffic from any IP"
-  vpc_id      = "VPC-ID"
+  vpc_id      = aws_vpc.main.id
 
   ingress {
     from_port   = 22
@@ -10,7 +10,7 @@ resource "aws_security_group" "allow_ssh" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags {
+  tags = {
     Name = "Allow SSH"
   }
 }
