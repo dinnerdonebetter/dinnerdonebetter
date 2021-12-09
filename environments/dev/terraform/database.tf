@@ -59,7 +59,6 @@ resource "aws_ssm_parameter" "database_url" {
   )
 }
 
-
 resource "aws_secretsmanager_secret" "dev_database" {
   name = format("rds-db-credentials/%s/%s", aws_rds_cluster.api_database.cluster_resource_id, local.database_username)
 }
@@ -75,4 +74,37 @@ resource "aws_secretsmanager_secret_version" "dev_database" {
     username             = local.database_username,
     password             = random_password.database_password.result
   })
+}
+
+resource "aws_security_group" "database" {
+  name        = "postgres"
+  description = "Allow Postgres traffic"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description      = "Postgres from VPC"
+    from_port        = 5432
+    to_port          = 5432
+    protocol         = "tcp"
+    cidr_blocks      = [aws_vpc.main.cidr_block]
+    ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
+    security_groups = [
+      aws_security_group.api_service.id,
+      aws_security_group.load_balancer.id,
+    ]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    ipv6_cidr_blocks = ["::/0"]
+  }
 }

@@ -60,3 +60,44 @@ resource "aws_ssm_parameter" "search_url" {
   type  = "String"
   value = format("http://%s", aws_elasticsearch_domain.search.endpoint)
 }
+
+resource "aws_security_group" "search" {
+  name        = "elasticsearch"
+  description = "Elasticsearch traffic"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 9200
+    to_port     = 9200
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
