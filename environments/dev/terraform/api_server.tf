@@ -69,7 +69,7 @@ resource "aws_ecs_service" "api_server" {
     assign_public_ip = true
 
     security_groups = [
-      aws_security_group.load_balancer.id,
+      aws_security_group.http_service.id,
     ]
 
     subnets = [for x in aws_subnet.private_subnets : x.id]

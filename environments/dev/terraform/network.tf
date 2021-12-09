@@ -108,7 +108,7 @@ resource "aws_alb" "api" {
   subnets = [for x in aws_subnet.public_subnets : x.id]
 
   security_groups = [
-    aws_security_group.load_balancer.id,
+    aws_security_group.http_service.id,
   ]
 
   depends_on = [aws_internet_gateway.main]
@@ -139,7 +139,6 @@ resource "aws_alb_listener" "api_http" {
 output "alb_url" {
   value = "http://${aws_alb.api.dns_name}"
 }
-
 
 # resource "aws_alb_listener" "api_https" {
 #   load_balancer_arn = aws_alb.api.arn
