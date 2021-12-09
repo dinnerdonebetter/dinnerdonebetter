@@ -6,17 +6,21 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/sqs"
 	_ "github.com/lib/pq"
+	"github.com/segmentio/ksuid"
 )
 
 const (
-	dbURL = "user=prixfixe_api dbname=prixfixe password=F9F7[#v=hSWL6f-KT#z6b2[2RIjWMlW_NhUxVBCu5GicS1_Rj]dkia_NXUq]KC=d host=api-database.cluster-ctj4wxgujo7g.us-east-1.rds.amazonaws.com"
-	// queueURL = "https://sqs.us-east-1.amazonaws.com/966107642521/writes.fifo"
+	dbURL    = "user=prixfixe_api dbname=prixfixe password='F9F7[#v=hSWL6f-KT#z6b2[2RIjWMlW_NhUxVBCu5GicS1_Rj]dkia_NXUq]KC=d' host=api-database.cluster-ctj4wxgujo7g.us-east-1.rds.amazonaws.com"
+	queueURL = "https://sqs.us-east-1.amazonaws.com/966107642521/writes.fifo"
 )
 
 var (
-	db *sql.DB
-	// queue *sqs.SQS
+	db    *sql.DB
+	queue *sqs.SQS
 )
 
 func main() {
@@ -29,10 +33,10 @@ func main() {
 		log.Fatalf("error connecting to database: %v", err)
 	}
 
-	// sess := session.Must(session.NewSessionWithOptions(session.Options{
-	// 	SharedConfigState: session.SharedConfigEnable,
-	// }))
-	// queue = sqs.New(sess)
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable,
+	}))
+	queue = sqs.New(sess)
 
 	log.Fatal(http.ListenAndServe(":80", nil))
 }
@@ -47,21 +51,21 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Error: %s", err)
 	}
 
-	// if _, err := queue.SendMessage(&sqs.SendMessageInput{
-	// 	MessageAttributes: map[string]*sqs.MessageAttributeValue{
-	// 		"Things": {
-	// 			DataType:    aws.String("String"),
-	// 			StringValue: aws.String("Stuff"),
-	// 		},
-	// 	},
-	// 	MessageDeduplicationId: aws.String(ksuid.New().String()),
-	// 	MessageGroupId:         aws.String("writes"),
-	// 	MessageBody:            aws.String("just testin'"),
-	// 	QueueUrl:               aws.String(queueURL),
-	// }); err != nil {
-	// 	log.Printf("error writing message to queue: %v\n", err)
-	// 	fmt.Fprintf(w, "Error: %s", err)
-	// }
+	if _, err := queue.SendMessage(&sqs.SendMessageInput{
+		MessageAttributes: map[string]*sqs.MessageAttributeValue{
+			"Things": {
+				DataType:    aws.String("String"),
+				StringValue: aws.String("Stuff"),
+			},
+		},
+		MessageDeduplicationId: aws.String(ksuid.New().String()),
+		MessageGroupId:         aws.String("writes"),
+		MessageBody:            aws.String("just testin'"),
+		QueueUrl:               aws.String(queueURL),
+	}); err != nil {
+		log.Printf("error writing message to queue: %v\n", err)
+		fmt.Fprintf(w, "Error: %s", err)
+	}
 
 	fmt.Fprintf(w, "Hello, there from version %s!", version)
 }

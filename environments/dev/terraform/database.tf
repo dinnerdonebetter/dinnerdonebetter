@@ -47,10 +47,18 @@ resource "aws_rds_cluster" "api_database" {
 }
 
 resource "aws_ssm_parameter" "database_url" {
-  name  = "PRIXFIXE_DATABASE_URL"
+  name  = "PRIXFIXE_DATABASE_CONNECTION_STRING"
   type  = "String"
-  value = format("postgres://%s:%s@%s:%d/%s", local.database_username, random_password.database_password.result, aws_rds_cluster.api_database.endpoint, aws_rds_cluster.api_database.port, local.database_name)
+  value = format(
+    "user=%s dbname=%s password='%s' host=%s port=%s",
+    local.database_username,
+    local.database_name,
+    random_password.database_password.result,
+    aws_rds_cluster.api_database.endpoint,
+    aws_rds_cluster.api_database.port,
+  )
 }
+
 
 resource "aws_secretsmanager_secret" "dev_database" {
   name = format("rds-db-credentials/%s/%s", aws_rds_cluster.api_database.cluster_resource_id, local.database_username)

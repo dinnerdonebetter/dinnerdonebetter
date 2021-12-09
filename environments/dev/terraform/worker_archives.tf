@@ -20,8 +20,8 @@ data "archive_file" "archives_dummy" {
 }
 
 resource "aws_lambda_function" "archives_worker_lambda" {
-  function_name = "archives_worker"
-  handler       = "archives_worker"
+  function_name = "archiver_worker"
+  handler       = "archiver_worker"
   role          = aws_iam_role.worker_lambda_role.arn
   runtime       = local.lambda_runtime
   memory_size   = local.memory_size

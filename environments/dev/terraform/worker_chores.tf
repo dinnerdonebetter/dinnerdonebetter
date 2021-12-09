@@ -21,7 +21,7 @@ data "archive_file" "chores_dummy" {
 
 resource "aws_lambda_function" "chores_worker_lambda" {
   function_name = "chores_worker"
-  handler       = "chores_worker"
+  handler       = "main"
   role          = aws_iam_role.worker_lambda_role.arn
   runtime       = local.lambda_runtime
   memory_size   = local.memory_size
@@ -33,11 +33,6 @@ resource "aws_lambda_function" "chores_worker_lambda" {
 
   filename = data.archive_file.chores_dummy.output_path
 }
-
-# resource "aws_lambda_event_source_mapping" "chores_mapping" {
-#   event_source_arn = aws_sqs_queue.chores_queue.arn
-#   function_name    = aws_lambda_function.chores_worker_lambda.arn
-# }
 
 resource "aws_cloudwatch_event_rule" "every_minute" {
   name                = "every-minute"

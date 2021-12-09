@@ -13,7 +13,7 @@ import (
 
 const (
 	baseConfigSSMKey               = "PRIXFIXE_BASE_CONFIG"
-	databaseConnectionURLSSMKey    = "PRIXFIXE_DATABASE_URL"
+	databaseConnectionURLSSMKey    = "PRIXFIXE_DATABASE_CONNECTION_STRING"
 	writesQueueNameSSMKey          = "PRIXFIXE_WRITES_QUEUE_URL"
 	updatesQueueNameSSMKey         = "PRIXFIXE_UPDATES_QUEUE_URL"
 	archivesQueueNameSSMKey        = "PRIXFIXE_ARCHIVES_QUEUE_URL"
