@@ -1,5 +1,5 @@
 resource "aws_security_group" "allow_ssh" {
-  name        = "allow_all"
+  name        = "ssh"
   description = "Allow inbound SSH traffic from any IP"
   vpc_id      = aws_vpc.main.id
 
@@ -12,7 +12,7 @@ resource "aws_security_group" "allow_ssh" {
 }
 
 resource "aws_security_group" "database" {
-  name        = "allow-postgres"
+  name        = "postgres"
   description = "Allow Postgres traffic"
   vpc_id      = aws_vpc.main.id
 
@@ -37,7 +37,7 @@ resource "aws_security_group" "database" {
 }
 
 resource "aws_security_group" "api_service" {
-  name        = "http"
+  name        = "prixfixe_api"
   description = "HTTP traffic"
   vpc_id      = aws_vpc.main.id
 
@@ -71,8 +71,8 @@ resource "aws_security_group" "api_service" {
 }
 
 resource "aws_security_group" "load_balancer" {
-  name        = "http"
-  description = "HTTP traffic"
+  name        = "load_balancer"
+  description = "public internet traffic"
   vpc_id      = aws_vpc.main.id
 
   ingress {
