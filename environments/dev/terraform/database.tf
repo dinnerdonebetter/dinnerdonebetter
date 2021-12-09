@@ -47,8 +47,8 @@ resource "aws_rds_cluster" "api_database" {
 }
 
 resource "aws_ssm_parameter" "database_url" {
-  name  = "PRIXFIXE_DATABASE_CONNECTION_STRING"
-  type  = "String"
+  name = "PRIXFIXE_DATABASE_CONNECTION_STRING"
+  type = "String"
   value = format(
     "user=%s dbname=%s password='%s' host=%s port=%s",
     local.database_username,
