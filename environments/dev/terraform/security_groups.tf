@@ -9,13 +9,9 @@ resource "aws_security_group" "allow_ssh" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  tags = {
-    Name = "Allow SSH"
-  }
 }
 
-resource "aws_security_group" "allow_postgres" {
+resource "aws_security_group" "database" {
   name        = "allow-postgres"
   description = "Allow Postgres traffic"
   vpc_id      = aws_vpc.main.id
@@ -27,61 +23,104 @@ resource "aws_security_group" "allow_postgres" {
     protocol         = "tcp"
     cidr_blocks      = [aws_vpc.main.cidr_block]
     ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
+    security_groups = [
+      aws_security_group.api_service.id,
+      aws_security_group.load_balancer.id,
+    ]
   }
 
-  tags = {
-    Name = "allow_intra_vpc_postgres"
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
-resource "aws_security_group" "http_service" {
-  name        = "dev-service"
-  description = "Allow HTTP in, all outbound traffic"
-  vpc_id      = aws_vpc.main.id
+resource "aws_security_group" "api_service" {
+  name        = "http"
+  description = "HTTP traffic"
+  vpc_id      = aws_vpc.app_vpc.id
 
   ingress {
-    description = "http in"
     from_port   = 80
     to_port     = 80
-    protocol    = "tcp"
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 8888
+    to_port     = 8888
+    protocol    = "TCP"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  tags = {
-    Name = "dev_service"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
-resource "aws_security_group" "search_service" {
-  name        = "dev-search"
-  description = "Allow TCP search traffic"
-  vpc_id      = aws_vpc.main.id
+resource "aws_security_group" "load_balancer" {
+  name        = "http"
+  description = "HTTP traffic"
+  vpc_id      = aws_vpc.app_vpc.id
 
   ingress {
-    description = "search in"
-    from_port   = 9200
-    to_port     = 9200
-    protocol    = "tcp"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 8888
+    to_port     = 8888
+    protocol    = "TCP"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "search" {
+  name        = "elasticsearch"
+  description = "Elasticsearch traffic"
+  vpc_id      = aws_vpc.app_vpc.id
+
+  ingress {
+    from_port   = 9200
+    to_port     = 9200
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = {
-    Name = "dev_search"
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }

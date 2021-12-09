@@ -42,7 +42,7 @@ resource "aws_rds_cluster" "api_database" {
 
   db_subnet_group_name = aws_db_subnet_group.private.name
   vpc_security_group_ids = [
-    aws_security_group.allow_postgres.id,
+    aws_security_group.database.id,
   ]
 }
 
