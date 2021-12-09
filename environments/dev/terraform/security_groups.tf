@@ -40,7 +40,7 @@ resource "aws_security_group" "database" {
 resource "aws_security_group" "api_service" {
   name        = "http"
   description = "HTTP traffic"
-  vpc_id      = aws_vpc.app_vpc.id
+  vpc_id      = aws_vpc.main.id
 
   ingress {
     from_port   = 80
@@ -74,7 +74,7 @@ resource "aws_security_group" "api_service" {
 resource "aws_security_group" "load_balancer" {
   name        = "http"
   description = "HTTP traffic"
-  vpc_id      = aws_vpc.app_vpc.id
+  vpc_id      = aws_vpc.main.id
 
   ingress {
     from_port   = 80
@@ -108,7 +108,7 @@ resource "aws_security_group" "load_balancer" {
 resource "aws_security_group" "search" {
   name        = "elasticsearch"
   description = "Elasticsearch traffic"
-  vpc_id      = aws_vpc.app_vpc.id
+  vpc_id      = aws_vpc.main.id
 
   ingress {
     from_port   = 9200
