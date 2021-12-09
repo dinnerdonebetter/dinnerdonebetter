@@ -45,7 +45,7 @@ resource "aws_elasticsearch_domain" "search" {
   }
 
   vpc_options {
-    subnet_ids = [for x in aws_subnet.private_subnets : x.id]
+    subnet_ids = [aws_subnet.private_subnets["us-east-1a"].id]
 
     security_group_ids = [
       aws_security_group.search.id,
