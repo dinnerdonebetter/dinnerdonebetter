@@ -25,5 +25,9 @@ terraform {
       source  = "hashicorp/archive"
       version = "~> 2.2.0"
     }
+    ec = {
+      source  = "elastic/ec"
+      version = "0.3.0"
+    }
   }
 }
