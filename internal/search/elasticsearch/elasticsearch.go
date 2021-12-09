@@ -50,18 +50,17 @@ func NewIndexManager(
 	l := logger.WithName("search")
 
 	if !elasticsearchIsReady(client, path, logger, 50) {
-		// return nil, errors.New("elasticsearch isn't ready")
-		l.Info("search won't work!")
+		return nil, errors.New("elasticsearch isn't ready")
 	}
 
 	c, err := elastic.NewClient(
 		elastic.SetURL(string(path)),
+		//elastic.SetBasicAuth(cfg.Username, cfg.Password),
 		elastic.SetHttpClient(client),
 		elastic.SetHealthcheck(false),
 	)
 	if err != nil {
-		// return nil, fmt.Errorf("initializing search client: %w", err)
-		l.Info("search won't work!")
+		return nil, fmt.Errorf("initializing search client: %w", err)
 	}
 
 	im := &indexManager{
@@ -73,8 +72,7 @@ func NewIndexManager(
 	}
 
 	if indexErr := im.ensureIndices(ctx, name); indexErr != nil {
-		// return nil, indexErr
-		l.Info("search won't work!")
+		return nil, indexErr
 	}
 
 	return im, nil

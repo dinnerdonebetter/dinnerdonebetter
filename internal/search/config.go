@@ -16,7 +16,10 @@ type Config struct {
 	_ struct{}
 
 	Provider string    `json:"provider" mapstructure:"provider" toml:"provider,omitempty"`
+	Name     IndexName `json:"indexName" mapstructure:"index_name" toml:"index_name,omitempty"`
 	Address  IndexPath `json:"address" mapstructure:"address" toml:"address,omitempty"`
+	Username string    `json:"username" mapstructure:"username" toml:"username,omitempty"`
+	Password string    `json:"password" mapstructure:"password" toml:"password,omitempty"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)
