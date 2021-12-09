@@ -89,6 +89,13 @@ resource "aws_route_table" "private" {
   }
 }
 
+resource "aws_route_table_association" "private_subnets" {
+  for_each = aws_subnet.private_subnets
+
+  subnet_id      = each.value.id
+  route_table_id = aws_route_table.private.id
+}
+
 resource "aws_main_route_table_association" "main" {
   vpc_id         = aws_vpc.main.id
   route_table_id = aws_route_table.private.id
