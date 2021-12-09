@@ -58,5 +58,5 @@ resource "aws_elasticsearch_domain" "search" {
 resource "aws_ssm_parameter" "search_url" {
   name  = "PRIXFIXE_ELASTICSEARCH_INSTANCE_URL"
   type  = "String"
-  value = aws_elasticsearch_domain.search.arn
+  value = aws_elasticsearch_domain.search.endpoint
 }
