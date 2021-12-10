@@ -2,13 +2,15 @@ package elasticsearch
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 	"strings"
 	"time"
 
-	"github.com/olivere/elastic/v7"
+	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/elastic/go-elasticsearch/v8/esapi"
 
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -19,43 +21,41 @@ import (
 var _ search.IndexManager = (*indexManager)(nil)
 
 type (
-	esClient interface {
-		IndexExists(indices ...string) *elastic.IndicesExistsService
-		CreateIndex(name string) *elastic.IndicesCreateService
-		Search(indices ...string) *elastic.SearchService
-		Index() *elastic.IndexService
-		DeleteByQuery(indices ...string) *elastic.DeleteByQueryService
-	}
-
 	indexManager struct {
 		logger       logging.Logger
 		tracer       tracing.Tracer
-		esclient     esClient
+		esclient     *elasticsearch.Client
 		indexName    string
+		timeout      time.Duration
 		searchFields []string
 	}
 
 	indexManagerProvider struct {
-		esclient esClient
+		esclient *elasticsearch.Client
 	}
 )
 
 // NewIndexManagerProvider instantiates an Elasticsearch client.
 func NewIndexManagerProvider(
 	logger logging.Logger,
-	client *http.Client,
 	cfg *search.Config,
 ) (search.IndexManagerProvider, error) {
-	if !elasticsearchIsReady(client, cfg, logger, 50) {
+	if !elasticsearchIsReady(cfg, logger, 10) {
 		return nil, errors.New("elasticsearch isn't ready")
 	}
 
-	c, err := elastic.NewClient(
-		elastic.SetURL(string(cfg.Address)),
-		elastic.SetBasicAuth(cfg.Username, cfg.Password),
-		elastic.SetHttpClient(client),
-		elastic.SetHealthcheck(false),
-	)
+	c, err := elasticsearch.NewClient(elasticsearch.Config{
+		Addresses: []string{
+			string(cfg.Address),
+		},
+		Username:             cfg.Username,
+		Password:             cfg.Password,
+		RetryOnStatus:        nil,
+		EnableRetryOnTimeout: true,
+		MaxRetries:           10,
+		Transport:            nil,
+		Logger:               nil,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("initializing search client: %w", err)
 	}
@@ -71,6 +71,7 @@ func (m *indexManagerProvider) ProvideIndexManager(ctx context.Context, logger l
 		logger:       logging.EnsureLogger(logger).WithName(string(name)),
 		searchFields: fields,
 		esclient:     m.esclient,
+		timeout:      30 * time.Second,
 		indexName:    string(name),
 	}
 
@@ -82,7 +83,6 @@ func (m *indexManagerProvider) ProvideIndexManager(ctx context.Context, logger l
 }
 
 func elasticsearchIsReady(
-	client *http.Client,
 	cfg *search.Config,
 	l logging.Logger,
 	maxAttempts uint8,
@@ -95,11 +95,18 @@ func elasticsearchIsReady(
 	})
 
 	for !ready {
-		_, err := elastic.NewClient(
-			elastic.SetURL(string(cfg.Address)),
-			elastic.SetBasicAuth(cfg.Username, cfg.Password),
-			elastic.SetHttpClient(client),
-		)
+		_, err := elasticsearch.NewClient(elasticsearch.Config{
+			Addresses: []string{
+				string(cfg.Address),
+			},
+			Username:             cfg.Username,
+			Password:             cfg.Password,
+			RetryOnStatus:        nil,
+			EnableRetryOnTimeout: true,
+			MaxRetries:           10,
+			Transport:            observability.HTTPClient().Transport,
+			Logger:               nil,
+		})
 		if err != nil {
 			logger.WithValue("attempt_count", attemptCount).Debug("ping failed, waiting for elasticsearch")
 			time.Sleep(time.Second)
@@ -123,14 +130,22 @@ func (sm *indexManager) ensureIndices(ctx context.Context) error {
 
 	logger := sm.logger.WithValue("index", sm.indexName)
 
-	indexExists, err := sm.esclient.IndexExists(strings.ToLower(sm.indexName)).Do(ctx)
+	res, err := esapi.IndicesExistsRequest{
+		Index:             []string{sm.indexName},
+		IgnoreUnavailable: esapi.BoolPtr(false),
+		ErrorTrace:        false,
+		FilterPath:        nil,
+	}.Do(ctx, sm.esclient)
 	if err != nil {
 		return observability.PrepareError(err, logger, span, "checking index existence")
 	}
 
-	if !indexExists {
-		if _, err = sm.esclient.CreateIndex(strings.ToLower(sm.indexName)).Do(ctx); err != nil && !strings.Contains(elastic.ErrorReason(err), "already exists") {
-			return observability.PrepareError(err, logger, span, elastic.ErrorReason(err))
+	var x map[string]interface{}
+	_ = json.NewDecoder(res.Body).Decode(&x)
+
+	if res.StatusCode == http.StatusNotFound {
+		if _, err = (esapi.IndicesCreateRequest{Index: strings.ToLower(sm.indexName)}).Do(ctx, sm.esclient); err != nil {
+			return observability.PrepareError(err, logger, span, "checking index existence")
 		}
 	}
 
