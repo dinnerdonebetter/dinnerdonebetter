@@ -82,11 +82,12 @@ func Test_indexManager_ensureIndices(T *testing.T) {
 		esc.On("IndexExists", []string{exampleIndexName}).Return(indicesExistsService)
 
 		im := &indexManager{
-			esclient: esc,
-			tracer:   tracing.NewTracer(t.Name()),
-			logger:   logger,
+			esclient:  esc,
+			tracer:    tracing.NewTracer(t.Name()),
+			indexName: exampleIndexName,
+			logger:    logger,
 		}
-		assert.NoError(t, im.ensureIndices(ctx, exampleIndexName))
+		assert.NoError(t, im.ensureIndices(ctx))
 
 		mock.AssertExpectationsForObjects(t, esc)
 	})
@@ -126,11 +127,12 @@ func Test_indexManager_ensureIndices(T *testing.T) {
 		esc.On("CreateIndex", exampleIndexName).Return(indicesCreateService)
 
 		im := &indexManager{
-			esclient: esc,
-			tracer:   tracing.NewTracer(t.Name()),
-			logger:   logger,
+			esclient:  esc,
+			tracer:    tracing.NewTracer(t.Name()),
+			indexName: exampleIndexName,
+			logger:    logger,
 		}
-		assert.NoError(t, im.ensureIndices(ctx, exampleIndexName))
+		assert.NoError(t, im.ensureIndices(ctx))
 
 		mock.AssertExpectationsForObjects(t, esc)
 	})
@@ -160,11 +162,12 @@ func Test_indexManager_ensureIndices(T *testing.T) {
 		esc.On("IndexExists", []string{exampleIndexName}).Return(indicesExistsService)
 
 		im := &indexManager{
-			esclient: esc,
-			tracer:   tracing.NewTracer(t.Name()),
-			logger:   logger,
+			esclient:  esc,
+			tracer:    tracing.NewTracer(t.Name()),
+			indexName: exampleIndexName,
+			logger:    logger,
 		}
-		assert.Error(t, im.ensureIndices(ctx, exampleIndexName))
+		assert.Error(t, im.ensureIndices(ctx))
 
 		mock.AssertExpectationsForObjects(t, esc)
 	})
@@ -201,11 +204,12 @@ func Test_indexManager_ensureIndices(T *testing.T) {
 		esc.On("CreateIndex", exampleIndexName).Return(indicesCreateService)
 
 		im := &indexManager{
-			esclient: esc,
-			tracer:   tracing.NewTracer(t.Name()),
-			logger:   logger,
+			esclient:  esc,
+			tracer:    tracing.NewTracer(t.Name()),
+			indexName: exampleIndexName,
+			logger:    logger,
 		}
-		assert.Error(t, im.ensureIndices(ctx, exampleIndexName))
+		assert.Error(t, im.ensureIndices(ctx))
 
 		mock.AssertExpectationsForObjects(t, esc)
 	})

@@ -3,7 +3,6 @@ package workers
 import (
 	"context"
 	"fmt"
-	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
@@ -37,37 +36,35 @@ type WritesWorker struct {
 func ProvideWritesWorker(
 	ctx context.Context,
 	logger logging.Logger,
-	client *http.Client,
 	dataManager database.DataManager,
 	postWritesPublisher publishers.Publisher,
-	searchIndexLocation search.IndexPath,
 	searchIndexProvider search.IndexManagerProvider,
 	emailSender email.Emailer,
 	customerDataCollector customerdata.Collector,
 ) (*WritesWorker, error) {
 	const name = "pre_writes"
 
-	validInstrumentsIndexManager, err := searchIndexProvider(ctx, logger, client, searchIndexLocation, "valid_instruments", "name", "variant", "description", "icon")
+	validInstrumentsIndexManager, err := searchIndexProvider.ProvideIndexManager(ctx, logger, "valid_instruments", "name", "variant", "description", "icon")
 	if err != nil {
 		return nil, fmt.Errorf("setting up valid instruments search index manager: %w", err)
 	}
 
-	validIngredientsIndexManager, err := searchIndexProvider(ctx, logger, client, searchIndexLocation, "valid_ingredients", "name", "variant", "description", "warning", "icon")
+	validIngredientsIndexManager, err := searchIndexProvider.ProvideIndexManager(ctx, logger, "valid_ingredients", "name", "variant", "description", "warning", "icon")
 	if err != nil {
 		return nil, fmt.Errorf("setting up valid ingredients search index manager: %w", err)
 	}
 
-	validPreparationsIndexManager, err := searchIndexProvider(ctx, logger, client, searchIndexLocation, "valid_preparations", "name", "description", "icon")
+	validPreparationsIndexManager, err := searchIndexProvider.ProvideIndexManager(ctx, logger, "valid_preparations", "name", "description", "icon")
 	if err != nil {
 		return nil, fmt.Errorf("setting up valid preparations search index manager: %w", err)
 	}
 
-	validIngredientPreparationsIndexManager, err := searchIndexProvider(ctx, logger, client, searchIndexLocation, "valid_ingredient_preparations", "notes", "validPreparationID", "validIngredientID")
+	validIngredientPreparationsIndexManager, err := searchIndexProvider.ProvideIndexManager(ctx, logger, "valid_ingredient_preparations", "notes", "validPreparationID", "validIngredientID")
 	if err != nil {
 		return nil, fmt.Errorf("setting up valid ingredient preparations search index manager: %w", err)
 	}
 
-	recipesIndexManager, err := searchIndexProvider(ctx, logger, client, searchIndexLocation, "recipes", "name", "source", "description", "inspiredByRecipeID")
+	recipesIndexManager, err := searchIndexProvider.ProvideIndexManager(ctx, logger, "recipes", "name", "source", "description", "inspiredByRecipeID")
 	if err != nil {
 		return nil, fmt.Errorf("setting up recipes search index manager: %w", err)
 	}

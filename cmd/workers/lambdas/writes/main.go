@@ -67,14 +67,17 @@ func main() {
 		logger.Fatal(err)
 	}
 
+	indexManagerProvider, err := elasticsearch.NewIndexManagerProvider(logger, observability.HTTPClient(), &cfg.Search)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
 	preWritesWorker, err := workers.ProvideWritesWorker(
 		ctx,
 		logger,
-		client,
 		dataManager,
 		postWritesPublisher,
-		cfg.Search.Address,
-		elasticsearch.NewIndexManager,
+		indexManagerProvider,
 		emailer,
 		cdp,
 	)

@@ -2,7 +2,6 @@ package search
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
@@ -21,6 +20,8 @@ type (
 		Delete(ctx context.Context, id string) (err error)
 	}
 
-	// IndexManagerProvider is a function that provides an IndexManager for a given index.
-	IndexManagerProvider func(context.Context, logging.Logger, *http.Client, IndexPath, IndexName, ...string) (IndexManager, error)
+	// IndexManagerProvider is a struct that provides a IndexManager for a given index.
+	IndexManagerProvider interface {
+		ProvideIndexManager(ctx context.Context, logger logging.Logger, name IndexName, fields ...string) (IndexManager, error)
+	}
 )

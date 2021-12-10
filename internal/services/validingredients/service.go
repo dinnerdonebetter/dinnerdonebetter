@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
@@ -52,9 +51,7 @@ func ProvideService(
 	routeParamManager routing.RouteParamManager,
 	publisherProvider publishers.PublisherProvider,
 ) (types.ValidIngredientDataService, error) {
-	client := &http.Client{Transport: tracing.BuildTracedHTTPTransport(time.Second)}
-
-	searchIndexManager, err := searchIndexProvider(ctx, logger, client, search.IndexPath(cfg.SearchIndexPath), "valid_ingredients", "name", "variant", "description", "warning")
+	searchIndexManager, err := searchIndexProvider.ProvideIndexManager(ctx, logger, "valid_ingredients", "name", "variant", "description", "warning")
 	if err != nil {
 		return nil, fmt.Errorf("setting up valid ingredient search index: %w", err)
 	}

@@ -2,7 +2,6 @@ package workers
 
 import (
 	"context"
-	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,6 +13,8 @@ import (
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/search"
+	mocksearch "github.com/prixfixeco/api_server/internal/search/mock"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 func newTestWritesWorker(t *testing.T) *WritesWorker {
@@ -21,22 +22,53 @@ func newTestWritesWorker(t *testing.T) *WritesWorker {
 
 	ctx := context.Background()
 	logger := logging.NewNoopLogger()
-	client := &http.Client{}
 	dbManager := &database.MockDatabase{}
-	postArchivesPublisher := &mockpublishers.Publisher{}
-	searchIndexLocation := search.IndexPath(t.Name())
-	searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-		return nil, nil
-	}
+	postWritesPublisher := &mockpublishers.Publisher{}
+	indexManagerProvider := &mocksearch.IndexManagerProvider{}
+	indexManager := &mocksearch.IndexManager{}
+
+	indexManagerProvider.On(
+		"ProvideIndexManager",
+		testutils.ContextMatcher,
+		logger,
+		search.IndexName("valid_instruments"),
+		[]string{"name", "variant", "description", "icon"},
+	).Return(indexManager, nil)
+	indexManagerProvider.On(
+		"ProvideIndexManager",
+		testutils.ContextMatcher,
+		logger,
+		search.IndexName("valid_ingredients"),
+		[]string{"name", "variant", "description", "warning", "icon"},
+	).Return(indexManager, nil)
+	indexManagerProvider.On(
+		"ProvideIndexManager",
+		testutils.ContextMatcher,
+		logger,
+		search.IndexName("valid_preparations"),
+		[]string{"name", "description", "icon"},
+	).Return(indexManager, nil)
+	indexManagerProvider.On(
+		"ProvideIndexManager",
+		testutils.ContextMatcher,
+		logger,
+		search.IndexName("valid_ingredient_preparations"),
+		[]string{"notes", "validPreparationID", "validIngredientID"},
+	).Return(indexManager, nil)
+	indexManagerProvider.On(
+		"ProvideIndexManager",
+		testutils.ContextMatcher,
+		logger,
+		search.IndexName("recipes"),
+		[]string{"name", "source", "description", "inspiredByRecipeID"},
+	).Return(indexManager, nil)
 
 	worker, err := ProvideWritesWorker(
 		ctx,
 		logger,
-		client,
 		dbManager,
-		postArchivesPublisher,
-		searchIndexLocation,
-		searchIndexProvider,
+		postWritesPublisher,
+		indexManagerProvider,
 		&email.MockEmailer{},
 		&customerdata.MockCollector{},
 	)
@@ -51,22 +83,53 @@ func newTestUpdatesWorker(t *testing.T) *UpdatesWorker {
 
 	ctx := context.Background()
 	logger := logging.NewNoopLogger()
-	client := &http.Client{}
 	dbManager := &database.MockDatabase{}
-	postArchivesPublisher := &mockpublishers.Publisher{}
-	searchIndexLocation := search.IndexPath(t.Name())
-	searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-		return nil, nil
-	}
+	postUpdatesPublisher := &mockpublishers.Publisher{}
+	indexManagerProvider := &mocksearch.IndexManagerProvider{}
+	indexManager := &mocksearch.IndexManager{}
+
+	indexManagerProvider.On(
+		"ProvideIndexManager",
+		testutils.ContextMatcher,
+		logger,
+		search.IndexName("valid_instruments"),
+		[]string{"name", "variant", "description", "icon"},
+	).Return(indexManager, nil)
+	indexManagerProvider.On(
+		"ProvideIndexManager",
+		testutils.ContextMatcher,
+		logger,
+		search.IndexName("valid_ingredients"),
+		[]string{"name", "variant", "description", "warning", "icon"},
+	).Return(indexManager, nil)
+	indexManagerProvider.On(
+		"ProvideIndexManager",
+		testutils.ContextMatcher,
+		logger,
+		search.IndexName("valid_preparations"),
+		[]string{"name", "description", "icon"},
+	).Return(indexManager, nil)
+	indexManagerProvider.On(
+		"ProvideIndexManager",
+		testutils.ContextMatcher,
+		logger,
+		search.IndexName("valid_ingredient_preparations"),
+		[]string{"notes", "validPreparationID", "validIngredientID"},
+	).Return(indexManager, nil)
+	indexManagerProvider.On(
+		"ProvideIndexManager",
+		testutils.ContextMatcher,
+		logger,
+		search.IndexName("recipes"),
+		[]string{"name", "source", "description", "inspiredByRecipeID"},
+	).Return(indexManager, nil)
 
 	worker, err := ProvideUpdatesWorker(
 		ctx,
 		logger,
-		client,
 		dbManager,
-		postArchivesPublisher,
-		searchIndexLocation,
-		searchIndexProvider,
+		postUpdatesPublisher,
+		indexManagerProvider,
 		&email.MockEmailer{},
 		&customerdata.MockCollector{},
 	)
@@ -96,22 +159,53 @@ func newTestArchivesWorker(t *testing.T) *ArchivesWorker {
 
 	ctx := context.Background()
 	logger := logging.NewNoopLogger()
-	client := &http.Client{}
 	dbManager := database.NewMockDatabase()
 	postArchivesPublisher := &mockpublishers.Publisher{}
-	searchIndexLocation := search.IndexPath(t.Name())
-	searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-		return nil, nil
-	}
+	indexManagerProvider := &mocksearch.IndexManagerProvider{}
+	indexManager := &mocksearch.IndexManager{}
+
+	indexManagerProvider.On(
+		"ProvideIndexManager",
+		testutils.ContextMatcher,
+		logger,
+		search.IndexName("valid_instruments"),
+		[]string{"name", "variant", "description", "icon"},
+	).Return(indexManager, nil)
+	indexManagerProvider.On(
+		"ProvideIndexManager",
+		testutils.ContextMatcher,
+		logger,
+		search.IndexName("valid_ingredients"),
+		[]string{"name", "variant", "description", "warning", "icon"},
+	).Return(indexManager, nil)
+	indexManagerProvider.On(
+		"ProvideIndexManager",
+		testutils.ContextMatcher,
+		logger,
+		search.IndexName("valid_preparations"),
+		[]string{"name", "description", "icon"},
+	).Return(indexManager, nil)
+	indexManagerProvider.On(
+		"ProvideIndexManager",
+		testutils.ContextMatcher,
+		logger,
+		search.IndexName("valid_ingredient_preparations"),
+		[]string{"notes", "validPreparationID", "validIngredientID"},
+	).Return(indexManager, nil)
+	indexManagerProvider.On(
+		"ProvideIndexManager",
+		testutils.ContextMatcher,
+		logger,
+		search.IndexName("recipes"),
+		[]string{"name", "source", "description", "inspiredByRecipeID"},
+	).Return(indexManager, nil)
 
 	worker, err := ProvideArchivesWorker(
 		ctx,
 		logger,
-		client,
 		dbManager,
 		postArchivesPublisher,
-		searchIndexLocation,
-		searchIndexProvider,
+		indexManagerProvider,
 		&customerdata.MockCollector{},
 	)
 	require.NotNil(t, worker)

@@ -17,6 +17,7 @@ import (
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/messagequeue/consumers/redis"
+	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/search/elasticsearch"
 	"github.com/prixfixeco/api_server/internal/workers"
@@ -98,6 +99,11 @@ func main() {
 		logger.Fatal(err)
 	}
 
+	indexManagerProvider, err := elasticsearch.NewIndexManagerProvider(logger, observability.HTTPClient(), &cfg.Search)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
 	// post-writes worker
 
 	postWritesWorker := workers.ProvideDataChangesWorker(
@@ -122,11 +128,9 @@ func main() {
 	preWritesWorker, err := workers.ProvideWritesWorker(
 		ctx,
 		logger,
-		client,
 		dataManager,
 		postWritesPublisher,
-		cfg.Search.Address,
-		elasticsearch.NewIndexManager,
+		indexManagerProvider,
 		emailer,
 		cdp,
 	)
@@ -151,11 +155,9 @@ func main() {
 	preUpdatesWorker, err := workers.ProvideUpdatesWorker(
 		ctx,
 		logger,
-		client,
 		dataManager,
 		postUpdatesPublisher,
-		cfg.Search.Address,
-		elasticsearch.NewIndexManager,
+		indexManagerProvider,
 		emailer,
 		cdp,
 	)
@@ -180,11 +182,9 @@ func main() {
 	preArchivesWorker, err := workers.ProvideArchivesWorker(
 		ctx,
 		logger,
-		client,
 		dataManager,
 		postArchivesPublisher,
-		cfg.Search.Address,
-		elasticsearch.NewIndexManager,
+		indexManagerProvider,
 		cdp,
 	)
 	if err != nil {

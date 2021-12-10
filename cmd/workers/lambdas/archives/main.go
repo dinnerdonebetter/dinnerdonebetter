@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"net/http"
-	"time"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -34,7 +32,6 @@ func buildHandler(worker *workers.ArchivesWorker) func(ctx context.Context, sqsE
 func main() {
 	ctx := context.Background()
 	logger := logging.NewZerologLogger()
-	client := &http.Client{Timeout: 10 * time.Second}
 
 	cfg, err := config.GetConfigFromParameterStore()
 	if err != nil {
@@ -61,14 +58,17 @@ func main() {
 		logger.Fatal(err)
 	}
 
+	indexManagerProvider, err := elasticsearch.NewIndexManagerProvider(logger, observability.HTTPClient(), &cfg.Search)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
 	preArchivesWorker, err := workers.ProvideArchivesWorker(
 		ctx,
 		logger,
-		client,
 		dataManager,
 		postArchivesPublisher,
-		cfg.Search.Address,
-		elasticsearch.NewIndexManager,
+		indexManagerProvider,
 		cdp,
 	)
 	if err != nil {

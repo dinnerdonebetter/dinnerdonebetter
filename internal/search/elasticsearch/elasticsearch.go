@@ -2,7 +2,6 @@ package elasticsearch
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -12,7 +11,6 @@ import (
 	"github.com/olivere/elastic/v7"
 
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/search"
@@ -36,26 +34,25 @@ type (
 		indexName    string
 		searchFields []string
 	}
+
+	indexManagerProvider struct {
+		esclient esClient
+	}
 )
 
-// NewIndexManager instantiates an Elasticsearch client.
-func NewIndexManager(
-	ctx context.Context,
+// NewIndexManagerProvider instantiates an Elasticsearch client.
+func NewIndexManagerProvider(
 	logger logging.Logger,
 	client *http.Client,
-	path search.IndexPath,
-	name search.IndexName,
-	fields ...string,
-) (search.IndexManager, error) {
-	l := logger.WithName("search")
-
-	if !elasticsearchIsReady(client, path, logger, 50) {
+	cfg *search.Config,
+) (search.IndexManagerProvider, error) {
+	if !elasticsearchIsReady(client, cfg.Address, logger, 50) {
 		return nil, errors.New("elasticsearch isn't ready")
 	}
 
 	c, err := elastic.NewClient(
-		elastic.SetURL(string(path)),
-		//elastic.SetBasicAuth(cfg.Username, cfg.Password),
+		elastic.SetURL(string(cfg.Address)),
+		elastic.SetBasicAuth(cfg.Username, cfg.Password),
 		elastic.SetHttpClient(client),
 		elastic.SetHealthcheck(false),
 	)
@@ -63,15 +60,21 @@ func NewIndexManager(
 		return nil, fmt.Errorf("initializing search client: %w", err)
 	}
 
+	im := &indexManagerProvider{esclient: c}
+
+	return im, nil
+}
+
+func (m *indexManagerProvider) ProvideIndexManager(ctx context.Context, logger logging.Logger, name search.IndexName, fields ...string) (search.IndexManager, error) {
 	im := &indexManager{
-		indexName:    string(name),
-		esclient:     c,
-		logger:       l,
-		searchFields: fields,
 		tracer:       tracing.NewTracer("search"),
+		logger:       logging.EnsureLogger(logger).WithName(string(name)),
+		searchFields: fields,
+		esclient:     m.esclient,
+		indexName:    string(name),
 	}
 
-	if indexErr := im.ensureIndices(ctx, name); indexErr != nil {
+	if indexErr := im.ensureIndices(ctx); indexErr != nil {
 		return nil, indexErr
 	}
 
@@ -113,109 +116,22 @@ func elasticsearchIsReady(
 	return false
 }
 
-func (sm *indexManager) ensureIndices(ctx context.Context, indices ...search.IndexName) error {
+func (sm *indexManager) ensureIndices(ctx context.Context) error {
 	_, span := sm.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := sm.logger.WithValue("indices", indices)
+	logger := sm.logger.WithValue("index", sm.indexName)
 
-	for _, index := range indices {
-		indexExists, err := sm.esclient.IndexExists(strings.ToLower(string(index))).Do(ctx)
-		if err != nil {
-			return observability.PrepareError(err, logger, span, "checking index existence")
-		}
-
-		if !indexExists {
-			if _, err = sm.esclient.CreateIndex(strings.ToLower(string(index))).Do(ctx); err != nil && !strings.Contains(elastic.ErrorReason(err), "already exists") {
-				return observability.PrepareError(err, logger, span, elastic.ErrorReason(err))
-			}
-		}
-	}
-
-	return nil
-}
-
-// Index implements our IndexManager interface.
-func (sm *indexManager) Index(ctx context.Context, id string, value interface{}) error {
-	_, span := sm.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := sm.logger.WithValue("id", id).WithValue("value", value)
-	logger.Debug("adding to index")
-
-	if _, err := sm.esclient.Index().Index(sm.indexName).Id(id).BodyJson(value).Do(ctx); err != nil {
-		return observability.PrepareError(err, logger, span, "indexing value")
-	}
-
-	return nil
-}
-
-type idContainer struct {
-	ID string `json:"id"`
-}
-
-var (
-	// ErrEmptyQueryProvided indicates an empty query was provided as input.
-	ErrEmptyQueryProvided = errors.New("empty search query provided")
-)
-
-// search executes search queries.
-func (sm *indexManager) search(ctx context.Context, byField, query, householdID string) (ids []string, err error) {
-	_, span := sm.tracer.StartSpan(ctx)
-	defer span.End()
-
-	tracing.AttachSearchQueryToSpan(span, query)
-	logger := sm.logger.WithValue(keys.SearchQueryKey, query)
-
-	if query == "" {
-		return nil, ErrEmptyQueryProvided
-	}
-
-	baseQuery := elastic.NewWildcardQuery(byField, fmt.Sprintf("*%s*", query))
-
-	var q elastic.Query
-	if householdID == "" {
-		q = baseQuery
-	} else {
-		householdIDMatchQuery := elastic.NewMatchQuery("householdID", householdID)
-		q = elastic.NewBoolQuery().Should(householdIDMatchQuery).Should(baseQuery)
-	}
-
-	results, err := sm.esclient.Search().Index(sm.indexName).Query(q).Do(ctx)
+	indexExists, err := sm.esclient.IndexExists(strings.ToLower(sm.indexName)).Do(ctx)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "querying elasticsearch")
+		return observability.PrepareError(err, logger, span, "checking index existence")
 	}
 
-	resultIDs := []string{}
-	for _, hit := range results.Hits.Hits {
-		var i *idContainer
-		if unmarshalErr := json.Unmarshal(hit.Source, &i); unmarshalErr != nil {
-			return nil, observability.PrepareError(err, logger, span, "unmarshalling search result")
+	if !indexExists {
+		if _, err = sm.esclient.CreateIndex(strings.ToLower(sm.indexName)).Do(ctx); err != nil && !strings.Contains(elastic.ErrorReason(err), "already exists") {
+			return observability.PrepareError(err, logger, span, elastic.ErrorReason(err))
 		}
-		resultIDs = append(resultIDs, i.ID)
 	}
-
-	return resultIDs, nil
-}
-
-// Search implements our IndexManager interface.
-func (sm *indexManager) Search(ctx context.Context, byField, query, householdID string) (ids []string, err error) {
-	return sm.search(ctx, byField, query, householdID)
-}
-
-// Delete implements our IndexManager interface.
-func (sm *indexManager) Delete(ctx context.Context, id string) error {
-	_, span := sm.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := sm.logger.WithValue("id", id)
-
-	q := elastic.NewTermQuery("id", id)
-	if _, err := sm.esclient.DeleteByQuery(sm.indexName).Query(q).Do(ctx); err != nil {
-		return observability.PrepareError(err, logger, span, "deleting from elasticsearch")
-	}
-
-	logger.Debug("removed from index")
 
 	return nil
 }

@@ -17,6 +17,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/search"
 	mocksearch "github.com/prixfixeco/api_server/internal/search/mock"
 	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 func buildTestService() *service {
@@ -37,6 +38,8 @@ func TestProvideValidIngredientsService(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
+		logger := logging.NewNoopLogger()
+
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
@@ -55,15 +58,23 @@ func TestProvideValidIngredientsService(T *testing.T) {
 		pp.On("ProviderPublisher", cfg.PreUpdatesTopicName).Return(&mockpublishers.Publisher{}, nil)
 		pp.On("ProviderPublisher", cfg.PreArchivesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
+		mockIndexManager := &mocksearch.IndexManager{}
+		mockIndexManagerProvider := &mocksearch.IndexManagerProvider{}
+		mockIndexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_ingredients"),
+			[]string{"name", "variant", "description", "warning"},
+		).Return(mockIndexManager, nil)
+
 		s, err := ProvideService(
 			ctx,
-			logging.NewNoopLogger(),
+			logger,
 			&cfg,
 			&mocktypes.ValidIngredientDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
-			func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-				return &mocksearch.IndexManager{}, nil
-			},
+			mockIndexManagerProvider,
 			rpm,
 			pp,
 		)
@@ -78,6 +89,8 @@ func TestProvideValidIngredientsService(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
+		logger := logging.NewNoopLogger()
+
 		cfg := Config{
 			SearchIndexPath:      "example/path",
 			PreWritesTopicName:   "pre-writes",
@@ -88,15 +101,23 @@ func TestProvideValidIngredientsService(T *testing.T) {
 		pp := &mockpublishers.ProducerProvider{}
 		pp.On("ProviderPublisher", cfg.PreWritesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
+		mockIndexManager := &mocksearch.IndexManager{}
+		mockIndexManagerProvider := &mocksearch.IndexManagerProvider{}
+		mockIndexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_ingredients"),
+			[]string{"name", "variant", "description", "warning"},
+		).Return(mockIndexManager, nil)
+
 		s, err := ProvideService(
 			ctx,
-			logging.NewNoopLogger(),
+			logger,
 			&cfg,
 			&mocktypes.ValidIngredientDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
-			func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-				return &mocksearch.IndexManager{}, nil
-			},
+			mockIndexManagerProvider,
 			nil,
 			pp,
 		)
@@ -111,6 +132,8 @@ func TestProvideValidIngredientsService(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
+		logger := logging.NewNoopLogger()
+
 		cfg := Config{
 			SearchIndexPath:      "example/path",
 			PreWritesTopicName:   "pre-writes",
@@ -122,15 +145,23 @@ func TestProvideValidIngredientsService(T *testing.T) {
 		pp.On("ProviderPublisher", cfg.PreWritesTopicName).Return(&mockpublishers.Publisher{}, nil)
 		pp.On("ProviderPublisher", cfg.PreUpdatesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
+		mockIndexManager := &mocksearch.IndexManager{}
+		mockIndexManagerProvider := &mocksearch.IndexManagerProvider{}
+		mockIndexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_ingredients"),
+			[]string{"name", "variant", "description", "warning"},
+		).Return(mockIndexManager, nil)
+
 		s, err := ProvideService(
 			ctx,
-			logging.NewNoopLogger(),
+			logger,
 			&cfg,
 			&mocktypes.ValidIngredientDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
-			func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-				return &mocksearch.IndexManager{}, nil
-			},
+			mockIndexManagerProvider,
 			nil,
 			pp,
 		)
@@ -145,6 +176,8 @@ func TestProvideValidIngredientsService(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
+		logger := logging.NewNoopLogger()
+
 		cfg := Config{
 			SearchIndexPath:      "example/path",
 			PreWritesTopicName:   "pre-writes",
@@ -157,15 +190,23 @@ func TestProvideValidIngredientsService(T *testing.T) {
 		pp.On("ProviderPublisher", cfg.PreUpdatesTopicName).Return(&mockpublishers.Publisher{}, nil)
 		pp.On("ProviderPublisher", cfg.PreArchivesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
+		mockIndexManager := &mocksearch.IndexManager{}
+		mockIndexManagerProvider := &mocksearch.IndexManagerProvider{}
+		mockIndexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_ingredients"),
+			[]string{"name", "variant", "description", "warning"},
+		).Return(mockIndexManager, nil)
+
 		s, err := ProvideService(
 			ctx,
-			logging.NewNoopLogger(),
+			logger,
 			&cfg,
 			&mocktypes.ValidIngredientDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
-			func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-				return &mocksearch.IndexManager{}, nil
-			},
+			mockIndexManagerProvider,
 			nil,
 			pp,
 		)
@@ -180,6 +221,8 @@ func TestProvideValidIngredientsService(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
+		logger := logging.NewNoopLogger()
+
 		cfg := Config{
 			SearchIndexPath:      "example/path",
 			PreWritesTopicName:   "pre-writes",
@@ -187,15 +230,22 @@ func TestProvideValidIngredientsService(T *testing.T) {
 			PreArchivesTopicName: "pre-archives",
 		}
 
+		mockIndexManagerProvider := &mocksearch.IndexManagerProvider{}
+		mockIndexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_ingredients"),
+			[]string{"name", "variant", "description", "warning"},
+		).Return(&mocksearch.IndexManager{}, errors.New("blah"))
+
 		s, err := ProvideService(
 			ctx,
-			logging.NewNoopLogger(),
+			logger,
 			&cfg,
 			&mocktypes.ValidIngredientDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
-			func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-				return nil, errors.New("blah")
-			},
+			mockIndexManagerProvider,
 			mockrouting.NewRouteParamManager(),
 			nil,
 		)

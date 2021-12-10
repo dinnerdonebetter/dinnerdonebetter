@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -19,6 +18,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/search"
 	mocksearch "github.com/prixfixeco/api_server/internal/search/mock"
 	"github.com/prixfixeco/api_server/pkg/types"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 func TestProvidePreUpdatesWorker(T *testing.T) {
@@ -29,22 +29,53 @@ func TestProvidePreUpdatesWorker(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 		dbManager := &database.MockDatabase{}
 		postArchivesPublisher := &mockpublishers.Publisher{}
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return nil, nil
-		}
+		indexManagerProvider := &mocksearch.IndexManagerProvider{}
+		indexManager := &mocksearch.IndexManager{}
+
+		indexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_instruments"),
+			[]string{"name", "variant", "description", "icon"},
+		).Return(indexManager, nil)
+		indexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_ingredients"),
+			[]string{"name", "variant", "description", "warning", "icon"},
+		).Return(indexManager, nil)
+		indexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_preparations"),
+			[]string{"name", "description", "icon"},
+		).Return(indexManager, nil)
+		indexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_ingredient_preparations"),
+			[]string{"notes", "validPreparationID", "validIngredientID"},
+		).Return(indexManager, nil)
+		indexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("recipes"),
+			[]string{"name", "source", "description", "inspiredByRecipeID"},
+		).Return(indexManager, nil)
 
 		actual, err := ProvideUpdatesWorker(
 			ctx,
 			logger,
-			client,
 			dbManager,
 			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
+			indexManagerProvider,
 			&email.MockEmailer{},
 			&customerdata.MockCollector{},
 		)
@@ -59,22 +90,24 @@ func TestProvidePreUpdatesWorker(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 		dbManager := &database.MockDatabase{}
 		postArchivesPublisher := &mockpublishers.Publisher{}
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			return nil, errors.New("blah")
-		}
+		indexManagerProvider := &mocksearch.IndexManagerProvider{}
+
+		indexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_instruments"),
+			[]string{"name", "variant", "description", "icon"},
+		).Return(&mocksearch.IndexManager{}, errors.New("blah"))
 
 		actual, err := ProvideUpdatesWorker(
 			ctx,
 			logger,
-			client,
 			dbManager,
 			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
+			indexManagerProvider,
 			&email.MockEmailer{},
 			&customerdata.MockCollector{},
 		)
@@ -89,28 +122,32 @@ func TestProvidePreUpdatesWorker(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 		dbManager := &database.MockDatabase{}
 		postArchivesPublisher := &mockpublishers.Publisher{}
-		searchProviderInvocationCount := 0
+		indexManagerProvider := &mocksearch.IndexManagerProvider{}
+		indexManager := &mocksearch.IndexManager{}
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			searchProviderInvocationCount++
-			if searchProviderInvocationCount == 2 {
-				return nil, errors.New("blah")
-			}
-			return &mocksearch.IndexManager{}, nil
-		}
+		indexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_instruments"),
+			[]string{"name", "variant", "description", "icon"},
+		).Return(indexManager, nil)
+		indexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_ingredients"),
+			[]string{"name", "variant", "description", "warning", "icon"},
+		).Return(&mocksearch.IndexManager{}, errors.New("blah"))
 
 		actual, err := ProvideUpdatesWorker(
 			ctx,
 			logger,
-			client,
 			dbManager,
 			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
+			indexManagerProvider,
 			&email.MockEmailer{},
 			&customerdata.MockCollector{},
 		)
@@ -125,28 +162,39 @@ func TestProvidePreUpdatesWorker(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 		dbManager := &database.MockDatabase{}
 		postArchivesPublisher := &mockpublishers.Publisher{}
-		searchProviderInvocationCount := 0
+		indexManagerProvider := &mocksearch.IndexManagerProvider{}
+		indexManager := &mocksearch.IndexManager{}
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			searchProviderInvocationCount++
-			if searchProviderInvocationCount == 3 {
-				return nil, errors.New("blah")
-			}
-			return &mocksearch.IndexManager{}, nil
-		}
+		indexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_instruments"),
+			[]string{"name", "variant", "description", "icon"},
+		).Return(indexManager, nil)
+		indexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_ingredients"),
+			[]string{"name", "variant", "description", "warning", "icon"},
+		).Return(indexManager, nil)
+		indexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_preparations"),
+			[]string{"name", "description", "icon"},
+		).Return(&mocksearch.IndexManager{}, errors.New("blah"))
 
 		actual, err := ProvideUpdatesWorker(
 			ctx,
 			logger,
-			client,
 			dbManager,
 			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
+			indexManagerProvider,
 			&email.MockEmailer{},
 			&customerdata.MockCollector{},
 		)
@@ -161,28 +209,46 @@ func TestProvidePreUpdatesWorker(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 		dbManager := &database.MockDatabase{}
 		postArchivesPublisher := &mockpublishers.Publisher{}
-		searchProviderInvocationCount := 0
+		indexManagerProvider := &mocksearch.IndexManagerProvider{}
+		indexManager := &mocksearch.IndexManager{}
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			searchProviderInvocationCount++
-			if searchProviderInvocationCount == 4 {
-				return nil, errors.New("blah")
-			}
-			return &mocksearch.IndexManager{}, nil
-		}
+		indexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_instruments"),
+			[]string{"name", "variant", "description", "icon"},
+		).Return(indexManager, nil)
+		indexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_ingredients"),
+			[]string{"name", "variant", "description", "warning", "icon"},
+		).Return(indexManager, nil)
+		indexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_preparations"),
+			[]string{"name", "description", "icon"},
+		).Return(indexManager, nil)
+		indexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_ingredient_preparations"),
+			[]string{"notes", "validPreparationID", "validIngredientID"},
+		).Return(&mocksearch.IndexManager{}, errors.New("blah"))
 
 		actual, err := ProvideUpdatesWorker(
 			ctx,
 			logger,
-			client,
 			dbManager,
 			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
+			indexManagerProvider,
 			&email.MockEmailer{},
 			&customerdata.MockCollector{},
 		)
@@ -197,28 +263,53 @@ func TestProvidePreUpdatesWorker(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		client := &http.Client{}
 		dbManager := &database.MockDatabase{}
 		postArchivesPublisher := &mockpublishers.Publisher{}
-		searchProviderInvocationCount := 0
+		indexManagerProvider := &mocksearch.IndexManagerProvider{}
+		indexManager := &mocksearch.IndexManager{}
 
-		searchIndexLocation := search.IndexPath(t.Name())
-		searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-			searchProviderInvocationCount++
-			if searchProviderInvocationCount == 5 {
-				return nil, errors.New("blah")
-			}
-			return &mocksearch.IndexManager{}, nil
-		}
+		indexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_instruments"),
+			[]string{"name", "variant", "description", "icon"},
+		).Return(indexManager, nil)
+		indexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_ingredients"),
+			[]string{"name", "variant", "description", "warning", "icon"},
+		).Return(indexManager, nil)
+		indexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_preparations"),
+			[]string{"name", "description", "icon"},
+		).Return(indexManager, nil)
+		indexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_ingredient_preparations"),
+			[]string{"notes", "validPreparationID", "validIngredientID"},
+		).Return(indexManager, nil)
+		indexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("recipes"),
+			[]string{"name", "source", "description", "inspiredByRecipeID"},
+		).Return(&mocksearch.IndexManager{}, errors.New("blah"))
 
 		actual, err := ProvideUpdatesWorker(
 			ctx,
 			logger,
-			client,
 			dbManager,
 			postArchivesPublisher,
-			searchIndexLocation,
-			searchIndexProvider,
+			indexManagerProvider,
 			&email.MockEmailer{},
 			&customerdata.MockCollector{},
 		)

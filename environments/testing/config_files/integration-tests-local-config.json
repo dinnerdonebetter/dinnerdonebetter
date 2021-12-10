@@ -13,7 +13,10 @@
 	},
 	"search": {
 		"provider": "elasticsearch",
-		"address": "http://localhost:9200"
+		"indexName": "",
+		"address": "http://localhost:9200",
+		"username": "",
+		"password": ""
 	},
 	"email": {
 		"provider": "",
@@ -143,7 +146,7 @@
 		"auth": {
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "IIXRd8g1RKDVqcgenBg7v+dwM/mNzTYaxZgzJ3h6ilw=",
+				"localModeKey": "rtYBGnmiiKGhursTvpjhINEx+dz4uKAljVHhbWpGTVA=",
 				"lifetime": 60000000000
 			},
 			"cookies": {
