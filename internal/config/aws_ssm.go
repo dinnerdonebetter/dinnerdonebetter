@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"encoding/json"
+	"github.com/prixfixeco/api_server/internal/search"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -36,6 +37,7 @@ func mustGetParameter(ps *ssm.SSM, paramName string) string {
 		Name:           aws.String(paramName),
 		WithDecryption: aws.Bool(true),
 	}
+
 	rawParam, err := ps.GetParameter(input)
 	if err != nil {
 		panic(err)
@@ -58,11 +60,14 @@ func GetConfigFromParameterStore() (*InstanceConfig, error) {
 		return nil, err
 	}
 
+	elasticsearchInstanceURL := mustGetParameter(svc, elasticsearchInstanceURLSSMKey)
+
 	// fetch supplementary data from SSM
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(mustGetParameter(svc, databaseConnectionURLSSMKey))
 	cfg.Email.APIToken = mustGetParameter(svc, sendgridAPITokenSSMKey)
 	cfg.CustomerData.APIToken = mustGetParameter(svc, segmentAPITokenSSMKey)
 
+	cfg.Search.Address = search.IndexPath(elasticsearchInstanceURL)
 	cfg.Search.Username = mustGetParameter(svc, elasticsearchInstanceUsernameSSMKey)
 	cfg.Search.Password = mustGetParameter(svc, elasticsearchInstancePasswordSSMKey)
 
@@ -70,7 +75,6 @@ func GetConfigFromParameterStore() (*InstanceConfig, error) {
 	updatesTopicName := mustGetParameter(svc, updatesQueueNameSSMKey)
 	archivesTopicName := mustGetParameter(svc, archivesQueueNameSSMKey)
 	dataChangesTopicName := mustGetParameter(svc, dataChangesQueueNameSSMKey)
-	elasticsearchInstanceURL := mustGetParameter(svc, elasticsearchInstanceURLSSMKey)
 
 	cfg.Services.Auth.Cookies.BlockKey = mustGetParameter(svc, cookieBlockKeySSMKey)
 	cfg.Services.Auth.Cookies.HashKey = mustGetParameter(svc, cookieHashKeySSMKey)
