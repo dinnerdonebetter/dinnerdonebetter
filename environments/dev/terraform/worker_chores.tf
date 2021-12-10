@@ -29,7 +29,7 @@ data "archive_file" "chores_dummy" {
 
 resource "aws_lambda_function" "chores_worker_lambda" {
   function_name = "chores_worker"
-  handler       = "main"
+  handler       = "chores_worker"
   role          = aws_iam_role.worker_lambda_role.arn
   runtime       = local.lambda_runtime
   memory_size   = local.memory_size
