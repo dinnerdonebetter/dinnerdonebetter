@@ -13,6 +13,12 @@ resource "ec_deployment" "dev" {
 
   elasticsearch {
     autoscale = false
+
+    topology {
+      id         = "hot_content"
+      size       = "1g"
+      zone_count = 1
+    }
   }
 }
 
