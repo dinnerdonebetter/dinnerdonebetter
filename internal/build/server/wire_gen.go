@@ -16,11 +16,10 @@ import (
 	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	config4 "github.com/prixfixeco/api_server/internal/messagequeue/config"
-	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/routing/chi"
-	"github.com/prixfixeco/api_server/internal/search/elasticsearch"
+	"github.com/prixfixeco/api_server/internal/search/realasticsearch"
 	"github.com/prixfixeco/api_server/internal/server"
 	"github.com/prixfixeco/api_server/internal/services/admin"
 	"github.com/prixfixeco/api_server/internal/services/apiclients"
@@ -131,9 +130,8 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	}
 	validinstrumentsConfig := &servicesConfigurations.ValidInstruments
 	validInstrumentDataManager := database.ProvideValidInstrumentDataManager(dataManager)
-	client := observability.HTTPClient()
 	searchConfig := &cfg.Search
-	indexManagerProvider, err := elasticsearch.NewIndexManagerProvider(logger, client, searchConfig)
+	indexManagerProvider, err := elasticsearch.NewIndexManagerProvider(logger, searchConfig)
 	if err != nil {
 		return nil, err
 	}
