@@ -69,6 +69,8 @@ func ProvideService(
 		tracer:                      tracing.NewTracer(serviceName),
 	}
 
+	svc.logger.WithValue("topic_name", cfg.DataChangesTopicName).Info("fetching data change thing")
+
 	dataChangesConsumer, err := consumerProvider.ProvideConsumer(ctx, cfg.DataChangesTopicName, svc.handleDataChange)
 	if err != nil {
 		return nil, fmt.Errorf("setting up event publisher: %w", err)

@@ -137,7 +137,9 @@
 			"writesTopicName": "pre_writes",
 			"debug": false
 		},
-		"websockets": {},
+		"websockets": {
+			"dataChangesTopicName": "data_changes"
+		},
 		"webhooks": {
 			"writesTopicName": "pre_writes",
 			"archivesTopicName": "pre_archives",
@@ -146,7 +148,7 @@
 		"auth": {
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "rtYBGnmiiKGhursTvpjhINEx+dz4uKAljVHhbWpGTVA=",
+				"localModeKey": "2y9NUoGPrraRxPvTOamQUxBbZObwnJG7PZ1luCRVKUc=",
 				"lifetime": 60000000000
 			},
 			"cookies": {

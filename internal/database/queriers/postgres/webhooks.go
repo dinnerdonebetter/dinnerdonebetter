@@ -298,8 +298,6 @@ func (q *SQLQuerier) CreateWebhook(ctx context.Context, input *types.WebhookData
 	tracing.AttachWebhookIDToSpan(span, x.ID)
 	logger = logger.WithValue(keys.WebhookIDKey, x.ID)
 
-	logger.Info("webhook created")
-
 	return x, nil
 }
 

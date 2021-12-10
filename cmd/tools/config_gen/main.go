@@ -63,6 +63,7 @@ const (
 	preWritesTopicName   = "pre_writes"
 	preUpdatesTopicName  = "pre_updates"
 	preArchivesTopicName = "pre_archives"
+	dataChangesTopicName = "data_changes"
 
 	pasetoSecretSize      = 32
 	maxAttempts           = 50
@@ -321,7 +322,9 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 				PreWritesTopicName:   preWritesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
 			},
-			Websockets: websocketsservice.Config{},
+			Websockets: websocketsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 			ValidInstruments: validinstrumentsservice.Config{
 				SearchIndexPath:      localElasticsearchLocation,
 				PreWritesTopicName:   preWritesTopicName,
@@ -475,7 +478,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				PreWritesTopicName:   preWritesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
 			},
-			Websockets: websocketsservice.Config{},
+			Websockets: websocketsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 			ValidInstruments: validinstrumentsservice.Config{
 				SearchIndexPath:      localElasticsearchLocation,
 				PreWritesTopicName:   preWritesTopicName,

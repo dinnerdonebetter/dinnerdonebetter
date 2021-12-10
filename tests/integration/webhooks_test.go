@@ -40,6 +40,7 @@ func (s *TestSuite) TestWebhooks_Creating() {
 			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
 			createdWebhookID, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
+			t.Logf("created webhook %s", createdWebhookID)
 
 			n := <-notificationsChan
 			assert.Equal(t, types.WebhookDataType, n.DataType)
