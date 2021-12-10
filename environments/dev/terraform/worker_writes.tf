@@ -1,9 +1,9 @@
 resource "aws_sqs_queue" "writes_dead_letter" {
-  name       = "writes_dead_letter"
+  name = "writes_dead_letter"
 }
 
 resource "aws_sqs_queue" "writes_queue" {
-  name       = "writes"
+  name = "writes"
 
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.writes_dead_letter.arn

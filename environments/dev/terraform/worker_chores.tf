@@ -1,9 +1,9 @@
 resource "aws_sqs_queue" "chores_dead_letter" {
-  name       = "chores_dead_letter"
+  name = "chores_dead_letter"
 }
 
 resource "aws_sqs_queue" "chores_queue" {
-  name       = "chores"
+  name = "chores"
 
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.chores_dead_letter.arn
