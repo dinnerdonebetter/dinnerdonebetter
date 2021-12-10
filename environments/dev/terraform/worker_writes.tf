@@ -1,6 +1,14 @@
+resource "aws_sqs_queue" "writes_dead_letter" {
+  name       = "writes_dead_letter"
+}
+
 resource "aws_sqs_queue" "writes_queue" {
-  name       = "writes.fifo"
-  fifo_queue = true
+  name       = "writes"
+
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.writes_dead_letter.arn
+    maxReceiveCount     = 5
+  })
 }
 
 resource "aws_ssm_parameter" "writes_queue_parameter" {

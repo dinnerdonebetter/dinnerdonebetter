@@ -1,6 +1,14 @@
+resource "aws_sqs_queue" "updates_dead_letter" {
+  name       = "updates_dead_letter"
+}
+
 resource "aws_sqs_queue" "updates_queue" {
-  name       = "updates.fifo"
-  fifo_queue = true
+  name       = "updates"
+
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.updates_dead_letter.arn
+    maxReceiveCount     = 5
+  })
 }
 
 resource "aws_ssm_parameter" "updates_queue_parameter" {

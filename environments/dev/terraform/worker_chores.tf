@@ -1,6 +1,14 @@
+resource "aws_sqs_queue" "chores_dead_letter" {
+  name       = "chores_dead_letter"
+}
+
 resource "aws_sqs_queue" "chores_queue" {
-  name       = "chores.fifo"
-  fifo_queue = true
+  name       = "chores"
+
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.chores_dead_letter.arn
+    maxReceiveCount     = 5
+  })
 }
 
 resource "aws_ssm_parameter" "chores_queue_parameter" {

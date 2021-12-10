@@ -1,6 +1,14 @@
+resource "aws_sqs_queue" "archives_dead_letter" {
+  name       = "archives_dead_letter"
+}
+
 resource "aws_sqs_queue" "archives_queue" {
-  name       = "archives.fifo"
-  fifo_queue = true
+  name       = "archives"
+
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.archives_dead_letter.arn
+    maxReceiveCount     = 5
+  })
 }
 
 resource "aws_ssm_parameter" "archives_queue_parameter" {

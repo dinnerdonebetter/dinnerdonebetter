@@ -40,6 +40,7 @@ func main() {
 	if err != nil {
 		logger.Fatal(err)
 	}
+	cfg.Database.RunMigrations = false
 
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database)
 	if err != nil {
