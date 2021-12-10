@@ -2,8 +2,6 @@ package elasticsearch
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -47,7 +45,8 @@ func NewIndexManagerProvider(
 	cfg *search.Config,
 ) (search.IndexManagerProvider, error) {
 	if !elasticsearchIsReady(client, cfg.Address, logger, 50) {
-		return nil, errors.New("elasticsearch isn't ready")
+		//return nil, errors.New("elasticsearch isn't ready")
+		logger.Info("Elasticsearch is down")
 	}
 
 	c, err := elastic.NewClient(
@@ -57,7 +56,8 @@ func NewIndexManagerProvider(
 		elastic.SetHealthcheck(false),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("initializing search client: %w", err)
+		//return nil, fmt.Errorf("initializing search client: %w", err)
+		logger.Info("Elasticsearch is down")
 	}
 
 	im := &indexManagerProvider{esclient: c}
