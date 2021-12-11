@@ -129,10 +129,10 @@ resource "aws_lb_target_group" "api" {
   vpc_id      = aws_vpc.main.id
 
 
-  health_check {
-    enabled = false
-    path    = "/_meta_/health"
-  }
+  # health_check {
+  #   enabled = false
+  #   path    = "/_meta_/health"
+  # }
 
   depends_on = [aws_alb.api]
 }
