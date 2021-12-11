@@ -276,12 +276,7 @@ resource "aws_alb_listener" "api_http" {
   }
 }
 
-resource "aws_alb_listener_certificate" "api_dot" {
-  listener_arn    = aws_alb_listener.api_http.arn
-  certificate_arn = aws_acm_certificate.api_dot.arn
-}
-
-resource "aws_lb_listener" "front_end" {
+resource "aws_alb_listener" "api_https" {
   load_balancer_arn = aws_alb.api.arn
   port              = "443"
   protocol          = "HTTPS"
@@ -292,6 +287,11 @@ resource "aws_lb_listener" "front_end" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.api.arn
   }
+}
+
+resource "aws_alb_listener_certificate" "api_dot" {
+  listener_arn    = aws_alb_listener.api_https.arn
+  certificate_arn = aws_acm_certificate.api_dot.arn
 }
 
 resource "cloudflare_record" "api_dot_prixfixe_dot_dev" {
