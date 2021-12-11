@@ -48,8 +48,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 
 	router.Route("/_meta_", func(metaRouter routing.Router) {
 		health := healthcheck.NewHandler()
-		// Expose a liveness check on /live
-		metaRouter.Get("/live", health.LiveEndpoint)
 		// Expose a readiness check on /ready
 		metaRouter.Get("/ready", health.ReadyEndpoint)
 	})

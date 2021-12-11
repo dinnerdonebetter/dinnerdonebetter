@@ -25,7 +25,7 @@ services:
             CONFIGURATION_FILEPATH: '/etc/service.config'
             JAEGER_DISABLED: 'false'
         ports:
-            - '8888:8888'
+            - '8000:8000'
         volumes:
             - source: '../../environments/local/certificates/cert.pem'
               target: '/etc/certs/cert.pem'

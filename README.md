@@ -19,7 +19,7 @@ It's a good idea to run `mage make lintegration_tests` before commits. You won't
 
 1. clone this repository
 2. run `make run`
-3. [http://localhost:8888/](http://localhost:8888/)
+3. [http://localhost:8000/](http://localhost:8000/)
 
 ## working on the frontend
 

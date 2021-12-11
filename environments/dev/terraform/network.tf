@@ -128,10 +128,14 @@ resource "aws_lb_target_group" "api" {
   target_type = "ip"
   vpc_id      = aws_vpc.main.id
 
-  # health_check {
-  #   enabled = false
-  #   path    = "/_meta_/ready"
-  # }
+  health_check {
+    enabled  = true
+    path     = "/_meta_/ready"
+    port     = "traffic-port"
+    matcher  = "200"
+    protocol = "http"
+    timeout  = 15
+  }
 
   depends_on = [aws_alb.api]
 }
