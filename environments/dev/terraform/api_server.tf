@@ -286,7 +286,7 @@ resource "aws_lb_listener" "api_https" {
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = data.aws_acm_certificate.certificate.arn
+  certificate_arn   = aws_acm_certificate.api_dot.arn
 
   default_action {
     type             = "forward"
@@ -297,14 +297,6 @@ resource "aws_lb_listener" "api_https" {
 resource "aws_lb_listener_certificate" "api_dot" {
   listener_arn    = aws_lb_listener.api_https.arn
   certificate_arn = aws_acm_certificate.api_dot.arn
-}
-
-data "aws_acm_certificate" "certificate" {
-  domain      = local.public_url
-  statuses    = ["ISSUED"]
-  most_recent = true
-
-  depends_on = [aws_acm_certificate.api_dot]
 }
 
 resource "cloudflare_record" "api_dot_prixfixe_dot_dev" {
