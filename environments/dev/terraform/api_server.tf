@@ -109,11 +109,11 @@ resource "aws_ecs_task_definition" "api_server" {
           "protocol" : "tcp",
         },
       ],
-      healthCheck: {
-        command: [ "CMD-SHELL", "curl -f http://httpbin.org/get || exit 1" ]
-        interval: 5,
-        retries: 4,
-        startPeriod: 10,
+      healthCheck : {
+        command : ["CMD-SHELL", "curl -f http://httpbin.org/get || exit 1"]
+        interval : 5,
+        retries : 4,
+        startPeriod : 10,
       },
       logConfiguration : {
         "logDriver" : "awslogs",
