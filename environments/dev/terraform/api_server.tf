@@ -141,7 +141,7 @@ resource "aws_ecs_service" "api_server" {
   task_definition = aws_ecs_task_definition.api_server.arn
   cluster         = aws_ecs_cluster.api.id
   launch_type     = "FARGATE"
-
+  deployment_maximum_percent = 200
   desired_count = 1
 
   load_balancer {

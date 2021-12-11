@@ -150,6 +150,9 @@ jobs:
           docker build --tag $ECR_REGISTRY/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
           docker push $ECR_REGISTRY/api_server:latest
 
+      - name: deploy to ECS
+        run: aws ecs update-service --cluster api_servers --service api_server --force-new-deployment
+
       - name: Download writer lambda
         uses: actions/download-artifact@v2
         with:
