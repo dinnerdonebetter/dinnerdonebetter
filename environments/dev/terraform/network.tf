@@ -151,12 +151,3 @@ resource "aws_alb_listener" "api_http" {
     target_group_arn = aws_lb_target_group.api.arn
   }
 }
-
-resource "aws_acm_certificate" "api_dot" {
-  domain_name       = "api.prixfixe.dev"
-  validation_method = "DNS"
-}
-
-output "domain_validations" {
-  value = aws_acm_certificate.api_dot.domain_validation_options
-}

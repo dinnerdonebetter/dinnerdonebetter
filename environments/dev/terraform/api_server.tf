@@ -1,3 +1,7 @@
+locals {
+  public_url = "api.prixfixe.dev"
+}
+
 resource "aws_ecr_repository" "api_server" {
   name = "api_server"
   # do not set image_tag_mutability to "IMMUTABLE", or else we cannot use :latest tags.
@@ -6,8 +10,6 @@ resource "aws_ecr_repository" "api_server" {
     scan_on_push = true
   }
 }
-
-
 
 resource "aws_security_group" "api_service" {
   name        = "prixfixe_api"
@@ -220,14 +222,33 @@ resource "aws_iam_role" "api_task_role" {
   }
 }
 
+resource "aws_acm_certificate" "api_dot" {
+  domain_name       = local.public_url
+  validation_method = "DNS"
+}
+
+output "domain_validations" {
+  value = aws_acm_certificate.api_dot.domain_validation_options
+}
+
 resource "cloudflare_record" "api_dot_prixfixe_dot_dev" {
   zone_id         = var.CLOUDFLARE_ZONE_ID
-  name            = "api.prixfixe.dev"
+  name            = local.public_url
   value           = aws_alb.api.dns_name
   type            = "CNAME"
   proxied         = true
   allow_overwrite = true
   ttl             = 1
+}
+
+resource "cloudflare_record" "api_dot_prixfixe_dot_dev_ssl_validation" {
+  zone_id         = var.CLOUDFLARE_ZONE_ID
+  name            = aws_acm_certificate.api_dot.domain_validation_options.resource_record_name
+  value           = aws_acm_certificate.api_dot.domain_validation_options.resource_record_value
+  type            = aws_acm_certificate.api_dot.domain_validation_options.resource_record_type
+  proxied         = false
+  allow_overwrite = true
+  ttl             = 60
 }
 
 output "alb_url" {
