@@ -263,7 +263,7 @@ resource "aws_lb_target_group" "api" {
     path     = "/_meta_/ready"
     port     = "traffic-port"
     matcher  = "200"
-    protocol = "http"
+    protocol = "HTTP"
     timeout  = 15
   }
 
