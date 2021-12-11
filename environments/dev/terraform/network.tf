@@ -131,7 +131,7 @@ resource "aws_lb_target_group" "api" {
 
   # health_check {
   #   enabled = false
-  #   path    = "/_meta_/health"
+  #   path    = "/_meta_/ready"
   # }
 
   depends_on = [aws_alb.api]

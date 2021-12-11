@@ -19,6 +19,7 @@ resource "aws_security_group" "api_service" {
     to_port     = 80
     protocol    = "TCP"
     cidr_blocks = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   ingress {
@@ -26,6 +27,7 @@ resource "aws_security_group" "api_service" {
     to_port     = 443
     protocol    = "TCP"
     cidr_blocks = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   ingress {
@@ -33,6 +35,7 @@ resource "aws_security_group" "api_service" {
     to_port     = 8000
     protocol    = "TCP"
     cidr_blocks = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   egress {
@@ -40,12 +43,6 @@ resource "aws_security_group" "api_service" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
     ipv6_cidr_blocks = ["::/0"]
   }
 }
@@ -60,6 +57,7 @@ resource "aws_security_group" "load_balancer" {
     to_port     = 80
     protocol    = "TCP"
     cidr_blocks = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   ingress {
@@ -67,6 +65,7 @@ resource "aws_security_group" "load_balancer" {
     to_port     = 443
     protocol    = "TCP"
     cidr_blocks = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   ingress {
@@ -74,6 +73,7 @@ resource "aws_security_group" "load_balancer" {
     to_port     = 8000
     protocol    = "TCP"
     cidr_blocks = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   egress {
@@ -81,12 +81,6 @@ resource "aws_security_group" "load_balancer" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
     ipv6_cidr_blocks = ["::/0"]
   }
 }
@@ -105,16 +99,15 @@ resource "aws_ecs_task_definition" "api_server" {
       portMappings : [
         {
           "containerPort" : 8000,
-          "hostPort" : 8000,
           "protocol" : "tcp",
         },
       ],
-      healthCheck : {
-        command : ["CMD-SHELL", "curl -f http://httpbin.org/get || exit 1"]
-        interval : 5,
-        retries : 4,
-        startPeriod : 10,
-      },
+      # healthCheck : {
+      #   command : ["CMD-SHELL", "curl -f http://httpbin.org/get || exit 1"]
+      #   interval : 5,
+      #   retries : 4,
+      #   startPeriod : 10,
+      # },
       logConfiguration : {
         "logDriver" : "awslogs",
         "options" : {
@@ -228,11 +221,13 @@ resource "aws_iam_role" "api_task_role" {
 }
 
 resource "cloudflare_record" "api_dot_prixfixe_dot_dev" {
-  zone_id = var.CLOUDFLARE_ZONE_ID
-  name    = "api"
-  value   = aws_alb.api.dns_name
-  type    = "CNAME"
-  ttl     = 3600
+  zone_id         = var.CLOUDFLARE_ZONE_ID
+  name            = "api"
+  value           = aws_alb.api.dns_name
+  type            = "CNAME"
+  proxied         = true
+  allow_overwrite = true
+  ttl             = 3600
 }
 
 output "alb_url" {
