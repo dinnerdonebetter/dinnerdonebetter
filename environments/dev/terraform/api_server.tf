@@ -227,6 +227,72 @@ resource "aws_acm_certificate" "api_dot" {
   validation_method = "DNS"
 }
 
+output "domain_validations" {
+  value = aws_acm_certificate.api_dot.domain_validation_options
+}
+
+resource "aws_alb" "api" {
+  name               = "api-lb"
+  internal           = false
+  load_balancer_type = "application"
+
+  subnets = [for x in aws_subnet.public_subnets : x.id]
+
+  security_groups = [
+    aws_security_group.load_balancer.id,
+  ]
+
+  depends_on = [aws_internet_gateway.main]
+}
+
+resource "aws_lb_target_group" "api" {
+  name        = "api"
+  port        = 8000
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = aws_vpc.main.id
+
+  health_check {
+    enabled  = true
+    path     = "/_meta_/ready"
+    port     = "traffic-port"
+    matcher  = "200"
+    protocol = "http"
+    timeout  = 15
+  }
+
+  depends_on = [aws_alb.api]
+}
+
+
+resource "aws_alb_listener" "api_http" {
+  load_balancer_arn = aws_alb.api.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.api.arn
+  }
+}
+
+resource "aws_alb_listener_certificate" "api_dot" {
+  listener_arn    = aws_alb_listener.api_http.arn
+  certificate_arn = aws_acm_certificate.api_dot.arn
+}
+
+resource "aws_lb_listener" "front_end" {
+  load_balancer_arn = aws_alb.api.arn
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = split("_", aws_alb_listener_certificate.api_dot.id)[1]
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.api.arn
+  }
+}
 
 resource "cloudflare_record" "api_dot_prixfixe_dot_dev" {
   zone_id         = var.CLOUDFLARE_ZONE_ID
@@ -250,8 +316,4 @@ resource "cloudflare_record" "api_dot_prixfixe_dot_dev_ssl_validation" {
 
 output "alb_url" {
   value = "http://${aws_alb.api.dns_name}"
-}
-
-output "domain_validations" {
-  value = aws_acm_certificate.api_dot.domain_validation_options
 }
