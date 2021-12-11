@@ -7,6 +7,90 @@ resource "aws_ecr_repository" "api_server" {
   }
 }
 
+
+
+resource "aws_security_group" "api_service" {
+  name        = "prixfixe_api"
+  description = "HTTP traffic"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 8000
+    to_port     = 8000
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
+
+resource "aws_security_group" "load_balancer" {
+  name        = "load_balancer"
+  description = "public internet traffic"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 8000
+    to_port     = 8000
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
+
 resource "aws_cloudwatch_log_group" "api_server" {
   name = "/ecs/api_server"
 }
@@ -20,11 +104,17 @@ resource "aws_ecs_task_definition" "api_server" {
       image = format("%s:latest", aws_ecr_repository.api_server.repository_url),
       portMappings : [
         {
-          "containerPort" : 80,
+          "containerPort" : 8000,
           "hostPort" : 80,
           "protocol" : "tcp",
         },
       ],
+      healthCheck: {
+        command: [ "CMD-SHELL", "curl -f http://httpbin.org/get || exit 1" ]
+        interval: 5,
+        retries: 4,
+        startPeriod: 10,
+      },
       logConfiguration : {
         "logDriver" : "awslogs",
         "options" : {
@@ -62,7 +152,7 @@ resource "aws_ecs_service" "api_server" {
   load_balancer {
     target_group_arn = aws_lb_target_group.api.arn
     container_name   = "api_server"
-    container_port   = 80
+    container_port   = 8000
   }
 
   network_configuration {
@@ -137,84 +227,14 @@ resource "aws_iam_role" "api_task_role" {
   }
 }
 
-resource "aws_security_group" "api_service" {
-  name        = "prixfixe_api"
-  description = "HTTP traffic"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "TCP"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "TCP"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 8888
-    to_port     = 8888
-    protocol    = "TCP"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    ipv6_cidr_blocks = ["::/0"]
-  }
+resource "cloudflare_record" "foobar" {
+  zone_id = var.CLOUDFLARE_ZONE_ID
+  name    = "api"
+  value   = aws_alb.api.dns_name
+  type    = "CNAME"
+  ttl     = 3600
 }
 
-resource "aws_security_group" "load_balancer" {
-  name        = "load_balancer"
-  description = "public internet traffic"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "TCP"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "TCP"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 8888
-    to_port     = 8888
-    protocol    = "TCP"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    ipv6_cidr_blocks = ["::/0"]
-  }
+output "alb_url" {
+  value = "http://${aws_alb.api.dns_name}"
 }

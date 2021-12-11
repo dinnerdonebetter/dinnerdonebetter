@@ -46,7 +46,7 @@ import (
 )
 
 const (
-	defaultPort              = 8888
+	defaultPort              = 8000
 	defaultCookieDomain      = ".prixfixe.local"
 	debugCookieSecret        = "HEREISA32CHARSECRETWHICHISMADEUP"
 	debugCookieSigningKey    = "DIFFERENT32CHARSECRETTHATIMADEUP"
@@ -200,7 +200,7 @@ func devEnvironmentConfig(ctx context.Context, filePath string) error {
 		CustomerData: customerDataPlatformConfig,
 		Server: server.Config{
 			Debug:           true,
-			HTTPPort:        80,
+			HTTPPort:        defaultPort,
 			StartupDeadline: time.Minute,
 			// HTTPSCertificateFile:    "/etc/certs/cert.pem",
 			// HTTPSCertificateKeyFile: "/etc/certs/key.pem",

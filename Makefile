@@ -104,10 +104,13 @@ rewire: ensure_wire_installed clean_wire wire
 format:
 	for file in `find $(PWD) -name '*.go'`; do $(GO_FORMAT) $$file; done
 
-
 .PHONY: terraformat
 terraformat:
 	@(cd environments/dev/terraform && terraform fmt)
+
+.PHONY: check_terraform
+check_terraform:
+	@(cd environments/dev/terraform && terraform init && terraform validate && terraform fmt)
 
 .PHONY: fmt
 fmt: format terraformat

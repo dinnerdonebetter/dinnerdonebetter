@@ -1,7 +1,7 @@
 {
 	"server": {
 		"startupDeadline": 60000000000,
-		"httpPort": 8888,
+		"httpPort": 8000,
 		"debug": true
 	},
 	"events": {
@@ -13,7 +13,6 @@
 	},
 	"search": {
 		"provider": "elasticsearch",
-		"indexName": "",
 		"address": "http://elasticsearch:9200",
 		"username": "",
 		"password": ""
@@ -153,7 +152,7 @@
 		"auth": {
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "2y9NUoGPrraRxPvTOamQUxBbZObwnJG7PZ1luCRVKUc=",
+				"localModeKey": "GFNOs+lI5irkK9/tspNvODgdvhNfu4cr4lsSKrfeSXk=",
 				"lifetime": 60000000000
 			},
 			"cookies": {
