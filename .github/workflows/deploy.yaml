@@ -94,10 +94,10 @@ jobs:
         id: init
         run: terraform init
 
-      - name: Terraform Format
-        working-directory: environments/dev/terraform
-        id: fmt
-        run: terraform fmt -check
+      # - name: Terraform Format
+      #   working-directory: environments/dev/terraform
+      #   id: fmt
+      #   run: terraform fmt -check
 
       - name: copy config file
         working-directory: environments/dev

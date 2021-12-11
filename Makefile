@@ -110,7 +110,7 @@ terraformat:
 
 .PHONY: check_terraform
 check_terraform:
-	@(cd environments/dev/terraform && terraform init && terraform validate && terraform fmt)
+	@(cd environments/dev/terraform && terraform init && terraform validate && terraform fmt && terraform fmt -check)
 
 .PHONY: fmt
 fmt: format terraformat

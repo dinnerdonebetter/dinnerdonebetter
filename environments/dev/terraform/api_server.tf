@@ -164,7 +164,7 @@ resource "aws_ecs_service" "api_server" {
   }
 
   depends_on = [
-    aws_alb_listener.api_http,
+    aws_lb_listener.api_http,
   ]
 }
 
@@ -227,11 +227,7 @@ resource "aws_acm_certificate" "api_dot" {
   validation_method = "DNS"
 }
 
-output "domain_validations" {
-  value = aws_acm_certificate.api_dot.domain_validation_options
-}
-
-resource "aws_alb" "api" {
+resource "aws_lb" "api" {
   name               = "api-lb"
   internal           = false
   load_balancer_type = "application"
@@ -261,12 +257,11 @@ resource "aws_lb_target_group" "api" {
     timeout  = 15
   }
 
-  depends_on = [aws_alb.api]
+  depends_on = [aws_lb.api]
 }
 
-
-resource "aws_alb_listener" "api_http" {
-  load_balancer_arn = aws_alb.api.arn
+resource "aws_lb_listener" "api_http" {
+  load_balancer_arn = aws_lb.api.arn
   port              = 80
   protocol          = "HTTP"
 
@@ -276,12 +271,12 @@ resource "aws_alb_listener" "api_http" {
   }
 }
 
-resource "aws_alb_listener" "api_https" {
-  load_balancer_arn = aws_alb.api.arn
+resource "aws_lb_listener" "api_https" {
+  load_balancer_arn = aws_lb.api.arn
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  #  certificate_arn   = split("_", aws_alb_listener_certificate.api_dot.id)[1]
+  certificate_arn   = data.aws_acm_certificate.certificate.arn
 
   default_action {
     type             = "forward"
@@ -289,15 +284,21 @@ resource "aws_alb_listener" "api_https" {
   }
 }
 
-resource "aws_alb_listener_certificate" "api_dot" {
-  listener_arn    = aws_alb_listener.api_https.arn
+resource "aws_lb_listener_certificate" "api_dot" {
+  listener_arn    = aws_lb_listener.api_https.arn
   certificate_arn = aws_acm_certificate.api_dot.arn
+}
+
+data "aws_acm_certificate" "certificate" {
+  domain      = local.public_url
+  statuses    = ["ISSUED"]
+  most_recent = true
 }
 
 resource "cloudflare_record" "api_dot_prixfixe_dot_dev" {
   zone_id         = var.CLOUDFLARE_ZONE_ID
   name            = local.public_url
-  value           = aws_alb.api.dns_name
+  value           = aws_lb.api.dns_name
   type            = "CNAME"
   proxied         = true
   allow_overwrite = true
@@ -315,5 +316,5 @@ resource "cloudflare_record" "api_dot_prixfixe_dot_dev_ssl_validation" {
 }
 
 output "alb_url" {
-  value = "http://${aws_alb.api.dns_name}"
+  value = "http://${aws_lb.api.dns_name}"
 }
