@@ -1,12 +1,15 @@
 package elasticsearch
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
+	"strings"
 
-	"github.com/olivere/elastic/v7"
+	"github.com/elastic/go-elasticsearch/v8/esapi"
 
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
@@ -30,11 +33,78 @@ func (sm *indexManager) Index(ctx context.Context, id string, value interface{})
 	logger := sm.logger.WithValue("id", id).WithValue("value", value)
 	logger.Debug("adding to index")
 
-	if _, err := sm.esclient.Index().Index(sm.indexName).Id(id).BodyJson(value).Do(ctx); err != nil {
+	b, err := json.Marshal(value)
+	if err != nil {
+		println("fart")
+	}
+
+	res, err := esapi.IndexRequest{
+		Index:               sm.indexName,
+		DocumentID:          id,
+		Body:                bytes.NewReader(b),
+		Timeout:             sm.timeout,
+		Version:             nil,
+		VersionType:         "",
+		WaitForActiveShards: "",
+		Pretty:              false,
+		Human:               false,
+		ErrorTrace:          false,
+		FilterPath:          nil,
+		Header:              nil,
+	}.Do(ctx, sm.esclient)
+	if err != nil {
 		return observability.PrepareError(err, logger, span, "indexing value")
 	}
 
+	if res.StatusCode != http.StatusOK {
+		println("")
+	}
+
 	return nil
+}
+
+type matchCondition struct {
+	Query string `json:"query"`
+}
+
+type matchQuery map[string]matchCondition
+
+type wildcardCondition struct {
+	Value string `json:"value"`
+}
+
+type wildcardQuery map[string]wildcardCondition
+
+type condition struct {
+	Match    matchQuery     `json:"match,omitempty"`
+	Wildcard *wildcardQuery `json:"wildcard,omitempty"`
+}
+
+type should struct {
+	Should []condition `json:"should"`
+}
+
+type queryContainer struct {
+	Bool should `json:"bool"`
+}
+
+type searchQuery struct {
+	Query queryContainer `json:"query"`
+}
+
+type esHit struct {
+	ID         string          `json:"_id"`
+	Source     json.RawMessage `json:"_source"`
+	Highlights json.RawMessage `json:"highlight"`
+	Sort       []interface{}   `json:"sort"`
+}
+
+type esResponse struct {
+	Hits struct {
+		Hits  []*esHit
+		Total struct{ Value int }
+	}
+	Took int
 }
 
 // search executes search queries.
@@ -49,28 +119,73 @@ func (sm *indexManager) search(ctx context.Context, byField, query, householdID 
 		return nil, ErrEmptyQueryProvided
 	}
 
-	baseQuery := elastic.NewWildcardQuery(byField, fmt.Sprintf("*%s*", query))
-
-	var q elastic.Query
-	if householdID == "" {
-		q = baseQuery
-	} else {
-		householdIDMatchQuery := elastic.NewMatchQuery("householdID", householdID)
-		q = elastic.NewBoolQuery().Should(householdIDMatchQuery).Should(baseQuery)
+	resultIDs := []string{}
+	q := searchQuery{
+		Query: queryContainer{
+			Bool: should{
+				Should: []condition{},
+			},
+		},
 	}
 
-	results, err := sm.esclient.Search().Index(sm.indexName).Query(q).Do(ctx)
+	if householdID != "" {
+		q.Query.Bool.Should = append(q.Query.Bool.Should, condition{
+			Match: map[string]matchCondition{
+				"householdID": {Query: householdID},
+			},
+		})
+	}
+
+	q.Query.Bool.Should = append(q.Query.Bool.Should, condition{
+		Wildcard: &wildcardQuery{
+			byField: wildcardCondition{
+				Value: fmt.Sprintf("*%s*", query),
+			},
+		},
+	})
+
+	queryBody, err := json.Marshal(q)
 	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "encodign search query")
+	}
+
+	res, err := sm.esclient.Search(
+		sm.esclient.Search.WithIndex(sm.indexName),
+		sm.esclient.Search.WithBody(bytes.NewReader(queryBody)),
+	)
+	defer func() {
+		if res != nil {
+			if err = res.Body.Close(); err != nil {
+				observability.AcknowledgeError(err, logger, span, "closing response body")
+			}
+		}
+	}()
+
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "querying elasticsearch successfully")
+	}
+
+	if res.IsError() {
+		var e map[string]interface{}
+		if err = json.NewDecoder(res.Body).Decode(&e); err != nil {
+			return nil, observability.PrepareError(err, logger, span, "invalid response from elasticsearch")
+		}
+
+		err = errors.New(strings.Join(res.Warnings(), ", "))
 		return nil, observability.PrepareError(err, logger, span, "querying elasticsearch")
 	}
 
-	resultIDs := []string{}
-	for _, hit := range results.Hits.Hits {
-		var i *idContainer
-		if unmarshalErr := json.Unmarshal(hit.Source, &i); unmarshalErr != nil {
-			return nil, observability.PrepareError(err, logger, span, "unmarshalling search result")
+	var r esResponse
+	if err = json.NewDecoder(res.Body).Decode(&r); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "decoding response")
+	}
+
+	for _, hit := range r.Hits.Hits {
+		var c *idContainer
+		if err = json.Unmarshal(hit.Source, &c); err != nil {
+			return nil, observability.PrepareError(err, logger, span, "decoding response")
 		}
-		resultIDs = append(resultIDs, i.ID)
+		resultIDs = append(resultIDs, c.ID)
 	}
 
 	return resultIDs, nil
@@ -88,8 +203,11 @@ func (sm *indexManager) Delete(ctx context.Context, id string) error {
 
 	logger := sm.logger.WithValue("id", id)
 
-	q := elastic.NewTermQuery("id", id)
-	if _, err := sm.esclient.DeleteByQuery(sm.indexName).Query(q).Do(ctx); err != nil {
+	_, err := esapi.DeleteRequest{
+		Index:      sm.indexName,
+		DocumentID: id,
+	}.Do(ctx, sm.esclient)
+	if err != nil {
 		return observability.PrepareError(err, logger, span, "deleting from elasticsearch")
 	}
 

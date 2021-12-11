@@ -147,7 +147,7 @@
 		"auth": {
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "GFNOs+lI5irkK9/tspNvODgdvhNfu4cr4lsSKrfeSXk=",
+				"localModeKey": "kIywZqq/30Xiqb0A/SX8YFKTmAan03AQ8Q4RymW6m4Y=",
 				"lifetime": 60000000000
 			},
 			"cookies": {

@@ -227,7 +227,7 @@ resource "cloudflare_record" "api_dot_prixfixe_dot_dev" {
   type            = "CNAME"
   proxied         = true
   allow_overwrite = true
-  ttl             = 3600
+  ttl             = 1
 }
 
 output "alb_url" {

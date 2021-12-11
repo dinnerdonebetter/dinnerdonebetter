@@ -128,7 +128,6 @@ resource "aws_lb_target_group" "api" {
   target_type = "ip"
   vpc_id      = aws_vpc.main.id
 
-
   # health_check {
   #   enabled = false
   #   path    = "/_meta_/ready"

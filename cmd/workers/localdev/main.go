@@ -17,7 +17,6 @@ import (
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/messagequeue/consumers/redis"
-	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/search/elasticsearch"
 	"github.com/prixfixeco/api_server/internal/workers"
@@ -99,7 +98,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	indexManagerProvider, err := elasticsearch.NewIndexManagerProvider(logger, observability.HTTPClient(), &cfg.Search)
+	indexManagerProvider, err := elasticsearch.NewIndexManagerProvider(ctx, logger, &cfg.Search)
 	if err != nil {
 		logger.Fatal(err)
 	}

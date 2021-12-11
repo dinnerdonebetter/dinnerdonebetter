@@ -68,7 +68,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	indexManagerProvider, err := elasticsearch.NewIndexManagerProvider(logger, observability.HTTPClient(), &cfg.Search)
+	indexManagerProvider, err := elasticsearch.NewIndexManagerProvider(ctx, logger, &cfg.Search)
 	if err != nil {
 		logger.Fatal(err)
 	}

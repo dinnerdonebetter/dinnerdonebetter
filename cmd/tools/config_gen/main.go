@@ -86,8 +86,6 @@ var (
 		Debug:           true,
 		HTTPPort:        defaultPort,
 		StartupDeadline: time.Minute,
-		// HTTPSCertificateFile:    "/etc/certs/cert.pem",
-		// HTTPSCertificateKeyFile: "/etc/certs/key.pem",
 	}
 
 	localCookies = authservice.CookieConfig{
@@ -202,8 +200,6 @@ func devEnvironmentConfig(ctx context.Context, filePath string) error {
 			Debug:           true,
 			HTTPPort:        defaultPort,
 			StartupDeadline: time.Minute,
-			// HTTPSCertificateFile:    "/etc/certs/cert.pem",
-			// HTTPSCertificateKeyFile: "/etc/certs/key.pem",
 		},
 		Database: dbconfig.Config{
 			Debug:           true,

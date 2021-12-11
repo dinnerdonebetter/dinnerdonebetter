@@ -8,7 +8,6 @@
        - name: Run the integration tests
          run: |
            docker-compose \
-           --file environments/testing/compose_files/integration-tests-base.yaml \
            --file environments/testing/compose_files/integration-tests.yaml up \
            --build \
            --force-recreate \

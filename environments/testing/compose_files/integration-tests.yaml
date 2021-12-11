@@ -1,5 +1,39 @@
 version: "3.8"
 services:
+    redis:
+        hostname: worker_queue
+        image: redis:6-buster
+        container_name: redis
+        ports:
+            - '6379:6379'
+        logging:
+            driver: none
+    postgres:
+        container_name: postgres
+        hostname: pgdatabase
+        image: postgres:10
+        environment:
+            POSTGRES_DB: 'prixfixe'
+            POSTGRES_PASSWORD: 'hunter2'
+            POSTGRES_USER: 'dbuser'
+        logging:
+            driver: none
+        ports:
+            - '5432:5432'
+    elasticsearch:
+        image: elasticsearch:7.14.1
+        ports:
+            - '9200:9200'
+            - '9300:9300'
+        environment:
+            discovery.type: 'single-node'
+        healthcheck:
+            test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+            interval: 30s
+            timeout: 30s
+            retries: 3
+        logging:
+            driver: none
     workers:
         container_name: integration_tests_workers
         build:
@@ -40,7 +74,7 @@ services:
               type: 'bind'
     test:
         environment:
-            TARGET_ADDRESS: 'http://api_server:8888'
+            TARGET_ADDRESS: 'http://api_server:8000'
             TARGET_DATABASE: 'postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable'
         depends_on:
             - workers

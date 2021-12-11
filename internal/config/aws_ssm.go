@@ -3,13 +3,13 @@ package config
 import (
 	"context"
 	"encoding/json"
-	"github.com/prixfixeco/api_server/internal/search"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ssm"
 
 	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/search"
 )
 
 const (

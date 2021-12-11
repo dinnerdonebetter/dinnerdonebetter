@@ -19,7 +19,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/routing/chi"
-	"github.com/prixfixeco/api_server/internal/search/realasticsearch"
+	"github.com/prixfixeco/api_server/internal/search/elasticsearch"
 	"github.com/prixfixeco/api_server/internal/server"
 	"github.com/prixfixeco/api_server/internal/services/admin"
 	"github.com/prixfixeco/api_server/internal/services/apiclients"
@@ -131,7 +131,7 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	validinstrumentsConfig := &servicesConfigurations.ValidInstruments
 	validInstrumentDataManager := database.ProvideValidInstrumentDataManager(dataManager)
 	searchConfig := &cfg.Search
-	indexManagerProvider, err := elasticsearch.NewIndexManagerProvider(logger, searchConfig)
+	indexManagerProvider, err := elasticsearch.NewIndexManagerProvider(ctx, logger, searchConfig)
 	if err != nil {
 		return nil, err
 	}
