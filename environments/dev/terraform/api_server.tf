@@ -227,9 +227,6 @@ resource "aws_acm_certificate" "api_dot" {
   validation_method = "DNS"
 }
 
-output "domain_validations" {
-  value = aws_acm_certificate.api_dot.domain_validation_options
-}
 
 resource "cloudflare_record" "api_dot_prixfixe_dot_dev" {
   zone_id         = var.CLOUDFLARE_ZONE_ID
@@ -243,9 +240,9 @@ resource "cloudflare_record" "api_dot_prixfixe_dot_dev" {
 
 resource "cloudflare_record" "api_dot_prixfixe_dot_dev_ssl_validation" {
   zone_id         = var.CLOUDFLARE_ZONE_ID
-  name            = aws_acm_certificate.api_dot.domain_validation_options.resource_record_name
-  value           = aws_acm_certificate.api_dot.domain_validation_options.resource_record_value
-  type            = aws_acm_certificate.api_dot.domain_validation_options.resource_record_type
+  name            = one(aws_acm_certificate.api_dot.domain_validation_options).resource_record_name
+  value           = one(aws_acm_certificate.api_dot.domain_validation_options).resource_record_value
+  type            = one(aws_acm_certificate.api_dot.domain_validation_options).resource_record_type
   proxied         = false
   allow_overwrite = true
   ttl             = 60
@@ -253,4 +250,8 @@ resource "cloudflare_record" "api_dot_prixfixe_dot_dev_ssl_validation" {
 
 output "alb_url" {
   value = "http://${aws_alb.api.dns_name}"
+}
+
+output "domain_validations" {
+  value = aws_acm_certificate.api_dot.domain_validation_options
 }
