@@ -1,3 +1,4 @@
+
 data "aws_iam_policy_document" "allow_to_manipulate_queues" {
   statement {
     effect = "Allow"
@@ -43,7 +44,6 @@ data "aws_iam_policy_document" "allow_parameter_store_access" {
     ]
   }
 }
-
 data "aws_iam_policy_document" "allow_to_decrypt_parameters" {
   statement {
     effect = "Allow"
@@ -54,27 +54,6 @@ data "aws_iam_policy_document" "allow_to_decrypt_parameters" {
     resources = [
       aws_kms_key.parameter_store_key.arn,
     ]
-  }
-}
-
-data "aws_iam_policy_document" "aws_otel_collector_role" {
-  version = "2012-10-17"
-
-  statement {
-    actions = [
-      "logs:PutLogEvents",
-      "logs:CreateLogGroup",
-      "logs:CreateLogStream",
-      "logs:DescribeLogStreams",
-      "logs:DescribeLogGroups",
-      "xray:PutTraceSegments",
-      "xray:PutTelemetryRecords",
-      "xray:GetSamplingRules",
-      "xray:GetSamplingTargets",
-      "xray:GetSamplingStatisticSummaries",
-      "ssm:GetParameters"
-    ]
-    resources = ["*"]
   }
 }
 

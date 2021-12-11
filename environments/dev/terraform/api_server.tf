@@ -96,21 +96,6 @@ resource "aws_ecs_task_definition" "api_server" {
 
   container_definitions = jsonencode([
     {
-      name : "aws-otel-collector",
-      image : "amazon/aws-otel-collector",
-      command : ["--config=/etc/ecs/ecs-default-config.yaml"],
-      essential : true,
-      logConfiguration : {
-        "logDriver" : "awslogs",
-        "options" : {
-          "awslogs-group" : "/ecs/ecs-aws-otel-sidecar-collector",
-          "awslogs-region" : "us-east-1",
-          "awslogs-stream-prefix" : "ecs",
-          "awslogs-create-group" : "True"
-        }
-      }
-    },
-    {
       name  = "api_server",
       image = format("%s:latest", aws_ecr_repository.api_server.repository_url),
       portMappings : [
@@ -119,6 +104,12 @@ resource "aws_ecs_task_definition" "api_server" {
           "protocol" : "tcp",
         },
       ],
+      # healthCheck : {
+      #   command : ["CMD-SHELL", "curl -f http://httpbin.org/get || exit 1"]
+      #   interval : 5,
+      #   retries : 4,
+      #   startPeriod : 10,
+      # },
       logConfiguration : {
         "logDriver" : "awslogs",
         "options" : {
@@ -238,11 +229,6 @@ resource "aws_iam_role" "api_task_role" {
   inline_policy {
     name   = "allow_decrypt_ssm_parameters"
     policy = data.aws_iam_policy_document.allow_to_decrypt_parameters.json
-  }
-
-  inline_policy {
-    name   = "ECS-AWSOTel"
-    policy = data.aws_iam_policy_document.aws_otel_collector_role.json
   }
 }
 
