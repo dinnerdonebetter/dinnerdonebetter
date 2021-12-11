@@ -281,7 +281,7 @@ resource "aws_alb_listener" "api_https" {
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = split("_", aws_alb_listener_certificate.api_dot.id)[1]
+#  certificate_arn   = split("_", aws_alb_listener_certificate.api_dot.id)[1]
 
   default_action {
     type             = "forward"
