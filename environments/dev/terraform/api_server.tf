@@ -222,7 +222,7 @@ resource "aws_iam_role" "api_task_role" {
 
 resource "cloudflare_record" "api_dot_prixfixe_dot_dev" {
   zone_id         = var.CLOUDFLARE_ZONE_ID
-  name            = "api"
+  name            = "api.prixfixe.dev"
   value           = aws_alb.api.dns_name
   type            = "CNAME"
   proxied         = true
