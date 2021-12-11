@@ -303,6 +303,8 @@ data "aws_acm_certificate" "certificate" {
   domain      = local.public_url
   statuses    = ["ISSUED"]
   most_recent = true
+
+  depends_on = [aws_acm_certificate.api_dot]
 }
 
 resource "cloudflare_record" "api_dot_prixfixe_dot_dev" {
