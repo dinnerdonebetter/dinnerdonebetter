@@ -48,7 +48,7 @@ resource "aws_lambda_event_source_mapping" "updates_mapping" {
   function_name    = aws_lambda_function.updates_worker_lambda.arn
 }
 
-resource "aws_cloudwatch_log_group" "loggroup" {
+resource "aws_cloudwatch_log_group" "updates_worker_lambda_logs" {
   name              = "/aws/lambda/${aws_lambda_function.updates_worker_lambda.function_name}"
   retention_in_days = 14
 }
