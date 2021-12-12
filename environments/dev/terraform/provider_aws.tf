@@ -13,3 +13,17 @@ provider "aws" {
     }
   }
 }
+
+data "aws_caller_identity" "current" {}
+
+output "caller_id" {
+  value = data.aws_caller_identity.current.id
+}
+
+output "caller_account_id" {
+  value = data.aws_caller_identity.current.account_id
+}
+
+output "user_id" {
+  value = data.aws_caller_identity.current.account_id
+}
