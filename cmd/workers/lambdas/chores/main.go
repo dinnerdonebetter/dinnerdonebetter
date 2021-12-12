@@ -18,7 +18,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/workers"
 )
 
-func buildHandler(worker *workers.ChoresWorker) func(ctx context.Context, sqsEvent events.SQSEvent) error {
+func buildHandler(logger logging.Logger, worker *workers.ChoresWorker) func(ctx context.Context, sqsEvent events.SQSEvent) error {
 	return func(ctx context.Context, sqsEvent events.SQSEvent) error {
 		for i := 0; i < len(sqsEvent.Records); i++ {
 			message := sqsEvent.Records[i]
@@ -26,6 +26,8 @@ func buildHandler(worker *workers.ChoresWorker) func(ctx context.Context, sqsEve
 				return observability.PrepareError(err, nil, nil, "handling writes message")
 			}
 		}
+
+		logger.Debug("chores performed")
 
 		return nil
 	}
@@ -75,5 +77,5 @@ func main() {
 		cdp,
 	)
 
-	lambda.Start(buildHandler(preChoresWorker))
+	lambda.Start(buildHandler(logger, preChoresWorker))
 }
