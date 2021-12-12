@@ -1,6 +1,12 @@
 locals {
   database_username = "prixfixe_api"
   database_name     = "prixfixe"
+  cluster_name      = "api-database"
+}
+
+resource "aws_cloudwatch_log_group" "writes_worker_lambda_logs" {
+  name              = "/aws/rds/cluster/${local.cluster_name}/postgresql"
+  retention_in_days = 14
 }
 
 resource "random_password" "database_password" {
@@ -16,7 +22,7 @@ resource "aws_db_subnet_group" "db_subnet" {
 }
 
 resource "aws_rds_cluster" "api_database" {
-  cluster_identifier = "api-database"
+  cluster_identifier = local.cluster_name
   database_name      = local.database_name
   engine             = "aurora-postgresql"
 
