@@ -9,7 +9,7 @@ resource "aws_cloudwatch_log_group" "database_logs" {
   retention_in_days = 14
 }
 
-resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_subscription_filter" {
+resource "aws_cloudwatch_log_subscription_filter" "database_logs_subscription_filter" {
   name            = "aurora-postgres-log-group-subscription"
   log_group_name  = aws_cloudwatch_log_group.database_logs.name
   filter_pattern  = ""

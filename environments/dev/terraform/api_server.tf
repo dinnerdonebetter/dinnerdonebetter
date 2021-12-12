@@ -92,7 +92,7 @@ resource "aws_cloudwatch_log_group" "api_server" {
   retention_in_days = 14
 }
 
-resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_subscription_filter" {
+resource "aws_cloudwatch_log_subscription_filter" "api_server_logs_subscription_filter" {
   name            = "api-server-log-group-subscription"
   log_group_name  = aws_cloudwatch_log_group.api_server.name
   filter_pattern  = ""

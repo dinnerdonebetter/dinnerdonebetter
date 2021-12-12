@@ -52,7 +52,7 @@ resource "aws_cloudwatch_log_group" "writes_worker_lambda_logs" {
   retention_in_days = 14
 }
 
-resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_subscription_filter" {
+resource "aws_cloudwatch_log_subscription_filter" "writes_worker_lambda_subscription_filter" {
   name            = format("%s-postgres-log-group-subscription", aws_lambda_function.writes_worker_lambda.function_name)
   log_group_name  = aws_cloudwatch_log_group.writes_worker_lambda_logs.name
   filter_pattern  = ""
