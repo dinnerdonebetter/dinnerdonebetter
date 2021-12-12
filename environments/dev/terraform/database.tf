@@ -9,6 +9,13 @@ resource "aws_cloudwatch_log_group" "database_logs" {
   retention_in_days = 14
 }
 
+resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_subscription_filter" {
+  name            = "aurora-postgres-log-group-subscription"
+  log_group_name  = aws_cloudwatch_log_group.database_logs.name
+  filter_pattern  = ""
+  destination_arn = data.aws_lambda_function.cloudwatch_logs.arn
+}
+
 resource "random_password" "database_password" {
   length           = 64
   special          = true
