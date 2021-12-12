@@ -1,13 +1,13 @@
 data "ec_stack" "latest" {
   version_regex = "latest"
-  region        = "us-east-1"
+  region        = local.aws_region
 }
 
 resource "ec_deployment" "dev" {
   name = "dev_api"
 
   # Mandatory fields
-  region                 = "us-east-1"
+  region                 = local.aws_region
   version                = data.ec_stack.latest.version
   deployment_template_id = "aws-storage-optimized"
 

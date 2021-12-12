@@ -114,7 +114,7 @@ resource "aws_ecs_task_definition" "api_server" {
       logConfiguration : {
         "logDriver" : "awslogs",
         "options" : {
-          "awslogs-region" : "us-east-1",
+          "awslogs-region" : local.aws_region,
           "awslogs-group" : aws_cloudwatch_log_group.api_server.name,
           "awslogs-stream-prefix" : "ecs",
         },
