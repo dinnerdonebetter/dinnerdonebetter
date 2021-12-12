@@ -92,13 +92,6 @@ resource "aws_cloudwatch_log_group" "api_server" {
   retention_in_days = local.log_retention_period_in_days
 }
 
-resource "aws_cloudwatch_log_subscription_filter" "api_server_logs_subscription_filter" {
-  name            = "api-server-log-group-subscription"
-  log_group_name  = aws_cloudwatch_log_group.api_server.name
-  filter_pattern  = ""
-  destination_arn = aws_lambda_function.cloudwatch_logs.arn
-}
-
 resource "aws_ecs_task_definition" "api_server" {
   family = "api_server"
 
@@ -327,6 +320,45 @@ resource "cloudflare_record" "api_dot_prixfixe_dot_dev_ssl_validation" {
   ttl             = 60
 }
 
-output "alb_url" {
-  value = "http://${aws_lb.api.dns_name}"
+# log group for the exporter lambda
+resource "aws_cloudwatch_log_group" "dev_api_server_logs" {
+  name              = "/aws/lambda/honeycomb-dev-api-server-logs-integration"
+  retention_in_days = local.log_retention_period_in_days
+}
+
+resource "aws_lambda_function" "dev_server_log_sync" {
+  function_name = "honeycomb-dev-api-server-logs-integration"
+  s3_bucket     = "honeycomb-integrations-us-east-1"
+  s3_key        = "agentless-integrations-for-aws/LATEST/ingest-handlers.zip"
+  handler       = "cloudwatch-handler"
+  runtime       = "go1.x"
+  memory_size   = "128"
+  role          = aws_iam_role.honeycomb_logs.arn
+
+  environment {
+    variables = {
+      ENVIRONMENT         = "dev"
+      PARSER_TYPE         = "json"
+      HONEYCOMB_WRITE_KEY = var.HONEYCOMB_API_KEY
+      DATASET             = "dev_api_server_logs"
+      SAMPLE_RATE         = "1"
+      TIME_FIELD_NAME     = "time"
+      TIME_FIELD_FORMAT   = "%s(%L)?"
+    }
+  }
+}
+
+resource "aws_lambda_permission" "allow_dev_server_logs_from_cloudwatch" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.dev_server_log_sync.arn
+  principal     = "logs.amazonaws.com"
+}
+
+# this is the actual subscription filter that fires off the log exporter lambda.
+resource "aws_cloudwatch_log_subscription_filter" "api_server_logs_subscription_filter" {
+  name            = "api-server-log-group-subscription"
+  log_group_name  = aws_cloudwatch_log_group.api_server.name
+  filter_pattern  = ""
+  destination_arn = aws_lambda_function.dev_server_log_sync.arn
 }
