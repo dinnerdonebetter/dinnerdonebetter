@@ -55,6 +55,6 @@ resource "aws_cloudwatch_log_group" "data_changes_worker_lambda_logs" {
 resource "aws_cloudwatch_log_subscription_filter" "data_changes_worker_lambda_subscription_filter" {
   name            = format("%s-postgres-log-group-subscription", aws_lambda_function.data_changes_worker_lambda.function_name)
   log_group_name  = aws_cloudwatch_log_group.data_changes_worker_lambda_logs.name
-  filter_pattern  = ""
+  filter_pattern  = local.cloudwatch_exclude_lambda_events_filter
   destination_arn = data.aws_lambda_function.cloudwatch_logs.arn
 }
