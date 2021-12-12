@@ -50,12 +50,12 @@ resource "aws_lambda_event_source_mapping" "updates_mapping" {
 
 resource "aws_cloudwatch_log_group" "updates_worker_lambda_logs" {
   name              = "/aws/lambda/${aws_lambda_function.updates_worker_lambda.function_name}"
-  retention_in_days = 14
+  retention_in_days = local.log_retention_period_in_days
 }
 
-resource "aws_cloudwatch_log_subscription_filter" "updates_worker_lambda_subscription_filter" {
-  name            = format("%s-postgres-log-group-subscription", aws_lambda_function.updates_worker_lambda.function_name)
-  log_group_name  = aws_cloudwatch_log_group.updates_worker_lambda_logs.name
-  filter_pattern  = local.cloudwatch_exclude_lambda_events_filter
-  destination_arn = data.aws_lambda_function.cloudwatch_logs.arn
-}
+#resource "aws_cloudwatch_log_subscription_filter" "updates_worker_lambda_subscription_filter" {
+#  name            = format("%s-log-group-subscription", aws_lambda_function.updates_worker_lambda.function_name)
+#  log_group_name  = aws_cloudwatch_log_group.updates_worker_lambda_logs.name
+#  filter_pattern  = local.cloudwatch_exclude_lambda_events_filter
+#  destination_arn = aws_lambda_function.cloudwatch_logs.arn
+#}

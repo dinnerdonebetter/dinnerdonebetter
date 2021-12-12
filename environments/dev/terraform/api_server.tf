@@ -89,14 +89,14 @@ resource "aws_security_group" "load_balancer" {
 
 resource "aws_cloudwatch_log_group" "api_server" {
   name              = "/ecs/api_server"
-  retention_in_days = 14
+  retention_in_days = local.log_retention_period_in_days
 }
 
 resource "aws_cloudwatch_log_subscription_filter" "api_server_logs_subscription_filter" {
   name            = "api-server-log-group-subscription"
   log_group_name  = aws_cloudwatch_log_group.api_server.name
   filter_pattern  = ""
-  destination_arn = data.aws_lambda_function.cloudwatch_logs.arn
+  destination_arn = aws_lambda_function.cloudwatch_logs.arn
 }
 
 resource "aws_ecs_task_definition" "api_server" {

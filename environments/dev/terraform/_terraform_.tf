@@ -29,5 +29,9 @@ terraform {
       source  = "elastic/ec"
       version = "0.3.0"
     }
+    honeycombio = {
+      source  = "kvrhdn/honeycombio"
+      version = "~> 0.1.0"
+    }
   }
 }
