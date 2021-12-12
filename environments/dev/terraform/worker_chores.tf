@@ -61,3 +61,8 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_chores_worker" {
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.every_minute.arn
 }
+
+resource "aws_cloudwatch_log_group" "loggroup" {
+  name              = "/aws/lambda/${aws_lambda_function.chores_worker_lambda.function_name}"
+  retention_in_days = 14
+}

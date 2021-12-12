@@ -87,10 +87,6 @@ resource "aws_security_group" "load_balancer" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "api_server" {
-  name = "/ecs/api_server"
-}
-
 resource "aws_ecs_task_definition" "api_server" {
   family = "api_server"
 
@@ -114,8 +110,8 @@ resource "aws_ecs_task_definition" "api_server" {
         "logDriver" : "awslogs",
         "options" : {
           "awslogs-region" : "us-east-1",
-          "awslogs-group" : "/ecs/api_server",
-          "awslogs-stream-prefix" : "ecs",
+          "awslogs-group" : aws_cloudwatch_log_group.dev.name,
+          "awslogs-stream-prefix" : "",
         },
       },
     },

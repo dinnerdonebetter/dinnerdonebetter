@@ -46,3 +46,8 @@ resource "aws_lambda_event_source_mapping" "archives_mapping" {
   event_source_arn = aws_sqs_queue.archives_queue.arn
   function_name    = aws_lambda_function.archives_worker_lambda.arn
 }
+
+resource "aws_cloudwatch_log_group" "loggroup" {
+  name              = "/aws/lambda/${aws_lambda_function.archives_worker_lambda.function_name}"
+  retention_in_days = 14
+}
