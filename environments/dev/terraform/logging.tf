@@ -5,8 +5,6 @@ resource "aws_cloudwatch_log_group" "dev" {
 
 data "aws_lambda_function" "cloudwatch_logs" {
   function_name = "honeycomb-cloudwatch-logs-integration"
-  s3_bucket     = "honeycomb-integrations-us-east-1"
-  s3_key        = "agentless-integrations-for-aws/LATEST/ingest-handlers.zip"
 }
 
 resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_subscription_filter" {
