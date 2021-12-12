@@ -4,7 +4,7 @@ locals {
   cluster_name      = "api-database"
 }
 
-resource "aws_cloudwatch_log_group" "writes_worker_lambda_logs" {
+resource "aws_cloudwatch_log_group" "database_logs" {
   name              = "/aws/rds/cluster/${local.cluster_name}/postgresql"
   retention_in_days = 14
 }
