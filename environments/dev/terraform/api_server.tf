@@ -340,6 +340,7 @@ resource "aws_lambda_function" "dev_server_log_sync" {
       ENVIRONMENT         = "dev"
       PARSER_TYPE         = "json"
       HONEYCOMB_WRITE_KEY = var.HONEYCOMB_API_KEY
+      HONEYCOMB_DEBUG     = true
       DATASET             = "dev_api_server_logs"
       SAMPLE_RATE         = "1"
       TIME_FIELD_NAME     = "time"

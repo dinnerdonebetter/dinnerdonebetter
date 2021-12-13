@@ -26,6 +26,7 @@ resource "aws_lambda_function" "worker_log_sync" {
       ENVIRONMENT         = "dev"
       PARSER_TYPE         = "json"
       HONEYCOMB_WRITE_KEY = var.HONEYCOMB_API_KEY
+      HONEYCOMB_DEBUG     = true
       DATASET             = "dev_worker_logs"
       SAMPLE_RATE         = "1"
       TIME_FIELD_NAME     = "time"
