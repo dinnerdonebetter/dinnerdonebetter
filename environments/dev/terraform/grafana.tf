@@ -1,0 +1,2 @@
+variable "GRAFANA_CLOUD_API_KEY" {}
+variable "GRAFANA_CLOUD_USER_ID" {}
