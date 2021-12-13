@@ -41,7 +41,6 @@ data "aws_iam_policy_document" "allow_parameter_store_access" {
       aws_ssm_parameter.search_url.arn,
       aws_ssm_parameter.search_username.arn,
       aws_ssm_parameter.search_password.arn,
-      data.aws_ssm_parameter.honeycomb_api_key.arn,
     ]
   }
 }

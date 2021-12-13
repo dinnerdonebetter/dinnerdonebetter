@@ -66,10 +66,3 @@ resource "aws_cloudwatch_log_group" "chores_worker_lambda_logs" {
   name              = "/aws/lambda/${aws_lambda_function.chores_worker_lambda.function_name}"
   retention_in_days = local.log_retention_period_in_days
 }
-
-resource "aws_cloudwatch_log_subscription_filter" "chores_worker_lambda_subscription_filter" {
-  name            = format("%s-log-group-subscription", aws_lambda_function.chores_worker_lambda.function_name)
-  log_group_name  = aws_cloudwatch_log_group.chores_worker_lambda_logs.name
-  filter_pattern  = local.cloudwatch_exclude_lambda_events_filter
-  destination_arn = aws_lambda_function.worker_log_sync.arn
-}
