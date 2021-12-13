@@ -344,7 +344,7 @@ resource "aws_lambda_function" "dev_server_log_sync" {
       DATASET             = "dev_api_server_logs"
       SAMPLE_RATE         = "1"
       TIME_FIELD_NAME     = "time"
-      TIME_FIELD_FORMAT   = "2006-01-02T15:04:05.999999999Z07:00"
+      TIME_FIELD_FORMAT   = "2006-01-02T15:04:05.999999999Z"
     }
   }
 }
