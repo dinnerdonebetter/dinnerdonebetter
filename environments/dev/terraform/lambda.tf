@@ -30,7 +30,7 @@ resource "aws_lambda_function" "worker_log_sync" {
       DATASET             = "dev_worker_logs"
       SAMPLE_RATE         = "1"
       TIME_FIELD_NAME     = "time"
-      TIME_FIELD_FORMAT   = "2006-01-02T15:04:05.999999999Z"
+      TIME_FIELD_FORMAT   = "Jan _2 15:04:05.000000000"
     }
   }
 }

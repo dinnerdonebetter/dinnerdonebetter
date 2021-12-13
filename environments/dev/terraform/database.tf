@@ -9,13 +9,6 @@ resource "aws_cloudwatch_log_group" "database_logs" {
   retention_in_days = local.log_retention_period_in_days
 }
 
-#resource "aws_cloudwatch_log_subscription_filter" "database_logs_subscription_filter" {
-#  name            = "aurora-postgres-log-group-subscription"
-#  log_group_name  = aws_cloudwatch_log_group.database_logs.name
-#  filter_pattern  = ""
-#  destination_arn = aws_lambda_function.cloudwatch_logs.arn
-#}
-
 resource "random_password" "database_password" {
   length           = 64
   special          = true
@@ -120,4 +113,33 @@ resource "aws_security_group" "database" {
     protocol         = "-1"
     ipv6_cidr_blocks = ["::/0"]
   }
+}
+
+resource "aws_lambda_function" "honeycomb_postgres_rds_logs" {
+  # change me to your region
+  s3_bucket     = "honeycomb-integrations-us-east-1"
+  s3_key        = "agentless-integrations-for-aws/LATEST/ingest-handlers.zip"
+  function_name = "honeycomb-postgres-rds-logs"
+  role          = aws_iam_role.honeycomb_logs.arn
+  handler       = "postgres-handler"
+  runtime       = "go1.x"
+  memory_size   = "128"
+
+  environment {
+    variables = {
+      ENVIRONMENT         = "dev"
+      HONEYCOMB_WRITE_KEY = var.HONEYCOMB_API_KEY
+      DATASET             = "dev_postgres_rds_logs"
+      SAMPLE_RATE         = "1"
+      SCRUB_QUERY         = "false"
+      HONEYCOMB_DEBUG     = true
+    }
+  }
+}
+
+resource "aws_cloudwatch_log_subscription_filter" "database_logs_subscription_filter" {
+  name            = "honeycomb-postgres-rds-subscription"
+  log_group_name  = aws_cloudwatch_log_group.database_logs.name
+  filter_pattern  = ""
+  destination_arn = aws_lambda_function.honeycomb_postgres_rds_logs.arn
 }

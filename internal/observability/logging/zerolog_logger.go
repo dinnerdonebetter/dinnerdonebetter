@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/rs/zerolog"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 )
@@ -17,12 +18,12 @@ const here = "github.com/prixfixeco/api_server/"
 func init() {
 	zerolog.CallerSkipFrameCount += 2
 	zerolog.DisableSampling(true)
-	zerolog.TimeFieldFormat = time.RFC3339Nano
+	zerolog.TimeFieldFormat = time.StampNano
 	zerolog.TimestampFunc = func() time.Time {
 		return time.Now().UTC()
 	}
 	zerolog.CallerMarshalFunc = func(file string, line int) string {
-		return strings.TrimPrefix(file, here) + ":" + strconv.Itoa(line)
+		return strings.TrimPrefix(file, here) + ", line " + strconv.Itoa(line)
 	}
 }
 
@@ -130,6 +131,17 @@ func (l *zerologLogger) WithValues(values map[string]interface{}) Logger {
 // WithError satisfies our contract for the logging.Logger WithError method.
 func (l *zerologLogger) WithError(err error) Logger {
 	l2 := l.logger.With().Err(err).Logger()
+	return &zerologLogger{logger: l2}
+}
+
+// WithSpan satisfies our contract for the logging.Logger WithSpan method.
+func (l *zerologLogger) WithSpan(span trace.Span) Logger {
+	spanCtx := span.SpanContext()
+	spanID := spanCtx.SpanID().String()
+	traceID := spanCtx.TraceID().String()
+
+	l2 := l.logger.With().Str(keys.SpanIDKey, spanID).Str(keys.TraceIDKey, traceID).Logger()
+
 	return &zerologLogger{logger: l2}
 }
 

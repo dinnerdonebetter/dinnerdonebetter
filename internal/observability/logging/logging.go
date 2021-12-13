@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"go.opentelemetry.io/otel/trace"
+
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 )
 
@@ -55,6 +57,7 @@ type Logger interface {
 	WithRequest(*http.Request) Logger
 	WithResponse(response *http.Response) Logger
 	WithError(error) Logger
+	WithSpan(span trace.Span) Logger
 }
 
 // EnsureLogger guarantees that a zerologLogger is available.
