@@ -115,13 +115,17 @@ resource "aws_security_group" "database" {
   }
 }
 
+resource "honeycombio_dataset" "dev_postgres_rds_logs" {
+  name = "dev_postgres_rds_logs"
+}
+
 resource "aws_lambda_function" "honeycomb_postgres_rds_logs" {
   # change me to your region
   s3_bucket     = "honeycomb-integrations-us-east-1"
   s3_key        = "agentless-integrations-for-aws/LATEST/ingest-handlers.zip"
   function_name = "honeycomb-postgres-rds-logs"
   role          = aws_iam_role.honeycomb_logs.arn
-  handler       = "postgres-handler"
+  handler       = "postgresql-handler"
   runtime       = "go1.x"
   memory_size   = "128"
 
@@ -129,7 +133,7 @@ resource "aws_lambda_function" "honeycomb_postgres_rds_logs" {
     variables = {
       ENVIRONMENT         = "dev"
       HONEYCOMB_WRITE_KEY = var.HONEYCOMB_API_KEY
-      DATASET             = "dev_postgres_rds_logs"
+      DATASET             = honeycombio_dataset.dev_postgres_rds_logs.name
       SAMPLE_RATE         = "1"
       SCRUB_QUERY         = "false"
       HONEYCOMB_DEBUG     = true

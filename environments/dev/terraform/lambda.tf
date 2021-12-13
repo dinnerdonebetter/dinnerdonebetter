@@ -12,6 +12,10 @@ resource "aws_cloudwatch_log_group" "honeycomb_worker_logs" {
   retention_in_days = local.log_retention_period_in_days
 }
 
+resource "honeycombio_dataset" "dev_worker_logs" {
+  name = "dev_worker_logs"
+}
+
 resource "aws_lambda_function" "worker_log_sync" {
   function_name = "honeycomb-worker-logs-integration"
   s3_bucket     = "honeycomb-integrations-us-east-1"
@@ -27,7 +31,7 @@ resource "aws_lambda_function" "worker_log_sync" {
       PARSER_TYPE         = "json"
       HONEYCOMB_WRITE_KEY = var.HONEYCOMB_API_KEY
       HONEYCOMB_DEBUG     = true
-      DATASET             = "dev_worker_logs"
+      DATASET             = honeycombio_dataset.dev_worker_logs.name
       SAMPLE_RATE         = "1"
       TIME_FIELD_NAME     = "time"
       TIME_FIELD_FORMAT   = "Jan _2 15:04:05.000000000"
