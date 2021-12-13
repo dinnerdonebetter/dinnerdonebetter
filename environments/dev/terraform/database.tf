@@ -137,6 +137,13 @@ resource "aws_lambda_function" "honeycomb_postgres_rds_logs" {
   }
 }
 
+resource "aws_lambda_permission" "allow_database_logs_from_cloudwatch" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.honeycomb_postgres_rds_logs.arn
+  principal     = "logs.amazonaws.com"
+}
+
 resource "aws_cloudwatch_log_subscription_filter" "database_logs_subscription_filter" {
   name            = "honeycomb-postgres-rds-subscription"
   log_group_name  = aws_cloudwatch_log_group.database_logs.name
