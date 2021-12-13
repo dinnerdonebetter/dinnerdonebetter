@@ -18,7 +18,7 @@ const here = "github.com/prixfixeco/api_server/"
 func init() {
 	zerolog.CallerSkipFrameCount += 2
 	zerolog.DisableSampling(true)
-	zerolog.TimeFieldFormat = time.StampNano
+	zerolog.TimeFieldFormat = time.RFC3339Nano
 	zerolog.TimestampFunc = func() time.Time {
 		return time.Now().UTC()
 	}

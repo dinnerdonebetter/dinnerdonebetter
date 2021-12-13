@@ -11,8 +11,10 @@ import (
 )
 
 const (
-	// Jaeger represents the popular distributed tracing server.
+	// Jaeger represents the open source tracing server.
 	Jaeger = "jaeger"
+	// Honeycomb represents the hosted tracing service.
+	Honeycomb = "honeycomb"
 )
 
 type (
@@ -20,9 +22,10 @@ type (
 	Config struct {
 		_ struct{}
 
-		Jaeger                    *JaegerConfig `json:"jaeger,omitempty" mapstructure:"jaeger" toml:"jaeger,omitempty"`
-		Provider                  string        `json:"provider,omitempty" mapstructure:"provider" toml:"provider,omitempty"`
-		SpanCollectionProbability float64       `json:"spanCollectionProbability,omitempty" mapstructure:"span_collection_probability" toml:"span_collection_probability,omitempty"`
+		Jaeger                    *JaegerConfig    `json:"jaeger,omitempty" mapstructure:"jaeger" toml:"jaeger,omitempty"`
+		Honeycomb                 *HoneycombConfig `json:"honeycomb,omitempty" mapstructure:"honeycomb" toml:"honeycomb,omitempty"`
+		Provider                  string           `json:"provider,omitempty" mapstructure:"provider" toml:"provider,omitempty"`
+		SpanCollectionProbability float64          `json:"spanCollectionProbability,omitempty" mapstructure:"span_collection_probability" toml:"span_collection_probability,omitempty"`
 	}
 
 	// JaegerConfig contains settings related to tracing with Jaeger.
@@ -31,6 +34,13 @@ type (
 
 		CollectorEndpoint string `json:"collector_endpoint,omitempty" mapstructure:"collector_endpoint" toml:"collector_endpoint,omitempty"`
 		ServiceName       string `json:"service_name,omitempty" mapstructure:"service_name" toml:"service_name,omitempty"`
+	}
+
+	// HoneycombConfig contains settings related to tracing with Honeycomb.
+	HoneycombConfig struct {
+		_ struct{}
+
+		APIKey string `json:"collector_endpoint,omitempty" mapstructure:"collector_endpoint" toml:"collector_endpoint,omitempty"`
 	}
 )
 
@@ -45,6 +55,9 @@ func (c *Config) Initialize(l logging.Logger) (flushFunc func(), err error) {
 	case Jaeger:
 		logger.Debug("setting up jaeger")
 		return c.SetupJaeger()
+	case Honeycomb:
+		logger.Debug("setting up honeycomb")
+		return nil, nil
 	case "":
 		return nil, nil
 	default:
@@ -58,8 +71,9 @@ var _ validation.ValidatableWithContext = (*Config)(nil)
 // ValidateWithContext validates the config struct.
 func (c *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, c,
-		validation.Field(&c.Provider, validation.In("", Jaeger)),
+		validation.Field(&c.Provider, validation.In("", Jaeger, Honeycomb)),
 		validation.Field(&c.Jaeger, validation.When(c.Provider == Jaeger, validation.Required).Else(validation.Nil)),
+		validation.Field(&c.Honeycomb, validation.When(c.Provider == Honeycomb, validation.Required).Else(validation.Nil)),
 	)
 }
 
