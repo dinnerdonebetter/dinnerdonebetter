@@ -110,7 +110,7 @@ resource "aws_ecs_task_definition" "api_server" {
           protocol : "tcp",
         },
       ],
-      essential: true,
+      essential : true,
       logConfiguration : {
         logDriver : "awslogs",
         options : {
