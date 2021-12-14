@@ -92,7 +92,7 @@ resource "aws_cloudwatch_log_group" "api_server" {
   retention_in_days = local.log_retention_period_in_days
 }
 
-resource "aws_cloudwatch_log_group" "api_server" {
+resource "aws_cloudwatch_log_group" "api_sidecar" {
   name              = "/ecs/ecs-aws-otel-sidecar-collector"
   retention_in_days = local.log_retention_period_in_days
 }
@@ -104,15 +104,15 @@ resource "aws_ecs_task_definition" "api_server" {
     {
       name : "aws-otel-collector",
       image : "amazon/aws-otel-collector",
-      command :[ "--config=/etc/ecs/container-insights/otel-task-metrics-config.yaml" ],
+      command : ["--config=/etc/ecs/container-insights/otel-task-metrics-config.yaml"],
       essential : true,
       logConfiguration : {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": aws_cloudwatch_log_group.api_server.name,
-          "awslogs-region": local.aws_region,
-          "awslogs-stream-prefix": "ecs",
-          "awslogs-create-group": "True"
+        "logDriver" : "awslogs",
+        "options" : {
+          "awslogs-group" : aws_cloudwatch_log_group.api_sidecar.name,
+          "awslogs-region" : local.aws_region,
+          "awslogs-stream-prefix" : "ecs",
+          "awslogs-create-group" : "True"
         }
       }
     },
@@ -361,6 +361,6 @@ data "aws_iam_policy_document" "opentelemetry_collector_policy" {
       "ec2:DescribeTags",
       "ssm:GetParameters"
     ]
-    resources = [ "*" ]
+    resources = ["*"]
   }
 }
