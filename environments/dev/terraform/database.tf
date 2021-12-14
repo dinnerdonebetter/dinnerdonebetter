@@ -50,6 +50,10 @@ resource "aws_rds_cluster" "api_database" {
   vpc_security_group_ids = [
     aws_security_group.database.id,
   ]
+
+  depends_on = [
+    aws_cloudwatch_log_group.database_logs,
+  ]
 }
 
 resource "aws_ssm_parameter" "database_url" {
