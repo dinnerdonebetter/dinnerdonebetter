@@ -102,27 +102,6 @@ resource "aws_ecs_task_definition" "api_server" {
 
   container_definitions = jsonencode([
     {
-      essential : true,
-      image : "grafana/fluent-bit-plugin-loki:2.0.0-amd64",
-      name : "log_router",
-      firelensConfiguration : {
-        type : "fluentbit",
-        options : {
-          enable-ecs-log-metadata : "true"
-        }
-      },
-      logConfiguration : {
-        logDriver : "awslogs",
-        options : {
-          awslogs-group : aws_cloudwatch_log_group.api_server_firelens_logs.name,
-          awslogs-region : "us-east-1",
-          awslogs-create-group : "true",
-          awslogs-stream-prefix : "firelens"
-        }
-      },
-      memoryReservation : 50
-    },
-    {
       name  = "api_server",
       image = format("%s:latest", aws_ecr_repository.api_server.repository_url),
       portMappings : [
@@ -131,15 +110,13 @@ resource "aws_ecs_task_definition" "api_server" {
           protocol : "tcp",
         },
       ],
+      essential: true,
       logConfiguration : {
-        logDriver : "awsfirelens",
+        logDriver : "awslogs",
         options : {
-          Name : "loki",
-          Url : "https://${var.GRAFANA_CLOUD_USER_ID}:${var.GRAFANA_CLOUD_API_KEY}@logs-prod-us-central1.grafana.net/loki/api/v1/push",
-          Labels : "{job=\"firelens\"}",
-          RemoveKeys : "container_id,ecs_task_arn",
-          LabelKeys : "container_name,ecs_task_definition,source,ecs_cluster",
-          LineFormat : "key_value",
+          awslogs-region : local.aws_region,
+          awslogs-group : aws_cloudwatch_log_group.api_server.name,
+          awslogs-stream-prefix : "ecs",
         },
       },
     },

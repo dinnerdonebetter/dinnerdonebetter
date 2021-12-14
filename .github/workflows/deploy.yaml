@@ -99,9 +99,11 @@ jobs:
         id: fmt
         run: terraform fmt -check
 
-      - name: copy config file
+      - name: copy config files
         working-directory: environments/dev
-        run: cp config_files/service-config.json terraform/service-config.json
+        run: |
+        cp config_files/service-config.json terraform/service-config.json
+        cp config_files/grafana/agent/config.yaml grafana_agent_config.yaml
 
       - name: Terraform Validate
         working-directory: environments/dev/terraform
