@@ -41,8 +41,8 @@ func (c *Config) Initialize(l logging.Logger) (traceProvidier trace.TracerProvid
 	case Jaeger:
 		logger.Debug("setting up jaeger")
 		return jaeger.SetupJaeger(c.Jaeger)
-	case "":
-		return nil, nil, nil
+	case XRay:
+		return trace.NewNoopTracerProvider(), func() {}, nil
 	default:
 		logger.Debug("invalid tracing config")
 		return nil, nil, fmt.Errorf("invalid tracing provider: %q", p)

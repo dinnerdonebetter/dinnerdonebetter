@@ -43,10 +43,10 @@
 		"tracing": {
 			"jaeger": {
 				"collector_endpoint": "http://tracing-server:14268/api/traces",
-				"service_name": "prixfixe_service"
+				"service_name": "prixfixe_service",
+				"spanCollectionProbability": 1
 			},
-			"provider": "jaeger",
-			"spanCollectionProbability": 1
+			"provider": "jaeger"
 		},
 		"metrics": {
 			"provider": "prometheus",
@@ -152,7 +152,7 @@
 		"auth": {
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "Kt1eKzYM+YYL2SWg/jpxQWanoV31b8YZnZ7ZkwFLZyo=",
+				"localModeKey": "Bi6tdZ4aC6kpeojULJXmHc57YBMCkHq3o412+X7mnTg=",
 				"lifetime": 60000000000
 			},
 			"cookies": {

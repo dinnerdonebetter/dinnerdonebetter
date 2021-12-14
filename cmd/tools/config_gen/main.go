@@ -209,7 +209,9 @@ func devEnvironmentConfig(ctx context.Context, filePath string) error {
 				Provider:                         "prometheus",
 				RuntimeMetricsCollectionInterval: time.Second,
 			},
-			Tracing: noopTracingConfig,
+			Tracing: tracingcfg.Config{
+				Provider: tracingcfg.XRay,
+			},
 		},
 		Uploads: uploads.Config{
 			Debug: true,
