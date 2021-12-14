@@ -99,9 +99,13 @@ jobs:
         id: fmt
         run: terraform fmt -check
 
-      - name: copy config files
+      - name: copy server config file
         working-directory: environments/dev
         run: cp config_files/service-config.json terraform/service-config.json
+
+      - name: copy opentelemetry config file
+        working-directory: environments/dev
+        run: cp config_files/opentelemetry/config.yaml terraform/opentelemetry-config.yaml
 
       - name: Terraform Validate
         working-directory: environments/dev/terraform

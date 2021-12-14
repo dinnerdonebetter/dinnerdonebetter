@@ -1,0 +1,18 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: localhost:55680
+      http:
+        endpoint: localhost:55681
+processors:
+  batch:
+    timeout: 60s
+exporters:
+  awsemf:
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [awsemf]

@@ -106,13 +106,6 @@ resource "aws_ecs_task_definition" "api_server" {
       image : "amazon/aws-otel-collector",
       command : ["--config=/etc/ecs/container-insights/otel-task-metrics-config.yaml"],
       essential : true,
-      mountPoints : [
-        {
-          sourceVolume  = "./fart.txt",
-          containerPath = "/etc/fart.txt",
-          readOnly      = true,
-        },
-      ]
       logConfiguration : {
         "logDriver" : "awslogs",
         "options" : {
@@ -131,6 +124,12 @@ resource "aws_ecs_task_definition" "api_server" {
           containerPort : 8000,
           protocol : "tcp",
         },
+      ],
+      secrets : [
+        {
+          "name" : "AOT_CONFIG_CONTENT",
+          "valueFrom" : aws_ssm_parameter.opentelemetry_collector_config.arn,
+        }
       ],
       essential : true,
       logConfiguration : {
