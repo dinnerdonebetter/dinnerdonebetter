@@ -92,11 +92,6 @@ resource "aws_cloudwatch_log_group" "api_server" {
   retention_in_days = local.log_retention_period_in_days
 }
 
-resource "aws_cloudwatch_log_group" "api_server_firelens_logs" {
-  name              = "/ecs/api_server/firelens"
-  retention_in_days = local.log_retention_period_in_days
-}
-
 resource "aws_ecs_task_definition" "api_server" {
   family = "api_server"
 
