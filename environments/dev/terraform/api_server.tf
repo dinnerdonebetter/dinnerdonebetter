@@ -110,7 +110,7 @@ resource "aws_ecs_task_definition" "api_server" {
         {
           sourceVolume  = "./fart.txt",
           containerPath = "/etc/fart.txt",
-          readOnly      = "true",
+          readOnly      = true,
         },
       ]
       logConfiguration : {
