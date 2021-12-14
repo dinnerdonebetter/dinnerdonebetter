@@ -7,6 +7,8 @@ import (
 	"testing"
 	"time"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -54,7 +56,7 @@ func TestUsingJSON(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		c, err := NewClient(mustParseURL(exampleURI), UsingJSON())
+		c, err := NewClient(mustParseURL(exampleURI), trace.NewNoopTracerProvider(), UsingJSON())
 		assert.NoError(t, err)
 		assert.NotNil(t, c)
 
@@ -68,7 +70,7 @@ func TestUsingXML(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		c, err := NewClient(mustParseURL(exampleURI), UsingXML())
+		c, err := NewClient(mustParseURL(exampleURI), trace.NewNoopTracerProvider(), UsingXML())
 		assert.NoError(t, err)
 		assert.NotNil(t, c)
 
@@ -85,7 +87,7 @@ func TestUsingLogger(T *testing.T) {
 		expectedURL, err := url.Parse("https://prixfixe.verygoodsoftwarenotvirus.ru")
 		require.NoError(t, err)
 
-		c, err := NewClient(expectedURL, UsingLogger(logging.NewNoopLogger()))
+		c, err := NewClient(expectedURL, trace.NewNoopTracerProvider(), UsingLogger(logging.NewNoopLogger()))
 		assert.NotNil(t, c)
 		assert.NoError(t, err)
 	})
@@ -97,7 +99,7 @@ func TestUsingDebug(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		c, err := NewClient(mustParseURL(exampleURI), UsingDebug(true))
+		c, err := NewClient(mustParseURL(exampleURI), trace.NewNoopTracerProvider(), UsingDebug(true))
 		assert.NoError(t, err)
 		assert.NotNil(t, c)
 
@@ -113,7 +115,7 @@ func TestUsingTimeout(T *testing.T) {
 
 		expected := time.Minute
 
-		c, err := NewClient(mustParseURL(exampleURI), UsingTimeout(expected))
+		c, err := NewClient(mustParseURL(exampleURI), trace.NewNoopTracerProvider(), UsingTimeout(expected))
 		assert.NoError(t, err)
 		assert.NotNil(t, c)
 
@@ -123,7 +125,7 @@ func TestUsingTimeout(T *testing.T) {
 	T.Run("with fallback to default timeout", func(t *testing.T) {
 		t.Parallel()
 
-		c, err := NewClient(mustParseURL(exampleURI), UsingTimeout(0))
+		c, err := NewClient(mustParseURL(exampleURI), trace.NewNoopTracerProvider(), UsingTimeout(0))
 
 		assert.NoError(t, err)
 		assert.NotNil(t, c)
@@ -140,7 +142,7 @@ func TestUsingCookie(T *testing.T) {
 
 		exampleInput := &http.Cookie{Name: t.Name()}
 
-		c, err := NewClient(mustParseURL(exampleURI), UsingCookie(exampleInput))
+		c, err := NewClient(mustParseURL(exampleURI), trace.NewNoopTracerProvider(), UsingCookie(exampleInput))
 		assert.NoError(t, err)
 		assert.NotNil(t, c)
 
@@ -150,7 +152,7 @@ func TestUsingCookie(T *testing.T) {
 	T.Run("with nil cooki9e", func(t *testing.T) {
 		t.Parallel()
 
-		c, err := NewClient(mustParseURL(exampleURI), UsingCookie(nil))
+		c, err := NewClient(mustParseURL(exampleURI), trace.NewNoopTracerProvider(), UsingCookie(nil))
 		assert.Error(t, err)
 		assert.Nil(t, c)
 	})
@@ -162,7 +164,7 @@ func TestUsingPASETO(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		c, err := NewClient(mustParseURL(exampleURI), UsingPASETO(t.Name(), []byte(t.Name())))
+		c, err := NewClient(mustParseURL(exampleURI), trace.NewNoopTracerProvider(), UsingPASETO(t.Name(), []byte(t.Name())))
 		assert.NoError(t, err)
 		assert.NotNil(t, c)
 

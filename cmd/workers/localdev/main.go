@@ -64,7 +64,7 @@ func main() {
 
 	cfg.Observability.Tracing.Jaeger.ServiceName = "workers"
 
-	flushFunc, initializeTracerErr := cfg.Observability.Tracing.Initialize(logger)
+	tracerProvider, flushFunc, initializeTracerErr := cfg.Observability.Tracing.Initialize(logger)
 	if initializeTracerErr != nil {
 		logger.Error(initializeTracerErr, "initializing tracer")
 	}
@@ -86,19 +86,19 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database)
+	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, tracerProvider)
 	if err != nil {
 		logger.Fatal(err)
 	}
 
-	consumerProvider := redis.ProvideRedisConsumerProvider(logger, string(cfg.Events.RedisConfig.QueueAddress))
+	consumerProvider := redis.ProvideRedisConsumerProvider(logger, tracerProvider, string(cfg.Events.RedisConfig.QueueAddress))
 
-	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, &cfg.Events)
+	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
 	if err != nil {
 		logger.Fatal(err)
 	}
 
-	indexManagerProvider, err := elasticsearch.NewIndexManagerProvider(ctx, logger, &cfg.Search)
+	indexManagerProvider, err := elasticsearch.NewIndexManagerProvider(ctx, logger, &cfg.Search, tracerProvider)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -109,6 +109,7 @@ func main() {
 		logger,
 		emailer,
 		cdp,
+		tracerProvider,
 	)
 	postWritesConsumer, err := consumerProvider.ProvideConsumer(ctx, dataChangesTopicName, postWritesWorker.HandleMessage)
 	if err != nil {
@@ -132,6 +133,7 @@ func main() {
 		indexManagerProvider,
 		emailer,
 		cdp,
+		tracerProvider,
 	)
 	if err != nil {
 		logger.Fatal(err)
@@ -159,6 +161,7 @@ func main() {
 		indexManagerProvider,
 		emailer,
 		cdp,
+		tracerProvider,
 	)
 	if err != nil {
 		logger.Fatal(err)
@@ -185,6 +188,7 @@ func main() {
 		postArchivesPublisher,
 		indexManagerProvider,
 		cdp,
+		tracerProvider,
 	)
 	if err != nil {
 		logger.Fatal(err)
@@ -204,6 +208,7 @@ func main() {
 		postUpdatesPublisher,
 		emailer,
 		cdp,
+		tracerProvider,
 	)
 
 	choresConsumer, err := consumerProvider.ProvideConsumer(ctx, choresTopicName, choresWorker.HandleMessage)

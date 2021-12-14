@@ -195,15 +195,6 @@ wipe_local_elasticsearch:
 	@echo "wiping elasticsearch"
 	@docker run --interactive --tty --network=host curlimages/curl:7.79.1 curl -X DELETE "http://localhost:9200/*"
 
-.PHONY: deploy_base_infra
-deploy_base_infra:
-	docker-compose \
-	--file $(ENVIRONMENTS_DIR)/local/docker-compose-base.yaml up \
-	--quiet-pull \
-	--no-recreate \
-	--always-recreate-deps \
-	--detach
-
 
 .PHONY: lintegration_tests # this is just a handy lil' helper I use sometimes
 lintegration_tests: lint clear integration-tests
@@ -229,13 +220,12 @@ integration_tests_postgres:
 ## Running
 
 .PHONY: dev
-dev: $(ARTIFACTS_DIR) deploy_base_infra
-	docker-compose --file $(ENVIRONMENTS_DIR)/local/docker-compose-services.yaml up \
+dev: $(ARTIFACTS_DIR)
+	docker-compose \
+	--file $(ENVIRONMENTS_DIR)/local/docker-compose.yaml up \
 	--quiet-pull \
-	--build \
-	--force-recreate \
-	--renew-anon-volumes \
-	--detach
+	--no-recreate \
+	--always-recreate-deps
 
 .PHONY: initialize_database
 initialize_database:

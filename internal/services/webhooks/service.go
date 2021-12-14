@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -43,6 +45,7 @@ func ProvideWebhooksService(
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
 	publisherProvider publishers.PublisherProvider,
+	tracerProvider trace.TracerProvider,
 ) (types.WebhookDataService, error) {
 	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
 	if err != nil {
@@ -62,7 +65,7 @@ func ProvideWebhooksService(
 		preArchivesPublisher:      preArchivesPublisher,
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		webhookIDFetcher:          routeParamManager.BuildRouteParamStringIDFetcher(WebhookIDURIParamKey),
-		tracer:                    tracing.NewTracer(serviceName),
+		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 	}
 
 	return s, nil

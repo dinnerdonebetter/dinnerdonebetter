@@ -6,6 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -58,7 +60,7 @@ func buildTestHelper(t *testing.T) *mealPlansServiceHTTPRoutesTestHelper {
 		},
 	}
 
-	helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+	helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 	helper.service.sessionContextDataFetcher = func(*http.Request) (*types.SessionContextData, error) {
 		return sessionCtxData, nil
 	}

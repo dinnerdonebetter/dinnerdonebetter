@@ -7,6 +7,8 @@ import (
 	"net/url"
 	"path"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
@@ -30,7 +32,7 @@ type Builder struct {
 }
 
 // NewBuilder builds a new API client for us.
-func NewBuilder(u *url.URL, logger logging.Logger, encoder encoding.ClientEncoder) (*Builder, error) {
+func NewBuilder(u *url.URL, logger logging.Logger, tracerProvider trace.TracerProvider, encoder encoding.ClientEncoder) (*Builder, error) {
 	l := logging.EnsureLogger(logger)
 
 	if u == nil {
@@ -46,7 +48,7 @@ func NewBuilder(u *url.URL, logger logging.Logger, encoder encoding.ClientEncode
 		logger:   l,
 		encoder:  encoder,
 		panicker: panicking.NewProductionPanicker(),
-		tracer:   tracing.NewTracer(clientName),
+		tracer:   tracing.NewTracer(tracerProvider.Tracer(clientName)),
 	}
 
 	return c, nil

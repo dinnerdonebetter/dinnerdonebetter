@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
@@ -45,7 +46,7 @@ func TestRecipeStepsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeRecipeStepDatabaseCreationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -74,7 +75,7 @@ func TestRecipeStepsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
@@ -90,7 +91,7 @@ func TestRecipeStepsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := &types.RecipeStepCreationRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -109,7 +110,7 @@ func TestRecipeStepsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeRecipeStepDatabaseCreationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -130,7 +131,7 @@ func TestRecipeStepsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeRecipeStepDatabaseCreationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -398,7 +399,7 @@ func TestRecipeStepsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeRecipeStepUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -436,7 +437,7 @@ func TestRecipeStepsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := &types.RecipeStepUpdateRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -466,7 +467,7 @@ func TestRecipeStepsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
@@ -482,7 +483,7 @@ func TestRecipeStepsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeRecipeStepUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -512,7 +513,7 @@ func TestRecipeStepsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeRecipeStepUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -542,7 +543,7 @@ func TestRecipeStepsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeRecipeStepUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)

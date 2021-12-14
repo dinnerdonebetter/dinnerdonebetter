@@ -4,6 +4,8 @@ import (
 	"context"
 	"strings"
 
+	"go.opentelemetry.io/otel/trace"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
 	"github.com/prixfixeco/api_server/internal/customerdata"
@@ -37,7 +39,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 func (cfg *Config) ProvideCollector(logger logging.Logger) (customerdata.Collector, error) {
 	switch strings.ToLower(strings.TrimSpace(cfg.Provider)) {
 	case ProviderSegment:
-		return segment.NewSegmentCustomerDataCollector(logger, cfg.APIToken)
+		return segment.NewSegmentCustomerDataCollector(logger, trace.NewNoopTracerProvider(), cfg.APIToken)
 	default:
 		return customerdata.NewNoopCollector()
 	}

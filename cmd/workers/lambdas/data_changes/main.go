@@ -49,7 +49,17 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	dataChangesWorker := workers.ProvideDataChangesWorker(logger, emailer, cdp)
+	tracerProvider, flushFunc, initializeTracerErr := cfg.Observability.Tracing.Initialize(logger)
+	if initializeTracerErr != nil {
+		logger.Error(initializeTracerErr, "initializing tracer")
+	}
+
+	// if tracing is disabled, this will be nil
+	if flushFunc != nil {
+		defer flushFunc()
+	}
+
+	dataChangesWorker := workers.ProvideDataChangesWorker(logger, emailer, cdp, tracerProvider)
 	if err != nil {
 		logger.Fatal(err)
 	}

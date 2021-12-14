@@ -9,6 +9,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
@@ -23,7 +24,7 @@ func buildTestService() *service {
 	return &service{
 		logger:         logging.NewNoopLogger(),
 		encoderDecoder: mockencoding.NewMockEncoderDecoder(),
-		tracer:         tracing.NewTracer("test"),
+		tracer:         tracing.NewTracerForTest("test"),
 		connections:    map[string][]websocketConnection{},
 		authConfig: &authservice.Config{
 			Cookies: authservice.CookieConfig{
@@ -43,7 +44,7 @@ func TestProvideService(T *testing.T) {
 		authCfg := &authservice.Config{}
 		cfg := Config{}
 		logger := logging.NewNoopLogger()
-		encoder := encoding.ProvideServerEncoderDecoder(logger, encoding.ContentTypeJSON)
+		encoder := encoding.ProvideServerEncoderDecoder(logger, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		consumer := &mockconsumers.Consumer{}
 		consumer.On("Consume", chan bool(nil), chan error(nil))
@@ -63,6 +64,7 @@ func TestProvideService(T *testing.T) {
 			logger,
 			encoder,
 			consumerProvider,
+			trace.NewNoopTracerProvider(),
 		)
 
 		require.NoError(t, err)
@@ -78,7 +80,7 @@ func TestProvideService(T *testing.T) {
 		authCfg := &authservice.Config{}
 		cfg := Config{}
 		logger := logging.NewNoopLogger()
-		encoder := encoding.ProvideServerEncoderDecoder(logger, encoding.ContentTypeJSON)
+		encoder := encoding.ProvideServerEncoderDecoder(logger, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		consumerProvider := &mockconsumers.ConsumerProvider{}
 		consumerProvider.On(
@@ -95,6 +97,7 @@ func TestProvideService(T *testing.T) {
 			logger,
 			encoder,
 			consumerProvider,
+			trace.NewNoopTracerProvider(),
 		)
 
 		require.Error(t, err)
@@ -108,7 +111,7 @@ func Test_buildWebsocketErrorFunc(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		encoder := encoding.ProvideServerEncoderDecoder(nil, encoding.ContentTypeJSON)
+		encoder := encoding.ProvideServerEncoderDecoder(nil, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		res := httptest.NewRecorder()
 		req := httptest.NewRequest(http.MethodGet, "/", nil)

@@ -42,7 +42,7 @@
 	"observability": {
 		"tracing": {
 			"jaeger": {
-				"collector_endpoint": "http://localhost:14268/api/traces",
+				"collector_endpoint": "http://tracing-server:14268/api/traces",
 				"service_name": "prixfixe_service"
 			},
 			"provider": "jaeger",
@@ -152,7 +152,7 @@
 		"auth": {
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "kIywZqq/30Xiqb0A/SX8YFKTmAan03AQ8Q4RymW6m4Y=",
+				"localModeKey": "Kt1eKzYM+YYL2SWg/jpxQWanoV31b8YZnZ7ZkwFLZyo=",
 				"lifetime": 60000000000
 			},
 			"cookies": {

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/net/http2"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
@@ -89,12 +90,13 @@ func ProvideHTTPServer(
 	logger logging.Logger,
 	encoder encoding.ServerEncoderDecoder,
 	router routing.Router,
+	tracerProvider trace.TracerProvider,
 ) (*HTTPServer, error) {
 	srv := &HTTPServer{
 		config: serverSettings,
 
 		// infra things,
-		tracer:     tracing.NewTracer(loggerName),
+		tracer:     tracing.NewTracer(tracerProvider.Tracer(loggerName)),
 		encoder:    encoder,
 		logger:     logging.EnsureLogger(logger).WithName(loggerName),
 		panicker:   panicking.NewProductionPanicker(),

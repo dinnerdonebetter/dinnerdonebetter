@@ -9,6 +9,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/internal/encoding"
@@ -100,7 +101,7 @@ func buildTestHelper(t *testing.T) *authServiceHTTPRoutesTestHelper {
 
 	helper.setContextFetcher(t)
 
-	helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+	helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 	var err error
 

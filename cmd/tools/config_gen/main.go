@@ -10,26 +10,26 @@ import (
 	"strings"
 	"time"
 
+	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database"
-	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
-	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
-	mealsservice "github.com/prixfixeco/api_server/internal/services/meals"
-
-	"github.com/prixfixeco/api_server/internal/config"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
+	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	tracingcfg "github.com/prixfixeco/api_server/internal/observability/tracing/config"
+	jaeger "github.com/prixfixeco/api_server/internal/observability/tracing/jaeger"
 	"github.com/prixfixeco/api_server/internal/search"
 	"github.com/prixfixeco/api_server/internal/server"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
+	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
 	householdsservice "github.com/prixfixeco/api_server/internal/services/households"
 	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
 	mealplanoptionvotesservice "github.com/prixfixeco/api_server/internal/services/mealplanoptionvotes"
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
+	mealsservice "github.com/prixfixeco/api_server/internal/services/meals"
 	recipesservice "github.com/prixfixeco/api_server/internal/services/recipes"
 	recipestepingredientsservice "github.com/prixfixeco/api_server/internal/services/recipestepingredients"
 	recipestepinstrumentsservice "github.com/prixfixeco/api_server/internal/services/recipestepinstruments"
@@ -78,9 +78,7 @@ const (
 var (
 	examplePASETOKey = generatePASETOKey()
 
-	noopTracingConfig = tracing.Config{
-		SpanCollectionProbability: 0,
-	}
+	noopTracingConfig = tracingcfg.Config{}
 
 	localServer = server.Config{
 		Debug:           true,
@@ -97,12 +95,12 @@ var (
 		SecureOnly: true,
 	}
 
-	localTracingConfig = tracing.Config{
-		Provider:                  "jaeger",
-		SpanCollectionProbability: 1,
-		Jaeger: &tracing.JaegerConfig{
-			CollectorEndpoint: "http://localhost:14268/api/traces",
-			ServiceName:       "prixfixe_service",
+	localTracingConfig = tracingcfg.Config{
+		Provider: "jaeger",
+		Jaeger: &jaeger.Config{
+			SpanCollectionProbability: 1,
+			CollectorEndpoint:         "http://tracing-server:14268/api/traces",
+			ServiceName:               "prixfixe_service",
 		},
 	}
 

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/messagequeue/consumers"
@@ -51,6 +52,7 @@ func ProvideService(
 	logger logging.Logger,
 	encoder encoding.ServerEncoderDecoder,
 	consumerProvider consumers.ConsumerProvider,
+	tracerProvider trace.TracerProvider,
 ) (types.WebsocketDataService, error) {
 	upgrader := websocket.Upgrader{
 		HandshakeTimeout: 10 * time.Second,
@@ -66,7 +68,7 @@ func ProvideService(
 		websocketDeadline:           5 * time.Second,
 		pollDuration:                10 * time.Second,
 		authConfig:                  authCfg,
-		tracer:                      tracing.NewTracer(serviceName),
+		tracer:                      tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 	}
 
 	svc.logger.WithValue("topic_name", cfg.DataChangesTopicName).Info("fetching data change thing")

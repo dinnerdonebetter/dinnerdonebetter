@@ -92,10 +92,30 @@ resource "aws_cloudwatch_log_group" "api_server" {
   retention_in_days = local.log_retention_period_in_days
 }
 
+resource "aws_cloudwatch_log_group" "api_server" {
+  name              = "/ecs/ecs-aws-otel-sidecar-collector"
+  retention_in_days = local.log_retention_period_in_days
+}
+
 resource "aws_ecs_task_definition" "api_server" {
   family = "api_server"
 
   container_definitions = jsonencode([
+    {
+      name : "aws-otel-collector",
+      image : "amazon/aws-otel-collector",
+      command :[ "--config=/etc/ecs/container-insights/otel-task-metrics-config.yaml" ],
+      essential : true,
+      logConfiguration : {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": aws_cloudwatch_log_group.api_server.name,
+          "awslogs-region": local.aws_region,
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "True"
+        }
+      }
+    },
     {
       name  = "api_server",
       image = format("%s:latest", aws_ecr_repository.api_server.repository_url),
@@ -226,6 +246,11 @@ resource "aws_iam_role" "api_task_role" {
     name   = "allow_decrypt_ssm_parameters"
     policy = data.aws_iam_policy_document.allow_to_decrypt_parameters.json
   }
+
+  inline_policy {
+    name   = "allow_opentelemetry_collection"
+    policy = data.aws_iam_policy_document.opentelemetry_collector_policy.json
+  }
 }
 
 resource "aws_acm_certificate" "api_dot" {
@@ -313,4 +338,29 @@ resource "cloudflare_record" "api_dot_prixfixe_dot_dev_ssl_validation" {
   proxied         = false
   allow_overwrite = true
   ttl             = 60
+}
+
+data "aws_iam_policy_document" "opentelemetry_collector_policy" {
+  version = "2012-10-17"
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "logs:PutLogEvents",
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:DescribeLogStreams",
+      "logs:DescribeLogGroups",
+      "xray:PutTraceSegments",
+      "xray:PutTelemetryRecords",
+      "xray:GetSamplingRules",
+      "xray:GetSamplingTargets",
+      "xray:GetSamplingStatisticSummaries",
+      "cloudwatch:PutMetricData",
+      "ec2:DescribeVolumes",
+      "ec2:DescribeTags",
+      "ssm:GetParameters"
+    ]
+    resources = [ "*" ]
+  }
 }

@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/email"
@@ -41,6 +43,7 @@ func ProvideWritesWorker(
 	searchIndexProvider search.IndexManagerProvider,
 	emailSender email.Emailer,
 	customerDataCollector customerdata.Collector,
+	tracerProvider trace.TracerProvider,
 ) (*WritesWorker, error) {
 	const name = "pre_writes"
 
@@ -71,8 +74,8 @@ func ProvideWritesWorker(
 
 	w := &WritesWorker{
 		logger:                                  logging.EnsureLogger(logger).WithName(name).WithValue("topic", name),
-		tracer:                                  tracing.NewTracer(name),
-		encoder:                                 encoding.ProvideClientEncoder(logger, encoding.ContentTypeJSON),
+		tracer:                                  tracing.NewTracer(tracerProvider.Tracer(name)),
+		encoder:                                 encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
 		dataChangesPublisher:                    postWritesPublisher,
 		dataManager:                             dataManager,
 		validInstrumentsIndexManager:            validInstrumentsIndexManager,

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/prixfixeco/api_server/internal/messagequeue/consumers"
 	redisconsumer "github.com/prixfixeco/api_server/internal/messagequeue/consumers/redis"
 	sqsconsumer "github.com/prixfixeco/api_server/internal/messagequeue/consumers/sqs"
@@ -52,24 +54,24 @@ func cleanString(s string) string {
 }
 
 // ProvideConsumerProvider provides a PublisherProvider.
-func ProvideConsumerProvider(logger logging.Logger, c *Config) (consumers.ConsumerProvider, error) {
+func ProvideConsumerProvider(logger logging.Logger, tracerProvider trace.TracerProvider, c *Config) (consumers.ConsumerProvider, error) {
 	switch cleanString(string(c.Provider)) {
 	case ProviderRedis:
-		return redisconsumer.ProvideRedisConsumerProvider(logger, string(c.RedisConfig.QueueAddress)), nil
+		return redisconsumer.ProvideRedisConsumerProvider(logger, tracerProvider, string(c.RedisConfig.QueueAddress)), nil
 	case ProviderSQS:
-		return sqsconsumer.ProvideSQSConsumerProvider(logger), nil
+		return sqsconsumer.ProvideSQSConsumerProvider(logger, tracerProvider), nil
 	default:
 		return nil, fmt.Errorf("invalid provider: %q", c.Provider)
 	}
 }
 
 // ProvidePublisherProvider provides a PublisherProvider.
-func ProvidePublisherProvider(logger logging.Logger, c *Config) (publishers.PublisherProvider, error) {
+func ProvidePublisherProvider(logger logging.Logger, tracerProvider trace.TracerProvider, c *Config) (publishers.PublisherProvider, error) {
 	switch cleanString(string(c.Provider)) {
 	case ProviderRedis:
-		return redispublisher.ProvideRedisPublisherProvider(logger, string(c.RedisConfig.QueueAddress)), nil
+		return redispublisher.ProvideRedisPublisherProvider(logger, tracerProvider, string(c.RedisConfig.QueueAddress)), nil
 	case ProviderSQS:
-		return sqspublisher.ProvideSQSPublisherProvider(logger, string(c.SQSConfig.QueueAddress)), nil
+		return sqspublisher.ProvideSQSPublisherProvider(logger, tracerProvider, string(c.SQSConfig.QueueAddress)), nil
 	default:
 		return nil, fmt.Errorf("invalid publisher provider: %q", c.Provider)
 	}

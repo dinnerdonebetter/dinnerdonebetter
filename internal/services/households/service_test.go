@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"testing"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
@@ -27,7 +29,7 @@ func buildTestService() *service {
 		householdMembershipDataManager: &mocktypes.HouseholdUserMembershipDataManager{},
 		householdIDFetcher:             func(req *http.Request) string { return "" },
 		encoderDecoder:                 mockencoding.NewMockEncoderDecoder(),
-		tracer:                         tracing.NewTracer("test"),
+		tracer:                         tracing.NewTracerForTest("test"),
 	}
 }
 
@@ -69,6 +71,7 @@ func TestProvideHouseholdsService(T *testing.T) {
 			rpm,
 			pp,
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.NotNil(t, s)
@@ -103,6 +106,7 @@ func TestProvideHouseholdsService(T *testing.T) {
 			rpm,
 			pp,
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.Nil(t, s)

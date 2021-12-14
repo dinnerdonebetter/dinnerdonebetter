@@ -7,6 +7,8 @@ import (
 	"net/url"
 	"sync"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/pkg/client/httpclient"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -64,7 +66,7 @@ func main() {
 		logger.Fatal(fmt.Errorf("getting cookie: %w", cookieErr))
 	}
 
-	client, err := httpclient.NewClient(parsedURI, httpclient.UsingLogger(logger), httpclient.UsingCookie(cookie))
+	client, err := httpclient.NewClient(parsedURI, trace.NewNoopTracerProvider(), httpclient.UsingLogger(logger), httpclient.UsingCookie(cookie))
 	if err != nil {
 		logger.Fatal(fmt.Errorf("initializing client: %w", err))
 	}

@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"testing"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
@@ -27,7 +29,7 @@ func buildTestService() *service {
 		validIngredientIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:             mockencoding.NewMockEncoderDecoder(),
 		search:                     &mocksearch.IndexManager{},
-		tracer:                     tracing.NewTracer("test"),
+		tracer:                     tracing.NewTracerForTest("test"),
 	}
 }
 
@@ -77,6 +79,7 @@ func TestProvideValidIngredientsService(T *testing.T) {
 			mockIndexManagerProvider,
 			rpm,
 			pp,
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.NotNil(t, s)
@@ -120,6 +123,7 @@ func TestProvideValidIngredientsService(T *testing.T) {
 			mockIndexManagerProvider,
 			nil,
 			pp,
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.Nil(t, s)
@@ -164,6 +168,7 @@ func TestProvideValidIngredientsService(T *testing.T) {
 			mockIndexManagerProvider,
 			nil,
 			pp,
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.Nil(t, s)
@@ -209,6 +214,7 @@ func TestProvideValidIngredientsService(T *testing.T) {
 			mockIndexManagerProvider,
 			nil,
 			pp,
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.Nil(t, s)
@@ -248,6 +254,7 @@ func TestProvideValidIngredientsService(T *testing.T) {
 			mockIndexManagerProvider,
 			mockrouting.NewRouteParamManager(),
 			nil,
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.Nil(t, s)

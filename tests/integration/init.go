@@ -10,6 +10,8 @@ import (
 	"strings"
 	"time"
 
+	"go.opentelemetry.io/otel/trace"
+
 	_ "github.com/lib/pq"
 	"github.com/segmentio/ksuid"
 
@@ -68,14 +70,14 @@ func init() {
 		MaxPingAttempts:   50,
 	}
 
-	dbm, err := postgres.ProvideDatabaseClient(ctx, logger, cfg)
+	dbm, err := postgres.ProvideDatabaseClient(ctx, logger, cfg, trace.NewNoopTracerProvider())
 	if err != nil {
 		panic(err)
 	}
 
 	dbmanager = dbm
 
-	hasher := authentication.ProvideArgon2Authenticator(logger)
+	hasher := authentication.ProvideArgon2Authenticator(logger, trace.NewNoopTracerProvider())
 	actuallyHashedPass, err := hasher.HashPassword(ctx, premadeAdminUser.HashedPassword)
 	if err != nil {
 		panic(err)

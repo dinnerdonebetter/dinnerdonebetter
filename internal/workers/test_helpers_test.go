@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -71,6 +73,7 @@ func newTestWritesWorker(t *testing.T) *WritesWorker {
 		indexManagerProvider,
 		&email.MockEmailer{},
 		&customerdata.MockCollector{},
+		trace.NewNoopTracerProvider(),
 	)
 	require.NotNil(t, worker)
 	require.NoError(t, err)
@@ -132,6 +135,7 @@ func newTestUpdatesWorker(t *testing.T) *UpdatesWorker {
 		indexManagerProvider,
 		&email.MockEmailer{},
 		&customerdata.MockCollector{},
+		trace.NewNoopTracerProvider(),
 	)
 	require.NotNil(t, worker)
 	require.NoError(t, err)
@@ -148,6 +152,7 @@ func newTestChoresWorker(t *testing.T) *ChoresWorker {
 		&mockpublishers.Publisher{},
 		&email.MockEmailer{},
 		&customerdata.MockCollector{},
+		trace.NewNoopTracerProvider(),
 	)
 	assert.NotNil(t, worker)
 
@@ -207,6 +212,7 @@ func newTestArchivesWorker(t *testing.T) *ArchivesWorker {
 		postArchivesPublisher,
 		indexManagerProvider,
 		&customerdata.MockCollector{},
+		trace.NewNoopTracerProvider(),
 	)
 	require.NotNil(t, worker)
 	require.NoError(t, err)

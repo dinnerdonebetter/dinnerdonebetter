@@ -62,7 +62,7 @@ func main() {
 		}
 	}
 
-	flushFunc, initializeTracerErr := cfg.Observability.Tracing.Initialize(logger)
+	tracerProvider, flushFunc, initializeTracerErr := cfg.Observability.Tracing.Initialize(logger)
 	if initializeTracerErr != nil {
 		logger.Error(initializeTracerErr, "initializing tracer")
 	}
@@ -77,7 +77,7 @@ func main() {
 	ctx, initSpan := tracing.StartSpan(ctx)
 
 	// build our server struct.
-	srv, err := server.Build(ctx, logger, cfg)
+	srv, err := server.Build(ctx, logger, cfg, tracerProvider)
 	if err != nil {
 		logger.Fatal(fmt.Errorf("initializing HTTP server: %w", err))
 	}

@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
@@ -35,7 +36,7 @@ func Test_sqsPublisher_Publish(T *testing.T) {
 
 		logger := logging.NewZerologLogger()
 
-		provider := ProvideSQSPublisherProvider(logger, t.Name())
+		provider := ProvideSQSPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
 		require.NotNil(t, provider)
 
 		a, err := provider.ProviderPublisher(t.Name())
@@ -73,7 +74,7 @@ func Test_sqsPublisher_Publish(T *testing.T) {
 
 		logger := logging.NewZerologLogger()
 
-		provider := ProvideSQSPublisherProvider(logger, t.Name())
+		provider := ProvideSQSPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
 		require.NotNil(t, provider)
 
 		a, err := provider.ProviderPublisher(t.Name())
@@ -103,7 +104,7 @@ func TestProvideSQSPublisherProvider(T *testing.T) {
 
 		logger := logging.NewZerologLogger()
 
-		actual := ProvideSQSPublisherProvider(logger, t.Name())
+		actual := ProvideSQSPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
 		assert.NotNil(t, actual)
 	})
 }
@@ -116,7 +117,7 @@ func Test_publisherProvider_ProviderPublisher(T *testing.T) {
 
 		logger := logging.NewZerologLogger()
 
-		provider := ProvideSQSPublisherProvider(logger, t.Name())
+		provider := ProvideSQSPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
 		require.NotNil(t, provider)
 
 		actual, err := provider.ProviderPublisher(t.Name())
@@ -129,7 +130,7 @@ func Test_publisherProvider_ProviderPublisher(T *testing.T) {
 
 		logger := logging.NewZerologLogger()
 
-		provider := ProvideSQSPublisherProvider(logger, t.Name())
+		provider := ProvideSQSPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
 		require.NotNil(t, provider)
 
 		actual, err := provider.ProviderPublisher(t.Name())

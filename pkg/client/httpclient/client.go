@@ -9,6 +9,8 @@ import (
 	"path"
 	"time"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/gorilla/websocket"
 	"github.com/moul/http2curl"
 
@@ -75,7 +77,7 @@ func (c *Client) RequestBuilder() *requests.Builder {
 }
 
 // NewClient builds a new API client for us.
-func NewClient(u *url.URL, options ...option) (*Client, error) {
+func NewClient(u *url.URL, tracerProvider trace.TracerProvider, options ...option) (*Client, error) {
 	l := logging.NewNoopLogger()
 
 	if u == nil {
@@ -86,15 +88,15 @@ func NewClient(u *url.URL, options ...option) (*Client, error) {
 		url:                   u,
 		logger:                l,
 		debug:                 false,
-		tracer:                tracing.NewTracer(clientName),
+		tracer:                tracing.NewTracer(tracerProvider.Tracer(clientName)),
 		panicker:              panicking.NewProductionPanicker(),
-		encoder:               encoding.ProvideClientEncoder(l, encoding.ContentTypeJSON),
+		encoder:               encoding.ProvideClientEncoder(l, tracerProvider, encoding.ContentTypeJSON),
 		authedClient:          &http.Client{Transport: tracing.BuildTracedHTTPTransport(defaultTimeout), Timeout: defaultTimeout},
 		unauthenticatedClient: &http.Client{Transport: tracing.BuildTracedHTTPTransport(defaultTimeout), Timeout: defaultTimeout},
 		websocketDialer:       websocket.DefaultDialer,
 	}
 
-	requestBuilder, err := requests.NewBuilder(c.url, c.logger, encoding.ProvideClientEncoder(l, defaultContentType))
+	requestBuilder, err := requests.NewBuilder(c.url, c.logger, tracerProvider, encoding.ProvideClientEncoder(l, tracerProvider, defaultContentType))
 	if err != nil {
 		return nil, err
 	}

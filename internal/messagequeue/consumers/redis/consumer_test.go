@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -23,7 +25,7 @@ func Test_provideRedisConsumer(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 
-		actual := provideRedisConsumer(ctx, logger, redis.NewClient(&redis.Options{}), t.Name(), nil)
+		actual := provideRedisConsumer(ctx, logger, redis.NewClient(&redis.Options{}), trace.NewNoopTracerProvider(), t.Name(), nil)
 		assert.NotNil(t, actual)
 	})
 }
@@ -53,7 +55,7 @@ func Test_redisConsumer_Consume(T *testing.T) {
 			return nil
 		}
 
-		actual := provideRedisConsumer(ctx, logger, redis.NewClient(&redis.Options{}), t.Name(), hf)
+		actual := provideRedisConsumer(ctx, logger, redis.NewClient(&redis.Options{}), trace.NewNoopTracerProvider(), t.Name(), hf)
 		require.NotNil(t, actual)
 
 		returnChan := make(chan *redis.Message)
@@ -86,7 +88,7 @@ func Test_redisConsumer_Consume(T *testing.T) {
 			return anticipatedError
 		}
 
-		actual := provideRedisConsumer(ctx, logger, redis.NewClient(&redis.Options{}), t.Name(), hf)
+		actual := provideRedisConsumer(ctx, logger, redis.NewClient(&redis.Options{}), trace.NewNoopTracerProvider(), t.Name(), hf)
 		require.NotNil(t, actual)
 
 		returnChan := make(chan *redis.Message)
@@ -116,7 +118,7 @@ func Test_redisConsumer_Consume(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 
-		actual := provideRedisConsumer(ctx, logger, redis.NewClient(&redis.Options{}), t.Name(), nil)
+		actual := provideRedisConsumer(ctx, logger, redis.NewClient(&redis.Options{}), trace.NewNoopTracerProvider(), t.Name(), nil)
 		require.NotNil(t, actual)
 
 		returnChan := make(<-chan *redis.Message)
@@ -143,7 +145,7 @@ func TestProvideRedisConsumerProvider(T *testing.T) {
 		logger := logging.NewNoopLogger()
 		exampleAddress := t.Name()
 
-		actual := ProvideRedisConsumerProvider(logger, exampleAddress)
+		actual := ProvideRedisConsumerProvider(logger, trace.NewNoopTracerProvider(), exampleAddress)
 		assert.NotNil(t, actual)
 	})
 }
@@ -157,7 +159,7 @@ func Test_consumerProvider_ProviderConsumer(T *testing.T) {
 		logger := logging.NewNoopLogger()
 		exampleAddress := t.Name()
 
-		conPro := ProvideRedisConsumerProvider(logger, exampleAddress)
+		conPro := ProvideRedisConsumerProvider(logger, trace.NewNoopTracerProvider(), exampleAddress)
 		require.NotNil(t, conPro)
 
 		ctx := context.Background()
@@ -173,7 +175,7 @@ func Test_consumerProvider_ProviderConsumer(T *testing.T) {
 		logger := logging.NewNoopLogger()
 		exampleAddress := t.Name()
 
-		conPro := ProvideRedisConsumerProvider(logger, exampleAddress)
+		conPro := ProvideRedisConsumerProvider(logger, trace.NewNoopTracerProvider(), exampleAddress)
 		require.NotNil(t, conPro)
 
 		ctx := context.Background()

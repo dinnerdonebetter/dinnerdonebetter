@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
@@ -150,7 +151,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeHouseholdCreationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -195,7 +196,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeHouseholdCreationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -216,7 +217,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
@@ -232,7 +233,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := &types.HouseholdCreationRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -251,7 +252,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeHouseholdCreationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -280,7 +281,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeHouseholdCreationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -444,7 +445,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeHouseholdUpdateInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -491,7 +492,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeHouseholdUpdateInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -512,7 +513,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
@@ -528,7 +529,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := &types.HouseholdUpdateInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -547,7 +548,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeHouseholdUpdateInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -576,7 +577,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeHouseholdUpdateInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -605,7 +606,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeHouseholdUpdateInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -643,7 +644,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeHouseholdUpdateInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -853,7 +854,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleInput := fakes.BuildFakeUserPermissionModificationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
@@ -898,7 +899,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
@@ -914,7 +915,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleInput := &types.ModifyUserPermissionsInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
@@ -934,7 +935,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleInput := fakes.BuildFakeUserPermissionModificationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
@@ -953,7 +954,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleInput := fakes.BuildFakeUserPermissionModificationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
@@ -984,7 +985,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleInput := fakes.BuildFakeUserPermissionModificationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
@@ -1033,7 +1034,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleInput := fakes.BuildFakeTransferHouseholdOwnershipInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
@@ -1063,7 +1064,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
@@ -1079,7 +1080,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleInput := &types.HouseholdOwnershipTransferInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
@@ -1099,7 +1100,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleInput := fakes.BuildFakeTransferHouseholdOwnershipInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
@@ -1118,7 +1119,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleInput := fakes.BuildFakeTransferHouseholdOwnershipInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)

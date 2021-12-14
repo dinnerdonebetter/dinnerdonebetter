@@ -43,12 +43,22 @@ func main() {
 	}
 	cfg.Database.RunMigrations = false
 
-	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database)
+	tracerProvider, flushFunc, initializeTracerErr := cfg.Observability.Tracing.Initialize(logger)
+	if initializeTracerErr != nil {
+		logger.Error(initializeTracerErr, "initializing tracer")
+	}
+
+	// if tracing is disabled, this will be nil
+	if flushFunc != nil {
+		defer flushFunc()
+	}
+
+	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, tracerProvider)
 	if err != nil {
 		logger.Fatal(err)
 	}
 
-	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, &cfg.Events)
+	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -68,7 +78,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	indexManagerProvider, err := elasticsearch.NewIndexManagerProvider(ctx, logger, &cfg.Search)
+	indexManagerProvider, err := elasticsearch.NewIndexManagerProvider(ctx, logger, &cfg.Search, tracerProvider)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -81,6 +91,7 @@ func main() {
 		indexManagerProvider,
 		emailer,
 		cdp,
+		tracerProvider,
 	)
 	if err != nil {
 		logger.Fatal(err)

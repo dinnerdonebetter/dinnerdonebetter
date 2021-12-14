@@ -85,7 +85,7 @@ func Test_buildCheckRetryFunc(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		f := buildCheckRetryFunc(tracing.NewTracer(t.Name()))
+		f := buildCheckRetryFunc(tracing.NewTracerForTest(t.Name()))
 
 		actual, err := f(ctx, &http.Response{}, nil)
 		assert.True(t, actual)
@@ -115,7 +115,7 @@ func Test_buildRetryingClient(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		actual := buildRetryingClient(http.DefaultClient, nil, tracing.NewTracer(t.Name()))
+		actual := buildRetryingClient(http.DefaultClient, nil, tracing.NewTracerForTest(t.Name()))
 		require.NotNil(t, actual)
 	})
 }

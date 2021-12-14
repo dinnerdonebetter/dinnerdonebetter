@@ -34,7 +34,6 @@ require (
 	github.com/mxschmitt/playwright-go v0.1100.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/o1egl/paseto v1.0.0
-	github.com/olivere/elastic/v7 v7.0.29
 	github.com/pquerna/otp v1.3.0
 	github.com/rs/zerolog v1.21.0
 	github.com/segmentio/ksuid v1.0.4
@@ -97,6 +96,7 @@ require (
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/nicksnyder/go-i18n/v2 v2.1.2 // indirect
 	github.com/nleeper/goment v1.4.1 // indirect
+	github.com/olivere/elastic/v7 v7.0.29 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.9.0 // indirect

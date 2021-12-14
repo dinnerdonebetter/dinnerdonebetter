@@ -8,6 +8,7 @@ import (
 	"github.com/sendgrid/rest"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -38,7 +39,7 @@ type (
 )
 
 // NewSendGridEmailer returns a new SendGrid-backed Emailer.
-func NewSendGridEmailer(apiToken string, logger logging.Logger, client *http.Client) (*Emailer, error) {
+func NewSendGridEmailer(apiToken string, logger logging.Logger, tracerProvider trace.TracerProvider, client *http.Client) (*Emailer, error) {
 	if apiToken == "" {
 		return nil, ErrEmptyAPIToken
 	}
@@ -52,7 +53,7 @@ func NewSendGridEmailer(apiToken string, logger logging.Logger, client *http.Cli
 
 	e := &Emailer{
 		logger: logging.EnsureLogger(logger).WithName(name),
-		tracer: tracing.NewTracer(name),
+		tracer: tracing.NewTracer(tracerProvider.Tracer(name)),
 		client: c,
 	}
 

@@ -12,6 +12,7 @@ import (
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/unrolled/secure"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -101,7 +102,7 @@ func buildChiMux(logger logging.Logger, _ *routing.Config) chi.Router {
 	return mux
 }
 
-func buildRouter(mux chi.Router, logger logging.Logger, cfg *routing.Config) *router {
+func buildRouter(mux chi.Router, logger logging.Logger, tracerProvider trace.TracerProvider, cfg *routing.Config) *router {
 	logger = logging.EnsureLogger(logger)
 
 	if mux == nil {
@@ -111,7 +112,7 @@ func buildRouter(mux chi.Router, logger logging.Logger, cfg *routing.Config) *ro
 
 	r := &router{
 		router: mux,
-		tracer: tracing.NewTracer("router"),
+		tracer: tracing.NewTracer(tracerProvider.Tracer("router")),
 		logger: logger,
 	}
 
@@ -132,11 +133,11 @@ func convertMiddleware(in ...routing.Middleware) []func(handler http.Handler) ht
 
 // NewRouter constructs a new router.
 func NewRouter(logger logging.Logger, cfg *routing.Config) routing.Router {
-	return buildRouter(nil, logger, cfg)
+	return buildRouter(nil, logger, trace.NewNoopTracerProvider(), cfg)
 }
 
 func (r *router) clone() *router {
-	return buildRouter(r.router, r.logger, r.cfg)
+	return buildRouter(r.router, r.logger, trace.NewNoopTracerProvider(), r.cfg)
 }
 
 // WithMiddleware returns a router with certain middleware applied.
@@ -165,7 +166,7 @@ func (r *router) LogRoutes() {
 // Route lets you apply a set of routes to a subrouter with a provided pattern.
 func (r *router) Route(pattern string, fn func(r routing.Router)) routing.Router {
 	r.router.Route(pattern, func(subrouter chi.Router) {
-		fn(buildRouter(subrouter, r.logger, r.cfg))
+		fn(buildRouter(subrouter, r.logger, trace.NewNoopTracerProvider(), r.cfg))
 	})
 
 	return r

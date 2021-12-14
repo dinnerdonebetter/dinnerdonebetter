@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/go-redis/redis/v8"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
@@ -44,13 +45,13 @@ func (r *redisPublisher) Publish(ctx context.Context, data interface{}) error {
 }
 
 // provideRedisPublisher provides a redis-backed Publisher.
-func provideRedisPublisher(logger logging.Logger, redisClient *redis.Client, topic string) *redisPublisher {
+func provideRedisPublisher(logger logging.Logger, tracerProvider trace.TracerProvider, redisClient *redis.Client, topic string) *redisPublisher {
 	return &redisPublisher{
 		publisher: redisClient,
 		topic:     topic,
-		encoder:   encoding.ProvideClientEncoder(logger, encoding.ContentTypeJSON),
+		encoder:   encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
 		logger:    logging.EnsureLogger(logger),
-		tracer:    tracing.NewTracer(fmt.Sprintf("%s_publisher", topic)),
+		tracer:    tracing.NewTracer(tracerProvider.Tracer(fmt.Sprintf("%s_publisher", topic))),
 	}
 }
 
@@ -58,11 +59,12 @@ type publisherProvider struct {
 	logger            logging.Logger
 	publisherCache    map[string]publishers.Publisher
 	redisClient       *redis.Client
+	tracerProvider    trace.TracerProvider
 	publisherCacheHat sync.RWMutex
 }
 
 // ProvideRedisPublisherProvider returns a PublisherProvider for a given address.
-func ProvideRedisPublisherProvider(logger logging.Logger, address string) publishers.PublisherProvider {
+func ProvideRedisPublisherProvider(logger logging.Logger, tracerProvider trace.TracerProvider, address string) publishers.PublisherProvider {
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     address,
 		Password: "", // no password set
@@ -73,6 +75,7 @@ func ProvideRedisPublisherProvider(logger logging.Logger, address string) publis
 		logger:         logging.EnsureLogger(logger),
 		redisClient:    redisClient,
 		publisherCache: map[string]publishers.Publisher{},
+		tracerProvider: tracerProvider,
 	}
 }
 
@@ -86,7 +89,7 @@ func (p *publisherProvider) ProviderPublisher(topic string) (publishers.Publishe
 		return cachedPub, nil
 	}
 
-	pub := provideRedisPublisher(logger, p.redisClient, topic)
+	pub := provideRedisPublisher(logger, p.tracerProvider, p.redisClient, topic)
 	p.publisherCache[topic] = pub
 
 	return pub, nil

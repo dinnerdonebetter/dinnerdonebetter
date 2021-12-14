@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/http"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -31,7 +33,7 @@ func newPASETORoundTripper(client *Client, clientID string, secretKey []byte) *p
 	}
 }
 
-var pasetoRoundTripperClient = buildRetryingClient(&http.Client{Timeout: defaultTimeout}, logging.NewNoopLogger(), tracing.NewTracer("PASETO_roundtripper"))
+var pasetoRoundTripperClient = buildRetryingClient(&http.Client{Timeout: defaultTimeout}, logging.NewNoopLogger(), tracing.NewTracer(trace.NewNoopTracerProvider().Tracer("PASETO")))
 
 // RoundTrip authorizes and authenticates the request with a PASETO.
 func (t *pasetoRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {

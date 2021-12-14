@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"go.opentelemetry.io/otel/trace"
 	"gopkg.in/segmentio/analytics-go.v3"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -29,13 +30,13 @@ type (
 )
 
 // NewSegmentCustomerDataCollector returns a new Segment-backed CustomerDataCollector.
-func NewSegmentCustomerDataCollector(logger logging.Logger, apiKey string) (*CustomerDataCollector, error) {
+func NewSegmentCustomerDataCollector(logger logging.Logger, tracerProvider trace.TracerProvider, apiKey string) (*CustomerDataCollector, error) {
 	if apiKey == "" {
 		return nil, ErrEmptyAPIToken
 	}
 
 	c := &CustomerDataCollector{
-		tracer: tracing.NewTracer(name),
+		tracer: tracing.NewTracer(tracerProvider.Tracer(name)),
 		logger: logging.EnsureLogger(logger).WithName(name),
 		client: analytics.New(apiKey),
 	}

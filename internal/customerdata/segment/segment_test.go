@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -18,7 +20,7 @@ func TestNewSegmentCustomerDataCollector(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		collector, err := NewSegmentCustomerDataCollector(logger, t.Name())
+		collector, err := NewSegmentCustomerDataCollector(logger, trace.NewNoopTracerProvider(), t.Name())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 	})
@@ -28,7 +30,7 @@ func TestNewSegmentCustomerDataCollector(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		collector, err := NewSegmentCustomerDataCollector(logger, "")
+		collector, err := NewSegmentCustomerDataCollector(logger, trace.NewNoopTracerProvider(), "")
 		require.Error(t, err)
 		require.Nil(t, collector)
 	})
@@ -42,7 +44,7 @@ func TestCustomerDataCollector_Close(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		collector, err := NewSegmentCustomerDataCollector(logger, t.Name())
+		collector, err := NewSegmentCustomerDataCollector(logger, trace.NewNoopTracerProvider(), t.Name())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 
@@ -63,7 +65,7 @@ func TestCustomerDataCollector_AddUser(T *testing.T) {
 			"test.name": t.Name(),
 		}
 
-		collector, err := NewSegmentCustomerDataCollector(logger, t.Name())
+		collector, err := NewSegmentCustomerDataCollector(logger, trace.NewNoopTracerProvider(), t.Name())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 
@@ -84,7 +86,7 @@ func TestCustomerDataCollector_EventOccurred(T *testing.T) {
 			"test.name": t.Name(),
 		}
 
-		collector, err := NewSegmentCustomerDataCollector(logger, t.Name())
+		collector, err := NewSegmentCustomerDataCollector(logger, trace.NewNoopTracerProvider(), t.Name())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 

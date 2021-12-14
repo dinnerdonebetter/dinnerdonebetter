@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/stretchr/testify/assert"
 
 	"github.com/prixfixeco/api_server/internal/customerdata"
@@ -21,6 +23,7 @@ func TestProvideDataChangesWorker(T *testing.T) {
 			logging.NewZerologLogger(),
 			&email.MockEmailer{},
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, actual)
 	})
@@ -36,6 +39,7 @@ func TestDataChangesWorker_HandleMessage(T *testing.T) {
 			logging.NewZerologLogger(),
 			&email.MockEmailer{},
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, actual)
 
@@ -50,6 +54,7 @@ func TestDataChangesWorker_HandleMessage(T *testing.T) {
 			logging.NewZerologLogger(),
 			&email.MockEmailer{},
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, actual)
 

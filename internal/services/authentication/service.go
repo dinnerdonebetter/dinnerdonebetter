@@ -6,6 +6,7 @@ import (
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/gorilla/securecookie"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/authentication"
 	"github.com/prixfixeco/api_server/internal/customerdata"
@@ -58,6 +59,7 @@ func ProvideService(
 	sessionManager *scs.SessionManager,
 	encoder encoding.ServerEncoderDecoder,
 	customerDataCollector customerdata.Collector,
+	tracerProvider trace.TracerProvider,
 ) (types.AuthService, error) {
 	hashKey := []byte(cfg.Cookies.HashKey)
 	if len(hashKey) == 0 {
@@ -75,7 +77,7 @@ func ProvideService(
 		sessionManager:             sessionManager,
 		sessionContextDataFetcher:  FetchContextFromRequest,
 		cookieManager:              securecookie.New(hashKey, []byte(cfg.Cookies.BlockKey)),
-		tracer:                     tracing.NewTracer(serviceName),
+		tracer:                     tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 		customerDataCollector:      customerDataCollector,
 	}
 

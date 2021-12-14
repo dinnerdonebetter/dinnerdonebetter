@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"testing"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
@@ -22,7 +24,7 @@ func buildTestService() *service {
 		webhookDataManager: &mocktypes.WebhookDataManager{},
 		webhookIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:     mockencoding.NewMockEncoderDecoder(),
-		tracer:             tracing.NewTracer("test"),
+		tracer:             tracing.NewTracerForTest("test"),
 	}
 }
 
@@ -54,6 +56,7 @@ func TestProvideWebhooksService(T *testing.T) {
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.NotNil(t, actual)
@@ -80,6 +83,7 @@ func TestProvideWebhooksService(T *testing.T) {
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.Nil(t, actual)
@@ -107,6 +111,7 @@ func TestProvideWebhooksService(T *testing.T) {
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.Nil(t, actual)

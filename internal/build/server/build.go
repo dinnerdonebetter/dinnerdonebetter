@@ -7,6 +7,7 @@ import (
 	"context"
 
 	"github.com/google/wire"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/authentication"
 	"github.com/prixfixeco/api_server/internal/config"
@@ -53,6 +54,7 @@ func Build(
 	ctx context.Context,
 	logger logging.Logger,
 	cfg *config.InstanceConfig,
+	tracerProvider trace.TracerProvider,
 ) (*server.HTTPServer, error) {
 	wire.Build(
 		elasticsearch.Providers,

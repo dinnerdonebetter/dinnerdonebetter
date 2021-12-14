@@ -5,6 +5,8 @@ import (
 	"errors"
 	"testing"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -66,7 +68,7 @@ func TestStandardSecretGenerator_GenerateBase32EncodedString(T *testing.T) {
 		ctx := context.Background()
 		exampleLength := 123
 
-		s := NewGenerator(nil)
+		s := NewGenerator(nil, trace.NewNoopTracerProvider())
 		value, err := s.GenerateBase32EncodedString(ctx, exampleLength)
 
 		assert.NotEmpty(t, value)
@@ -80,7 +82,7 @@ func TestStandardSecretGenerator_GenerateBase32EncodedString(T *testing.T) {
 		ctx := context.Background()
 		exampleLength := 123
 
-		s, ok := NewGenerator(nil).(*standardGenerator)
+		s, ok := NewGenerator(nil, trace.NewNoopTracerProvider()).(*standardGenerator)
 		require.True(t, ok)
 		s.randReader = &erroneousReader{}
 		value, err := s.GenerateBase32EncodedString(ctx, exampleLength)
@@ -99,7 +101,7 @@ func TestStandardSecretGenerator_GenerateBase64EncodedString(T *testing.T) {
 		ctx := context.Background()
 		exampleLength := 123
 
-		s := NewGenerator(nil)
+		s := NewGenerator(nil, trace.NewNoopTracerProvider())
 		value, err := s.GenerateBase64EncodedString(ctx, exampleLength)
 
 		assert.NotEmpty(t, value)
@@ -113,7 +115,7 @@ func TestStandardSecretGenerator_GenerateBase64EncodedString(T *testing.T) {
 		ctx := context.Background()
 		exampleLength := 123
 
-		s, ok := NewGenerator(nil).(*standardGenerator)
+		s, ok := NewGenerator(nil, trace.NewNoopTracerProvider()).(*standardGenerator)
 		require.True(t, ok)
 		s.randReader = &erroneousReader{}
 		value, err := s.GenerateBase64EncodedString(ctx, exampleLength)
@@ -132,7 +134,7 @@ func TestStandardSecretGenerator_GenerateRawBytes(T *testing.T) {
 		ctx := context.Background()
 		exampleLength := 123
 
-		s := NewGenerator(nil)
+		s := NewGenerator(nil, trace.NewNoopTracerProvider())
 		value, err := s.GenerateRawBytes(ctx, exampleLength)
 
 		assert.NotEmpty(t, value)
@@ -146,7 +148,7 @@ func TestStandardSecretGenerator_GenerateRawBytes(T *testing.T) {
 		ctx := context.Background()
 		exampleLength := 123
 
-		s, ok := NewGenerator(nil).(*standardGenerator)
+		s, ok := NewGenerator(nil, trace.NewNoopTracerProvider()).(*standardGenerator)
 		require.True(t, ok)
 		s.randReader = &erroneousReader{}
 		value, err := s.GenerateRawBytes(ctx, exampleLength)

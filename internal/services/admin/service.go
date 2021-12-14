@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/alexedwards/scs/v2"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/authentication"
 	"github.com/prixfixeco/api_server/internal/encoding"
@@ -42,6 +43,7 @@ func ProvideService(
 	sessionManager *scs.SessionManager,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
+	tracerProvider trace.TracerProvider,
 ) types.AdminService {
 	svc := &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
@@ -52,7 +54,7 @@ func ProvideService(
 		sessionManager:            sessionManager,
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		userIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(UserIDURIParamKey),
-		tracer:                    tracing.NewTracer(serviceName),
+		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 	}
 	svc.sessionManager.Lifetime = cfg.Cookies.Lifetime
 

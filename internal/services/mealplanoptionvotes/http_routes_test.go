@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
@@ -47,7 +48,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeMealPlanOptionVoteDatabaseCreationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -90,7 +91,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
@@ -106,7 +107,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeMealPlanOptionVoteDatabaseCreationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -127,7 +128,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeMealPlanOptionVoteDatabaseCreationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -156,7 +157,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeMealPlanOptionVoteDatabaseCreationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -444,7 +445,7 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeMealPlanOptionVoteUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -497,7 +498,7 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := &types.MealPlanOptionVoteUpdateRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -527,7 +528,7 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
@@ -543,7 +544,7 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeMealPlanOptionVoteUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -574,7 +575,7 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeMealPlanOptionVoteUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -605,7 +606,7 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeMealPlanOptionVoteUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -644,7 +645,7 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeMealPlanOptionVoteUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)

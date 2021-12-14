@@ -6,6 +6,8 @@ import (
 	"errors"
 	"testing"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -76,6 +78,7 @@ func TestProvidePreArchivesWorker(T *testing.T) {
 			postArchivesPublisher,
 			indexManagerProvider,
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
@@ -107,6 +110,7 @@ func TestProvidePreArchivesWorker(T *testing.T) {
 			postArchivesPublisher,
 			indexManagerProvider,
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -146,6 +150,7 @@ func TestProvidePreArchivesWorker(T *testing.T) {
 			postArchivesPublisher,
 			indexManagerProvider,
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -192,6 +197,7 @@ func TestProvidePreArchivesWorker(T *testing.T) {
 			postArchivesPublisher,
 			indexManagerProvider,
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -245,6 +251,7 @@ func TestProvidePreArchivesWorker(T *testing.T) {
 			postArchivesPublisher,
 			indexManagerProvider,
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -305,6 +312,7 @@ func TestProvidePreArchivesWorker(T *testing.T) {
 			postArchivesPublisher,
 			indexManagerProvider,
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 		assert.Nil(t, actual)
 		assert.Error(t, err)

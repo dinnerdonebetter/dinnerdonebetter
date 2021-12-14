@@ -7,6 +7,8 @@ import (
 	"encoding/xml"
 	"net/http"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -233,10 +235,10 @@ func (e *serverEncoderDecoder) DecodeRequest(ctx context.Context, req *http.Requ
 }
 
 // ProvideServerEncoderDecoder provides a ServerEncoderDecoder.
-func ProvideServerEncoderDecoder(logger logging.Logger, contentType ContentType) ServerEncoderDecoder {
+func ProvideServerEncoderDecoder(logger logging.Logger, tracerProvider trace.TracerProvider, contentType ContentType) ServerEncoderDecoder {
 	return &serverEncoderDecoder{
 		logger:      logging.EnsureLogger(logger).WithName("server_encoder_decoder"),
-		tracer:      tracing.NewTracer("server_encoder_decoder"),
+		tracer:      tracing.NewTracer(tracerProvider.Tracer("server_encoder_decoder")),
 		panicker:    panicking.NewProductionPanicker(),
 		contentType: contentType,
 	}

@@ -13,6 +13,7 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"github.com/lib/pq"
 	"github.com/luna-duclos/instrumentedsql"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
@@ -49,8 +50,9 @@ func ProvideDatabaseClient(
 	ctx context.Context,
 	logger logging.Logger,
 	cfg *dbconfig.Config,
+	tracerProvider trace.TracerProvider,
 ) (database.DataManager, error) {
-	tracer := tracing.NewTracer(tracingName)
+	tracer := tracing.NewTracer(tracerProvider.Tracer(tracingName))
 
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
@@ -63,7 +65,7 @@ func ProvideDatabaseClient(
 			instrumentedsql.WrapDriver(
 				&pq.Driver{},
 				instrumentedsql.WithOmitArgs(),
-				instrumentedsql.WithTracer(tracing.NewInstrumentedSQLTracer("postgres_connection")),
+				instrumentedsql.WithTracer(tracing.NewInstrumentedSQLTracer(tracerProvider, "postgres_connection")),
 				instrumentedsql.WithLogger(tracing.NewInstrumentedSQLLogger(logger)),
 			),
 		)

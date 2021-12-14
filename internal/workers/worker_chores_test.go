@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
@@ -31,6 +32,7 @@ func TestProvideChoresWorker(T *testing.T) {
 			&mockpublishers.Publisher{},
 			&email.MockEmailer{},
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, actual)
 	})

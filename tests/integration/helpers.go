@@ -4,10 +4,13 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"github.com/brianvoe/gofakeit/v5"
 	"net/http"
 	"testing"
 	"time"
+
+	"go.opentelemetry.io/otel/trace"
+
+	"github.com/brianvoe/gofakeit/v5"
 
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/require"
@@ -86,6 +89,7 @@ func initializeCookiePoweredClient(cookie *http.Cookie) (*httpclient.Client, err
 	logger := logging.ProvideLogger(logging.Config{Provider: logging.ProviderZerolog})
 
 	c, err := httpclient.NewClient(parsedURLToUse,
+		trace.NewNoopTracerProvider(),
 		httpclient.UsingLogger(logger),
 		httpclient.UsingCookie(cookie),
 	)
@@ -104,6 +108,7 @@ func initializeCookiePoweredClient(cookie *http.Cookie) (*httpclient.Client, err
 
 func initializePASETOPoweredClient(clientID string, secretKey []byte) (*httpclient.Client, error) {
 	c, err := httpclient.NewClient(parsedURLToUse,
+		trace.NewNoopTracerProvider(),
 		httpclient.UsingLogger(logging.NewNoopLogger()),
 		httpclient.UsingPASETO(clientID, secretKey),
 	)
@@ -123,7 +128,7 @@ func initializePASETOPoweredClient(clientID string, secretKey []byte) (*httpclie
 func buildSimpleClient(t *testing.T) *httpclient.Client {
 	t.Helper()
 
-	c, err := httpclient.NewClient(parsedURLToUse)
+	c, err := httpclient.NewClient(parsedURLToUse, trace.NewNoopTracerProvider())
 	require.NoError(t, err)
 
 	return c

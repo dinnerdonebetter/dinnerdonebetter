@@ -6,7 +6,7 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	tracingcfg "github.com/prixfixeco/api_server/internal/observability/tracing/config"
 )
 
 type (
@@ -14,8 +14,8 @@ type (
 	Config struct {
 		_ struct{}
 
-		Tracing tracing.Config `json:"tracing" mapstructure:"tracing" toml:"tracing,omitempty"`
-		Metrics metrics.Config `json:"metrics" mapstructure:"metrics" toml:"metrics,omitempty"`
+		Tracing tracingcfg.Config `json:"tracing" mapstructure:"tracing" toml:"tracing,omitempty"`
+		Metrics metrics.Config    `json:"metrics" mapstructure:"metrics" toml:"metrics,omitempty"`
 	}
 )
 

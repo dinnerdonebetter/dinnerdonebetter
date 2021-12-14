@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
@@ -31,7 +32,7 @@ func Test_redisPublisher_Publish(T *testing.T) {
 
 		logger := logging.NewZerologLogger()
 
-		provider := ProvideRedisPublisherProvider(logger, t.Name())
+		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
 		require.NotNil(t, provider)
 
 		a, err := provider.ProviderPublisher(t.Name())
@@ -69,7 +70,7 @@ func Test_redisPublisher_Publish(T *testing.T) {
 
 		logger := logging.NewZerologLogger()
 
-		provider := ProvideRedisPublisherProvider(logger, t.Name())
+		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
 		require.NotNil(t, provider)
 
 		a, err := provider.ProviderPublisher(t.Name())
@@ -99,7 +100,7 @@ func TestProvideRedisPublisherProvider(T *testing.T) {
 
 		logger := logging.NewZerologLogger()
 
-		actual := ProvideRedisPublisherProvider(logger, t.Name())
+		actual := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
 		assert.NotNil(t, actual)
 	})
 }
@@ -112,7 +113,7 @@ func Test_publisherProvider_ProviderPublisher(T *testing.T) {
 
 		logger := logging.NewZerologLogger()
 
-		provider := ProvideRedisPublisherProvider(logger, t.Name())
+		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
 		require.NotNil(t, provider)
 
 		actual, err := provider.ProviderPublisher(t.Name())
@@ -125,7 +126,7 @@ func Test_publisherProvider_ProviderPublisher(T *testing.T) {
 
 		logger := logging.NewZerologLogger()
 
-		provider := ProvideRedisPublisherProvider(logger, t.Name())
+		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
 		require.NotNil(t, provider)
 
 		actual, err := provider.ProviderPublisher(t.Name())

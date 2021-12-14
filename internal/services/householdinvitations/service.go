@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
@@ -51,6 +53,7 @@ func ProvideHouseholdInvitationsService(
 	routeParamManager routing.RouteParamManager,
 	publisherProvider publishers.PublisherProvider,
 	customerDataCollector customerdata.Collector,
+	tracerProvider trace.TracerProvider,
 ) (types.HouseholdInvitationDataService, error) {
 	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
 	if err != nil {
@@ -63,11 +66,11 @@ func ProvideHouseholdInvitationsService(
 		householdInvitationDataManager: householdInvitationDataManager,
 		encoderDecoder:                 encoder,
 		preWritesPublisher:             preWritesPublisher,
-		secretGenerator:                random.NewGenerator(logger),
+		secretGenerator:                random.NewGenerator(logger, tracerProvider),
 		sessionContextDataFetcher:      authservice.FetchContextFromRequest,
 		householdIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(householdsservice.HouseholdIDURIParamKey),
 		householdInvitationIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(HouseholdInvitationIDURIParamKey),
-		tracer:                         tracing.NewTracer(serviceName),
+		tracer:                         tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 		customerDataCollector:          customerDataCollector,
 	}
 

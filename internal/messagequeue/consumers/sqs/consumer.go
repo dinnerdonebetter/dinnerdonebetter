@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/messagequeue/consumers"
@@ -87,20 +88,24 @@ type consumerProvider struct {
 	logger           logging.Logger
 	consumerCache    map[string]consumers.Consumer
 	sqsClient        *sqs.SQS
+	tracerProvider   trace.TracerProvider
 	consumerCacheHat sync.RWMutex
 }
 
+var _ consumers.ConsumerProvider = (*consumerProvider)(nil)
+
 // ProvideSQSConsumerProvider returns a ConsumerProvider for a given address.
-func ProvideSQSConsumerProvider(logger logging.Logger) consumers.ConsumerProvider {
+func ProvideSQSConsumerProvider(logger logging.Logger, tracerProvider trace.TracerProvider) consumers.ConsumerProvider {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
 	svc := sqs.New(sess)
 
 	return &consumerProvider{
-		logger:        logging.EnsureLogger(logger),
-		sqsClient:     svc,
-		consumerCache: map[string]consumers.Consumer{},
+		logger:         logging.EnsureLogger(logger),
+		sqsClient:      svc,
+		consumerCache:  map[string]consumers.Consumer{},
+		tracerProvider: tracerProvider,
 	}
 }
 
@@ -114,13 +119,13 @@ func (p *consumerProvider) ProvideConsumer(ctx context.Context, topic string, ha
 		return cachedPub, nil
 	}
 
-	c := provideSQSConsumer(ctx, logger, p.sqsClient, topic, handlerFunc)
+	c := provideSQSConsumer(ctx, logger, p.sqsClient, p.tracerProvider, topic, handlerFunc)
 	p.consumerCache[topic] = c
 
 	return c, nil
 }
 
-func provideSQSConsumer(_ context.Context, logger logging.Logger, sqsClient *sqs.SQS, topic string, handlerFunc func(context.Context, []byte) error) *sqsConsumer {
+func provideSQSConsumer(_ context.Context, logger logging.Logger, sqsClient *sqs.SQS, tracerProvider trace.TracerProvider, topic string, handlerFunc func(context.Context, []byte) error) *sqsConsumer {
 	return &sqsConsumer{
 		topic:              topic,
 		handlerFunc:        handlerFunc,
@@ -128,7 +133,7 @@ func provideSQSConsumer(_ context.Context, logger logging.Logger, sqsClient *sqs
 		queueURL:           topic,
 		messagesPerReceive: 10, // max value is 10
 		logger:             logging.EnsureLogger(logger),
-		tracer:             tracing.NewTracer(fmt.Sprintf("%s_consumer", topic)),
-		encoder:            encoding.ProvideClientEncoder(logger, encoding.ContentTypeJSON),
+		tracer:             tracing.NewTracer(tracerProvider.Tracer(fmt.Sprintf("%s_consumer", topic))),
+		encoder:            encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
 	}
 }

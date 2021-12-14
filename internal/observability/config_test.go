@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	tracingcfg "github.com/prixfixeco/api_server/internal/observability/tracing/config"
 )
 
 func TestConfig_ValidateWithContext(T *testing.T) {
@@ -18,8 +18,8 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
-			Tracing: tracing.Config{
-				Provider: tracing.Jaeger,
+			Tracing: tracingcfg.Config{
+				Provider: tracingcfg.Jaeger,
 			},
 			Metrics: metrics.Config{
 				Provider:                         metrics.Prometheus,
