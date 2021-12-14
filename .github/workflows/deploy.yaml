@@ -101,9 +101,7 @@ jobs:
 
       - name: copy config files
         working-directory: environments/dev
-        run: |
-        cp config_files/service-config.json terraform/service-config.json
-        cp config_files/grafana/agent/config.yaml grafana_agent_config.yaml
+        run: cp config_files/service-config.json terraform/service-config.json
 
       - name: Terraform Validate
         working-directory: environments/dev/terraform
