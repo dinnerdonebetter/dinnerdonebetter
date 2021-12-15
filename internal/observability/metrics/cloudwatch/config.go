@@ -1,4 +1,4 @@
-package prometheus
+package cloudwatch
 
 import (
 	"context"
@@ -7,17 +7,19 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 
+	"go.opentelemetry.io/otel/sdk/resource"
+	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"go.opentelemetry.io/contrib/instrumentation/runtime"
-	"go.opentelemetry.io/otel/exporters/prometheus"
+	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/metric/global"
 	"go.opentelemetry.io/otel/metric/unit"
-	"go.opentelemetry.io/otel/sdk/export/metric/aggregation"
-	"go.opentelemetry.io/otel/sdk/metric/aggregator/histogram"
 	controller "go.opentelemetry.io/otel/sdk/metric/controller/basic"
 	processor "go.opentelemetry.io/otel/sdk/metric/processor/basic"
-	selector "go.opentelemetry.io/otel/sdk/metric/selector/simple"
+	"go.opentelemetry.io/otel/sdk/metric/selector/simple"
+	"google.golang.org/grpc"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
@@ -31,12 +33,6 @@ const (
 	// minimumRuntimeCollectionInterval is the smallest interval we can collect metrics at
 	// this value is used to guard against zero values.
 	minimumRuntimeCollectionInterval = time.Second
-
-	// DefaultMetricsCollectionInterval is the default amount of time we wait between runtime metrics queries.
-	DefaultMetricsCollectionInterval = 2 * time.Second
-
-	// Prometheus represents the popular time series database.
-	Prometheus = "prometheus"
 )
 
 type (
@@ -44,7 +40,7 @@ type (
 	Config struct {
 		_ struct{}
 
-		// RuntimeMetricsCollectionInterval  is the interval we collect runtime statistics at.
+		CollectorEndpoint                string        `json:"collector_endpoint,omitempty" mapstructure:"collector_endpoint" toml:"collector_endpoint,omitempty"`
 		RuntimeMetricsCollectionInterval time.Duration `json:"runtimeMetricsCollectionInterval,omitempty" mapstructure:"runtime_metrics_collection_interval" toml:"runtime_metrics_collection_interval,omitempty"`
 	}
 )
@@ -56,48 +52,57 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	)
 }
 
-func initiatePrometheusExporter() (metric.MeterProvider, error) {
-	config := prometheus.Config{
-		// copied from go.opentelemetry.io/otel/sdk/metric/aggregator
-		DefaultHistogramBoundaries: []float64{.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10},
-	}
-	c := controller.New(
-		processor.NewFactory(
-			selector.NewWithHistogramDistribution(
-				histogram.WithExplicitBoundaries(config.DefaultHistogramBoundaries),
-			),
-			aggregation.CumulativeTemporalitySelector(),
-			processor.WithMemory(true),
-		),
+func initiateExporter(ctx context.Context, cfg *Config) (metric.MeterProvider, error) {
+	metricExporter, err := otlpmetricgrpc.New(
+		ctx,
+		otlpmetricgrpc.WithInsecure(),
+		otlpmetricgrpc.WithEndpoint(cfg.CollectorEndpoint),
+		otlpmetricgrpc.WithDialOption(grpc.WithBlock()),
 	)
-
-	prometheusExporter, err := prometheus.New(config, c)
 	if err != nil {
 		return nil, err
 	}
 
-	mp := prometheusExporter.MeterProvider()
-	global.SetMeterProvider(mp)
+	res := resource.NewWithAttributes(
+		semconv.SchemaURL,
+		semconv.ServiceNameKey.String("prixfixe_api"),
+	)
 
-	return mp, nil
+	cont := controller.New(
+		processor.NewFactory(
+			simple.NewWithHistogramDistribution(),
+			metricExporter,
+		),
+		controller.WithExporter(metricExporter),
+		controller.WithCollectPeriod(2*time.Second),
+		controller.WithResource(res),
+	)
+
+	global.SetMeterProvider(cont)
+
+	if metricStartErr := cont.Start(ctx); metricStartErr != nil {
+		return nil, metricStartErr
+	}
+
+	return cont, nil
 }
 
 // ProvideInstrumentationHandler provides an instrumentation handler.
-func (cfg *Config) ProvideInstrumentationHandler(logger logging.Logger) (metric.MeterProvider, error) {
+func (cfg *Config) ProvideInstrumentationHandler(ctx context.Context, logger logging.Logger) (metric.MeterProvider, error) {
 	logger.Debug("setting metrics provider")
 
 	if err := runtime.Start(runtime.WithMinimumReadMemStatsInterval(cfg.RuntimeMetricsCollectionInterval)); err != nil {
 		return nil, fmt.Errorf("failed to start runtime metrics collection: %w", err)
 	}
 
-	return initiatePrometheusExporter()
+	return initiateExporter(ctx, cfg)
 }
 
 // ProvideUnitCounterProvider provides an instrumentation handler.
-func (cfg *Config) ProvideUnitCounterProvider(logger logging.Logger) (metrics.UnitCounterProvider, error) {
+func (cfg *Config) ProvideUnitCounterProvider(ctx context.Context, logger logging.Logger) (metrics.UnitCounterProvider, error) {
 	logger.Debug("setting up meter")
 
-	meterProvider, err := initiatePrometheusExporter()
+	meterProvider, err := initiateExporter(ctx, cfg)
 	if err != nil {
 		return nil, err
 	}

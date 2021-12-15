@@ -36,6 +36,7 @@
 		"debug": false
 	},
 	"observability": {
+		"metrics": {},
 		"tracing": {
 			"jaeger": {
 				"collector_endpoint": "http://tracing-server:14268/api/traces",
@@ -43,9 +44,6 @@
 				"spanCollectionProbability": 1
 			},
 			"provider": "jaeger"
-		},
-		"metrics": {
-			"runtimeMetricsCollectionInterval": 1000000000
 		}
 	},
 	"routing": {},
@@ -55,7 +53,10 @@
 		"runMigrations": true,
 		"maxPingAttempts": 50
 	},
-	"logging": {},
+	"logging": {
+		"level": 0,
+		"provider": "zerolog"
+	},
 	"meta": {
 		"runMode": "testing",
 		"debug": false
@@ -147,7 +148,7 @@
 		"auth": {
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "xGsExt6Qm+ZffGvmdRWamkc2ZyRFN1RvVBz4L3rE3Qs=",
+				"localModeKey": "e/X3mtEBHbnM8yw1DVgOQvDDWlAx8fEF8DeHjfeRjD0=",
 				"lifetime": 60000000000
 			},
 			"cookies": {

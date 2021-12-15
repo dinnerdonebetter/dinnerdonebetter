@@ -51,14 +51,8 @@ import (
 // Injectors from build.go:
 
 // Build builds a server.
-func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfig, tracerProvider trace.TracerProvider) (*server.HTTPServer, error) {
+func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfig, tracerProvider trace.TracerProvider, unitCounterProvider metrics.UnitCounterProvider) (*server.HTTPServer, error) {
 	serverConfig := cfg.Server
-	observabilityConfig := &cfg.Observability
-	metricsConfig := &observabilityConfig.Metrics
-	instrumentationHandler, err := metrics.ProvideMetricsInstrumentationHandlerForServer(metricsConfig, logger)
-	if err != nil {
-		return nil, err
-	}
 	servicesConfigurations := &cfg.Services
 	authenticationConfig := &servicesConfigurations.Auth
 	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
@@ -88,10 +82,6 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 		return nil, err
 	}
 	householdDataManager := database.ProvideHouseholdDataManager(dataManager)
-	unitCounterProvider, err := metrics.ProvideUnitCounterProvider(metricsConfig, logger)
-	if err != nil {
-		return nil, err
-	}
 	imageUploadProcessor := images.NewImageUploadProcessor(logger, tracerProvider)
 	uploadsConfig := &cfg.Uploads
 	storageConfig := &uploadsConfig.Storage
@@ -222,7 +212,7 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	adminService := admin.ProvideService(logger, authenticationConfig, authenticator, adminUserDataManager, sessionManager, serverEncoderDecoder, routeParamManager, tracerProvider)
 	routingConfig := &cfg.Routing
 	router := chi.NewRouter(logger, routingConfig)
-	httpServer, err := server.ProvideHTTPServer(ctx, serverConfig, instrumentationHandler, authService, userDataService, householdDataService, householdInvitationDataService, apiClientDataService, websocketDataService, validInstrumentDataService, validIngredientDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, recipeStepProductDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, webhookDataService, adminService, logger, serverEncoderDecoder, router, tracerProvider)
+	httpServer, err := server.ProvideHTTPServer(ctx, serverConfig, authService, userDataService, householdDataService, householdInvitationDataService, apiClientDataService, websocketDataService, validInstrumentDataService, validIngredientDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, recipeStepProductDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, webhookDataService, adminService, logger, serverEncoderDecoder, router, tracerProvider)
 	if err != nil {
 		return nil, err
 	}

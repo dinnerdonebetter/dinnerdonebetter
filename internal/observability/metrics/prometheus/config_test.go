@@ -25,24 +25,6 @@ func TestConfig_ProvideInstrumentationHandler(T *testing.T) {
 	})
 }
 
-func TestConfig_ProvideUnitCounterProvider(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		cfg := &Config{
-			RuntimeMetricsCollectionInterval: minimumRuntimeCollectionInterval,
-		}
-
-		actual, err := ProvideUnitCounterProvider(cfg, logging.NewNoopLogger())
-		assert.NoError(t, err)
-		assert.NotNil(t, actual)
-
-		actual("things", "stuff")
-	})
-}
-
 func TestConfig_ValidateWithContext(T *testing.T) {
 	T.Parallel()
 

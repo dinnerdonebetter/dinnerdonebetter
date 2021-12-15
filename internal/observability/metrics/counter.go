@@ -14,6 +14,11 @@ type unitCounter struct {
 	counter metric.Int64Counter
 }
 
+// NewUnitCounter yields a new UnitCounter.
+func NewUnitCounter(counter metric.Int64Counter) UnitCounter {
+	return &unitCounter{counter: counter}
+}
+
 func (c *unitCounter) Increment(ctx context.Context) {
 	ctx, span := tracing.StartSpan(ctx)
 	defer span.End()

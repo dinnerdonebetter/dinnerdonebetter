@@ -15,7 +15,6 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/panicking"
 	"github.com/prixfixeco/api_server/internal/routing"
@@ -65,7 +64,6 @@ type (
 func ProvideHTTPServer(
 	ctx context.Context,
 	serverSettings Config,
-	metricsHandler metrics.InstrumentationHandler,
 	authService types.AuthService,
 	usersService types.UserDataService,
 	householdsService types.HouseholdDataService,
@@ -126,7 +124,7 @@ func ProvideHTTPServer(
 		apiClientsService:                  apiClientsService,
 	}
 
-	srv.setupRouter(ctx, router, metricsHandler)
+	srv.setupRouter(ctx, router)
 
 	logger.Debug("HTTP server successfully constructed")
 

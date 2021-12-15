@@ -9,11 +9,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
-
-	"github.com/prixfixeco/api_server/internal/observability/tracing/xray"
-
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
@@ -21,9 +16,14 @@ import (
 	"github.com/prixfixeco/api_server/internal/encoding"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/metrics"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
+	"github.com/prixfixeco/api_server/internal/observability/metrics/cloudwatch"
+	metricscfg "github.com/prixfixeco/api_server/internal/observability/metrics/config"
+	"github.com/prixfixeco/api_server/internal/observability/metrics/prometheus"
 	tracingcfg "github.com/prixfixeco/api_server/internal/observability/tracing/config"
 	jaeger "github.com/prixfixeco/api_server/internal/observability/tracing/jaeger"
+	"github.com/prixfixeco/api_server/internal/observability/tracing/xray"
 	"github.com/prixfixeco/api_server/internal/search"
 	"github.com/prixfixeco/api_server/internal/server"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
@@ -218,9 +218,11 @@ func devEnvironmentConfig(ctx context.Context, filePath string) error {
 			MaxPingAttempts: maxAttempts,
 		},
 		Observability: observability.Config{
-			Metrics: metrics.Config{
-				Provider:                         "prometheus",
-				RuntimeMetricsCollectionInterval: time.Second,
+			Metrics: metricscfg.Config{
+				Provider: metricscfg.ProviderCloudwatch,
+				Cloudwatch: &cloudwatch.Config{
+					RuntimeMetricsCollectionInterval: 15 * time.Second,
+				},
 			},
 			Tracing: tracingcfg.Config{
 				Provider: tracingcfg.XRay,
@@ -290,9 +292,11 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 			ConnectionDetails: devPostgresDBConnDetails,
 		},
 		Observability: observability.Config{
-			Metrics: metrics.Config{
-				Provider:                         "prometheus",
-				RuntimeMetricsCollectionInterval: time.Second,
+			Metrics: metricscfg.Config{
+				Provider: "prometheus",
+				Prometheus: &prometheus.Config{
+					RuntimeMetricsCollectionInterval: time.Second,
+				},
 			},
 			Tracing: localTracingConfig,
 		},
@@ -444,9 +448,8 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			ConnectionDetails: devPostgresDBConnDetails,
 		},
 		Observability: observability.Config{
-			Metrics: metrics.Config{
-				Provider:                         "",
-				RuntimeMetricsCollectionInterval: time.Second,
+			Metrics: metricscfg.Config{
+				Provider: "",
 			},
 			Tracing: localTracingConfig,
 		},

@@ -17,7 +17,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
-	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/routing/chi"
@@ -55,6 +54,7 @@ func Build(
 	logger logging.Logger,
 	cfg *config.InstanceConfig,
 	tracerProvider trace.TracerProvider,
+	unitCounterProvider metrics.UnitCounterProvider,
 ) (*server.HTTPServer, error) {
 	wire.Build(
 		elasticsearch.Providers,
@@ -66,10 +66,8 @@ func Build(
 		msgconfig.Providers,
 		server.Providers,
 		postgres.Providers,
-		metrics.Providers,
 		images.Providers,
 		uploads.Providers,
-		observability.Providers,
 		storage.Providers,
 		chi.Providers,
 		authentication.Providers,

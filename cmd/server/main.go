@@ -68,12 +68,17 @@ func main() {
 		logger.Error(initializeTracerErr, "initializing tracer")
 	}
 
+	metricsProvider, initializeMetricsErr := cfg.Observability.Metrics.ProvideUnitCounterProvider(ctx, logger)
+	if initializeMetricsErr != nil {
+		logger.Error(initializeTracerErr, "initializing metrics collector")
+	}
+
 	// only allow initialization to take so long.
 	ctx, cancel := context.WithTimeout(ctx, cfg.Server.StartupDeadline)
 	ctx, initSpan := tracing.StartSpan(ctx)
 
 	// build our server struct.
-	srv, err := server.Build(ctx, logger, cfg, tracerProvider)
+	srv, err := server.Build(ctx, logger, cfg, tracerProvider, metricsProvider)
 	if err != nil {
 		logger.Fatal(fmt.Errorf("initializing HTTP server: %w", err))
 	}

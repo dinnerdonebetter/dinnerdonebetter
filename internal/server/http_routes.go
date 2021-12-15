@@ -8,7 +8,6 @@ import (
 	"github.com/heptiolabs/healthcheck"
 
 	"github.com/prixfixeco/api_server/internal/authorization"
-	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/routing"
 	apiclientsservice "github.com/prixfixeco/api_server/internal/services/apiclients"
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
@@ -42,7 +41,7 @@ func buildURLVarChunk(key, pattern string) string {
 	return fmt.Sprintf("/{%s}", key)
 }
 
-func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, metricsHandler metrics.Handler) {
+func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -51,11 +50,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		// Expose a readiness check on /ready
 		metaRouter.Get("/ready", health.ReadyEndpoint)
 	})
-
-	if metricsHandler != nil {
-		s.logger.Debug("establishing metrics handler")
-		router.HandleFunc("/metrics", metricsHandler.ServeHTTP)
-	}
 
 	router.Post("/paseto", s.authService.PASETOHandler)
 

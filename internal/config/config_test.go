@@ -7,6 +7,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/prixfixeco/api_server/internal/observability/metrics/config"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -14,7 +16,6 @@ import (
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	server "github.com/prixfixeco/api_server/internal/server"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	validingredientsservice "github.com/prixfixeco/api_server/internal/services/validingredients"
@@ -41,9 +42,8 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 				ContentType: "application/json",
 			},
 			Observability: observability.Config{
-				Metrics: metrics.Config{
-					Provider:                         "",
-					RuntimeMetricsCollectionInterval: 2 * time.Second,
+				Metrics: config.Config{
+					Provider: "",
 				},
 			},
 			Services: ServicesConfigurations{
