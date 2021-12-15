@@ -1,10 +1,12 @@
-package logging
+package zerolog
 
 import (
 	"errors"
 	"net/http"
 	"net/url"
 	"testing"
+
+	"github.com/prixfixeco/api_server/internal/observability/logging"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -48,25 +50,25 @@ func Test_zerologLogger_SetLevel(T *testing.T) {
 	T.Run("Info", func(t *testing.T) {
 		t.Parallel()
 
-		NewZerologLogger().SetLevel(InfoLevel)
+		NewZerologLogger().SetLevel(logging.InfoLevel)
 	})
 
 	T.Run("Debug", func(t *testing.T) {
 		t.Parallel()
 
-		NewZerologLogger().SetLevel(DebugLevel)
+		NewZerologLogger().SetLevel(logging.DebugLevel)
 	})
 
 	T.Run("Error", func(t *testing.T) {
 		t.Parallel()
 
-		NewZerologLogger().SetLevel(ErrorLevel)
+		NewZerologLogger().SetLevel(logging.ErrorLevel)
 	})
 
 	T.Run("Warn", func(t *testing.T) {
 		t.Parallel()
 
-		NewZerologLogger().SetLevel(WarnLevel)
+		NewZerologLogger().SetLevel(logging.WarnLevel)
 	})
 }
 

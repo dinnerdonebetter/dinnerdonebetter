@@ -5,8 +5,6 @@ import (
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-
-	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
 
 const (
@@ -47,13 +45,12 @@ type (
 	Config struct {
 		_ struct{}
 
-		Logging               *logging.Config `json:"logging,omitempty" mapstructure:"logging" toml:"logging,omitempty"`
-		PASETO                PASETOConfig    `json:"paseto,omitempty" mapstructure:"paseto" toml:"paseto,omitempty"`
-		Cookies               CookieConfig    `json:"cookies,omitempty" mapstructure:"cookies" toml:"cookies,omitempty"`
-		Debug                 bool            `json:"debug,omitempty" mapstructure:"debug" toml:"debug,omitempty"`
-		EnableUserSignup      bool            `json:"enableUserSignup,omitempty" mapstructure:"enable_user_signup" toml:"enable_user_signup,omitempty"`
-		MinimumUsernameLength uint8           `json:"minimumUsernameLength,omitempty" mapstructure:"minimum_username_length" toml:"minimum_username_length,omitempty"`
-		MinimumPasswordLength uint8           `json:"minimumPasswordLength,omitempty" mapstructure:"minimum_password_length" toml:"minimum_password_length,omitempty"`
+		PASETO                PASETOConfig `json:"paseto,omitempty" mapstructure:"paseto" toml:"paseto,omitempty"`
+		Cookies               CookieConfig `json:"cookies,omitempty" mapstructure:"cookies" toml:"cookies,omitempty"`
+		Debug                 bool         `json:"debug,omitempty" mapstructure:"debug" toml:"debug,omitempty"`
+		EnableUserSignup      bool         `json:"enableUserSignup,omitempty" mapstructure:"enable_user_signup" toml:"enable_user_signup,omitempty"`
+		MinimumUsernameLength uint8        `json:"minimumUsernameLength,omitempty" mapstructure:"minimum_username_length" toml:"minimum_username_length,omitempty"`
+		MinimumPasswordLength uint8        `json:"minimumPasswordLength,omitempty" mapstructure:"minimum_password_length" toml:"minimum_password_length,omitempty"`
 	}
 )
 

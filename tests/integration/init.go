@@ -10,6 +10,8 @@ import (
 	"strings"
 	"time"
 
+	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
+
 	"go.opentelemetry.io/otel/trace"
 
 	_ "github.com/lib/pq"
@@ -21,7 +23,6 @@ import (
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
 	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
@@ -50,7 +51,7 @@ func init() {
 	ctx, span := tracing.StartSpan(context.Background())
 	defer span.End()
 
-	logger := logging.ProvideLogger(logging.Config{Provider: logging.ProviderZerolog})
+	logger := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
 
 	parsedURLToUse = testutils.DetermineServiceURL()
 	urlToUse = parsedURLToUse.String()

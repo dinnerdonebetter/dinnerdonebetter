@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 
+	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
+
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 
@@ -11,7 +13,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/search/elasticsearch"
 	"github.com/prixfixeco/api_server/internal/workers"
 )
@@ -31,7 +32,7 @@ func buildHandler(worker *workers.ArchivesWorker) func(ctx context.Context, sqsE
 
 func main() {
 	ctx := context.Background()
-	logger := logging.NewZerologLogger()
+	logger := zerolog.NewZerologLogger()
 
 	cfg, err := config.GetConfigFromParameterStore()
 	if err != nil {

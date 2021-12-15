@@ -3,6 +3,8 @@ package tracing
 import (
 	"context"
 
+	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
+
 	"go.opentelemetry.io/otel"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -18,7 +20,7 @@ func (h errorHandler) Handle(err error) {
 
 func init() {
 	// set this to a noop error handler just so one is set
-	otel.SetErrorHandler(errorHandler{logger: logging.NewZerologLogger().WithName("otel_errors")})
+	otel.SetErrorHandler(errorHandler{logger: zerolog.NewZerologLogger().WithName("otel_errors")})
 }
 
 // Tracer describes a tracer.

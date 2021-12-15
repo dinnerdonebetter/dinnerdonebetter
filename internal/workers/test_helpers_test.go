@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
+
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/stretchr/testify/assert"
@@ -147,7 +149,7 @@ func newTestChoresWorker(t *testing.T) *ChoresWorker {
 	t.Helper()
 
 	worker := ProvideChoresWorker(
-		logging.NewZerologLogger(),
+		zerolog.NewZerologLogger(),
 		&database.MockDatabase{},
 		&mockpublishers.Publisher{},
 		&email.MockEmailer{},

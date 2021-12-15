@@ -3,11 +3,11 @@ package config
 import (
 	"testing"
 
+	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
+
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
 
 func Test_cleanString(T *testing.T) {
@@ -26,7 +26,7 @@ func TestProvideConsumerProvider(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewZerologLogger()
+		logger := zerolog.NewZerologLogger()
 		cfg := &Config{
 			Provider: ProviderRedis,
 		}
@@ -39,7 +39,7 @@ func TestProvideConsumerProvider(T *testing.T) {
 	T.Run("with invalid provider", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewZerologLogger()
+		logger := zerolog.NewZerologLogger()
 		cfg := &Config{}
 
 		provider, err := ProvideConsumerProvider(logger, trace.NewNoopTracerProvider(), cfg)
@@ -54,7 +54,7 @@ func TestProvidePublisherProvider(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewZerologLogger()
+		logger := zerolog.NewZerologLogger()
 		cfg := &Config{
 			Provider: ProviderRedis,
 		}
@@ -67,7 +67,7 @@ func TestProvidePublisherProvider(T *testing.T) {
 	T.Run("with invalid provider", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewZerologLogger()
+		logger := zerolog.NewZerologLogger()
 		cfg := &Config{}
 
 		provider, err := ProvidePublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)

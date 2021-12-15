@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 
+	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
@@ -13,7 +15,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/encoding"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/routing"
 	"github.com/prixfixeco/api_server/internal/search"
 	"github.com/prixfixeco/api_server/internal/server"
@@ -64,7 +65,7 @@ type (
 		Observability observability.Config      `json:"observability" mapstructure:"observability" toml:"observability,omitempty"`
 		Routing       routing.Config            `json:"routing" mapstructure:"routing" toml:"routing,omitempty"`
 		Database      dbconfig.Config           `json:"database" mapstructure:"database" toml:"database,omitempty"`
-		Logging       logging.Config            `json:"logging,omitempty" mapstructure:"logging" toml:"logging,omitempty"`
+		Logging       logcfg.Config             `json:"logging,omitempty" mapstructure:"logging" toml:"logging,omitempty"`
 		Meta          MetaSettings              `json:"meta" mapstructure:"meta" toml:"meta,omitempty"`
 		Services      ServicesConfigurations    `json:"services" mapstructure:"services" toml:"services,omitempty"`
 	}

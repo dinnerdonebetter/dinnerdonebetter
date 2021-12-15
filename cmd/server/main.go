@@ -14,6 +14,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/build/server"
 	"github.com/prixfixeco/api_server/internal/config"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
 
@@ -25,7 +26,7 @@ const (
 func main() {
 	var (
 		ctx    = context.Background()
-		logger = logging.ProvideLogger(logging.Config{Provider: logging.ProviderZerolog})
+		logger = (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
 	)
 
 	logger.SetLevel(logging.DebugLevel)

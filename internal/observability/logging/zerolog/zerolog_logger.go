@@ -1,4 +1,4 @@
-package logging
+package zerolog
 
 import (
 	"net/http"
@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/prixfixeco/api_server/internal/observability/logging"
 
 	"github.com/rs/zerolog"
 	"go.opentelemetry.io/otel/trace"
@@ -29,7 +31,7 @@ func init() {
 
 // logger is our log wrapper.
 type zerologLogger struct {
-	requestIDFunc RequestIDFunc
+	requestIDFunc logging.RequestIDFunc
 	logger        zerolog.Logger
 }
 
@@ -39,31 +41,31 @@ func buildZerologger() zerolog.Logger {
 }
 
 // NewZerologLogger builds a new zerologLogger.
-func NewZerologLogger() Logger {
+func NewZerologLogger() logging.Logger {
 	return &zerologLogger{logger: buildZerologger()}
 }
 
 // WithName is our obligatory contract fulfillment function.
 // Zerolog doesn't support named loggers :( so we have this workaround.
-func (l *zerologLogger) WithName(name string) Logger {
-	l2 := l.logger.With().Str(LoggerNameKey, name).Logger()
+func (l *zerologLogger) WithName(name string) logging.Logger {
+	l2 := l.logger.With().Str(logging.LoggerNameKey, name).Logger()
 	return &zerologLogger{logger: l2}
 }
 
 // SetLevel sets the log level for our zerologLogger.
-func (l *zerologLogger) SetLevel(level Level) {
+func (l *zerologLogger) SetLevel(level logging.Level) {
 	var lvl zerolog.Level
 
 	switch level {
-	case InfoLevel:
+	case logging.InfoLevel:
 		lvl = zerolog.InfoLevel
-	case DebugLevel:
+	case logging.DebugLevel:
 		l.logger = l.logger.With().Logger()
 		lvl = zerolog.DebugLevel
-	case WarnLevel:
+	case logging.WarnLevel:
 		l.logger = l.logger.With().Caller().Logger()
 		lvl = zerolog.WarnLevel
-	case ErrorLevel:
+	case logging.ErrorLevel:
 		l.logger = l.logger.With().Caller().Logger()
 		lvl = zerolog.ErrorLevel
 	}
@@ -72,7 +74,7 @@ func (l *zerologLogger) SetLevel(level Level) {
 }
 
 // SetRequestIDFunc sets the request ID retrieval function.
-func (l *zerologLogger) SetRequestIDFunc(f RequestIDFunc) {
+func (l *zerologLogger) SetRequestIDFunc(f logging.RequestIDFunc) {
 	if f != nil {
 		l.requestIDFunc = f
 	}
@@ -106,19 +108,19 @@ func (l *zerologLogger) Printf(format string, args ...interface{}) {
 }
 
 // Clone satisfies our contract for the logging.Logger WithValue method.
-func (l *zerologLogger) Clone() Logger {
+func (l *zerologLogger) Clone() logging.Logger {
 	l2 := l.logger.With().Logger()
 	return &zerologLogger{logger: l2}
 }
 
 // WithValue satisfies our contract for the logging.Logger WithValue method.
-func (l *zerologLogger) WithValue(key string, value interface{}) Logger {
+func (l *zerologLogger) WithValue(key string, value interface{}) logging.Logger {
 	l2 := l.logger.With().Interface(key, value).Logger()
 	return &zerologLogger{logger: l2}
 }
 
 // WithValues satisfies our contract for the logging.Logger WithValues method.
-func (l *zerologLogger) WithValues(values map[string]interface{}) Logger {
+func (l *zerologLogger) WithValues(values map[string]interface{}) logging.Logger {
 	var l2 = l.logger.With().Logger()
 
 	for key, val := range values {
@@ -129,13 +131,13 @@ func (l *zerologLogger) WithValues(values map[string]interface{}) Logger {
 }
 
 // WithError satisfies our contract for the logging.Logger WithError method.
-func (l *zerologLogger) WithError(err error) Logger {
+func (l *zerologLogger) WithError(err error) logging.Logger {
 	l2 := l.logger.With().Err(err).Logger()
 	return &zerologLogger{logger: l2}
 }
 
 // WithSpan satisfies our contract for the logging.Logger WithSpan method.
-func (l *zerologLogger) WithSpan(span trace.Span) Logger {
+func (l *zerologLogger) WithSpan(span trace.Span) logging.Logger {
 	spanCtx := span.SpanContext()
 	spanID := spanCtx.SpanID().String()
 	traceID := spanCtx.TraceID().String()
@@ -171,12 +173,12 @@ func (l *zerologLogger) attachRequestToLog(req *http.Request) zerolog.Logger {
 }
 
 // WithRequest satisfies our contract for the logging.Logger WithRequest method.
-func (l *zerologLogger) WithRequest(req *http.Request) Logger {
+func (l *zerologLogger) WithRequest(req *http.Request) logging.Logger {
 	return &zerologLogger{logger: l.attachRequestToLog(req)}
 }
 
 // WithResponse satisfies our contract for the logging.Logger WithResponse method.
-func (l *zerologLogger) WithResponse(res *http.Response) Logger {
+func (l *zerologLogger) WithResponse(res *http.Response) logging.Logger {
 	l2 := l.logger.With().Logger()
 	if res != nil {
 		l2 = l.attachRequestToLog(res.Request).With().Int(keys.ResponseStatusKey, res.StatusCode).Logger()

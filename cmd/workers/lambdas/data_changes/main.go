@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
+
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 
@@ -12,7 +14,6 @@ import (
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/workers"
 )
 
@@ -30,7 +31,7 @@ func buildHandler(worker *workers.DataChangesWorker) func(ctx context.Context, s
 }
 
 func main() {
-	logger := logging.NewZerologLogger()
+	logger := zerolog.NewZerologLogger()
 	client := &http.Client{Timeout: 10 * time.Second}
 	ctx := context.Background()
 

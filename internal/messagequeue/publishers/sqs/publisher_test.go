@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/service/sqs"
@@ -13,7 +15,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/otel/trace"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
@@ -34,7 +35,7 @@ func Test_sqsPublisher_Publish(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewZerologLogger()
+		logger := zerolog.NewZerologLogger()
 
 		provider := ProvideSQSPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
 		require.NotNil(t, provider)
@@ -72,7 +73,7 @@ func Test_sqsPublisher_Publish(T *testing.T) {
 	T.Run("with error encoding value", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewZerologLogger()
+		logger := zerolog.NewZerologLogger()
 
 		provider := ProvideSQSPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
 		require.NotNil(t, provider)
@@ -102,7 +103,7 @@ func TestProvideSQSPublisherProvider(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewZerologLogger()
+		logger := zerolog.NewZerologLogger()
 
 		actual := ProvideSQSPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
 		assert.NotNil(t, actual)
@@ -115,7 +116,7 @@ func Test_publisherProvider_ProviderPublisher(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewZerologLogger()
+		logger := zerolog.NewZerologLogger()
 
 		provider := ProvideSQSPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
 		require.NotNil(t, provider)
@@ -128,7 +129,7 @@ func Test_publisherProvider_ProviderPublisher(T *testing.T) {
 	T.Run("with cache hit", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewZerologLogger()
+		logger := zerolog.NewZerologLogger()
 
 		provider := ProvideSQSPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
 		require.NotNil(t, provider)

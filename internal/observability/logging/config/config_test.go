@@ -1,4 +1,4 @@
-package logging
+package config
 
 import (
 	"testing"
@@ -12,18 +12,18 @@ func TestProvideLogger(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		cfg := Config{
+		cfg := &Config{
 			Provider: ProviderZerolog,
 		}
 
-		assert.NotNil(t, ProvideLogger(cfg))
+		assert.NotNil(t, cfg.ProvideLogger())
 	})
 
 	T.Run("no provider", func(t *testing.T) {
 		t.Parallel()
 
-		cfg := Config{}
+		cfg := &Config{}
 
-		assert.NotNil(t, ProvideLogger(cfg))
+		assert.NotNil(t, cfg.ProvideLogger())
 	})
 }

@@ -7,14 +7,15 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
+
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 
 	"github.com/prixfixeco/api_server/internal/observability/tracing/xray"
 
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
-	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	"github.com/prixfixeco/api_server/internal/encoding"
@@ -81,6 +82,16 @@ var (
 	examplePASETOKey = generatePASETOKey()
 
 	noopTracingConfig = tracingcfg.Config{}
+
+	devEnvLogConfig = logcfg.Config{
+		Level:    logging.InfoLevel,
+		Provider: logcfg.ProviderZerolog,
+	}
+
+	localLogConfig = logcfg.Config{
+		Level:    logging.DebugLevel,
+		Provider: logcfg.ProviderZerolog,
+	}
 
 	localServer = server.Config{
 		Debug:           true,
@@ -150,10 +161,9 @@ func saveConfig(ctx context.Context, outputPath string, cfg *config.InstanceConf
 type configFunc func(ctx context.Context, filePath string) error
 
 var files = map[string]configFunc{
-	"environments/dev/config_files/service-config.json":                     devEnvironmentConfig,
-	"environments/local/config_files/service-config.json":                   localDevelopmentConfig,
-	"environments/testing/config_files/integration-tests-config.json":       integrationTestConfig,
-	"environments/testing/config_files/integration-tests-local-config.json": localIntegrationTestConfig,
+	"environments/dev/config_files/service-config.json":               devEnvironmentConfig,
+	"environments/local/config_files/service-config.json":             localDevelopmentConfig,
+	"environments/testing/config_files/integration-tests-config.json": integrationTestConfig,
 }
 
 func generatePASETOKey() []byte {
@@ -184,6 +194,7 @@ func devEnvironmentConfig(ctx context.Context, filePath string) error {
 	}
 
 	cfg := &config.InstanceConfig{
+		Logging: devEnvLogConfig,
 		Meta: config.MetaSettings{
 			Debug:   true,
 			RunMode: developmentEnv,
@@ -255,6 +266,7 @@ func devEnvironmentConfig(ctx context.Context, filePath string) error {
 
 func localDevelopmentConfig(ctx context.Context, filePath string) error {
 	cfg := &config.InstanceConfig{
+		Logging: localLogConfig,
 		Meta: config.MetaSettings{
 			Debug:   true,
 			RunMode: developmentEnv,
@@ -404,6 +416,7 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 
 func buildIntegrationTestsConfig() *config.InstanceConfig {
 	return &config.InstanceConfig{
+		Logging: localLogConfig,
 		Meta: config.MetaSettings{
 			Debug:   false,
 			RunMode: testingEnv,
@@ -558,20 +571,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 
 func integrationTestConfig(ctx context.Context, filePath string) error {
 	cfg := buildIntegrationTestsConfig()
-
-	return saveConfig(ctx, filePath, cfg, true, true)
-}
-
-func localIntegrationTestConfig(ctx context.Context, filePath string) error {
-	cfg := buildIntegrationTestsConfig()
-
-	cfg.Events.RedisConfig.QueueAddress = msgconfig.MessageQueueAddress(strings.ReplaceAll(workerQueueAddress, "worker_queue", "localhost"))
-	cfg.Search.Address = search.IndexPath(strings.ReplaceAll(localElasticsearchLocation, "elasticsearch", "localhost"))
-	cfg.Database.ConnectionDetails = database.ConnectionDetails(strings.ReplaceAll(devPostgresDBConnDetails, "pgdatabase", "localhost"))
-
-	cfg.Services.ValidInstruments.SearchIndexPath = strings.ReplaceAll(localElasticsearchLocation, "elasticsearch", "localhost")
-	cfg.Services.ValidIngredients.SearchIndexPath = strings.ReplaceAll(localElasticsearchLocation, "elasticsearch", "localhost")
-	cfg.Services.ValidPreparations.SearchIndexPath = strings.ReplaceAll(localElasticsearchLocation, "elasticsearch", "localhost")
 
 	return saveConfig(ctx, filePath, cfg, true, true)
 }

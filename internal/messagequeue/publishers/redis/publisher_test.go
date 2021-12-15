@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
+
 	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/otel/trace"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
@@ -30,7 +31,7 @@ func Test_redisPublisher_Publish(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewZerologLogger()
+		logger := zerolog.NewZerologLogger()
 
 		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
 		require.NotNil(t, provider)
@@ -68,7 +69,7 @@ func Test_redisPublisher_Publish(T *testing.T) {
 	T.Run("with error encoding value", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewZerologLogger()
+		logger := zerolog.NewZerologLogger()
 
 		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
 		require.NotNil(t, provider)
@@ -98,7 +99,7 @@ func TestProvideRedisPublisherProvider(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewZerologLogger()
+		logger := zerolog.NewZerologLogger()
 
 		actual := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
 		assert.NotNil(t, actual)
@@ -111,7 +112,7 @@ func Test_publisherProvider_ProviderPublisher(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewZerologLogger()
+		logger := zerolog.NewZerologLogger()
 
 		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
 		require.NotNil(t, provider)
@@ -124,7 +125,7 @@ func Test_publisherProvider_ProviderPublisher(T *testing.T) {
 	T.Run("with cache hit", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewZerologLogger()
+		logger := zerolog.NewZerologLogger()
 
 		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
 		require.NotNil(t, provider)

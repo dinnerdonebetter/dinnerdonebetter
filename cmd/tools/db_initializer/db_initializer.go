@@ -7,14 +7,13 @@ import (
 	"net/url"
 	"sync"
 
+	flag "github.com/spf13/pflag"
 	"go.opentelemetry.io/otel/trace"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging"
+	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 	"github.com/prixfixeco/api_server/pkg/client/httpclient"
 	"github.com/prixfixeco/api_server/pkg/types"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
-
-	flag "github.com/spf13/pflag"
 )
 
 var (
@@ -37,7 +36,7 @@ func main() {
 	flag.Parse()
 
 	ctx := context.Background()
-	logger := logging.ProvideLogger(logging.Config{Provider: logging.ProviderZerolog})
+	logger := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
 
 	if address == "" {
 		logger.Fatal(errors.New("uri must be valid"))

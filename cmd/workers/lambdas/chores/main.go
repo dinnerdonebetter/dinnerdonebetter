@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
+
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 
@@ -35,7 +37,7 @@ func buildHandler(logger logging.Logger, worker *workers.ChoresWorker) func(ctx 
 
 func main() {
 	ctx := context.Background()
-	logger := logging.NewZerologLogger()
+	logger := zerolog.NewZerologLogger()
 	client := &http.Client{Timeout: 10 * time.Second}
 
 	cfg, err := config.GetConfigFromParameterStore()

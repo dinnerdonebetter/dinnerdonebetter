@@ -8,6 +8,8 @@ import (
 	"testing"
 	"time"
 
+	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
+
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/brianvoe/gofakeit/v5"
@@ -86,7 +88,7 @@ func initializeCookiePoweredClient(cookie *http.Cookie) (*httpclient.Client, err
 		panic("url not set!")
 	}
 
-	logger := logging.ProvideLogger(logging.Config{Provider: logging.ProviderZerolog})
+	logger := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
 
 	c, err := httpclient.NewClient(parsedURLToUse,
 		trace.NewNoopTracerProvider(),
@@ -152,7 +154,7 @@ func buildAdminCookieAndPASETOClients(ctx context.Context, t *testing.T) (cookie
 
 	u := testutils.DetermineServiceURL()
 	urlToUse = u.String()
-	logger := logging.ProvideLogger(logging.Config{Provider: logging.ProviderZerolog})
+	logger := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
 
 	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
 	testutils.EnsureServerIsUp(ctx, urlToUse)

@@ -11,13 +11,14 @@ import (
 	"syscall"
 	"time"
 
+	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
+
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/messagequeue/consumers/redis"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/search/elasticsearch"
 	"github.com/prixfixeco/api_server/internal/workers"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -36,9 +37,7 @@ const (
 func main() {
 	ctx := context.Background()
 
-	logger := logging.ProvideLogger(logging.Config{
-		Provider: logging.ProviderZerolog,
-	})
+	logger := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
 
 	logger.Info("starting workers...")
 
