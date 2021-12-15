@@ -1,15 +1,19 @@
 package jaeger
 
 import (
+	"context"
 	"fmt"
+	"net/http"
+	"time"
+
+	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
 
 	"go.opentelemetry.io/otel/trace"
 
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/exporters/trace/jaeger"
-	"go.opentelemetry.io/otel/sdk/resource"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/exporters/jaeger"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
@@ -27,24 +31,27 @@ func init() {
 }
 
 // SetupJaeger creates a new trace provider instance and registers it as global trace provider.
-func SetupJaeger(c *Config) (trace.TracerProvider, func(), error) {
+func SetupJaeger(_ context.Context, c *Config) (trace.TracerProvider, error) {
 	// Create and install Jaeger export pipeline.
-	tp, flush, err := jaeger.NewExportPipeline(
-		jaeger.WithCollectorEndpoint(c.CollectorEndpoint),
-		jaeger.WithProcessFromEnv(),
-		jaeger.WithSDKOptions(
-			sdktrace.WithSampler(sdktrace.TraceIDRatioBased(c.SpanCollectionProbability)),
-			sdktrace.WithResource(resource.NewWithAttributes(
-				attribute.String("exporter", "jaeger"),
-				attribute.String("service.name", c.ServiceName),
-			)),
+	exporter, err := jaeger.New(
+		jaeger.WithCollectorEndpoint(
+			jaeger.WithEndpoint(c.CollectorEndpoint),
+			jaeger.WithHTTPClient(&http.Client{Timeout: 10 * time.Second}),
 		),
 	)
 	if err != nil {
-		return nil, nil, fmt.Errorf("initializing Jaeger: %w", err)
+		return nil, fmt.Errorf("initializing Jaeger: %w", err)
 	}
+
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithBatcher(exporter),
+		sdktrace.WithResource(resource.NewSchemaless(
+			semconv.ServiceNameKey.String(c.ServiceName),
+			// attribute.String(tagKey, tagVal),
+		)),
+	)
 
 	otel.SetTracerProvider(tp)
 
-	return tp, flush, nil
+	return tp, nil
 }

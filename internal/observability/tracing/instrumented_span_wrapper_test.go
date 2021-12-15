@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"testing"
+
+	"go.opentelemetry.io/otel/trace"
 )
 
 func Test_instrumentedSQLSpanWrapper_NewChild(T *testing.T) {
@@ -14,8 +16,9 @@ func Test_instrumentedSQLSpanWrapper_NewChild(T *testing.T) {
 
 		ctx, span := StartSpan(context.Background())
 		w := &instrumentedSQLSpanWrapper{
-			ctx:  ctx,
-			span: span,
+			ctx:    ctx,
+			tracer: NewTracer(trace.NewNoopTracerProvider().Tracer(t.Name())),
+			span:   span,
 		}
 
 		w.NewChild("test")

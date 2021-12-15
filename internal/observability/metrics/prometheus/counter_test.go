@@ -1,8 +1,10 @@
-package metrics
+package prometheus
 
 import (
 	"context"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/metric/unit"
@@ -14,8 +16,9 @@ func Test_unitCounter_Decrement(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		initiatePrometheusExporter()
-		meterProvider := prometheusExporter.MeterProvider()
+		meterProvider, err := initiatePrometheusExporter()
+		require.NoError(t, err)
+
 		mustMeter := metric.Must(meterProvider.Meter(defaultNamespace, metric.WithInstrumentationVersion(instrumentationVersion)))
 
 		ctx := context.Background()
@@ -36,8 +39,9 @@ func Test_unitCounter_Increment(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		initiatePrometheusExporter()
-		meterProvider := prometheusExporter.MeterProvider()
+		meterProvider, err := initiatePrometheusExporter()
+		require.NoError(t, err)
+
 		mustMeter := metric.Must(meterProvider.Meter(defaultNamespace, metric.WithInstrumentationVersion(instrumentationVersion)))
 
 		ctx := context.Background()
@@ -55,12 +59,13 @@ func Test_unitCounter_Increment(T *testing.T) {
 func Test_unitCounter_IncrementBy(T *testing.T) {
 	T.Parallel()
 
-	initiatePrometheusExporter()
-	meterProvider := prometheusExporter.MeterProvider()
-	mustMeter := metric.Must(meterProvider.Meter(defaultNamespace, metric.WithInstrumentationVersion(instrumentationVersion)))
-
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
+
+		meterProvider, err := initiatePrometheusExporter()
+		require.NoError(T, err)
+
+		mustMeter := metric.Must(meterProvider.Meter(defaultNamespace, metric.WithInstrumentationVersion(instrumentationVersion)))
 
 		ctx := context.Background()
 		uc := &unitCounter{

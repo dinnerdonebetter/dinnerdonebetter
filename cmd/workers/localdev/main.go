@@ -64,14 +64,9 @@ func main() {
 
 	cfg.Observability.Tracing.Jaeger.ServiceName = "workers"
 
-	tracerProvider, flushFunc, initializeTracerErr := cfg.Observability.Tracing.Initialize(logger)
+	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.Initialize(ctx, logger)
 	if initializeTracerErr != nil {
 		logger.Error(initializeTracerErr, "initializing tracer")
-	}
-
-	// if tracing is disabled, this will be nil
-	if flushFunc != nil {
-		defer flushFunc()
 	}
 
 	cfg.Database.RunMigrations = false

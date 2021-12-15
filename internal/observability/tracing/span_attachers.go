@@ -38,14 +38,14 @@ func attachBooleanToSpan(span trace.Span, key string, b bool) {
 	}
 }
 
-func attachSliceToSpan(span trace.Span, key string, slice interface{}) {
-	span.SetAttributes(attribute.Array(key, slice))
+func attachSliceToSpan(span trace.Span, key string, slice []string) {
+	span.SetAttributes(attribute.StringSlice(key, slice))
 }
 
 // AttachToSpan allows a user to attach any value to a span.
 func AttachToSpan(span trace.Span, key string, val interface{}) {
 	if span != nil {
-		span.SetAttributes(attribute.Any(key, val))
+		span.SetAttributes(attribute.String(key, fmt.Sprintf("%+v", val)))
 	}
 }
 
@@ -182,7 +182,7 @@ func AttachDatabaseQueryToSpan(span trace.Span, queryDescription, query string, 
 	attachStringToSpan(span, "query_description", queryDescription)
 
 	for i, arg := range args {
-		span.SetAttributes(attribute.Any(fmt.Sprintf("query_args_%d", i), arg))
+		span.SetAttributes(attribute.String(fmt.Sprintf("query_args_%d", i), fmt.Sprintf("%+v", arg)))
 	}
 }
 

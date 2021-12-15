@@ -1,6 +1,7 @@
 package jaeger
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -25,30 +26,15 @@ func TestConfig_SetupJaeger(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		cfg := &Config{
 			CollectorEndpoint:         "blah blah blah",
 			ServiceName:               t.Name(),
 			SpanCollectionProbability: 0,
 		}
 
-		actual, flush, err := SetupJaeger(cfg)
+		actual, err := SetupJaeger(ctx, cfg)
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
-		assert.NotNil(t, flush)
-	})
-
-	T.Run("with empty collector endpoint", func(t *testing.T) {
-		t.Parallel()
-
-		cfg := &Config{
-			CollectorEndpoint:         "",
-			ServiceName:               t.Name(),
-			SpanCollectionProbability: 0,
-		}
-
-		actual, flush, err := SetupJaeger(cfg)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-		assert.Nil(t, flush)
 	})
 }

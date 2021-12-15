@@ -26,8 +26,9 @@ func (t *instrumentedSQLTracerWrapper) GetSpan(ctx context.Context) instrumented
 	ctx, span := t.tracer.StartSpan(ctx)
 
 	return &instrumentedSQLSpanWrapper{
-		ctx:  ctx,
-		span: span,
+		ctx:    ctx,
+		tracer: t.tracer,
+		span:   span,
 	}
 }
 

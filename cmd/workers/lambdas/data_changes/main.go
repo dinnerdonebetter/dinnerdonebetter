@@ -32,6 +32,7 @@ func buildHandler(worker *workers.DataChangesWorker) func(ctx context.Context, s
 func main() {
 	logger := logging.NewZerologLogger()
 	client := &http.Client{Timeout: 10 * time.Second}
+	ctx := context.Background()
 
 	cfg, err := config.GetConfigFromParameterStore()
 	if err != nil {
@@ -49,14 +50,9 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	tracerProvider, flushFunc, initializeTracerErr := cfg.Observability.Tracing.Initialize(logger)
+	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.Initialize(ctx, logger)
 	if initializeTracerErr != nil {
 		logger.Error(initializeTracerErr, "initializing tracer")
-	}
-
-	// if tracing is disabled, this will be nil
-	if flushFunc != nil {
-		defer flushFunc()
 	}
 
 	dataChangesWorker := workers.ProvideDataChangesWorker(logger, emailer, cdp, tracerProvider)

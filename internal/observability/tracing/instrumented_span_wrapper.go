@@ -11,12 +11,13 @@ import (
 var _ instrumentedsql.Span = (*instrumentedSQLSpanWrapper)(nil)
 
 type instrumentedSQLSpanWrapper struct {
-	ctx  context.Context
-	span trace.Span
+	ctx    context.Context
+	tracer Tracer
+	span   trace.Span
 }
 
 func (w *instrumentedSQLSpanWrapper) NewChild(s string) instrumentedsql.Span {
-	w.ctx, w.span = w.span.Tracer().Start(w.ctx, s)
+	w.ctx, w.span = w.tracer.StartCustomSpan(w.ctx, s)
 
 	return w
 }

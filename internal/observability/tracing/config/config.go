@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/prixfixeco/api_server/internal/observability/tracing/xray"
+
 	"go.opentelemetry.io/otel/trace"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -25,13 +27,14 @@ type (
 	Config struct {
 		_ struct{}
 
+		XRay     *xray.Config   `json:"xray,omitempty" mapstructure:"xray" toml:"xray,omitempty"`
 		Jaeger   *jaeger.Config `json:"jaeger,omitempty" mapstructure:"jaeger" toml:"jaeger,omitempty"`
 		Provider string         `json:"provider,omitempty" mapstructure:"provider" toml:"provider,omitempty"`
 	}
 )
 
 // Initialize provides an instrumentation handler.
-func (c *Config) Initialize(l logging.Logger) (traceProvidier trace.TracerProvider, flushFunc func(), err error) {
+func (c *Config) Initialize(ctx context.Context, l logging.Logger) (traceProvider trace.TracerProvider, err error) {
 	logger := l.WithValue("tracing_provider", c.Provider)
 	logger.Info("setting tracing provider")
 
@@ -39,13 +42,14 @@ func (c *Config) Initialize(l logging.Logger) (traceProvidier trace.TracerProvid
 
 	switch p {
 	case Jaeger:
-		logger.Debug("setting up jaeger")
-		return jaeger.SetupJaeger(c.Jaeger)
+		return jaeger.SetupJaeger(ctx, c.Jaeger)
 	case XRay:
-		return trace.NewNoopTracerProvider(), func() {}, nil
+		return xray.SetupXRay(ctx, c.XRay)
+	case "":
+		return trace.NewNoopTracerProvider(), nil
 	default:
-		logger.Debug("invalid tracing config")
-		return nil, nil, fmt.Errorf("invalid tracing provider: %q", p)
+		logger.Debug("invalid tracing provider")
+		return nil, fmt.Errorf("invalid tracing provider: %q", p)
 	}
 }
 
@@ -54,7 +58,8 @@ var _ validation.ValidatableWithContext = (*Config)(nil)
 // ValidateWithContext validates the config struct.
 func (c *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, c,
-		validation.Field(&c.Provider, validation.In("", Jaeger)),
+		validation.Field(&c.Provider, validation.In("", Jaeger, XRay)),
 		validation.Field(&c.Jaeger, validation.When(c.Provider == Jaeger, validation.Required).Else(validation.Nil)),
+		validation.Field(&c.XRay, validation.When(c.Provider == XRay, validation.Required).Else(validation.Nil)),
 	)
 }

@@ -10,6 +10,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/prixfixeco/api_server/internal/observability/tracing/xray"
+
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database"
@@ -211,6 +213,11 @@ func devEnvironmentConfig(ctx context.Context, filePath string) error {
 			},
 			Tracing: tracingcfg.Config{
 				Provider: tracingcfg.XRay,
+				XRay: &xray.Config{
+					CollectorEndpoint:         "0.0.0.0:4317",
+					ServiceName:               "prixfixe_api",
+					SpanCollectionProbability: 1,
+				},
 			},
 		},
 		Uploads: uploads.Config{
