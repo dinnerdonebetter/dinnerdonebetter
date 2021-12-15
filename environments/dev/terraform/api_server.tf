@@ -104,7 +104,6 @@ resource "aws_ecs_task_definition" "api_server" {
     {
       name : "aws-otel-collector",
       image : "amazon/aws-otel-collector",
-      command : ["--config=/etc/ecs/container-insights/otel-task-metrics-config.yaml"],
       essential : true,
       secrets : [
         {
