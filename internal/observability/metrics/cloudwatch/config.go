@@ -5,11 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/prixfixeco/api_server/internal/observability/metrics"
-
-	"go.opentelemetry.io/otel/sdk/resource"
-	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
-
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"go.opentelemetry.io/contrib/instrumentation/runtime"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
@@ -19,19 +14,19 @@ import (
 	controller "go.opentelemetry.io/otel/sdk/metric/controller/basic"
 	processor "go.opentelemetry.io/otel/sdk/metric/processor/basic"
 	"go.opentelemetry.io/otel/sdk/metric/selector/simple"
+	"go.opentelemetry.io/otel/sdk/resource"
+	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
 	"google.golang.org/grpc"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/metrics"
 )
 
 const (
 	// defaultNamespace is the default namespace under which we register metrics.
-	defaultNamespace = "prixfixe_server"
-
-	instrumentationVersion = "1.0.0"
-
-	// minimumRuntimeCollectionInterval is the smallest interval we can collect metrics at
-	// this value is used to guard against zero values.
+	defaultNamespace                 = "prixfixe_server"
+	instrumentationVersion           = "1.0.0"
+	minimumMetricsCollectionInterval = time.Second
 	minimumRuntimeCollectionInterval = time.Second
 )
 
@@ -41,7 +36,8 @@ type (
 		_ struct{}
 
 		CollectorEndpoint                string        `json:"collector_endpoint,omitempty" mapstructure:"collector_endpoint" toml:"collector_endpoint,omitempty"`
-		RuntimeMetricsCollectionInterval time.Duration `json:"runtimeMetricsCollectionInterval,omitempty" mapstructure:"runtime_metrics_collection_interval" toml:"runtime_metrics_collection_interval,omitempty"`
+		MetricsCollectionInterval        time.Duration `json:"runtimeMetricsCollectionInterval,omitempty" mapstructure:"runtime_metrics_collection_interval" toml:"runtime_metrics_collection_interval,omitempty"`
+		RuntimeMetricsCollectionInterval time.Duration `json:"metricsCollectionInterval,omitempty" mapstructure:"metrics_collection_interval" toml:"metrics_collection_interval,omitempty"`
 	}
 )
 
@@ -49,6 +45,7 @@ type (
 func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, cfg,
 		validation.Field(&cfg.CollectorEndpoint, validation.Required),
+		validation.Field(&cfg.MetricsCollectionInterval, validation.Min(minimumRuntimeCollectionInterval)),
 		validation.Field(&cfg.RuntimeMetricsCollectionInterval, validation.Min(minimumRuntimeCollectionInterval)),
 	)
 }
@@ -75,7 +72,7 @@ func initiateExporter(ctx context.Context, cfg *Config) (metric.MeterProvider, e
 			metricExporter,
 		),
 		controller.WithExporter(metricExporter),
-		controller.WithCollectPeriod(2*time.Second),
+		controller.WithCollectPeriod(cfg.MetricsCollectionInterval),
 		controller.WithResource(res),
 	)
 

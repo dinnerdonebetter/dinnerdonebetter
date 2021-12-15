@@ -15,6 +15,8 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
+			CollectorEndpoint:                t.Name(),
+			MetricsCollectionInterval:        minimumMetricsCollectionInterval,
 			RuntimeMetricsCollectionInterval: minimumRuntimeCollectionInterval,
 		}
 

@@ -220,7 +220,8 @@ func devEnvironmentConfig(ctx context.Context, filePath string) error {
 				Provider: metricscfg.ProviderCloudwatch,
 				Cloudwatch: &cloudwatch.Config{
 					CollectorEndpoint:                "0.0.0.0:4317",
-					RuntimeMetricsCollectionInterval: 15 * time.Second,
+					MetricsCollectionInterval:        5 * time.Second,
+					RuntimeMetricsCollectionInterval: 5 * time.Second,
 				},
 			},
 			Tracing: tracingcfg.Config{
