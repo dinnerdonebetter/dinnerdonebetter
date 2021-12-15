@@ -81,8 +81,6 @@ const (
 var (
 	examplePASETOKey = generatePASETOKey()
 
-	noopTracingConfig = tracingcfg.Config{}
-
 	devEnvLogConfig = logcfg.Config{
 		Level:    logging.InfoLevel,
 		Provider: logcfg.ProviderZerolog,
@@ -221,6 +219,7 @@ func devEnvironmentConfig(ctx context.Context, filePath string) error {
 			Metrics: metricscfg.Config{
 				Provider: metricscfg.ProviderCloudwatch,
 				Cloudwatch: &cloudwatch.Config{
+					CollectorEndpoint:                "0.0.0.0:4317",
 					RuntimeMetricsCollectionInterval: 15 * time.Second,
 				},
 			},
