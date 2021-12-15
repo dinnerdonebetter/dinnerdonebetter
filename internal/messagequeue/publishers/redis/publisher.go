@@ -3,6 +3,7 @@ package redis
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 
@@ -14,6 +15,11 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
+)
+
+var (
+	// ErrEmptyInputProvided indicates empty input was provided in an unacceptable context.
+	ErrEmptyInputProvided = errors.New("empty input provided")
 )
 
 type (
@@ -82,6 +88,10 @@ func ProvideRedisPublisherProvider(logger logging.Logger, tracerProvider trace.T
 // ProviderPublisher returns a Publisher for a given topic.
 func (p *publisherProvider) ProviderPublisher(topic string) (publishers.Publisher, error) {
 	logger := logging.EnsureLogger(p.logger).WithValue("topic", topic)
+
+	if topic == "" {
+		return nil, ErrEmptyInputProvided
+	}
 
 	p.publisherCacheHat.Lock()
 	defer p.publisherCacheHat.Unlock()

@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 
@@ -12,6 +13,11 @@ import (
 	"github.com/prixfixeco/api_server/internal/messagequeue/consumers"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
+)
+
+var (
+	// ErrEmptyInputProvided indicates empty input was provided in an unacceptable context.
+	ErrEmptyInputProvided = errors.New("empty input provided")
 )
 
 type (
@@ -51,7 +57,7 @@ func provideRedisConsumer(ctx context.Context, logger logging.Logger, redisClien
 
 // Consume reads messages and applies the handler to their payloads.
 // Writes errors to the error chan if it isn't nil.
-func (r *redisConsumer) Consume(stopChan chan bool, errors chan error) {
+func (r *redisConsumer) Consume(stopChan chan bool, errs chan error) {
 	if stopChan == nil {
 		stopChan = make(chan bool, 1)
 	}
@@ -63,8 +69,8 @@ func (r *redisConsumer) Consume(stopChan chan bool, errors chan error) {
 			ctx := context.Background()
 			if err := r.handlerFunc(ctx, []byte(msg.Payload)); err != nil {
 				r.logger.Error(err, "handling message")
-				if errors != nil {
-					errors <- err
+				if errs != nil {
+					errs <- err
 				}
 			}
 		case <-stopChan:
@@ -100,6 +106,10 @@ func ProvideRedisConsumerProvider(logger logging.Logger, tracerProvider trace.Tr
 // ProvideConsumer returns a Consumer for a given topic.
 func (p *consumerProvider) ProvideConsumer(ctx context.Context, topic string, handlerFunc func(context.Context, []byte) error) (consumers.Consumer, error) {
 	logger := logging.EnsureLogger(p.logger).WithValue("topic", topic)
+
+	if topic == "" {
+		return nil, ErrEmptyInputProvided
+	}
 
 	p.consumerCacheHat.Lock()
 	defer p.consumerCacheHat.Unlock()

@@ -34,7 +34,7 @@ func main() {
 	ctx := context.Background()
 	logger := zerolog.NewZerologLogger()
 
-	cfg, err := config.GetConfigFromParameterStore()
+	cfg, err := config.GetConfigFromParameterStore(true)
 	if err != nil {
 		logger.Fatal(err)
 	}

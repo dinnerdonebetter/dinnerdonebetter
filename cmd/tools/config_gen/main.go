@@ -159,7 +159,8 @@ func saveConfig(ctx context.Context, outputPath string, cfg *config.InstanceConf
 type configFunc func(ctx context.Context, filePath string) error
 
 var files = map[string]configFunc{
-	"environments/dev/config_files/service-config.json":               devEnvironmentConfig,
+	"environments/dev/config_files/service-config.json":               devEnvironmentServerConfig,
+	"environments/dev/config_files/worker-config.json":                devEnvironmentWorkerConfig,
 	"environments/local/config_files/service-config.json":             localDevelopmentConfig,
 	"environments/testing/config_files/integration-tests-config.json": integrationTestConfig,
 }
@@ -173,7 +174,7 @@ func generatePASETOKey() []byte {
 	return b
 }
 
-func devEnvironmentConfig(ctx context.Context, filePath string) error {
+func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 	cookieConfig := authservice.CookieConfig{
 		Name:       defaultCookieName,
 		Domain:     ".prixfixe.dev",
@@ -262,6 +263,20 @@ func devEnvironmentConfig(ctx context.Context, filePath string) error {
 			},
 		},
 	}
+
+	return cfg
+}
+
+func devEnvironmentServerConfig(ctx context.Context, filePath string) error {
+	cfg := buildDevEnvironmentServerConfig()
+
+	return saveConfig(ctx, filePath, cfg, false, false)
+}
+
+func devEnvironmentWorkerConfig(ctx context.Context, filePath string) error {
+	cfg := buildDevEnvironmentServerConfig()
+
+	cfg.Observability.Tracing.Provider = ""
 
 	return saveConfig(ctx, filePath, cfg, false, false)
 }

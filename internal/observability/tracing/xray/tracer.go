@@ -2,6 +2,7 @@ package xray
 
 import (
 	"context"
+	"time"
 
 	"go.opentelemetry.io/contrib/propagators/aws/xray"
 	"go.opentelemetry.io/otel"
@@ -29,26 +30,38 @@ func init() {
 
 // SetupXRay creates a new trace provider instance and registers it as global trace provider.
 func SetupXRay(ctx context.Context, c *Config) (trace.TracerProvider, error) {
-	traceExporter, err := otlptracegrpc.New(ctx, otlptracegrpc.WithInsecure(), otlptracegrpc.WithEndpoint(c.CollectorEndpoint), otlptracegrpc.WithDialOption(grpc.WithBlock()))
-	if err != nil {
-		return nil, err
-	}
+	grpcCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
 
-	res := resource.NewWithAttributes(
-		semconv.SchemaURL,
-		// the service name used to display traces in backends
-		semconv.ServiceNameKey.String(c.ServiceName),
-	)
+	return func() (trace.TracerProvider, error) {
+		traceExporter, err := otlptracegrpc.New(
+			grpcCtx,
+			otlptracegrpc.WithInsecure(),
+			otlptracegrpc.WithEndpoint(c.CollectorEndpoint),
+			otlptracegrpc.WithDialOption(
+				grpc.WithBlock(),
+			),
+		)
+		if err != nil {
+			return nil, err
+		}
 
-	tp := sdktrace.NewTracerProvider(
-		sdktrace.WithSampler(sdktrace.TraceIDRatioBased(c.SpanCollectionProbability)),
-		sdktrace.WithResource(res),
-		sdktrace.WithBatcher(traceExporter),
-		sdktrace.WithIDGenerator(xray.NewIDGenerator()),
-	)
+		res := resource.NewWithAttributes(
+			semconv.SchemaURL,
+			// the service name used to display traces in backends
+			semconv.ServiceNameKey.String(c.ServiceName),
+		)
 
-	otel.SetTracerProvider(tp)
-	otel.SetTextMapPropagator(xray.Propagator{})
+		tp := sdktrace.NewTracerProvider(
+			sdktrace.WithSampler(sdktrace.TraceIDRatioBased(c.SpanCollectionProbability)),
+			sdktrace.WithResource(res),
+			sdktrace.WithBatcher(traceExporter),
+			sdktrace.WithIDGenerator(xray.NewIDGenerator()),
+		)
 
-	return tp, nil
+		otel.SetTracerProvider(tp)
+		otel.SetTextMapPropagator(xray.Propagator{})
+
+		return tp, nil
+	}()
 }

@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	baseConfigSSMKey                    = "PRIXFIXE_BASE_CONFIG"
+	baseAPIServerConfigSSMKey           = "PRIXFIXE_BASE_API_SERVER_CONFIG"
+	baseWorkerConfigSSMKey              = "PRIXFIXE_BASE_WORKER_CONFIG"
 	databaseConnectionURLSSMKey         = "PRIXFIXE_DATABASE_CONNECTION_STRING"
 	writesQueueNameSSMKey               = "PRIXFIXE_WRITES_QUEUE_URL"
 	updatesQueueNameSSMKey              = "PRIXFIXE_UPDATES_QUEUE_URL"
@@ -47,13 +48,18 @@ func mustGetParameter(ps *ssm.SSM, paramName string) string {
 }
 
 // GetConfigFromParameterStore fetches and InstanceConfig from AWS SSM Parameter Store.
-func GetConfigFromParameterStore() (*InstanceConfig, error) {
+func GetConfigFromParameterStore(worker bool) (*InstanceConfig, error) {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
 	svc := ssm.New(sess)
 
-	rawPartialConfig := mustGetParameter(svc, baseConfigSSMKey)
+	var rawPartialConfig string
+	if worker {
+		rawPartialConfig = mustGetParameter(svc, baseWorkerConfigSSMKey)
+	} else {
+		rawPartialConfig = mustGetParameter(svc, baseAPIServerConfigSSMKey)
+	}
 
 	var cfg *InstanceConfig
 	if err := json.Unmarshal([]byte(rawPartialConfig), &cfg); err != nil {

@@ -35,7 +35,7 @@ func main() {
 	client := &http.Client{Timeout: 10 * time.Second}
 	ctx := context.Background()
 
-	cfg, err := config.GetConfigFromParameterStore()
+	cfg, err := config.GetConfigFromParameterStore(true)
 	if err != nil {
 		logger.Fatal(err)
 	}

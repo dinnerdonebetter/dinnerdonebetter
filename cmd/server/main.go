@@ -57,7 +57,7 @@ func main() {
 			logger.Fatal(err)
 		}
 	} else {
-		cfg, err = config.GetConfigFromParameterStore()
+		cfg, err = config.GetConfigFromParameterStore(false)
 		if err != nil {
 			logger.Fatal(err)
 		}
