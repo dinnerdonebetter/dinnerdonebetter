@@ -38,9 +38,7 @@ func SetupXRay(ctx context.Context, c *Config) (trace.TracerProvider, error) {
 			grpcCtx,
 			otlptracegrpc.WithInsecure(),
 			otlptracegrpc.WithEndpoint(c.CollectorEndpoint),
-			otlptracegrpc.WithDialOption(
-				grpc.WithBlock(),
-			),
+			otlptracegrpc.WithDialOption(grpc.WithBlock()),
 		)
 		if err != nil {
 			return nil, err
