@@ -29,20 +29,23 @@ processors:
       - ec2
 
 exporters:
-  awsprometheusremotewrite:
-    endpoint: https://prometheus-prod-10-prod-us-central-0.grafana.net/api/prom/push
-    basic_auth:
-      username: 276952
-      password: eyJrIjoiMmVlMTFkYmI4MmEyODUxMmNkYmI3ZDZmYjliMjg3OGI5MjBjNzljZiIsIm4iOiJBV1MgRGV2IiwiaWQiOjQ2MDQzMX0=
+  awsxray:
+  awsemf/application:
+    namespace: ECS/AWSOTel/Application
+    log_group_name: '/aws/ecs/application/metrics'
+    dimension_rollup_option: ZeroAndSingleDimensionRollup
+    resource_to_telemetry_conversion:
+      enabled: true
 
 service:
   pipelines:
-    metrics/application:
+    traces:
+      receivers: [otlp]
+      processors: [resourcedetection, batch/traces]
+      exporters: [awsxray]
+    metrics:
       receivers: [otlp]
       processors: [resourcedetection, batch/metrics]
-      exporters: [awsprometheusremotewrite]
-    metrics:
-      receivers: [awsecscontainermetrics]
-      exporters: [awsprometheusremotewrite]
+      exporters: [awsemf/application]
 
   extensions: [health_check]
