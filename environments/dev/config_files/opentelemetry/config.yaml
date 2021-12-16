@@ -40,7 +40,7 @@ exporters:
     resource_to_telemetry_conversion:
       enabled: true
   awsprometheusremotewrite:
-    endpoint: "https://aps-workspaces.us-east-1.amazonaws.com/workspaces/ws-9464bd31-7ea1-444f-847e-3d69f8debb27/v1/api/remote_write"
+    endpoint: "https://aps-workspaces.us-east-1.amazonaws.com/workspaces/ws-9464bd31-7ea1-444f-847e-3d69f8debb27/api/v1/remote_write"
     aws_auth:
       service: "aps"
       region: "user-region"
