@@ -29,7 +29,7 @@ processors:
       - ec2
 
 exporters:
-  prometheusremotewrite:
+  awsprometheusremotewrite:
     endpoint: https://prometheus-prod-10-prod-us-central-0.grafana.net/api/prom/push
     basic_auth:
       username: 276952
@@ -40,9 +40,9 @@ service:
     metrics/application:
       receivers: [otlp]
       processors: [resourcedetection, batch/metrics]
-      exporters: [prometheusremotewrite]
+      exporters: [awsprometheusremotewrite]
     metrics:
       receivers: [awsecscontainermetrics]
-      exporters: [prometheusremotewrite]
+      exporters: [awsprometheusremotewrite]
 
   extensions: [health_check]
