@@ -24,7 +24,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 		ctx := context.Background()
 		cfg := &Config{
 			Tracing: tracingcfg.Config{
-				Provider: tracingcfg.Jaeger,
+				Provider: tracingcfg.ProviderJaeger,
 				Jaeger: &jaeger.Config{
 					CollectorEndpoint:         "0.0.0.0",
 					ServiceName:               t.Name(),

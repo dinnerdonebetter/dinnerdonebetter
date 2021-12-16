@@ -17,10 +17,10 @@ import (
 )
 
 const (
-	// Jaeger represents the open source tracing server.
-	Jaeger = "jaeger"
-	// XRay represents the AWS tracing server.
-	XRay = "xray"
+	// ProviderJaeger represents the open source tracing server.
+	ProviderJaeger = "jaeger"
+	// ProviderXRay represents the AWS tracing server.
+	ProviderXRay = "xray"
 )
 
 type (
@@ -42,9 +42,9 @@ func (c *Config) Initialize(ctx context.Context, l logging.Logger) (traceProvide
 	p := strings.TrimSpace(strings.ToLower(c.Provider))
 
 	switch p {
-	case Jaeger:
+	case ProviderJaeger:
 		return jaeger.SetupJaeger(ctx, c.Jaeger)
-	case XRay:
+	case ProviderXRay:
 		return xray.SetupXRay(ctx, c.XRay)
 	case "":
 		return trace.NewNoopTracerProvider(), nil
@@ -59,8 +59,8 @@ var _ validation.ValidatableWithContext = (*Config)(nil)
 // ValidateWithContext validates the config struct.
 func (c *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, c,
-		validation.Field(&c.Provider, validation.In("", Jaeger, XRay)),
-		validation.Field(&c.Jaeger, validation.When(c.Provider == Jaeger, validation.Required).Else(validation.Nil)),
-		validation.Field(&c.XRay, validation.When(c.Provider == XRay, validation.Required).Else(validation.Nil)),
+		validation.Field(&c.Provider, validation.In("", ProviderJaeger, ProviderXRay)),
+		validation.Field(&c.Jaeger, validation.When(c.Provider == ProviderJaeger, validation.Required).Else(validation.Nil)),
+		validation.Field(&c.XRay, validation.When(c.Provider == ProviderXRay, validation.Required).Else(validation.Nil)),
 	)
 }
