@@ -40,9 +40,10 @@ exporters:
     resource_to_telemetry_conversion:
       enabled: true
   awsprometheusremotewrite:
-    endpoint: https://prometheus-prod-10-prod-us-central-0.grafana.net/api/prom/push
-    headers:
-      Authorization: "Basic Mjc2OTUyOmV5SnJJam9pTTJabE5ESTFZMlEwTW1GaVpUZGxNekpqTnpoak9EVmhORE5tTTJVM01XTXlZbUV4TlRrNFpDSXNJbTRpT2lKQlYxTWlMQ0pwWkNJNk5EWXdORE14ZlE9PQ=="
+    endpoint: "https://aps-workspaces.us-east-1.amazonaws.com/workspaces/ws-9464bd31-7ea1-444f-847e-3d69f8debb27/v1/api/remote_write"
+    aws_auth:
+      service: "aps"
+      region: "user-region"
 
 service:
   pipelines:

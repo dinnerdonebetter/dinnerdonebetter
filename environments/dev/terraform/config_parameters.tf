@@ -9,9 +9,3 @@ resource "aws_ssm_parameter" "worker_config" {
   type  = "String"
   value = file("${path.module}/worker-config.json")
 }
-
-resource "aws_ssm_parameter" "opentelemetry_collector_config" {
-  name  = "otel-collector-config"
-  type  = "String"
-  value = file("${path.module}/opentelemetry-config.yaml")
-}

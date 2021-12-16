@@ -354,28 +354,3 @@ resource "cloudflare_record" "api_dot_prixfixe_dot_dev_ssl_validation" {
   allow_overwrite = true
   ttl             = 60
 }
-
-data "aws_iam_policy_document" "opentelemetry_collector_policy" {
-  version = "2012-10-17"
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "logs:PutLogEvents",
-      "logs:CreateLogGroup",
-      "logs:CreateLogStream",
-      "logs:DescribeLogStreams",
-      "logs:DescribeLogGroups",
-      "xray:PutTraceSegments",
-      "xray:PutTelemetryRecords",
-      "xray:GetSamplingRules",
-      "xray:GetSamplingTargets",
-      "xray:GetSamplingStatisticSummaries",
-      "cloudwatch:PutMetricData",
-      "ec2:DescribeVolumes",
-      "ec2:DescribeTags",
-      "ssm:GetParameters"
-    ]
-    resources = ["*"]
-  }
-}
