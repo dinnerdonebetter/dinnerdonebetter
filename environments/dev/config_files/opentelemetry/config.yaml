@@ -42,7 +42,7 @@ exporters:
   awsprometheusremotewrite:
     endpoint: https://prometheus-prod-10-prod-us-central-0.grafana.net/api/prom/push
     headers:
-      Authorization: "Basic Mjc2OTUyOmV5SnJJam9pTW1WbE1URmtZbUk0TW1FeU9EVXhNbU5rWW1JM1pEWm1ZamxpTWpnM09HSTVNakJqTnpsalppSXNJbTRpT2lKQlYxTWdSR1YySWl3aWFXUWlPalEyTURRek1YMD0="
+      Authorization: "Basic Mjc2OTUyOmV5SnJJam9pTTJabE5ESTFZMlEwTW1GaVpUZGxNekpqTnpoak9EVmhORE5tTTJVM01XTXlZbUV4TlRrNFpDSXNJbTRpT2lKQlYxTWlMQ0pwWkNJNk5EWXdORE14ZlE9PQ=="
 
 service:
   pipelines:
