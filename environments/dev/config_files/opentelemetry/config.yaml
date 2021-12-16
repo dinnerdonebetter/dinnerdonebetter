@@ -19,7 +19,10 @@ receivers:
           scheme: 'http'
 
 processors:
-  batch/metrics:
+  traces:
+    timeout: 1s
+    send_batch_size: 50
+  metrics:
     timeout: 60s
   resourcedetection:
     detectors:
@@ -36,16 +39,20 @@ exporters:
     dimension_rollup_option: ZeroAndSingleDimensionRollup
     resource_to_telemetry_conversion:
       enabled: true
+  awsprometheusremotewrite:
+    endpoint: https://prometheus-prod-10-prod-us-central-0.grafana.net/api/prom/push
+    headers:
+      Authorization: "Basic Mjc2OTUyOmV5SnJJam9pTW1WbE1URmtZbUk0TW1FeU9EVXhNbU5rWW1JM1pEWm1ZamxpTWpnM09HSTVNakJqTnpsalppSXNJbTRpT2lKQlYxTWdSR1YySWl3aWFXUWlPalEyTURRek1YMD0="
 
 service:
   pipelines:
     traces:
       receivers: [otlp]
-      processors: [resourcedetection, batch/traces]
+      processors: [resourcedetection, traces]
       exporters: [awsxray]
     metrics:
       receivers: [otlp]
-      processors: [resourcedetection, batch/metrics]
-      exporters: [awsemf/application]
+      processors: [resourcedetection, metrics]
+      exporters: [awsprometheusremotewrite,awsemf/application]
 
   extensions: [health_check]
