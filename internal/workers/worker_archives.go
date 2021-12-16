@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/encoding"
@@ -40,7 +38,7 @@ func ProvideArchivesWorker(
 	postArchivesPublisher publishers.Publisher,
 	searchIndexProvider search.IndexManagerProvider,
 	customerDataCollector customerdata.Collector,
-	tracerProvider trace.TracerProvider,
+	tracerProvider tracing.TracerProvider,
 ) (*ArchivesWorker, error) {
 	const name = "pre_archives"
 

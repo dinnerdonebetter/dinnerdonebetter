@@ -6,6 +6,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
@@ -28,3 +29,6 @@ type Tracer interface {
 	StartSpan(ctx context.Context) (context.Context, Span)
 	StartCustomSpan(ctx context.Context, name string) (context.Context, Span)
 }
+
+// TracerProvider is a simple alias for trace.TracerProvider.
+type TracerProvider trace.TracerProvider

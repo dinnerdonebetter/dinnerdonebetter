@@ -7,8 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/prixfixeco/api_server/internal/capitalism"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
@@ -47,7 +45,7 @@ type (
 )
 
 // ProvideStripePaymentManager builds a Stripe-backed stripePaymentManager.
-func ProvideStripePaymentManager(logger logging.Logger, tracerProvider trace.TracerProvider, cfg *capitalism.StripeConfig) capitalism.PaymentManager {
+func ProvideStripePaymentManager(logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *capitalism.StripeConfig) capitalism.PaymentManager {
 	if cfg == nil {
 		return &capitalism.NoopPaymentManager{}
 	}

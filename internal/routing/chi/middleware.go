@@ -1,0 +1,78 @@
+package chi
+
+import (
+	"fmt"
+	"net/http"
+	"strings"
+	"time"
+
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
+
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+)
+
+var doNotLog = map[string]struct{}{
+	"/metrics": {}, // metrics scrapes
+	"/build/":  {}, // svelte output
+	"/assets/": {}, // static files
+}
+
+// buildLoggingMiddleware builds a logging middleware.
+func buildLoggingMiddleware(logger logging.Logger) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+			ww := chimiddleware.NewWrapResponseWriter(res, req.ProtoMajor)
+
+			start := time.Now()
+			next.ServeHTTP(ww, req)
+
+			shouldLog := true
+			for route := range doNotLog {
+				if strings.HasPrefix(req.URL.Path, route) || req.URL.Path == route {
+					shouldLog = false
+					break
+				}
+			}
+
+			if shouldLog {
+				logger.WithRequest(req).WithValues(map[string]interface{}{
+					"status":  ww.Status(),
+					"elapsed": time.Since(start).Milliseconds(),
+					"written": ww.BytesWritten(),
+				}).Debug("response served")
+			}
+		})
+	}
+}
+
+var doNotTrace = map[string]struct{}{
+	"/_meta_/ready": {}, // health checks
+}
+
+// buildTracingMiddleware builds a tracing middleware.
+func buildTracingMiddleware(tracer tracing.Tracer) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+			shouldTrace := true
+			for route := range doNotTrace {
+				if strings.HasPrefix(req.URL.Path, route) || req.URL.Path == route {
+					shouldTrace = false
+					break
+				}
+			}
+
+			if shouldTrace {
+				ctx, span := tracer.StartCustomSpan(req.Context(), fmt.Sprintf("%s %s", req.Method, req.URL.Path))
+				defer span.End()
+
+				req = req.WithContext(ctx)
+			}
+
+			ww := chimiddleware.NewWrapResponseWriter(res, req.ProtoMajor)
+
+			next.ServeHTTP(ww, req)
+		})
+	}
+}

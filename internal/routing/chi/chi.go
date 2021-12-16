@@ -38,7 +38,7 @@ type router struct {
 	logger logging.Logger
 }
 
-func buildChiMux(logger logging.Logger, _ *routing.Config) chi.Router {
+func buildChiMux(logger logging.Logger, tracer tracing.Tracer, _ *routing.Config) chi.Router {
 	ch := cors.New(cors.Options{
 		// AllowedOrigins: []string{"https://foo.com"}, // Use this to allow specific origin hosts,
 		AllowedOrigins: []string{
@@ -89,11 +89,12 @@ func buildChiMux(logger logging.Logger, _ *routing.Config) chi.Router {
 
 	mux := chi.NewRouter()
 	mux.Use(
+		buildTracingMiddleware(tracer),
 		sec.Handler,
 		chimiddleware.RequestID,
 		chimiddleware.RealIP,
 		chimiddleware.Timeout(maxTimeout),
-		logging.BuildLoggingMiddleware(logging.EnsureLogger(logger).WithName("router")),
+		buildLoggingMiddleware(logging.EnsureLogger(logger).WithName("router")),
 		ch.Handler,
 	)
 
@@ -102,17 +103,18 @@ func buildChiMux(logger logging.Logger, _ *routing.Config) chi.Router {
 	return mux
 }
 
-func buildRouter(mux chi.Router, logger logging.Logger, tracerProvider trace.TracerProvider, cfg *routing.Config) *router {
-	logger = logging.EnsureLogger(logger)
+func buildRouter(mux chi.Router, l logging.Logger, tracerProvider tracing.TracerProvider, cfg *routing.Config) *router {
+	logger := logging.EnsureLogger(l)
+	tracer := tracing.NewTracer(tracerProvider.Tracer("router"))
 
 	if mux == nil {
 		logger.Info("starting with a new mux")
-		mux = buildChiMux(logger, cfg)
+		mux = buildChiMux(logger, tracer, cfg)
 	}
 
 	r := &router{
 		router: mux,
-		tracer: tracing.NewTracer(tracerProvider.Tracer("router")),
+		tracer: tracer,
 		logger: logger,
 	}
 
@@ -132,8 +134,8 @@ func convertMiddleware(in ...routing.Middleware) []func(handler http.Handler) ht
 }
 
 // NewRouter constructs a new router.
-func NewRouter(logger logging.Logger, cfg *routing.Config) routing.Router {
-	return buildRouter(nil, logger, trace.NewNoopTracerProvider(), cfg)
+func NewRouter(logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *routing.Config) routing.Router {
+	return buildRouter(nil, logger, tracerProvider, cfg)
 }
 
 func (r *router) clone() *router {

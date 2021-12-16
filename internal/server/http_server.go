@@ -9,8 +9,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/prixfixeco/api_server/internal/observability/metrics"
+
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
-	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/net/http2"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
@@ -88,7 +89,8 @@ func ProvideHTTPServer(
 	logger logging.Logger,
 	encoder encoding.ServerEncoderDecoder,
 	router routing.Router,
-	tracerProvider trace.TracerProvider,
+	tracerProvider tracing.TracerProvider,
+	metricsHandler metrics.Handler,
 ) (*HTTPServer, error) {
 	srv := &HTTPServer{
 		config: serverSettings,
@@ -124,7 +126,7 @@ func ProvideHTTPServer(
 		apiClientsService:                  apiClientsService,
 	}
 
-	srv.setupRouter(ctx, router)
+	srv.setupRouter(ctx, router, metricsHandler)
 
 	logger.Debug("HTTP server successfully constructed")
 

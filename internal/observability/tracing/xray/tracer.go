@@ -10,10 +10,10 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
-	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
 
 type errorHandler struct {
@@ -29,11 +29,11 @@ func init() {
 }
 
 // SetupXRay creates a new trace provider instance and registers it as global trace provider.
-func SetupXRay(ctx context.Context, c *Config) (trace.TracerProvider, error) {
+func SetupXRay(ctx context.Context, c *Config) (tracing.TracerProvider, error) {
 	grpcCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	return func() (trace.TracerProvider, error) {
+	return func() (tracing.TracerProvider, error) {
 		traceExporter, err := otlptracegrpc.New(
 			grpcCtx,
 			otlptracegrpc.WithInsecure(),

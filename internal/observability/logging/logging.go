@@ -2,12 +2,8 @@ package logging
 
 import (
 	"net/http"
-	"strings"
-	"time"
 
 	"go.opentelemetry.io/otel/trace"
-
-	chimiddleware "github.com/go-chi/chi/v5/middleware"
 )
 
 const (
@@ -67,38 +63,4 @@ func EnsureLogger(logger Logger) Logger {
 	}
 
 	return NewNoopLogger()
-}
-
-var doNotLog = map[string]struct{}{
-	"/metrics": {}, // metrics scrapes
-	"/build/":  {}, // svelte output
-	"/assets/": {}, // static files
-}
-
-// BuildLoggingMiddleware builds a logging middleware.
-func BuildLoggingMiddleware(logger Logger) func(next http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-			ww := chimiddleware.NewWrapResponseWriter(res, req.ProtoMajor)
-
-			start := time.Now()
-			next.ServeHTTP(ww, req)
-
-			shouldLog := true
-			for route := range doNotLog {
-				if strings.HasPrefix(req.URL.Path, route) || req.URL.Path == route {
-					shouldLog = false
-					break
-				}
-			}
-
-			if shouldLog {
-				logger.WithRequest(req).WithValues(map[string]interface{}{
-					"status":  ww.Status(),
-					"elapsed": time.Since(start).Milliseconds(),
-					"written": ww.BytesWritten(),
-				}).Debug("response served")
-			}
-		})
-	}
 }

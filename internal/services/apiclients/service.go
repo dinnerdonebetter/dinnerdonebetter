@@ -3,8 +3,6 @@ package apiclients
 import (
 	"net/http"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/prixfixeco/api_server/internal/authentication"
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
@@ -58,7 +56,7 @@ func ProvideAPIClientsService(
 	routeParamManager routing.RouteParamManager,
 	cfg *config,
 	customerDataCollector customerdata.Collector,
-	tracerProvider trace.TracerProvider,
+	tracerProvider tracing.TracerProvider,
 ) types.APIClientDataService {
 	return &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),

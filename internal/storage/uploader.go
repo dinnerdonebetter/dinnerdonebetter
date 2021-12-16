@@ -9,7 +9,6 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"go.opentelemetry.io/otel/trace"
 	"gocloud.dev/blob"
 	"gocloud.dev/blob/fileblob"
 	"gocloud.dev/blob/memblob"
@@ -74,7 +73,7 @@ func (c *Config) ValidateWithContext(ctx context.Context) error {
 }
 
 // NewUploadManager provides a new uploads.UploadManager.
-func NewUploadManager(ctx context.Context, logger logging.Logger, tracerProvider trace.TracerProvider, cfg *Config, routeParamManager routing.RouteParamManager) (*Uploader, error) {
+func NewUploadManager(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *Config, routeParamManager routing.RouteParamManager) (*Uploader, error) {
 	if cfg == nil {
 		return nil, ErrNilConfig
 	}

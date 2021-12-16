@@ -9,7 +9,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
-	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/messagequeue/consumers"
@@ -88,14 +87,14 @@ type consumerProvider struct {
 	logger           logging.Logger
 	consumerCache    map[string]consumers.Consumer
 	sqsClient        *sqs.SQS
-	tracerProvider   trace.TracerProvider
+	tracerProvider   tracing.TracerProvider
 	consumerCacheHat sync.RWMutex
 }
 
 var _ consumers.ConsumerProvider = (*consumerProvider)(nil)
 
 // ProvideSQSConsumerProvider returns a ConsumerProvider for a given address.
-func ProvideSQSConsumerProvider(logger logging.Logger, tracerProvider trace.TracerProvider) consumers.ConsumerProvider {
+func ProvideSQSConsumerProvider(logger logging.Logger, tracerProvider tracing.TracerProvider) consumers.ConsumerProvider {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
@@ -125,7 +124,7 @@ func (p *consumerProvider) ProvideConsumer(ctx context.Context, topic string, ha
 	return c, nil
 }
 
-func provideSQSConsumer(_ context.Context, logger logging.Logger, sqsClient *sqs.SQS, tracerProvider trace.TracerProvider, topic string, handlerFunc func(context.Context, []byte) error) *sqsConsumer {
+func provideSQSConsumer(_ context.Context, logger logging.Logger, sqsClient *sqs.SQS, tracerProvider tracing.TracerProvider, topic string, handlerFunc func(context.Context, []byte) error) *sqsConsumer {
 	return &sqsConsumer{
 		topic:              topic,
 		handlerFunc:        handlerFunc,

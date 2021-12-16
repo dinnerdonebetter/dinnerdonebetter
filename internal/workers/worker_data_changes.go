@@ -3,8 +3,6 @@ package workers
 import (
 	"context"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/encoding"
@@ -28,7 +26,7 @@ func ProvideDataChangesWorker(
 	logger logging.Logger,
 	emailSender email.Emailer,
 	customerDataCollector customerdata.Collector,
-	tracerProvider trace.TracerProvider,
+	tracerProvider tracing.TracerProvider,
 ) *DataChangesWorker {
 	name := "post_writes"
 

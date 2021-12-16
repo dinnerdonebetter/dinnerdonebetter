@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"path"
 
+	"github.com/prixfixeco/api_server/internal/observability/metrics"
+
 	"github.com/heptiolabs/healthcheck"
 
 	"github.com/prixfixeco/api_server/internal/authorization"
@@ -41,15 +43,22 @@ func buildURLVarChunk(key, pattern string) string {
 	return fmt.Sprintf("/{%s}", key)
 }
 
-func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router) {
+func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, metricsHandler metrics.Handler) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
+
+	logger := s.logger.WithSpan(span)
 
 	router.Route("/_meta_", func(metaRouter routing.Router) {
 		health := healthcheck.NewHandler()
 		// Expose a readiness check on /ready
 		metaRouter.Get("/ready", health.ReadyEndpoint)
 	})
+
+	if metricsHandler != nil {
+		logger.Info("setting up metrics handler")
+		router.Get("/metrics", metricsHandler.ServeHTTP)
+	}
 
 	router.Post("/paseto", s.authService.PASETOHandler)
 

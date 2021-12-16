@@ -44,12 +44,27 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	)
 }
 
-// ProvideUnitCounterProvider provides an instrumentation handler.
+// ProvideMetricsHandler provides an instrumentation handler.
+func (cfg *Config) ProvideMetricsHandler(l logging.Logger) (metrics.Handler, error) {
+	p := strings.TrimSpace(strings.ToLower(cfg.Provider))
+
+	logger := l.WithValue("metrics_provider", p)
+	logger.Debug("setting up meter handler")
+
+	switch p {
+	case ProviderPrometheus:
+		return cfg.Prometheus.ProvideMetricsHandler()
+	default:
+		return nil, nil
+	}
+}
+
+// ProvideUnitCounterProvider provides a counter provider.
 func (cfg *Config) ProvideUnitCounterProvider(ctx context.Context, logger logging.Logger) (metrics.UnitCounterProvider, error) {
 	p := strings.TrimSpace(strings.ToLower(cfg.Provider))
 
 	logger = logger.WithValue("metrics_provider", p)
-	logger.Debug("setting up meter")
+	logger.Debug("setting up meter provider")
 
 	switch p {
 	case ProviderPrometheus:

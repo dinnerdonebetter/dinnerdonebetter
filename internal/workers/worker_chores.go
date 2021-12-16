@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/email"
@@ -35,7 +33,7 @@ func ProvideChoresWorker(
 	postUpdatesPublisher publishers.Publisher,
 	emailSender email.Emailer,
 	customerDataCollector customerdata.Collector,
-	tracerProvider trace.TracerProvider,
+	tracerProvider tracing.TracerProvider,
 ) *ChoresWorker {
 	name := "chores"
 

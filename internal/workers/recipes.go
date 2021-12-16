@@ -12,15 +12,20 @@ func (w *WritesWorker) createRecipe(ctx context.Context, msg *types.PreWriteMess
 	defer span.End()
 
 	logger := w.logger.WithValue("data_type", msg.DataType)
+	logger.Debug("createRecipe called")
 
+	logger.Debug("creating")
 	recipe, err := w.dataManager.CreateRecipe(ctx, msg.Recipe)
 	if err != nil {
 		return observability.PrepareError(err, logger, span, "creating recipe")
 	}
+	logger.Debug("created")
 
+	logger.Debug("indexing")
 	if err = w.recipesIndexManager.Index(ctx, recipe.ID, recipe); err != nil {
 		return observability.PrepareError(err, logger, span, "indexing the recipe")
 	}
+	logger.Debug("indexed")
 
 	if w.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
@@ -31,9 +36,11 @@ func (w *WritesWorker) createRecipe(ctx context.Context, msg *types.PreWriteMess
 			AttributableToHouseholdID: msg.AttributableToHouseholdID,
 		}
 
+		logger.Debug("publishing to data change")
 		if err = w.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			return observability.PrepareError(err, logger, span, "publishing to post-writes topic")
 		}
+		logger.Debug("published to data change")
 	}
 
 	return nil

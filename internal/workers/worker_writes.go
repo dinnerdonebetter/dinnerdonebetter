@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/email"
@@ -43,7 +41,7 @@ func ProvideWritesWorker(
 	searchIndexProvider search.IndexManagerProvider,
 	emailSender email.Emailer,
 	customerDataCollector customerdata.Collector,
-	tracerProvider trace.TracerProvider,
+	tracerProvider tracing.TracerProvider,
 ) (*WritesWorker, error) {
 	const name = "pre_writes"
 

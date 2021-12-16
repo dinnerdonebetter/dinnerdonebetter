@@ -3,8 +3,6 @@ package users
 import (
 	"net/http"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/prixfixeco/api_server/internal/authentication"
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
@@ -65,7 +63,7 @@ func ProvideUsersService(
 	uploadManager uploads.UploadManager,
 	routeParamManager routing.RouteParamManager,
 	customerDataCollector customerdata.Collector,
-	tracerProvider trace.TracerProvider,
+	tracerProvider tracing.TracerProvider,
 ) types.UserDataService {
 	return &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),

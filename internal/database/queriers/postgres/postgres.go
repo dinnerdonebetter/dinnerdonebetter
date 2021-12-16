@@ -13,7 +13,6 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"github.com/lib/pq"
 	"github.com/luna-duclos/instrumentedsql"
-	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
@@ -50,7 +49,7 @@ func ProvideDatabaseClient(
 	ctx context.Context,
 	logger logging.Logger,
 	cfg *dbconfig.Config,
-	tracerProvider trace.TracerProvider,
+	tracerProvider tracing.TracerProvider,
 ) (database.DataManager, error) {
 	tracer := tracing.NewTracer(tracerProvider.Tracer(tracingName))
 
@@ -80,7 +79,7 @@ func ProvideDatabaseClient(
 		db:            db,
 		config:        cfg,
 		tracer:        tracer,
-		logQueries:    true,
+		logQueries:    false,
 		timeFunc:      defaultTimeFunc,
 		connectionURL: string(cfg.ConnectionDetails),
 		logger:        logging.EnsureLogger(logger),

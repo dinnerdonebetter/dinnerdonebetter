@@ -8,91 +8,41 @@ receivers:
         endpoint: 0.0.0.0:4317
       http:
         endpoint: 0.0.0.0:4318
+  awsecscontainermetrics:
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'prixfixe-api-server'
+          scrape_interval: 5s
+          scrape_timeout: 5s
+          metrics_path: '/metrics'
+          scheme: 'http'
 
 processors:
-  batch/traces:
-    timeout: 1s
-    send_batch_size: 50
   batch/metrics:
     timeout: 60s
   resourcedetection:
     detectors:
       - env
+      - system
       - ecs
       - ec2
-  resource:
-    attributes:
-      - key: TaskDefinitionFamily
-        from_attribute: aws.ecs.task.family
-        action: insert
-      - key: aws.ecs.task.family
-        action: delete
-      - key: InstanceId
-        from_attribute: host.id
-        action: insert
-      - key: host.id
-        action: delete
-      - key: TaskARN
-        from_attribute: aws.ecs.task.arn
-        action: insert
-      - key: aws.ecs.task.arn
-        action: delete
-      - key: TaskDefinitionRevision
-        from_attribute: aws.ecs.task.revision
-        action: insert
-      - key: aws.ecs.task.revision
-        action: delete
-      - key: LaunchType
-        from_attribute: aws.ecs.launchtype
-        action: insert
-      - key: aws.ecs.launchtype
-        action: delete
-      - key: ClusterARN
-        from_attribute: aws.ecs.cluster.arn
-        action: insert
-      - key: aws.ecs.cluster.arn
-        action: delete
-      - key: cloud.provider
-        action: delete
-      - key: cloud.platform
-        action: delete
-      - key: cloud.account.id
-        action: delete
-      - key: cloud.region
-        action: delete
-      - key: cloud.availability_zone
-        action: delete
-      - key: aws.log.group.names
-        action: delete
-      - key: aws.log.group.arns
-        action: delete
-      - key: aws.log.stream.names
-        action: delete
-      - key: host.image.id
-        action: delete
-      - key: host.name
-        action: delete
-      - key: host.type
-        action: delete
 
 exporters:
-  awsxray:
-  awsemf/application:
-    namespace: ECS/AWSOTel/Application
-    log_group_name: '/aws/ecs/application/metrics'
-    dimension_rollup_option: ZeroAndSingleDimensionRollup
-    resource_to_telemetry_conversion:
-      enabled: true
+  prometheusremotewrite:
+    endpoint: https://prometheus-prod-10-prod-us-central-0.grafana.net/api/prom/push
+    basic_auth:
+      username: 276952
+      password: eyJrIjoiMmVlMTFkYmI4MmEyODUxMmNkYmI3ZDZmYjliMjg3OGI5MjBjNzljZiIsIm4iOiJBV1MgRGV2IiwiaWQiOjQ2MDQzMX0=
 
 service:
   pipelines:
-    traces:
-      receivers: [otlp]
-      processors: [resourcedetection, batch/traces]
-      exporters: [awsxray]
     metrics/application:
       receivers: [otlp]
-      processors: [resourcedetection, resource, batch/metrics]
-      exporters: [awsemf/application]
+      processors: [resourcedetection, batch/metrics]
+      exporters: [prometheusremotewrite]
+    metrics:
+      receivers: [awsecscontainermetrics]
+      exporters: [prometheusremotewrite]
 
   extensions: [health_check]

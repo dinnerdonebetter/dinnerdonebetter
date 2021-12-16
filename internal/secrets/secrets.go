@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 
-	"go.opentelemetry.io/otel/trace"
 	"gocloud.dev/secrets"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -37,7 +36,7 @@ type (
 )
 
 // ProvideSecretManager builds a new SecretManager.
-func ProvideSecretManager(logger logging.Logger, tracerProvider trace.TracerProvider, keeper *secrets.Keeper) (SecretManager, error) {
+func ProvideSecretManager(logger logging.Logger, tracerProvider tracing.TracerProvider, keeper *secrets.Keeper) (SecretManager, error) {
 	if keeper == nil {
 		return nil, errInvalidKeeper
 	}

@@ -7,7 +7,6 @@ import (
 	"context"
 
 	"github.com/google/wire"
-	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/authentication"
 	"github.com/prixfixeco/api_server/internal/config"
@@ -19,6 +18,7 @@ import (
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/routing/chi"
 	"github.com/prixfixeco/api_server/internal/search/elasticsearch"
 	"github.com/prixfixeco/api_server/internal/server"
@@ -53,8 +53,9 @@ func Build(
 	ctx context.Context,
 	logger logging.Logger,
 	cfg *config.InstanceConfig,
-	tracerProvider trace.TracerProvider,
+	tracerProvider tracing.TracerProvider,
 	unitCounterProvider metrics.UnitCounterProvider,
+	metricsHandler metrics.Handler,
 ) (*server.HTTPServer, error) {
 	wire.Build(
 		elasticsearch.Providers,

@@ -7,7 +7,6 @@ import (
 	"sync"
 
 	"github.com/go-redis/redis/v8"
-	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/messagequeue/consumers"
@@ -41,7 +40,7 @@ type (
 	}
 )
 
-func provideRedisConsumer(ctx context.Context, logger logging.Logger, redisClient *redis.Client, tracerProvider trace.TracerProvider, topic string, handlerFunc func(context.Context, []byte) error) *redisConsumer {
+func provideRedisConsumer(ctx context.Context, logger logging.Logger, redisClient *redis.Client, tracerProvider tracing.TracerProvider, topic string, handlerFunc func(context.Context, []byte) error) *redisConsumer {
 	subscription := redisClient.Subscribe(ctx, topic)
 
 	return &redisConsumer{
@@ -83,12 +82,12 @@ type consumerProvider struct {
 	logger           logging.Logger
 	consumerCache    map[string]consumers.Consumer
 	redisClient      *redis.Client
-	tracerProvider   trace.TracerProvider
+	tracerProvider   tracing.TracerProvider
 	consumerCacheHat sync.RWMutex
 }
 
 // ProvideRedisConsumerProvider returns a ConsumerProvider for a given address.
-func ProvideRedisConsumerProvider(logger logging.Logger, tracerProvider trace.TracerProvider, queueAddress string) consumers.ConsumerProvider {
+func ProvideRedisConsumerProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, queueAddress string) consumers.ConsumerProvider {
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     queueAddress,
 		Password: "", // no password set

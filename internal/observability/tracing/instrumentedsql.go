@@ -3,15 +3,13 @@ package tracing
 import (
 	"context"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/luna-duclos/instrumentedsql"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
 
 // NewInstrumentedSQLTracer wraps a Tracer for instrumentedsql.
-func NewInstrumentedSQLTracer(tracerProvider trace.TracerProvider, name string) instrumentedsql.Tracer {
+func NewInstrumentedSQLTracer(tracerProvider TracerProvider, name string) instrumentedsql.Tracer {
 	return &instrumentedSQLTracerWrapper{tracer: NewTracer(tracerProvider.Tracer(name))}
 }
 

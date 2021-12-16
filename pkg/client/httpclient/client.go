@@ -9,8 +9,6 @@ import (
 	"path"
 	"time"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/gorilla/websocket"
 	"github.com/moul/http2curl"
 
@@ -77,7 +75,7 @@ func (c *Client) RequestBuilder() *requests.Builder {
 }
 
 // NewClient builds a new API client for us.
-func NewClient(u *url.URL, tracerProvider trace.TracerProvider, options ...option) (*Client, error) {
+func NewClient(u *url.URL, tracerProvider tracing.TracerProvider, options ...option) (*Client, error) {
 	l := logging.NewNoopLogger()
 
 	if u == nil {

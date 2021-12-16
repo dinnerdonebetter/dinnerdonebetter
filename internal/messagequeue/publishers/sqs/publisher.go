@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"sync"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -62,7 +60,7 @@ func (r *sqsPublisher) Publish(ctx context.Context, data interface{}) error {
 }
 
 // provideSQSPublisher provides a sqs-backed Publisher.
-func provideSQSPublisher(logger logging.Logger, sqsClient *sqs.SQS, tracerProvider trace.TracerProvider, topic string) *sqsPublisher {
+func provideSQSPublisher(logger logging.Logger, sqsClient *sqs.SQS, tracerProvider tracing.TracerProvider, topic string) *sqsPublisher {
 	return &sqsPublisher{
 		publisher: sqsClient,
 		topic:     topic,
@@ -76,12 +74,12 @@ type publisherProvider struct {
 	logger            logging.Logger
 	publisherCache    map[string]publishers.Publisher
 	sqsClient         *sqs.SQS
-	tracerProvider    trace.TracerProvider
+	tracerProvider    tracing.TracerProvider
 	publisherCacheHat sync.RWMutex
 }
 
 // ProvideSQSPublisherProvider returns a PublisherProvider for a given address.
-func ProvideSQSPublisherProvider(logger logging.Logger, tracerProvider trace.TracerProvider, address string) publishers.PublisherProvider {
+func ProvideSQSPublisherProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, address string) publishers.PublisherProvider {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))

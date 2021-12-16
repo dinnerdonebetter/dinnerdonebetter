@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/go-chi/chi/v5"
@@ -18,7 +20,7 @@ import (
 )
 
 func buildRouterForTest() routing.Router {
-	return NewRouter(logging.NewNoopLogger(), &routing.Config{})
+	return NewRouter(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), &routing.Config{})
 }
 
 func TestNewRouter(T *testing.T) {
@@ -27,7 +29,7 @@ func TestNewRouter(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		assert.NotNil(t, NewRouter(logging.NewNoopLogger(), &routing.Config{}))
+		assert.NotNil(t, NewRouter(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), &routing.Config{}))
 	})
 }
 
@@ -37,7 +39,7 @@ func Test_buildChiMux(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		assert.NotNil(t, buildChiMux(logging.NewNoopLogger(), &routing.Config{}))
+		assert.NotNil(t, buildChiMux(logging.NewNoopLogger(), tracing.NewTracer(trace.NewNoopTracerProvider().Tracer(t.Name())), &routing.Config{}))
 	})
 }
 

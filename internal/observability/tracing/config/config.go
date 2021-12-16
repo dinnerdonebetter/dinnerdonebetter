@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/observability/tracing/xray"
 
 	"go.opentelemetry.io/otel/trace"
@@ -34,7 +35,7 @@ type (
 )
 
 // Initialize provides an instrumentation handler.
-func (c *Config) Initialize(ctx context.Context, l logging.Logger) (traceProvider trace.TracerProvider, err error) {
+func (c *Config) Initialize(ctx context.Context, l logging.Logger) (traceProvider tracing.TracerProvider, err error) {
 	logger := l.WithValue("tracing_provider", c.Provider)
 	logger.Info("setting tracing provider")
 

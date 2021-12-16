@@ -8,7 +8,6 @@ import (
 	"sync"
 
 	"github.com/go-redis/redis/v8"
-	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
@@ -51,7 +50,7 @@ func (r *redisPublisher) Publish(ctx context.Context, data interface{}) error {
 }
 
 // provideRedisPublisher provides a redis-backed Publisher.
-func provideRedisPublisher(logger logging.Logger, tracerProvider trace.TracerProvider, redisClient *redis.Client, topic string) *redisPublisher {
+func provideRedisPublisher(logger logging.Logger, tracerProvider tracing.TracerProvider, redisClient *redis.Client, topic string) *redisPublisher {
 	return &redisPublisher{
 		publisher: redisClient,
 		topic:     topic,
@@ -65,12 +64,12 @@ type publisherProvider struct {
 	logger            logging.Logger
 	publisherCache    map[string]publishers.Publisher
 	redisClient       *redis.Client
-	tracerProvider    trace.TracerProvider
+	tracerProvider    tracing.TracerProvider
 	publisherCacheHat sync.RWMutex
 }
 
 // ProvideRedisPublisherProvider returns a PublisherProvider for a given address.
-func ProvideRedisPublisherProvider(logger logging.Logger, tracerProvider trace.TracerProvider, address string) publishers.PublisherProvider {
+func ProvideRedisPublisherProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, address string) publishers.PublisherProvider {
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     address,
 		Password: "", // no password set

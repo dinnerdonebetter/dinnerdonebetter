@@ -46,7 +46,7 @@ type (
 )
 
 // NewGenerator builds a new Generator.
-func NewGenerator(logger logging.Logger, tracerProvider trace.TracerProvider) Generator {
+func NewGenerator(logger logging.Logger, tracerProvider tracing.TracerProvider) Generator {
 	return &standardGenerator{
 		logger:     logging.EnsureLogger(logger).WithName("random_string_generator"),
 		tracer:     tracing.NewTracer(tracerProvider.Tracer("secret_generator")),

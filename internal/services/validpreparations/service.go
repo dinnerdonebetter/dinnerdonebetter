@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -52,7 +50,7 @@ func ProvideService(
 	searchIndexProvider search.IndexManagerProvider,
 	routeParamManager routing.RouteParamManager,
 	publisherProvider publishers.PublisherProvider,
-	tracerProvider trace.TracerProvider,
+	tracerProvider tracing.TracerProvider,
 ) (types.ValidPreparationDataService, error) {
 	searchIndexManager, err := searchIndexProvider.ProvideIndexManager(ctx, logger, "valid_preparations", "name", "description")
 	if err != nil {

@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/prixfixeco/api_server/internal/messagequeue/consumers"
 	redisconsumer "github.com/prixfixeco/api_server/internal/messagequeue/consumers/redis"
 	sqsconsumer "github.com/prixfixeco/api_server/internal/messagequeue/consumers/sqs"
@@ -13,6 +11,7 @@ import (
 	redispublisher "github.com/prixfixeco/api_server/internal/messagequeue/publishers/redis"
 	sqspublisher "github.com/prixfixeco/api_server/internal/messagequeue/publishers/sqs"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
 
 const (
@@ -54,7 +53,7 @@ func cleanString(s string) string {
 }
 
 // ProvideConsumerProvider provides a PublisherProvider.
-func ProvideConsumerProvider(logger logging.Logger, tracerProvider trace.TracerProvider, c *Config) (consumers.ConsumerProvider, error) {
+func ProvideConsumerProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, c *Config) (consumers.ConsumerProvider, error) {
 	switch cleanString(string(c.Provider)) {
 	case ProviderRedis:
 		return redisconsumer.ProvideRedisConsumerProvider(logger, tracerProvider, string(c.RedisConfig.QueueAddress)), nil
@@ -66,7 +65,7 @@ func ProvideConsumerProvider(logger logging.Logger, tracerProvider trace.TracerP
 }
 
 // ProvidePublisherProvider provides a PublisherProvider.
-func ProvidePublisherProvider(logger logging.Logger, tracerProvider trace.TracerProvider, c *Config) (publishers.PublisherProvider, error) {
+func ProvidePublisherProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, c *Config) (publishers.PublisherProvider, error) {
 	switch cleanString(string(c.Provider)) {
 	case ProviderRedis:
 		return redispublisher.ProvideRedisPublisherProvider(logger, tracerProvider, string(c.RedisConfig.QueueAddress)), nil

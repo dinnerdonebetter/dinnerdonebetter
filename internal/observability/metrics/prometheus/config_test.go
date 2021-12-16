@@ -5,11 +5,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
 
-func TestConfig_ProvideInstrumentationHandler(T *testing.T) {
+func TestConfig_ProvideMetricsHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -19,7 +17,7 @@ func TestConfig_ProvideInstrumentationHandler(T *testing.T) {
 			RuntimeMetricsCollectionInterval: minimumRuntimeCollectionInterval,
 		}
 
-		actual, err := cfg.ProvideInstrumentationHandler(logging.NewNoopLogger())
+		actual, err := cfg.ProvideMetricsHandler()
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
 	})
@@ -46,6 +44,10 @@ func Test_initiatePrometheusExporter(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		initiatePrometheusExporter()
+		cfg := &Config{
+			RuntimeMetricsCollectionInterval: minimumRuntimeCollectionInterval,
+		}
+
+		cfg.initiatePrometheusExporter()
 	})
 }

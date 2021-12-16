@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
@@ -57,7 +55,7 @@ func ProvideService(
 	routeParamManager routing.RouteParamManager,
 	publisherProvider publishers.PublisherProvider,
 	customerDataCollector customerdata.Collector,
-	tracerProvider trace.TracerProvider,
+	tracerProvider tracing.TracerProvider,
 ) (types.MealPlanOptionVoteDataService, error) {
 	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
 	if err != nil {

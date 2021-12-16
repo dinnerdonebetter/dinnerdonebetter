@@ -10,7 +10,6 @@ import (
 
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/esapi"
-	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -32,7 +31,7 @@ type (
 
 	indexManagerProvider struct {
 		esclient       *elasticsearch.Client
-		tracerProvider trace.TracerProvider
+		tracerProvider tracing.TracerProvider
 		address        string
 	}
 )
@@ -42,7 +41,7 @@ func NewIndexManagerProvider(
 	ctx context.Context,
 	logger logging.Logger,
 	cfg *search.Config,
-	tracerProvider trace.TracerProvider,
+	tracerProvider tracing.TracerProvider,
 ) (search.IndexManagerProvider, error) {
 	if !elasticsearchIsReady(ctx, cfg, logger, 10) {
 		return nil, errors.New("elasticsearch isn't ready")
