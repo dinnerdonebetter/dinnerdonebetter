@@ -19,10 +19,10 @@ receivers:
           scheme: 'http'
 
 processors:
-  traces:
+  batch/traces:
     timeout: 1s
     send_batch_size: 50
-  metrics:
+  batch/metrics:
     timeout: 60s
   resourcedetection:
     detectors:
@@ -48,11 +48,11 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      processors: [resourcedetection, traces]
+      processors: [resourcedetection, batch/traces]
       exporters: [awsxray]
     metrics:
-      receivers: [otlp]
-      processors: [resourcedetection, metrics]
+      receivers: [otlp, prometheus, awsecscontainermetrics]
+      processors: [resourcedetection, batch/metrics]
       exporters: [awsprometheusremotewrite,awsemf/application]
 
   extensions: [health_check]
