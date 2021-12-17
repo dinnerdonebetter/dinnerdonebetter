@@ -43,7 +43,6 @@ data "aws_iam_policy_document" "allow_parameter_store_access" {
       aws_ssm_parameter.search_url.arn,
       aws_ssm_parameter.search_username.arn,
       aws_ssm_parameter.search_password.arn,
-      aws_ssm_parameter.prometheus_endpoint.arn,
     ]
   }
 }
