@@ -2,13 +2,16 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
-
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-lambda-go/otellambda"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-lambda-go/otellambda/xrayconfig"
+	"go.opentelemetry.io/contrib/propagators/aws/xray"
+	"go.opentelemetry.io/otel"
 
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
@@ -17,6 +20,7 @@ import (
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/api_server/internal/workers"
 )
 
@@ -46,10 +50,19 @@ func main() {
 	}
 	cfg.Database.RunMigrations = false
 
-	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.Initialize(ctx, logger)
-	if initializeTracerErr != nil {
-		logger.Error(initializeTracerErr, "initializing tracer")
+	tracerProvider, err := xrayconfig.NewTracerProvider(ctx)
+	if err != nil {
+		fmt.Printf("error creating tracer provider: %v", err)
 	}
+
+	defer func(ctx context.Context) {
+		if shutdownErr := tracerProvider.Shutdown(ctx); shutdownErr != nil {
+			fmt.Printf("error shutting down tracer provider: %v", shutdownErr)
+		}
+	}(ctx)
+
+	otel.SetTracerProvider(tracerProvider)
+	otel.SetTextMapPropagator(xray.Propagator{})
 
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, tracerProvider)
 	if err != nil {
@@ -85,5 +98,8 @@ func main() {
 		tracerProvider,
 	)
 
-	lambda.Start(buildHandler(logger, preChoresWorker))
+	lambda.Start(otellambda.InstrumentHandler(
+		buildHandler(logger, preChoresWorker),
+		xrayconfig.WithRecommendedOptions(tracerProvider)...,
+	))
 }

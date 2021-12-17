@@ -2,18 +2,21 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
-
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-lambda-go/otellambda/xrayconfig"
+	"go.opentelemetry.io/contrib/propagators/aws/xray"
+	"go.opentelemetry.io/otel"
 
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/api_server/internal/workers"
 )
 
@@ -40,6 +43,19 @@ func main() {
 		logger.Fatal(err)
 	}
 	cfg.Database.RunMigrations = false
+	tracerProvider, err := xrayconfig.NewTracerProvider(ctx)
+	if err != nil {
+		fmt.Printf("error creating tracer provider: %v", err)
+	}
+
+	defer func(ctx context.Context) {
+		if shutdownErr := tracerProvider.Shutdown(ctx); shutdownErr != nil {
+			fmt.Printf("error shutting down tracer provider: %v", shutdownErr)
+		}
+	}(ctx)
+
+	otel.SetTracerProvider(tracerProvider)
+	otel.SetTextMapPropagator(xray.Propagator{})
 
 	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, client)
 	if err != nil {
@@ -49,11 +65,6 @@ func main() {
 	cdp, err := customerdataconfig.ProvideCollector(&cfg.CustomerData, logger)
 	if err != nil {
 		logger.Fatal(err)
-	}
-
-	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.Initialize(ctx, logger)
-	if initializeTracerErr != nil {
-		logger.Error(initializeTracerErr, "initializing tracer")
 	}
 
 	dataChangesWorker := workers.ProvideDataChangesWorker(logger, emailer, cdp, tracerProvider)
