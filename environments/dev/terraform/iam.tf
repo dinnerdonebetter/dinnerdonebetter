@@ -46,6 +46,7 @@ data "aws_iam_policy_document" "allow_parameter_store_access" {
     ]
   }
 }
+
 data "aws_iam_policy_document" "allow_to_decrypt_parameters" {
   statement {
     effect = "Allow"
@@ -55,6 +56,23 @@ data "aws_iam_policy_document" "allow_to_decrypt_parameters" {
     ]
     resources = [
       aws_kms_key.parameter_store_key.arn,
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "allowed_to_write_traces" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "xray:PutTraceSegments",
+      "xray:PutTelemetryRecords",
+    ]
+    resources = [
+      aws_lambda_function.writes_worker_lambda.arn,
+      aws_lambda_function.updates_worker_lambda.arn,
+      aws_lambda_function.archives_worker_lambda.arn,
+      aws_lambda_function.chores_worker_lambda.arn,
+      aws_lambda_function.data_changes_worker_lambda.arn,
     ]
   }
 }
@@ -75,6 +93,11 @@ resource "aws_iam_role" "worker_lambda_role" {
   inline_policy {
     name   = "allow_decrypt_ssm_parameters"
     policy = data.aws_iam_policy_document.allow_to_decrypt_parameters.json
+  }
+
+  inline_policy {
+    name   = "allowed_to_write_traces"
+    policy = data.aws_iam_policy_document.allowed_to_write_traces.json
   }
 
   managed_policy_arns = [
