@@ -9,8 +9,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/prixfixeco/api_server/internal/observability/metrics/cloudwatch"
-
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
@@ -23,7 +21,7 @@ import (
 	metricscfg "github.com/prixfixeco/api_server/internal/observability/metrics/config"
 	"github.com/prixfixeco/api_server/internal/observability/metrics/prometheus"
 	tracingcfg "github.com/prixfixeco/api_server/internal/observability/tracing/config"
-	jaeger "github.com/prixfixeco/api_server/internal/observability/tracing/jaeger"
+	"github.com/prixfixeco/api_server/internal/observability/tracing/jaeger"
 	"github.com/prixfixeco/api_server/internal/observability/tracing/xray"
 	"github.com/prixfixeco/api_server/internal/search"
 	"github.com/prixfixeco/api_server/internal/server"
@@ -218,17 +216,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 			MaxPingAttempts: maxAttempts,
 		},
 		Observability: observability.Config{
-			Metrics: metricscfg.Config{
-				Provider: metricscfg.ProviderCloudwatch,
-				//Prometheus: &prometheus.Config{
-				//	RuntimeMetricsCollectionInterval: 5 * time.Second,
-				//},
-				Cloudwatch: &cloudwatch.Config{
-					CollectorEndpoint:                "0.0.0.0:4317",
-					MetricsCollectionInterval:        5 * time.Second,
-					RuntimeMetricsCollectionInterval: 5 * time.Second,
-				},
-			},
+			Metrics: metricscfg.Config{},
 			Tracing: tracingcfg.Config{
 				Provider: tracingcfg.ProviderXRay,
 				XRay: &xray.Config{

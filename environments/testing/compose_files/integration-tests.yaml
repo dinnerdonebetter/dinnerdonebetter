@@ -63,12 +63,6 @@ services:
             context: '../../../'
             dockerfile: 'environments/testing/dockerfiles/integration-server.Dockerfile'
         volumes:
-            - source: '../../../environments/local/certificates/cert.pem'
-              target: '/etc/certs/cert.pem'
-              type: 'bind'
-            - source: '../../../environments/local/certificates/key.pem'
-              target: '/etc/certs/key.pem'
-              type: 'bind'
             - source: '../../../environments/testing/config_files/integration-tests-config.json'
               target: '/etc/service.config'
               type: 'bind'

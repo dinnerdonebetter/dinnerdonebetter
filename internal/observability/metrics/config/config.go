@@ -6,8 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/prixfixeco/api_server/internal/observability/metrics/cloudwatch"
-
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -21,15 +19,12 @@ const (
 
 	// ProviderPrometheus represents the popular time series database.
 	ProviderPrometheus = "prometheus"
-	// ProviderCloudwatch represents the AWS metrics management service.
-	ProviderCloudwatch = "cloudwatch"
 )
 
 type (
 	// Config contains settings related to .
 	Config struct {
 		_          struct{}
-		Cloudwatch *cloudwatch.Config `json:"cloudwatch,omitempty" mapstructure:"cloudwatch" toml:"cloudwatch,omitempty"`
 		Prometheus *prometheus.Config `json:"prometheus,omitempty" mapstructure:"prometheus" toml:"prometheus,omitempty"`
 		Provider   string             `json:"provider,omitempty" mapstructure:"provider" toml:"provider,omitempty"`
 	}
@@ -38,9 +33,8 @@ type (
 // ValidateWithContext validates the config struct.
 func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, cfg,
-		validation.Field(&cfg.Provider, validation.In("", ProviderPrometheus, ProviderCloudwatch)),
+		validation.Field(&cfg.Provider, validation.In("", ProviderPrometheus)),
 		validation.Field(&cfg.Prometheus, validation.When(cfg.Provider == ProviderPrometheus, validation.Required)),
-		validation.Field(&cfg.Cloudwatch, validation.When(cfg.Provider == ProviderCloudwatch, validation.Required)),
 	)
 }
 
@@ -69,8 +63,6 @@ func (cfg *Config) ProvideUnitCounterProvider(ctx context.Context, logger loggin
 	switch p {
 	case ProviderPrometheus:
 		return cfg.Prometheus.ProvideUnitCounterProvider(logger)
-	case ProviderCloudwatch:
-		return cfg.Cloudwatch.ProvideUnitCounterProvider(ctx, logger)
 	case "":
 		logger.Debug("noop unit counter provider")
 		noopFunc := metrics.UnitCounterProvider(func(name, description string) metrics.UnitCounter {
