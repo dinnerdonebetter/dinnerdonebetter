@@ -37,7 +37,7 @@ service:
       receivers: [otlp]
       processors: [resourcedetection, batch/traces]
       exporters: [awsxray]
-    metrics/application:
+    metrics:
       receivers: [otlp]
       processors: [resourcedetection, resource, batch/metrics]
       exporters: [awsemf/application]
