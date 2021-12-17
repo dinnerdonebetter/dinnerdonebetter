@@ -48,8 +48,8 @@ resource "aws_lambda_function" "data_changes_worker_lambda" {
 
 resource "aws_sns_topic_subscription" "data_changes_mapping" {
   topic_arn = aws_sns_topic.data_changes_queue.arn
-  protocol = "lambda"
-  endpoint    = aws_lambda_function.data_changes_worker_lambda.arn
+  protocol  = "lambda"
+  endpoint  = aws_lambda_function.data_changes_worker_lambda.arn
 }
 
 resource "aws_cloudwatch_log_group" "data_changes_worker_lambda_logs" {
