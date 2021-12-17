@@ -39,6 +39,10 @@ resource "aws_lambda_function" "archives_worker_lambda" {
     mode = "Active"
   }
 
+  layers = [
+    local.collector_layer_arns.us-east-1,
+  ]
+
   filename = data.archive_file.archives_dummy.output_path
 }
 

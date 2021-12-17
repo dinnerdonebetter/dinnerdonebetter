@@ -17,10 +17,6 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 3.0"
     }
-    postgresql = {
-      source  = "cyrilgdn/postgresql"
-      version = "~> 1.14"
-    }
     archive = {
       source  = "hashicorp/archive"
       version = "~> 2.2.0"

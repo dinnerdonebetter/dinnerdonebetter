@@ -12,7 +12,7 @@ data "aws_iam_policy_document" "allow_to_manipulate_queues" {
       aws_sqs_queue.writes_queue.arn,
       aws_sqs_queue.updates_queue.arn,
       aws_sqs_queue.archives_queue.arn,
-      aws_sqs_queue.data_changes_queue.arn,
+      aws_sns_topic.data_changes_queue.arn,
     ]
   }
 }

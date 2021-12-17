@@ -2,19 +2,19 @@ resource "aws_sqs_queue" "data_changes_dead_letter" {
   name = "data_changes_dead_letter"
 }
 
-resource "aws_sqs_queue" "data_changes_queue" {
+resource "aws_sns_topic" "data_changes_queue" {
   name = "data_changes"
 
-  redrive_policy = jsonencode({
-    deadLetterTargetArn = aws_sqs_queue.data_changes_dead_letter.arn
-    maxReceiveCount     = 5
-  })
+  #  redrive_policy = jsonencode({
+  #    deadLetterTargetArn = aws_sqs_queue.data_changes_dead_letter.arn
+  #    maxReceiveCount     = 5
+  #  })
 }
 
 resource "aws_ssm_parameter" "data_changes_queue_parameter" {
   name  = "PRIXFIXE_DATA_CHANGES_QUEUE_URL"
   type  = "String"
-  value = aws_sqs_queue.data_changes_queue.url
+  value = aws_sns_topic.data_changes_queue.arn
 }
 
 data "archive_file" "data_changes_dummy" {
@@ -39,11 +39,15 @@ resource "aws_lambda_function" "data_changes_worker_lambda" {
     mode = "Active"
   }
 
+  layers = [
+    local.collector_layer_arns.us-east-1,
+  ]
+
   filename = data.archive_file.data_changes_dummy.output_path
 }
 
 resource "aws_lambda_event_source_mapping" "data_changes_mapping" {
-  event_source_arn = aws_sqs_queue.data_changes_queue.arn
+  event_source_arn = aws_sns_topic.data_changes_queue.arn
   function_name    = aws_lambda_function.data_changes_worker_lambda.arn
 }
 

@@ -40,6 +40,10 @@ resource "aws_lambda_function" "updates_worker_lambda" {
     mode = "Active"
   }
 
+  layers = [
+    local.collector_layer_arns.us-east-1,
+  ]
+
   filename = data.archive_file.updates_lambda_dummy.output_path
 }
 
