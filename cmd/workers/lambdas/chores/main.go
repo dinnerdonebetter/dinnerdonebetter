@@ -100,6 +100,9 @@ func main() {
 
 	lambda.Start(otellambda.InstrumentHandler(
 		buildHandler(logger, preChoresWorker),
-		xrayconfig.WithRecommendedOptions(tracerProvider)...,
+		xrayconfig.WithEventToCarrier(),
+		otellambda.WithPropagator(xray.Propagator{}),
+		otellambda.WithTracerProvider(tracerProvider),
+		otellambda.WithFlusher(tracerProvider),
 	))
 }

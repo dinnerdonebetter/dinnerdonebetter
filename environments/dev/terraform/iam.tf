@@ -68,11 +68,7 @@ data "aws_iam_policy_document" "allowed_to_write_traces" {
       "xray:PutTelemetryRecords",
     ]
     resources = [
-      aws_lambda_function.writes_worker_lambda.arn,
-      aws_lambda_function.updates_worker_lambda.arn,
-      aws_lambda_function.archives_worker_lambda.arn,
-      aws_lambda_function.chores_worker_lambda.arn,
-      aws_lambda_function.data_changes_worker_lambda.arn,
+      "*",
     ]
   }
 }
