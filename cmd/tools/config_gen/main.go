@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/prixfixeco/api_server/internal/observability/metrics/cloudwatch"
+
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
@@ -217,15 +219,15 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 		},
 		Observability: observability.Config{
 			Metrics: metricscfg.Config{
-				Provider: metricscfg.ProviderPrometheus,
-				Prometheus: &prometheus.Config{
-					RuntimeMetricsCollectionInterval: 5 * time.Second,
-				},
-				//Cloudwatch: &cloudwatch.Config{
-				//	CollectorEndpoint:                "0.0.0.0:4317",
-				//	MetricsCollectionInterval:        5 * time.Second,
+				Provider: metricscfg.ProviderCloudwatch,
+				//Prometheus: &prometheus.Config{
 				//	RuntimeMetricsCollectionInterval: 5 * time.Second,
 				//},
+				Cloudwatch: &cloudwatch.Config{
+					CollectorEndpoint:                "0.0.0.0:4317",
+					MetricsCollectionInterval:        5 * time.Second,
+					RuntimeMetricsCollectionInterval: 5 * time.Second,
+				},
 			},
 			Tracing: tracingcfg.Config{
 				Provider: tracingcfg.ProviderXRay,

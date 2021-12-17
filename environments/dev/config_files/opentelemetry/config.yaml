@@ -8,15 +8,6 @@ receivers:
         endpoint: 0.0.0.0:4317
       http:
         endpoint: 0.0.0.0:4318
-  awsecscontainermetrics:
-  prometheus:
-    config:
-      scrape_configs:
-        - job_name: 'prixfixe-api-server'
-          scrape_interval: 5s
-          scrape_timeout: 5s
-          metrics_path: '/metrics'
-          scheme: 'http'
 
 processors:
   batch/traces:
@@ -39,24 +30,16 @@ exporters:
     dimension_rollup_option: ZeroAndSingleDimensionRollup
     resource_to_telemetry_conversion:
       enabled: true
-  awsprometheusremotewrite:
-    endpoint: https://prometheus-prod-10-prod-us-central-0.grafana.net/api/prom/push
-    headers:
-      Authorization: "Basic Mjc2OTUyOmV5SnJJam9pTTJabE5ESTFZMlEwTW1GaVpUZGxNekpqTnpoak9EVmhORE5tTTJVM01XTXlZbUV4TlRrNFpDSXNJbTRpT2lKQlYxTWlMQ0pwWkNJNk5EWXdORE14ZlE9PQ=="
-  otlp:
-    endpoint: tempo-us-central1.grafana.net:443
-    headers:
-      authorization: "Basic MTMzOTU3OmV5SnJJam9pTTJabE5ESTFZMlEwTW1GaVpUZGxNekpqTnpoak9EVmhORE5tTTJVM01XTXlZbUV4TlRrNFpDSXNJbTRpT2lKQlYxTWlMQ0pwWkNJNk5EWXdORE14ZlE9PQ=="
 
 service:
   pipelines:
     traces:
       receivers: [otlp]
       processors: [resourcedetection, batch/traces]
-      exporters: [otlp,awsxray]
-    metrics:
-      receivers: [otlp, prometheus, awsecscontainermetrics]
-      processors: [resourcedetection, batch/metrics]
-      exporters: [awsprometheusremotewrite,awsemf/application]
+      exporters: [awsxray]
+    metrics/application:
+      receivers: [otlp]
+      processors: [resourcedetection, resource, batch/metrics]
+      exporters: [awsemf/application]
 
   extensions: [health_check]
