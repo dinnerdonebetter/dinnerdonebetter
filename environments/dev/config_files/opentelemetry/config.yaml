@@ -30,8 +30,6 @@ exporters:
     dimension_rollup_option: ZeroAndSingleDimensionRollup
     resource_to_telemetry_conversion:
       enabled: true
-  awsprometheusremotewrite:
-    endpoint: https://aps-workspaces.us-east-1.amazonaws.com/workspaces/ws-8e2060da-23e8-4046-9010-6e4b86245239/api/v1/remote_write
 
 service:
   pipelines:
