@@ -39,7 +39,7 @@ service:
       exporters: [awsxray]
     metrics:
       receivers: [otlp]
-      processors: [resourcedetection, resource, batch/metrics]
+      processors: [resourcedetection, batch/metrics]
       exporters: [awsemf/application]
 
   extensions: [health_check]
