@@ -90,7 +90,9 @@ func ProvideWritesWorker(
 
 func (w *WritesWorker) determineWriteMessageHandler(msg *types.PreWriteMessage) func(context.Context, *types.PreWriteMessage) error {
 	funcMap := map[string]func(context.Context, *types.PreWriteMessage) error{
+		string(types.ValidInstrumentDataType):            w.createValidInstrument,
 		string(types.ValidIngredientDataType):            w.createValidIngredient,
+		string(types.ValidPreparationDataType):           w.createValidPreparation,
 		string(types.ValidIngredientPreparationDataType): w.createValidIngredientPreparation,
 		string(types.MealDataType):                       w.createMeal,
 		string(types.RecipeDataType):                     w.createRecipe,

@@ -16,7 +16,7 @@ import (
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
-func TestWritesWorker_createValidIngredient(T *testing.T) {
+func TestWritesWorker_createValidPreparation(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -25,25 +25,25 @@ func TestWritesWorker_createValidIngredient(T *testing.T) {
 		ctx := context.Background()
 
 		body := &types.PreWriteMessage{
-			DataType:        types.ValidIngredientDataType,
-			ValidIngredient: fakes.BuildFakeValidIngredientDatabaseCreationInput(),
+			DataType:         types.ValidPreparationDataType,
+			ValidPreparation: fakes.BuildFakeValidPreparationDatabaseCreationInput(),
 		}
 
-		expectedValidIngredient := fakes.BuildFakeValidIngredient()
+		expectedValidPreparation := fakes.BuildFakeValidPreparation()
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"CreateValidIngredient",
+		dbManager.ValidPreparationDataManager.On(
+			"CreateValidPreparation",
 			testutils.ContextMatcher,
-			body.ValidIngredient,
-		).Return(expectedValidIngredient, nil)
+			body.ValidPreparation,
+		).Return(expectedValidPreparation, nil)
 
 		searchIndexManager := &mocksearch.IndexManager{}
 		searchIndexManager.On(
 			"Index",
 			testutils.ContextMatcher,
-			expectedValidIngredient.ID,
-			expectedValidIngredient,
+			expectedValidPreparation.ID,
+			expectedValidPreparation,
 		).Return(nil)
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
@@ -55,14 +55,10 @@ func TestWritesWorker_createValidIngredient(T *testing.T) {
 
 		worker := newTestWritesWorker(t)
 		worker.dataManager = dbManager
-		worker.validIngredientsIndexManager = searchIndexManager
+		worker.validPreparationsIndexManager = searchIndexManager
 		worker.dataChangesPublisher = dataChangesPublisher
 
-		worker.dataManager = dbManager
-		worker.validIngredientsIndexManager = searchIndexManager
-		worker.dataChangesPublisher = dataChangesPublisher
-
-		assert.NoError(t, worker.createValidIngredient(ctx, body))
+		assert.NoError(t, worker.createValidPreparation(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher, searchIndexManager)
 	})
@@ -73,21 +69,21 @@ func TestWritesWorker_createValidIngredient(T *testing.T) {
 		ctx := context.Background()
 
 		body := &types.PreWriteMessage{
-			DataType:        types.ValidIngredientDataType,
-			ValidIngredient: fakes.BuildFakeValidIngredientDatabaseCreationInput(),
+			DataType:         types.ValidPreparationDataType,
+			ValidPreparation: fakes.BuildFakeValidPreparationDatabaseCreationInput(),
 		}
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"CreateValidIngredient",
+		dbManager.ValidPreparationDataManager.On(
+			"CreateValidPreparation",
 			testutils.ContextMatcher,
-			body.ValidIngredient,
-		).Return((*types.ValidIngredient)(nil), errors.New("blah"))
+			body.ValidPreparation,
+		).Return((*types.ValidPreparation)(nil), errors.New("blah"))
 
 		worker := newTestWritesWorker(t)
 		worker.dataManager = dbManager
 
-		assert.Error(t, worker.createValidIngredient(ctx, body))
+		assert.Error(t, worker.createValidPreparation(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
@@ -98,32 +94,32 @@ func TestWritesWorker_createValidIngredient(T *testing.T) {
 		ctx := context.Background()
 
 		body := &types.PreWriteMessage{
-			DataType:        types.ValidIngredientDataType,
-			ValidIngredient: fakes.BuildFakeValidIngredientDatabaseCreationInput(),
+			DataType:         types.ValidPreparationDataType,
+			ValidPreparation: fakes.BuildFakeValidPreparationDatabaseCreationInput(),
 		}
 
-		expectedValidIngredient := fakes.BuildFakeValidIngredient()
+		expectedValidPreparation := fakes.BuildFakeValidPreparation()
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"CreateValidIngredient",
+		dbManager.ValidPreparationDataManager.On(
+			"CreateValidPreparation",
 			testutils.ContextMatcher,
-			body.ValidIngredient,
-		).Return(expectedValidIngredient, nil)
+			body.ValidPreparation,
+		).Return(expectedValidPreparation, nil)
 
 		searchIndexManager := &mocksearch.IndexManager{}
 		searchIndexManager.On(
 			"Index",
 			testutils.ContextMatcher,
-			expectedValidIngredient.ID,
-			expectedValidIngredient,
+			expectedValidPreparation.ID,
+			expectedValidPreparation,
 		).Return(errors.New("blah"))
 
 		worker := newTestWritesWorker(t)
 		worker.dataManager = dbManager
-		worker.validIngredientsIndexManager = searchIndexManager
+		worker.validPreparationsIndexManager = searchIndexManager
 
-		assert.Error(t, worker.createValidIngredient(ctx, body))
+		assert.Error(t, worker.createValidPreparation(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager, searchIndexManager)
 	})
@@ -134,25 +130,25 @@ func TestWritesWorker_createValidIngredient(T *testing.T) {
 		ctx := context.Background()
 
 		body := &types.PreWriteMessage{
-			DataType:        types.ValidIngredientDataType,
-			ValidIngredient: fakes.BuildFakeValidIngredientDatabaseCreationInput(),
+			DataType:         types.ValidPreparationDataType,
+			ValidPreparation: fakes.BuildFakeValidPreparationDatabaseCreationInput(),
 		}
 
-		expectedValidIngredient := fakes.BuildFakeValidIngredient()
+		expectedValidPreparation := fakes.BuildFakeValidPreparation()
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"CreateValidIngredient",
+		dbManager.ValidPreparationDataManager.On(
+			"CreateValidPreparation",
 			testutils.ContextMatcher,
-			body.ValidIngredient,
-		).Return(expectedValidIngredient, nil)
+			body.ValidPreparation,
+		).Return(expectedValidPreparation, nil)
 
 		searchIndexManager := &mocksearch.IndexManager{}
 		searchIndexManager.On(
 			"Index",
 			testutils.ContextMatcher,
-			expectedValidIngredient.ID,
-			expectedValidIngredient,
+			expectedValidPreparation.ID,
+			expectedValidPreparation,
 		).Return(nil)
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
@@ -164,16 +160,16 @@ func TestWritesWorker_createValidIngredient(T *testing.T) {
 
 		worker := newTestWritesWorker(t)
 		worker.dataManager = dbManager
-		worker.validIngredientsIndexManager = searchIndexManager
+		worker.validPreparationsIndexManager = searchIndexManager
 		worker.dataChangesPublisher = dataChangesPublisher
 
-		assert.Error(t, worker.createValidIngredient(ctx, body))
+		assert.Error(t, worker.createValidPreparation(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher, searchIndexManager)
 	})
 }
 
-func TestWritesWorker_updateValidIngredient(T *testing.T) {
+func TestWritesWorker_updateValidPreparation(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -182,23 +178,23 @@ func TestWritesWorker_updateValidIngredient(T *testing.T) {
 		ctx := context.Background()
 
 		body := &types.PreUpdateMessage{
-			DataType:        types.ValidIngredientDataType,
-			ValidIngredient: fakes.BuildFakeValidIngredient(),
+			DataType:         types.ValidPreparationDataType,
+			ValidPreparation: fakes.BuildFakeValidPreparation(),
 		}
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"UpdateValidIngredient",
+		dbManager.ValidPreparationDataManager.On(
+			"UpdateValidPreparation",
 			testutils.ContextMatcher,
-			body.ValidIngredient,
+			body.ValidPreparation,
 		).Return(nil)
 
 		searchIndexManager := &mocksearch.IndexManager{}
 		searchIndexManager.On(
 			"Index",
 			testutils.ContextMatcher,
-			body.ValidIngredient.ID,
-			body.ValidIngredient,
+			body.ValidPreparation.ID,
+			body.ValidPreparation,
 		).Return(nil)
 
 		postUpdatesPublisher := &mockpublishers.Publisher{}
@@ -210,35 +206,35 @@ func TestWritesWorker_updateValidIngredient(T *testing.T) {
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
-		worker.validIngredientsIndexManager = searchIndexManager
+		worker.validPreparationsIndexManager = searchIndexManager
 		worker.postUpdatesPublisher = postUpdatesPublisher
 
-		assert.NoError(t, worker.updateValidIngredient(ctx, body))
+		assert.NoError(t, worker.updateValidPreparation(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager, postUpdatesPublisher, searchIndexManager)
 	})
 
-	T.Run("with error updating valid ingredient", func(t *testing.T) {
+	T.Run("with error updating valid preparation", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
 
 		body := &types.PreUpdateMessage{
-			DataType:        types.ValidIngredientDataType,
-			ValidIngredient: fakes.BuildFakeValidIngredient(),
+			DataType:         types.ValidPreparationDataType,
+			ValidPreparation: fakes.BuildFakeValidPreparation(),
 		}
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"UpdateValidIngredient",
+		dbManager.ValidPreparationDataManager.On(
+			"UpdateValidPreparation",
 			testutils.ContextMatcher,
-			body.ValidIngredient,
+			body.ValidPreparation,
 		).Return(errors.New("blah"))
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
 
-		assert.Error(t, worker.updateValidIngredient(ctx, body))
+		assert.Error(t, worker.updateValidPreparation(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
@@ -249,30 +245,30 @@ func TestWritesWorker_updateValidIngredient(T *testing.T) {
 		ctx := context.Background()
 
 		body := &types.PreUpdateMessage{
-			DataType:        types.ValidIngredientDataType,
-			ValidIngredient: fakes.BuildFakeValidIngredient(),
+			DataType:         types.ValidPreparationDataType,
+			ValidPreparation: fakes.BuildFakeValidPreparation(),
 		}
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"UpdateValidIngredient",
+		dbManager.ValidPreparationDataManager.On(
+			"UpdateValidPreparation",
 			testutils.ContextMatcher,
-			body.ValidIngredient,
+			body.ValidPreparation,
 		).Return(nil)
 
 		searchIndexManager := &mocksearch.IndexManager{}
 		searchIndexManager.On(
 			"Index",
 			testutils.ContextMatcher,
-			body.ValidIngredient.ID,
-			body.ValidIngredient,
+			body.ValidPreparation.ID,
+			body.ValidPreparation,
 		).Return(errors.New("blah"))
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
-		worker.validIngredientsIndexManager = searchIndexManager
+		worker.validPreparationsIndexManager = searchIndexManager
 
-		assert.Error(t, worker.updateValidIngredient(ctx, body))
+		assert.Error(t, worker.updateValidPreparation(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager, searchIndexManager)
 	})
@@ -283,23 +279,23 @@ func TestWritesWorker_updateValidIngredient(T *testing.T) {
 		ctx := context.Background()
 
 		body := &types.PreUpdateMessage{
-			DataType:        types.ValidIngredientDataType,
-			ValidIngredient: fakes.BuildFakeValidIngredient(),
+			DataType:         types.ValidPreparationDataType,
+			ValidPreparation: fakes.BuildFakeValidPreparation(),
 		}
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"UpdateValidIngredient",
+		dbManager.ValidPreparationDataManager.On(
+			"UpdateValidPreparation",
 			testutils.ContextMatcher,
-			body.ValidIngredient,
+			body.ValidPreparation,
 		).Return(nil)
 
 		searchIndexManager := &mocksearch.IndexManager{}
 		searchIndexManager.On(
 			"Index",
 			testutils.ContextMatcher,
-			body.ValidIngredient.ID,
-			body.ValidIngredient,
+			body.ValidPreparation.ID,
+			body.ValidPreparation,
 		).Return(nil)
 
 		postUpdatesPublisher := &mockpublishers.Publisher{}
@@ -311,16 +307,16 @@ func TestWritesWorker_updateValidIngredient(T *testing.T) {
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
-		worker.validIngredientsIndexManager = searchIndexManager
+		worker.validPreparationsIndexManager = searchIndexManager
 		worker.postUpdatesPublisher = postUpdatesPublisher
 
-		assert.Error(t, worker.updateValidIngredient(ctx, body))
+		assert.Error(t, worker.updateValidPreparation(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager, postUpdatesPublisher, searchIndexManager)
 	})
 }
 
-func TestWritesWorker_archiveValidIngredient(T *testing.T) {
+func TestWritesWorker_archiveValidPreparation(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -329,14 +325,14 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 		ctx := context.Background()
 
 		body := &types.PreArchiveMessage{
-			DataType: types.ValidIngredientDataType,
+			DataType: types.ValidPreparationDataType,
 		}
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"ArchiveValidIngredient",
+		dbManager.ValidPreparationDataManager.On(
+			"ArchiveValidPreparation",
 			testutils.ContextMatcher,
-			body.ValidIngredientID,
+			body.ValidPreparationID,
 		).Return(nil)
 
 		postArchivesPublisher := &mockpublishers.Publisher{}
@@ -350,15 +346,15 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 		searchIndexManager.On(
 			"Delete",
 			testutils.ContextMatcher,
-			body.ValidIngredientID,
+			body.ValidPreparationID,
 		).Return(nil)
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.validIngredientsIndexManager = searchIndexManager
+		worker.validPreparationsIndexManager = searchIndexManager
 		worker.postArchivesPublisher = postArchivesPublisher
 
-		assert.NoError(t, worker.archiveValidIngredient(ctx, body))
+		assert.NoError(t, worker.archiveValidPreparation(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher, searchIndexManager)
 	})
@@ -369,20 +365,20 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 		ctx := context.Background()
 
 		body := &types.PreArchiveMessage{
-			DataType: types.ValidIngredientDataType,
+			DataType: types.ValidPreparationDataType,
 		}
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"ArchiveValidIngredient",
+		dbManager.ValidPreparationDataManager.On(
+			"ArchiveValidPreparation",
 			testutils.ContextMatcher,
-			body.ValidIngredientID,
+			body.ValidPreparationID,
 		).Return(errors.New("blah"))
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
 
-		assert.Error(t, worker.archiveValidIngredient(ctx, body))
+		assert.Error(t, worker.archiveValidPreparation(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
@@ -393,28 +389,28 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 		ctx := context.Background()
 
 		body := &types.PreArchiveMessage{
-			DataType: types.ValidIngredientDataType,
+			DataType: types.ValidPreparationDataType,
 		}
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"ArchiveValidIngredient",
+		dbManager.ValidPreparationDataManager.On(
+			"ArchiveValidPreparation",
 			testutils.ContextMatcher,
-			body.ValidIngredientID,
+			body.ValidPreparationID,
 		).Return(nil)
 
 		searchIndexManager := &mocksearch.IndexManager{}
 		searchIndexManager.On(
 			"Delete",
 			testutils.ContextMatcher,
-			body.ValidIngredientID,
+			body.ValidPreparationID,
 		).Return(errors.New("blah"))
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.validIngredientsIndexManager = searchIndexManager
+		worker.validPreparationsIndexManager = searchIndexManager
 
-		assert.Error(t, worker.archiveValidIngredient(ctx, body))
+		assert.Error(t, worker.archiveValidPreparation(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager, searchIndexManager)
 	})
@@ -425,14 +421,14 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 		ctx := context.Background()
 
 		body := &types.PreArchiveMessage{
-			DataType: types.ValidIngredientDataType,
+			DataType: types.ValidPreparationDataType,
 		}
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"ArchiveValidIngredient",
+		dbManager.ValidPreparationDataManager.On(
+			"ArchiveValidPreparation",
 			testutils.ContextMatcher,
-			body.ValidIngredientID,
+			body.ValidPreparationID,
 		).Return(nil)
 
 		postArchivesPublisher := &mockpublishers.Publisher{}
@@ -446,15 +442,15 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 		searchIndexManager.On(
 			"Delete",
 			testutils.ContextMatcher,
-			body.ValidIngredientID,
+			body.ValidPreparationID,
 		).Return(nil)
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.validIngredientsIndexManager = searchIndexManager
+		worker.validPreparationsIndexManager = searchIndexManager
 		worker.postArchivesPublisher = postArchivesPublisher
 
-		assert.Error(t, worker.archiveValidIngredient(ctx, body))
+		assert.Error(t, worker.archiveValidPreparation(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher, searchIndexManager)
 	})

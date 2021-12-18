@@ -69,31 +69,31 @@ func (c *Client) GetRecipeSteps(ctx context.Context, recipeID string, filter *ty
 }
 
 // CreateRecipeStep creates a recipe step.
-func (c *Client) CreateRecipeStep(ctx context.Context, input *types.RecipeStepCreationRequestInput) (*types.RecipeStep, error) {
+func (c *Client) CreateRecipeStep(ctx context.Context, input *types.RecipeStepCreationRequestInput) (string, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
 	if input == nil {
-		return nil, ErrNilInputProvided
+		return "", ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return "", observability.PrepareError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateRecipeStepRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building create recipe step request")
+		return "", observability.PrepareError(err, logger, span, "building create recipe step request")
 	}
 
-	var recipeStep *types.RecipeStep
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeStep); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating recipe step")
+	var pwr *types.PreWriteResponse
+	if err = c.fetchAndUnmarshal(ctx, req, &pwr); err != nil {
+		return "", observability.PrepareError(err, logger, span, "creating recipe step")
 	}
 
-	return recipeStep, nil
+	return pwr.ID, nil
 }
 
 // UpdateRecipeStep updates a recipe step.

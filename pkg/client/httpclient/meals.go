@@ -57,31 +57,31 @@ func (c *Client) GetMeals(ctx context.Context, filter *types.QueryFilter) (*type
 }
 
 // CreateMeal creates a meal.
-func (c *Client) CreateMeal(ctx context.Context, input *types.MealCreationRequestInput) (*types.Meal, error) {
+func (c *Client) CreateMeal(ctx context.Context, input *types.MealCreationRequestInput) (string, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
 	if input == nil {
-		return nil, ErrNilInputProvided
+		return "", ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return "", observability.PrepareError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateMealRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building create meal request")
+		return "", observability.PrepareError(err, logger, span, "building create meal request")
 	}
 
-	var meal *types.Meal
-	if err = c.fetchAndUnmarshal(ctx, req, &meal); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating meal")
+	var pwr *types.PreWriteResponse
+	if err = c.fetchAndUnmarshal(ctx, req, &pwr); err != nil {
+		return "", observability.PrepareError(err, logger, span, "creating meal")
 	}
 
-	return meal, nil
+	return pwr.ID, nil
 }
 
 // ArchiveMeal archives a meal.

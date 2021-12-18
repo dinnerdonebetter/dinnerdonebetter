@@ -9,8 +9,6 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/prixfixeco/api_server/internal/database"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -61,36 +59,19 @@ func TestValidInstrumentsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidInstrumentDataManager.On(
-			"CreateValidInstrument",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(instrument *types.ValidInstrumentDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidInstrument, nil)
-		helper.service.validInstrumentDataManager = dbManager
-
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Index",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-			helper.exampleValidInstrument,
-		).Return(nil)
-		helper.service.search = searchIndexManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(testutils.PreWriteMessageMatcher),
 		).Return(nil)
-		helper.service.dataChangesPublisher = dataChangesPublisher
+		helper.service.preWritesPublisher = mockEventProducer
 
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, dbManager, searchIndexManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, mockEventProducer)
 	})
 
 	T.Run("without input attached", func(t *testing.T) {
@@ -149,7 +130,7 @@ func TestValidInstrumentsService_CreateHandler(T *testing.T) {
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
 
-	T.Run("with error writing to database", func(t *testing.T) {
+	T.Run("with error publishing event", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -163,103 +144,19 @@ func TestValidInstrumentsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidInstrumentDataManager.On(
-			"CreateValidInstrument",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(instrument *types.ValidInstrumentDatabaseCreationInput) bool { return true }),
-		).Return((*types.ValidInstrument)(nil), errors.New("blah"))
-		helper.service.validInstrumentDataManager = dbManager
-
-		helper.service.CreateHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, dbManager)
-	})
-
-	T.Run("with error updating search index", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeValidInstrumentDatabaseCreationInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidInstrumentDataManager.On(
-			"CreateValidInstrument",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(instrument *types.ValidInstrumentDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidInstrument, nil)
-		helper.service.validInstrumentDataManager = dbManager
-
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Index",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-			helper.exampleValidInstrument,
-		).Return(errors.New("blah"))
-		helper.service.search = searchIndexManager
-
-		helper.service.CreateHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, dbManager, searchIndexManager)
-	})
-
-	T.Run("with error sending data change message", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeValidInstrumentDatabaseCreationInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidInstrumentDataManager.On(
-			"CreateValidInstrument",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(instrument *types.ValidInstrumentDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidInstrument, nil)
-		helper.service.validInstrumentDataManager = dbManager
-
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Index",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-			helper.exampleValidInstrument,
-		).Return(nil)
-		helper.service.search = searchIndexManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(testutils.PreWriteMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
+		helper.service.preWritesPublisher = mockEventProducer
 
 		helper.service.CreateHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, dbManager, searchIndexManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, mockEventProducer)
 	})
 }
 
@@ -716,36 +613,21 @@ func TestValidInstrumentsService_UpdateHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleValidInstrument.ID,
 		).Return(helper.exampleValidInstrument, nil)
-
-		validInstrumentDataManager.On(
-			"UpdateValidInstrument",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument,
-		).Return(nil)
 		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Index",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-			helper.exampleValidInstrument,
-		).Return(nil)
-		helper.service.search = searchIndexManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+			mock.MatchedBy(testutils.PreUpdateMessageMatcher),
 		).Return(nil)
-		helper.service.dataChangesPublisher = dataChangesPublisher
+		helper.service.preUpdatesPublisher = mockEventProducer
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, searchIndexManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, mockEventProducer)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -852,7 +734,7 @@ func TestValidInstrumentsService_UpdateHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
 	})
 
-	T.Run("with error writing update to database", func(t *testing.T) {
+	T.Run("with error publishing to message queue", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -872,115 +754,21 @@ func TestValidInstrumentsService_UpdateHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleValidInstrument.ID,
 		).Return(helper.exampleValidInstrument, nil)
-
-		validInstrumentDataManager.On(
-			"UpdateValidInstrument",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument,
-		).Return(errors.New("blah"))
 		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
-	})
-
-	T.Run("with error updating search index", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeValidInstrumentUpdateRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
-		validInstrumentDataManager.On(
-			"GetValidInstrument",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-		).Return(helper.exampleValidInstrument, nil)
-
-		validInstrumentDataManager.On(
-			"UpdateValidInstrument",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument,
-		).Return(nil)
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
-
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Index",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-			helper.exampleValidInstrument,
-		).Return(errors.New("blah"))
-		helper.service.search = searchIndexManager
-
-		helper.service.UpdateHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, searchIndexManager)
-	})
-
-	T.Run("with error publishing data change message", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeValidInstrumentUpdateRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
-		validInstrumentDataManager.On(
-			"GetValidInstrument",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-		).Return(helper.exampleValidInstrument, nil)
-
-		validInstrumentDataManager.On(
-			"UpdateValidInstrument",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument,
-		).Return(nil)
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
-
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Index",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-			helper.exampleValidInstrument,
-		).Return(nil)
-		helper.service.search = searchIndexManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+			mock.MatchedBy(testutils.PreUpdateMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
+		helper.service.preUpdatesPublisher = mockEventProducer
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, mockEventProducer)
 	})
 }
 
@@ -998,35 +786,21 @@ func TestValidInstrumentsService_ArchiveHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleValidInstrument.ID,
 		).Return(true, nil)
-
-		validInstrumentDataManager.On(
-			"ArchiveValidInstrument",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-		).Return(nil)
 		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Delete",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-		).Return(nil)
-		helper.service.search = searchIndexManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+			mock.MatchedBy(testutils.PreArchiveMessageMatcher),
 		).Return(nil)
-		helper.service.dataChangesPublisher = dataChangesPublisher
+		helper.service.preArchivesPublisher = mockEventProducer
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, searchIndexManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, mockEventProducer)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -1101,7 +875,7 @@ func TestValidInstrumentsService_ArchiveHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
 	})
 
-	T.Run("with error writing to database", func(t *testing.T) {
+	T.Run("with error publishing to message queue", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -1112,94 +886,20 @@ func TestValidInstrumentsService_ArchiveHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleValidInstrument.ID,
 		).Return(true, nil)
-
-		validInstrumentDataManager.On(
-			"ArchiveValidInstrument",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-		).Return(errors.New("blah"))
 		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
-	})
-
-	T.Run("with error updating search index", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
-		validInstrumentDataManager.On(
-			"ValidInstrumentExists",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-		).Return(true, nil)
-
-		validInstrumentDataManager.On(
-			"ArchiveValidInstrument",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-		).Return(nil)
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
-
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Delete",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-		).Return(errors.New("blah"))
-		helper.service.search = searchIndexManager
-
-		helper.service.ArchiveHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, searchIndexManager)
-	})
-
-	T.Run("with error publishing data change message", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
-		validInstrumentDataManager.On(
-			"ValidInstrumentExists",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-		).Return(true, nil)
-
-		validInstrumentDataManager.On(
-			"ArchiveValidInstrument",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-		).Return(nil)
-		helper.service.validInstrumentDataManager = validInstrumentDataManager
-
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Delete",
-			testutils.ContextMatcher,
-			helper.exampleValidInstrument.ID,
-		).Return(nil)
-		helper.service.search = searchIndexManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+			mock.MatchedBy(testutils.PreArchiveMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
+		helper.service.preArchivesPublisher = mockEventProducer
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusNoContent, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, searchIndexManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, mockEventProducer)
 	})
 }

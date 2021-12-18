@@ -67,36 +67,22 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachValidIngredientIDToSpan(span, input.ID)
 
-	validIngredient, err := s.validIngredientDataManager.CreateValidIngredient(ctx, input)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating valid ingredient")
+	// create valid ingredient in database.
+	preWrite := &types.PreWriteMessage{
+		DataType:                  types.ValidIngredientDataType,
+		ValidIngredient:           input,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+	}
+	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing valid ingredient write message")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
-	logger.Debug("valid ingredient created")
 
-	if err = s.search.Index(ctx, validIngredient.ID, validIngredient); err != nil {
-		observability.AcknowledgeError(err, logger, span, "indexing the valid ingredient")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
-	}
-	logger.Debug("valid ingredient indexed in search")
+	pwr := types.PreWriteResponse{ID: input.ID}
 
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:                  types.ValidIngredientDataType,
-			MessageType:               "valid_ingredient_created",
-			ValidIngredient:           validIngredient,
-			AttributableToUserID:      sessionCtxData.Requester.UserID,
-			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-		}
-
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing to post-writes topic")
-		}
-	}
-
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validIngredient, http.StatusAccepted)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusAccepted)
 }
 
 // ReadHandler returns a GET handler that returns a valid ingredient.
@@ -278,30 +264,16 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// update the valid ingredient.
 	validIngredient.Update(input)
 
-	if err = s.validIngredientDataManager.UpdateValidIngredient(ctx, validIngredient); err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating valid ingredient")
+	pum := &types.PreUpdateMessage{
+		DataType:                  types.ValidIngredientDataType,
+		ValidIngredient:           validIngredient,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+	}
+	if err = s.preUpdatesPublisher.Publish(ctx, pum); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing valid ingredient update message")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
-	}
-
-	if err = s.search.Index(ctx, validIngredient.ID, validIngredient); err != nil {
-		observability.AcknowledgeError(err, logger, span, "indexing the valid ingredient")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
-	}
-
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:                  types.ValidIngredientDataType,
-			MessageType:               "valid_ingredient_updated",
-			ValidIngredient:           validIngredient,
-			AttributableToUserID:      sessionCtxData.Requester.UserID,
-			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-		}
-
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing data change message")
-		}
 	}
 
 	// encode our response and peace.
@@ -342,29 +314,16 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if err = s.validIngredientDataManager.ArchiveValidIngredient(ctx, validIngredientID); err != nil {
-		observability.AcknowledgeError(err, logger, span, "archiving the valid ingredient")
+	pam := &types.PreArchiveMessage{
+		DataType:                  types.ValidIngredientDataType,
+		ValidIngredientID:         validIngredientID,
+		AttributableToUserID:      sessionCtxData.Requester.UserID,
+		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+	}
+	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing valid ingredient archive message")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
-	}
-
-	if err = s.search.Delete(ctx, validIngredientID); err != nil {
-		observability.AcknowledgeError(err, logger, span, "removing valid ingredient from search index")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
-	}
-
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:                  types.ValidIngredientDataType,
-			MessageType:               "valid_ingredient_archived",
-			AttributableToUserID:      sessionCtxData.Requester.UserID,
-			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-		}
-
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing data change message")
-		}
 	}
 
 	// encode our response and peace.

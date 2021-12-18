@@ -192,13 +192,13 @@ func (s *validInstrumentsTestSuite) TestClient_CreateValidInstrument() {
 		exampleInput := fakes.BuildFakeValidInstrumentCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidInstrument)
+		c, _ := buildTestClientWithJSONResponse(t, spec, &types.PreWriteResponse{ID: s.exampleValidInstrument.ID})
 
 		actual, err := c.CreateValidInstrument(s.ctx, exampleInput)
 		require.NotEmpty(t, actual)
 		assert.NoError(t, err)
 
-		assert.Equal(t, s.exampleValidInstrument, actual)
+		assert.Equal(t, s.exampleValidInstrument.ID, actual)
 	})
 
 	s.Run("with nil input", func() {

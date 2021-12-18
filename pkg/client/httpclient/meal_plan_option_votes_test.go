@@ -189,13 +189,13 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_CreateMealPlanOptionVote() {
 		exampleInput.BelongsToMealPlanOption = s.exampleMealPlanOptionID
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleMealPlanID, s.exampleMealPlanOptionID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOptionVote)
+		c, _ := buildTestClientWithJSONResponse(t, spec, &types.PreWriteResponse{ID: s.exampleMealPlanOptionVote.ID})
 
 		actual, err := c.CreateMealPlanOptionVote(s.ctx, s.exampleMealPlanID, exampleInput)
 		require.NotEmpty(t, actual)
 		assert.NoError(t, err)
 
-		assert.Equal(t, s.exampleMealPlanOptionVote, actual)
+		assert.Equal(t, s.exampleMealPlanOptionVote.ID, actual)
 	})
 
 	s.Run("with invalid meal plan ID", func() {

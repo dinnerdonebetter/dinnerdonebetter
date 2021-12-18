@@ -16,7 +16,7 @@ import (
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
-func TestWritesWorker_createValidIngredient(T *testing.T) {
+func TestWritesWorker_createValidInstrument(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -25,25 +25,25 @@ func TestWritesWorker_createValidIngredient(T *testing.T) {
 		ctx := context.Background()
 
 		body := &types.PreWriteMessage{
-			DataType:        types.ValidIngredientDataType,
-			ValidIngredient: fakes.BuildFakeValidIngredientDatabaseCreationInput(),
+			DataType:        types.ValidInstrumentDataType,
+			ValidInstrument: fakes.BuildFakeValidInstrumentDatabaseCreationInput(),
 		}
 
-		expectedValidIngredient := fakes.BuildFakeValidIngredient()
+		expectedValidInstrument := fakes.BuildFakeValidInstrument()
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"CreateValidIngredient",
+		dbManager.ValidInstrumentDataManager.On(
+			"CreateValidInstrument",
 			testutils.ContextMatcher,
-			body.ValidIngredient,
-		).Return(expectedValidIngredient, nil)
+			body.ValidInstrument,
+		).Return(expectedValidInstrument, nil)
 
 		searchIndexManager := &mocksearch.IndexManager{}
 		searchIndexManager.On(
 			"Index",
 			testutils.ContextMatcher,
-			expectedValidIngredient.ID,
-			expectedValidIngredient,
+			expectedValidInstrument.ID,
+			expectedValidInstrument,
 		).Return(nil)
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
@@ -55,14 +55,10 @@ func TestWritesWorker_createValidIngredient(T *testing.T) {
 
 		worker := newTestWritesWorker(t)
 		worker.dataManager = dbManager
-		worker.validIngredientsIndexManager = searchIndexManager
+		worker.validInstrumentsIndexManager = searchIndexManager
 		worker.dataChangesPublisher = dataChangesPublisher
 
-		worker.dataManager = dbManager
-		worker.validIngredientsIndexManager = searchIndexManager
-		worker.dataChangesPublisher = dataChangesPublisher
-
-		assert.NoError(t, worker.createValidIngredient(ctx, body))
+		assert.NoError(t, worker.createValidInstrument(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher, searchIndexManager)
 	})
@@ -73,21 +69,21 @@ func TestWritesWorker_createValidIngredient(T *testing.T) {
 		ctx := context.Background()
 
 		body := &types.PreWriteMessage{
-			DataType:        types.ValidIngredientDataType,
-			ValidIngredient: fakes.BuildFakeValidIngredientDatabaseCreationInput(),
+			DataType:        types.ValidInstrumentDataType,
+			ValidInstrument: fakes.BuildFakeValidInstrumentDatabaseCreationInput(),
 		}
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"CreateValidIngredient",
+		dbManager.ValidInstrumentDataManager.On(
+			"CreateValidInstrument",
 			testutils.ContextMatcher,
-			body.ValidIngredient,
-		).Return((*types.ValidIngredient)(nil), errors.New("blah"))
+			body.ValidInstrument,
+		).Return((*types.ValidInstrument)(nil), errors.New("blah"))
 
 		worker := newTestWritesWorker(t)
 		worker.dataManager = dbManager
 
-		assert.Error(t, worker.createValidIngredient(ctx, body))
+		assert.Error(t, worker.createValidInstrument(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
@@ -98,32 +94,32 @@ func TestWritesWorker_createValidIngredient(T *testing.T) {
 		ctx := context.Background()
 
 		body := &types.PreWriteMessage{
-			DataType:        types.ValidIngredientDataType,
-			ValidIngredient: fakes.BuildFakeValidIngredientDatabaseCreationInput(),
+			DataType:        types.ValidInstrumentDataType,
+			ValidInstrument: fakes.BuildFakeValidInstrumentDatabaseCreationInput(),
 		}
 
-		expectedValidIngredient := fakes.BuildFakeValidIngredient()
+		expectedValidInstrument := fakes.BuildFakeValidInstrument()
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"CreateValidIngredient",
+		dbManager.ValidInstrumentDataManager.On(
+			"CreateValidInstrument",
 			testutils.ContextMatcher,
-			body.ValidIngredient,
-		).Return(expectedValidIngredient, nil)
+			body.ValidInstrument,
+		).Return(expectedValidInstrument, nil)
 
 		searchIndexManager := &mocksearch.IndexManager{}
 		searchIndexManager.On(
 			"Index",
 			testutils.ContextMatcher,
-			expectedValidIngredient.ID,
-			expectedValidIngredient,
+			expectedValidInstrument.ID,
+			expectedValidInstrument,
 		).Return(errors.New("blah"))
 
 		worker := newTestWritesWorker(t)
 		worker.dataManager = dbManager
-		worker.validIngredientsIndexManager = searchIndexManager
+		worker.validInstrumentsIndexManager = searchIndexManager
 
-		assert.Error(t, worker.createValidIngredient(ctx, body))
+		assert.Error(t, worker.createValidInstrument(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager, searchIndexManager)
 	})
@@ -134,25 +130,25 @@ func TestWritesWorker_createValidIngredient(T *testing.T) {
 		ctx := context.Background()
 
 		body := &types.PreWriteMessage{
-			DataType:        types.ValidIngredientDataType,
-			ValidIngredient: fakes.BuildFakeValidIngredientDatabaseCreationInput(),
+			DataType:        types.ValidInstrumentDataType,
+			ValidInstrument: fakes.BuildFakeValidInstrumentDatabaseCreationInput(),
 		}
 
-		expectedValidIngredient := fakes.BuildFakeValidIngredient()
+		expectedValidInstrument := fakes.BuildFakeValidInstrument()
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"CreateValidIngredient",
+		dbManager.ValidInstrumentDataManager.On(
+			"CreateValidInstrument",
 			testutils.ContextMatcher,
-			body.ValidIngredient,
-		).Return(expectedValidIngredient, nil)
+			body.ValidInstrument,
+		).Return(expectedValidInstrument, nil)
 
 		searchIndexManager := &mocksearch.IndexManager{}
 		searchIndexManager.On(
 			"Index",
 			testutils.ContextMatcher,
-			expectedValidIngredient.ID,
-			expectedValidIngredient,
+			expectedValidInstrument.ID,
+			expectedValidInstrument,
 		).Return(nil)
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
@@ -164,16 +160,16 @@ func TestWritesWorker_createValidIngredient(T *testing.T) {
 
 		worker := newTestWritesWorker(t)
 		worker.dataManager = dbManager
-		worker.validIngredientsIndexManager = searchIndexManager
+		worker.validInstrumentsIndexManager = searchIndexManager
 		worker.dataChangesPublisher = dataChangesPublisher
 
-		assert.Error(t, worker.createValidIngredient(ctx, body))
+		assert.Error(t, worker.createValidInstrument(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher, searchIndexManager)
 	})
 }
 
-func TestWritesWorker_updateValidIngredient(T *testing.T) {
+func TestWritesWorker_updateValidInstrument(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -182,23 +178,23 @@ func TestWritesWorker_updateValidIngredient(T *testing.T) {
 		ctx := context.Background()
 
 		body := &types.PreUpdateMessage{
-			DataType:        types.ValidIngredientDataType,
-			ValidIngredient: fakes.BuildFakeValidIngredient(),
+			DataType:        types.ValidInstrumentDataType,
+			ValidInstrument: fakes.BuildFakeValidInstrument(),
 		}
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"UpdateValidIngredient",
+		dbManager.ValidInstrumentDataManager.On(
+			"UpdateValidInstrument",
 			testutils.ContextMatcher,
-			body.ValidIngredient,
+			body.ValidInstrument,
 		).Return(nil)
 
 		searchIndexManager := &mocksearch.IndexManager{}
 		searchIndexManager.On(
 			"Index",
 			testutils.ContextMatcher,
-			body.ValidIngredient.ID,
-			body.ValidIngredient,
+			body.ValidInstrument.ID,
+			body.ValidInstrument,
 		).Return(nil)
 
 		postUpdatesPublisher := &mockpublishers.Publisher{}
@@ -210,69 +206,69 @@ func TestWritesWorker_updateValidIngredient(T *testing.T) {
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
-		worker.validIngredientsIndexManager = searchIndexManager
+		worker.validInstrumentsIndexManager = searchIndexManager
 		worker.postUpdatesPublisher = postUpdatesPublisher
 
-		assert.NoError(t, worker.updateValidIngredient(ctx, body))
+		assert.NoError(t, worker.updateValidInstrument(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager, postUpdatesPublisher, searchIndexManager)
 	})
 
-	T.Run("with error updating valid ingredient", func(t *testing.T) {
+	T.Run("with error updating valid instrument", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
 
 		body := &types.PreUpdateMessage{
-			DataType:        types.ValidIngredientDataType,
-			ValidIngredient: fakes.BuildFakeValidIngredient(),
+			DataType:        types.ValidInstrumentDataType,
+			ValidInstrument: fakes.BuildFakeValidInstrument(),
 		}
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"UpdateValidIngredient",
+		dbManager.ValidInstrumentDataManager.On(
+			"UpdateValidInstrument",
 			testutils.ContextMatcher,
-			body.ValidIngredient,
+			body.ValidInstrument,
 		).Return(errors.New("blah"))
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
 
-		assert.Error(t, worker.updateValidIngredient(ctx, body))
+		assert.Error(t, worker.updateValidInstrument(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
 
-	T.Run("with error updating search index", func(t *testing.T) {
+	T.Run("with error updating index", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
 
 		body := &types.PreUpdateMessage{
-			DataType:        types.ValidIngredientDataType,
-			ValidIngredient: fakes.BuildFakeValidIngredient(),
+			DataType:        types.ValidInstrumentDataType,
+			ValidInstrument: fakes.BuildFakeValidInstrument(),
 		}
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"UpdateValidIngredient",
+		dbManager.ValidInstrumentDataManager.On(
+			"UpdateValidInstrument",
 			testutils.ContextMatcher,
-			body.ValidIngredient,
+			body.ValidInstrument,
 		).Return(nil)
 
 		searchIndexManager := &mocksearch.IndexManager{}
 		searchIndexManager.On(
 			"Index",
 			testutils.ContextMatcher,
-			body.ValidIngredient.ID,
-			body.ValidIngredient,
+			body.ValidInstrument.ID,
+			body.ValidInstrument,
 		).Return(errors.New("blah"))
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
-		worker.validIngredientsIndexManager = searchIndexManager
+		worker.validInstrumentsIndexManager = searchIndexManager
 
-		assert.Error(t, worker.updateValidIngredient(ctx, body))
+		assert.Error(t, worker.updateValidInstrument(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager, searchIndexManager)
 	})
@@ -283,23 +279,23 @@ func TestWritesWorker_updateValidIngredient(T *testing.T) {
 		ctx := context.Background()
 
 		body := &types.PreUpdateMessage{
-			DataType:        types.ValidIngredientDataType,
-			ValidIngredient: fakes.BuildFakeValidIngredient(),
+			DataType:        types.ValidInstrumentDataType,
+			ValidInstrument: fakes.BuildFakeValidInstrument(),
 		}
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"UpdateValidIngredient",
+		dbManager.ValidInstrumentDataManager.On(
+			"UpdateValidInstrument",
 			testutils.ContextMatcher,
-			body.ValidIngredient,
+			body.ValidInstrument,
 		).Return(nil)
 
 		searchIndexManager := &mocksearch.IndexManager{}
 		searchIndexManager.On(
 			"Index",
 			testutils.ContextMatcher,
-			body.ValidIngredient.ID,
-			body.ValidIngredient,
+			body.ValidInstrument.ID,
+			body.ValidInstrument,
 		).Return(nil)
 
 		postUpdatesPublisher := &mockpublishers.Publisher{}
@@ -311,16 +307,16 @@ func TestWritesWorker_updateValidIngredient(T *testing.T) {
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
-		worker.validIngredientsIndexManager = searchIndexManager
+		worker.validInstrumentsIndexManager = searchIndexManager
 		worker.postUpdatesPublisher = postUpdatesPublisher
 
-		assert.Error(t, worker.updateValidIngredient(ctx, body))
+		assert.Error(t, worker.updateValidInstrument(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager, postUpdatesPublisher, searchIndexManager)
 	})
 }
 
-func TestWritesWorker_archiveValidIngredient(T *testing.T) {
+func TestWritesWorker_archiveValidInstrument(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -329,14 +325,14 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 		ctx := context.Background()
 
 		body := &types.PreArchiveMessage{
-			DataType: types.ValidIngredientDataType,
+			DataType: types.ValidInstrumentDataType,
 		}
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"ArchiveValidIngredient",
+		dbManager.ValidInstrumentDataManager.On(
+			"ArchiveValidInstrument",
 			testutils.ContextMatcher,
-			body.ValidIngredientID,
+			body.ValidInstrumentID,
 		).Return(nil)
 
 		postArchivesPublisher := &mockpublishers.Publisher{}
@@ -350,15 +346,15 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 		searchIndexManager.On(
 			"Delete",
 			testutils.ContextMatcher,
-			body.ValidIngredientID,
+			body.ValidInstrumentID,
 		).Return(nil)
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.validIngredientsIndexManager = searchIndexManager
+		worker.validInstrumentsIndexManager = searchIndexManager
 		worker.postArchivesPublisher = postArchivesPublisher
 
-		assert.NoError(t, worker.archiveValidIngredient(ctx, body))
+		assert.NoError(t, worker.archiveValidInstrument(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher, searchIndexManager)
 	})
@@ -369,22 +365,25 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 		ctx := context.Background()
 
 		body := &types.PreArchiveMessage{
-			DataType: types.ValidIngredientDataType,
+			DataType: types.ValidInstrumentDataType,
 		}
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"ArchiveValidIngredient",
+		dbManager.ValidInstrumentDataManager.On(
+			"ArchiveValidInstrument",
 			testutils.ContextMatcher,
-			body.ValidIngredientID,
+			body.ValidInstrumentID,
 		).Return(errors.New("blah"))
+
+		postArchivesPublisher := &mockpublishers.Publisher{}
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
+		worker.postArchivesPublisher = postArchivesPublisher
 
-		assert.Error(t, worker.archiveValidIngredient(ctx, body))
+		assert.Error(t, worker.archiveValidInstrument(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager)
+		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
 	})
 
 	T.Run("with error removing from search index", func(t *testing.T) {
@@ -393,30 +392,33 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 		ctx := context.Background()
 
 		body := &types.PreArchiveMessage{
-			DataType: types.ValidIngredientDataType,
+			DataType: types.ValidInstrumentDataType,
 		}
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"ArchiveValidIngredient",
+		dbManager.ValidInstrumentDataManager.On(
+			"ArchiveValidInstrument",
 			testutils.ContextMatcher,
-			body.ValidIngredientID,
+			body.ValidInstrumentID,
 		).Return(nil)
 
 		searchIndexManager := &mocksearch.IndexManager{}
 		searchIndexManager.On(
 			"Delete",
 			testutils.ContextMatcher,
-			body.ValidIngredientID,
+			body.ValidInstrumentID,
 		).Return(errors.New("blah"))
+
+		postArchivesPublisher := &mockpublishers.Publisher{}
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.validIngredientsIndexManager = searchIndexManager
+		worker.validInstrumentsIndexManager = searchIndexManager
+		worker.postArchivesPublisher = postArchivesPublisher
 
-		assert.Error(t, worker.archiveValidIngredient(ctx, body))
+		assert.Error(t, worker.archiveValidInstrument(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, searchIndexManager)
+		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher, searchIndexManager)
 	})
 
 	T.Run("with error publishing post-archive message", func(t *testing.T) {
@@ -425,14 +427,14 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 		ctx := context.Background()
 
 		body := &types.PreArchiveMessage{
-			DataType: types.ValidIngredientDataType,
+			DataType: types.ValidInstrumentDataType,
 		}
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"ArchiveValidIngredient",
+		dbManager.ValidInstrumentDataManager.On(
+			"ArchiveValidInstrument",
 			testutils.ContextMatcher,
-			body.ValidIngredientID,
+			body.ValidInstrumentID,
 		).Return(nil)
 
 		postArchivesPublisher := &mockpublishers.Publisher{}
@@ -446,15 +448,15 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 		searchIndexManager.On(
 			"Delete",
 			testutils.ContextMatcher,
-			body.ValidIngredientID,
+			body.ValidInstrumentID,
 		).Return(nil)
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.validIngredientsIndexManager = searchIndexManager
+		worker.validInstrumentsIndexManager = searchIndexManager
 		worker.postArchivesPublisher = postArchivesPublisher
 
-		assert.Error(t, worker.archiveValidIngredient(ctx, body))
+		assert.Error(t, worker.archiveValidInstrument(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher, searchIndexManager)
 	})

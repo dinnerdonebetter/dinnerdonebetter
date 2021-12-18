@@ -81,37 +81,37 @@ func (c *Client) GetRecipeStepProducts(ctx context.Context, recipeID, recipeStep
 }
 
 // CreateRecipeStepProduct creates a recipe step product.
-func (c *Client) CreateRecipeStepProduct(ctx context.Context, recipeID string, input *types.RecipeStepProductCreationRequestInput) (*types.RecipeStepProduct, error) {
+func (c *Client) CreateRecipeStepProduct(ctx context.Context, recipeID string, input *types.RecipeStepProductCreationRequestInput) (string, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
 	if recipeID == "" {
-		return nil, ErrInvalidIDProvided
+		return "", ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if input == nil {
-		return nil, ErrNilInputProvided
+		return "", ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return "", observability.PrepareError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateRecipeStepProductRequest(ctx, recipeID, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building create recipe step product request")
+		return "", observability.PrepareError(err, logger, span, "building create recipe step product request")
 	}
 
-	var recipeStepProduct *types.RecipeStepProduct
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepProduct); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating recipe step product")
+	var pwr *types.PreWriteResponse
+	if err = c.fetchAndUnmarshal(ctx, req, &pwr); err != nil {
+		return "", observability.PrepareError(err, logger, span, "creating recipe step product")
 	}
 
-	return recipeStepProduct, nil
+	return pwr.ID, nil
 }
 
 // UpdateRecipeStepProduct updates a recipe step product.

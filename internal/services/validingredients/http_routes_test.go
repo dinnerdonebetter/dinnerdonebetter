@@ -9,8 +9,6 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/prixfixeco/api_server/internal/database"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -61,36 +59,19 @@ func TestValidIngredientsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"CreateValidIngredient",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(ingredient *types.ValidIngredientDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidIngredient, nil)
-		helper.service.validIngredientDataManager = dbManager
-
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Index",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-			helper.exampleValidIngredient,
-		).Return(nil)
-		helper.service.search = searchIndexManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+			mock.MatchedBy(testutils.PreWriteMessageMatcher),
 		).Return(nil)
-		helper.service.dataChangesPublisher = dataChangesPublisher
+		helper.service.preWritesPublisher = mockEventProducer
 
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, dbManager, searchIndexManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, mockEventProducer)
 	})
 
 	T.Run("without input attached", func(t *testing.T) {
@@ -149,7 +130,7 @@ func TestValidIngredientsService_CreateHandler(T *testing.T) {
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
 
-	T.Run("with error writing to database", func(t *testing.T) {
+	T.Run("with error publishing event", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -163,103 +144,19 @@ func TestValidIngredientsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"CreateValidIngredient",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(ingredient *types.ValidIngredientDatabaseCreationInput) bool { return true }),
-		).Return((*types.ValidIngredient)(nil), errors.New("blah"))
-		helper.service.validIngredientDataManager = dbManager
-
-		helper.service.CreateHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, dbManager)
-	})
-
-	T.Run("with error updating search index", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeValidIngredientDatabaseCreationInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"CreateValidIngredient",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(ingredient *types.ValidIngredientDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidIngredient, nil)
-		helper.service.validIngredientDataManager = dbManager
-
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Index",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-			helper.exampleValidIngredient,
-		).Return(errors.New("blah"))
-		helper.service.search = searchIndexManager
-
-		helper.service.CreateHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, dbManager, searchIndexManager)
-	})
-
-	T.Run("with error publishing data change message", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeValidIngredientDatabaseCreationInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientDataManager.On(
-			"CreateValidIngredient",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(ingredient *types.ValidIngredientDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidIngredient, nil)
-		helper.service.validIngredientDataManager = dbManager
-
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Index",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-			helper.exampleValidIngredient,
-		).Return(nil)
-		helper.service.search = searchIndexManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+			mock.MatchedBy(testutils.PreWriteMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
+		helper.service.preWritesPublisher = mockEventProducer
 
 		helper.service.CreateHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, dbManager, searchIndexManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, mockEventProducer)
 	})
 }
 
@@ -716,36 +613,21 @@ func TestValidIngredientsService_UpdateHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
 		).Return(helper.exampleValidIngredient, nil)
-
-		validIngredientDataManager.On(
-			"UpdateValidIngredient",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient,
-		).Return(nil)
 		helper.service.validIngredientDataManager = validIngredientDataManager
 
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Index",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-			helper.exampleValidIngredient,
-		).Return(nil)
-		helper.service.search = searchIndexManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+			mock.MatchedBy(testutils.PreUpdateMessageMatcher),
 		).Return(nil)
-		helper.service.dataChangesPublisher = dataChangesPublisher
+		helper.service.preUpdatesPublisher = mockEventProducer
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager, searchIndexManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, validIngredientDataManager, mockEventProducer)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -852,7 +734,7 @@ func TestValidIngredientsService_UpdateHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
 	})
 
-	T.Run("with error writing update to database", func(t *testing.T) {
+	T.Run("with error publishing to message queue", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -872,115 +754,21 @@ func TestValidIngredientsService_UpdateHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
 		).Return(helper.exampleValidIngredient, nil)
-
-		validIngredientDataManager.On(
-			"UpdateValidIngredient",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient,
-		).Return(errors.New("blah"))
 		helper.service.validIngredientDataManager = validIngredientDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
-	})
-
-	T.Run("with error updating search index", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeValidIngredientUpdateRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManager{}
-		validIngredientDataManager.On(
-			"GetValidIngredient",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-		).Return(helper.exampleValidIngredient, nil)
-
-		validIngredientDataManager.On(
-			"UpdateValidIngredient",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient,
-		).Return(nil)
-		helper.service.validIngredientDataManager = validIngredientDataManager
-
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Index",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-			helper.exampleValidIngredient,
-		).Return(errors.New("blah"))
-		helper.service.search = searchIndexManager
-
-		helper.service.UpdateHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager, searchIndexManager)
-	})
-
-	T.Run("with error publishing data change message", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeValidIngredientUpdateRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManager{}
-		validIngredientDataManager.On(
-			"GetValidIngredient",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-		).Return(helper.exampleValidIngredient, nil)
-
-		validIngredientDataManager.On(
-			"UpdateValidIngredient",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient,
-		).Return(nil)
-		helper.service.validIngredientDataManager = validIngredientDataManager
-
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Index",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-			helper.exampleValidIngredient,
-		).Return(nil)
-		helper.service.search = searchIndexManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+			mock.MatchedBy(testutils.PreUpdateMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
+		helper.service.preUpdatesPublisher = mockEventProducer
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager, searchIndexManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, validIngredientDataManager, mockEventProducer)
 	})
 }
 
@@ -998,35 +786,21 @@ func TestValidIngredientsService_ArchiveHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
 		).Return(true, nil)
-
-		validIngredientDataManager.On(
-			"ArchiveValidIngredient",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-		).Return(nil)
 		helper.service.validIngredientDataManager = validIngredientDataManager
 
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Delete",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-		).Return(nil)
-		helper.service.search = searchIndexManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+			mock.MatchedBy(testutils.PreArchiveMessageMatcher),
 		).Return(nil)
-		helper.service.dataChangesPublisher = dataChangesPublisher
+		helper.service.preArchivesPublisher = mockEventProducer
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager, searchIndexManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, validIngredientDataManager, mockEventProducer)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -1101,7 +875,7 @@ func TestValidIngredientsService_ArchiveHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
 	})
 
-	T.Run("with error writing to database", func(t *testing.T) {
+	T.Run("with error publishing to message queue", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -1112,94 +886,20 @@ func TestValidIngredientsService_ArchiveHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
 		).Return(true, nil)
-
-		validIngredientDataManager.On(
-			"ArchiveValidIngredient",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-		).Return(errors.New("blah"))
 		helper.service.validIngredientDataManager = validIngredientDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager)
-	})
-
-	T.Run("with error removing from search index", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManager{}
-		validIngredientDataManager.On(
-			"ValidIngredientExists",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-		).Return(true, nil)
-
-		validIngredientDataManager.On(
-			"ArchiveValidIngredient",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-		).Return(nil)
-		helper.service.validIngredientDataManager = validIngredientDataManager
-
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Delete",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-		).Return(errors.New("blah"))
-		helper.service.search = searchIndexManager
-
-		helper.service.ArchiveHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager, searchIndexManager)
-	})
-
-	T.Run("with error publishing data change message", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		validIngredientDataManager := &mocktypes.ValidIngredientDataManager{}
-		validIngredientDataManager.On(
-			"ValidIngredientExists",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-		).Return(true, nil)
-
-		validIngredientDataManager.On(
-			"ArchiveValidIngredient",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-		).Return(nil)
-		helper.service.validIngredientDataManager = validIngredientDataManager
-
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Delete",
-			testutils.ContextMatcher,
-			helper.exampleValidIngredient.ID,
-		).Return(nil)
-		helper.service.search = searchIndexManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+			mock.MatchedBy(testutils.PreArchiveMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
+		helper.service.preArchivesPublisher = mockEventProducer
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusNoContent, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validIngredientDataManager, searchIndexManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, validIngredientDataManager, mockEventProducer)
 	})
 }

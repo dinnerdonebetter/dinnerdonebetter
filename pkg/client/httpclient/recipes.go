@@ -57,31 +57,31 @@ func (c *Client) GetRecipes(ctx context.Context, filter *types.QueryFilter) (*ty
 }
 
 // CreateRecipe creates a recipe.
-func (c *Client) CreateRecipe(ctx context.Context, input *types.RecipeCreationRequestInput) (*types.Recipe, error) {
+func (c *Client) CreateRecipe(ctx context.Context, input *types.RecipeCreationRequestInput) (string, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
 	if input == nil {
-		return nil, ErrNilInputProvided
+		return "", ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return "", observability.PrepareError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateRecipeRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building create recipe request")
+		return "", observability.PrepareError(err, logger, span, "building create recipe request")
 	}
 
-	var recipe *types.Recipe
-	if err = c.fetchAndUnmarshal(ctx, req, &recipe); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating recipe")
+	var pwr *types.PreWriteResponse
+	if err = c.fetchAndUnmarshal(ctx, req, &pwr); err != nil {
+		return "", observability.PrepareError(err, logger, span, "creating recipe")
 	}
 
-	return recipe, nil
+	return pwr.ID, nil
 }
 
 // UpdateRecipe updates a recipe.

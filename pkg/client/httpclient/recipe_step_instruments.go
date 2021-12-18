@@ -81,37 +81,37 @@ func (c *Client) GetRecipeStepInstruments(ctx context.Context, recipeID, recipeS
 }
 
 // CreateRecipeStepInstrument creates a recipe step instrument.
-func (c *Client) CreateRecipeStepInstrument(ctx context.Context, recipeID string, input *types.RecipeStepInstrumentCreationRequestInput) (*types.RecipeStepInstrument, error) {
+func (c *Client) CreateRecipeStepInstrument(ctx context.Context, recipeID string, input *types.RecipeStepInstrumentCreationRequestInput) (string, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
 	if recipeID == "" {
-		return nil, ErrInvalidIDProvided
+		return "", ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if input == nil {
-		return nil, ErrNilInputProvided
+		return "", ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return "", observability.PrepareError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateRecipeStepInstrumentRequest(ctx, recipeID, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building create recipe step instrument request")
+		return "", observability.PrepareError(err, logger, span, "building create recipe step instrument request")
 	}
 
-	var recipeStepInstrument *types.RecipeStepInstrument
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepInstrument); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating recipe step instrument")
+	var pwr *types.PreWriteResponse
+	if err = c.fetchAndUnmarshal(ctx, req, &pwr); err != nil {
+		return "", observability.PrepareError(err, logger, span, "creating recipe step instrument")
 	}
 
-	return recipeStepInstrument, nil
+	return pwr.ID, nil
 }
 
 // UpdateRecipeStepInstrument updates a recipe step instrument.

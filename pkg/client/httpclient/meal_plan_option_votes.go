@@ -81,37 +81,37 @@ func (c *Client) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPla
 }
 
 // CreateMealPlanOptionVote creates a meal plan option vote.
-func (c *Client) CreateMealPlanOptionVote(ctx context.Context, mealPlanID string, input *types.MealPlanOptionVoteCreationRequestInput) (*types.MealPlanOptionVote, error) {
+func (c *Client) CreateMealPlanOptionVote(ctx context.Context, mealPlanID string, input *types.MealPlanOptionVoteCreationRequestInput) (string, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
 	if mealPlanID == "" {
-		return nil, ErrInvalidIDProvided
+		return "", ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	if input == nil {
-		return nil, ErrNilInputProvided
+		return "", ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return "", observability.PrepareError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateMealPlanOptionVoteRequest(ctx, mealPlanID, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building create meal plan option vote request")
+		return "", observability.PrepareError(err, logger, span, "building create meal plan option vote request")
 	}
 
-	var mealPlanOptionVote *types.MealPlanOptionVote
-	if err = c.fetchAndUnmarshal(ctx, req, &mealPlanOptionVote); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating meal plan option vote")
+	var pwr *types.PreWriteResponse
+	if err = c.fetchAndUnmarshal(ctx, req, &pwr); err != nil {
+		return "", observability.PrepareError(err, logger, span, "creating meal plan option vote")
 	}
 
-	return mealPlanOptionVote, nil
+	return pwr.ID, nil
 }
 
 // UpdateMealPlanOptionVote updates a meal plan option vote.

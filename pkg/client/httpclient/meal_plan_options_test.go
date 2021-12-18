@@ -165,13 +165,13 @@ func (s *mealPlanOptionsTestSuite) TestClient_CreateMealPlanOption() {
 		exampleInput.BelongsToMealPlan = s.exampleMealPlanID
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleMealPlanID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOption)
+		c, _ := buildTestClientWithJSONResponse(t, spec, &types.PreWriteResponse{ID: s.exampleMealPlanOption.ID})
 
 		actual, err := c.CreateMealPlanOption(s.ctx, exampleInput)
 		require.NotEmpty(t, actual)
 		assert.NoError(t, err)
 
-		assert.Equal(t, s.exampleMealPlanOption, actual)
+		assert.Equal(t, s.exampleMealPlanOption.ID, actual)
 	})
 
 	s.Run("with nil input", func() {
