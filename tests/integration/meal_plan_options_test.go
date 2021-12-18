@@ -4,11 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
-	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
 func checkMealPlanOptionEquality(t *testing.T, expected, actual *types.MealPlanOption) {
@@ -29,6 +26,8 @@ func convertMealPlanOptionToMealPlanOptionUpdateInput(x *types.MealPlanOption) *
 		Notes:  x.Notes,
 	}
 }
+
+/*
 
 func (s *TestSuite) TestMealPlanOptions_CompleteLifecycle() {
 	s.runForCookieClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
@@ -145,3 +144,6 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 		}
 	})
 }
+
+
+*/

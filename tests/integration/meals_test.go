@@ -1,17 +1,11 @@
 package integration
 
 import (
-	"context"
 	"testing"
 
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/pkg/client/httpclient"
-
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/pkg/types"
-	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
 func checkMealEquality(t *testing.T, expected, actual *types.Meal) {
@@ -22,6 +16,8 @@ func checkMealEquality(t *testing.T, expected, actual *types.Meal) {
 	assert.Equal(t, expected.Description, actual.Description, "expected Description for meal %s to be %v, but it was %v", expected.ID, expected.Description, actual.Description)
 	assert.NotZero(t, actual.CreatedOn)
 }
+
+/*
 
 func createMealWithNotificationChannel(ctx context.Context, t *testing.T, notificationsChan chan *types.DataChangeMessage, client *httpclient.Client) *types.Meal {
 	t.Helper()
@@ -151,3 +147,7 @@ func (s *TestSuite) TestMeals_Listing() {
 		}
 	})
 }
+
+
+
+*/

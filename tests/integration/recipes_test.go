@@ -1,18 +1,11 @@
 package integration
 
 import (
-	"context"
 	"testing"
-	"time"
-
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/pkg/client/httpclient"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/pkg/types"
-	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
 func checkRecipeEquality(t *testing.T, expected, actual *types.Recipe) {
@@ -35,6 +28,8 @@ func convertRecipeToRecipeUpdateInput(x *types.Recipe) *types.RecipeUpdateReques
 		InspiredByRecipeID: x.InspiredByRecipeID,
 	}
 }
+
+/*
 
 func createRecipeWithNotificationChannel(ctx context.Context, t *testing.T, notificationsChan chan *types.DataChangeMessage, client *httpclient.Client) ([]*types.ValidIngredient, *types.ValidPreparation, *types.Recipe) {
 	t.Helper()
@@ -387,3 +382,5 @@ func (s *TestSuite) TestRecipes_Listing() {
 		}
 	})
 }
+
+*/

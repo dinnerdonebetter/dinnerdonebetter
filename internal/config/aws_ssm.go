@@ -96,9 +96,7 @@ func GetConfigFromParameterStore(worker bool) (*InstanceConfig, error) {
 	cfg.Services.ValidIngredients.PreArchivesTopicName = archivesTopicName
 	cfg.Services.ValidIngredients.SearchIndexPath = elasticsearchInstanceURL
 
-	cfg.Services.ValidPreparations.PreWritesTopicName = writesTopicName
-	cfg.Services.ValidPreparations.PreUpdatesTopicName = updatesTopicName
-	cfg.Services.ValidPreparations.PreArchivesTopicName = archivesTopicName
+	cfg.Services.ValidPreparations.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ValidPreparations.SearchIndexPath = elasticsearchInstanceURL
 
 	cfg.Services.MealPlanOptionVotes.PreWritesTopicName = writesTopicName
@@ -143,11 +141,8 @@ func GetConfigFromParameterStore(worker bool) (*InstanceConfig, error) {
 
 	cfg.Services.Households.PreWritesTopicName = writesTopicName
 
-	cfg.Services.HouseholdInvitations.PreWritesTopicName = writesTopicName
-
-	cfg.Services.Webhooks.PreWritesTopicName = writesTopicName
-	cfg.Services.Webhooks.PreArchivesTopicName = archivesTopicName
-
+	cfg.Services.HouseholdInvitations.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.Webhooks.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.Websockets.DataChangesTopicName = dataChangesTopicName
 
 	ctx := context.Background()

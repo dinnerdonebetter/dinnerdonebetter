@@ -55,21 +55,28 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachWebhookIDToSpan(span, input.ID)
 	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 
-	preWrite := &types.PreWriteMessage{
-		DataType:                  types.WebhookDataType,
-		Webhook:                   input,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing webhook write message")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+	webhook, err := s.webhookDataManager.CreateWebhook(ctx, input)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "creating webhook")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusInternalServerError)
 		return
 	}
 
-	pwr := types.PreWriteResponse{ID: input.ID}
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.WebhookDataType,
+			MessageType:               "webhook_created",
+			Webhook:                   webhook,
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: webhook.BelongsToHousehold,
+		}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusCreated)
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, webhook, http.StatusCreated)
 }
 
 // ListHandler is our list route.
@@ -183,23 +190,30 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	exists, webhookExistenceCheckErr := s.webhookDataManager.WebhookExists(ctx, webhookID, sessionCtxData.ActiveHouseholdID)
 	if webhookExistenceCheckErr != nil && !errors.Is(webhookExistenceCheckErr, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		observability.AcknowledgeError(webhookExistenceCheckErr, logger, span, "checking item existence")
+		observability.AcknowledgeError(webhookExistenceCheckErr, logger, span, "checking webhook existence")
 		return
 	} else if !exists || errors.Is(webhookExistenceCheckErr, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	}
 
-	pam := &types.PreArchiveMessage{
-		DataType:                  types.WebhookDataType,
-		WebhookID:                 webhookID,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing webhook archive message")
+	if err = s.webhookDataManager.ArchiveWebhook(ctx, webhookID, sessionCtxData.ActiveHouseholdID); err != nil {
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		observability.AcknowledgeError(webhookExistenceCheckErr, logger, span, "creating webhook")
 		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.WebhookDataType,
+			MessageType:               "webhookArchived",
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	// let everybody go home.

@@ -10,8 +10,8 @@ import (
 type Config struct {
 	_ struct{}
 
-	PreWritesTopicName string `json:"writesTopicName,omitempty" mapstructure:"pre_writes_topic_name" toml:"pre_writes_topic_name,omitempty"`
-	Debug              bool   `json:"debug" mapstructure:"debug" toml:"debug,omitempty"`
+	DataChangesTopicName string `json:"dataChangesTopicName,omitempty" mapstructure:"data_changes_topic_name" toml:"data_changes_topic_name,omitempty"`
+	Debug                bool   `json:"debug" mapstructure:"debug" toml:"debug,omitempty"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

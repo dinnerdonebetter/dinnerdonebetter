@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -40,26 +39,11 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
-			require.NotNil(t, notificationsChan)
-			require.NoError(t, err)
-
-			var n *types.DataChangeMessage
-
 			t.Log("creating valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
 			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparationID, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			require.NoError(t, err)
-			t.Logf("valid preparation %q created", createdValidPreparationID)
+			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 
-			n = <-notificationsChan
-			assert.Equal(t, types.ValidPreparationDataType, n.DataType)
-			require.NotNil(t, n.ValidPreparation)
-			checkValidPreparationEquality(t, exampleValidPreparation, n.ValidPreparation)
-
-			createdValidPreparation, err := testClients.admin.GetValidPreparation(ctx, createdValidPreparationID)
 			requireNotNilAndNoProblems(t, createdValidPreparation, err)
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
@@ -68,11 +52,8 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			createdValidPreparation.Update(convertValidPreparationToValidPreparationUpdateInput(newValidPreparation))
 			assert.NoError(t, testClients.admin.UpdateValidPreparation(ctx, createdValidPreparation))
 
-			n = <-notificationsChan
-			assert.Equal(t, types.ValidPreparationDataType, n.DataType)
-
 			t.Log("fetching changed valid preparation")
-			actual, err := testClients.admin.GetValidPreparation(ctx, createdValidPreparationID)
+			actual, err := testClients.admin.GetValidPreparation(ctx, createdValidPreparation.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert valid preparation equality
@@ -80,7 +61,7 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedOn)
 
 			t.Log("cleaning up valid preparation")
-			assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparationID))
+			assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
 		}
 	})
 
@@ -95,16 +76,8 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			t.Log("creating valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
 			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparationID, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			require.NoError(t, err)
-			t.Logf("valid preparation %q created", createdValidPreparationID)
+			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 
-			var createdValidPreparation *types.ValidPreparation
-			checkFunc = func() bool {
-				createdValidPreparation, err = testClients.admin.GetValidPreparation(ctx, createdValidPreparationID)
-				return assert.NotNil(t, createdValidPreparation) && assert.NoError(t, err)
-			}
-			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
 			// change valid preparation
@@ -117,7 +90,7 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			// retrieve changed valid preparation
 			var actual *types.ValidPreparation
 			checkFunc = func() bool {
-				actual, err = testClients.admin.GetValidPreparation(ctx, createdValidPreparationID)
+				actual, err = testClients.admin.GetValidPreparation(ctx, createdValidPreparation.ID)
 				return assert.NotNil(t, createdValidPreparation) && assert.NoError(t, err)
 			}
 			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
@@ -129,7 +102,7 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedOn)
 
 			t.Log("cleaning up valid preparation")
-			assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparationID))
+			assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
 		}
 	})
 }
@@ -142,28 +115,12 @@ func (s *TestSuite) TestValidPreparations_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
-			require.NotNil(t, notificationsChan)
-			require.NoError(t, err)
-
-			var n *types.DataChangeMessage
-
 			t.Log("creating valid preparations")
 			var expected []*types.ValidPreparation
 			for i := 0; i < 5; i++ {
 				exampleValidPreparation := fakes.BuildFakeValidPreparation()
 				exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
-				createdValidPreparationID, createdValidPreparationErr := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
-				require.NoError(t, createdValidPreparationErr)
-				t.Logf("valid preparation %q created", createdValidPreparationID)
-
-				n = <-notificationsChan
-				assert.Equal(t, types.ValidPreparationDataType, n.DataType)
-				require.NotNil(t, n.ValidPreparation)
-				checkValidPreparationEquality(t, exampleValidPreparation, n.ValidPreparation)
-
-				createdValidPreparation, createdValidPreparationErr := testClients.admin.GetValidPreparation(ctx, createdValidPreparationID)
+				createdValidPreparation, createdValidPreparationErr := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 				requireNotNilAndNoProblems(t, createdValidPreparation, createdValidPreparationErr)
 
 				expected = append(expected, createdValidPreparation)
@@ -191,7 +148,6 @@ func (s *TestSuite) TestValidPreparations_Listing() {
 		return func() {
 			t := s.T()
 
-			var checkFunc func() bool
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
@@ -200,15 +156,8 @@ func (s *TestSuite) TestValidPreparations_Listing() {
 			for i := 0; i < 5; i++ {
 				exampleValidPreparation := fakes.BuildFakeValidPreparation()
 				exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
-				createdValidPreparationID, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
-				require.NoError(t, err)
-
-				var createdValidPreparation *types.ValidPreparation
-				checkFunc = func() bool {
-					createdValidPreparation, err = testClients.admin.GetValidPreparation(ctx, createdValidPreparationID)
-					return assert.NotNil(t, createdValidPreparation) && assert.NoError(t, err)
-				}
-				assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
+				createdValidPreparation, validPreparationCreationErr := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
+				requireNotNilAndNoProblems(t, createdValidPreparation, validPreparationCreationErr)
 				checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
 				expected = append(expected, createdValidPreparation)
@@ -241,13 +190,6 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
-			require.NotNil(t, notificationsChan)
-			require.NoError(t, err)
-
-			var n *types.DataChangeMessage
-
 			t.Log("creating valid preparations")
 			var expected []*types.ValidPreparation
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
@@ -256,16 +198,7 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 			for i := 0; i < 5; i++ {
 				exampleValidPreparation.Name = fmt.Sprintf("%s %d", searchQuery, i)
 				exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
-				createdValidPreparationID, createdValidPreparationErr := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
-				require.NoError(t, createdValidPreparationErr)
-				t.Logf("valid preparation %q created", createdValidPreparationID)
-
-				n = <-notificationsChan
-				assert.Equal(t, types.ValidPreparationDataType, n.DataType)
-				require.NotNil(t, n.ValidPreparation)
-				checkValidPreparationEquality(t, exampleValidPreparation, n.ValidPreparation)
-
-				createdValidPreparation, createdValidPreparationErr := testClients.admin.GetValidPreparation(ctx, createdValidPreparationID)
+				createdValidPreparation, createdValidPreparationErr := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 				requireNotNilAndNoProblems(t, createdValidPreparation, createdValidPreparationErr)
 
 				expected = append(expected, createdValidPreparation)
@@ -298,7 +231,6 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 		return func() {
 			t := s.T()
 
-			var checkFunc func() bool
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
@@ -310,16 +242,7 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 			for i := 0; i < 5; i++ {
 				exampleValidPreparation.Name = fmt.Sprintf("%s %d", searchQuery, i)
 				exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
-				createdValidPreparationID, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
-				require.NoError(t, err)
-				t.Logf("valid preparation %q created", createdValidPreparationID)
-
-				var createdValidPreparation *types.ValidPreparation
-				checkFunc = func() bool {
-					createdValidPreparation, err = testClients.admin.GetValidPreparation(ctx, createdValidPreparationID)
-					return assert.NotNil(t, createdValidPreparation) && assert.NoError(t, err)
-				}
-				assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
+				createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 				requireNotNilAndNoProblems(t, createdValidPreparation, err)
 
 				expected = append(expected, createdValidPreparation)

@@ -1,4 +1,4 @@
-on: [pull_request]
+on: [gollum]
 name: Deploy
 jobs:
   build:

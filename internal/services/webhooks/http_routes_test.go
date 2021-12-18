@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/prixfixeco/api_server/internal/database"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -31,7 +33,7 @@ func TestWebhooksService_CreateHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeWebhookDatabaseCreationInput()
+		exampleCreationInput := fakes.BuildFakeWebhookDatabaseCreationInputFromWebhook(helper.exampleWebhook)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -39,18 +41,26 @@ func TestWebhooksService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
+		dbManager := database.NewMockDatabase()
+		dbManager.WebhookDataManager.On(
+			"CreateWebhook",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(input *types.WebhookDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleWebhook, nil)
+		helper.service.webhookDataManager = dbManager
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.PreWriteMessageMatcher),
+			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
 		).Return(nil)
-		helper.service.preWritesPublisher = mockEventProducer
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.CreateHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockEventProducer)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -119,13 +129,13 @@ func TestWebhooksService_CreateHandler(T *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 	})
 
-	T.Run("with error publishing to pre-writes queue", func(t *testing.T) {
+	T.Run("with error writing to database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeWebhookDatabaseCreationInput()
+		exampleCreationInput := fakes.BuildFakeWebhookDatabaseCreationInputFromWebhook(helper.exampleWebhook)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -133,18 +143,54 @@ func TestWebhooksService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
-			"Publish",
+		dbManager := database.NewMockDatabase()
+		dbManager.WebhookDataManager.On(
+			"CreateWebhook",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.PreWriteMessageMatcher),
-		).Return(errors.New("blah"))
-		helper.service.preWritesPublisher = mockEventProducer
+			mock.MatchedBy(func(input *types.WebhookDatabaseCreationInput) bool { return true }),
+		).Return((*types.Webhook)(nil), errors.New("blah"))
+		helper.service.webhookDataManager = dbManager
 
 		helper.service.CreateHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockEventProducer)
+		mock.AssertExpectationsForObjects(t, dbManager)
+	})
+
+	T.Run("with error publishing to data changes queue", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleCreationInput := fakes.BuildFakeWebhookDatabaseCreationInputFromWebhook(helper.exampleWebhook)
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		dbManager := database.NewMockDatabase()
+		dbManager.WebhookDataManager.On(
+			"CreateWebhook",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(input *types.WebhookDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleWebhook, nil)
+		helper.service.webhookDataManager = dbManager
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+		).Return(errors.New("blah"))
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		helper.service.CreateHandler(helper.res, helper.req)
+		assert.Equal(t, http.StatusCreated, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
@@ -368,18 +414,25 @@ func TestWebhooksService_ArchiveHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.webhookDataManager = wd
 
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
+		wd.On(
+			"ArchiveWebhook",
+			testutils.ContextMatcher,
+			helper.exampleWebhook.ID,
+			helper.exampleHousehold.ID,
+		).Return(nil)
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.PreArchiveMessageMatcher),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(nil)
-		helper.service.preArchivesPublisher = mockEventProducer
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd)
+		mock.AssertExpectationsForObjects(t, wd, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -449,7 +502,7 @@ func TestWebhooksService_ArchiveHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
 	})
 
-	T.Run("with error publishing to message queue", func(t *testing.T) {
+	T.Run("with error writing to database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
@@ -463,17 +516,51 @@ func TestWebhooksService_ArchiveHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.webhookDataManager = wd
 
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
-			"Publish",
+		wd.On(
+			"ArchiveWebhook",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.PreArchiveMessageMatcher),
+			helper.exampleWebhook.ID,
+			helper.exampleHousehold.ID,
 		).Return(errors.New("blah"))
-		helper.service.preArchivesPublisher = mockEventProducer
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd)
+	})
+
+	T.Run("with error publishing data change message", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+
+		wd := &mocktypes.WebhookDataManager{}
+		wd.On(
+			"WebhookExists",
+			testutils.ContextMatcher,
+			helper.exampleWebhook.ID,
+			helper.exampleHousehold.ID,
+		).Return(true, nil)
+		helper.service.webhookDataManager = wd
+
+		wd.On(
+			"ArchiveWebhook",
+			testutils.ContextMatcher,
+			helper.exampleWebhook.ID,
+			helper.exampleHousehold.ID,
+		).Return(nil)
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+		).Return(errors.New("blah"))
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		helper.service.ArchiveHandler(helper.res, helper.req)
+		assert.Equal(t, http.StatusNoContent, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, wd, dataChangesPublisher)
 	})
 }

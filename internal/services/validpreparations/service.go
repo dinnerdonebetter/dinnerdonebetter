@@ -31,9 +31,7 @@ type (
 		validPreparationDataManager types.ValidPreparationDataManager
 		validPreparationIDFetcher   func(*http.Request) string
 		sessionContextDataFetcher   func(*http.Request) (*types.SessionContextData, error)
-		preWritesPublisher          publishers.Publisher
-		preUpdatesPublisher         publishers.Publisher
-		preArchivesPublisher        publishers.Publisher
+		dataChangesPublisher        publishers.Publisher
 		encoderDecoder              encoding.ServerEncoderDecoder
 		tracer                      tracing.Tracer
 		search                      SearchIndex
@@ -57,17 +55,7 @@ func ProvideService(
 		return nil, fmt.Errorf("setting up valid preparation search index: %w", err)
 	}
 
-	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
-	if err != nil {
-		return nil, fmt.Errorf("setting up valid preparation queue pre-writes publisher: %w", err)
-	}
-
-	preUpdatesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreUpdatesTopicName)
-	if err != nil {
-		return nil, fmt.Errorf("setting up valid preparation queue pre-updates publisher: %w", err)
-	}
-
-	preArchivesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreArchivesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up valid preparation queue pre-archives publisher: %w", err)
 	}
@@ -77,9 +65,7 @@ func ProvideService(
 		validPreparationIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(ValidPreparationIDURIParamKey),
 		sessionContextDataFetcher:   authservice.FetchContextFromRequest,
 		validPreparationDataManager: validPreparationDataManager,
-		preWritesPublisher:          preWritesPublisher,
-		preUpdatesPublisher:         preUpdatesPublisher,
-		preArchivesPublisher:        preArchivesPublisher,
+		dataChangesPublisher:        dataChangesPublisher,
 		encoderDecoder:              encoder,
 		search:                      searchIndexManager,
 		tracer:                      tracing.NewTracer(tracerProvider.Tracer(serviceName)),
