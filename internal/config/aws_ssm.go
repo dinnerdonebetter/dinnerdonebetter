@@ -13,16 +13,20 @@ import (
 )
 
 const (
-	baseAPIServerConfigSSMKey           = "PRIXFIXE_BASE_API_SERVER_CONFIG"
-	baseWorkerConfigSSMKey              = "PRIXFIXE_BASE_WORKER_CONFIG"
-	databaseConnectionURLSSMKey         = "PRIXFIXE_DATABASE_CONNECTION_STRING"
-	writesQueueNameSSMKey               = "PRIXFIXE_WRITES_QUEUE_URL"
-	updatesQueueNameSSMKey              = "PRIXFIXE_UPDATES_QUEUE_URL"
-	archivesQueueNameSSMKey             = "PRIXFIXE_ARCHIVES_QUEUE_URL"
-	dataChangesQueueNameSSMKey          = "PRIXFIXE_DATA_CHANGES_QUEUE_URL"
-	cookieBlockKeySSMKey                = "PRIXFIXE_COOKIE_BLOCK_KEY"
-	cookieHashKeySSMKey                 = "PRIXFIXE_COOKIE_HASH_KEY"
-	cookiePASETOLocalModeKeySSMKey      = "PRIXFIXE_PASETO_LOCAL_MODE_KEY"
+	baseAPIServerConfigSSMKey      = "PRIXFIXE_BASE_API_SERVER_CONFIG"
+	baseWorkerConfigSSMKey         = "PRIXFIXE_BASE_WORKER_CONFIG"
+	databaseConnectionURLSSMKey    = "PRIXFIXE_DATABASE_CONNECTION_STRING"
+	writesQueueNameSSMKey          = "PRIXFIXE_WRITES_QUEUE_URL"
+	updatesQueueNameSSMKey         = "PRIXFIXE_UPDATES_QUEUE_URL"
+	archivesQueueNameSSMKey        = "PRIXFIXE_ARCHIVES_QUEUE_URL"
+	dataChangesQueueNameSSMKey     = "PRIXFIXE_DATA_CHANGES_QUEUE_URL"
+	cookieBlockKeySSMKey           = "PRIXFIXE_COOKIE_BLOCK_KEY"
+	cookieHashKeySSMKey            = "PRIXFIXE_COOKIE_HASH_KEY"
+	cookiePASETOLocalModeKeySSMKey = "PRIXFIXE_PASETO_LOCAL_MODE_KEY"
+	pubsubServerURLSSMKey          = "PRIXFIXE_PUBSUB_SERVER_URL"
+	pubsubServerUsernameSSMKey     = "PRIXFIXE_PUBSUB_SERVER_USERNAME"
+	/* #nosec G101 */
+	pubsubServerPasswordSSMKey          = "PRIXFIXE_PUBSUB_SERVER_PASSWORD"
 	elasticsearchInstanceURLSSMKey      = "PRIXFIXE_ELASTICSEARCH_INSTANCE_URL"
 	elasticsearchInstanceUsernameSSMKey = "PRIXFIXE_ELASTICSEARCH_USERNAME"
 	/* #nosec G101 */
@@ -72,6 +76,10 @@ func GetConfigFromParameterStore(worker bool) (*InstanceConfig, error) {
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(mustGetParameter(svc, databaseConnectionURLSSMKey))
 	cfg.Email.APIToken = mustGetParameter(svc, sendgridAPITokenSSMKey)
 	cfg.CustomerData.APIToken = mustGetParameter(svc, segmentAPITokenSSMKey)
+
+	cfg.Events.RedisConfig.Username = mustGetParameter(svc, pubsubServerUsernameSSMKey)
+	cfg.Events.RedisConfig.Password = mustGetParameter(svc, pubsubServerPasswordSSMKey)
+	cfg.Events.RedisConfig.QueueAddress = mustGetParameter(svc, pubsubServerURLSSMKey)
 
 	cfg.Search.Address = search.IndexPath(elasticsearchInstanceURL)
 	cfg.Search.Username = mustGetParameter(svc, elasticsearchInstanceUsernameSSMKey)

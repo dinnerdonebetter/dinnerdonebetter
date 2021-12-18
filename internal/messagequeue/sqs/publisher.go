@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/prixfixeco/api_server/internal/messagequeue"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -72,14 +73,14 @@ func provideSQSPublisher(logger logging.Logger, sqsClient *sqs.SQS, tracerProvid
 
 type publisherProvider struct {
 	logger            logging.Logger
-	publisherCache    map[string]publishers.Publisher
+	publisherCache    map[string]messagequeue.Publisher
 	sqsClient         *sqs.SQS
 	tracerProvider    tracing.TracerProvider
 	publisherCacheHat sync.RWMutex
 }
 
 // ProvideSQSPublisherProvider returns a PublisherProvider for a given address.
-func ProvideSQSPublisherProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, address string) publishers.PublisherProvider {
+func ProvideSQSPublisherProvider(logger logging.Logger, tracerProvider tracing.TracerProvider) messagequeue.PublisherProvider {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
@@ -88,13 +89,13 @@ func ProvideSQSPublisherProvider(logger logging.Logger, tracerProvider tracing.T
 	return &publisherProvider{
 		logger:         logging.EnsureLogger(logger),
 		sqsClient:      svc,
-		publisherCache: map[string]publishers.Publisher{},
+		publisherCache: map[string]messagequeue.Publisher{},
 		tracerProvider: tracerProvider,
 	}
 }
 
 // ProviderPublisher returns a Publisher for a given topic.
-func (p *publisherProvider) ProviderPublisher(topic string) (publishers.Publisher, error) {
+func (p *publisherProvider) ProviderPublisher(topic string) (messagequeue.Publisher, error) {
 	logger := logging.EnsureLogger(p.logger).WithValue("topic", topic)
 
 	p.publisherCacheHat.Lock()

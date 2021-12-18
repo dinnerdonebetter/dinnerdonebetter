@@ -1,4 +1,4 @@
-package consumers
+package messagequeue
 
 import (
 	"context"
@@ -9,12 +9,6 @@ type (
 	Consumer interface {
 		Consume(stopChan chan bool, errors chan error)
 	}
-
-	// MessageQueueAddress is a simple string alias for the location of our event queue server.
-	MessageQueueAddress string
-
-	// Topic is a simple string alias for the location of our event queue server.
-	Topic string
 
 	// ConsumerProvider is a function that provides a Consumer for a given topic.
 	ConsumerProvider interface {

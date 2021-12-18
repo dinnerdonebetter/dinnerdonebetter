@@ -6,12 +6,13 @@ import (
 	"sync"
 	"time"
 
+	"github.com/prixfixeco/api_server/internal/messagequeue"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/messagequeue/consumers"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
@@ -26,11 +27,6 @@ type (
 		queueURL           string
 		topic              string
 		messagesPerReceive uint8
-	}
-
-	// Config configures a SQS-backed consumer.
-	Config struct {
-		QueueAddress consumers.MessageQueueAddress `json:"messageQueueAddress" mapstructure:"message_queue_address" toml:"message_queue_address,omitempty"`
 	}
 )
 
@@ -85,16 +81,16 @@ func (r *sqsConsumer) Consume(stopChan chan bool, errors chan error) {
 
 type consumerProvider struct {
 	logger           logging.Logger
-	consumerCache    map[string]consumers.Consumer
+	consumerCache    map[string]messagequeue.Consumer
 	sqsClient        *sqs.SQS
 	tracerProvider   tracing.TracerProvider
 	consumerCacheHat sync.RWMutex
 }
 
-var _ consumers.ConsumerProvider = (*consumerProvider)(nil)
+var _ messagequeue.ConsumerProvider = (*consumerProvider)(nil)
 
 // ProvideSQSConsumerProvider returns a ConsumerProvider for a given address.
-func ProvideSQSConsumerProvider(logger logging.Logger, tracerProvider tracing.TracerProvider) consumers.ConsumerProvider {
+func ProvideSQSConsumerProvider(logger logging.Logger, tracerProvider tracing.TracerProvider) messagequeue.ConsumerProvider {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
@@ -103,13 +99,13 @@ func ProvideSQSConsumerProvider(logger logging.Logger, tracerProvider tracing.Tr
 	return &consumerProvider{
 		logger:         logging.EnsureLogger(logger),
 		sqsClient:      svc,
-		consumerCache:  map[string]consumers.Consumer{},
+		consumerCache:  map[string]messagequeue.Consumer{},
 		tracerProvider: tracerProvider,
 	}
 }
 
 // ProvideConsumer returns a Consumer for a given topic.
-func (p *consumerProvider) ProvideConsumer(ctx context.Context, topic string, handlerFunc func(context.Context, []byte) error) (consumers.Consumer, error) {
+func (p *consumerProvider) ProvideConsumer(ctx context.Context, topic string, handlerFunc func(context.Context, []byte) error) (messagequeue.Consumer, error) {
 	logger := logging.EnsureLogger(p.logger).WithValue("topic", topic)
 
 	p.consumerCacheHat.Lock()

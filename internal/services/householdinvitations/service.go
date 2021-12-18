@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/prixfixeco/api_server/internal/messagequeue"
+
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/random"
@@ -33,7 +34,7 @@ type (
 		tracer                         tracing.Tracer
 		encoderDecoder                 encoding.ServerEncoderDecoder
 		secretGenerator                random.Generator
-		preWritesPublisher             publishers.Publisher
+		preWritesPublisher             messagequeue.Publisher
 		householdIDFetcher             func(*http.Request) string
 		householdInvitationIDFetcher   func(*http.Request) string
 		sessionContextDataFetcher      func(*http.Request) (*types.SessionContextData, error)
@@ -49,7 +50,7 @@ func ProvideHouseholdInvitationsService(
 	householdInvitationDataManager types.HouseholdInvitationDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
-	publisherProvider publishers.PublisherProvider,
+	publisherProvider messagequeue.PublisherProvider,
 	customerDataCollector customerdata.Collector,
 	tracerProvider tracing.TracerProvider,
 ) (types.HouseholdInvitationDataService, error) {

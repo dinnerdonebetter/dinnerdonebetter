@@ -7,13 +7,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	mockconsumers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
+
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
-	mockconsumers "github.com/prixfixeco/api_server/internal/messagequeue/consumers/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"

@@ -7,10 +7,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/prixfixeco/api_server/internal/messagequeue"
+
 	"github.com/gorilla/websocket"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/messagequeue/consumers"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
@@ -50,7 +51,7 @@ func ProvideService(
 	cfg Config,
 	logger logging.Logger,
 	encoder encoding.ServerEncoderDecoder,
-	consumerProvider consumers.ConsumerProvider,
+	consumerProvider messagequeue.ConsumerProvider,
 	tracerProvider tracing.TracerProvider,
 ) (types.WebsocketDataService, error) {
 	upgrader := websocket.Upgrader{

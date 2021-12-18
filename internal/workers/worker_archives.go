@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/prixfixeco/api_server/internal/messagequeue"
+
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -20,7 +21,7 @@ type ArchivesWorker struct {
 	logger                                  logging.Logger
 	tracer                                  tracing.Tracer
 	encoder                                 encoding.ClientEncoder
-	postArchivesPublisher                   publishers.Publisher
+	postArchivesPublisher                   messagequeue.Publisher
 	dataManager                             database.DataManager
 	validInstrumentsIndexManager            search.IndexManager
 	validIngredientsIndexManager            search.IndexManager
@@ -35,7 +36,7 @@ func ProvideArchivesWorker(
 	ctx context.Context,
 	logger logging.Logger,
 	dataManager database.DataManager,
-	postArchivesPublisher publishers.Publisher,
+	postArchivesPublisher messagequeue.Publisher,
 	searchIndexProvider search.IndexManagerProvider,
 	customerDataCollector customerdata.Collector,
 	tracerProvider tracing.TracerProvider,

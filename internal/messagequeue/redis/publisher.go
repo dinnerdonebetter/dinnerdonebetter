@@ -7,10 +7,11 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/prixfixeco/api_server/internal/messagequeue"
+
 	"github.com/go-redis/redis/v8"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -62,30 +63,31 @@ func provideRedisPublisher(logger logging.Logger, tracerProvider tracing.TracerP
 
 type publisherProvider struct {
 	logger            logging.Logger
-	publisherCache    map[string]publishers.Publisher
+	publisherCache    map[string]messagequeue.Publisher
 	redisClient       *redis.Client
 	tracerProvider    tracing.TracerProvider
 	publisherCacheHat sync.RWMutex
 }
 
 // ProvideRedisPublisherProvider returns a PublisherProvider for a given address.
-func ProvideRedisPublisherProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, address string) publishers.PublisherProvider {
+func ProvideRedisPublisherProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, cfg Config) messagequeue.PublisherProvider {
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:     address,
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Addr:     cfg.QueueAddress,
+		Username: cfg.Username,
+		Password: cfg.Password,
+		DB:       cfg.DB,
 	})
 
 	return &publisherProvider{
 		logger:         logging.EnsureLogger(logger),
 		redisClient:    redisClient,
-		publisherCache: map[string]publishers.Publisher{},
+		publisherCache: map[string]messagequeue.Publisher{},
 		tracerProvider: tracerProvider,
 	}
 }
 
 // ProviderPublisher returns a Publisher for a given topic.
-func (p *publisherProvider) ProviderPublisher(topic string) (publishers.Publisher, error) {
+func (p *publisherProvider) ProviderPublisher(topic string) (messagequeue.Publisher, error) {
 	logger := logging.EnsureLogger(p.logger).WithValue("topic", topic)
 
 	if topic == "" {

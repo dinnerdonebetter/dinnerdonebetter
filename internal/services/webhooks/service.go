@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/prixfixeco/api_server/internal/messagequeue"
+
 	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/routing"
@@ -28,8 +29,8 @@ type (
 		webhookDataManager        types.WebhookDataManager
 		tracer                    tracing.Tracer
 		encoderDecoder            encoding.ServerEncoderDecoder
-		preWritesPublisher        publishers.Publisher
-		preArchivesPublisher      publishers.Publisher
+		preWritesPublisher        messagequeue.Publisher
+		preArchivesPublisher      messagequeue.Publisher
 		webhookIDFetcher          func(*http.Request) string
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
 	}
@@ -42,7 +43,7 @@ func ProvideWebhooksService(
 	webhookDataManager types.WebhookDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
-	publisherProvider publishers.PublisherProvider,
+	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
 ) (types.WebhookDataService, error) {
 	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)

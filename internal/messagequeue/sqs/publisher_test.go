@@ -37,7 +37,7 @@ func Test_sqsPublisher_Publish(T *testing.T) {
 
 		logger := zerolog.NewZerologLogger()
 
-		provider := ProvideSQSPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
+		provider := ProvideSQSPublisherProvider(logger, trace.NewNoopTracerProvider())
 		require.NotNil(t, provider)
 
 		a, err := provider.ProviderPublisher(t.Name())
@@ -75,7 +75,7 @@ func Test_sqsPublisher_Publish(T *testing.T) {
 
 		logger := zerolog.NewZerologLogger()
 
-		provider := ProvideSQSPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
+		provider := ProvideSQSPublisherProvider(logger, trace.NewNoopTracerProvider())
 		require.NotNil(t, provider)
 
 		a, err := provider.ProviderPublisher(t.Name())
@@ -105,7 +105,7 @@ func TestProvideSQSPublisherProvider(T *testing.T) {
 
 		logger := zerolog.NewZerologLogger()
 
-		actual := ProvideSQSPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
+		actual := ProvideSQSPublisherProvider(logger, trace.NewNoopTracerProvider())
 		assert.NotNil(t, actual)
 	})
 }
@@ -118,7 +118,7 @@ func Test_publisherProvider_ProviderPublisher(T *testing.T) {
 
 		logger := zerolog.NewZerologLogger()
 
-		provider := ProvideSQSPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
+		provider := ProvideSQSPublisherProvider(logger, trace.NewNoopTracerProvider())
 		require.NotNil(t, provider)
 
 		actual, err := provider.ProviderPublisher(t.Name())
@@ -131,7 +131,7 @@ func Test_publisherProvider_ProviderPublisher(T *testing.T) {
 
 		logger := zerolog.NewZerologLogger()
 
-		provider := ProvideSQSPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
+		provider := ProvideSQSPublisherProvider(logger, trace.NewNoopTracerProvider())
 		require.NotNil(t, provider)
 
 		actual, err := provider.ProviderPublisher(t.Name())

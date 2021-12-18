@@ -4,11 +4,12 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/prixfixeco/api_server/internal/messagequeue"
+
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -21,7 +22,7 @@ type WritesWorker struct {
 	logger                                  logging.Logger
 	tracer                                  tracing.Tracer
 	encoder                                 encoding.ClientEncoder
-	dataChangesPublisher                    publishers.Publisher
+	dataChangesPublisher                    messagequeue.Publisher
 	dataManager                             database.DataManager
 	validInstrumentsIndexManager            search.IndexManager
 	validIngredientsIndexManager            search.IndexManager
@@ -37,7 +38,7 @@ func ProvideWritesWorker(
 	ctx context.Context,
 	logger logging.Logger,
 	dataManager database.DataManager,
-	postWritesPublisher publishers.Publisher,
+	postWritesPublisher messagequeue.Publisher,
 	searchIndexProvider search.IndexManagerProvider,
 	emailSender email.Emailer,
 	customerDataCollector customerdata.Collector,

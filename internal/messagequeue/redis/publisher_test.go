@@ -33,7 +33,10 @@ func Test_redisPublisher_Publish(T *testing.T) {
 
 		logger := zerolog.NewZerologLogger()
 
-		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
+		cfg := Config{
+			QueueAddress: t.Name(),
+		}
+		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, provider)
 
 		a, err := provider.ProviderPublisher(t.Name())
@@ -71,7 +74,10 @@ func Test_redisPublisher_Publish(T *testing.T) {
 
 		logger := zerolog.NewZerologLogger()
 
-		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
+		cfg := Config{
+			QueueAddress: t.Name(),
+		}
+		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, provider)
 
 		a, err := provider.ProviderPublisher(t.Name())
@@ -101,7 +107,10 @@ func TestProvideRedisPublisherProvider(T *testing.T) {
 
 		logger := zerolog.NewZerologLogger()
 
-		actual := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
+		cfg := Config{
+			QueueAddress: t.Name(),
+		}
+		actual := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)
 		assert.NotNil(t, actual)
 	})
 }
@@ -114,7 +123,10 @@ func Test_publisherProvider_ProviderPublisher(T *testing.T) {
 
 		logger := zerolog.NewZerologLogger()
 
-		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
+		cfg := Config{
+			QueueAddress: t.Name(),
+		}
+		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, provider)
 
 		actual, err := provider.ProviderPublisher(t.Name())
@@ -127,7 +139,10 @@ func Test_publisherProvider_ProviderPublisher(T *testing.T) {
 
 		logger := zerolog.NewZerologLogger()
 
-		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), t.Name())
+		cfg := Config{
+			QueueAddress: t.Name(),
+		}
+		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, provider)
 
 		actual, err := provider.ProviderPublisher(t.Name())

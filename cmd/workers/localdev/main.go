@@ -11,6 +11,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/prixfixeco/api_server/internal/messagequeue/redis"
+
 	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 
 	"github.com/prixfixeco/api_server/internal/config"
@@ -18,7 +20,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
-	"github.com/prixfixeco/api_server/internal/messagequeue/consumers/redis"
 	"github.com/prixfixeco/api_server/internal/search/elasticsearch"
 	"github.com/prixfixeco/api_server/internal/workers"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -85,7 +86,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	consumerProvider := redis.ProvideRedisConsumerProvider(logger, tracerProvider, string(cfg.Events.RedisConfig.QueueAddress))
+	consumerProvider := redis.ProvideRedisConsumerProvider(logger, tracerProvider, cfg.Events.RedisConfig)
 
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
 	if err != nil {

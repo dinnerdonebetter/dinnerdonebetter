@@ -15,6 +15,7 @@ import (
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
+	"github.com/prixfixeco/api_server/internal/messagequeue/redis"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
@@ -285,7 +286,7 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 		},
 		Events: msgconfig.Config{
 			Provider: msgconfig.ProviderRedis,
-			RedisConfig: msgconfig.RedisConfig{
+			RedisConfig: redis.Config{
 				QueueAddress: workerQueueAddress,
 			},
 		},
@@ -434,7 +435,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 		},
 		Events: msgconfig.Config{
 			Provider: msgconfig.ProviderRedis,
-			RedisConfig: msgconfig.RedisConfig{
+			RedisConfig: redis.Config{
 				QueueAddress: workerQueueAddress,
 			},
 		},

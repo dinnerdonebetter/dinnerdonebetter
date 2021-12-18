@@ -143,9 +143,9 @@ func TestProvideRedisConsumerProvider(T *testing.T) {
 		t.Parallel()
 
 		logger := logging.NewNoopLogger()
-		exampleAddress := t.Name()
+		cfg := Config{}
 
-		actual := ProvideRedisConsumerProvider(logger, trace.NewNoopTracerProvider(), exampleAddress)
+		actual := ProvideRedisConsumerProvider(logger, trace.NewNoopTracerProvider(), cfg)
 		assert.NotNil(t, actual)
 	})
 }
@@ -157,9 +157,9 @@ func Test_consumerProvider_ProviderConsumer(T *testing.T) {
 		t.Parallel()
 
 		logger := logging.NewNoopLogger()
-		exampleAddress := t.Name()
+		cfg := Config{}
 
-		conPro := ProvideRedisConsumerProvider(logger, trace.NewNoopTracerProvider(), exampleAddress)
+		conPro := ProvideRedisConsumerProvider(logger, trace.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, conPro)
 
 		ctx := context.Background()
@@ -173,9 +173,9 @@ func Test_consumerProvider_ProviderConsumer(T *testing.T) {
 		t.Parallel()
 
 		logger := logging.NewNoopLogger()
-		exampleAddress := t.Name()
+		cfg := Config{}
 
-		conPro := ProvideRedisConsumerProvider(logger, trace.NewNoopTracerProvider(), exampleAddress)
+		conPro := ProvideRedisConsumerProvider(logger, trace.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, conPro)
 
 		ctx := context.Background()

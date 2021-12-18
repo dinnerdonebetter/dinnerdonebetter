@@ -1,14 +1,14 @@
-package mockconsumers
+package mockpublishers
 
 import (
 	"context"
 
-	"github.com/stretchr/testify/mock"
+	"github.com/prixfixeco/api_server/internal/messagequeue"
 
-	"github.com/prixfixeco/api_server/internal/messagequeue/consumers"
+	"github.com/stretchr/testify/mock"
 )
 
-var _ consumers.ConsumerProvider = (*ConsumerProvider)(nil)
+var _ messagequeue.ConsumerProvider = (*ConsumerProvider)(nil)
 
 // ConsumerProvider is a mock consumers.ConsumerProvider.
 type ConsumerProvider struct {
@@ -16,10 +16,10 @@ type ConsumerProvider struct {
 }
 
 // ProvideConsumer implements the interface.
-func (m *ConsumerProvider) ProvideConsumer(ctx context.Context, topic string, handlerFunc func(context.Context, []byte) error) (consumers.Consumer, error) {
+func (m *ConsumerProvider) ProvideConsumer(ctx context.Context, topic string, handlerFunc func(context.Context, []byte) error) (messagequeue.Consumer, error) {
 	args := m.Called(ctx, topic, handlerFunc)
 
-	return args.Get(0).(consumers.Consumer), args.Error(1)
+	return args.Get(0).(messagequeue.Consumer), args.Error(1)
 }
 
 // Consumer is a mock consumers.Consumer.

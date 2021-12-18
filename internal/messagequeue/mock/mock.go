@@ -3,12 +3,12 @@ package mockpublishers
 import (
 	"context"
 
-	"github.com/stretchr/testify/mock"
+	"github.com/prixfixeco/api_server/internal/messagequeue"
 
-	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
+	"github.com/stretchr/testify/mock"
 )
 
-var _ publishers.Publisher = (*Publisher)(nil)
+var _ messagequeue.Publisher = (*Publisher)(nil)
 
 // Publisher implements our interface.
 type Publisher struct {
@@ -31,8 +31,8 @@ type ProducerProvider struct {
 }
 
 // ProviderPublisher implements our interface.
-func (m *ProducerProvider) ProviderPublisher(topic string) (publishers.Publisher, error) {
+func (m *ProducerProvider) ProviderPublisher(topic string) (messagequeue.Publisher, error) {
 	args := m.Called(topic)
 
-	return args.Get(0).(publishers.Publisher), args.Error(1)
+	return args.Get(0).(messagequeue.Publisher), args.Error(1)
 }

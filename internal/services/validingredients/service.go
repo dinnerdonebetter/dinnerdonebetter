@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/prixfixeco/api_server/internal/messagequeue"
+
 	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/routing"
@@ -31,9 +32,9 @@ type (
 		validIngredientDataManager types.ValidIngredientDataManager
 		validIngredientIDFetcher   func(*http.Request) string
 		sessionContextDataFetcher  func(*http.Request) (*types.SessionContextData, error)
-		preWritesPublisher         publishers.Publisher
-		preUpdatesPublisher        publishers.Publisher
-		preArchivesPublisher       publishers.Publisher
+		preWritesPublisher         messagequeue.Publisher
+		preUpdatesPublisher        messagequeue.Publisher
+		preArchivesPublisher       messagequeue.Publisher
 		encoderDecoder             encoding.ServerEncoderDecoder
 		tracer                     tracing.Tracer
 		search                     SearchIndex
@@ -49,7 +50,7 @@ func ProvideService(
 	encoder encoding.ServerEncoderDecoder,
 	searchIndexProvider search.IndexManagerProvider,
 	routeParamManager routing.RouteParamManager,
-	publisherProvider publishers.PublisherProvider,
+	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
 ) (types.ValidIngredientDataService, error) {
 	searchIndexManager, err := searchIndexProvider.ProvideIndexManager(ctx, logger, "valid_ingredients", "name", "variant", "description", "warning")

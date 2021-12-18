@@ -4,11 +4,12 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/prixfixeco/api_server/internal/messagequeue"
+
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -21,7 +22,7 @@ type ChoresWorker struct {
 	tracer                tracing.Tracer
 	encoder               encoding.ClientEncoder
 	dataManager           database.DataManager
-	postUpdatesPublisher  publishers.Publisher
+	postUpdatesPublisher  messagequeue.Publisher
 	emailSender           email.Emailer
 	customerDataCollector customerdata.Collector
 }
@@ -30,7 +31,7 @@ type ChoresWorker struct {
 func ProvideChoresWorker(
 	logger logging.Logger,
 	dataManager database.DataManager,
-	postUpdatesPublisher publishers.Publisher,
+	postUpdatesPublisher messagequeue.Publisher,
 	emailSender email.Emailer,
 	customerDataCollector customerdata.Collector,
 	tracerProvider tracing.TracerProvider,
