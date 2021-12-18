@@ -57,31 +57,31 @@ func (c *Client) GetValidIngredientPreparations(ctx context.Context, filter *typ
 }
 
 // CreateValidIngredientPreparation creates a valid ingredient preparation.
-func (c *Client) CreateValidIngredientPreparation(ctx context.Context, input *types.ValidIngredientPreparationCreationRequestInput) (string, error) {
+func (c *Client) CreateValidIngredientPreparation(ctx context.Context, input *types.ValidIngredientPreparationCreationRequestInput) (*types.ValidIngredientPreparation, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
 	if input == nil {
-		return "", ErrNilInputProvided
+		return nil, ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return "", observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateValidIngredientPreparationRequest(ctx, input)
 	if err != nil {
-		return "", observability.PrepareError(err, logger, span, "building create valid ingredient preparation request")
+		return nil, observability.PrepareError(err, logger, span, "building create valid ingredient preparation request")
 	}
 
-	var pwr *types.PreWriteResponse
-	if err = c.fetchAndUnmarshal(ctx, req, &pwr); err != nil {
-		return "", observability.PrepareError(err, logger, span, "creating valid ingredient preparation")
+	var validIngredientPreparation *types.ValidIngredientPreparation
+	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientPreparation); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "creating valid ingredient preparation")
 	}
 
-	return pwr.ID, nil
+	return validIngredientPreparation, nil
 }
 
 // UpdateValidIngredientPreparation updates a valid ingredient preparation.

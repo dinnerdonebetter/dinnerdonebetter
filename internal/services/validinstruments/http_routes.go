@@ -67,22 +67,36 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachValidInstrumentIDToSpan(span, input.ID)
 
-	// create valid instrument in database.
-	preWrite := &types.PreWriteMessage{
-		DataType:                  types.ValidInstrumentDataType,
-		ValidInstrument:           input,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing valid instrument write message")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+	validInstrument, err := s.validInstrumentDataManager.CreateValidInstrument(ctx, input)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "creating valid instrument")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "creating valid instrument", http.StatusInternalServerError)
 		return
 	}
+	logger.Debug("valid instrument created")
 
-	pwr := types.PreWriteResponse{ID: input.ID}
+	if err = s.search.Index(ctx, validInstrument.ID, validInstrument); err != nil {
+		observability.AcknowledgeError(err, logger, span, "indexing the valid instrument")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "indexing the valid instrument", http.StatusInternalServerError)
+		return
+	}
+	logger.Debug("valid instrument indexed in search")
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusAccepted)
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.ValidInstrumentDataType,
+			MessageType:               "valid_instrument_created",
+			ValidInstrument:           validInstrument,
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing to post-writes topic")
+		}
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validInstrument, http.StatusAccepted)
 }
 
 // ReadHandler returns a GET handler that returns a valid instrument.
@@ -264,16 +278,30 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// update the valid instrument.
 	validInstrument.Update(input)
 
-	pum := &types.PreUpdateMessage{
-		DataType:                  types.ValidInstrumentDataType,
-		ValidInstrument:           validInstrument,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preUpdatesPublisher.Publish(ctx, pum); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing valid instrument update message")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+	if err = s.validInstrumentDataManager.UpdateValidInstrument(ctx, validInstrument); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating valid instrument")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "updating valid instrument", http.StatusInternalServerError)
 		return
+	}
+
+	if err = s.search.Index(ctx, validInstrument.ID, validInstrument); err != nil {
+		observability.AcknowledgeError(err, logger, span, "indexing the valid instrument")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "indexing the valid instrument", http.StatusInternalServerError)
+		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.ValidInstrumentDataType,
+			MessageType:               "valid_instrument_updated",
+			ValidInstrument:           validInstrument,
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	// encode our response and peace.
@@ -314,16 +342,29 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	pam := &types.PreArchiveMessage{
-		DataType:                  types.ValidInstrumentDataType,
-		ValidInstrumentID:         validInstrumentID,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing valid instrument archive message")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+	if err = s.validInstrumentDataManager.ArchiveValidInstrument(ctx, validInstrumentID); err != nil {
+		observability.AcknowledgeError(err, logger, span, "archiving valid instrument")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "archiving valid instrument", http.StatusInternalServerError)
 		return
+	}
+
+	if err = s.search.Delete(ctx, validInstrumentID); err != nil {
+		observability.AcknowledgeError(err, logger, span, "removing valid instrument from search index")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "removing valid instrument from search index", http.StatusInternalServerError)
+		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.ValidInstrumentDataType,
+			MessageType:               "valid_instrument_archived",
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	// encode our response and peace.

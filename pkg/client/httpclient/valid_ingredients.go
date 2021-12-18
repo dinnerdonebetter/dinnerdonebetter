@@ -87,31 +87,31 @@ func (c *Client) GetValidIngredients(ctx context.Context, filter *types.QueryFil
 }
 
 // CreateValidIngredient creates a valid ingredient.
-func (c *Client) CreateValidIngredient(ctx context.Context, input *types.ValidIngredientCreationRequestInput) (string, error) {
+func (c *Client) CreateValidIngredient(ctx context.Context, input *types.ValidIngredientCreationRequestInput) (*types.ValidIngredient, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
 	if input == nil {
-		return "", ErrNilInputProvided
+		return nil, ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return "", observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateValidIngredientRequest(ctx, input)
 	if err != nil {
-		return "", observability.PrepareError(err, logger, span, "building create valid ingredient request")
+		return nil, observability.PrepareError(err, logger, span, "building create valid ingredient request")
 	}
 
-	var pwr *types.PreWriteResponse
-	if err = c.fetchAndUnmarshal(ctx, req, &pwr); err != nil {
-		return "", observability.PrepareError(err, logger, span, "creating valid ingredient")
+	var validIngredient *types.ValidIngredient
+	if err = c.fetchAndUnmarshal(ctx, req, &validIngredient); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "creating valid ingredient")
 	}
 
-	return pwr.ID, nil
+	return validIngredient, nil
 }
 
 // UpdateValidIngredient updates a valid ingredient.

@@ -141,13 +141,13 @@ func (s *recipesTestSuite) TestClient_CreateRecipe() {
 		exampleInput.CreatedByUser = ""
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, &types.PreWriteResponse{ID: s.exampleRecipe.ID})
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipe)
 
 		actual, err := c.CreateRecipe(s.ctx, exampleInput)
 		require.NotEmpty(t, actual)
 		assert.NoError(t, err)
 
-		assert.Equal(t, s.exampleRecipe.ID, actual)
+		assert.Equal(t, s.exampleRecipe, actual)
 	})
 
 	s.Run("with nil input", func() {

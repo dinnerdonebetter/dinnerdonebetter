@@ -339,18 +339,18 @@ func TestWritesWorker_archiveValidIngredient(T *testing.T) {
 			body.ValidIngredientID,
 		).Return(nil)
 
-		postArchivesPublisher := &mockpublishers.Publisher{}
-		postArchivesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
-		).Return(nil)
-
 		searchIndexManager := &mocksearch.IndexManager{}
 		searchIndexManager.On(
 			"Delete",
 			testutils.ContextMatcher,
 			body.ValidIngredientID,
+		).Return(nil)
+
+		postArchivesPublisher := &mockpublishers.Publisher{}
+		postArchivesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
 		).Return(nil)
 
 		worker := newTestArchivesWorker(t)

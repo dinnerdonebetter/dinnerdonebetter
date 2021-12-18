@@ -52,16 +52,16 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			t.Log("creating valid instrument")
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
 			exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
-			createdValidInstrumentID, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 			require.NoError(t, err)
-			t.Logf("valid instrument %q created", createdValidInstrumentID)
+			t.Logf("valid instrument %q created", createdValidInstrument.ID)
 
 			n = <-notificationsChan
 			assert.Equal(t, types.ValidInstrumentDataType, n.DataType)
 			require.NotNil(t, n.ValidInstrument)
 			checkValidInstrumentEquality(t, exampleValidInstrument, n.ValidInstrument)
 
-			createdValidInstrument, err := testClients.admin.GetValidInstrument(ctx, createdValidInstrumentID)
+			createdValidInstrument, err = testClients.admin.GetValidInstrument(ctx, createdValidInstrument.ID)
 			requireNotNilAndNoProblems(t, createdValidInstrument, err)
 
 			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
@@ -75,7 +75,7 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			assert.Equal(t, types.ValidInstrumentDataType, n.DataType)
 
 			t.Log("fetching changed valid instrument")
-			actual, err := testClients.admin.GetValidInstrument(ctx, createdValidInstrumentID)
+			actual, err := testClients.admin.GetValidInstrument(ctx, createdValidInstrument.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert valid instrument equality
@@ -83,7 +83,7 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedOn)
 
 			t.Log("cleaning up valid instrument")
-			assert.NoError(t, testClients.admin.ArchiveValidInstrument(ctx, createdValidInstrumentID))
+			assert.NoError(t, testClients.admin.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
 		}
 	})
 
@@ -98,13 +98,12 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			t.Log("creating valid instrument")
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
 			exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
-			createdValidInstrumentID, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 			require.NoError(t, err)
-			t.Logf("valid instrument %q created", createdValidInstrumentID)
+			t.Logf("valid instrument %q created", createdValidInstrument.ID)
 
-			var createdValidInstrument *types.ValidInstrument
 			checkFunc = func() bool {
-				createdValidInstrument, err = testClients.admin.GetValidInstrument(ctx, createdValidInstrumentID)
+				createdValidInstrument, err = testClients.admin.GetValidInstrument(ctx, createdValidInstrument.ID)
 				return assert.NotNil(t, createdValidInstrument) && assert.NoError(t, err)
 			}
 			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
@@ -123,7 +122,7 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			// retrieve changed valid instrument
 			var actual *types.ValidInstrument
 			checkFunc = func() bool {
-				actual, err = testClients.admin.GetValidInstrument(ctx, createdValidInstrumentID)
+				actual, err = testClients.admin.GetValidInstrument(ctx, createdValidInstrument.ID)
 				return assert.NotNil(t, createdValidInstrument) && assert.NoError(t, err)
 			}
 			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
@@ -135,7 +134,7 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedOn)
 
 			t.Log("cleaning up valid instrument")
-			assert.NoError(t, testClients.admin.ArchiveValidInstrument(ctx, createdValidInstrumentID))
+			assert.NoError(t, testClients.admin.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
 		}
 	})
 }
@@ -160,16 +159,16 @@ func (s *TestSuite) TestValidInstruments_Listing() {
 			for i := 0; i < 5; i++ {
 				exampleValidInstrument := fakes.BuildFakeValidInstrument()
 				exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
-				createdValidInstrumentID, createdValidInstrumentErr := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+				createdValidInstrument, createdValidInstrumentErr := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 				require.NoError(t, createdValidInstrumentErr)
-				t.Logf("valid instrument %q created", createdValidInstrumentID)
+				t.Logf("valid instrument %q created", createdValidInstrument.ID)
 
 				n = <-notificationsChan
 				assert.Equal(t, types.ValidInstrumentDataType, n.DataType)
 				require.NotNil(t, n.ValidInstrument)
 				checkValidInstrumentEquality(t, exampleValidInstrument, n.ValidInstrument)
 
-				createdValidInstrument, createdValidInstrumentErr := testClients.admin.GetValidInstrument(ctx, createdValidInstrumentID)
+				createdValidInstrument, createdValidInstrumentErr = testClients.admin.GetValidInstrument(ctx, createdValidInstrument.ID)
 				requireNotNilAndNoProblems(t, createdValidInstrument, createdValidInstrumentErr)
 
 				expected = append(expected, createdValidInstrument)
@@ -206,12 +205,11 @@ func (s *TestSuite) TestValidInstruments_Listing() {
 			for i := 0; i < 5; i++ {
 				exampleValidInstrument := fakes.BuildFakeValidInstrument()
 				exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
-				createdValidInstrumentID, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+				createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 				require.NoError(t, err)
 
-				var createdValidInstrument *types.ValidInstrument
 				checkFunc = func() bool {
-					createdValidInstrument, err = testClients.admin.GetValidInstrument(ctx, createdValidInstrumentID)
+					createdValidInstrument, err = testClients.admin.GetValidInstrument(ctx, createdValidInstrument.ID)
 					return assert.NotNil(t, createdValidInstrument) && assert.NoError(t, err)
 				}
 				assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
@@ -262,16 +260,16 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 			for i := 0; i < 5; i++ {
 				exampleValidInstrument.Name = fmt.Sprintf("%s %d", searchQuery, i)
 				exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
-				createdValidInstrumentID, createdValidInstrumentErr := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+				createdValidInstrument, createdValidInstrumentErr := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 				require.NoError(t, createdValidInstrumentErr)
-				t.Logf("valid instrument %q created", createdValidInstrumentID)
+				t.Logf("valid instrument %q created", createdValidInstrument.ID)
 
 				n = <-notificationsChan
 				assert.Equal(t, types.ValidInstrumentDataType, n.DataType)
 				require.NotNil(t, n.ValidInstrument)
 				checkValidInstrumentEquality(t, exampleValidInstrument, n.ValidInstrument)
 
-				createdValidInstrument, createdValidInstrumentErr := testClients.admin.GetValidInstrument(ctx, createdValidInstrumentID)
+				createdValidInstrument, createdValidInstrumentErr = testClients.admin.GetValidInstrument(ctx, createdValidInstrument.ID)
 				requireNotNilAndNoProblems(t, createdValidInstrument, createdValidInstrumentErr)
 
 				expected = append(expected, createdValidInstrument)
@@ -316,13 +314,12 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 			for i := 0; i < 5; i++ {
 				exampleValidInstrument.Name = fmt.Sprintf("%s %d", searchQuery, i)
 				exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
-				createdValidInstrumentID, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+				createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 				require.NoError(t, err)
-				t.Logf("valid instrument %q created", createdValidInstrumentID)
+				t.Logf("valid instrument %q created", createdValidInstrument.ID)
 
-				var createdValidInstrument *types.ValidInstrument
 				checkFunc = func() bool {
-					createdValidInstrument, err = testClients.admin.GetValidInstrument(ctx, createdValidInstrumentID)
+					createdValidInstrument, err = testClients.admin.GetValidInstrument(ctx, createdValidInstrument.ID)
 					return assert.NotNil(t, createdValidInstrument) && assert.NoError(t, err)
 				}
 				assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)

@@ -140,13 +140,13 @@ func (s *validIngredientPreparationsTestSuite) TestClient_CreateValidIngredientP
 		exampleInput := fakes.BuildFakeValidIngredientPreparationCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, &types.PreWriteResponse{ID: s.exampleValidIngredientPreparation.ID})
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientPreparation)
 
 		actual, err := c.CreateValidIngredientPreparation(s.ctx, exampleInput)
 		require.NotEmpty(t, actual)
 		assert.NoError(t, err)
 
-		assert.Equal(t, s.exampleValidIngredientPreparation.ID, actual)
+		assert.Equal(t, s.exampleValidIngredientPreparation, actual)
 	})
 
 	s.Run("with nil input", func() {
