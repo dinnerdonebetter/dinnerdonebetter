@@ -125,11 +125,11 @@ func (s *webhooksTestSuite) TestClient_CreateWebhook() {
 		exampleInput.BelongsToHousehold = ""
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleWebhook)
+		c, _ := buildTestClientWithJSONResponse(t, spec, &types.PreWriteResponse{ID: s.exampleWebhook.ID})
 
 		actual, err := c.CreateWebhook(s.ctx, exampleInput)
 		assert.NoError(t, err)
-		assert.Equal(t, s.exampleWebhook, actual)
+		assert.Equal(t, s.exampleWebhook.ID, actual)
 	})
 
 	s.Run("with nil input", func() {

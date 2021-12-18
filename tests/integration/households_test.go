@@ -3,11 +3,15 @@ package integration
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	"github.com/brianvoe/gofakeit/v5"
+
+	"github.com/prixfixeco/api_server/internal/authorization"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/pkg/client/httpclient"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
@@ -227,11 +231,23 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 			relevantHouseholdID := currentStatus.ActiveHousehold
 			t.Logf("initial household is %s; initial user ID is %s", relevantHouseholdID, s.user.ID)
 
+			stopChan := make(chan bool, 1)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
+			require.NotNil(t, notificationsChan)
+			require.NoError(t, err)
+
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
 			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
-			createdWebhook, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			createdWebhookID, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			require.NoError(t, err)
 
+			n := <-notificationsChan
+			assert.Equal(t, types.WebhookDataType, n.DataType)
+			require.NotNil(t, n.Webhook)
+			checkWebhookEquality(t, exampleWebhook, n.Webhook)
+
+			createdWebhook, err := testClients.main.GetWebhook(ctx, createdWebhookID)
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 			require.Equal(t, relevantHouseholdID, createdWebhook.BelongsToHousehold)
 
@@ -239,13 +255,16 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 			u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
 
 			t.Logf("inviting user")
-			invitation, err := testClients.main.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
+			invitationID, err := testClients.main.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
 				FromUser:             s.user.ID,
 				Note:                 t.Name(),
 				ToEmail:              u.EmailAddress,
 				DestinationHousehold: relevantHouseholdID,
 			})
 			require.NoError(t, err)
+
+			n = <-notificationsChan
+			assert.Equal(t, types.HouseholdInvitationDataType, n.DataType)
 
 			t.Logf("checking for sent invitation")
 			sentInvitations, err := testClients.main.GetPendingHouseholdInvitationsFromUser(ctx, nil)
@@ -258,7 +277,7 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 			assert.NotEmpty(t, invitations.HouseholdInvitations)
 
 			t.Logf("accepting invitation")
-			err = c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitation.ID, t.Name())
+			err = c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitationID, t.Name())
 			require.NoError(t, err)
 
 			t.Logf("checking for sent invitation")
@@ -285,8 +304,6 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 	})
 }
 
-/*
-
 func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 	s.runForCookieClient("should be possible to invite a user before they sign up", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -301,11 +318,15 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 			relevantHouseholdID := currentStatus.ActiveHousehold
 			t.Logf("initial household is %s; initial user ID is %s", relevantHouseholdID, s.user.ID)
 
+			stopChan := make(chan bool, 1)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
+			require.NotNil(t, notificationsChan)
+			require.NoError(t, err)
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
 			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
-			createdWebhook, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			createdWebhookID, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
 
 			n := <-notificationsChan
@@ -313,7 +334,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 			require.NotNil(t, n.Webhook)
 			checkWebhookEquality(t, exampleWebhook, n.Webhook)
 
-			createdWebhook, err := testClients.main.GetWebhook(ctx, createdWebhook.ID)
+			createdWebhook, err := testClients.main.GetWebhook(ctx, createdWebhookID)
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 			require.Equal(t, relevantHouseholdID, createdWebhook.BelongsToHousehold)
 
@@ -327,7 +348,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 			invitationID, err := testClients.main.InviteUserToHousehold(ctx, inviteReq)
 			require.NoError(t, err)
 
-
+			n = <-notificationsChan
 			assert.Equal(t, types.HouseholdInvitationDataType, n.DataType)
 
 			t.Logf("checking for sent invitation")
@@ -389,11 +410,15 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCan
 			relevantHouseholdID := currentStatus.ActiveHousehold
 			t.Logf("initial household is %s; initial user ID is %s", relevantHouseholdID, s.user.ID)
 
+			stopChan := make(chan bool, 1)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
+			require.NotNil(t, notificationsChan)
+			require.NoError(t, err)
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
 			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
-			createdWebhook, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			createdWebhookID, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
 
 			n := <-notificationsChan
@@ -401,7 +426,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCan
 			require.NotNil(t, n.Webhook)
 			checkWebhookEquality(t, exampleWebhook, n.Webhook)
 
-			createdWebhook, err := testClients.main.GetWebhook(ctx, createdWebhook.ID)
+			createdWebhook, err := testClients.main.GetWebhook(ctx, createdWebhookID)
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 			require.Equal(t, relevantHouseholdID, createdWebhook.BelongsToHousehold)
 
@@ -415,7 +440,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCan
 			invitationID, err := testClients.main.InviteUserToHousehold(ctx, inviteReq)
 			require.NoError(t, err)
 
-
+			n = <-notificationsChan
 			assert.Equal(t, types.HouseholdInvitationDataType, n.DataType)
 
 			t.Logf("checking for sent invitation")
@@ -461,11 +486,15 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 			relevantHouseholdID := currentStatus.ActiveHousehold
 			t.Logf("initial household is %s; initial user ID is %s", relevantHouseholdID, s.user.ID)
 
+			stopChan := make(chan bool, 1)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
+			require.NotNil(t, notificationsChan)
+			require.NoError(t, err)
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
 			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
-			createdWebhook, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			createdWebhookID, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
 
 			n := <-notificationsChan
@@ -473,7 +502,7 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 			require.NotNil(t, n.Webhook)
 			checkWebhookEquality(t, exampleWebhook, n.Webhook)
 
-			createdWebhook, err := testClients.main.GetWebhook(ctx, createdWebhook.ID)
+			createdWebhook, err := testClients.main.GetWebhook(ctx, createdWebhookID)
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 			require.Equal(t, relevantHouseholdID, createdWebhook.BelongsToHousehold)
 
@@ -487,7 +516,7 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 			createdInvitationID, err := testClients.main.InviteUserToHousehold(ctx, inviteReq)
 			require.NoError(t, err)
 
-
+			n = <-notificationsChan
 			assert.Equal(t, types.HouseholdInvitationDataType, n.DataType)
 
 			createdInvitation, err := testClients.main.GetHouseholdInvitation(ctx, relevantHouseholdID, createdInvitationID)
@@ -539,11 +568,15 @@ func (s *TestSuite) TestHouseholds_InviteCanBeCancelled() {
 			relevantHouseholdID := currentStatus.ActiveHousehold
 			t.Logf("initial household is %s; initial user ID is %s", relevantHouseholdID, s.user.ID)
 
+			stopChan := make(chan bool, 1)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
+			require.NotNil(t, notificationsChan)
+			require.NoError(t, err)
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
 			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
-			createdWebhook, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			createdWebhookID, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
 
 			n := <-notificationsChan
@@ -551,7 +584,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeCancelled() {
 			require.NotNil(t, n.Webhook)
 			checkWebhookEquality(t, exampleWebhook, n.Webhook)
 
-			createdWebhook, err := testClients.main.GetWebhook(ctx, createdWebhook.ID)
+			createdWebhook, err := testClients.main.GetWebhook(ctx, createdWebhookID)
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 			require.Equal(t, relevantHouseholdID, createdWebhook.BelongsToHousehold)
 
@@ -565,7 +598,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeCancelled() {
 			invitationID, err := testClients.main.InviteUserToHousehold(ctx, inviteReq)
 			require.NoError(t, err)
 
-
+			n = <-notificationsChan
 			assert.Equal(t, types.HouseholdInvitationDataType, n.DataType)
 
 			require.NoError(t, testClients.main.CancelHouseholdInvitation(ctx, relevantHouseholdID, invitationID, t.Name()))
@@ -604,11 +637,15 @@ func (s *TestSuite) TestHouseholds_InviteCanBeRejected() {
 			relevantHouseholdID := currentStatus.ActiveHousehold
 			t.Logf("initial household is %s; initial user ID is %s", relevantHouseholdID, s.user.ID)
 
+			stopChan := make(chan bool, 1)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
+			require.NotNil(t, notificationsChan)
+			require.NoError(t, err)
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
 			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
-			createdWebhook, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			createdWebhookID, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
 
 			n := <-notificationsChan
@@ -616,7 +653,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeRejected() {
 			require.NotNil(t, n.Webhook)
 			checkWebhookEquality(t, exampleWebhook, n.Webhook)
 
-			createdWebhook, err := testClients.main.GetWebhook(ctx, createdWebhook.ID)
+			createdWebhook, err := testClients.main.GetWebhook(ctx, createdWebhookID)
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 			require.Equal(t, relevantHouseholdID, createdWebhook.BelongsToHousehold)
 
@@ -632,7 +669,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeRejected() {
 			})
 			require.NoError(t, err)
 
-
+			n = <-notificationsChan
 			assert.Equal(t, types.HouseholdInvitationDataType, n.DataType)
 
 			t.Logf("checking for sent invitation")
@@ -685,12 +722,23 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 
 			t.Logf("switched main test client active household to %s, creating webhook", household.ID)
 
+			stopChan := make(chan bool, 1)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
+			require.NotNil(t, notificationsChan)
+			require.NoError(t, err)
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
 			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
-			createdWebhook, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			createdWebhookID, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			require.NoError(t, err)
 
+			n := <-notificationsChan
+			assert.Equal(t, types.WebhookDataType, n.DataType)
+			require.NotNil(t, n.Webhook)
+			checkWebhookEquality(t, exampleWebhook, n.Webhook)
+
+			createdWebhook, err := testClients.main.GetWebhook(ctx, createdWebhookID)
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 			require.Equal(t, household.ID, createdWebhook.BelongsToHousehold)
 
@@ -730,7 +778,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 				require.NoError(t, invitationErr)
 				require.NotEmpty(t, invitationID)
 
-
+				n = <-notificationsChan
 				assert.Equal(t, types.HouseholdInvitationDataType, n.DataType)
 				t.Logf("invited user %q to household %s", users[i].ID, household.ID)
 
@@ -819,7 +867,15 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
 			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
-			createdWebhook, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			createdWebhookID, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			require.NoError(t, err)
+
+			var createdWebhook *types.Webhook
+			checkFunc := func() bool {
+				createdWebhook, err = testClients.main.GetWebhook(ctx, createdWebhookID)
+				return assert.NotNil(t, createdWebhook) && assert.NoError(t, err)
+			}
+			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
 
 			// assert webhook equality
 			requireNotNilAndNoProblems(t, createdWebhook, err)
@@ -949,11 +1005,23 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 			t.Logf("switched to active household: %s", household.ID)
 
 			// create a webhook
+			stopChan := make(chan bool, 1)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
+			require.NotNil(t, notificationsChan)
+			require.NoError(t, err)
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
 			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
-			createdWebhook, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			createdWebhookID, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			require.NoError(t, err)
+
+			n := <-notificationsChan
+			assert.Equal(t, types.WebhookDataType, n.DataType)
+			require.NotNil(t, n.Webhook)
+			checkWebhookEquality(t, exampleWebhook, n.Webhook)
+
+			createdWebhook, err := testClients.main.GetWebhook(ctx, createdWebhookID)
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 
 			t.Logf("created webhook %s belonging to household %s", createdWebhook.ID, createdWebhook.BelongsToHousehold)
@@ -1020,7 +1088,16 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 			// create a webhook
 			exampleWebhook := fakes.BuildFakeWebhook()
 			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
-			createdWebhook, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			createdWebhookID, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			require.NoError(t, err)
+
+			var createdWebhook *types.Webhook
+			checkFunc := func() bool {
+				createdWebhook, err = testClients.main.GetWebhook(ctx, createdWebhookID)
+				return assert.NotNil(t, createdWebhook) && assert.NoError(t, err)
+			}
+			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
+
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 
 			t.Logf("created webhook %s belonging to household %s", createdWebhook.ID, createdWebhook.BelongsToHousehold)
@@ -1060,6 +1137,3 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 		}
 	})
 }
-
-
-*/

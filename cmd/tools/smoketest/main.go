@@ -49,17 +49,17 @@ func main() {
 		panic(err)
 	}
 
-	createdWebhook, err := client.CreateWebhook(ctx, fakes.BuildFakeWebhookCreationInput())
+	createdRecipeID, err := client.CreateRecipe(ctx, fakes.BuildFakeRecipeCreationRequestInput())
 	if err != nil {
 		panic(err)
 	}
 
 	time.Sleep(time.Second)
 
-	webhook, err := client.GetWebhook(ctx, createdWebhook.ID)
+	recipe, err := client.GetRecipe(ctx, createdRecipeID)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println(webhook)
+	fmt.Println(recipe)
 }

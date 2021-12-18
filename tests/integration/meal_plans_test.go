@@ -1,11 +1,18 @@
 package integration
 
 import (
+	"context"
 	"testing"
+	"time"
+
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/pkg/client/httpclient"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
 func checkMealPlanEquality(t *testing.T, expected, actual *types.MealPlan) {
@@ -18,8 +25,6 @@ func checkMealPlanEquality(t *testing.T, expected, actual *types.MealPlan) {
 	assert.Equal(t, expected.EndsAt, actual.EndsAt, "expected EndsAt for meal plan %s to be %v, but it was %v", expected.ID, expected.EndsAt, actual.EndsAt)
 	assert.NotZero(t, actual.CreatedOn)
 }
-
-/*
 
 func createMealPlanWithNotificationChannel(ctx context.Context, t *testing.T, notificationsChan chan *types.DataChangeMessage, client *httpclient.Client) *types.MealPlan {
 	t.Helper()
@@ -117,7 +122,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 				require.NoError(t, err)
 
 				t.Logf("inviting user")
-				invitation, err := testClients.main.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
+				invitationID, err := testClients.main.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
 					FromUser:             s.user.ID,
 					Note:                 t.Name(),
 					ToEmail:              u.EmailAddress,
@@ -139,7 +144,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 				assert.NotEmpty(t, invitations.HouseholdInvitations)
 
 				t.Logf("accepting invitation")
-				require.NoError(t, c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitation.ID, t.Name()))
+				require.NoError(t, c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitationID, t.Name()))
 
 				require.NoError(t, c.SwitchActiveHousehold(ctx, relevantHouseholdID))
 
@@ -366,7 +371,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 				require.NoError(t, err)
 
 				t.Logf("inviting user")
-				invitation, err := testClients.main.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
+				invitationID, err := testClients.main.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
 					FromUser:             s.user.ID,
 					Note:                 t.Name(),
 					ToEmail:              u.EmailAddress,
@@ -388,7 +393,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 				assert.NotEmpty(t, invitations.HouseholdInvitations)
 
 				t.Logf("accepting invitation")
-				require.NoError(t, c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitation.ID, t.Name()))
+				require.NoError(t, c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitationID, t.Name()))
 
 				require.NoError(t, c.SwitchActiveHousehold(ctx, relevantHouseholdID))
 
@@ -584,6 +589,3 @@ func (s *TestSuite) TestMealPlans_Listing() {
 		}
 	})
 }
-
-
-*/

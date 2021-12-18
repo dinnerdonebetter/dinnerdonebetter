@@ -330,7 +330,7 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 				PreWritesTopicName: preWritesTopicName,
 			},
 			HouseholdInvitations: householdinvitationsservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
+				PreWritesTopicName: preWritesTopicName,
 			},
 			Auth: authservice.Config{
 				PASETO: authservice.PASETOConfig{
@@ -345,7 +345,8 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 				MinimumPasswordLength: 8,
 			},
 			Webhooks: webhooksservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
+				PreWritesTopicName:   preWritesTopicName,
+				PreArchivesTopicName: preArchivesTopicName,
 			},
 			Websockets: websocketsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
@@ -364,7 +365,9 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 			},
 			ValidPreparations: validpreparationsservice.Config{
 				SearchIndexPath:      localElasticsearchLocation,
-				DataChangesTopicName: dataChangesTopicName,
+				PreWritesTopicName:   preWritesTopicName,
+				PreUpdatesTopicName:  preUpdatesTopicName,
+				PreArchivesTopicName: preArchivesTopicName,
 			},
 			ValidIngredientPreparations: validingredientpreparationsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
@@ -476,7 +479,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				PreWritesTopicName: preWritesTopicName,
 			},
 			HouseholdInvitations: householdinvitationsservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
+				PreWritesTopicName: preWritesTopicName,
 			},
 			Auth: authservice.Config{
 				PASETO: authservice.PASETOConfig{
@@ -498,7 +501,8 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				MinimumPasswordLength: 8,
 			},
 			Webhooks: webhooksservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
+				PreWritesTopicName:   preWritesTopicName,
+				PreArchivesTopicName: preArchivesTopicName,
 			},
 			Websockets: websocketsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
@@ -517,7 +521,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			},
 			ValidPreparations: validpreparationsservice.Config{
 				SearchIndexPath:      localElasticsearchLocation,
-				DataChangesTopicName: dataChangesTopicName,
+				PreWritesTopicName:   preWritesTopicName,
+				PreUpdatesTopicName:  preUpdatesTopicName,
+				PreArchivesTopicName: preArchivesTopicName,
 			},
 			ValidIngredientPreparations: validingredientpreparationsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,

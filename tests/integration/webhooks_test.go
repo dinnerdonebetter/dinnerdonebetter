@@ -30,12 +30,25 @@ func (s *TestSuite) TestWebhooks_Creating() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			stopChan := make(chan bool, 1)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
+			require.NotNil(t, notificationsChan)
+			require.NoError(t, err)
+
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
 			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
-			createdWebhook, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			createdWebhookID, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
-			t.Logf("created webhook %s", createdWebhook.ID)
+			t.Logf("created webhook %s", createdWebhookID)
+
+			n := <-notificationsChan
+			assert.Equal(t, types.WebhookDataType, n.DataType)
+			require.NotNil(t, n.Webhook)
+			checkWebhookEquality(t, exampleWebhook, n.Webhook)
+
+			createdWebhook, err := testClients.main.GetWebhook(ctx, createdWebhookID)
+			requireNotNilAndNoProblems(t, createdWebhook, err)
 
 			// assert webhook equality
 			checkWebhookEquality(t, exampleWebhook, createdWebhook)
@@ -59,8 +72,15 @@ func (s *TestSuite) TestWebhooks_Creating() {
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
 			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
-			createdWebhook, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			createdWebhookID, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
+
+			var createdWebhook *types.Webhook
+			checkFunc := func() bool {
+				createdWebhook, err = testClients.main.GetWebhook(ctx, createdWebhookID)
+				return assert.NotNil(t, createdWebhook) && assert.NoError(t, err)
+			}
+			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
 
 			// assert webhook equality
 			checkWebhookEquality(t, exampleWebhook, createdWebhook)
@@ -98,14 +118,27 @@ func (s *TestSuite) TestWebhooks_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			stopChan := make(chan bool, 1)
+			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
+			require.NotNil(t, notificationsChan)
+			require.NoError(t, err)
+
 			// Create webhooks.
 			var expected []*types.Webhook
 			for i := 0; i < 5; i++ {
 				// Create webhook.
 				exampleWebhook := fakes.BuildFakeWebhook()
 				exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
-				createdWebhook, webhookCreationErr := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+				createdWebhookID, webhookCreationErr := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
 				require.NoError(t, webhookCreationErr)
+
+				n := <-notificationsChan
+				assert.Equal(t, types.WebhookDataType, n.DataType)
+				require.NotNil(t, n.Webhook)
+				checkWebhookEquality(t, exampleWebhook, n.Webhook)
+
+				createdWebhook, webhookCreationErr := testClients.main.GetWebhook(ctx, createdWebhookID)
+				requireNotNilAndNoProblems(t, createdWebhook, webhookCreationErr)
 
 				expected = append(expected, createdWebhook)
 			}
@@ -135,8 +168,17 @@ func (s *TestSuite) TestWebhooks_Listing() {
 				// Create webhook.
 				exampleWebhook := fakes.BuildFakeWebhook()
 				exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
-				createdWebhook, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+				createdWebhookID, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
 				require.NoError(t, err)
+
+				var createdWebhook *types.Webhook
+				checkFunc := func() bool {
+					createdWebhook, err = testClients.main.GetWebhook(ctx, createdWebhookID)
+					return assert.NotNil(t, createdWebhook) && assert.NoError(t, err)
+				}
+				assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
+
+				requireNotNilAndNoProblems(t, createdWebhook, err)
 
 				expected = append(expected, createdWebhook)
 			}

@@ -87,31 +87,31 @@ func (c *Client) GetValidPreparations(ctx context.Context, filter *types.QueryFi
 }
 
 // CreateValidPreparation creates a valid preparation.
-func (c *Client) CreateValidPreparation(ctx context.Context, input *types.ValidPreparationCreationRequestInput) (*types.ValidPreparation, error) {
+func (c *Client) CreateValidPreparation(ctx context.Context, input *types.ValidPreparationCreationRequestInput) (string, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
 	if input == nil {
-		return nil, ErrNilInputProvided
+		return "", ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "validating input")
+		return "", observability.PrepareError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateValidPreparationRequest(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "building create valid preparation request")
+		return "", observability.PrepareError(err, logger, span, "building create valid preparation request")
 	}
 
-	var preparation *types.ValidPreparation
-	if err = c.fetchAndUnmarshal(ctx, req, &preparation); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating valid preparation")
+	var pwr *types.PreWriteResponse
+	if err = c.fetchAndUnmarshal(ctx, req, &pwr); err != nil {
+		return "", observability.PrepareError(err, logger, span, "creating valid preparation")
 	}
 
-	return preparation, nil
+	return pwr.ID, nil
 }
 
 // UpdateValidPreparation updates a valid preparation.

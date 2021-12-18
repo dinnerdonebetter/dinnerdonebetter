@@ -45,6 +45,3 @@ func PreUpdateMessageMatcher(*types.PreUpdateMessage) bool { return true }
 
 // PreArchiveMessageMatcher matches the types.PreArchiveMessage type.
 func PreArchiveMessageMatcher(*types.PreArchiveMessage) bool { return true }
-
-// DataChangeMessageMatcher matches the types.DataChangeMessage type.
-func DataChangeMessageMatcher(*types.DataChangeMessage) bool { return true }

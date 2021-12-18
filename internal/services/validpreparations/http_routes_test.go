@@ -9,8 +9,6 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/prixfixeco/api_server/internal/database"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -61,36 +59,19 @@ func TestValidPreparationsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidPreparationDataManager.On(
-			"CreateValidPreparation",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(preparation *types.ValidPreparationDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidPreparation, nil)
-		helper.service.validPreparationDataManager = dbManager
-
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Index",
-			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-			helper.exampleValidPreparation,
-		).Return(nil)
-		helper.service.search = searchIndexManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(testutils.PreWriteMessageMatcher),
 		).Return(nil)
-		helper.service.dataChangesPublisher = dataChangesPublisher
+		helper.service.preWritesPublisher = mockEventProducer
 
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, dbManager, searchIndexManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, mockEventProducer)
 	})
 
 	T.Run("without input attached", func(t *testing.T) {
@@ -149,7 +130,7 @@ func TestValidPreparationsService_CreateHandler(T *testing.T) {
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
 
-	T.Run("with error writing to database", func(t *testing.T) {
+	T.Run("with error publishing event", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -163,112 +144,19 @@ func TestValidPreparationsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidPreparationDataManager.On(
-			"CreateValidPreparation",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(preparation *types.ValidPreparationDatabaseCreationInput) bool { return true }),
-		).Return((*types.ValidPreparation)(nil), errors.New("blah"))
-		helper.service.validPreparationDataManager = dbManager
-
-		searchIndexManager := &mocksearch.IndexManager{}
-		helper.service.search = searchIndexManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.CreateHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, dbManager, searchIndexManager, dataChangesPublisher)
-	})
-
-	T.Run("with error indexing data", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeValidPreparationDatabaseCreationInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidPreparationDataManager.On(
-			"CreateValidPreparation",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(preparation *types.ValidPreparationDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidPreparation, nil)
-		helper.service.validPreparationDataManager = dbManager
-
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Index",
-			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-			helper.exampleValidPreparation,
-		).Return(errors.New("blah"))
-		helper.service.search = searchIndexManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		helper.service.CreateHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, dbManager, searchIndexManager, dataChangesPublisher)
-	})
-
-	T.Run("with error writing to data changes publisher", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeValidPreparationDatabaseCreationInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.ValidPreparationDataManager.On(
-			"CreateValidPreparation",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(preparation *types.ValidPreparationDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidPreparation, nil)
-		helper.service.validPreparationDataManager = dbManager
-
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Index",
-			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-			helper.exampleValidPreparation,
-		).Return(nil)
-		helper.service.search = searchIndexManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(testutils.PreWriteMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
+		helper.service.preWritesPublisher = mockEventProducer
 
 		helper.service.CreateHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, dbManager, searchIndexManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, mockEventProducer)
 	})
 }
 
@@ -725,36 +613,21 @@ func TestValidPreparationsService_UpdateHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
 		).Return(helper.exampleValidPreparation, nil)
-
-		validPreparationDataManager.On(
-			"UpdateValidPreparation",
-			testutils.ContextMatcher,
-			helper.exampleValidPreparation,
-		).Return(nil)
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Index",
-			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-			helper.exampleValidPreparation,
-		).Return(nil)
-		helper.service.search = searchIndexManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(testutils.PreUpdateMessageMatcher),
 		).Return(nil)
-		helper.service.dataChangesPublisher = dataChangesPublisher
+		helper.service.preUpdatesPublisher = mockEventProducer
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager, searchIndexManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager, mockEventProducer)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -861,7 +734,7 @@ func TestValidPreparationsService_UpdateHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
 	})
 
-	T.Run("with error writing to database", func(t *testing.T) {
+	T.Run("with error publishing to message queue", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -881,115 +754,21 @@ func TestValidPreparationsService_UpdateHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
 		).Return(helper.exampleValidPreparation, nil)
-
-		validPreparationDataManager.On(
-			"UpdateValidPreparation",
-			testutils.ContextMatcher,
-			helper.exampleValidPreparation,
-		).Return(errors.New("blah"))
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.UpdateHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
-	})
-
-	T.Run("with error updating search index", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeValidPreparationUpdateRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
-		validPreparationDataManager.On(
-			"GetValidPreparation",
-			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-		).Return(helper.exampleValidPreparation, nil)
-
-		validPreparationDataManager.On(
-			"UpdateValidPreparation",
-			testutils.ContextMatcher,
-			helper.exampleValidPreparation,
-		).Return(nil)
-		helper.service.validPreparationDataManager = validPreparationDataManager
-
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Index",
-			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-			helper.exampleValidPreparation,
-		).Return(errors.New("blah"))
-		helper.service.search = searchIndexManager
-
-		helper.service.UpdateHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager, searchIndexManager)
-	})
-
-	T.Run("with error publishing data change message", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeValidPreparationUpdateRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
-		validPreparationDataManager.On(
-			"GetValidPreparation",
-			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-		).Return(helper.exampleValidPreparation, nil)
-
-		validPreparationDataManager.On(
-			"UpdateValidPreparation",
-			testutils.ContextMatcher,
-			helper.exampleValidPreparation,
-		).Return(nil)
-		helper.service.validPreparationDataManager = validPreparationDataManager
-
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Index",
-			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-			helper.exampleValidPreparation,
-		).Return(nil)
-		helper.service.search = searchIndexManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(testutils.PreUpdateMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
+		helper.service.preUpdatesPublisher = mockEventProducer
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager, searchIndexManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager, mockEventProducer)
 	})
 }
 
@@ -1007,35 +786,21 @@ func TestValidPreparationsService_ArchiveHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
 		).Return(true, nil)
-
-		validPreparationDataManager.On(
-			"ArchiveValidPreparation",
-			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-		).Return(nil)
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Delete",
-			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-		).Return(nil)
-		helper.service.search = searchIndexManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(testutils.PreArchiveMessageMatcher),
 		).Return(nil)
-		helper.service.dataChangesPublisher = dataChangesPublisher
+		helper.service.preArchivesPublisher = mockEventProducer
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager, searchIndexManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager, mockEventProducer)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -1110,7 +875,7 @@ func TestValidPreparationsService_ArchiveHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
 	})
 
-	T.Run("with error writing to database", func(t *testing.T) {
+	T.Run("with error publishing to message queue", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -1121,94 +886,20 @@ func TestValidPreparationsService_ArchiveHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
 		).Return(true, nil)
-
-		validPreparationDataManager.On(
-			"ArchiveValidPreparation",
-			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-		).Return(errors.New("blah"))
 		helper.service.validPreparationDataManager = validPreparationDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
-	})
-
-	T.Run("with error updating search index", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
-		validPreparationDataManager.On(
-			"ValidPreparationExists",
-			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-		).Return(true, nil)
-
-		validPreparationDataManager.On(
-			"ArchiveValidPreparation",
-			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-		).Return(nil)
-		helper.service.validPreparationDataManager = validPreparationDataManager
-
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Delete",
-			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-		).Return(errors.New("blah"))
-		helper.service.search = searchIndexManager
-
-		helper.service.ArchiveHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager, searchIndexManager)
-	})
-
-	T.Run("with error publishing data change message", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
-		validPreparationDataManager.On(
-			"ValidPreparationExists",
-			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-		).Return(true, nil)
-
-		validPreparationDataManager.On(
-			"ArchiveValidPreparation",
-			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-		).Return(nil)
-		helper.service.validPreparationDataManager = validPreparationDataManager
-
-		searchIndexManager := &mocksearch.IndexManager{}
-		searchIndexManager.On(
-			"Delete",
-			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
-		).Return(nil)
-		helper.service.search = searchIndexManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
+		mockEventProducer := &mockpublishers.Publisher{}
+		mockEventProducer.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(testutils.PreArchiveMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.dataChangesPublisher = dataChangesPublisher
+		helper.service.preArchivesPublisher = mockEventProducer
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusNoContent, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validPreparationDataManager, searchIndexManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager, mockEventProducer)
 	})
 }

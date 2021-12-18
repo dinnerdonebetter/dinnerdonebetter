@@ -2,10 +2,14 @@ package integration
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
 func checkRecipeStepInstrumentEquality(t *testing.T, expected, actual *types.RecipeStepInstrument) {
@@ -26,9 +30,6 @@ func convertRecipeStepInstrumentToRecipeStepInstrumentUpdateInput(x *types.Recip
 		Notes:        x.Notes,
 	}
 }
-
-/*
-
 
 func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 	s.runForCookieClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
@@ -299,7 +300,3 @@ func (s *TestSuite) TestRecipeStepInstruments_Listing() {
 		}
 	})
 }
-
-
-
-*/

@@ -28,7 +28,8 @@ type (
 		webhookDataManager        types.WebhookDataManager
 		tracer                    tracing.Tracer
 		encoderDecoder            encoding.ServerEncoderDecoder
-		dataChangesPublisher      publishers.Publisher
+		preWritesPublisher        publishers.Publisher
+		preArchivesPublisher      publishers.Publisher
 		webhookIDFetcher          func(*http.Request) string
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
 	}
@@ -44,16 +45,22 @@ func ProvideWebhooksService(
 	publisherProvider publishers.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
 ) (types.WebhookDataService, error) {
-	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
+	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
 	if err != nil {
-		return nil, fmt.Errorf("setting up data changes producer: %w", err)
+		return nil, fmt.Errorf("setting up pre-writes producer: %w", err)
+	}
+
+	preArchivesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreArchivesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up pre-archives producer: %w", err)
 	}
 
 	s := &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
 		webhookDataManager:        webhookDataManager,
 		encoderDecoder:            encoder,
-		dataChangesPublisher:      dataChangesPublisher,
+		preWritesPublisher:        preWritesPublisher,
+		preArchivesPublisher:      preArchivesPublisher,
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		webhookIDFetcher:          routeParamManager.BuildRouteParamStringIDFetcher(WebhookIDURIParamKey),
 		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),

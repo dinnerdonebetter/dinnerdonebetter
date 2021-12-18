@@ -75,7 +75,9 @@
 			"searchIndexPath": "http://elasticsearch:9200"
 		},
 		"validPreparations": {
-			"dataChangesTopicName": "data_changes",
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives",
 			"searchIndexPath": "http://elasticsearch:9200"
 		},
 		"mealPlanOptionVotes": {
@@ -132,20 +134,21 @@
 			"writesTopicName": "pre_writes"
 		},
 		"householdInvitations": {
-			"dataChangesTopicName": "data_changes",
+			"writesTopicName": "pre_writes",
 			"debug": false
 		},
 		"websockets": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"webhooks": {
-			"dataChangesTopicName": "data_changes",
+			"writesTopicName": "pre_writes",
+			"archivesTopicName": "pre_archives",
 			"debug": false
 		},
 		"auth": {
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "JPGLsLyx3yrEKFQQ15EsEOo59OXP5aCj0sm/dPjOQjo=",
+				"localModeKey": "3ITzf3hVz1SpXqjAwU3AkgQLk+t75RwHPksX3Qq8skY=",
 				"lifetime": 60000000000
 			},
 			"cookies": {

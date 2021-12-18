@@ -4,8 +4,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
 func checkMealPlanOptionVoteEquality(t *testing.T, expected, actual *types.MealPlanOptionVote) {
@@ -17,8 +20,6 @@ func checkMealPlanOptionVoteEquality(t *testing.T, expected, actual *types.MealP
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for meal plan option vote %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.NotZero(t, actual.CreatedOn)
 }
-
-/*
 
 // convertMealPlanOptionVoteToMealPlanOptionVoteUpdateInput creates an MealPlanOptionVoteUpdateRequestInput struct from a meal plan option vote.
 func convertMealPlanOptionVoteToMealPlanOptionVoteUpdateInput(x *types.MealPlanOptionVote) *types.MealPlanOptionVoteUpdateRequestInput {
@@ -163,6 +164,3 @@ func (s *TestSuite) TestMealPlanOptionVotes_Listing() {
 		}
 	})
 }
-
-
-*/

@@ -103,6 +103,7 @@ func (w *WritesWorker) determineWriteMessageHandler(msg *types.PreWriteMessage) 
 		string(types.MealPlanDataType):                   w.createMealPlan,
 		string(types.MealPlanOptionDataType):             w.createMealPlanOption,
 		string(types.MealPlanOptionVoteDataType):         w.createMealPlanOptionVote,
+		string(types.WebhookDataType):                    w.createWebhook,
 		string(types.HouseholdInvitationDataType):        w.createHouseholdInvitation,
 		string(types.UserMembershipDataType):             func(context.Context, *types.PreWriteMessage) error { return nil },
 	}

@@ -189,16 +189,16 @@ func (s *validPreparationsTestSuite) TestClient_CreateValidPreparation() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(s.exampleValidPreparation)
+		exampleInput := fakes.BuildFakeValidPreparationCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparation)
+		c, _ := buildTestClientWithJSONResponse(t, spec, &types.PreWriteResponse{ID: s.exampleValidPreparation.ID})
 
 		actual, err := c.CreateValidPreparation(s.ctx, exampleInput)
 		require.NotEmpty(t, actual)
 		assert.NoError(t, err)
 
-		assert.Equal(t, s.exampleValidPreparation, actual)
+		assert.Equal(t, s.exampleValidPreparation.ID, actual)
 	})
 
 	s.Run("with nil input", func() {

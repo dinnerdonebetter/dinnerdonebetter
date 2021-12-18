@@ -50,11 +50,15 @@ func TestProvideValidPreparationsService(T *testing.T) {
 
 		cfg := Config{
 			SearchIndexPath:      "example/path",
-			DataChangesTopicName: "data_changes",
+			PreWritesTopicName:   "pre-writes",
+			PreUpdatesTopicName:  "pre-updates",
+			PreArchivesTopicName: "pre-archives",
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProviderPublisher", cfg.PreWritesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProviderPublisher", cfg.PreUpdatesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProviderPublisher", cfg.PreArchivesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		mockIndexManager := &mocksearch.IndexManager{}
 		mockIndexManagerProvider := &mocksearch.IndexManagerProvider{}
@@ -84,7 +88,7 @@ func TestProvideValidPreparationsService(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, rpm, pp)
 	})
 
-	T.Run("with error providing data changes producer", func(t *testing.T) {
+	T.Run("with error providing pre-writes producer", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -92,11 +96,104 @@ func TestProvideValidPreparationsService(T *testing.T) {
 
 		cfg := Config{
 			SearchIndexPath:      "example/path",
-			DataChangesTopicName: "data_changes",
+			PreWritesTopicName:   "pre-writes",
+			PreUpdatesTopicName:  "pre-updates",
+			PreArchivesTopicName: "pre-archives",
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
+		pp.On("ProviderPublisher", cfg.PreWritesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
+
+		mockIndexManager := &mocksearch.IndexManager{}
+		mockIndexManagerProvider := &mocksearch.IndexManagerProvider{}
+		mockIndexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_preparations"),
+			[]string{"name", "description"},
+		).Return(mockIndexManager, nil)
+
+		s, err := ProvideService(
+			ctx,
+			logger,
+			&cfg,
+			&mocktypes.ValidPreparationDataManager{},
+			mockencoding.NewMockEncoderDecoder(),
+			mockIndexManagerProvider,
+			nil,
+			pp,
+			trace.NewNoopTracerProvider(),
+		)
+
+		assert.Nil(t, s)
+		assert.Error(t, err)
+
+		mock.AssertExpectationsForObjects(t, pp)
+	})
+
+	T.Run("with error providing pre-updates producer", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		logger := logging.NewNoopLogger()
+
+		cfg := Config{
+			SearchIndexPath:      "example/path",
+			PreWritesTopicName:   "pre-writes",
+			PreUpdatesTopicName:  "pre-updates",
+			PreArchivesTopicName: "pre-archives",
+		}
+
+		pp := &mockpublishers.ProducerProvider{}
+		pp.On("ProviderPublisher", cfg.PreWritesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProviderPublisher", cfg.PreUpdatesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
+
+		mockIndexManager := &mocksearch.IndexManager{}
+		mockIndexManagerProvider := &mocksearch.IndexManagerProvider{}
+		mockIndexManagerProvider.On(
+			"ProvideIndexManager",
+			testutils.ContextMatcher,
+			logger,
+			search.IndexName("valid_preparations"),
+			[]string{"name", "description"},
+		).Return(mockIndexManager, nil)
+
+		s, err := ProvideService(
+			ctx,
+			logger,
+			&cfg,
+			&mocktypes.ValidPreparationDataManager{},
+			mockencoding.NewMockEncoderDecoder(),
+			mockIndexManagerProvider,
+			nil,
+			pp,
+			trace.NewNoopTracerProvider(),
+		)
+
+		assert.Nil(t, s)
+		assert.Error(t, err)
+
+		mock.AssertExpectationsForObjects(t, pp)
+	})
+
+	T.Run("with error providing pre-archives producer", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		logger := logging.NewNoopLogger()
+
+		cfg := Config{
+			SearchIndexPath:      "example/path",
+			PreWritesTopicName:   "pre-writes",
+			PreUpdatesTopicName:  "pre-updates",
+			PreArchivesTopicName: "pre-archives",
+		}
+
+		pp := &mockpublishers.ProducerProvider{}
+		pp.On("ProviderPublisher", cfg.PreWritesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProviderPublisher", cfg.PreUpdatesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProviderPublisher", cfg.PreArchivesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		mockIndexManager := &mocksearch.IndexManager{}
 		mockIndexManagerProvider := &mocksearch.IndexManagerProvider{}
@@ -134,7 +231,9 @@ func TestProvideValidPreparationsService(T *testing.T) {
 
 		cfg := Config{
 			SearchIndexPath:      "example/path",
-			DataChangesTopicName: "data_changes",
+			PreWritesTopicName:   "pre-writes",
+			PreUpdatesTopicName:  "pre-updates",
+			PreArchivesTopicName: "pre-archives",
 		}
 
 		mockIndexManagerProvider := &mocksearch.IndexManagerProvider{}

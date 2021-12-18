@@ -99,6 +99,7 @@ func (w *ArchivesWorker) determineArchiveMessageHandler(msg *types.PreArchiveMes
 		string(types.MealPlanDataType):                   w.archiveMealPlan,
 		string(types.MealPlanOptionDataType):             w.archiveMealPlanOption,
 		string(types.MealPlanOptionVoteDataType):         w.archiveMealPlanOptionVote,
+		string(types.WebhookDataType):                    w.archiveWebhook,
 		string(types.UserMembershipDataType):             func(context.Context, *types.PreArchiveMessage) error { return nil },
 		string(types.HouseholdInvitationDataType):        func(context.Context, *types.PreArchiveMessage) error { return nil },
 	}

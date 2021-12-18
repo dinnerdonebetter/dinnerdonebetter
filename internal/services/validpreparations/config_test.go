@@ -15,8 +15,10 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
+			PreWritesTopicName:   "blah",
+			PreUpdatesTopicName:  "blah",
+			PreArchivesTopicName: "blah",
 			SearchIndexPath:      "blah",
-			DataChangesTopicName: "blah",
 		}
 
 		assert.NoError(t, cfg.ValidateWithContext(ctx))
