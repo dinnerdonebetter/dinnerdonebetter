@@ -31,6 +31,13 @@ resource "aws_lambda_function" "writes_worker_lambda" {
     mode = "Active"
   }
 
+  vpc_config {
+    subnet_ids         = [for x in aws_subnet.private_subnets : x.id]
+    security_group_ids = [
+      aws_security_group.database,
+    ]
+  }
+
   #  layers = [
   #    local.collector_layer_arns.us-east-1,
   #  ]
