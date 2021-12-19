@@ -57,6 +57,6 @@ resource "aws_lambda_event_source_mapping" "updates_mapping" {
 }
 
 resource "aws_cloudwatch_log_group" "updates_worker_lambda_logs" {
-  name              = "/aws/lambda/${aws_lambda_function.updates_worker_lambda.function_name}"
+  name              = "/aws/lambda/updates_worker"
   retention_in_days = local.log_retention_period_in_days
 }

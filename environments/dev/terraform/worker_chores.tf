@@ -71,6 +71,6 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_chores_worker" {
 }
 
 resource "aws_cloudwatch_log_group" "chores_worker_lambda_logs" {
-  name              = "/aws/lambda/${aws_lambda_function.chores_worker_lambda.function_name}"
+  name              = "/aws/lambda/chores_worker"
   retention_in_days = local.log_retention_period_in_days
 }

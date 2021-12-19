@@ -56,6 +56,6 @@ resource "aws_lambda_event_source_mapping" "writes_mapping" {
 }
 
 resource "aws_cloudwatch_log_group" "writes_worker_lambda_logs" {
-  name              = "/aws/lambda/${aws_lambda_function.writes_worker_lambda.function_name}"
+  name              = "/aws/lambda/writes_worker"
   retention_in_days = local.log_retention_period_in_days
 }

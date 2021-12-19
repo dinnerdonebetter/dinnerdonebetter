@@ -57,6 +57,6 @@ resource "aws_sns_topic_subscription" "data_changes_mapping" {
 }
 
 resource "aws_cloudwatch_log_group" "data_changes_worker_lambda_logs" {
-  name              = "/aws/lambda/${aws_lambda_function.data_changes_worker_lambda.function_name}"
+  name              = "/aws/lambda/data_changes"
   retention_in_days = local.log_retention_period_in_days
 }
