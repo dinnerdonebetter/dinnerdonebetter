@@ -14,3 +14,8 @@ data "archive_file" "dummy_zip" {
     filename = "dummy.txt"
   }
 }
+
+resource "aws_vpc_endpoint" "ssm_endpoint" {
+  vpc_id       = aws_vpc.main.id
+  service_name = "com.amazonaws.${local.aws_region}.ssm"
+}
