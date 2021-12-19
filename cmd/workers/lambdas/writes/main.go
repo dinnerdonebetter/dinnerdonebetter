@@ -61,6 +61,8 @@ func main() {
 	parameterStore := ssm.New(sess)
 	parameterStore.Config.Logger.Log("")
 
+	logger.WithValue("time", time.Now().String()).Info("logging one last time, for sanity's sake")
+
 	cfg, err := config.GetConfigFromParameterStore(true)
 	logger.Info("config fetched")
 	if err != nil {
