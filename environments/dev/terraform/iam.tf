@@ -81,8 +81,8 @@ data "aws_iam_policy_document" "allowed_to_network_in_the_vpc" {
     effect = "Allow"
     actions = [
       "ec2:CreateNetworkInterface",
-      "ec2:DeleteNetworkInterface",
       "ec2:DescribeNetworkInterfaces",
+      "ec2:DeleteNetworkInterface",
     ]
     resources = [
       "*",

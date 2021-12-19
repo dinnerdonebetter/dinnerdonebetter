@@ -16,40 +16,29 @@ data "archive_file" "dummy_zip" {
 }
 
 resource "aws_security_group" "lambda_workers" {
-  name        = "lambda"
+  name        = "workers"
   description = "Lambda group"
   vpc_id      = aws_vpc.main.id
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port        = 443
-    to_port          = 443
-    protocol         = "TCP"
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
+}
 
-  egress {
-    from_port        = 5432
-    to_port          = 5432
-    protocol         = "TCP"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
+resource "aws_vpc_endpoint" "s3_endpoint" {
+  vpc_id            = aws_vpc.main.id
+  service_name      = "com.amazonaws.${local.aws_region}.s3"
+  vpc_endpoint_type = "Interface"
 
-  egress {
-    from_port        = 6379
-    to_port          = 6379
-    protocol         = "TCP"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
+  security_group_ids = [
+    aws_security_group.lambda_workers.id,
+  ]
+
+  private_dns_enabled = true
 }
 
 resource "aws_vpc_endpoint" "ssm_endpoint" {

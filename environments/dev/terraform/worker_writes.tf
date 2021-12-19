@@ -37,7 +37,7 @@ resource "aws_lambda_function" "writes_worker_lambda" {
       [for x in aws_subnet.private_subnets : x.id],
     )
     security_group_ids = [
-      aws_security_group.database.id,
+      aws_security_group.lambda_workers.id,
     ]
   }
 
