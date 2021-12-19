@@ -57,7 +57,6 @@ func mustGetParameter(ps *ssm.SSM, paramName string) string {
 // GetConfigFromParameterStore fetches and InstanceConfig from AWS SSM Parameter Store.
 func GetConfigFromParameterStore(worker bool) (*InstanceConfig, error) {
 	logger := zerolog.NewZerologLogger().WithValue("worker", worker)
-
 	logger.Debug("setting up ssm session client")
 
 	sess := session.Must(session.NewSessionWithOptions(session.Options{

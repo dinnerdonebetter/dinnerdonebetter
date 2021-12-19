@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/ssm"
+
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -51,6 +54,12 @@ func main() {
 
 	logger.Info("lambda starting at top of main, fetching configuration")
 	logger.WithValue("time", time.Now().String()).Info("logging one more time, for sanity's sake")
+
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable,
+	}))
+	parameterStore := ssm.New(sess)
+	parameterStore.Config.Logger.Log("")
 
 	cfg, err := config.GetConfigFromParameterStore(true)
 	logger.Info("config fetched")
