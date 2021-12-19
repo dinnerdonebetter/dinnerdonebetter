@@ -20,6 +20,10 @@ import (
 	"github.com/prixfixeco/api_server/internal/workers"
 )
 
+const (
+	dataChangesTopicName = "data_changes"
+)
+
 func buildHandler(worker *workers.DataChangesWorker) func(ctx context.Context, sqsEvent events.SQSEvent) error {
 	return func(ctx context.Context, sqsEvent events.SQSEvent) error {
 		for i := 0; i < len(sqsEvent.Records); i++ {

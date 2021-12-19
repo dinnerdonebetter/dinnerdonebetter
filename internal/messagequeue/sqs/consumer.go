@@ -89,7 +89,7 @@ type consumerProvider struct {
 
 var _ messagequeue.ConsumerProvider = (*consumerProvider)(nil)
 
-// ProvideSQSConsumerProvider returns a ConsumerProvider for a given address.
+// ProvideSQSConsumerProvider returns a ConsumerProvider.
 func ProvideSQSConsumerProvider(logger logging.Logger, tracerProvider tracing.TracerProvider) messagequeue.ConsumerProvider {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
@@ -106,7 +106,7 @@ func ProvideSQSConsumerProvider(logger logging.Logger, tracerProvider tracing.Tr
 
 // ProvideConsumer returns a Consumer for a given topic.
 func (p *consumerProvider) ProvideConsumer(ctx context.Context, topic string, handlerFunc func(context.Context, []byte) error) (messagequeue.Consumer, error) {
-	logger := logging.EnsureLogger(p.logger).WithValue("topic", topic)
+	logger := logging.EnsureLogger(p.logger).Clone().WithValue("topic", topic)
 
 	p.consumerCacheHat.Lock()
 	defer p.consumerCacheHat.Unlock()
@@ -127,7 +127,7 @@ func provideSQSConsumer(_ context.Context, logger logging.Logger, sqsClient *sqs
 		sqsClient:          sqsClient,
 		queueURL:           topic,
 		messagesPerReceive: 10, // max value is 10
-		logger:             logging.EnsureLogger(logger),
+		logger:             logging.EnsureLogger(logger).Clone().WithName(fmt.Sprintf("%s_consumer", topic)),
 		tracer:             tracing.NewTracer(tracerProvider.Tracer(fmt.Sprintf("%s_consumer", topic))),
 		encoder:            encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
 	}

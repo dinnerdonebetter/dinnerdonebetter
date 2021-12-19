@@ -24,6 +24,10 @@ import (
 	"github.com/prixfixeco/api_server/internal/workers"
 )
 
+const (
+	dataChangesTopicName = "data_changes"
+)
+
 func buildHandler(logger logging.Logger, worker *workers.ChoresWorker) func(ctx context.Context, sqsEvent events.SQSEvent) error {
 	return func(ctx context.Context, sqsEvent events.SQSEvent) error {
 		for i := 0; i < len(sqsEvent.Records); i++ {
@@ -74,7 +78,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	postChoresPublisher, err := publisherProvider.ProviderPublisher("data_changes")
+	postChoresPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
 	if err != nil {
 		logger.Fatal(err)
 	}

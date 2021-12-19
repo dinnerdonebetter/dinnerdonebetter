@@ -44,6 +44,10 @@ type (
 	}
 )
 
+const (
+	topicName = "data_changes"
+)
+
 // ProvideService builds a new websocket service.
 func ProvideService(
 	ctx context.Context,
@@ -71,9 +75,9 @@ func ProvideService(
 		tracer:                      tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 	}
 
-	svc.logger.WithValue("topic_name", cfg.DataChangesTopicName).Info("fetching data change thing")
+	svc.logger.WithValue("topic_name", "data_changes").Info("fetching data change thing")
 
-	dataChangesConsumer, err := consumerProvider.ProvideConsumer(ctx, cfg.DataChangesTopicName, svc.handleDataChange)
+	dataChangesConsumer, err := consumerProvider.ProvideConsumer(ctx, topicName, svc.handleDataChange)
 	if err != nil {
 		return nil, fmt.Errorf("setting up event publisher: %w", err)
 	}

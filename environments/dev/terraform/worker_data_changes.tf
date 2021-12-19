@@ -4,11 +4,6 @@ resource "aws_sqs_queue" "data_changes_dead_letter" {
 
 resource "aws_sqs_queue" "data_changes_queue" {
   name = "data_changes"
-
-  #  redrive_policy = jsonencode({
-  #    deadLetterTargetArn = aws_sqs_queue.data_changes_dead_letter.arn
-  #    maxReceiveCount     = 5
-  #  })
 }
 
 resource "aws_ssm_parameter" "data_changes_queue_parameter" {
@@ -42,7 +37,7 @@ resource "aws_lambda_function" "data_changes_worker_lambda" {
 
 resource "aws_lambda_event_source_mapping" "data_changes_mapping" {
   event_source_arn = aws_sqs_queue.data_changes_queue.arn
-  function_name    = aws_lambda_function.updates_worker_lambda.arn
+  function_name    = aws_lambda_function.data_changes_worker_lambda.arn
 }
 
 resource "aws_cloudwatch_log_group" "data_changes_worker_lambda_logs" {

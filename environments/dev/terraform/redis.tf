@@ -31,10 +31,6 @@ resource "aws_elasticache_user" "dev_api" {
   passwords     = [random_password.database_password.result]
 }
 
-output "es_cluster" {
-  value = aws_elasticache_cluster.dev_api
-}
-
 resource "aws_ssm_parameter" "pubsub_server_url" {
   name  = "PRIXFIXE_PUBSUB_SERVER_URLS"
   type  = "String"
