@@ -44,6 +44,10 @@ resource "aws_lambda_function" "archives_worker_lambda" {
   ]
 
   filename = data.archive_file.archives_dummy.output_path
+
+  depends_on = [
+    aws_cloudwatch_log_group.archives_worker_lambda_logs,
+  ]
 }
 
 resource "aws_lambda_event_source_mapping" "archives_mapping" {

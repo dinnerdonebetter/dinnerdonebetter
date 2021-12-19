@@ -44,6 +44,10 @@ resource "aws_lambda_function" "writes_worker_lambda" {
   ]
 
   filename = data.archive_file.writes_lambda_dummy.output_path
+
+  depends_on = [
+    aws_cloudwatch_log_group.writes_worker_lambda_logs,
+  ]
 }
 
 resource "aws_lambda_event_source_mapping" "writes_mapping" {

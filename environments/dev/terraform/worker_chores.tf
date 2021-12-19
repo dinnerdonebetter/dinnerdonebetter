@@ -44,6 +44,10 @@ resource "aws_lambda_function" "chores_worker_lambda" {
   ]
 
   filename = data.archive_file.chores_dummy.output_path
+
+  depends_on = [
+    aws_cloudwatch_log_group.chores_worker_lambda_logs,
+  ]
 }
 
 resource "aws_cloudwatch_event_rule" "every_minute" {

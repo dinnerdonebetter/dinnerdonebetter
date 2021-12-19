@@ -44,6 +44,10 @@ resource "aws_lambda_function" "data_changes_worker_lambda" {
   ]
 
   filename = data.archive_file.data_changes_dummy.output_path
+
+  depends_on = [
+    aws_cloudwatch_log_group.data_changes_worker_lambda_logs,
+  ]
 }
 
 resource "aws_sns_topic_subscription" "data_changes_mapping" {

@@ -45,6 +45,10 @@ resource "aws_lambda_function" "updates_worker_lambda" {
   ]
 
   filename = data.archive_file.updates_lambda_dummy.output_path
+
+  depends_on = [
+    aws_cloudwatch_log_group.updates_worker_lambda_logs,
+  ]
 }
 
 resource "aws_lambda_event_source_mapping" "updates_mapping" {
