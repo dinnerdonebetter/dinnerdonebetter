@@ -19,6 +19,10 @@ resource "aws_vpc_endpoint" "ssm_endpoint" {
   vpc_id            = aws_vpc.main.id
   service_name      = "com.amazonaws.${local.aws_region}.ssm"
   vpc_endpoint_type = "Interface"
+
+  security_group_ids = [
+    aws_security_group.lambda_workers.id,
+  ]
 }
 
 
@@ -26,4 +30,8 @@ resource "aws_vpc_endpoint" "kms_endpoint" {
   vpc_id            = aws_vpc.main.id
   service_name      = "com.amazonaws.${local.aws_region}.kms"
   vpc_endpoint_type = "Interface"
+
+  security_group_ids = [
+    aws_security_group.lambda_workers.id,
+  ]
 }
