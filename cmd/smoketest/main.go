@@ -6,13 +6,11 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/brianvoe/gofakeit/v5"
 	"go.opentelemetry.io/otel/trace"
 
-	"github.com/prixfixeco/api_server/pkg/client/httpclient"
-
-	"github.com/brianvoe/gofakeit/v5"
-
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
+	"github.com/prixfixeco/api_server/pkg/client/httpclient"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
