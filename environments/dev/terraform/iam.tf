@@ -76,6 +76,18 @@ data "aws_iam_policy_document" "allowed_to_write_traces" {
   }
 }
 
+data "aws_iam_policy_document" "allowed_to_network_in_the_vpc" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:DescribeNetworkInterfaces",
+    ]
+    resources = [
+      "*",
+    ]
+  }
+}
+
 resource "aws_iam_role" "worker_lambda_role" {
   name = "Worker"
 
@@ -97,6 +109,11 @@ resource "aws_iam_role" "worker_lambda_role" {
   inline_policy {
     name   = "allowed_to_write_traces"
     policy = data.aws_iam_policy_document.allowed_to_write_traces.json
+  }
+
+  inline_policy {
+    name   = "allowed_to_network_in_the_vpc"
+    policy = data.aws_iam_policy_document.allowed_to_network_in_the_vpc.json
   }
 
   managed_policy_arns = [
