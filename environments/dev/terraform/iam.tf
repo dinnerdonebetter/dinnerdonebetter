@@ -90,6 +90,18 @@ data "aws_iam_policy_document" "allowed_to_network_in_the_vpc" {
   }
 }
 
+data "aws_iam_policy_document" "allowed_to_write_to_the_database" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "rds-data:*"
+    ]
+    resources = [
+      "*",
+    ]
+  }
+}
+
 resource "aws_iam_role" "worker_lambda_role" {
   name = "Worker"
 
@@ -116,6 +128,11 @@ resource "aws_iam_role" "worker_lambda_role" {
   inline_policy {
     name   = "allowed_to_network_in_the_vpc"
     policy = data.aws_iam_policy_document.allowed_to_network_in_the_vpc.json
+  }
+
+  inline_policy {
+    name   = "allowed_to_write_to_the_database"
+    policy = data.aws_iam_policy_document.allowed_to_write_to_the_database.json
   }
 
   managed_policy_arns = [
