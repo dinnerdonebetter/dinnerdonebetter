@@ -60,7 +60,7 @@ func main() {
 		panic(err)
 	}
 
-	time.Sleep(16 * time.Second)
+	time.Sleep(1 * time.Minute)
 
 	webhook, err := c.GetWebhook(ctx, createdWebhookID)
 	if err != nil {

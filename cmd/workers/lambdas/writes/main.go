@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-lambda-go/otellambda/xrayconfig"
@@ -27,12 +29,16 @@ const (
 	dataChangesTopicName = "data_changes"
 )
 
-func buildHandler(worker *workers.WritesWorker) func(ctx context.Context, sqsEvent events.SQSEvent) error {
+func buildHandler(logger logging.Logger, worker *workers.WritesWorker) func(ctx context.Context, sqsEvent events.SQSEvent) error {
+	logger.Info("starting lambda")
 	return func(ctx context.Context, sqsEvent events.SQSEvent) error {
+		logger = logger.WithValue("event_count", len(sqsEvent.Records))
+		logger.Info("looping through records")
 		for i := 0; i < len(sqsEvent.Records); i++ {
+			logger.WithValue("event_count", len(sqsEvent.Records)).Info("record loop")
 			message := sqsEvent.Records[i]
 			if err := worker.HandleMessage(ctx, []byte(message.Body)); err != nil {
-				return observability.PrepareError(err, nil, nil, "handling writes message")
+				return observability.PrepareError(err, logger, nil, "handling writes message")
 			}
 		}
 
@@ -109,5 +115,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	lambda.Start(buildHandler(preWritesWorker))
+	logger.Info("starting lambda")
+
+	lambda.Start(buildHandler(logger, preWritesWorker))
 }
