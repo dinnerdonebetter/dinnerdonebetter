@@ -44,7 +44,6 @@ resource "aws_vpc_endpoint" "ssm_endpoint" {
     aws_security_group.lambda_workers.id,
   ]
 
-
   private_dns_enabled = true
 }
 

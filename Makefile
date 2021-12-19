@@ -248,4 +248,4 @@ deploy_writer_lambda:
 	go build -o writes_worker github.com/prixfixeco/api_server/cmd/workers/lambdas/writes
 	zip writer_worker.zip writes_worker
 	aws lambda update-function-code --function-name writes_worker --zip-file fileb://writer_worker.zip
-	rm writes_worker writer_worker.zip
+	rm -f writes_worker writer_worker.zip

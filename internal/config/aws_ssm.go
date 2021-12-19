@@ -40,13 +40,13 @@ const (
 	segmentAPITokenSSMKey = "PRIXFIXE_SEGMENT_API_TOKEN"
 )
 
-func mustGetParameter(ps *ssm.SSM, paramName string) string {
+func mustGetParameter(parameterStore *ssm.SSM, paramName string) string {
 	input := &ssm.GetParameterInput{
 		Name:           aws.String(paramName),
 		WithDecryption: aws.Bool(true),
 	}
 
-	rawParam, err := ps.GetParameter(input)
+	rawParam, err := parameterStore.GetParameter(input)
 	if err != nil {
 		panic(err)
 	}
@@ -167,6 +167,9 @@ func GetConfigFromParameterStore(worker bool) (*InstanceConfig, error) {
 	cfg.Services.Webhooks.PreArchivesTopicName = archivesTopicName
 
 	cfg.Services.Websockets.DataChangesTopicName = dataChangesTopicName
+
+	configRaw, _ := json.Marshal(cfg)
+	_ = configRaw
 
 	ctx := context.Background()
 	if err := cfg.ValidateWithContext(ctx); err != nil {
