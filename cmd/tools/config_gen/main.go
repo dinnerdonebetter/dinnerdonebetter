@@ -270,6 +270,7 @@ func devEnvironmentWorkerConfig(ctx context.Context, filePath string) error {
 	cfg := buildDevEnvironmentServerConfig()
 
 	cfg.Observability.Tracing.Provider = ""
+	cfg.Database.RunMigrations = false
 
 	return saveConfig(ctx, filePath, cfg, false, false)
 }

@@ -50,6 +50,7 @@ func main() {
 	client := &http.Client{Timeout: 10 * time.Second}
 
 	logger.Info("lambda starting at top of main, fetching configuration")
+	logger.WithValue("time", time.Now().String()).Info("logging one more time, for sanity's sake")
 
 	cfg, err := config.GetConfigFromParameterStore(true)
 	logger.Info("config fetched")
