@@ -110,7 +110,7 @@ terraformat:
 
 .PHONY: check_terraform
 check_terraform:
-	@(cd environments/dev/terraform && terraform init && terraform validate && terraform fmt && terraform fmt -check)
+	@(cd environments/dev/terraform && terraform init -upgrade && terraform validate && terraform fmt && terraform fmt -check)
 
 .PHONY: fmt
 fmt: format terraformat
@@ -132,7 +132,7 @@ docker_lint:
 	docker run --interactive --tty --rm --volume $(PWD):$(PWD) --workdir=$(PWD) openpolicyagent/conftest:v0.21.0 test --policy docker_security.rego `find . -type f -name "*.Dockerfile"`
 
 .PHONY: lint
-lint: pre_lint docker_lint
+lint: pre_lint docker_lint check_terraform
 	@docker pull golangci/golangci-lint:v1.42
 	docker run \
 		--rm \
