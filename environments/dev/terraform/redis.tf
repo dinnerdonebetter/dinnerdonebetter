@@ -31,11 +31,15 @@ resource "aws_elasticache_user" "dev_api" {
   passwords     = [random_password.database_password.result]
 }
 
-resource "aws_ssm_parameter" "pubsub_server_url" {
-  name  = "PRIXFIXE_PUBSUB_SERVER_URL"
-  type  = "String"
-  value = aws_elasticache_cluster.dev_api.cluster_address
+output "es_cluster" {
+  value = aws_elasticache_cluster.dev_api
 }
+
+#resource "aws_ssm_parameter" "pubsub_server_url" {
+#  name  = "PRIXFIXE_PUBSUB_SERVER_URL"
+#  type  = "String"
+#  value = aws_elasticache_cluster.dev_api.cluster_address
+#}
 
 resource "aws_ssm_parameter" "pubsub_server_username" {
   name  = "PRIXFIXE_PUBSUB_SERVER_USERNAME"
