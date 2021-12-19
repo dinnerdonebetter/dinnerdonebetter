@@ -29,9 +29,9 @@ resource "aws_lambda_function" "writes_worker_lambda" {
     mode = "Active"
   }
 
-#  layers = [
-#    local.collector_layer_arns.us-east-1,
-#  ]
+  #  layers = [
+  #    local.collector_layer_arns.us-east-1,
+  #  ]
 
   filename = data.archive_file.dummy_zip.output_path
 
