@@ -90,6 +90,9 @@ func ProvideWritesWorker(
 }
 
 func (w *WritesWorker) determineWriteMessageHandler(msg *types.PreWriteMessage) func(context.Context, *types.PreWriteMessage) error {
+	logger := w.logger.WithValue("data_type", msg.DataType)
+	logger.Debug("determining message handler for msg with type")
+
 	funcMap := map[string]func(context.Context, *types.PreWriteMessage) error{
 		string(types.ValidInstrumentDataType):            w.createValidInstrument,
 		string(types.ValidIngredientDataType):            w.createValidIngredient,
@@ -114,6 +117,8 @@ func (w *WritesWorker) determineWriteMessageHandler(msg *types.PreWriteMessage) 
 		return f
 	}
 
+	logger.Debug("no message handler found for msg with type")
+
 	return nil
 }
 
@@ -134,6 +139,8 @@ func (w *WritesWorker) HandleMessage(ctx context.Context, message []byte) error 
 	logger.Debug("message read successfully")
 
 	f := w.determineWriteMessageHandler(msg)
+
+	logger.Debug("determined message handler for msg with type")
 
 	if f == nil {
 		return fmt.Errorf("no handler assigned to message type %q", msg.DataType)
