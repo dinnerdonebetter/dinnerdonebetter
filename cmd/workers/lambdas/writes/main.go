@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws"
+
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ssm"
 
@@ -59,7 +61,17 @@ func main() {
 		SharedConfigState: session.SharedConfigEnable,
 	}))
 	parameterStore := ssm.New(sess)
-	parameterStore.Config.Logger.Log("")
+
+	input := &ssm.GetParameterInput{
+		Name:           aws.String("PRIXFIXE_PUBSUB_SERVER_USERNAME"),
+		WithDecryption: aws.Bool(true),
+	}
+
+	rawParam, err := parameterStore.GetParameter(input)
+	if err != nil {
+		panic(err)
+	}
+	_ = rawParam
 
 	logger.WithValue("time", time.Now().String()).Info("logging one last time, for sanity's sake")
 
