@@ -1,5 +1,5 @@
 resource "aws_sqs_queue" "updates_dead_letter" {
-  name = "updates_dead_letter"
+  name                    = "updates_dead_letter"
   sqs_managed_sse_enabled = true
 }
 
