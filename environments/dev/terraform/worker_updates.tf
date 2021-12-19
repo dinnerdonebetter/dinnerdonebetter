@@ -17,17 +17,6 @@ resource "aws_ssm_parameter" "updates_queue_parameter" {
   value = aws_sqs_queue.updates_queue.url
 }
 
-
-data "archive_file" "updates_lambda_dummy" {
-  type        = "zip"
-  output_path = "${path.module}/updates_lambda.zip"
-
-  source {
-    content  = "hello"
-    filename = "dummy.txt"
-  }
-}
-
 resource "aws_lambda_function" "updates_worker_lambda" {
   function_name = "updates_worker"
   handler       = "updates_worker"
@@ -44,7 +33,7 @@ resource "aws_lambda_function" "updates_worker_lambda" {
     local.collector_layer_arns.us-east-1,
   ]
 
-  filename = data.archive_file.updates_lambda_dummy.output_path
+  filename = data.archive_file.dummy_zip.output_path
 
   depends_on = [
     aws_cloudwatch_log_group.updates_worker_lambda_logs,

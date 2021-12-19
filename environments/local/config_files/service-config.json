@@ -11,9 +11,9 @@
 		},
 		"redis": {
 			"username": "",
-			"password": "",
-			"messageQueueAddress": "worker_queue:6379",
-			"database": 0
+			"queueAddress": [
+				"worker_queue:6379"
+			]
 		}
 	},
 	"search": {
@@ -162,7 +162,7 @@
 		"auth": {
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "8QDnG/rsAJCKaBJX8SvEdRvNLnwBuT7kC6b6bOKSLWM=",
+				"localModeKey": "Cwzde8UQinTxq1SSkpIuYn/evsnyRavmL2mieQNldtk=",
 				"lifetime": 60000000000
 			},
 			"cookies": {

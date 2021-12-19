@@ -17,16 +17,6 @@ resource "aws_ssm_parameter" "chores_queue_parameter" {
   value = aws_sqs_queue.chores_queue.url
 }
 
-data "archive_file" "chores_dummy" {
-  type        = "zip"
-  output_path = "${path.module}/archives_lambda.zip"
-
-  source {
-    content  = "hello"
-    filename = "dummy.txt"
-  }
-}
-
 resource "aws_lambda_function" "chores_worker_lambda" {
   function_name = "chores_worker"
   handler       = "chores_worker"
@@ -43,7 +33,7 @@ resource "aws_lambda_function" "chores_worker_lambda" {
     local.collector_layer_arns.us-east-1,
   ]
 
-  filename = data.archive_file.chores_dummy.output_path
+  filename = data.archive_file.dummy_zip.output_path
 
   depends_on = [
     aws_cloudwatch_log_group.chores_worker_lambda_logs,

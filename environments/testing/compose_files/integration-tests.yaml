@@ -6,6 +6,7 @@ services:
         container_name: redis
         ports:
             - '6379:6379'
+        command: [ "redis-server", "--cluster-enabled yes" ]
         logging:
             driver: none
     postgres:

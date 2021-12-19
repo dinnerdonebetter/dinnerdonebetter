@@ -25,7 +25,7 @@ func Test_provideRedisConsumer(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 
-		actual := provideRedisConsumer(ctx, logger, redis.NewClient(&redis.Options{}), trace.NewNoopTracerProvider(), t.Name(), nil)
+		actual := provideRedisConsumer(ctx, logger, redis.NewClusterClient(&redis.ClusterOptions{}), trace.NewNoopTracerProvider(), t.Name(), nil)
 		assert.NotNil(t, actual)
 	})
 }
@@ -55,7 +55,7 @@ func Test_redisConsumer_Consume(T *testing.T) {
 			return nil
 		}
 
-		actual := provideRedisConsumer(ctx, logger, redis.NewClient(&redis.Options{}), trace.NewNoopTracerProvider(), t.Name(), hf)
+		actual := provideRedisConsumer(ctx, logger, redis.NewClusterClient(&redis.ClusterOptions{}), trace.NewNoopTracerProvider(), t.Name(), hf)
 		require.NotNil(t, actual)
 
 		returnChan := make(chan *redis.Message)
@@ -88,7 +88,7 @@ func Test_redisConsumer_Consume(T *testing.T) {
 			return anticipatedError
 		}
 
-		actual := provideRedisConsumer(ctx, logger, redis.NewClient(&redis.Options{}), trace.NewNoopTracerProvider(), t.Name(), hf)
+		actual := provideRedisConsumer(ctx, logger, redis.NewClusterClient(&redis.ClusterOptions{}), trace.NewNoopTracerProvider(), t.Name(), hf)
 		require.NotNil(t, actual)
 
 		returnChan := make(chan *redis.Message)
@@ -118,7 +118,7 @@ func Test_redisConsumer_Consume(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 
-		actual := provideRedisConsumer(ctx, logger, redis.NewClient(&redis.Options{}), trace.NewNoopTracerProvider(), t.Name(), nil)
+		actual := provideRedisConsumer(ctx, logger, redis.NewClusterClient(&redis.ClusterOptions{}), trace.NewNoopTracerProvider(), t.Name(), nil)
 		require.NotNil(t, actual)
 
 		returnChan := make(<-chan *redis.Message)

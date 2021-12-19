@@ -287,7 +287,7 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 		Events: msgconfig.Config{
 			Provider: msgconfig.ProviderRedis,
 			RedisConfig: redis.Config{
-				QueueAddress: workerQueueAddress,
+				QueueAddresses: []string{workerQueueAddress},
 			},
 		},
 		Email:        localEmailConfig,
@@ -436,7 +436,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 		Events: msgconfig.Config{
 			Provider: msgconfig.ProviderRedis,
 			RedisConfig: redis.Config{
-				QueueAddress: workerQueueAddress,
+				QueueAddresses: []string{workerQueueAddress},
 			},
 		},
 		Encoding: encoding.Config{

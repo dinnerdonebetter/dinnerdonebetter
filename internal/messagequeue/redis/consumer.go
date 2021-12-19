@@ -23,14 +23,14 @@ type (
 		tracer       tracing.Tracer
 		encoder      encoding.ClientEncoder
 		logger       logging.Logger
-		redisClient  *redis.Client
+		redisClient  *redis.ClusterClient
 		handlerFunc  func(context.Context, []byte) error
 		subscription channelProvider
 		topic        string
 	}
 )
 
-func provideRedisConsumer(ctx context.Context, logger logging.Logger, redisClient *redis.Client, tracerProvider tracing.TracerProvider, topic string, handlerFunc func(context.Context, []byte) error) *redisConsumer {
+func provideRedisConsumer(ctx context.Context, logger logging.Logger, redisClient *redis.ClusterClient, tracerProvider tracing.TracerProvider, topic string, handlerFunc func(context.Context, []byte) error) *redisConsumer {
 	subscription := redisClient.Subscribe(ctx, topic)
 
 	return &redisConsumer{
@@ -71,18 +71,17 @@ func (r *redisConsumer) Consume(stopChan chan bool, errs chan error) {
 type consumerProvider struct {
 	logger           logging.Logger
 	consumerCache    map[string]messagequeue.Consumer
-	redisClient      *redis.Client
+	redisClient      *redis.ClusterClient
 	tracerProvider   tracing.TracerProvider
 	consumerCacheHat sync.RWMutex
 }
 
 // ProvideRedisConsumerProvider returns a ConsumerProvider for a given address.
 func ProvideRedisConsumerProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, cfg Config) messagequeue.ConsumerProvider {
-	redisClient := redis.NewClient(&redis.Options{
-		Addr:     cfg.QueueAddress,
+	redisClient := redis.NewClusterClient(&redis.ClusterOptions{
+		Addrs:    cfg.QueueAddresses,
 		Username: cfg.Username,
 		Password: cfg.Password,
-		DB:       cfg.DB,
 	})
 
 	return &consumerProvider{

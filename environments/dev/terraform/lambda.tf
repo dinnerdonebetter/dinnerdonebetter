@@ -4,3 +4,13 @@ locals {
   memory_size    = 128
   timeout        = 15
 }
+
+data "archive_file" "dummy_zip" {
+  type        = "zip"
+  output_path = "${path.module}/data_changes_lambda.zip"
+
+  source {
+    content  = "hello"
+    filename = "dummy.txt"
+  }
+}

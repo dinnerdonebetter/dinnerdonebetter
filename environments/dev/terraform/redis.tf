@@ -36,9 +36,9 @@ output "es_cluster" {
 }
 
 resource "aws_ssm_parameter" "pubsub_server_url" {
-  name  = "PRIXFIXE_PUBSUB_SERVER_URL"
+  name  = "PRIXFIXE_PUBSUB_SERVER_URLS"
   type  = "String"
-  value = aws_elasticache_cluster.dev_api.arn
+  value = join(",", [for x in aws_elasticache_cluster.dev_api.cache_nodes : x.address])
 }
 
 resource "aws_ssm_parameter" "pubsub_server_username" {

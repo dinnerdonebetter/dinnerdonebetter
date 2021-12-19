@@ -34,7 +34,7 @@ func Test_redisPublisher_Publish(T *testing.T) {
 		logger := zerolog.NewZerologLogger()
 
 		cfg := Config{
-			QueueAddress: t.Name(),
+			QueueAddresses: []string{t.Name()},
 		}
 		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, provider)
@@ -75,7 +75,7 @@ func Test_redisPublisher_Publish(T *testing.T) {
 		logger := zerolog.NewZerologLogger()
 
 		cfg := Config{
-			QueueAddress: t.Name(),
+			QueueAddresses: []string{t.Name()},
 		}
 		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, provider)
@@ -108,7 +108,7 @@ func TestProvideRedisPublisherProvider(T *testing.T) {
 		logger := zerolog.NewZerologLogger()
 
 		cfg := Config{
-			QueueAddress: t.Name(),
+			QueueAddresses: []string{t.Name()},
 		}
 		actual := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)
 		assert.NotNil(t, actual)
@@ -124,7 +124,7 @@ func Test_publisherProvider_ProviderPublisher(T *testing.T) {
 		logger := zerolog.NewZerologLogger()
 
 		cfg := Config{
-			QueueAddress: t.Name(),
+			QueueAddresses: []string{t.Name()},
 		}
 		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, provider)
@@ -140,7 +140,7 @@ func Test_publisherProvider_ProviderPublisher(T *testing.T) {
 		logger := zerolog.NewZerologLogger()
 
 		cfg := Config{
-			QueueAddress: t.Name(),
+			QueueAddresses: []string{t.Name()},
 		}
 		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, provider)

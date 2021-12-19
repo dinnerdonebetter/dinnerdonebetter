@@ -51,7 +51,7 @@ func (r *redisPublisher) Publish(ctx context.Context, data interface{}) error {
 }
 
 // provideRedisPublisher provides a redis-backed Publisher.
-func provideRedisPublisher(logger logging.Logger, tracerProvider tracing.TracerProvider, redisClient *redis.Client, topic string) *redisPublisher {
+func provideRedisPublisher(logger logging.Logger, tracerProvider tracing.TracerProvider, redisClient *redis.ClusterClient, topic string) *redisPublisher {
 	return &redisPublisher{
 		publisher: redisClient,
 		topic:     topic,
@@ -64,18 +64,17 @@ func provideRedisPublisher(logger logging.Logger, tracerProvider tracing.TracerP
 type publisherProvider struct {
 	logger            logging.Logger
 	publisherCache    map[string]messagequeue.Publisher
-	redisClient       *redis.Client
+	redisClient       *redis.ClusterClient
 	tracerProvider    tracing.TracerProvider
 	publisherCacheHat sync.RWMutex
 }
 
 // ProvideRedisPublisherProvider returns a PublisherProvider for a given address.
 func ProvideRedisPublisherProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, cfg Config) messagequeue.PublisherProvider {
-	redisClient := redis.NewClient(&redis.Options{
-		Addr:     cfg.QueueAddress,
+	redisClient := redis.NewClusterClient(&redis.ClusterOptions{
+		Addrs:    cfg.QueueAddresses,
 		Username: cfg.Username,
 		Password: cfg.Password,
-		DB:       cfg.DB,
 	})
 
 	return &publisherProvider{

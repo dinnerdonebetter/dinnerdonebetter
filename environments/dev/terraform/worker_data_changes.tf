@@ -2,7 +2,7 @@ resource "aws_sqs_queue" "data_changes_dead_letter" {
   name = "data_changes_dead_letter"
 }
 
-resource "aws_sns_topic" "data_changes_queue" {
+resource "aws_sqs_queue" "data_changes_queue" {
   name = "data_changes"
 
   #  redrive_policy = jsonencode({
@@ -14,17 +14,7 @@ resource "aws_sns_topic" "data_changes_queue" {
 resource "aws_ssm_parameter" "data_changes_queue_parameter" {
   name  = "PRIXFIXE_DATA_CHANGES_QUEUE_URL"
   type  = "String"
-  value = aws_sns_topic.data_changes_queue.arn
-}
-
-data "archive_file" "data_changes_dummy" {
-  type        = "zip"
-  output_path = "${path.module}/data_changes_lambda.zip"
-
-  source {
-    content  = "hello"
-    filename = "dummy.txt"
-  }
+  value = aws_sqs_queue.data_changes_queue.arn
 }
 
 resource "aws_lambda_function" "data_changes_worker_lambda" {
@@ -43,17 +33,16 @@ resource "aws_lambda_function" "data_changes_worker_lambda" {
     local.collector_layer_arns.us-east-1,
   ]
 
-  filename = data.archive_file.data_changes_dummy.output_path
+  filename = data.archive_file.dummy_zip.output_path
 
   depends_on = [
     aws_cloudwatch_log_group.data_changes_worker_lambda_logs,
   ]
 }
 
-resource "aws_sns_topic_subscription" "data_changes_mapping" {
-  topic_arn = aws_sns_topic.data_changes_queue.arn
-  protocol  = "lambda"
-  endpoint  = aws_lambda_function.data_changes_worker_lambda.arn
+resource "aws_lambda_event_source_mapping" "data_changes_mapping" {
+  event_source_arn = aws_sqs_queue.data_changes_queue.arn
+  function_name    = aws_lambda_function.updates_worker_lambda.arn
 }
 
 resource "aws_cloudwatch_log_group" "data_changes_worker_lambda_logs" {

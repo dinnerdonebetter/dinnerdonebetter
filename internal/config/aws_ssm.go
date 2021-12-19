@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"encoding/json"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -23,7 +24,7 @@ const (
 	cookieBlockKeySSMKey           = "PRIXFIXE_COOKIE_BLOCK_KEY"
 	cookieHashKeySSMKey            = "PRIXFIXE_COOKIE_HASH_KEY"
 	cookiePASETOLocalModeKeySSMKey = "PRIXFIXE_PASETO_LOCAL_MODE_KEY"
-	pubsubServerURLSSMKey          = "PRIXFIXE_PUBSUB_SERVER_URL"
+	pubsubServerURLSSMKey          = "PRIXFIXE_PUBSUB_SERVER_URLS"
 	pubsubServerUsernameSSMKey     = "PRIXFIXE_PUBSUB_SERVER_USERNAME"
 	/* #nosec G101 */
 	pubsubServerPasswordSSMKey          = "PRIXFIXE_PUBSUB_SERVER_PASSWORD"
@@ -79,7 +80,7 @@ func GetConfigFromParameterStore(worker bool) (*InstanceConfig, error) {
 
 	cfg.Events.RedisConfig.Username = mustGetParameter(svc, pubsubServerUsernameSSMKey)
 	cfg.Events.RedisConfig.Password = mustGetParameter(svc, pubsubServerPasswordSSMKey)
-	cfg.Events.RedisConfig.QueueAddress = mustGetParameter(svc, pubsubServerURLSSMKey)
+	cfg.Events.RedisConfig.QueueAddresses = strings.Split(mustGetParameter(svc, pubsubServerURLSSMKey), ",")
 
 	cfg.Search.Address = search.IndexPath(elasticsearchInstanceURL)
 	cfg.Search.Username = mustGetParameter(svc, elasticsearchInstanceUsernameSSMKey)
