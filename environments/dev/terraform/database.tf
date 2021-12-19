@@ -101,29 +101,9 @@ resource "aws_security_group" "database" {
     security_groups = [
       aws_security_group.api_service.id,
       aws_security_group.load_balancer.id,
-      aws_security_group.lambda_workers,
+      aws_security_group.lambda_workers.id,
     ]
   }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    ipv6_cidr_blocks = ["::/0"]
-  }
-}
-
-resource "aws_security_group" "lambda_workers" {
-  name        = "lambda"
-  description = "Lambda group"
-  vpc_id      = aws_vpc.main.id
 
   egress {
     from_port   = 0

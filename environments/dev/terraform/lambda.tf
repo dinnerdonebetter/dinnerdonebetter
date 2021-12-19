@@ -15,6 +15,26 @@ data "archive_file" "dummy_zip" {
   }
 }
 
+resource "aws_security_group" "lambda_workers" {
+  name        = "lambda"
+  description = "Lambda group"
+  vpc_id      = aws_vpc.main.id
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
+
 resource "aws_vpc_endpoint" "ssm_endpoint" {
   vpc_id            = aws_vpc.main.id
   service_name      = "com.amazonaws.${local.aws_region}.ssm"
