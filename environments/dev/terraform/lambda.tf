@@ -43,6 +43,9 @@ resource "aws_vpc_endpoint" "ssm_endpoint" {
   security_group_ids = [
     aws_security_group.lambda_workers.id,
   ]
+
+
+  private_dns_enabled = true
 }
 
 
@@ -54,4 +57,6 @@ resource "aws_vpc_endpoint" "kms_endpoint" {
   security_group_ids = [
     aws_security_group.lambda_workers.id,
   ]
+
+  private_dns_enabled = true
 }
