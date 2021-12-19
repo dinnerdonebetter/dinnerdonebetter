@@ -79,7 +79,7 @@ func ProvideDatabaseClient(
 		db:            db,
 		config:        cfg,
 		tracer:        tracer,
-		logQueries:    false,
+		logQueries:    true,
 		timeFunc:      defaultTimeFunc,
 		connectionURL: string(cfg.ConnectionDetails),
 		logger:        logging.EnsureLogger(logger),
@@ -268,6 +268,7 @@ func (q *SQLQuerier) performWriteQuery(ctx context.Context, querier database.SQL
 
 	logger := q.logger.WithValue("query", query).WithValue("description", queryDescription).WithValue("args", args)
 	tracing.AttachDatabaseQueryToSpan(span, queryDescription, query, args)
+	logger.Debug("performWriteQuery called")
 
 	res, err := querier.ExecContext(ctx, query, args...)
 	if err != nil {

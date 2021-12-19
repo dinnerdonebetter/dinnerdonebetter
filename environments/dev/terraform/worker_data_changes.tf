@@ -1,9 +1,11 @@
 resource "aws_sqs_queue" "data_changes_dead_letter" {
   name = "data_changes_dead_letter"
+  sqs_managed_sse_enabled = true
 }
 
 resource "aws_sqs_queue" "data_changes_queue" {
   name = "data_changes"
+  # sqs_managed_sse_enabled = true
 }
 
 resource "aws_ssm_parameter" "data_changes_queue_parameter" {

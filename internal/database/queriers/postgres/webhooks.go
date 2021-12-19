@@ -266,6 +266,8 @@ func (q *SQLQuerier) CreateWebhook(ctx context.Context, input *types.WebhookData
 	tracing.AttachHouseholdIDToSpan(span, input.BelongsToHousehold)
 	logger := q.logger.WithValue(keys.HouseholdIDKey, input.BelongsToHousehold)
 
+	logger.Debug("CreateWebhook invoked")
+
 	args := []interface{}{
 		input.ID,
 		input.Name,
