@@ -63,6 +63,19 @@ resource "aws_vpc_endpoint" "ssm_endpoint" {
   private_dns_enabled = true
 }
 
+resource "aws_vpc_endpoint_subnet_association" "public_ssm_association" {
+  for_each = aws_subnet.public_subnets
+
+  subnet_id       = each.value.id
+  vpc_endpoint_id = aws_vpc_endpoint.ssm_endpoint.id
+}
+
+resource "aws_vpc_endpoint_subnet_association" "private_ssm_association" {
+  for_each = aws_subnet.private_subnets
+
+  subnet_id       = each.value.id
+  vpc_endpoint_id = aws_vpc_endpoint.ssm_endpoint.id
+}
 
 resource "aws_vpc_endpoint" "kms_endpoint" {
   vpc_id            = aws_vpc.main.id

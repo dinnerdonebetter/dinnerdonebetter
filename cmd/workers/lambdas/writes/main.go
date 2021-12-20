@@ -5,17 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws"
-
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ssm"
-
-	"go.opentelemetry.io/otel/trace"
-
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
@@ -23,6 +15,7 @@ import (
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/api_server/internal/search/elasticsearch"
 	"github.com/prixfixeco/api_server/internal/workers"
@@ -49,6 +42,16 @@ func buildHandler(logger logging.Logger, worker *workers.WritesWorker) func(ctx 
 	}
 }
 
+const exampleEvent = `
+{
+	"Records": [
+		{
+			"body": "{\"dataType\": \"webhook\",\"webhook\": {\"name\": \"example\",\"url\": \"https://hongry.io\",\"method\": \"GET\",\"contentType\": \"application/json\",\"id\": \"notreallol\",\"belongsToHousehold\": \"blahblahblah\",\"events\": [\"things\"],\"dataTypes\": [\"things\"]},\"attributableToUserID\": \"lahblahblahb\",\"attributableToHouseholdID\": \"blahblahblah\"}"
+		}
+	]
+}
+`
+
 func main() {
 	ctx := context.Background()
 	logger := zerolog.NewZerologLogger()
@@ -56,24 +59,6 @@ func main() {
 
 	logger.Info("lambda starting at top of main, fetching configuration")
 	logger.WithValue("time", time.Now().String()).Info("logging one more time, for sanity's sake")
-
-	sess := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	}))
-	parameterStore := ssm.New(sess)
-
-	input := &ssm.GetParameterInput{
-		Name:           aws.String("PRIXFIXE_PUBSUB_SERVER_USERNAME"),
-		WithDecryption: aws.Bool(true),
-	}
-
-	rawParam, err := parameterStore.GetParameter(input)
-	if err != nil {
-		panic(err)
-	}
-	_ = rawParam
-
-	logger.WithValue("time", time.Now().String()).Info("logging one last time, for sanity's sake")
 
 	cfg, err := config.GetConfigFromParameterStore(true)
 	logger.Info("config fetched")

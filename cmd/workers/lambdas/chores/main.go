@@ -93,7 +93,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	preChoresWorker := workers.ProvideChoresWorker(
+	choresWorker := workers.ProvideChoresWorker(
 		logger,
 		dataManager,
 		postChoresPublisher,
@@ -103,7 +103,7 @@ func main() {
 	)
 
 	lambda.Start(otellambda.InstrumentHandler(
-		buildHandler(logger, preChoresWorker),
+		buildHandler(logger, choresWorker),
 		xrayconfig.WithEventToCarrier(),
 		otellambda.WithPropagator(xray.Propagator{}),
 		otellambda.WithTracerProvider(tracerProvider),

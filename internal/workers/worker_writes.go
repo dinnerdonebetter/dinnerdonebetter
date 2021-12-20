@@ -127,14 +127,16 @@ func (w *WritesWorker) HandleMessage(ctx context.Context, message []byte) error 
 	ctx, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
-	w.logger.Debug("message received")
+	logger := w.logger.WithValue("msg", string(message))
+
+	logger.Debug("message received")
 	var msg *types.PreWriteMessage
 
 	if err := w.encoder.Unmarshal(ctx, message, &msg); err != nil {
 		return observability.PrepareError(err, w.logger, span, "unmarshalling message")
 	}
 	tracing.AttachUserIDToSpan(span, msg.AttributableToUserID)
-	logger := w.logger.WithValue("data_type", msg.DataType)
+	logger = logger.WithValue("data_type", msg.DataType)
 
 	logger.Debug("message read successfully")
 
