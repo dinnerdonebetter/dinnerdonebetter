@@ -15,6 +15,28 @@ data "archive_file" "dummy_zip" {
   }
 }
 
+resource "aws_security_group" "vpc_endpoints" {
+  name        = "vpc_endpoints"
+  description = "AWS VPC endpoints"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port        = 443
+    to_port          = 443
+    protocol         = "TCP"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
+
 resource "aws_security_group" "lambda_workers" {
   name        = "workers"
   description = "Lambda group"
@@ -35,7 +57,7 @@ resource "aws_vpc_endpoint" "ssm_endpoint" {
   vpc_endpoint_type = "Interface"
 
   security_group_ids = [
-    aws_security_group.lambda_workers.id,
+    aws_security_group.vpc_endpoints.id,
   ]
 
   private_dns_enabled = true
@@ -48,7 +70,7 @@ resource "aws_vpc_endpoint" "kms_endpoint" {
   vpc_endpoint_type = "Interface"
 
   security_group_ids = [
-    aws_security_group.lambda_workers.id,
+    aws_security_group.vpc_endpoints.id,
   ]
 
   private_dns_enabled = true
