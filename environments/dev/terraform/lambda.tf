@@ -29,18 +29,6 @@ resource "aws_security_group" "lambda_workers" {
   }
 }
 
-resource "aws_vpc_endpoint" "s3_endpoint" {
-  vpc_id            = aws_vpc.main.id
-  service_name      = "com.amazonaws.${local.aws_region}.s3"
-  vpc_endpoint_type = "Interface"
-
-  security_group_ids = [
-    aws_security_group.lambda_workers.id,
-  ]
-
-  private_dns_enabled = true
-}
-
 resource "aws_vpc_endpoint" "ssm_endpoint" {
   vpc_id            = aws_vpc.main.id
   service_name      = "com.amazonaws.${local.aws_region}.ssm"
