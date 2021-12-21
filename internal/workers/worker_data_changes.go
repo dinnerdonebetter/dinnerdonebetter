@@ -28,7 +28,7 @@ func ProvideDataChangesWorker(
 	customerDataCollector customerdata.Collector,
 	tracerProvider tracing.TracerProvider,
 ) *DataChangesWorker {
-	name := "post_writes"
+	name := "data_changes"
 
 	return &DataChangesWorker{
 		logger:                logging.EnsureLogger(logger).WithName(name),

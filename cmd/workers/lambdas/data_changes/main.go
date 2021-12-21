@@ -2,9 +2,20 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+
+	"github.com/prixfixeco/api_server/pkg/types"
+
+	"github.com/prixfixeco/api_server/internal/messagequeue"
+	"github.com/prixfixeco/api_server/internal/messagequeue/redis"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -15,17 +26,23 @@ import (
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
-	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
-	"github.com/prixfixeco/api_server/internal/workers"
 )
 
-func buildHandler(worker *workers.DataChangesWorker) func(ctx context.Context, sqsEvent events.SQSEvent) error {
+func buildHandler(tracer tracing.Tracer, logger logging.Logger, notificationQueue messagequeue.Publisher) func(ctx context.Context, sqsEvent events.SQSEvent) error {
 	return func(ctx context.Context, sqsEvent events.SQSEvent) error {
+		ctx, span := tracer.StartSpan(ctx)
+		defer span.End()
+
 		for i := 0; i < len(sqsEvent.Records); i++ {
 			message := sqsEvent.Records[i]
-			if err := worker.HandleMessage(ctx, []byte(message.Body)); err != nil {
-				return observability.PrepareError(err, nil, nil, "handling archives message")
+			var dcm *types.DataChangeMessage
+			if err := json.Unmarshal([]byte(message.Body), &dcm); err != nil {
+				logger.Error(err, "unmarshalling data change message`")
+			}
+
+			if err := notificationQueue.Publish(ctx, message); err != nil {
+				return observability.PrepareError(err, logger, span, "publishing message to notification queue")
 			}
 		}
 
@@ -43,10 +60,12 @@ func main() {
 		logger.Fatal(err)
 	}
 	cfg.Database.RunMigrations = false
+
 	tracerProvider, err := xrayconfig.NewTracerProvider(ctx)
 	if err != nil {
 		fmt.Printf("error creating tracer provider: %v", err)
 	}
+	tracer := tracerProvider.Tracer("data_changes_worker")
 
 	defer func(ctx context.Context) {
 		if shutdownErr := tracerProvider.Shutdown(ctx); shutdownErr != nil {
@@ -67,10 +86,10 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	dataChangesWorker := workers.ProvideDataChangesWorker(logger, emailer, cdp, tracerProvider)
-	if err != nil {
-		logger.Fatal(err)
-	}
+	_, _ = emailer, cdp
 
-	lambda.Start(buildHandler(dataChangesWorker))
+	publisherProvider := redis.ProvideRedisPublisherProvider(logger, tracerProvider, cfg.Events.RedisConfig)
+	publisher, err := publisherProvider.ProviderPublisher("data_changes")
+
+	lambda.Start(buildHandler(tracing.NewTracer(tracer), logger, publisher))
 }

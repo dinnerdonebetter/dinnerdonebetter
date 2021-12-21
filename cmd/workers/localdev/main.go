@@ -94,21 +94,6 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	// post-writes worker
-
-	postWritesWorker := workers.ProvideDataChangesWorker(
-		logger,
-		emailer,
-		cdp,
-		tracerProvider,
-	)
-	postWritesConsumer, err := consumerProvider.ProvideConsumer(ctx, dataChangesTopicName, postWritesWorker.HandleMessage)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	go postWritesConsumer.Consume(nil, nil)
-
 	// pre-writes worker
 
 	postWritesPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)

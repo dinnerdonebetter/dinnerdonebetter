@@ -5,7 +5,7 @@ resource "aws_sqs_queue" "writes_dead_letter" {
 
 resource "aws_sqs_queue" "writes_queue" {
   name = "writes"
-  # sqs_managed_sse_enabled = true
+  sqs_managed_sse_enabled = true
 
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.writes_dead_letter.arn
