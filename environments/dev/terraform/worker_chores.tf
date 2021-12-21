@@ -4,7 +4,7 @@ resource "aws_sqs_queue" "chores_dead_letter" {
 }
 
 resource "aws_sqs_queue" "chores_queue" {
-  name = "chores"
+  name                    = "chores"
   sqs_managed_sse_enabled = true
 
   redrive_policy = jsonencode({

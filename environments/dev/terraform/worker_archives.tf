@@ -4,7 +4,7 @@ resource "aws_sqs_queue" "archives_dead_letter" {
 }
 
 resource "aws_sqs_queue" "archives_queue" {
-  name = "archives"
+  name                    = "archives"
   sqs_managed_sse_enabled = true
 
   redrive_policy = jsonencode({
