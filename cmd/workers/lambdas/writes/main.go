@@ -121,6 +121,7 @@ func main() {
 
 	logger.Info("setting up search index manager")
 
+	//indexManagerProvider := &search.NoopIndexManagerProvider{}
 	indexManagerProvider, err := elasticsearch.NewIndexManagerProvider(ctx, logger, &cfg.Search, tracerProvider)
 	if err != nil {
 		logger.Fatal(err)

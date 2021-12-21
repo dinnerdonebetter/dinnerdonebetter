@@ -92,8 +92,8 @@ func GetConfigFromParameterStore(worker bool) (*InstanceConfig, error) {
 	cfg.Events.RedisConfig.QueueAddresses = strings.Split(mustGetParameter(parameterStore, pubsubServerURLSSMKey), ",")
 
 	cfg.Search.Address = search.IndexPath(elasticsearchInstanceURL)
-	cfg.Search.Username = mustGetParameter(parameterStore, elasticsearchInstanceUsernameSSMKey)
-	cfg.Search.Password = mustGetParameter(parameterStore, elasticsearchInstancePasswordSSMKey)
+	//cfg.Search.Username = mustGetParameter(parameterStore, elasticsearchInstanceUsernameSSMKey)
+	//cfg.Search.Password = mustGetParameter(parameterStore, elasticsearchInstancePasswordSSMKey)
 
 	writesTopicName := mustGetParameter(parameterStore, writesQueueNameSSMKey)
 	updatesTopicName := mustGetParameter(parameterStore, updatesQueueNameSSMKey)
