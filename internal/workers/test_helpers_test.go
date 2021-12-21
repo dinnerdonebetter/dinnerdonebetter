@@ -14,9 +14,6 @@ import (
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
-	"github.com/prixfixeco/api_server/internal/search"
-	mocksearch "github.com/prixfixeco/api_server/internal/search/mock"
-	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 func newTestWritesWorker(t *testing.T) *WritesWorker {
@@ -26,51 +23,12 @@ func newTestWritesWorker(t *testing.T) *WritesWorker {
 	logger := logging.NewNoopLogger()
 	dbManager := &database.MockDatabase{}
 	postWritesPublisher := &mockpublishers.Publisher{}
-	indexManagerProvider := &mocksearch.IndexManagerProvider{}
-	indexManager := &mocksearch.IndexManager{}
-
-	indexManagerProvider.On(
-		"ProvideIndexManager",
-		testutils.ContextMatcher,
-		logger,
-		search.IndexName("valid_instruments"),
-		[]string{"name", "variant", "description", "icon"},
-	).Return(indexManager, nil)
-	indexManagerProvider.On(
-		"ProvideIndexManager",
-		testutils.ContextMatcher,
-		logger,
-		search.IndexName("valid_ingredients"),
-		[]string{"name", "variant", "description", "warning", "icon"},
-	).Return(indexManager, nil)
-	indexManagerProvider.On(
-		"ProvideIndexManager",
-		testutils.ContextMatcher,
-		logger,
-		search.IndexName("valid_preparations"),
-		[]string{"name", "description", "icon"},
-	).Return(indexManager, nil)
-	indexManagerProvider.On(
-		"ProvideIndexManager",
-		testutils.ContextMatcher,
-		logger,
-		search.IndexName("valid_ingredient_preparations"),
-		[]string{"notes", "validPreparationID", "validIngredientID"},
-	).Return(indexManager, nil)
-	indexManagerProvider.On(
-		"ProvideIndexManager",
-		testutils.ContextMatcher,
-		logger,
-		search.IndexName("recipes"),
-		[]string{"name", "source", "description", "inspiredByRecipeID"},
-	).Return(indexManager, nil)
 
 	worker, err := ProvideWritesWorker(
 		ctx,
 		logger,
 		dbManager,
 		postWritesPublisher,
-		indexManagerProvider,
 		&email.MockEmailer{},
 		&customerdata.MockCollector{},
 		trace.NewNoopTracerProvider(),
@@ -88,51 +46,12 @@ func newTestUpdatesWorker(t *testing.T) *UpdatesWorker {
 	logger := logging.NewNoopLogger()
 	dbManager := &database.MockDatabase{}
 	postUpdatesPublisher := &mockpublishers.Publisher{}
-	indexManagerProvider := &mocksearch.IndexManagerProvider{}
-	indexManager := &mocksearch.IndexManager{}
-
-	indexManagerProvider.On(
-		"ProvideIndexManager",
-		testutils.ContextMatcher,
-		logger,
-		search.IndexName("valid_instruments"),
-		[]string{"name", "variant", "description", "icon"},
-	).Return(indexManager, nil)
-	indexManagerProvider.On(
-		"ProvideIndexManager",
-		testutils.ContextMatcher,
-		logger,
-		search.IndexName("valid_ingredients"),
-		[]string{"name", "variant", "description", "warning", "icon"},
-	).Return(indexManager, nil)
-	indexManagerProvider.On(
-		"ProvideIndexManager",
-		testutils.ContextMatcher,
-		logger,
-		search.IndexName("valid_preparations"),
-		[]string{"name", "description", "icon"},
-	).Return(indexManager, nil)
-	indexManagerProvider.On(
-		"ProvideIndexManager",
-		testutils.ContextMatcher,
-		logger,
-		search.IndexName("valid_ingredient_preparations"),
-		[]string{"notes", "validPreparationID", "validIngredientID"},
-	).Return(indexManager, nil)
-	indexManagerProvider.On(
-		"ProvideIndexManager",
-		testutils.ContextMatcher,
-		logger,
-		search.IndexName("recipes"),
-		[]string{"name", "source", "description", "inspiredByRecipeID"},
-	).Return(indexManager, nil)
 
 	worker, err := ProvideUpdatesWorker(
 		ctx,
 		logger,
 		dbManager,
 		postUpdatesPublisher,
-		indexManagerProvider,
 		&email.MockEmailer{},
 		&customerdata.MockCollector{},
 		trace.NewNoopTracerProvider(),
@@ -166,51 +85,12 @@ func newTestArchivesWorker(t *testing.T) *ArchivesWorker {
 	logger := logging.NewNoopLogger()
 	dbManager := database.NewMockDatabase()
 	postArchivesPublisher := &mockpublishers.Publisher{}
-	indexManagerProvider := &mocksearch.IndexManagerProvider{}
-	indexManager := &mocksearch.IndexManager{}
-
-	indexManagerProvider.On(
-		"ProvideIndexManager",
-		testutils.ContextMatcher,
-		logger,
-		search.IndexName("valid_instruments"),
-		[]string{"name", "variant", "description", "icon"},
-	).Return(indexManager, nil)
-	indexManagerProvider.On(
-		"ProvideIndexManager",
-		testutils.ContextMatcher,
-		logger,
-		search.IndexName("valid_ingredients"),
-		[]string{"name", "variant", "description", "warning", "icon"},
-	).Return(indexManager, nil)
-	indexManagerProvider.On(
-		"ProvideIndexManager",
-		testutils.ContextMatcher,
-		logger,
-		search.IndexName("valid_preparations"),
-		[]string{"name", "description", "icon"},
-	).Return(indexManager, nil)
-	indexManagerProvider.On(
-		"ProvideIndexManager",
-		testutils.ContextMatcher,
-		logger,
-		search.IndexName("valid_ingredient_preparations"),
-		[]string{"notes", "validPreparationID", "validIngredientID"},
-	).Return(indexManager, nil)
-	indexManagerProvider.On(
-		"ProvideIndexManager",
-		testutils.ContextMatcher,
-		logger,
-		search.IndexName("recipes"),
-		[]string{"name", "source", "description", "inspiredByRecipeID"},
-	).Return(indexManager, nil)
 
 	worker, err := ProvideArchivesWorker(
 		ctx,
 		logger,
 		dbManager,
 		postArchivesPublisher,
-		indexManagerProvider,
 		&customerdata.MockCollector{},
 		trace.NewNoopTracerProvider(),
 	)

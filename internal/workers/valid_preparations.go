@@ -18,10 +18,6 @@ func (w *WritesWorker) createValidPreparation(ctx context.Context, msg *types.Pr
 		return observability.PrepareError(err, logger, span, "creating valid preparation")
 	}
 
-	if err = w.validPreparationsIndexManager.Index(ctx, validPreparation.ID, validPreparation); err != nil {
-		return observability.PrepareError(err, logger, span, "indexing the valid preparation")
-	}
-
 	if w.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  msg.DataType,
@@ -49,10 +45,6 @@ func (w *UpdatesWorker) updateValidPreparation(ctx context.Context, msg *types.P
 		return observability.PrepareError(err, logger, span, "creating valid preparation")
 	}
 
-	if err := w.validPreparationsIndexManager.Index(ctx, msg.ValidPreparation.ID, msg.ValidPreparation); err != nil {
-		return observability.PrepareError(err, logger, span, "indexing the valid preparation")
-	}
-
 	if w.postUpdatesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  msg.DataType,
@@ -78,10 +70,6 @@ func (w *ArchivesWorker) archiveValidPreparation(ctx context.Context, msg *types
 
 	if err := w.dataManager.ArchiveValidPreparation(ctx, msg.ValidPreparationID); err != nil {
 		return observability.PrepareError(err, w.logger, span, "archiving valid preparation")
-	}
-
-	if err := w.validPreparationsIndexManager.Delete(ctx, msg.ValidPreparationID); err != nil {
-		return observability.PrepareError(err, w.logger, span, "removing valid preparation from index")
 	}
 
 	if w.postArchivesPublisher != nil {

@@ -149,6 +149,38 @@ func (q *SQLQuerier) GetValidInstrument(ctx context.Context, validInstrumentID s
 	return validInstrument, nil
 }
 
+const validInstrumentSearchQuery = "SELECT valid_instruments.id, valid_instruments.name, valid_instruments.variant, valid_instruments.description, valid_instruments.icon_path, valid_instruments.created_on, valid_instruments.last_updated_on, valid_instruments.archived_on FROM valid_instruments WHERE valid_instruments.archived_on IS NULL AND valid_instruments.name ILIKE $1 LIMIT 50"
+
+// SearchForValidInstruments fetches a valid instrument from the database.
+func (q *SQLQuerier) SearchForValidInstruments(ctx context.Context, query string) ([]*types.ValidInstrument, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if query == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.SearchQueryKey, query)
+	tracing.AttachValidInstrumentIDToSpan(span, query)
+
+	args := []interface{}{
+		fmt.Sprintf("%s%%", query),
+	}
+
+	rows, err := q.performReadQuery(ctx, q.db, "valid ingredients", validInstrumentSearchQuery, args)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "executing valid ingredients list retrieval query")
+	}
+
+	validInstruments, _, _, err := q.scanValidInstruments(ctx, rows, false)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "scanning validInstrument")
+	}
+
+	return validInstruments, nil
+}
+
 const getTotalValidInstrumentsCountQuery = "SELECT COUNT(valid_instruments.id) FROM valid_instruments WHERE valid_instruments.archived_on IS NULL"
 
 // GetTotalValidInstrumentCount fetches the count of valid instruments from the database that meet a particular filter.

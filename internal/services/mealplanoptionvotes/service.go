@@ -12,7 +12,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/routing"
-	"github.com/prixfixeco/api_server/internal/search"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
@@ -26,9 +25,6 @@ const (
 var _ types.MealPlanOptionVoteDataService = (*service)(nil)
 
 type (
-	// SearchIndex is a type alias for dependency injection's sake.
-	SearchIndex search.IndexManager
-
 	// service handles meal plan option votes.
 	service struct {
 		logger                        logging.Logger

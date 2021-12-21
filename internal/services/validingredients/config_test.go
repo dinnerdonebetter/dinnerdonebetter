@@ -18,7 +18,6 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 			PreWritesTopicName:   "blah",
 			PreUpdatesTopicName:  "blah",
 			PreArchivesTopicName: "blah",
-			SearchIndexPath:      "blah",
 		}
 
 		assert.NoError(t, cfg.ValidateWithContext(ctx))

@@ -10,6 +10,6 @@ COPY . .
 ENV SKIP_PASETO_TESTS=TRUE
 
 # to debug a specific test:
-# ENTRYPOINT [ "go", "test", "-parallel", "1", "-v", "-failfast", "github.com/prixfixeco/api_server/tests/integration", "-run", "TestIntegration/TestMealPlans_*" ]
+# ENTRYPOINT [ "go", "test", "-parallel", "1", "-v", "-failfast", "github.com/prixfixeco/api_server/tests/integration", "-run", "TestIntegration/TestValidInstruments_Searching" ]
 
 ENTRYPOINT [ "go", "test", "-v", "-failfast", "github.com/prixfixeco/api_server/tests/integration" ]

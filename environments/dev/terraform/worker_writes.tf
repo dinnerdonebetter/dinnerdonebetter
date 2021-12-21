@@ -41,9 +41,9 @@ resource "aws_lambda_function" "writes_worker_lambda" {
     ]
   }
 
-  #  layers = [
-  #    local.collector_layer_arns.us-east-1,
-  #  ]
+  layers = [
+    local.collector_layer_arns[local.aws_region],
+  ]
 
   filename = data.archive_file.dummy_zip.output_path
 

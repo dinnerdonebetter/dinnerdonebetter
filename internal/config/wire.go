@@ -16,7 +16,6 @@ var (
 			"Uploads",
 			"Email",
 			"CustomerData",
-			"Search",
 			"Events",
 			"Server",
 			"Routing",

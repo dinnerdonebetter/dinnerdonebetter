@@ -18,10 +18,6 @@ func (w *WritesWorker) createValidIngredientPreparation(ctx context.Context, msg
 		return observability.PrepareError(err, logger, span, "creating valid ingredient preparation")
 	}
 
-	if err = w.validIngredientPreparationsIndexManager.Index(ctx, validIngredientPreparation.ID, validIngredientPreparation); err != nil {
-		return observability.PrepareError(err, logger, span, "indexing the valid ingredient preparation")
-	}
-
 	if w.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                   msg.DataType,
@@ -49,10 +45,6 @@ func (w *UpdatesWorker) updateValidIngredientPreparation(ctx context.Context, ms
 		return observability.PrepareError(err, logger, span, "creating valid ingredient preparation")
 	}
 
-	if err := w.validIngredientPreparationsIndexManager.Index(ctx, msg.ValidIngredientPreparation.ID, msg.ValidIngredientPreparation); err != nil {
-		return observability.PrepareError(err, logger, span, "indexing the valid ingredient preparation")
-	}
-
 	if w.postUpdatesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                   msg.DataType,
@@ -78,10 +70,6 @@ func (w *ArchivesWorker) archiveValidIngredientPreparation(ctx context.Context, 
 
 	if err := w.dataManager.ArchiveValidIngredientPreparation(ctx, msg.ValidIngredientPreparationID); err != nil {
 		return observability.PrepareError(err, w.logger, span, "archiving valid ingredient preparation")
-	}
-
-	if err := w.validIngredientPreparationsIndexManager.Delete(ctx, msg.ValidIngredientPreparationID); err != nil {
-		return observability.PrepareError(err, w.logger, span, "removing valid ingredient preparation from index")
 	}
 
 	if w.postArchivesPublisher != nil {

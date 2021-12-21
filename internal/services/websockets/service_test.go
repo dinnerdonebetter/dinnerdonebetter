@@ -54,7 +54,7 @@ func TestProvideService(T *testing.T) {
 		consumerProvider.On(
 			"ProvideConsumer",
 			testutils.ContextMatcher,
-			cfg.DataChangesTopicName,
+			topicName,
 			mock.Anything,
 		).Return(consumer, nil)
 
@@ -87,7 +87,7 @@ func TestProvideService(T *testing.T) {
 		consumerProvider.On(
 			"ProvideConsumer",
 			testutils.ContextMatcher,
-			cfg.DataChangesTopicName,
+			topicName,
 			mock.Anything,
 		).Return(&mockconsumers.Consumer{}, errors.New("blah"))
 

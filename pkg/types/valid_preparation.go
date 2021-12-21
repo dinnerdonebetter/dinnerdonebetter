@@ -75,6 +75,7 @@ type (
 		GetValidPreparation(ctx context.Context, validPreparationID string) (*ValidPreparation, error)
 		GetTotalValidPreparationCount(ctx context.Context) (uint64, error)
 		GetValidPreparations(ctx context.Context, filter *QueryFilter) (*ValidPreparationList, error)
+		SearchForValidPreparations(ctx context.Context, query string) ([]*ValidPreparation, error)
 		GetValidPreparationsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*ValidPreparation, error)
 		CreateValidPreparation(ctx context.Context, input *ValidPreparationDatabaseCreationInput) (*ValidPreparation, error)
 		UpdateValidPreparation(ctx context.Context, updated *ValidPreparation) error

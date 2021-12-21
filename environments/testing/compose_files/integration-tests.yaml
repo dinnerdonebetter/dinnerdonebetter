@@ -21,20 +21,6 @@ services:
             driver: none
         ports:
             - '5432:5432'
-    elasticsearch:
-        image: elasticsearch:7.14.1
-        ports:
-            - '9200:9200'
-            - '9300:9300'
-        environment:
-            discovery.type: 'single-node'
-        healthcheck:
-            test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
-            interval: 30s
-            timeout: 30s
-            retries: 3
-        logging:
-            driver: none
     workers:
         container_name: integration_tests_workers
         build:
@@ -50,8 +36,6 @@ services:
     prixfixe_api_server:
         hostname: api_server
         container_name: integration_tests_server
-#        logging:
-#            driver: none
         depends_on:
             - workers
         environment:

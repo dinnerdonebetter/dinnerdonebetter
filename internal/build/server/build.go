@@ -20,7 +20,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/routing/chi"
-	"github.com/prixfixeco/api_server/internal/search/elasticsearch"
 	"github.com/prixfixeco/api_server/internal/server"
 	adminservice "github.com/prixfixeco/api_server/internal/services/admin"
 	apiclientsservice "github.com/prixfixeco/api_server/internal/services/apiclients"
@@ -58,7 +57,6 @@ func Build(
 	metricsHandler metrics.Handler,
 ) (*server.HTTPServer, error) {
 	wire.Build(
-		elasticsearch.Providers,
 		config.Providers,
 		database.Providers,
 		dbconfig.Providers,

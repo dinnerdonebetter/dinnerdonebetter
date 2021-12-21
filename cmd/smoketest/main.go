@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"time"
 
 	"github.com/brianvoe/gofakeit/v5"
 	"go.opentelemetry.io/otel/trace"
@@ -55,19 +56,19 @@ func main() {
 	}
 
 	// Create webhook.
-	//exampleWebhook := fakes.BuildFakeWebhook()
-	//exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
-	//createdWebhookID, err := c.CreateWebhook(ctx, exampleWebhookInput)
-	//if err != nil {
-	//	panic(err)
-	//}
-	//
-	//time.Sleep(3 * time.Second)
-	//
-	//webhook, err := c.GetWebhook(ctx, createdWebhookID)
-	//if err != nil {
-	//	panic(err)
-	//}
-	//
-	//fmt.Println(webhook)
+	exampleWebhook := fakes.BuildFakeWebhook()
+	exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
+	createdWebhookID, err := c.CreateWebhook(ctx, exampleWebhookInput)
+	if err != nil {
+		panic(err)
+	}
+
+	time.Sleep(3 * time.Second)
+
+	webhook, err := c.GetWebhook(ctx, createdWebhookID)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(webhook)
 }

@@ -12,7 +12,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/routing"
-	"github.com/prixfixeco/api_server/internal/search"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -26,9 +25,6 @@ const (
 var _ types.HouseholdDataService = (*service)(nil)
 
 type (
-	// SearchIndex is a type alias for dependency injection's sake.
-	SearchIndex search.IndexManager
-
 	// service handles to-do list households.
 	service struct {
 		logger                         logging.Logger

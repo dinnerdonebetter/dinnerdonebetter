@@ -190,15 +190,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	relevantIDs, err := s.search.Search(ctx, "name", query, "")
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "executing valid ingredient search query")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
-	}
-
-	// fetch valid ingredients from database.
-	validIngredients, err := s.validIngredientDataManager.GetValidIngredientsWithIDs(ctx, filter.Limit, relevantIDs)
+	validIngredients, err := s.validIngredientDataManager.SearchForValidIngredients(ctx, query)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		validIngredients = []*types.ValidIngredient{}

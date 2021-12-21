@@ -16,7 +16,6 @@ import (
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
-	"github.com/prixfixeco/api_server/internal/search/elasticsearch"
 	"github.com/prixfixeco/api_server/internal/workers"
 )
 
@@ -81,17 +80,11 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	indexManagerProvider, err := elasticsearch.NewIndexManagerProvider(ctx, logger, &cfg.Search, tracerProvider)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
 	preArchivesWorker, err := workers.ProvideArchivesWorker(
 		ctx,
 		logger,
 		dataManager,
 		postArchivesPublisher,
-		indexManagerProvider,
 		cdp,
 		tracerProvider,
 	)

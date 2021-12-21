@@ -11,7 +11,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/routing"
-	"github.com/prixfixeco/api_server/internal/search"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -23,9 +22,6 @@ const (
 var _ types.ValidIngredientDataService = (*service)(nil)
 
 type (
-	// SearchIndex is a type alias for dependency injection's sake.
-	SearchIndex search.IndexManager
-
 	// service handles valid ingredients.
 	service struct {
 		logger                     logging.Logger
@@ -37,27 +33,20 @@ type (
 		preArchivesPublisher       messagequeue.Publisher
 		encoderDecoder             encoding.ServerEncoderDecoder
 		tracer                     tracing.Tracer
-		search                     SearchIndex
 	}
 )
 
 // ProvideService builds a new ValidIngredientsService.
 func ProvideService(
-	ctx context.Context,
+	_ context.Context,
 	logger logging.Logger,
 	cfg *Config,
 	validIngredientDataManager types.ValidIngredientDataManager,
 	encoder encoding.ServerEncoderDecoder,
-	searchIndexProvider search.IndexManagerProvider,
 	routeParamManager routing.RouteParamManager,
 	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
 ) (types.ValidIngredientDataService, error) {
-	searchIndexManager, err := searchIndexProvider.ProvideIndexManager(ctx, logger, "valid_ingredients", "name", "variant", "description", "warning")
-	if err != nil {
-		return nil, fmt.Errorf("setting up valid ingredient search index: %w", err)
-	}
-
 	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up valid ingredient queue pre-writes publisher: %w", err)
@@ -82,7 +71,6 @@ func ProvideService(
 		preUpdatesPublisher:        preUpdatesPublisher,
 		preArchivesPublisher:       preArchivesPublisher,
 		encoderDecoder:             encoder,
-		search:                     searchIndexManager,
 		tracer:                     tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 	}
 

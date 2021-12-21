@@ -18,9 +18,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability"
 	server "github.com/prixfixeco/api_server/internal/server"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
-	validingredientsservice "github.com/prixfixeco/api_server/internal/services/validingredients"
-	validinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validinstruments"
-	validpreparationsservice "github.com/prixfixeco/api_server/internal/services/validpreparations"
 )
 
 func TestServerConfig_EncodeToFile(T *testing.T) {
@@ -56,15 +53,6 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 					MinimumUsernameLength: 4,
 					MinimumPasswordLength: 8,
 					EnableUserSignup:      true,
-				},
-				ValidInstruments: validinstrumentsservice.Config{
-					SearchIndexPath: "/valid_instruments_index_path",
-				},
-				ValidIngredients: validingredientsservice.Config{
-					SearchIndexPath: "/valid_ingredients_index_path",
-				},
-				ValidPreparations: validpreparationsservice.Config{
-					SearchIndexPath: "/valid_preparations_index_path",
 				},
 			},
 			Database: dbconfig.Config{

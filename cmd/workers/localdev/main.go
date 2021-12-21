@@ -20,7 +20,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
-	"github.com/prixfixeco/api_server/internal/search/elasticsearch"
 	"github.com/prixfixeco/api_server/internal/workers"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -86,14 +85,11 @@ func main() {
 		logger.Fatal(err)
 	}
 
+	dataManager.IsReady(ctx, 50)
+
 	consumerProvider := redis.ProvideRedisConsumerProvider(logger, tracerProvider, cfg.Events.RedisConfig)
 
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	indexManagerProvider, err := elasticsearch.NewIndexManagerProvider(ctx, logger, &cfg.Search, tracerProvider)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -125,7 +121,6 @@ func main() {
 		logger,
 		dataManager,
 		postWritesPublisher,
-		indexManagerProvider,
 		emailer,
 		cdp,
 		tracerProvider,
@@ -153,7 +148,6 @@ func main() {
 		logger,
 		dataManager,
 		postUpdatesPublisher,
-		indexManagerProvider,
 		emailer,
 		cdp,
 		tracerProvider,
@@ -181,7 +175,6 @@ func main() {
 		logger,
 		dataManager,
 		postArchivesPublisher,
-		indexManagerProvider,
 		cdp,
 		tracerProvider,
 	)

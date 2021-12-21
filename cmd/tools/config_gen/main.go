@@ -24,7 +24,6 @@ import (
 	tracingcfg "github.com/prixfixeco/api_server/internal/observability/tracing/config"
 	"github.com/prixfixeco/api_server/internal/observability/tracing/jaeger"
 	"github.com/prixfixeco/api_server/internal/observability/tracing/xray"
-	"github.com/prixfixeco/api_server/internal/search"
 	"github.com/prixfixeco/api_server/internal/server"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
@@ -239,9 +238,6 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				},
 			},
 		},
-		Search: search.Config{
-			Provider: search.ElasticsearchProvider,
-		},
 		Services: config.ServicesConfigurations{
 			Auth: authservice.Config{
 				PASETO: authservice.PASETOConfig{
@@ -323,10 +319,6 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 				},
 			},
 		},
-		Search: search.Config{
-			Provider: search.ElasticsearchProvider,
-			Address:  localElasticsearchLocation,
-		},
 		Services: config.ServicesConfigurations{
 			Households: householdsservice.Config{
 				PreWritesTopicName: preWritesTopicName,
@@ -354,19 +346,16 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidInstruments: validinstrumentsservice.Config{
-				SearchIndexPath:      localElasticsearchLocation,
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
 			},
 			ValidIngredients: validingredientsservice.Config{
-				SearchIndexPath:      localElasticsearchLocation,
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
 			},
 			ValidPreparations: validpreparationsservice.Config{
-				SearchIndexPath:      localElasticsearchLocation,
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
@@ -472,10 +461,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				S3Config:    nil,
 			},
 		},
-		Search: search.Config{
-			Provider: search.ElasticsearchProvider,
-			Address:  localElasticsearchLocation,
-		},
 		Services: config.ServicesConfigurations{
 			Households: householdsservice.Config{
 				PreWritesTopicName: preWritesTopicName,
@@ -510,19 +495,16 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidInstruments: validinstrumentsservice.Config{
-				SearchIndexPath:      localElasticsearchLocation,
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
 			},
 			ValidIngredients: validingredientsservice.Config{
-				SearchIndexPath:      localElasticsearchLocation,
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
 			},
 			ValidPreparations: validpreparationsservice.Config{
-				SearchIndexPath:      localElasticsearchLocation,
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,

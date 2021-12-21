@@ -16,7 +16,6 @@ import (
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/routing"
-	"github.com/prixfixeco/api_server/internal/search"
 	"github.com/prixfixeco/api_server/internal/server"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
@@ -57,7 +56,6 @@ type (
 		_             struct{}
 		Server        server.Config             `json:"server" mapstructure:"server" toml:"server,omitempty"`
 		Events        msgconfig.Config          `json:"events" mapstructure:"events" toml:"events,omitempty"`
-		Search        search.Config             `json:"search" mapstructure:"search" toml:"search,omitempty"`
 		Email         emailconfig.Config        `json:"email" mapstructure:"email" toml:"email,omitempty"`
 		CustomerData  customerdataconfig.Config `json:"customerData" mapstructure:"customer_data" toml:"customer_data,omitempty"`
 		Encoding      encoding.Config           `json:"encoding" mapstructure:"encoding" toml:"encoding,omitempty"`
@@ -108,10 +106,6 @@ var _ validation.ValidatableWithContext = (*InstanceConfig)(nil)
 
 // ValidateWithContext validates a InstanceConfig struct.
 func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context) error {
-	if err := cfg.Search.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating Search portion of config: %w", err)
-	}
-
 	if err := cfg.Uploads.ValidateWithContext(ctx); err != nil {
 		return fmt.Errorf("error validating Uploads portion of config: %w", err)
 	}

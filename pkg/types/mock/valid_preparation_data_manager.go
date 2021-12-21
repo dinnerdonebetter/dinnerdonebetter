@@ -27,6 +27,12 @@ func (m *ValidPreparationDataManager) GetValidPreparation(ctx context.Context, v
 	return args.Get(0).(*types.ValidPreparation), args.Error(1)
 }
 
+// SearchForValidPreparations is a mock function.
+func (m *ValidPreparationDataManager) SearchForValidPreparations(ctx context.Context, query string) ([]*types.ValidPreparation, error) {
+	args := m.Called(ctx, query)
+	return args.Get(0).([]*types.ValidPreparation), args.Error(1)
+}
+
 // GetTotalValidPreparationCount is a mock function.
 func (m *ValidPreparationDataManager) GetTotalValidPreparationCount(ctx context.Context) (uint64, error) {
 	args := m.Called(ctx)

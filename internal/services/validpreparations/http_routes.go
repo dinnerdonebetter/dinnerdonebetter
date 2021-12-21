@@ -190,15 +190,8 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	relevantIDs, err := s.search.Search(ctx, "name", query, "")
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "executing valid preparation search query")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
-	}
-
 	// fetch valid preparations from database.
-	validPreparations, err := s.validPreparationDataManager.GetValidPreparationsWithIDs(ctx, filter.Limit, relevantIDs)
+	validPreparations, err := s.validPreparationDataManager.SearchForValidPreparations(ctx, query)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		validPreparations = []*types.ValidPreparation{}

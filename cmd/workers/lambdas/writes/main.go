@@ -2,12 +2,15 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"go.opentelemetry.io/otel/trace"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-lambda-go/otellambda/xrayconfig"
+	"go.opentelemetry.io/contrib/propagators/aws/xray"
+	"go.opentelemetry.io/otel"
 
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
@@ -17,7 +20,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
-	"github.com/prixfixeco/api_server/internal/search/elasticsearch"
 	"github.com/prixfixeco/api_server/internal/workers"
 )
 
@@ -42,7 +44,8 @@ func buildHandler(logger logging.Logger, worker *workers.WritesWorker) func(ctx 
 	}
 }
 
-const exampleEvent = `
+// example event.
+const _ = `
 {
 	"Records": [
 		{
@@ -69,20 +72,19 @@ func main() {
 
 	logger.Info("getting tracer")
 
-	tracerProvider := trace.NewNoopTracerProvider()
-	//tracerProvider, err := xrayconfig.NewTracerProvider(ctx)
-	//if err != nil {
-	//	fmt.Printf("error creating tracer provider: %v", err)
-	//}
-	//
-	//defer func(ctx context.Context) {
-	//	if shutdownErr := tracerProvider.Shutdown(ctx); shutdownErr != nil {
-	//		fmt.Printf("error shutting down tracer provider: %v", shutdownErr)
-	//	}
-	//}(ctx)
-	//
-	//otel.SetTracerProvider(tracerProvider)
-	//otel.SetTextMapPropagator(xray.Propagator{})
+	tracerProvider, err := xrayconfig.NewTracerProvider(ctx)
+	if err != nil {
+		fmt.Printf("error creating tracer provider: %v", err)
+	}
+
+	defer func(ctx context.Context) {
+		if shutdownErr := tracerProvider.Shutdown(ctx); shutdownErr != nil {
+			fmt.Printf("error shutting down tracer provider: %v", shutdownErr)
+		}
+	}(ctx)
+
+	otel.SetTracerProvider(tracerProvider)
+	otel.SetTextMapPropagator(xray.Propagator{})
 
 	logger.Info("setting up database client")
 
@@ -119,14 +121,6 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	logger.Info("setting up search index manager")
-
-	//indexManagerProvider := &search.NoopIndexManagerProvider{}
-	indexManagerProvider, err := elasticsearch.NewIndexManagerProvider(ctx, logger, &cfg.Search, tracerProvider)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
 	logger.Info("building worker")
 
 	preWritesWorker, err := workers.ProvideWritesWorker(
@@ -134,7 +128,6 @@ func main() {
 		logger,
 		dataManager,
 		postWritesPublisher,
-		indexManagerProvider,
 		emailer,
 		cdp,
 		tracerProvider,

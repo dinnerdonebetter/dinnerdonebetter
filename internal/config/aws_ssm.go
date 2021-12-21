@@ -12,7 +12,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/ssm"
 
 	"github.com/prixfixeco/api_server/internal/database"
-	"github.com/prixfixeco/api_server/internal/search"
 )
 
 const (
@@ -29,11 +28,7 @@ const (
 	pubsubServerURLSSMKey          = "PRIXFIXE_PUBSUB_SERVER_URLS"
 	pubsubServerUsernameSSMKey     = "PRIXFIXE_PUBSUB_SERVER_USERNAME"
 	/* #nosec G101 */
-	pubsubServerPasswordSSMKey          = "PRIXFIXE_PUBSUB_SERVER_PASSWORD"
-	elasticsearchInstanceURLSSMKey      = "PRIXFIXE_ELASTICSEARCH_INSTANCE_URL"
-	elasticsearchInstanceUsernameSSMKey = "PRIXFIXE_ELASTICSEARCH_USERNAME"
-	/* #nosec G101 */
-	elasticsearchInstancePasswordSSMKey = "PRIXFIXE_ELASTICSEARCH_PASSWORD"
+	pubsubServerPasswordSSMKey = "PRIXFIXE_PUBSUB_SERVER_PASSWORD"
 	/* #nosec G101 */
 	sendgridAPITokenSSMKey = "PRIXFIXE_SENDGRID_API_TOKEN"
 	/* #nosec G101 */
@@ -80,8 +75,6 @@ func GetConfigFromParameterStore(worker bool) (*InstanceConfig, error) {
 		return nil, err
 	}
 
-	elasticsearchInstanceURL := mustGetParameter(parameterStore, elasticsearchInstanceURLSSMKey)
-
 	// fetch supplementary data from SSM
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(mustGetParameter(parameterStore, databaseConnectionURLSSMKey))
 	cfg.Email.APIToken = mustGetParameter(parameterStore, sendgridAPITokenSSMKey)
@@ -90,10 +83,6 @@ func GetConfigFromParameterStore(worker bool) (*InstanceConfig, error) {
 	cfg.Events.RedisConfig.Username = mustGetParameter(parameterStore, pubsubServerUsernameSSMKey)
 	cfg.Events.RedisConfig.Password = mustGetParameter(parameterStore, pubsubServerPasswordSSMKey)
 	cfg.Events.RedisConfig.QueueAddresses = strings.Split(mustGetParameter(parameterStore, pubsubServerURLSSMKey), ",")
-
-	cfg.Search.Address = search.IndexPath(elasticsearchInstanceURL)
-	//cfg.Search.Username = mustGetParameter(parameterStore, elasticsearchInstanceUsernameSSMKey)
-	//cfg.Search.Password = mustGetParameter(parameterStore, elasticsearchInstancePasswordSSMKey)
 
 	writesTopicName := mustGetParameter(parameterStore, writesQueueNameSSMKey)
 	updatesTopicName := mustGetParameter(parameterStore, updatesQueueNameSSMKey)
@@ -107,17 +96,14 @@ func GetConfigFromParameterStore(worker bool) (*InstanceConfig, error) {
 	cfg.Services.ValidInstruments.PreWritesTopicName = writesTopicName
 	cfg.Services.ValidInstruments.PreUpdatesTopicName = updatesTopicName
 	cfg.Services.ValidInstruments.PreArchivesTopicName = archivesTopicName
-	cfg.Services.ValidInstruments.SearchIndexPath = elasticsearchInstanceURL
 
 	cfg.Services.ValidIngredients.PreWritesTopicName = writesTopicName
 	cfg.Services.ValidIngredients.PreUpdatesTopicName = updatesTopicName
 	cfg.Services.ValidIngredients.PreArchivesTopicName = archivesTopicName
-	cfg.Services.ValidIngredients.SearchIndexPath = elasticsearchInstanceURL
 
 	cfg.Services.ValidPreparations.PreWritesTopicName = writesTopicName
 	cfg.Services.ValidPreparations.PreUpdatesTopicName = updatesTopicName
 	cfg.Services.ValidPreparations.PreArchivesTopicName = archivesTopicName
-	cfg.Services.ValidPreparations.SearchIndexPath = elasticsearchInstanceURL
 
 	cfg.Services.MealPlanOptionVotes.PreWritesTopicName = writesTopicName
 	cfg.Services.MealPlanOptionVotes.PreUpdatesTopicName = updatesTopicName
@@ -167,9 +153,6 @@ func GetConfigFromParameterStore(worker bool) (*InstanceConfig, error) {
 	cfg.Services.Webhooks.PreArchivesTopicName = archivesTopicName
 
 	cfg.Services.Websockets.DataChangesTopicName = dataChangesTopicName
-
-	configRaw, _ := json.Marshal(cfg)
-	_ = configRaw
 
 	ctx := context.Background()
 	if err := cfg.ValidateWithContext(ctx); err != nil {

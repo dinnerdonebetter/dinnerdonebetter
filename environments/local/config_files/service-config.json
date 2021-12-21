@@ -16,12 +16,6 @@
 			]
 		}
 	},
-	"search": {
-		"provider": "elasticsearch",
-		"address": "http://elasticsearch:9200",
-		"username": "",
-		"password": ""
-	},
 	"email": {
 		"provider": "",
 		"apiToken": ""
@@ -79,20 +73,17 @@
 		"validInstruments": {
 			"writesTopicName": "pre_writes",
 			"updatesTopicName": "pre_updates",
-			"archivesTopicName": "pre_archives",
-			"searchIndexPath": "http://elasticsearch:9200"
+			"archivesTopicName": "pre_archives"
 		},
 		"validIngredients": {
 			"writesTopicName": "pre_writes",
 			"updatesTopicName": "pre_updates",
-			"archivesTopicName": "pre_archives",
-			"searchIndexPath": "http://elasticsearch:9200"
+			"archivesTopicName": "pre_archives"
 		},
 		"validPreparations": {
 			"writesTopicName": "pre_writes",
 			"updatesTopicName": "pre_updates",
-			"archivesTopicName": "pre_archives",
-			"searchIndexPath": "http://elasticsearch:9200"
+			"archivesTopicName": "pre_archives"
 		},
 		"mealPlanOptionVotes": {
 			"writesTopicName": "pre_writes",
@@ -162,7 +153,7 @@
 		"auth": {
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "Cwzde8UQinTxq1SSkpIuYn/evsnyRavmL2mieQNldtk=",
+				"localModeKey": "VywSD4Ig4ZfSX6E9IFWZk7HYTV9SiYCZdB2f1KWQau0=",
 				"lifetime": 60000000000
 			},
 			"cookies": {

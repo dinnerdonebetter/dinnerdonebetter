@@ -52,7 +52,7 @@ const (
 func ProvideService(
 	ctx context.Context,
 	authCfg *authservice.Config,
-	cfg Config,
+	_ Config,
 	logger logging.Logger,
 	encoder encoding.ServerEncoderDecoder,
 	consumerProvider messagequeue.ConsumerProvider,
