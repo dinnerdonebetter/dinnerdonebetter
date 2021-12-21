@@ -154,7 +154,13 @@ func (b *Builder) BuildWebsocketURL(ctx context.Context, parts ...string) string
 	defer span.End()
 
 	u := b.buildAPIV1URL(ctx, nil, parts...)
-	u.Scheme = "ws"
+
+	switch b.url.Scheme {
+	case "http":
+		u.Scheme = "ws"
+	case "https":
+		u.Scheme = "wss"
+	}
 
 	return u.String()
 }
