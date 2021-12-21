@@ -31,12 +31,6 @@ resource "aws_elasticache_user" "dev_api" {
   passwords     = [random_password.database_password.result]
 }
 
-resource "aws_ssm_parameter" "pubsub_server_url" {
-  name  = "PRIXFIXE_PUBSUB_SERVER_URLS"
-  type  = "String"
-  value = join(",", [for x in aws_elasticache_cluster.dev_api.cache_nodes : x.address])
-}
-
 resource "aws_ssm_parameter" "pubsub_server_username" {
   name  = "PRIXFIXE_PUBSUB_SERVER_USERNAME"
   type  = "String"
@@ -47,4 +41,10 @@ resource "aws_ssm_parameter" "pubsub_server_password" {
   name  = "PRIXFIXE_PUBSUB_SERVER_PASSWORD"
   type  = "String"
   value = random_password.database_password.result
+}
+
+resource "aws_ssm_parameter" "pubsub_server_url" {
+  name  = "PRIXFIXE_PUBSUB_SERVER_URLS"
+  type  = "String"
+  value = join(",", [for x in aws_elasticache_cluster.dev_api.cache_nodes : format("redis://%s:6379", x.address)])
 }
