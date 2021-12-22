@@ -60,7 +60,7 @@ resource "aws_elasticache_user" "dev_api" {
   user_name     = local.redis_username
   access_string = "on ~* +@pubsub"
   engine        = "REDIS"
-  passwords     = [random_password.database_password.result]
+  passwords     = [random_password.redis_password.result]
 }
 
 resource "aws_ssm_parameter" "pubsub_server_username" {
