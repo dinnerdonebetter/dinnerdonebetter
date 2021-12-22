@@ -37,6 +37,8 @@ type (
 func provideRedisConsumer(ctx context.Context, logger logging.Logger, redisClient subscriptionProvider, tracerProvider tracing.TracerProvider, topic string, handlerFunc func(context.Context, []byte) error) *redisConsumer {
 	subscription := redisClient.Subscribe(ctx, topic)
 
+	logger.Debug("subscribed to topic!")
+
 	return &redisConsumer{
 		topic:        topic,
 		handlerFunc:  handlerFunc,
