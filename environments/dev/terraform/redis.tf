@@ -29,6 +29,11 @@ resource "aws_security_group" "redis" {
   }
 }
 
+resource "aws_elasticache_subnet_group" "redis" {
+  name       = "redis-subnet"
+  subnet_ids = [for x in aws_subnet.private_subnets : x.id]
+}
+
 resource "aws_elasticache_cluster" "dev_api" {
   cluster_id           = "dev-api"
   engine               = "redis"
@@ -38,6 +43,7 @@ resource "aws_elasticache_cluster" "dev_api" {
   engine_version       = "6.x"
   port                 = 6379
 
+  subnet_group_name = aws_elasticache_subnet_group.redis.name
   security_group_ids = [
     aws_security_group.redis.id,
   ]
