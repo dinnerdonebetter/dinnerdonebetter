@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"time"
 
+	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
+
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 
@@ -68,6 +70,8 @@ func main() {
 		logger.Fatal(err)
 	}
 	cfg.Database.RunMigrations = false
+
+	cfg.Events.Publishers.Provider = msgconfig.ProviderRedis
 
 	tracerProvider, err := xrayconfig.NewTracerProvider(ctx)
 	if err != nil {

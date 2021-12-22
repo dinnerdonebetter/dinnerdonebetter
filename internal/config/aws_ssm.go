@@ -81,6 +81,7 @@ func GetConfigFromParameterStore(worker bool) (*InstanceConfig, error) {
 	cfg.CustomerData.APIToken = mustGetParameter(parameterStore, segmentAPITokenSSMKey)
 
 	cfg.Events.Consumers.RedisConfig.QueueAddresses = strings.Split(mustGetParameter(parameterStore, pubsubServerURLSSMKey), ",")
+	cfg.Events.Publishers.RedisConfig.QueueAddresses = strings.Split(mustGetParameter(parameterStore, pubsubServerURLSSMKey), ",")
 
 	writesTopicName := mustGetParameter(parameterStore, writesQueueNameSSMKey)
 	updatesTopicName := mustGetParameter(parameterStore, updatesQueueNameSSMKey)

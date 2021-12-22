@@ -41,9 +41,9 @@ resource "aws_lambda_function" "data_changes_worker_lambda" {
     ]
   }
 
-  #  layers = [
-  #    local.collector_layer_arns.us-east-1,
-  #  ]
+  layers = [
+    local.collector_layer_arns.us-east-1,
+  ]
 
   filename = data.archive_file.dummy_zip.output_path
 
@@ -58,6 +58,6 @@ resource "aws_lambda_event_source_mapping" "data_changes_mapping" {
 }
 
 resource "aws_cloudwatch_log_group" "data_changes_worker_lambda_logs" {
-  name              = "/aws/lambda/data_changes"
+  name              = "/aws/lambda/data_changes_worker"
   retention_in_days = local.log_retention_period_in_days
 }

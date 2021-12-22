@@ -41,9 +41,9 @@ resource "aws_lambda_function" "chores_worker_lambda" {
     ]
   }
 
-  #  layers = [
-  #    local.collector_layer_arns.us-east-1,
-  #  ]
+  layers = [
+    local.collector_layer_arns.us-east-1,
+  ]
 
   filename = data.archive_file.dummy_zip.output_path
 
