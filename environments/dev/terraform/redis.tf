@@ -72,7 +72,7 @@ resource "aws_ssm_parameter" "pubsub_server_username" {
 resource "aws_ssm_parameter" "pubsub_server_password" {
   name  = "PRIXFIXE_PUBSUB_SERVER_PASSWORD"
   type  = "String"
-  value = random_password.database_password.result
+  value = random_password.redis_password.result
 }
 
 resource "aws_ssm_parameter" "pubsub_server_url" {
