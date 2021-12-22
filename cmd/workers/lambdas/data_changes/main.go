@@ -45,12 +45,14 @@ func buildHandler(tracer tracing.Tracer, logger logging.Logger, notificationQueu
 				logger.Error(err, "unmarshalling data change message")
 			}
 
-			logger.Info("parsed data change message JSON")
-
 			if err := notificationQueue.Publish(ctx, message); err != nil {
 				return observability.PrepareError(err, logger, span, "publishing message to notification queue")
 			}
+
+			logger.Info("published message to pubsub")
 		}
+
+		logger.Info("all messages handled")
 
 		return nil
 	}

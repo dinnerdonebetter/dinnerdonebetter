@@ -16,8 +16,6 @@ func (s *service) handleDataChange(ctx context.Context, payload []byte) error {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	s.logger.Debug("data change message received")
-
 	var msg *types.DataChangeMessage
 	if err := json.Unmarshal(payload, &msg); err != nil {
 		observability.AcknowledgeError(err, s.logger, span, "unmarshalling data change message")
@@ -68,7 +66,11 @@ func (s *service) pingConnections() {
 			for i, conn := range connections {
 				l = l.WithValue("connection_index", i)
 				if err := conn.WriteControl(websocket.PingMessage, []byte("ping"), time.Now().Add(s.pollDuration/2)); err != nil {
-					l.Error(err, "pinging websocket connection")
+					if closeErr := s.connections[userID][i].Close(); closeErr != nil {
+						l.WithError(closeErr).Debug("error occurred closing troubled websocket connection")
+					}
+
+					l.Debug("removing websocket connection")
 
 					s.connections[userID] = removeConnection(s.connections[userID], i)
 					if len(s.connections[userID]) == 0 {

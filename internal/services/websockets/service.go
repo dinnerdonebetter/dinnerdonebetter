@@ -3,6 +3,7 @@ package websockets
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/http"
 	"sync"
 	"time"
@@ -24,6 +25,7 @@ const (
 
 type (
 	websocketConnection interface {
+		io.Closer
 		SetWriteDeadline(t time.Time) error
 		WriteMessage(messageType int, data []byte) error
 		WriteControl(messageType int, data []byte, deadline time.Time) error
@@ -70,7 +72,7 @@ func ProvideService(
 		websocketConnectionUpgrader: upgrader,
 		connections:                 map[string][]websocketConnection{},
 		websocketDeadline:           5 * time.Second,
-		pollDuration:                10 * time.Second,
+		pollDuration:                30 * time.Second,
 		authConfig:                  authCfg,
 		tracer:                      tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 	}
