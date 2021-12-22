@@ -7,6 +7,28 @@ resource "aws_elasticache_parameter_group" "dev_api" {
   family = "redis6.x"
 }
 
+resource "aws_security_group" "redis" {
+  name        = "vpc_endpoints"
+  description = "AWS VPC endpoints"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port        = 6379
+    to_port          = 6379
+    protocol         = "TCP"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
+
 resource "aws_elasticache_cluster" "dev_api" {
   cluster_id           = "dev-api"
   engine               = "redis"
@@ -15,6 +37,10 @@ resource "aws_elasticache_cluster" "dev_api" {
   parameter_group_name = aws_elasticache_parameter_group.dev_api.name
   engine_version       = "6.x"
   port                 = 6379
+
+  security_group_ids = [
+    aws_security_group.redis.id,
+  ]
 }
 
 resource "random_password" "redis_password" {
