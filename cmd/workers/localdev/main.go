@@ -87,7 +87,7 @@ func main() {
 
 	dataManager.IsReady(ctx, 50)
 
-	consumerProvider := redis.ProvideRedisConsumerProvider(logger, tracerProvider, cfg.Events.RedisConfig)
+	consumerProvider := redis.ProvideRedisConsumerProvider(logger, tracerProvider, cfg.Events.Consumers.RedisConfig)
 
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
 	if err != nil {

@@ -201,7 +201,12 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 			ContentType: contentTypeJSON,
 		},
 		Events: msgconfig.Config{
-			Provider: msgconfig.ProviderSQS,
+			Consumers: msgconfig.ProviderConfig{
+				Provider: msgconfig.ProviderRedis,
+			},
+			Publishers: msgconfig.ProviderConfig{
+				Provider: msgconfig.ProviderSQS,
+			},
 		},
 		Email:        emailConfig,
 		CustomerData: customerDataPlatformConfig,
@@ -266,6 +271,7 @@ func devEnvironmentWorkerConfig(ctx context.Context, filePath string) error {
 	cfg := buildDevEnvironmentServerConfig()
 
 	cfg.Observability.Tracing.Provider = ""
+	cfg.Events.Consumers.Provider = ""
 	cfg.Database.RunMigrations = false
 
 	return saveConfig(ctx, filePath, cfg, false, false)
@@ -282,9 +288,17 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 			ContentType: contentTypeJSON,
 		},
 		Events: msgconfig.Config{
-			Provider: msgconfig.ProviderRedis,
-			RedisConfig: redis.Config{
-				QueueAddresses: []string{workerQueueAddress},
+			Consumers: msgconfig.ProviderConfig{
+				Provider: msgconfig.ProviderRedis,
+				RedisConfig: redis.Config{
+					QueueAddresses: []string{workerQueueAddress},
+				},
+			},
+			Publishers: msgconfig.ProviderConfig{
+				Provider: msgconfig.ProviderRedis,
+				RedisConfig: redis.Config{
+					QueueAddresses: []string{workerQueueAddress},
+				},
 			},
 		},
 		Email:        localEmailConfig,
@@ -424,9 +438,17 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			RunMode: testingEnv,
 		},
 		Events: msgconfig.Config{
-			Provider: msgconfig.ProviderRedis,
-			RedisConfig: redis.Config{
-				QueueAddresses: []string{workerQueueAddress},
+			Consumers: msgconfig.ProviderConfig{
+				Provider: msgconfig.ProviderRedis,
+				RedisConfig: redis.Config{
+					QueueAddresses: []string{workerQueueAddress},
+				},
+			},
+			Publishers: msgconfig.ProviderConfig{
+				Provider: msgconfig.ProviderRedis,
+				RedisConfig: redis.Config{
+					QueueAddresses: []string{workerQueueAddress},
+				},
 			},
 		},
 		Encoding: encoding.Config{

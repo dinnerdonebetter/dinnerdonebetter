@@ -5,15 +5,29 @@
 		"debug": false
 	},
 	"events": {
-		"provider": "redis",
-		"sqs": {
-			"messageQueueAddress": ""
+		"consumers": {
+			"provider": "redis",
+			"sqs": {
+				"messageQueueAddress": ""
+			},
+			"redis": {
+				"username": "",
+				"queueAddress": [
+					"worker_queue:6379"
+				]
+			}
 		},
-		"redis": {
-			"username": "",
-			"queueAddress": [
-				"worker_queue:6379"
-			]
+		"publishers": {
+			"provider": "redis",
+			"sqs": {
+				"messageQueueAddress": ""
+			},
+			"redis": {
+				"username": "",
+				"queueAddress": [
+					"worker_queue:6379"
+				]
+			}
 		}
 	},
 	"email": {
@@ -144,7 +158,7 @@
 		"auth": {
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "VywSD4Ig4ZfSX6E9IFWZk7HYTV9SiYCZdB2f1KWQau0=",
+				"localModeKey": "xCCeNg9bKEH+GIexLUXYffsuiWYYaDiV9DrCUqpKwlA=",
 				"lifetime": 60000000000
 			},
 			"cookies": {

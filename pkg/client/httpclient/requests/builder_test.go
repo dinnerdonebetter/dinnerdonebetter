@@ -265,7 +265,7 @@ func TestBuilder_BuildWebsocketURL(T *testing.T) {
 
 		require.NoError(t, err)
 
-		expected := "ws://prixfixe.verygoodsoftwarenotvirus.ru/api/v1/things/and/stuff"
+		expected := "wss://prixfixe.verygoodsoftwarenotvirus.ru/api/v1/things/and/stuff"
 		actual := c.BuildWebsocketURL(ctx, "things", "and", "stuff")
 
 		assert.Equal(t, expected, actual)

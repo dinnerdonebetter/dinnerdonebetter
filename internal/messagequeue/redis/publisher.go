@@ -41,8 +41,6 @@ func (r *redisPublisher) Publish(ctx context.Context, data interface{}) error {
 	_, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	r.logger.Debug("publishing message")
-
 	var b bytes.Buffer
 	if err := r.encoder.Encode(ctx, &b, data); err != nil {
 		return observability.PrepareError(err, r.logger, span, "encoding topic message")

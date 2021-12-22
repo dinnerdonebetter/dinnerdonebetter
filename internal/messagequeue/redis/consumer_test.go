@@ -157,7 +157,9 @@ func Test_consumerProvider_ProviderConsumer(T *testing.T) {
 		t.Parallel()
 
 		logger := logging.NewNoopLogger()
-		cfg := Config{}
+		cfg := Config{
+			QueueAddresses: []string{t.Name()},
+		}
 
 		conPro := ProvideRedisConsumerProvider(logger, trace.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, conPro)
@@ -173,7 +175,9 @@ func Test_consumerProvider_ProviderConsumer(T *testing.T) {
 		t.Parallel()
 
 		logger := logging.NewNoopLogger()
-		cfg := Config{}
+		cfg := Config{
+			QueueAddresses: []string{t.Name()},
+		}
 
 		conPro := ProvideRedisConsumerProvider(logger, trace.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, conPro)

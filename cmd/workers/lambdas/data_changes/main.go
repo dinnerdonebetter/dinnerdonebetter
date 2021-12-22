@@ -96,7 +96,7 @@ func main() {
 
 	_, _ = emailer, cdp
 
-	publisherProvider := redis.ProvideRedisPublisherProvider(logger, tracerProvider, cfg.Events.RedisConfig)
+	publisherProvider := redis.ProvideRedisPublisherProvider(logger, tracerProvider, cfg.Events.Publishers.RedisConfig)
 	publisher, err := publisherProvider.ProviderPublisher("data_changes")
 
 	lambda.Start(buildHandler(tracing.NewTracer(tracer), logger, publisher))

@@ -28,7 +28,9 @@ func TestProvideConsumerProvider(T *testing.T) {
 
 		logger := zerolog.NewZerologLogger()
 		cfg := &Config{
-			Provider: ProviderRedis,
+			Consumers: ProviderConfig{
+				Provider: ProviderRedis,
+			},
 		}
 
 		provider, err := ProvideConsumerProvider(logger, trace.NewNoopTracerProvider(), cfg)
@@ -56,7 +58,9 @@ func TestProvidePublisherProvider(T *testing.T) {
 
 		logger := zerolog.NewZerologLogger()
 		cfg := &Config{
-			Provider: ProviderRedis,
+			Publishers: ProviderConfig{
+				Provider: ProviderRedis,
+			},
 		}
 
 		provider, err := ProvidePublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)

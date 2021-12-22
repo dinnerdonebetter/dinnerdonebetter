@@ -19,6 +19,10 @@ type mockWebsocketConnection struct {
 	mock.Mock
 }
 
+func (m *mockWebsocketConnection) Close() error {
+	return m.Called().Error(0)
+}
+
 func (m *mockWebsocketConnection) SetWriteDeadline(t time.Time) error {
 	return m.Called(t).Error(0)
 }
@@ -218,6 +222,8 @@ func Test_pingConnections(T *testing.T) {
 			[]byte("ping"),
 			mock.MatchedBy(func(x time.Time) bool { return true }),
 		).Return(errors.New("blah"))
+
+		mc.On("Close").Return(nil)
 
 		s.service.connections = map[string][]websocketConnection{
 			s.exampleHousehold.ID: {mc},
