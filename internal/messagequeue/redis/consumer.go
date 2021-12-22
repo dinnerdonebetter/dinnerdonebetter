@@ -81,6 +81,10 @@ type consumerProvider struct {
 
 // ProvideRedisConsumerProvider returns a ConsumerProvider for a given address.
 func ProvideRedisConsumerProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, cfg Config) messagequeue.ConsumerProvider {
+	logger.WithValue("queue_addresses", cfg.QueueAddresses).
+		WithValue("username", cfg.Username).
+		WithValue("password", cfg.Password).Info("setting up redis consumer")
+
 	var redisClient subscriptionProvider
 	if len(cfg.QueueAddresses) > 1 {
 		redisClient = redis.NewClusterClient(&redis.ClusterOptions{
