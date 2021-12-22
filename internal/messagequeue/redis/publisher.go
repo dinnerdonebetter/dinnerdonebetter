@@ -72,7 +72,9 @@ type publisherProvider struct {
 
 // ProvideRedisPublisherProvider returns a PublisherProvider for a given address.
 func ProvideRedisPublisherProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, cfg Config) messagequeue.PublisherProvider {
-	logger.WithValue("queue_addresses", cfg.QueueAddresses).Info("setting up redis publisher")
+	logger.WithValue("queue_addresses", cfg.QueueAddresses).
+		WithValue("username", cfg.Username).
+		WithValue("password", cfg.Password).Info("setting up redis publisher")
 
 	redisClient := redis.NewClusterClient(&redis.ClusterOptions{
 		Addrs:        cfg.QueueAddresses,
@@ -84,6 +86,9 @@ func ProvideRedisPublisherProvider(logger logging.Logger, tracerProvider tracing
 			logger.Info("NewClient invoked")
 			return redis.NewClient(opt).WithTimeout(1 * time.Second)
 		},
+		//TLSConfig: &tls.Config{
+		//	MinVersion: tls.VersionTLS12,
+		//},
 	})
 
 	return &publisherProvider{

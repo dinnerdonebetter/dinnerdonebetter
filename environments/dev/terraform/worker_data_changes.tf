@@ -26,6 +26,16 @@ resource "aws_lambda_function" "data_changes_worker_lambda" {
     mode = "Active"
   }
 
+  vpc_config {
+    subnet_ids = concat(
+      [for x in aws_subnet.public_subnets : x.id],
+      [for x in aws_subnet.private_subnets : x.id],
+    )
+    security_group_ids = [
+      aws_security_group.lambda_workers.id,
+    ]
+  }
+
   #  layers = [
   #    local.collector_layer_arns.us-east-1,
   #  ]
