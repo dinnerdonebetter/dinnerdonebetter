@@ -52,7 +52,7 @@ func (r *redisPublisher) Publish(ctx context.Context, data interface{}) error {
 }
 
 // provideRedisPublisher provides a redis-backed Publisher.
-func provideRedisPublisher(logger logging.Logger, tracerProvider tracing.TracerProvider, redisClient *redis.ClusterClient, topic string) *redisPublisher {
+func provideRedisPublisher(logger logging.Logger, tracerProvider tracing.TracerProvider, redisClient messagePublisher, topic string) *redisPublisher {
 	return &redisPublisher{
 		publisher: redisClient,
 		topic:     topic,
@@ -65,31 +65,33 @@ func provideRedisPublisher(logger logging.Logger, tracerProvider tracing.TracerP
 type publisherProvider struct {
 	logger            logging.Logger
 	publisherCache    map[string]messagequeue.Publisher
-	redisClient       *redis.ClusterClient
+	redisClient       messagePublisher
 	tracerProvider    tracing.TracerProvider
 	publisherCacheHat sync.RWMutex
 }
 
 // ProvideRedisPublisherProvider returns a PublisherProvider for a given address.
 func ProvideRedisPublisherProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, cfg Config) messagequeue.PublisherProvider {
-	logger.WithValue("queue_addresses", cfg.QueueAddresses).
-		WithValue("username", cfg.Username).
-		WithValue("password", cfg.Password).Info("setting up redis publisher")
+	logger.Info("setting up redis publisher")
 
-	redisClient := redis.NewClusterClient(&redis.ClusterOptions{
-		Addrs:        cfg.QueueAddresses,
-		Username:     cfg.Username,
-		Password:     cfg.Password,
-		DialTimeout:  1 * time.Second,
-		WriteTimeout: 1 * time.Second,
-		NewClient: func(opt *redis.Options) *redis.Client {
-			logger.Info("NewClient invoked")
-			return redis.NewClient(opt).WithTimeout(1 * time.Second)
-		},
-		//TLSConfig: &tls.Config{
-		//	MinVersion: tls.VersionTLS12,
-		//},
-	})
+	var redisClient messagePublisher
+	if len(cfg.QueueAddresses) > 1 {
+		redisClient = redis.NewClusterClient(&redis.ClusterOptions{
+			Addrs:        cfg.QueueAddresses,
+			Username:     cfg.Username,
+			Password:     cfg.Password,
+			DialTimeout:  1 * time.Second,
+			WriteTimeout: 1 * time.Second,
+		})
+	} else if len(cfg.QueueAddresses) == 1 {
+		redisClient = redis.NewClient(&redis.Options{
+			Addr:         cfg.QueueAddresses[0],
+			Username:     cfg.Username,
+			Password:     cfg.Password,
+			DialTimeout:  1 * time.Second,
+			WriteTimeout: 1 * time.Second,
+		})
+	}
 
 	return &publisherProvider{
 		logger:         logging.EnsureLogger(logger),

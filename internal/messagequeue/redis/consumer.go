@@ -15,6 +15,10 @@ import (
 )
 
 type (
+	subscriptionProvider interface {
+		Subscribe(ctx context.Context, channels ...string) *redis.PubSub
+	}
+
 	channelProvider interface {
 		Channel(...redis.ChannelOption) <-chan *redis.Message
 	}
@@ -30,13 +34,12 @@ type (
 	}
 )
 
-func provideRedisConsumer(ctx context.Context, logger logging.Logger, redisClient *redis.ClusterClient, tracerProvider tracing.TracerProvider, topic string, handlerFunc func(context.Context, []byte) error) *redisConsumer {
+func provideRedisConsumer(ctx context.Context, logger logging.Logger, redisClient subscriptionProvider, tracerProvider tracing.TracerProvider, topic string, handlerFunc func(context.Context, []byte) error) *redisConsumer {
 	subscription := redisClient.Subscribe(ctx, topic)
 
 	return &redisConsumer{
 		topic:        topic,
 		handlerFunc:  handlerFunc,
-		redisClient:  redisClient,
 		subscription: subscription,
 		logger:       logging.EnsureLogger(logger),
 		tracer:       tracing.NewTracer(tracerProvider.Tracer(fmt.Sprintf("%s_consumer", topic))),
@@ -71,18 +74,27 @@ func (r *redisConsumer) Consume(stopChan chan bool, errs chan error) {
 type consumerProvider struct {
 	logger           logging.Logger
 	consumerCache    map[string]messagequeue.Consumer
-	redisClient      *redis.ClusterClient
+	redisClient      subscriptionProvider
 	tracerProvider   tracing.TracerProvider
 	consumerCacheHat sync.RWMutex
 }
 
 // ProvideRedisConsumerProvider returns a ConsumerProvider for a given address.
 func ProvideRedisConsumerProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, cfg Config) messagequeue.ConsumerProvider {
-	redisClient := redis.NewClusterClient(&redis.ClusterOptions{
-		Addrs:    cfg.QueueAddresses,
-		Username: cfg.Username,
-		Password: cfg.Password,
-	})
+	var redisClient subscriptionProvider
+	if len(cfg.QueueAddresses) > 1 {
+		redisClient = redis.NewClusterClient(&redis.ClusterOptions{
+			Addrs:    cfg.QueueAddresses,
+			Username: cfg.Username,
+			Password: cfg.Password,
+		})
+	} else if len(cfg.QueueAddresses) == 1 {
+		redisClient = redis.NewClient(&redis.Options{
+			Addr:     cfg.QueueAddresses[0],
+			Username: cfg.Username,
+			Password: cfg.Password,
+		})
+	}
 
 	return &consumerProvider{
 		logger:         logging.EnsureLogger(logger),

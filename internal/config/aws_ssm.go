@@ -80,8 +80,8 @@ func GetConfigFromParameterStore(worker bool) (*InstanceConfig, error) {
 	cfg.Email.APIToken = mustGetParameter(parameterStore, sendgridAPITokenSSMKey)
 	cfg.CustomerData.APIToken = mustGetParameter(parameterStore, segmentAPITokenSSMKey)
 
-	cfg.Events.RedisConfig.Username = mustGetParameter(parameterStore, pubsubServerUsernameSSMKey)
-	cfg.Events.RedisConfig.Password = mustGetParameter(parameterStore, pubsubServerPasswordSSMKey)
+	//cfg.Events.RedisConfig.Username = mustGetParameter(parameterStore, pubsubServerUsernameSSMKey)
+	//cfg.Events.RedisConfig.Password = mustGetParameter(parameterStore, pubsubServerPasswordSSMKey)
 	cfg.Events.RedisConfig.QueueAddresses = strings.Split(mustGetParameter(parameterStore, pubsubServerURLSSMKey), ",")
 
 	writesTopicName := mustGetParameter(parameterStore, writesQueueNameSSMKey)

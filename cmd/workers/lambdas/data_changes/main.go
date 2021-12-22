@@ -30,7 +30,6 @@ import (
 )
 
 func buildHandler(tracer tracing.Tracer, logger logging.Logger, notificationQueue messagequeue.Publisher) func(ctx context.Context, sqsEvent events.SQSEvent) error {
-	logger.Info("returning handler closure")
 	return func(ctx context.Context, sqsEvent events.SQSEvent) error {
 		ctx, span := tracer.StartSpan(ctx)
 		defer span.End()
@@ -40,7 +39,6 @@ func buildHandler(tracer tracing.Tracer, logger logging.Logger, notificationQueu
 
 		for i := 0; i < len(sqsEvent.Records); i++ {
 			message := sqsEvent.Records[i]
-			logger.WithValue("sqs_message", message.Body).Info("handling message")
 
 			var dcm *types.DataChangeMessage
 			if err := json.Unmarshal([]byte(message.Body), &dcm); err != nil {
@@ -69,8 +67,6 @@ func main() {
 	}
 	cfg.Database.RunMigrations = false
 
-	logger.Info("setting up tracer")
-
 	tracerProvider, err := xrayconfig.NewTracerProvider(ctx)
 	if err != nil {
 		fmt.Printf("error creating tracer provider: %v", err)
@@ -86,14 +82,10 @@ func main() {
 	otel.SetTracerProvider(tracerProvider)
 	otel.SetTextMapPropagator(xray.Propagator{})
 
-	logger.Info("setting up emailer")
-
 	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, client)
 	if err != nil {
 		logger.Fatal(err)
 	}
-
-	logger.Info("setting up customer data platform checker")
 
 	cdp, err := customerdataconfig.ProvideCollector(&cfg.CustomerData, logger)
 	if err != nil {
@@ -101,8 +93,6 @@ func main() {
 	}
 
 	_, _ = emailer, cdp
-
-	logger.Info("setting up publisher provider")
 
 	publisherProvider := redis.ProvideRedisPublisherProvider(logger, tracerProvider, cfg.Events.RedisConfig)
 	publisher, err := publisherProvider.ProviderPublisher("data_changes")

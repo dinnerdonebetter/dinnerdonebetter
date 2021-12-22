@@ -58,7 +58,7 @@ resource "random_password" "redis_password" {
 resource "aws_elasticache_user" "dev_api" {
   user_id       = "dev-api"
   user_name     = local.redis_username
-  access_string = "on ~* +@pubsub"
+  access_string = "on ~* +@all"
   engine        = "REDIS"
   passwords     = [random_password.redis_password.result]
 }
