@@ -9,7 +9,7 @@ resource "aws_sqs_queue" "chores_queue" {
 
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.chores_dead_letter.arn
-    maxReceiveCount     = 5
+    maxReceiveCount     = 1
   })
 }
 

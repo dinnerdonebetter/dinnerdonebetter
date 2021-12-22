@@ -6,6 +6,11 @@ resource "aws_sqs_queue" "data_changes_dead_letter" {
 resource "aws_sqs_queue" "data_changes_queue" {
   name                    = "data_changes"
   sqs_managed_sse_enabled = true
+
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.data_changes_dead_letter.arn
+    maxReceiveCount     = 1
+  })
 }
 
 resource "aws_ssm_parameter" "data_changes_queue_parameter" {
