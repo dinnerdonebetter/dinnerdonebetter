@@ -52,7 +52,7 @@ resource "aws_elasticache_cluster" "dev_api" {
 resource "random_password" "redis_password" {
   length           = 64
   special          = true
-  override_special = "#$*-_=+[]"
+  override_special = "-._~()'!*"
 }
 
 resource "aws_elasticache_user" "dev_api" {
