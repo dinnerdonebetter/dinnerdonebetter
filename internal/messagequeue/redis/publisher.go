@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/prixfixeco/api_server/internal/messagequeue"
 
@@ -71,10 +72,18 @@ type publisherProvider struct {
 
 // ProvideRedisPublisherProvider returns a PublisherProvider for a given address.
 func ProvideRedisPublisherProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, cfg Config) messagequeue.PublisherProvider {
+	logger.WithValue("queue_addresses", cfg.QueueAddresses).Info("setting up redis publisher")
+
 	redisClient := redis.NewClusterClient(&redis.ClusterOptions{
-		Addrs:    cfg.QueueAddresses,
-		Username: cfg.Username,
-		Password: cfg.Password,
+		Addrs:        cfg.QueueAddresses,
+		Username:     cfg.Username,
+		Password:     cfg.Password,
+		DialTimeout:  1 * time.Second,
+		WriteTimeout: 1 * time.Second,
+		NewClient: func(opt *redis.Options) *redis.Client {
+			logger.Info("NewClient invoked")
+			return redis.NewClient(opt).WithTimeout(1 * time.Second)
+		},
 	})
 
 	return &publisherProvider{
