@@ -8,8 +8,8 @@ resource "aws_elasticache_parameter_group" "dev_api" {
 }
 
 resource "aws_security_group" "redis" {
-  name        = "vpc_endpoints"
-  description = "AWS VPC endpoints"
+  name        = "redis"
+  description = "Redis access"
   vpc_id      = aws_vpc.main.id
 
   ingress {
