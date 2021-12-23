@@ -1,11 +1,13 @@
 resource "aws_sqs_queue" "chores_dead_letter" {
-  name                    = "chores_dead_letter"
-  sqs_managed_sse_enabled = true
+  name                        = "chores_dead_letter"
+  sqs_managed_sse_enabled     = true
+  content_based_deduplication = true
 }
 
 resource "aws_sqs_queue" "chores_queue" {
-  name                    = "chores"
-  sqs_managed_sse_enabled = true
+  name                        = "chores"
+  sqs_managed_sse_enabled     = true
+  content_based_deduplication = true
 
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.chores_dead_letter.arn

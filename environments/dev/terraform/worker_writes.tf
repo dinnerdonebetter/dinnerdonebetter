@@ -1,11 +1,13 @@
 resource "aws_sqs_queue" "writes_dead_letter" {
-  name                    = "writes_dead_letter"
-  sqs_managed_sse_enabled = true
+  name                        = "writes_dead_letter"
+  sqs_managed_sse_enabled     = true
+  content_based_deduplication = true
 }
 
 resource "aws_sqs_queue" "writes_queue" {
-  name                    = "writes"
-  sqs_managed_sse_enabled = true
+  name                        = "writes"
+  sqs_managed_sse_enabled     = true
+  content_based_deduplication = true
 
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.writes_dead_letter.arn

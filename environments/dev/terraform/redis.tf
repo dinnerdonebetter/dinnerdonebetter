@@ -49,31 +49,31 @@ resource "aws_elasticache_cluster" "dev_api" {
   ]
 }
 
-resource "random_password" "redis_password" {
-  length           = 64
-  special          = true
-  override_special = "-._~()'!*"
-}
+#resource "random_password" "redis_password" {
+#  length           = 64
+#  special          = true
+#  override_special = "-._~()'!*"
+#}
 
-resource "aws_elasticache_user" "dev_api" {
-  user_id       = "dev-api"
-  user_name     = local.redis_username
-  access_string = "on ~* +@all"
-  engine        = "REDIS"
-  passwords     = [random_password.redis_password.result]
-}
+#resource "aws_elasticache_user" "dev_api" {
+#  user_id       = "dev-api"
+#  user_name     = local.redis_username
+#  access_string = "on ~* +@all"
+#  engine        = "REDIS"
+#  passwords     = [random_password.redis_password.result]
+#}
 
-resource "aws_ssm_parameter" "pubsub_server_username" {
-  name  = "PRIXFIXE_PUBSUB_SERVER_USERNAME"
-  type  = "String"
-  value = local.redis_username
-}
-
-resource "aws_ssm_parameter" "pubsub_server_password" {
-  name  = "PRIXFIXE_PUBSUB_SERVER_PASSWORD"
-  type  = "String"
-  value = random_password.redis_password.result
-}
+#resource "aws_ssm_parameter" "pubsub_server_username" {
+#  name  = "PRIXFIXE_PUBSUB_SERVER_USERNAME"
+#  type  = "String"
+#  value = local.redis_username
+#}
+#
+#resource "aws_ssm_parameter" "pubsub_server_password" {
+#  name  = "PRIXFIXE_PUBSUB_SERVER_PASSWORD"
+#  type  = "String"
+#  value = random_password.redis_password.result
+#}
 
 resource "aws_ssm_parameter" "pubsub_server_url" {
   name  = "PRIXFIXE_PUBSUB_SERVER_URLS"
