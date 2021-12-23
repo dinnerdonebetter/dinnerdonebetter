@@ -47,7 +47,7 @@ func buildHandler(tracer tracing.Tracer, logger logging.Logger, notificationQueu
 				logger.Error(err, "unmarshalling data change message")
 			}
 
-			if err := notificationQueue.Publish(ctx, message); err != nil {
+			if err := notificationQueue.Publish(ctx, dcm); err != nil {
 				return observability.PrepareError(err, logger, span, "publishing message to notification queue")
 			}
 
