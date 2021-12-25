@@ -71,5 +71,12 @@ func main() {
 		panic(err)
 	}
 
+	if err = c.ArchiveWebhook(ctx, createdWebhookID); err != nil {
+		panic(err)
+	}
+
+	logger.Info("waiting for webhook archive notification")
+	<-notificationsChan
+
 	fmt.Println(webhook)
 }

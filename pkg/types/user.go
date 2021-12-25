@@ -90,7 +90,7 @@ type (
 		HouseholdStatus householdStatus `json:"householdStatus"`
 		TwoFactorSecret string          `json:"twoFactorSecret"`
 		TwoFactorQRCode string          `json:"qrCode"`
-		CreatedUserID   string          `json:"ID"`
+		CreatedUserID   string          `json:"createdUserID"`
 		CreatedOn       uint64          `json:"createdOn"`
 		IsAdmin         bool            `json:"isAdmin"`
 	}
