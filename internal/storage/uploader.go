@@ -49,8 +49,6 @@ type (
 		_ struct{}
 
 		FilesystemConfig  *FilesystemConfig `json:"filesystem,omitempty" mapstructure:"filesystem" toml:"filesystem,omitempty"`
-		AzureConfig       *AzureConfig      `json:"azure,omitempty" mapstructure:"azure" toml:"azure,omitempty"`
-		GCSConfig         *GCSConfig        `json:"gcs,omitempty" mapstructure:"gcs" toml:"gcs,omitempty"`
 		S3Config          *S3Config         `json:"s3,omitempty" mapstructure:"s3" toml:"s3,omitempty"`
 		BucketName        string            `json:"bucketName,omitempty" mapstructure:"bucket_name" toml:"bucket_name,omitempty"`
 		UploadFilenameKey string            `json:"uploadFilenameKey,omitempty" mapstructure:"upload_filename_key" toml:"upload_filename_key,omitempty"`
@@ -64,9 +62,7 @@ var _ validation.ValidatableWithContext = (*Config)(nil)
 func (c *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, c,
 		validation.Field(&c.BucketName, validation.Required),
-		validation.Field(&c.Provider, validation.In(AzureProvider, GCSProvider, S3Provider, FilesystemProvider, MemoryProvider)),
-		validation.Field(&c.AzureConfig, validation.When(c.Provider == AzureProvider, validation.Required).Else(validation.Nil)),
-		validation.Field(&c.GCSConfig, validation.When(c.Provider == GCSProvider, validation.Required).Else(validation.Nil)),
+		validation.Field(&c.Provider, validation.In(S3Provider, FilesystemProvider, MemoryProvider)),
 		validation.Field(&c.S3Config, validation.When(c.Provider == S3Provider, validation.Required).Else(validation.Nil)),
 		validation.Field(&c.FilesystemConfig, validation.When(c.Provider == FilesystemProvider, validation.Required).Else(validation.Nil)),
 	)
@@ -104,22 +100,6 @@ func NewUploadManager(ctx context.Context, logger logging.Logger, tracerProvider
 
 func (u *Uploader) selectBucket(ctx context.Context, cfg *Config) (err error) {
 	switch strings.TrimSpace(strings.ToLower(cfg.Provider)) {
-	case AzureProvider:
-		if cfg.AzureConfig == nil {
-			return ErrNilConfig
-		}
-
-		if u.bucket, err = provideAzureBucket(ctx, cfg.AzureConfig, u.logger); err != nil {
-			return fmt.Errorf("initializing azure bucket: %w", err)
-		}
-	case GCSProvider:
-		if cfg.GCSConfig == nil {
-			return ErrNilConfig
-		}
-
-		if u.bucket, err = buildGCSBucket(ctx, cfg.GCSConfig); err != nil {
-			return fmt.Errorf("initializing gcs bucket: %w", err)
-		}
 	case S3Provider:
 		if cfg.S3Config == nil {
 			return ErrNilConfig

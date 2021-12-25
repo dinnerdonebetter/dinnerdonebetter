@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -48,6 +50,24 @@ func Test_initiatePrometheusExporter(T *testing.T) {
 			RuntimeMetricsCollectionInterval: minimumRuntimeCollectionInterval,
 		}
 
-		cfg.initiatePrometheusExporter()
+		_, _, err := cfg.initiatePrometheusExporter()
+		assert.NoError(t, err)
+	})
+}
+
+func TestConfig_ProvideUnitCounterProvider(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		logger := logging.NewNoopLogger()
+		cfg := &Config{}
+
+		actual, err := cfg.ProvideUnitCounterProvider(logger)
+		assert.NotNil(t, actual)
+		assert.NoError(t, err)
+
+		actual("things", "stuff")
 	})
 }

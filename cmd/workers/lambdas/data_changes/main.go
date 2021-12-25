@@ -102,6 +102,9 @@ func main() {
 
 	publisherProvider := redis.ProvideRedisPublisherProvider(logger, tracerProvider, cfg.Events.Publishers.RedisConfig)
 	publisher, err := publisherProvider.ProviderPublisher("data_changes")
+	if err != nil {
+		logger.Fatal(err)
+	}
 
 	lambda.Start(buildHandler(tracing.NewTracer(tracer), logger, publisher))
 }

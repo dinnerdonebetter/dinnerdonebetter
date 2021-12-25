@@ -165,7 +165,7 @@ func (q *SQLQuerier) SearchForValidInstruments(ctx context.Context, query string
 	tracing.AttachValidInstrumentIDToSpan(span, query)
 
 	args := []interface{}{
-		fmt.Sprintf("%s%%", query),
+		wrapQueryForILIKE(query),
 	}
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid ingredients", validInstrumentSearchQuery, args)

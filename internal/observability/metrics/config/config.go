@@ -54,7 +54,7 @@ func (cfg *Config) ProvideMetricsHandler(l logging.Logger) (metrics.Handler, err
 }
 
 // ProvideUnitCounterProvider provides a counter provider.
-func (cfg *Config) ProvideUnitCounterProvider(ctx context.Context, logger logging.Logger) (metrics.UnitCounterProvider, error) {
+func (cfg *Config) ProvideUnitCounterProvider(_ context.Context, logger logging.Logger) (metrics.UnitCounterProvider, error) {
 	p := strings.TrimSpace(strings.ToLower(cfg.Provider))
 
 	logger = logger.WithValue("metrics_provider", p)

@@ -1,4 +1,4 @@
-on: [pull_request]
+on: [release]
 name: Deploy
 jobs:
   build:

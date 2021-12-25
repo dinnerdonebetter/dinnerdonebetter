@@ -57,8 +57,6 @@ func ProvideConsumerProvider(logger logging.Logger, tracerProvider tracing.Trace
 	switch cleanString(string(c.Consumers.Provider)) {
 	case ProviderRedis:
 		return redis.ProvideRedisConsumerProvider(logger, tracerProvider, c.Consumers.RedisConfig), nil
-	case ProviderSQS:
-		return sqs.ProvideSQSConsumerProvider(logger, tracerProvider), nil
 	default:
 		return nil, fmt.Errorf("invalid provider: %q", c.Consumers.Provider)
 	}

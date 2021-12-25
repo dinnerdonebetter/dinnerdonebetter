@@ -325,8 +325,6 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 				UploadFilenameKey: "avatar",
 				Provider:          "filesystem",
 				BucketName:        "avatars.prixfixe.dev",
-				AzureConfig:       nil,
-				GCSConfig:         nil,
 				S3Config:          nil,
 				FilesystemConfig: &storage.FilesystemConfig{
 					RootDirectory: "/avatars",
@@ -476,11 +474,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 		Uploads: uploads.Config{
 			Debug: false,
 			Storage: storage.Config{
-				Provider:    "memory",
-				BucketName:  "avatars",
-				AzureConfig: nil,
-				GCSConfig:   nil,
-				S3Config:    nil,
+				Provider:   "memory",
+				BucketName: "avatars",
+				S3Config:   nil,
 			},
 		},
 		Services: config.ServicesConfigurations{

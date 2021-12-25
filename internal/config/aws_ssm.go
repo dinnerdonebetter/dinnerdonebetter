@@ -26,9 +26,6 @@ const (
 	cookieHashKeySSMKey            = "PRIXFIXE_COOKIE_HASH_KEY"
 	cookiePASETOLocalModeKeySSMKey = "PRIXFIXE_PASETO_LOCAL_MODE_KEY"
 	pubsubServerURLSSMKey          = "PRIXFIXE_PUBSUB_SERVER_URLS"
-	pubsubServerUsernameSSMKey     = "PRIXFIXE_PUBSUB_SERVER_USERNAME"
-	/* #nosec G101 */
-	pubsubServerPasswordSSMKey = "PRIXFIXE_PUBSUB_SERVER_PASSWORD"
 	/* #nosec G101 */
 	sendgridAPITokenSSMKey = "PRIXFIXE_SENDGRID_API_TOKEN"
 	/* #nosec G101 */

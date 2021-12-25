@@ -167,7 +167,7 @@ func (q *SQLQuerier) SearchForValidPreparations(ctx context.Context, query strin
 	tracing.AttachValidPreparationIDToSpan(span, query)
 
 	args := []interface{}{
-		fmt.Sprintf("%s%%", query),
+		wrapQueryForILIKE(query),
 	}
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid ingredients", validPreparationSearchQuery, args)

@@ -2,10 +2,13 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
-	"go.opentelemetry.io/otel/trace"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-lambda-go/otellambda/xrayconfig"
+	"go.opentelemetry.io/contrib/propagators/aws/xray"
+	"go.opentelemetry.io/otel"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -70,20 +73,19 @@ func main() {
 
 	logger.Info("getting tracer")
 
-	tracerProvider := trace.NewNoopTracerProvider()
-	//tracerProvider, err := xrayconfig.NewTracerProvider(ctx)
-	//if err != nil {
-	//	fmt.Printf("error creating tracer provider: %v", err)
-	//}
-	//
-	//defer func(ctx context.Context) {
-	//	if shutdownErr := tracerProvider.Shutdown(ctx); shutdownErr != nil {
-	//		fmt.Printf("error shutting down tracer provider: %v", shutdownErr)
-	//	}
-	//}(ctx)
-	//
-	//otel.SetTracerProvider(tracerProvider)
-	//otel.SetTextMapPropagator(xray.Propagator{})
+	tracerProvider, err := xrayconfig.NewTracerProvider(ctx)
+	if err != nil {
+		fmt.Printf("error creating tracer provider: %v", err)
+	}
+
+	defer func(ctx context.Context) {
+		if shutdownErr := tracerProvider.Shutdown(ctx); shutdownErr != nil {
+			fmt.Printf("error shutting down tracer provider: %v", shutdownErr)
+		}
+	}(ctx)
+
+	otel.SetTracerProvider(tracerProvider)
+	otel.SetTextMapPropagator(xray.Propagator{})
 
 	logger.Info("setting up database client")
 

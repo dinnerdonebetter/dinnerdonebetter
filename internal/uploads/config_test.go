@@ -18,16 +18,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 		ctx := context.Background()
 		cfg := &Config{
 			Storage: storage.Config{
-				FilesystemConfig: &storage.FilesystemConfig{RootDirectory: "/blah"},
-				AzureConfig: &storage.AzureConfig{
-					BucketName: "blahs",
-					Retrying:   &storage.AzureRetryConfig{},
-				},
-				GCSConfig: &storage.GCSConfig{
-					ServiceHouseholdKeyFilepath: "/blah/blah",
-					BucketName:                  "blah",
-					Scopes:                      nil,
-				},
+				FilesystemConfig:  &storage.FilesystemConfig{RootDirectory: "/blah"},
 				S3Config:          &storage.S3Config{BucketName: "blahs"},
 				BucketName:        "blahs",
 				UploadFilenameKey: "blahs",

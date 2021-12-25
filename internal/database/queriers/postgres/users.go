@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/segmentio/ksuid"
@@ -358,7 +357,7 @@ func (q *SQLQuerier) SearchForUsersByUsername(ctx context.Context, usernameQuery
 	logger := q.logger.WithValue(keys.SearchQueryKey, usernameQuery)
 
 	args := []interface{}{
-		fmt.Sprintf("%s%%", usernameQuery),
+		wrapQueryForILIKE(usernameQuery),
 	}
 
 	rows, err := q.performReadQuery(ctx, q.db, "user search by username", searchForUserByUsernameQuery, args)

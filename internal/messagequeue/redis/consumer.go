@@ -27,7 +27,6 @@ type (
 		tracer       tracing.Tracer
 		encoder      encoding.ClientEncoder
 		logger       logging.Logger
-		redisClient  *redis.ClusterClient
 		handlerFunc  func(context.Context, []byte) error
 		subscription channelProvider
 		topic        string
