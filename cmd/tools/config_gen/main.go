@@ -227,7 +227,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				XRay: &xray.Config{
 					CollectorEndpoint:         "0.0.0.0:4317",
 					ServiceName:               "prixfixe_api",
-					SpanCollectionProbability: 1,
+					SpanCollectionProbability: 0.1,
 				},
 			},
 		},
