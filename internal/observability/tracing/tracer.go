@@ -2,13 +2,11 @@ package tracing
 
 import (
 	"context"
-	"fmt"
+
+	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/exporters/trace/jaeger"
-	"go.opentelemetry.io/otel/sdk/resource"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
@@ -22,29 +20,8 @@ func (h errorHandler) Handle(err error) {
 }
 
 func init() {
-	otel.SetErrorHandler(errorHandler{logger: logging.NewNoopLogger().WithName("otel_errors")})
-}
-
-// SetupJaeger creates a new trace provider instance and registers it as global trace provider.
-func (c *Config) SetupJaeger() (func(), error) {
-	// Create and install Jaeger export pipeline.
-	flush, err := jaeger.InstallNewPipeline(
-		jaeger.WithCollectorEndpoint(c.Jaeger.CollectorEndpoint),
-		jaeger.WithProcessFromEnv(),
-		jaeger.WithSDKOptions(
-			sdktrace.WithSampler(sdktrace.TraceIDRatioBased(c.SpanCollectionProbability)),
-			sdktrace.WithResource(resource.NewWithAttributes(
-				attribute.String("exporter", "jaeger"),
-				attribute.String("service.name", c.Jaeger.ServiceName),
-			)),
-		),
-	)
-
-	if err != nil {
-		return nil, fmt.Errorf("initializing Jaeger: %w", err)
-	}
-
-	return flush, nil
+	// set this to a noop error handler just so one is set
+	otel.SetErrorHandler(errorHandler{logger: zerolog.NewZerologLogger().WithName("otel_errors")})
 }
 
 // Tracer describes a tracer.
@@ -52,3 +29,6 @@ type Tracer interface {
 	StartSpan(ctx context.Context) (context.Context, Span)
 	StartCustomSpan(ctx context.Context, name string) (context.Context, Span)
 }
+
+// TracerProvider is a simple alias for trace.TracerProvider.
+type TracerProvider trace.TracerProvider

@@ -7,6 +7,8 @@ import (
 	"testing"
 	"time"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -46,6 +48,7 @@ func TestNewClient(T *testing.T) {
 
 		c, err := NewClient(
 			mustParseURL(exampleURI),
+			trace.NewNoopTracerProvider(),
 			UsingLogger(logging.NewNoopLogger()),
 		)
 
@@ -58,6 +61,7 @@ func TestNewClient(T *testing.T) {
 
 		c, err := NewClient(
 			nil,
+			trace.NewNoopTracerProvider(),
 			UsingLogger(logging.NewNoopLogger()),
 		)
 
@@ -84,7 +88,10 @@ func TestClient_BuildURL(T *testing.T) {
 	T.Run("various urls", func(t *testing.T) {
 		t.Parallel()
 
-		c, _ := NewClient(mustParseURL(exampleURI))
+		c, _ := NewClient(
+			mustParseURL(exampleURI),
+			trace.NewNoopTracerProvider(),
+		)
 		ctx := context.Background()
 
 		testCases := []struct {
@@ -142,7 +149,10 @@ func TestClient_CloseRequestBody(T *testing.T) {
 			StatusCode: http.StatusOK,
 		}
 
-		c, _ := NewClient(mustParseURL(exampleURI))
+		c, _ := NewClient(
+			mustParseURL(exampleURI),
+			trace.NewNoopTracerProvider(),
+		)
 		assert.NotNil(t, c)
 
 		c.closeResponseBody(ctx, res)
@@ -157,7 +167,10 @@ func TestBuildVersionlessURL(T *testing.T) {
 	T.Run("various urls", func(t *testing.T) {
 		t.Parallel()
 
-		c, _ := NewClient(mustParseURL(exampleURI))
+		c, _ := NewClient(
+			mustParseURL(exampleURI),
+			trace.NewNoopTracerProvider(),
+		)
 
 		testCases := []struct {
 			inputQuery  valuer
@@ -205,7 +218,10 @@ func TestClient_BuildWebsocketURL(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		c, _ := NewClient(mustParseURL(exampleURI))
+		c, _ := NewClient(
+			mustParseURL(exampleURI),
+			trace.NewNoopTracerProvider(),
+		)
 		ctx := context.Background()
 
 		expected := "ws://prixfixe.verygoodsoftwarenotvirus.ru/api/v1/things/and/stuff"

@@ -6,6 +6,10 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -16,7 +20,7 @@ import (
 )
 
 func buildRouterForTest() routing.Router {
-	return NewRouter(logging.NewNoopLogger(), &routing.Config{})
+	return NewRouter(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), &routing.Config{})
 }
 
 func TestNewRouter(T *testing.T) {
@@ -25,7 +29,7 @@ func TestNewRouter(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		assert.NotNil(t, NewRouter(logging.NewNoopLogger(), &routing.Config{}))
+		assert.NotNil(t, NewRouter(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), &routing.Config{}))
 	})
 }
 
@@ -35,7 +39,7 @@ func Test_buildChiMux(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		assert.NotNil(t, buildChiMux(logging.NewNoopLogger(), &routing.Config{}))
+		assert.NotNil(t, buildChiMux(logging.NewNoopLogger(), tracing.NewTracer(trace.NewNoopTracerProvider().Tracer(t.Name())), &routing.Config{}))
 	})
 }
 
@@ -271,7 +275,7 @@ func Test_router_clone(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		r := buildRouter(nil, nil, &routing.Config{})
+		r := buildRouter(nil, nil, trace.NewNoopTracerProvider(), &routing.Config{})
 
 		assert.NotNil(t, r.clone())
 	})
@@ -283,7 +287,7 @@ func Test_router_BuildRouteParamIDFetcher(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		r := buildRouter(nil, nil, &routing.Config{})
+		r := buildRouter(nil, nil, trace.NewNoopTracerProvider(), &routing.Config{})
 		l := logging.NewNoopLogger()
 		ctx := context.Background()
 		exampleKey := "blah"
@@ -311,7 +315,7 @@ func Test_router_BuildRouteParamIDFetcher(T *testing.T) {
 	T.Run("without appropriate value attached to context", func(t *testing.T) {
 		t.Parallel()
 
-		r := buildRouter(nil, nil, &routing.Config{})
+		r := buildRouter(nil, nil, trace.NewNoopTracerProvider(), &routing.Config{})
 		l := logging.NewNoopLogger()
 		ctx := context.Background()
 		exampleKey := "blah"
@@ -334,7 +338,7 @@ func Test_router_BuildRouteParamStringIDFetcher(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		r := buildRouter(nil, nil, &routing.Config{})
+		r := buildRouter(nil, nil, trace.NewNoopTracerProvider(), &routing.Config{})
 		ctx := context.Background()
 		exampleKey := "blah"
 

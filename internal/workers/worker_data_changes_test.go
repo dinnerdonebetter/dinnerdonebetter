@@ -4,11 +4,14 @@ import (
 	"context"
 	"testing"
 
+	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
+
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/stretchr/testify/assert"
 
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/email"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
 
 func TestProvideDataChangesWorker(T *testing.T) {
@@ -18,9 +21,10 @@ func TestProvideDataChangesWorker(T *testing.T) {
 		t.Parallel()
 
 		actual := ProvideDataChangesWorker(
-			logging.NewZerologLogger(),
+			zerolog.NewZerologLogger(),
 			&email.MockEmailer{},
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, actual)
 	})
@@ -33,9 +37,10 @@ func TestDataChangesWorker_HandleMessage(T *testing.T) {
 		t.Parallel()
 
 		actual := ProvideDataChangesWorker(
-			logging.NewZerologLogger(),
+			zerolog.NewZerologLogger(),
 			&email.MockEmailer{},
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, actual)
 
@@ -47,9 +52,10 @@ func TestDataChangesWorker_HandleMessage(T *testing.T) {
 		t.Parallel()
 
 		actual := ProvideDataChangesWorker(
-			logging.NewZerologLogger(),
+			zerolog.NewZerologLogger(),
 			&email.MockEmailer{},
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, actual)
 

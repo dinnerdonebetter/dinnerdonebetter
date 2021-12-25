@@ -11,17 +11,11 @@ import (
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 )
 
-const (
-	// PostgresProvider is the string used to refer to postgres.
-	PostgresProvider = "postgres"
-)
-
 type (
 	// Config represents our database configuration.
 	Config struct {
 		_ struct{}
 
-		Provider          string                     `json:"provider" mapstructure:"provider" toml:"provider,omitempty"`
 		ConnectionDetails database.ConnectionDetails `json:"connectionDetails" mapstructure:"connection_details" toml:"connection_details,omitempty"`
 		Debug             bool                       `json:"debug" mapstructure:"debug" toml:"debug,omitempty"`
 		RunMigrations     bool                       `json:"runMigrations" mapstructure:"run_migrations" toml:"run_migrations,omitempty"`
@@ -37,7 +31,6 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 		ctx,
 		cfg,
 		validation.Field(&cfg.ConnectionDetails, validation.Required),
-		validation.Field(&cfg.Provider, validation.In(PostgresProvider)),
 	)
 }
 

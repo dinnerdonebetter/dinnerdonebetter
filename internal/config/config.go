@@ -2,24 +2,20 @@ package config
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
-	"strings"
+
+	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
-	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
-	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/routing"
-	"github.com/prixfixeco/api_server/internal/search"
 	"github.com/prixfixeco/api_server/internal/server"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
@@ -51,11 +47,6 @@ const (
 	ProductionRunMode runMode = "production"
 )
 
-var (
-	errNilConfig               = errors.New("nil config provided")
-	errInvalidDatabaseProvider = errors.New("invalid database provider")
-)
-
 type (
 	// runMode describes what method of operation the server is under.
 	runMode string
@@ -65,7 +56,6 @@ type (
 		_             struct{}
 		Server        server.Config             `json:"server" mapstructure:"server" toml:"server,omitempty"`
 		Events        msgconfig.Config          `json:"events" mapstructure:"events" toml:"events,omitempty"`
-		Search        search.Config             `json:"search" mapstructure:"search" toml:"search,omitempty"`
 		Email         emailconfig.Config        `json:"email" mapstructure:"email" toml:"email,omitempty"`
 		CustomerData  customerdataconfig.Config `json:"customerData" mapstructure:"customer_data" toml:"customer_data,omitempty"`
 		Encoding      encoding.Config           `json:"encoding" mapstructure:"encoding" toml:"encoding,omitempty"`
@@ -73,6 +63,7 @@ type (
 		Observability observability.Config      `json:"observability" mapstructure:"observability" toml:"observability,omitempty"`
 		Routing       routing.Config            `json:"routing" mapstructure:"routing" toml:"routing,omitempty"`
 		Database      dbconfig.Config           `json:"database" mapstructure:"database" toml:"database,omitempty"`
+		Logging       logcfg.Config             `json:"logging,omitempty" mapstructure:"logging" toml:"logging,omitempty"`
 		Meta          MetaSettings              `json:"meta" mapstructure:"meta" toml:"meta,omitempty"`
 		Services      ServicesConfigurations    `json:"services" mapstructure:"services" toml:"services,omitempty"`
 	}
@@ -115,10 +106,6 @@ var _ validation.ValidatableWithContext = (*InstanceConfig)(nil)
 
 // ValidateWithContext validates a InstanceConfig struct.
 func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context) error {
-	if err := cfg.Search.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating Search portion of config: %w", err)
-	}
-
 	if err := cfg.Uploads.ValidateWithContext(ctx); err != nil {
 		return fmt.Errorf("error validating Uploads portion of config: %w", err)
 	}
@@ -212,19 +199,4 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context) error {
 	}
 
 	return nil
-}
-
-// ProvideDatabaseClient provides a database implementation dependent on the configuration.
-// NOTE: you may be tempted to move this to the database/config package. This is a fool's errand.
-func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, cfg *InstanceConfig) (database.DataManager, error) {
-	if cfg == nil {
-		return nil, errNilConfig
-	}
-
-	switch strings.ToLower(strings.TrimSpace(cfg.Database.Provider)) {
-	case dbconfig.PostgresProvider:
-		return postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database)
-	default:
-		return nil, fmt.Errorf("%w: %q", errInvalidDatabaseProvider, cfg.Database.Provider)
-	}
 }

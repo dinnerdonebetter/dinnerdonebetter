@@ -65,7 +65,6 @@ func (c *Client) CreateWebhook(ctx context.Context, input *types.WebhookCreation
 	}
 
 	logger := c.logger.WithValue(keys.NameKey, input.Name)
-	logger.Debug("creating webhook")
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return "", observability.PrepareError(err, logger, span, "validating input")
@@ -80,8 +79,6 @@ func (c *Client) CreateWebhook(ctx context.Context, input *types.WebhookCreation
 	if err = c.fetchAndUnmarshal(ctx, req, &pwr); err != nil {
 		return "", observability.PrepareError(err, logger, span, "creating webhook")
 	}
-
-	logger.Debug("webhook created")
 
 	return pwr.ID, nil
 }

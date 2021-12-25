@@ -1,0 +1,176 @@
+{
+	"server": {
+		"startupDeadline": 60000000000,
+		"httpPort": 8000,
+		"debug": false
+	},
+	"events": {
+		"consumers": {
+			"provider": "redis",
+			"sqs": {
+				"messageQueueAddress": ""
+			},
+			"redis": {
+				"username": "",
+				"queueAddress": [
+					"worker_queue:6379"
+				]
+			}
+		},
+		"publishers": {
+			"provider": "redis",
+			"sqs": {
+				"messageQueueAddress": ""
+			},
+			"redis": {
+				"username": "",
+				"queueAddress": [
+					"worker_queue:6379"
+				]
+			}
+		}
+	},
+	"email": {
+		"provider": "",
+		"apiToken": ""
+	},
+	"customerData": {
+		"provider": "",
+		"apiToken": ""
+	},
+	"encoding": {
+		"contentType": "application/json"
+	},
+	"uploads": {
+		"storageConfig": {
+			"bucketName": "avatars",
+			"provider": "memory"
+		},
+		"debug": false
+	},
+	"observability": {
+		"metrics": {},
+		"tracing": {
+			"jaeger": {
+				"collector_endpoint": "http://tracing-server:14268/api/traces",
+				"service_name": "prixfixe_service",
+				"spanCollectionProbability": 1
+			},
+			"provider": "jaeger"
+		}
+	},
+	"routing": {},
+	"database": {
+		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable",
+		"debug": false,
+		"runMigrations": true,
+		"maxPingAttempts": 50
+	},
+	"logging": {
+		"level": 0,
+		"provider": "zerolog"
+	},
+	"meta": {
+		"runMode": "testing",
+		"debug": false
+	},
+	"services": {
+		"validInstruments": {
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
+		},
+		"validIngredients": {
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
+		},
+		"validPreparations": {
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
+		},
+		"mealPlanOptionVotes": {
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
+		},
+		"validIngredientPreparations": {
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
+		},
+		"meals": {
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
+		},
+		"recipes": {
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
+		},
+		"recipeSteps": {
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
+		},
+		"recipeStepInstruments": {
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
+		},
+		"recipeStepIngredients": {
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
+		},
+		"mealPlans": {
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
+		},
+		"mealPlanOptions": {
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
+		},
+		"recipeStepProducts": {
+			"writesTopicName": "pre_writes",
+			"updatesTopicName": "pre_updates",
+			"archivesTopicName": "pre_archives"
+		},
+		"households": {
+			"writesTopicName": "pre_writes"
+		},
+		"householdInvitations": {
+			"writesTopicName": "pre_writes",
+			"debug": false
+		},
+		"websockets": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"webhooks": {
+			"writesTopicName": "pre_writes",
+			"archivesTopicName": "pre_archives",
+			"debug": false
+		},
+		"auth": {
+			"paseto": {
+				"issuer": "prixfixe_service",
+				"localModeKey": "RMfORyQsjJtY/fxUlMvvG0Tr5BEj6leIXugbbuKdL24=",
+				"lifetime": 60000000000
+			},
+			"cookies": {
+				"name": "prixfixecookie",
+				"domain": ".prixfixe.local",
+				"hashKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+				"blockKey": "DIFFERENT32CHARSECRETTHATIMADEUP",
+				"lifetime": 86400000000000
+			},
+			"enableUserSignup": true,
+			"minimumUsernameLength": 4,
+			"minimumPasswordLength": 8
+		}
+	}
+}

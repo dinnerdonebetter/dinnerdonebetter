@@ -12,8 +12,10 @@ func (w *WritesWorker) createWebhook(ctx context.Context, msg *types.PreWriteMes
 	defer span.End()
 
 	logger := w.logger.WithValue("data_type", msg.DataType)
+	logger.Debug("createWebhook called")
 
 	webhook, err := w.dataManager.CreateWebhook(ctx, msg.Webhook)
+	logger.Debug("database call executed")
 	if err != nil {
 		return observability.PrepareError(err, logger, span, "creating webhook")
 	}

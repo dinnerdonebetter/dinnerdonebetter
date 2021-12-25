@@ -151,6 +151,38 @@ func (q *SQLQuerier) GetValidPreparation(ctx context.Context, validPreparationID
 	return validPreparation, nil
 }
 
+const validPreparationSearchQuery = "SELECT valid_preparations.id, valid_preparations.name, valid_preparations.description, valid_preparations.icon_path, valid_preparations.created_on, valid_preparations.last_updated_on, valid_preparations.archived_on FROM valid_preparations WHERE valid_preparations.archived_on IS NULL AND valid_preparations.name ILIKE $1 LIMIT 50"
+
+// SearchForValidPreparations fetches a valid preparation from the database.
+func (q *SQLQuerier) SearchForValidPreparations(ctx context.Context, query string) ([]*types.ValidPreparation, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if query == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.SearchQueryKey, query)
+	tracing.AttachValidPreparationIDToSpan(span, query)
+
+	args := []interface{}{
+		wrapQueryForILIKE(query),
+	}
+
+	rows, err := q.performReadQuery(ctx, q.db, "valid ingredients", validPreparationSearchQuery, args)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "executing valid ingredients list retrieval query")
+	}
+
+	x, _, _, err := q.scanValidPreparations(ctx, rows, false)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "scanning valid ingredients")
+	}
+
+	return x, nil
+}
+
 const getTotalValidPreparationsCountQuery = "SELECT COUNT(valid_preparations.id) FROM valid_preparations WHERE valid_preparations.archived_on IS NULL"
 
 // GetTotalValidPreparationCount fetches the count of valid preparations from the database that meet a particular filter.

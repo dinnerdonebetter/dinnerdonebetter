@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
-	"fmt"
 	"strings"
 	"testing"
 
@@ -491,7 +490,7 @@ func TestQuerier_SearchForUsersByUsername(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			fmt.Sprintf("%s%%", exampleUsername),
+			wrapQueryForILIKE(exampleUsername),
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(searchForUserByUsernameQuery)).
@@ -524,7 +523,7 @@ func TestQuerier_SearchForUsersByUsername(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			fmt.Sprintf("%s%%", exampleUsername),
+			wrapQueryForILIKE(exampleUsername),
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(searchForUserByUsernameQuery)).
@@ -546,7 +545,7 @@ func TestQuerier_SearchForUsersByUsername(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			fmt.Sprintf("%s%%", exampleUsername),
+			wrapQueryForILIKE(exampleUsername),
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(searchForUserByUsernameQuery)).
@@ -567,7 +566,7 @@ func TestQuerier_SearchForUsersByUsername(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			fmt.Sprintf("%s%%", exampleUsername),
+			wrapQueryForILIKE(exampleUsername),
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(searchForUserByUsernameQuery)).

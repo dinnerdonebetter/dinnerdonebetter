@@ -12,12 +12,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
-	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
+	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
-	mocksearch "github.com/prixfixeco/api_server/internal/search/mock"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
@@ -48,7 +48,7 @@ func TestValidIngredientsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeValidIngredientDatabaseCreationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -77,7 +77,7 @@ func TestValidIngredientsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
@@ -93,7 +93,7 @@ func TestValidIngredientsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := &types.ValidIngredientCreationRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -112,7 +112,7 @@ func TestValidIngredientsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeValidIngredientDatabaseCreationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -133,7 +133,7 @@ func TestValidIngredientsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeValidIngredientDatabaseCreationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -394,10 +394,6 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 	exampleQuery := "whatever"
 	exampleLimit := uint8(123)
 	exampleValidIngredientList := fakes.BuildFakeValidIngredientList()
-	exampleValidIngredientIDs := []string{}
-	for _, x := range exampleValidIngredientList.ValidIngredients {
-		exampleValidIngredientIDs = append(exampleValidIngredientIDs, x.ID)
-	}
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -409,22 +405,11 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		indexManager := &mocksearch.IndexManager{}
-		indexManager.On(
-			"Search",
-			testutils.ContextMatcher,
-			"name",
-			exampleQuery,
-			"",
-		).Return(exampleValidIngredientIDs, nil)
-		helper.service.search = indexManager
-
 		validIngredientDataManager := &mocktypes.ValidIngredientDataManager{}
 		validIngredientDataManager.On(
-			"GetValidIngredientsWithIDs",
+			"SearchForValidIngredients",
 			testutils.ContextMatcher,
-			exampleLimit,
-			exampleValidIngredientIDs,
+			exampleQuery,
 		).Return(exampleValidIngredientList.ValidIngredients, nil)
 		helper.service.validIngredientDataManager = validIngredientDataManager
 
@@ -441,13 +426,14 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, indexManager, validIngredientDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, validIngredientDataManager, encoderDecoder)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
@@ -459,45 +445,11 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 		)
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
-
 		helper.service.SearchHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, encoderDecoder)
-	})
-
-	T.Run("with error conducting search", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
-
-		indexManager := &mocksearch.IndexManager{}
-		indexManager.On(
-			"Search",
-			testutils.ContextMatcher,
-			"name",
-			exampleQuery,
-			"",
-		).Return([]string{}, errors.New("blah"))
-		helper.service.search = indexManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
-		helper.service.SearchHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, indexManager, encoderDecoder)
 	})
 
 	T.Run("with no rows returned", func(t *testing.T) {
@@ -510,22 +462,11 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		indexManager := &mocksearch.IndexManager{}
-		indexManager.On(
-			"Search",
-			testutils.ContextMatcher,
-			"name",
-			exampleQuery,
-			"",
-		).Return(exampleValidIngredientIDs, nil)
-		helper.service.search = indexManager
-
 		validIngredientDataManager := &mocktypes.ValidIngredientDataManager{}
 		validIngredientDataManager.On(
-			"GetValidIngredientsWithIDs",
+			"SearchForValidIngredients",
 			testutils.ContextMatcher,
-			exampleLimit,
-			exampleValidIngredientIDs,
+			exampleQuery,
 		).Return([]*types.ValidIngredient{}, sql.ErrNoRows)
 		helper.service.validIngredientDataManager = validIngredientDataManager
 
@@ -542,7 +483,7 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, indexManager, validIngredientDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, validIngredientDataManager, encoderDecoder)
 	})
 
 	T.Run("with error retrieving from database", func(t *testing.T) {
@@ -554,23 +495,12 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		indexManager := &mocksearch.IndexManager{}
-		indexManager.On(
-			"Search",
-			testutils.ContextMatcher,
-			"name",
-			exampleQuery,
-			"",
-		).Return(exampleValidIngredientIDs, nil)
-		helper.service.search = indexManager
-
 		validIngredientDataManager := &mocktypes.ValidIngredientDataManager{}
 		validIngredientDataManager.On(
-			"GetValidIngredientsWithIDs",
+			"SearchForValidIngredients",
 			testutils.ContextMatcher,
-			exampleLimit,
-			exampleValidIngredientIDs,
-		).Return([]*types.ValidIngredient{}, errors.New("blah"))
+			exampleQuery,
+		).Return([]*types.ValidIngredient(nil), errors.New("blah"))
 		helper.service.validIngredientDataManager = validIngredientDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -585,7 +515,7 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, indexManager, validIngredientDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, validIngredientDataManager, encoderDecoder)
 	})
 }
 
@@ -596,7 +526,7 @@ func TestValidIngredientsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeValidIngredientUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -633,7 +563,7 @@ func TestValidIngredientsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := &types.ValidIngredientUpdateRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -663,7 +593,7 @@ func TestValidIngredientsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
@@ -679,7 +609,7 @@ func TestValidIngredientsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeValidIngredientUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -708,7 +638,7 @@ func TestValidIngredientsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeValidIngredientUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -737,7 +667,7 @@ func TestValidIngredientsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeValidIngredientUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)

@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/prixfixeco/api_server/internal/messagequeue"
+
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/routing"
-	"github.com/prixfixeco/api_server/internal/search"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	mealplanoptionsservice "github.com/prixfixeco/api_server/internal/services/mealplanoptions"
 	mealplansservice "github.com/prixfixeco/api_server/internal/services/mealplans"
@@ -25,9 +25,6 @@ const (
 var _ types.MealPlanOptionVoteDataService = (*service)(nil)
 
 type (
-	// SearchIndex is a type alias for dependency injection's sake.
-	SearchIndex search.IndexManager
-
 	// service handles meal plan option votes.
 	service struct {
 		logger                        logging.Logger
@@ -36,9 +33,9 @@ type (
 		mealPlanOptionIDFetcher       func(*http.Request) string
 		mealPlanOptionVoteIDFetcher   func(*http.Request) string
 		sessionContextDataFetcher     func(*http.Request) (*types.SessionContextData, error)
-		preWritesPublisher            publishers.Publisher
-		preUpdatesPublisher           publishers.Publisher
-		preArchivesPublisher          publishers.Publisher
+		preWritesPublisher            messagequeue.Publisher
+		preUpdatesPublisher           messagequeue.Publisher
+		preArchivesPublisher          messagequeue.Publisher
 		encoderDecoder                encoding.ServerEncoderDecoder
 		tracer                        tracing.Tracer
 		customerDataCollector         customerdata.Collector
@@ -53,8 +50,9 @@ func ProvideService(
 	mealPlanOptionVoteDataManager types.MealPlanOptionVoteDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
-	publisherProvider publishers.PublisherProvider,
+	publisherProvider messagequeue.PublisherProvider,
 	customerDataCollector customerdata.Collector,
+	tracerProvider tracing.TracerProvider,
 ) (types.MealPlanOptionVoteDataService, error) {
 	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
 	if err != nil {
@@ -82,7 +80,7 @@ func ProvideService(
 		preUpdatesPublisher:           preUpdatesPublisher,
 		preArchivesPublisher:          preArchivesPublisher,
 		encoderDecoder:                encoder,
-		tracer:                        tracing.NewTracer(serviceName),
+		tracer:                        tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 		customerDataCollector:         customerDataCollector,
 	}
 

@@ -9,8 +9,8 @@ import (
 )
 
 // NewInstrumentedSQLTracer wraps a Tracer for instrumentedsql.
-func NewInstrumentedSQLTracer(name string) instrumentedsql.Tracer {
-	return &instrumentedSQLTracerWrapper{tracer: NewTracer(name)}
+func NewInstrumentedSQLTracer(tracerProvider TracerProvider, name string) instrumentedsql.Tracer {
+	return &instrumentedSQLTracerWrapper{tracer: NewTracer(tracerProvider.Tracer(name))}
 }
 
 var _ instrumentedsql.Tracer = (*instrumentedSQLTracerWrapper)(nil)
@@ -24,8 +24,9 @@ func (t *instrumentedSQLTracerWrapper) GetSpan(ctx context.Context) instrumented
 	ctx, span := t.tracer.StartSpan(ctx)
 
 	return &instrumentedSQLSpanWrapper{
-		ctx:  ctx,
-		span: span,
+		ctx:    ctx,
+		tracer: t.tracer,
+		span:   span,
 	}
 }
 

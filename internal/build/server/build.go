@@ -13,13 +13,13 @@ import (
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
+	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
-	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/routing/chi"
-	"github.com/prixfixeco/api_server/internal/search/elasticsearch"
 	"github.com/prixfixeco/api_server/internal/server"
 	adminservice "github.com/prixfixeco/api_server/internal/services/admin"
 	apiclientsservice "github.com/prixfixeco/api_server/internal/services/apiclients"
@@ -52,9 +52,11 @@ func Build(
 	ctx context.Context,
 	logger logging.Logger,
 	cfg *config.InstanceConfig,
+	tracerProvider tracing.TracerProvider,
+	unitCounterProvider metrics.UnitCounterProvider,
+	metricsHandler metrics.Handler,
 ) (*server.HTTPServer, error) {
 	wire.Build(
-		elasticsearch.Providers,
 		config.Providers,
 		database.Providers,
 		dbconfig.Providers,
@@ -62,10 +64,9 @@ func Build(
 		encoding.Providers,
 		msgconfig.Providers,
 		server.Providers,
-		metrics.Providers,
+		postgres.Providers,
 		images.Providers,
 		uploads.Providers,
-		observability.Providers,
 		storage.Providers,
 		chi.Providers,
 		authentication.Providers,

@@ -12,12 +12,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
-	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
+	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
-	mocksearch "github.com/prixfixeco/api_server/internal/search/mock"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
@@ -48,7 +48,7 @@ func TestValidInstrumentsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeValidInstrumentDatabaseCreationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -77,7 +77,7 @@ func TestValidInstrumentsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
@@ -93,7 +93,7 @@ func TestValidInstrumentsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := &types.ValidInstrumentCreationRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -112,7 +112,7 @@ func TestValidInstrumentsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeValidInstrumentDatabaseCreationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -133,7 +133,7 @@ func TestValidInstrumentsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeValidInstrumentDatabaseCreationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -394,10 +394,6 @@ func TestValidInstrumentsService_SearchHandler(T *testing.T) {
 	exampleQuery := "whatever"
 	exampleLimit := uint8(123)
 	exampleValidInstrumentList := fakes.BuildFakeValidInstrumentList()
-	exampleValidInstrumentIDs := []string{}
-	for _, x := range exampleValidInstrumentList.ValidInstruments {
-		exampleValidInstrumentIDs = append(exampleValidInstrumentIDs, x.ID)
-	}
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -409,22 +405,11 @@ func TestValidInstrumentsService_SearchHandler(T *testing.T) {
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		indexManager := &mocksearch.IndexManager{}
-		indexManager.On(
-			"Search",
-			testutils.ContextMatcher,
-			"name",
-			exampleQuery,
-			"",
-		).Return(exampleValidInstrumentIDs, nil)
-		helper.service.search = indexManager
-
 		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
 		validInstrumentDataManager.On(
-			"GetValidInstrumentsWithIDs",
+			"SearchForValidInstruments",
 			testutils.ContextMatcher,
-			exampleLimit,
-			exampleValidInstrumentIDs,
+			exampleQuery,
 		).Return(exampleValidInstrumentList.ValidInstruments, nil)
 		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
@@ -441,7 +426,7 @@ func TestValidInstrumentsService_SearchHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, indexManager, validInstrumentDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, encoderDecoder)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -468,38 +453,6 @@ func TestValidInstrumentsService_SearchHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, encoderDecoder)
 	})
 
-	T.Run("with error conducting search", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
-
-		indexManager := &mocksearch.IndexManager{}
-		indexManager.On(
-			"Search",
-			testutils.ContextMatcher,
-			"name",
-			exampleQuery,
-			"",
-		).Return([]string{}, errors.New("blah"))
-		helper.service.search = indexManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
-		helper.service.SearchHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, indexManager, encoderDecoder)
-	})
-
 	T.Run("with no rows returned", func(t *testing.T) {
 		t.Parallel()
 
@@ -510,22 +463,11 @@ func TestValidInstrumentsService_SearchHandler(T *testing.T) {
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		indexManager := &mocksearch.IndexManager{}
-		indexManager.On(
-			"Search",
-			testutils.ContextMatcher,
-			"name",
-			exampleQuery,
-			"",
-		).Return(exampleValidInstrumentIDs, nil)
-		helper.service.search = indexManager
-
 		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
 		validInstrumentDataManager.On(
-			"GetValidInstrumentsWithIDs",
+			"SearchForValidInstruments",
 			testutils.ContextMatcher,
-			exampleLimit,
-			exampleValidInstrumentIDs,
+			exampleQuery,
 		).Return([]*types.ValidInstrument{}, sql.ErrNoRows)
 		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
@@ -542,7 +484,7 @@ func TestValidInstrumentsService_SearchHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, indexManager, validInstrumentDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, encoderDecoder)
 	})
 
 	T.Run("with error retrieving from database", func(t *testing.T) {
@@ -554,22 +496,11 @@ func TestValidInstrumentsService_SearchHandler(T *testing.T) {
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		indexManager := &mocksearch.IndexManager{}
-		indexManager.On(
-			"Search",
-			testutils.ContextMatcher,
-			"name",
-			exampleQuery,
-			"",
-		).Return(exampleValidInstrumentIDs, nil)
-		helper.service.search = indexManager
-
 		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
 		validInstrumentDataManager.On(
-			"GetValidInstrumentsWithIDs",
+			"SearchForValidInstruments",
 			testutils.ContextMatcher,
-			exampleLimit,
-			exampleValidInstrumentIDs,
+			exampleQuery,
 		).Return([]*types.ValidInstrument{}, errors.New("blah"))
 		helper.service.validInstrumentDataManager = validInstrumentDataManager
 
@@ -585,7 +516,7 @@ func TestValidInstrumentsService_SearchHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, indexManager, validInstrumentDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, encoderDecoder)
 	})
 }
 
@@ -596,7 +527,7 @@ func TestValidInstrumentsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeValidInstrumentUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -633,7 +564,7 @@ func TestValidInstrumentsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := &types.ValidInstrumentUpdateRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -663,7 +594,7 @@ func TestValidInstrumentsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
@@ -679,7 +610,7 @@ func TestValidInstrumentsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeValidInstrumentUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -708,7 +639,7 @@ func TestValidInstrumentsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeValidInstrumentUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -737,7 +668,7 @@ func TestValidInstrumentsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeValidInstrumentUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)

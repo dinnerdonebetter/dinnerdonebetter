@@ -16,6 +16,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -193,7 +195,7 @@ func Test_uploadProcessor_Process(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		p := NewImageUploadProcessor(nil)
+		p := NewImageUploadProcessor(nil, trace.NewNoopTracerProvider())
 		expectedFieldName := "avatar"
 
 		imgBytes := buildPNGBytes(t)
@@ -212,7 +214,7 @@ func Test_uploadProcessor_Process(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		p := NewImageUploadProcessor(nil)
+		p := NewImageUploadProcessor(nil, trace.NewNoopTracerProvider())
 		expectedFieldName := "avatar"
 
 		req, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://tests.verygoodsoftwarenotvirus.ru", nil)
@@ -227,7 +229,7 @@ func Test_uploadProcessor_Process(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		p := NewImageUploadProcessor(nil)
+		p := NewImageUploadProcessor(nil, trace.NewNoopTracerProvider())
 		expectedFieldName := "avatar"
 
 		imgBytes := buildPNGBytes(t)
@@ -243,7 +245,7 @@ func Test_uploadProcessor_Process(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		p := NewImageUploadProcessor(nil)
+		p := NewImageUploadProcessor(nil, trace.NewNoopTracerProvider())
 		expectedFieldName := "avatar"
 
 		req := newAvatarUploadRequest(t, "avatar.png", bytes.NewBufferString(""))

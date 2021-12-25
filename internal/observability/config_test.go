@@ -4,10 +4,15 @@ import (
 	"context"
 	"testing"
 
+	"github.com/prixfixeco/api_server/internal/observability/tracing/jaeger"
+
+	"github.com/prixfixeco/api_server/internal/observability/metrics/prometheus"
+
+	"github.com/prixfixeco/api_server/internal/observability/metrics/config"
+
 	"github.com/stretchr/testify/assert"
 
-	"github.com/prixfixeco/api_server/internal/observability/metrics"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	tracingcfg "github.com/prixfixeco/api_server/internal/observability/tracing/config"
 )
 
 func TestConfig_ValidateWithContext(T *testing.T) {
@@ -18,12 +23,19 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
-			Tracing: tracing.Config{
-				Provider: tracing.Jaeger,
+			Tracing: tracingcfg.Config{
+				Provider: tracingcfg.ProviderJaeger,
+				Jaeger: &jaeger.Config{
+					CollectorEndpoint:         "0.0.0.0",
+					ServiceName:               t.Name(),
+					SpanCollectionProbability: 1,
+				},
 			},
-			Metrics: metrics.Config{
-				Provider:                         metrics.Prometheus,
-				RuntimeMetricsCollectionInterval: metrics.DefaultMetricsCollectionInterval,
+			Metrics: config.Config{
+				Provider: config.ProviderPrometheus,
+				Prometheus: &prometheus.Config{
+					RuntimeMetricsCollectionInterval: config.DefaultMetricsCollectionInterval,
+				},
 			},
 		}
 

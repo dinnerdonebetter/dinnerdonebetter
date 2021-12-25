@@ -36,14 +36,14 @@ type (
 )
 
 // ProvideSecretManager builds a new SecretManager.
-func ProvideSecretManager(logger logging.Logger, keeper *secrets.Keeper) (SecretManager, error) {
+func ProvideSecretManager(logger logging.Logger, tracerProvider tracing.TracerProvider, keeper *secrets.Keeper) (SecretManager, error) {
 	if keeper == nil {
 		return nil, errInvalidKeeper
 	}
 
 	sm := &secretManager{
 		logger: logging.EnsureLogger(logger),
-		tracer: tracing.NewTracer(tracerName),
+		tracer: tracing.NewTracer(tracerProvider.Tracer(tracerName)),
 		keeper: keeper,
 	}
 

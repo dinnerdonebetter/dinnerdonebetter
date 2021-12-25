@@ -226,6 +226,88 @@ func TestQuerier_GetValidInstrument(T *testing.T) {
 	})
 }
 
+func TestQuerier_SearchForValidInstruments(T *testing.T) {
+	T.Parallel()
+
+	exampleQuery := "blah"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleValidInstruments := fakes.BuildFakeValidInstrumentList()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{
+			wrapQueryForILIKE(exampleQuery),
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(validInstrumentSearchQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromValidInstruments(false, 0, exampleValidInstruments.ValidInstruments...))
+
+		actual, err := c.SearchForValidInstruments(ctx, exampleQuery)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidInstruments.ValidInstruments, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid valid instrument ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		actual, err := c.SearchForValidInstruments(ctx, "")
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{
+			wrapQueryForILIKE(exampleQuery),
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(validInstrumentSearchQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.SearchForValidInstruments(ctx, exampleQuery)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error scanning response", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{
+			wrapQueryForILIKE(exampleQuery),
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(validInstrumentSearchQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildErroneousMockRow())
+
+		actual, err := c.SearchForValidInstruments(ctx, exampleQuery)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_GetTotalValidInstrumentCount(T *testing.T) {
 	T.Parallel()
 

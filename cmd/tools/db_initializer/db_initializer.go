@@ -7,12 +7,13 @@ import (
 	"net/url"
 	"sync"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging"
+	flag "github.com/spf13/pflag"
+	"go.opentelemetry.io/otel/trace"
+
+	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 	"github.com/prixfixeco/api_server/pkg/client/httpclient"
 	"github.com/prixfixeco/api_server/pkg/types"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
-
-	flag "github.com/spf13/pflag"
 )
 
 var (
@@ -35,7 +36,7 @@ func main() {
 	flag.Parse()
 
 	ctx := context.Background()
-	logger := logging.ProvideLogger(logging.Config{Provider: logging.ProviderZerolog})
+	logger := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
 
 	if address == "" {
 		logger.Fatal(errors.New("uri must be valid"))
@@ -64,7 +65,7 @@ func main() {
 		logger.Fatal(fmt.Errorf("getting cookie: %w", cookieErr))
 	}
 
-	client, err := httpclient.NewClient(parsedURI, httpclient.UsingLogger(logger), httpclient.UsingCookie(cookie))
+	client, err := httpclient.NewClient(parsedURI, trace.NewNoopTracerProvider(), httpclient.UsingLogger(logger), httpclient.UsingCookie(cookie))
 	if err != nil {
 		logger.Fatal(fmt.Errorf("initializing client: %w", err))
 	}

@@ -27,6 +27,12 @@ func (m *ValidInstrumentDataManager) GetValidInstrument(ctx context.Context, val
 	return args.Get(0).(*types.ValidInstrument), args.Error(1)
 }
 
+// SearchForValidInstruments is a mock function.
+func (m *ValidInstrumentDataManager) SearchForValidInstruments(ctx context.Context, query string) ([]*types.ValidInstrument, error) {
+	args := m.Called(ctx, query)
+	return args.Get(0).([]*types.ValidInstrument), args.Error(1)
+}
+
 // GetTotalValidInstrumentCount is a mock function.
 func (m *ValidInstrumentDataManager) GetTotalValidInstrumentCount(ctx context.Context) (uint64, error) {
 	args := m.Called(ctx)

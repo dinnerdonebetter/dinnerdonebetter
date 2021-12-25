@@ -8,10 +8,11 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
-	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
+	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
@@ -26,7 +27,7 @@ func buildTestService() *service {
 		mealPlanOptionVoteDataManager: &mocktypes.MealPlanOptionVoteDataManager{},
 		mealPlanOptionVoteIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:                mockencoding.NewMockEncoderDecoder(),
-		tracer:                        tracing.NewTracer("test"),
+		tracer:                        tracing.NewTracerForTest("test"),
 	}
 }
 
@@ -71,6 +72,7 @@ func TestProvideMealPlanOptionVotesService(T *testing.T) {
 			rpm,
 			pp,
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.NotNil(t, s)
@@ -101,6 +103,7 @@ func TestProvideMealPlanOptionVotesService(T *testing.T) {
 			nil,
 			pp,
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.Nil(t, s)
@@ -132,6 +135,7 @@ func TestProvideMealPlanOptionVotesService(T *testing.T) {
 			nil,
 			pp,
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.Nil(t, s)
@@ -164,6 +168,7 @@ func TestProvideMealPlanOptionVotesService(T *testing.T) {
 			nil,
 			pp,
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.Nil(t, s)

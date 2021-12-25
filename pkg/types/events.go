@@ -17,25 +17,25 @@ type (
 		ValidIngredient            *ValidIngredientDatabaseCreationInput            `json:"validIngredient,omitempty"`
 		ValidPreparation           *ValidPreparationDatabaseCreationInput           `json:"validPreparation,omitempty"`
 		ValidIngredientPreparation *ValidIngredientPreparationDatabaseCreationInput `json:"validIngredientPreparation,omitempty"`
-		MealID                     string                                           `json:"mealID"`
+		MealID                     string                                           `json:"mealID,omitempty"`
 		Meal                       *MealDatabaseCreationInput                       `json:"meal,omitempty"`
-		RecipeID                   string                                           `json:"recipeID"`
+		RecipeID                   string                                           `json:"recipeID,omitempty"`
 		Recipe                     *RecipeDatabaseCreationInput                     `json:"recipe,omitempty"`
-		RecipeStepID               string                                           `json:"recipeStepID"`
+		RecipeStepID               string                                           `json:"recipeStepID,omitempty"`
 		RecipeStep                 *RecipeStepDatabaseCreationInput                 `json:"recipeStep,omitempty"`
 		RecipeStepInstrument       *RecipeStepInstrumentDatabaseCreationInput       `json:"recipeStepInstrument,omitempty"`
 		RecipeStepIngredient       *RecipeStepIngredientDatabaseCreationInput       `json:"recipeStepIngredient,omitempty"`
 		RecipeStepProduct          *RecipeStepProductDatabaseCreationInput          `json:"recipeStepProduct,omitempty"`
 		MealPlan                   *MealPlanDatabaseCreationInput                   `json:"mealPlan,omitempty"`
-		MealPlanID                 string                                           `json:"mealPlanID"`
+		MealPlanID                 string                                           `json:"mealPlanID,omitempty"`
 		MealPlanOption             *MealPlanOptionDatabaseCreationInput             `json:"mealPlanOption,omitempty"`
-		MealPlanOptionID           string                                           `json:"mealPlanOptionID"`
+		MealPlanOptionID           string                                           `json:"mealPlanOptionID,omitempty"`
 		MealPlanOptionVote         *MealPlanOptionVoteDatabaseCreationInput         `json:"mealPlanOptionVote,omitempty"`
 		Webhook                    *WebhookDatabaseCreationInput                    `json:"webhook,omitempty"`
 		UserMembership             *HouseholdUserMembershipDatabaseCreationInput    `json:"userMembership,omitempty"`
 		HouseholdInvitation        *HouseholdInvitationDatabaseCreationInput        `json:"householdInvitation,omitempty"`
-		AttributableToUserID       string                                           `json:"attributableToUserID"`
-		AttributableToHouseholdID  string                                           `json:"attributableToHouseholdID"`
+		AttributableToUserID       string                                           `json:"attributableToUserID,omitempty"`
+		AttributableToHouseholdID  string                                           `json:"attributableToHouseholdID,omitempty"`
 	}
 
 	// PreUpdateMessage represents an event that asks a worker to update data in the datastore.
@@ -47,23 +47,23 @@ type (
 		ValidIngredient            *ValidIngredient            `json:"validIngredient,omitempty"`
 		ValidPreparation           *ValidPreparation           `json:"validPreparation,omitempty"`
 		ValidIngredientPreparation *ValidIngredientPreparation `json:"validIngredientPreparation,omitempty"`
-		MealID                     string                      `json:"mealID"`
+		MealID                     string                      `json:"mealID,omitempty"`
 		Meal                       *Meal                       `json:"meal,omitempty"`
-		RecipeID                   string                      `json:"recipeID"`
+		RecipeID                   string                      `json:"recipeID,omitempty"`
 		Recipe                     *Recipe                     `json:"recipe,omitempty"`
-		RecipeStepID               string                      `json:"recipeStepID"`
+		RecipeStepID               string                      `json:"recipeStepID,omitempty"`
 		RecipeStep                 *RecipeStep                 `json:"recipeStep,omitempty"`
 		RecipeStepInstrument       *RecipeStepInstrument       `json:"recipeStepInstrument,omitempty"`
 		RecipeStepIngredient       *RecipeStepIngredient       `json:"recipeStepIngredient,omitempty"`
 		RecipeStepProduct          *RecipeStepProduct          `json:"recipeStepProduct,omitempty"`
 		MealPlan                   *MealPlan                   `json:"mealPlan,omitempty"`
-		MealPlanID                 string                      `json:"mealPlanID"`
+		MealPlanID                 string                      `json:"mealPlanID,omitempty"`
 		MealPlanOption             *MealPlanOption             `json:"mealPlanOption,omitempty"`
-		MealPlanOptionID           string                      `json:"mealPlanOptionID"`
+		MealPlanOptionID           string                      `json:"mealPlanOptionID,omitempty"`
 		MealPlanOptionVote         *MealPlanOptionVote         `json:"mealPlanOptionVote,omitempty"`
 		HouseholdInvitation        *HouseholdInvitation        `json:"householdInvitation,omitempty"`
-		AttributableToUserID       string                      `json:"attributableToUserID"`
-		AttributableToHouseholdID  string                      `json:"attributableToHouseholdID"`
+		AttributableToUserID       string                      `json:"attributableToUserID,omitempty"`
+		AttributableToHouseholdID  string                      `json:"attributableToHouseholdID,omitempty"`
 	}
 
 	// PreArchiveMessage represents an event that asks a worker to archive data in the datastore.
@@ -71,23 +71,23 @@ type (
 		_ struct{}
 
 		DataType                     dataType `json:"dataType"`
-		ValidInstrumentID            string   `json:"validInstrumentID"`
-		ValidIngredientID            string   `json:"validIngredientID"`
-		ValidPreparationID           string   `json:"validPreparationID"`
-		ValidIngredientPreparationID string   `json:"validIngredientPreparationID"`
-		MealID                       string   `json:"mealID"`
-		RecipeID                     string   `json:"recipeID"`
-		RecipeStepID                 string   `json:"recipeStepID"`
-		RecipeStepInstrumentID       string   `json:"recipeStepInstrumentID"`
-		RecipeStepIngredientID       string   `json:"recipeStepIngredientID"`
-		RecipeStepProductID          string   `json:"recipeStepProductID"`
-		MealPlanID                   string   `json:"mealPlanID"`
-		MealPlanOptionID             string   `json:"mealPlanOptionID"`
-		MealPlanOptionVoteID         string   `json:"mealPlanOptionVoteID"`
-		WebhookID                    string   `json:"webhookID"`
-		HouseholdInvitationID        string   `json:"HouseholdInvitationID"`
-		AttributableToUserID         string   `json:"attributableToUserID"`
-		AttributableToHouseholdID    string   `json:"attributableToHouseholdID"`
+		ValidInstrumentID            string   `json:"validInstrumentID,omitempty"`
+		ValidIngredientID            string   `json:"validIngredientID,omitempty"`
+		ValidPreparationID           string   `json:"validPreparationID,omitempty"`
+		ValidIngredientPreparationID string   `json:"validIngredientPreparationID,omitempty"`
+		MealID                       string   `json:"mealID,omitempty"`
+		RecipeID                     string   `json:"recipeID,omitempty"`
+		RecipeStepID                 string   `json:"recipeStepID,omitempty"`
+		RecipeStepInstrumentID       string   `json:"recipeStepInstrumentID,omitempty"`
+		RecipeStepIngredientID       string   `json:"recipeStepIngredientID,omitempty"`
+		RecipeStepProductID          string   `json:"recipeStepProductID,omitempty"`
+		MealPlanID                   string   `json:"mealPlanID,omitempty"`
+		MealPlanOptionID             string   `json:"mealPlanOptionID,omitempty"`
+		MealPlanOptionVoteID         string   `json:"mealPlanOptionVoteID,omitempty"`
+		WebhookID                    string   `json:"webhookID,omitempty"`
+		HouseholdInvitationID        string   `json:"HouseholdInvitationID,omitempty"`
+		AttributableToUserID         string   `json:"attributableToUserID,omitempty"`
+		AttributableToHouseholdID    string   `json:"attributableToHouseholdID,omitempty"`
 	}
 
 	// DataChangeMessage represents an event that asks a worker to write data to the datastore.
@@ -100,27 +100,27 @@ type (
 		ValidIngredient            *ValidIngredient            `json:"validIngredient,omitempty"`
 		ValidPreparation           *ValidPreparation           `json:"validPreparation,omitempty"`
 		ValidIngredientPreparation *ValidIngredientPreparation `json:"validIngredientPreparation,omitempty"`
-		MealID                     string                      `json:"mealID"`
+		MealID                     string                      `json:"mealID,omitempty"`
 		Meal                       *Meal                       `json:"meal,omitempty"`
-		RecipeID                   string                      `json:"recipeID"`
+		RecipeID                   string                      `json:"recipeID,omitempty"`
 		Recipe                     *Recipe                     `json:"recipe,omitempty"`
-		RecipeStepID               string                      `json:"recipeStepID"`
+		RecipeStepID               string                      `json:"recipeStepID,omitempty"`
 		RecipeStep                 *RecipeStep                 `json:"recipeStep,omitempty"`
 		RecipeStepInstrument       *RecipeStepInstrument       `json:"recipeStepInstrument,omitempty"`
 		RecipeStepIngredient       *RecipeStepIngredient       `json:"recipeStepIngredient,omitempty"`
 		RecipeStepProduct          *RecipeStepProduct          `json:"recipeStepProduct,omitempty"`
 		MealPlan                   *MealPlan                   `json:"mealPlan,omitempty"`
-		MealPlanID                 string                      `json:"mealPlanID"`
+		MealPlanID                 string                      `json:"mealPlanID,omitempty"`
 		MealPlanOption             *MealPlanOption             `json:"mealPlanOption,omitempty"`
-		MealPlanOptionID           string                      `json:"mealPlanOptionID"`
+		MealPlanOptionID           string                      `json:"mealPlanOptionID,omitempty"`
 		MealPlanOptionVote         *MealPlanOptionVote         `json:"mealPlanOptionVote,omitempty"`
-		MealPlanOptionVoteID       string                      `json:"mealPlanOptionVoteID"`
+		MealPlanOptionVoteID       string                      `json:"mealPlanOptionVoteID,omitempty"`
 		Webhook                    *Webhook                    `json:"webhook,omitempty"`
 		HouseholdInvitation        *HouseholdInvitation        `json:"householdInvitation,omitempty"`
 		UserMembership             *HouseholdUserMembership    `json:"userMembership,omitempty"`
 		Context                    map[string]string           `json:"context,omitempty"`
-		AttributableToUserID       string                      `json:"attributableToUserID"`
-		AttributableToHouseholdID  string                      `json:"attributableToHouseholdID"`
+		AttributableToUserID       string                      `json:"attributableToUserID,omitempty"`
+		AttributableToHouseholdID  string                      `json:"attributableToHouseholdID,omitempty"`
 	}
 
 	choreType string
@@ -130,7 +130,7 @@ type (
 		_ struct{}
 
 		ChoreType                 choreType `json:"choreType"`
-		MealPlanID                string    `json:"mealPlanID"`
-		AttributableToHouseholdID string    `json:"attributableToHouseholdID"`
+		MealPlanID                string    `json:"mealPlanID,omitempty"`
+		AttributableToHouseholdID string    `json:"attributableToHouseholdID,omitempty"`
 	}
 )

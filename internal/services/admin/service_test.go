@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"testing"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/alexedwards/scs/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -30,12 +32,13 @@ func buildTestService(t *testing.T) *service {
 
 	s := ProvideService(
 		logger,
-		&authservice.Config{Cookies: authservice.CookieConfig{SigningKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!"}},
+		&authservice.Config{Cookies: authservice.CookieConfig{BlockKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!"}},
 		&mockauthn.Authenticator{},
 		&mocktypes.AdminUserDataManager{},
 		scs.New(),
-		encoding.ProvideServerEncoderDecoder(logger, encoding.ContentTypeJSON),
+		encoding.ProvideServerEncoderDecoder(logger, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON),
 		rpm,
+		trace.NewNoopTracerProvider(),
 	)
 
 	mock.AssertExpectationsForObjects(t, rpm)
@@ -62,12 +65,13 @@ func TestProvideAdminService(T *testing.T) {
 
 		s := ProvideService(
 			logger,
-			&authservice.Config{Cookies: authservice.CookieConfig{SigningKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!"}},
+			&authservice.Config{Cookies: authservice.CookieConfig{BlockKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!"}},
 			&mockauthn.Authenticator{},
 			&mocktypes.AdminUserDataManager{},
 			scs.New(),
-			encoding.ProvideServerEncoderDecoder(logger, encoding.ContentTypeJSON),
+			encoding.ProvideServerEncoderDecoder(logger, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON),
 			rpm,
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.NotNil(t, s)

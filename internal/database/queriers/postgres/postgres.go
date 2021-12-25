@@ -31,14 +31,15 @@ var _ database.DataManager = (*SQLQuerier)(nil)
 
 // SQLQuerier is the primary database querying client. All tracing/logging/query execution happens here. Query building generally happens elsewhere.
 type SQLQuerier struct {
-	tracer      tracing.Tracer
-	sqlBuilder  squirrel.StatementBuilderType
-	logger      logging.Logger
-	db          *sql.DB
-	timeFunc    func() uint64
-	config      *dbconfig.Config
-	migrateOnce sync.Once
-	logQueries  bool
+	tracer        tracing.Tracer
+	sqlBuilder    squirrel.StatementBuilderType
+	logger        logging.Logger
+	db            *sql.DB
+	timeFunc      func() uint64
+	config        *dbconfig.Config
+	connectionURL string
+	migrateOnce   sync.Once
+	logQueries    bool
 }
 
 var instrumentedDriverRegistration sync.Once
@@ -48,8 +49,9 @@ func ProvideDatabaseClient(
 	ctx context.Context,
 	logger logging.Logger,
 	cfg *dbconfig.Config,
+	tracerProvider tracing.TracerProvider,
 ) (database.DataManager, error) {
-	tracer := tracing.NewTracer(tracingName)
+	tracer := tracing.NewTracer(tracerProvider.Tracer(tracingName))
 
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
@@ -62,7 +64,7 @@ func ProvideDatabaseClient(
 			instrumentedsql.WrapDriver(
 				&pq.Driver{},
 				instrumentedsql.WithOmitArgs(),
-				instrumentedsql.WithTracer(tracing.NewInstrumentedSQLTracer("postgres_connection")),
+				instrumentedsql.WithTracer(tracing.NewInstrumentedSQLTracer(tracerProvider, "postgres_connection")),
 				instrumentedsql.WithLogger(tracing.NewInstrumentedSQLLogger(logger)),
 			),
 		)
@@ -74,13 +76,14 @@ func ProvideDatabaseClient(
 	}
 
 	c := &SQLQuerier{
-		db:         db,
-		config:     cfg,
-		tracer:     tracer,
-		logQueries: true,
-		timeFunc:   defaultTimeFunc,
-		logger:     logging.EnsureLogger(logger),
-		sqlBuilder: squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
+		db:            db,
+		config:        cfg,
+		tracer:        tracer,
+		logQueries:    false,
+		timeFunc:      defaultTimeFunc,
+		connectionURL: string(cfg.ConnectionDetails),
+		logger:        logging.EnsureLogger(logger),
+		sqlBuilder:    squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
 	}
 
 	if cfg.Debug {
@@ -112,10 +115,7 @@ func (q *SQLQuerier) IsReady(ctx context.Context, maxAttempts uint8) (ready bool
 
 	attemptCount := 0
 
-	logger := q.logger.WithValues(map[string]interface{}{
-		"interval":     time.Second.String(),
-		"max_attempts": maxAttempts,
-	})
+	logger := q.logger.WithValue("connection_url", q.connectionURL)
 
 	for !ready {
 		err := q.db.PingContext(ctx)
@@ -268,6 +268,7 @@ func (q *SQLQuerier) performWriteQuery(ctx context.Context, querier database.SQL
 
 	logger := q.logger.WithValue("query", query).WithValue("description", queryDescription).WithValue("args", args)
 	tracing.AttachDatabaseQueryToSpan(span, queryDescription, query, args)
+	logger.Debug("performWriteQuery called")
 
 	res, err := querier.ExecContext(ctx, query, args...)
 	if err != nil {

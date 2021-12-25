@@ -745,7 +745,5 @@ func (q *SQLQuerier) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context
 		return nil, observability.PrepareError(err, logger, span, "closing rows")
 	}
 
-	logger.WithValue("newly_expired_meal_plans", len(mealPlans)).Debug("retrieved expired and unfinalized meal plans")
-
 	return mealPlans, nil
 }

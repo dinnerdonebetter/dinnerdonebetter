@@ -26,13 +26,14 @@ func ProvideDataChangesWorker(
 	logger logging.Logger,
 	emailSender email.Emailer,
 	customerDataCollector customerdata.Collector,
+	tracerProvider tracing.TracerProvider,
 ) *DataChangesWorker {
-	name := "post_writes"
+	name := "data_changes"
 
 	return &DataChangesWorker{
 		logger:                logging.EnsureLogger(logger).WithName(name),
-		tracer:                tracing.NewTracer(name),
-		encoder:               encoding.ProvideClientEncoder(logger, encoding.ContentTypeJSON),
+		tracer:                tracing.NewTracer(tracerProvider.Tracer(name)),
+		encoder:               encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
 		emailSender:           emailSender,
 		customerDataCollector: customerDataCollector,
 	}

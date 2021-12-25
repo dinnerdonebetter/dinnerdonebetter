@@ -8,9 +8,10 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"go.opentelemetry.io/otel/trace"
 
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
-	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
+	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
@@ -25,7 +26,7 @@ func buildTestService() *service {
 		recipeStepProductDataManager: &mocktypes.RecipeStepProductDataManager{},
 		recipeStepProductIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:               mockencoding.NewMockEncoderDecoder(),
-		tracer:                       tracing.NewTracer("test"),
+		tracer:                       tracing.NewTracerForTest("test"),
 	}
 }
 
@@ -69,6 +70,7 @@ func TestProvideRecipeStepProductsService(T *testing.T) {
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.NotNil(t, s)
@@ -98,6 +100,7 @@ func TestProvideRecipeStepProductsService(T *testing.T) {
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.Nil(t, s)
@@ -128,6 +131,7 @@ func TestProvideRecipeStepProductsService(T *testing.T) {
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.Nil(t, s)
@@ -159,6 +163,7 @@ func TestProvideRecipeStepProductsService(T *testing.T) {
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.Nil(t, s)

@@ -26,7 +26,7 @@ func TestProvideCollector(T *testing.T) {
 		t.Parallel()
 
 		cfg := &Config{
-			Provider: providerSegment,
+			Provider: ProviderSegment,
 			APIToken: t.Name(),
 		}
 		logger := logging.NewNoopLogger()

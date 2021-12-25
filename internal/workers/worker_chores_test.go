@@ -8,12 +8,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/email"
-	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
+	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
+	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
@@ -26,11 +27,12 @@ func TestProvideChoresWorker(T *testing.T) {
 		t.Parallel()
 
 		actual := ProvideChoresWorker(
-			logging.NewZerologLogger(),
+			zerolog.NewZerologLogger(),
 			&database.MockDatabase{},
 			&mockpublishers.Publisher{},
 			&email.MockEmailer{},
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, actual)
 	})

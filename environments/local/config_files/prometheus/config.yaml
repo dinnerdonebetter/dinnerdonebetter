@@ -6,10 +6,10 @@ global:
   # scrape_timeout is set to the global default (10s).
 
 scrape_configs:
-  - job_name: 'prixfixe-server'
+  - job_name: 'prixfixe-api-server'
 
     static_configs:
-      - targets: ['prixfixe-server:8888']
+      - targets: ['prixfixe-server:8000']
 
     # How frequently to scrape targets from this job.
     scrape_interval: 15s

@@ -10,6 +10,8 @@ import (
 	"testing"
 	"time"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/Masterminds/squirrel"
 	"github.com/segmentio/ksuid"
@@ -118,7 +120,7 @@ func buildTestClient(t *testing.T) (*SQLQuerier, *sqlmockExpecterWrapper) {
 		db:         fakeDB,
 		logger:     logging.NewNoopLogger(),
 		timeFunc:   defaultTimeFunc,
-		tracer:     tracing.NewTracer("test"),
+		tracer:     tracing.NewTracerForTest("test"),
 		sqlBuilder: squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
 	}
 
@@ -188,13 +190,12 @@ func TestProvideDatabaseClient(T *testing.T) {
 		ctx := context.Background()
 
 		exampleConfig := &config.Config{
-			Provider:        config.PostgresProvider,
 			Debug:           true,
 			RunMigrations:   false,
 			MaxPingAttempts: 1,
 		}
 
-		actual, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), exampleConfig)
+		actual, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), exampleConfig, trace.NewNoopTracerProvider())
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 	})

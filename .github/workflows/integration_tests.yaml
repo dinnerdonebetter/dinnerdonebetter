@@ -1,18 +1,17 @@
-on: [release]
-name: Tests
-jobs:
-  integration_tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Run the integration tests
-        run: |
-          docker-compose \
-          --file environments/testing/compose_files/integration-tests-base.yaml \
-          --file environments/testing/compose_files/integration-tests.yaml up \
-          --build \
-          --force-recreate \
-          --remove-orphans \
-          --renew-anon-volumes \
-          --always-recreate-deps \
-          --abort-on-container-exit
+ on: [gollum]
+ name: Tests
+ jobs:
+   integration_tests:
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v2
+       - name: Run the integration tests
+         run: |
+           docker-compose \
+           --file environments/testing/compose_files/integration-tests.yaml up \
+           --build \
+           --force-recreate \
+           --remove-orphans \
+           --renew-anon-volumes \
+           --always-recreate-deps \
+           --abort-on-container-exit

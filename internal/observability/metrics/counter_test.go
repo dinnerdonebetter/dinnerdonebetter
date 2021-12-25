@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"go.opentelemetry.io/otel/metric"
-	"go.opentelemetry.io/otel/unit"
+	"go.opentelemetry.io/otel/metric/unit"
 )
 
 func Test_unitCounter_Decrement(T *testing.T) {
@@ -14,9 +14,7 @@ func Test_unitCounter_Decrement(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		initiatePrometheusExporter()
-		meterProvider := prometheusExporter.MeterProvider()
-		mustMeter := metric.Must(meterProvider.Meter(defaultNamespace, metric.WithInstrumentationVersion(instrumentationVersion)))
+		mustMeter := metric.Must(metric.NewNoopMeterProvider().Meter(t.Name()))
 
 		ctx := context.Background()
 		uc := &unitCounter{
@@ -36,9 +34,7 @@ func Test_unitCounter_Increment(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		initiatePrometheusExporter()
-		meterProvider := prometheusExporter.MeterProvider()
-		mustMeter := metric.Must(meterProvider.Meter(defaultNamespace, metric.WithInstrumentationVersion(instrumentationVersion)))
+		mustMeter := metric.Must(metric.NewNoopMeterProvider().Meter(t.Name()))
 
 		ctx := context.Background()
 		uc := &unitCounter{
@@ -55,12 +51,10 @@ func Test_unitCounter_Increment(T *testing.T) {
 func Test_unitCounter_IncrementBy(T *testing.T) {
 	T.Parallel()
 
-	initiatePrometheusExporter()
-	meterProvider := prometheusExporter.MeterProvider()
-	mustMeter := metric.Must(meterProvider.Meter(defaultNamespace, metric.WithInstrumentationVersion(instrumentationVersion)))
-
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
+
+		mustMeter := metric.Must(metric.NewNoopMeterProvider().Meter(t.Name()))
 
 		ctx := context.Background()
 		uc := &unitCounter{

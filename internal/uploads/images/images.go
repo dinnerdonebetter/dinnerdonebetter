@@ -83,10 +83,10 @@ func (i *Image) Thumbnail(width, height uint, filename string) (*Image, error) {
 }
 
 // NewImageUploadProcessor provides a new ImageUploadProcessor.
-func NewImageUploadProcessor(logger logging.Logger) ImageUploadProcessor {
+func NewImageUploadProcessor(logger logging.Logger, tracerProvider tracing.TracerProvider) ImageUploadProcessor {
 	return &uploadProcessor{
 		logger: logging.EnsureLogger(logger).WithName("image_upload_processor"),
-		tracer: tracing.NewTracer("image_upload_processor"),
+		tracer: tracing.NewTracer(tracerProvider.Tracer("image_upload_processor")),
 	}
 }
 

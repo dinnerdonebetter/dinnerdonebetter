@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"path"
 
+	"github.com/prixfixeco/api_server/internal/observability/metrics"
+
 	"github.com/heptiolabs/healthcheck"
 
 	"github.com/prixfixeco/api_server/internal/authorization"
-	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/routing"
 	apiclientsservice "github.com/prixfixeco/api_server/internal/services/apiclients"
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
@@ -46,17 +47,17 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := s.logger.WithSpan(span)
+
 	router.Route("/_meta_", func(metaRouter routing.Router) {
 		health := healthcheck.NewHandler()
-		// Expose a liveness check on /live
-		metaRouter.Get("/live", health.LiveEndpoint)
 		// Expose a readiness check on /ready
 		metaRouter.Get("/ready", health.ReadyEndpoint)
 	})
 
 	if metricsHandler != nil {
-		s.logger.Debug("establishing metrics handler")
-		router.HandleFunc("/metrics", metricsHandler.ServeHTTP)
+		logger.Info("setting up metrics handler")
+		router.Get("/metrics", metricsHandler.ServeHTTP)
 	}
 
 	router.Post("/paseto", s.authService.PASETOHandler)

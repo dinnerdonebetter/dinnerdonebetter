@@ -42,6 +42,7 @@ func ProvideService(
 	sessionManager *scs.SessionManager,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
+	tracerProvider tracing.TracerProvider,
 ) types.AdminService {
 	svc := &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
@@ -52,7 +53,7 @@ func ProvideService(
 		sessionManager:            sessionManager,
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		userIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(UserIDURIParamKey),
-		tracer:                    tracing.NewTracer(serviceName),
+		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 	}
 	svc.sessionManager.Lifetime = cfg.Cookies.Lifetime
 

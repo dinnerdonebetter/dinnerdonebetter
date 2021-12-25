@@ -10,6 +10,10 @@ import (
 	"strings"
 	"time"
 
+	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
+
+	"go.opentelemetry.io/otel/trace"
+
 	_ "github.com/lib/pq"
 	"github.com/segmentio/ksuid"
 
@@ -19,7 +23,6 @@ import (
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
 	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
@@ -48,7 +51,7 @@ func init() {
 	ctx, span := tracing.StartSpan(context.Background())
 	defer span.End()
 
-	logger := logging.ProvideLogger(logging.Config{Provider: logging.ProviderZerolog})
+	logger := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
 
 	parsedURLToUse = testutils.DetermineServiceURL()
 	urlToUse = parsedURLToUse.String()
@@ -62,21 +65,20 @@ func init() {
 	}
 
 	cfg := &dbconfig.Config{
-		Provider:          dbconfig.PostgresProvider,
 		ConnectionDetails: database.ConnectionDetails(dbAddr),
 		Debug:             false,
 		RunMigrations:     false,
 		MaxPingAttempts:   50,
 	}
 
-	dbm, err := postgres.ProvideDatabaseClient(ctx, logger, cfg)
+	dbm, err := postgres.ProvideDatabaseClient(ctx, logger, cfg, trace.NewNoopTracerProvider())
 	if err != nil {
 		panic(err)
 	}
 
 	dbmanager = dbm
 
-	hasher := authentication.ProvideArgon2Authenticator(logger)
+	hasher := authentication.ProvideArgon2Authenticator(logger, trace.NewNoopTracerProvider())
 	actuallyHashedPass, err := hasher.HashPassword(ctx, premadeAdminUser.HashedPassword)
 	if err != nil {
 		panic(err)

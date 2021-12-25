@@ -1,0 +1,5 @@
+*.json
+*.yaml
+*.config
+.terraform/
+.terraform.lock.hcl

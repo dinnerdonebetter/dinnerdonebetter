@@ -8,14 +8,13 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"go.opentelemetry.io/otel/trace"
 
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
-	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
+	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
-	"github.com/prixfixeco/api_server/internal/search"
-	mocksearch "github.com/prixfixeco/api_server/internal/search/mock"
 	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
 )
 
@@ -25,8 +24,7 @@ func buildTestService() *service {
 		validInstrumentDataManager: &mocktypes.ValidInstrumentDataManager{},
 		validInstrumentIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:             mockencoding.NewMockEncoderDecoder(),
-		search:                     &mocksearch.IndexManager{},
-		tracer:                     tracing.NewTracer("test"),
+		tracer:                     tracing.NewTracerForTest("test"),
 	}
 }
 
@@ -37,6 +35,8 @@ func TestProvideValidInstrumentsService(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
+		logger := logging.NewNoopLogger()
+
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
@@ -44,7 +44,6 @@ func TestProvideValidInstrumentsService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 
 		cfg := Config{
-			SearchIndexPath:      "example/path",
 			PreWritesTopicName:   "pre-writes",
 			PreUpdatesTopicName:  "pre-updates",
 			PreArchivesTopicName: "pre-archives",
@@ -57,15 +56,13 @@ func TestProvideValidInstrumentsService(T *testing.T) {
 
 		s, err := ProvideService(
 			ctx,
-			logging.NewNoopLogger(),
+			logger,
 			&cfg,
 			&mocktypes.ValidInstrumentDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
-			func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-				return &mocksearch.IndexManager{}, nil
-			},
 			rpm,
 			pp,
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.NotNil(t, s)
@@ -78,8 +75,9 @@ func TestProvideValidInstrumentsService(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
+		logger := logging.NewNoopLogger()
+
 		cfg := Config{
-			SearchIndexPath:      "example/path",
 			PreWritesTopicName:   "pre-writes",
 			PreUpdatesTopicName:  "pre-updates",
 			PreArchivesTopicName: "pre-archives",
@@ -90,15 +88,13 @@ func TestProvideValidInstrumentsService(T *testing.T) {
 
 		s, err := ProvideService(
 			ctx,
-			logging.NewNoopLogger(),
+			logger,
 			&cfg,
 			&mocktypes.ValidInstrumentDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
-			func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-				return &mocksearch.IndexManager{}, nil
-			},
 			nil,
 			pp,
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.Nil(t, s)
@@ -111,8 +107,9 @@ func TestProvideValidInstrumentsService(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
+		logger := logging.NewNoopLogger()
+
 		cfg := Config{
-			SearchIndexPath:      "example/path",
 			PreWritesTopicName:   "pre-writes",
 			PreUpdatesTopicName:  "pre-updates",
 			PreArchivesTopicName: "pre-archives",
@@ -124,15 +121,13 @@ func TestProvideValidInstrumentsService(T *testing.T) {
 
 		s, err := ProvideService(
 			ctx,
-			logging.NewNoopLogger(),
+			logger,
 			&cfg,
 			&mocktypes.ValidInstrumentDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
-			func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-				return &mocksearch.IndexManager{}, nil
-			},
 			nil,
 			pp,
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.Nil(t, s)
@@ -145,8 +140,9 @@ func TestProvideValidInstrumentsService(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
+		logger := logging.NewNoopLogger()
+
 		cfg := Config{
-			SearchIndexPath:      "example/path",
 			PreWritesTopicName:   "pre-writes",
 			PreUpdatesTopicName:  "pre-updates",
 			PreArchivesTopicName: "pre-archives",
@@ -159,48 +155,18 @@ func TestProvideValidInstrumentsService(T *testing.T) {
 
 		s, err := ProvideService(
 			ctx,
-			logging.NewNoopLogger(),
+			logger,
 			&cfg,
 			&mocktypes.ValidInstrumentDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
-			func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-				return &mocksearch.IndexManager{}, nil
-			},
 			nil,
 			pp,
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.Nil(t, s)
 		assert.Error(t, err)
 
 		mock.AssertExpectationsForObjects(t, pp)
-	})
-
-	T.Run("with error providing index", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		cfg := Config{
-			SearchIndexPath:      "example/path",
-			PreWritesTopicName:   "pre-writes",
-			PreUpdatesTopicName:  "pre-updates",
-			PreArchivesTopicName: "pre-archives",
-		}
-
-		s, err := ProvideService(
-			ctx,
-			logging.NewNoopLogger(),
-			&cfg,
-			&mocktypes.ValidInstrumentDataManager{},
-			mockencoding.NewMockEncoderDecoder(),
-			func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-				return nil, errors.New("blah")
-			},
-			mockrouting.NewRouteParamManager(),
-			nil,
-		)
-
-		assert.Nil(t, s)
-		assert.Error(t, err)
 	})
 }

@@ -12,15 +12,14 @@ func (w *WritesWorker) createRecipe(ctx context.Context, msg *types.PreWriteMess
 	defer span.End()
 
 	logger := w.logger.WithValue("data_type", msg.DataType)
+	logger.Debug("createRecipe called")
 
+	logger.Debug("creating")
 	recipe, err := w.dataManager.CreateRecipe(ctx, msg.Recipe)
 	if err != nil {
 		return observability.PrepareError(err, logger, span, "creating recipe")
 	}
-
-	if err = w.recipesIndexManager.Index(ctx, recipe.ID, recipe); err != nil {
-		return observability.PrepareError(err, logger, span, "indexing the recipe")
-	}
+	logger.Debug("created")
 
 	if w.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
@@ -31,9 +30,11 @@ func (w *WritesWorker) createRecipe(ctx context.Context, msg *types.PreWriteMess
 			AttributableToHouseholdID: msg.AttributableToHouseholdID,
 		}
 
+		logger.Debug("publishing to data change")
 		if err = w.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			return observability.PrepareError(err, logger, span, "publishing to post-writes topic")
 		}
+		logger.Debug("published to data change")
 	}
 
 	return nil
@@ -47,10 +48,6 @@ func (w *UpdatesWorker) updateRecipe(ctx context.Context, msg *types.PreUpdateMe
 
 	if err := w.dataManager.UpdateRecipe(ctx, msg.Recipe); err != nil {
 		return observability.PrepareError(err, logger, span, "creating recipe")
-	}
-
-	if err := w.recipesIndexManager.Index(ctx, msg.Recipe.ID, msg.Recipe); err != nil {
-		return observability.PrepareError(err, logger, span, "indexing the recipe")
 	}
 
 	if w.postUpdatesPublisher != nil {
@@ -78,10 +75,6 @@ func (w *ArchivesWorker) archiveRecipe(ctx context.Context, msg *types.PreArchiv
 
 	if err := w.dataManager.ArchiveRecipe(ctx, msg.RecipeID, msg.AttributableToHouseholdID); err != nil {
 		return observability.PrepareError(err, w.logger, span, "archiving recipe")
-	}
-
-	if err := w.recipesIndexManager.Delete(ctx, msg.RecipeID); err != nil {
-		return observability.PrepareError(err, w.logger, span, "removing recipe from index")
 	}
 
 	if w.postArchivesPublisher != nil {

@@ -17,9 +17,6 @@ type (
 	// SpanFormatter formats the name of a span given a request.
 	SpanFormatter func(*http.Request) string
 
-	// InstrumentationHandler is an obligatory alias.
-	InstrumentationHandler http.Handler
-
 	// Handler is the Handler that provides metrics data to scraping services.
 	Handler http.Handler
 

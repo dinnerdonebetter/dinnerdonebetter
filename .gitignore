@@ -3,6 +3,7 @@
 *.dll
 *.so
 *.dylib
+*.zip
 
 # Test binary, build with "go test -c"
 *.test
@@ -40,3 +41,10 @@ internal/services/frontend/_vendor_/*
 *.coverprofile
 *.profile
 
+# Local .terraform directories
+**/.terraform/*
+**/.terraform.lock.hcl
+
+# .tfstate files
+*.tfstate
+*.tfstate.*

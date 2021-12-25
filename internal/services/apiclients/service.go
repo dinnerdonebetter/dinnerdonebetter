@@ -56,6 +56,7 @@ func ProvideAPIClientsService(
 	routeParamManager routing.RouteParamManager,
 	cfg *config,
 	customerDataCollector customerdata.Collector,
+	tracerProvider tracing.TracerProvider,
 ) types.APIClientDataService {
 	return &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
@@ -67,8 +68,8 @@ func ProvideAPIClientsService(
 		urlClientIDExtractor:      routeParamManager.BuildRouteParamStringIDFetcher(APIClientIDURIParamKey),
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		apiClientCounter:          metrics.EnsureUnitCounter(counterProvider, logger, counterName, counterDescription),
-		secretGenerator:           random.NewGenerator(logger),
-		tracer:                    tracing.NewTracer(serviceName),
+		secretGenerator:           random.NewGenerator(logger, tracerProvider),
+		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 		customerDataCollector:     customerDataCollector,
 	}
 }

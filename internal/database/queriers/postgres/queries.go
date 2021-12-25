@@ -21,6 +21,10 @@ const (
 	householdOwnershipColumn = "belongs_to_household"
 )
 
+func wrapQueryForILIKE(s string) string {
+	return fmt.Sprintf("%s%%", s)
+}
+
 func joinIDs(ids []string) string {
 	return strings.Join(ids, commaSeparator)
 }

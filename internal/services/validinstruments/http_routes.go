@@ -190,15 +190,8 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	relevantIDs, err := s.search.Search(ctx, "name", query, "")
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "executing valid instrument search query")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
-	}
-
 	// fetch valid instruments from database.
-	validInstruments, err := s.validInstrumentDataManager.GetValidInstrumentsWithIDs(ctx, filter.Limit, relevantIDs)
+	validInstruments, err := s.validInstrumentDataManager.SearchForValidInstruments(ctx, query)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		validInstruments = []*types.ValidInstrument{}

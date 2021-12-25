@@ -4,6 +4,8 @@ import (
 	"context"
 	"strings"
 
+	"go.opentelemetry.io/otel/trace"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
 	"github.com/prixfixeco/api_server/internal/customerdata"
@@ -12,14 +14,15 @@ import (
 )
 
 const (
-	providerSegment = "segment"
+	// ProviderSegment represents Segment.
+	ProviderSegment = "segment"
 )
 
 type (
 	// Config is the configuration structure.
 	Config struct {
-		Provider string
-		APIToken string
+		Provider string `json:"provider" mapstructure:"provider" toml:"provider,omitempty"`
+		APIToken string `json:"apiToken" mapstructure:"api_token" toml:"api_token,omitempty"`
 	}
 )
 
@@ -28,15 +31,15 @@ var _ validation.ValidatableWithContext = (*Config)(nil)
 // ValidateWithContext validates a Config struct.
 func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, cfg,
-		validation.Field(&cfg.APIToken, validation.When(strings.EqualFold(strings.TrimSpace(cfg.Provider), providerSegment), validation.Required)),
+		validation.Field(&cfg.APIToken, validation.When(strings.EqualFold(strings.TrimSpace(cfg.Provider), ProviderSegment), validation.Required)),
 	)
 }
 
 // ProvideCollector provides a collector.
 func (cfg *Config) ProvideCollector(logger logging.Logger) (customerdata.Collector, error) {
 	switch strings.ToLower(strings.TrimSpace(cfg.Provider)) {
-	case providerSegment:
-		return segment.NewSegmentCustomerDataCollector(logger, cfg.APIToken)
+	case ProviderSegment:
+		return segment.NewSegmentCustomerDataCollector(logger, trace.NewNoopTracerProvider(), cfg.APIToken)
 	default:
 		return customerdata.NewNoopCollector()
 	}

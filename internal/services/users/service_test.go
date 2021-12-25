@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"testing"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
@@ -49,6 +51,7 @@ func buildTestService(t *testing.T) *service {
 		&mockuploads.UploadManager{},
 		chi.NewRouteParamManager(),
 		&customerdata.MockCollector{},
+		trace.NewNoopTracerProvider(),
 	)
 
 	mock.AssertExpectationsForObjects(t, mockDB, uc)
@@ -82,6 +85,7 @@ func TestProvideUsersService(T *testing.T) {
 			&mockuploads.UploadManager{},
 			rpm,
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.NotNil(t, s)

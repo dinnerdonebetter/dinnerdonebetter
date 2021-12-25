@@ -14,6 +14,8 @@ import (
 	"testing"
 	"time"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/prixfixeco/api_server/internal/capitalism"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
@@ -36,7 +38,7 @@ func buildTestPaymentManager(t *testing.T) *stripePaymentManager {
 
 	logger := logging.NewNoopLogger()
 
-	pm := ProvideStripePaymentManager(logger, &capitalism.StripeConfig{})
+	pm := ProvideStripePaymentManager(logger, trace.NewNoopTracerProvider(), &capitalism.StripeConfig{})
 
 	return pm.(*stripePaymentManager)
 }
@@ -48,7 +50,7 @@ func TestNewStripePaymentManager(T *testing.T) {
 		t.Parallel()
 
 		logger := logging.NewNoopLogger()
-		pm := ProvideStripePaymentManager(logger, &capitalism.StripeConfig{})
+		pm := ProvideStripePaymentManager(logger, trace.NewNoopTracerProvider(), &capitalism.StripeConfig{})
 
 		assert.NotNil(t, pm)
 	})

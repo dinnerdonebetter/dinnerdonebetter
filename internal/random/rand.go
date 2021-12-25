@@ -7,6 +7,8 @@ import (
 	"encoding/base64"
 	"io"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -19,7 +21,7 @@ const (
 var (
 	_ Generator = (*standardGenerator)(nil)
 
-	defaultGenerator = NewGenerator(logging.NewNoopLogger())
+	defaultGenerator = NewGenerator(logging.NewNoopLogger(), trace.NewNoopTracerProvider())
 )
 
 func init() {
@@ -44,10 +46,10 @@ type (
 )
 
 // NewGenerator builds a new Generator.
-func NewGenerator(logger logging.Logger) Generator {
+func NewGenerator(logger logging.Logger, tracerProvider tracing.TracerProvider) Generator {
 	return &standardGenerator{
 		logger:     logging.EnsureLogger(logger).WithName("random_string_generator"),
-		tracer:     tracing.NewTracer("secret_generator"),
+		tracer:     tracing.NewTracer(tracerProvider.Tracer("secret_generator")),
 		randReader: rand.Reader,
 	}
 }

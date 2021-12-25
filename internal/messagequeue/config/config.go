@@ -4,34 +4,47 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/prixfixeco/api_server/internal/messagequeue/consumers"
-	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
+	"github.com/prixfixeco/api_server/internal/messagequeue"
+	"github.com/prixfixeco/api_server/internal/messagequeue/redis"
+	"github.com/prixfixeco/api_server/internal/messagequeue/sqs"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
 
 const (
 	// ProviderRedis is used to refer to redis.
 	ProviderRedis = "redis"
+	// ProviderSQS is used to refer to sqs.
+	ProviderSQS = "sqs"
 )
 
 type (
 	// Provider is used to indicate what messaging provider we'll use.
 	Provider string
 
-	// MessageQueueAddress is a simple string alias for the location of our event queue server.
-	MessageQueueAddress string
-
 	// RedisConfig configures a Redis-backed consumer.
 	RedisConfig struct {
-		QueueAddress MessageQueueAddress `json:"message_queue_address" mapstructure:"message_queue_address" toml:"message_queue_address,omitempty"`
+		QueueAddress string `json:"message_queue_address,omitempty" mapstructure:"message_queue_address" toml:"message_queue_address,omitempty"`
+	}
+
+	// SQSConfig configures a SQS-backed consumer.
+	SQSConfig struct {
+		QueueAddress string `json:"message_queue_address,omitempty" mapstructure:"message_queue_address" toml:"message_queue_address,omitempty"`
+	}
+
+	// ProviderConfig is used to indicate how the messaging provider should be configured.
+	ProviderConfig struct {
+		_           struct{}
+		Provider    Provider     `json:"provider,omitempty" mapstructure:"provider" toml:"provider,omitempty"`
+		SQSConfig   sqs.Config   `json:"sqs,omitempty" mapstructure:"sqs" toml:"sqs,omitempty"`
+		RedisConfig redis.Config `json:"redis,omitempty" mapstructure:"redis" toml:"redis,omitempty"`
 	}
 
 	// Config is used to indicate how the messaging provider should be configured.
 	Config struct {
-		_ struct{}
-
-		Provider    Provider    `json:"provider" mapstructure:"provider" toml:"provider,omitempty"`
-		RedisConfig RedisConfig `json:"redis" mapstructure:"redis" toml:"redis,omitempty"`
+		_          struct{}
+		Consumers  ProviderConfig `json:"consumers,omitempty" mapstructure:"consumers" toml:"consumers,omitempty"`
+		Publishers ProviderConfig `json:"publishers,omitempty" mapstructure:"publishers" toml:"publishers,omitempty"`
 	}
 )
 
@@ -40,21 +53,23 @@ func cleanString(s string) string {
 }
 
 // ProvideConsumerProvider provides a PublisherProvider.
-func ProvideConsumerProvider(logger logging.Logger, c *Config) (consumers.ConsumerProvider, error) {
-	switch cleanString(string(c.Provider)) {
+func ProvideConsumerProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, c *Config) (messagequeue.ConsumerProvider, error) {
+	switch cleanString(string(c.Consumers.Provider)) {
 	case ProviderRedis:
-		return consumers.ProvideRedisConsumerProvider(logger, string(c.RedisConfig.QueueAddress)), nil
+		return redis.ProvideRedisConsumerProvider(logger, tracerProvider, c.Consumers.RedisConfig), nil
 	default:
-		return nil, fmt.Errorf("invalid provider: %q", c.Provider)
+		return nil, fmt.Errorf("invalid provider: %q", c.Consumers.Provider)
 	}
 }
 
 // ProvidePublisherProvider provides a PublisherProvider.
-func ProvidePublisherProvider(logger logging.Logger, c *Config) (publishers.PublisherProvider, error) {
-	switch cleanString(string(c.Provider)) {
+func ProvidePublisherProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, c *Config) (messagequeue.PublisherProvider, error) {
+	switch cleanString(string(c.Publishers.Provider)) {
 	case ProviderRedis:
-		return publishers.ProvideRedisPublisherProvider(logger, string(c.RedisConfig.QueueAddress)), nil
+		return redis.ProvideRedisPublisherProvider(logger, tracerProvider, c.Publishers.RedisConfig), nil
+	case ProviderSQS:
+		return sqs.ProvideSQSPublisherProvider(logger, tracerProvider), nil
 	default:
-		return nil, fmt.Errorf("invalid provider: %q", c.Provider)
+		return nil, fmt.Errorf("invalid publisher provider: %q", c.Publishers.Provider)
 	}
 }

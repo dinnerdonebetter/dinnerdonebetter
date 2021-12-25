@@ -1,12 +1,13 @@
 package config
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"testing"
 	"time"
+
+	"github.com/prixfixeco/api_server/internal/observability/metrics/config"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -15,13 +16,8 @@ import (
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	server "github.com/prixfixeco/api_server/internal/server"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
-	validingredientsservice "github.com/prixfixeco/api_server/internal/services/validingredients"
-	validinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validinstruments"
-	validpreparationsservice "github.com/prixfixeco/api_server/internal/services/validpreparations"
 )
 
 func TestServerConfig_EncodeToFile(T *testing.T) {
@@ -43,10 +39,8 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 				ContentType: "application/json",
 			},
 			Observability: observability.Config{
-				Metrics: metrics.Config{
-					Provider:                         "",
-					RouteToken:                       "",
-					RuntimeMetricsCollectionInterval: 2 * time.Second,
+				Metrics: config.Config{
+					Provider: "",
 				},
 			},
 			Services: ServicesConfigurations{
@@ -60,21 +54,11 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 					MinimumPasswordLength: 8,
 					EnableUserSignup:      true,
 				},
-				ValidInstruments: validinstrumentsservice.Config{
-					SearchIndexPath: "/valid_instruments_index_path",
-				},
-				ValidIngredients: validingredientsservice.Config{
-					SearchIndexPath: "/valid_ingredients_index_path",
-				},
-				ValidPreparations: validpreparationsservice.Config{
-					SearchIndexPath: "/valid_preparations_index_path",
-				},
 			},
 			Database: dbconfig.Config{
-				Provider:          "postgres",
 				Debug:             true,
 				RunMigrations:     true,
-				ConnectionDetails: database.ConnectionDetails("postgres://username:passwords@host/table"),
+				ConnectionDetails: database.ConnectionDetails("postgres://username:password@host/table"),
 			},
 		}
 
@@ -95,45 +79,5 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 		assert.Error(t, cfg.EncodeToFile(f.Name(), func(interface{}) ([]byte, error) {
 			return nil, errors.New("blah")
 		}))
-	})
-}
-
-func TestServerConfig_ProvideDatabaseClient(T *testing.T) {
-	T.Parallel()
-
-	T.Run("supported providers", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-
-		for _, provider := range []string{"postgres"} {
-			cfg := &InstanceConfig{
-				Database: dbconfig.Config{
-					Provider: provider,
-				},
-			}
-
-			x, err := ProvideDatabaseClient(ctx, logger, cfg)
-			assert.NotNil(t, x)
-			assert.NoError(t, err)
-		}
-	})
-
-	T.Run("with invalid provider", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-
-		cfg := &InstanceConfig{
-			Database: dbconfig.Config{
-				Provider: "provider",
-			},
-		}
-
-		x, err := ProvideDatabaseClient(ctx, logger, cfg)
-		assert.Nil(t, x)
-		assert.Error(t, err)
 	})
 }

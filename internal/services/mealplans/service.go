@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/prixfixeco/api_server/internal/messagequeue"
+
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/routing"
-	"github.com/prixfixeco/api_server/internal/search"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -23,18 +23,15 @@ const (
 var _ types.MealPlanDataService = (*service)(nil)
 
 type (
-	// SearchIndex is a type alias for dependency injection's sake.
-	SearchIndex search.IndexManager
-
 	// service handles meal plans.
 	service struct {
 		logger                    logging.Logger
 		mealPlanDataManager       types.MealPlanDataManager
 		mealPlanIDFetcher         func(*http.Request) string
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
-		preWritesPublisher        publishers.Publisher
-		preUpdatesPublisher       publishers.Publisher
-		preArchivesPublisher      publishers.Publisher
+		preWritesPublisher        messagequeue.Publisher
+		preUpdatesPublisher       messagequeue.Publisher
+		preArchivesPublisher      messagequeue.Publisher
 		encoderDecoder            encoding.ServerEncoderDecoder
 		tracer                    tracing.Tracer
 		customerDataCollector     customerdata.Collector
@@ -49,8 +46,9 @@ func ProvideService(
 	mealPlanDataManager types.MealPlanDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
-	publisherProvider publishers.PublisherProvider,
+	publisherProvider messagequeue.PublisherProvider,
 	customerDataCollector customerdata.Collector,
+	tracerProvider tracing.TracerProvider,
 ) (types.MealPlanDataService, error) {
 	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
 	if err != nil {
@@ -76,7 +74,7 @@ func ProvideService(
 		preUpdatesPublisher:       preUpdatesPublisher,
 		preArchivesPublisher:      preArchivesPublisher,
 		encoderDecoder:            encoder,
-		tracer:                    tracing.NewTracer(serviceName),
+		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 		customerDataCollector:     customerDataCollector,
 	}
 

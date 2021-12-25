@@ -9,6 +9,7 @@ The following tools are prerequisites for development work:
 - [docker-compose](https://docs.docker.com/compose/install/)
 - [wire](https://github.com/google/wire) for dependency management
 - [make](https://www.gnu.org/software/make/) for task running
+- [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) for deploying/formatting
 
 ## dev setup
 
@@ -18,7 +19,7 @@ It's a good idea to run `mage make lintegration_tests` before commits. You won't
 
 1. clone this repository
 2. run `make run`
-3. [http://localhost:8888/](http://localhost:8888/)
+3. [http://localhost:8000/](http://localhost:8000/)
 
 ## working on the frontend
 

@@ -93,10 +93,10 @@ func (e *clientEncoder) EncodeReader(ctx context.Context, data interface{}) (io.
 }
 
 // ProvideClientEncoder provides a ClientEncoder.
-func ProvideClientEncoder(logger logging.Logger, encoding *contentType) ClientEncoder {
+func ProvideClientEncoder(logger logging.Logger, tracerProvider tracing.TracerProvider, encoding *contentType) ClientEncoder {
 	return &clientEncoder{
 		logger:      logging.EnsureLogger(logger).WithName("client_encoder"),
-		tracer:      tracing.NewTracer("client_encoder"),
+		tracer:      tracing.NewTracer(tracerProvider.Tracer("client_encoder")),
 		contentType: encoding,
 	}
 }

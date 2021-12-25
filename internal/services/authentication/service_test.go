@@ -4,6 +4,8 @@ import (
 	"testing"
 	"time"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/alexedwards/scs/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -19,14 +21,14 @@ func buildTestService(t *testing.T) *service {
 	t.Helper()
 
 	logger := logging.NewNoopLogger()
-	encoderDecoder := encoding.ProvideServerEncoderDecoder(logger, encoding.ContentTypeJSON)
+	encoderDecoder := encoding.ProvideServerEncoderDecoder(logger, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 	s, err := ProvideService(
 		logger,
 		&Config{
 			Cookies: CookieConfig{
-				Name:       DefaultCookieName,
-				SigningKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!",
+				Name:     DefaultCookieName,
+				BlockKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!",
 			},
 			PASETO: PASETOConfig{
 				Issuer:       "test",
@@ -41,6 +43,7 @@ func buildTestService(t *testing.T) *service {
 		scs.New(),
 		encoderDecoder,
 		&customerdata.MockCollector{},
+		trace.NewNoopTracerProvider(),
 	)
 	require.NoError(t, err)
 
@@ -53,14 +56,14 @@ func TestProvideService(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 		logger := logging.NewNoopLogger()
-		encoderDecoder := encoding.ProvideServerEncoderDecoder(logger, encoding.ContentTypeJSON)
+		encoderDecoder := encoding.ProvideServerEncoderDecoder(logger, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		s, err := ProvideService(
 			logger,
 			&Config{
 				Cookies: CookieConfig{
-					Name:       DefaultCookieName,
-					SigningKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!",
+					Name:     DefaultCookieName,
+					BlockKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!",
 				},
 			},
 			&mockauthn.Authenticator{},
@@ -70,6 +73,7 @@ func TestProvideService(T *testing.T) {
 			scs.New(),
 			encoderDecoder,
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.NotNil(t, s)
@@ -79,14 +83,14 @@ func TestProvideService(T *testing.T) {
 	T.Run("with invalid cookie key", func(t *testing.T) {
 		t.Parallel()
 		logger := logging.NewNoopLogger()
-		encoderDecoder := encoding.ProvideServerEncoderDecoder(logger, encoding.ContentTypeJSON)
+		encoderDecoder := encoding.ProvideServerEncoderDecoder(logger, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		s, err := ProvideService(
 			logger,
 			&Config{
 				Cookies: CookieConfig{
-					Name:       DefaultCookieName,
-					SigningKey: "BLAHBLAHBLAH",
+					Name:     DefaultCookieName,
+					BlockKey: "BLAHBLAHBLAH",
 				},
 			},
 			&mockauthn.Authenticator{},
@@ -96,6 +100,7 @@ func TestProvideService(T *testing.T) {
 			scs.New(),
 			encoderDecoder,
 			&customerdata.MockCollector{},
+			trace.NewNoopTracerProvider(),
 		)
 
 		assert.Nil(t, s)

@@ -9,7 +9,7 @@
     <kind value="FILE" />
     <package value="github.com/prixfixeco/api_server" />
     <directory value="$PROJECT_DIR$" />
-    <filePath value="$PROJECT_DIR$/cmd/workers/main.go" />
+    <filePath value="$PROJECT_DIR$/cmd/workers/localdev/main.go" />
     <method v="2" />
   </configuration>
 </component>

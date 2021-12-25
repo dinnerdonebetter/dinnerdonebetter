@@ -2,18 +2,18 @@ package workers
 
 import (
 	"context"
-	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/email"
-	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/publishers/mock"
+	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/search"
+	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 )
 
 func newTestWritesWorker(t *testing.T) *WritesWorker {
@@ -21,24 +21,17 @@ func newTestWritesWorker(t *testing.T) *WritesWorker {
 
 	ctx := context.Background()
 	logger := logging.NewNoopLogger()
-	client := &http.Client{}
 	dbManager := &database.MockDatabase{}
-	postArchivesPublisher := &mockpublishers.Publisher{}
-	searchIndexLocation := search.IndexPath(t.Name())
-	searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-		return nil, nil
-	}
+	postWritesPublisher := &mockpublishers.Publisher{}
 
 	worker, err := ProvideWritesWorker(
 		ctx,
 		logger,
-		client,
 		dbManager,
-		postArchivesPublisher,
-		searchIndexLocation,
-		searchIndexProvider,
+		postWritesPublisher,
 		&email.MockEmailer{},
 		&customerdata.MockCollector{},
+		trace.NewNoopTracerProvider(),
 	)
 	require.NotNil(t, worker)
 	require.NoError(t, err)
@@ -51,24 +44,17 @@ func newTestUpdatesWorker(t *testing.T) *UpdatesWorker {
 
 	ctx := context.Background()
 	logger := logging.NewNoopLogger()
-	client := &http.Client{}
 	dbManager := &database.MockDatabase{}
-	postArchivesPublisher := &mockpublishers.Publisher{}
-	searchIndexLocation := search.IndexPath(t.Name())
-	searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-		return nil, nil
-	}
+	postUpdatesPublisher := &mockpublishers.Publisher{}
 
 	worker, err := ProvideUpdatesWorker(
 		ctx,
 		logger,
-		client,
 		dbManager,
-		postArchivesPublisher,
-		searchIndexLocation,
-		searchIndexProvider,
+		postUpdatesPublisher,
 		&email.MockEmailer{},
 		&customerdata.MockCollector{},
+		trace.NewNoopTracerProvider(),
 	)
 	require.NotNil(t, worker)
 	require.NoError(t, err)
@@ -80,11 +66,12 @@ func newTestChoresWorker(t *testing.T) *ChoresWorker {
 	t.Helper()
 
 	worker := ProvideChoresWorker(
-		logging.NewZerologLogger(),
+		zerolog.NewZerologLogger(),
 		&database.MockDatabase{},
 		&mockpublishers.Publisher{},
 		&email.MockEmailer{},
 		&customerdata.MockCollector{},
+		trace.NewNoopTracerProvider(),
 	)
 	assert.NotNil(t, worker)
 
@@ -96,23 +83,16 @@ func newTestArchivesWorker(t *testing.T) *ArchivesWorker {
 
 	ctx := context.Background()
 	logger := logging.NewNoopLogger()
-	client := &http.Client{}
 	dbManager := database.NewMockDatabase()
 	postArchivesPublisher := &mockpublishers.Publisher{}
-	searchIndexLocation := search.IndexPath(t.Name())
-	searchIndexProvider := func(context.Context, logging.Logger, *http.Client, search.IndexPath, search.IndexName, ...string) (search.IndexManager, error) {
-		return nil, nil
-	}
 
 	worker, err := ProvideArchivesWorker(
 		ctx,
 		logger,
-		client,
 		dbManager,
 		postArchivesPublisher,
-		searchIndexLocation,
-		searchIndexProvider,
 		&customerdata.MockCollector{},
+		trace.NewNoopTracerProvider(),
 	)
 	require.NotNil(t, worker)
 	require.NoError(t, err)

@@ -2,7 +2,12 @@ package config
 
 import (
 	"context"
+	"net/http"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/prixfixeco/api_server/internal/observability/logging"
 
 	"github.com/stretchr/testify/require"
 )
@@ -30,5 +35,36 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 		}
 
 		require.Error(t, cfg.ValidateWithContext(ctx))
+	})
+}
+
+func TestConfig_ProvideEmailer(T *testing.T) {
+	T.Parallel()
+
+	T.Run("with SendGrid", func(t *testing.T) {
+		t.Parallel()
+
+		logger := logging.NewNoopLogger()
+		cfg := &Config{
+			Provider: ProviderSendgrid,
+			APIToken: t.Name(),
+		}
+
+		actual, err := cfg.ProvideEmailer(logger, &http.Client{})
+		assert.NotNil(t, actual)
+		assert.NoError(t, err)
+	})
+
+	T.Run("with invalid provider", func(t *testing.T) {
+		t.Parallel()
+
+		logger := logging.NewNoopLogger()
+		cfg := &Config{
+			Provider: "",
+		}
+
+		actual, err := cfg.ProvideEmailer(logger, &http.Client{})
+		assert.NotNil(t, actual)
+		assert.NoError(t, err)
 	})
 }

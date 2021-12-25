@@ -233,10 +233,10 @@ func (e *serverEncoderDecoder) DecodeRequest(ctx context.Context, req *http.Requ
 }
 
 // ProvideServerEncoderDecoder provides a ServerEncoderDecoder.
-func ProvideServerEncoderDecoder(logger logging.Logger, contentType ContentType) ServerEncoderDecoder {
+func ProvideServerEncoderDecoder(logger logging.Logger, tracerProvider tracing.TracerProvider, contentType ContentType) ServerEncoderDecoder {
 	return &serverEncoderDecoder{
 		logger:      logging.EnsureLogger(logger).WithName("server_encoder_decoder"),
-		tracer:      tracing.NewTracer("server_encoder_decoder"),
+		tracer:      tracing.NewTracer(tracerProvider.Tracer("server_encoder_decoder")),
 		panicker:    panicking.NewProductionPanicker(),
 		contentType: contentType,
 	}

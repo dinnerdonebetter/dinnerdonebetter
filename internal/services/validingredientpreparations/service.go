@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/prixfixeco/api_server/internal/messagequeue"
+
 	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/routing"
-	"github.com/prixfixeco/api_server/internal/search"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -22,18 +22,15 @@ const (
 var _ types.ValidIngredientPreparationDataService = (*service)(nil)
 
 type (
-	// SearchIndex is a type alias for dependency injection's sake.
-	SearchIndex search.IndexManager
-
 	// service handles valid ingredient preparations.
 	service struct {
 		logger                                logging.Logger
 		validIngredientPreparationDataManager types.ValidIngredientPreparationDataManager
 		validIngredientPreparationIDFetcher   func(*http.Request) string
 		sessionContextDataFetcher             func(*http.Request) (*types.SessionContextData, error)
-		preWritesPublisher                    publishers.Publisher
-		preUpdatesPublisher                   publishers.Publisher
-		preArchivesPublisher                  publishers.Publisher
+		preWritesPublisher                    messagequeue.Publisher
+		preUpdatesPublisher                   messagequeue.Publisher
+		preArchivesPublisher                  messagequeue.Publisher
 		encoderDecoder                        encoding.ServerEncoderDecoder
 		tracer                                tracing.Tracer
 	}
@@ -47,7 +44,8 @@ func ProvideService(
 	validIngredientPreparationDataManager types.ValidIngredientPreparationDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
-	publisherProvider publishers.PublisherProvider,
+	publisherProvider messagequeue.PublisherProvider,
+	tracerProvider tracing.TracerProvider,
 ) (types.ValidIngredientPreparationDataService, error) {
 	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
 	if err != nil {
@@ -73,7 +71,7 @@ func ProvideService(
 		preUpdatesPublisher:                   preUpdatesPublisher,
 		preArchivesPublisher:                  preArchivesPublisher,
 		encoderDecoder:                        encoder,
-		tracer:                                tracing.NewTracer(serviceName),
+		tracer:                                tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 	}
 
 	return svc, nil

@@ -2,14 +2,16 @@ package logging
 
 import (
 	"net/http"
+
+	"go.opentelemetry.io/otel/trace"
 )
 
-// noopLogger is a default zerologLogger we can provide that does nothing in case of dire emergencies.
+// noopLogger is a default Logger we can provide that does nothing in case of dire emergencies.
 type noopLogger struct{}
 
 var logger = new(noopLogger)
 
-// NewNoopLogger provides our noop zerologLogger to dependency managers.
+// NewNoopLogger provides our noop Logger to dependency managers.
 func NewNoopLogger() Logger { return logger }
 
 // Info satisfies our interface.
@@ -53,3 +55,6 @@ func (l *noopLogger) WithResponse(*http.Response) Logger { return l }
 
 // WithError satisfies our interface.
 func (l *noopLogger) WithError(error) Logger { return l }
+
+// WithSpan satisfies our interface.
+func (l *noopLogger) WithSpan(trace.Span) Logger { return l }

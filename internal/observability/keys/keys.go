@@ -27,6 +27,10 @@ const (
 	ServiceRoleKey = "user.service_role"
 	// NameKey is the standard key for referring to a name.
 	NameKey = "name"
+	// SpanIDKey is the standard key for referring to a span ID.
+	SpanIDKey = "span.id"
+	// TraceIDKey is the standard key for referring to a trace ID.
+	TraceIDKey = "trace.id"
 	// FilterCreatedAfterKey is the standard key for referring to a types.QueryFilter's CreatedAfter field.
 	FilterCreatedAfterKey = "query_filter.created_after"
 	// FilterCreatedBeforeKey is the standard key for referring to a types.QueryFilter's CreatedBefore field.

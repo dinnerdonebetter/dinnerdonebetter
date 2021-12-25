@@ -70,72 +70,72 @@ var (
 	mealPlanOptionVotesMigration string
 	migrations                   = []darwin.Migration{
 		{
-			Version:     0.01,
+			Version:     1,
 			Description: "basic infrastructural tables",
 			Script:      initMigration,
 		},
 		{
-			Version:     0.02,
+			Version:     2,
 			Description: "create valid instruments table",
 			Script:      validInstrumentsMigration,
 		},
 		{
-			Version:     0.03,
+			Version:     3,
 			Description: "create valid ingredients table",
 			Script:      validIngredientsMigration,
 		},
 		{
-			Version:     0.04,
+			Version:     4,
 			Description: "create valid preparations table",
 			Script:      validPreparationsMigration,
 		},
 		{
-			Version:     0.05,
+			Version:     5,
 			Description: "create valid ingredient preparations table",
 			Script:      validIngredientPreparationsMigration,
 		},
 		{
-			Version:     0.06,
+			Version:     6,
 			Description: "create recipes table",
 			Script:      recipesMigration,
 		},
 		{
-			Version:     0.07,
+			Version:     7,
 			Description: "create recipe steps table",
 			Script:      recipeStepsMigration,
 		},
 		{
-			Version:     0.08,
+			Version:     8,
 			Description: "create recipe step instruments table",
 			Script:      recipeStepInstrumentsMigration,
 		},
 		{
-			Version:     0.09,
+			Version:     9,
 			Description: "create recipe step ingredients table",
 			Script:      recipeStepIngredientsMigration,
 		},
 		{
-			Version:     0.1,
+			Version:     10,
 			Description: "create recipe step products table",
 			Script:      recipeStepProductsMigration,
 		},
 		{
-			Version:     0.11,
+			Version:     11,
 			Description: "create meals table",
 			Script:      mealsMigration,
 		},
 		{
-			Version:     0.12,
+			Version:     12,
 			Description: "create meal plans table",
 			Script:      mealPlansMigration,
 		},
 		{
-			Version:     0.13,
+			Version:     13,
 			Description: "create meal plan options table",
 			Script:      mealPlanOptionsMigration,
 		},
 		{
-			Version:     0.14,
+			Version:     14,
 			Description: "create meal plan option votes table",
 			Script:      mealPlanOptionVotesMigration,
 		},

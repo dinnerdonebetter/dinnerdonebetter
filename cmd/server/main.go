@@ -1,21 +1,21 @@
 package main
 
 import (
+	"bytes"
 	"context"
-	"errors"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"strconv"
 
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
-	flag "github.com/spf13/pflag"
 
 	"github.com/prixfixeco/api_server/internal/build/server"
 	"github.com/prixfixeco/api_server/internal/config"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/internal/secrets"
 )
 
 const (
@@ -23,42 +23,10 @@ const (
 	configFilepathEnvVar = "CONFIGURATION_FILEPATH"
 )
 
-var (
-	configFilepath string
-	errNoConfig    = errors.New("no configuration file provided")
-)
-
-func init() {
-	flag.StringVarP(&configFilepath, "config", "c", "", "the config filepath")
-}
-
-func initializeLocalSecretManager(ctx context.Context) secrets.SecretManager {
-	logger := logging.NewNoopLogger()
-
-	cfg := &secrets.Config{
-		Provider: secrets.ProviderLocal,
-		Key:      os.Getenv("PRIXFIXE_SERVER_LOCAL_CONFIG_STORE_KEY"),
-	}
-
-	k, err := secrets.ProvideSecretKeeper(ctx, cfg)
-	if err != nil {
-		panic(err)
-	}
-
-	sm, err := secrets.ProvideSecretManager(logger, k)
-	if err != nil {
-		panic(err)
-	}
-
-	return sm
-}
-
 func main() {
-	flag.Parse()
-
 	var (
 		ctx    = context.Background()
-		logger = logging.ProvideLogger(logging.Config{Provider: logging.ProviderZerolog})
+		logger = (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
 	)
 
 	logger.SetLevel(logging.DebugLevel)
@@ -67,37 +35,47 @@ func main() {
 		return chimiddleware.GetReqID(req.Context())
 	})
 
-	if x, err := strconv.ParseBool(os.Getenv(useNoOpLoggerEnvVar)); x && err == nil {
+	if x, parseErr := strconv.ParseBool(os.Getenv(useNoOpLoggerEnvVar)); x && parseErr == nil {
 		logger = logging.NewNoopLogger()
 	}
 
 	// find and validate our configuration filepath.
-	if configFilepath == "" {
-		if configFilepath = os.Getenv(configFilepathEnvVar); configFilepath == "" {
-			logger.Fatal(errNoConfig)
+
+	var (
+		cfg *config.InstanceConfig
+		err error
+	)
+
+	// find and validate our configuration filepath.
+	if configFilepath := os.Getenv(configFilepathEnvVar); configFilepath != "" {
+		configBytes, configReadErr := os.ReadFile(configFilepath)
+		if configReadErr != nil {
+			logger.Fatal(configReadErr)
+		}
+
+		if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
+			logger.Fatal(err)
+		}
+	} else {
+		cfg, err = config.GetConfigFromParameterStore(false)
+		if err != nil {
+			logger.Fatal(err)
 		}
 	}
 
-	configBytes, err := os.ReadFile(configFilepath)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	sm := initializeLocalSecretManager(ctx)
-
-	var cfg *config.InstanceConfig
-	if err = sm.Decrypt(ctx, string(configBytes), &cfg); err != nil || cfg == nil {
-		logger.Fatal(err)
-	}
-
-	flushFunc, initializeTracerErr := cfg.Observability.Tracing.Initialize(logger)
+	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.Initialize(ctx, logger)
 	if initializeTracerErr != nil {
 		logger.Error(initializeTracerErr, "initializing tracer")
 	}
 
-	// if tracing is disabled, this will be nil
-	if flushFunc != nil {
-		defer flushFunc()
+	metricsProvider, initializeMetricsErr := cfg.Observability.Metrics.ProvideUnitCounterProvider(ctx, logger)
+	if initializeMetricsErr != nil {
+		logger.Error(initializeMetricsErr, "initializing metrics collector")
+	}
+
+	metricsHandler, metricsHandlerErr := cfg.Observability.Metrics.ProvideMetricsHandler(logger)
+	if metricsHandlerErr != nil {
+		logger.Error(metricsHandlerErr, "initializing metrics handler")
 	}
 
 	// only allow initialization to take so long.
@@ -105,7 +83,7 @@ func main() {
 	ctx, initSpan := tracing.StartSpan(ctx)
 
 	// build our server struct.
-	srv, err := server.Build(ctx, logger, cfg)
+	srv, err := server.Build(ctx, logger, cfg, tracerProvider, metricsProvider, metricsHandler)
 	if err != nil {
 		logger.Fatal(fmt.Errorf("initializing HTTP server: %w", err))
 	}

@@ -9,12 +9,13 @@ import (
 	"os"
 	"time"
 
+	"github.com/prixfixeco/api_server/internal/observability/metrics"
+
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"golang.org/x/net/http2"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/panicking"
 	"github.com/prixfixeco/api_server/internal/routing"
@@ -64,7 +65,6 @@ type (
 func ProvideHTTPServer(
 	ctx context.Context,
 	serverSettings Config,
-	metricsHandler metrics.InstrumentationHandler,
 	authService types.AuthService,
 	usersService types.UserDataService,
 	householdsService types.HouseholdDataService,
@@ -89,12 +89,14 @@ func ProvideHTTPServer(
 	logger logging.Logger,
 	encoder encoding.ServerEncoderDecoder,
 	router routing.Router,
+	tracerProvider tracing.TracerProvider,
+	metricsHandler metrics.Handler,
 ) (*HTTPServer, error) {
 	srv := &HTTPServer{
 		config: serverSettings,
 
 		// infra things,
-		tracer:     tracing.NewTracer(loggerName),
+		tracer:     tracing.NewTracer(tracerProvider.Tracer(loggerName)),
 		encoder:    encoder,
 		logger:     logging.EnsureLogger(logger).WithName(loggerName),
 		panicker:   panicking.NewProductionPanicker(),

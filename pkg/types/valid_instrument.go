@@ -79,6 +79,7 @@ type (
 		GetValidInstrument(ctx context.Context, validInstrumentID string) (*ValidInstrument, error)
 		GetTotalValidInstrumentCount(ctx context.Context) (uint64, error)
 		GetValidInstruments(ctx context.Context, filter *QueryFilter) (*ValidInstrumentList, error)
+		SearchForValidInstruments(ctx context.Context, query string) ([]*ValidInstrument, error)
 		GetValidInstrumentsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*ValidInstrument, error)
 		CreateValidInstrument(ctx context.Context, input *ValidInstrumentDatabaseCreationInput) (*ValidInstrument, error)
 		UpdateValidInstrument(ctx context.Context, updated *ValidInstrument) error

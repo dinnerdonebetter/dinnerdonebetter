@@ -6,6 +6,8 @@ import (
 	"os"
 	"testing"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
@@ -45,7 +47,7 @@ func TestNewUploadManager(T *testing.T) {
 		rpm := &mockrouting.RouteParamManager{}
 		rpm.On("BuildRouteParamStringIDFetcher", cfg.UploadFilenameKey).Return(func(*http.Request) string { return t.Name() })
 
-		x, err := NewUploadManager(ctx, l, cfg, rpm)
+		x, err := NewUploadManager(ctx, l, trace.NewNoopTracerProvider(), cfg, rpm)
 		assert.NotNil(t, x)
 		assert.NoError(t, err)
 
@@ -59,7 +61,7 @@ func TestNewUploadManager(T *testing.T) {
 		l := logging.NewNoopLogger()
 		rpm := &mockrouting.RouteParamManager{}
 
-		x, err := NewUploadManager(ctx, l, nil, rpm)
+		x, err := NewUploadManager(ctx, l, trace.NewNoopTracerProvider(), nil, rpm)
 		assert.Nil(t, x)
 		assert.Error(t, err)
 
@@ -75,7 +77,7 @@ func TestNewUploadManager(T *testing.T) {
 		rpm := &mockrouting.RouteParamManager{}
 		rpm.On("BuildRouteParamStringIDFetcher", cfg.UploadFilenameKey).Return(func(*http.Request) string { return t.Name() })
 
-		x, err := NewUploadManager(ctx, l, cfg, rpm)
+		x, err := NewUploadManager(ctx, l, trace.NewNoopTracerProvider(), cfg, rpm)
 		assert.Nil(t, x)
 		assert.Error(t, err)
 
@@ -85,49 +87,6 @@ func TestNewUploadManager(T *testing.T) {
 
 func TestUploader_selectBucket(T *testing.T) {
 	T.Parallel()
-
-	T.Run("azure happy path", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		u := &Uploader{}
-		cfg := &Config{
-			Provider: AzureProvider,
-			AzureConfig: &AzureConfig{
-				AccountName: "blah",
-				BucketName:  "blahs",
-				Retrying:    &AzureRetryConfig{},
-			},
-		}
-
-		assert.NoError(t, u.selectBucket(ctx, cfg))
-	})
-
-	T.Run("azure with nil config", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		u := &Uploader{}
-		cfg := &Config{
-			Provider:    AzureProvider,
-			AzureConfig: nil,
-		}
-
-		assert.Error(t, u.selectBucket(ctx, cfg))
-	})
-
-	T.Run("gcs with nil config", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		u := &Uploader{}
-		cfg := &Config{
-			Provider:  GCSProvider,
-			GCSConfig: nil,
-		}
-
-		assert.Error(t, u.selectBucket(ctx, cfg))
-	})
 
 	T.Run("s3 happy path", func(t *testing.T) {
 		t.Parallel()

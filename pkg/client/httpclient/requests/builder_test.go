@@ -8,6 +8,8 @@ import (
 	"net/url"
 	"testing"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -34,8 +36,8 @@ func TestNewBuilder(T *testing.T) {
 		t.Parallel()
 
 		logger := logging.NewNoopLogger()
-		encoder := encoding.ProvideClientEncoder(logger, encoding.ContentTypeJSON)
-		c, err := NewBuilder(mustParseURL(exampleURI), logger, encoder)
+		encoder := encoding.ProvideClientEncoder(logger, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		c, err := NewBuilder(mustParseURL(exampleURI), logger, trace.NewNoopTracerProvider(), encoder)
 
 		require.NotNil(t, c)
 		require.NoError(t, err)
@@ -45,8 +47,8 @@ func TestNewBuilder(T *testing.T) {
 		t.Parallel()
 
 		logger := logging.NewNoopLogger()
-		encoder := encoding.ProvideClientEncoder(logger, encoding.ContentTypeJSON)
-		c, err := NewBuilder(nil, logger, encoder)
+		encoder := encoding.ProvideClientEncoder(logger, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		c, err := NewBuilder(nil, logger, trace.NewNoopTracerProvider(), encoder)
 
 		require.Nil(t, c)
 		require.Error(t, err)
@@ -56,7 +58,7 @@ func TestNewBuilder(T *testing.T) {
 		t.Parallel()
 
 		logger := logging.NewNoopLogger()
-		c, err := NewBuilder(mustParseURL(exampleURI), logger, nil)
+		c, err := NewBuilder(mustParseURL(exampleURI), logger, trace.NewNoopTracerProvider(), nil)
 
 		require.Nil(t, c)
 		require.Error(t, err)
@@ -102,9 +104,9 @@ func TestBuilder_BuildURL(T *testing.T) {
 		t.Parallel()
 
 		logger := logging.NewNoopLogger()
-		encoder := encoding.ProvideClientEncoder(logger, encoding.ContentTypeJSON)
+		encoder := encoding.ProvideClientEncoder(logger, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		c, _ := NewBuilder(mustParseURL(exampleURI), logger, encoder)
+		c, _ := NewBuilder(mustParseURL(exampleURI), logger, trace.NewNoopTracerProvider(), encoder)
 		ctx := context.Background()
 
 		testCases := []struct {
@@ -205,8 +207,8 @@ func TestBuilder_buildUnversionedURL(T *testing.T) {
 		t.Parallel()
 
 		logger := logging.NewNoopLogger()
-		encoder := encoding.ProvideClientEncoder(logger, encoding.ContentTypeJSON)
-		b, err := NewBuilder(mustParseURL(exampleURI), logger, encoder)
+		encoder := encoding.ProvideClientEncoder(logger, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		b, err := NewBuilder(mustParseURL(exampleURI), logger, trace.NewNoopTracerProvider(), encoder)
 
 		require.NoError(t, err)
 
@@ -258,12 +260,12 @@ func TestBuilder_BuildWebsocketURL(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		encoder := encoding.ProvideClientEncoder(logger, encoding.ContentTypeJSON)
-		c, err := NewBuilder(mustParseURL(exampleURI), logger, encoder)
+		encoder := encoding.ProvideClientEncoder(logger, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		c, err := NewBuilder(mustParseURL(exampleURI), logger, trace.NewNoopTracerProvider(), encoder)
 
 		require.NoError(t, err)
 
-		expected := "ws://prixfixe.verygoodsoftwarenotvirus.ru/api/v1/things/and/stuff"
+		expected := "wss://prixfixe.verygoodsoftwarenotvirus.ru/api/v1/things/and/stuff"
 		actual := c.BuildWebsocketURL(ctx, "things", "and", "stuff")
 
 		assert.Equal(t, expected, actual)

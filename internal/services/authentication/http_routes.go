@@ -476,7 +476,7 @@ func (s *service) CycleCookieSecretHandler(res http.ResponseWriter, req *http.Re
 
 	s.cookieManager = securecookie.New(
 		securecookie.GenerateRandomKey(cookieSecretSize),
-		[]byte(s.config.Cookies.SigningKey),
+		[]byte(s.config.Cookies.BlockKey),
 	)
 
 	res.WriteHeader(http.StatusAccepted)

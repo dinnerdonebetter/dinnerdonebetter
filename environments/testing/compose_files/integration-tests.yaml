@@ -1,5 +1,26 @@
 version: "3.8"
 services:
+    redis:
+        hostname: worker_queue
+        image: redis:6-buster
+        container_name: redis
+        ports:
+            - '6379:6379'
+        command: [ "redis-server", "--cluster-enabled yes" ]
+        logging:
+            driver: none
+    postgres:
+        container_name: postgres
+        hostname: pgdatabase
+        image: postgres:10
+        environment:
+            POSTGRES_DB: 'prixfixe'
+            POSTGRES_PASSWORD: 'hunter2'
+            POSTGRES_USER: 'dbuser'
+        logging:
+            driver: none
+        ports:
+            - '5432:5432'
     workers:
         container_name: integration_tests_workers
         build:
@@ -9,14 +30,12 @@ services:
             CONFIGURATION_FILEPATH: '/etc/service.config'
             PRIXFIXE_WORKERS_LOCAL_CONFIG_STORE_KEY: 'SUFNQVdBUkVUSEFUVEhJU1NFQ1JFVElTVU5TRUNVUkU='
         volumes:
-            - source: '../../../environments/testing/config_files/integration-tests.config'
+            - source: '../../../environments/testing/config_files/integration-tests-config.json'
               target: '/etc/service.config'
               type: 'bind'
     prixfixe_api_server:
         hostname: api_server
         container_name: integration_tests_server
-#        logging:
-#            driver: none
         depends_on:
             - workers
         environment:
@@ -24,23 +43,17 @@ services:
             CONFIGURATION_FILEPATH: '/etc/service.config'
             PRIXFIXE_SERVER_LOCAL_CONFIG_STORE_KEY: 'SUFNQVdBUkVUSEFUVEhJU1NFQ1JFVElTVU5TRUNVUkU='
         ports:
-            - '8888:8888'
+            - '8000:8000'
         build:
             context: '../../../'
             dockerfile: 'environments/testing/dockerfiles/integration-server.Dockerfile'
         volumes:
-            - source: '../../../environments/local/certificates/cert.pem'
-              target: '/etc/certs/cert.pem'
-              type: 'bind'
-            - source: '../../../environments/local/certificates/key.pem'
-              target: '/etc/certs/key.pem'
-              type: 'bind'
-            - source: '../../../environments/testing/config_files/integration-tests.config'
+            - source: '../../../environments/testing/config_files/integration-tests-config.json'
               target: '/etc/service.config'
               type: 'bind'
     test:
         environment:
-            TARGET_ADDRESS: 'http://api_server:8888'
+            TARGET_ADDRESS: 'http://api_server:8000'
             TARGET_DATABASE: 'postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable'
         depends_on:
             - workers

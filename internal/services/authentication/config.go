@@ -24,33 +24,33 @@ type (
 	CookieConfig struct {
 		_ struct{}
 
-		Name       string        `json:"name" mapstructure:"name" toml:"name,omitempty"`
-		Domain     string        `json:"domain" mapstructure:"domain" toml:"domain,omitempty"`
-		HashKey    string        `json:"hash_key" mapstructure:"hash_key" toml:"hash_key,omitempty"`
-		SigningKey string        `json:"signing_key" mapstructure:"signing_key" toml:"signing_key,omitempty"`
-		Lifetime   time.Duration `json:"lifetime" mapstructure:"lifetime" toml:"lifetime,omitempty"`
-		SecureOnly bool          `json:"secure_only" mapstructure:"secure_only" toml:"secure_only,omitempty"`
+		Name       string        `json:"name,omitempty" mapstructure:"name" toml:"name,omitempty"`
+		Domain     string        `json:"domain,omitempty" mapstructure:"domain" toml:"domain,omitempty"`
+		HashKey    string        `json:"hashKey,omitempty" mapstructure:"hash_key" toml:"hash_key,omitempty"`
+		BlockKey   string        `json:"blockKey,omitempty" mapstructure:"signing_key" toml:"signing_key,omitempty"`
+		Lifetime   time.Duration `json:"lifetime,omitempty" mapstructure:"lifetime" toml:"lifetime,omitempty"`
+		SecureOnly bool          `json:"secureOnly,omitempty" mapstructure:"secure_only" toml:"secure_only,omitempty"`
 	}
 
 	// PASETOConfig holds our PASETO settings.
 	PASETOConfig struct {
 		_ struct{}
 
-		Issuer       string        `json:"issuer" mapstructure:"issuer" toml:"issuer,omitempty"`
-		LocalModeKey []byte        `json:"local_mode_key" mapstructure:"local_mode_key" toml:"local_mode_key,omitempty"`
-		Lifetime     time.Duration `json:"lifetime" mapstructure:"lifetime" toml:"lifetime,omitempty"`
+		Issuer       string        `json:"issuer,omitempty" mapstructure:"issuer" toml:"issuer,omitempty"`
+		LocalModeKey []byte        `json:"localModeKey,omitempty" mapstructure:"local_mode_key" toml:"local_mode_key,omitempty"`
+		Lifetime     time.Duration `json:"lifetime,omitempty" mapstructure:"lifetime" toml:"lifetime,omitempty"`
 	}
 
 	// Config represents our passwords configuration.
 	Config struct {
 		_ struct{}
 
-		PASETO                PASETOConfig `json:"paseto" mapstructure:"paseto" toml:"paseto,omitempty"`
-		Cookies               CookieConfig `json:"cookies" mapstructure:"cookies" toml:"cookies,omitempty"`
-		Debug                 bool         `json:"debug" mapstructure:"debug" toml:"debug,omitempty"`
-		EnableUserSignup      bool         `json:"enable_user_signup" mapstructure:"enable_user_signup" toml:"enable_user_signup,omitempty"`
-		MinimumUsernameLength uint8        `json:"minimum_username_length" mapstructure:"minimum_username_length" toml:"minimum_username_length,omitempty"`
-		MinimumPasswordLength uint8        `json:"minimum_password_length" mapstructure:"minimum_password_length" toml:"minimum_password_length,omitempty"`
+		PASETO                PASETOConfig `json:"paseto,omitempty" mapstructure:"paseto" toml:"paseto,omitempty"`
+		Cookies               CookieConfig `json:"cookies,omitempty" mapstructure:"cookies" toml:"cookies,omitempty"`
+		Debug                 bool         `json:"debug,omitempty" mapstructure:"debug" toml:"debug,omitempty"`
+		EnableUserSignup      bool         `json:"enableUserSignup,omitempty" mapstructure:"enable_user_signup" toml:"enable_user_signup,omitempty"`
+		MinimumUsernameLength uint8        `json:"minimumUsernameLength,omitempty" mapstructure:"minimum_username_length" toml:"minimum_username_length,omitempty"`
+		MinimumPasswordLength uint8        `json:"minimumPasswordLength,omitempty" mapstructure:"minimum_password_length" toml:"minimum_password_length,omitempty"`
 	}
 )
 

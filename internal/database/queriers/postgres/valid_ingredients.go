@@ -177,6 +177,38 @@ func (q *SQLQuerier) GetValidIngredient(ctx context.Context, validIngredientID s
 	return validIngredient, nil
 }
 
+const validIngredientSearchQuery = "SELECT valid_ingredients.id, valid_ingredients.name, valid_ingredients.variant, valid_ingredients.description, valid_ingredients.warning, valid_ingredients.contains_egg, valid_ingredients.contains_dairy, valid_ingredients.contains_peanut, valid_ingredients.contains_tree_nut, valid_ingredients.contains_soy, valid_ingredients.contains_wheat, valid_ingredients.contains_shellfish, valid_ingredients.contains_sesame, valid_ingredients.contains_fish, valid_ingredients.contains_gluten, valid_ingredients.animal_flesh, valid_ingredients.animal_derived, valid_ingredients.volumetric, valid_ingredients.icon_path, valid_ingredients.created_on, valid_ingredients.last_updated_on, valid_ingredients.archived_on FROM valid_ingredients WHERE valid_ingredients.name ILIKE $1 AND valid_ingredients.archived_on IS NULL LIMIT 50"
+
+// SearchForValidIngredients fetches a valid ingredient from the database.
+func (q *SQLQuerier) SearchForValidIngredients(ctx context.Context, query string) ([]*types.ValidIngredient, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if query == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.SearchQueryKey, query)
+	tracing.AttachValidIngredientIDToSpan(span, query)
+
+	args := []interface{}{
+		wrapQueryForILIKE(query),
+	}
+
+	rows, err := q.performReadQuery(ctx, q.db, "valid ingredients", validIngredientSearchQuery, args)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "executing valid ingredients list retrieval query")
+	}
+
+	x, _, _, err := q.scanValidIngredients(ctx, rows, false)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "scanning valid ingredients")
+	}
+
+	return x, nil
+}
+
 const getTotalValidIngredientsCountQuery = "SELECT COUNT(valid_ingredients.id) FROM valid_ingredients WHERE valid_ingredients.archived_on IS NULL"
 
 // GetTotalValidIngredientCount fetches the count of valid ingredients from the database that meet a particular filter.

@@ -104,8 +104,16 @@ rewire: ensure_wire_installed clean_wire wire
 format:
 	for file in `find $(PWD) -name '*.go'`; do $(GO_FORMAT) $$file; done
 
+.PHONY: terraformat
+terraformat:
+	@(cd environments/dev/terraform && terraform fmt)
+
+.PHONY: check_terraform
+check_terraform:
+	@(cd environments/dev/terraform && terraform init -upgrade && terraform validate && terraform fmt && terraform fmt -check)
+
 .PHONY: fmt
-fmt: format
+fmt: format terraformat
 
 .PHONY: check_formatting
 check_formatting: vendor
@@ -124,7 +132,7 @@ docker_lint:
 	docker run --interactive --tty --rm --volume $(PWD):$(PWD) --workdir=$(PWD) openpolicyagent/conftest:v0.21.0 test --policy docker_security.rego `find . -type f -name "*.Dockerfile"`
 
 .PHONY: lint
-lint: pre_lint docker_lint
+lint: pre_lint docker_lint check_terraform
 	@docker pull golangci/golangci-lint:v1.42
 	docker run \
 		--rm \
@@ -187,15 +195,6 @@ wipe_local_elasticsearch:
 	@echo "wiping elasticsearch"
 	@docker run --interactive --tty --network=host curlimages/curl:7.79.1 curl -X DELETE "http://localhost:9200/*"
 
-.PHONY: deploy_base_infra
-deploy_base_infra:
-	docker-compose \
-	--file $(ENVIRONMENTS_DIR)/local/docker-compose-base.yaml up \
-	--quiet-pull \
-	--no-recreate \
-	--always-recreate-deps \
-	--detach
-
 
 .PHONY: lintegration_tests # this is just a handy lil' helper I use sometimes
 lintegration_tests: lint clear integration-tests
@@ -209,9 +208,7 @@ integration-tests: integration_tests_postgres
 .PHONY: integration_tests_postgres
 integration_tests_postgres:
 	docker-compose \
-	$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(LOCAL)),, --file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests-base.yaml) \
 	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests.yaml \
-	$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(LOCAL)), --file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests-local.override.yaml,) \
 	up \
 	--build \
 	--force-recreate \
@@ -223,13 +220,12 @@ integration_tests_postgres:
 ## Running
 
 .PHONY: dev
-dev: $(ARTIFACTS_DIR) deploy_base_infra
-	docker-compose --file $(ENVIRONMENTS_DIR)/local/docker-compose-services.yaml up \
+dev: $(ARTIFACTS_DIR)
+	docker-compose \
+	--file $(ENVIRONMENTS_DIR)/local/docker-compose.yaml up \
 	--quiet-pull \
-	--build \
-	--force-recreate \
-	--renew-anon-volumes \
-	--detach
+	--no-recreate \
+	--always-recreate-deps
 
 .PHONY: initialize_database
 initialize_database:
@@ -244,3 +240,19 @@ tree:
 .PHONY: line_count
 line_count: ensure_scc_installed
 	@scc --include-ext go --exclude-dir vendor
+
+# Lambdas
+
+.PHONY: deploy_writer_lambda
+deploy_writer_lambda:
+	go build -o writes_worker github.com/prixfixeco/api_server/cmd/workers/lambdas/writes
+	zip writer_worker.zip writes_worker
+	aws lambda update-function-code --function-name writes_worker --zip-file fileb://writer_worker.zip
+	rm -f writer_worker.zip writes_worker
+
+.PHONY: deploy_data_changes_lambda
+deploy_data_changes_lambda:
+	go build -o data_changes_worker github.com/prixfixeco/api_server/cmd/workers/lambdas/data_changes
+	zip data_changes_worker.zip data_changes_worker
+	aws lambda update-function-code --function-name data_changes_worker --zip-file fileb://data_changes_worker.zip
+	rm -f data_changes_worker.zip data_changes_worker

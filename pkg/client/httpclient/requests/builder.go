@@ -30,7 +30,7 @@ type Builder struct {
 }
 
 // NewBuilder builds a new API client for us.
-func NewBuilder(u *url.URL, logger logging.Logger, encoder encoding.ClientEncoder) (*Builder, error) {
+func NewBuilder(u *url.URL, logger logging.Logger, tracerProvider tracing.TracerProvider, encoder encoding.ClientEncoder) (*Builder, error) {
 	l := logging.EnsureLogger(logger)
 
 	if u == nil {
@@ -46,7 +46,7 @@ func NewBuilder(u *url.URL, logger logging.Logger, encoder encoding.ClientEncode
 		logger:   l,
 		encoder:  encoder,
 		panicker: panicking.NewProductionPanicker(),
-		tracer:   tracing.NewTracer(clientName),
+		tracer:   tracing.NewTracer(tracerProvider.Tracer(clientName)),
 	}
 
 	return c, nil
@@ -154,7 +154,13 @@ func (b *Builder) BuildWebsocketURL(ctx context.Context, parts ...string) string
 	defer span.End()
 
 	u := b.buildAPIV1URL(ctx, nil, parts...)
-	u.Scheme = "ws"
+
+	switch b.url.Scheme {
+	case "http":
+		u.Scheme = "ws"
+	case "https":
+		u.Scheme = "wss"
+	}
 
 	return u.String()
 }

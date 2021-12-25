@@ -18,10 +18,6 @@ func (w *WritesWorker) createValidInstrument(ctx context.Context, msg *types.Pre
 		return observability.PrepareError(err, logger, span, "creating valid instrument")
 	}
 
-	if err = w.validInstrumentsIndexManager.Index(ctx, validInstrument.ID, validInstrument); err != nil {
-		return observability.PrepareError(err, logger, span, "indexing the valid instrument")
-	}
-
 	if w.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  msg.DataType,
@@ -49,10 +45,6 @@ func (w *UpdatesWorker) updateValidInstrument(ctx context.Context, msg *types.Pr
 		return observability.PrepareError(err, logger, span, "creating valid instrument")
 	}
 
-	if err := w.validInstrumentsIndexManager.Index(ctx, msg.ValidInstrument.ID, msg.ValidInstrument); err != nil {
-		return observability.PrepareError(err, logger, span, "indexing the valid instrument")
-	}
-
 	if w.postUpdatesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  msg.DataType,
@@ -78,10 +70,6 @@ func (w *ArchivesWorker) archiveValidInstrument(ctx context.Context, msg *types.
 
 	if err := w.dataManager.ArchiveValidInstrument(ctx, msg.ValidInstrumentID); err != nil {
 		return observability.PrepareError(err, w.logger, span, "archiving valid instrument")
-	}
-
-	if err := w.validInstrumentsIndexManager.Delete(ctx, msg.ValidInstrumentID); err != nil {
-		return observability.PrepareError(err, w.logger, span, "removing valid instrument from index")
 	}
 
 	if w.postArchivesPublisher != nil {

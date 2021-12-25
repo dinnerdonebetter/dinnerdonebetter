@@ -24,8 +24,9 @@ func (c *Client) SubscribeToNotifications(ctx context.Context, stopChan <-chan b
 		return nil, observability.PrepareError(err, logger, span, "preparing websocket request headers")
 	}
 
-	conn, _, err := c.websocketDialer.DialContext(ctx, uri, header)
+	conn, res, err := c.websocketDialer.DialContext(ctx, uri, header)
 	if err != nil {
+		logger = logger.WithValue("http.response_code", res.StatusCode)
 		return nil, observability.PrepareError(err, logger, span, "dialing websocket")
 	}
 

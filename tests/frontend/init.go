@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/prixfixeco/api_server/internal/observability/keys"
-	"github.com/prixfixeco/api_server/internal/observability/logging"
+	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
@@ -16,7 +16,7 @@ func init() {
 	u := testutils.DetermineServiceURL()
 	urlToUse = u.String()
 
-	logger := logging.ProvideLogger(logging.Config{Provider: logging.ProviderZerolog})
+	logger := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
 	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
 	testutils.EnsureServerIsUp(context.Background(), urlToUse)
 

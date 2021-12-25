@@ -3,84 +3,46 @@ package workers
 import (
 	"context"
 	"fmt"
-	"net/http"
+
+	"github.com/prixfixeco/api_server/internal/messagequeue"
 
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/internal/search"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 // ArchivesWorker archives data from the pending archives topic to the database.
 type ArchivesWorker struct {
-	logger                                  logging.Logger
-	tracer                                  tracing.Tracer
-	encoder                                 encoding.ClientEncoder
-	postArchivesPublisher                   publishers.Publisher
-	dataManager                             database.DataManager
-	validInstrumentsIndexManager            search.IndexManager
-	validIngredientsIndexManager            search.IndexManager
-	validPreparationsIndexManager           search.IndexManager
-	validIngredientPreparationsIndexManager search.IndexManager
-	recipesIndexManager                     search.IndexManager
-	customerDataCollector                   customerdata.Collector
+	logger                logging.Logger
+	tracer                tracing.Tracer
+	encoder               encoding.ClientEncoder
+	postArchivesPublisher messagequeue.Publisher
+	dataManager           database.DataManager
+	customerDataCollector customerdata.Collector
 }
 
 // ProvideArchivesWorker provides an ArchivesWorker.
 func ProvideArchivesWorker(
-	ctx context.Context,
+	_ context.Context,
 	logger logging.Logger,
-	client *http.Client,
 	dataManager database.DataManager,
-	postArchivesPublisher publishers.Publisher,
-	searchIndexLocation search.IndexPath,
-	searchIndexProvider search.IndexManagerProvider,
+	postArchivesPublisher messagequeue.Publisher,
 	customerDataCollector customerdata.Collector,
+	tracerProvider tracing.TracerProvider,
 ) (*ArchivesWorker, error) {
 	const name = "pre_archives"
 
-	validInstrumentsIndexManager, err := searchIndexProvider(ctx, logger, client, searchIndexLocation, "valid_instruments", "name", "variant", "description", "icon")
-	if err != nil {
-		return nil, fmt.Errorf("setting up valid instruments search index manager: %w", err)
-	}
-
-	validIngredientsIndexManager, err := searchIndexProvider(ctx, logger, client, searchIndexLocation, "valid_ingredients", "name", "variant", "description", "warning", "icon")
-	if err != nil {
-		return nil, fmt.Errorf("setting up valid ingredients search index manager: %w", err)
-	}
-
-	validPreparationsIndexManager, err := searchIndexProvider(ctx, logger, client, searchIndexLocation, "valid_preparations", "name", "description", "icon")
-	if err != nil {
-		return nil, fmt.Errorf("setting up valid preparations search index manager: %w", err)
-	}
-
-	validIngredientPreparationsIndexManager, err := searchIndexProvider(ctx, logger, client, searchIndexLocation, "valid_ingredient_preparations", "notes", "validPreparationID", "validIngredientID")
-	if err != nil {
-		return nil, fmt.Errorf("setting up valid ingredient preparations search index manager: %w", err)
-	}
-
-	recipesIndexManager, err := searchIndexProvider(ctx, logger, client, searchIndexLocation, "recipes", "name", "source", "description", "inspiredByRecipeID")
-	if err != nil {
-		return nil, fmt.Errorf("setting up recipes search index manager: %w", err)
-	}
-
 	w := &ArchivesWorker{
-		logger:                                  logging.EnsureLogger(logger).WithName(name).WithValue("topic", name),
-		tracer:                                  tracing.NewTracer(name),
-		encoder:                                 encoding.ProvideClientEncoder(logger, encoding.ContentTypeJSON),
-		postArchivesPublisher:                   postArchivesPublisher,
-		dataManager:                             dataManager,
-		validInstrumentsIndexManager:            validInstrumentsIndexManager,
-		validIngredientsIndexManager:            validIngredientsIndexManager,
-		validPreparationsIndexManager:           validPreparationsIndexManager,
-		validIngredientPreparationsIndexManager: validIngredientPreparationsIndexManager,
-		recipesIndexManager:                     recipesIndexManager,
-		customerDataCollector:                   customerDataCollector,
+		logger:                logging.EnsureLogger(logger).WithName(name).WithValue("topic", name),
+		tracer:                tracing.NewTracer(tracerProvider.Tracer(name)),
+		encoder:               encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
+		postArchivesPublisher: postArchivesPublisher,
+		dataManager:           dataManager,
+		customerDataCollector: customerDataCollector,
 	}
 
 	return w, nil

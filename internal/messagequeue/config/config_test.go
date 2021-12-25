@@ -3,9 +3,11 @@ package config
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"go.opentelemetry.io/otel/trace"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_cleanString(T *testing.T) {
@@ -24,12 +26,14 @@ func TestProvideConsumerProvider(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewZerologLogger()
+		logger := zerolog.NewZerologLogger()
 		cfg := &Config{
-			Provider: ProviderRedis,
+			Consumers: ProviderConfig{
+				Provider: ProviderRedis,
+			},
 		}
 
-		provider, err := ProvideConsumerProvider(logger, cfg)
+		provider, err := ProvideConsumerProvider(logger, trace.NewNoopTracerProvider(), cfg)
 		assert.NoError(t, err)
 		assert.NotNil(t, provider)
 	})
@@ -37,10 +41,10 @@ func TestProvideConsumerProvider(T *testing.T) {
 	T.Run("with invalid provider", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewZerologLogger()
+		logger := zerolog.NewZerologLogger()
 		cfg := &Config{}
 
-		provider, err := ProvideConsumerProvider(logger, cfg)
+		provider, err := ProvideConsumerProvider(logger, trace.NewNoopTracerProvider(), cfg)
 		assert.Error(t, err)
 		assert.Nil(t, provider)
 	})
@@ -52,12 +56,14 @@ func TestProvidePublisherProvider(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewZerologLogger()
+		logger := zerolog.NewZerologLogger()
 		cfg := &Config{
-			Provider: ProviderRedis,
+			Publishers: ProviderConfig{
+				Provider: ProviderRedis,
+			},
 		}
 
-		provider, err := ProvidePublisherProvider(logger, cfg)
+		provider, err := ProvidePublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)
 		assert.NoError(t, err)
 		assert.NotNil(t, provider)
 	})
@@ -65,10 +71,10 @@ func TestProvidePublisherProvider(T *testing.T) {
 	T.Run("with invalid provider", func(t *testing.T) {
 		t.Parallel()
 
-		logger := logging.NewZerologLogger()
+		logger := zerolog.NewZerologLogger()
 		cfg := &Config{}
 
-		provider, err := ProvidePublisherProvider(logger, cfg)
+		provider, err := ProvidePublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)
 		assert.Error(t, err)
 		assert.Nil(t, provider)
 	})

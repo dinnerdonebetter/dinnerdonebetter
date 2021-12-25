@@ -17,7 +17,7 @@ func TestBuilder_BuildSubscribeToNotificationsURL(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		expected := fmt.Sprintf("ws://%s%s", exampleDomain, expectedPathFormat)
+		expected := fmt.Sprintf("wss://%s%s", exampleDomain, expectedPathFormat)
 
 		actual := helper.builder.BuildSubscribeToDataChangesWebsocketURL(helper.ctx)
 

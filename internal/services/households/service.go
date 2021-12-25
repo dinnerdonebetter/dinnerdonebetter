@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/prixfixeco/api_server/internal/messagequeue"
+
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/messagequeue/publishers"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/routing"
-	"github.com/prixfixeco/api_server/internal/search"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -25,9 +25,6 @@ const (
 var _ types.HouseholdDataService = (*service)(nil)
 
 type (
-	// SearchIndex is a type alias for dependency injection's sake.
-	SearchIndex search.IndexManager
-
 	// service handles to-do list households.
 	service struct {
 		logger                         logging.Logger
@@ -37,7 +34,7 @@ type (
 		tracer                         tracing.Tracer
 		householdCounter               metrics.UnitCounter
 		encoderDecoder                 encoding.ServerEncoderDecoder
-		preWritesPublisher             publishers.Publisher
+		preWritesPublisher             messagequeue.Publisher
 		sessionContextDataFetcher      func(*http.Request) (*types.SessionContextData, error)
 		userIDFetcher                  func(*http.Request) string
 		householdIDFetcher             func(*http.Request) string
@@ -55,8 +52,9 @@ func ProvideService(
 	encoder encoding.ServerEncoderDecoder,
 	counterProvider metrics.UnitCounterProvider,
 	routeParamManager routing.RouteParamManager,
-	publisherProvider publishers.PublisherProvider,
+	publisherProvider messagequeue.PublisherProvider,
 	customerDataCollector customerdata.Collector,
+	tracerProvider tracing.TracerProvider,
 ) (types.HouseholdDataService, error) {
 	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
 	if err != nil {
@@ -74,7 +72,7 @@ func ProvideService(
 		encoderDecoder:                 encoder,
 		preWritesPublisher:             preWritesPublisher,
 		householdCounter:               metrics.EnsureUnitCounter(counterProvider, logger, counterName, counterDescription),
-		tracer:                         tracing.NewTracer(serviceName),
+		tracer:                         tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 		customerDataCollector:          customerDataCollector,
 	}
 

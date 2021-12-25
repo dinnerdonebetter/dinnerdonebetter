@@ -3,14 +3,16 @@ package websockets
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/http"
 	"sync"
 	"time"
 
+	"github.com/prixfixeco/api_server/internal/messagequeue"
+
 	"github.com/gorilla/websocket"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/messagequeue/consumers"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
@@ -18,12 +20,12 @@ import (
 )
 
 const (
-	serviceName          = "websockets_service"
-	dataChangesTopicName = "data_changes"
+	serviceName = "websockets_service"
 )
 
 type (
 	websocketConnection interface {
+		io.Closer
 		SetWriteDeadline(t time.Time) error
 		WriteMessage(messageType int, data []byte) error
 		WriteControl(messageType int, data []byte, deadline time.Time) error
@@ -44,13 +46,19 @@ type (
 	}
 )
 
+const (
+	topicName = "data_changes"
+)
+
 // ProvideService builds a new websocket service.
 func ProvideService(
 	ctx context.Context,
 	authCfg *authservice.Config,
+	_ Config,
 	logger logging.Logger,
 	encoder encoding.ServerEncoderDecoder,
-	consumerProvider consumers.ConsumerProvider,
+	consumerProvider messagequeue.ConsumerProvider,
+	tracerProvider tracing.TracerProvider,
 ) (types.WebsocketDataService, error) {
 	upgrader := websocket.Upgrader{
 		HandshakeTimeout: 10 * time.Second,
@@ -64,12 +72,14 @@ func ProvideService(
 		websocketConnectionUpgrader: upgrader,
 		connections:                 map[string][]websocketConnection{},
 		websocketDeadline:           5 * time.Second,
-		pollDuration:                10 * time.Second,
+		pollDuration:                30 * time.Second,
 		authConfig:                  authCfg,
-		tracer:                      tracing.NewTracer(serviceName),
+		tracer:                      tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 	}
 
-	dataChangesConsumer, err := consumerProvider.ProviderConsumer(ctx, dataChangesTopicName, svc.handleDataChange)
+	svc.logger.WithValue("topic_name", "data_changes").Info("fetching data change thing")
+
+	dataChangesConsumer, err := consumerProvider.ProvideConsumer(ctx, topicName, svc.handleDataChange)
 	if err != nil {
 		return nil, fmt.Errorf("setting up event publisher: %w", err)
 	}
