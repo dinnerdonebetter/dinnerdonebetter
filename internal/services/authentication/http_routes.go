@@ -9,6 +9,7 @@ import (
 	"errors"
 	"math"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -29,9 +30,40 @@ var (
 	ErrUserBanned = errors.New("user is banned")
 	// ErrInvalidCredentials indicates a user provided invalid credentials.
 	ErrInvalidCredentials = errors.New("invalid credentials")
+
+	customCookieDomainHeader = "X-PRIXFIXE-COOKIE-DOMAIN"
+
+	allowedCookiesHat    sync.Mutex
+	allowedCookieDomains = map[string]uint{
+		".prixfixe.local": 0,
+		".prixfixe.dev":   1,
+		".prixfixe.app":   2,
+	}
 )
 
-func (s *service) authenticateUser(ctx context.Context, loginData *types.UserLoginInput) (*types.User, *http.Cookie, error) {
+// determineCookieDomain determines which domain to assign a cookie.
+func (s *service) determineCookieDomain(ctx context.Context, req *http.Request) string {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	requestedCookieDomain := s.config.Cookies.Domain
+	if headerCookieDomain := req.Header.Get(customCookieDomainHeader); headerCookieDomain != "" {
+		allowedCookiesHat.Lock()
+		// if the requested domain is present in the map, and it has a lower score than the current domain, then
+		if currentScore, ok1 := allowedCookieDomains[requestedCookieDomain]; ok1 {
+			if newScore, ok2 := allowedCookieDomains[headerCookieDomain]; ok2 {
+				if currentScore > newScore {
+					requestedCookieDomain = headerCookieDomain
+				}
+			}
+		}
+		allowedCookiesHat.Unlock()
+	}
+
+	return requestedCookieDomain
+}
+
+func (s *service) authenticateUserAndBuildCookie(ctx context.Context, loginData *types.UserLoginInput, requestedCookieDomain string) (*types.User, *http.Cookie, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -75,7 +107,7 @@ func (s *service) authenticateUser(ctx context.Context, loginData *types.UserLog
 		return user, nil, observability.PrepareError(err, logger, span, "fetching user memberships")
 	}
 
-	cookie, err := s.issueSessionManagedCookie(ctx, defaultHouseholdID, user.ID)
+	cookie, err := s.issueSessionManagedCookie(ctx, defaultHouseholdID, user.ID, requestedCookieDomain)
 	if err != nil {
 		return user, nil, observability.PrepareError(err, logger, span, "issuing cookie")
 	}
@@ -106,7 +138,13 @@ func (s *service) BeginSessionHandler(res http.ResponseWriter, req *http.Request
 
 	logger = logger.WithValue(keys.UsernameKey, loginData.Username)
 
-	user, cookie, err := s.authenticateUser(ctx, loginData)
+	requestedCookieDomain := s.determineCookieDomain(ctx, req)
+	if requestedCookieDomain != "" {
+		logger = logger.WithValue("cookie_domain", requestedCookieDomain)
+		logger.Debug("setting alternative cookie domain")
+	}
+
+	user, cookie, err := s.authenticateUserAndBuildCookie(ctx, loginData, requestedCookieDomain)
 	if err != nil {
 		switch {
 		case errors.Is(err, ErrUserNotFound):
@@ -189,7 +227,13 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 		return
 	}
 
-	cookie, err := s.issueSessionManagedCookie(ctx, householdID, requesterID)
+	requestedCookieDomain := s.determineCookieDomain(ctx, req)
+	if requestedCookieDomain != "" {
+		logger = logger.WithValue("cookie_domain", requestedCookieDomain)
+		logger.Debug("setting alternative cookie domain")
+	}
+
+	cookie, err := s.issueSessionManagedCookie(ctx, householdID, requesterID, requestedCookieDomain)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "issuing cookie")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
@@ -242,7 +286,13 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 		return
 	}
 
-	newCookie, cookieBuildingErr := s.buildCookie("deleted", time.Time{})
+	requestedCookieDomain := s.determineCookieDomain(ctx, req)
+	if requestedCookieDomain != "" {
+		logger = logger.WithValue("cookie_domain", requestedCookieDomain)
+		logger.Debug("setting alternative cookie domain")
+	}
+
+	newCookie, cookieBuildingErr := s.buildCookie(requestedCookieDomain, "deleted", time.Time{})
 	if cookieBuildingErr != nil || newCookie == nil {
 		observability.AcknowledgeError(err, logger, span, "building cookie")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
