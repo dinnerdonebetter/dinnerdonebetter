@@ -114,7 +114,7 @@ func (s *service) validateLogin(ctx context.Context, user *types.User, loginInpu
 	return loginValid, nil
 }
 
-func (s *service) issueSessionManagedCookie(ctx context.Context, householdID, requesterID string) (cookie *http.Cookie, err error) {
+func (s *service) issueSessionManagedCookie(ctx context.Context, householdID, requesterID, cookieDomain string) (cookie *http.Cookie, err error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -142,7 +142,7 @@ func (s *service) issueSessionManagedCookie(ctx context.Context, householdID, re
 		return nil, err
 	}
 
-	cookie, err = s.buildCookie(token, expiry)
+	cookie, err = s.buildCookie(cookieDomain, token, expiry)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "building cookie")
 		return nil, err
@@ -152,10 +152,10 @@ func (s *service) issueSessionManagedCookie(ctx context.Context, householdID, re
 }
 
 // buildCookie provides a consistent way of constructing an HTTP cookie.
-func (s *service) buildCookie(value string, expiry time.Time) (*http.Cookie, error) {
+func (s *service) buildCookie(cookieDomain, value string, expiry time.Time) (*http.Cookie, error) {
 	encoded, err := s.cookieManager.Encode(s.config.Cookies.Name, value)
 	if err != nil {
-		// NOTE: these errs should be infrequent, and should cause alarm when they do occur
+		// NOTE: these errors should be infrequent, and should cause alarm when they do occur
 		s.logger.WithName(cookieErrorLogName).Error(err, "error encoding cookie")
 		return nil, err
 	}
@@ -167,7 +167,7 @@ func (s *service) buildCookie(value string, expiry time.Time) (*http.Cookie, err
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   s.config.Cookies.SecureOnly,
-		Domain:   s.config.Cookies.Domain,
+		Domain:   cookieDomain,
 		Expires:  expiry,
 		SameSite: http.SameSiteNoneMode,
 		MaxAge:   int(time.Until(expiry).Seconds()),

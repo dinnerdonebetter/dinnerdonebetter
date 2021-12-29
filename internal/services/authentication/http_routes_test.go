@@ -11,7 +11,10 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
@@ -36,6 +39,37 @@ import (
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
+func Test_service_determineCookieDomain(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		helper := buildTestHelper(t)
+
+		req := httptest.NewRequest(http.MethodPost, "/users/login", nil)
+
+		actual := helper.service.determineCookieDomain(ctx, req)
+		assert.Equal(t, helper.service.config.Cookies.Domain, actual)
+	})
+
+	T.Run("with requested domain", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		helper := buildTestHelper(t)
+
+		expected := ".prixfixe.local"
+
+		req := httptest.NewRequest(http.MethodPost, "/users/login", nil)
+		req.Header.Set(customCookieDomainHeader, expected)
+
+		actual := helper.service.determineCookieDomain(ctx, req)
+		assert.Equal(t, expected, actual)
+	})
+}
+
 func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {
 	T.Parallel()
 
@@ -54,7 +88,7 @@ func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {
 		sm.On("Commit", testutils.ContextMatcher).Return(expectedToken, time.Now().Add(24*time.Hour), nil)
 		helper.service.sessionManager = sm
 
-		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleHousehold.ID, helper.exampleUser.ID)
+		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleHousehold.ID, helper.exampleUser.ID, helper.service.config.Cookies.Domain)
 		require.NotNil(t, cookie)
 		assert.NoError(t, err)
 
@@ -75,7 +109,7 @@ func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleHousehold.ID, helper.exampleUser.ID)
+		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleHousehold.ID, helper.exampleUser.ID, helper.service.config.Cookies.Domain)
 		require.Nil(t, cookie)
 		assert.Error(t, err)
 
@@ -92,7 +126,7 @@ func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {
 		sm.On("RenewToken", testutils.ContextMatcher).Return(errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleHousehold.ID, helper.exampleUser.ID)
+		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleHousehold.ID, helper.exampleUser.ID, helper.service.config.Cookies.Domain)
 		require.Nil(t, cookie)
 		assert.Error(t, err)
 
@@ -114,7 +148,7 @@ func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {
 		sm.On("Commit", testutils.ContextMatcher).Return(expectedToken, time.Now(), errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleHousehold.ID, helper.exampleUser.ID)
+		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleHousehold.ID, helper.exampleUser.ID, helper.service.config.Cookies.Domain)
 		require.Nil(t, cookie)
 		assert.Error(t, err)
 
@@ -141,7 +175,7 @@ func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {
 			[]byte(""),
 		)
 
-		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleHousehold.ID, helper.exampleUser.ID)
+		cookie, err := helper.service.issueSessionManagedCookie(helper.ctx, helper.exampleHousehold.ID, helper.exampleUser.ID, helper.service.config.Cookies.Domain)
 		require.Nil(t, cookie)
 		assert.Error(t, err)
 	})
@@ -204,6 +238,69 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
+
+		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB, cdc)
+	})
+
+	T.Run("with requested cookie domain", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleLoginInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		expectedCookieDomain := ".prixfixe.local"
+		helper.req.Header.Set(customCookieDomainHeader, expectedCookieDomain)
+
+		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager.On(
+			"GetUserByUsername",
+			testutils.ContextMatcher,
+			helper.exampleUser.Username,
+		).Return(helper.exampleUser, nil)
+		helper.service.userDataManager = userDataManager
+
+		authenticator := &mockauthn.Authenticator{}
+		authenticator.On(
+			"ValidateLogin",
+			testutils.ContextMatcher,
+			helper.exampleUser.HashedPassword,
+			helper.exampleLoginInput.Password,
+			helper.exampleUser.TwoFactorSecret,
+			helper.exampleLoginInput.TOTPToken,
+		).Return(true, nil)
+		helper.service.authenticator = authenticator
+
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB.On(
+			"GetDefaultHouseholdIDForUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleHousehold.ID, nil)
+		helper.service.householdMembershipManager = membershipDB
+
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"logged_in",
+			helper.exampleUser.ID,
+			map[string]interface{}{},
+		).Return(nil)
+		helper.service.customerDataCollector = cdc
+
+		helper.service.BeginSessionHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+
+		rawCookie := helper.res.Header().Get("Set-Cookie")
+		assert.Contains(t, rawCookie, fmt.Sprintf("Domain=%s", strings.TrimPrefix(expectedCookieDomain, ".")))
 
 		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB, cdc)
 	})
