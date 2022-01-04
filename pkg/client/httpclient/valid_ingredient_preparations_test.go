@@ -140,13 +140,11 @@ func (s *validIngredientPreparationsTestSuite) TestClient_CreateValidIngredientP
 		exampleInput := fakes.BuildFakeValidIngredientPreparationCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, &types.PreWriteResponse{ID: s.exampleValidIngredientPreparation.ID})
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientPreparation)
 
 		actual, err := c.CreateValidIngredientPreparation(s.ctx, exampleInput)
-		require.NotEmpty(t, actual)
 		assert.NoError(t, err)
-
-		assert.Equal(t, s.exampleValidIngredientPreparation.ID, actual)
+		assert.Equal(t, s.exampleValidIngredientPreparation, actual)
 	})
 
 	s.Run("with nil input", func() {
@@ -155,7 +153,7 @@ func (s *validIngredientPreparationsTestSuite) TestClient_CreateValidIngredientP
 		c, _ := buildSimpleTestClient(t)
 
 		actual, err := c.CreateValidIngredientPreparation(s.ctx, nil)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 
@@ -166,7 +164,7 @@ func (s *validIngredientPreparationsTestSuite) TestClient_CreateValidIngredientP
 		exampleInput := &types.ValidIngredientPreparationCreationRequestInput{}
 
 		actual, err := c.CreateValidIngredientPreparation(s.ctx, exampleInput)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 
@@ -178,7 +176,7 @@ func (s *validIngredientPreparationsTestSuite) TestClient_CreateValidIngredientP
 		c := buildTestClientWithInvalidURL(t)
 
 		actual, err := c.CreateValidIngredientPreparation(s.ctx, exampleInput)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 
@@ -189,7 +187,7 @@ func (s *validIngredientPreparationsTestSuite) TestClient_CreateValidIngredientP
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		actual, err := c.CreateValidIngredientPreparation(s.ctx, exampleInput)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }

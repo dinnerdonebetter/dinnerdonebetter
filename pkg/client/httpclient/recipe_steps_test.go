@@ -165,13 +165,11 @@ func (s *recipeStepsTestSuite) TestClient_CreateRecipeStep() {
 		exampleInput.BelongsToRecipe = s.exampleRecipeID
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleRecipeID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, &types.PreWriteResponse{ID: s.exampleRecipeStep.ID})
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStep)
 
 		actual, err := c.CreateRecipeStep(s.ctx, exampleInput)
-		require.NotEmpty(t, actual)
 		assert.NoError(t, err)
-
-		assert.Equal(t, s.exampleRecipeStep.ID, actual)
+		assert.Equal(t, s.exampleRecipeStep, actual)
 	})
 
 	s.Run("with nil input", func() {
@@ -180,7 +178,7 @@ func (s *recipeStepsTestSuite) TestClient_CreateRecipeStep() {
 		c, _ := buildSimpleTestClient(t)
 
 		actual, err := c.CreateRecipeStep(s.ctx, nil)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 
@@ -191,7 +189,7 @@ func (s *recipeStepsTestSuite) TestClient_CreateRecipeStep() {
 		exampleInput := &types.RecipeStepCreationRequestInput{}
 
 		actual, err := c.CreateRecipeStep(s.ctx, exampleInput)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 
@@ -203,7 +201,7 @@ func (s *recipeStepsTestSuite) TestClient_CreateRecipeStep() {
 		c := buildTestClientWithInvalidURL(t)
 
 		actual, err := c.CreateRecipeStep(s.ctx, exampleInput)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 
@@ -214,7 +212,7 @@ func (s *recipeStepsTestSuite) TestClient_CreateRecipeStep() {
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		actual, err := c.CreateRecipeStep(s.ctx, exampleInput)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }

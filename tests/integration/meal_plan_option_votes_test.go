@@ -4,11 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
-	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
 func checkMealPlanOptionVoteEquality(t *testing.T, expected, actual *types.MealPlanOptionVote) {
@@ -30,6 +27,8 @@ func convertMealPlanOptionVoteToMealPlanOptionVoteUpdateInput(x *types.MealPlanO
 		BelongsToMealPlanOption: x.BelongsToMealPlanOption,
 	}
 }
+
+/*
 
 func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 	s.runForCookieClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
@@ -59,16 +58,16 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 			exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 			exampleMealPlanOptionVote.BelongsToMealPlanOption = createdMealPlanOption.ID
 			exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(exampleMealPlanOptionVote)
-			createdMealPlanOptionVoteID, err := testClients.main.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
+			createdMealPlanOptionVote, err := testClients.main.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
 			require.NoError(t, err)
-			t.Logf("meal plan option vote %q created", createdMealPlanOptionVoteID)
+			t.Logf("meal plan option vote %q created", createdMealPlanOptionVote.ID)
 
 			n = <-notificationsChan
 			assert.Equal(t, types.MealPlanOptionVoteDataType, n.DataType)
 			require.NotNil(t, n.MealPlanOptionVote)
 			checkMealPlanOptionVoteEquality(t, exampleMealPlanOptionVote, n.MealPlanOptionVote)
 
-			createdMealPlanOptionVote, err := testClients.main.GetMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVoteID)
+			createdMealPlanOptionVote, err = testClients.main.GetMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVote.ID)
 			requireNotNilAndNoProblems(t, createdMealPlanOptionVote, err)
 			require.Equal(t, createdMealPlanOption.ID, createdMealPlanOptionVote.BelongsToMealPlanOption)
 
@@ -86,7 +85,7 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 			// can't predict which order :'(
 
 			t.Log("fetching changed meal plan option vote")
-			actual, err := testClients.main.GetMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVoteID)
+			actual, err := testClients.main.GetMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVote.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert meal plan option vote equality
@@ -94,7 +93,7 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedOn)
 
 			t.Log("cleaning up meal plan option vote")
-			assert.NoError(t, testClients.main.ArchiveMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVoteID))
+			assert.NoError(t, testClients.main.ArchiveMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVote.ID))
 
 			t.Log("cleaning up meal plan option")
 			assert.NoError(t, testClients.main.ArchiveMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanOption.ID))
@@ -133,16 +132,16 @@ func (s *TestSuite) TestMealPlanOptionVotes_Listing() {
 			exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 			exampleMealPlanOptionVote.BelongsToMealPlanOption = createdMealPlanOption.ID
 			exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(exampleMealPlanOptionVote)
-			createdMealPlanOptionVoteID, err := testClients.main.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
+			createdMealPlanOptionVote, err := testClients.main.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
 			require.NoError(t, err)
-			t.Logf("meal plan option vote %q created", createdMealPlanOptionVoteID)
+			t.Logf("meal plan option vote %q created", createdMealPlanOptionVote.ID)
 
 			n = <-notificationsChan
 			assert.Equal(t, types.MealPlanOptionVoteDataType, n.DataType)
 			require.NotNil(t, n.MealPlanOptionVote)
 			checkMealPlanOptionVoteEquality(t, exampleMealPlanOptionVote, n.MealPlanOptionVote)
 
-			createdMealPlanOptionVote, err := testClients.main.GetMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVoteID)
+			createdMealPlanOptionVote, err = testClients.main.GetMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVote.ID)
 			requireNotNilAndNoProblems(t, createdMealPlanOptionVote, err)
 			require.Equal(t, createdMealPlanOption.ID, createdMealPlanOptionVote.BelongsToMealPlanOption)
 
@@ -164,3 +163,5 @@ func (s *TestSuite) TestMealPlanOptionVotes_Listing() {
 		}
 	})
 }
+
+*/

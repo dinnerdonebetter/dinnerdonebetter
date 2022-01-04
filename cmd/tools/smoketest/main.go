@@ -49,14 +49,14 @@ func main() {
 		panic(err)
 	}
 
-	createdRecipeID, err := client.CreateRecipe(ctx, fakes.BuildFakeRecipeCreationRequestInput())
+	createdRecipe, err := client.CreateRecipe(ctx, fakes.BuildFakeRecipeCreationRequestInput())
 	if err != nil {
 		panic(err)
 	}
 
 	time.Sleep(time.Second)
 
-	recipe, err := client.GetRecipe(ctx, createdRecipeID)
+	recipe, err := client.GetRecipe(ctx, createdRecipe.ID)
 	if err != nil {
 		panic(err)
 	}

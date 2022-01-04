@@ -58,7 +58,7 @@ func main() {
 	// Create webhook.
 	exampleWebhook := fakes.BuildFakeWebhook()
 	exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
-	createdWebhookID, err := c.CreateWebhook(ctx, exampleWebhookInput)
+	createdWebhook, err := c.CreateWebhook(ctx, exampleWebhookInput)
 	if err != nil {
 		panic(err)
 	}
@@ -66,12 +66,12 @@ func main() {
 	logger.Info("waiting for webhook creation notification")
 	<-notificationsChan
 
-	webhook, err := c.GetWebhook(ctx, createdWebhookID)
+	webhook, err := c.GetWebhook(ctx, createdWebhook.ID)
 	if err != nil {
 		panic(err)
 	}
 
-	if err = c.ArchiveWebhook(ctx, createdWebhookID); err != nil {
+	if err = c.ArchiveWebhook(ctx, createdWebhook.ID); err != nil {
 		panic(err)
 	}
 

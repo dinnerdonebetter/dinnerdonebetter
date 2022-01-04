@@ -189,13 +189,11 @@ func (s *recipeStepIngredientsTestSuite) TestClient_CreateRecipeStepIngredient()
 		exampleInput.BelongsToRecipeStep = s.exampleRecipeStepID
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleRecipeID, s.exampleRecipeStepID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, &types.PreWriteResponse{ID: s.exampleRecipeStepIngredient.ID})
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepIngredient)
 
 		actual, err := c.CreateRecipeStepIngredient(s.ctx, s.exampleRecipeID, exampleInput)
-		require.NotEmpty(t, actual)
 		assert.NoError(t, err)
-
-		assert.Equal(t, s.exampleRecipeStepIngredient.ID, actual)
+		assert.Equal(t, s.exampleRecipeStepIngredient, actual)
 	})
 
 	s.Run("with invalid recipe ID", func() {
@@ -207,7 +205,7 @@ func (s *recipeStepIngredientsTestSuite) TestClient_CreateRecipeStepIngredient()
 		c, _ := buildSimpleTestClient(t)
 
 		actual, err := c.CreateRecipeStepIngredient(s.ctx, "", exampleInput)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 
@@ -217,7 +215,7 @@ func (s *recipeStepIngredientsTestSuite) TestClient_CreateRecipeStepIngredient()
 		c, _ := buildSimpleTestClient(t)
 
 		actual, err := c.CreateRecipeStepIngredient(s.ctx, s.exampleRecipeID, nil)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 
@@ -228,7 +226,7 @@ func (s *recipeStepIngredientsTestSuite) TestClient_CreateRecipeStepIngredient()
 		exampleInput := &types.RecipeStepIngredientCreationRequestInput{}
 
 		actual, err := c.CreateRecipeStepIngredient(s.ctx, s.exampleRecipeID, exampleInput)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 
@@ -240,7 +238,7 @@ func (s *recipeStepIngredientsTestSuite) TestClient_CreateRecipeStepIngredient()
 		c := buildTestClientWithInvalidURL(t)
 
 		actual, err := c.CreateRecipeStepIngredient(s.ctx, s.exampleRecipeID, exampleInput)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 

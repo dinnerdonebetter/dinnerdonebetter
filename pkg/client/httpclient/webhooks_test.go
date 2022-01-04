@@ -121,15 +121,13 @@ func (s *webhooksTestSuite) TestClient_CreateWebhook() {
 		t := s.T()
 
 		exampleInput := fakes.BuildFakeWebhookCreationInputFromWebhook(s.exampleWebhook)
-		exampleInput.ID = ""
-		exampleInput.BelongsToHousehold = ""
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, &types.PreWriteResponse{ID: s.exampleWebhook.ID})
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleWebhook)
 
 		actual, err := c.CreateWebhook(s.ctx, exampleInput)
 		assert.NoError(t, err)
-		assert.Equal(t, s.exampleWebhook.ID, actual)
+		assert.Equal(t, s.exampleWebhook, actual)
 	})
 
 	s.Run("with nil input", func() {
@@ -139,7 +137,7 @@ func (s *webhooksTestSuite) TestClient_CreateWebhook() {
 
 		actual, err := c.CreateWebhook(s.ctx, nil)
 		assert.Error(t, err)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 	})
 
 	s.Run("with invalid input", func() {
@@ -149,7 +147,7 @@ func (s *webhooksTestSuite) TestClient_CreateWebhook() {
 
 		actual, err := c.CreateWebhook(s.ctx, &types.WebhookCreationRequestInput{})
 		assert.Error(t, err)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 	})
 
 	s.Run("with error building request", func() {
@@ -160,7 +158,7 @@ func (s *webhooksTestSuite) TestClient_CreateWebhook() {
 
 		actual, err := c.CreateWebhook(s.ctx, exampleInput)
 		assert.Error(t, err)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 	})
 
 	s.Run("with error executing request", func() {
@@ -171,7 +169,7 @@ func (s *webhooksTestSuite) TestClient_CreateWebhook() {
 
 		actual, err := c.CreateWebhook(s.ctx, exampleInput)
 		assert.Error(t, err)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 	})
 }
 

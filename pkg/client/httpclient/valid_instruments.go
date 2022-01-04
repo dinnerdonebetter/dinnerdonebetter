@@ -87,31 +87,31 @@ func (c *Client) GetValidInstruments(ctx context.Context, filter *types.QueryFil
 }
 
 // CreateValidInstrument creates a valid instrument.
-func (c *Client) CreateValidInstrument(ctx context.Context, input *types.ValidInstrumentCreationRequestInput) (string, error) {
+func (c *Client) CreateValidInstrument(ctx context.Context, input *types.ValidInstrumentCreationRequestInput) (*types.ValidInstrument, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
 	if input == nil {
-		return "", ErrNilInputProvided
+		return nil, ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return "", observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateValidInstrumentRequest(ctx, input)
 	if err != nil {
-		return "", observability.PrepareError(err, logger, span, "building create valid instrument request")
+		return nil, observability.PrepareError(err, logger, span, "building create valid instrument request")
 	}
 
-	var pwr *types.PreWriteResponse
-	if err = c.fetchAndUnmarshal(ctx, req, &pwr); err != nil {
-		return "", observability.PrepareError(err, logger, span, "creating valid instrument")
+	var validInstrument *types.ValidInstrument
+	if err = c.fetchAndUnmarshal(ctx, req, &validInstrument); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "creating valid instrument")
 	}
 
-	return pwr.ID, nil
+	return validInstrument, nil
 }
 
 // UpdateValidInstrument updates a valid instrument.

@@ -189,13 +189,11 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_CreateMealPlanOptionVote() {
 		exampleInput.BelongsToMealPlanOption = s.exampleMealPlanOptionID
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleMealPlanID, s.exampleMealPlanOptionID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, &types.PreWriteResponse{ID: s.exampleMealPlanOptionVote.ID})
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOptionVote)
 
 		actual, err := c.CreateMealPlanOptionVote(s.ctx, s.exampleMealPlanID, exampleInput)
-		require.NotEmpty(t, actual)
 		assert.NoError(t, err)
-
-		assert.Equal(t, s.exampleMealPlanOptionVote.ID, actual)
+		assert.Equal(t, s.exampleMealPlanOptionVote, actual)
 	})
 
 	s.Run("with invalid meal plan ID", func() {
@@ -207,7 +205,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_CreateMealPlanOptionVote() {
 		c, _ := buildSimpleTestClient(t)
 
 		actual, err := c.CreateMealPlanOptionVote(s.ctx, "", exampleInput)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 
@@ -217,7 +215,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_CreateMealPlanOptionVote() {
 		c, _ := buildSimpleTestClient(t)
 
 		actual, err := c.CreateMealPlanOptionVote(s.ctx, s.exampleMealPlanID, nil)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 
@@ -228,7 +226,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_CreateMealPlanOptionVote() {
 		exampleInput := &types.MealPlanOptionVoteCreationRequestInput{}
 
 		actual, err := c.CreateMealPlanOptionVote(s.ctx, s.exampleMealPlanID, exampleInput)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 
@@ -240,7 +238,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_CreateMealPlanOptionVote() {
 		c := buildTestClientWithInvalidURL(t)
 
 		actual, err := c.CreateMealPlanOptionVote(s.ctx, s.exampleMealPlanID, exampleInput)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 
@@ -251,7 +249,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_CreateMealPlanOptionVote() {
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		actual, err := c.CreateMealPlanOptionVote(s.ctx, s.exampleMealPlanID, exampleInput)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }

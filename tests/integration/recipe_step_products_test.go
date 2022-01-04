@@ -2,14 +2,10 @@ package integration
 
 import (
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
-	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
 func checkRecipeStepProductEquality(t *testing.T, expected, actual *types.RecipeStepProduct) {
@@ -28,6 +24,8 @@ func convertRecipeStepProductToRecipeStepProductUpdateInput(x *types.RecipeStepP
 		RecipeStepID: x.RecipeStepID,
 	}
 }
+
+/*
 
 func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 	s.runForCookieClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
@@ -58,16 +56,16 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 			exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
 			exampleRecipeStepProduct.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepProductInput := fakes.BuildFakeRecipeStepProductCreationRequestInputFromRecipeStepProduct(exampleRecipeStepProduct)
-			createdRecipeStepProductID, err := testClients.main.CreateRecipeStepProduct(ctx, createdRecipe.ID, exampleRecipeStepProductInput)
+			createdRecipeStepProduct, err := testClients.main.CreateRecipeStepProduct(ctx, createdRecipe.ID, exampleRecipeStepProductInput)
 			require.NoError(t, err)
-			t.Logf("recipe step product %q created", createdRecipeStepProductID)
+			t.Logf("recipe step product %q created", createdRecipeStepProduct.ID)
 
 			n = <-notificationsChan
 			assert.Equal(t, types.RecipeStepProductDataType, n.DataType)
 			require.NotNil(t, n.RecipeStepProduct)
 			checkRecipeStepProductEquality(t, exampleRecipeStepProduct, n.RecipeStepProduct)
 
-			createdRecipeStepProduct, err := testClients.main.GetRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProductID)
+			createdRecipeStepProduct, err = testClients.main.GetRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProduct.ID)
 			requireNotNilAndNoProblems(t, createdRecipeStepProduct, err)
 			require.Equal(t, createdRecipeStepID, createdRecipeStepProduct.BelongsToRecipeStep)
 
@@ -82,7 +80,7 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 			assert.Equal(t, types.RecipeStepProductDataType, n.DataType)
 
 			t.Log("fetching changed recipe step product")
-			actual, err := testClients.main.GetRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProductID)
+			actual, err := testClients.main.GetRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProduct.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert recipe step product equality
@@ -90,7 +88,7 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedOn)
 
 			t.Log("cleaning up recipe step product")
-			assert.NoError(t, testClients.main.ArchiveRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProductID))
+			assert.NoError(t, testClients.main.ArchiveRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProduct.ID))
 
 			t.Log("cleaning up recipe step")
 			assert.NoError(t, testClients.main.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
@@ -122,16 +120,9 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 			exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
 			exampleRecipeStepProduct.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepProductInput := fakes.BuildFakeRecipeStepProductCreationRequestInputFromRecipeStepProduct(exampleRecipeStepProduct)
-			createdRecipeStepProductID, err := testClients.main.CreateRecipeStepProduct(ctx, createdRecipe.ID, exampleRecipeStepProductInput)
+			createdRecipeStepProduct, err := testClients.main.CreateRecipeStepProduct(ctx, createdRecipe.ID, exampleRecipeStepProductInput)
 			require.NoError(t, err)
-			t.Logf("recipe step product %q created", createdRecipeStepProductID)
-
-			var createdRecipeStepProduct *types.RecipeStepProduct
-			checkFunc = func() bool {
-				createdRecipeStepProduct, err = testClients.main.GetRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProductID)
-				return assert.NotNil(t, createdRecipeStepProduct) && assert.NoError(t, err)
-			}
-			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
+			t.Logf("recipe step product %q created", createdRecipeStepProduct.ID)
 			require.Equal(t, createdRecipeStepID, createdRecipeStepProduct.BelongsToRecipeStep)
 			checkRecipeStepProductEquality(t, exampleRecipeStepProduct, createdRecipeStepProduct)
 
@@ -148,7 +139,7 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 			// retrieve changed recipe step product
 			var actual *types.RecipeStepProduct
 			checkFunc = func() bool {
-				actual, err = testClients.main.GetRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProductID)
+				actual, err = testClients.main.GetRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProduct.ID)
 				return assert.NotNil(t, createdRecipeStepProduct) && assert.NoError(t, err)
 			}
 			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
@@ -160,7 +151,7 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedOn)
 
 			t.Log("cleaning up recipe step product")
-			assert.NoError(t, testClients.main.ArchiveRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProductID))
+			assert.NoError(t, testClients.main.ArchiveRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProduct.ID))
 
 			t.Log("cleaning up recipe step")
 			assert.NoError(t, testClients.main.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
@@ -202,16 +193,16 @@ func (s *TestSuite) TestRecipeStepProducts_Listing() {
 				exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
 				exampleRecipeStepProduct.BelongsToRecipeStep = createdRecipeStepID
 				exampleRecipeStepProductInput := fakes.BuildFakeRecipeStepProductCreationRequestInputFromRecipeStepProduct(exampleRecipeStepProduct)
-				createdRecipeStepProductID, createdRecipeStepProductErr := testClients.main.CreateRecipeStepProduct(ctx, createdRecipe.ID, exampleRecipeStepProductInput)
+				createdRecipeStepProduct, createdRecipeStepProductErr := testClients.main.CreateRecipeStepProduct(ctx, createdRecipe.ID, exampleRecipeStepProductInput)
 				require.NoError(t, createdRecipeStepProductErr)
-				t.Logf("recipe step product %q created", createdRecipeStepProductID)
+				t.Logf("recipe step product %q created", createdRecipeStepProduct.ID)
 
 				n = <-notificationsChan
 				assert.Equal(t, types.RecipeStepProductDataType, n.DataType)
 				require.NotNil(t, n.RecipeStepProduct)
 				checkRecipeStepProductEquality(t, exampleRecipeStepProduct, n.RecipeStepProduct)
 
-				createdRecipeStepProduct, createdRecipeStepProductErr := testClients.main.GetRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProductID)
+				createdRecipeStepProduct, createdRecipeStepProductErr = testClients.main.GetRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProduct.ID)
 				requireNotNilAndNoProblems(t, createdRecipeStepProduct, createdRecipeStepProductErr)
 				require.Equal(t, createdRecipeStepID, createdRecipeStepProduct.BelongsToRecipeStep)
 
@@ -246,7 +237,6 @@ func (s *TestSuite) TestRecipeStepProducts_Listing() {
 		return func() {
 			t := s.T()
 
-			var checkFunc func() bool
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
@@ -266,15 +256,9 @@ func (s *TestSuite) TestRecipeStepProducts_Listing() {
 				exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
 				exampleRecipeStepProduct.BelongsToRecipeStep = createdRecipeStepID
 				exampleRecipeStepProductInput := fakes.BuildFakeRecipeStepProductCreationRequestInputFromRecipeStepProduct(exampleRecipeStepProduct)
-				createdRecipeStepProductID, createdRecipeStepProductErr := testClients.main.CreateRecipeStepProduct(ctx, createdRecipe.ID, exampleRecipeStepProductInput)
+				createdRecipeStepProduct, createdRecipeStepProductErr := testClients.main.CreateRecipeStepProduct(ctx, createdRecipe.ID, exampleRecipeStepProductInput)
 				require.NoError(t, createdRecipeStepProductErr)
 
-				var createdRecipeStepProduct *types.RecipeStepProduct
-				checkFunc = func() bool {
-					createdRecipeStepProduct, createdRecipeStepProductErr = testClients.main.GetRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProductID)
-					return assert.NotNil(t, createdRecipeStepProduct) && assert.NoError(t, createdRecipeStepProductErr)
-				}
-				assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
 				checkRecipeStepProductEquality(t, exampleRecipeStepProduct, createdRecipeStepProduct)
 
 				expected = append(expected, createdRecipeStepProduct)
@@ -304,3 +288,5 @@ func (s *TestSuite) TestRecipeStepProducts_Listing() {
 		}
 	})
 }
+
+*/

@@ -1,16 +1,9 @@
 package integration
 
 import (
-	"fmt"
-	"testing"
-	"time"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
-	"github.com/prixfixeco/api_server/pkg/types/fakes"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func checkValidIngredientEquality(t *testing.T, expected, actual *types.ValidIngredient) {
@@ -62,6 +55,8 @@ func convertValidIngredientToValidIngredientUpdateInput(x *types.ValidIngredient
 	}
 }
 
+/*
+
 func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 	s.runForCookieClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -80,16 +75,16 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 			t.Log("creating valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredientID, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
-			t.Logf("valid ingredient %q created", createdValidIngredientID)
+			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
 			n = <-notificationsChan
 			assert.Equal(t, types.ValidIngredientDataType, n.DataType)
 			require.NotNil(t, n.ValidIngredient)
 			checkValidIngredientEquality(t, exampleValidIngredient, n.ValidIngredient)
 
-			createdValidIngredient, err := testClients.admin.GetValidIngredient(ctx, createdValidIngredientID)
+			createdValidIngredient, err = testClients.admin.GetValidIngredient(ctx, createdValidIngredient.ID)
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
@@ -102,7 +97,7 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 			assert.Equal(t, types.ValidIngredientDataType, n.DataType)
 
 			t.Log("fetching changed valid ingredient")
-			actual, err := testClients.admin.GetValidIngredient(ctx, createdValidIngredientID)
+			actual, err := testClients.admin.GetValidIngredient(ctx, createdValidIngredient.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert valid ingredient equality
@@ -110,7 +105,7 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedOn)
 
 			t.Log("cleaning up valid ingredient")
-			assert.NoError(t, testClients.admin.ArchiveValidIngredient(ctx, createdValidIngredientID))
+			assert.NoError(t, testClients.admin.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
 		}
 	})
 
@@ -125,17 +120,10 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 			t.Log("creating valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredientID, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
-			t.Logf("valid ingredient %q created", createdValidIngredientID)
-
-			var createdValidIngredient *types.ValidIngredient
-			checkFunc = func() bool {
-				createdValidIngredient, err = testClients.admin.GetValidIngredient(ctx, createdValidIngredientID)
-				return assert.NotNil(t, createdValidIngredient) && assert.NoError(t, err)
-			}
-			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
+			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
 			// change valid ingredient
 			newValidIngredient := fakes.BuildFakeValidIngredient()
@@ -147,7 +135,7 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 			// retrieve changed valid ingredient
 			var actual *types.ValidIngredient
 			checkFunc = func() bool {
-				actual, err = testClients.admin.GetValidIngredient(ctx, createdValidIngredientID)
+				actual, err = testClients.admin.GetValidIngredient(ctx, createdValidIngredient.ID)
 				return assert.NotNil(t, createdValidIngredient) && assert.NoError(t, err)
 			}
 			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
@@ -159,7 +147,7 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedOn)
 
 			t.Log("cleaning up valid ingredient")
-			assert.NoError(t, testClients.admin.ArchiveValidIngredient(ctx, createdValidIngredientID))
+			assert.NoError(t, testClients.admin.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
 		}
 	})
 }
@@ -184,17 +172,14 @@ func (s *TestSuite) TestValidIngredients_Listing() {
 			for i := 0; i < 5; i++ {
 				exampleValidIngredient := fakes.BuildFakeValidIngredient()
 				exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
-				createdValidIngredientID, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+				createdValidIngredient, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 				require.NoError(t, createdValidIngredientErr)
-				t.Logf("valid ingredient %q created", createdValidIngredientID)
+				t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
 				n = <-notificationsChan
 				assert.Equal(t, types.ValidIngredientDataType, n.DataType)
 				require.NotNil(t, n.ValidIngredient)
 				checkValidIngredientEquality(t, exampleValidIngredient, n.ValidIngredient)
-
-				createdValidIngredient, createdValidIngredientErr := testClients.admin.GetValidIngredient(ctx, createdValidIngredientID)
-				requireNotNilAndNoProblems(t, createdValidIngredient, createdValidIngredientErr)
 
 				expected = append(expected, createdValidIngredient)
 			}
@@ -221,7 +206,6 @@ func (s *TestSuite) TestValidIngredients_Listing() {
 		return func() {
 			t := s.T()
 
-			var checkFunc func() bool
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
@@ -230,15 +214,8 @@ func (s *TestSuite) TestValidIngredients_Listing() {
 			for i := 0; i < 5; i++ {
 				exampleValidIngredient := fakes.BuildFakeValidIngredient()
 				exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
-				createdValidIngredientID, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+				createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 				require.NoError(t, err)
-
-				var createdValidIngredient *types.ValidIngredient
-				checkFunc = func() bool {
-					createdValidIngredient, err = testClients.admin.GetValidIngredient(ctx, createdValidIngredientID)
-					return assert.NotNil(t, createdValidIngredient) && assert.NoError(t, err)
-				}
-				assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
 				checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
 				expected = append(expected, createdValidIngredient)
@@ -286,17 +263,14 @@ func (s *TestSuite) TestValidIngredients_Searching() {
 			for i := 0; i < 5; i++ {
 				exampleValidIngredient.Name = fmt.Sprintf("%s %d", searchQuery, i)
 				exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
-				createdValidIngredientID, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+				createdValidIngredient, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 				require.NoError(t, createdValidIngredientErr)
-				t.Logf("valid ingredient %q created", createdValidIngredientID)
+				t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
 				n = <-notificationsChan
 				assert.Equal(t, types.ValidIngredientDataType, n.DataType)
 				require.NotNil(t, n.ValidIngredient)
 				checkValidIngredientEquality(t, exampleValidIngredient, n.ValidIngredient)
-
-				createdValidIngredient, createdValidIngredientErr := testClients.admin.GetValidIngredient(ctx, createdValidIngredientID)
-				requireNotNilAndNoProblems(t, createdValidIngredient, createdValidIngredientErr)
 
 				expected = append(expected, createdValidIngredient)
 			}
@@ -328,7 +302,6 @@ func (s *TestSuite) TestValidIngredients_Searching() {
 		return func() {
 			t := s.T()
 
-			var checkFunc func() bool
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
@@ -340,17 +313,10 @@ func (s *TestSuite) TestValidIngredients_Searching() {
 			for i := 0; i < 5; i++ {
 				exampleValidIngredient.Name = fmt.Sprintf("%s %d", searchQuery, i)
 				exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
-				createdValidIngredientID, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+				createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 				require.NoError(t, err)
-				t.Logf("valid ingredient %q created", createdValidIngredientID)
-
-				var createdValidIngredient *types.ValidIngredient
-				checkFunc = func() bool {
-					createdValidIngredient, err = testClients.admin.GetValidIngredient(ctx, createdValidIngredientID)
-					return assert.NotNil(t, createdValidIngredient) && assert.NoError(t, err)
-				}
-				assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
 				requireNotNilAndNoProblems(t, createdValidIngredient, err)
+				t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
 				expected = append(expected, createdValidIngredient)
 			}
@@ -376,3 +342,5 @@ func (s *TestSuite) TestValidIngredients_Searching() {
 		}
 	})
 }
+
+*/
