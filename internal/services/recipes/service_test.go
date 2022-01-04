@@ -46,12 +46,14 @@ func TestProvideRecipesService(T *testing.T) {
 			PreWritesTopicName:   "pre-writes",
 			PreUpdatesTopicName:  "pre-updates",
 			PreArchivesTopicName: "pre-archives",
+			DataChangesTopicName: "data_changes",
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
 		pp.On("ProviderPublisher", cfg.PreWritesTopicName).Return(&mockpublishers.Publisher{}, nil)
 		pp.On("ProviderPublisher", cfg.PreUpdatesTopicName).Return(&mockpublishers.Publisher{}, nil)
 		pp.On("ProviderPublisher", cfg.PreArchivesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
 			ctx,
@@ -79,6 +81,7 @@ func TestProvideRecipesService(T *testing.T) {
 			PreWritesTopicName:   "pre-writes",
 			PreUpdatesTopicName:  "pre-updates",
 			PreArchivesTopicName: "pre-archives",
+			DataChangesTopicName: "data_changes",
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
@@ -110,6 +113,7 @@ func TestProvideRecipesService(T *testing.T) {
 			PreWritesTopicName:   "pre-writes",
 			PreUpdatesTopicName:  "pre-updates",
 			PreArchivesTopicName: "pre-archives",
+			DataChangesTopicName: "data_changes",
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
@@ -142,6 +146,7 @@ func TestProvideRecipesService(T *testing.T) {
 			PreWritesTopicName:   "pre-writes",
 			PreUpdatesTopicName:  "pre-updates",
 			PreArchivesTopicName: "pre-archives",
+			DataChangesTopicName: "data_changes",
 		}
 
 		pp := &mockpublishers.ProducerProvider{}

@@ -10,6 +10,7 @@ import (
 type Config struct {
 	_ struct{}
 
+	DataChangesTopicName string `json:"dataChangesTopicName,omitempty" mapstructure:"data_changes_topic_name" toml:"data_changes_topic_name,omitempty"`
 	PreWritesTopicName   string `json:"writesTopicName,omitempty" mapstructure:"pre_writes_topic_name" toml:"pre_writes_topic_name,omitempty"`
 	PreUpdatesTopicName  string `json:"updatesTopicName,omitempty" mapstructure:"pre_updates_topic_name" toml:"pre_updates_topic_name,omitempty"`
 	PreArchivesTopicName string `json:"archivesTopicName,omitempty" mapstructure:"pre_archives_topic_name" toml:"pre_archives_topic_name,omitempty"`

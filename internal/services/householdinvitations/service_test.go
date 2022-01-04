@@ -46,11 +46,13 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 
 		cfg := &Config{
-			PreWritesTopicName: "pre-writes",
+			PreWritesTopicName:   "pre-writes",
+			DataChangesTopicName: "data_changes",
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
 		pp.On("ProviderPublisher", cfg.PreWritesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		actual, err := ProvideHouseholdInvitationsService(
 			logging.NewNoopLogger(),

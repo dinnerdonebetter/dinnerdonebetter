@@ -333,10 +333,12 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 		},
 		Services: config.ServicesConfigurations{
 			Households: householdsservice.Config{
-				PreWritesTopicName: preWritesTopicName,
+				PreWritesTopicName:   preWritesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			HouseholdInvitations: householdinvitationsservice.Config{
-				PreWritesTopicName: preWritesTopicName,
+				PreWritesTopicName:   preWritesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			Auth: authservice.Config{
 				PASETO: authservice.PASETOConfig{
@@ -351,8 +353,7 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 				MinimumPasswordLength: 8,
 			},
 			Webhooks: webhooksservice.Config{
-				PreWritesTopicName:   preWritesTopicName,
-				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			Websockets: websocketsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
@@ -361,66 +362,79 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidIngredients: validingredientsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidPreparations: validpreparationsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidIngredientPreparations: validingredientpreparationsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			Meals: mealsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			Recipes: recipesservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			RecipeSteps: recipestepsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			RecipeStepInstruments: recipestepinstrumentsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			RecipeStepIngredients: recipestepingredientsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			RecipeStepProducts: recipestepproductsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			MealPlans: mealplansservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			MealPlanOptions: mealplanoptionsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			MealPlanOptionVotes: mealplanoptionvotesservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 		},
 	}
@@ -481,10 +495,12 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 		},
 		Services: config.ServicesConfigurations{
 			Households: householdsservice.Config{
-				PreWritesTopicName: preWritesTopicName,
+				PreWritesTopicName:   preWritesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			HouseholdInvitations: householdinvitationsservice.Config{
-				PreWritesTopicName: preWritesTopicName,
+				PreWritesTopicName:   preWritesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			Auth: authservice.Config{
 				PASETO: authservice.PASETOConfig{
@@ -506,8 +522,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				MinimumPasswordLength: 8,
 			},
 			Webhooks: webhooksservice.Config{
-				PreWritesTopicName:   preWritesTopicName,
-				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			Websockets: websocketsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
@@ -516,66 +531,79 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidIngredients: validingredientsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidPreparations: validpreparationsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidIngredientPreparations: validingredientpreparationsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			Meals: mealsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			Recipes: recipesservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			RecipeSteps: recipestepsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			RecipeStepInstruments: recipestepinstrumentsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			RecipeStepIngredients: recipestepingredientsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			RecipeStepProducts: recipestepproductsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			MealPlans: mealplansservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			MealPlanOptions: mealplanoptionsservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 			MealPlanOptionVotes: mealplanoptionvotesservice.Config{
 				PreWritesTopicName:   preWritesTopicName,
 				PreUpdatesTopicName:  preUpdatesTopicName,
 				PreArchivesTopicName: preArchivesTopicName,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 		},
 	}

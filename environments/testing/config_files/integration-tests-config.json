@@ -76,74 +76,89 @@
 	},
 	"services": {
 		"validInstruments": {
+			"dataChangesTopicName": "data_changes",
 			"writesTopicName": "pre_writes",
 			"updatesTopicName": "pre_updates",
 			"archivesTopicName": "pre_archives"
 		},
 		"validIngredients": {
+			"dataChangesTopicName": "data_changes",
 			"writesTopicName": "pre_writes",
 			"updatesTopicName": "pre_updates",
 			"archivesTopicName": "pre_archives"
 		},
 		"validPreparations": {
+			"dataChangesTopicName": "data_changes",
 			"writesTopicName": "pre_writes",
 			"updatesTopicName": "pre_updates",
 			"archivesTopicName": "pre_archives"
 		},
 		"mealPlanOptionVotes": {
+			"dataChangesTopicName": "data_changes",
 			"writesTopicName": "pre_writes",
 			"updatesTopicName": "pre_updates",
 			"archivesTopicName": "pre_archives"
 		},
 		"validIngredientPreparations": {
+			"dataChangesTopicName": "data_changes",
 			"writesTopicName": "pre_writes",
 			"updatesTopicName": "pre_updates",
 			"archivesTopicName": "pre_archives"
 		},
 		"meals": {
+			"dataChangesTopicName": "data_changes",
 			"writesTopicName": "pre_writes",
 			"updatesTopicName": "pre_updates",
 			"archivesTopicName": "pre_archives"
 		},
 		"recipes": {
+			"dataChangesTopicName": "data_changes",
 			"writesTopicName": "pre_writes",
 			"updatesTopicName": "pre_updates",
 			"archivesTopicName": "pre_archives"
 		},
 		"recipeSteps": {
+			"dataChangesTopicName": "data_changes",
 			"writesTopicName": "pre_writes",
 			"updatesTopicName": "pre_updates",
 			"archivesTopicName": "pre_archives"
 		},
 		"recipeStepInstruments": {
+			"dataChangesTopicName": "data_changes",
 			"writesTopicName": "pre_writes",
 			"updatesTopicName": "pre_updates",
 			"archivesTopicName": "pre_archives"
 		},
 		"recipeStepIngredients": {
+			"dataChangesTopicName": "data_changes",
 			"writesTopicName": "pre_writes",
 			"updatesTopicName": "pre_updates",
 			"archivesTopicName": "pre_archives"
 		},
 		"mealPlans": {
+			"dataChangesTopicName": "data_changes",
 			"writesTopicName": "pre_writes",
 			"updatesTopicName": "pre_updates",
 			"archivesTopicName": "pre_archives"
 		},
 		"mealPlanOptions": {
+			"dataChangesTopicName": "data_changes",
 			"writesTopicName": "pre_writes",
 			"updatesTopicName": "pre_updates",
 			"archivesTopicName": "pre_archives"
 		},
 		"recipeStepProducts": {
+			"dataChangesTopicName": "data_changes",
 			"writesTopicName": "pre_writes",
 			"updatesTopicName": "pre_updates",
 			"archivesTopicName": "pre_archives"
 		},
 		"households": {
+			"dataChangesTopicName": "data_changes",
 			"writesTopicName": "pre_writes"
 		},
 		"householdInvitations": {
+			"dataChangesTopicName": "data_changes",
 			"writesTopicName": "pre_writes",
 			"debug": false
 		},
@@ -151,14 +166,13 @@
 			"dataChangesTopicName": "data_changes"
 		},
 		"webhooks": {
-			"writesTopicName": "pre_writes",
-			"archivesTopicName": "pre_archives",
+			"dataChangesTopicName": "data_changes",
 			"debug": false
 		},
 		"auth": {
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "RMfORyQsjJtY/fxUlMvvG0Tr5BEj6leIXugbbuKdL24=",
+				"localModeKey": "zsFHAZMQrLiZPIqDhu9C6O8dOs1YGI6H1rugFi3lffU=",
 				"lifetime": 60000000000
 			},
 			"cookies": {

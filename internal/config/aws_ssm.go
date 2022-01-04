@@ -145,9 +145,7 @@ func GetConfigFromParameterStore(worker bool) (*InstanceConfig, error) {
 
 	cfg.Services.HouseholdInvitations.PreWritesTopicName = writesTopicName
 
-	cfg.Services.Webhooks.PreWritesTopicName = writesTopicName
-	cfg.Services.Webhooks.PreArchivesTopicName = archivesTopicName
-
+	cfg.Services.Webhooks.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.Websockets.DataChangesTopicName = dataChangesTopicName
 
 	ctx := context.Background()

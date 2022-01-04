@@ -33,6 +33,7 @@ type (
 		preWritesPublisher        messagequeue.Publisher
 		preUpdatesPublisher       messagequeue.Publisher
 		preArchivesPublisher      messagequeue.Publisher
+		dataChangesPublisher      messagequeue.Publisher
 		encoderDecoder            encoding.ServerEncoderDecoder
 		tracer                    tracing.Tracer
 		customerDataCollector     customerdata.Collector
@@ -66,6 +67,11 @@ func ProvideService(
 		return nil, fmt.Errorf("setting up meal queue pre-archives publisher: %w", err)
 	}
 
+	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up recipe step product queue data changes publisher: %w", err)
+	}
+
 	svc := &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
 		mealIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(MealIDURIParamKey),
@@ -74,6 +80,7 @@ func ProvideService(
 		preWritesPublisher:        preWritesPublisher,
 		preUpdatesPublisher:       preUpdatesPublisher,
 		preArchivesPublisher:      preArchivesPublisher,
+		dataChangesPublisher:      dataChangesPublisher,
 		encoderDecoder:            encoder,
 		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 		customerDataCollector:     customerDataCollector,
