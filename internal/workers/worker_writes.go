@@ -57,7 +57,6 @@ func (w *WritesWorker) determineWriteMessageHandler(msg *types.PreWriteMessage) 
 	logger.Debug("determining message handler for msg with type")
 
 	funcMap := map[string]func(context.Context, *types.PreWriteMessage) error{
-		string(types.ValidIngredientDataType):            w.createValidIngredient,
 		string(types.ValidIngredientPreparationDataType): w.createValidIngredientPreparation,
 		string(types.MealDataType):                       w.createMeal,
 		string(types.RecipeDataType):                     w.createRecipe,

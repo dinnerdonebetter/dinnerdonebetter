@@ -50,7 +50,6 @@ func ProvideArchivesWorker(
 
 func (w *ArchivesWorker) determineArchiveMessageHandler(msg *types.PreArchiveMessage) func(context.Context, *types.PreArchiveMessage) error {
 	funcMap := map[string]func(context.Context, *types.PreArchiveMessage) error{
-		string(types.ValidIngredientDataType):            w.archiveValidIngredient,
 		string(types.ValidIngredientPreparationDataType): w.archiveValidIngredientPreparation,
 		string(types.MealDataType):                       w.archiveMeal,
 		string(types.RecipeDataType):                     w.archiveRecipe,

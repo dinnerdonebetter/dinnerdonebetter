@@ -76,22 +76,13 @@
 	},
 	"services": {
 		"validInstruments": {
-			"dataChangesTopicName": "data_changes",
-			"writesTopicName": "pre_writes",
-			"updatesTopicName": "pre_updates",
-			"archivesTopicName": "pre_archives"
+			"dataChangesTopicName": "data_changes"
 		},
 		"validIngredients": {
-			"dataChangesTopicName": "data_changes",
-			"writesTopicName": "pre_writes",
-			"updatesTopicName": "pre_updates",
-			"archivesTopicName": "pre_archives"
+			"dataChangesTopicName": "data_changes"
 		},
 		"validPreparations": {
-			"dataChangesTopicName": "data_changes",
-			"writesTopicName": "pre_writes",
-			"updatesTopicName": "pre_updates",
-			"archivesTopicName": "pre_archives"
+			"dataChangesTopicName": "data_changes"
 		},
 		"mealPlanOptionVotes": {
 			"dataChangesTopicName": "data_changes",
@@ -172,7 +163,7 @@
 		"auth": {
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "zsFHAZMQrLiZPIqDhu9C6O8dOs1YGI6H1rugFi3lffU=",
+				"localModeKey": "8D8hsFW6PFETOM64Hh3gf0JsUzVS8azuRS2HZszoJS8=",
 				"lifetime": 60000000000
 			},
 			"cookies": {

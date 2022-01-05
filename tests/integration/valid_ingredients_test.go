@@ -1,9 +1,16 @@
 package integration
 
 import (
-	"github.com/prixfixeco/api_server/pkg/types"
-	"github.com/stretchr/testify/assert"
+	"fmt"
 	"testing"
+	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
 func checkValidIngredientEquality(t *testing.T, expected, actual *types.ValidIngredient) {
@@ -55,8 +62,6 @@ func convertValidIngredientToValidIngredientUpdateInput(x *types.ValidIngredient
 	}
 }
 
-/*
-
 func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 	s.runForCookieClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -65,24 +70,13 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
-			require.NotNil(t, notificationsChan)
-			require.NoError(t, err)
-
-			var n *types.DataChangeMessage
-
 			t.Log("creating valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
 			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
 			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
-
-			n = <-notificationsChan
-			assert.Equal(t, types.ValidIngredientDataType, n.DataType)
-			require.NotNil(t, n.ValidIngredient)
-			checkValidIngredientEquality(t, exampleValidIngredient, n.ValidIngredient)
+			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
 			createdValidIngredient, err = testClients.admin.GetValidIngredient(ctx, createdValidIngredient.ID)
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
@@ -92,9 +86,6 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 			newValidIngredient := fakes.BuildFakeValidIngredient()
 			createdValidIngredient.Update(convertValidIngredientToValidIngredientUpdateInput(newValidIngredient))
 			assert.NoError(t, testClients.admin.UpdateValidIngredient(ctx, createdValidIngredient))
-
-			n = <-notificationsChan
-			assert.Equal(t, types.ValidIngredientDataType, n.DataType)
 
 			t.Log("fetching changed valid ingredient")
 			actual, err := testClients.admin.GetValidIngredient(ctx, createdValidIngredient.ID)
@@ -160,13 +151,6 @@ func (s *TestSuite) TestValidIngredients_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
-			require.NotNil(t, notificationsChan)
-			require.NoError(t, err)
-
-			var n *types.DataChangeMessage
-
 			t.Log("creating valid ingredients")
 			var expected []*types.ValidIngredient
 			for i := 0; i < 5; i++ {
@@ -176,10 +160,7 @@ func (s *TestSuite) TestValidIngredients_Listing() {
 				require.NoError(t, createdValidIngredientErr)
 				t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
-				n = <-notificationsChan
-				assert.Equal(t, types.ValidIngredientDataType, n.DataType)
-				require.NotNil(t, n.ValidIngredient)
-				checkValidIngredientEquality(t, exampleValidIngredient, n.ValidIngredient)
+				checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
 				expected = append(expected, createdValidIngredient)
 			}
@@ -248,13 +229,6 @@ func (s *TestSuite) TestValidIngredients_Searching() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
-			require.NotNil(t, notificationsChan)
-			require.NoError(t, err)
-
-			var n *types.DataChangeMessage
-
 			t.Log("creating valid ingredients")
 			var expected []*types.ValidIngredient
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
@@ -265,12 +239,8 @@ func (s *TestSuite) TestValidIngredients_Searching() {
 				exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
 				createdValidIngredient, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 				require.NoError(t, createdValidIngredientErr)
+				checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 				t.Logf("valid ingredient %q created", createdValidIngredient.ID)
-
-				n = <-notificationsChan
-				assert.Equal(t, types.ValidIngredientDataType, n.DataType)
-				require.NotNil(t, n.ValidIngredient)
-				checkValidIngredientEquality(t, exampleValidIngredient, n.ValidIngredient)
 
 				expected = append(expected, createdValidIngredient)
 			}
@@ -342,5 +312,3 @@ func (s *TestSuite) TestValidIngredients_Searching() {
 		}
 	})
 }
-
-*/
