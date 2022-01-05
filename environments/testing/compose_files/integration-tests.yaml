@@ -27,6 +27,7 @@ services:
             context: '../../../'
             dockerfile: 'environments/testing/dockerfiles/workers.Dockerfile'
         environment:
+            TARGET_ADDRESS: 'http://api_server:8000'
             CONFIGURATION_FILEPATH: '/etc/service.config'
             PRIXFIXE_WORKERS_LOCAL_CONFIG_STORE_KEY: 'SUFNQVdBUkVUSEFUVEhJU1NFQ1JFVElTVU5TRUNVUkU='
         volumes:

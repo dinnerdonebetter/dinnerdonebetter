@@ -87,7 +87,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validPreparation, http.StatusOK)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validPreparation, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a valid preparation.

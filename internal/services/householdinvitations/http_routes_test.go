@@ -58,13 +58,13 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		).Return(t.Name(), nil)
 		helper.service.secretGenerator = sg
 
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(testutils.PreWriteMessageMatcher),
 		).Return(nil)
-		helper.service.preWritesPublisher = mockEventProducer
+		helper.service.preWritesPublisher = dataChangesPublisher
 
 		cdc := &customerdata.MockCollector{}
 		cdc.On(
@@ -79,7 +79,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.InviteMemberHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusAccepted, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, udm, sg, mockEventProducer, cdc)
+		mock.AssertExpectationsForObjects(t, udm, sg, dataChangesPublisher, cdc)
 	})
 
 	T.Run("with error fetching session context data", func(t *testing.T) {
@@ -238,18 +238,18 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		).Return(t.Name(), nil)
 		helper.service.secretGenerator = sg
 
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(testutils.PreWriteMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.preWritesPublisher = mockEventProducer
+		helper.service.preWritesPublisher = dataChangesPublisher
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, udm, sg, mockEventProducer)
+		mock.AssertExpectationsForObjects(t, udm, sg, dataChangesPublisher)
 	})
 
 	T.Run("with error collecting data", func(t *testing.T) {
@@ -282,13 +282,13 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		).Return(t.Name(), nil)
 		helper.service.secretGenerator = sg
 
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(testutils.PreWriteMessageMatcher),
 		).Return(nil)
-		helper.service.preWritesPublisher = mockEventProducer
+		helper.service.preWritesPublisher = dataChangesPublisher
 
 		cdc := &customerdata.MockCollector{}
 		cdc.On(
@@ -303,7 +303,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.InviteMemberHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusAccepted, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, udm, sg, mockEventProducer, cdc)
+		mock.AssertExpectationsForObjects(t, udm, sg, dataChangesPublisher, cdc)
 	})
 }
 

@@ -67,22 +67,27 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachValidIngredientPreparationIDToSpan(span, input.ID)
 
-	// create valid ingredient preparation in database.
-	preWrite := &types.PreWriteMessage{
-		DataType:                   types.ValidIngredientPreparationDataType,
-		ValidIngredientPreparation: input,
-		AttributableToUserID:       sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID:  sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing valid ingredient preparation write message")
+	validIngredientPreparation, err := s.validIngredientPreparationDataManager.CreateValidIngredientPreparation(ctx, input)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "creating valid ingredient preparation")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	pwr := types.PreWriteResponse{ID: input.ID}
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                   types.ValidIngredientPreparationDataType,
+			MessageType:                "valid_ingredient_preparation_created",
+			ValidIngredientPreparation: validIngredientPreparation,
+			AttributableToUserID:       sessionCtxData.Requester.UserID,
+		}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusAccepted)
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing to post-writes topic")
+		}
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validIngredientPreparation, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a valid ingredient preparation.
@@ -215,16 +220,23 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// update the valid ingredient preparation.
 	validIngredientPreparation.Update(input)
 
-	pum := &types.PreUpdateMessage{
-		DataType:                   types.ValidIngredientPreparationDataType,
-		ValidIngredientPreparation: validIngredientPreparation,
-		AttributableToUserID:       sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID:  sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preUpdatesPublisher.Publish(ctx, pum); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing valid ingredient preparation update message")
+	if err = s.validIngredientPreparationDataManager.UpdateValidIngredientPreparation(ctx, validIngredientPreparation); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating valid ingredient preparation")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                   types.ValidIngredientPreparationDataType,
+			MessageType:                "valid_ingredient_preparation_updated",
+			ValidIngredientPreparation: validIngredientPreparation,
+			AttributableToUserID:       sessionCtxData.Requester.UserID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	// encode our response and peace.
@@ -265,16 +277,22 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	pam := &types.PreArchiveMessage{
-		DataType:                     types.ValidIngredientPreparationDataType,
-		ValidIngredientPreparationID: validIngredientPreparationID,
-		AttributableToUserID:         sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID:    sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing valid ingredient preparation archive message")
+	if err = s.validIngredientPreparationDataManager.ArchiveValidIngredientPreparation(ctx, validIngredientPreparationID); err != nil {
+		observability.AcknowledgeError(err, logger, span, "archiving valid ingredient preparation")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:             types.ValidIngredientPreparationDataType,
+			MessageType:          "valid_ingredient_preparation_archived",
+			AttributableToUserID: sessionCtxData.Requester.UserID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	// encode our response and peace.

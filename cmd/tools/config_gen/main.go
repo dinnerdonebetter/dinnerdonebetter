@@ -368,9 +368,6 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidIngredientPreparations: validingredientpreparationsservice.Config{
-				PreWritesTopicName:   preWritesTopicName,
-				PreUpdatesTopicName:  preUpdatesTopicName,
-				PreArchivesTopicName: preArchivesTopicName,
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			Meals: mealsservice.Config{
@@ -528,9 +525,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidIngredientPreparations: validingredientpreparationsservice.Config{
-				PreWritesTopicName:   preWritesTopicName,
-				PreUpdatesTopicName:  preUpdatesTopicName,
-				PreArchivesTopicName: preArchivesTopicName,
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			Meals: mealsservice.Config{

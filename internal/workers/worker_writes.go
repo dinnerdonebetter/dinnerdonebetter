@@ -57,18 +57,17 @@ func (w *WritesWorker) determineWriteMessageHandler(msg *types.PreWriteMessage) 
 	logger.Debug("determining message handler for msg with type")
 
 	funcMap := map[string]func(context.Context, *types.PreWriteMessage) error{
-		string(types.ValidIngredientPreparationDataType): w.createValidIngredientPreparation,
-		string(types.MealDataType):                       w.createMeal,
-		string(types.RecipeDataType):                     w.createRecipe,
-		string(types.RecipeStepDataType):                 w.createRecipeStep,
-		string(types.RecipeStepInstrumentDataType):       w.createRecipeStepInstrument,
-		string(types.RecipeStepIngredientDataType):       w.createRecipeStepIngredient,
-		string(types.RecipeStepProductDataType):          w.createRecipeStepProduct,
-		string(types.MealPlanDataType):                   w.createMealPlan,
-		string(types.MealPlanOptionDataType):             w.createMealPlanOption,
-		string(types.MealPlanOptionVoteDataType):         w.createMealPlanOptionVote,
-		string(types.HouseholdInvitationDataType):        w.createHouseholdInvitation,
-		string(types.UserMembershipDataType):             func(context.Context, *types.PreWriteMessage) error { return nil },
+		string(types.MealDataType):                 w.createMeal,
+		string(types.RecipeDataType):               w.createRecipe,
+		string(types.RecipeStepDataType):           w.createRecipeStep,
+		string(types.RecipeStepInstrumentDataType): w.createRecipeStepInstrument,
+		string(types.RecipeStepIngredientDataType): w.createRecipeStepIngredient,
+		string(types.RecipeStepProductDataType):    w.createRecipeStepProduct,
+		string(types.MealPlanDataType):             w.createMealPlan,
+		string(types.MealPlanOptionDataType):       w.createMealPlanOption,
+		string(types.MealPlanOptionVoteDataType):   w.createMealPlanOptionVote,
+		string(types.HouseholdInvitationDataType):  w.createHouseholdInvitation,
+		string(types.UserMembershipDataType):       func(context.Context, *types.PreWriteMessage) error { return nil },
 	}
 
 	f, ok := funcMap[string(msg.DataType)]

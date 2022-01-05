@@ -78,7 +78,7 @@ func TestValidPreparationsService_CreateHandler(T *testing.T) {
 
 		helper.service.CreateHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -200,7 +200,7 @@ func TestValidPreparationsService_CreateHandler(T *testing.T) {
 
 		helper.service.CreateHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})

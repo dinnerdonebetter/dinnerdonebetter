@@ -11,6 +11,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/prixfixeco/api_server/internal/observability/keys"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
+
 	"github.com/prixfixeco/api_server/internal/messagequeue/redis"
 
 	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
@@ -85,6 +88,9 @@ func main() {
 		logger.Fatal(err)
 	}
 
+	urlToUse := testutils.DetermineServiceURL().String()
+	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
+	testutils.EnsureServerIsUp(ctx, urlToUse)
 	dataManager.IsReady(ctx, 50)
 
 	consumerProvider := redis.ProvideRedisConsumerProvider(logger, tracerProvider, cfg.Events.Consumers.RedisConfig)

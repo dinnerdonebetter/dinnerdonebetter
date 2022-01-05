@@ -58,13 +58,13 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(testutils.PreWriteMessageMatcher),
 		).Return(nil)
-		helper.service.preWritesPublisher = mockEventProducer
+		helper.service.preWritesPublisher = dataChangesPublisher
 
 		cdc := &customerdata.MockCollector{}
 		cdc.On(
@@ -84,7 +84,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockEventProducer, cdc)
+		mock.AssertExpectationsForObjects(t, dataChangesPublisher, cdc)
 	})
 
 	T.Run("without input attached", func(t *testing.T) {
@@ -138,19 +138,19 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(testutils.PreWriteMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.preWritesPublisher = mockEventProducer
+		helper.service.preWritesPublisher = dataChangesPublisher
 
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockEventProducer)
+		mock.AssertExpectationsForObjects(t, dataChangesPublisher)
 	})
 
 	T.Run("with error writing to customer data platform", func(t *testing.T) {
@@ -167,13 +167,13 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(testutils.PreWriteMessageMatcher),
 		).Return(nil)
-		helper.service.preWritesPublisher = mockEventProducer
+		helper.service.preWritesPublisher = dataChangesPublisher
 
 		cdc := &customerdata.MockCollector{}
 		cdc.On(
@@ -193,7 +193,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockEventProducer, cdc)
+		mock.AssertExpectationsForObjects(t, dataChangesPublisher, cdc)
 	})
 }
 
@@ -465,13 +465,13 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 		).Return(helper.exampleMealPlanOptionVote, nil)
 		helper.service.mealPlanOptionVoteDataManager = mealPlanOptionVoteDataManager
 
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(testutils.PreUpdateMessageMatcher),
 		).Return(nil)
-		helper.service.preUpdatesPublisher = mockEventProducer
+		helper.service.preUpdatesPublisher = dataChangesPublisher
 
 		cdc := &customerdata.MockCollector{}
 		cdc.On(
@@ -491,7 +491,7 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealPlanOptionVoteDataManager, mockEventProducer, cdc)
+		mock.AssertExpectationsForObjects(t, mealPlanOptionVoteDataManager, dataChangesPublisher, cdc)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -626,19 +626,19 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 		).Return(helper.exampleMealPlanOptionVote, nil)
 		helper.service.mealPlanOptionVoteDataManager = mealPlanOptionVoteDataManager
 
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(testutils.PreUpdateMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.preUpdatesPublisher = mockEventProducer
+		helper.service.preUpdatesPublisher = dataChangesPublisher
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealPlanOptionVoteDataManager, mockEventProducer)
+		mock.AssertExpectationsForObjects(t, mealPlanOptionVoteDataManager, dataChangesPublisher)
 	})
 
 	T.Run("standard", func(t *testing.T) {
@@ -665,13 +665,13 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 		).Return(helper.exampleMealPlanOptionVote, nil)
 		helper.service.mealPlanOptionVoteDataManager = mealPlanOptionVoteDataManager
 
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(testutils.PreUpdateMessageMatcher),
 		).Return(nil)
-		helper.service.preUpdatesPublisher = mockEventProducer
+		helper.service.preUpdatesPublisher = dataChangesPublisher
 
 		cdc := &customerdata.MockCollector{}
 		cdc.On(
@@ -691,7 +691,7 @@ func TestMealPlanOptionVotesService_UpdateHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealPlanOptionVoteDataManager, mockEventProducer, cdc)
+		mock.AssertExpectationsForObjects(t, mealPlanOptionVoteDataManager, dataChangesPublisher, cdc)
 	})
 }
 
@@ -713,13 +713,13 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.mealPlanOptionVoteDataManager = mealPlanOptionVoteDataManager
 
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(testutils.PreArchiveMessageMatcher),
 		).Return(nil)
-		helper.service.preArchivesPublisher = mockEventProducer
+		helper.service.preArchivesPublisher = dataChangesPublisher
 
 		cdc := &customerdata.MockCollector{}
 		cdc.On(
@@ -739,7 +739,7 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealPlanOptionVoteDataManager, mockEventProducer, cdc)
+		mock.AssertExpectationsForObjects(t, mealPlanOptionVoteDataManager, dataChangesPublisher, cdc)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -833,19 +833,19 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.mealPlanOptionVoteDataManager = mealPlanOptionVoteDataManager
 
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(testutils.PreArchiveMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.preArchivesPublisher = mockEventProducer
+		helper.service.preArchivesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealPlanOptionVoteDataManager, mockEventProducer)
+		mock.AssertExpectationsForObjects(t, mealPlanOptionVoteDataManager, dataChangesPublisher)
 	})
 
 	T.Run("standard", func(t *testing.T) {
@@ -863,13 +863,13 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.mealPlanOptionVoteDataManager = mealPlanOptionVoteDataManager
 
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(testutils.PreArchiveMessageMatcher),
 		).Return(nil)
-		helper.service.preArchivesPublisher = mockEventProducer
+		helper.service.preArchivesPublisher = dataChangesPublisher
 
 		cdc := &customerdata.MockCollector{}
 		cdc.On(
@@ -889,6 +889,6 @@ func TestMealPlanOptionVotesService_ArchiveHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealPlanOptionVoteDataManager, mockEventProducer, cdc)
+		mock.AssertExpectationsForObjects(t, mealPlanOptionVoteDataManager, dataChangesPublisher, cdc)
 	})
 }

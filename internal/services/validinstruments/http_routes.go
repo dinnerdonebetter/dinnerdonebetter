@@ -87,7 +87,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validInstrument, http.StatusAccepted)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validInstrument, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a valid instrument.

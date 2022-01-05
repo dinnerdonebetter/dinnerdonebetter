@@ -56,19 +56,19 @@ func TestRecipeStepIngredientsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(testutils.PreWriteMessageMatcher),
 		).Return(nil)
-		helper.service.preWritesPublisher = mockEventProducer
+		helper.service.preWritesPublisher = dataChangesPublisher
 
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockEventProducer)
+		mock.AssertExpectationsForObjects(t, dataChangesPublisher)
 	})
 
 	T.Run("without input attached", func(t *testing.T) {
@@ -141,19 +141,19 @@ func TestRecipeStepIngredientsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(testutils.PreWriteMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.preWritesPublisher = mockEventProducer
+		helper.service.preWritesPublisher = dataChangesPublisher
 
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockEventProducer)
+		mock.AssertExpectationsForObjects(t, dataChangesPublisher)
 	})
 }
 
@@ -425,19 +425,19 @@ func TestRecipeStepIngredientsService_UpdateHandler(T *testing.T) {
 		).Return(helper.exampleRecipeStepIngredient, nil)
 		helper.service.recipeStepIngredientDataManager = recipeStepIngredientDataManager
 
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(testutils.PreUpdateMessageMatcher),
 		).Return(nil)
-		helper.service.preUpdatesPublisher = mockEventProducer
+		helper.service.preUpdatesPublisher = dataChangesPublisher
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, recipeStepIngredientDataManager, mockEventProducer)
+		mock.AssertExpectationsForObjects(t, recipeStepIngredientDataManager, dataChangesPublisher)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -572,19 +572,19 @@ func TestRecipeStepIngredientsService_UpdateHandler(T *testing.T) {
 		).Return(helper.exampleRecipeStepIngredient, nil)
 		helper.service.recipeStepIngredientDataManager = recipeStepIngredientDataManager
 
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(testutils.PreUpdateMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.preUpdatesPublisher = mockEventProducer
+		helper.service.preUpdatesPublisher = dataChangesPublisher
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, recipeStepIngredientDataManager, mockEventProducer)
+		mock.AssertExpectationsForObjects(t, recipeStepIngredientDataManager, dataChangesPublisher)
 	})
 }
 
@@ -606,19 +606,19 @@ func TestRecipeStepIngredientsService_ArchiveHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.recipeStepIngredientDataManager = recipeStepIngredientDataManager
 
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(testutils.PreArchiveMessageMatcher),
 		).Return(nil)
-		helper.service.preArchivesPublisher = mockEventProducer
+		helper.service.preArchivesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, recipeStepIngredientDataManager, mockEventProducer)
+		mock.AssertExpectationsForObjects(t, recipeStepIngredientDataManager, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -712,18 +712,18 @@ func TestRecipeStepIngredientsService_ArchiveHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.recipeStepIngredientDataManager = recipeStepIngredientDataManager
 
-		mockEventProducer := &mockpublishers.Publisher{}
-		mockEventProducer.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(testutils.PreArchiveMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.preArchivesPublisher = mockEventProducer
+		helper.service.preArchivesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, recipeStepIngredientDataManager, mockEventProducer)
+		mock.AssertExpectationsForObjects(t, recipeStepIngredientDataManager, dataChangesPublisher)
 	})
 }

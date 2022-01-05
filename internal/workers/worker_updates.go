@@ -54,18 +54,17 @@ func ProvideUpdatesWorker(
 
 func (w *UpdatesWorker) determineUpdateMessageHandler(msg *types.PreUpdateMessage) func(context.Context, *types.PreUpdateMessage) error {
 	funcMap := map[string]func(context.Context, *types.PreUpdateMessage) error{
-		string(types.ValidIngredientPreparationDataType): w.updateValidIngredientPreparation,
-		string(types.RecipeDataType):                     w.updateRecipe,
-		string(types.RecipeStepDataType):                 w.updateRecipeStep,
-		string(types.RecipeStepInstrumentDataType):       w.updateRecipeStepInstrument,
-		string(types.RecipeStepIngredientDataType):       w.updateRecipeStepIngredient,
-		string(types.RecipeStepProductDataType):          w.updateRecipeStepProduct,
-		string(types.MealPlanDataType):                   w.updateMealPlan,
-		string(types.MealPlanOptionDataType):             w.updateMealPlanOption,
-		string(types.MealPlanOptionVoteDataType):         w.updateMealPlanOptionVote,
-		string(types.UserMembershipDataType):             func(context.Context, *types.PreUpdateMessage) error { return nil },
-		string(types.WebhookDataType):                    func(context.Context, *types.PreUpdateMessage) error { return nil },
-		string(types.HouseholdInvitationDataType):        func(context.Context, *types.PreUpdateMessage) error { return nil },
+		string(types.RecipeDataType):               w.updateRecipe,
+		string(types.RecipeStepDataType):           w.updateRecipeStep,
+		string(types.RecipeStepInstrumentDataType): w.updateRecipeStepInstrument,
+		string(types.RecipeStepIngredientDataType): w.updateRecipeStepIngredient,
+		string(types.RecipeStepProductDataType):    w.updateRecipeStepProduct,
+		string(types.MealPlanDataType):             w.updateMealPlan,
+		string(types.MealPlanOptionDataType):       w.updateMealPlanOption,
+		string(types.MealPlanOptionVoteDataType):   w.updateMealPlanOptionVote,
+		string(types.UserMembershipDataType):       func(context.Context, *types.PreUpdateMessage) error { return nil },
+		string(types.WebhookDataType):              func(context.Context, *types.PreUpdateMessage) error { return nil },
+		string(types.HouseholdInvitationDataType):  func(context.Context, *types.PreUpdateMessage) error { return nil },
 	}
 
 	f, ok := funcMap[string(msg.DataType)]

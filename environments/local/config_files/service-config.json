@@ -100,10 +100,7 @@
 			"archivesTopicName": "pre_archives"
 		},
 		"validIngredientPreparations": {
-			"dataChangesTopicName": "data_changes",
-			"writesTopicName": "pre_writes",
-			"updatesTopicName": "pre_updates",
-			"archivesTopicName": "pre_archives"
+			"dataChangesTopicName": "data_changes"
 		},
 		"meals": {
 			"dataChangesTopicName": "data_changes",
@@ -172,7 +169,7 @@
 		"auth": {
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "8D8hsFW6PFETOM64Hh3gf0JsUzVS8azuRS2HZszoJS8=",
+				"localModeKey": "tLKkKgEbuwDr427S+FXL6uDPJz1iTJQHY27SDSo0PYw=",
 				"lifetime": 60000000000
 			},
 			"cookies": {

@@ -99,9 +99,7 @@ func GetConfigFromParameterStore(worker bool) (*InstanceConfig, error) {
 	cfg.Services.MealPlanOptionVotes.PreUpdatesTopicName = updatesTopicName
 	cfg.Services.MealPlanOptionVotes.PreArchivesTopicName = archivesTopicName
 
-	cfg.Services.ValidIngredientPreparations.PreWritesTopicName = writesTopicName
-	cfg.Services.ValidIngredientPreparations.PreUpdatesTopicName = updatesTopicName
-	cfg.Services.ValidIngredientPreparations.PreArchivesTopicName = archivesTopicName
+	cfg.Services.ValidIngredientPreparations.DataChangesTopicName = dataChangesTopicName
 
 	cfg.Services.Meals.PreWritesTopicName = writesTopicName
 	cfg.Services.Meals.PreUpdatesTopicName = updatesTopicName
