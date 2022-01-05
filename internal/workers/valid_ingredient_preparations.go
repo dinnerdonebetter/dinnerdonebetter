@@ -45,7 +45,7 @@ func (w *UpdatesWorker) updateValidIngredientPreparation(ctx context.Context, ms
 		return observability.PrepareError(err, logger, span, "creating valid ingredient preparation")
 	}
 
-	if w.postUpdatesPublisher != nil {
+	if w.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                   msg.DataType,
 			MessageType:                "validIngredientPreparationUpdated",
@@ -54,7 +54,7 @@ func (w *UpdatesWorker) updateValidIngredientPreparation(ctx context.Context, ms
 			AttributableToHouseholdID:  msg.AttributableToHouseholdID,
 		}
 
-		if err := w.postUpdatesPublisher.Publish(ctx, dcm); err != nil {
+		if err := w.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			return observability.PrepareError(err, logger, span, "publishing data change message")
 		}
 	}
@@ -72,7 +72,7 @@ func (w *ArchivesWorker) archiveValidIngredientPreparation(ctx context.Context, 
 		return observability.PrepareError(err, w.logger, span, "archiving valid ingredient preparation")
 	}
 
-	if w.postArchivesPublisher != nil {
+	if w.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  msg.DataType,
 			MessageType:               "validIngredientPreparationArchived",
@@ -80,7 +80,7 @@ func (w *ArchivesWorker) archiveValidIngredientPreparation(ctx context.Context, 
 			AttributableToHouseholdID: msg.AttributableToHouseholdID,
 		}
 
-		if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
+		if err := w.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			return observability.PrepareError(err, logger, span, "publishing data change message")
 		}
 	}

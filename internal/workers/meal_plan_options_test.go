@@ -146,7 +146,7 @@ func TestWritesWorker_updateMealPlanOption(T *testing.T) {
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
-		worker.postUpdatesPublisher = postUpdatesPublisher
+		worker.dataChangesPublisher = postUpdatesPublisher
 
 		assert.NoError(t, worker.updateMealPlanOption(ctx, body))
 
@@ -174,7 +174,7 @@ func TestWritesWorker_updateMealPlanOption(T *testing.T) {
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
-		worker.postUpdatesPublisher = postUpdatesPublisher
+		worker.dataChangesPublisher = postUpdatesPublisher
 
 		assert.Error(t, worker.updateMealPlanOption(ctx, body))
 
@@ -207,7 +207,7 @@ func TestWritesWorker_updateMealPlanOption(T *testing.T) {
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
-		worker.postUpdatesPublisher = postUpdatesPublisher
+		worker.dataChangesPublisher = postUpdatesPublisher
 
 		assert.Error(t, worker.updateMealPlanOption(ctx, body))
 
@@ -244,7 +244,7 @@ func TestWritesWorker_archiveMealPlanOption(T *testing.T) {
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.postArchivesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = postArchivesPublisher
 
 		assert.NoError(t, worker.archiveMealPlanOption(ctx, body))
 
@@ -272,7 +272,7 @@ func TestWritesWorker_archiveMealPlanOption(T *testing.T) {
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.postArchivesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = postArchivesPublisher
 
 		assert.Error(t, worker.archiveMealPlanOption(ctx, body))
 
@@ -305,7 +305,7 @@ func TestWritesWorker_archiveMealPlanOption(T *testing.T) {
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.postArchivesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = postArchivesPublisher
 
 		assert.Error(t, worker.archiveMealPlanOption(ctx, body))
 

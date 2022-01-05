@@ -143,7 +143,7 @@ func TestWritesWorker_archiveMeal(T *testing.T) {
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.postArchivesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = postArchivesPublisher
 
 		assert.NoError(t, worker.archiveMeal(ctx, body))
 
@@ -201,7 +201,7 @@ func TestWritesWorker_archiveMeal(T *testing.T) {
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.postArchivesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = postArchivesPublisher
 
 		assert.Error(t, worker.archiveMeal(ctx, body))
 

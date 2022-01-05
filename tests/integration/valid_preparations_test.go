@@ -1,7 +1,14 @@
 package integration
 
 import (
+	"fmt"
 	"testing"
+	"time"
+
+	"github.com/stretchr/testify/require"
+
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
 
@@ -27,8 +34,6 @@ func convertValidPreparationToValidPreparationUpdateInput(x *types.ValidPreparat
 	}
 }
 
-/*
-
 func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 	s.runForCookieClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -37,24 +42,13 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
-			require.NotNil(t, notificationsChan)
-			require.NoError(t, err)
-
-			var n *types.DataChangeMessage
-
 			t.Log("creating valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
 			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
 			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
 			t.Logf("valid preparation %q created", createdValidPreparation.ID)
-
-			n = <-notificationsChan
-			assert.Equal(t, types.ValidPreparationDataType, n.DataType)
-			require.NotNil(t, n.ValidPreparation)
-			checkValidPreparationEquality(t, exampleValidPreparation, n.ValidPreparation)
+			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
 			createdValidPreparation, err = testClients.admin.GetValidPreparation(ctx, createdValidPreparation.ID)
 			requireNotNilAndNoProblems(t, createdValidPreparation, err)
@@ -64,9 +58,6 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			newValidPreparation := fakes.BuildFakeValidPreparation()
 			createdValidPreparation.Update(convertValidPreparationToValidPreparationUpdateInput(newValidPreparation))
 			assert.NoError(t, testClients.admin.UpdateValidPreparation(ctx, createdValidPreparation))
-
-			n = <-notificationsChan
-			assert.Equal(t, types.ValidPreparationDataType, n.DataType)
 
 			t.Log("fetching changed valid preparation")
 			actual, err := testClients.admin.GetValidPreparation(ctx, createdValidPreparation.ID)
@@ -102,8 +93,6 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			createdValidPreparation.Update(convertValidPreparationToValidPreparationUpdateInput(newValidPreparation))
 			assert.NoError(t, testClients.admin.UpdateValidPreparation(ctx, createdValidPreparation))
 
-			time.Sleep(2 * time.Second)
-
 			// retrieve changed valid preparation
 			var actual *types.ValidPreparation
 			checkFunc = func() bool {
@@ -132,13 +121,6 @@ func (s *TestSuite) TestValidPreparations_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
-			require.NotNil(t, notificationsChan)
-			require.NoError(t, err)
-
-			var n *types.DataChangeMessage
-
 			t.Log("creating valid preparations")
 			var expected []*types.ValidPreparation
 			for i := 0; i < 5; i++ {
@@ -148,10 +130,7 @@ func (s *TestSuite) TestValidPreparations_Listing() {
 				require.NoError(t, createdValidPreparationErr)
 				t.Logf("valid preparation %q created", createdValidPreparation.ID)
 
-				n = <-notificationsChan
-				assert.Equal(t, types.ValidPreparationDataType, n.DataType)
-				require.NotNil(t, n.ValidPreparation)
-				checkValidPreparationEquality(t, exampleValidPreparation, n.ValidPreparation)
+				checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
 				expected = append(expected, createdValidPreparation)
 			}
@@ -220,13 +199,6 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
-			require.NotNil(t, notificationsChan)
-			require.NoError(t, err)
-
-			var n *types.DataChangeMessage
-
 			t.Log("creating valid preparations")
 			var expected []*types.ValidPreparation
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
@@ -238,11 +210,7 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 				createdValidPreparation, createdValidPreparationErr := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 				require.NoError(t, createdValidPreparationErr)
 				t.Logf("valid preparation %q created", createdValidPreparation.ID)
-
-				n = <-notificationsChan
-				assert.Equal(t, types.ValidPreparationDataType, n.DataType)
-				require.NotNil(t, n.ValidPreparation)
-				checkValidPreparationEquality(t, exampleValidPreparation, n.ValidPreparation)
+				checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
 				expected = append(expected, createdValidPreparation)
 			}
@@ -314,5 +282,3 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 		}
 	})
 }
-
-*/

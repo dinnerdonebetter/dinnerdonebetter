@@ -143,7 +143,7 @@ func TestWritesWorker_archiveWebhook(T *testing.T) {
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.postArchivesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = postArchivesPublisher
 
 		assert.NoError(t, worker.archiveWebhook(ctx, body))
 
@@ -201,7 +201,7 @@ func TestWritesWorker_archiveWebhook(T *testing.T) {
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.postArchivesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = postArchivesPublisher
 
 		assert.Error(t, worker.archiveWebhook(ctx, body))
 

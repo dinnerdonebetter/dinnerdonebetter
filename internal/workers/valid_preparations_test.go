@@ -143,7 +143,7 @@ func TestWritesWorker_updateValidPreparation(T *testing.T) {
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
-		worker.postUpdatesPublisher = postUpdatesPublisher
+		worker.dataChangesPublisher = postUpdatesPublisher
 
 		assert.NoError(t, worker.updateValidPreparation(ctx, body))
 
@@ -201,7 +201,7 @@ func TestWritesWorker_updateValidPreparation(T *testing.T) {
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
-		worker.postUpdatesPublisher = postUpdatesPublisher
+		worker.dataChangesPublisher = postUpdatesPublisher
 
 		assert.Error(t, worker.updateValidPreparation(ctx, body))
 
@@ -237,7 +237,7 @@ func TestWritesWorker_archiveValidPreparation(T *testing.T) {
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.postArchivesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = postArchivesPublisher
 
 		assert.NoError(t, worker.archiveValidPreparation(ctx, body))
 
@@ -293,7 +293,7 @@ func TestWritesWorker_archiveValidPreparation(T *testing.T) {
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.postArchivesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = postArchivesPublisher
 
 		assert.Error(t, worker.archiveValidPreparation(ctx, body))
 

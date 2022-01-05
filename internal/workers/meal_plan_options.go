@@ -45,7 +45,7 @@ func (w *UpdatesWorker) updateMealPlanOption(ctx context.Context, msg *types.Pre
 		return observability.PrepareError(err, logger, span, "creating meal plan option")
 	}
 
-	if w.postUpdatesPublisher != nil {
+	if w.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  msg.DataType,
 			MessageType:               "mealPlanOptionUpdated",
@@ -54,7 +54,7 @@ func (w *UpdatesWorker) updateMealPlanOption(ctx context.Context, msg *types.Pre
 			AttributableToHouseholdID: msg.AttributableToHouseholdID,
 		}
 
-		if err := w.postUpdatesPublisher.Publish(ctx, dcm); err != nil {
+		if err := w.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			return observability.PrepareError(err, logger, span, "publishing data change message")
 		}
 	}
@@ -72,7 +72,7 @@ func (w *ArchivesWorker) archiveMealPlanOption(ctx context.Context, msg *types.P
 		return observability.PrepareError(err, w.logger, span, "archiving meal plan option")
 	}
 
-	if w.postArchivesPublisher != nil {
+	if w.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  msg.DataType,
 			MessageType:               "mealPlanOptionArchived",
@@ -80,7 +80,7 @@ func (w *ArchivesWorker) archiveMealPlanOption(ctx context.Context, msg *types.P
 			AttributableToHouseholdID: msg.AttributableToHouseholdID,
 		}
 
-		if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
+		if err := w.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			return observability.PrepareError(err, logger, span, "publishing data change message")
 		}
 	}

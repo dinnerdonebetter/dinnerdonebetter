@@ -396,7 +396,7 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
-		worker.postUpdatesPublisher = postUpdatesPublisher
+		worker.dataChangesPublisher = postUpdatesPublisher
 
 		assert.NoError(t, worker.updateMealPlanOptionVote(ctx, body))
 
@@ -424,7 +424,7 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
-		worker.postUpdatesPublisher = postUpdatesPublisher
+		worker.dataChangesPublisher = postUpdatesPublisher
 
 		assert.Error(t, worker.updateMealPlanOptionVote(ctx, body))
 
@@ -457,7 +457,7 @@ func TestWritesWorker_updateMealPlanOptionVote(T *testing.T) {
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
-		worker.postUpdatesPublisher = postUpdatesPublisher
+		worker.dataChangesPublisher = postUpdatesPublisher
 
 		assert.Error(t, worker.updateMealPlanOptionVote(ctx, body))
 
@@ -494,7 +494,7 @@ func TestWritesWorker_archiveMealPlanOptionVote(T *testing.T) {
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.postArchivesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = postArchivesPublisher
 
 		assert.NoError(t, worker.archiveMealPlanOptionVote(ctx, body))
 
@@ -521,7 +521,7 @@ func TestWritesWorker_archiveMealPlanOptionVote(T *testing.T) {
 		postArchivesPublisher := &mockpublishers.Publisher{}
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.postArchivesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = postArchivesPublisher
 
 		assert.Error(t, worker.archiveMealPlanOptionVote(ctx, body))
 
@@ -554,7 +554,7 @@ func TestWritesWorker_archiveMealPlanOptionVote(T *testing.T) {
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.postArchivesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = postArchivesPublisher
 
 		assert.Error(t, worker.archiveMealPlanOptionVote(ctx, body))
 

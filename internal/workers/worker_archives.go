@@ -20,7 +20,7 @@ type ArchivesWorker struct {
 	logger                logging.Logger
 	tracer                tracing.Tracer
 	encoder               encoding.ClientEncoder
-	postArchivesPublisher messagequeue.Publisher
+	dataChangesPublisher  messagequeue.Publisher
 	dataManager           database.DataManager
 	customerDataCollector customerdata.Collector
 }
@@ -40,7 +40,7 @@ func ProvideArchivesWorker(
 		logger:                logging.EnsureLogger(logger).WithName(name).WithValue("topic", name),
 		tracer:                tracing.NewTracer(tracerProvider.Tracer(name)),
 		encoder:               encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
-		postArchivesPublisher: postArchivesPublisher,
+		dataChangesPublisher:  postArchivesPublisher,
 		dataManager:           dataManager,
 		customerDataCollector: customerDataCollector,
 	}

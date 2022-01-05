@@ -47,7 +47,7 @@ func (w *ArchivesWorker) archiveWebhook(ctx context.Context, msg *types.PreArchi
 		return observability.PrepareError(err, w.logger, span, "creating webhook")
 	}
 
-	if w.postArchivesPublisher != nil {
+	if w.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  msg.DataType,
 			MessageType:               "webhookArchived",
@@ -55,7 +55,7 @@ func (w *ArchivesWorker) archiveWebhook(ctx context.Context, msg *types.PreArchi
 			AttributableToHouseholdID: msg.AttributableToHouseholdID,
 		}
 
-		if err := w.postArchivesPublisher.Publish(ctx, dcm); err != nil {
+		if err := w.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			return observability.PrepareError(err, logger, span, "publishing data change message")
 		}
 	}

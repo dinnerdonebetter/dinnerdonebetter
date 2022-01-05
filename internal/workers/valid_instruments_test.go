@@ -143,7 +143,7 @@ func TestWritesWorker_updateValidInstrument(T *testing.T) {
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
-		worker.postUpdatesPublisher = postUpdatesPublisher
+		worker.dataChangesPublisher = postUpdatesPublisher
 
 		assert.NoError(t, worker.updateValidInstrument(ctx, body))
 
@@ -201,7 +201,7 @@ func TestWritesWorker_updateValidInstrument(T *testing.T) {
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
-		worker.postUpdatesPublisher = postUpdatesPublisher
+		worker.dataChangesPublisher = postUpdatesPublisher
 
 		assert.Error(t, worker.updateValidInstrument(ctx, body))
 
@@ -237,7 +237,7 @@ func TestWritesWorker_archiveValidInstrument(T *testing.T) {
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.postArchivesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = postArchivesPublisher
 
 		assert.NoError(t, worker.archiveValidInstrument(ctx, body))
 
@@ -264,7 +264,7 @@ func TestWritesWorker_archiveValidInstrument(T *testing.T) {
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.postArchivesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = postArchivesPublisher
 
 		assert.Error(t, worker.archiveValidInstrument(ctx, body))
 
@@ -296,7 +296,7 @@ func TestWritesWorker_archiveValidInstrument(T *testing.T) {
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.postArchivesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = postArchivesPublisher
 
 		assert.Error(t, worker.archiveValidInstrument(ctx, body))
 

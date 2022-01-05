@@ -21,7 +21,7 @@ type UpdatesWorker struct {
 	logger                logging.Logger
 	tracer                tracing.Tracer
 	encoder               encoding.ClientEncoder
-	postUpdatesPublisher  messagequeue.Publisher
+	dataChangesPublisher  messagequeue.Publisher
 	dataManager           database.DataManager
 	emailSender           email.Emailer
 	customerDataCollector customerdata.Collector
@@ -43,7 +43,7 @@ func ProvideUpdatesWorker(
 		logger:                logging.EnsureLogger(logger).WithName(name).WithValue("topic", name),
 		tracer:                tracing.NewTracer(tracerProvider.Tracer(name)),
 		encoder:               encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
-		postUpdatesPublisher:  postUpdatesPublisher,
+		dataChangesPublisher:  postUpdatesPublisher,
 		dataManager:           dataManager,
 		emailSender:           emailSender,
 		customerDataCollector: customerDataCollector,

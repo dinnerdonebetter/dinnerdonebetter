@@ -143,7 +143,7 @@ func TestWritesWorker_updateRecipeStep(T *testing.T) {
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
-		worker.postUpdatesPublisher = postUpdatesPublisher
+		worker.dataChangesPublisher = postUpdatesPublisher
 
 		assert.NoError(t, worker.updateRecipeStep(ctx, body))
 
@@ -201,7 +201,7 @@ func TestWritesWorker_updateRecipeStep(T *testing.T) {
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
-		worker.postUpdatesPublisher = postUpdatesPublisher
+		worker.dataChangesPublisher = postUpdatesPublisher
 
 		assert.Error(t, worker.updateRecipeStep(ctx, body))
 
@@ -238,7 +238,7 @@ func TestWritesWorker_archiveRecipeStep(T *testing.T) {
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.postArchivesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = postArchivesPublisher
 
 		assert.NoError(t, worker.archiveRecipeStep(ctx, body))
 
@@ -296,7 +296,7 @@ func TestWritesWorker_archiveRecipeStep(T *testing.T) {
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.postArchivesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = postArchivesPublisher
 
 		assert.Error(t, worker.archiveRecipeStep(ctx, body))
 
