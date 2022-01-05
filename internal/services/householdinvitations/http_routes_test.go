@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/prixfixeco/api_server/internal/database"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -58,13 +60,21 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		).Return(t.Name(), nil)
 		helper.service.secretGenerator = sg
 
+		dbManager := database.NewMockDatabase()
+		dbManager.HouseholdInvitationDataManager.On(
+			"CreateHouseholdInvitation",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(*types.HouseholdInvitationDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleHouseholdInvitation, nil)
+		helper.service.householdInvitationDataManager = dbManager
+
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.PreWriteMessageMatcher),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(nil)
-		helper.service.preWritesPublisher = dataChangesPublisher
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		cdc := &customerdata.MockCollector{}
 		cdc.On(
@@ -77,9 +87,9 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.customerDataCollector = cdc
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusAccepted, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusCreated, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, udm, sg, dataChangesPublisher, cdc)
+		mock.AssertExpectationsForObjects(t, udm, sg, dbManager, dataChangesPublisher, cdc)
 	})
 
 	T.Run("with error fetching session context data", func(t *testing.T) {
@@ -238,18 +248,36 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		).Return(t.Name(), nil)
 		helper.service.secretGenerator = sg
 
+		dbManager := database.NewMockDatabase()
+		dbManager.HouseholdInvitationDataManager.On(
+			"CreateHouseholdInvitation",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(*types.HouseholdInvitationDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleHouseholdInvitation, nil)
+		helper.service.householdInvitationDataManager = dbManager
+
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.PreWriteMessageMatcher),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.preWritesPublisher = dataChangesPublisher
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		cdc := &customerdata.MockCollector{}
+		cdc.On(
+			"EventOccurred",
+			testutils.ContextMatcher,
+			"household_invitation_created",
+			helper.exampleUser.ID,
+			testutils.MapOfStringToInterfaceMatcher,
+		).Return(nil)
+		helper.service.customerDataCollector = cdc
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusCreated, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, udm, sg, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, udm, sg, dbManager, dataChangesPublisher, cdc)
 	})
 
 	T.Run("with error collecting data", func(t *testing.T) {
@@ -282,13 +310,21 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		).Return(t.Name(), nil)
 		helper.service.secretGenerator = sg
 
+		dbManager := database.NewMockDatabase()
+		dbManager.HouseholdInvitationDataManager.On(
+			"CreateHouseholdInvitation",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(*types.HouseholdInvitationDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleHouseholdInvitation, nil)
+		helper.service.householdInvitationDataManager = dbManager
+
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.PreWriteMessageMatcher),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(nil)
-		helper.service.preWritesPublisher = dataChangesPublisher
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		cdc := &customerdata.MockCollector{}
 		cdc.On(
@@ -301,9 +337,9 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.customerDataCollector = cdc
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusAccepted, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusCreated, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, udm, sg, dataChangesPublisher, cdc)
+		mock.AssertExpectationsForObjects(t, udm, sg, dbManager, dataChangesPublisher, cdc)
 	})
 }
 

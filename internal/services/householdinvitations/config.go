@@ -11,7 +11,6 @@ type Config struct {
 	_ struct{}
 
 	DataChangesTopicName string `json:"dataChangesTopicName,omitempty" mapstructure:"data_changes_topic_name" toml:"data_changes_topic_name,omitempty"`
-	PreWritesTopicName   string `json:"writesTopicName,omitempty" mapstructure:"pre_writes_topic_name" toml:"pre_writes_topic_name,omitempty"`
 	Debug                bool   `json:"debug" mapstructure:"debug" toml:"debug,omitempty"`
 }
 

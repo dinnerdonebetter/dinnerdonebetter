@@ -85,16 +85,24 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 		input.ToUser = &userID
 	}
 
-	preWrite := &types.PreWriteMessage{
-		DataType:                  types.HouseholdInvitationDataType,
-		HouseholdInvitation:       input,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: householdID,
-	}
-	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing household write message")
+	householdInvitation, err := s.householdInvitationDataManager.CreateHouseholdInvitation(ctx, input)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "creating household invitation")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.HouseholdInvitationDataType,
+			MessageType:               "household_invitation_created",
+			HouseholdInvitation:       householdInvitation,
+			AttributableToUserID:      requester,
+			AttributableToHouseholdID: householdID,
+		}
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	if err = s.customerDataCollector.EventOccurred(ctx, "household_invitation_created", requester, map[string]interface{}{
@@ -106,9 +114,7 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 		logger.Error(err, "notifying customer data platform")
 	}
 
-	pwr := types.PreWriteResponse{ID: providedInput.ID}
-
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusAccepted)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, householdInvitation, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a household invitation.

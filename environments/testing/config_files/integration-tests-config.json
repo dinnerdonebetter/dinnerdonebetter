@@ -147,7 +147,6 @@
 		},
 		"householdInvitations": {
 			"dataChangesTopicName": "data_changes",
-			"writesTopicName": "pre_writes",
 			"debug": false
 		},
 		"websockets": {
@@ -160,7 +159,7 @@
 		"auth": {
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "tLKkKgEbuwDr427S+FXL6uDPJz1iTJQHY27SDSo0PYw=",
+				"localModeKey": "BOD0tnCi1hx5bJxA80+qq4yPAQ8/WdObkXGjJ8ByO34=",
 				"lifetime": 60000000000
 			},
 			"cookies": {

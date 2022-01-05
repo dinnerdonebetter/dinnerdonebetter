@@ -46,12 +46,10 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 
 		cfg := &Config{
-			PreWritesTopicName:   "pre-writes",
 			DataChangesTopicName: "data_changes",
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProviderPublisher", cfg.PreWritesTopicName).Return(&mockpublishers.Publisher{}, nil)
 		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		actual, err := ProvideHouseholdInvitationsService(
@@ -72,15 +70,15 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, rpm, pp)
 	})
 
-	T.Run("with error providing pre-writes publisher", func(t *testing.T) {
+	T.Run("with error providing data changes publisher", func(t *testing.T) {
 		t.Parallel()
 
 		cfg := &Config{
-			PreWritesTopicName: "pre-writes",
+			DataChangesTopicName: "pre-writes",
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProviderPublisher", cfg.PreWritesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
+		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		actual, err := ProvideHouseholdInvitationsService(
 			logging.NewNoopLogger(),

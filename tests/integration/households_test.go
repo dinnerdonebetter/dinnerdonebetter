@@ -3,6 +3,14 @@ package integration
 import (
 	"testing"
 
+	"github.com/brianvoe/gofakeit/v5"
+	"github.com/stretchr/testify/require"
+
+	"github.com/prixfixeco/api_server/internal/authorization"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/pkg/client/httpclient"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
+
 	"github.com/stretchr/testify/assert"
 
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -15,8 +23,6 @@ func checkHouseholdEquality(t *testing.T, expected, actual *types.Household) {
 	assert.Equal(t, expected.Name, actual.Name, "expected BucketName for household %s to be %v, but it was %v ", expected.ID, expected.Name, actual.Name)
 	assert.NotZero(t, actual.CreatedOn)
 }
-
-/*
 
 func (s *TestSuite) TestHouseholds_Creating() {
 	s.runForEachClientExcept("should be possible to create households", func(testClients *testClientWrapper) func() {
@@ -1118,5 +1124,3 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 		}
 	})
 }
-
-*/

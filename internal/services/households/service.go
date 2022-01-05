@@ -34,7 +34,6 @@ type (
 		tracer                         tracing.Tracer
 		householdCounter               metrics.UnitCounter
 		encoderDecoder                 encoding.ServerEncoderDecoder
-		preWritesPublisher             messagequeue.Publisher
 		dataChangesPublisher           messagequeue.Publisher
 		sessionContextDataFetcher      func(*http.Request) (*types.SessionContextData, error)
 		userIDFetcher                  func(*http.Request) string
@@ -57,11 +56,6 @@ func ProvideService(
 	customerDataCollector customerdata.Collector,
 	tracerProvider tracing.TracerProvider,
 ) (types.HouseholdDataService, error) {
-	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
-	if err != nil {
-		return nil, fmt.Errorf("setting up event publisher: %w", err)
-	}
-
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up household service data changes publisher: %w", err)
@@ -76,7 +70,6 @@ func ProvideService(
 		householdInvitationDataManager: householdInvitationDataManager,
 		householdMembershipDataManager: householdMembershipDataManager,
 		encoderDecoder:                 encoder,
-		preWritesPublisher:             preWritesPublisher,
 		dataChangesPublisher:           dataChangesPublisher,
 		householdCounter:               metrics.EnsureUnitCounter(counterProvider, logger, counterName, counterDescription),
 		tracer:                         tracing.NewTracer(tracerProvider.Tracer(serviceName)),

@@ -337,7 +337,6 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			HouseholdInvitations: householdinvitationsservice.Config{
-				PreWritesTopicName:   preWritesTopicName,
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			Auth: authservice.Config{
@@ -487,7 +486,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			HouseholdInvitations: householdinvitationsservice.Config{
-				PreWritesTopicName:   preWritesTopicName,
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			Auth: authservice.Config{
