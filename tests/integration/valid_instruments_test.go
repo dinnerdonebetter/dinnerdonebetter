@@ -1,7 +1,14 @@
 package integration
 
 import (
+	"fmt"
 	"testing"
+	"time"
+
+	"github.com/stretchr/testify/require"
+
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
 
@@ -29,8 +36,6 @@ func convertValidInstrumentToValidInstrumentUpdateInput(x *types.ValidInstrument
 	}
 }
 
-/*
-
 func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 	s.runForCookieClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -39,32 +44,18 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
-			require.NotNil(t, notificationsChan)
-			require.NoError(t, err)
-
-			var n *types.DataChangeMessage
-
 			t.Log("creating valid instrument")
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
 			exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
 			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 			require.NoError(t, err)
 			t.Logf("valid instrument %q created", createdValidInstrument.ID)
-
-			n = <-notificationsChan
-			assert.Equal(t, types.ValidInstrumentDataType, n.DataType)
-			require.NotNil(t, n.ValidInstrument)
-			checkValidInstrumentEquality(t, exampleValidInstrument, n.ValidInstrument)
+			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
 
 			t.Log("changing valid instrument")
 			newValidInstrument := fakes.BuildFakeValidInstrument()
 			createdValidInstrument.Update(convertValidInstrumentToValidInstrumentUpdateInput(newValidInstrument))
 			assert.NoError(t, testClients.admin.UpdateValidInstrument(ctx, createdValidInstrument))
-
-			n = <-notificationsChan
-			assert.Equal(t, types.ValidInstrumentDataType, n.DataType)
 
 			t.Log("fetching changed valid instrument")
 			actual, err := testClients.admin.GetValidInstrument(ctx, createdValidInstrument.ID)
@@ -103,8 +94,6 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			createdValidInstrument.Update(convertValidInstrumentToValidInstrumentUpdateInput(newValidInstrument))
 			assert.NoError(t, testClients.admin.UpdateValidInstrument(ctx, createdValidInstrument))
 
-			time.Sleep(2 * time.Second)
-
 			// retrieve changed valid instrument
 			var actual *types.ValidInstrument
 			checkFunc = func() bool {
@@ -133,13 +122,6 @@ func (s *TestSuite) TestValidInstruments_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
-			require.NotNil(t, notificationsChan)
-			require.NoError(t, err)
-
-			var n *types.DataChangeMessage
-
 			t.Log("creating valid instruments")
 			var expected []*types.ValidInstrument
 			for i := 0; i < 5; i++ {
@@ -149,10 +131,7 @@ func (s *TestSuite) TestValidInstruments_Listing() {
 				require.NoError(t, createdValidInstrumentErr)
 				t.Logf("valid instrument %q created", createdValidInstrument.ID)
 
-				n = <-notificationsChan
-				assert.Equal(t, types.ValidInstrumentDataType, n.DataType)
-				require.NotNil(t, n.ValidInstrument)
-				checkValidInstrumentEquality(t, exampleValidInstrument, n.ValidInstrument)
+				checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
 
 				expected = append(expected, createdValidInstrument)
 			}
@@ -221,13 +200,6 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
-			require.NotNil(t, notificationsChan)
-			require.NoError(t, err)
-
-			var n *types.DataChangeMessage
-
 			t.Log("creating valid instruments")
 			var expected []*types.ValidInstrument
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
@@ -239,11 +211,7 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 				createdValidInstrument, createdValidInstrumentErr := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 				require.NoError(t, createdValidInstrumentErr)
 				t.Logf("valid instrument %q created", createdValidInstrument.ID)
-
-				n = <-notificationsChan
-				assert.Equal(t, types.ValidInstrumentDataType, n.DataType)
-				require.NotNil(t, n.ValidInstrument)
-				checkValidInstrumentEquality(t, exampleValidInstrument, n.ValidInstrument)
+				checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
 
 				expected = append(expected, createdValidInstrument)
 			}
@@ -315,5 +283,3 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 		}
 	})
 }
-
-*/

@@ -89,9 +89,7 @@ func GetConfigFromParameterStore(worker bool) (*InstanceConfig, error) {
 	cfg.Services.Auth.Cookies.HashKey = mustGetParameter(parameterStore, cookieHashKeySSMKey)
 	cfg.Services.Auth.PASETO.LocalModeKey = []byte(mustGetParameter(parameterStore, cookiePASETOLocalModeKeySSMKey))
 
-	cfg.Services.ValidInstruments.PreWritesTopicName = writesTopicName
-	cfg.Services.ValidInstruments.PreUpdatesTopicName = updatesTopicName
-	cfg.Services.ValidInstruments.PreArchivesTopicName = archivesTopicName
+	cfg.Services.ValidInstruments.DataChangesTopicName = dataChangesTopicName
 
 	cfg.Services.ValidIngredients.PreWritesTopicName = writesTopicName
 	cfg.Services.ValidIngredients.PreUpdatesTopicName = updatesTopicName

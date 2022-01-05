@@ -134,8 +134,8 @@ func TestWritesWorker_archiveMeal(T *testing.T) {
 			body.AttributableToHouseholdID,
 		).Return(nil)
 
-		postArchivesPublisher := &mockpublishers.Publisher{}
-		postArchivesPublisher.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
@@ -143,11 +143,11 @@ func TestWritesWorker_archiveMeal(T *testing.T) {
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.dataChangesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.NoError(t, worker.archiveMeal(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 
 	T.Run("with error archiving", func(t *testing.T) {
@@ -192,8 +192,8 @@ func TestWritesWorker_archiveMeal(T *testing.T) {
 			body.AttributableToHouseholdID,
 		).Return(nil)
 
-		postArchivesPublisher := &mockpublishers.Publisher{}
-		postArchivesPublisher.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
@@ -201,10 +201,10 @@ func TestWritesWorker_archiveMeal(T *testing.T) {
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.dataChangesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.Error(t, worker.archiveMeal(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }

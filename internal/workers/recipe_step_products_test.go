@@ -134,8 +134,8 @@ func TestWritesWorker_updateRecipeStepProduct(T *testing.T) {
 			body.RecipeStepProduct,
 		).Return(nil)
 
-		postUpdatesPublisher := &mockpublishers.Publisher{}
-		postUpdatesPublisher.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
@@ -143,11 +143,11 @@ func TestWritesWorker_updateRecipeStepProduct(T *testing.T) {
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
-		worker.dataChangesPublisher = postUpdatesPublisher
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.NoError(t, worker.updateRecipeStepProduct(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postUpdatesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 
 	T.Run("with error updating recipe step product", func(t *testing.T) {
@@ -192,8 +192,8 @@ func TestWritesWorker_updateRecipeStepProduct(T *testing.T) {
 			body.RecipeStepProduct,
 		).Return(nil)
 
-		postUpdatesPublisher := &mockpublishers.Publisher{}
-		postUpdatesPublisher.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
@@ -201,11 +201,11 @@ func TestWritesWorker_updateRecipeStepProduct(T *testing.T) {
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
-		worker.dataChangesPublisher = postUpdatesPublisher
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.Error(t, worker.updateRecipeStepProduct(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postUpdatesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
@@ -229,8 +229,8 @@ func TestWritesWorker_archiveRecipeStepProduct(T *testing.T) {
 			body.RecipeStepProductID,
 		).Return(nil)
 
-		postArchivesPublisher := &mockpublishers.Publisher{}
-		postArchivesPublisher.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
@@ -238,11 +238,11 @@ func TestWritesWorker_archiveRecipeStepProduct(T *testing.T) {
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.dataChangesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.NoError(t, worker.archiveRecipeStepProduct(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 
 	T.Run("with error archiving", func(t *testing.T) {
@@ -287,8 +287,8 @@ func TestWritesWorker_archiveRecipeStepProduct(T *testing.T) {
 			body.RecipeStepProductID,
 		).Return(nil)
 
-		postArchivesPublisher := &mockpublishers.Publisher{}
-		postArchivesPublisher.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
@@ -296,10 +296,10 @@ func TestWritesWorker_archiveRecipeStepProduct(T *testing.T) {
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.dataChangesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.Error(t, worker.archiveRecipeStepProduct(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }

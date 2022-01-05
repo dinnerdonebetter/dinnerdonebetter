@@ -28,9 +28,6 @@ type (
 		validInstrumentDataManager types.ValidInstrumentDataManager
 		validInstrumentIDFetcher   func(*http.Request) string
 		sessionContextDataFetcher  func(*http.Request) (*types.SessionContextData, error)
-		preWritesPublisher         messagequeue.Publisher
-		preUpdatesPublisher        messagequeue.Publisher
-		preArchivesPublisher       messagequeue.Publisher
 		dataChangesPublisher       messagequeue.Publisher
 		encoderDecoder             encoding.ServerEncoderDecoder
 		tracer                     tracing.Tracer
@@ -48,21 +45,6 @@ func ProvideService(
 	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
 ) (types.ValidInstrumentDataService, error) {
-	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
-	if err != nil {
-		return nil, fmt.Errorf("setting up valid instrument queue pre-writes publisher: %w", err)
-	}
-
-	preUpdatesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreUpdatesTopicName)
-	if err != nil {
-		return nil, fmt.Errorf("setting up valid instrument queue pre-updates publisher: %w", err)
-	}
-
-	preArchivesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreArchivesTopicName)
-	if err != nil {
-		return nil, fmt.Errorf("setting up valid instrument queue pre-archives publisher: %w", err)
-	}
-
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up recipe step product queue data changes publisher: %w", err)
@@ -73,9 +55,6 @@ func ProvideService(
 		validInstrumentIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(ValidInstrumentIDURIParamKey),
 		sessionContextDataFetcher:  authservice.FetchContextFromRequest,
 		validInstrumentDataManager: validInstrumentDataManager,
-		preWritesPublisher:         preWritesPublisher,
-		preUpdatesPublisher:        preUpdatesPublisher,
-		preArchivesPublisher:       preArchivesPublisher,
 		dataChangesPublisher:       dataChangesPublisher,
 		encoderDecoder:             encoder,
 		tracer:                     tracing.NewTracer(tracerProvider.Tracer(serviceName)),

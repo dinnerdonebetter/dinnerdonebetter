@@ -50,9 +50,7 @@ func ProvideArchivesWorker(
 
 func (w *ArchivesWorker) determineArchiveMessageHandler(msg *types.PreArchiveMessage) func(context.Context, *types.PreArchiveMessage) error {
 	funcMap := map[string]func(context.Context, *types.PreArchiveMessage) error{
-		string(types.ValidInstrumentDataType):            w.archiveValidInstrument,
 		string(types.ValidIngredientDataType):            w.archiveValidIngredient,
-		string(types.ValidPreparationDataType):           w.archiveValidPreparation,
 		string(types.ValidIngredientPreparationDataType): w.archiveValidIngredientPreparation,
 		string(types.MealDataType):                       w.archiveMeal,
 		string(types.RecipeDataType):                     w.archiveRecipe,
@@ -63,7 +61,6 @@ func (w *ArchivesWorker) determineArchiveMessageHandler(msg *types.PreArchiveMes
 		string(types.MealPlanDataType):                   w.archiveMealPlan,
 		string(types.MealPlanOptionDataType):             w.archiveMealPlanOption,
 		string(types.MealPlanOptionVoteDataType):         w.archiveMealPlanOptionVote,
-		string(types.WebhookDataType):                    w.archiveWebhook,
 		string(types.UserMembershipDataType):             func(context.Context, *types.PreArchiveMessage) error { return nil },
 		string(types.HouseholdInvitationDataType):        func(context.Context, *types.PreArchiveMessage) error { return nil },
 	}

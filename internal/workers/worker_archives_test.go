@@ -26,20 +26,20 @@ func TestProvidePreArchivesWorker(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		dbManager := &database.MockDatabase{}
-		postArchivesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher := &mockpublishers.Publisher{}
 
 		actual, err := ProvideArchivesWorker(
 			ctx,
 			logger,
 			dbManager,
-			postArchivesPublisher,
+			dataChangesPublisher,
 			&customerdata.MockCollector{},
 			trace.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
@@ -51,14 +51,14 @@ func TestArchivesWorker_HandleMessage(T *testing.T) {
 
 		ctx := context.Background()
 		dbManager := database.NewMockDatabase()
-		postArchivesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher := &mockpublishers.Publisher{}
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
 
 		assert.Error(t, worker.HandleMessage(ctx, []byte("} bad JSON lol")))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 
 	T.Run("standard", func(t *testing.T) {
@@ -66,7 +66,7 @@ func TestArchivesWorker_HandleMessage(T *testing.T) {
 
 		ctx := context.Background()
 		dbManager := database.NewMockDatabase()
-		postArchivesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher := &mockpublishers.Publisher{}
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
@@ -79,6 +79,6 @@ func TestArchivesWorker_HandleMessage(T *testing.T) {
 
 		assert.NoError(t, worker.HandleMessage(ctx, examplePayload))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }

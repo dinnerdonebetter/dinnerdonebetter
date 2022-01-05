@@ -134,8 +134,8 @@ func TestWritesWorker_updateMealPlan(T *testing.T) {
 			body.MealPlan,
 		).Return(nil)
 
-		postUpdatesPublisher := &mockpublishers.Publisher{}
-		postUpdatesPublisher.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
@@ -143,11 +143,11 @@ func TestWritesWorker_updateMealPlan(T *testing.T) {
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
-		worker.dataChangesPublisher = postUpdatesPublisher
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.NoError(t, worker.updateMealPlan(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postUpdatesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 
 	T.Run("with error updating meal plan", func(t *testing.T) {
@@ -192,8 +192,8 @@ func TestWritesWorker_updateMealPlan(T *testing.T) {
 			body.MealPlan,
 		).Return(nil)
 
-		postUpdatesPublisher := &mockpublishers.Publisher{}
-		postUpdatesPublisher.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
@@ -201,11 +201,11 @@ func TestWritesWorker_updateMealPlan(T *testing.T) {
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
-		worker.dataChangesPublisher = postUpdatesPublisher
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.Error(t, worker.updateMealPlan(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postUpdatesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
@@ -229,8 +229,8 @@ func TestWritesWorker_archiveMealPlan(T *testing.T) {
 			body.AttributableToHouseholdID,
 		).Return(nil)
 
-		postArchivesPublisher := &mockpublishers.Publisher{}
-		postArchivesPublisher.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
@@ -238,11 +238,11 @@ func TestWritesWorker_archiveMealPlan(T *testing.T) {
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.dataChangesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.NoError(t, worker.archiveMealPlan(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 
 	T.Run("with error archiving", func(t *testing.T) {
@@ -287,8 +287,8 @@ func TestWritesWorker_archiveMealPlan(T *testing.T) {
 			body.AttributableToHouseholdID,
 		).Return(nil)
 
-		postArchivesPublisher := &mockpublishers.Publisher{}
-		postArchivesPublisher.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
@@ -296,10 +296,10 @@ func TestWritesWorker_archiveMealPlan(T *testing.T) {
 
 		worker := newTestArchivesWorker(t)
 		worker.dataManager = dbManager
-		worker.dataChangesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.Error(t, worker.archiveMealPlan(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }

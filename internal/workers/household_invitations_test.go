@@ -37,8 +37,8 @@ func TestWritesWorker_createHouseholdInvitation(T *testing.T) {
 			body.HouseholdInvitation,
 		).Return(expectedHouseholdInvitation, nil)
 
-		postArchivesPublisher := &mockpublishers.Publisher{}
-		postArchivesPublisher.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
@@ -46,11 +46,11 @@ func TestWritesWorker_createHouseholdInvitation(T *testing.T) {
 
 		worker := newTestWritesWorker(t)
 		worker.dataManager = dbManager
-		worker.dataChangesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.NoError(t, worker.createHouseholdInvitation(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 
 	T.Run("with error writing", func(t *testing.T) {
@@ -70,15 +70,15 @@ func TestWritesWorker_createHouseholdInvitation(T *testing.T) {
 			body.HouseholdInvitation,
 		).Return((*types.HouseholdInvitation)(nil), errors.New("blah"))
 
-		postArchivesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher := &mockpublishers.Publisher{}
 
 		worker := newTestWritesWorker(t)
 		worker.dataManager = dbManager
-		worker.dataChangesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.Error(t, worker.createHouseholdInvitation(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 
 	T.Run("with error publishing data change message", func(t *testing.T) {
@@ -99,8 +99,8 @@ func TestWritesWorker_createHouseholdInvitation(T *testing.T) {
 			body.HouseholdInvitation,
 		).Return(expectedHouseholdInvitation, nil)
 
-		postArchivesPublisher := &mockpublishers.Publisher{}
-		postArchivesPublisher.On(
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
@@ -108,10 +108,10 @@ func TestWritesWorker_createHouseholdInvitation(T *testing.T) {
 
 		worker := newTestWritesWorker(t)
 		worker.dataManager = dbManager
-		worker.dataChangesPublisher = postArchivesPublisher
+		worker.dataChangesPublisher = dataChangesPublisher
 
 		assert.Error(t, worker.createHouseholdInvitation(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }

@@ -27,13 +27,13 @@ func TestProvidePreUpdatesWorker(T *testing.T) {
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		dbManager := &database.MockDatabase{}
-		postArchivesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher := &mockpublishers.Publisher{}
 
 		actual, err := ProvideUpdatesWorker(
 			ctx,
 			logger,
 			dbManager,
-			postArchivesPublisher,
+			dataChangesPublisher,
 			&email.MockEmailer{},
 			&customerdata.MockCollector{},
 			trace.NewNoopTracerProvider(),
@@ -41,7 +41,7 @@ func TestProvidePreUpdatesWorker(T *testing.T) {
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
@@ -60,14 +60,14 @@ func TestUpdatesWorker_HandleMessage(T *testing.T) {
 		require.NoError(t, err)
 
 		dbManager := database.NewMockDatabase()
-		postArchivesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher := &mockpublishers.Publisher{}
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
 
 		assert.NoError(t, worker.HandleMessage(ctx, examplePayload))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -75,13 +75,13 @@ func TestUpdatesWorker_HandleMessage(T *testing.T) {
 
 		ctx := context.Background()
 		dbManager := database.NewMockDatabase()
-		postArchivesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher := &mockpublishers.Publisher{}
 
 		worker := newTestUpdatesWorker(t)
 		worker.dataManager = dbManager
 
 		assert.Error(t, worker.HandleMessage(ctx, []byte("} bad JSON lol")))
 
-		mock.AssertExpectationsForObjects(t, dbManager, postArchivesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }

@@ -22,13 +22,13 @@ func newTestWritesWorker(t *testing.T) *WritesWorker {
 	ctx := context.Background()
 	logger := logging.NewNoopLogger()
 	dbManager := &database.MockDatabase{}
-	postWritesPublisher := &mockpublishers.Publisher{}
+	dataChangesPublisher := &mockpublishers.Publisher{}
 
 	worker, err := ProvideWritesWorker(
 		ctx,
 		logger,
 		dbManager,
-		postWritesPublisher,
+		dataChangesPublisher,
 		&email.MockEmailer{},
 		&customerdata.MockCollector{},
 		trace.NewNoopTracerProvider(),
@@ -45,13 +45,13 @@ func newTestUpdatesWorker(t *testing.T) *UpdatesWorker {
 	ctx := context.Background()
 	logger := logging.NewNoopLogger()
 	dbManager := &database.MockDatabase{}
-	postUpdatesPublisher := &mockpublishers.Publisher{}
+	dataChangesPublisher := &mockpublishers.Publisher{}
 
 	worker, err := ProvideUpdatesWorker(
 		ctx,
 		logger,
 		dbManager,
-		postUpdatesPublisher,
+		dataChangesPublisher,
 		&email.MockEmailer{},
 		&customerdata.MockCollector{},
 		trace.NewNoopTracerProvider(),
@@ -84,13 +84,13 @@ func newTestArchivesWorker(t *testing.T) *ArchivesWorker {
 	ctx := context.Background()
 	logger := logging.NewNoopLogger()
 	dbManager := database.NewMockDatabase()
-	postArchivesPublisher := &mockpublishers.Publisher{}
+	dataChangesPublisher := &mockpublishers.Publisher{}
 
 	worker, err := ProvideArchivesWorker(
 		ctx,
 		logger,
 		dbManager,
-		postArchivesPublisher,
+		dataChangesPublisher,
 		&customerdata.MockCollector{},
 		trace.NewNoopTracerProvider(),
 	)
