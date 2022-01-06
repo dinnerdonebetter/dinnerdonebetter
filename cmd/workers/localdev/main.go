@@ -28,10 +28,7 @@ import (
 )
 
 const (
-	preWritesTopicName   = "pre_writes"
 	dataChangesTopicName = "data_changes"
-	preUpdatesTopicName  = "pre_updates"
-	preArchivesTopicName = "pre_archives"
 	choresTopicName      = "chores"
 
 	configFilepathEnvVar = "CONFIGURATION_FILEPATH"
@@ -100,91 +97,16 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	// pre-writes worker
-
-	postWritesPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
 	if err != nil {
 		logger.Fatal(err)
 	}
-
-	preWritesWorker, err := workers.ProvideWritesWorker(
-		ctx,
-		logger,
-		dataManager,
-		postWritesPublisher,
-		emailer,
-		cdp,
-		tracerProvider,
-	)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	preWritesConsumer, err := consumerProvider.ProvideConsumer(ctx, preWritesTopicName, preWritesWorker.HandleMessage)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	go preWritesConsumer.Consume(nil, nil)
-
-	// pre-updates worker
-
-	postUpdatesPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	preUpdatesWorker, err := workers.ProvideUpdatesWorker(
-		ctx,
-		logger,
-		dataManager,
-		postUpdatesPublisher,
-		emailer,
-		cdp,
-		tracerProvider,
-	)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	preUpdatesConsumer, err := consumerProvider.ProvideConsumer(ctx, preUpdatesTopicName, preUpdatesWorker.HandleMessage)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	go preUpdatesConsumer.Consume(nil, nil)
-
-	// pre-archives worker
-
-	postArchivesPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	preArchivesWorker, err := workers.ProvideArchivesWorker(
-		ctx,
-		logger,
-		dataManager,
-		postArchivesPublisher,
-		cdp,
-		tracerProvider,
-	)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	preArchivesConsumer, err := consumerProvider.ProvideConsumer(ctx, preArchivesTopicName, preArchivesWorker.HandleMessage)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	go preArchivesConsumer.Consume(nil, nil)
 
 	everySecond := time.Tick(time.Second)
 	choresWorker := workers.ProvideChoresWorker(
 		logger,
 		dataManager,
-		postUpdatesPublisher,
+		dataChangesPublisher,
 		emailer,
 		cdp,
 		tracerProvider,
@@ -204,9 +126,9 @@ func main() {
 
 	go func() {
 		for range everySecond {
-			mealPlans, err := dataManager.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
-			if err != nil {
-				logger.Fatal(err)
+			mealPlans, fetchMealPlansErr := dataManager.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
+			if fetchMealPlansErr != nil {
+				logger.Fatal(fetchMealPlansErr)
 			}
 
 			for _, mealPlan := range mealPlans {

@@ -53,7 +53,7 @@ func TestWebhooksService_CreateHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -183,7 +183,7 @@ func TestWebhooksService_CreateHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -425,7 +425,7 @@ func TestWebhooksService_ArchiveHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -554,7 +554,7 @@ func TestWebhooksService_ArchiveHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 

@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/prixfixeco/api_server/internal/database"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -56,19 +58,27 @@ func TestRecipeStepProductsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
+		dbManager := database.NewMockDatabase()
+		dbManager.RecipeStepProductDataManager.On(
+			"CreateRecipeStepProduct",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(*types.RecipeStepProductDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleRecipeStepProduct, nil)
+		helper.service.recipeStepProductDataManager = dbManager
+
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.PreWriteMessageMatcher),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(nil)
-		helper.service.preWritesPublisher = dataChangesPublisher
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 
 	T.Run("without input attached", func(t *testing.T) {
@@ -127,6 +137,35 @@ func TestRecipeStepProductsService_CreateHandler(T *testing.T) {
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
 
+	T.Run("with error writing to database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleCreationInput := fakes.BuildFakeRecipeStepProductDatabaseCreationInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		dbManager := database.NewMockDatabase()
+		dbManager.RecipeStepProductDataManager.On(
+			"CreateRecipeStepProduct",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(*types.RecipeStepProductDatabaseCreationInput) bool { return true }),
+		).Return((*types.RecipeStepProduct)(nil), errors.New("blah"))
+		helper.service.recipeStepProductDataManager = dbManager
+
+		helper.service.CreateHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, dbManager)
+	})
+
 	T.Run("with error publishing event", func(t *testing.T) {
 		t.Parallel()
 
@@ -141,19 +180,27 @@ func TestRecipeStepProductsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
+		dbManager := database.NewMockDatabase()
+		dbManager.RecipeStepProductDataManager.On(
+			"CreateRecipeStepProduct",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(*types.RecipeStepProductDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleRecipeStepProduct, nil)
+		helper.service.recipeStepProductDataManager = dbManager
+
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.PreWriteMessageMatcher),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.preWritesPublisher = dataChangesPublisher
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.CreateHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
@@ -415,29 +462,35 @@ func TestRecipeStepProductsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		recipeStepProductDataManager := &mocktypes.RecipeStepProductDataManager{}
-		recipeStepProductDataManager.On(
+		dbManager := database.NewMockDatabase()
+		dbManager.RecipeStepProductDataManager.On(
 			"GetRecipeStepProduct",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 			helper.exampleRecipeStepProduct.ID,
 		).Return(helper.exampleRecipeStepProduct, nil)
-		helper.service.recipeStepProductDataManager = recipeStepProductDataManager
+
+		dbManager.RecipeStepProductDataManager.On(
+			"UpdateRecipeStepProduct",
+			testutils.ContextMatcher,
+			helper.exampleRecipeStepProduct,
+		).Return(nil)
+		helper.service.recipeStepProductDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.PreUpdateMessageMatcher),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(nil)
-		helper.service.preUpdatesPublisher = dataChangesPublisher
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, recipeStepProductDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -548,6 +601,43 @@ func TestRecipeStepProductsService_UpdateHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, recipeStepProductDataManager)
 	})
 
+	T.Run("with error writing to database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleCreationInput := fakes.BuildFakeRecipeStepProductUpdateRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		dbManager := database.NewMockDatabase()
+		dbManager.RecipeStepProductDataManager.On(
+			"GetRecipeStepProduct",
+			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
+			helper.exampleRecipeStep.ID,
+			helper.exampleRecipeStepProduct.ID,
+		).Return(helper.exampleRecipeStepProduct, nil)
+
+		dbManager.RecipeStepProductDataManager.On(
+			"UpdateRecipeStepProduct",
+			testutils.ContextMatcher,
+			helper.exampleRecipeStepProduct,
+		).Return(errors.New("blah"))
+		helper.service.recipeStepProductDataManager = dbManager
+
+		helper.service.UpdateHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, dbManager)
+	})
+
 	T.Run("with error publishing to message queue", func(t *testing.T) {
 		t.Parallel()
 
@@ -562,29 +652,35 @@ func TestRecipeStepProductsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		recipeStepProductDataManager := &mocktypes.RecipeStepProductDataManager{}
-		recipeStepProductDataManager.On(
+		dbManager := database.NewMockDatabase()
+		dbManager.RecipeStepProductDataManager.On(
 			"GetRecipeStepProduct",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 			helper.exampleRecipeStepProduct.ID,
 		).Return(helper.exampleRecipeStepProduct, nil)
-		helper.service.recipeStepProductDataManager = recipeStepProductDataManager
+
+		dbManager.RecipeStepProductDataManager.On(
+			"UpdateRecipeStepProduct",
+			testutils.ContextMatcher,
+			helper.exampleRecipeStepProduct,
+		).Return(nil)
+		helper.service.recipeStepProductDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.PreUpdateMessageMatcher),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.preUpdatesPublisher = dataChangesPublisher
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, recipeStepProductDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
@@ -596,29 +692,65 @@ func TestRecipeStepProductsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepProductDataManager := &mocktypes.RecipeStepProductDataManager{}
-		recipeStepProductDataManager.On(
+		dbManager := database.NewMockDatabase()
+		dbManager.RecipeStepProductDataManager.On(
 			"RecipeStepProductExists",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 			helper.exampleRecipeStepProduct.ID,
 		).Return(true, nil)
-		helper.service.recipeStepProductDataManager = recipeStepProductDataManager
+
+		dbManager.RecipeStepProductDataManager.On(
+			"ArchiveRecipeStepProduct",
+			testutils.ContextMatcher,
+			helper.exampleRecipeStep.ID,
+			helper.exampleRecipeStepProduct.ID,
+		).Return(nil)
+		helper.service.recipeStepProductDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.PreArchiveMessageMatcher),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(nil)
-		helper.service.preArchivesPublisher = dataChangesPublisher
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, recipeStepProductDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
+	})
+
+	T.Run("with error writing to database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		dbManager := database.NewMockDatabase()
+		dbManager.RecipeStepProductDataManager.On(
+			"RecipeStepProductExists",
+			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
+			helper.exampleRecipeStep.ID,
+			helper.exampleRecipeStepProduct.ID,
+		).Return(true, nil)
+
+		dbManager.RecipeStepProductDataManager.On(
+			"ArchiveRecipeStepProduct",
+			testutils.ContextMatcher,
+			helper.exampleRecipeStep.ID,
+			helper.exampleRecipeStepProduct.ID,
+		).Return(errors.New("blah"))
+		helper.service.recipeStepProductDataManager = dbManager
+
+		helper.service.ArchiveHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, dbManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -702,28 +834,35 @@ func TestRecipeStepProductsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepProductDataManager := &mocktypes.RecipeStepProductDataManager{}
-		recipeStepProductDataManager.On(
+		dbManager := database.NewMockDatabase()
+		dbManager.RecipeStepProductDataManager.On(
 			"RecipeStepProductExists",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 			helper.exampleRecipeStepProduct.ID,
 		).Return(true, nil)
-		helper.service.recipeStepProductDataManager = recipeStepProductDataManager
+
+		dbManager.RecipeStepProductDataManager.On(
+			"ArchiveRecipeStepProduct",
+			testutils.ContextMatcher,
+			helper.exampleRecipeStep.ID,
+			helper.exampleRecipeStepProduct.ID,
+		).Return(nil)
+		helper.service.recipeStepProductDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.PreArchiveMessageMatcher),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.preArchivesPublisher = dataChangesPublisher
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, recipeStepProductDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }

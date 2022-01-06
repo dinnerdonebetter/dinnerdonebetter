@@ -41,7 +41,7 @@ func TestWritesWorker_createMealPlanOption(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(nil)
 
 		worker := newTestWritesWorker(t)
@@ -104,7 +104,7 @@ func TestWritesWorker_createMealPlanOption(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(errors.New("blah"))
 
 		worker := newTestWritesWorker(t)
@@ -141,7 +141,7 @@ func TestWritesWorker_updateMealPlanOption(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(nil)
 
 		worker := newTestUpdatesWorker(t)
@@ -202,7 +202,7 @@ func TestWritesWorker_updateMealPlanOption(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(errors.New("blah"))
 
 		worker := newTestUpdatesWorker(t)
@@ -239,7 +239,7 @@ func TestWritesWorker_archiveMealPlanOption(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(nil)
 
 		worker := newTestArchivesWorker(t)
@@ -300,7 +300,7 @@ func TestWritesWorker_archiveMealPlanOption(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(errors.New("blah"))
 
 		worker := newTestArchivesWorker(t)

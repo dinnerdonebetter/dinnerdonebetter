@@ -15,7 +15,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
-			PreWritesTopicName: t.Name(),
+			DataChangesTopicName: t.Name(),
 		}
 
 		require.NoError(t, cfg.ValidateWithContext(ctx))

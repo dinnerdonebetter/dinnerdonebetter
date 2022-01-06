@@ -41,7 +41,7 @@ func TestWritesWorker_createMeal(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(nil)
 
 		worker := newTestWritesWorker(t)
@@ -101,7 +101,7 @@ func TestWritesWorker_createMeal(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(errors.New("blah"))
 
 		worker := newTestWritesWorker(t)
@@ -138,7 +138,7 @@ func TestWritesWorker_archiveMeal(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(nil)
 
 		worker := newTestArchivesWorker(t)
@@ -196,7 +196,7 @@ func TestWritesWorker_archiveMeal(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(message *types.DataChangeMessage) bool { return true }),
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(errors.New("blah"))
 
 		worker := newTestArchivesWorker(t)

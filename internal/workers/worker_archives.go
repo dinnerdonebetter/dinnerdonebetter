@@ -52,7 +52,6 @@ func (w *ArchivesWorker) determineArchiveMessageHandler(msg *types.PreArchiveMes
 	funcMap := map[string]func(context.Context, *types.PreArchiveMessage) error{
 		string(types.MealDataType):                 w.archiveMeal,
 		string(types.RecipeDataType):               w.archiveRecipe,
-		string(types.RecipeStepDataType):           w.archiveRecipeStep,
 		string(types.RecipeStepInstrumentDataType): w.archiveRecipeStepInstrument,
 		string(types.RecipeStepIngredientDataType): w.archiveRecipeStepIngredient,
 		string(types.RecipeStepProductDataType):    w.archiveRecipeStepProduct,

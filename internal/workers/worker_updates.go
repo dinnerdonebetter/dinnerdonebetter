@@ -55,7 +55,6 @@ func ProvideUpdatesWorker(
 func (w *UpdatesWorker) determineUpdateMessageHandler(msg *types.PreUpdateMessage) func(context.Context, *types.PreUpdateMessage) error {
 	funcMap := map[string]func(context.Context, *types.PreUpdateMessage) error{
 		string(types.RecipeDataType):               w.updateRecipe,
-		string(types.RecipeStepDataType):           w.updateRecipeStep,
 		string(types.RecipeStepInstrumentDataType): w.updateRecipeStepInstrument,
 		string(types.RecipeStepIngredientDataType): w.updateRecipeStepIngredient,
 		string(types.RecipeStepProductDataType):    w.updateRecipeStepProduct,

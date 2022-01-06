@@ -59,7 +59,6 @@ func (w *WritesWorker) determineWriteMessageHandler(msg *types.PreWriteMessage) 
 	funcMap := map[string]func(context.Context, *types.PreWriteMessage) error{
 		string(types.MealDataType):                 w.createMeal,
 		string(types.RecipeDataType):               w.createRecipe,
-		string(types.RecipeStepDataType):           w.createRecipeStep,
 		string(types.RecipeStepInstrumentDataType): w.createRecipeStepInstrument,
 		string(types.RecipeStepIngredientDataType): w.createRecipeStepIngredient,
 		string(types.RecipeStepProductDataType):    w.createRecipeStepProduct,

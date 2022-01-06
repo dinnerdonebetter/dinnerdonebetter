@@ -18,9 +18,6 @@ const (
 	baseAPIServerConfigSSMKey      = "PRIXFIXE_BASE_API_SERVER_CONFIG"
 	baseWorkerConfigSSMKey         = "PRIXFIXE_BASE_WORKER_CONFIG"
 	databaseConnectionURLSSMKey    = "PRIXFIXE_DATABASE_CONNECTION_STRING"
-	writesQueueNameSSMKey          = "PRIXFIXE_WRITES_QUEUE_URL"
-	updatesQueueNameSSMKey         = "PRIXFIXE_UPDATES_QUEUE_URL"
-	archivesQueueNameSSMKey        = "PRIXFIXE_ARCHIVES_QUEUE_URL"
 	dataChangesQueueNameSSMKey     = "PRIXFIXE_DATA_CHANGES_QUEUE_URL"
 	cookieBlockKeySSMKey           = "PRIXFIXE_COOKIE_BLOCK_KEY"
 	cookieHashKeySSMKey            = "PRIXFIXE_COOKIE_HASH_KEY"
@@ -80,9 +77,6 @@ func GetConfigFromParameterStore(worker bool) (*InstanceConfig, error) {
 	cfg.Events.Consumers.RedisConfig.QueueAddresses = strings.Split(mustGetParameter(parameterStore, pubsubServerURLSSMKey), ",")
 	cfg.Events.Publishers.RedisConfig.QueueAddresses = strings.Split(mustGetParameter(parameterStore, pubsubServerURLSSMKey), ",")
 
-	writesTopicName := mustGetParameter(parameterStore, writesQueueNameSSMKey)
-	updatesTopicName := mustGetParameter(parameterStore, updatesQueueNameSSMKey)
-	archivesTopicName := mustGetParameter(parameterStore, archivesQueueNameSSMKey)
 	dataChangesTopicName := mustGetParameter(parameterStore, dataChangesQueueNameSSMKey)
 
 	cfg.Services.Auth.Cookies.BlockKey = mustGetParameter(parameterStore, cookieBlockKeySSMKey)
@@ -90,53 +84,23 @@ func GetConfigFromParameterStore(worker bool) (*InstanceConfig, error) {
 	cfg.Services.Auth.PASETO.LocalModeKey = []byte(mustGetParameter(parameterStore, cookiePASETOLocalModeKeySSMKey))
 
 	cfg.Services.ValidInstruments.DataChangesTopicName = dataChangesTopicName
-
-	cfg.Services.ValidIngredients.DataChangesTopicName = archivesTopicName
-
+	cfg.Services.ValidIngredients.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ValidPreparations.DataChangesTopicName = dataChangesTopicName
-
-	cfg.Services.MealPlanOptionVotes.PreWritesTopicName = writesTopicName
-	cfg.Services.MealPlanOptionVotes.PreUpdatesTopicName = updatesTopicName
-	cfg.Services.MealPlanOptionVotes.PreArchivesTopicName = archivesTopicName
-
 	cfg.Services.ValidIngredientPreparations.DataChangesTopicName = dataChangesTopicName
 
-	cfg.Services.Meals.PreWritesTopicName = writesTopicName
-	cfg.Services.Meals.PreUpdatesTopicName = updatesTopicName
-	cfg.Services.Meals.PreArchivesTopicName = archivesTopicName
+	cfg.Services.Recipes.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.RecipeSteps.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.RecipeStepProducts.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.RecipeStepInstruments.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.RecipeStepIngredients.DataChangesTopicName = dataChangesTopicName
 
-	cfg.Services.Recipes.PreWritesTopicName = writesTopicName
-	cfg.Services.Recipes.PreUpdatesTopicName = updatesTopicName
-	cfg.Services.Recipes.PreArchivesTopicName = archivesTopicName
+	cfg.Services.Meals.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.MealPlans.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.MealPlanOptions.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.MealPlanOptionVotes.DataChangesTopicName = dataChangesTopicName
 
-	cfg.Services.RecipeSteps.PreWritesTopicName = writesTopicName
-	cfg.Services.RecipeSteps.PreUpdatesTopicName = updatesTopicName
-	cfg.Services.RecipeSteps.PreArchivesTopicName = archivesTopicName
-
-	cfg.Services.RecipeStepInstruments.PreWritesTopicName = writesTopicName
-	cfg.Services.RecipeStepInstruments.PreUpdatesTopicName = updatesTopicName
-	cfg.Services.RecipeStepInstruments.PreArchivesTopicName = archivesTopicName
-
-	cfg.Services.RecipeStepIngredients.PreWritesTopicName = writesTopicName
-	cfg.Services.RecipeStepIngredients.PreUpdatesTopicName = updatesTopicName
-	cfg.Services.RecipeStepIngredients.PreArchivesTopicName = archivesTopicName
-
-	cfg.Services.MealPlans.PreWritesTopicName = writesTopicName
-	cfg.Services.MealPlans.PreUpdatesTopicName = updatesTopicName
-	cfg.Services.MealPlans.PreArchivesTopicName = archivesTopicName
-
-	cfg.Services.MealPlanOptions.PreWritesTopicName = writesTopicName
-	cfg.Services.MealPlanOptions.PreUpdatesTopicName = updatesTopicName
-	cfg.Services.MealPlanOptions.PreArchivesTopicName = archivesTopicName
-
-	cfg.Services.RecipeStepProducts.PreWritesTopicName = writesTopicName
-	cfg.Services.RecipeStepProducts.PreUpdatesTopicName = updatesTopicName
-	cfg.Services.RecipeStepProducts.PreArchivesTopicName = archivesTopicName
-
-	cfg.Services.Households.PreWritesTopicName = writesTopicName
-
+	cfg.Services.Households.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.HouseholdInvitations.DataChangesTopicName = dataChangesTopicName
-
 	cfg.Services.Webhooks.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.Websockets.DataChangesTopicName = dataChangesTopicName
 

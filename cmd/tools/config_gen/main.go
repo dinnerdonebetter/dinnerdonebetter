@@ -333,7 +333,6 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 		},
 		Services: config.ServicesConfigurations{
 			Households: householdsservice.Config{
-				PreWritesTopicName:   preWritesTopicName,
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			HouseholdInvitations: householdinvitationsservice.Config{
@@ -382,9 +381,6 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			RecipeSteps: recipestepsservice.Config{
-				PreWritesTopicName:   preWritesTopicName,
-				PreUpdatesTopicName:  preUpdatesTopicName,
-				PreArchivesTopicName: preArchivesTopicName,
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			RecipeStepInstruments: recipestepinstrumentsservice.Config{
@@ -400,9 +396,6 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			RecipeStepProducts: recipestepproductsservice.Config{
-				PreWritesTopicName:   preWritesTopicName,
-				PreUpdatesTopicName:  preUpdatesTopicName,
-				PreArchivesTopicName: preArchivesTopicName,
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			MealPlans: mealplansservice.Config{
@@ -482,7 +475,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 		},
 		Services: config.ServicesConfigurations{
 			Households: householdsservice.Config{
-				PreWritesTopicName:   preWritesTopicName,
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			HouseholdInvitations: householdinvitationsservice.Config{
@@ -538,9 +530,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			RecipeSteps: recipestepsservice.Config{
-				PreWritesTopicName:   preWritesTopicName,
-				PreUpdatesTopicName:  preUpdatesTopicName,
-				PreArchivesTopicName: preArchivesTopicName,
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			RecipeStepInstruments: recipestepinstrumentsservice.Config{
@@ -556,9 +545,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			RecipeStepProducts: recipestepproductsservice.Config{
-				PreWritesTopicName:   preWritesTopicName,
-				PreUpdatesTopicName:  preUpdatesTopicName,
-				PreArchivesTopicName: preArchivesTopicName,
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			MealPlans: mealplansservice.Config{
