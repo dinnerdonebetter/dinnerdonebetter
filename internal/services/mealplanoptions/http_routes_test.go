@@ -22,23 +22,6 @@ import (
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
-func TestParseBool(t *testing.T) {
-	t.Parallel()
-
-	expectations := map[string]bool{
-		"1":      true,
-		t.Name(): false,
-		"true":   true,
-		"troo":   false,
-		"t":      true,
-		"false":  false,
-	}
-
-	for input, expected := range expectations {
-		assert.Equal(t, expected, parseBool(input))
-	}
-}
-
 func TestMealPlanOptionsService_CreateHandler(T *testing.T) {
 	T.Parallel()
 

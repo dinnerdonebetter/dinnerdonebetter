@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
-	"strings"
 
 	"github.com/segmentio/ksuid"
 
@@ -18,16 +17,6 @@ const (
 	// MealIDURIParamKey is a standard string that we'll use to refer to meal IDs with.
 	MealIDURIParamKey = "mealID"
 )
-
-// parseBool differs from strconv.ParseBool in that it returns false by default.
-func parseBool(str string) bool {
-	switch strings.ToLower(strings.TrimSpace(str)) {
-	case "1", "t", "true":
-		return true
-	default:
-		return false
-	}
-}
 
 // CreateHandler is our meal creation route.
 func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
@@ -68,17 +57,25 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input.CreatedByUser = sessionCtxData.Requester.UserID
 	tracing.AttachMealIDToSpan(span, input.ID)
 
-	// create meal in database.
-	preWrite := &types.PreWriteMessage{
-		DataType:                  types.MealDataType,
-		Meal:                      input,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing meal write message")
+	meal, err := s.mealDataManager.CreateMeal(ctx, input)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "creating meal")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.MealDataType,
+			MessageType:               "meal_created",
+			Meal:                      meal,
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
+		}
 	}
 
 	if err = s.customerDataCollector.EventOccurred(ctx, "meal_created", sessionCtxData.Requester.UserID, map[string]interface{}{
@@ -90,7 +87,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	pwr := types.PreWriteResponse{ID: input.ID}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusAccepted)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a meal.
@@ -205,16 +202,23 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	pam := &types.PreArchiveMessage{
-		DataType:                  types.MealDataType,
-		MealID:                    mealID,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing meal archive message")
+	if err = s.mealDataManager.ArchiveMeal(ctx, mealID, sessionCtxData.Requester.UserID); err != nil {
+		observability.AcknowledgeError(err, logger, span, "archiving meal")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.MealDataType,
+			MessageType:               "meal_archived",
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	if err = s.customerDataCollector.EventOccurred(ctx, "meal_archived", sessionCtxData.Requester.UserID, map[string]interface{}{

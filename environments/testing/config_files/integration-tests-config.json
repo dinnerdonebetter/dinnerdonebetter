@@ -94,34 +94,19 @@
 			"dataChangesTopicName": "data_changes"
 		},
 		"meals": {
-			"dataChangesTopicName": "data_changes",
-			"writesTopicName": "pre_writes",
-			"updatesTopicName": "pre_updates",
-			"archivesTopicName": "pre_archives"
+			"dataChangesTopicName": "data_changes"
 		},
 		"recipes": {
-			"dataChangesTopicName": "data_changes",
-			"writesTopicName": "pre_writes",
-			"updatesTopicName": "pre_updates",
-			"archivesTopicName": "pre_archives"
+			"dataChangesTopicName": "data_changes"
 		},
 		"recipeSteps": {
-			"dataChangesTopicName": "data_changes",
-			"writesTopicName": "pre_writes",
-			"updatesTopicName": "pre_updates",
-			"archivesTopicName": "pre_archives"
+			"dataChangesTopicName": "data_changes"
 		},
 		"recipeStepInstruments": {
-			"dataChangesTopicName": "data_changes",
-			"writesTopicName": "pre_writes",
-			"updatesTopicName": "pre_updates",
-			"archivesTopicName": "pre_archives"
+			"dataChangesTopicName": "data_changes"
 		},
 		"recipeStepIngredients": {
-			"dataChangesTopicName": "data_changes",
-			"writesTopicName": "pre_writes",
-			"updatesTopicName": "pre_updates",
-			"archivesTopicName": "pre_archives"
+			"dataChangesTopicName": "data_changes"
 		},
 		"mealPlans": {
 			"dataChangesTopicName": "data_changes",
@@ -136,14 +121,10 @@
 			"archivesTopicName": "pre_archives"
 		},
 		"recipeStepProducts": {
-			"dataChangesTopicName": "data_changes",
-			"writesTopicName": "pre_writes",
-			"updatesTopicName": "pre_updates",
-			"archivesTopicName": "pre_archives"
+			"dataChangesTopicName": "data_changes"
 		},
 		"households": {
-			"dataChangesTopicName": "data_changes",
-			"writesTopicName": "pre_writes"
+			"dataChangesTopicName": "data_changes"
 		},
 		"householdInvitations": {
 			"dataChangesTopicName": "data_changes",
@@ -159,7 +140,7 @@
 		"auth": {
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "BOD0tnCi1hx5bJxA80+qq4yPAQ8/WdObkXGjJ8ByO34=",
+				"localModeKey": "l5UVR0PxI8rhMDVOkZgaWdbPwD6gaqTADRPmivs4OIg=",
 				"lifetime": 60000000000
 			},
 			"cookies": {

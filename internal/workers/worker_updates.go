@@ -54,12 +54,9 @@ func ProvideUpdatesWorker(
 
 func (w *UpdatesWorker) determineUpdateMessageHandler(msg *types.PreUpdateMessage) func(context.Context, *types.PreUpdateMessage) error {
 	funcMap := map[string]func(context.Context, *types.PreUpdateMessage) error{
-		string(types.MealPlanDataType):            w.updateMealPlan,
-		string(types.MealPlanOptionDataType):      w.updateMealPlanOption,
-		string(types.MealPlanOptionVoteDataType):  w.updateMealPlanOptionVote,
-		string(types.UserMembershipDataType):      func(context.Context, *types.PreUpdateMessage) error { return nil },
-		string(types.WebhookDataType):             func(context.Context, *types.PreUpdateMessage) error { return nil },
-		string(types.HouseholdInvitationDataType): func(context.Context, *types.PreUpdateMessage) error { return nil },
+		string(types.MealPlanDataType):           w.updateMealPlan,
+		string(types.MealPlanOptionDataType):     w.updateMealPlanOption,
+		string(types.MealPlanOptionVoteDataType): w.updateMealPlanOptionVote,
 	}
 
 	f, ok := funcMap[string(msg.DataType)]

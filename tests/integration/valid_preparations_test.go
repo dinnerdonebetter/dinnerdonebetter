@@ -3,7 +3,6 @@ package integration
 import (
 	"fmt"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -35,7 +34,7 @@ func convertValidPreparationToValidPreparationUpdateInput(x *types.ValidPreparat
 }
 
 func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
-	s.runForCookieClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -71,50 +70,10 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
 		}
 	})
-
-	s.runForPASETOClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			var checkFunc func() bool
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			t.Log("creating valid preparation")
-			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			require.NoError(t, err)
-			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
-			t.Logf("valid preparation %q created", createdValidPreparation.ID)
-
-			// change valid preparation
-			newValidPreparation := fakes.BuildFakeValidPreparation()
-			createdValidPreparation.Update(convertValidPreparationToValidPreparationUpdateInput(newValidPreparation))
-			assert.NoError(t, testClients.admin.UpdateValidPreparation(ctx, createdValidPreparation))
-
-			// retrieve changed valid preparation
-			var actual *types.ValidPreparation
-			checkFunc = func() bool {
-				actual, err = testClients.admin.GetValidPreparation(ctx, createdValidPreparation.ID)
-				return assert.NotNil(t, createdValidPreparation) && assert.NoError(t, err)
-			}
-			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
-
-			requireNotNilAndNoProblems(t, actual, err)
-
-			// assert valid preparation equality
-			checkValidPreparationEquality(t, newValidPreparation, actual)
-			assert.NotNil(t, actual.LastUpdatedOn)
-
-			t.Log("cleaning up valid preparation")
-			assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
-		}
-	})
 }
 
 func (s *TestSuite) TestValidPreparations_Listing() {
-	s.runForCookieClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -130,43 +89,6 @@ func (s *TestSuite) TestValidPreparations_Listing() {
 				require.NoError(t, createdValidPreparationErr)
 				t.Logf("valid preparation %q created", createdValidPreparation.ID)
 
-				checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
-
-				expected = append(expected, createdValidPreparation)
-			}
-
-			// assert valid preparation list equality
-			actual, err := testClients.admin.GetValidPreparations(ctx, nil)
-			requireNotNilAndNoProblems(t, actual, err)
-			assert.True(
-				t,
-				len(expected) <= len(actual.ValidPreparations),
-				"expected %d to be <= %d",
-				len(expected),
-				len(actual.ValidPreparations),
-			)
-
-			t.Log("cleaning up")
-			for _, createdValidPreparation := range expected {
-				assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
-			}
-		}
-	})
-
-	s.runForPASETOClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			t.Log("creating valid preparations")
-			var expected []*types.ValidPreparation
-			for i := 0; i < 5; i++ {
-				exampleValidPreparation := fakes.BuildFakeValidPreparation()
-				exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
-				createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
-				require.NoError(t, err)
 				checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
 				expected = append(expected, createdValidPreparation)
@@ -192,7 +114,7 @@ func (s *TestSuite) TestValidPreparations_Listing() {
 }
 
 func (s *TestSuite) TestValidPreparations_Searching() {
-	s.runForCookieClient("should be able to be search for valid preparations", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should be able to be search for valid preparations", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -202,7 +124,7 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 			t.Log("creating valid preparations")
 			var expected []*types.ValidPreparation
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparation.Name = "example"
+			exampleValidPreparation.Name = fmt.Sprintf("example_%s", testClients.authType)
 			searchQuery := exampleValidPreparation.Name
 			for i := 0; i < 5; i++ {
 				exampleValidPreparation.Name = fmt.Sprintf("%s %d", searchQuery, i)
@@ -216,53 +138,6 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 			}
 
 			exampleLimit := uint8(20)
-
-			// give the index a moment
-			time.Sleep(3 * time.Second)
-
-			// assert valid preparation list equality
-			actual, err := testClients.admin.SearchValidPreparations(ctx, searchQuery, exampleLimit)
-			requireNotNilAndNoProblems(t, actual, err)
-			assert.True(
-				t,
-				len(expected) <= len(actual),
-				"expected %d to be <= %d",
-				len(expected),
-				len(actual),
-			)
-
-			t.Log("cleaning up")
-			for _, createdValidPreparation := range expected {
-				assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
-			}
-		}
-	})
-
-	s.runForPASETOClient("should be able to be search for valid preparations", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			t.Log("creating valid preparations")
-			var expected []*types.ValidPreparation
-			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparation.Name = "example"
-			searchQuery := exampleValidPreparation.Name
-			for i := 0; i < 5; i++ {
-				exampleValidPreparation.Name = fmt.Sprintf("%s %d", searchQuery, i)
-				exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
-				createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
-				require.NoError(t, err)
-				requireNotNilAndNoProblems(t, createdValidPreparation, err)
-				t.Logf("valid preparation %q created", createdValidPreparation.ID)
-
-				expected = append(expected, createdValidPreparation)
-			}
-
-			exampleLimit := uint8(20)
-			time.Sleep(2 * time.Second) // give the index a moment
 
 			// assert valid preparation list equality
 			actual, err := testClients.admin.SearchValidPreparations(ctx, searchQuery, exampleLimit)

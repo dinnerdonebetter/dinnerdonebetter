@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/pkg/client/httpclient"
@@ -23,15 +25,13 @@ func checkMealEquality(t *testing.T, expected, actual *types.Meal) {
 	assert.NotZero(t, actual.CreatedOn)
 }
 
-func createMealWithNotificationChannel(ctx context.Context, t *testing.T, notificationsChan chan *types.DataChangeMessage, client *httpclient.Client) *types.Meal {
+func createMealForTest(ctx context.Context, t *testing.T, client *httpclient.Client) *types.Meal {
 	t.Helper()
-
-	var n *types.DataChangeMessage
 
 	createdRecipes := []*types.Recipe{}
 	createdRecipeIDs := []string{}
 	for i := 0; i < 3; i++ {
-		_, _, recipe := createRecipeWithNotificationChannel(ctx, t, notificationsChan, client)
+		_, _, recipe := createRecipeForTest(ctx, t, client)
 		createdRecipes = append(createdRecipes, recipe)
 		createdRecipeIDs = append(createdRecipeIDs, recipe.ID)
 	}
@@ -44,10 +44,6 @@ func createMealWithNotificationChannel(ctx context.Context, t *testing.T, notifi
 	createdMeal, err := client.CreateMeal(ctx, exampleMealInput)
 	require.NoError(t, err)
 
-	n = <-notificationsChan
-	assert.Equal(t, types.MealDataType, n.DataType)
-	require.NotNil(t, n.Meal)
-	checkMealEquality(t, exampleMeal, n.Meal)
 	t.Logf("meal %q created", createdMeal.ID)
 
 	createdMeal, err = client.GetMeal(ctx, createdMeal.ID)
@@ -57,22 +53,15 @@ func createMealWithNotificationChannel(ctx context.Context, t *testing.T, notifi
 	return createdMeal
 }
 
-/*
-
 func (s *TestSuite) TestMeals_CompleteLifecycle() {
-	s.runForCookieClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
-			require.NotNil(t, notificationsChan)
-			require.NoError(t, err)
-
-			createdMeal := createMealWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
+			createdMeal := createMealForTest(ctx, t, testClients.main)
 
 			t.Log("cleaning up meal")
 			assert.NoError(t, testClients.main.ArchiveMeal(ctx, createdMeal.ID))
@@ -81,19 +70,12 @@ func (s *TestSuite) TestMeals_CompleteLifecycle() {
 }
 
 func (s *TestSuite) TestMeals_Listing() {
-	s.runForCookieClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
-
-			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
-			require.NotNil(t, notificationsChan)
-			require.NoError(t, err)
-
-			var n *types.DataChangeMessage
 
 			t.Log("creating prerequisite valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
@@ -102,10 +84,7 @@ func (s *TestSuite) TestMeals_Listing() {
 			require.NoError(t, err)
 			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
-			n = <-notificationsChan
-			assert.Equal(t, types.ValidIngredientDataType, n.DataType)
-			require.NotNil(t, n.ValidIngredient)
-			checkValidIngredientEquality(t, exampleValidIngredient, n.ValidIngredient)
+			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
 			createdValidIngredient, err = testClients.main.GetValidIngredient(ctx, createdValidIngredient.ID)
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
@@ -118,10 +97,7 @@ func (s *TestSuite) TestMeals_Listing() {
 			require.NoError(t, err)
 			t.Logf("valid preparation %q created", createdValidPreparation.ID)
 
-			n = <-notificationsChan
-			assert.Equal(t, types.ValidPreparationDataType, n.DataType)
-			require.NotNil(t, n.ValidPreparation)
-			checkValidPreparationEquality(t, exampleValidPreparation, n.ValidPreparation)
+			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
 			createdValidPreparation, err = testClients.main.GetValidPreparation(ctx, createdValidPreparation.ID)
 			requireNotNilAndNoProblems(t, createdValidPreparation, err)
@@ -130,7 +106,7 @@ func (s *TestSuite) TestMeals_Listing() {
 			t.Log("creating meals")
 			var expected []*types.Meal
 			for i := 0; i < 5; i++ {
-				createdMeal := createMealWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
+				createdMeal := createMealForTest(ctx, t, testClients.main)
 
 				expected = append(expected, createdMeal)
 			}
@@ -153,5 +129,3 @@ func (s *TestSuite) TestMeals_Listing() {
 		}
 	})
 }
-
-*/

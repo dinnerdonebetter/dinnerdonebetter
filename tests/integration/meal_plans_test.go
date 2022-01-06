@@ -25,7 +25,7 @@ func checkMealPlanEquality(t *testing.T, expected, actual *types.MealPlan) {
 	assert.NotZero(t, actual.CreatedOn)
 }
 
-func createMealPlanWithNotificationChannel(ctx context.Context, t *testing.T, notificationsChan chan *types.DataChangeMessage, client *httpclient.Client) *types.MealPlan {
+func createMealPlanWithNotificationChannel(ctx context.Context, t *testing.T, client *httpclient.Client) *types.MealPlan {
 	t.Helper()
 
 	var n *types.DataChangeMessage
@@ -33,7 +33,7 @@ func createMealPlanWithNotificationChannel(ctx context.Context, t *testing.T, no
 	t.Log("creating meal plan")
 	exampleMealPlan := fakes.BuildFakeMealPlan()
 	for i := range exampleMealPlan.Options {
-		createdMeal := createMealWithNotificationChannel(ctx, t, notificationsChan, client)
+		createdMeal := createMealForTest(ctx, t, client)
 		exampleMealPlan.Options[i].MealID = createdMeal.ID
 	}
 
@@ -42,7 +42,6 @@ func createMealPlanWithNotificationChannel(ctx context.Context, t *testing.T, no
 	require.NotEmpty(t, createdMealPlan.ID)
 	require.NoError(t, err)
 
-	n = <-notificationsChan
 	assert.Equal(t, types.MealPlanDataType, n.DataType)
 	require.NotNil(t, n.MealPlan)
 	checkMealPlanEquality(t, exampleMealPlan, n.MealPlan)
@@ -157,7 +156,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			// create recipes for meal plan
 			createdMeals := []*types.Meal{}
 			for i := 0; i < 3; i++ {
-				createdMeal := createMealWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
+				createdMeal := createMealForTest(ctx, t, notificationsChan, testClients.main)
 				createdMeals = append(createdMeals, createdMeal)
 			}
 
@@ -406,7 +405,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			// create recipes for meal plan
 			createdMeals := []*types.Meal{}
 			for i := 0; i < 3; i++ {
-				createdMeal := createMealWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
+				createdMeal := createMealForTest(ctx, t, notificationsChan, testClients.main)
 				createdMeals = append(createdMeals, createdMeal)
 			}
 

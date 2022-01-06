@@ -2,12 +2,10 @@ package workers
 
 import (
 	"context"
-	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/customerdata"
@@ -15,7 +13,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/email"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
-	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 func TestProvidePreUpdatesWorker(T *testing.T) {
@@ -47,28 +44,6 @@ func TestProvidePreUpdatesWorker(T *testing.T) {
 
 func TestUpdatesWorker_HandleMessage(T *testing.T) {
 	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		body := &types.PreUpdateMessage{
-			DataType: types.UserMembershipDataType,
-		}
-		examplePayload, err := json.Marshal(body)
-		require.NoError(t, err)
-
-		dbManager := database.NewMockDatabase()
-		dataChangesPublisher := &mockpublishers.Publisher{}
-
-		worker := newTestUpdatesWorker(t)
-		worker.dataManager = dbManager
-
-		assert.NoError(t, worker.HandleMessage(ctx, examplePayload))
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
-	})
 
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()

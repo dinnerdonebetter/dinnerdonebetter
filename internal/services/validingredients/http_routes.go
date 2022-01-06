@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
-	"strings"
 
 	"github.com/segmentio/ksuid"
 
@@ -18,16 +17,6 @@ const (
 	// ValidIngredientIDURIParamKey is a standard string that we'll use to refer to valid ingredient IDs with.
 	ValidIngredientIDURIParamKey = "validIngredientID"
 )
-
-// parseBool differs from strconv.ParseBool in that it returns false by default.
-func parseBool(str string) bool {
-	switch strings.ToLower(strings.TrimSpace(str)) {
-	case "1", "t", "true":
-		return true
-	default:
-		return false
-	}
-}
 
 // CreateHandler is our valid ingredient creation route.
 func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {

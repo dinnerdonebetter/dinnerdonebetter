@@ -3,8 +3,9 @@ package integration
 import (
 	"testing"
 
-	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 func checkMealPlanOptionEquality(t *testing.T, expected, actual *types.MealPlanOption) {
@@ -102,7 +103,7 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 				exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 				exampleMealPlanOption.BelongsToMealPlan = createdMealPlan.ID
 
-				createdMeal := createMealWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
+				createdMeal := createMealForTest(ctx, t, notificationsChan, testClients.main)
 				exampleMealPlanOption.MealID = createdMeal.ID
 
 				exampleMealPlanOptionInput := fakes.BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(exampleMealPlanOption)
