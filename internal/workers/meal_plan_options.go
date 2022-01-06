@@ -28,7 +28,7 @@ func (w *WritesWorker) createMealPlanOption(ctx context.Context, msg *types.PreW
 		}
 
 		if err = w.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			return observability.PrepareError(err, logger, span, "publishing to post-writes topic")
+			return observability.PrepareError(err, logger, span, "publishing to data changes topic")
 		}
 	}
 

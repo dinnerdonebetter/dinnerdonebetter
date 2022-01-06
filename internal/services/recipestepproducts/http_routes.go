@@ -90,7 +90,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		}
 
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing to post-writes topic")
+			observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 		}
 	}
 

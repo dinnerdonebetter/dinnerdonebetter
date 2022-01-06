@@ -75,17 +75,27 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input.CreatedByUser = sessionCtxData.Requester.UserID
 	tracing.AttachRecipeIDToSpan(span, input.ID)
 
-	// create recipe in database.
-	preWrite := &types.PreWriteMessage{
-		DataType:                  types.RecipeDataType,
-		Recipe:                    input,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing recipe write message")
+	recipe, err := s.recipeDataManager.CreateRecipe(ctx, input)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "creating recipe")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.RecipeDataType,
+			MessageType:               "recipe_created",
+			Recipe:                    recipe,
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+		}
+
+		logger.Debug("publishing to data change")
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
+		}
+		logger.Debug("published to data change")
 	}
 
 	if err = s.customerDataCollector.EventOccurred(ctx, "recipe_created", sessionCtxData.Requester.UserID, map[string]interface{}{
@@ -95,9 +105,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		logger.Error(err, "notifying customer data platform")
 	}
 
-	pwr := types.PreWriteResponse{ID: input.ID}
-
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusAccepted)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, recipe, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a recipe.
@@ -230,16 +238,24 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// update the recipe.
 	recipe.Update(input)
 
-	pum := &types.PreUpdateMessage{
-		DataType:                  types.RecipeDataType,
-		Recipe:                    recipe,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preUpdatesPublisher.Publish(ctx, pum); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing recipe update message")
+	if err = s.recipeDataManager.UpdateRecipe(ctx, recipe); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating recipe")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.RecipeDataType,
+			MessageType:               "recipe_updated",
+			Recipe:                    recipe,
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	if err = s.customerDataCollector.EventOccurred(ctx, "recipe_updated", sessionCtxData.Requester.UserID, map[string]interface{}{
@@ -287,16 +303,23 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	pam := &types.PreArchiveMessage{
-		DataType:                  types.RecipeDataType,
-		RecipeID:                  recipeID,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing recipe archive message")
+	if err = s.recipeDataManager.ArchiveRecipe(ctx, recipeID, sessionCtxData.Requester.UserID); err != nil {
+		observability.AcknowledgeError(err, logger, span, "archiving recipe")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.RecipeDataType,
+			MessageType:               "recipe_archived",
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	if err = s.customerDataCollector.EventOccurred(ctx, "recipe_archived", sessionCtxData.Requester.UserID, map[string]interface{}{
