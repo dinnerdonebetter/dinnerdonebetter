@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
-	"strings"
 
 	"github.com/segmentio/ksuid"
 
@@ -18,16 +17,6 @@ const (
 	// MealPlanIDURIParamKey is a standard string that we'll use to refer to meal plan IDs with.
 	MealPlanIDURIParamKey = "mealPlanID"
 )
-
-// parseBool differs from strconv.ParseBool in that it returns false by default.
-func parseBool(str string) bool {
-	switch strings.ToLower(strings.TrimSpace(str)) {
-	case "1", "t", "true":
-		return true
-	default:
-		return false
-	}
-}
 
 // CreateHandler is our meal plan creation route.
 func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
@@ -72,17 +61,25 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 	tracing.AttachMealPlanIDToSpan(span, input.ID)
 
-	// create meal plan in database.
-	preWrite := &types.PreWriteMessage{
-		DataType:                  types.MealPlanDataType,
-		MealPlan:                  input,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing meal plan write message")
+	mealPlan, err := s.mealPlanDataManager.CreateMealPlan(ctx, input)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "creating meal plan")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.MealPlanDataType,
+			MessageType:               "meal_plan_created",
+			MealPlan:                  mealPlan,
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
+		}
 	}
 
 	if err = s.customerDataCollector.EventOccurred(ctx, "meal_plan_created", sessionCtxData.Requester.UserID, map[string]interface{}{
@@ -95,7 +92,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	pwr := types.PreWriteResponse{ID: input.ID}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusAccepted)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a meal plan.
@@ -229,16 +226,24 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// update the meal plan.
 	mealPlan.Update(input)
 
-	pum := &types.PreUpdateMessage{
-		DataType:                  types.MealPlanDataType,
-		MealPlan:                  mealPlan,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preUpdatesPublisher.Publish(ctx, pum); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing meal plan update message")
+	if err = s.mealPlanDataManager.UpdateMealPlan(ctx, mealPlan); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating meal plan")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.MealPlanDataType,
+			MessageType:               "meal_plan_updated",
+			MealPlan:                  mealPlan,
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	if err = s.customerDataCollector.EventOccurred(ctx, "meal_plan_updated", sessionCtxData.Requester.UserID, map[string]interface{}{
@@ -286,16 +291,24 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	pam := &types.PreArchiveMessage{
-		DataType:                  types.MealPlanDataType,
-		MealPlanID:                mealPlanID,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing meal plan archive message")
+	if err = s.mealPlanDataManager.ArchiveMealPlan(ctx, mealPlanID, sessionCtxData.ActiveHouseholdID); err != nil {
+		observability.AcknowledgeError(err, logger, span, "archiving meal plan")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.MealPlanDataType,
+			MessageType:               "meal_plan_archived",
+			MealPlanID:                mealPlanID,
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	if err = s.customerDataCollector.EventOccurred(ctx, "meal_plan_archived", sessionCtxData.Requester.UserID, map[string]interface{}{

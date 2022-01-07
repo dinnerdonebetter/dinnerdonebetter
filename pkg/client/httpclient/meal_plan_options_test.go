@@ -165,13 +165,11 @@ func (s *mealPlanOptionsTestSuite) TestClient_CreateMealPlanOption() {
 		exampleInput.BelongsToMealPlan = s.exampleMealPlanID
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleMealPlanID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, &types.PreWriteResponse{ID: s.exampleMealPlanOption.ID})
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOption)
 
 		actual, err := c.CreateMealPlanOption(s.ctx, exampleInput)
-		require.NotEmpty(t, actual)
 		assert.NoError(t, err)
-
-		assert.Equal(t, s.exampleMealPlanOption.ID, actual)
+		assert.Equal(t, s.exampleMealPlanOption, actual)
 	})
 
 	s.Run("with nil input", func() {
@@ -180,7 +178,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_CreateMealPlanOption() {
 		c, _ := buildSimpleTestClient(t)
 
 		actual, err := c.CreateMealPlanOption(s.ctx, nil)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 
@@ -191,7 +189,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_CreateMealPlanOption() {
 		exampleInput := &types.MealPlanOptionCreationRequestInput{}
 
 		actual, err := c.CreateMealPlanOption(s.ctx, exampleInput)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 
@@ -203,7 +201,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_CreateMealPlanOption() {
 		c := buildTestClientWithInvalidURL(t)
 
 		actual, err := c.CreateMealPlanOption(s.ctx, exampleInput)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 
@@ -214,7 +212,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_CreateMealPlanOption() {
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		actual, err := c.CreateMealPlanOption(s.ctx, exampleInput)
-		assert.Empty(t, actual)
+		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }

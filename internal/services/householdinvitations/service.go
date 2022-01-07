@@ -34,7 +34,7 @@ type (
 		tracer                         tracing.Tracer
 		encoderDecoder                 encoding.ServerEncoderDecoder
 		secretGenerator                random.Generator
-		preWritesPublisher             messagequeue.Publisher
+		dataChangesPublisher           messagequeue.Publisher
 		householdIDFetcher             func(*http.Request) string
 		householdInvitationIDFetcher   func(*http.Request) string
 		sessionContextDataFetcher      func(*http.Request) (*types.SessionContextData, error)
@@ -54,9 +54,9 @@ func ProvideHouseholdInvitationsService(
 	customerDataCollector customerdata.Collector,
 	tracerProvider tracing.TracerProvider,
 ) (types.HouseholdInvitationDataService, error) {
-	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
 	if err != nil {
-		return nil, fmt.Errorf("setting up pre-writes producer: %w", err)
+		return nil, fmt.Errorf("setting up household invitations service data changes publisher: %w", err)
 	}
 
 	s := &service{
@@ -64,7 +64,7 @@ func ProvideHouseholdInvitationsService(
 		userDataManager:                userDataManager,
 		householdInvitationDataManager: householdInvitationDataManager,
 		encoderDecoder:                 encoder,
-		preWritesPublisher:             preWritesPublisher,
+		dataChangesPublisher:           dataChangesPublisher,
 		secretGenerator:                random.NewGenerator(logger, tracerProvider),
 		sessionContextDataFetcher:      authservice.FetchContextFromRequest,
 		householdIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(householdsservice.HouseholdIDURIParamKey),

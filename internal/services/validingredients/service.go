@@ -28,9 +28,7 @@ type (
 		validIngredientDataManager types.ValidIngredientDataManager
 		validIngredientIDFetcher   func(*http.Request) string
 		sessionContextDataFetcher  func(*http.Request) (*types.SessionContextData, error)
-		preWritesPublisher         messagequeue.Publisher
-		preUpdatesPublisher        messagequeue.Publisher
-		preArchivesPublisher       messagequeue.Publisher
+		dataChangesPublisher       messagequeue.Publisher
 		encoderDecoder             encoding.ServerEncoderDecoder
 		tracer                     tracing.Tracer
 	}
@@ -47,19 +45,9 @@ func ProvideService(
 	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
 ) (types.ValidIngredientDataService, error) {
-	preWritesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreWritesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
 	if err != nil {
-		return nil, fmt.Errorf("setting up valid ingredient queue pre-writes publisher: %w", err)
-	}
-
-	preUpdatesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreUpdatesTopicName)
-	if err != nil {
-		return nil, fmt.Errorf("setting up valid ingredient queue pre-updates publisher: %w", err)
-	}
-
-	preArchivesPublisher, err := publisherProvider.ProviderPublisher(cfg.PreArchivesTopicName)
-	if err != nil {
-		return nil, fmt.Errorf("setting up valid ingredient queue pre-archives publisher: %w", err)
+		return nil, fmt.Errorf("setting up recipe step product queue data changes publisher: %w", err)
 	}
 
 	svc := &service{
@@ -67,9 +55,7 @@ func ProvideService(
 		validIngredientIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientIDURIParamKey),
 		sessionContextDataFetcher:  authservice.FetchContextFromRequest,
 		validIngredientDataManager: validIngredientDataManager,
-		preWritesPublisher:         preWritesPublisher,
-		preUpdatesPublisher:        preUpdatesPublisher,
-		preArchivesPublisher:       preArchivesPublisher,
+		dataChangesPublisher:       dataChangesPublisher,
 		encoderDecoder:             encoder,
 		tracer:                     tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 	}

@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
-	"strings"
 
 	"github.com/segmentio/ksuid"
 
@@ -18,16 +17,6 @@ const (
 	// RecipeStepInstrumentIDURIParamKey is a standard string that we'll use to refer to recipe step instrument IDs with.
 	RecipeStepInstrumentIDURIParamKey = "recipeStepInstrumentID"
 )
-
-// parseBool differs from strconv.ParseBool in that it returns false by default.
-func parseBool(str string) bool {
-	switch strings.ToLower(strings.TrimSpace(str)) {
-	case "1", "t", "true":
-		return true
-	default:
-		return false
-	}
-}
 
 // CreateHandler is our recipe step instrument creation route.
 func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
@@ -73,23 +62,28 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input.BelongsToRecipeStep = recipeStepID
 	tracing.AttachRecipeStepInstrumentIDToSpan(span, input.ID)
 
-	// create recipe step instrument in database.
-	preWrite := &types.PreWriteMessage{
-		DataType:                  types.RecipeStepInstrumentDataType,
-		RecipeStepID:              recipeStepID,
-		RecipeStepInstrument:      input,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing recipe step instrument write message")
+	recipeStepInstrument, err := s.recipeStepInstrumentDataManager.CreateRecipeStepInstrument(ctx, input)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "creating recipe step ingredient")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	pwr := types.PreWriteResponse{ID: input.ID}
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.RecipeStepInstrumentDataType,
+			MessageType:               "recipe_step_instrument_created",
+			RecipeStepInstrument:      recipeStepInstrument,
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+		}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusAccepted)
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
+		}
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, recipeStepInstrument, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a recipe step instrument.
@@ -252,17 +246,24 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// update the recipe step instrument.
 	recipeStepInstrument.Update(input)
 
-	pum := &types.PreUpdateMessage{
-		DataType:                  types.RecipeStepInstrumentDataType,
-		RecipeStepID:              recipeStepID,
-		RecipeStepInstrument:      recipeStepInstrument,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preUpdatesPublisher.Publish(ctx, pum); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing recipe step instrument update message")
+	if err = s.recipeStepInstrumentDataManager.UpdateRecipeStepInstrument(ctx, recipeStepInstrument); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating recipe step ingredient")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.RecipeStepInstrumentDataType,
+			MessageType:               "recipe_step_instrument_updated",
+			RecipeStepInstrument:      recipeStepInstrument,
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	// encode our response and peace.
@@ -313,17 +314,23 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	pam := &types.PreArchiveMessage{
-		DataType:                  types.RecipeStepInstrumentDataType,
-		RecipeStepID:              recipeStepID,
-		RecipeStepInstrumentID:    recipeStepInstrumentID,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing recipe step instrument archive message")
+	if err = s.recipeStepInstrumentDataManager.ArchiveRecipeStepInstrument(ctx, recipeStepID, recipeStepInstrumentID); err != nil {
+		observability.AcknowledgeError(err, logger, span, "archiving recipe step ingredient")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.RecipeStepIngredientDataType,
+			MessageType:               "recipe_step_instrument_archived",
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	// encode our response and peace.

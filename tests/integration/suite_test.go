@@ -81,6 +81,13 @@ func (s *TestSuite) runForPASETOClient(name string, subtestBuilder func(*testCli
 	}
 }
 
+func (s *TestSuite) runForEachClient(name string, subtestBuilder func(*testClientWrapper) func()) {
+	for a, c := range s.eachClientExcept() {
+		authType, testClients := a, c
+		s.Run(fmt.Sprintf("%s via %s", name, authType), subtestBuilder(testClients))
+	}
+}
+
 func (s *TestSuite) runForEachClientExcept(name string, subtestBuilder func(*testClientWrapper) func(), exceptions ...string) {
 	for a, c := range s.eachClientExcept(exceptions...) {
 		authType, testClients := a, c

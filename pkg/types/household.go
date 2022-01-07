@@ -9,6 +9,9 @@ import (
 )
 
 const (
+	// HouseholdDataType indicates an event is related to a household.
+	HouseholdDataType dataType = "household"
+
 	// PaidHouseholdBillingStatus indicates a household is fully paid.
 	PaidHouseholdBillingStatus HouseholdBillingStatus = "paid"
 	// UnpaidHouseholdBillingStatus indicates a household is not paid.

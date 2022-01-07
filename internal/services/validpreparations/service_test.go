@@ -44,15 +44,11 @@ func TestProvideValidPreparationsService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 
 		cfg := Config{
-			PreWritesTopicName:   "pre-writes",
-			PreUpdatesTopicName:  "pre-updates",
-			PreArchivesTopicName: "pre-archives",
+			DataChangesTopicName: "data_changes",
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProviderPublisher", cfg.PreWritesTopicName).Return(&mockpublishers.Publisher{}, nil)
-		pp.On("ProviderPublisher", cfg.PreUpdatesTopicName).Return(&mockpublishers.Publisher{}, nil)
-		pp.On("ProviderPublisher", cfg.PreArchivesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
 			ctx,
@@ -71,87 +67,18 @@ func TestProvideValidPreparationsService(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, rpm, pp)
 	})
 
-	T.Run("with error providing pre-writes producer", func(t *testing.T) {
+	T.Run("with error providing data changes producer", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 
 		cfg := Config{
-			PreWritesTopicName:   "pre-writes",
-			PreUpdatesTopicName:  "pre-updates",
-			PreArchivesTopicName: "pre-archives",
+			DataChangesTopicName: "data_changes",
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProviderPublisher", cfg.PreWritesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
-
-		s, err := ProvideService(
-			ctx,
-			logger,
-			&cfg,
-			&mocktypes.ValidPreparationDataManager{},
-			mockencoding.NewMockEncoderDecoder(),
-			nil,
-			pp,
-			trace.NewNoopTracerProvider(),
-		)
-
-		assert.Nil(t, s)
-		assert.Error(t, err)
-
-		mock.AssertExpectationsForObjects(t, pp)
-	})
-
-	T.Run("with error providing pre-updates producer", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-
-		cfg := Config{
-			PreWritesTopicName:   "pre-writes",
-			PreUpdatesTopicName:  "pre-updates",
-			PreArchivesTopicName: "pre-archives",
-		}
-
-		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProviderPublisher", cfg.PreWritesTopicName).Return(&mockpublishers.Publisher{}, nil)
-		pp.On("ProviderPublisher", cfg.PreUpdatesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
-
-		s, err := ProvideService(
-			ctx,
-			logger,
-			&cfg,
-			&mocktypes.ValidPreparationDataManager{},
-			mockencoding.NewMockEncoderDecoder(),
-			nil,
-			pp,
-			trace.NewNoopTracerProvider(),
-		)
-
-		assert.Nil(t, s)
-		assert.Error(t, err)
-
-		mock.AssertExpectationsForObjects(t, pp)
-	})
-
-	T.Run("with error providing pre-archives producer", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-
-		cfg := Config{
-			PreWritesTopicName:   "pre-writes",
-			PreUpdatesTopicName:  "pre-updates",
-			PreArchivesTopicName: "pre-archives",
-		}
-
-		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProviderPublisher", cfg.PreWritesTopicName).Return(&mockpublishers.Publisher{}, nil)
-		pp.On("ProviderPublisher", cfg.PreUpdatesTopicName).Return(&mockpublishers.Publisher{}, nil)
-		pp.On("ProviderPublisher", cfg.PreArchivesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
+		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		s, err := ProvideService(
 			ctx,

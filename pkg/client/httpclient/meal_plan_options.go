@@ -69,31 +69,31 @@ func (c *Client) GetMealPlanOptions(ctx context.Context, mealPlanID string, filt
 }
 
 // CreateMealPlanOption creates a meal plan option.
-func (c *Client) CreateMealPlanOption(ctx context.Context, input *types.MealPlanOptionCreationRequestInput) (string, error) {
+func (c *Client) CreateMealPlanOption(ctx context.Context, input *types.MealPlanOptionCreationRequestInput) (*types.MealPlanOption, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
 	if input == nil {
-		return "", ErrNilInputProvided
+		return nil, ErrNilInputProvided
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return "", observability.PrepareError(err, logger, span, "validating input")
+		return nil, observability.PrepareError(err, logger, span, "validating input")
 	}
 
 	req, err := c.requestBuilder.BuildCreateMealPlanOptionRequest(ctx, input)
 	if err != nil {
-		return "", observability.PrepareError(err, logger, span, "building create meal plan option request")
+		return nil, observability.PrepareError(err, logger, span, "building create meal plan option request")
 	}
 
-	var pwr *types.PreWriteResponse
-	if err = c.fetchAndUnmarshal(ctx, req, &pwr); err != nil {
-		return "", observability.PrepareError(err, logger, span, "creating meal plan option")
+	var mealPlanOption *types.MealPlanOption
+	if err = c.fetchAndUnmarshal(ctx, req, &mealPlanOption); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "creating meal plan option")
 	}
 
-	return pwr.ID, nil
+	return mealPlanOption, nil
 }
 
 // UpdateMealPlanOption updates a meal plan option.

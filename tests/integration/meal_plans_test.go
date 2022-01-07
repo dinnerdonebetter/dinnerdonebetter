@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
+
 	"github.com/prixfixeco/api_server/pkg/client/httpclient"
 
 	"github.com/stretchr/testify/assert"
@@ -26,30 +27,24 @@ func checkMealPlanEquality(t *testing.T, expected, actual *types.MealPlan) {
 	assert.NotZero(t, actual.CreatedOn)
 }
 
-func createMealPlanWithNotificationChannel(ctx context.Context, t *testing.T, notificationsChan chan *types.DataChangeMessage, client *httpclient.Client) *types.MealPlan {
+func createMealPlanWithNotificationChannel(ctx context.Context, t *testing.T, client *httpclient.Client) *types.MealPlan {
 	t.Helper()
-
-	var n *types.DataChangeMessage
 
 	t.Log("creating meal plan")
 	exampleMealPlan := fakes.BuildFakeMealPlan()
 	for i := range exampleMealPlan.Options {
-		createdMeal := createMealWithNotificationChannel(ctx, t, notificationsChan, client)
+		createdMeal := createMealForTest(ctx, t, client)
 		exampleMealPlan.Options[i].MealID = createdMeal.ID
 	}
 
 	exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
-	createdMealPlanID, err := client.CreateMealPlan(ctx, exampleMealPlanInput)
-	require.NotEmpty(t, createdMealPlanID)
+	createdMealPlan, err := client.CreateMealPlan(ctx, exampleMealPlanInput)
+	require.NotEmpty(t, createdMealPlan.ID)
 	require.NoError(t, err)
 
-	n = <-notificationsChan
-	assert.Equal(t, types.MealPlanDataType, n.DataType)
-	require.NotNil(t, n.MealPlan)
-	checkMealPlanEquality(t, exampleMealPlan, n.MealPlan)
-	t.Logf("meal plan %q created", createdMealPlanID)
+	t.Logf("meal plan %q created", createdMealPlan.ID)
 
-	createdMealPlan, err := client.GetMealPlan(ctx, createdMealPlanID)
+	createdMealPlan, err = client.GetMealPlan(ctx, createdMealPlan.ID)
 	requireNotNilAndNoProblems(t, createdMealPlan, err)
 	checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
 
@@ -88,19 +83,12 @@ func byDayAndMeal(l []*types.MealPlanOption, day time.Weekday, meal types.MealNa
 }
 
 func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
-	s.runForCookieClient("should resolve the meal plan status upon receiving all votes", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should resolve the meal plan status upon receiving all votes", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
-
-			var n *types.DataChangeMessage
-
-			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
-			require.NotNil(t, notificationsChan)
-			require.NoError(t, err)
 
 			// create household members
 			t.Logf("determining household ID")
@@ -122,16 +110,13 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 				require.NoError(t, err)
 
 				t.Logf("inviting user")
-				invitationID, err := testClients.main.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
+				invitation, err := testClients.main.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
 					FromUser:             s.user.ID,
 					Note:                 t.Name(),
 					ToEmail:              u.EmailAddress,
 					DestinationHousehold: relevantHouseholdID,
 				})
 				require.NoError(t, err)
-
-				n = <-notificationsChan
-				assert.Equal(t, types.HouseholdInvitationDataType, n.DataType)
 
 				t.Logf("checking for sent invitation")
 				sentInvitations, err := testClients.main.GetPendingHouseholdInvitationsFromUser(ctx, nil)
@@ -144,7 +129,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 				assert.NotEmpty(t, invitations.HouseholdInvitations)
 
 				t.Logf("accepting invitation")
-				require.NoError(t, c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitationID, t.Name()))
+				require.NoError(t, c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitation.ID, t.Name()))
 
 				require.NoError(t, c.SwitchActiveHousehold(ctx, relevantHouseholdID))
 
@@ -156,7 +141,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			// create recipes for meal plan
 			createdMeals := []*types.Meal{}
 			for i := 0; i < 3; i++ {
-				createdMeal := createMealWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
+				createdMeal := createMealForTest(ctx, t, testClients.main)
 				createdMeals = append(createdMeals, createdMeal)
 			}
 
@@ -190,17 +175,12 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			}
 
 			exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
-			createdMealPlanID, err := testClients.main.CreateMealPlan(ctx, exampleMealPlanInput)
-			require.NotEmpty(t, createdMealPlanID)
+			createdMealPlan, err := testClients.main.CreateMealPlan(ctx, exampleMealPlanInput)
+			require.NotEmpty(t, createdMealPlan.ID)
 			require.NoError(t, err)
+			t.Logf("meal plan %q created", createdMealPlan.ID)
 
-			n = <-notificationsChan
-			assert.Equal(t, types.MealPlanDataType, n.DataType)
-			require.NotNil(t, n.MealPlan)
-			checkMealPlanEquality(t, exampleMealPlan, n.MealPlan)
-			t.Logf("meal plan %q created", createdMealPlanID)
-
-			createdMealPlan, err := testClients.main.GetMealPlan(ctx, createdMealPlanID)
+			createdMealPlan, err = testClients.main.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
 
@@ -252,16 +232,13 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			for i, vote := range userAVotes {
 				t.Logf("creating meal plan option vote #%d for user A", i)
 				exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(vote)
-				createdMealPlanOptionVoteID, err := createdClients[0].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
+				createdMealPlanOptionVote, err := createdClients[0].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
 				require.NoError(t, err)
-				t.Logf("meal plan option vote #%d (%s) created for user A", i, createdMealPlanOptionVoteID)
+				t.Logf("meal plan option vote #%d (%s) created for user A", i, createdMealPlanOptionVote.ID)
 
-				n = <-createdNotificationChannels[0]
-				assert.Equal(t, types.MealPlanOptionVoteDataType, n.DataType)
-				require.NotNil(t, n.MealPlanOptionVote)
-				checkMealPlanOptionVoteEquality(t, vote, n.MealPlanOptionVote)
+				checkMealPlanOptionVoteEquality(t, vote, createdMealPlanOptionVote)
 
-				createdMealPlanOptionVote, err := createdClients[0].GetMealPlanOptionVote(ctx, createdMealPlan.ID, vote.BelongsToMealPlanOption, createdMealPlanOptionVoteID)
+				createdMealPlanOptionVote, err = createdClients[0].GetMealPlanOptionVote(ctx, createdMealPlan.ID, vote.BelongsToMealPlanOption, createdMealPlanOptionVote.ID)
 				requireNotNilAndNoProblems(t, createdMealPlanOptionVote, err)
 				require.Equal(t, vote.BelongsToMealPlanOption, createdMealPlanOptionVote.BelongsToMealPlanOption)
 				checkMealPlanOptionVoteEquality(t, vote, createdMealPlanOptionVote)
@@ -270,16 +247,13 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			for i, vote := range userBVotes {
 				t.Logf("creating meal plan option vote #%d for user B", i)
 				exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(vote)
-				createdMealPlanOptionVoteID, err := createdClients[1].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
+				createdMealPlanOptionVote, err := createdClients[1].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
 				require.NoError(t, err)
-				t.Logf("meal plan option vote #%d (%s) created for user B", i, createdMealPlanOptionVoteID)
+				t.Logf("meal plan option vote #%d (%s) created for user B", i, createdMealPlanOptionVote.ID)
 
-				n = <-createdNotificationChannels[1]
-				assert.Equal(t, types.MealPlanOptionVoteDataType, n.DataType)
-				require.NotNil(t, n.MealPlanOptionVote)
-				checkMealPlanOptionVoteEquality(t, vote, n.MealPlanOptionVote)
+				checkMealPlanOptionVoteEquality(t, vote, createdMealPlanOptionVote)
 
-				createdMealPlanOptionVote, err := createdClients[1].GetMealPlanOptionVote(ctx, createdMealPlan.ID, vote.BelongsToMealPlanOption, createdMealPlanOptionVoteID)
+				createdMealPlanOptionVote, err = createdClients[1].GetMealPlanOptionVote(ctx, createdMealPlan.ID, vote.BelongsToMealPlanOption, createdMealPlanOptionVote.ID)
 				requireNotNilAndNoProblems(t, createdMealPlanOptionVote, err)
 				require.Equal(t, vote.BelongsToMealPlanOption, createdMealPlanOptionVote.BelongsToMealPlanOption)
 				checkMealPlanOptionVoteEquality(t, vote, createdMealPlanOptionVote)
@@ -288,32 +262,21 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			for i, vote := range userCVotes {
 				t.Logf("creating meal plan option vote #%d for user C", i)
 				exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(vote)
-				createdMealPlanOptionVoteID, err := testClients.main.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
+				createdMealPlanOptionVote, err := testClients.main.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
 				require.NoError(t, err)
-				t.Logf("meal plan option vote #%d (%s) created for user C", i, createdMealPlanOptionVoteID)
+				t.Logf("meal plan option vote #%d (%s) created for user C", i, createdMealPlanOptionVote.ID)
 
-				n = <-notificationsChan
-				assert.Equal(t, types.MealPlanOptionVoteDataType, n.DataType)
-				require.NotNil(t, n.MealPlanOptionVote)
-				checkMealPlanOptionVoteEquality(t, vote, n.MealPlanOptionVote)
+				checkMealPlanOptionVoteEquality(t, vote, createdMealPlanOptionVote)
 
-				createdMealPlanOptionVote, err := testClients.main.GetMealPlanOptionVote(ctx, createdMealPlan.ID, vote.BelongsToMealPlanOption, createdMealPlanOptionVoteID)
+				createdMealPlanOptionVote, err = testClients.main.GetMealPlanOptionVote(ctx, createdMealPlan.ID, vote.BelongsToMealPlanOption, createdMealPlanOptionVote.ID)
 				requireNotNilAndNoProblems(t, createdMealPlanOptionVote, err)
 				require.Equal(t, vote.BelongsToMealPlanOption, createdMealPlanOptionVote.BelongsToMealPlanOption)
 				checkMealPlanOptionVoteEquality(t, vote, createdMealPlanOptionVote)
-
-				if i == len(userCVotes)-1 {
-					t.Logf("awaiting meal plan option notification for user C")
-					n = <-notificationsChan
-					assert.Equal(t, types.MealPlanOptionDataType, n.DataType)
-
-					t.Logf("awaiting meal plan notification for user C")
-					n = <-notificationsChan
-					assert.Equal(t, types.MealPlanDataType, n.DataType)
-				}
 			}
 
-			createdMealPlan, err = testClients.main.GetMealPlan(ctx, createdMealPlanID)
+			time.Sleep(5 * time.Second)
+
+			createdMealPlan, err = testClients.main.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			assert.Equal(t, types.FinalizedMealPlanStatus, createdMealPlan.Status)
 
@@ -337,19 +300,12 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 }
 
 func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
-	s.runForCookieClient("should resolve the meal plan status upon voting deadline expiry", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should resolve the meal plan status upon voting deadline expiry", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
-
-			var n *types.DataChangeMessage
-
-			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
-			require.NotNil(t, notificationsChan)
-			require.NoError(t, err)
 
 			// create household members
 			t.Logf("determining household ID")
@@ -371,16 +327,13 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 				require.NoError(t, err)
 
 				t.Logf("inviting user")
-				invitationID, err := testClients.main.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
+				invitation, err := testClients.main.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
 					FromUser:             s.user.ID,
 					Note:                 t.Name(),
 					ToEmail:              u.EmailAddress,
 					DestinationHousehold: relevantHouseholdID,
 				})
 				require.NoError(t, err)
-
-				n = <-notificationsChan
-				assert.Equal(t, types.HouseholdInvitationDataType, n.DataType)
 
 				t.Logf("checking for sent invitation")
 				sentInvitations, err := testClients.main.GetPendingHouseholdInvitationsFromUser(ctx, nil)
@@ -393,7 +346,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 				assert.NotEmpty(t, invitations.HouseholdInvitations)
 
 				t.Logf("accepting invitation")
-				require.NoError(t, c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitationID, t.Name()))
+				require.NoError(t, c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitation.ID, t.Name()))
 
 				require.NoError(t, c.SwitchActiveHousehold(ctx, relevantHouseholdID))
 
@@ -405,7 +358,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			// create recipes for meal plan
 			createdMeals := []*types.Meal{}
 			for i := 0; i < 3; i++ {
-				createdMeal := createMealWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
+				createdMeal := createMealForTest(ctx, t, testClients.main)
 				createdMeals = append(createdMeals, createdMeal)
 			}
 
@@ -439,17 +392,13 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			}
 
 			exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
-			createdMealPlanID, err := testClients.main.CreateMealPlan(ctx, exampleMealPlanInput)
-			require.NotEmpty(t, createdMealPlanID)
+			createdMealPlan, err := testClients.main.CreateMealPlan(ctx, exampleMealPlanInput)
+			require.NotEmpty(t, createdMealPlan.ID)
 			require.NoError(t, err)
 
-			n = <-notificationsChan
-			assert.Equal(t, types.MealPlanDataType, n.DataType)
-			require.NotNil(t, n.MealPlan)
-			checkMealPlanEquality(t, exampleMealPlan, n.MealPlan)
-			t.Logf("meal plan %q created", createdMealPlanID)
+			t.Logf("meal plan %q created", createdMealPlan.ID)
 
-			createdMealPlan, err := testClients.main.GetMealPlan(ctx, createdMealPlanID)
+			createdMealPlan, err = testClients.main.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
 
@@ -486,16 +435,13 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			for i, vote := range userAVotes {
 				t.Logf("creating meal plan option vote #%d for user A", i)
 				exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(vote)
-				createdMealPlanOptionVoteID, err := createdClients[0].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
+				createdMealPlanOptionVote, err := createdClients[0].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
 				require.NoError(t, err)
-				t.Logf("meal plan option vote #%d (%s) created for user A", i, createdMealPlanOptionVoteID)
+				t.Logf("meal plan option vote #%d (%s) created for user A", i, createdMealPlanOptionVote.ID)
 
-				n = <-createdNotificationChannels[0]
-				assert.Equal(t, types.MealPlanOptionVoteDataType, n.DataType)
-				require.NotNil(t, n.MealPlanOptionVote)
-				checkMealPlanOptionVoteEquality(t, vote, n.MealPlanOptionVote)
+				checkMealPlanOptionVoteEquality(t, vote, createdMealPlanOptionVote)
 
-				createdMealPlanOptionVote, err := createdClients[0].GetMealPlanOptionVote(ctx, createdMealPlan.ID, vote.BelongsToMealPlanOption, createdMealPlanOptionVoteID)
+				createdMealPlanOptionVote, err = createdClients[0].GetMealPlanOptionVote(ctx, createdMealPlan.ID, vote.BelongsToMealPlanOption, createdMealPlanOptionVote.ID)
 				requireNotNilAndNoProblems(t, createdMealPlanOptionVote, err)
 				require.Equal(t, vote.BelongsToMealPlanOption, createdMealPlanOptionVote.BelongsToMealPlanOption)
 				checkMealPlanOptionVoteEquality(t, vote, createdMealPlanOptionVote)
@@ -504,22 +450,19 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			for i, vote := range userBVotes {
 				t.Logf("creating meal plan option vote #%d for user B", i)
 				exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(vote)
-				createdMealPlanOptionVoteID, err := createdClients[1].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
+				createdMealPlanOptionVote, err := createdClients[1].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
 				require.NoError(t, err)
-				t.Logf("meal plan option vote #%d (%s) created for user B", i, createdMealPlanOptionVoteID)
+				t.Logf("meal plan option vote #%d (%s) created for user B", i, createdMealPlanOptionVote.ID)
 
-				n = <-createdNotificationChannels[1]
-				assert.Equal(t, types.MealPlanOptionVoteDataType, n.DataType)
-				require.NotNil(t, n.MealPlanOptionVote)
-				checkMealPlanOptionVoteEquality(t, vote, n.MealPlanOptionVote)
+				checkMealPlanOptionVoteEquality(t, vote, createdMealPlanOptionVote)
 
-				createdMealPlanOptionVote, err := createdClients[1].GetMealPlanOptionVote(ctx, createdMealPlan.ID, vote.BelongsToMealPlanOption, createdMealPlanOptionVoteID)
+				createdMealPlanOptionVote, err = createdClients[1].GetMealPlanOptionVote(ctx, createdMealPlan.ID, vote.BelongsToMealPlanOption, createdMealPlanOptionVote.ID)
 				requireNotNilAndNoProblems(t, createdMealPlanOptionVote, err)
 				require.Equal(t, vote.BelongsToMealPlanOption, createdMealPlanOptionVote.BelongsToMealPlanOption)
 				checkMealPlanOptionVoteEquality(t, vote, createdMealPlanOptionVote)
 			}
 
-			createdMealPlan, err = testClients.main.GetMealPlan(ctx, createdMealPlanID)
+			createdMealPlan, err = testClients.main.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			assert.Equal(t, types.AwaitingVotesMealPlanStatus, createdMealPlan.Status)
 
@@ -528,7 +471,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 
 			time.Sleep(5 * time.Second)
 
-			createdMealPlan, err = testClients.main.GetMealPlan(ctx, createdMealPlanID)
+			createdMealPlan, err = testClients.main.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			assert.Equal(t, types.FinalizedMealPlanStatus, createdMealPlan.Status)
 
@@ -552,22 +495,17 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 }
 
 func (s *TestSuite) TestMealPlans_Listing() {
-	s.runForCookieClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
-			require.NotNil(t, notificationsChan)
-			require.NoError(t, err)
-
 			t.Log("creating meal plans")
 			var expected []*types.MealPlan
 			for i := 0; i < 5; i++ {
-				createdMealPlan := createMealPlanWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
+				createdMealPlan := createMealPlanWithNotificationChannel(ctx, t, testClients.main)
 				expected = append(expected, createdMealPlan)
 			}
 

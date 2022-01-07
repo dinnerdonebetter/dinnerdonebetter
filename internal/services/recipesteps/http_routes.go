@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
-	"strings"
 
 	"github.com/segmentio/ksuid"
 
@@ -18,16 +17,6 @@ const (
 	// RecipeStepIDURIParamKey is a standard string that we'll use to refer to recipe step IDs with.
 	RecipeStepIDURIParamKey = "recipeStepID"
 )
-
-// parseBool differs from strconv.ParseBool in that it returns false by default.
-func parseBool(str string) bool {
-	switch strings.ToLower(strings.TrimSpace(str)) {
-	case "1", "t", "true":
-		return true
-	default:
-		return false
-	}
-}
 
 // CreateHandler is our recipe step creation route.
 func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
@@ -77,23 +66,28 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input.BelongsToRecipe = recipeID
 	tracing.AttachRecipeStepIDToSpan(span, input.ID)
 
-	// create recipe step in database.
-	preWrite := &types.PreWriteMessage{
-		DataType:                  types.RecipeStepDataType,
-		RecipeID:                  recipeID,
-		RecipeStep:                input,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing recipe step write message")
+	recipeStep, err := s.recipeStepDataManager.CreateRecipeStep(ctx, input)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "creating recipe step")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	pwr := types.PreWriteResponse{ID: input.ID}
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.RecipeStepDataType,
+			MessageType:               "recipe_step_created",
+			RecipeStep:                recipeStep,
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+		}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusAccepted)
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
+		}
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, recipeStep, http.StatusAccepted)
 }
 
 // ReadHandler returns a GET handler that returns a recipe step.
@@ -241,17 +235,24 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// update the recipe step.
 	recipeStep.Update(input)
 
-	pum := &types.PreUpdateMessage{
-		DataType:                  types.RecipeStepDataType,
-		RecipeID:                  recipeID,
-		RecipeStep:                recipeStep,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preUpdatesPublisher.Publish(ctx, pum); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing recipe step update message")
+	if err = s.recipeStepDataManager.UpdateRecipeStep(ctx, recipeStep); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating recipe step")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.RecipeStepDataType,
+			MessageType:               "recipe_step_updated",
+			RecipeStep:                recipeStep,
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	// encode our response and peace.
@@ -297,17 +298,23 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	pam := &types.PreArchiveMessage{
-		DataType:                  types.RecipeStepDataType,
-		RecipeID:                  recipeID,
-		RecipeStepID:              recipeStepID,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing recipe step archive message")
+	if err = s.recipeStepDataManager.ArchiveRecipeStep(ctx, recipeID, recipeStepID); err != nil {
+		observability.AcknowledgeError(err, logger, span, "archiving recipe step")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.RecipeStepDataType,
+			MessageType:               "recipe_step_archived",
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	// encode our response and peace.

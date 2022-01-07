@@ -16,6 +16,10 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
+const (
+	name = "chores"
+)
+
 // ChoresWorker performs chores.
 type ChoresWorker struct {
 	logger                logging.Logger
@@ -36,8 +40,6 @@ func ProvideChoresWorker(
 	customerDataCollector customerdata.Collector,
 	tracerProvider tracing.TracerProvider,
 ) *ChoresWorker {
-	name := "chores"
-
 	return &ChoresWorker{
 		logger:                logging.EnsureLogger(logger).WithName(name),
 		tracer:                tracing.NewTracer(tracerProvider.Tracer(name)),

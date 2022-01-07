@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
-	"strings"
 
 	"github.com/segmentio/ksuid"
 
@@ -18,16 +17,6 @@ const (
 	// ValidPreparationIDURIParamKey is a standard string that we'll use to refer to valid preparation IDs with.
 	ValidPreparationIDURIParamKey = "validPreparationID"
 )
-
-// parseBool differs from strconv.ParseBool in that it returns false by default.
-func parseBool(str string) bool {
-	switch strings.ToLower(strings.TrimSpace(str)) {
-	case "1", "t", "true":
-		return true
-	default:
-		return false
-	}
-}
 
 // CreateHandler is our valid preparation creation route.
 func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
@@ -67,22 +56,27 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachValidPreparationIDToSpan(span, input.ID)
 
-	// create valid preparation in database.
-	preWrite := &types.PreWriteMessage{
-		DataType:                  types.ValidPreparationDataType,
-		ValidPreparation:          input,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preWritesPublisher.Publish(ctx, preWrite); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing valid preparation write message")
+	validPreparation, err := s.validPreparationDataManager.CreateValidPreparation(ctx, input)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "creating valid preparations")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	pwr := types.PreWriteResponse{ID: input.ID}
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:             types.ValidPreparationDataType,
+			MessageType:          "valid_preparation_created",
+			ValidPreparation:     validPreparation,
+			AttributableToUserID: sessionCtxData.Requester.UserID,
+		}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, pwr, http.StatusAccepted)
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
+		}
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validPreparation, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a valid preparation.
@@ -257,16 +251,23 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// update the valid preparation.
 	validPreparation.Update(input)
 
-	pum := &types.PreUpdateMessage{
-		DataType:                  types.ValidPreparationDataType,
-		ValidPreparation:          validPreparation,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preUpdatesPublisher.Publish(ctx, pum); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing valid preparation update message")
+	if err = s.validPreparationDataManager.UpdateValidPreparation(ctx, validPreparation); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating valid preparations")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:             types.ValidPreparationDataType,
+			MessageType:          "valid_preparation_updated",
+			ValidPreparation:     validPreparation,
+			AttributableToUserID: sessionCtxData.Requester.UserID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	// encode our response and peace.
@@ -307,16 +308,22 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	pam := &types.PreArchiveMessage{
-		DataType:                  types.ValidPreparationDataType,
-		ValidPreparationID:        validPreparationID,
-		AttributableToUserID:      sessionCtxData.Requester.UserID,
-		AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-	}
-	if err = s.preArchivesPublisher.Publish(ctx, pam); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing valid preparation archive message")
+	if err = s.validPreparationDataManager.ArchiveValidPreparation(ctx, validPreparationID); err != nil {
+		observability.AcknowledgeError(err, logger, span, "archiving valid preparations")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:             types.ValidPreparationDataType,
+			MessageType:          "valid_preparation_archived",
+			AttributableToUserID: sessionCtxData.Requester.UserID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	// encode our response and peace.

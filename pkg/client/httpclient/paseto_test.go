@@ -38,6 +38,7 @@ func TestClient_fetchAuthTokenForAPIClient(T *testing.T) {
 		))
 
 		c := buildTestClient(t, ts)
+		c.householdID = ""
 		exampleClientID := "example_client_id"
 		exampleSecret := make([]byte, validClientSecretSize)
 		ctx := context.Background()

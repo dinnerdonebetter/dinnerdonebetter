@@ -3,7 +3,6 @@ package integration
 import (
 	"fmt"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -63,33 +62,22 @@ func convertValidIngredientToValidIngredientUpdateInput(x *types.ValidIngredient
 }
 
 func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
-	s.runForCookieClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
-			require.NotNil(t, notificationsChan)
-			require.NoError(t, err)
-
-			var n *types.DataChangeMessage
-
 			t.Log("creating valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredientID, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
-			t.Logf("valid ingredient %q created", createdValidIngredientID)
+			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
+			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
-			n = <-notificationsChan
-			assert.Equal(t, types.ValidIngredientDataType, n.DataType)
-			require.NotNil(t, n.ValidIngredient)
-			checkValidIngredientEquality(t, exampleValidIngredient, n.ValidIngredient)
-
-			createdValidIngredient, err := testClients.admin.GetValidIngredient(ctx, createdValidIngredientID)
+			createdValidIngredient, err = testClients.admin.GetValidIngredient(ctx, createdValidIngredient.ID)
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
@@ -98,11 +86,8 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 			createdValidIngredient.Update(convertValidIngredientToValidIngredientUpdateInput(newValidIngredient))
 			assert.NoError(t, testClients.admin.UpdateValidIngredient(ctx, createdValidIngredient))
 
-			n = <-notificationsChan
-			assert.Equal(t, types.ValidIngredientDataType, n.DataType)
-
 			t.Log("fetching changed valid ingredient")
-			actual, err := testClients.admin.GetValidIngredient(ctx, createdValidIngredientID)
+			actual, err := testClients.admin.GetValidIngredient(ctx, createdValidIngredient.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert valid ingredient equality
@@ -110,135 +95,28 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedOn)
 
 			t.Log("cleaning up valid ingredient")
-			assert.NoError(t, testClients.admin.ArchiveValidIngredient(ctx, createdValidIngredientID))
-		}
-	})
-
-	s.runForPASETOClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			var checkFunc func() bool
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			t.Log("creating valid ingredient")
-			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredientID, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			require.NoError(t, err)
-			t.Logf("valid ingredient %q created", createdValidIngredientID)
-
-			var createdValidIngredient *types.ValidIngredient
-			checkFunc = func() bool {
-				createdValidIngredient, err = testClients.admin.GetValidIngredient(ctx, createdValidIngredientID)
-				return assert.NotNil(t, createdValidIngredient) && assert.NoError(t, err)
-			}
-			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
-			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
-
-			// change valid ingredient
-			newValidIngredient := fakes.BuildFakeValidIngredient()
-			createdValidIngredient.Update(convertValidIngredientToValidIngredientUpdateInput(newValidIngredient))
-			assert.NoError(t, testClients.admin.UpdateValidIngredient(ctx, createdValidIngredient))
-
-			time.Sleep(2 * time.Second)
-
-			// retrieve changed valid ingredient
-			var actual *types.ValidIngredient
-			checkFunc = func() bool {
-				actual, err = testClients.admin.GetValidIngredient(ctx, createdValidIngredientID)
-				return assert.NotNil(t, createdValidIngredient) && assert.NoError(t, err)
-			}
-			assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
-
-			requireNotNilAndNoProblems(t, actual, err)
-
-			// assert valid ingredient equality
-			checkValidIngredientEquality(t, newValidIngredient, actual)
-			assert.NotNil(t, actual.LastUpdatedOn)
-
-			t.Log("cleaning up valid ingredient")
-			assert.NoError(t, testClients.admin.ArchiveValidIngredient(ctx, createdValidIngredientID))
+			assert.NoError(t, testClients.admin.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
 		}
 	})
 }
 
 func (s *TestSuite) TestValidIngredients_Listing() {
-	s.runForCookieClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
-			require.NotNil(t, notificationsChan)
-			require.NoError(t, err)
-
-			var n *types.DataChangeMessage
-
 			t.Log("creating valid ingredients")
 			var expected []*types.ValidIngredient
 			for i := 0; i < 5; i++ {
 				exampleValidIngredient := fakes.BuildFakeValidIngredient()
 				exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
-				createdValidIngredientID, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+				createdValidIngredient, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 				require.NoError(t, createdValidIngredientErr)
-				t.Logf("valid ingredient %q created", createdValidIngredientID)
+				t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
-				n = <-notificationsChan
-				assert.Equal(t, types.ValidIngredientDataType, n.DataType)
-				require.NotNil(t, n.ValidIngredient)
-				checkValidIngredientEquality(t, exampleValidIngredient, n.ValidIngredient)
-
-				createdValidIngredient, createdValidIngredientErr := testClients.admin.GetValidIngredient(ctx, createdValidIngredientID)
-				requireNotNilAndNoProblems(t, createdValidIngredient, createdValidIngredientErr)
-
-				expected = append(expected, createdValidIngredient)
-			}
-
-			// assert valid ingredient list equality
-			actual, err := testClients.admin.GetValidIngredients(ctx, nil)
-			requireNotNilAndNoProblems(t, actual, err)
-			assert.True(
-				t,
-				len(expected) <= len(actual.ValidIngredients),
-				"expected %d to be <= %d",
-				len(expected),
-				len(actual.ValidIngredients),
-			)
-
-			t.Log("cleaning up")
-			for _, createdValidIngredient := range expected {
-				assert.NoError(t, testClients.admin.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
-			}
-		}
-	})
-
-	s.runForPASETOClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			var checkFunc func() bool
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			t.Log("creating valid ingredients")
-			var expected []*types.ValidIngredient
-			for i := 0; i < 5; i++ {
-				exampleValidIngredient := fakes.BuildFakeValidIngredient()
-				exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
-				createdValidIngredientID, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
-				require.NoError(t, err)
-
-				var createdValidIngredient *types.ValidIngredient
-				checkFunc = func() bool {
-					createdValidIngredient, err = testClients.admin.GetValidIngredient(ctx, createdValidIngredientID)
-					return assert.NotNil(t, createdValidIngredient) && assert.NoError(t, err)
-				}
-				assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
 				checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
 				expected = append(expected, createdValidIngredient)
@@ -264,99 +142,30 @@ func (s *TestSuite) TestValidIngredients_Listing() {
 }
 
 func (s *TestSuite) TestValidIngredients_Searching() {
-	s.runForCookieClient("should be able to be search for valid ingredients", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should be able to be search for valid ingredients", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.admin.SubscribeToNotifications(ctx, stopChan)
-			require.NotNil(t, notificationsChan)
-			require.NoError(t, err)
-
-			var n *types.DataChangeMessage
-
 			t.Log("creating valid ingredients")
 			var expected []*types.ValidIngredient
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredient.Name = "example"
+			exampleValidIngredient.Name = fmt.Sprintf("example_%s", testClients.authType)
 			searchQuery := exampleValidIngredient.Name
 			for i := 0; i < 5; i++ {
 				exampleValidIngredient.Name = fmt.Sprintf("%s %d", searchQuery, i)
 				exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
-				createdValidIngredientID, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+				createdValidIngredient, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 				require.NoError(t, createdValidIngredientErr)
-				t.Logf("valid ingredient %q created", createdValidIngredientID)
-
-				n = <-notificationsChan
-				assert.Equal(t, types.ValidIngredientDataType, n.DataType)
-				require.NotNil(t, n.ValidIngredient)
-				checkValidIngredientEquality(t, exampleValidIngredient, n.ValidIngredient)
-
-				createdValidIngredient, createdValidIngredientErr := testClients.admin.GetValidIngredient(ctx, createdValidIngredientID)
-				requireNotNilAndNoProblems(t, createdValidIngredient, createdValidIngredientErr)
+				checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
+				t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
 				expected = append(expected, createdValidIngredient)
 			}
 
 			exampleLimit := uint8(20)
-
-			// give the index a moment
-			time.Sleep(3 * time.Second)
-
-			// assert valid ingredient list equality
-			actual, err := testClients.admin.SearchValidIngredients(ctx, searchQuery, exampleLimit)
-			requireNotNilAndNoProblems(t, actual, err)
-			assert.True(
-				t,
-				len(expected) <= len(actual),
-				"expected %d to be <= %d",
-				len(expected),
-				len(actual),
-			)
-
-			t.Log("cleaning up")
-			for _, createdValidIngredient := range expected {
-				assert.NoError(t, testClients.admin.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
-			}
-		}
-	})
-
-	s.runForPASETOClient("should be able to be search for valid ingredients", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			var checkFunc func() bool
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			t.Log("creating valid ingredients")
-			var expected []*types.ValidIngredient
-			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredient.Name = "example"
-			searchQuery := exampleValidIngredient.Name
-			for i := 0; i < 5; i++ {
-				exampleValidIngredient.Name = fmt.Sprintf("%s %d", searchQuery, i)
-				exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
-				createdValidIngredientID, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
-				require.NoError(t, err)
-				t.Logf("valid ingredient %q created", createdValidIngredientID)
-
-				var createdValidIngredient *types.ValidIngredient
-				checkFunc = func() bool {
-					createdValidIngredient, err = testClients.admin.GetValidIngredient(ctx, createdValidIngredientID)
-					return assert.NotNil(t, createdValidIngredient) && assert.NoError(t, err)
-				}
-				assert.Eventually(t, checkFunc, creationTimeout, waitPeriod)
-				requireNotNilAndNoProblems(t, createdValidIngredient, err)
-
-				expected = append(expected, createdValidIngredient)
-			}
-
-			exampleLimit := uint8(20)
-			time.Sleep(2 * time.Second) // give the index a moment
 
 			// assert valid ingredient list equality
 			actual, err := testClients.admin.SearchValidIngredients(ctx, searchQuery, exampleLimit)

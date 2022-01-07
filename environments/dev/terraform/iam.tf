@@ -9,9 +9,6 @@ data "aws_iam_policy_document" "allow_to_manipulate_queues" {
       "sqs:GetQueueAttributes",
     ]
     resources = [
-      aws_sqs_queue.writes_queue.arn,
-      aws_sqs_queue.updates_queue.arn,
-      aws_sqs_queue.archives_queue.arn,
       aws_sqs_queue.data_changes_queue.arn,
     ]
   }
@@ -30,9 +27,6 @@ data "aws_iam_policy_document" "allow_parameter_store_access" {
       aws_ssm_parameter.service_config.arn,
       aws_ssm_parameter.worker_config.arn,
       aws_ssm_parameter.opentelemetry_collector_config.arn,
-      aws_ssm_parameter.writes_queue_parameter.arn,
-      aws_ssm_parameter.updates_queue_parameter.arn,
-      aws_ssm_parameter.archives_queue_parameter.arn,
       aws_ssm_parameter.data_changes_queue_parameter.arn,
       aws_ssm_parameter.database_url.arn,
       aws_ssm_parameter.sendgrid_token.arn,

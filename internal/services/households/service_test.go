@@ -53,11 +53,11 @@ func TestProvideHouseholdsService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 
 		cfg := Config{
-			PreWritesTopicName: "pre-writes",
+			DataChangesTopicName: "data changes",
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProviderPublisher", cfg.PreWritesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
 			logging.NewNoopLogger(),
@@ -88,11 +88,11 @@ func TestProvideHouseholdsService(T *testing.T) {
 
 		rpm := mockrouting.NewRouteParamManager()
 		cfg := Config{
-			PreWritesTopicName: "pre-writes",
+			DataChangesTopicName: "data changes",
 		}
 
 		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProviderPublisher", cfg.PreWritesTopicName).Return(&mockpublishers.Publisher{}, errors.New("blah"))
+		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, errors.New("blah"))
 
 		s, err := ProvideService(
 			logging.NewNoopLogger(),
