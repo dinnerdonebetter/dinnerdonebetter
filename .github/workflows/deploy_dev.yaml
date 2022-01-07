@@ -15,45 +15,6 @@ jobs:
         with:
           go-version: '1.17.3'
 
-      - name: Build writes worker lambda
-        run: go build -o writes_worker github.com/prixfixeco/api_server/cmd/workers/lambdas/writes
-
-      - name: Zip writer lambda
-        run: zip writer_worker.zip writes_worker
-
-      - name: Upload writer lambda
-        uses: actions/upload-artifact@v2
-        with:
-          name: writer_lambda
-          path: writer_worker.zip
-          retention-days: 1
-
-      - name: Build updates worker lambda
-        run: go build -o updates_worker github.com/prixfixeco/api_server/cmd/workers/lambdas/updates
-
-      - name: Zip updater lambda
-        run: zip updater_worker.zip updates_worker
-
-      - name: Upload updater lambda
-        uses: actions/upload-artifact@v2
-        with:
-          name: updater_lambda
-          path: updater_worker.zip
-          retention-days: 1
-
-      - name: Build archives worker lambda
-        run: go build -o archiver_worker github.com/prixfixeco/api_server/cmd/workers/lambdas/archives
-
-      - name: Zip archiver lambda
-        run: zip archiver_worker.zip archiver_worker
-
-      - name: Upload archiver lambda
-        uses: actions/upload-artifact@v2
-        with:
-          name: archiver_lambda
-          path: archiver_worker.zip
-          retention-days: 1
-
       - name: Build data changes worker lambda
         run: go build -o data_changes_worker github.com/prixfixeco/api_server/cmd/workers/lambdas/data_changes
 
@@ -158,36 +119,6 @@ jobs:
 
       - name: deploy to ECS
         run: aws ecs update-service --cluster api_servers --service api_server --force-new-deployment
-
-      - name: Download writer lambda
-        uses: actions/download-artifact@v2
-        with:
-          name: writer_lambda
-          path: artifacts
-
-      - name: Deploy writer lambda
-        working-directory: artifacts
-        run: aws lambda update-function-code --function-name writes_worker --zip-file fileb://writer_worker.zip
-
-      - name: Download updater lambda
-        uses: actions/download-artifact@v2
-        with:
-          name: updater_lambda
-          path: artifacts
-
-      - name: Deploy updater lambda
-        working-directory: artifacts
-        run: aws lambda update-function-code --function-name updates_worker --zip-file fileb://updater_worker.zip
-
-      - name: Download archiver lambda
-        uses: actions/download-artifact@v2
-        with:
-          name: archiver_lambda
-          path: artifacts
-
-      - name: Deploy archiver lambda
-        working-directory: artifacts
-        run: aws lambda update-function-code --function-name archiver_worker --zip-file fileb://archiver_worker.zip
 
       - name: Download data changes lambda
         uses: actions/download-artifact@v2
