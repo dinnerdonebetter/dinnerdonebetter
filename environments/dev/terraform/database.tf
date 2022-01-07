@@ -19,7 +19,7 @@ resource "aws_db_subnet_group" "db_subnet" {
 resource "aws_db_instance" "api_database" {
   allocated_storage = 10
   engine            = "postgres"
-  engine_version    = "13"
+  engine_version    = "12"
   instance_class    = "db.t2.micro"
   name              = local.database_name
 
