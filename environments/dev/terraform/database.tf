@@ -22,6 +22,7 @@ resource "aws_db_instance" "api_database" {
   engine_version    = "12"
   instance_class    = "db.t2.micro"
   name              = local.database_name
+  identifier        = "dev"
 
   username = local.database_username
   password = random_password.database_password.result
