@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/url"
-	"time"
 
 	"github.com/brianvoe/gofakeit/v5"
 	"go.opentelemetry.io/otel/trace"
@@ -58,9 +57,6 @@ func main() {
 		panic(err)
 	}
 
-	logger.Info("waiting for webhook creation notification")
-	time.Sleep(10 * time.Second)
-
 	webhook, err := c.GetWebhook(ctx, createdWebhook.ID)
 	if err != nil {
 		panic(err)
@@ -69,9 +65,6 @@ func main() {
 	if err = c.ArchiveWebhook(ctx, createdWebhook.ID); err != nil {
 		panic(err)
 	}
-
-	logger.Info("waiting for webhook archive notification")
-	time.Sleep(10 * time.Second)
 
 	fmt.Println(webhook)
 }

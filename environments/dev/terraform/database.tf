@@ -49,7 +49,7 @@ resource "aws_ssm_parameter" "database_url" {
     local.database_username,
     local.database_name,
     random_password.database_password.result,
-    aws_db_instance.api_database.endpoint,
+    aws_db_instance.api_database.address,
     aws_db_instance.api_database.port,
   )
 }
