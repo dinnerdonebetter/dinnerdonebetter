@@ -27,8 +27,8 @@ resource "aws_db_instance" "api_database" {
   password = random_password.database_password.result
 
   skip_final_snapshot = true
-  storage_encrypted   = true
   port                = 5423
+  # storage_encrypted = true # InvalidParameterCombination: DB Instance class db.t2.micro does not support encryption at rest
 
   backup_window      = "05:00-08:00"
   maintenance_window = "sat:01:00-sat:04:00"
