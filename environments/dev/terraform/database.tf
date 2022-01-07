@@ -17,16 +17,18 @@ resource "aws_db_subnet_group" "db_subnet" {
 }
 
 resource "aws_db_instance" "api_database" {
-  allocated_storage = 10
-  engine            = "postgres"
-  engine_version    = "12"
-  instance_class    = "db.t2.micro"
-  name              = local.database_name
-  identifier        = "dev"
+  engine                = "postgres"
+  engine_version        = "12"
+  instance_class        = "db.t2.micro"
+  name                  = local.database_name
+  identifier            = "dev"
+  allocated_storage     = 10
+  max_allocated_storage = 20
 
   username = local.database_username
   password = random_password.database_password.result
 
+  publicly_accessible = true
   skip_final_snapshot = true
   port                = 5423
   # storage_encrypted = true # InvalidParameterCombination: DB Instance class db.t2.micro does not support encryption at rest
