@@ -191,8 +191,7 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 		return nil, err
 	}
 	mealplanoptionvotesConfig := &servicesConfigurations.MealPlanOptionVotes
-	mealPlanOptionVoteDataManager := database.ProvideMealPlanOptionVoteDataManager(dataManager)
-	mealPlanOptionVoteDataService, err := mealplanoptionvotes.ProvideService(ctx, logger, mealplanoptionvotesConfig, mealPlanOptionVoteDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, collector, tracerProvider)
+	mealPlanOptionVoteDataService, err := mealplanoptionvotes.ProvideService(ctx, logger, mealplanoptionvotesConfig, dataManager, serverEncoderDecoder, routeParamManager, publisherProvider, collector, tracerProvider)
 	if err != nil {
 		return nil, err
 	}

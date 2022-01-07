@@ -3,6 +3,11 @@ package integration
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
+
 	"github.com/stretchr/testify/assert"
 
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -27,24 +32,15 @@ func convertMealPlanOptionToMealPlanOptionUpdateInput(x *types.MealPlanOption) *
 	}
 }
 
-/*
-
 func (s *TestSuite) TestMealPlanOptions_CompleteLifecycle() {
-	s.runForCookieClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
-			require.NotNil(t, notificationsChan)
-			require.NoError(t, err)
-
-			var n *types.DataChangeMessage
-
-			createdMealPlan := createMealPlanWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
+			createdMealPlan := createMealPlanWithNotificationChannel(ctx, t, testClients.main)
 
 			var createdMealPlanOption *types.MealPlanOption
 			for _, opt := range createdMealPlan.Options {
@@ -59,9 +55,6 @@ func (s *TestSuite) TestMealPlanOptions_CompleteLifecycle() {
 			newMealPlanOption.BelongsToMealPlan = createdMealPlan.ID
 			createdMealPlanOption.Update(convertMealPlanOptionToMealPlanOptionUpdateInput(newMealPlanOption))
 			assert.NoError(t, testClients.main.UpdateMealPlanOption(ctx, createdMealPlanOption))
-
-			n = <-notificationsChan
-			assert.Equal(t, types.MealPlanOptionDataType, n.DataType)
 
 			t.Log("fetching changed meal plan option")
 			actual, err := testClients.main.GetMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanOption.ID)
@@ -81,21 +74,14 @@ func (s *TestSuite) TestMealPlanOptions_CompleteLifecycle() {
 }
 
 func (s *TestSuite) TestMealPlanOptions_Listing() {
-	s.runForCookieClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			stopChan := make(chan bool, 1)
-			notificationsChan, err := testClients.main.SubscribeToNotifications(ctx, stopChan)
-			require.NotNil(t, notificationsChan)
-			require.NoError(t, err)
-
-			var n *types.DataChangeMessage
-
-			createdMealPlan := createMealPlanWithNotificationChannel(ctx, t, notificationsChan, testClients.main)
+			createdMealPlan := createMealPlanWithNotificationChannel(ctx, t, testClients.main)
 
 			t.Log("creating meal plan options")
 			var expected []*types.MealPlanOption
@@ -103,7 +89,7 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 				exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 				exampleMealPlanOption.BelongsToMealPlan = createdMealPlan.ID
 
-				createdMeal := createMealForTest(ctx, t, notificationsChan, testClients.main)
+				createdMeal := createMealForTest(ctx, t, testClients.main)
 				exampleMealPlanOption.MealID = createdMeal.ID
 
 				exampleMealPlanOptionInput := fakes.BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(exampleMealPlanOption)
@@ -111,10 +97,7 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 				require.NoError(t, err)
 				t.Logf("meal plan option %q created", createdMealPlanOption.ID)
 
-				n = <-notificationsChan
-				assert.Equal(t, types.MealPlanOptionDataType, n.DataType)
-				require.NotNil(t, n.MealPlanOption)
-				checkMealPlanOptionEquality(t, exampleMealPlanOption, n.MealPlanOption)
+				checkMealPlanOptionEquality(t, exampleMealPlanOption, createdMealPlanOption)
 
 				createdMealPlanOption, err = testClients.main.GetMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanOption.ID)
 				requireNotNilAndNoProblems(t, createdMealPlanOption, err)
@@ -144,5 +127,3 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 		}
 	})
 }
-
-*/
