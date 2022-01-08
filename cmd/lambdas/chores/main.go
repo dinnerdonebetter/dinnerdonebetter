@@ -2,9 +2,10 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"time"
+
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -30,11 +31,9 @@ const (
 
 func buildHandler(logger logging.Logger, worker *workers.ChoresWorker) func(ctx context.Context, sqsEvent events.SQSEvent) error {
 	return func(ctx context.Context, sqsEvent events.SQSEvent) error {
-		for i := 0; i < len(sqsEvent.Records); i++ {
-			message := sqsEvent.Records[i]
-			if err := worker.HandleMessage(ctx, []byte(message.Body)); err != nil {
-				return observability.PrepareError(err, nil, nil, "handling writes message")
-			}
+		logger.Debug("handling message")
+		if err := worker.HandleMessage(ctx, nil); err != nil {
+			return observability.PrepareError(err, nil, nil, "handling writes message")
 		}
 
 		logger.Debug("chores performed")
@@ -54,17 +53,7 @@ func main() {
 	}
 	cfg.Database.RunMigrations = false
 
-	tracerProvider, err := xrayconfig.NewTracerProvider(ctx)
-	if err != nil {
-		fmt.Printf("error creating tracer provider: %v", err)
-	}
-
-	defer func(ctx context.Context) {
-		if shutdownErr := tracerProvider.Shutdown(ctx); shutdownErr != nil {
-			fmt.Printf("error shutting down tracer provider: %v", shutdownErr)
-		}
-	}(ctx)
-
+	tracerProvider := trace.NewNoopTracerProvider()
 	otel.SetTracerProvider(tracerProvider)
 	otel.SetTextMapPropagator(xray.Propagator{})
 
@@ -107,6 +96,6 @@ func main() {
 		xrayconfig.WithEventToCarrier(),
 		otellambda.WithPropagator(xray.Propagator{}),
 		otellambda.WithTracerProvider(tracerProvider),
-		otellambda.WithFlusher(tracerProvider),
+		// otellambda.WithFlusher(tracerProvider),
 	))
 }

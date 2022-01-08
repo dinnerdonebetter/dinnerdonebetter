@@ -2,7 +2,6 @@ locals {
   lambda_runtime = "go1.x"
   lambda_handler = "main"
   memory_size    = 128
-  timeout        = 8
 }
 
 data "archive_file" "dummy_zip" {

@@ -126,19 +126,8 @@ func main() {
 
 	go func() {
 		for range everySecond {
-			mealPlans, fetchMealPlansErr := dataManager.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
-			if fetchMealPlansErr != nil {
-				logger.Fatal(fetchMealPlansErr)
-			}
-
-			for _, mealPlan := range mealPlans {
-				if err = choresPublisher.Publish(ctx, &types.ChoreMessage{
-					ChoreType:                 types.FinalizeMealPlansWithExpiredVotingPeriodsChoreType,
-					MealPlanID:                mealPlan.ID,
-					AttributableToHouseholdID: mealPlan.BelongsToHousehold,
-				}); err != nil {
-					logger.Fatal(err)
-				}
+			if err = choresPublisher.Publish(ctx, &types.ChoreMessage{ChoreType: types.FinalizeMealPlansWithExpiredVotingPeriodsChoreType}); err != nil {
+				logger.Fatal(err)
 			}
 		}
 	}()

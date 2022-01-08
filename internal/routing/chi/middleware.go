@@ -14,9 +14,8 @@ import (
 )
 
 var doNotLog = map[string]struct{}{
-	"/metrics": {}, // metrics scrapes
-	"/build/":  {}, // svelte output
-	"/assets/": {}, // static files
+	"/_meta_/ready": {}, // ready checks
+	"/metrics":      {}, // metrics scrapes
 }
 
 // buildLoggingMiddleware builds a logging middleware.

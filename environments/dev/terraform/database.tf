@@ -1,12 +1,6 @@
 locals {
   database_username = "prixfixe_api"
   database_name     = "prixfixe"
-  cluster_name      = "api-database"
-}
-
-resource "aws_cloudwatch_log_group" "database_logs" {
-  name              = "/aws/rds/cluster/${local.cluster_name}/postgresql"
-  retention_in_days = local.log_retention_period_in_days
 }
 
 resource "random_password" "database_password" {
@@ -21,39 +15,31 @@ resource "aws_db_subnet_group" "db_subnet" {
   subnet_ids  = [for x in aws_subnet.private_subnets : x.id]
 }
 
-resource "aws_rds_cluster" "api_database" {
-  cluster_identifier = local.cluster_name
-  database_name      = local.database_name
-  engine             = "aurora-postgresql"
+resource "aws_db_instance" "api_database" {
+  identifier            = "dev-api-database"
+  name                  = local.database_name
+  engine                = "postgres"
+  engine_version        = "12"
+  instance_class        = "db.t2.micro"
+  allocated_storage     = 10
+  max_allocated_storage = 20
 
-  engine_mode = "serverless"
-  scaling_configuration {
-    auto_pause               = true
-    min_capacity             = 2
-    max_capacity             = 2
-    seconds_until_auto_pause = 300
-    timeout_action           = "ForceApplyCapacityChange"
-  }
+  username            = local.database_username
+  password            = random_password.database_password.result
+  backup_window       = "05:00-08:00"
+  maintenance_window  = "sat:01:00-sat:04:00"
+  publicly_accessible = true
+  # storage_encrypted = true # InvalidParameterCombination: DB Instance class db.t2.micro does not support encryption at rest
+  skip_final_snapshot = true
 
-  master_username              = local.database_username
-  master_password              = random_password.database_password.result
-  preferred_backup_window      = "05:00-08:00"
-  preferred_maintenance_window = "sat:01:00-sat:04:00"
-  apply_immediately            = true
-  enable_http_endpoint         = true
-  storage_encrypted            = true
-  skip_final_snapshot          = true
-  copy_tags_to_snapshot        = true
-  backup_retention_period      = 7
+  port = 5432
 
   db_subnet_group_name = aws_db_subnet_group.db_subnet.name
   vpc_security_group_ids = [
     aws_security_group.database.id,
   ]
 
-  depends_on = [
-    aws_cloudwatch_log_group.database_logs,
-  ]
+  enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
 }
 
 resource "aws_ssm_parameter" "database_url" {
@@ -64,26 +50,9 @@ resource "aws_ssm_parameter" "database_url" {
     local.database_username,
     local.database_name,
     random_password.database_password.result,
-    aws_rds_cluster.api_database.endpoint,
-    aws_rds_cluster.api_database.port,
+    aws_db_instance.api_database.address,
+    aws_db_instance.api_database.port,
   )
-}
-
-resource "aws_secretsmanager_secret" "dev_database" {
-  name = format("rds-db-credentials/%s/%s", aws_rds_cluster.api_database.cluster_resource_id, local.database_username)
-}
-
-resource "aws_secretsmanager_secret_version" "dev_database" {
-  secret_id = aws_secretsmanager_secret.dev_database.id
-  secret_string = jsonencode({
-    dbInstanceIdentifier = "api-database",
-    engine               = aws_rds_cluster.api_database.engine,
-    host                 = aws_rds_cluster.api_database.endpoint,
-    port                 = aws_rds_cluster.api_database.port,
-    resourceId           = aws_rds_cluster.api_database.cluster_resource_id,
-    username             = local.database_username,
-    password             = random_password.database_password.result
-  })
 }
 
 resource "aws_security_group" "database" {
