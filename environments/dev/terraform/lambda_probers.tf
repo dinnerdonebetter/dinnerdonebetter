@@ -21,20 +21,6 @@ resource "aws_lambda_function" "meal_planning_prober_worker_lambda" {
   memory_size   = local.memory_size
   timeout       = local.timeout
 
-  tracing_config {
-    mode = "Active"
-  }
-
-  vpc_config {
-    subnet_ids = concat(
-      [for x in aws_subnet.public_subnets : x.id],
-      [for x in aws_subnet.private_subnets : x.id],
-    )
-    security_group_ids = [
-      aws_security_group.lambda_workers.id,
-    ]
-  }
-
   filename = data.archive_file.dummy_zip.output_path
 
   depends_on = [
