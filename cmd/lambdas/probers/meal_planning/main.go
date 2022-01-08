@@ -6,6 +6,8 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/prixfixeco/api_server/internal/observability/logging"
+
 	"github.com/aws/aws-lambda-go/lambda"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
@@ -24,7 +26,7 @@ const (
 	creationDeadline = 1 * time.Minute
 )
 
-func getClientForUser(ctx context.Context) (*types.User, *httpclient.Client, error) {
+func getClientForUser(ctx context.Context, logger logging.Logger) (*types.User, *httpclient.Client, error) {
 	example := fakes.BuildFakeUserRegistrationInput()
 	input := &types.UserRegistrationInput{
 		Username:     example.Username,
@@ -37,15 +39,22 @@ func getClientForUser(ctx context.Context) (*types.User, *httpclient.Client, err
 		return nil, nil, fmt.Errorf("parsing provided URI: %w", err)
 	}
 
+	logger.Debug("creating user")
+
 	user, err := testutils.CreateServiceUser(ctx, stagingAddress, input)
 	if err != nil {
 		return nil, nil, err
 	}
 
+	logger = logger.WithValue("username", user.Username)
+	logger.Debug("getting login cookie")
+
 	cookie, err := testutils.GetLoginCookie(ctx, stagingAddress, user)
 	if err != nil {
 		return nil, nil, fmt.Errorf("getting login cookie: %w", err)
 	}
+
+	logger.Debug("initializing client")
 
 	client, err := httpclient.NewClient(parsedURI, trace.NewNoopTracerProvider(), httpclient.UsingCookie(cookie))
 	if err != nil {
@@ -152,212 +161,215 @@ func createMealForTest(ctx context.Context, client *httpclient.Client) (*types.M
 	return createdMeal, nil
 }
 
-func buildHandler(ctx context.Context) error {
-	logger := zerolog.NewZerologLogger()
-	householdLeader, householdLeaderClient, err := getClientForUser(ctx)
-	if err != nil {
-		return fmt.Errorf("creating household leader API client")
-	}
-
-	// create household members
-	logger.Debug("determining household ID")
-	currentStatus, err := householdLeaderClient.UserStatus(ctx)
-	if err != nil {
-		return fmt.Errorf("checking household leader user status: %w", err)
-	}
-
-	relevantHouseholdID := currentStatus.ActiveHousehold
-	createdClients := []*httpclient.Client{}
-
-	for i := 0; i < 2; i++ {
-		logger.Debug("creating user to invite")
-		u, c, userCreationErr := getClientForUser(ctx)
-		if userCreationErr != nil {
-			return fmt.Errorf("error creating household member #%d: %w", i, userCreationErr)
-		}
-
-		logger.Debug("inviting user")
-		invitation, invitationCreationErr := householdLeaderClient.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
-			FromUser:             householdLeader.ID,
-			Note:                 "prober testing",
-			ToEmail:              u.EmailAddress,
-			DestinationHousehold: relevantHouseholdID,
-		})
-		if invitationCreationErr != nil {
-			return fmt.Errorf("inviting user #%d: %w", i, invitationCreationErr)
-		}
-
-		logger.Debug("checking for sent invitation")
-		sentInvitations, invitationSendErr := householdLeaderClient.GetPendingHouseholdInvitationsFromUser(ctx, nil)
-		if invitationSendErr != nil {
-			return fmt.Errorf("checking for sent invitations for user #%d: %w", i, invitationSendErr)
-		}
-
-		if len(sentInvitations.HouseholdInvitations) == 0 {
-			return fmt.Errorf("no invitations sent to user #%d", i)
-		}
-
-		logger.Debug("checking for received invitation")
-		invitations, getInvitationsErr := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
-		if getInvitationsErr != nil {
-			return fmt.Errorf("checking for received invitations for user #%d: %w", i, getInvitationsErr)
-		}
-
-		if len(invitations.HouseholdInvitations) == 0 {
-			return fmt.Errorf("user #%d received no invitations", i)
-		}
-
-		if err = c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitation.ID, "prober testing"); err != nil {
-			return fmt.Errorf("accepting household invitation for user #%d: %w", i, err)
-		}
-
-		if err = c.SwitchActiveHousehold(ctx, relevantHouseholdID); err != nil {
-			return fmt.Errorf("switching household for user #%d: %w", i, err)
-		}
-		createdClients = append(createdClients, c)
-	}
-
-	// create recipes for meal plan
-	createdMeals := []*types.Meal{}
-	for i := 0; i < 3; i++ {
-		createdMeal, mealCreationErr := createMealForTest(ctx, householdLeaderClient)
-		if mealCreationErr != nil {
-			return fmt.Errorf("error creating meal #%d: %w", i, mealCreationErr)
-		}
-		createdMeals = append(createdMeals, createdMeal)
-	}
-
-	exampleMealPlan := &types.MealPlan{
-		Notes:          "prober testing",
-		Status:         types.AwaitingVotesMealPlanStatus,
-		StartsAt:       uint64(time.Now().Add(24 * time.Hour).Unix()),
-		EndsAt:         uint64(time.Now().Add(72 * time.Hour).Unix()),
-		VotingDeadline: uint64(time.Now().Add(creationDeadline).Unix()),
-		Options: []*types.MealPlanOption{
-			{
-				MealID:   createdMeals[0].ID,
-				Notes:    "option A",
-				MealName: types.BreakfastMealName,
-				Day:      time.Monday,
-			},
-			{
-				MealID:   createdMeals[1].ID,
-				Notes:    "option B",
-				MealName: types.BreakfastMealName,
-				Day:      time.Monday,
-			},
-			{
-				MealID:   createdMeals[2].ID,
-				Notes:    "option C",
-				MealName: types.BreakfastMealName,
-				Day:      time.Monday,
-			},
-		},
-	}
-
-	exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
-	createdMealPlan, err := householdLeaderClient.CreateMealPlan(ctx, exampleMealPlanInput)
-	if err != nil {
-		return fmt.Errorf("creating meal plan: %w", err)
-	}
-
-	createdMealPlan, err = householdLeaderClient.GetMealPlan(ctx, createdMealPlan.ID)
-	if err != nil {
-		return fmt.Errorf("fetching meal plan: %w", err)
-	}
-
-	userAVotes := []*types.MealPlanOptionVote{
-		{
-			BelongsToMealPlanOption: createdMealPlan.Options[0].ID,
-			Rank:                    0,
-		},
-		{
-			BelongsToMealPlanOption: createdMealPlan.Options[1].ID,
-			Rank:                    2,
-		},
-		{
-			BelongsToMealPlanOption: createdMealPlan.Options[2].ID,
-			Rank:                    1,
-		},
-	}
-
-	userBVotes := []*types.MealPlanOptionVote{
-		{
-			BelongsToMealPlanOption: createdMealPlan.Options[0].ID,
-			Rank:                    0,
-		},
-		{
-			BelongsToMealPlanOption: createdMealPlan.Options[1].ID,
-			Rank:                    1,
-		},
-		{
-			BelongsToMealPlanOption: createdMealPlan.Options[2].ID,
-			Rank:                    2,
-		},
-	}
-
-	for _, vote := range userAVotes {
-		exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(vote)
-		_, err = createdClients[0].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
-
+func buildHandler(logger logging.Logger) func(ctx context.Context) error {
+	return func(ctx context.Context) error {
+		logger.Debug("creating household leader")
+		householdLeader, householdLeaderClient, err := getClientForUser(ctx, logger)
 		if err != nil {
-			return fmt.Errorf("voting for user A: %w", err)
+			return fmt.Errorf("creating household leader API client")
 		}
-	}
 
-	for _, vote := range userBVotes {
-		exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(vote)
-		_, err = createdClients[1].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
-
+		logger.Debug("household leader created,determining household ID")
+		currentStatus, err := householdLeaderClient.UserStatus(ctx)
 		if err != nil {
-			return fmt.Errorf("voting for user B: %w", err)
+			return fmt.Errorf("checking household leader user status: %w", err)
 		}
-	}
 
-	createdMealPlan, err = householdLeaderClient.GetMealPlan(ctx, createdMealPlan.ID)
-	if err != nil {
-		return fmt.Errorf("fetching voted upon meal plan: %w", err)
-	}
+		relevantHouseholdID := currentStatus.ActiveHousehold
+		createdClients := []*httpclient.Client{}
 
-	if types.AwaitingVotesMealPlanStatus != createdMealPlan.Status {
-		return fmt.Errorf("unexpected meal plan status: %s", createdMealPlan.Status)
-	}
+		for i := 0; i < 2; i++ {
+			logger.Debug("creating user to invite")
+			u, c, userCreationErr := getClientForUser(ctx, logger)
+			if userCreationErr != nil {
+				return fmt.Errorf("error creating household member #%d: %w", i, userCreationErr)
+			}
 
-	time.Sleep(creationDeadline)
+			logger.Debug("inviting user")
+			invitation, invitationCreationErr := householdLeaderClient.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
+				FromUser:             householdLeader.ID,
+				Note:                 "prober testing",
+				ToEmail:              u.EmailAddress,
+				DestinationHousehold: relevantHouseholdID,
+			})
+			if invitationCreationErr != nil {
+				return fmt.Errorf("inviting user #%d: %w", i, invitationCreationErr)
+			}
 
-	createdMealPlan, err = householdLeaderClient.GetMealPlan(ctx, createdMealPlan.ID)
-	if err != nil {
-		return fmt.Errorf("fetching maybe finalized meal plan: %w", err)
-	}
+			logger.Debug("checking for sent invitation")
+			sentInvitations, invitationSendErr := householdLeaderClient.GetPendingHouseholdInvitationsFromUser(ctx, nil)
+			if invitationSendErr != nil {
+				return fmt.Errorf("checking for sent invitations for user #%d: %w", i, invitationSendErr)
+			}
 
-	if types.FinalizedMealPlanStatus != createdMealPlan.Status {
-		return fmt.Errorf("unexpected final meal status: %s", createdMealPlan.Status)
-	}
+			if len(sentInvitations.HouseholdInvitations) == 0 {
+				return fmt.Errorf("no invitations sent to user #%d", i)
+			}
 
-	for _, day := range allDays {
-		for _, mealName := range allMealNames {
-			options := byDayAndMeal(createdMealPlan.Options, day, mealName)
-			if len(options) > 0 {
-				selectionMade := false
-				for _, opt := range options {
-					if opt.Chosen {
-						selectionMade = true
-						break
+			logger.Debug("checking for received invitation")
+			invitations, getInvitationsErr := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
+			if getInvitationsErr != nil {
+				return fmt.Errorf("checking for received invitations for user #%d: %w", i, getInvitationsErr)
+			}
+
+			if len(invitations.HouseholdInvitations) == 0 {
+				return fmt.Errorf("user #%d received no invitations", i)
+			}
+
+			if err = c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitation.ID, "prober testing"); err != nil {
+				return fmt.Errorf("accepting household invitation for user #%d: %w", i, err)
+			}
+
+			if err = c.SwitchActiveHousehold(ctx, relevantHouseholdID); err != nil {
+				return fmt.Errorf("switching household for user #%d: %w", i, err)
+			}
+			createdClients = append(createdClients, c)
+		}
+
+		// create recipes for meal plan
+		createdMeals := []*types.Meal{}
+		for i := 0; i < 3; i++ {
+			createdMeal, mealCreationErr := createMealForTest(ctx, householdLeaderClient)
+			if mealCreationErr != nil {
+				return fmt.Errorf("error creating meal #%d: %w", i, mealCreationErr)
+			}
+			createdMeals = append(createdMeals, createdMeal)
+		}
+
+		exampleMealPlan := &types.MealPlan{
+			Notes:          "prober testing",
+			Status:         types.AwaitingVotesMealPlanStatus,
+			StartsAt:       uint64(time.Now().Add(24 * time.Hour).Unix()),
+			EndsAt:         uint64(time.Now().Add(72 * time.Hour).Unix()),
+			VotingDeadline: uint64(time.Now().Add(creationDeadline).Unix()),
+			Options: []*types.MealPlanOption{
+				{
+					MealID:   createdMeals[0].ID,
+					Notes:    "option A",
+					MealName: types.BreakfastMealName,
+					Day:      time.Monday,
+				},
+				{
+					MealID:   createdMeals[1].ID,
+					Notes:    "option B",
+					MealName: types.BreakfastMealName,
+					Day:      time.Monday,
+				},
+				{
+					MealID:   createdMeals[2].ID,
+					Notes:    "option C",
+					MealName: types.BreakfastMealName,
+					Day:      time.Monday,
+				},
+			},
+		}
+
+		exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
+		createdMealPlan, err := householdLeaderClient.CreateMealPlan(ctx, exampleMealPlanInput)
+		if err != nil {
+			return fmt.Errorf("creating meal plan: %w", err)
+		}
+
+		createdMealPlan, err = householdLeaderClient.GetMealPlan(ctx, createdMealPlan.ID)
+		if err != nil {
+			return fmt.Errorf("fetching meal plan: %w", err)
+		}
+
+		userAVotes := []*types.MealPlanOptionVote{
+			{
+				BelongsToMealPlanOption: createdMealPlan.Options[0].ID,
+				Rank:                    0,
+			},
+			{
+				BelongsToMealPlanOption: createdMealPlan.Options[1].ID,
+				Rank:                    2,
+			},
+			{
+				BelongsToMealPlanOption: createdMealPlan.Options[2].ID,
+				Rank:                    1,
+			},
+		}
+
+		userBVotes := []*types.MealPlanOptionVote{
+			{
+				BelongsToMealPlanOption: createdMealPlan.Options[0].ID,
+				Rank:                    0,
+			},
+			{
+				BelongsToMealPlanOption: createdMealPlan.Options[1].ID,
+				Rank:                    1,
+			},
+			{
+				BelongsToMealPlanOption: createdMealPlan.Options[2].ID,
+				Rank:                    2,
+			},
+		}
+
+		for _, vote := range userAVotes {
+			exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(vote)
+			_, err = createdClients[0].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
+
+			if err != nil {
+				return fmt.Errorf("voting for user A: %w", err)
+			}
+		}
+
+		for _, vote := range userBVotes {
+			exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(vote)
+			_, err = createdClients[1].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
+
+			if err != nil {
+				return fmt.Errorf("voting for user B: %w", err)
+			}
+		}
+
+		createdMealPlan, err = householdLeaderClient.GetMealPlan(ctx, createdMealPlan.ID)
+		if err != nil {
+			return fmt.Errorf("fetching voted upon meal plan: %w", err)
+		}
+
+		if types.AwaitingVotesMealPlanStatus != createdMealPlan.Status {
+			return fmt.Errorf("unexpected meal plan status: %s", createdMealPlan.Status)
+		}
+
+		time.Sleep(creationDeadline)
+
+		createdMealPlan, err = householdLeaderClient.GetMealPlan(ctx, createdMealPlan.ID)
+		if err != nil {
+			return fmt.Errorf("fetching maybe finalized meal plan: %w", err)
+		}
+
+		if types.FinalizedMealPlanStatus != createdMealPlan.Status {
+			return fmt.Errorf("unexpected final meal status: %s", createdMealPlan.Status)
+		}
+
+		for _, day := range allDays {
+			for _, mealName := range allMealNames {
+				options := byDayAndMeal(createdMealPlan.Options, day, mealName)
+				if len(options) > 0 {
+					selectionMade := false
+					for _, opt := range options {
+						if opt.Chosen {
+							selectionMade = true
+							break
+						}
 					}
-				}
 
-				if !selectionMade {
-					return fmt.Errorf("selection wasn't made for meal plan %s", createdMealPlan.ID)
+					if !selectionMade {
+						return fmt.Errorf("selection wasn't made for meal plan %s", createdMealPlan.ID)
+					}
 				}
 			}
 		}
+
+		logger.Info("done")
+
+		return nil
 	}
-
-	logger.Info("done")
-
-	return nil
 }
 
 func main() {
-	lambda.Start(buildHandler)
+	logger := zerolog.NewZerologLogger()
+	logger.Info("starting prober")
+	lambda.Start(buildHandler(logger))
 }
