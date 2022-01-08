@@ -182,7 +182,11 @@ func (q *SQLQuerier) getOneRow(ctx context.Context, querier database.SQLQueryExe
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue("query", query).WithValue("args", args)
+	logger := q.logger.WithValue("query_desc", queryDescription)
+	if q.logQueries {
+		logger = logger.WithValue("query", query).WithValue("args", args)
+	}
+
 	tracing.AttachDatabaseQueryToSpan(span, fmt.Sprintf("%s single row fetch query", queryDescription), query, args)
 
 	row := querier.QueryRowContext(ctx, query, args...)
@@ -198,7 +202,10 @@ func (q *SQLQuerier) performReadQuery(ctx context.Context, querier database.SQLQ
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue("query", query).WithValue("args", args)
+	logger := q.logger.WithValue("query_desc", queryDescription)
+	if q.logQueries {
+		logger = logger.WithValue("query", query).WithValue("args", args)
+	}
 
 	tracing.AttachDatabaseQueryToSpan(span, fmt.Sprintf("%s fetch query", queryDescription), query, args)
 
@@ -222,7 +229,10 @@ func (q *SQLQuerier) performCountQuery(ctx context.Context, querier database.SQL
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue("query", query)
+	logger := q.logger.WithValue("query_desc", queryDesc)
+	if q.logQueries {
+		logger = logger.WithValue("query", query)
+	}
 
 	tracing.AttachDatabaseQueryToSpan(span, fmt.Sprintf("%s count query", queryDesc), query, nil)
 
@@ -266,7 +276,11 @@ func (q *SQLQuerier) performWriteQuery(ctx context.Context, querier database.SQL
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue("query", query).WithValue("description", queryDescription).WithValue("args", args)
+	logger := q.logger.WithValue("query_desc", queryDescription)
+	if q.logQueries {
+		logger = logger.WithValue("query", query).WithValue("args", args)
+	}
+
 	tracing.AttachDatabaseQueryToSpan(span, queryDescription, query, args)
 	logger.Debug("performWriteQuery called")
 
