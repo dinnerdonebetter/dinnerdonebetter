@@ -42,10 +42,10 @@ jobs:
           retention-days: 1
 
       - name: Build meal planning prober lambda
-        run: go build -o meal_planning_prober_lambda github.com/prixfixeco/api_server/cmd/lambdas/probers/meal_planning
+        run: go build -o prober_meal_planning github.com/prixfixeco/api_server/cmd/lambdas/probers/meal_planning
 
       - name: Zip meal planning prober lambda
-        run: zip meal_planning_prober_lambda.zip meal_planning_prober_lambda
+        run: zip meal_planning_prober_lambda.zip prober_meal_planning
 
       - name: Upload chores lambda
         uses: actions/upload-artifact@v2
