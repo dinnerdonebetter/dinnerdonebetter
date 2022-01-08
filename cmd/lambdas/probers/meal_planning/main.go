@@ -23,7 +23,8 @@ import (
 const (
 	stagingAddress = "https://api.prixfixe.dev"
 
-	creationDeadline = 1 * time.Minute
+	votingDeadline   = 45 * time.Second
+	creationDeadline = 90 * time.Second
 )
 
 func getClientForUser(ctx context.Context, logger logging.Logger) (*types.User, *httpclient.Client, error) {
@@ -179,13 +180,13 @@ func buildHandler(logger logging.Logger) func(ctx context.Context) error {
 		createdClients := []*httpclient.Client{}
 
 		for i := 0; i < 2; i++ {
-			logger.Debug("creating user to invite")
+			logger.WithValue("i", i).Debug("creating user to invite")
 			u, c, userCreationErr := getClientForUser(ctx, logger)
 			if userCreationErr != nil {
 				return fmt.Errorf("error creating household member #%d: %w", i, userCreationErr)
 			}
 
-			logger.Debug("inviting user")
+			logger.WithValue("i", i).Debug("inviting user")
 			invitation, invitationCreationErr := householdLeaderClient.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
 				FromUser:             householdLeader.ID,
 				Note:                 "prober testing",
@@ -196,7 +197,7 @@ func buildHandler(logger logging.Logger) func(ctx context.Context) error {
 				return fmt.Errorf("inviting user #%d: %w", i, invitationCreationErr)
 			}
 
-			logger.Debug("checking for sent invitation")
+			logger.WithValue("i", i).Debug("checking for sent invitation")
 			sentInvitations, invitationSendErr := householdLeaderClient.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			if invitationSendErr != nil {
 				return fmt.Errorf("checking for sent invitations for user #%d: %w", i, invitationSendErr)
@@ -206,7 +207,7 @@ func buildHandler(logger logging.Logger) func(ctx context.Context) error {
 				return fmt.Errorf("no invitations sent to user #%d", i)
 			}
 
-			logger.Debug("checking for received invitation")
+			logger.WithValue("i", i).Debug("checking for received invitation")
 			invitations, getInvitationsErr := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
 			if getInvitationsErr != nil {
 				return fmt.Errorf("checking for received invitations for user #%d: %w", i, getInvitationsErr)
@@ -216,17 +217,19 @@ func buildHandler(logger logging.Logger) func(ctx context.Context) error {
 				return fmt.Errorf("user #%d received no invitations", i)
 			}
 
+			logger.WithValue("i", i).Debug("accepting household invitation")
 			if err = c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitation.ID, "prober testing"); err != nil {
 				return fmt.Errorf("accepting household invitation for user #%d: %w", i, err)
 			}
 
+			logger.WithValue("i", i).Debug("switching active household")
 			if err = c.SwitchActiveHousehold(ctx, relevantHouseholdID); err != nil {
 				return fmt.Errorf("switching household for user #%d: %w", i, err)
 			}
 			createdClients = append(createdClients, c)
 		}
 
-		// create recipes for meal plan
+		logger.Debug("creating recipes for meal plan")
 		createdMeals := []*types.Meal{}
 		for i := 0; i < 3; i++ {
 			createdMeal, mealCreationErr := createMealForTest(ctx, householdLeaderClient)
@@ -241,7 +244,7 @@ func buildHandler(logger logging.Logger) func(ctx context.Context) error {
 			Status:         types.AwaitingVotesMealPlanStatus,
 			StartsAt:       uint64(time.Now().Add(24 * time.Hour).Unix()),
 			EndsAt:         uint64(time.Now().Add(72 * time.Hour).Unix()),
-			VotingDeadline: uint64(time.Now().Add(creationDeadline).Unix()),
+			VotingDeadline: uint64(time.Now().Add(votingDeadline).Unix()),
 			Options: []*types.MealPlanOption{
 				{
 					MealID:   createdMeals[0].ID,
@@ -270,10 +273,14 @@ func buildHandler(logger logging.Logger) func(ctx context.Context) error {
 			return fmt.Errorf("creating meal plan: %w", err)
 		}
 
+		logger.Debug("created meal plan")
+
 		createdMealPlan, err = householdLeaderClient.GetMealPlan(ctx, createdMealPlan.ID)
 		if err != nil {
 			return fmt.Errorf("fetching meal plan: %w", err)
 		}
+
+		logger.Debug("fetched created meal plan")
 
 		userAVotes := []*types.MealPlanOptionVote{
 			{
@@ -306,6 +313,8 @@ func buildHandler(logger logging.Logger) func(ctx context.Context) error {
 		}
 
 		for _, vote := range userAVotes {
+			logger.Debug("voting for user A")
+
 			exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(vote)
 			_, err = createdClients[0].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
 
@@ -315,6 +324,8 @@ func buildHandler(logger logging.Logger) func(ctx context.Context) error {
 		}
 
 		for _, vote := range userBVotes {
+			logger.Debug("voting for user B")
+
 			exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(vote)
 			_, err = createdClients[1].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
 
@@ -323,6 +334,7 @@ func buildHandler(logger logging.Logger) func(ctx context.Context) error {
 			}
 		}
 
+		logger.Debug("getting voted upon meal plan")
 		createdMealPlan, err = householdLeaderClient.GetMealPlan(ctx, createdMealPlan.ID)
 		if err != nil {
 			return fmt.Errorf("fetching voted upon meal plan: %w", err)
@@ -332,8 +344,10 @@ func buildHandler(logger logging.Logger) func(ctx context.Context) error {
 			return fmt.Errorf("unexpected meal plan status: %s", createdMealPlan.Status)
 		}
 
+		logger.Debug("waiting for worker to finalize meal plan")
 		time.Sleep(creationDeadline)
 
+		logger.Debug("getting hopefully finalized meal plan")
 		createdMealPlan, err = householdLeaderClient.GetMealPlan(ctx, createdMealPlan.ID)
 		if err != nil {
 			return fmt.Errorf("fetching maybe finalized meal plan: %w", err)
@@ -370,6 +384,8 @@ func buildHandler(logger logging.Logger) func(ctx context.Context) error {
 
 func main() {
 	logger := zerolog.NewZerologLogger()
+	logger.SetLevel(logging.DebugLevel)
 	logger.Info("starting prober")
+
 	lambda.Start(buildHandler(logger))
 }

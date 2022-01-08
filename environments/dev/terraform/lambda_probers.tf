@@ -19,7 +19,7 @@ resource "aws_lambda_function" "meal_planning_prober_worker_lambda" {
   role          = aws_iam_role.worker_lambda_role.arn
   runtime       = local.lambda_runtime
   memory_size   = local.memory_size
-  timeout       = local.timeout
+  timeout       = 300
 
   filename = data.archive_file.dummy_zip.output_path
 
@@ -29,7 +29,7 @@ resource "aws_lambda_function" "meal_planning_prober_worker_lambda" {
 }
 
 resource "aws_cloudwatch_event_rule" "every_five_minutes" {
-  name                = "every-minute"
+  name                = "every-five-minutes"
   description         = "Fires every five minutes"
   schedule_expression = "rate(5 minutes)"
 }
