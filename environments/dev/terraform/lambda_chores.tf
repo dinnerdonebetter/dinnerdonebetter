@@ -13,12 +13,6 @@ resource "aws_sqs_queue" "chores_queue" {
   })
 }
 
-resource "aws_ssm_parameter" "chores_queue_parameter" {
-  name  = "PRIXFIXE_CHORES_QUEUE_URL"
-  type  = "String"
-  value = aws_sqs_queue.chores_queue.url
-}
-
 resource "aws_lambda_function" "chores_worker_lambda" {
   function_name = "chores_worker"
   handler       = "chores_worker"

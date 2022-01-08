@@ -2,15 +2,16 @@ package main
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"net/url"
 	"time"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/aws/aws-lambda-go/lambda"
+
+	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 
 	"go.opentelemetry.io/otel/trace"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/api_server/pkg/client/httpclient"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
@@ -23,7 +24,7 @@ const (
 	creationDeadline = 1 * time.Minute
 )
 
-func getClientForUser(ctx context.Context) (*types.User, *httpclient.Client) {
+func getClientForUser(ctx context.Context) (*types.User, *httpclient.Client, error) {
 	example := fakes.BuildFakeUserRegistrationInput()
 	input := &types.UserRegistrationInput{
 		Username:     example.Username,
@@ -33,31 +34,25 @@ func getClientForUser(ctx context.Context) (*types.User, *httpclient.Client) {
 
 	parsedURI, err := url.Parse(stagingAddress)
 	if err != nil {
-		panic(err)
+		return nil, nil, fmt.Errorf("parsing provided URI: %w", err)
 	}
 
 	user, err := testutils.CreateServiceUser(ctx, stagingAddress, input)
 	if err != nil {
-		panic(err)
+		return nil, nil, err
 	}
 
 	cookie, err := testutils.GetLoginCookie(ctx, stagingAddress, user)
 	if err != nil {
-		panic(err)
+		return nil, nil, fmt.Errorf("getting login cookie: %w", err)
 	}
 
 	client, err := httpclient.NewClient(parsedURI, trace.NewNoopTracerProvider(), httpclient.UsingCookie(cookie))
 	if err != nil {
-		panic(err)
+		return nil, nil, fmt.Errorf("initializing REST API client: %w", err)
 	}
 
-	return user, client
-}
-
-func mustnt(err error, doing string) {
-	if err != nil {
-		log.Panicf("error %s: %v", doing, err)
-	}
+	return user, client, nil
 }
 
 var allDays = []time.Weekday{
@@ -95,11 +90,14 @@ func stringPointer(s string) *string {
 	return &s
 }
 
-func createRecipeForTest(ctx context.Context, logger logging.Logger, client *httpclient.Client) ([]*types.ValidIngredient, *types.ValidPreparation, *types.Recipe) {
+func createRecipeForTest(ctx context.Context, client *httpclient.Client) ([]*types.ValidIngredient, *types.ValidPreparation, *types.Recipe, error) {
 	exampleValidPreparation := fakes.BuildFakeValidPreparation()
 	exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
 	createdValidPreparation, err := client.CreateValidPreparation(ctx, exampleValidPreparationInput)
-	mustnt(err, "creating valid preparation")
+
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("creating valid preparation: %w", err)
+	}
 
 	exampleRecipe := fakes.BuildFakeRecipe()
 
@@ -108,8 +106,10 @@ func createRecipeForTest(ctx context.Context, logger logging.Logger, client *htt
 		for j := range recipeStep.Ingredients {
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := client.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			mustnt(err, "creating valid ingredient")
+			createdValidIngredient, validIngredientCreationErr := client.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			if validIngredientCreationErr != nil {
+				return nil, nil, nil, fmt.Errorf("creating valid ingredient: %w", validIngredientCreationErr)
+			}
 
 			createdValidIngredients = append(createdValidIngredients, createdValidIngredient)
 
@@ -123,17 +123,20 @@ func createRecipeForTest(ctx context.Context, logger logging.Logger, client *htt
 	}
 
 	createdRecipe, err := client.CreateRecipe(ctx, exampleRecipeInput)
-	mustnt(err, "creating recipe")
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("creating recipe: %w", err)
+	}
 
-	return createdValidIngredients, createdValidPreparation, createdRecipe
+	return createdValidIngredients, createdValidPreparation, createdRecipe, nil
 }
 
-func createMealForTest(ctx context.Context, logger logging.Logger, client *httpclient.Client) *types.Meal {
-	createdRecipes := []*types.Recipe{}
+func createMealForTest(ctx context.Context, client *httpclient.Client) (*types.Meal, error) {
 	createdRecipeIDs := []string{}
 	for i := 0; i < 3; i++ {
-		_, _, recipe := createRecipeForTest(ctx, logger, client)
-		createdRecipes = append(createdRecipes, recipe)
+		_, _, recipe, err := createRecipeForTest(ctx, client)
+		if err != nil {
+			return nil, fmt.Errorf("creating recipe #%d: %w", i, err)
+		}
 		createdRecipeIDs = append(createdRecipeIDs, recipe.ID)
 	}
 
@@ -142,69 +145,85 @@ func createMealForTest(ctx context.Context, logger logging.Logger, client *httpc
 	exampleMealInput.Recipes = createdRecipeIDs
 
 	createdMeal, err := client.CreateMeal(ctx, exampleMealInput)
-	mustnt(err, "creating meal")
+	if err != nil {
+		return nil, fmt.Errorf("creating meal: %w", err)
+	}
 
-	return createdMeal
+	return createdMeal, nil
 }
 
-func main() {
-	//ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-	//defer cancel()
-
-	ctx := context.Background()
-
+func buildHandler(ctx context.Context) error {
 	logger := zerolog.NewZerologLogger()
-	householdLeader, householdLeaderClient := getClientForUser(ctx)
+	householdLeader, householdLeaderClient, err := getClientForUser(ctx)
+	if err != nil {
+		return fmt.Errorf("creating household leader API client")
+	}
 
 	// create household members
 	logger.Debug("determining household ID")
-	currentStatus, statusErr := householdLeaderClient.UserStatus(ctx)
-	mustnt(statusErr, "checking household leader user status")
+	currentStatus, err := householdLeaderClient.UserStatus(ctx)
+	if err != nil {
+		return fmt.Errorf("checking household leader user status: %w", err)
+	}
 
 	relevantHouseholdID := currentStatus.ActiveHousehold
-
-	createdUsers := []*types.User{}
 	createdClients := []*httpclient.Client{}
 
 	for i := 0; i < 2; i++ {
 		logger.Debug("creating user to invite")
-		u, c := getClientForUser(ctx)
+		u, c, userCreationErr := getClientForUser(ctx)
+		if userCreationErr != nil {
+			return fmt.Errorf("error creating household member #%d: %w", i, userCreationErr)
+		}
 
 		logger.Debug("inviting user")
-		invitation, err := householdLeaderClient.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
+		invitation, invitationCreationErr := householdLeaderClient.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
 			FromUser:             householdLeader.ID,
 			Note:                 "prober testing",
 			ToEmail:              u.EmailAddress,
 			DestinationHousehold: relevantHouseholdID,
 		})
-		mustnt(err, "")
+		if invitationCreationErr != nil {
+			return fmt.Errorf("inviting user #%d: %w", i, invitationCreationErr)
+		}
 
 		logger.Debug("checking for sent invitation")
-		sentInvitations, err := householdLeaderClient.GetPendingHouseholdInvitationsFromUser(ctx, nil)
-		mustnt(err, "")
+		sentInvitations, invitationSendErr := householdLeaderClient.GetPendingHouseholdInvitationsFromUser(ctx, nil)
+		if invitationSendErr != nil {
+			return fmt.Errorf("checking for sent invitations for user #%d: %w", i, invitationSendErr)
+		}
+
 		if len(sentInvitations.HouseholdInvitations) == 0 {
-			panic("no sent invitations")
+			return fmt.Errorf("no invitations sent to user #%d", i)
 		}
 
 		logger.Debug("checking for received invitation")
-		invitations, err := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
-		mustnt(err, "")
-		if len(invitations.HouseholdInvitations) == 0 {
-			panic("no received invitations")
+		invitations, getInvitationsErr := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
+		if getInvitationsErr != nil {
+			return fmt.Errorf("checking for received invitations for user #%d: %w", i, getInvitationsErr)
 		}
 
-		mustnt(c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitation.ID, "prober testing"), "accepting household invitation")
+		if len(invitations.HouseholdInvitations) == 0 {
+			return fmt.Errorf("user #%d received no invitations", i)
+		}
 
-		mustnt(c.SwitchActiveHousehold(ctx, relevantHouseholdID), "switching household")
+		if err = c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitation.ID, "prober testing"); err != nil {
+			return fmt.Errorf("accepting household invitation for user #%d: %w", i, err)
+		}
 
-		createdUsers = append(createdUsers, u)
+		if err = c.SwitchActiveHousehold(ctx, relevantHouseholdID); err != nil {
+			return fmt.Errorf("switching household for user #%d: %w", i, err)
+		}
 		createdClients = append(createdClients, c)
 	}
 
 	// create recipes for meal plan
 	createdMeals := []*types.Meal{}
 	for i := 0; i < 3; i++ {
-		createdMeal := createMealForTest(ctx, logger, householdLeaderClient)
+		createdMeal, mealCreationErr := createMealForTest(ctx, householdLeaderClient)
+		if mealCreationErr != nil {
+			return fmt.Errorf("error creating meal #%d: %w", i, mealCreationErr)
+		}
 		createdMeals = append(createdMeals, createdMeal)
 	}
 
@@ -213,7 +232,7 @@ func main() {
 		Status:         types.AwaitingVotesMealPlanStatus,
 		StartsAt:       uint64(time.Now().Add(24 * time.Hour).Unix()),
 		EndsAt:         uint64(time.Now().Add(72 * time.Hour).Unix()),
-		VotingDeadline: uint64(time.Now().Add(10 * time.Minute).Unix()),
+		VotingDeadline: uint64(time.Now().Add(creationDeadline).Unix()),
 		Options: []*types.MealPlanOption{
 			{
 				MealID:   createdMeals[0].ID,
@@ -237,12 +256,15 @@ func main() {
 	}
 
 	exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
-	exampleMealPlanInput.VotingDeadline = uint64(time.Now().Add(creationDeadline).Unix())
 	createdMealPlan, err := householdLeaderClient.CreateMealPlan(ctx, exampleMealPlanInput)
-	mustnt(err, "")
+	if err != nil {
+		return fmt.Errorf("creating meal plan: %w", err)
+	}
 
 	createdMealPlan, err = householdLeaderClient.GetMealPlan(ctx, createdMealPlan.ID)
-	mustnt(err, "")
+	if err != nil {
+		return fmt.Errorf("fetching meal plan: %w", err)
+	}
 
 	userAVotes := []*types.MealPlanOptionVote{
 		{
@@ -277,27 +299,39 @@ func main() {
 	for _, vote := range userAVotes {
 		exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(vote)
 		_, err = createdClients[0].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
-		mustnt(err, "")
+
+		if err != nil {
+			return fmt.Errorf("voting for user A: %w", err)
+		}
 	}
 
 	for _, vote := range userBVotes {
 		exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(vote)
 		_, err = createdClients[1].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
-		mustnt(err, "")
+
+		if err != nil {
+			return fmt.Errorf("voting for user B: %w", err)
+		}
 	}
 
 	createdMealPlan, err = householdLeaderClient.GetMealPlan(ctx, createdMealPlan.ID)
-	mustnt(err, "")
+	if err != nil {
+		return fmt.Errorf("fetching voted upon meal plan: %w", err)
+	}
+
 	if types.AwaitingVotesMealPlanStatus != createdMealPlan.Status {
-		panic("unexpected meal plan status")
+		return fmt.Errorf("unexpected meal plan status: %s", createdMealPlan.Status)
 	}
 
 	time.Sleep(creationDeadline)
 
 	createdMealPlan, err = householdLeaderClient.GetMealPlan(ctx, createdMealPlan.ID)
-	mustnt(err, "")
+	if err != nil {
+		return fmt.Errorf("fetching maybe finalized meal plan: %w", err)
+	}
+
 	if types.FinalizedMealPlanStatus != createdMealPlan.Status {
-		panic("unexpected final meal plan status")
+		return fmt.Errorf("unexpected final meal status: %s", createdMealPlan.Status)
 	}
 
 	for _, day := range allDays {
@@ -311,12 +345,19 @@ func main() {
 						break
 					}
 				}
+
 				if !selectionMade {
-					panic("selection wasn't made")
+					return fmt.Errorf("selection wasn't made for meal plan %s", createdMealPlan.ID)
 				}
 			}
 		}
 	}
 
 	logger.Info("done")
+
+	return nil
+}
+
+func main() {
+	lambda.Start(buildHandler)
 }
