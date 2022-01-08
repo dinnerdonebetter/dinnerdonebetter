@@ -1,4 +1,4 @@
- on: [gollum]
+ on: [pull_request]
  name: Tests
  jobs:
    unit_tests:
