@@ -24,15 +24,15 @@ resource "aws_db_instance" "api_database" {
   allocated_storage     = 10
   max_allocated_storage = 20
 
-  username = local.database_username
-  password = random_password.database_password.result
-  backup_window      = "05:00-08:00"
-  maintenance_window = "sat:01:00-sat:04:00"
+  username            = local.database_username
+  password            = random_password.database_password.result
+  backup_window       = "05:00-08:00"
+  maintenance_window  = "sat:01:00-sat:04:00"
   publicly_accessible = true
   # storage_encrypted = true # InvalidParameterCombination: DB Instance class db.t2.micro does not support encryption at rest
   skip_final_snapshot = true
 
-  port                = 5432
+  port = 5432
 
   db_subnet_group_name = aws_db_subnet_group.db_subnet.name
   vpc_security_group_ids = [
