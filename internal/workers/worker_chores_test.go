@@ -53,13 +53,22 @@ func TestChoresWorker_HandleMessage(T *testing.T) {
 		body, err := json.Marshal(exampleInput)
 		require.NoError(t, err)
 
+		exampleMealPlans := fakes.BuildFakeMealPlanList().MealPlans
+
 		dbm := database.NewMockDatabase()
 		dbm.MealPlanDataManager.On(
-			"FinalizeMealPlanWithExpiredVotingPeriod",
+			"GetUnfinalizedMealPlansWithExpiredVotingPeriods",
 			testutils.ContextMatcher,
-			exampleInput.MealPlanID,
-			exampleInput.AttributableToHouseholdID,
-		).Return(true, nil)
+		).Return(exampleMealPlans, nil)
+
+		for _, mealPlan := range exampleMealPlans {
+			dbm.MealPlanDataManager.On(
+				"FinalizeMealPlanWithExpiredVotingPeriod",
+				testutils.ContextMatcher,
+				mealPlan.ID,
+				mealPlan.BelongsToHousehold,
+			).Return(true, nil)
+		}
 
 		worker := newTestChoresWorker(t)
 		worker.dataManager = dbm
@@ -67,14 +76,5 @@ func TestChoresWorker_HandleMessage(T *testing.T) {
 		assert.NoError(t, worker.HandleMessage(ctx, body))
 
 		mock.AssertExpectationsForObjects(t, dbm)
-	})
-
-	T.Run("invalid input", func(t *testing.T) {
-		t.Parallel()
-
-		worker := newTestChoresWorker(t)
-
-		ctx := context.Background()
-		assert.Error(t, worker.HandleMessage(ctx, []byte("} bad JSON lol")))
 	})
 }
