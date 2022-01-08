@@ -31,8 +31,11 @@ const (
 
 func buildHandler(logger logging.Logger, worker *workers.ChoresWorker) func(ctx context.Context, sqsEvent events.SQSEvent) error {
 	return func(ctx context.Context, sqsEvent events.SQSEvent) error {
+		logger = logger.WithValue("event_count", len(sqsEvent.Records))
+
 		for i := 0; i < len(sqsEvent.Records); i++ {
 			message := sqsEvent.Records[i]
+			logger.WithValue("iteration", i).Debug("handling message")
 			if err := worker.HandleMessage(ctx, []byte(message.Body)); err != nil {
 				return observability.PrepareError(err, nil, nil, "handling writes message")
 			}

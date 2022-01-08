@@ -28,7 +28,7 @@ func getClientForUser(ctx context.Context) (*types.User, *httpclient.Client) {
 	input := &types.UserRegistrationInput{
 		Username:     example.Username,
 		Password:     example.Password,
-		EmailAddress: "verygoodsoftwarenotvirus@protonmail.com",
+		EmailAddress: example.EmailAddress,
 	}
 
 	parsedURI, err := url.Parse(stagingAddress)
@@ -148,8 +148,10 @@ func createMealForTest(ctx context.Context, logger logging.Logger, client *httpc
 }
 
 func main() {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-	defer cancel()
+	//ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	//defer cancel()
+
+	ctx := context.Background()
 
 	logger := zerolog.NewZerologLogger()
 	householdLeader, householdLeaderClient := getClientForUser(ctx)
@@ -163,14 +165,10 @@ func main() {
 
 	createdUsers := []*types.User{}
 	createdClients := []*httpclient.Client{}
-	createdNotificationChannels := []chan *types.DataChangeMessage{}
 
 	for i := 0; i < 2; i++ {
 		logger.Debug("creating user to invite")
 		u, c := getClientForUser(ctx)
-
-		nc, err := c.SubscribeToNotifications(ctx, nil)
-		mustnt(err, "")
 
 		logger.Debug("inviting user")
 		invitation, err := householdLeaderClient.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
@@ -201,7 +199,6 @@ func main() {
 
 		createdUsers = append(createdUsers, u)
 		createdClients = append(createdClients, c)
-		createdNotificationChannels = append(createdNotificationChannels, nc)
 	}
 
 	// create recipes for meal plan
@@ -320,4 +317,6 @@ func main() {
 			}
 		}
 	}
+
+	logger.Info("done")
 }

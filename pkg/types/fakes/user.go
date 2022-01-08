@@ -100,8 +100,9 @@ func BuildFakeUserReputationUpdateInputFromUser(user *types.User) *types.UserRep
 // BuildFakeUserRegistrationInput builds a faked UserLoginInput.
 func BuildFakeUserRegistrationInput() *types.UserRegistrationInput {
 	return &types.UserRegistrationInput{
-		Username: fake.Username(),
-		Password: fake.Password(true, true, true, true, true, 32),
+		Username:     fake.Username(),
+		Password:     fake.Password(true, true, true, true, true, 32),
+		EmailAddress: fake.Email(),
 	}
 }
 
