@@ -31,7 +31,7 @@ resource "aws_lambda_function" "meal_planning_prober_worker_lambda" {
 resource "aws_cloudwatch_event_rule" "every_five_minutes" {
   name                = "every-minute"
   description         = "Fires every five minutes"
-  schedule_expression = "rate(5 minute)"
+  schedule_expression = "rate(5 minutes)"
 }
 
 resource "aws_cloudwatch_event_target" "run_meal_planning_prober_every_five_minutes" {
