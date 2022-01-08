@@ -19,7 +19,7 @@ resource "aws_lambda_function" "chores_worker_lambda" {
   role          = aws_iam_role.worker_lambda_role.arn
   runtime       = local.lambda_runtime
   memory_size   = local.memory_size
-  timeout       = local.timeout
+  timeout       = 55
 
   tracing_config {
     mode = "Active"
