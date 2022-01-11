@@ -44,7 +44,7 @@ type (
 		TwoFactorSecret           string          `json:"-"`
 		HashedPassword            string          `json:"-"`
 		ID                        string          `json:"id"`
-		ServiceRoles              []string        `json:"serviceRole"`
+		ServiceRoles              []string        `json:"serviceRoles"`
 		CreatedOn                 uint64          `json:"createdOn"`
 		RequiresPasswordChange    bool            `json:"requiresPasswordChange"`
 	}

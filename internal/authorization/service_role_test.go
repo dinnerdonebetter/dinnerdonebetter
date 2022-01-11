@@ -32,4 +32,16 @@ func TestServiceRoles(T *testing.T) {
 		assert.True(t, r.CanSeeUserData())
 		assert.True(t, r.CanSearchUsers())
 	})
+
+	T.Run("both", func(t *testing.T) {
+		t.Parallel()
+
+		r := NewServiceRolePermissionChecker(ServiceUserRole.String(), ServiceAdminRole.String())
+
+		assert.True(t, r.IsServiceAdmin())
+		assert.True(t, r.CanCycleCookieSecrets())
+		assert.True(t, r.CanUpdateUserReputations())
+		assert.True(t, r.CanSeeUserData())
+		assert.True(t, r.CanSearchUsers())
+	})
 }

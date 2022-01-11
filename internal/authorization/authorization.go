@@ -12,12 +12,12 @@ func hasPermission(p Permission, roles ...string) bool {
 	}
 
 	for _, r := range roles {
-		if !globalAuthorizer.IsGranted(r, p, nil) {
-			return false
+		if globalAuthorizer.IsGranted(r, p, nil) {
+			return true
 		}
 	}
 
-	return true
+	return false
 }
 
 // CanCreateValidInstruments returns whether a user can create valid instruments or not.

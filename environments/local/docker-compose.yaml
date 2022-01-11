@@ -17,15 +17,6 @@ services:
             driver: none
         ports:
             - '5432:5432'
-    elasticsearch:
-      image: elasticsearch:7.14.1
-      ports:
-        - '9200:9200'
-        - '9300:9300'
-      environment:
-        discovery.type: 'single-node'
-      logging:
-        driver: none
     tracing-server:
         image: jaegertracing/all-in-one:1.22.0
         logging:
@@ -68,6 +59,7 @@ services:
     workers:
       container_name: workers
       environment:
+        TARGET_ADDRESS: 'http://api_server:8000'
         PRIXFIXE_WORKERS_LOCAL_CONFIG_STORE_KEY: 'SUFNQVdBUkVUSEFUVEhJU1NFQ1JFVElTVU5TRUNVUkU='
         CONFIGURATION_FILEPATH: '/etc/service.config'
         JAEGER_DISABLED: 'false'
