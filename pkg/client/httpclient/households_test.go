@@ -81,6 +81,45 @@ func (s *householdsTestSuite) TestClient_SwitchActiveHousehold() {
 	})
 }
 
+func (s *householdsTestSuite) TestClient_GetCurrentHousehold() {
+	const expectedPathFormat = "/api/v1/households/current"
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat)
+
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHousehold)
+
+		actual, err := c.GetCurrentHousehold(s.ctx)
+		require.NotNil(t, actual)
+		assert.NoError(t, err)
+		assert.Equal(t, s.exampleHousehold, actual)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		c := buildTestClientWithInvalidURL(t)
+		actual, err := c.GetCurrentHousehold(s.ctx)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error executing request", func() {
+		t := s.T()
+
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat)
+
+		c := buildTestClientWithInvalidResponse(t, spec)
+		actual, err := c.GetCurrentHousehold(s.ctx)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
 func (s *householdsTestSuite) TestClient_GetHousehold() {
 	const expectedPathFormat = "/api/v1/households/%s"
 

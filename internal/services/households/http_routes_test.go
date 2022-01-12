@@ -386,6 +386,122 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 	})
 }
 
+func TestHouseholdsService_InfoHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager.On(
+			"GetHousehold",
+			testutils.ContextMatcher,
+			helper.exampleHousehold.ID,
+			helper.exampleUser.ID,
+		).Return(helper.exampleHousehold, nil)
+		helper.service.householdDataManager = householdDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"RespondWithData",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			mock.IsType(&types.Household{}),
+		).Return()
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.InfoHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, householdDataManager, encoderDecoder)
+	})
+
+	T.Run("with error retrieving session context data", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeErrorResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			"unauthenticated",
+			http.StatusUnauthorized,
+		).Return()
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.InfoHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, encoderDecoder)
+	})
+
+	T.Run("with no such household in database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager.On(
+			"GetHousehold",
+			testutils.ContextMatcher,
+			helper.exampleHousehold.ID,
+			helper.exampleUser.ID,
+		).Return((*types.Household)(nil), sql.ErrNoRows)
+		helper.service.householdDataManager = householdDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeNotFoundResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+		).Return()
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.InfoHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, householdDataManager, encoderDecoder)
+	})
+
+	T.Run("with error reading from database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		householdDataManager := &mocktypes.HouseholdDataManager{}
+		householdDataManager.On(
+			"GetHousehold",
+			testutils.ContextMatcher,
+			helper.exampleHousehold.ID,
+			helper.exampleUser.ID,
+		).Return((*types.Household)(nil), errors.New("blah"))
+		helper.service.householdDataManager = householdDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeUnspecifiedInternalServerErrorResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+		).Return()
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.InfoHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, householdDataManager, encoderDecoder)
+	})
+}
+
 func TestHouseholdsService_ReadHandler(T *testing.T) {
 	T.Parallel()
 
@@ -481,7 +597,8 @@ func TestHouseholdsService_ReadHandler(T *testing.T) {
 		householdDataManager.On(
 			"GetHousehold",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID, helper.exampleUser.ID,
+			helper.exampleHousehold.ID,
+			helper.exampleUser.ID,
 		).Return((*types.Household)(nil), errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
 
@@ -633,7 +750,8 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		householdDataManager.On(
 			"GetHousehold",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID, helper.exampleUser.ID,
+			helper.exampleHousehold.ID,
+			helper.exampleUser.ID,
 		).Return((*types.Household)(nil), sql.ErrNoRows)
 		helper.service.householdDataManager = householdDataManager
 
@@ -662,7 +780,8 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		householdDataManager.On(
 			"GetHousehold",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID, helper.exampleUser.ID,
+			helper.exampleHousehold.ID,
+			helper.exampleUser.ID,
 		).Return((*types.Household)(nil), errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
 

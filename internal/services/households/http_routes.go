@@ -141,6 +141,45 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, household, http.StatusCreated)
 }
 
+// InfoHandler returns a handler that returns the current household.
+func (s *service) InfoHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	requester := sessionCtxData.Requester.UserID
+	logger = logger.WithValue(keys.RequesterIDKey, requester)
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+
+	// determine household ID.
+	householdID := sessionCtxData.ActiveHouseholdID
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
+
+	// fetch household from database.
+	household, err := s.householdDataManager.GetHousehold(ctx, householdID, requester)
+	if errors.Is(err, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		return
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "fetching household from database")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, household)
+}
+
 // ReadHandler returns a GET handler that returns a household.
 func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())

@@ -54,6 +54,36 @@ func TestBuilder_BuildSwitchActiveHouseholdRequest(T *testing.T) {
 	})
 }
 
+func TestBuilder_BuildGetCurrentHouseholdRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPathFormat = "/api/v1/households/current"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat)
+
+		actual, err := helper.builder.BuildGetCurrentHouseholdRequest(helper.ctx)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+
+		actual, err := helper.builder.BuildGetCurrentHouseholdRequest(helper.ctx)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
 func TestBuilder_BuildGetHouseholdRequest(T *testing.T) {
 	T.Parallel()
 

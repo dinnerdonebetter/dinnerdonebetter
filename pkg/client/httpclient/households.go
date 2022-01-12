@@ -37,6 +37,26 @@ func (c *Client) SwitchActiveHousehold(ctx context.Context, householdID string) 
 	return nil
 }
 
+// GetCurrentHousehold retrieves a household.
+func (c *Client) GetCurrentHousehold(ctx context.Context) (*types.Household, error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := c.logger
+
+	req, err := c.requestBuilder.BuildGetCurrentHouseholdRequest(ctx)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building household retrieval request")
+	}
+
+	var household *types.Household
+	if err = c.fetchAndUnmarshal(ctx, req, &household); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "retrieving household")
+	}
+
+	return household, nil
+}
+
 // GetHousehold retrieves a household.
 func (c *Client) GetHousehold(ctx context.Context, householdID string) (*types.Household, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
