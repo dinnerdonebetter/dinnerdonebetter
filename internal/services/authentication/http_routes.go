@@ -141,7 +141,6 @@ func (s *service) BeginSessionHandler(res http.ResponseWriter, req *http.Request
 	requestedCookieDomain := s.determineCookieDomain(ctx, req)
 	if requestedCookieDomain != "" {
 		logger = logger.WithValue("cookie_domain", requestedCookieDomain)
-		logger.Debug("setting alternative cookie domain")
 	}
 
 	user, cookie, err := s.authenticateUserAndBuildCookie(ctx, loginData, requestedCookieDomain)
@@ -230,7 +229,6 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 	requestedCookieDomain := s.determineCookieDomain(ctx, req)
 	if requestedCookieDomain != "" {
 		logger = logger.WithValue("cookie_domain", requestedCookieDomain)
-		logger.Debug("setting alternative cookie domain")
 	}
 
 	cookie, err := s.issueSessionManagedCookie(ctx, householdID, requesterID, requestedCookieDomain)
@@ -289,7 +287,6 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 	requestedCookieDomain := s.determineCookieDomain(ctx, req)
 	if requestedCookieDomain != "" {
 		logger = logger.WithValue("cookie_domain", requestedCookieDomain)
-		logger.Debug("setting alternative cookie domain")
 	}
 
 	newCookie, cookieBuildingErr := s.buildCookie(requestedCookieDomain, "deleted", time.Time{})

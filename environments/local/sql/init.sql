@@ -246,6 +246,78 @@ VALUES
     NULL
 ),
 (
+    'water',
+    'water',
+    '',
+    '',
+    '',
+    '',
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    '1641866784',
+    NULL,
+    NULL
+),
+(
+    'onion',
+    'onion',
+    '',
+    '',
+    '',
+    '',
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    '1641866784',
+    NULL,
+    NULL
+),
+(
+    'olive_oil',
+    'olive oil',
+    '',
+    '',
+    '',
+    '',
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    '1641866784',
+    NULL,
+    NULL
+),
+(
     'coffee',
     'coffee',
     '',
@@ -309,6 +381,24 @@ INSERT INTO "valid_preparations"
 )
 VALUES
 (
+    'dice',
+    'dice',
+    '',
+    '',
+    '1641866834',
+    NULL,
+    NULL
+),
+(
+    'sautee',
+    'sautee',
+    '',
+    '',
+    '1641866834',
+    NULL,
+    NULL
+),
+(
     'grill',
     'grill',
     '',
@@ -334,8 +424,8 @@ INSERT INTO "recipes"
 )
 VALUES
 (
-    'grilledChickenBreast',
-    'grilled chicken breast',
+    'mushroomRisotto',
+    'mushroom risotto',
     '',
     '',
     '',
@@ -345,8 +435,8 @@ VALUES
     NULL
 ),
 (
-    'friedChickenBreast',
-    'fried chicken breast',
+    'friedChicken',
+    'fried chicken',
     '',
     '',
     '',
@@ -354,4 +444,114 @@ VALUES
     '1641867048',
     NULL,
     NULL
+);
+
+-- Recipe Steps
+
+INSERT INTO "recipe_steps" (
+    "id",
+    "index",
+    "preparation_id",
+    "prerequisite_step",
+    "min_estimated_time_in_seconds",
+    "max_estimated_time_in_seconds",
+    "temperature_in_celsius",
+    "notes",
+    "why",
+    "belongs_to_recipe"
+)
+VALUES
+(
+    'mushroomRisotto1',
+    0,
+    'dice',
+    0,
+    0,
+    0,
+    NULL,
+    '',
+    '',
+    'mushroomRisotto'
+),
+(
+    'mushroomRisotto2',
+    0,
+    'sautee',
+    0,
+    0,
+    0,
+    NULL,
+    '',
+    '',
+    'mushroomRisotto'
+);
+
+-- Recipe Step Ingredients
+
+INSERT INTO "recipe_step_ingredients" (
+    "id",
+    "ingredient_id",
+    "quantity_type",
+    "quantity_value",
+    "quantity_notes",
+    "product_of_recipe_step",
+    "ingredient_notes",
+    "belongs_to_recipe_step"
+)
+VALUES
+(
+    'mushroomRisotto1_1',
+    'onion',
+    'grams',
+    400,
+    '',
+    false,
+    '',
+    'mushroomRisotto1'
+),
+(
+    'mushroomRisotto2_1',
+    'onion',
+    'grams',
+    400,
+    '',
+    true,
+    '',
+    'mushroomRisotto2'
+),
+(
+    'mushroomRisotto2_2',
+    'olive_oil',
+    'grams',
+    30,
+    '',
+    false,
+    '',
+    'mushroomRisotto2'
+),
+(
+    'mushroomRisotto2_3',
+    'water',
+    'milliliters',
+    250,
+    '',
+    false,
+    'helps avoid burning the onion',
+    'mushroomRisotto2'
+);
+
+-- Meals
+
+INSERT INTO meals (
+    "id",
+    "name",
+    "description",
+    "created_by_user"
+)
+VALUES
+(
+    'mushroomRisottoWithChicken',
+    'mushroom risotto with chicken',
+    'chicken with a nice mushroom risotto',
+    'mom_jones'
 );

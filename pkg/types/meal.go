@@ -30,7 +30,7 @@ type (
 		Description   string    `json:"description"`
 		CreatedByUser string    `json:"createdByUser"`
 		Name          string    `json:"name"`
-		Recipes       []*Recipe `json:"meals"`
+		Recipes       []*Recipe `json:"recipes"`
 		CreatedOn     uint64    `json:"createdOn"`
 	}
 
@@ -70,7 +70,7 @@ type (
 		Name          string   `json:"name"`
 		Description   string   `json:"description"`
 		CreatedByUser string   `json:"-"`
-		Recipes       []string `json:"meals"`
+		Recipes       []string `json:"recipes"`
 	}
 
 	// MealDataManager describes a structure capable of storing meals permanently.
