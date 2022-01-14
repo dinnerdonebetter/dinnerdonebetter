@@ -294,7 +294,55 @@ VALUES
     NULL
 ),
 (
-    'olive_oil',
+    'garlic',
+    'garlic',
+    '',
+    '',
+    '',
+    '',
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    '1641866784',
+    NULL,
+    NULL
+),
+(
+    'blackPepper',
+    'black pepper',
+    '',
+    '',
+    '',
+    '',
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    '1641866784',
+    NULL,
+    NULL
+),
+(
+    'oliveOil',
     'olive oil',
     '',
     '',
@@ -399,6 +447,15 @@ VALUES
     NULL
 ),
 (
+    'marinate',
+    'marinate',
+    '',
+    '',
+    '1641866834',
+    NULL,
+    NULL
+),
+(
     'grill',
     'grill',
     '',
@@ -435,8 +492,8 @@ VALUES
     NULL
 ),
 (
-    'friedChicken',
-    'fried chicken',
+    'grilledChickenBreast',
+    'grilled chicken',
     '',
     '',
     '',
@@ -484,6 +541,30 @@ VALUES
     '',
     '',
     'mushroomRisotto'
+),
+(
+    'grilledChickenBreast1',
+    0,
+    'marinate',
+    0,
+    0,
+    0,
+    NULL,
+    '',
+    '',
+    'grilledChickenBreast'
+),
+(
+    'grilledChickenBreast2',
+    0,
+    'grill',
+    0,
+    0,
+    0,
+    NULL,
+    '',
+    '',
+    'grilledChickenBreast'
 );
 
 -- Recipe Step Ingredients
@@ -520,16 +601,6 @@ VALUES
     'mushroomRisotto2'
 ),
 (
-    'mushroomRisotto2_2',
-    'olive_oil',
-    'grams',
-    30,
-    '',
-    false,
-    '',
-    'mushroomRisotto2'
-),
-(
     'mushroomRisotto2_3',
     'water',
     'milliliters',
@@ -538,11 +609,51 @@ VALUES
     false,
     'helps avoid burning the onion',
     'mushroomRisotto2'
+),
+(
+    'grilledChickenBreast1_1',
+    'chickenBreast',
+    'grams',
+    900,
+    '',
+    false,
+    '',
+    'grilledChickenBreast1'
+),
+(
+    'grilledChickenBreast1_2',
+    'blackPepper',
+    'grams',
+    3,
+    '',
+    false,
+    '',
+    'grilledChickenBreast1'
+),
+(
+    'grilledChickenBreast1_3',
+    'garlic',
+    'grams',
+    20,
+    '',
+    false,
+    '',
+    'grilledChickenBreast1'
+),
+(
+    'grilledChickenBreast2_1',
+    'chickenBreast',
+    'grams',
+    900,
+    '',
+    true,
+    '',
+    'grilledChickenBreast2'
 );
 
 -- Meals
 
-INSERT INTO meals (
+INSERT INTO "meals" (
     "id",
     "name",
     "description",
@@ -554,4 +665,21 @@ VALUES
     'mushroom risotto with chicken',
     'chicken with a nice mushroom risotto',
     'mom_jones'
+);
+
+INSERT INTO "meal_recipes" (
+    "id",
+    "meal_id",
+    "recipe_id"
+)
+VALUES
+(
+    'mrwcMR',
+    'mushroomRisottoWithChicken',
+    'mushroomRisotto'
+),
+(
+    'mrwcChicken',
+    'mushroomRisottoWithChicken',
+    'grilledChickenBreast'
 );
