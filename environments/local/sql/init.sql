@@ -665,6 +665,12 @@ VALUES
     'mushroom risotto with chicken',
     'chicken with a nice mushroom risotto',
     'mom_jones'
+),
+(
+    'lasagnaWithCapreseSalad',
+    'lasagna with caprese salad',
+    'lasagna with a nice caprese salad',
+    'mom_jones'
 );
 
 INSERT INTO "meal_recipes" (
@@ -683,3 +689,56 @@ VALUES
     'mushroomRisottoWithChicken',
     'grilledChickenBreast'
 );
+
+
+-- Meal Plans
+
+INSERT INTO "meal_plans" (
+    "id",
+    "notes",
+    "status",
+    "voting_deadline",
+    "starts_at",
+    "ends_at",
+    "belongs_to_household"
+)
+VALUES
+(
+    'jonesMealPlan1',
+    '',
+    'finalized',
+    '1641866834',
+    '1641867834',
+    '1642866834',
+    'jonesHousehold'
+);
+
+INSERT INTO "meal_plan_options" (
+    "id",
+    "day",
+    "meal_name",
+    "meal_id",
+    "chosen",
+    "notes",
+    "belongs_to_meal_plan"
+)
+VALUES
+(
+    'jonesMealPlanOption1',
+    3,
+    'dinner',
+    'mushroomRisottoWithChicken',
+    true,
+    '',
+    'jonesMealPlan1'
+),
+(
+    'jonesMealPlanOption2',
+    3,
+    'dinner',
+    'lasagnaWithCapreseSalad',
+    false,
+    '',
+    'jonesMealPlan1'
+);
+
