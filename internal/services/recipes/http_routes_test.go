@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+	"net/url"
 	"testing"
 
 	"github.com/prixfixeco/api_server/internal/database"
@@ -491,6 +492,109 @@ func TestRecipesService_ListHandler(T *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager, encoderDecoder)
+	})
+}
+
+func TestRecipesService_SearchHandler(T *testing.T) {
+	T.Parallel()
+
+	const exampleQuery = "example"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
+
+		exampleRecipeList := fakes.BuildFakeRecipeList()
+
+		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager.On(
+			"SearchForRecipes",
+			testutils.ContextMatcher,
+			exampleQuery,
+			mock.IsType(&types.QueryFilter{}),
+		).Return(exampleRecipeList, nil)
+		helper.service.recipeDataManager = recipeDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"RespondWithData",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			mock.IsType(&types.RecipeList{}),
+		).Return()
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.SearchHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager, encoderDecoder)
+	})
+
+	T.Run("with error fetching session context data", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+
+		helper.service.SearchHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+	})
+
+	T.Run("with no rows returned", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
+
+		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager.On(
+			"SearchForRecipes",
+			testutils.ContextMatcher,
+			exampleQuery,
+			mock.IsType(&types.QueryFilter{}),
+		).Return((*types.RecipeList)(nil), sql.ErrNoRows)
+		helper.service.recipeDataManager = recipeDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"RespondWithData",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			mock.IsType(&types.RecipeList{}),
+		).Return()
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.SearchHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager, encoderDecoder)
+	})
+
+	T.Run("with error reading from database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
+
+		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager.On(
+			"SearchForRecipes",
+			testutils.ContextMatcher,
+			exampleQuery,
+			mock.IsType(&types.QueryFilter{}),
+		).Return((*types.RecipeList)(nil), errors.New("blah"))
+		helper.service.recipeDataManager = recipeDataManager
+
+		helper.service.SearchHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
 }
 
@@ -986,7 +1090,7 @@ func TestRecipesService_ArchiveHandler(T *testing.T) {
 			"Publish",
 			testutils.ContextMatcher,
 			mock.MatchedBy(testutils.DataChangeMessageMatcher),
-		).Return(nil)
+		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		cdc := &customerdata.MockCollector{}
@@ -999,7 +1103,7 @@ func TestRecipesService_ArchiveHandler(T *testing.T) {
 				keys.HouseholdIDKey: helper.exampleHousehold.ID,
 				keys.RecipeIDKey:    helper.exampleRecipe.ID,
 			},
-		).Return(errors.New("blah"))
+		).Return(nil)
 		helper.service.customerDataCollector = cdc
 
 		helper.service.ArchiveHandler(helper.res, helper.req)

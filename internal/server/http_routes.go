@@ -178,11 +178,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			})
 		})
 
-		// Websockets
-		v1Router.Route("/websockets", func(websocketsRouter routing.Router) {
-			websocketsRouter.Get("/data_changes", s.websocketsService.SubscribeHandler)
-		})
-
 		// Webhooks
 		v1Router.Route("/webhooks", func(webhookRouter routing.Router) {
 			singleWebhookRoute := buildURLVarChunk(webhooksservice.WebhookIDURIParamKey, "")
@@ -344,6 +339,9 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			recipesRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesPermission)).
 				Get(root, s.recipesService.ListHandler)
+			recipesRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesPermission)).
+				Get("/search", s.recipesService.SearchHandler)
 
 			recipesRouter.Route(recipeIDRouteParam, func(singleRecipeRouter routing.Router) {
 				singleRecipeRouter.

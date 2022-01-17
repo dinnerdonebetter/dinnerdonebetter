@@ -99,15 +99,10 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 
 			createdUsers := []*types.User{}
 			createdClients := []*httpclient.Client{}
-			createdNotificationChannels := []chan *types.DataChangeMessage{}
 
 			for i := 0; i < 2; i++ {
 				t.Logf("creating user to invite")
 				u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
-
-				nc, err := c.SubscribeToNotifications(ctx, nil)
-				require.NotNil(t, nc)
-				require.NoError(t, err)
 
 				t.Logf("inviting user")
 				invitation, err := testClients.main.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
@@ -135,7 +130,6 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 
 				createdUsers = append(createdUsers, u)
 				createdClients = append(createdClients, c)
-				createdNotificationChannels = append(createdNotificationChannels, nc)
 			}
 
 			// create recipes for meal plan
@@ -316,15 +310,10 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 
 			createdUsers := []*types.User{}
 			createdClients := []*httpclient.Client{}
-			createdNotificationChannels := []chan *types.DataChangeMessage{}
 
 			for i := 0; i < 2; i++ {
 				t.Logf("creating user to invite")
 				u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
-
-				nc, err := c.SubscribeToNotifications(ctx, nil)
-				require.NotNil(t, nc)
-				require.NoError(t, err)
 
 				t.Logf("inviting user")
 				invitation, err := testClients.main.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
@@ -352,7 +341,6 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 
 				createdUsers = append(createdUsers, u)
 				createdClients = append(createdClients, c)
-				createdNotificationChannels = append(createdNotificationChannels, nc)
 			}
 
 			// create recipes for meal plan

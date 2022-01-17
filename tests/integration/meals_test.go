@@ -31,7 +31,7 @@ func createMealForTest(ctx context.Context, t *testing.T, client *httpclient.Cli
 	createdRecipes := []*types.Recipe{}
 	createdRecipeIDs := []string{}
 	for i := 0; i < 3; i++ {
-		_, _, recipe := createRecipeForTest(ctx, t, client)
+		_, _, recipe := createRecipeForTest(ctx, t, client, nil)
 		createdRecipes = append(createdRecipes, recipe)
 		createdRecipeIDs = append(createdRecipeIDs, recipe.ID)
 	}

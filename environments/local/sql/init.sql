@@ -130,7 +130,7 @@ VALUES
     NULL
 );
 
--- Household  Memberships
+-- Household Memberships
 
 INSERT INTO "household_user_memberships" (
     "id",
@@ -205,10 +205,10 @@ INSERT INTO "valid_ingredients" (
     "warning",
     "animal_derived",
     "animal_flesh",
+    "contains_gluten",
     "contains_dairy",
     "contains_egg",
     "contains_fish",
-    "contains_gluten",
     "contains_peanut",
     "contains_sesame",
     "contains_shellfish",
@@ -372,10 +372,82 @@ VALUES
     '',
     '',
     '',
-    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    '1641866784',
+    NULL,
+    NULL
+),
+(
+    'pasta',
+    'pasta',
+    '',
+    '',
+    '',
+    '',
+    false,
+    false,
     true,
     false,
     false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    '1641866784',
+    NULL,
+    NULL
+),
+(
+    'tomato',
+    'tomato',
+    '',
+    '',
+    '',
+    '',
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    '1641866784',
+    NULL,
+    NULL
+),
+(
+    'mozzarella',
+    'mozzarella',
+    '',
+    '',
+    '',
+    '',
+    true,
+    false,
+    false,
+    true,
     false,
     false,
     false,
@@ -438,6 +510,24 @@ VALUES
     NULL
 ),
 (
+    'slice',
+    'slice',
+    '',
+    '',
+    '1641866834',
+    NULL,
+    NULL
+),
+(
+    'plate',
+    'plate',
+    '',
+    '',
+    '1641866834',
+    NULL,
+    NULL
+),
+(
     'sautee',
     'sautee',
     '',
@@ -449,6 +539,24 @@ VALUES
 (
     'marinate',
     'marinate',
+    '',
+    '',
+    '1641866834',
+    NULL,
+    NULL
+),
+(
+    'boil',
+    'boil',
+    '',
+    '',
+    '1641866834',
+    NULL,
+    NULL
+),
+(
+    'drain',
+    'drain',
     '',
     '',
     '1641866834',
@@ -494,6 +602,28 @@ VALUES
 (
     'grilledChickenBreast',
     'grilled chicken',
+    '',
+    '',
+    '',
+    'mom_jones',
+    '1641867048',
+    NULL,
+    NULL
+),
+(
+    'capreseSalad',
+    'caprese salad',
+    '',
+    '',
+    '',
+    'mom_jones',
+    '1641867048',
+    NULL,
+    NULL
+),
+(
+    'spaghettiWithMeatballs',
+    'spaghetti with meat balls',
     '',
     '',
     '',
@@ -565,6 +695,54 @@ VALUES
     '',
     '',
     'grilledChickenBreast'
+),
+(
+    'capreseSalad1',
+    0,
+    'slice',
+    0,
+    120,
+    450,
+    NULL,
+    '',
+    '',
+    'capreseSalad'
+),
+(
+    'capreseSalad2',
+    0,
+    'plate',
+    0,
+    0,
+    0,
+    NULL,
+    '',
+    '',
+    'capreseSalad'
+),
+(
+    'spaghettiWithMeatballs1',
+    0,
+    'boil',
+    0,
+    600,
+    900,
+    NULL,
+    '',
+    '',
+    'spaghettiWithMeatballs'
+),
+(
+    'spaghettiWithMeatballs2',
+    0,
+    'drain',
+    0,
+    0,
+    0,
+    NULL,
+    '',
+    '',
+    'spaghettiWithMeatballs'
 );
 
 -- Recipe Step Ingredients
@@ -649,6 +827,76 @@ VALUES
     true,
     '',
     'grilledChickenBreast2'
+),
+(
+    'capreseSalad1_1',
+    'tomato',
+    'grams',
+    500,
+    '',
+    false,
+    '',
+    'capreseSalad1'
+),
+(
+    'capreseSalad1_2',
+    'mozzarella',
+    'grams',
+    500,
+    '',
+    false,
+    '',
+    'capreseSalad1'
+),
+(
+    'capreseSalad2_1',
+    'tomato',
+    'grams',
+    500,
+    '',
+    true,
+    '',
+    'capreseSalad2'
+),
+(
+    'capreseSalad2_2',
+    'mozzarella',
+    'grams',
+    500,
+    '',
+    true,
+    '',
+    'capreseSalad2'
+),
+(
+    'spaghettiWithMeatballs1_1',
+    'pasta',
+    'grams',
+    420,
+    '',
+    false,
+    '',
+    'spaghettiWithMeatballs1'
+),
+(
+    'spaghettiWithMeatballs1_2',
+    'water',
+    'grams',
+    420,
+    '',
+    false,
+    '',
+    'spaghettiWithMeatballs1'
+),
+(
+    'spaghettiWithMeatballs2_1',
+    'pasta',
+    'grams',
+    420,
+    '',
+    true,
+    '',
+    'spaghettiWithMeatballs2'
 );
 
 -- Meals
@@ -667,9 +915,9 @@ VALUES
     'mom_jones'
 ),
 (
-    'lasagnaWithCapreseSalad',
-    'lasagna with caprese salad',
-    'lasagna with a nice caprese salad',
+    'spaghettiWithCapreseSalad',
+    'spaghetti with caprese salad',
+    'spaghetti with a nice caprese salad',
     'mom_jones'
 );
 
@@ -680,7 +928,7 @@ INSERT INTO "meal_recipes" (
 )
 VALUES
 (
-    'mrwcMR',
+    'mrwcRisotto',
     'mushroomRisottoWithChicken',
     'mushroomRisotto'
 ),
@@ -688,6 +936,16 @@ VALUES
     'mrwcChicken',
     'mushroomRisottoWithChicken',
     'grilledChickenBreast'
+),
+(
+    'swcsSpaghetti',
+    'spaghettiWithCapreseSalad',
+    'spaghettiWithMeatballs'
+),
+(
+    'swcsCaprese',
+    'spaghettiWithCapreseSalad',
+    'capreseSalad'
 );
 
 
@@ -736,9 +994,8 @@ VALUES
     'jonesMealPlanOption2',
     3,
     'dinner',
-    'lasagnaWithCapreseSalad',
+    'spaghettiWithCapreseSalad',
     false,
     '',
     'jonesMealPlan1'
 );
-

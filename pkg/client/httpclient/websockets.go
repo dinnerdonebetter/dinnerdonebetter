@@ -1,5 +1,7 @@
 package httpclient
 
+/*
+
 import (
 	"context"
 
@@ -58,3 +60,5 @@ func (c *Client) SubscribeToNotifications(ctx context.Context, stopChan <-chan b
 
 	return dataChangeMessages, nil
 }
+
+*/

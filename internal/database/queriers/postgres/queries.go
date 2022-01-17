@@ -48,7 +48,16 @@ func (q *SQLQuerier) buildQuery(span tracing.Span, builder squirrel.Sqlizer) (qu
 	return query, args
 }
 
-func (q *SQLQuerier) buildTotalCountQuery(ctx context.Context, tableName string, joins []string, where squirrel.Eq, ownershipColumn, userID string, forAdmin, includeArchived bool) (query string, args []interface{}) {
+func (q *SQLQuerier) buildTotalCountQuery(
+	ctx context.Context,
+	tableName string,
+	joins []string,
+	where squirrel.Eq,
+	ownershipColumn,
+	userID string,
+	forAdmin,
+	includeArchived bool,
+) (query string, args []interface{}) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -82,7 +91,62 @@ func (q *SQLQuerier) buildTotalCountQuery(ctx context.Context, tableName string,
 	return q.buildQuery(span, totalCountQueryBuilder)
 }
 
-func (q *SQLQuerier) buildFilteredCountQuery(ctx context.Context, tableName string, joins []string, where squirrel.Eq, ownershipColumn, userID string, forAdmin, includeArchived bool, filter *types.QueryFilter) (query string, args []interface{}) {
+func (q *SQLQuerier) buildTotalCountQueryWithILike(
+	ctx context.Context,
+	tableName string,
+	joins []string,
+	where squirrel.ILike,
+	ownershipColumn,
+	userID string,
+	forAdmin,
+	includeArchived bool,
+) (query string, args []interface{}) {
+	_, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if where == nil {
+		where = squirrel.ILike{}
+	}
+
+	totalCountQueryBuilder := q.sqlBuilder.
+		PlaceholderFormat(squirrel.Question).
+		Select(fmt.Sprintf(columnCountQueryTemplate, tableName)).
+		From(tableName)
+
+	for _, join := range joins {
+		totalCountQueryBuilder = totalCountQueryBuilder.Join(join)
+	}
+
+	equalsWhere := squirrel.Eq{}
+	if !forAdmin {
+		if userID != "" && ownershipColumn != "" {
+			equalsWhere[fmt.Sprintf("%s.%s", tableName, ownershipColumn)] = userID
+		}
+
+		equalsWhere[fmt.Sprintf("%s.archived_on", tableName)] = nil
+	} else if !includeArchived {
+		equalsWhere[fmt.Sprintf("%s.archived_on", tableName)] = nil
+	}
+
+	totalCountQueryBuilder = totalCountQueryBuilder.Where(where)
+	if len(equalsWhere) > 0 {
+		totalCountQueryBuilder = totalCountQueryBuilder.Where(equalsWhere)
+	}
+
+	return q.buildQuery(span, totalCountQueryBuilder)
+}
+
+func (q *SQLQuerier) buildFilteredCountQuery(
+	ctx context.Context,
+	tableName string,
+	joins []string,
+	where squirrel.Eq,
+	ownershipColumn,
+	userID string,
+	forAdmin,
+	includeArchived bool,
+	filter *types.QueryFilter,
+) (query string, args []interface{}) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -115,6 +179,60 @@ func (q *SQLQuerier) buildFilteredCountQuery(ctx context.Context, tableName stri
 
 	if len(where) > 0 {
 		filteredCountQueryBuilder = filteredCountQueryBuilder.Where(where)
+	}
+
+	if filter != nil {
+		filteredCountQueryBuilder = applyFilterToSubCountQueryBuilder(filter, tableName, filteredCountQueryBuilder)
+	}
+
+	return q.buildQuery(span, filteredCountQueryBuilder)
+}
+
+func (q *SQLQuerier) buildFilteredCountQueryWithILike(
+	ctx context.Context,
+	tableName string,
+	joins []string,
+	where squirrel.ILike,
+	ownershipColumn,
+	userID string,
+	forAdmin,
+	includeArchived bool,
+	filter *types.QueryFilter,
+) (query string, args []interface{}) {
+	_, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if filter != nil {
+		tracing.AttachFilterToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+	}
+
+	if where == nil {
+		where = squirrel.ILike{}
+	}
+
+	filteredCountQueryBuilder := q.sqlBuilder.
+		PlaceholderFormat(squirrel.Question).
+		Select(fmt.Sprintf(columnCountQueryTemplate, tableName)).
+		From(tableName).
+		Where(where)
+
+	for _, join := range joins {
+		filteredCountQueryBuilder = filteredCountQueryBuilder.Join(join)
+	}
+
+	equalsWhere := squirrel.Eq{}
+	if !forAdmin {
+		if userID != "" && ownershipColumn != "" {
+			equalsWhere[fmt.Sprintf("%s.%s", tableName, ownershipColumn)] = userID
+		}
+
+		equalsWhere[fmt.Sprintf("%s.archived_on", tableName)] = nil
+	} else if !includeArchived {
+		equalsWhere[fmt.Sprintf("%s.archived_on", tableName)] = nil
+	}
+
+	if len(equalsWhere) > 0 {
+		filteredCountQueryBuilder = filteredCountQueryBuilder.Where(equalsWhere)
 	}
 
 	if filter != nil {
@@ -177,6 +295,75 @@ func (q *SQLQuerier) buildListQuery(
 
 		builder = builder.Where(where)
 	}
+
+	actualGroupBys := []string{fmt.Sprintf("%s.%s", tableName, "id")}
+	if groupBys != nil {
+		actualGroupBys = append(actualGroupBys, groupBys...)
+	}
+
+	builder = builder.GroupBy(actualGroupBys...)
+	builder = builder.OrderBy(fmt.Sprintf("%s.%s", tableName, "id"))
+
+	if filter != nil {
+		builder = applyFilterToQueryBuilder(filter, tableName, builder)
+	}
+
+	query, selectArgs := q.buildQuery(span, builder)
+
+	return query, append(append(filteredCountQueryArgs, totalCountQueryArgs...), selectArgs...)
+}
+
+// BuildListQueryWithILike builds a SQL query selecting rows that adhere to a given QueryFilter and belong to a given household,
+// and returns both the query and the relevant args to pass to the query executor.
+func (q *SQLQuerier) buildListQueryWithILike(
+	ctx context.Context,
+	tableName string,
+	joins,
+	groupBys []string,
+	where squirrel.ILike,
+	ownershipColumn string,
+	columns []string,
+	ownerID string,
+	forAdmin bool,
+	filter *types.QueryFilter,
+) (query string, args []interface{}) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if filter != nil {
+		tracing.AttachFilterToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+	}
+
+	var includeArchived bool
+	if filter != nil {
+		includeArchived = filter.IncludeArchived
+	}
+
+	filteredCountQuery, filteredCountQueryArgs := q.buildFilteredCountQueryWithILike(ctx, tableName, joins, where, ownershipColumn, ownerID, forAdmin, includeArchived, filter)
+	totalCountQuery, totalCountQueryArgs := q.buildTotalCountQueryWithILike(ctx, tableName, joins, where, ownershipColumn, ownerID, forAdmin, includeArchived)
+
+	builder := q.sqlBuilder.
+		Select(append(
+			columns,
+			fmt.Sprintf("(%s) as total_count", totalCountQuery),
+			fmt.Sprintf("(%s) as filtered_count", filteredCountQuery),
+		)...).
+		From(tableName).
+		Where(where)
+
+	for _, join := range joins {
+		builder = builder.Join(join)
+	}
+
+	equalsWhere := squirrel.Eq{}
+	if !forAdmin {
+		equalsWhere[fmt.Sprintf("%s.archived_on", tableName)] = nil
+
+		if ownershipColumn != "" && ownerID != "" {
+			equalsWhere[fmt.Sprintf("%s.%s", tableName, ownershipColumn)] = ownerID
+		}
+	}
+	builder = builder.Where(equalsWhere)
 
 	actualGroupBys := []string{fmt.Sprintf("%s.%s", tableName, "id")}
 	if groupBys != nil {

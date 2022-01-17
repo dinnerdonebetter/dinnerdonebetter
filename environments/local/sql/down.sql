@@ -1,0 +1,14 @@
+DELETE FROM "users" WHERE id IS NOT NULL;
+DELETE FROM "households" WHERE id IS NOT NULL;
+DELETE FROM "household_user_memberships" WHERE id IS NOT NULL;
+DELETE FROM "valid_ingredients" WHERE id IS NOT NULL;
+DELETE FROM "valid_instruments" WHERE id IS NOT NULL;
+DELETE FROM "valid_preparations" WHERE id IS NOT NULL;
+DELETE FROM "recipes" WHERE id IS NOT NULL;
+DELETE FROM "recipe_steps" WHERE id IS NOT NULL;
+DELETE FROM "recipe_step_ingredients" WHERE id IS NOT NULL;
+DELETE FROM "meals" WHERE id IS NOT NULL;
+DELETE FROM "meal_recipes" WHERE id IS NOT NULL;
+DELETE FROM "meal_plans" WHERE id IS NOT NULL;
+DELETE FROM "meal_plan_options" WHERE id IS NOT NULL;
+DELETE FROM "sessions" WHERE id IS NOT NULL;

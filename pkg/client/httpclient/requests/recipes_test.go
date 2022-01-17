@@ -87,6 +87,39 @@ func TestBuilder_BuildGetRecipesRequest(T *testing.T) {
 	})
 }
 
+func TestBuilder_BuildSearchForRecipesRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPathFormat = "/api/v1/recipes"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		filter := (*types.QueryFilter)(nil)
+		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&q=example&sortBy=asc", expectedPathFormat)
+
+		actual, err := helper.builder.BuildSearchForRecipesRequest(helper.ctx, "example", filter)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+
+		filter := (*types.QueryFilter)(nil)
+
+		actual, err := helper.builder.BuildSearchForRecipesRequest(helper.ctx, "example", filter)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
 func TestBuilder_BuildCreateRecipeRequest(T *testing.T) {
 	T.Parallel()
 

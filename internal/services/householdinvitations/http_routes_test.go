@@ -218,6 +218,50 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, udm, sg)
 	})
 
+	T.Run("with error writing to database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeHouseholdInvitationCreationRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		udm := &mocktypes.UserDataManager{}
+		udm.On(
+			"GetUserIDByEmail",
+			testutils.ContextMatcher,
+			exampleInput.ToEmail,
+		).Return(helper.exampleUser.ID, nil)
+		helper.service.userDataManager = udm
+
+		sg := &mockrandom.Generator{}
+		sg.On(
+			"GenerateBase64EncodedString",
+			testutils.ContextMatcher,
+			64,
+		).Return(t.Name(), nil)
+		helper.service.secretGenerator = sg
+
+		dbManager := database.NewMockDatabase()
+		dbManager.HouseholdInvitationDataManager.On(
+			"CreateHouseholdInvitation",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(*types.HouseholdInvitationDatabaseCreationInput) bool { return true }),
+		).Return((*types.HouseholdInvitation)(nil), errors.New("blah"))
+		helper.service.householdInvitationDataManager = dbManager
+
+		helper.service.InviteMemberHandler(helper.res, helper.req)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, udm, sg, dbManager)
+	})
+
 	T.Run("with error publishing message", func(t *testing.T) {
 		t.Parallel()
 
