@@ -50,7 +50,7 @@ type (
 		Name          string   `json:"name"`
 		Description   string   `json:"description"`
 		CreatedByUser string   `json:"-"`
-		Recipes       []string `json:"meals"`
+		Recipes       []string `json:"recipes"`
 	}
 
 	// MealDatabaseCreationInput represents what a user could set as input for creating meals.
@@ -61,7 +61,7 @@ type (
 		Name          string   `json:"name"`
 		Description   string   `json:"description"`
 		CreatedByUser string   `json:"belongsToHousehold"`
-		Recipes       []string `json:"meals"`
+		Recipes       []string `json:"recipes"`
 	}
 
 	// MealUpdateRequestInput represents what a user could set as input for updating meals.
@@ -112,7 +112,6 @@ func (x *MealCreationRequestInput) ValidateWithContext(ctx context.Context) erro
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Description, validation.Required),
 		validation.Field(&x.Recipes, validation.Required),
 	)
 }
@@ -125,7 +124,6 @@ func (x *MealDatabaseCreationInput) ValidateWithContext(ctx context.Context) err
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Description, validation.Required),
 		validation.Field(&x.Recipes, validation.Required),
 		validation.Field(&x.CreatedByUser, validation.Required),
 	)
