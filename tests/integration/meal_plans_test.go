@@ -33,7 +33,7 @@ func createMealPlanWithNotificationChannel(ctx context.Context, t *testing.T, cl
 	t.Log("creating meal plan")
 	exampleMealPlan := fakes.BuildFakeMealPlan()
 	for i := range exampleMealPlan.Options {
-		createdMeal := createMealForTest(ctx, t, client)
+		createdMeal := createMealForTest(ctx, t, client, nil)
 		exampleMealPlan.Options[i].MealID = createdMeal.ID
 	}
 
@@ -135,7 +135,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			// create recipes for meal plan
 			createdMeals := []*types.Meal{}
 			for i := 0; i < 3; i++ {
-				createdMeal := createMealForTest(ctx, t, testClients.main)
+				createdMeal := createMealForTest(ctx, t, testClients.main, nil)
 				createdMeals = append(createdMeals, createdMeal)
 			}
 
@@ -346,7 +346,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			// create recipes for meal plan
 			createdMeals := []*types.Meal{}
 			for i := 0; i < 3; i++ {
-				createdMeal := createMealForTest(ctx, t, testClients.main)
+				createdMeal := createMealForTest(ctx, t, testClients.main, nil)
 				createdMeals = append(createdMeals, createdMeal)
 			}
 

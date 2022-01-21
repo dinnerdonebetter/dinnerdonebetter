@@ -89,7 +89,7 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 				exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 				exampleMealPlanOption.BelongsToMealPlan = createdMealPlan.ID
 
-				createdMeal := createMealForTest(ctx, t, testClients.main)
+				createdMeal := createMealForTest(ctx, t, testClients.main, nil)
 				exampleMealPlanOption.MealID = createdMeal.ID
 
 				exampleMealPlanOptionInput := fakes.BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(exampleMealPlanOption)

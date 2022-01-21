@@ -81,6 +81,7 @@ func (b *Builder) BuildSearchForRecipesRequest(ctx context.Context, query string
 		ctx,
 		queryParams,
 		recipesBasePath,
+		"search",
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)

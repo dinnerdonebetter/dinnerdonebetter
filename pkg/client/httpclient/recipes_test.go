@@ -132,7 +132,7 @@ func (s *recipesTestSuite) TestClient_GetRecipes() {
 }
 
 func (s *recipesTestSuite) TestClient_SearchForRecipes() {
-	const expectedPath = "/api/v1/recipes"
+	const expectedPath = "/api/v1/recipes/search"
 
 	s.Run("standard", func() {
 		t := s.T()

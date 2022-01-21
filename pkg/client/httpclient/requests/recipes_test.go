@@ -90,7 +90,7 @@ func TestBuilder_BuildGetRecipesRequest(T *testing.T) {
 func TestBuilder_BuildSearchForRecipesRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/recipes"
+	const expectedPathFormat = "/api/v1/recipes/search"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()

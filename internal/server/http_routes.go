@@ -317,6 +317,9 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			mealsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealsPermission)).
 				Get(root, s.mealsService.ListHandler)
+			mealsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealsPermission)).
+				Get("/search", s.mealsService.SearchHandler)
 
 			mealsRouter.Route(mealIDRouteParam, func(singleMealRouter routing.Router) {
 				singleMealRouter.

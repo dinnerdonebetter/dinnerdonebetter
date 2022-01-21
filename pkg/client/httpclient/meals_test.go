@@ -131,6 +131,51 @@ func (s *mealsTestSuite) TestClient_GetMeals() {
 	})
 }
 
+func (s *recipesTestSuite) TestClient_SearchForMeals() {
+	const expectedPath = "/api/v1/meals/search"
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		filter := (*types.QueryFilter)(nil)
+
+		exampleMealList := fakes.BuildFakeMealList()
+
+		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&q=example&sortBy=asc", expectedPath)
+		c, _ := buildTestClientWithJSONResponse(t, spec, exampleMealList)
+		actual, err := c.SearchForMeals(s.ctx, "example", filter)
+
+		require.NotNil(t, actual)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleMealList, actual)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		filter := (*types.QueryFilter)(nil)
+
+		c := buildTestClientWithInvalidURL(t)
+		actual, err := c.SearchForMeals(s.ctx, "example", filter)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error executing request", func() {
+		t := s.T()
+
+		filter := (*types.QueryFilter)(nil)
+
+		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&q=example&sortBy=asc", expectedPath)
+		c := buildTestClientWithInvalidResponse(t, spec)
+		actual, err := c.SearchForMeals(s.ctx, "example", filter)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
 func (s *mealsTestSuite) TestClient_CreateMeal() {
 	const expectedPath = "/api/v1/meals"
 
