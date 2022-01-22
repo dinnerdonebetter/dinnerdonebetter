@@ -282,6 +282,10 @@ func TestQuerier_GetMealPlan(T *testing.T) {
 		exampleHouseholdID := fakes.BuildFakeID()
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 
+		for i := range exampleMealPlan.Options {
+			exampleMealPlan.Options[i].Meal = types.Meal{ID: exampleMealPlan.Options[i].Meal.ID}
+		}
+
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
@@ -624,6 +628,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 		for i := range exampleMealPlan.Options {
 			exampleMealPlan.Options[i].ID = "2"
 			exampleMealPlan.Options[i].BelongsToMealPlan = "1"
+			exampleMealPlan.Options[i].Meal = types.Meal{ID: exampleMealPlan.Options[i].Meal.ID}
 			exampleMealPlan.Options[i].CreatedOn = exampleMealPlan.CreatedOn
 			exampleMealPlan.Options[i].Votes = []*types.MealPlanOptionVote{}
 		}

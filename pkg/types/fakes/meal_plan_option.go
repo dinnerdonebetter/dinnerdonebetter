@@ -17,11 +17,12 @@ func BuildFakeMealPlanOption() *types.MealPlanOption {
 	}
 
 	meal := BuildFakeMeal()
+	meal.Recipes = nil
 
 	return &types.MealPlanOption{
 		ID:   ksuid.New().String(),
 		Day:  time.Monday,
-		Meal: types.Meal{ID: meal.ID},
+		Meal: *meal,
 		MealName: types.MealName(fake.RandomString([]string{
 			string(types.BreakfastMealName),
 			string(types.SecondBreakfastMealName),

@@ -17,6 +17,7 @@ import (
 
 const (
 	mealPlansOnMealPlanOptionsJoinClause = "meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id"
+	mealsOnMealPlanOptionsJoinClause     = "meals ON meal_plan_options.meal_id=meals.id"
 )
 
 var (
@@ -35,10 +36,18 @@ var (
 		"meal_plan_options.last_updated_on",
 		"meal_plan_options.archived_on",
 		"meal_plan_options.belongs_to_meal_plan",
+		"meals.id",
+		"meals.name",
+		"meals.description",
+		"meals.created_on",
+		"meals.last_updated_on",
+		"meals.archived_on",
+		"meals.created_by_user",
 	}
 
 	getMealPlanOptionsJoins = []string{
 		mealPlansOnMealPlanOptionsJoinClause,
+		mealsOnMealPlanOptionsJoinClause,
 	}
 )
 
@@ -65,6 +74,13 @@ func (q *SQLQuerier) scanMealPlanOption(ctx context.Context, scan database.Scann
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
 		&x.BelongsToMealPlan,
+		&x.Meal.ID,
+		&x.Meal.Name,
+		&x.Meal.Description,
+		&x.Meal.CreatedOn,
+		&x.Meal.LastUpdatedOn,
+		&x.Meal.ArchivedOn,
+		&x.Meal.CreatedByUser,
 	}
 
 	if includeCounts {
@@ -146,7 +162,34 @@ func (q *SQLQuerier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealP
 	return result, nil
 }
 
-const getMealPlanOptionQuery = "SELECT meal_plan_options.id, meal_plan_options.day, meal_plan_options.meal_name, meal_plan_options.chosen, meal_plan_options.tiebroken, meal_plan_options.meal_id, meal_plan_options.notes, meal_plan_options.created_on, meal_plan_options.last_updated_on, meal_plan_options.archived_on, meal_plan_options.belongs_to_meal_plan FROM meal_plan_options JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id WHERE meal_plan_options.archived_on IS NULL AND meal_plan_options.belongs_to_meal_plan = $1 AND meal_plan_options.id = $2 AND meal_plans.archived_on IS NULL AND meal_plans.id = $3"
+const getMealPlanOptionQuery = `SELECT
+	meal_plan_options.id, 
+	meal_plan_options.day, 
+	meal_plan_options.meal_name, 
+	meal_plan_options.chosen, 
+	meal_plan_options.tiebroken, 
+	meal_plan_options.meal_id, 
+	meal_plan_options.notes, 
+	meal_plan_options.created_on, 
+	meal_plan_options.last_updated_on, 
+	meal_plan_options.archived_on, 
+	meal_plan_options.belongs_to_meal_plan,
+	meals.id,
+	meals.name,
+	meals.description,
+	meals.created_on,
+	meals.last_updated_on,
+	meals.archived_on,
+	meals.created_by_user
+FROM meal_plan_options 
+JOIN meal_plans ON meal_plan_options.belongs_to_meal_plan=meal_plans.id 
+JOIN meals ON meal_plan_options.meal_id=meals.id
+WHERE meal_plan_options.archived_on IS NULL 
+AND meal_plan_options.belongs_to_meal_plan = $1 
+AND meal_plan_options.id = $2 
+AND meal_plans.archived_on IS NULL 
+AND meal_plans.id = $3
+`
 
 // GetMealPlanOption fetches a meal plan option from the database.
 func (q *SQLQuerier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) (*types.MealPlanOption, error) {
@@ -221,7 +264,8 @@ func (q *SQLQuerier) GetMealPlanOptions(ctx context.Context, mealPlanID string, 
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, nil, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter)
+	groupBys := []string{"meal_plan_options.id", "meals.id"}
+	query, args := q.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, groupBys, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "mealPlanOptions", query, args)
 	if err != nil {
