@@ -21,7 +21,7 @@ INSERT INTO "users" (
 )
 VALUES
 (
-    'admin',
+    '242JvdHmmWASsLrccxeTr14jO3b',
     'admin',
     'admin@prixfixe.email',
     '$argon2id$v=19$m=65536,t=1,p=2$QdxGzEsSJc24mMaW4k3kzQ$uqwRs4CuwRJZKAIXjcR9G1V0Qpv38YtL9vK3wm7SZho',
@@ -34,7 +34,7 @@ VALUES
     NULL
 ),
 (
-    'mom_jones',
+    '242IshfGlwFV0yOm5OTl2NMnU6M',
     'momJones',
     'mom@jones.com',
     '$argon2id$v=19$m=65536,t=1,p=2$QdxGzEsSJc24mMaW4k3kzQ$uqwRs4CuwRJZKAIXjcR9G1V0Qpv38YtL9vK3wm7SZho',
@@ -47,7 +47,7 @@ VALUES
     NULL
 ),
 (
-    'dad_jones',
+    '242IsezjD5MePir3phbnMJVN5An',
     'dadJones',
     'dad@jones.com',
     '$argon2id$v=19$m=65536,t=1,p=2$QdxGzEsSJc24mMaW4k3kzQ$uqwRs4CuwRJZKAIXjcR9G1V0Qpv38YtL9vK3wm7SZho',
@@ -60,7 +60,7 @@ VALUES
     NULL
 ),
 (
-    'sally_jones',
+    '242IsfmqJyO8v5Gw44xDPNcnXUy',
     'sallyJones',
     'sally@jones.com',
     '$argon2id$v=19$m=65536,t=1,p=2$QdxGzEsSJc24mMaW4k3kzQ$uqwRs4CuwRJZKAIXjcR9G1V0Qpv38YtL9vK3wm7SZho',
@@ -73,7 +73,7 @@ VALUES
     NULL
 ),
 (
-    'billy_jones',
+    '242IsgJzNACYclM2fNitpFlLRji',
     'billyJones',
     'billy@jones.com',
     '$argon2id$v=19$m=65536,t=1,p=2$QdxGzEsSJc24mMaW4k3kzQ$uqwRs4CuwRJZKAIXjcR9G1V0Qpv38YtL9vK3wm7SZho',
@@ -104,27 +104,27 @@ INSERT INTO "households"
 )
 VALUES
 (
-    'adminHousehold',
+    '242JKAD4xrFnVPrtSUgwAXMJpBT',
     'admin_default',
     '',
     '',
     'unpaid',
     '',
     NULL,
-    'admin',
+    '242JvdHmmWASsLrccxeTr14jO3b',
     '1641786189',
     NULL,
     NULL
 ),
 (
-    'jonesHousehold',
+    '242JK9oro0PoSqGAFx4gaYwRVjB',
     'The Jones Household',
     '',
     '',
     'paid',
     '',
     NULL,
-    'mom_jones',
+    '242IshfGlwFV0yOm5OTl2NMnU6M',
     '1641786189',
     NULL,
     NULL
@@ -144,9 +144,9 @@ INSERT INTO "household_user_memberships" (
 ) 
 VALUES
 (
-    'adminMembership',
-    'admin',
-    'adminHousehold',
+    '242K1k2JfWPYVyyqQHlz25nJS42',
+    '242JvdHmmWASsLrccxeTr14jO3b',
+    '242JKAD4xrFnVPrtSUgwAXMJpBT',
     true,
     'household_admin',
     '1641786189',
@@ -154,9 +154,9 @@ VALUES
     NULL
 ),
 (
-    'momMembership',
-    'mom_jones',
-    'jonesHousehold',
+    '242K1l04Tuq5gsmCY00FQxmGFpE',
+    '242IshfGlwFV0yOm5OTl2NMnU6M',
+    '242JK9oro0PoSqGAFx4gaYwRVjB',
     true,
     'household_admin',
     '1641786189',
@@ -164,9 +164,9 @@ VALUES
     NULL
 ),
 (
-    'dadMembership',
-    'dad_jones',
-    'jonesHousehold',
+    '242K1mmV5sQW7LLLvGD8BQWbfDY',
+    '242IsezjD5MePir3phbnMJVN5An',
+    '242JK9oro0PoSqGAFx4gaYwRVjB',
     true,
     'household_member',
     '1641786189',
@@ -174,9 +174,9 @@ VALUES
     NULL
 ),
 (
-    'sallyMembership',
-    'sally_jones',
-    'jonesHousehold',
+    '242K1nnFEqUmmwKmWaL1elY5Fmy',
+    '242IsfmqJyO8v5Gw44xDPNcnXUy',
+    '242JK9oro0PoSqGAFx4gaYwRVjB',
     true,
     'household_member',
     '1641786189',
@@ -184,9 +184,9 @@ VALUES
     NULL
 ),
 (
-    'billyMembership',
-    'billy_jones',
-    'jonesHousehold',
+    '242K1n8kA2TwwOuqkrTGhQRjLip',
+    '242IsgJzNACYclM2fNitpFlLRji',
+    '242JK9oro0PoSqGAFx4gaYwRVjB',
     true,
     'household_member',
     '1641786189',
@@ -222,7 +222,7 @@ INSERT INTO "valid_ingredients" (
 )
 VALUES
 (
-    'chickenBreast',
+    '242K6rf5zYjACazuqbWQR8fmRh5',
     'chicken breast',
     '',
     '',
@@ -246,8 +246,8 @@ VALUES
     NULL
 ),
 (
+    '242K6mpP9j7pguQPL8f2B0Cwiwa',
     'water',
-    'water',
     '',
     '',
     '',
@@ -270,8 +270,8 @@ VALUES
     NULL
 ),
 (
+    '242K6lUSTFS3RkDNwdKI0RMZnYg',
     'onion',
-    'onion',
     '',
     '',
     '',
@@ -294,7 +294,7 @@ VALUES
     NULL
 ),
 (
-    'garlic',
+    '242K6rT1M9HV4g7UMlz1iUZWEnT',
     'garlic',
     '',
     '',
@@ -318,7 +318,7 @@ VALUES
     NULL
 ),
 (
-    'blackPepper',
+    '242K6majTgy4uSTfC2ve18NEGtw',
     'black pepper',
     '',
     '',
@@ -342,7 +342,7 @@ VALUES
     NULL
 ),
 (
-    'oliveOil',
+    '242K6sBp4qB1y8nAiRvjf45pclL',
     'olive oil',
     '',
     '',
@@ -366,7 +366,7 @@ VALUES
     NULL
 ),
 (
-    'coffee',
+    '242K6naFi701gk2Vw0cgtHIqk7y',
     'coffee',
     '',
     '',
@@ -390,7 +390,7 @@ VALUES
     NULL
 ),
 (
-    'pasta',
+    '242K6r9nU2631TR7Rqw2y91SJpj',
     'pasta',
     '',
     '',
@@ -414,7 +414,7 @@ VALUES
     NULL
 ),
 (
-    'tomato',
+    '242K6qNiXW9CghKfon91bTfR8jT',
     'tomato',
     '',
     '',
@@ -438,7 +438,7 @@ VALUES
     NULL
 ),
 (
-    'mozzarella',
+    '242KNFK2ZGVJLLsisy0ubPp4ncp',
     'mozzarella',
     '',
     '',
@@ -477,7 +477,7 @@ INSERT INTO "valid_instruments"
 )
 VALUES
 (
-    'spoon',
+    '242MIAAci4vYKu6WFca5Bwdt3cp',
     'spoon',
     '',
     '',
@@ -501,8 +501,8 @@ INSERT INTO "valid_preparations"
 )
 VALUES
 (
+    '242KSZW9sQHmaJlqR9PVdOQyzYe',
     'dice',
-    'dice',
     '',
     '',
     '1641866834',
@@ -510,8 +510,8 @@ VALUES
     NULL
 ),
 (
+    '242KSYqWQ3P5uG9UDNSS4Z1ArPP',
     'slice',
-    'slice',
     '',
     '',
     '1641866834',
@@ -519,8 +519,8 @@ VALUES
     NULL
 ),
 (
+    '242KSVGj7o2hTZkhcxhPHy9YCB1',
     'plate',
-    'plate',
     '',
     '',
     '1641866834',
@@ -528,8 +528,8 @@ VALUES
     NULL
 ),
 (
+    '242KScT8EAqUpovwmVc8ZxwODBS',
     'sautee',
-    'sautee',
     '',
     '',
     '1641866834',
@@ -537,8 +537,8 @@ VALUES
     NULL
 ),
 (
+    '242KSaMIRbPHmJtQ0N2IElTQm4T',
     'marinate',
-    'marinate',
     '',
     '',
     '1641866834',
@@ -546,8 +546,8 @@ VALUES
     NULL
 ),
 (
+    '242KSc0kYusZeGhHvRDgLalzcc3',
     'boil',
-    'boil',
     '',
     '',
     '1641866834',
@@ -555,7 +555,7 @@ VALUES
     NULL
 ),
 (
-    'drain',
+    '242KSVXFwEvzXGZwK7L4YMllSIm',
     'drain',
     '',
     '',
@@ -564,7 +564,7 @@ VALUES
     NULL
 ),
 (
-    'grill',
+    '242KSXAwTGR3zQKJgUVobr8Nbu3',
     'grill',
     '',
     '',
@@ -589,45 +589,45 @@ INSERT INTO "recipes"
 )
 VALUES
 (
-    'mushroomRisotto',
+    '242Kja7X4LeEU5Z8bIZEN6jqBnU',
     'mushroom risotto',
     '',
     '',
     '',
-    'mom_jones',
+    '242IshfGlwFV0yOm5OTl2NMnU6M',
     '1641867047',
     NULL,
     NULL
 ),
 (
-    'grilledChickenBreast',
+    '242KjT0WJ6tm4qGH1KhHoKaJj0v',
     'grilled chicken',
     '',
     '',
     '',
-    'mom_jones',
+    '242IshfGlwFV0yOm5OTl2NMnU6M',
     '1641867048',
     NULL,
     NULL
 ),
 (
-    'capreseSalad',
+    '242KjVZNo4aIUbxfmfwTwUmxH3E',
     'caprese salad',
     '',
     '',
     '',
-    'mom_jones',
+    '242IshfGlwFV0yOm5OTl2NMnU6M',
     '1641867048',
     NULL,
     NULL
 ),
 (
-    'spaghettiWithMeatballs',
+    '242KjZLuiBiNYD1Gkrh2wAjr8A0',
     'spaghetti with meat balls',
     '',
     '',
     '',
-    'mom_jones',
+    '242IshfGlwFV0yOm5OTl2NMnU6M',
     '1641867048',
     NULL,
     NULL
@@ -649,100 +649,100 @@ INSERT INTO "recipe_steps" (
 )
 VALUES
 (
-    'mushroomRisotto1',
+    '242LnPnhFnFlb14eyqHRWj3Et4I',
     0,
-    'dice',
-    0,
-    0,
-    0,
-    NULL,
-    '',
-    '',
-    'mushroomRisotto'
-),
-(
-    'mushroomRisotto2',
-    0,
-    'sautee',
+    '242KSZW9sQHmaJlqR9PVdOQyzYe',
     0,
     0,
     0,
     NULL,
     '',
     '',
-    'mushroomRisotto'
+    '242Kja7X4LeEU5Z8bIZEN6jqBnU'
 ),
 (
-    'grilledChickenBreast1',
+    '242LnPXtlLt1MlXgR27jygkL14l',
     0,
-    'marinate',
+    '242KScT8EAqUpovwmVc8ZxwODBS',
     0,
     0,
     0,
     NULL,
     '',
     '',
-    'grilledChickenBreast'
+    '242Kja7X4LeEU5Z8bIZEN6jqBnU'
 ),
 (
-    'grilledChickenBreast2',
+    '242LnLD9Gai0AHl7o6tqgFXV2FC',
     0,
-    'grill',
+    '242KSaMIRbPHmJtQ0N2IElTQm4T',
     0,
     0,
     0,
     NULL,
     '',
     '',
-    'grilledChickenBreast'
+    '242KjT0WJ6tm4qGH1KhHoKaJj0v'
 ),
 (
-    'capreseSalad1',
+    '242LnQj1xzfiaZpAtDSAT9qlIco',
     0,
-    'slice',
+    '242KSXAwTGR3zQKJgUVobr8Nbu3',
+    0,
+    0,
+    0,
+    NULL,
+    '',
+    '',
+    '242KjT0WJ6tm4qGH1KhHoKaJj0v'
+),
+(
+    '242LnJZumxU00IpD7xVXwMwzpMo',
+    0,
+    '242KSYqWQ3P5uG9UDNSS4Z1ArPP',
     0,
     120,
     450,
     NULL,
     '',
     '',
-    'capreseSalad'
+    '242KjVZNo4aIUbxfmfwTwUmxH3E'
 ),
 (
-    'capreseSalad2',
+    '242LnPB38Y3lcuqIyVDsYabb1p3',
     0,
-    'plate',
+    '242KSVGj7o2hTZkhcxhPHy9YCB1',
     0,
     0,
     0,
     NULL,
     '',
     '',
-    'capreseSalad'
+    '242KjVZNo4aIUbxfmfwTwUmxH3E'
 ),
 (
-    'spaghettiWithMeatballs1',
+    '242LnLPhiaoGTsIhoBlOYkrv3Nk',
     0,
-    'boil',
+    '242KSc0kYusZeGhHvRDgLalzcc3',
     0,
     600,
     900,
     NULL,
     '',
     '',
-    'spaghettiWithMeatballs'
+    '242KjZLuiBiNYD1Gkrh2wAjr8A0'
 ),
 (
-    'spaghettiWithMeatballs2',
+    '242Lcc6wDc3nFzhxBfc599RMtK4',
     0,
-    'drain',
+    '242KSVXFwEvzXGZwK7L4YMllSIm',
     0,
     0,
     0,
     NULL,
     '',
     '',
-    'spaghettiWithMeatballs'
+    '242KjZLuiBiNYD1Gkrh2wAjr8A0'
 );
 
 -- Recipe Step Ingredients
@@ -759,144 +759,144 @@ INSERT INTO "recipe_step_ingredients" (
 )
 VALUES
 (
-    'mushroomRisotto1_1',
-    'onion',
+    '242LJhvRkd3RaDfvlWhLJvzVcQD',
+    '242K6lUSTFS3RkDNwdKI0RMZnYg',
     'grams',
     400,
     '',
     false,
     '',
-    'mushroomRisotto1'
+    '242LnPnhFnFlb14eyqHRWj3Et4I'
 ),
 (
-    'mushroomRisotto2_1',
-    'onion',
+    '242LJisw7VUqdScDT9RPEPg5lKd',
+    '242K6lUSTFS3RkDNwdKI0RMZnYg',
     'grams',
     400,
     '',
     true,
     '',
-    'mushroomRisotto2'
+    '242LnPXtlLt1MlXgR27jygkL14l'
 ),
 (
-    'mushroomRisotto2_3',
-    'water',
+    '242LJjMgNI00fP5kWWqeLh4QjmY',
+    '242K6mpP9j7pguQPL8f2B0Cwiwa',
     'milliliters',
     250,
     '',
     false,
     'helps avoid burning the onion',
-    'mushroomRisotto2'
+    '242LnPXtlLt1MlXgR27jygkL14l'
 ),
 (
-    'grilledChickenBreast1_1',
-    'chickenBreast',
+    '242LMmQVxl8oRbLEOLwXcWiPfAM',
+    '242K6rf5zYjACazuqbWQR8fmRh5',
     'grams',
     900,
     '',
     false,
     '',
-    'grilledChickenBreast1'
+    '242LnLD9Gai0AHl7o6tqgFXV2FC'
 ),
 (
-    'grilledChickenBreast1_2',
-    'blackPepper',
+    '242LMiEZci3rddHc1zDWexJlgvf',
+    '242K6majTgy4uSTfC2ve18NEGtw',
     'grams',
     3,
     '',
     false,
     '',
-    'grilledChickenBreast1'
+    '242LnLD9Gai0AHl7o6tqgFXV2FC'
 ),
 (
-    'grilledChickenBreast1_3',
-    'garlic',
+    '242LMkWWADQlgy0xIqOyZPf1DNo',
+    '242K6rT1M9HV4g7UMlz1iUZWEnT',
     'grams',
     20,
     '',
     false,
     '',
-    'grilledChickenBreast1'
+    '242LnLD9Gai0AHl7o6tqgFXV2FC'
 ),
 (
-    'grilledChickenBreast2_1',
-    'chickenBreast',
+    '242LMhoFyV6q2fZLqWTTwYew8e3',
+    '242K6rf5zYjACazuqbWQR8fmRh5',
     'grams',
     900,
     '',
     true,
     '',
-    'grilledChickenBreast2'
+    '242LnQj1xzfiaZpAtDSAT9qlIco'
 ),
 (
-    'capreseSalad1_1',
-    'tomato',
+    '242LMkYNywxJthgCoourECpeFdW',
+    '242K6qNiXW9CghKfon91bTfR8jT',
     'grams',
     500,
     '',
     false,
     '',
-    'capreseSalad1'
+    '242LnJZumxU00IpD7xVXwMwzpMo'
 ),
 (
-    'capreseSalad1_2',
-    'mozzarella',
+    '242LcbG5ribewDwYODGlDiuUDFN',
+    '242KNFK2ZGVJLLsisy0ubPp4ncp',
     'grams',
     500,
     '',
     false,
     '',
-    'capreseSalad1'
+    '242LnJZumxU00IpD7xVXwMwzpMo'
 ),
 (
-    'capreseSalad2_1',
-    'tomato',
-    'grams',
-    500,
-    '',
-    true,
-    '',
-    'capreseSalad2'
-),
-(
-    'capreseSalad2_2',
-    'mozzarella',
+    '242M2p2f53UaMItuiutJpDGaG7c',
+    '242K6qNiXW9CghKfon91bTfR8jT',
     'grams',
     500,
     '',
     true,
     '',
-    'capreseSalad2'
+    '242LnPB38Y3lcuqIyVDsYabb1p3'
 ),
 (
-    'spaghettiWithMeatballs1_1',
-    'pasta',
+    '242LihCUy6camPbpspfMrJs9LUx',
+    '242KNFK2ZGVJLLsisy0ubPp4ncp',
+    'grams',
+    500,
+    '',
+    true,
+    '',
+    '242LnPB38Y3lcuqIyVDsYabb1p3'
+),
+(
+    '242LigMU1ezDGy8e9DFFLHER59U',
+    '242K6r9nU2631TR7Rqw2y91SJpj',
     'grams',
     420,
     '',
     false,
     '',
-    'spaghettiWithMeatballs1'
+    '242LnLPhiaoGTsIhoBlOYkrv3Nk'
 ),
 (
-    'spaghettiWithMeatballs1_2',
-    'water',
+    '242LifLmu7eUnNOxGYWKL6OpgI9',
+    '242K6mpP9j7pguQPL8f2B0Cwiwa',
     'grams',
     420,
     '',
     false,
     '',
-    'spaghettiWithMeatballs1'
+    '242LnLPhiaoGTsIhoBlOYkrv3Nk'
 ),
 (
-    'spaghettiWithMeatballs2_1',
-    'pasta',
+    '242Likl7CLJjy6X1tiGYl7rY1zk',
+    '242K6r9nU2631TR7Rqw2y91SJpj',
     'grams',
     420,
     '',
     true,
     '',
-    'spaghettiWithMeatballs2'
+    '242Lcc6wDc3nFzhxBfc599RMtK4'
 );
 
 -- Meals
@@ -909,16 +909,16 @@ INSERT INTO "meals" (
 )
 VALUES
 (
-    'mushroomRisottoWithChicken',
+    '242L0gJwrKM8lmhoEMR2yjIN7EF',
     'mushroom risotto with chicken',
     'chicken with a nice mushroom risotto',
-    'mom_jones'
+    '242IshfGlwFV0yOm5OTl2NMnU6M'
 ),
 (
-    'spaghettiWithCapreseSalad',
+    '242L0mca2sRcyquwstd1O8RpVPo',
     'spaghetti with caprese salad',
     'spaghetti with a nice caprese salad',
-    'mom_jones'
+    '242IshfGlwFV0yOm5OTl2NMnU6M'
 );
 
 INSERT INTO "meal_recipes" (
@@ -928,24 +928,24 @@ INSERT INTO "meal_recipes" (
 )
 VALUES
 (
-    'mrwcRisotto',
-    'mushroomRisottoWithChicken',
-    'mushroomRisotto'
+    '242L8uLRzdm07cwXe66lLVg2QGa',
+    '242L0gJwrKM8lmhoEMR2yjIN7EF',
+    '242Kja7X4LeEU5Z8bIZEN6jqBnU'
 ),
 (
-    'mrwcChicken',
-    'mushroomRisottoWithChicken',
-    'grilledChickenBreast'
+    '242L8w2SmY8s0IZuy4ldbQUUSq7',
+    '242L0gJwrKM8lmhoEMR2yjIN7EF',
+    '242KjT0WJ6tm4qGH1KhHoKaJj0v'
 ),
 (
-    'swcsSpaghetti',
-    'spaghettiWithCapreseSalad',
-    'spaghettiWithMeatballs'
+    '242L8uuZBw6brvrke8flXoT7wsx',
+    '242L0mca2sRcyquwstd1O8RpVPo',
+    '242KjZLuiBiNYD1Gkrh2wAjr8A0'
 ),
 (
-    'swcsCaprese',
-    'spaghettiWithCapreseSalad',
-    'capreseSalad'
+    '242L8sTwuBfGehMYk9Pon6wfT6z',
+    '242L0mca2sRcyquwstd1O8RpVPo',
+    '242KjVZNo4aIUbxfmfwTwUmxH3E'
 );
 
 
@@ -962,13 +962,13 @@ INSERT INTO "meal_plans" (
 )
 VALUES
 (
-    'jonesMealPlan1',
+    '242L0gB3b7omllUN4fzXMYf5YTX',
     '',
     'finalized',
     '1641866834',
     '1641867834',
     '1642866834',
-    'jonesHousehold'
+    '242JK9oro0PoSqGAFx4gaYwRVjB'
 );
 
 INSERT INTO "meal_plan_options" (
@@ -982,20 +982,20 @@ INSERT INTO "meal_plan_options" (
 )
 VALUES
 (
-    'jonesMealPlanOption1',
+    '242L0iZjCrPQIY6y6PVg42PSNCB',
     3,
     'dinner',
-    'mushroomRisottoWithChicken',
+    '242L0gJwrKM8lmhoEMR2yjIN7EF',
     true,
     '',
-    'jonesMealPlan1'
+    '242L0gB3b7omllUN4fzXMYf5YTX'
 ),
 (
-    'jonesMealPlanOption2',
+    '242L0mrTyPoV69OgTeyiSMD0hDe',
     3,
     'dinner',
-    'spaghettiWithCapreseSalad',
+    '242L0mca2sRcyquwstd1O8RpVPo',
     false,
     '',
-    'jonesMealPlan1'
+    '242L0gB3b7omllUN4fzXMYf5YTX'
 );
