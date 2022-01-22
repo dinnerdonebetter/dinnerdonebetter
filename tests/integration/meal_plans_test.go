@@ -34,7 +34,7 @@ func createMealPlanWithNotificationChannel(ctx context.Context, t *testing.T, cl
 	exampleMealPlan := fakes.BuildFakeMealPlan()
 	for i := range exampleMealPlan.Options {
 		createdMeal := createMealForTest(ctx, t, client, nil)
-		exampleMealPlan.Options[i].MealID = createdMeal.ID
+		exampleMealPlan.Options[i].Meal.ID = createdMeal.ID
 	}
 
 	exampleMealPlanInput := fakes.BuildFakeMealPlanCreationRequestInputFromMealPlan(exampleMealPlan)
@@ -148,19 +148,19 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 				VotingDeadline: uint64(time.Now().Add(10 * time.Minute).Unix()),
 				Options: []*types.MealPlanOption{
 					{
-						MealID:   createdMeals[0].ID,
+						Meal:     types.Meal{ID: createdMeals[0].ID},
 						Notes:    "option A",
 						MealName: types.BreakfastMealName,
 						Day:      time.Monday,
 					},
 					{
-						MealID:   createdMeals[1].ID,
+						Meal:     types.Meal{ID: createdMeals[1].ID},
 						Notes:    "option B",
 						MealName: types.BreakfastMealName,
 						Day:      time.Monday,
 					},
 					{
-						MealID:   createdMeals[2].ID,
+						Meal:     types.Meal{ID: createdMeals[2].ID},
 						Notes:    "option C",
 						MealName: types.BreakfastMealName,
 						Day:      time.Monday,
@@ -359,19 +359,19 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 				VotingDeadline: uint64(time.Now().Add(10 * time.Minute).Unix()),
 				Options: []*types.MealPlanOption{
 					{
-						MealID:   createdMeals[0].ID,
+						Meal:     types.Meal{ID: createdMeals[0].ID},
 						Notes:    "option A",
 						MealName: types.BreakfastMealName,
 						Day:      time.Monday,
 					},
 					{
-						MealID:   createdMeals[1].ID,
+						Meal:     types.Meal{ID: createdMeals[1].ID},
 						Notes:    "option B",
 						MealName: types.BreakfastMealName,
 						Day:      time.Monday,
 					},
 					{
-						MealID:   createdMeals[2].ID,
+						Meal:     types.Meal{ID: createdMeals[2].ID},
 						Notes:    "option C",
 						MealName: types.BreakfastMealName,
 						Day:      time.Monday,

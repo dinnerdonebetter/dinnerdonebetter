@@ -247,19 +247,19 @@ func buildHandler(logger logging.Logger) func(ctx context.Context) error {
 			VotingDeadline: uint64(time.Now().Add(votingDeadline).Unix()),
 			Options: []*types.MealPlanOption{
 				{
-					MealID:   createdMeals[0].ID,
+					Meal:     types.Meal{ID: createdMeals[0].ID},
 					Notes:    "option A",
 					MealName: types.BreakfastMealName,
 					Day:      time.Monday,
 				},
 				{
-					MealID:   createdMeals[1].ID,
+					Meal:     types.Meal{ID: createdMeals[1].ID},
 					Notes:    "option B",
 					MealName: types.BreakfastMealName,
 					Day:      time.Monday,
 				},
 				{
-					MealID:   createdMeals[2].ID,
+					Meal:     types.Meal{ID: createdMeals[2].ID},
 					Notes:    "option C",
 					MealName: types.BreakfastMealName,
 					Day:      time.Monday,

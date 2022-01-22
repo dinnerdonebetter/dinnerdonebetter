@@ -59,7 +59,7 @@ func (q *SQLQuerier) scanMealPlanOption(ctx context.Context, scan database.Scann
 		&x.MealName,
 		&x.Chosen,
 		&x.TieBroken,
-		&x.MealID,
+		&x.Meal.ID,
 		&x.Notes,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
@@ -330,7 +330,7 @@ func (q *SQLQuerier) createMealPlanOption(ctx context.Context, db database.SQLQu
 	x := &types.MealPlanOption{
 		ID:                input.ID,
 		Day:               input.Day,
-		MealID:            input.MealID,
+		Meal:              types.Meal{ID: input.MealID},
 		MealName:          input.MealName,
 		Notes:             input.Notes,
 		BelongsToMealPlan: input.BelongsToMealPlan,
@@ -365,7 +365,7 @@ func (q *SQLQuerier) UpdateMealPlanOption(ctx context.Context, updated *types.Me
 
 	args := []interface{}{
 		updated.Day,
-		updated.MealID,
+		updated.Meal.ID,
 		updated.MealName,
 		updated.Notes,
 		updated.BelongsToMealPlan,

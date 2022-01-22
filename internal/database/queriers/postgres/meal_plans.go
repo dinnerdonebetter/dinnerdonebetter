@@ -91,7 +91,7 @@ func (q *SQLQuerier) scanMealPlanWithOptionsAndVotesRow(ctx context.Context, sca
 		&mealPlanOption.MealName,
 		&mealPlanOption.Chosen,
 		&mealPlanOption.TieBroken,
-		&mealPlanOption.MealID,
+		&mealPlanOption.Meal.ID,
 		&mealPlanOption.Notes,
 		&mealPlanOption.CreatedOn,
 		&mealPlanOption.LastUpdatedOn,

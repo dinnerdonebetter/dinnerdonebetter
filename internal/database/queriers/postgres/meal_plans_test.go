@@ -109,7 +109,7 @@ func buildMockRowsFromFullMealPlans(includeCounts bool, filteredCount uint64, me
 					opt.MealName,
 					opt.Chosen,
 					opt.TieBroken,
-					opt.MealID,
+					opt.Meal.ID,
 					opt.Notes,
 					opt.CreatedOn,
 					opt.LastUpdatedOn,
