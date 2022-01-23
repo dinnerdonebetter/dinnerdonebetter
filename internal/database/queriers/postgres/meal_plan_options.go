@@ -479,9 +479,11 @@ func (q *SQLQuerier) determineWinner(winners []schulze.Score) string {
 	return scoreWinners[rand.Intn(len(scoreWinners))]
 }
 
-func (q *SQLQuerier) decideOptionWinner(options []*types.MealPlanOption) (winner string, tiebroken bool) {
+func (q *SQLQuerier) decideOptionWinner(options []*types.MealPlanOption) (winner string, tiebroken, decided bool) {
 	candidateMap := map[string]struct{}{}
 	votesByUser := map[string]schulze.Ballot{}
+
+	logger := q.logger.WithValue("options.count", len(options))
 
 	for _, option := range options {
 		for _, v := range option.Votes {
@@ -506,20 +508,20 @@ func (q *SQLQuerier) decideOptionWinner(options []*types.MealPlanOption) (winner
 	for _, vote := range votesByUser {
 		if voteErr := e.Vote(vote); voteErr != nil {
 			// this actually can never happen, lol
-			q.logger.Error(voteErr, "an invalid vote occurred")
+			logger.Error(voteErr, "an invalid vote occurred")
 		}
 	}
 
 	winners, tie := e.Compute()
 	if tie {
-		return q.determineWinner(winners), true
+		return q.determineWinner(winners), true, true
 	}
 
 	if len(winners) > 0 {
-		winner = winners[0].Choice
+		return winners[0].Choice, false, true
 	}
 
-	return winner, false
+	return winner, false, false
 }
 
 const finalizeMealPlanOptionQuery = `
@@ -588,19 +590,22 @@ func (q *SQLQuerier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mea
 		}
 	}
 
-	winner, tiebroken := q.decideOptionWinner(relevantOptions)
+	winner, tiebroken, chosen := q.decideOptionWinner(relevantOptions)
+	if chosen {
+		args := []interface{}{
+			mealPlanID,
+			winner,
+			tiebroken,
+		}
 
-	args := []interface{}{
-		mealPlanID,
-		winner,
-		tiebroken,
+		if err = q.performWriteQuery(ctx, q.db, "meal plan option finalization", finalizeMealPlanOptionQuery, args); err != nil {
+			return false, observability.PrepareError(err, logger, span, "finalizing meal plan option")
+		}
+
+		logger.Debug("finalized meal plan option")
+
+		return true, nil
 	}
 
-	if err = q.performWriteQuery(ctx, q.db, "meal plan option finalization", finalizeMealPlanOptionQuery, args); err != nil {
-		return false, observability.PrepareError(err, logger, span, "finalizing meal plan option")
-	}
-
-	logger.Debug("finalized meal plan option")
-
-	return true, nil
+	return false, nil
 }

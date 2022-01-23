@@ -947,9 +947,10 @@ func Test_decideOptionWinner(T *testing.T) {
 			},
 		}
 
-		actual, tiebroken := c.decideOptionWinner(exampleOptions)
+		actual, tiebroken, chosen := c.decideOptionWinner(exampleOptions)
 		assert.Equal(t, expected, actual)
 		assert.False(t, tiebroken)
+		assert.True(t, chosen)
 	})
 
 	T.Run("with tie", func(t *testing.T) {
@@ -984,9 +985,10 @@ func Test_decideOptionWinner(T *testing.T) {
 			},
 		}
 
-		actual, tiebroken := c.decideOptionWinner(exampleOptions)
+		actual, tiebroken, chosen := c.decideOptionWinner(exampleOptions)
 		assert.NotEmpty(t, actual)
 		assert.True(t, tiebroken)
+		assert.True(t, chosen)
 	})
 
 	T.Run("without enough votes", func(t *testing.T) {
@@ -1003,9 +1005,10 @@ func Test_decideOptionWinner(T *testing.T) {
 			},
 		}
 
-		actual, tiebroken := c.decideOptionWinner(exampleOptions)
+		actual, tiebroken, chosen := c.decideOptionWinner(exampleOptions)
 		assert.Empty(t, actual)
 		assert.False(t, tiebroken)
+		assert.False(t, chosen)
 	})
 }
 

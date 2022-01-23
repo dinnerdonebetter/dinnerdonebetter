@@ -65,8 +65,8 @@ func (q *SQLQuerier) scanMealPlan(ctx context.Context, scan database.Scanner, in
 	return x, filteredCount, totalCount, nil
 }
 
-// scanMealPlanWithOptionsAndVotesRow takes a database Scanner (i.e. *sql.Row) and scans the result into a meal plan struct.
-func (q *SQLQuerier) scanMealPlanWithOptionsAndVotesRow(ctx context.Context, scan database.Scanner) (mealPlan *types.MealPlan, mealPlanOption *types.MealPlanOption, mealPlanOptionVote *types.MealPlanOptionVote, err error) {
+// scanFullMealPlan takes a database Scanner (i.e. *sql.Row) and scans the result into a meal plan struct.
+func (q *SQLQuerier) scanFullMealPlan(ctx context.Context, scan database.Scanner) (mealPlan *types.MealPlan, mealPlanOption *types.MealPlanOption, mealPlanOptionVote *types.MealPlanOptionVote, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -106,6 +106,13 @@ func (q *SQLQuerier) scanMealPlanWithOptionsAndVotesRow(ctx context.Context, sca
 		&nmpov.LastUpdatedOn,
 		&nmpov.ArchivedOn,
 		&nmpov.BelongsToMealPlanOption,
+		&mealPlanOption.Meal.ID,
+		&mealPlanOption.Meal.Name,
+		&mealPlanOption.Meal.Description,
+		&mealPlanOption.Meal.CreatedOn,
+		&mealPlanOption.Meal.LastUpdatedOn,
+		&mealPlanOption.Meal.ArchivedOn,
+		&mealPlanOption.Meal.CreatedByUser,
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
@@ -225,10 +232,18 @@ const getMealPlanQuery = `SELECT
 	meal_plan_option_votes.created_on,
 	meal_plan_option_votes.last_updated_on,
 	meal_plan_option_votes.archived_on,
-	meal_plan_option_votes.belongs_to_meal_plan_option
+	meal_plan_option_votes.belongs_to_meal_plan_option,
+	meals.id,
+	meals.name,
+	meals.description,
+	meals.created_on,
+	meals.last_updated_on,
+	meals.archived_on,
+	meals.created_by_user
 FROM meal_plans 
 	FULL OUTER JOIN meal_plan_options ON meal_plan_options.belongs_to_meal_plan=meal_plans.id
 	FULL OUTER JOIN meal_plan_option_votes ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id
+	FULL OUTER JOIN meals ON meal_plan_options.meal_id=meals.id
 WHERE meal_plans.archived_on IS NULL 
 AND meal_plans.id = $1
 AND meal_plans.belongs_to_household = $2
@@ -269,7 +284,7 @@ func (q *SQLQuerier) GetMealPlan(ctx context.Context, mealPlanID, householdID st
 		currentOptionIndex = 0
 	)
 	for rows.Next() {
-		rowMealPlan, rowMealPlanOption, rowMealPlanOptionVote, scanErr := q.scanMealPlanWithOptionsAndVotesRow(ctx, rows)
+		rowMealPlan, rowMealPlanOption, rowMealPlanOptionVote, scanErr := q.scanFullMealPlan(ctx, rows)
 		if scanErr != nil {
 			return nil, scanErr
 		}
@@ -663,20 +678,24 @@ func (q *SQLQuerier) FinalizeMealPlanWithExpiredVotingPeriod(ctx context.Context
 		for _, mealName := range allMealNames {
 			options := byDayAndMeal(mealPlan.Options, day, mealName)
 			if len(options) > 0 {
-				winner, tiebroken := q.decideOptionWinner(options)
+				winner, tiebroken, chosen := q.decideOptionWinner(options)
 
-				args := []interface{}{
-					mealPlanID,
-					winner,
-					tiebroken,
+				if chosen {
+					args := []interface{}{
+						mealPlanID,
+						winner,
+						tiebroken,
+					}
+
+					logger = logger.WithValue("winner", winner).WithValue("tiebroken", tiebroken)
+
+					if err = q.performWriteQuery(ctx, tx, "meal plan option finalization", finalizeMealPlanOptionQuery, args); err != nil {
+						q.rollbackTransaction(ctx, tx)
+						return false, observability.PrepareError(err, logger, span, "finalizing meal plan option")
+					}
+
+					logger.Debug("finalized meal plan option")
 				}
-
-				if err = q.performWriteQuery(ctx, tx, "meal plan option finalization", finalizeMealPlanOptionQuery, args); err != nil {
-					q.rollbackTransaction(ctx, tx)
-					return false, observability.PrepareError(err, logger, span, "finalizing meal plan option")
-				}
-
-				logger.Debug("finalized meal plan option")
 			}
 		}
 	}
