@@ -507,6 +507,9 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				singleMealPlanRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateMealPlansPermission)).
 					Put(root, s.mealPlansService.UpdateHandler)
+				singleMealPlanRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlanOptionVotesPermission)).
+					Post("/vote", s.mealPlanOptionVotesService.CreateHandler)
 			})
 		})
 
@@ -552,9 +555,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		mealPlanOptionVotesRouteWithPrefix := fmt.Sprintf("/%s", mealPlanOptionVotesRoute)
 		mealPlanOptionVoteIDRouteParam := buildURLVarChunk(mealplanoptionvotesservice.MealPlanOptionVoteIDURIParamKey, "")
 		v1Router.Route(mealPlanOptionVotesRouteWithPrefix, func(mealPlanOptionVotesRouter routing.Router) {
-			mealPlanOptionVotesRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlanOptionVotesPermission)).
-				Post(root, s.mealPlanOptionVotesService.CreateHandler)
 			mealPlanOptionVotesRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadMealPlanOptionVotesPermission)).
 				Get(root, s.mealPlanOptionVotesService.ListHandler)

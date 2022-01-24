@@ -124,9 +124,7 @@ func (b *Builder) BuildCreateMealPlanOptionVoteRequest(ctx context.Context, meal
 		nil,
 		mealPlansBasePath,
 		mealPlanID,
-		mealPlanOptionsBasePath,
-		input.BelongsToMealPlanOption,
-		mealPlanOptionVotesBasePath,
+		"vote",
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 

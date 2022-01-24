@@ -54,33 +54,35 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 			exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 			exampleMealPlanOptionVote.BelongsToMealPlanOption = createdMealPlanOption.ID
 			exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(exampleMealPlanOptionVote)
-			createdMealPlanOptionVote, err := testClients.main.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
+			createdMealPlanOptionVotes, err := testClients.main.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
 			require.NoError(t, err)
-			t.Logf("meal plan option vote %q created", createdMealPlanOptionVote.ID)
+			t.Logf("meal plan option votes created")
 
-			checkMealPlanOptionVoteEquality(t, exampleMealPlanOptionVote, createdMealPlanOptionVote)
+			for _, createdMealPlanOptionVote := range createdMealPlanOptionVotes {
+				checkMealPlanOptionVoteEquality(t, exampleMealPlanOptionVote, createdMealPlanOptionVote)
 
-			createdMealPlanOptionVote, err = testClients.main.GetMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVote.ID)
-			requireNotNilAndNoProblems(t, createdMealPlanOptionVote, err)
-			require.Equal(t, createdMealPlanOption.ID, createdMealPlanOptionVote.BelongsToMealPlanOption)
+				createdMealPlanOptionVote, err = testClients.main.GetMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVote.ID)
+				requireNotNilAndNoProblems(t, createdMealPlanOptionVote, err)
+				require.Equal(t, createdMealPlanOption.ID, createdMealPlanOptionVote.BelongsToMealPlanOption)
 
-			checkMealPlanOptionVoteEquality(t, exampleMealPlanOptionVote, createdMealPlanOptionVote)
+				checkMealPlanOptionVoteEquality(t, exampleMealPlanOptionVote, createdMealPlanOptionVote)
 
-			t.Log("changing meal plan option vote")
-			newMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
-			createdMealPlanOptionVote.Update(convertMealPlanOptionVoteToMealPlanOptionVoteUpdateInput(newMealPlanOptionVote))
-			assert.NoError(t, testClients.main.UpdateMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOptionVote))
+				t.Log("changing meal plan option vote")
+				newMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
+				createdMealPlanOptionVote.Update(convertMealPlanOptionVoteToMealPlanOptionVoteUpdateInput(newMealPlanOptionVote))
+				assert.NoError(t, testClients.main.UpdateMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOptionVote))
 
-			t.Log("fetching changed meal plan option vote")
-			actual, err := testClients.main.GetMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVote.ID)
-			requireNotNilAndNoProblems(t, actual, err)
+				t.Log("fetching changed meal plan option vote")
+				actual, err := testClients.main.GetMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVote.ID)
+				requireNotNilAndNoProblems(t, actual, err)
 
-			// assert meal plan option vote equality
-			checkMealPlanOptionVoteEquality(t, newMealPlanOptionVote, actual)
-			assert.NotNil(t, actual.LastUpdatedOn)
+				// assert meal plan option vote equality
+				checkMealPlanOptionVoteEquality(t, newMealPlanOptionVote, actual)
+				assert.NotNil(t, actual.LastUpdatedOn)
 
-			t.Log("cleaning up meal plan option vote")
-			assert.NoError(t, testClients.main.ArchiveMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVote.ID))
+				t.Log("cleaning up meal plan option vote")
+				assert.NoError(t, testClients.main.ArchiveMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVote.ID))
+			}
 
 			t.Log("cleaning up meal plan option")
 			assert.NoError(t, testClients.main.ArchiveMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanOption.ID))
@@ -112,25 +114,27 @@ func (s *TestSuite) TestMealPlanOptionVotes_Listing() {
 			exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 			exampleMealPlanOptionVote.BelongsToMealPlanOption = createdMealPlanOption.ID
 			exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(exampleMealPlanOptionVote)
-			createdMealPlanOptionVote, err := testClients.main.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
+			createdMealPlanOptionVotes, err := testClients.main.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
 			require.NoError(t, err)
-			t.Logf("meal plan option vote %q created", createdMealPlanOptionVote.ID)
+			t.Logf("meal plan option votes created")
 
-			checkMealPlanOptionVoteEquality(t, exampleMealPlanOptionVote, createdMealPlanOptionVote)
+			for _, createdMealPlanOptionVote := range createdMealPlanOptionVotes {
+				checkMealPlanOptionVoteEquality(t, exampleMealPlanOptionVote, createdMealPlanOptionVote)
 
-			createdMealPlanOptionVote, err = testClients.main.GetMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVote.ID)
-			requireNotNilAndNoProblems(t, createdMealPlanOptionVote, err)
-			require.Equal(t, createdMealPlanOption.ID, createdMealPlanOptionVote.BelongsToMealPlanOption)
+				createdMealPlanOptionVote, err = testClients.main.GetMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVote.ID)
+				requireNotNilAndNoProblems(t, createdMealPlanOptionVote, err)
+				require.Equal(t, createdMealPlanOption.ID, createdMealPlanOptionVote.BelongsToMealPlanOption)
 
-			checkMealPlanOptionVoteEquality(t, exampleMealPlanOptionVote, createdMealPlanOptionVote)
+				checkMealPlanOptionVoteEquality(t, exampleMealPlanOptionVote, createdMealPlanOptionVote)
 
-			// assert meal plan option vote list equality
-			actual, err := testClients.main.GetMealPlanOptionVotes(ctx, createdMealPlan.ID, createdMealPlanOption.ID, nil)
-			requireNotNilAndNoProblems(t, actual, err)
-			assert.NotEmpty(t, actual.MealPlanOptionVotes)
+				// assert meal plan option vote list equality
+				actual, err := testClients.main.GetMealPlanOptionVotes(ctx, createdMealPlan.ID, createdMealPlanOption.ID, nil)
+				requireNotNilAndNoProblems(t, actual, err)
+				assert.NotEmpty(t, actual.MealPlanOptionVotes)
 
-			t.Log("cleaning up")
-			assert.NoError(t, testClients.main.ArchiveMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVote.ID))
+				t.Log("cleaning up")
+				assert.NoError(t, testClients.main.ArchiveMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanOption.ID, createdMealPlanOptionVote.ID))
+			}
 
 			t.Log("cleaning up meal plan option")
 			assert.NoError(t, testClients.main.ArchiveMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanOption.ID))

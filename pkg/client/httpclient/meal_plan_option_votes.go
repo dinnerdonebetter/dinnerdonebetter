@@ -81,7 +81,7 @@ func (c *Client) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPla
 }
 
 // CreateMealPlanOptionVote creates a meal plan option vote.
-func (c *Client) CreateMealPlanOptionVote(ctx context.Context, mealPlanID string, input *types.MealPlanOptionVoteCreationRequestInput) (*types.MealPlanOptionVote, error) {
+func (c *Client) CreateMealPlanOptionVote(ctx context.Context, mealPlanID string, input *types.MealPlanOptionVoteCreationRequestInput) ([]*types.MealPlanOptionVote, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -106,7 +106,7 @@ func (c *Client) CreateMealPlanOptionVote(ctx context.Context, mealPlanID string
 		return nil, observability.PrepareError(err, logger, span, "building create meal plan option vote request")
 	}
 
-	var mealPlanOptionVote *types.MealPlanOptionVote
+	var mealPlanOptionVote []*types.MealPlanOptionVote
 	if err = c.fetchAndUnmarshal(ctx, req, &mealPlanOptionVote); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "creating meal plan option vote")
 	}

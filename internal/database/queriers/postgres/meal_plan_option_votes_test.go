@@ -616,26 +616,34 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
-			exampleInput.ID,
-			exampleInput.Rank,
-			exampleInput.Abstain,
-			exampleInput.Notes,
-			exampleInput.ByUser,
-			exampleInput.BelongsToMealPlanOption,
+		db.ExpectBegin()
+
+		for _, vote := range exampleInput.Votes {
+			args := []interface{}{
+				vote.ID,
+				vote.Rank,
+				vote.Abstain,
+				vote.Notes,
+				vote.ByUser,
+				vote.BelongsToMealPlanOption,
+			}
+
+			db.ExpectExec(formatQueryForSQLMock(mealPlanOptionVoteCreationQuery)).
+				WithArgs(interfaceToDriverValue(args)...).
+				WillReturnResult(newArbitraryDatabaseResult())
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(mealPlanOptionVoteCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
+		db.ExpectCommit()
 
 		c.timeFunc = func() uint64 {
 			return exampleMealPlanOptionVote.CreatedOn
 		}
 
+		expected := []*types.MealPlanOptionVote{exampleMealPlanOptionVote}
+
 		actual, err := c.CreateMealPlanOptionVote(ctx, exampleInput)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleMealPlanOptionVote, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -661,18 +669,24 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		args := []interface{}{
-			exampleInput.ID,
-			exampleInput.Rank,
-			exampleInput.Abstain,
-			exampleInput.Notes,
-			exampleInput.ByUser,
-			exampleInput.BelongsToMealPlanOption,
+		db.ExpectBegin()
+
+		for _, vote := range exampleInput.Votes {
+			args := []interface{}{
+				vote.ID,
+				vote.Rank,
+				vote.Abstain,
+				vote.Notes,
+				vote.ByUser,
+				vote.BelongsToMealPlanOption,
+			}
+
+			db.ExpectExec(formatQueryForSQLMock(mealPlanOptionVoteCreationQuery)).
+				WithArgs(interfaceToDriverValue(args)...).
+				WillReturnError(expectedErr)
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(mealPlanOptionVoteCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(expectedErr)
+		db.ExpectRollback()
 
 		c.timeFunc = func() uint64 {
 			return exampleMealPlanOptionVote.CreatedOn

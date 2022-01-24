@@ -68,12 +68,23 @@ func BuildFakeMealPlanOptionVoteCreationRequestInput() *types.MealPlanOptionVote
 
 // BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote builds a faked MealPlanOptionVoteCreationRequestInput from a meal plan option vote.
 func BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(mealPlanOptionVote *types.MealPlanOptionVote) *types.MealPlanOptionVoteCreationRequestInput {
+	votes := []*types.MealPlanOptionVoteCreationInput{}
+	for _, vote := range []*types.MealPlanOptionVote{mealPlanOptionVote} {
+		votes = append(votes,
+			&types.MealPlanOptionVoteCreationInput{
+				ID:                      vote.ID,
+				Rank:                    vote.Rank,
+				Abstain:                 vote.Abstain,
+				Notes:                   vote.Notes,
+				BelongsToMealPlanOption: vote.BelongsToMealPlanOption,
+				ByUser:                  vote.ByUser,
+			},
+		)
+	}
+
 	return &types.MealPlanOptionVoteCreationRequestInput{
-		ID:                      mealPlanOptionVote.ID,
-		Rank:                    mealPlanOptionVote.Rank,
-		Abstain:                 mealPlanOptionVote.Abstain,
-		Notes:                   mealPlanOptionVote.Notes,
-		BelongsToMealPlanOption: mealPlanOptionVote.BelongsToMealPlanOption,
+		Votes:  votes,
+		ByUser: mealPlanOptionVote.ByUser,
 	}
 }
 
@@ -85,11 +96,22 @@ func BuildFakeMealPlanOptionVoteDatabaseCreationInput() *types.MealPlanOptionVot
 
 // BuildFakeMealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVote builds a faked MealPlanOptionVoteDatabaseCreationInput from a meal plan option vote.
 func BuildFakeMealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVote(mealPlanOptionVote *types.MealPlanOptionVote) *types.MealPlanOptionVoteDatabaseCreationInput {
+	votes := []*types.MealPlanOptionVoteCreationInput{}
+	for _, vote := range []*types.MealPlanOptionVote{mealPlanOptionVote} {
+		votes = append(votes,
+			&types.MealPlanOptionVoteCreationInput{
+				ID:                      vote.ID,
+				Rank:                    vote.Rank,
+				Abstain:                 vote.Abstain,
+				Notes:                   vote.Notes,
+				BelongsToMealPlanOption: vote.BelongsToMealPlanOption,
+				ByUser:                  vote.ByUser,
+			},
+		)
+	}
+
 	return &types.MealPlanOptionVoteDatabaseCreationInput{
-		ID:                      mealPlanOptionVote.ID,
-		Rank:                    mealPlanOptionVote.Rank,
-		Abstain:                 mealPlanOptionVote.Abstain,
-		Notes:                   mealPlanOptionVote.Notes,
-		BelongsToMealPlanOption: mealPlanOptionVote.BelongsToMealPlanOption,
+		Votes:  votes,
+		ByUser: mealPlanOptionVote.ByUser,
 	}
 }
