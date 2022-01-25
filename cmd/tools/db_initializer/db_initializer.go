@@ -6,7 +6,6 @@ import (
 	"database/sql"
 	_ "embed"
 	"errors"
-	"log"
 	"text/template"
 	"time"
 
@@ -77,7 +76,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	res, err := db.ExecContext(ctx, `
+	_, err = db.ExecContext(ctx, `
 DELETE FROM "users" WHERE id IS NOT NULL;
 DELETE FROM "households" WHERE id IS NOT NULL;
 DELETE FROM "household_user_memberships" WHERE id IS NOT NULL;
@@ -99,10 +98,8 @@ DELETE FROM "sessions" WHERE data IS NOT NULL;
 
 	q := query.String()
 
-	res, err = db.ExecContext(ctx, q)
+	_, err = db.ExecContext(ctx, q)
 	if err != nil {
 		logger.Fatal(err)
 	}
-
-	log.Println(res.RowsAffected())
 }
