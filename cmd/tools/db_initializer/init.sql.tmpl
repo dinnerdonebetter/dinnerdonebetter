@@ -1,7 +1,7 @@
 /*
 Some Notes:
 
-1. All passwords are `PrixFixe1!`, without backticks. 
+1. All passwords are `PrixFixe1!`, without backticks.
  */
 
 -- Users
@@ -21,68 +21,68 @@ INSERT INTO "users" (
 )
 VALUES
 (
-    '242JvdHmmWASsLrccxeTr14jO3b',
+    '{{ getID "admin_user" }}',
     'admin',
     'admin@prixfixe.email',
     '$argon2id$v=19$m=65536,t=1,p=2$QdxGzEsSJc24mMaW4k3kzQ$uqwRs4CuwRJZKAIXjcR9G1V0Qpv38YtL9vK3wm7SZho',
     'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
-    '1641786300',
+    '{{ timestamp }}',
     NULL,
     'good',
     'service_admin',
-    '1641786189',
+    '{{ timestamp }}',
     NULL
 ),
 (
-    '242IshfGlwFV0yOm5OTl2NMnU6M',
+    '{{ getID "household_1_user_1" }}',
     'momJones',
     'mom@jones.com',
     '$argon2id$v=19$m=65536,t=1,p=2$QdxGzEsSJc24mMaW4k3kzQ$uqwRs4CuwRJZKAIXjcR9G1V0Qpv38YtL9vK3wm7SZho',
     'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
-    '1641786300',
+    '{{ timestamp }}',
     NULL,
     'good',
     'service_user',
-    '1641786189',
+    '{{ timestamp }}',
     NULL
 ),
 (
-    '242IsezjD5MePir3phbnMJVN5An',
+    '{{ getID "household_1_user_2" }}',
     'dadJones',
     'dad@jones.com',
     '$argon2id$v=19$m=65536,t=1,p=2$QdxGzEsSJc24mMaW4k3kzQ$uqwRs4CuwRJZKAIXjcR9G1V0Qpv38YtL9vK3wm7SZho',
     'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
-    '1641786300',
+    '{{ timestamp }}',
     NULL,
     'good',
     'service_user',
-    '1641786189',
+    '{{ timestamp }}',
     NULL
 ),
 (
-    '242IsfmqJyO8v5Gw44xDPNcnXUy',
+    '{{ getID "household_1_user_3" }}',
     'sallyJones',
     'sally@jones.com',
     '$argon2id$v=19$m=65536,t=1,p=2$QdxGzEsSJc24mMaW4k3kzQ$uqwRs4CuwRJZKAIXjcR9G1V0Qpv38YtL9vK3wm7SZho',
     'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
-    '1641786300',
+    '{{ timestamp }}',
     NULL,
     'good',
     'service_user',
-    '1641786189',
+    '{{ timestamp }}',
     NULL
 ),
 (
-    '242IsgJzNACYclM2fNitpFlLRji',
+    '{{ getID "household_1_user_4" }}',
     'billyJones',
     'billy@jones.com',
     '$argon2id$v=19$m=65536,t=1,p=2$QdxGzEsSJc24mMaW4k3kzQ$uqwRs4CuwRJZKAIXjcR9G1V0Qpv38YtL9vK3wm7SZho',
     'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
-    '1641786300',
+    '{{ timestamp }}',
     NULL,
     'good',
     'service_user',
-    '1641786189',
+    '{{ timestamp }}',
     NULL
 );
 
@@ -104,28 +104,28 @@ INSERT INTO "households"
 )
 VALUES
 (
-    '242JKAD4xrFnVPrtSUgwAXMJpBT',
+    '{{ getID "admin_household" }}',
     'admin_default',
     '',
     '',
     'unpaid',
     '',
     NULL,
-    '242JvdHmmWASsLrccxeTr14jO3b',
-    '1641786189',
+    '{{ getID "admin_user" }}',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242JK9oro0PoSqGAFx4gaYwRVjB',
+    '{{ getID "household_1" }}',
     'The Jones Household',
     '',
     '',
     'paid',
     '',
     NULL,
-    '242IshfGlwFV0yOm5OTl2NMnU6M',
-    '1641786189',
+    '{{ getID "household_1_user_1" }}',
+    '{{ timestamp }}',
     NULL,
     NULL
 );
@@ -141,55 +141,55 @@ INSERT INTO "household_user_memberships" (
     "created_on",
     "last_updated_on",
     "archived_on"
-) 
+)
 VALUES
 (
-    '242K1k2JfWPYVyyqQHlz25nJS42',
-    '242JvdHmmWASsLrccxeTr14jO3b',
-    '242JKAD4xrFnVPrtSUgwAXMJpBT',
+    '{{ getID "admin_household_membership" }}',
+    '{{ getID "admin_user" }}',
+    '{{ getID "admin_household" }}',
     true,
     'household_admin',
-    '1641786189',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242K1l04Tuq5gsmCY00FQxmGFpE',
-    '242IshfGlwFV0yOm5OTl2NMnU6M',
-    '242JK9oro0PoSqGAFx4gaYwRVjB',
+    '{{ getID "household_1_user_1_membership" }}',
+    '{{ getID "household_1_user_1" }}',
+    '{{ getID "household_1" }}',
     true,
     'household_admin',
-    '1641786189',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242K1mmV5sQW7LLLvGD8BQWbfDY',
-    '242IsezjD5MePir3phbnMJVN5An',
-    '242JK9oro0PoSqGAFx4gaYwRVjB',
+    '{{ getID "household_1_user_2_membership" }}',
+    '{{ getID "household_1_user_2" }}',
+    '{{ getID "household_1" }}',
     true,
     'household_member',
-    '1641786189',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242K1nnFEqUmmwKmWaL1elY5Fmy',
-    '242IsfmqJyO8v5Gw44xDPNcnXUy',
-    '242JK9oro0PoSqGAFx4gaYwRVjB',
+    '{{ getID "household_1_user_3_membership" }}',
+    '{{ getID "household_1_user_3" }}',
+    '{{ getID "household_1" }}',
     true,
     'household_member',
-    '1641786189',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242K1n8kA2TwwOuqkrTGhQRjLip',
-    '242IsgJzNACYclM2fNitpFlLRji',
-    '242JK9oro0PoSqGAFx4gaYwRVjB',
+    '{{ getID "household_1_user_4_membership" }}',
+    '{{ getID "household_1_user_4" }}',
+    '{{ getID "household_1" }}',
     true,
     'household_member',
-    '1641786189',
+    '{{ timestamp }}',
     NULL,
     NULL
 );
@@ -222,7 +222,7 @@ INSERT INTO "valid_ingredients" (
 )
 VALUES
 (
-    '242K6rf5zYjACazuqbWQR8fmRh5',
+    '{{ getID "valid_ingredient_chicken_breast" }}',
     'chicken breast',
     '',
     '',
@@ -241,12 +241,12 @@ VALUES
     false,
     false,
     false,
-    '1641866784',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242K6mpP9j7pguQPL8f2B0Cwiwa',
+    '{{ getID "valid_ingredient_water" }}',
     'water',
     '',
     '',
@@ -265,12 +265,12 @@ VALUES
     false,
     false,
     false,
-    '1641866784',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242K6lUSTFS3RkDNwdKI0RMZnYg',
+    '{{ getID "valid_ingredient_onion" }}',
     'onion',
     '',
     '',
@@ -289,12 +289,12 @@ VALUES
     false,
     false,
     false,
-    '1641866784',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242K6rT1M9HV4g7UMlz1iUZWEnT',
+    '{{ getID "valid_ingredient_garlic" }}',
     'garlic',
     '',
     '',
@@ -313,12 +313,12 @@ VALUES
     false,
     false,
     false,
-    '1641866784',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242K6majTgy4uSTfC2ve18NEGtw',
+    '{{ getID "valid_ingredient_black_pepper" }}',
     'black pepper',
     '',
     '',
@@ -337,12 +337,12 @@ VALUES
     false,
     false,
     false,
-    '1641866784',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242K6sBp4qB1y8nAiRvjf45pclL',
+    '{{ getID "valid_ingredient_olive_oil" }}',
     'olive oil',
     '',
     '',
@@ -361,12 +361,12 @@ VALUES
     false,
     false,
     false,
-    '1641866784',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242K6naFi701gk2Vw0cgtHIqk7y',
+    '{{ getID "valid_ingredient_coffee" }}',
     'coffee',
     '',
     '',
@@ -385,12 +385,12 @@ VALUES
     false,
     false,
     false,
-    '1641866784',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242K6r9nU2631TR7Rqw2y91SJpj',
+    '{{ getID "valid_ingredient_pasta" }}',
     'pasta',
     '',
     '',
@@ -409,12 +409,12 @@ VALUES
     false,
     false,
     false,
-    '1641866784',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242K6qNiXW9CghKfon91bTfR8jT',
+    '{{ getID "valid_ingredient_tomato" }}',
     'tomato',
     '',
     '',
@@ -433,12 +433,12 @@ VALUES
     false,
     false,
     false,
-    '1641866784',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242KNFK2ZGVJLLsisy0ubPp4ncp',
+    '{{ getID "valid_ingredient_mozzarella" }}',
     'mozzarella',
     '',
     '',
@@ -457,7 +457,7 @@ VALUES
     false,
     false,
     false,
-    '1641866784',
+    '{{ timestamp }}',
     NULL,
     NULL
 );
@@ -477,12 +477,12 @@ INSERT INTO "valid_instruments"
 )
 VALUES
 (
-    '242MIAAci4vYKu6WFca5Bwdt3cp',
+    '{{ getID "valid_instrument_spoon" }}',
     'spoon',
     '',
     '',
     '',
-    '1641870035',
+    '{{ timestamp }}',
     NULL,
     NULL
 );
@@ -501,74 +501,74 @@ INSERT INTO "valid_preparations"
 )
 VALUES
 (
-    '242KSZW9sQHmaJlqR9PVdOQyzYe',
+    '{{ getID "valid_preparation_dice" }}',
     'dice',
     '',
     '',
-    '1641866834',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242KSYqWQ3P5uG9UDNSS4Z1ArPP',
+    '{{ getID "valid_preparation_slice" }}',
     'slice',
     '',
     '',
-    '1641866834',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242KSVGj7o2hTZkhcxhPHy9YCB1',
+    '{{ getID "valid_preparation_plate" }}',
     'plate',
     '',
     '',
-    '1641866834',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242KScT8EAqUpovwmVc8ZxwODBS',
+    '{{ getID "valid_preparation_sautee" }}',
     'sautee',
     '',
     '',
-    '1641866834',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242KSaMIRbPHmJtQ0N2IElTQm4T',
+    '{{ getID "valid_preparation_marinate" }}',
     'marinate',
     '',
     '',
-    '1641866834',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242KSc0kYusZeGhHvRDgLalzcc3',
+    '{{ getID "valid_preparation_boil" }}',
     'boil',
     '',
     '',
-    '1641866834',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242KSVXFwEvzXGZwK7L4YMllSIm',
+    '{{ getID "valid_preparation_drain" }}',
     'drain',
     '',
     '',
-    '1641866834',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242KSXAwTGR3zQKJgUVobr8Nbu3',
+    '{{ getID "valid_preparation_grill" }}',
     'grill',
     '',
     '',
-    '1641866834',
+    '{{ timestamp }}',
     NULL,
     NULL
 );
@@ -589,46 +589,46 @@ INSERT INTO "recipes"
 )
 VALUES
 (
-    '242Kja7X4LeEU5Z8bIZEN6jqBnU',
+    '{{ getID "recipe_mushroom_risotto" }}',
     'mushroom risotto',
     '',
     '',
     '',
-    '242IshfGlwFV0yOm5OTl2NMnU6M',
-    '1641867047',
+    '{{ getID "household_1_user_1" }}',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242KjT0WJ6tm4qGH1KhHoKaJj0v',
+    '{{ getID "recipe_grilled_chicken" }}',
     'grilled chicken',
     '',
     '',
     '',
-    '242IshfGlwFV0yOm5OTl2NMnU6M',
-    '1641867048',
+    '{{ getID "household_1_user_1" }}',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242KjVZNo4aIUbxfmfwTwUmxH3E',
+    '{{ getID "recipe_caprese_salad" }}',
     'caprese salad',
     '',
     '',
     '',
-    '242IshfGlwFV0yOm5OTl2NMnU6M',
-    '1641867048',
+    '{{ getID "household_1_user_1" }}',
+    '{{ timestamp }}',
     NULL,
     NULL
 ),
 (
-    '242KjZLuiBiNYD1Gkrh2wAjr8A0',
-    'spaghetti with meat balls',
+    '{{ getID "recipe_spaghetti_with_meatballs" }}',
+    'spaghetti with meatballs',
     '',
     '',
     '',
-    '242IshfGlwFV0yOm5OTl2NMnU6M',
-    '1641867048',
+    '{{ getID "household_1_user_1" }}',
+    '{{ timestamp }}',
     NULL,
     NULL
 );
@@ -649,100 +649,100 @@ INSERT INTO "recipe_steps" (
 )
 VALUES
 (
-    '242LnPnhFnFlb14eyqHRWj3Et4I',
+    '{{ getID "recipe_step_risotto_1" }}',
     0,
-    '242KSZW9sQHmaJlqR9PVdOQyzYe',
-    0,
-    0,
-    0,
-    NULL,
-    '',
-    '',
-    '242Kja7X4LeEU5Z8bIZEN6jqBnU'
-),
-(
-    '242LnPXtlLt1MlXgR27jygkL14l',
-    0,
-    '242KScT8EAqUpovwmVc8ZxwODBS',
+    '{{ getID "valid_preparation_dice" }}',
     0,
     0,
     0,
     NULL,
     '',
     '',
-    '242Kja7X4LeEU5Z8bIZEN6jqBnU'
+    '{{ getID "recipe_mushroom_risotto" }}'
 ),
 (
-    '242LnLD9Gai0AHl7o6tqgFXV2FC',
+    '{{ getID "recipe_step_risotto_2" }}',
     0,
-    '242KSaMIRbPHmJtQ0N2IElTQm4T',
+    '{{ getID "valid_preparation_sautee" }}',
     0,
     0,
     0,
     NULL,
     '',
     '',
-    '242KjT0WJ6tm4qGH1KhHoKaJj0v'
+    '{{ getID "recipe_mushroom_risotto" }}'
 ),
 (
-    '242LnQj1xzfiaZpAtDSAT9qlIco',
+    '{{ getID "recipe_step_grilled_chicken_1" }}',
     0,
-    '242KSXAwTGR3zQKJgUVobr8Nbu3',
+    '{{ getID "valid_preparation_marinate" }}',
     0,
     0,
     0,
     NULL,
     '',
     '',
-    '242KjT0WJ6tm4qGH1KhHoKaJj0v'
+    '{{ getID "recipe_grilled_chicken" }}'
 ),
 (
-    '242LnJZumxU00IpD7xVXwMwzpMo',
+    '{{ getID "recipe_step_grilled_chicken_2" }}',
     0,
-    '242KSYqWQ3P5uG9UDNSS4Z1ArPP',
+    '{{ getID "valid_preparation_grill" }}',
+    0,
+    0,
+    0,
+    NULL,
+    '',
+    '',
+    '{{ getID "recipe_grilled_chicken" }}'
+),
+(
+    '{{ getID "recipe_step_caprese_salad_1" }}',
+    0,
+    '{{ getID "valid_preparation_slice" }}',
     0,
     120,
     450,
     NULL,
     '',
     '',
-    '242KjVZNo4aIUbxfmfwTwUmxH3E'
+    '{{ getID "recipe_caprese_salad" }}'
 ),
 (
-    '242LnPB38Y3lcuqIyVDsYabb1p3',
+    '{{ getID "recipe_step_caprese_salad_2" }}',
     0,
-    '242KSVGj7o2hTZkhcxhPHy9YCB1',
+    '{{ getID "valid_preparation_plate" }}',
     0,
     0,
     0,
     NULL,
     '',
     '',
-    '242KjVZNo4aIUbxfmfwTwUmxH3E'
+    '{{ getID "recipe_caprese_salad" }}'
 ),
 (
-    '242LnLPhiaoGTsIhoBlOYkrv3Nk',
+    '{{ getID "recipe_step_spaghetti_with_meatballs_1" }}',
     0,
-    '242KSc0kYusZeGhHvRDgLalzcc3',
+    '{{ getID "valid_preparation_boil" }}',
     0,
     600,
     900,
     NULL,
     '',
     '',
-    '242KjZLuiBiNYD1Gkrh2wAjr8A0'
+    '{{ getID "recipe_spaghetti_with_meatballs" }}'
 ),
 (
-    '242Lcc6wDc3nFzhxBfc599RMtK4',
+    '{{ getID "recipe_step_spaghetti_with_meatballs_2" }}',
     0,
-    '242KSVXFwEvzXGZwK7L4YMllSIm',
+    '{{ getID "valid_preparation_drain" }}',
     0,
     0,
     0,
     NULL,
     '',
     '',
-    '242KjZLuiBiNYD1Gkrh2wAjr8A0'
+    '{{ getID "recipe_spaghetti_with_meatballs" }}'
 );
 
 -- Recipe Step Ingredients
@@ -759,144 +759,144 @@ INSERT INTO "recipe_step_ingredients" (
 )
 VALUES
 (
-    '242LJhvRkd3RaDfvlWhLJvzVcQD',
-    '242K6lUSTFS3RkDNwdKI0RMZnYg',
+    '{{ getID "recipe_step_ingredients_risotto_step_1_ingredient_1" }}',
+    '{{ getID "valid_ingredient_onion" }}',
     'grams',
     400,
     '',
     false,
     '',
-    '242LnPnhFnFlb14eyqHRWj3Et4I'
+    '{{ getID "recipe_step_risotto_1" }}'
 ),
 (
-    '242LJisw7VUqdScDT9RPEPg5lKd',
-    '242K6lUSTFS3RkDNwdKI0RMZnYg',
+    '{{ getID "recipe_step_ingredients_risotto_step_2_ingredient_1" }}',
+    '{{ getID "valid_ingredient_onion" }}',
     'grams',
     400,
     '',
     true,
     '',
-    '242LnPXtlLt1MlXgR27jygkL14l'
+    '{{ getID "recipe_step_risotto_2" }}'
 ),
 (
-    '242LJjMgNI00fP5kWWqeLh4QjmY',
-    '242K6mpP9j7pguQPL8f2B0Cwiwa',
+    '{{ getID "recipe_step_ingredients_risotto_step_2_ingredient_2" }}',
+    '{{ getID "valid_ingredient_water" }}',
     'milliliters',
     250,
     '',
     false,
     'helps avoid burning the onion',
-    '242LnPXtlLt1MlXgR27jygkL14l'
+    '{{ getID "recipe_step_risotto_2" }}'
 ),
 (
-    '242LMmQVxl8oRbLEOLwXcWiPfAM',
-    '242K6rf5zYjACazuqbWQR8fmRh5',
+    '{{ getID "recipe_step_ingredients_grilled_chicken_step_1_ingredient_1" }}',
+    '{{ getID "valid_ingredient_chicken_breast" }}',
     'grams',
     900,
     '',
     false,
     '',
-    '242LnLD9Gai0AHl7o6tqgFXV2FC'
+    '{{ getID "recipe_step_grilled_chicken_1" }}'
 ),
 (
-    '242LMiEZci3rddHc1zDWexJlgvf',
-    '242K6majTgy4uSTfC2ve18NEGtw',
+    '{{ getID "recipe_step_ingredients_grilled_chicken_step_1_ingredient_2" }}',
+    '{{ getID "valid_ingredient_black_pepper" }}',
     'grams',
     3,
     '',
     false,
     '',
-    '242LnLD9Gai0AHl7o6tqgFXV2FC'
+    '{{ getID "recipe_step_grilled_chicken_1" }}'
 ),
 (
-    '242LMkWWADQlgy0xIqOyZPf1DNo',
-    '242K6rT1M9HV4g7UMlz1iUZWEnT',
+    '{{ getID "recipe_step_ingredients_grilled_chicken_step_1_ingredient_3" }}',
+    '{{ getID "valid_ingredient_garlic" }}',
     'grams',
     20,
     '',
     false,
     '',
-    '242LnLD9Gai0AHl7o6tqgFXV2FC'
+    '{{ getID "recipe_step_grilled_chicken_1" }}'
 ),
 (
-    '242LMhoFyV6q2fZLqWTTwYew8e3',
-    '242K6rf5zYjACazuqbWQR8fmRh5',
+    '{{ getID "recipe_step_ingredients_grilled_chicken_step_2_ingredient_1" }}',
+    '{{ getID "valid_ingredient_chicken_breast" }}',
     'grams',
     900,
     '',
     true,
     '',
-    '242LnQj1xzfiaZpAtDSAT9qlIco'
+    '{{ getID "recipe_step_grilled_chicken_2" }}'
 ),
 (
-    '242LMkYNywxJthgCoourECpeFdW',
-    '242K6qNiXW9CghKfon91bTfR8jT',
+    '{{ getID "recipe_step_ingredients_caprese_salad_step_1_ingredient_1" }}',
+    '{{ getID "valid_ingredient_tomato" }}',
     'grams',
     500,
     '',
     false,
     '',
-    '242LnJZumxU00IpD7xVXwMwzpMo'
+    '{{ getID "recipe_step_caprese_salad_1" }}'
 ),
 (
-    '242LcbG5ribewDwYODGlDiuUDFN',
-    '242KNFK2ZGVJLLsisy0ubPp4ncp',
+    '{{ getID "recipe_step_ingredients_caprese_salad_step_1_ingredient_2" }}',
+    '{{ getID "valid_ingredient_mozzarella" }}',
     'grams',
     500,
     '',
     false,
     '',
-    '242LnJZumxU00IpD7xVXwMwzpMo'
+    '{{ getID "recipe_step_caprese_salad_1" }}'
 ),
 (
-    '242M2p2f53UaMItuiutJpDGaG7c',
-    '242K6qNiXW9CghKfon91bTfR8jT',
-    'grams',
-    500,
-    '',
-    true,
-    '',
-    '242LnPB38Y3lcuqIyVDsYabb1p3'
-),
-(
-    '242LihCUy6camPbpspfMrJs9LUx',
-    '242KNFK2ZGVJLLsisy0ubPp4ncp',
+    '{{ getID "recipe_step_ingredients_caprese_salad_step_2_ingredient_1" }}',
+    '{{ getID "valid_ingredient_tomato" }}',
     'grams',
     500,
     '',
     true,
     '',
-    '242LnPB38Y3lcuqIyVDsYabb1p3'
+    '{{ getID "recipe_step_caprese_salad_2" }}'
 ),
 (
-    '242LigMU1ezDGy8e9DFFLHER59U',
-    '242K6r9nU2631TR7Rqw2y91SJpj',
+    '{{ getID "recipe_step_ingredients_caprese_salad_step_2_ingredient_2" }}',
+    '{{ getID "valid_ingredient_mozzarella" }}',
+    'grams',
+    500,
+    '',
+    true,
+    '',
+    '{{ getID "recipe_step_caprese_salad_2" }}'
+),
+(
+    '{{ getID "recipe_step_ingredients_spaghetti_with_meatballs_step_1_ingredient_1" }}',
+    '{{ getID "valid_ingredient_pasta" }}',
     'grams',
     420,
     '',
     false,
     '',
-    '242LnLPhiaoGTsIhoBlOYkrv3Nk'
+    '{{ getID "recipe_step_spaghetti_with_meatballs_1" }}'
 ),
 (
-    '242LifLmu7eUnNOxGYWKL6OpgI9',
-    '242K6mpP9j7pguQPL8f2B0Cwiwa',
+    '{{ getID "recipe_step_ingredients_spaghetti_with_meatballs_step_1_ingredient_2" }}',
+    '{{ getID "valid_ingredient_water" }}',
     'grams',
     420,
     '',
     false,
     '',
-    '242LnLPhiaoGTsIhoBlOYkrv3Nk'
+    '{{ getID "recipe_step_spaghetti_with_meatballs_1" }}'
 ),
 (
-    '242Likl7CLJjy6X1tiGYl7rY1zk',
-    '242K6r9nU2631TR7Rqw2y91SJpj',
+    '{{ getID "recipe_step_ingredients_spaghetti_with_meatballs_step_2_ingredient_1" }}',
+    '{{ getID "valid_ingredient_pasta" }}',
     'grams',
     420,
     '',
     true,
     '',
-    '242Lcc6wDc3nFzhxBfc599RMtK4'
+    '{{ getID "recipe_step_spaghetti_with_meatballs_2" }}'
 );
 
 -- Meals
@@ -909,16 +909,16 @@ INSERT INTO "meals" (
 )
 VALUES
 (
-    '242L0gJwrKM8lmhoEMR2yjIN7EF',
+    '{{ getID "meal_mushroom_risotto_with_grilled_chicken" }}',
     'mushroom risotto with chicken',
     'chicken with a nice mushroom risotto',
-    '242IshfGlwFV0yOm5OTl2NMnU6M'
+    '{{ getID "household_1_user_1" }}'
 ),
 (
-    '242L0mca2sRcyquwstd1O8RpVPo',
+    '{{ getID "meal_spaghetti_with_caprese_salad" }}',
     'spaghetti with caprese salad',
     'spaghetti with a nice caprese salad',
-    '242IshfGlwFV0yOm5OTl2NMnU6M'
+    '{{ getID "household_1_user_1" }}'
 );
 
 INSERT INTO "meal_recipes" (
@@ -928,24 +928,24 @@ INSERT INTO "meal_recipes" (
 )
 VALUES
 (
-    '242L8uLRzdm07cwXe66lLVg2QGa',
-    '242L0gJwrKM8lmhoEMR2yjIN7EF',
-    '242Kja7X4LeEU5Z8bIZEN6jqBnU'
+    '{{ getID "meal_mushroom_risotto_with_grilled_chicken_recipe_1" }}',
+    '{{ getID "meal_mushroom_risotto_with_grilled_chicken" }}',
+    '{{ getID "recipe_mushroom_risotto" }}'
 ),
 (
-    '242L8w2SmY8s0IZuy4ldbQUUSq7',
-    '242L0gJwrKM8lmhoEMR2yjIN7EF',
-    '242KjT0WJ6tm4qGH1KhHoKaJj0v'
+    '{{ getID "meal_mushroom_risotto_with_grilled_chicken_recipe_2" }}',
+    '{{ getID "meal_mushroom_risotto_with_grilled_chicken" }}',
+    '{{ getID "recipe_grilled_chicken" }}'
 ),
 (
-    '242L8uuZBw6brvrke8flXoT7wsx',
-    '242L0mca2sRcyquwstd1O8RpVPo',
-    '242KjZLuiBiNYD1Gkrh2wAjr8A0'
+    '{{ getID "meal_spaghetti_with_caprese_salad_recipe_1" }}',
+    '{{ getID "meal_spaghetti_with_caprese_salad" }}',
+    '{{ getID "recipe_spaghetti_with_meatballs" }}'
 ),
 (
-    '242L8sTwuBfGehMYk9Pon6wfT6z',
-    '242L0mca2sRcyquwstd1O8RpVPo',
-    '242KjVZNo4aIUbxfmfwTwUmxH3E'
+    '{{ getID "meal_spaghetti_with_caprese_salad_recipe_2" }}',
+    '{{ getID "meal_spaghetti_with_caprese_salad" }}',
+    '{{ getID "recipe_caprese_salad" }}'
 );
 
 
@@ -962,13 +962,13 @@ INSERT INTO "meal_plans" (
 )
 VALUES
 (
-    '242L0gB3b7omllUN4fzXMYf5YTX',
+    '{{ getID "meal_plan_1_household_1" }}',
     '',
     'finalized',
-    '1641866834',
-    '1641867834',
-    '1642866834',
-    '242JK9oro0PoSqGAFx4gaYwRVjB'
+    '{{ timestamp }}',
+    '{{ timestamp }}',
+    '{{ timestamp }}',
+    '{{ getID "household_1" }}'
 );
 
 INSERT INTO "meal_plan_options" (
@@ -982,20 +982,20 @@ INSERT INTO "meal_plan_options" (
 )
 VALUES
 (
-    '242L0iZjCrPQIY6y6PVg42PSNCB',
+    '{{ getID "meal_plan_1_household_1_option_1" }}',
     3,
     'dinner',
-    '242L0gJwrKM8lmhoEMR2yjIN7EF',
+    '{{ getID "meal_mushroom_risotto_with_grilled_chicken" }}',
     true,
     '',
-    '242L0gB3b7omllUN4fzXMYf5YTX'
+    '{{ getID "meal_plan_1_household_1" }}'
 ),
 (
-    '242L0mrTyPoV69OgTeyiSMD0hDe',
+    '{{ getID "meal_plan_1_household_1_option_2" }}',
     3,
     'dinner',
-    '242L0mca2sRcyquwstd1O8RpVPo',
+    '{{ getID "meal_spaghetti_with_caprese_salad" }}',
     false,
     '',
-    '242L0gB3b7omllUN4fzXMYf5YTX'
+    '{{ getID "meal_plan_1_household_1" }}'
 );

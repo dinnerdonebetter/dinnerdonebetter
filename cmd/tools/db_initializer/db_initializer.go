@@ -1,34 +1,35 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"database/sql"
+	_ "embed"
 	"errors"
-	"fmt"
-	"net/url"
-	"sync"
+	"log"
+	"text/template"
+	"time"
 
+	"github.com/segmentio/ksuid"
+
+	_ "github.com/lib/pq"
 	flag "github.com/spf13/pflag"
-	"go.opentelemetry.io/otel/trace"
 
 	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
-	"github.com/prixfixeco/api_server/pkg/client/httpclient"
-	"github.com/prixfixeco/api_server/pkg/types"
-	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
+const defaultDBURL = "postgres://dbuser:hunter2@localhost:5432/prixfixe?sslmode=disable"
+
 var (
-	address    string
-	username   string
-	password   string
-	totpSecret string
-	debug      bool
+	dbString string
+	debug    bool
+
+	//go:embed init.sql.tmpl
+	initScriptTemplate string
 )
 
 func init() {
-	flag.StringVarP(&address, "address", "a", "", "where the target instance is hosted")
-	flag.StringVarP(&username, "username", "u", "", "admin username")
-	flag.StringVarP(&password, "password", "p", "", "admin password")
-	flag.StringVarP(&totpSecret, "two-factor-secret", "t", "", "admin 2FA secret")
+	flag.StringVarP(&dbString, "dburl", "u", defaultDBURL, "where the database is hosted")
 	flag.BoolVarP(&debug, "debug", "d", false, "whether debug mode is enabled")
 }
 
@@ -38,77 +39,70 @@ func main() {
 	ctx := context.Background()
 	logger := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
 
-	if address == "" {
+	if dbString == "" {
 		logger.Fatal(errors.New("uri must be valid"))
 	}
 
-	if username == "" || password == "" || address == "" {
-		logger.Fatal(errors.New("all credentials must be provided"))
+	if dbString == "" {
+		logger.Fatal(errors.New("database connection string must be provided"))
 	}
 
-	parsedURI, uriParseErr := url.Parse(address)
-	if uriParseErr != nil {
-		logger.Fatal(fmt.Errorf("parsing provided url: %w", uriParseErr))
-	}
-	if parsedURI.Scheme == "" {
-		logger.Fatal(errors.New("provided URI missing scheme"))
-	}
-
-	user := &types.User{
-		Username:        username,
-		TwoFactorSecret: totpSecret,
-		HashedPassword:  password,
-	}
-
-	cookie, cookieErr := testutils.GetLoginCookie(ctx, address, user)
-	if cookieErr != nil {
-		logger.Fatal(fmt.Errorf("getting cookie: %w", cookieErr))
-	}
-
-	client, err := httpclient.NewClient(parsedURI, trace.NewNoopTracerProvider(), httpclient.UsingLogger(logger), httpclient.UsingCookie(cookie))
+	db, err := sql.Open("postgres", dbString)
 	if err != nil {
-		logger.Fatal(fmt.Errorf("initializing client: %w", err))
+		logger.Fatal(err)
 	}
 
-	logger.Debug("initialized API client")
+	generatedIDs := map[string]string{}
 
-	var wg sync.WaitGroup
-
-	wg.Add(1)
-	go func() {
-		for _, instrument := range validInstruments {
-			if _, instrumentCreationErr := client.CreateValidInstrument(ctx, instrument); instrumentCreationErr != nil {
-				logger.Error(instrumentCreationErr, "creating valid instrument")
+	templateFuncs := map[string]interface{}{
+		"timestamp": func() int64 {
+			return time.Now().Unix()
+		},
+		"getID": func(key string) string {
+			if id, ok := generatedIDs[key]; ok {
+				return id
 			}
-		}
-		wg.Done()
-	}()
 
-	wg.Add(1)
-	go func() {
-		for _, preparation := range validPreparations {
-			if _, preparationCreationErr := client.CreateValidPreparation(ctx, preparation); preparationCreationErr != nil {
-				logger.Error(preparationCreationErr, "creating valid preparation")
-			}
-		}
-		wg.Done()
-	}()
+			newID := ksuid.New().String()
+			generatedIDs[key] = newID
 
-	wg.Add(1)
-	go func() {
-		for _, ingredient := range validIngredients {
-			if _, ingredientCreationErr := client.CreateValidIngredient(ctx, ingredient); ingredientCreationErr != nil {
-				logger.Error(ingredientCreationErr, "creating valid ingredient")
-			}
-		}
-		wg.Done()
-	}()
-
-	wg.Wait()
-
-	for _, recipe := range recipes {
-		if _, recipeCreationErr := client.CreateRecipe(ctx, recipe); recipeCreationErr != nil {
-			logger.Error(recipeCreationErr, "creating valid recipe")
-		}
+			return newID
+		},
 	}
+
+	t := template.Must(template.New("init").Funcs(templateFuncs).Parse(initScriptTemplate))
+
+	var query bytes.Buffer
+	if err = t.Execute(&query, struct{}{}); err != nil {
+		logger.Fatal(err)
+	}
+
+	res, err := db.ExecContext(ctx, `
+DELETE FROM "users" WHERE id IS NOT NULL;
+DELETE FROM "households" WHERE id IS NOT NULL;
+DELETE FROM "household_user_memberships" WHERE id IS NOT NULL;
+DELETE FROM "valid_ingredients" WHERE id IS NOT NULL;
+DELETE FROM "valid_instruments" WHERE id IS NOT NULL;
+DELETE FROM "valid_preparations" WHERE id IS NOT NULL;
+DELETE FROM "recipes" WHERE id IS NOT NULL;
+DELETE FROM "recipe_steps" WHERE id IS NOT NULL;
+DELETE FROM "recipe_step_ingredients" WHERE id IS NOT NULL;
+DELETE FROM "meals" WHERE id IS NOT NULL;
+DELETE FROM "meal_recipes" WHERE id IS NOT NULL;
+DELETE FROM "meal_plans" WHERE id IS NOT NULL;
+DELETE FROM "meal_plan_options" WHERE id IS NOT NULL;
+DELETE FROM "sessions" WHERE data IS NOT NULL;
+`)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	q := query.String()
+
+	res, err = db.ExecContext(ctx, q)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	log.Println(res.RowsAffected())
 }
