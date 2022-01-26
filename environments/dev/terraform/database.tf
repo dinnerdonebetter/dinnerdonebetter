@@ -1,5 +1,5 @@
 locals {
-  database_username = "prixfixe_api"
+  database_username = "api_db_user"
   database_name     = "prixfixe"
 }
 
@@ -27,6 +27,5 @@ resource "google_sql_ssl_cert" "client_cert" {
 resource "google_sql_user" "users" {
   name     = local.database_username
   instance = google_sql_database_instance.dev.name
-  host     = "prixfixe.dev"
   password = random_password.database_password.result
 }
