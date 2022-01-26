@@ -46,7 +46,7 @@ func (s *TestSuite) TestRecipeStepIngredients_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidIngredients, _, createdRecipe := createRecipeForTest(ctx, t, testClients.main)
+			createdValidIngredients, _, createdRecipe := createRecipeForTest(ctx, t, testClients.main, nil)
 
 			var (
 				createdRecipeStepID,
@@ -99,7 +99,7 @@ func (s *TestSuite) TestRecipeStepIngredients_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.main)
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.main, nil)
 
 			var (
 				createdRecipeStepID string
@@ -112,7 +112,7 @@ func (s *TestSuite) TestRecipeStepIngredients_Listing() {
 			t.Log("creating recipe step ingredients")
 			var expected []*types.RecipeStepIngredient
 			for i := 0; i < 5; i++ {
-				x, _, _ := createRecipeForTest(ctx, t, testClients.main)
+				x, _, _ := createRecipeForTest(ctx, t, testClients.main, nil)
 
 				exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 				exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStepID

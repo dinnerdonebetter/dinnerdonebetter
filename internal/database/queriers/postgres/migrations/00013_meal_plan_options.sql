@@ -9,7 +9,7 @@ CREATE TYPE meal_name AS ENUM (
 
 CREATE TABLE IF NOT EXISTS meal_plan_options (
 	"id" CHAR(27) NOT NULL PRIMARY KEY,
-	"day" INTEGER NOT NULL CONSTRAINT valid_day CHECK (day > 0), CHECK (day < 7),
+	"day" INTEGER NOT NULL CONSTRAINT valid_day CHECK (day >= 0), CHECK (day <= 6),
     "meal_id" CHAR(27) NOT NULL REFERENCES meals("id") ON DELETE CASCADE,
 	"notes" TEXT NOT NULL,
     "meal_name" meal_name NOT NULL,

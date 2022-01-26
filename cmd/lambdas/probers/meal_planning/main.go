@@ -247,19 +247,19 @@ func buildHandler(logger logging.Logger) func(ctx context.Context) error {
 			VotingDeadline: uint64(time.Now().Add(votingDeadline).Unix()),
 			Options: []*types.MealPlanOption{
 				{
-					MealID:   createdMeals[0].ID,
+					Meal:     types.Meal{ID: createdMeals[0].ID},
 					Notes:    "option A",
 					MealName: types.BreakfastMealName,
 					Day:      time.Monday,
 				},
 				{
-					MealID:   createdMeals[1].ID,
+					Meal:     types.Meal{ID: createdMeals[1].ID},
 					Notes:    "option B",
 					MealName: types.BreakfastMealName,
 					Day:      time.Monday,
 				},
 				{
-					MealID:   createdMeals[2].ID,
+					Meal:     types.Meal{ID: createdMeals[2].ID},
 					Notes:    "option C",
 					MealName: types.BreakfastMealName,
 					Day:      time.Monday,
@@ -280,58 +280,52 @@ func buildHandler(logger logging.Logger) func(ctx context.Context) error {
 			return fmt.Errorf("fetching meal plan: %w", err)
 		}
 
-		logger.Debug("fetched created meal plan")
+		logger.Debug("fetched created meal plan, voting for user A")
 
-		userAVotes := []*types.MealPlanOptionVote{
-			{
-				BelongsToMealPlanOption: createdMealPlan.Options[0].ID,
-				Rank:                    0,
-			},
-			{
-				BelongsToMealPlanOption: createdMealPlan.Options[1].ID,
-				Rank:                    2,
-			},
-			{
-				BelongsToMealPlanOption: createdMealPlan.Options[2].ID,
-				Rank:                    1,
-			},
-		}
-
-		userBVotes := []*types.MealPlanOptionVote{
-			{
-				BelongsToMealPlanOption: createdMealPlan.Options[0].ID,
-				Rank:                    0,
-			},
-			{
-				BelongsToMealPlanOption: createdMealPlan.Options[1].ID,
-				Rank:                    1,
-			},
-			{
-				BelongsToMealPlanOption: createdMealPlan.Options[2].ID,
-				Rank:                    2,
+		exampleMealPlanOptionVoteInputA := &types.MealPlanOptionVoteCreationRequestInput{
+			Votes: []*types.MealPlanOptionVoteCreationInput{
+				{
+					BelongsToMealPlanOption: createdMealPlan.Options[0].ID,
+					Rank:                    0,
+				},
+				{
+					BelongsToMealPlanOption: createdMealPlan.Options[1].ID,
+					Rank:                    2,
+				},
+				{
+					BelongsToMealPlanOption: createdMealPlan.Options[2].ID,
+					Rank:                    1,
+				},
 			},
 		}
 
-		for _, vote := range userAVotes {
-			logger.Debug("voting for user A")
-
-			exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(vote)
-			_, err = createdClients[0].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
-
-			if err != nil {
-				return fmt.Errorf("voting for user A: %w", err)
-			}
+		_, err = createdClients[0].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInputA)
+		if err != nil {
+			return fmt.Errorf("voting for user A: %w", err)
 		}
 
-		for _, vote := range userBVotes {
-			logger.Debug("voting for user B")
+		exampleMealPlanOptionVoteInputB := &types.MealPlanOptionVoteCreationRequestInput{
+			Votes: []*types.MealPlanOptionVoteCreationInput{
+				{
+					BelongsToMealPlanOption: createdMealPlan.Options[0].ID,
+					Rank:                    0,
+				},
+				{
+					BelongsToMealPlanOption: createdMealPlan.Options[1].ID,
+					Rank:                    1,
+				},
+				{
+					BelongsToMealPlanOption: createdMealPlan.Options[2].ID,
+					Rank:                    2,
+				},
+			},
+		}
 
-			exampleMealPlanOptionVoteInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(vote)
-			_, err = createdClients[1].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInput)
+		logger.Debug("voting for user B")
 
-			if err != nil {
-				return fmt.Errorf("voting for user B: %w", err)
-			}
+		_, err = createdClients[1].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, exampleMealPlanOptionVoteInputB)
+		if err != nil {
+			return fmt.Errorf("voting for user B: %w", err)
 		}
 
 		logger.Debug("getting voted upon meal plan")

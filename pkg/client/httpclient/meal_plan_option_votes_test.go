@@ -21,10 +21,11 @@ func TestMealPlanOptionVotes(t *testing.T) {
 
 type mealPlanOptionVotesBaseSuite struct {
 	suite.Suite
-	ctx                       context.Context
-	exampleMealPlanOptionVote *types.MealPlanOptionVote
-	exampleMealPlanID         string
-	exampleMealPlanOptionID   string
+	ctx                        context.Context
+	exampleMealPlanOptionVote  *types.MealPlanOptionVote
+	exampleMealPlanID          string
+	exampleMealPlanOptionID    string
+	exampleMealPlanOptionVotes []*types.MealPlanOptionVote
 }
 
 var _ suite.SetupTestSuite = (*mealPlanOptionVotesBaseSuite)(nil)
@@ -35,6 +36,7 @@ func (s *mealPlanOptionVotesBaseSuite) SetupTest() {
 	s.exampleMealPlanOptionID = fakes.BuildFakeID()
 	s.exampleMealPlanOptionVote = fakes.BuildFakeMealPlanOptionVote()
 	s.exampleMealPlanOptionVote.BelongsToMealPlanOption = s.exampleMealPlanOptionID
+	s.exampleMealPlanOptionVotes = []*types.MealPlanOptionVote{s.exampleMealPlanOptionVote}
 }
 
 type mealPlanOptionVotesTestSuite struct {
@@ -180,27 +182,25 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_GetMealPlanOptionVotes() {
 }
 
 func (s *mealPlanOptionVotesTestSuite) TestClient_CreateMealPlanOptionVote() {
-	const expectedPath = "/api/v1/meal_plans/%s/meal_plan_options/%s/meal_plan_option_votes"
+	const expectedPath = "/api/v1/meal_plans/%s/vote"
 
 	s.Run("standard", func() {
 		t := s.T()
 
 		exampleInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInput()
-		exampleInput.BelongsToMealPlanOption = s.exampleMealPlanOptionID
 
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleMealPlanID, s.exampleMealPlanOptionID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOptionVote)
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleMealPlanID)
+		c, _ := buildTestClientWithJSONResponse(t, spec, []*types.MealPlanOptionVote{s.exampleMealPlanOptionVote})
 
 		actual, err := c.CreateMealPlanOptionVote(s.ctx, s.exampleMealPlanID, exampleInput)
 		assert.NoError(t, err)
-		assert.Equal(t, s.exampleMealPlanOptionVote, actual)
+		assert.Equal(t, s.exampleMealPlanOptionVotes, actual)
 	})
 
 	s.Run("with invalid meal plan ID", func() {
 		t := s.T()
 
 		exampleInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInput()
-		exampleInput.BelongsToMealPlanOption = s.exampleMealPlanOptionID
 
 		c, _ := buildSimpleTestClient(t)
 

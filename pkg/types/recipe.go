@@ -89,6 +89,7 @@ type (
 		GetRecipeByIDAndUser(ctx context.Context, recipeID, userID string) (*Recipe, error)
 		GetTotalRecipeCount(ctx context.Context) (uint64, error)
 		GetRecipes(ctx context.Context, filter *QueryFilter) (*RecipeList, error)
+		SearchForRecipes(ctx context.Context, query string, filter *QueryFilter) (*RecipeList, error)
 		GetRecipesWithIDs(ctx context.Context, userID string, limit uint8, ids []string) ([]*Recipe, error)
 		CreateRecipe(ctx context.Context, input *RecipeDatabaseCreationInput) (*Recipe, error)
 		UpdateRecipe(ctx context.Context, updated *Recipe) error
@@ -100,6 +101,7 @@ type (
 		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
 		ReadHandler(res http.ResponseWriter, req *http.Request)
+		SearchHandler(res http.ResponseWriter, req *http.Request)
 		UpdateHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 	}

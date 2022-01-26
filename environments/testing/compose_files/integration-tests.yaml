@@ -22,6 +22,8 @@ services:
         ports:
             - '5432:5432'
     workers:
+        logging:
+            driver: none
         container_name: integration_tests_workers
         build:
             context: '../../../'

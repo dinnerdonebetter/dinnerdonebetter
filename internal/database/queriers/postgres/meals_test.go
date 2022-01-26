@@ -7,6 +7,8 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/Masterminds/squirrel"
+
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -442,6 +444,91 @@ func TestQuerier_GetMeals(T *testing.T) {
 			WillReturnRows(buildErroneousMockRow())
 
 		actual, err := c.GetMeals(ctx, filter)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_SearchForMeals(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		filter := types.DefaultQueryFilter()
+		exampleMealList := fakes.BuildFakeMealList()
+		for i := range exampleMealList.Meals {
+			exampleMealList.Meals[i].Recipes = nil
+		}
+
+		ctx := context.Background()
+		recipeNameQuery := "example"
+		c, db := buildTestClient(t)
+
+		where := squirrel.ILike{"name": wrapQueryForILIKE(recipeNameQuery)}
+		query, args := c.buildListQueryWithILike(ctx, "meals", nil, nil, where, "", mealsTableColumns, "", false, filter)
+
+		db.ExpectQuery(formatQueryForSQLMock(query)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromMeals(true, exampleMealList.FilteredCount, exampleMealList.Meals...))
+
+		actual, err := c.SearchForMeals(ctx, recipeNameQuery, filter)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleMealList, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		filter := types.DefaultQueryFilter()
+		exampleMealList := fakes.BuildFakeMealList()
+		for i := range exampleMealList.Meals {
+			exampleMealList.Meals[i].Recipes = nil
+		}
+
+		ctx := context.Background()
+		recipeNameQuery := "example"
+		c, db := buildTestClient(t)
+
+		where := squirrel.ILike{"name": wrapQueryForILIKE(recipeNameQuery)}
+		query, args := c.buildListQueryWithILike(ctx, "meals", nil, nil, where, "", mealsTableColumns, "", false, filter)
+
+		db.ExpectQuery(formatQueryForSQLMock(query)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.SearchForMeals(ctx, recipeNameQuery, filter)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error scanning response from database", func(t *testing.T) {
+		t.Parallel()
+
+		filter := types.DefaultQueryFilter()
+		exampleMealList := fakes.BuildFakeMealList()
+		for i := range exampleMealList.Meals {
+			exampleMealList.Meals[i].Recipes = nil
+		}
+
+		ctx := context.Background()
+		recipeNameQuery := "example"
+		c, db := buildTestClient(t)
+
+		where := squirrel.ILike{"name": wrapQueryForILIKE(recipeNameQuery)}
+		query, args := c.buildListQueryWithILike(ctx, "meals", nil, nil, where, "", mealsTableColumns, "", false, filter)
+
+		db.ExpectQuery(formatQueryForSQLMock(query)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildErroneousMockRow())
+
+		actual, err := c.SearchForMeals(ctx, recipeNameQuery, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 

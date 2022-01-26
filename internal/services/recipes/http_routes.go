@@ -175,6 +175,49 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, recipes)
 }
 
+// SearchHandler is our list route.
+func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	tracing.AttachRequestToSpan(span, req)
+
+	filter := types.ExtractQueryFilter(req)
+	logger := s.logger.WithRequest(req).
+		WithValue(keys.FilterLimitKey, filter.Limit).
+		WithValue(keys.FilterPageKey, filter.Page).
+		WithValue(keys.FilterSortByKey, string(filter.SortBy))
+	tracing.AttachFilterToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+
+	searchQuery := req.URL.Query().Get(types.SearchQueryKey)
+	tracing.AttachSearchQueryToSpan(span, searchQuery)
+	logger = logger.WithValue(keys.SearchQueryKey, searchQuery)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	recipes, err := s.recipeDataManager.SearchForRecipes(ctx, searchQuery, filter)
+	if errors.Is(err, sql.ErrNoRows) {
+		// in the event no rows exist, return an empty list.
+		recipes = &types.RecipeList{Recipes: []*types.Recipe{}}
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving recipes")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, recipes)
+}
+
 // UpdateHandler returns a handler that updates a recipe.
 func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())

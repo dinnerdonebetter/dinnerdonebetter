@@ -34,7 +34,6 @@ data "aws_iam_policy_document" "allow_parameter_store_access" {
       aws_ssm_parameter.cookie_hash_key.arn,
       aws_ssm_parameter.cookie_block_key.arn,
       aws_ssm_parameter.paseto_local_key.arn,
-      aws_ssm_parameter.pubsub_server_url.arn,
     ]
   }
 }

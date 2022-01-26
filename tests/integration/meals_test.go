@@ -2,6 +2,7 @@ package integration
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -25,19 +26,23 @@ func checkMealEquality(t *testing.T, expected, actual *types.Meal) {
 	assert.NotZero(t, actual.CreatedOn)
 }
 
-func createMealForTest(ctx context.Context, t *testing.T, client *httpclient.Client) *types.Meal {
+func createMealForTest(ctx context.Context, t *testing.T, client *httpclient.Client, mealInput *types.Meal) *types.Meal {
 	t.Helper()
 
 	createdRecipes := []*types.Recipe{}
 	createdRecipeIDs := []string{}
 	for i := 0; i < 3; i++ {
-		_, _, recipe := createRecipeForTest(ctx, t, client)
+		_, _, recipe := createRecipeForTest(ctx, t, client, nil)
 		createdRecipes = append(createdRecipes, recipe)
 		createdRecipeIDs = append(createdRecipeIDs, recipe.ID)
 	}
 
 	t.Log("creating meal")
-	exampleMeal := fakes.BuildFakeMeal()
+	exampleMeal := mealInput
+	if exampleMeal == nil {
+		exampleMeal = fakes.BuildFakeMeal()
+	}
+
 	exampleMealInput := fakes.BuildFakeMealCreationRequestInputFromMeal(exampleMeal)
 	exampleMealInput.Recipes = createdRecipeIDs
 
@@ -61,7 +66,7 @@ func (s *TestSuite) TestMeals_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdMeal := createMealForTest(ctx, t, testClients.main)
+			createdMeal := createMealForTest(ctx, t, testClients.main, nil)
 
 			t.Log("cleaning up meal")
 			assert.NoError(t, testClients.main.ArchiveMeal(ctx, createdMeal.ID))
@@ -106,13 +111,76 @@ func (s *TestSuite) TestMeals_Listing() {
 			t.Log("creating meals")
 			var expected []*types.Meal
 			for i := 0; i < 5; i++ {
-				createdMeal := createMealForTest(ctx, t, testClients.main)
+				createdMeal := createMealForTest(ctx, t, testClients.main, nil)
 
 				expected = append(expected, createdMeal)
 			}
 
 			// assert meal list equality
 			actual, err := testClients.main.GetMeals(ctx, nil)
+			requireNotNilAndNoProblems(t, actual, err)
+			assert.True(
+				t,
+				len(expected) <= len(actual.Meals),
+				"expected %d to be <= %d",
+				len(expected),
+				len(actual.Meals),
+			)
+
+			t.Log("cleaning up")
+			for _, createdMeal := range expected {
+				assert.NoError(t, testClients.main.ArchiveMeal(ctx, createdMeal.ID))
+			}
+		}
+	})
+}
+
+func (s *TestSuite) TestMeals_Searching() {
+	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			t.Log("creating prerequisite valid ingredient")
+			exampleValidIngredient := fakes.BuildFakeValidIngredient()
+			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
+			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			require.NoError(t, err)
+			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
+
+			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
+
+			createdValidIngredient, err = testClients.main.GetValidIngredient(ctx, createdValidIngredient.ID)
+			requireNotNilAndNoProblems(t, createdValidIngredient, err)
+			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
+
+			t.Log("creating prerequisite valid preparation")
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			require.NoError(t, err)
+			t.Logf("valid preparation %q created", createdValidPreparation.ID)
+
+			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
+
+			createdValidPreparation, err = testClients.main.GetValidPreparation(ctx, createdValidPreparation.ID)
+			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
+
+			t.Log("creating meals")
+			exampleMeal := fakes.BuildFakeMeal()
+			var expected []*types.Meal
+			for i := 0; i < 5; i++ {
+				exampleMeal.Name = fmt.Sprintf("example%d", i)
+				createdMeal := createMealForTest(ctx, t, testClients.main, exampleMeal)
+
+				expected = append(expected, createdMeal)
+			}
+
+			// assert meal list equality
+			actual, err := testClients.main.SearchForMeals(ctx, "example", nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,

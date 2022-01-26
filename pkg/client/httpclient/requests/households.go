@@ -35,6 +35,28 @@ func (b *Builder) BuildSwitchActiveHouseholdRequest(ctx context.Context, househo
 	return b.buildDataRequest(ctx, http.MethodPost, uri, input)
 }
 
+// BuildGetCurrentHouseholdRequest builds an HTTP request for fetching a household.
+func (b *Builder) BuildGetCurrentHouseholdRequest(ctx context.Context) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := b.logger
+	uri := b.BuildURL(
+		ctx,
+		nil,
+		householdsBasePath,
+		"current",
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building user status request")
+	}
+
+	return req, nil
+}
+
 // BuildGetHouseholdRequest builds an HTTP request for fetching a household.
 func (b *Builder) BuildGetHouseholdRequest(ctx context.Context, householdID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)

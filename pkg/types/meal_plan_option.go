@@ -44,11 +44,11 @@ type (
 		ArchivedOn        *uint64               `json:"archivedOn"`
 		LastUpdatedOn     *uint64               `json:"lastUpdatedOn"`
 		ID                string                `json:"id"`
-		MealID            string                `json:"mealID"`
+		BelongsToMealPlan string                `json:"belongsToMealPlan"`
 		Notes             string                `json:"notes"`
 		MealName          MealName              `json:"mealName"`
-		BelongsToMealPlan string                `json:"belongsToMealPlan"`
 		Votes             []*MealPlanOptionVote `json:"votes"`
+		Meal              Meal                  `json:"meal"`
 		CreatedOn         uint64                `json:"createdOn"`
 		Day               time.Weekday          `json:"day"`
 		Chosen            bool                  `json:"chosen"`
@@ -123,8 +123,9 @@ func (x *MealPlanOption) Update(input *MealPlanOptionUpdateRequestInput) {
 		x.Day = input.Day
 	}
 
-	if input.MealID != "" && input.MealID != x.MealID {
-		x.MealID = input.MealID
+	if input.MealID != "" && input.MealID != x.Meal.ID {
+		// we should do something better here
+		x.Meal = Meal{ID: input.MealID}
 	}
 
 	if input.Notes != "" && input.Notes != x.Notes {

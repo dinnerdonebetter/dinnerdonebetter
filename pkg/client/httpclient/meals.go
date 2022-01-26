@@ -56,6 +56,29 @@ func (c *Client) GetMeals(ctx context.Context, filter *types.QueryFilter) (*type
 	return meals, nil
 }
 
+// SearchForMeals retrieves a list of meals.
+func (c *Client) SearchForMeals(ctx context.Context, query string, filter *types.QueryFilter) (*types.MealList, error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	tracing.AttachSearchQueryToSpan(span, query)
+
+	logger := c.loggerWithFilter(filter).WithValue(keys.SearchQueryKey, query)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	req, err := c.requestBuilder.BuildSearchForMealsRequest(ctx, query, filter)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building meals list request")
+	}
+
+	var meals *types.MealList
+	if err = c.fetchAndUnmarshal(ctx, req, &meals); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "retrieving meals")
+	}
+
+	return meals, nil
+}
+
 // CreateMeal creates a meal.
 func (c *Client) CreateMeal(ctx context.Context, input *types.MealCreationRequestInput) (*types.Meal, error) {
 	ctx, span := c.tracer.StartSpan(ctx)

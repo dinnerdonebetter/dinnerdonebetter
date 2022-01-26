@@ -138,7 +138,15 @@ func (b *Builder) BuildUpdateMealPlanOptionRequest(ctx context.Context, mealPlan
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, mealPlanOption)
+	input := &types.MealPlanOptionUpdateRequestInput{
+		MealID:            mealPlanOption.Meal.ID,
+		Notes:             mealPlanOption.Notes,
+		MealName:          mealPlanOption.MealName,
+		BelongsToMealPlan: mealPlanOption.BelongsToMealPlan,
+		Day:               mealPlanOption.Day,
+	}
+
+	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building request")
 	}

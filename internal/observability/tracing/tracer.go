@@ -32,3 +32,6 @@ type Tracer interface {
 
 // TracerProvider is a simple alias for trace.TracerProvider.
 type TracerProvider trace.TracerProvider
+
+// NewNoopTracerProvider is a shadow for otel's NewNoopTracerProvider.
+var NewNoopTracerProvider = trace.NewNoopTracerProvider

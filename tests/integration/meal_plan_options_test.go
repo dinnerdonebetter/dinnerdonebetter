@@ -18,7 +18,7 @@ func checkMealPlanOptionEquality(t *testing.T, expected, actual *types.MealPlanO
 
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Day, actual.Day, "expected Day for meal plan option %s to be %v, but it was %v", expected.ID, expected.Day, actual.Day)
-	assert.Equal(t, expected.MealID, actual.MealID, "expected MealID for meal plan option %s to be %v, but it was %v", expected.ID, expected.MealID, actual.MealID)
+	assert.Equal(t, expected.Meal.ID, actual.Meal.ID, "expected MealID for meal plan option %s to be %v, but it was %v", expected.ID, expected.Meal.ID, actual.Meal.ID)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for meal plan option %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.NotZero(t, actual.CreatedOn)
 }
@@ -27,7 +27,7 @@ func checkMealPlanOptionEquality(t *testing.T, expected, actual *types.MealPlanO
 func convertMealPlanOptionToMealPlanOptionUpdateInput(x *types.MealPlanOption) *types.MealPlanOptionUpdateRequestInput {
 	return &types.MealPlanOptionUpdateRequestInput{
 		Day:    x.Day,
-		MealID: x.MealID,
+		MealID: x.Meal.ID,
 		Notes:  x.Notes,
 	}
 }
@@ -51,7 +51,7 @@ func (s *TestSuite) TestMealPlanOptions_CompleteLifecycle() {
 
 			t.Log("changing meal plan option")
 			newMealPlanOption := fakes.BuildFakeMealPlanOption()
-			newMealPlanOption.MealID = createdMealPlanOption.MealID
+			newMealPlanOption.Meal.ID = createdMealPlanOption.Meal.ID
 			newMealPlanOption.BelongsToMealPlan = createdMealPlan.ID
 			createdMealPlanOption.Update(convertMealPlanOptionToMealPlanOptionUpdateInput(newMealPlanOption))
 			assert.NoError(t, testClients.main.UpdateMealPlanOption(ctx, createdMealPlanOption))
@@ -89,8 +89,8 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 				exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 				exampleMealPlanOption.BelongsToMealPlan = createdMealPlan.ID
 
-				createdMeal := createMealForTest(ctx, t, testClients.main)
-				exampleMealPlanOption.MealID = createdMeal.ID
+				createdMeal := createMealForTest(ctx, t, testClients.main, nil)
+				exampleMealPlanOption.Meal.ID = createdMeal.ID
 
 				exampleMealPlanOptionInput := fakes.BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(exampleMealPlanOption)
 				createdMealPlanOption, err := testClients.main.CreateMealPlanOption(ctx, exampleMealPlanOptionInput)

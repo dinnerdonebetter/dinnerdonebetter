@@ -48,3 +48,7 @@ internal/services/frontend/_vendor_/*
 # .tfstate files
 *.tfstate
 *.tfstate.*
+
+# TLS certificates
+environments/testing/certificates
+*.pem

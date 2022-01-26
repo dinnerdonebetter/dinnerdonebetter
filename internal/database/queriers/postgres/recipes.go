@@ -556,6 +556,36 @@ func (q *SQLQuerier) GetRecipes(ctx context.Context, filter *types.QueryFilter) 
 	return x, nil
 }
 
+// SearchForRecipes fetches a list of recipes from the database that match a query.
+func (q *SQLQuerier) SearchForRecipes(ctx context.Context, recipeNameQuery string, filter *types.QueryFilter) (x *types.RecipeList, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	x = &types.RecipeList{}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	if filter != nil {
+		x.Page, x.Limit = filter.Page, filter.Limit
+	}
+
+	where := squirrel.ILike{"name": wrapQueryForILIKE(recipeNameQuery)}
+	query, args := q.buildListQueryWithILike(ctx, "recipes", nil, nil, where, "", recipesTableColumns, "", false, filter)
+
+	rows, err := q.performReadQuery(ctx, q.db, "recipes", query, args)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "executing recipes search query")
+	}
+
+	if x.Recipes, x.FilteredCount, x.TotalCount, err = q.scanRecipes(ctx, rows, true); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "scanning recipes")
+	}
+
+	return x, nil
+}
+
 func (q *SQLQuerier) buildGetRecipesWithIDsQuery(ctx context.Context, userID string, limit uint8, ids []string) (query string, args []interface{}) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()

@@ -236,7 +236,6 @@ linters:
     - makezero         # Finds slice declarations with non-zero initial length
     - misspell         # Finds commonly misspelled English words in comments
     - nakedret         # Finds naked returns in functions greater than a specified function length
-    - nestif           # Reports deeply nested if statements	complexity
     - nilerr           # Finds the code that returns nil even if it checks that the error is not nil.
     # - nlreturn         # nlreturn checks for a new line before return and branch statements to increase code clarity
     - noctx            # noctx finds sending http request without context.Context
@@ -248,7 +247,7 @@ linters:
     - revive           # Fast, configurable, extensible, flexible, and beautiful linter for Go. Drop-in replacement of golint.
     # - rowserrcheck     # checks whether Err of rows is checked successfully
     - sqlclosecheck    # Checks that sql.Rows and sql.Stmt are closed.
-    # - stylecheck       # Stylecheck is a replacement for golint	style
+    # - stylecheck       # Stylecheck is a replacement for golint
     # - tagliatelle      # Checks the struct tags.
     # - testpackage      # linter that makes you use a separate _test package
     - thelper          # thelper detects golang test helpers without t.Helper() call and checks the consistency of test helpers
@@ -281,6 +280,7 @@ linters:
     - cyclop           # checks function and package cyclomatic complexity
     - gocognit         # Computes and checks the cognitive complexity of functions
     - gocyclo          # Computes and checks the cyclomatic complexity of functions
+    - nestif           # Reports deeply nested if statements
 
 issues:
   # List of regexps of issue texts to exclude, empty list by default.

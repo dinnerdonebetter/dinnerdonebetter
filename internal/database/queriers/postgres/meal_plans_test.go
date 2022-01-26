@@ -82,6 +82,13 @@ func buildMockRowsFromFullMealPlans(includeCounts bool, filteredCount uint64, me
 		"meal_plan_option_votes.last_updated_on",
 		"meal_plan_option_votes.archived_on",
 		"meal_plan_option_votes.belongs_to_meal_plan_option",
+		"meals.id",
+		"meals.name",
+		"meals.description",
+		"meals.created_on",
+		"meals.last_updated_on",
+		"meals.archived_on",
+		"meals.created_by_user",
 	}
 
 	if includeCounts {
@@ -109,7 +116,7 @@ func buildMockRowsFromFullMealPlans(includeCounts bool, filteredCount uint64, me
 					opt.MealName,
 					opt.Chosen,
 					opt.TieBroken,
-					opt.MealID,
+					opt.Meal.ID,
 					opt.Notes,
 					opt.CreatedOn,
 					opt.LastUpdatedOn,
@@ -124,6 +131,13 @@ func buildMockRowsFromFullMealPlans(includeCounts bool, filteredCount uint64, me
 					vote.LastUpdatedOn,
 					vote.ArchivedOn,
 					vote.BelongsToMealPlanOption,
+					opt.Meal.ID,
+					opt.Meal.Name,
+					opt.Meal.Description,
+					opt.Meal.CreatedOn,
+					opt.Meal.LastUpdatedOn,
+					opt.Meal.ArchivedOn,
+					opt.Meal.CreatedByUser,
 				}
 
 				if includeCounts {
@@ -624,6 +638,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 		for i := range exampleMealPlan.Options {
 			exampleMealPlan.Options[i].ID = "2"
 			exampleMealPlan.Options[i].BelongsToMealPlan = "1"
+			exampleMealPlan.Options[i].Meal = types.Meal{ID: exampleMealPlan.Options[i].Meal.ID}
 			exampleMealPlan.Options[i].CreatedOn = exampleMealPlan.CreatedOn
 			exampleMealPlan.Options[i].Votes = []*types.MealPlanOptionVote{}
 		}
@@ -1885,7 +1900,7 @@ func TestQuerier_FinalizeMealPlanWithExpiredVotingPeriod(T *testing.T) {
 			for _, mealName := range allMealNames {
 				options := byDayAndMeal(exampleMealPlan.Options, day, mealName)
 				if len(options) > 0 {
-					winner, tiebroken := c.decideOptionWinner(options)
+					winner, tiebroken, _ := c.decideOptionWinner(options)
 
 					finalizeMealPlanOptionsArgs := []interface{}{
 						exampleMealPlan.ID,
@@ -2240,7 +2255,7 @@ func TestQuerier_FinalizeMealPlanWithExpiredVotingPeriod(T *testing.T) {
 		db.ExpectBegin()
 
 		options := byDayAndMeal(exampleMealPlan.Options, time.Monday, types.BreakfastMealName)
-		winner, tiebroken := c.decideOptionWinner(options)
+		winner, tiebroken, _ := c.decideOptionWinner(options)
 
 		finalizeMealPlanOptionsArgs := []interface{}{
 			exampleMealPlan.ID,
@@ -2394,7 +2409,7 @@ func TestQuerier_FinalizeMealPlanWithExpiredVotingPeriod(T *testing.T) {
 			for _, mealName := range allMealNames {
 				options := byDayAndMeal(exampleMealPlan.Options, day, mealName)
 				if len(options) > 0 {
-					winner, tiebroken := c.decideOptionWinner(options)
+					winner, tiebroken, _ := c.decideOptionWinner(options)
 
 					finalizeMealPlanOptionsArgs := []interface{}{
 						exampleMealPlan.ID,
@@ -2560,7 +2575,7 @@ func TestQuerier_FinalizeMealPlanWithExpiredVotingPeriod(T *testing.T) {
 			for _, mealName := range allMealNames {
 				options := byDayAndMeal(exampleMealPlan.Options, day, mealName)
 				if len(options) > 0 {
-					winner, tiebroken := c.decideOptionWinner(options)
+					winner, tiebroken, _ := c.decideOptionWinner(options)
 
 					finalizeMealPlanOptionsArgs := []interface{}{
 						exampleMealPlan.ID,

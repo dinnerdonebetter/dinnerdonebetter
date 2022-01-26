@@ -66,6 +66,34 @@ func (b *Builder) BuildGetMealsRequest(ctx context.Context, filter *types.QueryF
 	return req, nil
 }
 
+// BuildSearchForMealsRequest builds an HTTP request for fetching a list of recipes.
+func (b *Builder) BuildSearchForMealsRequest(ctx context.Context, query string, filter *types.QueryFilter) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := filter.AttachToLogger(b.logger).WithValue(keys.SearchQueryKey, query)
+	tracing.AttachSearchQueryToSpan(span, query)
+
+	queryParams := filter.ToValues()
+	queryParams.Set(types.SearchQueryKey, query)
+
+	uri := b.BuildURL(
+		ctx,
+		queryParams,
+		mealsBasePath,
+		"search",
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building user status request")
+	}
+
+	return req, nil
+}
+
 // BuildCreateMealRequest builds an HTTP request for creating a meal.
 func (b *Builder) BuildCreateMealRequest(ctx context.Context, input *types.MealCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)

@@ -331,7 +331,7 @@ func (q *SQLQuerier) GetMealPlanOptionVotesWithIDs(ctx context.Context, mealPlan
 const mealPlanOptionVoteCreationQuery = "INSERT INTO meal_plan_option_votes (id,rank,abstain,notes,by_user,belongs_to_meal_plan_option) VALUES ($1,$2,$3,$4,$5,$6)"
 
 // CreateMealPlanOptionVote creates a meal plan option vote in the database.
-func (q *SQLQuerier) CreateMealPlanOptionVote(ctx context.Context, input *types.MealPlanOptionVoteDatabaseCreationInput) (*types.MealPlanOptionVote, error) {
+func (q *SQLQuerier) CreateMealPlanOptionVote(ctx context.Context, input *types.MealPlanOptionVoteDatabaseCreationInput) ([]*types.MealPlanOptionVote, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -339,36 +339,52 @@ func (q *SQLQuerier) CreateMealPlanOptionVote(ctx context.Context, input *types.
 		return nil, ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue(keys.MealPlanOptionVoteIDKey, input.ID)
+	logger := q.logger.WithValue("vote_count", len(input.Votes))
 
-	args := []interface{}{
-		input.ID,
-		input.Rank,
-		input.Abstain,
-		input.Notes,
-		input.ByUser,
-		input.BelongsToMealPlanOption,
+	// begin transaction
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "beginning transaction")
 	}
 
-	// create the meal plan option vote.
-	if err := q.performWriteQuery(ctx, q.db, "meal plan option vote creation", mealPlanOptionVoteCreationQuery, args); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "creating meal plan option vote")
+	votes := []*types.MealPlanOptionVote{}
+	for _, vote := range input.Votes {
+		args := []interface{}{
+			vote.ID,
+			vote.Rank,
+			vote.Abstain,
+			vote.Notes,
+			vote.ByUser,
+			vote.BelongsToMealPlanOption,
+		}
+
+		// create the meal plan option vote.
+		if err = q.performWriteQuery(ctx, tx, "meal plan option vote creation", mealPlanOptionVoteCreationQuery, args); err != nil {
+			q.rollbackTransaction(ctx, tx)
+			return nil, observability.PrepareError(err, logger, span, "creating meal plan option vote")
+		}
+
+		x := &types.MealPlanOptionVote{
+			ID:                      vote.ID,
+			Rank:                    vote.Rank,
+			Abstain:                 vote.Abstain,
+			Notes:                   vote.Notes,
+			ByUser:                  vote.ByUser,
+			BelongsToMealPlanOption: vote.BelongsToMealPlanOption,
+			CreatedOn:               q.currentTime(),
+		}
+
+		tracing.AttachMealPlanOptionVoteIDToSpan(span, x.ID)
+		logger.Info("meal plan option vote created")
+
+		votes = append(votes, x)
 	}
 
-	x := &types.MealPlanOptionVote{
-		ID:                      input.ID,
-		Rank:                    input.Rank,
-		Abstain:                 input.Abstain,
-		Notes:                   input.Notes,
-		ByUser:                  input.ByUser,
-		BelongsToMealPlanOption: input.BelongsToMealPlanOption,
-		CreatedOn:               q.currentTime(),
+	if err = tx.Commit(); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "committing transaction")
 	}
 
-	tracing.AttachMealPlanOptionVoteIDToSpan(span, x.ID)
-	logger.Info("meal plan option vote created")
-
-	return x, nil
+	return votes, nil
 }
 
 const updateMealPlanOptionVoteQuery = "UPDATE meal_plan_option_votes SET rank = $1, abstain = $2, notes = $3, by_user = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_meal_plan_option = $5 AND id = $6"

@@ -28,7 +28,7 @@ func TestSQLQuerier_logQueryBuildingError(T *testing.T) {
 	})
 }
 
-func TestPostgres_BuildListQuery(T *testing.T) {
+func TestPostgres_buildListQuery(T *testing.T) {
 	T.Parallel()
 
 	const (
@@ -131,6 +131,140 @@ func TestPostgres_BuildListQuery(T *testing.T) {
 			filter.UpdatedBefore,
 		}
 		actualQuery, actualArgs := q.buildListQuery(ctx, exampleTableName, nil, nil, nil, exampleOwnershipColumn, exampleColumns, exampleUser.ID, true, filter)
+
+		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+}
+
+func TestPostgres_buildListQueryWithILike(T *testing.T) {
+	T.Parallel()
+
+	const (
+		exampleTableName       = "example_table"
+		exampleOwnershipColumn = "belongs_to_household"
+	)
+
+	exampleColumns := []string{
+		"column_one",
+		"column_two",
+		"column_three",
+	}
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		q, _ := buildTestClient(t)
+
+		exampleUser := fakes.BuildFakeUser()
+		filter := fakes.BuildFleshedOutQueryFilter()
+
+		expectedQuery := "SELECT column_one, column_two, column_three, (SELECT COUNT(example_table.id) FROM example_table JOIN things on stuff.thing_id=things.id WHERE key ILIKE $1 AND example_table.archived_on IS NULL AND example_table.belongs_to_household = $2) as total_count, (SELECT COUNT(example_table.id) FROM example_table JOIN things on stuff.thing_id=things.id WHERE key ILIKE $3 AND example_table.archived_on IS NULL AND example_table.belongs_to_household = $4 AND example_table.created_on > $5 AND example_table.created_on < $6 AND example_table.last_updated_on > $7 AND example_table.last_updated_on < $8) as filtered_count FROM example_table JOIN things on stuff.thing_id=things.id WHERE key ILIKE $9 AND example_table.archived_on IS NULL AND example_table.belongs_to_household = $10 AND example_table.created_on > $11 AND example_table.created_on < $12 AND example_table.last_updated_on > $13 AND example_table.last_updated_on < $14 GROUP BY example_table.id ORDER BY example_table.id LIMIT 20 OFFSET 180"
+		expectedArgs := []interface{}{
+			"value",
+			exampleUser.ID,
+			filter.CreatedAfter,
+			filter.CreatedBefore,
+			filter.UpdatedAfter,
+			filter.UpdatedBefore,
+			"value",
+			exampleUser.ID,
+			"value",
+			exampleUser.ID,
+			filter.CreatedAfter,
+			filter.CreatedBefore,
+			filter.UpdatedAfter,
+			filter.UpdatedBefore,
+		}
+		exampleJoins := []string{
+			"things on stuff.thing_id=things.id",
+		}
+		exampleWhere := squirrel.ILike{
+			"key": "value",
+		}
+
+		actualQuery, actualArgs := q.buildListQueryWithILike(ctx, exampleTableName, exampleJoins, nil, exampleWhere, exampleOwnershipColumn, exampleColumns, exampleUser.ID, false, filter)
+
+		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+
+	T.Run("with group bys", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		q, _ := buildTestClient(t)
+
+		exampleUser := fakes.BuildFakeUser()
+		filter := fakes.BuildFleshedOutQueryFilter()
+
+		expectedQuery := "SELECT column_one, column_two, column_three, (SELECT COUNT(example_table.id) FROM example_table JOIN things on stuff.thing_id=things.id WHERE key ILIKE $1 AND example_table.archived_on IS NULL AND example_table.belongs_to_household = $2) as total_count, (SELECT COUNT(example_table.id) FROM example_table JOIN things on stuff.thing_id=things.id WHERE key ILIKE $3 AND example_table.archived_on IS NULL AND example_table.belongs_to_household = $4 AND example_table.created_on > $5 AND example_table.created_on < $6 AND example_table.last_updated_on > $7 AND example_table.last_updated_on < $8) as filtered_count FROM example_table JOIN things on stuff.thing_id=things.id WHERE key ILIKE $9 AND example_table.archived_on IS NULL AND example_table.belongs_to_household = $10 AND example_table.created_on > $11 AND example_table.created_on < $12 AND example_table.last_updated_on > $13 AND example_table.last_updated_on < $14 GROUP BY example_table.id, things ORDER BY example_table.id LIMIT 20 OFFSET 180"
+		expectedArgs := []interface{}{
+			"value",
+			exampleUser.ID,
+			filter.CreatedAfter,
+			filter.CreatedBefore,
+			filter.UpdatedAfter,
+			filter.UpdatedBefore,
+			"value",
+			exampleUser.ID,
+			"value",
+			exampleUser.ID,
+			filter.CreatedAfter,
+			filter.CreatedBefore,
+			filter.UpdatedAfter,
+			filter.UpdatedBefore,
+		}
+		exampleJoins := []string{
+			"things on stuff.thing_id=things.id",
+		}
+		exampleWhere := squirrel.ILike{
+			"key": "value",
+		}
+		groupBys := []string{"things"}
+
+		actualQuery, actualArgs := q.buildListQueryWithILike(ctx, exampleTableName, exampleJoins, groupBys, exampleWhere, exampleOwnershipColumn, exampleColumns, exampleUser.ID, false, filter)
+
+		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+
+	T.Run("for admin with archived", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		q, _ := buildTestClient(t)
+
+		exampleUser := fakes.BuildFakeUser()
+		filter := fakes.BuildFleshedOutQueryFilter()
+		filter.IncludeArchived = true
+
+		expectedQuery := "SELECT column_one, column_two, column_three, (SELECT COUNT(example_table.id) FROM example_table JOIN things on stuff.thing_id=things.id WHERE key ILIKE $1) as total_count, (SELECT COUNT(example_table.id) FROM example_table JOIN things on stuff.thing_id=things.id WHERE key ILIKE $2 AND example_table.created_on > $3 AND example_table.created_on < $4 AND example_table.last_updated_on > $5 AND example_table.last_updated_on < $6) as filtered_count FROM example_table JOIN things on stuff.thing_id=things.id WHERE key ILIKE $7 AND (1=1) AND example_table.created_on > $8 AND example_table.created_on < $9 AND example_table.last_updated_on > $10 AND example_table.last_updated_on < $11 GROUP BY example_table.id ORDER BY example_table.id LIMIT 20 OFFSET 180"
+		expectedArgs := []interface{}{
+			"value",
+			filter.CreatedAfter,
+			filter.CreatedBefore,
+			filter.UpdatedAfter,
+			filter.UpdatedBefore,
+			"value",
+			"value",
+			filter.CreatedAfter,
+			filter.CreatedBefore,
+			filter.UpdatedAfter,
+			filter.UpdatedBefore,
+		}
+		exampleJoins := []string{
+			"things on stuff.thing_id=things.id",
+		}
+		exampleWhere := squirrel.ILike{
+			"key": "value",
+		}
+
+		actualQuery, actualArgs := q.buildListQueryWithILike(ctx, exampleTableName, exampleJoins, nil, exampleWhere, exampleOwnershipColumn, exampleColumns, exampleUser.ID, true, filter)
 
 		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)

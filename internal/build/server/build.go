@@ -41,7 +41,6 @@ import (
 	validinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validinstruments"
 	validpreparationsservice "github.com/prixfixeco/api_server/internal/services/validpreparations"
 	webhooksservice "github.com/prixfixeco/api_server/internal/services/webhooks"
-	websocketsservice "github.com/prixfixeco/api_server/internal/services/websockets"
 	"github.com/prixfixeco/api_server/internal/storage"
 	"github.com/prixfixeco/api_server/internal/uploads"
 	"github.com/prixfixeco/api_server/internal/uploads/images"
@@ -76,7 +75,6 @@ func Build(
 		householdinvitationssservice.Providers,
 		apiclientsservice.Providers,
 		webhooksservice.Providers,
-		websocketsservice.Providers,
 		adminservice.Providers,
 		validinstrumentsservice.Providers,
 		validingredientsservice.Providers,

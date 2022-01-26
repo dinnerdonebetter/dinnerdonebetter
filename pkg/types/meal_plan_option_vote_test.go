@@ -16,10 +16,10 @@ func TestMealPlanOptionVoteCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionVoteCreationRequestInput{
-			Abstain:                 fake.Bool(),
-			Rank:                    uint8(fake.Number(1, math.MaxUint8)),
-			Notes:                   fake.LoremIpsumSentence(exampleQuantity),
-			BelongsToMealPlanOption: t.Name(),
+			Votes: []*MealPlanOptionVoteCreationInput{
+				{},
+			},
+			ByUser: t.Name(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

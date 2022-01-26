@@ -42,11 +42,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
-	// determine meal plan option ID.
-	mealPlanOptionID := s.mealPlanOptionIDFetcher(req)
-	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
-	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
-
 	// read parsed input struct from request body.
 	providedInput := new(types.MealPlanOptionVoteCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
@@ -54,101 +49,109 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
 		return
 	}
-	providedInput.BelongsToMealPlanOption = mealPlanOptionID
 	providedInput.ByUser = sessionCtxData.Requester.UserID
 
 	// note, this is where you would call providedInput.ValidateWithContext, if that currently had any effect.
 
 	input := types.MealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVoteCreationInput(providedInput)
-	input.ID = ksuid.New().String()
-	input.ByUser = sessionCtxData.Requester.UserID
-	tracing.AttachMealPlanOptionVoteIDToSpan(span, input.ID)
+	for i := range input.Votes {
+		input.Votes[i].ID = ksuid.New().String()
+		input.Votes[i].ByUser = sessionCtxData.Requester.UserID
+		tracing.AttachMealPlanOptionVoteIDToSpan(span, input.Votes[i].ID)
+	}
 
-	mealPlanOptionVote, err := s.dataManager.CreateMealPlanOptionVote(ctx, input)
+	mealPlanOptionVotes, err := s.dataManager.CreateMealPlanOptionVote(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating meal plan option vote")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:                  types.MealPlanOptionVoteDataType,
-			MessageType:               "meal_plan_option_vote_created",
-			MealPlanID:                mealPlanID,
-			MealPlanOptionID:          mealPlanOptionID,
-			MealPlanOptionVote:        mealPlanOptionVote,
-			MealPlanOptionVoteID:      mealPlanOptionVote.ID,
-			AttributableToUserID:      sessionCtxData.Requester.UserID,
-			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-		}
+	for _, vote := range mealPlanOptionVotes {
+		if s.dataChangesPublisher != nil {
+			dcm := &types.DataChangeMessage{
+				DataType:                  types.MealPlanOptionVoteDataType,
+				MessageType:               "meal_plan_option_vote_created",
+				MealPlanID:                mealPlanID,
+				MealPlanOptionID:          vote.BelongsToMealPlanOption,
+				MealPlanOptionVote:        vote,
+				MealPlanOptionVoteID:      vote.ID,
+				AttributableToUserID:      sessionCtxData.Requester.UserID,
+				AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+			}
 
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing data change message about meal plan option vote")
+			if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+				observability.AcknowledgeError(err, logger, span, "publishing data change message about meal plan option vote")
+			}
 		}
 	}
 
-	// have all votes been received for an option? if so, finalize it
-	mealPlanOptionFinalized, err := s.dataManager.FinalizeMealPlanOption(ctx, mealPlanID, mealPlanOptionVote.BelongsToMealPlanOption, sessionCtxData.ActiveHouseholdID)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "finalizing meal plan option vote")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
-	}
+	if len(mealPlanOptionVotes) > 0 {
+		lastVote := mealPlanOptionVotes[len(mealPlanOptionVotes)-1]
 
-	// have all options for the meal plan been selected? if so, finalize the meal plan and fire event
-	if mealPlanOptionFinalized {
-		logger.Debug("meal plan option finalized")
-		// fire event
-		dcm := &types.DataChangeMessage{
-			DataType:                  types.MealPlanOptionDataType,
-			MessageType:               "meal_plan_option_finalized",
-			MealPlanID:                mealPlanID,
-			MealPlanOptionID:          mealPlanOptionID,
-			MealPlanOptionVote:        mealPlanOptionVote,
-			MealPlanOptionVoteID:      mealPlanOptionVote.ID,
-			AttributableToUserID:      sessionCtxData.Requester.UserID,
-			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
-		}
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing data change message about meal plan option finalization")
-		}
-
-		mealPlanFinalized, finalizationErr := s.dataManager.AttemptToFinalizeCompleteMealPlan(ctx, mealPlanID, sessionCtxData.ActiveHouseholdID)
-		if finalizationErr != nil {
-			observability.AcknowledgeError(err, logger, span, "finalizing meal plan option vote")
+		// have all votes been received for an option? if so, finalize it
+		mealPlanOptionFinalized, optionFinalizationErr := s.dataManager.FinalizeMealPlanOption(ctx, mealPlanID, lastVote.BelongsToMealPlanOption, sessionCtxData.ActiveHouseholdID)
+		if optionFinalizationErr != nil {
+			observability.AcknowledgeError(optionFinalizationErr, logger, span, "finalizing meal plan option vote")
 			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 			return
 		}
 
-		if mealPlanFinalized {
-			logger.Debug("meal plan finalized")
+		// have all options for the meal plan been selected? if so, finalize the meal plan and fire event
+		if mealPlanOptionFinalized {
+			logger.Debug("meal plan option finalized")
 			// fire event
-			dcm = &types.DataChangeMessage{
-				DataType:                  types.MealPlanDataType,
-				MessageType:               "meal_plan_finalized",
+			dcm := &types.DataChangeMessage{
+				DataType:                  types.MealPlanOptionDataType,
+				MessageType:               "meal_plan_option_finalized",
 				MealPlanID:                mealPlanID,
-				MealPlanOptionID:          mealPlanOptionID,
-				MealPlanOptionVote:        mealPlanOptionVote,
-				MealPlanOptionVoteID:      mealPlanOptionVote.ID,
+				MealPlanOptionID:          lastVote.BelongsToMealPlanOption,
+				MealPlanOptionVote:        lastVote,
+				MealPlanOptionVoteID:      lastVote.ID,
 				AttributableToUserID:      sessionCtxData.Requester.UserID,
 				AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 			}
-			if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-				observability.AcknowledgeError(err, logger, span, "publishing data change message about meal plan finalization")
+
+			if dataChangePublishErr := s.dataChangesPublisher.Publish(ctx, dcm); dataChangePublishErr != nil {
+				observability.AcknowledgeError(dataChangePublishErr, logger, span, "publishing data change message about meal plan option finalization")
 			}
+
+			mealPlanFinalized, finalizationErr := s.dataManager.AttemptToFinalizeCompleteMealPlan(ctx, mealPlanID, sessionCtxData.ActiveHouseholdID)
+			if finalizationErr != nil {
+				observability.AcknowledgeError(err, logger, span, "finalizing meal plan option vote")
+				s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+				return
+			}
+
+			if mealPlanFinalized {
+				logger.Debug("meal plan finalized")
+				// fire event
+				dcm = &types.DataChangeMessage{
+					DataType:                  types.MealPlanDataType,
+					MessageType:               "meal_plan_finalized",
+					MealPlanID:                mealPlanID,
+					MealPlanOptionID:          lastVote.BelongsToMealPlanOption,
+					MealPlanOptionVote:        lastVote,
+					MealPlanOptionVoteID:      lastVote.ID,
+					AttributableToUserID:      sessionCtxData.Requester.UserID,
+					AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+				}
+				if dataChangePublishErr := s.dataChangesPublisher.Publish(ctx, dcm); dataChangePublishErr != nil {
+					observability.AcknowledgeError(dataChangePublishErr, logger, span, "publishing data change message about meal plan finalization")
+				}
+			}
+		}
+
+		if eventOccurredErr := s.customerDataCollector.EventOccurred(ctx, "meal_plan_option_vote_created", sessionCtxData.Requester.UserID, map[string]interface{}{
+			keys.MealPlanIDKey:       mealPlanID,
+			keys.MealPlanOptionIDKey: lastVote.BelongsToMealPlanOption,
+			keys.HouseholdIDKey:      sessionCtxData.ActiveHouseholdID,
+		}); eventOccurredErr != nil {
+			logger.Error(eventOccurredErr, "notifying customer data platform")
 		}
 	}
 
-	if err = s.customerDataCollector.EventOccurred(ctx, "meal_plan_option_vote_created", sessionCtxData.Requester.UserID, map[string]interface{}{
-		keys.MealPlanIDKey:       mealPlanID,
-		keys.MealPlanOptionIDKey: mealPlanOptionID,
-		keys.HouseholdIDKey:      sessionCtxData.ActiveHouseholdID,
-	}); err != nil {
-		logger.Error(err, "notifying customer data platform")
-	}
-
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, mealPlanOptionVote, http.StatusCreated)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, mealPlanOptionVotes, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a meal plan option vote.

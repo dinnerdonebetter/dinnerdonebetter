@@ -11,9 +11,6 @@ var (
 	// ErrInvalidRequestInput is a handy error to return when we receive a 400 response.
 	ErrInvalidRequestInput = errors.New("400: bad request")
 
-	// ErrBanned is a handy error to return when we receive a 403 response.
-	ErrBanned = errors.New("403: banned")
-
 	// ErrInternalServerError is a handy error to return when we receive a 500 response.
 	ErrInternalServerError = errors.New("500: internal server error")
 

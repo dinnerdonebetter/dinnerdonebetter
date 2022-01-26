@@ -34,12 +34,19 @@ func buildMockRowsFromMealPlanOptions(includeCounts bool, filteredCount uint64, 
 			x.MealName,
 			x.Chosen,
 			x.TieBroken,
-			x.MealID,
+			x.Meal.ID,
 			x.Notes,
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,
 			x.BelongsToMealPlan,
+			x.Meal.ID,
+			x.Meal.Name,
+			x.Meal.Description,
+			x.Meal.CreatedOn,
+			x.Meal.LastUpdatedOn,
+			x.Meal.ArchivedOn,
+			x.Meal.CreatedByUser,
 		}
 
 		if includeCounts {
@@ -331,12 +338,14 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 
 		for i := range exampleMealPlanOptionList.MealPlanOptions {
 			exampleMealPlanOptionList.MealPlanOptions[i].Votes = []*types.MealPlanOptionVote{}
+			exampleMealPlanOptionList.MealPlanOptions[i].Meal = types.Meal{ID: exampleMealPlanOptionList.MealPlanOptions[i].Meal.ID}
 		}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, nil, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter)
+		groupBys := []string{"meal_plan_options.id", "meals.id"}
+		query, args := c.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, groupBys, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -378,7 +387,8 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, nil, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter)
+		groupBys := []string{"meal_plan_options.id", "meals.id"}
+		query, args := c.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, groupBys, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -400,7 +410,8 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, nil, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter)
+		groupBys := []string{"meal_plan_options.id", "meals.id"}
+		query, args := c.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, groupBys, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -422,7 +433,8 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, nil, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter)
+		groupBys := []string{"meal_plan_options.id", "meals.id"}
+		query, args := c.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, groupBys, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -561,6 +573,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 		exampleMealPlanOption.ID = "1"
 		exampleMealPlanOption.Votes = []*types.MealPlanOptionVote{}
+		exampleMealPlanOption.Meal = types.Meal{ID: exampleMealPlanOption.Meal.ID}
 		exampleInput := fakes.BuildFakeMealPlanOptionDatabaseCreationInputFromMealPlanOption(exampleMealPlanOption)
 
 		ctx := context.Background()
@@ -606,6 +619,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 
 		expectedErr := errors.New(t.Name())
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
+		exampleMealPlanOption.Meal = types.Meal{ID: exampleMealPlanOption.Meal.ID}
 		exampleInput := fakes.BuildFakeMealPlanOptionDatabaseCreationInputFromMealPlanOption(exampleMealPlanOption)
 
 		ctx := context.Background()
@@ -650,7 +664,7 @@ func TestQuerier_UpdateMealPlanOption(T *testing.T) {
 
 		args := []interface{}{
 			exampleMealPlanOption.Day,
-			exampleMealPlanOption.MealID,
+			exampleMealPlanOption.Meal.ID,
 			exampleMealPlanOption.MealName,
 			exampleMealPlanOption.Notes,
 			exampleMealPlanOption.BelongsToMealPlan,
@@ -685,7 +699,7 @@ func TestQuerier_UpdateMealPlanOption(T *testing.T) {
 
 		args := []interface{}{
 			exampleMealPlanOption.Day,
-			exampleMealPlanOption.MealID,
+			exampleMealPlanOption.Meal.ID,
 			exampleMealPlanOption.MealName,
 			exampleMealPlanOption.Notes,
 			exampleMealPlanOption.BelongsToMealPlan,
@@ -933,9 +947,10 @@ func Test_decideOptionWinner(T *testing.T) {
 			},
 		}
 
-		actual, tiebroken := c.decideOptionWinner(exampleOptions)
+		actual, tiebroken, chosen := c.decideOptionWinner(exampleOptions)
 		assert.Equal(t, expected, actual)
 		assert.False(t, tiebroken)
+		assert.True(t, chosen)
 	})
 
 	T.Run("with tie", func(t *testing.T) {
@@ -970,9 +985,10 @@ func Test_decideOptionWinner(T *testing.T) {
 			},
 		}
 
-		actual, tiebroken := c.decideOptionWinner(exampleOptions)
+		actual, tiebroken, chosen := c.decideOptionWinner(exampleOptions)
 		assert.NotEmpty(t, actual)
 		assert.True(t, tiebroken)
+		assert.True(t, chosen)
 	})
 
 	T.Run("without enough votes", func(t *testing.T) {
@@ -989,9 +1005,10 @@ func Test_decideOptionWinner(T *testing.T) {
 			},
 		}
 
-		actual, tiebroken := c.decideOptionWinner(exampleOptions)
+		actual, tiebroken, chosen := c.decideOptionWinner(exampleOptions)
 		assert.Empty(t, actual)
 		assert.False(t, tiebroken)
+		assert.False(t, chosen)
 	})
 }
 

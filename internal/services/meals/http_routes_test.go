@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+	"net/url"
 	"testing"
 
 	"github.com/prixfixeco/api_server/internal/database"
@@ -491,6 +492,109 @@ func TestMealsService_ListHandler(T *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mealDataManager, encoderDecoder)
+	})
+}
+
+func TestMealsService_SearchHandler(T *testing.T) {
+	T.Parallel()
+
+	const exampleQuery = "example"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
+
+		exampleMealList := fakes.BuildFakeMealList()
+
+		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager.On(
+			"SearchForMeals",
+			testutils.ContextMatcher,
+			exampleQuery,
+			mock.IsType(&types.QueryFilter{}),
+		).Return(exampleMealList, nil)
+		helper.service.mealDataManager = mealDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"RespondWithData",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			mock.IsType(&types.MealList{}),
+		).Return()
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.SearchHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mealDataManager, encoderDecoder)
+	})
+
+	T.Run("with error fetching session context data", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+
+		helper.service.SearchHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+	})
+
+	T.Run("with no rows returned", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
+
+		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager.On(
+			"SearchForMeals",
+			testutils.ContextMatcher,
+			exampleQuery,
+			mock.IsType(&types.QueryFilter{}),
+		).Return((*types.MealList)(nil), sql.ErrNoRows)
+		helper.service.mealDataManager = mealDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"RespondWithData",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			mock.IsType(&types.MealList{}),
+		).Return()
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.SearchHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mealDataManager, encoderDecoder)
+	})
+
+	T.Run("with error reading from database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
+
+		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager.On(
+			"SearchForMeals",
+			testutils.ContextMatcher,
+			exampleQuery,
+			mock.IsType(&types.QueryFilter{}),
+		).Return((*types.MealList)(nil), errors.New("blah"))
+		helper.service.mealDataManager = mealDataManager
+
+		helper.service.SearchHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
 }
 

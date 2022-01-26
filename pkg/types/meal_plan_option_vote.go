@@ -42,26 +42,29 @@ type (
 		Pagination
 	}
 
-	// MealPlanOptionVoteCreationRequestInput represents what a user could set as input for creating meal plan option votes.
-	MealPlanOptionVoteCreationRequestInput struct {
+	// MealPlanOptionVoteCreationInput represents what a user could set as input for creating meal plan option votes.
+	MealPlanOptionVoteCreationInput struct {
 		_                       struct{}
 		ID                      string `json:"-"`
 		Notes                   string `json:"notes"`
 		ByUser                  string `json:"-"`
-		BelongsToMealPlanOption string `json:"-"`
+		BelongsToMealPlanOption string `json:"belongsToMealPlanOption"`
 		Rank                    uint8  `json:"rank"`
 		Abstain                 bool   `json:"abstain"`
 	}
 
+	// MealPlanOptionVoteCreationRequestInput is a pending container for multiple votes.
+	MealPlanOptionVoteCreationRequestInput struct {
+		_      struct{}
+		ByUser string                             `json:"-"`
+		Votes  []*MealPlanOptionVoteCreationInput `json:"votes"`
+	}
+
 	// MealPlanOptionVoteDatabaseCreationInput represents what a user could set as input for creating meal plan option votes.
 	MealPlanOptionVoteDatabaseCreationInput struct {
-		_                       struct{}
-		ID                      string `json:"id"`
-		Notes                   string `json:"notes"`
-		ByUser                  string `json:"byUser"`
-		BelongsToMealPlanOption string `json:"belongsToMealPlanOption"`
-		Rank                    uint8  `json:"rank"`
-		Abstain                 bool   `json:"abstain"`
+		_      struct{}
+		ByUser string                             `json:"-"`
+		Votes  []*MealPlanOptionVoteCreationInput `json:"votes"`
 	}
 
 	// MealPlanOptionVoteUpdateRequestInput represents what a user could set as input for updating meal plan option votes.
@@ -80,7 +83,7 @@ type (
 		GetTotalMealPlanOptionVoteCount(ctx context.Context) (uint64, error)
 		GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanOptionID string, filter *QueryFilter) (*MealPlanOptionVoteList, error)
 		GetMealPlanOptionVotesWithIDs(ctx context.Context, mealPlanOptionID string, limit uint8, ids []string) ([]*MealPlanOptionVote, error)
-		CreateMealPlanOptionVote(ctx context.Context, input *MealPlanOptionVoteDatabaseCreationInput) (*MealPlanOptionVote, error)
+		CreateMealPlanOptionVote(ctx context.Context, input *MealPlanOptionVoteDatabaseCreationInput) ([]*MealPlanOptionVote, error)
 		UpdateMealPlanOptionVote(ctx context.Context, updated *MealPlanOptionVote) error
 		ArchiveMealPlanOptionVote(ctx context.Context, mealPlanOptionID, mealPlanOptionVoteID string) error
 	}
@@ -114,11 +117,11 @@ var _ validation.ValidatableWithContext = (*MealPlanOptionVoteCreationRequestInp
 
 // ValidateWithContext validates a MealPlanOptionVoteCreationRequestInput.
 func (x *MealPlanOptionVoteCreationRequestInput) ValidateWithContext(ctx context.Context) error {
+	// LATER: we should validate the contents of each individual vote
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.BelongsToMealPlanOption, validation.Required),
-		// we cannot validate rank because zero is a valid value.
+		validation.Field(&x.Votes, validation.Required),
 	)
 }
 
@@ -129,21 +132,15 @@ func (x *MealPlanOptionVoteDatabaseCreationInput) ValidateWithContext(ctx contex
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.ID, validation.Required),
-		validation.Field(&x.BelongsToMealPlanOption, validation.Required),
-		// we cannot validate rank because zero is a valid value.
-		validation.Field(&x.ByUser, validation.Required),
+		validation.Field(&x.Votes, validation.Required),
 	)
 }
 
 // MealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVoteCreationInput creates a DatabaseCreationInput from a CreationInput.
 func MealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVoteCreationInput(input *MealPlanOptionVoteCreationRequestInput) *MealPlanOptionVoteDatabaseCreationInput {
 	x := &MealPlanOptionVoteDatabaseCreationInput{
-		Notes:                   input.Notes,
-		ByUser:                  input.ByUser,
-		BelongsToMealPlanOption: input.BelongsToMealPlanOption,
-		Rank:                    input.Rank,
-		Abstain:                 input.Abstain,
+		Votes:  input.Votes,
+		ByUser: input.ByUser,
 	}
 
 	return x

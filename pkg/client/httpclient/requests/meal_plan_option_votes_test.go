@@ -157,7 +157,7 @@ func TestBuilder_BuildGetMealPlanOptionVotesRequest(T *testing.T) {
 func TestBuilder_BuildCreateMealPlanOptionVoteRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPath = "/api/v1/meal_plans/%s/meal_plan_options/%s/meal_plan_option_votes"
+	const expectedPath = "/api/v1/meal_plans/%s/vote"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -167,7 +167,7 @@ func TestBuilder_BuildCreateMealPlanOptionVoteRequest(T *testing.T) {
 		exampleMealPlanID := fakes.BuildFakeID()
 		exampleInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInput()
 
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, exampleMealPlanID, exampleInput.BelongsToMealPlanOption)
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, exampleMealPlanID)
 
 		actual, err := helper.builder.BuildCreateMealPlanOptionVoteRequest(helper.ctx, exampleMealPlanID, exampleInput)
 		assert.NoError(t, err)

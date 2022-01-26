@@ -137,6 +137,10 @@ var _ validation.ValidatableWithContext = (*MealPlanCreationRequestInput)(nil)
 
 // ValidateWithContext validates a MealPlanCreationRequestInput.
 func (x *MealPlanCreationRequestInput) ValidateWithContext(ctx context.Context) error {
+	// NOTE: we should almost certainly also make sure that:
+	// 		EndsAt > StartsAt and
+	//		the VotingDeadline is not after StartsAt.
+
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,

@@ -106,6 +106,9 @@ format:
 
 .PHONY: terraformat
 terraformat:
+	@touch environments/dev/terraform/service-config.json
+	@touch environments/dev/terraform/worker-config.json
+	@touch environments/dev/terraform/opentelemetry-config.yaml
 	@(cd environments/dev/terraform && terraform fmt)
 
 .PHONY: check_terraform

@@ -30,7 +30,7 @@ type (
 		Description   string    `json:"description"`
 		CreatedByUser string    `json:"createdByUser"`
 		Name          string    `json:"name"`
-		Recipes       []*Recipe `json:"meals"`
+		Recipes       []*Recipe `json:"recipes"`
 		CreatedOn     uint64    `json:"createdOn"`
 	}
 
@@ -50,7 +50,7 @@ type (
 		Name          string   `json:"name"`
 		Description   string   `json:"description"`
 		CreatedByUser string   `json:"-"`
-		Recipes       []string `json:"meals"`
+		Recipes       []string `json:"recipes"`
 	}
 
 	// MealDatabaseCreationInput represents what a user could set as input for creating meals.
@@ -61,7 +61,7 @@ type (
 		Name          string   `json:"name"`
 		Description   string   `json:"description"`
 		CreatedByUser string   `json:"belongsToHousehold"`
-		Recipes       []string `json:"meals"`
+		Recipes       []string `json:"recipes"`
 	}
 
 	// MealUpdateRequestInput represents what a user could set as input for updating meals.
@@ -70,7 +70,7 @@ type (
 		Name          string   `json:"name"`
 		Description   string   `json:"description"`
 		CreatedByUser string   `json:"-"`
-		Recipes       []string `json:"meals"`
+		Recipes       []string `json:"recipes"`
 	}
 
 	// MealDataManager describes a structure capable of storing meals permanently.
@@ -80,6 +80,7 @@ type (
 		GetTotalMealCount(ctx context.Context) (uint64, error)
 		GetMeals(ctx context.Context, filter *QueryFilter) (*MealList, error)
 		GetMealsWithIDs(ctx context.Context, userID string, limit uint8, ids []string) ([]*Meal, error)
+		SearchForMeals(ctx context.Context, query string, filter *QueryFilter) (*MealList, error)
 		CreateMeal(ctx context.Context, input *MealDatabaseCreationInput) (*Meal, error)
 		ArchiveMeal(ctx context.Context, mealID, userID string) error
 	}
@@ -89,6 +90,7 @@ type (
 		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
 		ReadHandler(res http.ResponseWriter, req *http.Request)
+		SearchHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
@@ -112,7 +114,6 @@ func (x *MealCreationRequestInput) ValidateWithContext(ctx context.Context) erro
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Description, validation.Required),
 		validation.Field(&x.Recipes, validation.Required),
 	)
 }
@@ -125,7 +126,6 @@ func (x *MealDatabaseCreationInput) ValidateWithContext(ctx context.Context) err
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Description, validation.Required),
 		validation.Field(&x.Recipes, validation.Required),
 		validation.Field(&x.CreatedByUser, validation.Required),
 	)

@@ -56,6 +56,29 @@ func (c *Client) GetRecipes(ctx context.Context, filter *types.QueryFilter) (*ty
 	return recipes, nil
 }
 
+// SearchForRecipes retrieves a list of recipes.
+func (c *Client) SearchForRecipes(ctx context.Context, query string, filter *types.QueryFilter) (*types.RecipeList, error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	tracing.AttachSearchQueryToSpan(span, query)
+
+	logger := c.loggerWithFilter(filter).WithValue(keys.SearchQueryKey, query)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	req, err := c.requestBuilder.BuildSearchForRecipesRequest(ctx, query, filter)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building recipes list request")
+	}
+
+	var recipes *types.RecipeList
+	if err = c.fetchAndUnmarshal(ctx, req, &recipes); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "retrieving recipes")
+	}
+
+	return recipes, nil
+}
+
 // CreateRecipe creates a recipe.
 func (c *Client) CreateRecipe(ctx context.Context, input *types.RecipeCreationRequestInput) (*types.Recipe, error) {
 	ctx, span := c.tracer.StartSpan(ctx)

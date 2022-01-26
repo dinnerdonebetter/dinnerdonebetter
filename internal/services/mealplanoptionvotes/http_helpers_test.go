@@ -17,17 +17,18 @@ import (
 )
 
 type mealPlanOptionVotesServiceHTTPRoutesTestHelper struct {
-	ctx                       context.Context
-	req                       *http.Request
-	res                       *httptest.ResponseRecorder
-	service                   *service
-	exampleUser               *types.User
-	exampleHousehold          *types.Household
-	exampleMealPlan           *types.MealPlan
-	exampleMealPlanOption     *types.MealPlanOption
-	exampleMealPlanOptionVote *types.MealPlanOptionVote
-	exampleCreationInput      *types.MealPlanOptionVoteCreationRequestInput
-	exampleUpdateInput        *types.MealPlanOptionVoteUpdateRequestInput
+	ctx                        context.Context
+	req                        *http.Request
+	res                        *httptest.ResponseRecorder
+	service                    *service
+	exampleUser                *types.User
+	exampleHousehold           *types.Household
+	exampleMealPlan            *types.MealPlan
+	exampleMealPlanOption      *types.MealPlanOption
+	exampleMealPlanOptionVote  *types.MealPlanOptionVote
+	exampleCreationInput       *types.MealPlanOptionVoteCreationRequestInput
+	exampleUpdateInput         *types.MealPlanOptionVoteUpdateRequestInput
+	exampleMealPlanOptionVotes []*types.MealPlanOptionVote
 }
 
 func buildTestHelper(t *testing.T) *mealPlanOptionVotesServiceHTTPRoutesTestHelper {
@@ -46,6 +47,7 @@ func buildTestHelper(t *testing.T) *mealPlanOptionVotesServiceHTTPRoutesTestHelp
 	helper.exampleMealPlanOption.BelongsToMealPlan = helper.exampleMealPlan.ID
 	helper.exampleMealPlanOptionVote = fakes.BuildFakeMealPlanOptionVote()
 	helper.exampleMealPlanOptionVote.BelongsToMealPlanOption = helper.exampleMealPlanOption.ID
+	helper.exampleMealPlanOptionVotes = []*types.MealPlanOptionVote{helper.exampleMealPlanOptionVote}
 	helper.exampleCreationInput = fakes.BuildFakeMealPlanOptionVoteCreationRequestInputFromMealPlanOptionVote(helper.exampleMealPlanOptionVote)
 	helper.exampleUpdateInput = fakes.BuildFakeMealPlanOptionVoteUpdateRequestInputFromMealPlanOptionVote(helper.exampleMealPlanOptionVote)
 

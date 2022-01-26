@@ -9,13 +9,12 @@ import (
 	"os"
 	"time"
 
-	"github.com/prixfixeco/api_server/internal/observability/metrics"
-
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"golang.org/x/net/http2"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/panicking"
 	"github.com/prixfixeco/api_server/internal/routing"
@@ -50,7 +49,6 @@ type (
 		mealPlansService                   types.MealPlanDataService
 		mealPlanOptionsService             types.MealPlanOptionDataService
 		mealPlanOptionVotesService         types.MealPlanOptionVoteDataService
-		websocketsService                  types.WebsocketDataService
 		encoder                            encoding.ServerEncoderDecoder
 		logger                             logging.Logger
 		router                             routing.Router
@@ -70,7 +68,6 @@ func ProvideHTTPServer(
 	householdsService types.HouseholdDataService,
 	householdInvitationsService types.HouseholdInvitationDataService,
 	apiClientsService types.APIClientDataService,
-	websocketsService types.WebsocketDataService,
 	validInstrumentsService types.ValidInstrumentDataService,
 	validIngredientsService types.ValidIngredientDataService,
 	validPreparationsService types.ValidPreparationDataService,
@@ -109,7 +106,6 @@ func ProvideHTTPServer(
 		householdsService:                  householdsService,
 		householdInvitationsService:        householdInvitationsService,
 		authService:                        authService,
-		websocketsService:                  websocketsService,
 		validInstrumentsService:            validInstrumentsService,
 		validIngredientsService:            validIngredientsService,
 		validPreparationsService:           validPreparationsService,
