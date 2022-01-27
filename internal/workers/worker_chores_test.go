@@ -26,7 +26,7 @@ func TestProvideChoresWorker(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		actual := ProvideChoresWorker(
+		actual := ProvideMealPlanFinalizer(
 			zerolog.NewZerologLogger(),
 			&database.MockDatabase{},
 			&mockpublishers.Publisher{},

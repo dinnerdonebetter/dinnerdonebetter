@@ -22,7 +22,6 @@ const (
 	cookieBlockKeySSMKey           = "PRIXFIXE_COOKIE_BLOCK_KEY"
 	cookieHashKeySSMKey            = "PRIXFIXE_COOKIE_HASH_KEY"
 	cookiePASETOLocalModeKeySSMKey = "PRIXFIXE_PASETO_LOCAL_MODE_KEY"
-	pubsubServerURLSSMKey          = "PRIXFIXE_PUBSUB_SERVER_URLS"
 	/* #nosec G101 */
 	sendgridAPITokenSSMKey = "PRIXFIXE_SENDGRID_API_TOKEN"
 	/* #nosec G101 */
@@ -75,7 +74,7 @@ func GetConfigFromParameterStore(worker bool) (*InstanceConfig, error) {
 	cfg.CustomerData.APIToken = mustGetParameter(parameterStore, segmentAPITokenSSMKey)
 
 	cfg.Events.Consumers.RedisConfig.QueueAddresses = strings.Split(mustGetParameter(parameterStore, pubsubServerURLSSMKey), ",")
-	cfg.Events.Publishers.RedisConfig.QueueAddresses = strings.Split(mustGetParameter(parameterStore, pubsubServerURLSSMKey), ",")
+	//cfg.Events.Publishers.RedisConfig.QueueAddresses = strings.Split(mustGetParameter(parameterStore, pubsubServerURLSSMKey), ",")
 
 	dataChangesTopicName := mustGetParameter(parameterStore, dataChangesQueueNameSSMKey)
 
@@ -102,7 +101,6 @@ func GetConfigFromParameterStore(worker bool) (*InstanceConfig, error) {
 	cfg.Services.Households.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.HouseholdInvitations.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.Webhooks.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.Websockets.DataChangesTopicName = dataChangesTopicName
 
 	ctx := context.Background()
 	if err := cfg.ValidateWithContext(ctx); err != nil {

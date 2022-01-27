@@ -103,7 +103,7 @@ func main() {
 	}
 
 	everySecond := time.Tick(time.Second)
-	choresWorker := workers.ProvideChoresWorker(
+	choresWorker := workers.ProvideMealPlanFinalizer(
 		logger,
 		dataManager,
 		dataChangesPublisher,

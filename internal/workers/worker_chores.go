@@ -28,8 +28,8 @@ type ChoresWorker struct {
 	customerDataCollector customerdata.Collector
 }
 
-// ProvideChoresWorker provides a ChoresWorker.
-func ProvideChoresWorker(
+// ProvideMealPlanFinalizer provides a ChoresWorker.
+func ProvideMealPlanFinalizer(
 	logger logging.Logger,
 	dataManager database.DataManager,
 	postUpdatesPublisher messagequeue.Publisher,

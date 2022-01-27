@@ -34,7 +34,6 @@ import (
 	validinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validinstruments"
 	validpreparationsservice "github.com/prixfixeco/api_server/internal/services/validpreparations"
 	webhooksservice "github.com/prixfixeco/api_server/internal/services/webhooks"
-	websocketsservice "github.com/prixfixeco/api_server/internal/services/websockets"
 	"github.com/prixfixeco/api_server/internal/uploads"
 )
 
@@ -86,7 +85,6 @@ type (
 		RecipeStepProducts          recipestepproductsservice.Config          `json:"recipeStepProducts" mapstructure:"recipe_step_products" toml:"recipe_step_products,omitempty"`
 		Households                  householdsservice.Config                  `json:"households" mapstructure:"households" toml:"households,omitempty"`
 		HouseholdInvitations        householdinvitationsservice.Config        `json:"householdInvitations" mapstructure:"household_invitations" toml:"household_invitations,omitempty"`
-		Websockets                  websocketsservice.Config                  `json:"websockets" mapstructure:"websockets" toml:"websockets,omitempty"`
 		Webhooks                    webhooksservice.Config                    `json:"webhooks" mapstructure:"webhooks" toml:"webhooks,omitempty"`
 		Auth                        authservice.Config                        `json:"auth" mapstructure:"auth" toml:"auth,omitempty"`
 	}

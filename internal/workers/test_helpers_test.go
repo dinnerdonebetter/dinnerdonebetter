@@ -16,7 +16,7 @@ import (
 func newTestChoresWorker(t *testing.T) *ChoresWorker {
 	t.Helper()
 
-	worker := ProvideChoresWorker(
+	worker := ProvideMealPlanFinalizer(
 		zerolog.NewZerologLogger(),
 		&database.MockDatabase{},
 		&mockpublishers.Publisher{},

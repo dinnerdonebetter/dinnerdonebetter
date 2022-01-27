@@ -1,76 +1,55 @@
 package main
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
-	"github.com/prixfixeco/api_server/internal/observability/keys"
-	testutils "github.com/prixfixeco/api_server/tests/utils"
-
-	"github.com/prixfixeco/api_server/internal/messagequeue/redis"
-
-	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
+	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/api_server/internal/workers"
-	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 const (
 	dataChangesTopicName = "data_changes"
-	choresTopicName      = "chores"
-
-	configFilepathEnvVar = "CONFIGURATION_FILEPATH"
 )
 
 func main() {
 	ctx := context.Background()
+	logger := zerolog.NewZerologLogger()
+	client := &http.Client{Timeout: 10 * time.Second}
 
-	logger := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
-	logger.Info("starting workers...")
-
-	client := &http.Client{Timeout: 5 * time.Second}
-
-	var (
-		cfg *config.InstanceConfig
-		err error
-	)
-
-	// find and validate our configuration filepath.
-	if configFilepath := os.Getenv(configFilepathEnvVar); configFilepath != "" {
-		configBytes, configReadErr := os.ReadFile(configFilepath)
-		if configReadErr != nil {
-			logger.Fatal(configReadErr)
-		}
-
-		if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
-			logger.Fatal(err)
-		}
-	} else {
-		cfg, err = config.GetConfigFromParameterStore(false)
-		if err != nil {
-			logger.Fatal(err)
-		}
+	cfg, err := config.GetConfigFromParameterStore(true)
+	if err != nil {
+		logger.Fatal(err)
 	}
-
-	cfg.Observability.Tracing.Jaeger.ServiceName = "workers"
-
-	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.Initialize(ctx, logger)
-	if initializeTracerErr != nil {
-		logger.Error(initializeTracerErr, "initializing tracer")
-	}
-
 	cfg.Database.RunMigrations = false
+
+	tracerProvider := trace.NewNoopTracerProvider()
+	otel.SetTracerProvider(tracerProvider)
+
+	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, tracerProvider)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	postChoresPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
+	if err != nil {
+		logger.Fatal(err)
+	}
 
 	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, client)
 	if err != nil {
@@ -82,64 +61,22 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, tracerProvider)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	urlToUse := testutils.DetermineServiceURL().String()
-	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
-
-	testutils.EnsureServerIsUp(ctx, urlToUse)
-	dataManager.IsReady(ctx, 50)
-
-	consumerProvider := redis.ProvideRedisConsumerProvider(logger, tracerProvider, cfg.Events.Consumers.RedisConfig)
-
-	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	dataChangesPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	everySecond := time.Tick(time.Second)
-	choresWorker := workers.ProvideChoresWorker(
+	mealPlanFinalizer := workers.ProvideMealPlanFinalizer(
 		logger,
 		dataManager,
-		dataChangesPublisher,
+		postChoresPublisher,
 		emailer,
 		cdp,
 		tracerProvider,
 	)
 
-	choresConsumer, err := consumerProvider.ProvideConsumer(ctx, choresTopicName, choresWorker.HandleMessage)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	go choresConsumer.Consume(nil, nil)
-
-	choresPublisher, err := publisherProvider.ProviderPublisher(choresTopicName)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	go func() {
-		for range everySecond {
-			if err = choresPublisher.Publish(ctx, &types.ChoreMessage{ChoreType: types.FinalizeMealPlansWithExpiredVotingPeriodsChoreType}); err != nil {
-				logger.Fatal(err)
+	everyMinute := time.Tick(time.Minute)
+	for {
+		select {
+		case <-everyMinute:
+			if err = mealPlanFinalizer.HandleMessage(context.Background(), nil); err != nil {
+				observability.AcknowledgeError(err, logger, nil, "performing meal plan finalization")
 			}
 		}
-	}()
-
-	logger.Info("working...")
-
-	// wait for signal to exit
-	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-
-	<-sigChan
+	}
 }

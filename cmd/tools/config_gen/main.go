@@ -42,7 +42,6 @@ import (
 	validinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validinstruments"
 	validpreparationsservice "github.com/prixfixeco/api_server/internal/services/validpreparations"
 	webhooksservice "github.com/prixfixeco/api_server/internal/services/webhooks"
-	websocketsservice "github.com/prixfixeco/api_server/internal/services/websockets"
 	"github.com/prixfixeco/api_server/internal/storage"
 	"github.com/prixfixeco/api_server/internal/uploads"
 )
@@ -353,9 +352,6 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 			Webhooks: webhooksservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
-			Websockets: websocketsservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
-			},
 			ValidInstruments: validinstrumentsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -479,9 +475,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				MinimumPasswordLength: 8,
 			},
 			Webhooks: webhooksservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
-			},
-			Websockets: websocketsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidInstruments: validinstrumentsservice.Config{
