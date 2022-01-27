@@ -12,6 +12,6 @@ FROM debian:stretch
 
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 
-COPY --from=build-stage /server /server
+COPY --from=build-stage /finalizer /finalizer
 
 ENTRYPOINT ["/finalizer"]
