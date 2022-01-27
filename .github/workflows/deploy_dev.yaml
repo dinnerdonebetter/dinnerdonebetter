@@ -131,10 +131,10 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build --tag $ECR_REGISTRY/api_server:$IMAGE_TAG --file environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
-          docker push $ECR_REGISTRY/api_server:$IMAGE_TAG
-          docker build --tag $ECR_REGISTRY/api_server:latest --file environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
-          docker push $ECR_REGISTRY/api_server:latest
+          docker build --tag $ECR_REGISTRY/meal_plan_finalizer:$IMAGE_TAG --file environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
+          docker push $ECR_REGISTRY/meal_plan_finalizer:$IMAGE_TAG
+          docker build --tag $ECR_REGISTRY/meal_plan_finalizer:latest --file environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
+          docker push $ECR_REGISTRY/meal_plan_finalizer:latest
 
       - name: refresh api server ECS deployment
         run: aws ecs update-service --cluster dev --service api_server --force-new-deployment
