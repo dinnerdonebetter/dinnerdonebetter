@@ -28,19 +28,6 @@ jobs:
           path: data_changes_worker.zip
           retention-days: 1
 
-      - name: Build chores worker lambda
-        run: go build -o chores_worker github.com/prixfixeco/api_server/cmd/lambdas/chores
-
-      - name: Zip chores lambda
-        run: zip chores_worker.zip chores_worker
-
-      - name: Upload chores lambda
-        uses: actions/upload-artifact@v2
-        with:
-          name: chores_lambda
-          path: chores_worker.zip
-          retention-days: 1
-
       - name: Build meal planning prober lambda
         run: go build -o prober_meal_planning github.com/prixfixeco/api_server/cmd/lambdas/probers/meal_planning
 
