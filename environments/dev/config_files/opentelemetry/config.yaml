@@ -21,9 +21,7 @@ exporters:
     endpoint: 0.0.0.0:4317
 
 processors:
-  probabilistic_sampler:
-    hash_seed: 22
-    sampling_percentage: ${SAMPLING_PERCENTAGE}
+  batch:
 
 extensions:
   health_check:
@@ -34,9 +32,9 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      processors: [probabilistic_sampler]
+      processors: [batch]
       exporters: [otlp]
     metrics:
       receivers: [otlp, hostmetrics]
-      processors: [probabilistic_sampler]
+      processors: [batch]
       exporters: [otlp]
