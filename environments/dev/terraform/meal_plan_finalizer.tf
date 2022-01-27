@@ -12,6 +12,32 @@ resource "aws_cloudwatch_log_group" "meal_plan_finalizer" {
   retention_in_days = local.log_retention_period_in_days
 }
 
+resource "aws_iam_role" "meal_plan_finalizer_task_execution_role" {
+  name               = "meal-plan-finalizer-task-execution-role"
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_assume_role.json
+}
+
+resource "aws_iam_role" "meal_plan_finalizer_task_role" {
+  name = "meal-plan-finalizer-task-role"
+
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
+
+  inline_policy {
+    name   = "allow_sqs_queue_access"
+    policy = data.aws_iam_policy_document.allow_to_manipulate_queues.json
+  }
+
+  inline_policy {
+    name   = "allow_ssm_access"
+    policy = data.aws_iam_policy_document.allow_parameter_store_access.json
+  }
+
+  inline_policy {
+    name   = "allow_decrypt_ssm_parameters"
+    policy = data.aws_iam_policy_document.allow_to_decrypt_parameters.json
+  }
+}
+
 resource "aws_ecs_task_definition" "meal_plan_finalizer" {
   family = "meal_plan_finalizer"
 
@@ -45,8 +71,8 @@ resource "aws_ecs_task_definition" "meal_plan_finalizer" {
     },
   ])
 
-  execution_role_arn = aws_iam_role.api_task_execution_role.arn
-  task_role_arn      = aws_iam_role.api_task_role.arn
+  execution_role_arn = aws_iam_role.meal_plan_finalizer_task_execution_role.arn
+  task_role_arn      = aws_iam_role.meal_plan_finalizer_task_role.arn
 
   # These are the minimum values for Fargate containers.
   cpu                      = 256

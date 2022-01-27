@@ -201,6 +201,11 @@ data "aws_iam_policy_document" "ecs_task_execution_assume_role" {
   }
 }
 
+resource "aws_iam_role" "api_task_execution_role" {
+  name               = "api-task-execution-role"
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_assume_role.json
+}
+
 resource "aws_iam_role" "api_task_role" {
   name = "api-task-role"
 
