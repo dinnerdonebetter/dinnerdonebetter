@@ -1,45 +1,43 @@
-extensions:
-  health_check:
-
 receivers:
   otlp:
     protocols:
       grpc:
-        endpoint: 0.0.0.0:4317
-      http:
-        endpoint: 0.0.0.0:4318
 
-processors:
-  batch/traces:
-    timeout: 1s
-    send_batch_size: 50
-  batch/metrics:
-    timeout: 60s
-  resourcedetection:
-    detectors:
-      - env
-      - system
-      - ecs
-      - ec2
+  hostmetrics:
+    collection_interval: 10s
+    scrapers:
+      cpu:
+      disk:
+      filesystem:
+      load:
+      memory:
+      network:
+      paging:
+      process:
+      processes:
+      swap:
 
 exporters:
-  awsxray:
-  awsemf/application:
-    namespace: ECS/AWSOTel/Application
-    log_group_name: '/aws/ecs/application/metrics'
-    dimension_rollup_option: ZeroAndSingleDimensionRollup
-    resource_to_telemetry_conversion:
-      enabled: true
+  otlp:
+    endpoint: 0.0.0.0:4317
+
+processors:
+  probabilistic_sampler:
+    hash_seed: 22
+    sampling_percentage: ${SAMPLING_PERCENTAGE}
+
+extensions:
+  health_check:
+  pprof:
+  zpages:
 
 service:
   pipelines:
     traces:
       receivers: [otlp]
-      processors: [resourcedetection, batch/traces]
-      exporters: [awsxray]
+      processors: [probabilistic_sampler]
+      exporters: [otlp]
     metrics:
-      receivers: [otlp]
-      processors: [resourcedetection, batch/metrics]
-      exporters: [awsemf/application]
-
-  extensions: [health_check]
+      receivers: [otlp, hostmetrics]
+      processors: [probabilistic_sampler]
+      exporters: [otlp]

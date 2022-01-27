@@ -1,9 +1,3 @@
-resource "aws_ssm_parameter" "opentelemetry_collector_config" {
-  name  = "otel-collector-config"
-  type  = "String"
-  value = file("${path.module}/opentelemetry-config.yaml")
-}
-
 data "aws_iam_policy_document" "opentelemetry_collector_policy" {
   version = "2012-10-17"
 

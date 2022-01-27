@@ -102,22 +102,16 @@ resource "aws_ecs_task_definition" "api_server" {
 
   container_definitions = jsonencode([
     {
-      name : "aws-otel-collector",
-      image : "amazon/aws-otel-collector",
+      name : "otel-collector",
+      image : format("%s:latest", aws_ecr_repository.otel_collector.repository_url)
       essential : true,
-      secrets : [
-        {
-          "name" : "AOT_CONFIG_CONTENT",
-          "valueFrom" : aws_ssm_parameter.opentelemetry_collector_config.arn,
-        }
-      ],
       logConfiguration : {
-        "logDriver" : "awslogs",
-        "options" : {
-          "awslogs-group" : aws_cloudwatch_log_group.api_sidecar.name,
-          "awslogs-region" : local.aws_region,
-          "awslogs-stream-prefix" : "ecs",
-          "awslogs-create-group" : "True"
+        logDriver : "awslogs",
+        options : {
+          awslogs-region : local.aws_region,
+          awslogs-group : "sidecars",
+          awslogs-create-group : "true",
+          awslogs-stream-prefix : "otel-collector"
         }
       }
     },
@@ -153,14 +147,11 @@ resource "aws_ecs_task_definition" "api_server" {
   network_mode = "awsvpc"
 }
 
-resource "aws_ecs_cluster" "api" {
-  name = "api_servers"
-}
 
 resource "aws_ecs_service" "api_server" {
   name                               = "api_server"
   task_definition                    = aws_ecs_task_definition.api_server.arn
-  cluster                            = aws_ecs_cluster.api.id
+  cluster                            = aws_ecs_cluster.dev.id
   launch_type                        = "FARGATE"
   deployment_maximum_percent         = 200
   deployment_minimum_healthy_percent = 100
@@ -200,38 +191,6 @@ resource "aws_ecs_service" "api_server" {
 }
 
 data "aws_iam_policy_document" "ecs_task_execution_assume_role" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
-    }
-  }
-}
-
-resource "aws_iam_role" "api_task_execution_role" {
-  name               = "api-task-execution-role"
-  assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_assume_role.json
-}
-
-# Normally we'd prefer not to hardcode an ARN in our Terraform, but since these are an AWS-managed policy, it's okay.
-resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
-  role       = aws_iam_role.api_task_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
-
-resource "aws_iam_role_policy_attachment" "cloudwatch_logs_full_access_role" {
-  role       = aws_iam_role.api_task_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
-}
-
-resource "aws_iam_role_policy_attachment" "ssm_read_only_access_role" {
-  role       = aws_iam_role.api_task_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
-}
-
-data "aws_iam_policy_document" "ecs_task_assume_role" {
   statement {
     actions = ["sts:AssumeRole"]
 
