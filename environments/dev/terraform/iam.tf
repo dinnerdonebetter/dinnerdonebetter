@@ -26,7 +26,6 @@ data "aws_iam_policy_document" "allow_parameter_store_access" {
     resources = [
       aws_ssm_parameter.service_config.arn,
       aws_ssm_parameter.worker_config.arn,
-      aws_ssm_parameter.opentelemetry_collector_config.arn,
       aws_ssm_parameter.data_changes_queue_parameter.arn,
       aws_ssm_parameter.database_url.arn,
       aws_ssm_parameter.sendgrid_token.arn,
