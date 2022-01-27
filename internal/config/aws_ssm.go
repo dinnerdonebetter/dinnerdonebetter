@@ -3,7 +3,6 @@ package config
 import (
 	"context"
 	"encoding/json"
-	"strings"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 
@@ -72,9 +71,6 @@ func GetConfigFromParameterStore(worker bool) (*InstanceConfig, error) {
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(mustGetParameter(parameterStore, databaseConnectionURLSSMKey))
 	cfg.Email.APIToken = mustGetParameter(parameterStore, sendgridAPITokenSSMKey)
 	cfg.CustomerData.APIToken = mustGetParameter(parameterStore, segmentAPITokenSSMKey)
-
-	cfg.Events.Consumers.RedisConfig.QueueAddresses = strings.Split(mustGetParameter(parameterStore, pubsubServerURLSSMKey), ",")
-	//cfg.Events.Publishers.RedisConfig.QueueAddresses = strings.Split(mustGetParameter(parameterStore, pubsubServerURLSSMKey), ",")
 
 	dataChangesTopicName := mustGetParameter(parameterStore, dataChangesQueueNameSSMKey)
 
