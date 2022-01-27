@@ -36,7 +36,3 @@ provider "google" {
   zone        = "us-central1-c"
   credentials = var.GCP_CREDENTIALS_DEV
 }
-
-resource "google_container_registry" "registry" {
-  location = "US"
-}
