@@ -152,16 +152,6 @@ jobs:
         working-directory: artifacts
         run: aws lambda update-function-code --function-name data_changes_worker --zip-file fileb://data_changes_worker.zip
 
-      - name: Download chores lambda
-        uses: actions/download-artifact@v2
-        with:
-          name: chores_lambda
-          path: artifacts
-
-      - name: Deploy data changes lambda
-        working-directory: artifacts
-        run: aws lambda update-function-code --function-name chores_worker --zip-file fileb://chores_worker.zip
-
       - name: Download meal planning prober lambda
         uses: actions/download-artifact@v2
         with:
