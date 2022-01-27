@@ -15,7 +15,6 @@ receivers:
       paging:
       process:
       processes:
-      swap:
 
 exporters:
   otlp:

@@ -104,6 +104,7 @@ resource "aws_ecs_service" "meal_plan_finalizer" {
     assign_public_ip = true
 
     subnets = concat(
+      [for x in aws_subnet.public_subnets : x.id],
       [for x in aws_subnet.private_subnets : x.id],
     )
   }
