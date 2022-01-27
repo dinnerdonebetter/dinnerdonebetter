@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -42,20 +41,26 @@ func main() {
 
 	client := &http.Client{Timeout: 5 * time.Second}
 
+	var (
+		cfg *config.InstanceConfig
+		err error
+	)
+
 	// find and validate our configuration filepath.
-	configFilepath := os.Getenv(configFilepathEnvVar)
-	if configFilepath == "" {
-		log.Fatal("no config provided")
-	}
+	if configFilepath := os.Getenv(configFilepathEnvVar); configFilepath != "" {
+		configBytes, configReadErr := os.ReadFile(configFilepath)
+		if configReadErr != nil {
+			logger.Fatal(configReadErr)
+		}
 
-	configBytes, err := os.ReadFile(configFilepath)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	var cfg *config.InstanceConfig
-	if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
-		logger.Fatal(err)
+		if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
+			logger.Fatal(err)
+		}
+	} else {
+		cfg, err = config.GetConfigFromParameterStore(false)
+		if err != nil {
+			logger.Fatal(err)
+		}
 	}
 
 	cfg.Observability.Tracing.Jaeger.ServiceName = "workers"
