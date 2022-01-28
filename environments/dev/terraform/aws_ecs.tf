@@ -2,7 +2,6 @@ resource "aws_ecs_cluster" "dev" {
   name = "dev"
 }
 
-
 # Normally we'd prefer not to hardcode an ARN in our Terraform, but since these are an AWS-managed policy, it's okay.
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
   role       = aws_iam_role.api_task_execution_role.name

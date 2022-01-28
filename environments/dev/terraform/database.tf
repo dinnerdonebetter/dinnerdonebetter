@@ -68,7 +68,7 @@ resource "aws_security_group" "database" {
     cidr_blocks      = [aws_vpc.main.cidr_block]
     ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
     security_groups = [
-      aws_security_group.api_service.id,
+      aws_security_group.api_server.id,
       aws_security_group.load_balancer.id,
       aws_security_group.lambda_workers.id,
     ]

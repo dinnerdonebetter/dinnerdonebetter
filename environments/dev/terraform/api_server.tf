@@ -1,5 +1,6 @@
 locals {
-  public_url = "api.prixfixe.dev"
+  public_url      = "api.prixfixe.dev"
+  api_server_port = 8000
 }
 
 resource "aws_ecr_repository" "api_server" {
@@ -11,8 +12,8 @@ resource "aws_ecr_repository" "api_server" {
   }
 }
 
-resource "aws_security_group" "api_service" {
-  name        = "prixfixe_api"
+resource "aws_security_group" "api_server" {
+  name        = "dev_api"
   description = "HTTP traffic"
   vpc_id      = aws_vpc.main.id
 
@@ -33,46 +34,8 @@ resource "aws_security_group" "api_service" {
   }
 
   ingress {
-    from_port        = 8000
-    to_port          = 8000
-    protocol         = "TCP"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-}
-
-resource "aws_security_group" "load_balancer" {
-  name        = "load_balancer"
-  description = "public internet traffic"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    from_port        = 80
-    to_port          = 80
-    protocol         = "TCP"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    from_port        = 443
-    to_port          = 443
-    protocol         = "TCP"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    from_port        = 8000
-    to_port          = 8000
+    from_port        = local.api_server_port
+    to_port          = local.api_server_port
     protocol         = "TCP"
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
@@ -121,11 +84,6 @@ resource "aws_iam_role" "api_task_role" {
     name   = "allow_decrypt_ssm_parameters"
     policy = data.aws_iam_policy_document.allow_to_decrypt_parameters.json
   }
-
-  inline_policy {
-    name   = "ECS-AWSOTel"
-    policy = data.aws_iam_policy_document.opentelemetry_collector_policy.json
-  }
 }
 
 resource "aws_ecs_task_definition" "api_server" {
@@ -151,7 +109,7 @@ resource "aws_ecs_task_definition" "api_server" {
       image = format("%s:latest", aws_ecr_repository.api_server.repository_url),
       portMappings : [
         {
-          containerPort : 8000,
+          containerPort : local.api_server_port,
           protocol : "tcp",
         },
       ],
@@ -199,14 +157,14 @@ resource "aws_ecs_service" "api_server" {
   load_balancer {
     target_group_arn = aws_lb_target_group.api.arn
     container_name   = "api_server"
-    container_port   = 8000
+    container_port   = local.api_server_port
   }
 
   network_configuration {
     assign_public_ip = true
 
     security_groups = [
-      aws_security_group.api_service.id,
+      aws_security_group.api_server.id,
     ]
 
     subnets = concat(
@@ -225,6 +183,44 @@ resource "aws_acm_certificate" "api_dot" {
   validation_method = "DNS"
 }
 
+resource "aws_security_group" "load_balancer" {
+  name        = "load_balancer"
+  description = "public internet traffic"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port        = 80
+    to_port          = 80
+    protocol         = "TCP"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  ingress {
+    from_port        = 443
+    to_port          = 443
+    protocol         = "TCP"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  ingress {
+    from_port        = local.api_server_port
+    to_port          = local.api_server_port
+    protocol         = "TCP"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
+
 resource "aws_lb" "api" {
   name               = "api-lb"
   internal           = false
@@ -241,7 +237,7 @@ resource "aws_lb" "api" {
 
 resource "aws_lb_target_group" "api" {
   name        = "api"
-  port        = 8000
+  port        = local.api_server_port
   protocol    = "HTTP"
   target_type = "ip"
   vpc_id      = aws_vpc.main.id
