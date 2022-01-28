@@ -1,5 +1,3 @@
-
-
 resource "aws_ecr_repository" "meal_plan_finalizer" {
   name = "meal_plan_finalizer"
   # do not set image_tag_mutability to "IMMUTABLE", or else we cannot use :latest tags.
@@ -13,6 +11,24 @@ resource "aws_security_group" "meal_plan_finalizer" {
   name        = "dev_meal_plan_finalizer"
   description = "HTTP traffic"
   vpc_id      = aws_vpc.main.id
+
+  # trying this
+  ingress {
+    from_port        = 80
+    to_port          = 80
+    protocol         = "TCP"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  ingress {
+    from_port        = 443
+    to_port          = 443
+    protocol         = "TCP"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+  # end trying this
 
   egress {
     from_port        = 0
@@ -100,7 +116,7 @@ resource "aws_ecs_task_definition" "meal_plan_finalizer" {
   memory                   = 512
   requires_compatibilities = ["FARGATE"]
 
-  network_mode = "awsvpc"
+  network_mode = "host"
 }
 
 resource "aws_ecs_service" "meal_plan_finalizer" {
