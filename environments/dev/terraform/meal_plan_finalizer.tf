@@ -116,7 +116,7 @@ resource "aws_ecs_task_definition" "meal_plan_finalizer" {
   memory                   = 512
   requires_compatibilities = ["FARGATE"]
 
-  network_mode = "host"
+  network_mode = "awsvpc"
 }
 
 resource "aws_ecs_service" "meal_plan_finalizer" {
