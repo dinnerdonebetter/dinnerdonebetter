@@ -8,9 +8,15 @@ resource "aws_ecr_repository" "meal_plan_finalizer" {
 }
 
 resource "aws_cloudwatch_log_group" "meal_plan_finalizer" {
-  name              = "/ecs/meal_plan_finalizer"
+  name              = "/ecs/dev_meal_plan_finalizer"
   retention_in_days = local.log_retention_period_in_days
 }
+
+resource "aws_cloudwatch_log_group" "finalizer_sidecar" {
+  name              = "/ecs/dev-meal-plan-finalizer-telemetry-collector-sidecar"
+  retention_in_days = local.log_retention_period_in_days
+}
+
 
 resource "aws_iam_role" "meal_plan_finalizer_task_execution_role" {
   name               = "meal-plan-finalizer-task-execution-role"
@@ -55,7 +61,7 @@ resource "aws_ecs_task_definition" "meal_plan_finalizer" {
         logDriver : "awslogs",
         options : {
           awslogs-region : local.aws_region,
-          awslogs-group : "sidecars",
+          awslogs-group : aws_cloudwatch_log_group.finalizer_sidecar.name,
           awslogs-create-group : "true",
           awslogs-stream-prefix : "otel-collector"
         }
@@ -87,20 +93,6 @@ resource "aws_ecs_task_definition" "meal_plan_finalizer" {
   network_mode = "awsvpc"
 }
 
-resource "aws_security_group" "meal_plan_finalizer" {
-  name        = "meal_plan_finalizer"
-  description = "meal plan finalizer"
-  vpc_id      = aws_vpc.main.id
-
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-}
-
 resource "aws_ecs_service" "meal_plan_finalizer" {
   name                               = "meal_plan_finalizer"
   task_definition                    = aws_ecs_task_definition.meal_plan_finalizer.arn
@@ -120,8 +112,6 @@ resource "aws_ecs_service" "meal_plan_finalizer" {
   }
 
   network_configuration {
-    assign_public_ip = true
-
     security_groups = [
       aws_security_group.meal_plan_finalizer.id,
     ]
@@ -130,5 +120,19 @@ resource "aws_ecs_service" "meal_plan_finalizer" {
       [for x in aws_subnet.public_subnets : x.id],
       [for x in aws_subnet.private_subnets : x.id],
     )
+  }
+}
+
+resource "aws_security_group" "meal_plan_finalizer" {
+  name        = "meal_plan_finalizer"
+  description = "meal plan finalizer"
+  vpc_id      = aws_vpc.main.id
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 }

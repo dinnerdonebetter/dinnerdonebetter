@@ -30,6 +30,17 @@ data "aws_iam_policy_document" "ecs_task_assume_role" {
   }
 }
 
+data "aws_iam_policy_document" "ecs_task_execution_assume_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
+  }
+}
+
 resource "aws_ecr_repository" "otel_collector" {
   name = "otel-collector"
   # do not set image_tag_mutability to "IMMUTABLE", or else we cannot use :latest tags.

@@ -93,19 +93,8 @@ resource "aws_cloudwatch_log_group" "api_server" {
 }
 
 resource "aws_cloudwatch_log_group" "api_sidecar" {
-  name              = "/ecs/ecs-aws-otel-sidecar-collector"
+  name              = "/ecs/dev-api-telemetry-collector-sidecar"
   retention_in_days = local.log_retention_period_in_days
-}
-
-data "aws_iam_policy_document" "ecs_task_execution_assume_role" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
-    }
-  }
 }
 
 resource "aws_iam_role" "api_task_execution_role" {
@@ -151,7 +140,7 @@ resource "aws_ecs_task_definition" "api_server" {
         logDriver : "awslogs",
         options : {
           awslogs-region : local.aws_region,
-          awslogs-group : "sidecars",
+          awslogs-group : aws_cloudwatch_log_group.api_sidecar.name,
           awslogs-create-group : "true",
           awslogs-stream-prefix : "otel-collector"
         }
