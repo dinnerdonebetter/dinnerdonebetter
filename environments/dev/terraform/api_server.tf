@@ -97,6 +97,48 @@ resource "aws_cloudwatch_log_group" "api_sidecar" {
   retention_in_days = local.log_retention_period_in_days
 }
 
+data "aws_iam_policy_document" "ecs_task_execution_assume_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "api_task_execution_role" {
+  name               = "api-task-execution-role"
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_assume_role.json
+}
+
+resource "aws_iam_role" "api_task_role" {
+  name = "api-task-role"
+
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
+
+  inline_policy {
+    name   = "allow_sqs_queue_access"
+    policy = data.aws_iam_policy_document.allow_to_manipulate_queues.json
+  }
+
+  inline_policy {
+    name   = "allow_ssm_access"
+    policy = data.aws_iam_policy_document.allow_parameter_store_access.json
+  }
+
+  inline_policy {
+    name   = "allow_decrypt_ssm_parameters"
+    policy = data.aws_iam_policy_document.allow_to_decrypt_parameters.json
+  }
+
+  inline_policy {
+    name   = "ECS-AWSOTel"
+    policy = data.aws_iam_policy_document.opentelemetry_collector_policy.json
+  }
+}
+
 resource "aws_ecs_task_definition" "api_server" {
   family = "api_server"
 
@@ -147,7 +189,6 @@ resource "aws_ecs_task_definition" "api_server" {
   network_mode = "awsvpc"
 }
 
-
 resource "aws_ecs_service" "api_server" {
   name                               = "api_server"
   task_definition                    = aws_ecs_task_definition.api_server.arn
@@ -188,48 +229,6 @@ resource "aws_ecs_service" "api_server" {
   depends_on = [
     aws_lb_listener.api_http,
   ]
-}
-
-data "aws_iam_policy_document" "ecs_task_execution_assume_role" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
-    }
-  }
-}
-
-resource "aws_iam_role" "api_task_execution_role" {
-  name               = "api-task-execution-role"
-  assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_assume_role.json
-}
-
-resource "aws_iam_role" "api_task_role" {
-  name = "api-task-role"
-
-  assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
-
-  inline_policy {
-    name   = "allow_sqs_queue_access"
-    policy = data.aws_iam_policy_document.allow_to_manipulate_queues.json
-  }
-
-  inline_policy {
-    name   = "allow_ssm_access"
-    policy = data.aws_iam_policy_document.allow_parameter_store_access.json
-  }
-
-  inline_policy {
-    name   = "allow_decrypt_ssm_parameters"
-    policy = data.aws_iam_policy_document.allow_to_decrypt_parameters.json
-  }
-
-  inline_policy {
-    name   = "ECS-AWSOTel"
-    policy = data.aws_iam_policy_document.opentelemetry_collector_policy.json
-  }
 }
 
 resource "aws_acm_certificate" "api_dot" {

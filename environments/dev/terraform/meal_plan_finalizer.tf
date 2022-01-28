@@ -36,6 +36,11 @@ resource "aws_iam_role" "meal_plan_finalizer_task_role" {
     name   = "allow_decrypt_ssm_parameters"
     policy = data.aws_iam_policy_document.allow_to_decrypt_parameters.json
   }
+
+  inline_policy {
+    name   = "ECS-AWSOTel"
+    policy = data.aws_iam_policy_document.opentelemetry_collector_policy.json
+  }
 }
 
 resource "aws_ecs_task_definition" "meal_plan_finalizer" {
@@ -82,6 +87,20 @@ resource "aws_ecs_task_definition" "meal_plan_finalizer" {
   network_mode = "awsvpc"
 }
 
+resource "aws_security_group" "meal_plan_finalizer" {
+  name        = "meal_plan_finalizer"
+  description = "meal plan finalizer"
+  vpc_id      = aws_vpc.main.id
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
+
 resource "aws_ecs_service" "meal_plan_finalizer" {
   name                               = "meal_plan_finalizer"
   task_definition                    = aws_ecs_task_definition.meal_plan_finalizer.arn
@@ -102,6 +121,10 @@ resource "aws_ecs_service" "meal_plan_finalizer" {
 
   network_configuration {
     assign_public_ip = true
+
+    security_groups = [
+      aws_security_group.meal_plan_finalizer.id,
+    ]
 
     subnets = concat(
       [for x in aws_subnet.public_subnets : x.id],
