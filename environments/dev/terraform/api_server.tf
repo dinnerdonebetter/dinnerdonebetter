@@ -86,8 +86,8 @@ resource "aws_iam_role" "api_task_role" {
   }
 }
 
-resource "aws_ecs_task_definition" "api_server" {
-  family = "api_server"
+resource "aws_ecs_task_definition" "dev_api" {
+  family = "dev_api"
 
   container_definitions = jsonencode([
     {
@@ -103,6 +103,19 @@ resource "aws_ecs_task_definition" "api_server" {
           awslogs-stream-prefix : "otel-collector"
         }
       }
+    },
+    {
+      name  = "meal_plan_finalizer",
+      image = format("%s:latest", aws_ecr_repository.meal_plan_finalizer.repository_url),
+      essential : true,
+      logConfiguration : {
+        logDriver : "awslogs",
+        options : {
+          awslogs-region : local.aws_region,
+          awslogs-group : aws_cloudwatch_log_group.meal_plan_finalizer.name,
+          awslogs-stream-prefix : "ecs",
+        },
+      },
     },
     {
       name  = "api_server",
@@ -138,7 +151,7 @@ resource "aws_ecs_task_definition" "api_server" {
 
 resource "aws_ecs_service" "api_server" {
   name                               = "api_server"
-  task_definition                    = aws_ecs_task_definition.api_server.arn
+  task_definition                    = aws_ecs_task_definition.dev_api.arn
   cluster                            = aws_ecs_cluster.dev.id
   launch_type                        = "FARGATE"
   deployment_maximum_percent         = 200

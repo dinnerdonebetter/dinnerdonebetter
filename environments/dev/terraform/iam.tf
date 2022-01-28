@@ -1,4 +1,3 @@
-
 data "aws_iam_policy_document" "allow_to_manipulate_queues" {
   statement {
     effect = "Allow"
