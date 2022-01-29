@@ -105,25 +105,6 @@ resource "aws_ecs_task_definition" "meal_plan_finalizer" {
         },
       },
     },
-    {
-      name  = "api_server",
-      image = format("%s:latest", aws_ecr_repository.meal_plan_finalizer.repository_url),
-      portMappings : [
-        {
-          containerPort : local.api_server_port,
-          protocol : "tcp",
-        },
-      ],
-      essential : true,
-      logConfiguration : {
-        logDriver : "awslogs",
-        options : {
-          awslogs-region : local.aws_region,
-          awslogs-group : aws_cloudwatch_log_group.api_server.name,
-          awslogs-stream-prefix : "ecs",
-        },
-      },
-    },
   ])
 
   execution_role_arn = aws_iam_role.meal_plan_finalizer_task_execution_role.arn
@@ -156,8 +137,6 @@ resource "aws_ecs_service" "meal_plan_finalizer" {
   }
 
   network_configuration {
-    assign_public_ip = true
-
     security_groups = [
       aws_security_group.meal_plan_finalizer.id,
     ]

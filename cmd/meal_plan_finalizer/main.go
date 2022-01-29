@@ -70,10 +70,14 @@ func main() {
 		tracerProvider,
 	)
 
+	logger.Info("watching for meal plans to finalize")
+
 	everyMinute := time.Tick(time.Minute)
 	for {
 		select {
 		case <-everyMinute:
+			logger.Info("checking for meal plans to finalize")
+
 			if err = mealPlanFinalizer.HandleMessage(context.Background(), nil); err != nil {
 				observability.AcknowledgeError(err, logger, nil, "performing meal plan finalization")
 			}
