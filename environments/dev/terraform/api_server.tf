@@ -56,17 +56,17 @@ resource "aws_cloudwatch_log_group" "api_server" {
 }
 
 resource "aws_cloudwatch_log_group" "api_sidecar" {
-  name              = "/ecs/dev-api-telemetry-collector-sidecar"
+  name              = "/ecs/dev_api_telemetry_collector_sidecar"
   retention_in_days = local.log_retention_period_in_days
 }
 
 resource "aws_iam_role" "api_task_execution_role" {
-  name               = "api-task-execution-role"
+  name               = "api_task_execution_role"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_assume_role.json
 }
 
 resource "aws_iam_role" "api_task_role" {
-  name = "api-task-role"
+  name = "api_task_role"
 
   assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
 
