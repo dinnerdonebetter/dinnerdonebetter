@@ -105,6 +105,19 @@ resource "aws_ecs_task_definition" "dev_api" {
       }
     },
     {
+      name  = "meal_plan_finalizer",
+      image = format("%s:latest", aws_ecr_repository.meal_plan_finalizer.repository_url),
+      essential : true,
+      logConfiguration : {
+        logDriver : "awslogs",
+        options : {
+          awslogs-region : local.aws_region,
+          awslogs-group : aws_cloudwatch_log_group.meal_plan_finalizer.name,
+          awslogs-stream-prefix : "ecs",
+        },
+      },
+    },
+    {
       name  = "api_server",
       image = format("%s:latest", aws_ecr_repository.api_server.repository_url),
       portMappings : [
