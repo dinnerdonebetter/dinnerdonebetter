@@ -15,32 +15,6 @@ jobs:
         with:
           go-version: '1.17.3'
 
-      - name: Build data changes worker lambda
-        run: go build -o data_changes_worker github.com/prixfixeco/api_server/cmd/lambdas/data_changes
-
-      - name: Zip data changes lambda
-        run: zip data_changes_worker.zip data_changes_worker
-
-      - name: Upload data changes lambda
-        uses: actions/upload-artifact@v2
-        with:
-          name: data_changes_lambda
-          path: data_changes_worker.zip
-          retention-days: 1
-
-      - name: Build meal planning prober lambda
-        run: go build -o prober_meal_planning github.com/prixfixeco/api_server/cmd/lambdas/probers/meal_planning
-
-      - name: Zip meal planning prober lambda
-        run: zip meal_planning_prober_lambda.zip prober_meal_planning
-
-      - name: Upload chores lambda
-        uses: actions/upload-artifact@v2
-        with:
-          name: meal_planning_prober_lambda
-          path: meal_planning_prober_lambda.zip
-          retention-days: 1
-
   scaffold:
     runs-on: ubuntu-latest
     steps:
@@ -95,69 +69,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build, tag, and push opentelemetry image to Amazon ECR
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build --tag $ECR_REGISTRY/otel-collector:$IMAGE_TAG --file environments/dev/dockerfiles/otel-collector.Dockerfile .
-          docker push $ECR_REGISTRY/otel-collector:$IMAGE_TAG
-          docker build --tag $ECR_REGISTRY/otel-collector:latest --file environments/dev/dockerfiles/otel-collector.Dockerfile .
-          docker push $ECR_REGISTRY/otel-collector:latest
-
-      - name: Build, tag, and push server image to Amazon ECR
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build --tag $ECR_REGISTRY/api_server:$IMAGE_TAG --file environments/dev/dockerfiles/api_server.Dockerfile .
-          docker push $ECR_REGISTRY/api_server:$IMAGE_TAG
-          docker build --tag $ECR_REGISTRY/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
-          docker push $ECR_REGISTRY/api_server:latest
-
-      - name: Build, tag, and push meal plan finalizer image to Amazon ECR
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build --tag $ECR_REGISTRY/meal_plan_finalizer:$IMAGE_TAG --file environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
-          docker push $ECR_REGISTRY/meal_plan_finalizer:$IMAGE_TAG
-          docker build --tag $ECR_REGISTRY/meal_plan_finalizer:latest --file environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
-          docker push $ECR_REGISTRY/meal_plan_finalizer:latest
-
-      - name: refresh api server ECS deployment
-        run: aws ecs update-service --cluster dev --service api_server --force-new-deployment
-
-      - name: refresh meal_plan_finalizer ECS deployment
-        run: aws ecs update-service --cluster dev --service meal_plan_finalizer --force-new-deployment
-
-      - name: Download data changes lambda
-        uses: actions/download-artifact@v2
-        with:
-          name: data_changes_lambda
-          path: artifacts
-
-      - name: Deploy data changes lambda
-        working-directory: artifacts
-        run: aws lambda update-function-code --function-name data_changes_worker --zip-file fileb://data_changes_worker.zip
-
-      - name: Download meal planning prober lambda
-        uses: actions/download-artifact@v2
-        with:
-          name: meal_planning_prober_lambda
-          path: artifacts
-
-      - name: Deploy meal planning prober lambda
-        working-directory: artifacts
-        run: aws lambda update-function-code --function-name prober_meal_planning --zip-file fileb://meal_planning_prober_lambda.zip
+#      - name: Build, tag, and push server image to DOCR
+#        env:
+#          IMAGE_TAG: ${{ github.sha }}
+#        run: |
+#          docker build --tag $ECR_REGISTRY/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
+#          docker push $ECR_REGISTRY/api_server:latest

@@ -13,13 +13,9 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "~> 2.0"
     }
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 3.70.0"
-    }
-    archive = {
-      source  = "hashicorp/archive"
-      version = "~> 2.2.0"
+    digitalocean = {
+      source  = "digitalocean/digitalocean"
+      version = "~> 2.0"
     }
   }
 }
