@@ -120,7 +120,7 @@ resource "aws_ecs_task_definition" "meal_plan_finalizer" {
 
 resource "aws_ecs_service" "meal_plan_finalizer" {
   name                               = "meal_plan_finalizer"
-  task_definition                    = aws_ecs_task_definition.dev_api.arn
+  task_definition                    = aws_ecs_task_definition.meal_plan_finalizer.arn
   cluster                            = aws_ecs_cluster.dev.id
   launch_type                        = "FARGATE"
   deployment_maximum_percent         = 200
