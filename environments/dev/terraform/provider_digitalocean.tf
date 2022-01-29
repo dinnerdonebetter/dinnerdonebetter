@@ -1,4 +1,6 @@
 variable "DIGITAL_OCEAN_API_TOKEN" {}
+#variable "SPACES_ACCESS_KEY_ID" {}
+#variable "SPACES_SECRET_ACCESS_KEY" {}
 
 # Configure the DigitalOcean Provider
 provider "digitalocean" {

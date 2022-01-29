@@ -1,7 +1,7 @@
 resource "digitalocean_app" "prixfixe" {
   spec {
     name   = "dev"
-    region = "nyc1"
+    region = "nyc3"
 
     domain {
       name = "api.prixfixe.dev"
@@ -16,7 +16,7 @@ resource "digitalocean_app" "prixfixe" {
       image {
         registry_type = "DOCR"
         registry      = ""
-        repostiory    = "api_server"
+        repository    = "api_server"
       }
 
       http_port = 8000
