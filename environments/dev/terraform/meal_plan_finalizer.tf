@@ -7,6 +7,11 @@ resource "aws_ecr_repository" "meal_plan_finalizer" {
   }
 }
 
+resource "aws_cloudwatch_log_group" "meal_plan_finalizer" {
+  name              = "/ecs/meal_plan_finalizer"
+  retention_in_days = local.log_retention_period_in_days
+}
+
 resource "aws_security_group" "meal_plan_finalizer" {
   name        = "meal_plan_finalizer"
   description = "meal plan finalizer service"
@@ -35,11 +40,6 @@ resource "aws_security_group" "meal_plan_finalizer" {
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
-}
-
-resource "aws_cloudwatch_log_group" "meal_plan_finalizer" {
-  name              = "/ecs/meal_plan_finalizer"
-  retention_in_days = local.log_retention_period_in_days
 }
 
 resource "aws_cloudwatch_log_group" "meal_plan_finalizer_sidecar" {
@@ -143,7 +143,6 @@ resource "aws_ecs_service" "meal_plan_finalizer" {
     ]
 
     subnets = concat(
-      [for x in aws_subnet.public_subnets : x.id],
       [for x in aws_subnet.private_subnets : x.id],
     )
   }

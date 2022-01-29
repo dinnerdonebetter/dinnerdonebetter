@@ -139,6 +139,9 @@ jobs:
       - name: refresh api server ECS deployment
         run: aws ecs update-service --cluster dev --service api_server --force-new-deployment
 
+      - name: refresh meal plan finalizer ECS deployment
+        run: aws ecs update-service --cluster dev --service meal_plan_finalizer --force-new-deployment
+
       - name: Download data changes lambda
         uses: actions/download-artifact@v2
         with:
