@@ -137,6 +137,8 @@ resource "aws_ecs_service" "meal_plan_finalizer" {
   }
 
   network_configuration {
+    assign_public_ip = true
+
     security_groups = [
       aws_security_group.meal_plan_finalizer.id,
     ]
