@@ -29,7 +29,7 @@ resource "digitalocean_app" "prixfixe" {
     }
 
     database {
-      name       = "dev-db"
+      name       = "dev"
       engine     = "PG"
       production = false
       db_name    = "prixfixe"
