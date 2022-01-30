@@ -25,7 +25,7 @@ resource "digitalocean_app" "prixfixe" {
         path = "/"
       }
 
-      run_command = "bin/api"
+      run_command = "/server"
     }
 
     database {
