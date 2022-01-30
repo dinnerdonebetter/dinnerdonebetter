@@ -11,7 +11,7 @@ provider "digitalocean" {
 }
 
 resource "digitalocean_container_registry" "dev" {
-  name                   = "dev"
+  name                   = "dev-prixfixe"
   subscription_tier_slug = "starter"
 }
 
