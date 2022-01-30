@@ -34,7 +34,7 @@ resource "digitalocean_app" "prixfixe" {
       production = false
       db_name    = "prixfixe"
       db_user    = "admin"
-      version    = "13"
+      version    = "12"
     }
   }
 
