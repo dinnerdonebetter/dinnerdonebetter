@@ -32,7 +32,6 @@ resource "digitalocean_app" "prixfixe" {
       name       = "dev"
       engine     = "PG"
       production = false
-      db_user    = "admin"
       version    = "12"
     }
   }
