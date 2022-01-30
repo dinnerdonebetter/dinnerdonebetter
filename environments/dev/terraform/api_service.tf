@@ -37,4 +37,8 @@ resource "digitalocean_app" "prixfixe" {
       version    = "13"
     }
   }
+
+  depends_on = [
+    digitalocean_container_registry.dev,
+  ]
 }
