@@ -29,10 +29,9 @@ resource "digitalocean_app" "prixfixe" {
     }
 
     database {
-      name       = "dev"
       engine     = "PG"
       production = false
-      db_name    = "prixfixe"
+      db_name    = "dev-prixfixe"
       db_user    = "admin"
       version    = "12"
     }
