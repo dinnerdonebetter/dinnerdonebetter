@@ -10,7 +10,7 @@ resource "digitalocean_database_cluster" "database" {
 resource "digitalocean_project_resources" "dev_db" {
   project = digitalocean_project.prixfixe_dev.id
   resources = [
-    digitalocean_database_cluster.database.id,
+    format("do:dbaas:%s", digitalocean_database_cluster.database.id),
   ]
 }
 

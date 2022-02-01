@@ -19,7 +19,7 @@ resource "digitalocean_kubernetes_cluster" "dev" {
 resource "digitalocean_project_resources" "dev_cluster" {
   project = digitalocean_project.prixfixe_dev.id
   resources = [
-    digitalocean_kubernetes_cluster.dev.id,
+    format("do:kubernetes:%s", digitalocean_kubernetes_cluster.dev.id),
   ]
 }
 
