@@ -15,3 +15,17 @@ resource "digitalocean_kubernetes_cluster" "dev" {
     node_count = 3
   }
 }
+
+output "kubernetes_host" {
+  value = digitalocean_kubernetes_cluster.dev.endpoint
+}
+
+output "kubernetes_token" {
+  value = digitalocean_kubernetes_cluster.dev.kube_config[0].token
+}
+
+output "kubernetes_cluster_cert" {
+  value = base64decode(
+    digitalocean_kubernetes_cluster.dev.kube_config[0].cluster_ca_certificate
+  )
+}
