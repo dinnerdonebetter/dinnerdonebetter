@@ -9,8 +9,8 @@ resource "digitalocean_kubernetes_cluster" "dev" {
   version      = data.digitalocean_kubernetes_versions.example.latest_version
 
   maintenance_policy {
-    start_time  = "04:00"
-    day         = "sunday"
+    start_time = "04:00"
+    day        = "sunday"
   }
 
   node_pool {
