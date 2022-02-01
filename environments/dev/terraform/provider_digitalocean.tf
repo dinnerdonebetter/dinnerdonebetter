@@ -2,6 +2,10 @@ variable "DIGITAL_OCEAN_API_TOKEN" {}
 variable "SPACES_ACCESS_KEY_ID" {}
 variable "SPACES_SECRET_ACCESS_KEY" {}
 
+locals {
+  region = "nyc1"
+}
+
 # Configure the DigitalOcean Provider
 provider "digitalocean" {
   token = var.DIGITAL_OCEAN_API_TOKEN

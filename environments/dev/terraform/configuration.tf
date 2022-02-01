@@ -1,6 +1,6 @@
 resource "digitalocean_spaces_bucket" "config" {
   name          = "dev-config"
-  region        = "nyc3"
+  region        = local.region
   acl           = "private"
   force_destroy = true
 }
