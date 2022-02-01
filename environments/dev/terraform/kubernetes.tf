@@ -16,6 +16,6 @@ resource "digitalocean_kubernetes_cluster" "dev" {
   }
 }
 
-output "k8s_cluster_enpdoint" {
+output "k8s_cluster_endpoint" {
   value = digitalocean_kubernetes_cluster.dev.endpoint
 }
