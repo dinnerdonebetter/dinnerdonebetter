@@ -1,12 +1,8 @@
-data "digitalocean_kubernetes_versions" "example" {
-  version_prefix = "1.18."
-}
-
 resource "digitalocean_kubernetes_cluster" "dev" {
   name         = "dev"
   region       = local.region
   auto_upgrade = true
-  version      = data.digitalocean_kubernetes_versions.example.latest_version
+  version      = "1.21.9-do.0"
 
   maintenance_policy {
     start_time = "04:00"
