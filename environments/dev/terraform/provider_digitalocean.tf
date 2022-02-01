@@ -3,7 +3,7 @@ variable "SPACES_ACCESS_KEY_ID" {}
 variable "SPACES_SECRET_ACCESS_KEY" {}
 
 locals {
-  region = "nyc1"
+  region = "nyc3"
 }
 
 # Configure the DigitalOcean Provider
