@@ -11,7 +11,7 @@ resource "digitalocean_kubernetes_cluster" "dev" {
 
   node_pool {
     name       = "default"
-    size       = "s-1vcpu-1gb"
+    size       = "s-1vcpu-2gb"
     node_count = 3
   }
 }
