@@ -19,3 +19,11 @@ resource "digitalocean_kubernetes_cluster" "dev" {
 output "k8s_cluster_endpoint" {
   value = digitalocean_kubernetes_cluster.dev.endpoint
 }
+
+provider "kubernetes" {
+  host  = digitalocean_kubernetes_cluster.dev.endpoint
+  token = digitalocean_kubernetes_cluster.dev.kube_config[0].token
+  cluster_ca_certificate = base64decode(
+    digitalocean_kubernetes_cluster.dev.kube_config[0].cluster_ca_certificate
+  )
+}

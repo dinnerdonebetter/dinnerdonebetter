@@ -23,7 +23,7 @@ output "docr_registry_domain" {
   value = digitalocean_container_registry.dev.endpoint
 }
 
-resource "digitalocean_project" "prixfixe-dev" {
+resource "digitalocean_project" "prixfixe_dev" {
   name        = "prixfixe-dev"
   description = "the dev environment for PrixFixe"
   purpose     = "Service or API"
