@@ -3,6 +3,7 @@ resource "digitalocean_kubernetes_cluster" "dev" {
   region       = local.region
   auto_upgrade = true
   version      = "1.21.9-do.0"
+  vpc_uuid     = digitalocean_vpc.dev.id
 
   maintenance_policy {
     start_time = "04:00"
@@ -19,6 +20,7 @@ resource "digitalocean_kubernetes_cluster" "dev" {
 resource "digitalocean_project_resources" "dev_cluster" {
   project = digitalocean_project.prixfixe_dev.id
   resources = [
+    # https://www.digitalocean.com/community/questions/attach-kubernetes-cluster-to-project
     format("do:kubernetes:%s", digitalocean_kubernetes_cluster.dev.id),
   ]
 }

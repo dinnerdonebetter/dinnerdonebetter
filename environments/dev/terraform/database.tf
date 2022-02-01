@@ -1,15 +1,17 @@
 resource "digitalocean_database_cluster" "database" {
-  name       = "prixfixe-dev"
-  engine     = "pg"
-  version    = "13"
-  size       = "db-s-1vcpu-1gb"
-  region     = local.region
-  node_count = 1
+  name                 = "database"
+  engine               = "pg"
+  version              = "13"
+  size                 = "db-s-1vcpu-1gb"
+  region               = local.region
+  node_count           = 1
+  private_network_uuid = digitalocean_vpc.dev.id
 }
 
 resource "digitalocean_project_resources" "dev_db" {
   project = digitalocean_project.prixfixe_dev.id
   resources = [
+    # https://github.com/digitalocean/api-v2/issues/179
     format("do:dbaas:%s", digitalocean_database_cluster.database.id),
   ]
 }
