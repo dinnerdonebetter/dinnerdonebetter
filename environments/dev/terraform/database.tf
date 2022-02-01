@@ -7,6 +7,13 @@ resource "digitalocean_database_cluster" "database" {
   node_count = 1
 }
 
+resource "digitalocean_project_resources" "dev_db" {
+  project = digitalocean_project.prixfixe_dev.id
+  resources = [
+    digitalocean_database_cluster.database.id,
+  ]
+}
+
 resource "cloudflare_record" "database_dot_prixfixe_dot_dev" {
   zone_id         = var.CLOUDFLARE_ZONE_ID
   name            = "database.prixfixe.dev"

@@ -28,9 +28,4 @@ resource "digitalocean_project" "prixfixe_dev" {
   description = "the dev environment for PrixFixe"
   purpose     = "Service or API"
   environment = "Development"
-  resources = [
-    digitalocean_kubernetes_cluster.dev.id,
-    digitalocean_database_cluster.database.urn,
-    digitalocean_spaces_bucket.config.urn,
-  ]
 }
