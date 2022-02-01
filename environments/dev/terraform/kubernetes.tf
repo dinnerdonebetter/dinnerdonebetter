@@ -16,16 +16,6 @@ resource "digitalocean_kubernetes_cluster" "dev" {
   }
 }
 
-output "kubernetes_host" {
+output "k8s_cluster_enpdoint" {
   value = digitalocean_kubernetes_cluster.dev.endpoint
-}
-
-output "kubernetes_token" {
-  value = digitalocean_kubernetes_cluster.dev.kube_config[0].token
-}
-
-output "kubernetes_cluster_cert" {
-  value = base64decode(
-    digitalocean_kubernetes_cluster.dev.kube_config[0].cluster_ca_certificate
-  )
 }
