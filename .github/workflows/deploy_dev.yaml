@@ -96,5 +96,5 @@ jobs:
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f environments/dev/kubernetes/namespace.yaml
-          kubectl create secret generic prixfixe-api-configuration --from-file=environments/dev/config_files/service-config.json --namespace $(LOCAL_K8S_NAMESPACE)
+          kubectl create secret generic prixfixe-api-configuration --from-file=environments/dev/config_files/service-config.json --namespace dev
           kubectl apply -f environments/dev/kubernetes/deployment.yaml
