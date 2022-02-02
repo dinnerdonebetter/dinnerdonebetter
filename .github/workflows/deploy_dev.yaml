@@ -80,9 +80,18 @@ jobs:
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
-#      - name: Build, tag, and push server image to DOCR
-#        env:
-#          IMAGE_TAG: ${{ github.sha }}
-#        run: |
-#          docker build --tag registry.digitalocean.com/dev-prixfixe/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
-#          docker push $ECR_REGISTRY/api_server:latest
+      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+        run: doctl registry login --expiry-seconds 600
+
+      - name: Build, tag, and push server image to DOCR
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build --tag registry.digitalocean.com/dev-prixfixe/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
+          docker push registry.digitalocean.com/dev-prixfixe/api_server:latest
+
+      - name: Save DigitalOcean kubeconfig with short-lived credentials
+        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 dev-cluster
+
+      - name: Deploy to Kubernetes
+        run: kubectl apply -f environments/dev/kubernetes/namespace.yml
