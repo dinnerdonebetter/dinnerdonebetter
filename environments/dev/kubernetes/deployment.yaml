@@ -1,0 +1,53 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prixfixe-api-server
+  namespace: prixfixe-local
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-server
+  template:
+    metadata:
+      name: prixfixe-api-server
+      labels:
+        app: api-server
+    spec:
+      containers:
+        - name: api-server-container
+          image: prixfixe_api_server:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: CONFIGURATION_FILEPATH
+              value: "/config/service-config.json"
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 8000
+          volumeMounts:
+            - name: config
+              mountPath: "/config/"
+              # readOnly: true
+      volumes:
+        - name: config
+          secret:
+            secretName: prixfixe-api-configuration
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prixfixe-api-service
+  namespace: prixfixe-local
+  labels:
+    app: prixfixe-api
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8000
+  selector:
+    app: prixfixe-api
+---
