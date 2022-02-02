@@ -31,7 +31,7 @@ spec:
           volumeMounts:
             - name: config
               mountPath: "/config/"
-              # readOnly: true
+              readOnly: true
       volumes:
         - name: config
           secret:
