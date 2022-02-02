@@ -91,7 +91,7 @@ jobs:
           docker push registry.digitalocean.com/dev-prixfixe/api_server:latest
 
       - name: Save DigitalOcean kubeconfig with short-lived credentials
-        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 dev-cluster
+        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 dev
 
       - name: Deploy to Kubernetes
         run: kubectl apply -f environments/dev/kubernetes/namespace.yml
