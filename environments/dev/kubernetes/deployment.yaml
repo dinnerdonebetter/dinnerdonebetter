@@ -19,7 +19,7 @@ spec:
         - name: api-server-container
           image: registry.digitalocean.com/dev-prixfixe/api_server:latest
           imagePullSecrets:
-            - name: do-registry
+            - name: registry-dev-prixfixe
           imagePullPolicy: IfNotPresent
           env:
             - name: CONFIGURATION_FILEPATH
