@@ -8,6 +8,12 @@ resource "digitalocean_database_cluster" "database" {
   private_network_uuid = digitalocean_vpc.dev.id
 }
 
+resource "digitalocean_database_user" "user-example" {
+  cluster_id = digitalocean_database_cluster.database.id
+  name       = "prixfixe_api"
+}
+
+
 resource "digitalocean_project_resources" "dev_db" {
   project = digitalocean_project.prixfixe_dev.id
   resources = [
