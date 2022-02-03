@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: api-server-container
-          image: prixfixe_api_server:latest
+          image: registry.digitalocean.com/dev-prixfixe/api_server:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: CONFIGURATION_FILEPATH
