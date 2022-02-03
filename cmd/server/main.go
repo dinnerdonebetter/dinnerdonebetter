@@ -9,6 +9,8 @@ import (
 	"os"
 	"strconv"
 
+	"go.opentelemetry.io/otel/trace"
+
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 
 	"github.com/prixfixeco/api_server/internal/build/server"
@@ -63,10 +65,12 @@ func main() {
 		}
 	}
 
-	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.Initialize(ctx, logger)
-	if initializeTracerErr != nil {
-		logger.Error(initializeTracerErr, "initializing tracer")
-	}
+	// tracerProvider, initializeTracerErr := cfg.Observability.Tracing.Initialize(ctx, logger)
+	// if initializeTracerErr != nil {
+	// 	logger.Error(initializeTracerErr, "initializing tracer")
+	// }
+
+	tracerProvider := trace.NewNoopTracerProvider()
 
 	metricsProvider, initializeMetricsErr := cfg.Observability.Metrics.ProvideUnitCounterProvider(ctx, logger)
 	if initializeMetricsErr != nil {
