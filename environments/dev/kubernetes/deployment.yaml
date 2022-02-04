@@ -27,8 +27,23 @@ spec:
             - name: DATABASE_CONFIGURATION
               valueFrom:
                 secretKeyRef:
-                  name: database.credentials
+                  name: config.database
                   key: connection_string
+            - name: PRIXFIXE_COOKIE_HASH_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: config.auth
+                  key: cookie_hash_key
+            - name: PRIXFIXE_COOKIE_BLOCK_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: config.auth
+                  key: cookie_block_key
+            - name: PRIXFIXE_PASETO_LOCAL_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: config.auth
+                  key: paseto_local_key
           resources:
             limits:
               memory: "128Mi"

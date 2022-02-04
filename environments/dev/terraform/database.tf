@@ -38,7 +38,7 @@ resource "digitalocean_project_resources" "dev_db" {
 resource "kubernetes_secret_v1" "database_credentials" {
   metadata {
     namespace = local.kubernetes_namespace
-    name      = "database.credentials"
+    name      = "config.database"
   }
 
   data = {
