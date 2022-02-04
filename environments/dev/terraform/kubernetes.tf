@@ -1,3 +1,7 @@
+locals {
+  kubernetes_namespace = "dev"
+}
+
 resource "digitalocean_kubernetes_cluster" "dev" {
   name         = "dev"
   region       = local.region
@@ -35,6 +39,6 @@ provider "kubernetes" {
 
 resource "kubernetes_namespace_v1" "dev_namespace" {
   metadata {
-    name = "dev"
+    name = local.kubernetes_namespace
   }
 }
