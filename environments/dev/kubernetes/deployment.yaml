@@ -20,7 +20,7 @@ spec:
       containers:
         - name: api-server-container
           image: registry.digitalocean.com/dev-prixfixe/api_server:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           env:
             - name: CONFIGURATION_FILEPATH
               value: "/config/service-config.json"
