@@ -64,19 +64,16 @@ func main() {
 			logger.Fatal(err)
 		}
 
-		if cfg.Database.ConnectionDetails == "" {
+		if len(cfg.Database.ConnectionDetails) == 0 {
 			cfg.Database.ConnectionDetails = database.ConnectionDetails(os.Getenv("DATABASE_CONFIGURATION"))
 		}
-
-		if cfg.Database.ConnectionDetails == "" {
-			logger.Fatal(errInvalidConfiguration)
-		}
-	} else {
-		cfg, err = config.GetConfigFromParameterStore(false)
-		if err != nil {
-			logger.Fatal(err)
-		}
 	}
+
+	if len(cfg.Database.ConnectionDetails) == 0 {
+		logger.Fatal(errInvalidConfiguration)
+	}
+
+	logger.WithValue("db_creds", cfg.Database.ConnectionDetails).Info("proceeding on to connect to database")
 
 	// tracerProvider, initializeTracerErr := cfg.Observability.Tracing.Initialize(ctx, logger)
 	// if initializeTracerErr != nil {
