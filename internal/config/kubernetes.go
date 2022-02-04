@@ -30,8 +30,8 @@ func GetConfigFromKubernetesEnv(ctx context.Context, noEnvs bool) (*InstanceConf
 	// fetch supplementary data from env vars
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(os.Getenv("DATABASE_CONFIGURATION"))
 
-	cfg.Email.APIToken = os.Getenv("SENDGRID_API_TOKEN")
-	cfg.CustomerData.APIToken = os.Getenv("SEGMENT_API_TOKEN")
+	cfg.Email.APIToken = os.Getenv("PRIXFIXE_SENDGRID_API_TOKEN")
+	cfg.CustomerData.APIToken = os.Getenv("PRIXFIXE_SEGMENT_API_TOKEN")
 
 	dataChangesTopicName := "data_changes"
 
