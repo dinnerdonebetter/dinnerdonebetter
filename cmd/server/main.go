@@ -37,7 +37,6 @@ func main() {
 	)
 
 	logger.SetLevel(logging.DebugLevel)
-
 	logger.SetRequestIDFunc(func(req *http.Request) string {
 		return chimiddleware.GetReqID(req.Context())
 	})
@@ -65,12 +64,15 @@ func main() {
 		}
 
 		if len(cfg.Database.ConnectionDetails) == 0 {
-			cfg.Database.ConnectionDetails = database.ConnectionDetails(os.Getenv("DATABASE_CONFIGURATION"))
-		}
-	}
+			creds := os.Getenv("DATABASE_CONFIGURATION")
+			if len(creds) == 0 {
+				logger.Fatal(errInvalidConfiguration)
+			}
 
-	if len(cfg.Database.ConnectionDetails) == 0 {
-		logger.Fatal(errInvalidConfiguration)
+			cfg.Database.ConnectionDetails = database.ConnectionDetails(creds)
+		} else {
+			logger.WithValue("db_creds", cfg.Database.ConnectionDetails).Info("proceeding on to connect to database")
+		}
 	}
 
 	logger.WithValue("db_creds", cfg.Database.ConnectionDetails).Info("proceeding on to connect to database")
