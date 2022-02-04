@@ -89,7 +89,6 @@ metadata:
     service.beta.kubernetes.io/do-loadbalancer-sticky-sessions-cookie-ttl: "60"
     service.beta.kubernetes.io/do-loadbalancer-redirect-http-to-https: "true"
     service.beta.kubernetes.io/do-loadbalancer-hostname: "api.prixfixe.dev"
-    service.beta.kubernetes.io/do-loadbalancer-http2-ports: "443,80"
     service.beta.kubernetes.io/do-loadbalancer-size-unit: "1"
 #    service.beta.kubernetes.io/do-loadbalancer-healthcheck-port: "80"
 #    service.beta.kubernetes.io/do-loadbalancer-healthcheck-protocol: "http"
