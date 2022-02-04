@@ -39,9 +39,7 @@ type (
 
 // NewSendGridEmailer returns a new SendGrid-backed Emailer.
 func NewSendGridEmailer(apiToken string, logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client) (*Emailer, error) {
-	if apiToken == "" {
-		return nil, ErrEmptyAPIToken
-	}
+	//	return nil, fmt.Errorf("error initializing Sendgrid emailer: %w", ErrEmptyAPIToken)
 
 	if client == nil {
 		return nil, ErrNilHTTPClient

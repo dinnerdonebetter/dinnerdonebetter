@@ -30,9 +30,9 @@ type (
 
 // NewSegmentCustomerDataCollector returns a new Segment-backed CustomerDataCollector.
 func NewSegmentCustomerDataCollector(logger logging.Logger, tracerProvider tracing.TracerProvider, apiKey string) (*CustomerDataCollector, error) {
-	if apiKey == "" {
-		return nil, ErrEmptyAPIToken
-	}
+	//if apiKey == "" {
+	//	return nil, fmt.Errorf("error initializing Segment customer data collector: %w", ErrEmptyAPIToken)
+	//}
 
 	c := &CustomerDataCollector{
 		tracer: tracing.NewTracer(tracerProvider.Tracer(name)),
