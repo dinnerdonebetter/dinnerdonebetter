@@ -4,10 +4,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
 	"strconv"
+
+	"github.com/prixfixeco/api_server/internal/database"
 
 	"go.opentelemetry.io/otel/trace"
 
@@ -24,6 +27,8 @@ const (
 	useNoOpLoggerEnvVar  = "USE_NOOP_LOGGER"
 	configFilepathEnvVar = "CONFIGURATION_FILEPATH"
 )
+
+var errInvalidConfiguration = errors.New("invalid configuration")
 
 func main() {
 	var (
@@ -57,6 +62,14 @@ func main() {
 
 		if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
 			logger.Fatal(err)
+		}
+
+		if cfg.Database.ConnectionDetails == "" {
+			cfg.Database.ConnectionDetails = database.ConnectionDetails(os.Getenv("DATABASE_CONFIGURATION"))
+		}
+
+		if cfg.Database.ConnectionDetails == "" {
+			logger.Fatal(errInvalidConfiguration)
 		}
 	} else {
 		cfg, err = config.GetConfigFromParameterStore(false)
