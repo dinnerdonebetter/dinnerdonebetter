@@ -44,7 +44,20 @@ spec:
                 secretKeyRef:
                   name: config.auth
                   key: paseto_local_key
+            - name: PRIXFIXE_SENDGRID_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: config.third-party.sendgrid
+                  key: sendgrid_api_token
+            - name: PRIXFIXE_SEGMENT_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: config.third-party.segment
+                  key: segment_api_token
           resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
             limits:
               memory: "128Mi"
               cpu: "500m"
