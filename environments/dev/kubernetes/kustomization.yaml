@@ -14,4 +14,3 @@ secretGenerator:
 
 resources:
   - deployment.yaml
-  - namespace.yaml
