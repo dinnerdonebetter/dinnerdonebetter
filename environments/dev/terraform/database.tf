@@ -42,7 +42,7 @@ resource "kubernetes_secret_v1" "database_credentials" {
   }
 
   data = {
-    "database_credentials" = format(
+    "connection_string" = format(
       "user=%s dbname=%s password='%s' host=%s port=%s",
       digitalocean_database_user.api_user.name,
       digitalocean_database_db.api_database.name,

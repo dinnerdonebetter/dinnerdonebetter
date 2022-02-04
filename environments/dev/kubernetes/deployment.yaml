@@ -24,6 +24,11 @@ spec:
           env:
             - name: CONFIGURATION_FILEPATH
               value: "/config/service-config.json"
+            - name: DATABASE_CONFIGURATION
+              valueFrom:
+                secretKeyRef:
+                  name: database.credentials
+                  key: connection_string
           resources:
             limits:
               memory: "128Mi"
