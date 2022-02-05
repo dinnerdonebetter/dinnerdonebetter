@@ -18,11 +18,6 @@ resource "helm_release" "external_dns" {
     value = "json"
   }
 
-  set {
-    name  = "namespace"
-    value = local.kubernetes_namespace
-  }
-
   set_sensitive {
     name  = "cloudflare.apiToken"
     value = var.CLOUDFLARE_API_TOKEN
@@ -33,6 +28,17 @@ resource "helm_release" "external_dns" {
     value = "cloudflare"
   }
 }
+
+#resource "helm_release" "nats" {
+#  name       = "nats"
+#  repository = "https://nats-io.github.io/k8s/helm/charts"
+#  chart      = "nats"
+#
+#  set {
+#    name = "jetstream.enabled"
+#    value = true
+#  }
+#}
 
 #resource "helm_release" "prometheus" {
 #  name       = "prometheus"
