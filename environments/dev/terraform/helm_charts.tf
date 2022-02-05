@@ -47,9 +47,9 @@ resource "helm_release" "external_dns" {
 #
 #  set {
 #    name  = "ingress.annotations"
-#    value = {
-#      things = "stuff"
-#    }
+#      value = jsonencode({
+#        things: "stuff"
+#      })
 #  }
 #
 #  set {
@@ -57,21 +57,21 @@ resource "helm_release" "external_dns" {
 #    value = local.kubernetes_namespace
 #  }
 #}
-#
-#resource "helm_release" "grafana" {
-#  name       = "grafana"
-#  repository = "https://grafana.github.io/helm-charts"
-#  chart      = "grafana"
-#
-#  set {
-#    name  = "ingress.annotations"
-#    value = {
-#      things = "stuff"
-#    }
-#  }
-#
-#  set {
-#    name = "namespaceOverride"
-#    value = local.kubernetes_namespace
-#  }
-#}
+
+resource "helm_release" "grafana" {
+  name       = "grafana"
+  repository = "https://grafana.github.io/helm-charts"
+  chart      = "grafana"
+
+  set {
+    name = "ingress.annotations"
+    value = jsonencode({
+      things : "stuff"
+    })
+  }
+
+  set {
+    name  = "namespaceOverride"
+    value = local.kubernetes_namespace
+  }
+}
