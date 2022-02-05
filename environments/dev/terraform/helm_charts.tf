@@ -43,7 +43,7 @@ resource "helm_release" "external_dns" {
 resource "helm_release" "prometheus" {
   name       = "prometheus"
   repository = "https://prometheus-community.github.io/helm-charts"
-  chart      = "prometheus-community"
+  chart      = "prometheus"
 
   set {
     name = "ingress.annotations"
