@@ -90,6 +90,7 @@ metadata:
     service.beta.kubernetes.io/do-loadbalancer-redirect-http-to-https: "true"
     service.beta.kubernetes.io/do-loadbalancer-hostname: "api.prixfixe.dev"
     service.beta.kubernetes.io/do-loadbalancer-size-unit: "1"
+    external-dns.alpha.kubernetes.io/hostname: "api.prixfixe.dev."
 #    service.beta.kubernetes.io/do-loadbalancer-healthcheck-port: "80"
 #    service.beta.kubernetes.io/do-loadbalancer-healthcheck-protocol: "http"
 #    service.beta.kubernetes.io/do-loadbalancer-healthcheck-path: "/health"
@@ -106,4 +107,20 @@ spec:
       targetPort: 8000
   selector:
     app: prixfixe-api
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /
+  name: api-ingress
+spec:
+  rules:
+    - host: api.prixfixe.dev
+      http:
+        paths:
+          - backend:
+              serviceName: prixfixe-api-service
+              servicePort: 8000
+            path: /
 ---
