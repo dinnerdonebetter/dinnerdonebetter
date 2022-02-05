@@ -29,16 +29,16 @@ resource "helm_release" "external_dns" {
   }
 }
 
-resource "helm_release" "nats" {
-  name       = "nats"
-  repository = "https://nats-io.github.io/k8s/helm/charts"
-  chart      = "nats"
-
-  #  set {
-  #    name = "jetstream.enabled"
-  #    value = true
-  #  }
-}
+#resource "helm_release" "nats" {
+#  name       = "nats"
+#  repository = "https://nats-io.github.io/k8s/helm/charts"
+#  chart      = "nats"
+#
+#  #  set {
+#  #    name = "jetstream.enabled"
+#  #    value = true
+#  #  }
+#}
 
 resource "helm_release" "prometheus" {
   name       = "prometheus"
