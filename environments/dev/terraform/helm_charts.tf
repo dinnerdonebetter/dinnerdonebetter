@@ -40,23 +40,23 @@ resource "helm_release" "external_dns" {
 #  }
 #}
 
-#resource "helm_release" "prometheus" {
-#  name       = "prometheus"
-#  repository = "https://prometheus-community.github.io/helm-charts"
-#  chart      = "prometheus-community"
-#
-#  set {
-#    name  = "ingress.annotations"
-#      value = jsonencode({
-#        things: "stuff"
-#      })
-#  }
-#
-#  set {
-#    name = "namespaceOverride"
-#    value = local.kubernetes_namespace
-#  }
-#}
+resource "helm_release" "prometheus" {
+  name       = "prometheus"
+  repository = "https://prometheus-community.github.io/helm-charts"
+  chart      = "prometheus-community"
+
+  set {
+    name = "ingress.annotations"
+    value = jsonencode({
+      things : "stuff"
+    })
+  }
+
+  set {
+    name  = "namespaceOverride"
+    value = local.kubernetes_namespace
+  }
+}
 
 resource "helm_release" "grafana" {
   name       = "grafana"
