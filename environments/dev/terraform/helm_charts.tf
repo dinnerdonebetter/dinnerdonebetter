@@ -10,7 +10,7 @@ provider "helm" {
 
 resource "helm_release" "external_dns" {
   name       = "external-dns"
-  repository = "https://kubernetes-sigs.github.io/external-dns"
+  repository = "https://charts.bitnami.com/bitnami"
   chart      = "external-dns"
 
   set {
