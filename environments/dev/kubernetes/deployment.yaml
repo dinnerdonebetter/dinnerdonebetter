@@ -84,15 +84,13 @@ metadata:
   annotations:
     service.beta.kubernetes.io/do-loadbalancer-name: "api.prixfixe.dev"
     service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
-    service.beta.kubernetes.io/do-loadbalancer-tls-ports: "443"
-    service.beta.kubernetes.io/do-loadbalancer-tls-passthrough: "true"
     service.beta.kubernetes.io/do-loadbalancer-sticky-sessions-type: "cookies"
     service.beta.kubernetes.io/do-loadbalancer-sticky-sessions-cookie-name: "prixfixecookie"
     service.beta.kubernetes.io/do-loadbalancer-sticky-sessions-cookie-ttl: "60"
     service.beta.kubernetes.io/do-loadbalancer-redirect-http-to-https: "true"
     service.beta.kubernetes.io/do-loadbalancer-hostname: "api.prixfixe.dev"
     service.beta.kubernetes.io/do-loadbalancer-size-unit: "1"
-    external-dns.alpha.kubernetes.io/hostname: prixfixe.dev
+    external-dns.alpha.kubernetes.io/hostname: api.prixfixe.dev
     external-dns.alpha.kubernetes.io/ttl: "120"
     external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
     # service.beta.kubernetes.io/do-loadbalancer-healthcheck-port: "80"
