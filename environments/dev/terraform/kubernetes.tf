@@ -53,10 +53,15 @@ provider "helm" {
   }
 }
 
-resource "helm_release" "kubewatch" {
-  name       = "kubewatch"
+resource "helm_release" "external_dns" {
+  name       = "external_dns"
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "external-dns"
+
+  set {
+    name  = "logFormat"
+    value = "json"
+  }
 
   set {
     name  = "namespace"
