@@ -4,6 +4,8 @@ kind: Deployment
 metadata:
   name: prixfixe-api-server
   namespace: dev
+  annotations:
+    sidecar.opentelemetry.io/inject: "true"
 spec:
   replicas: 1
   selector:
