@@ -104,8 +104,6 @@ metadata:
     # service.beta.kubernetes.io/do-loadbalancer-healthcheck-healthy-threshold: "5"
 spec:
   type: LoadBalancer
-  metadata:
-    name: api-load-balancer
   ports:
     - name: http
       protocol: http
