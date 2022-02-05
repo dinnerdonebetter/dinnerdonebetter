@@ -116,6 +116,7 @@ metadata:
     ingress.kubernetes.io/rewrite-target: /
     external-dns.alpha.kubernetes.io/hostname: prixfixe.dev
     external-dns.alpha.kubernetes.io/ttl: "120"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
 spec:
   rules:
     - host: api.prixfixe.dev
