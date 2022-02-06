@@ -126,7 +126,6 @@ resource "kubernetes_deployment" "api_server" {
     kubernetes_secret_v1.config_auth,
     kubernetes_secret_v1.config_sendgrid,
     kubernetes_secret_v1.config_segment,
-    kubernetes_secret_v1.api_config,
   ]
 }
 
