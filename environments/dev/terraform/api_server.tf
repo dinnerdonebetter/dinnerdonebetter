@@ -102,7 +102,7 @@ resource "kubernetes_deployment" "api_server" {
               memory = "250m"
             }
             limits = {
-              cpu    = "256Mi"
+              cpu    = "128Mi"
               memory = "500m"
             }
           }
@@ -172,5 +172,10 @@ resource "kubernetes_service_v1" "api_service" {
   depends_on = [
     digitalocean_loadbalancer.public,
     kubernetes_namespace_v1.dev_namespace,
+    kubernetes_deployment.api_server,
   ]
+}
+
+output "load_balancer_id" {
+  value = digitalocean_loadbalancer.public.id
 }
