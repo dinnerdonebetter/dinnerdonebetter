@@ -77,18 +77,3 @@ resource "kubernetes_secret_v1" "config_segment" {
     kubernetes_namespace_v1.dev_namespace,
   ]
 }
-
-resource "kubernetes_secret_v1" "api_config" {
-  metadata {
-    namespace = local.kubernetes_namespace
-    name      = "prixfixe-api-configuration"
-  }
-
-  data = {
-    "service-config.json" = file("${path.module}/service-config.json")
-  }
-
-  depends_on = [
-    kubernetes_namespace_v1.dev_namespace,
-  ]
-}
