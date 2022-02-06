@@ -1,6 +1,21 @@
 variable "SEGMENT_API_TOKEN" {}
 variable "SENDGRID_API_TOKEN" {}
 
+resource "kubernetes_secret_v1" "config_file" {
+  metadata {
+    namespace = local.kubernetes_namespace
+    name      = "prixfixe-api-configuration"
+  }
+
+  data = {
+    "service-config.json" = file("${path.module}/service-config.json")
+  }
+
+  depends_on = [
+    kubernetes_namespace_v1.dev_namespace,
+  ]
+}
+
 resource "random_string" "cookie_hash_key" {
   length  = 64
   special = false
@@ -27,6 +42,10 @@ resource "kubernetes_secret_v1" "config_auth" {
     "cookie_block_key" = random_string.cookie_block_key.result
     "paseto_local_key" = random_string.paseto_local_key.result
   }
+
+  depends_on = [
+    kubernetes_namespace_v1.dev_namespace,
+  ]
 }
 
 resource "kubernetes_secret_v1" "config_sendgrid" {
@@ -38,6 +57,10 @@ resource "kubernetes_secret_v1" "config_sendgrid" {
   data = {
     "sendgrid_api_token" = var.SENDGRID_API_TOKEN
   }
+
+  depends_on = [
+    kubernetes_namespace_v1.dev_namespace,
+  ]
 }
 
 resource "kubernetes_secret_v1" "config_segment" {
@@ -49,6 +72,10 @@ resource "kubernetes_secret_v1" "config_segment" {
   data = {
     "segment_api_token" = var.SEGMENT_API_TOKEN
   }
+
+  depends_on = [
+    kubernetes_namespace_v1.dev_namespace,
+  ]
 }
 
 resource "kubernetes_secret_v1" "api_config" {
@@ -60,4 +87,8 @@ resource "kubernetes_secret_v1" "api_config" {
   data = {
     "service-config.json" = file("${path.module}/service-config.json")
   }
+
+  depends_on = [
+    kubernetes_namespace_v1.dev_namespace,
+  ]
 }

@@ -119,6 +119,15 @@ resource "kubernetes_deployment" "api_server" {
       }
     }
   }
+
+  depends_on = [
+    kubernetes_namespace_v1.dev_namespace,
+    kubernetes_secret_v1.config_file,
+    kubernetes_secret_v1.config_auth,
+    kubernetes_secret_v1.config_sendgrid,
+    kubernetes_secret_v1.config_segment,
+    kubernetes_secret_v1.api_config,
+  ]
 }
 
 resource "kubernetes_service_v1" "api_service" {
@@ -152,4 +161,9 @@ resource "kubernetes_service_v1" "api_service" {
       target_port = 80
     }
   }
+
+  depends_on = [
+    digitalocean_loadbalancer.public,
+    kubernetes_namespace_v1.dev_namespace,
+  ]
 }
