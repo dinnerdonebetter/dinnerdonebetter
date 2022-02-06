@@ -90,11 +90,5 @@ jobs:
           docker build --tag registry.digitalocean.com/dev-prixfixe/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
           docker push registry.digitalocean.com/dev-prixfixe/api_server:latest
 
-      - name: Save DigitalOcean kubeconfig with short-lived credentials
-        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 dev
-
-      - name: Deploy to Kubernetes Cluster
-        run: kubectl apply -k environments/dev/kubernetes
-
-      - name: Deploy to Kubernetes Cluster
-        run: doctl registry kubernetes-manifest | kubectl apply -f -
+#      - name: Save DigitalOcean kubeconfig with short-lived credentials
+#        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 dev
