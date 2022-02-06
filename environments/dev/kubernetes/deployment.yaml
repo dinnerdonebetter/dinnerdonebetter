@@ -80,7 +80,7 @@ metadata:
   name: prixfixe-api-service
   namespace: dev
   labels:
-    app: prixfixe-api
+    app: api-server
   annotations:
     service.beta.kubernetes.io/do-loadbalancer-name: "api.prixfixe.dev"
     service.beta.kubernetes.io/do-loadbalancer-protocol: "http"
@@ -108,5 +108,5 @@ spec:
       port: 80
       targetPort: 8000
   selector:
-    app: prixfixe-api
+    app: api-server
 ---
