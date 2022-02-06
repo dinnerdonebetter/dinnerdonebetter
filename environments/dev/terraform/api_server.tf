@@ -25,6 +25,7 @@ resource "kubernetes_deployment" "api_server" {
         image_pull_secrets {
           name = "registry-dev-prixfixe"
         }
+
         container {
           name              = "api-server-container"
           image             = "registry.digitalocean.com/dev-prixfixe/api_server:latest"
@@ -140,9 +141,11 @@ resource "kubernetes_service_v1" "api_service" {
   metadata {
     name      = "prixfixe-api-service"
     namespace = local.kubernetes_namespace
+
     labels = {
       app = "api-server"
     }
+
     annotations = {
       "service.beta.kubernetes.io/do-loadbalancer-id" : digitalocean_loadbalancer.public.id
       "service.beta.kubernetes.io/do-loadbalancer-name" : "api.prixfixe.dev"
@@ -154,8 +157,10 @@ resource "kubernetes_service_v1" "api_service" {
       "external-dns.alpha.kubernetes.io/cloudflare-proxied" : true
     }
   }
+
   spec {
     type = "LoadBalancer"
+
     selector = {
       app = "api-server"
     }
