@@ -147,14 +147,10 @@ resource "kubernetes_service_v1" "api_service" {
     }
 
     annotations = {
-      "service.beta.kubernetes.io/do-loadbalancer-id" : digitalocean_loadbalancer.public.id
-      "service.beta.kubernetes.io/do-loadbalancer-name" : "api.prixfixe.dev"
-      "service.beta.kubernetes.io/do-loadbalancer-protocol" : "http"
-      "service.beta.kubernetes.io/do-loadbalancer-hostname" : "api.prixfixe.dev"
-      "service.beta.kubernetes.io/do-loadbalancer-size-unit" : 1
-      "external-dns.alpha.kubernetes.io/hostname" : "api.prixfixe.dev"
       "external-dns.alpha.kubernetes.io/ttl" : 120
       "external-dns.alpha.kubernetes.io/cloudflare-proxied" : true
+      "external-dns.alpha.kubernetes.io/hostname" : "api.prixfixe.dev"
+      "service.beta.kubernetes.io/do-loadbalancer-id" : digitalocean_loadbalancer.public.id
     }
   }
 

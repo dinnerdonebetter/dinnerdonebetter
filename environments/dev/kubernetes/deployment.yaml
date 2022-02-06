@@ -4,8 +4,6 @@ kind: Deployment
 metadata:
   name: prixfixe-api-server
   namespace: dev
-  annotations:
-    sidecar.opentelemetry.io/inject: "true"
 spec:
   replicas: 1
   selector:
@@ -86,7 +84,7 @@ metadata:
     service.beta.kubernetes.io/do-loadbalancer-protocol: "http"
     service.beta.kubernetes.io/do-loadbalancer-hostname: "api.prixfixe.dev"
     service.beta.kubernetes.io/do-loadbalancer-size-unit: "1"
-    external-dns.alpha.kubernetes.io/hostname: api.prixfixe.dev
+    external-dns.alpha.kubernetes.io/hostname: "api.prixfixe.dev"
     external-dns.alpha.kubernetes.io/ttl: "120"
     external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
     # service.beta.kubernetes.io/do-loadbalancer-sticky-sessions-type: "cookies"
