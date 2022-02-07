@@ -2,6 +2,20 @@ locals {
   public_url = "api.prixfixe.dev"
 }
 
+resource "google_service_account" "api_server_account" {
+  account_id   = "api-server"
+  display_name = "API Server"
+}
+
+resource "google_service_account_iam_binding" "api_server_account_iam" {
+  service_account_id = google_service_account.api_server_account.name
+  role               = "roles/secretmanager.secretAccessor"
+
+  members = [
+    format("serviceAccount:%s", google_service_account.api_server_account.email)
+  ]
+}
+
 resource "google_cloud_run_service" "default" {
   name     = "api-server"
   location = "us-central1"
@@ -15,6 +29,8 @@ resource "google_cloud_run_service" "default" {
 
   template {
     spec {
+      service_account_name = google_service_account.api_server_account.email
+
       containers {
         image = "gcr.io/prixfixe-dev/api_server"
 
