@@ -22,7 +22,7 @@ import (
 const (
 	useNoOpLoggerEnvVar        = "USE_NOOP_LOGGER"
 	configFilepathEnvVar       = "CONFIGURATION_FILEPATH"
-	googleCloudIndicatorEnvVar = "RUNNING_IN_GOOGLE_CLOUD"
+	googleCloudIndicatorEnvVar = "RUNNING_IN_GOOGLE_CLOUD_RUN"
 )
 
 func main() {
