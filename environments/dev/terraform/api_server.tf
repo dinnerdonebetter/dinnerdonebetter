@@ -10,6 +10,10 @@ resource "google_cloud_run_service" "default" {
     spec {
       containers {
         image = "gcr.io/prixfixe-dev/api_server"
+        env {
+          name  = "RUNNING_IN_GOOGLE_CLOUD"
+          value = "true"
+        }
       }
     }
 

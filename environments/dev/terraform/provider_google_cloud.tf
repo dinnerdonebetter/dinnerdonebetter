@@ -1,10 +1,10 @@
-variable "GCP_CREDENTIALS_DEV" {}
+variable "GOOGLE_CLOUD_CREDENTIALS" {}
 
 provider "google" {
   project     = "prixfixe-dev"
   region      = "us-central1"
   zone        = "us-central1-c"
-  credentials = var.GCP_CREDENTIALS_DEV
+  credentials = var.GOOGLE_CLOUD_CREDENTIALS
 }
 
 resource "google_container_registry" "registry" {

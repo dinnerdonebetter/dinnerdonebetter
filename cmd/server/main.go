@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -19,8 +20,9 @@ import (
 )
 
 const (
-	useNoOpLoggerEnvVar  = "USE_NOOP_LOGGER"
-	configFilepathEnvVar = "CONFIGURATION_FILEPATH"
+	useNoOpLoggerEnvVar        = "USE_NOOP_LOGGER"
+	configFilepathEnvVar       = "CONFIGURATION_FILEPATH"
+	googleCloudIndicatorEnvVar = "RUNNING_IN_GOOGLE_CLOUD"
 )
 
 func main() {
@@ -46,8 +48,12 @@ func main() {
 		err error
 	)
 
-	// find and validate our configuration filepath.
-	if configFilepath := os.Getenv(configFilepathEnvVar); configFilepath != "" {
+	if os.Getenv(googleCloudIndicatorEnvVar) != "" {
+		cfg, err = config.GetConfigFromCloudSecretManager(ctx)
+		if err != nil {
+			logger.Fatal(err)
+		}
+	} else if configFilepath := os.Getenv(configFilepathEnvVar); configFilepath != "" {
 		configBytes, configReadErr := os.ReadFile(configFilepath)
 		if configReadErr != nil {
 			logger.Fatal(configReadErr)
@@ -57,22 +63,22 @@ func main() {
 			logger.Fatal(err)
 		}
 	} else {
-		cfg, err = config.GetConfigFromParameterStore(false)
-		if err != nil {
-			logger.Fatal(err)
-		}
+		log.Fatal("no config provided")
 	}
 
+	// should make wire do these someday
 	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.Initialize(ctx, logger)
 	if initializeTracerErr != nil {
 		logger.Error(initializeTracerErr, "initializing tracer")
 	}
 
+	// should make wire do these someday
 	metricsProvider, initializeMetricsErr := cfg.Observability.Metrics.ProvideUnitCounterProvider(ctx, logger)
 	if initializeMetricsErr != nil {
 		logger.Error(initializeMetricsErr, "initializing metrics collector")
 	}
 
+	// should make wire do these someday
 	metricsHandler, metricsHandlerErr := cfg.Observability.Metrics.ProvideMetricsHandler(logger)
 	if metricsHandlerErr != nil {
 		logger.Error(metricsHandlerErr, "initializing metrics handler")
