@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
+	"strconv"
 
 	"github.com/prixfixeco/api_server/internal/database"
 
@@ -40,6 +42,12 @@ func GetConfigFromCloudSecretManager(ctx context.Context) (*InstanceConfig, erro
 	if unmarshalErr := json.Unmarshal([]byte(rawPartialConfig), &cfg); unmarshalErr != nil {
 		return nil, fmt.Errorf("error unmarshalling configuration: %w", unmarshalErr)
 	}
+
+	port, portParseErr := strconv.ParseInt(os.Getenv("PORT"), 10, 64)
+	if portParseErr != nil {
+		panic(portParseErr)
+	}
+	cfg.Server.HTTPPort = uint16(port)
 
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(mustGetSecretParameter(ctx, client, "database_connection_string"))
 	cfg.Email.APIToken = mustGetSecretParameter(ctx, client, "sendgrid_api_token")
