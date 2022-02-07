@@ -6,7 +6,3 @@ provider "google" {
   zone        = "us-central1-c"
   credentials = var.GOOGLE_CLOUD_CREDENTIALS
 }
-
-resource "google_container_registry" "registry" {
-  location = "US"
-}
