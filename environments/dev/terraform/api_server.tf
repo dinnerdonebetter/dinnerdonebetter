@@ -31,6 +31,15 @@ resource "google_project_iam_binding" "api_usercloudsql_client" {
   ]
 }
 
+resource "google_project_iam_binding" "make_api_public" {
+  project = local.project_id
+  role    = "roles/run.invoker"
+
+  members = [
+    "allUsers",
+  ]
+}
+
 resource "google_cloud_run_service" "api_server" {
   name     = "api-server"
   location = "us-central1"
@@ -168,4 +177,26 @@ resource "google_cloud_run_service" "api_server" {
       }
     }
   }
+}
+
+resource "google_cloud_run_domain_mapping" "default" {
+  location = "us-central1"
+  name     = "api.prixfixe.dev"
+
+  metadata {
+    namespace = local.project_id
+  }
+
+  spec {
+    route_name = google_cloud_run_service.api_server.name
+  }
+}
+
+# Add a record requiring a data map
+resource "cloudflare_record" "api_cname_record" {
+  zone_id = var.CLOUDFLARE_ZONE_ID
+  name    = "api.prixfixe.dev"
+  type    = "CNAME"
+  value   = "ghs.googlehosted.com"
+  ttl     = 3600
 }

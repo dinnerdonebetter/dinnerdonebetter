@@ -35,25 +35,3 @@ resource "google_sql_database" "api_database" {
   name     = local.database_name
   instance = google_sql_database_instance.dev.name
 }
-
-resource "google_cloud_run_domain_mapping" "default" {
-  location = "us-central1"
-  name     = "api.prixfixe.dev"
-
-  metadata {
-    namespace = local.project_id
-  }
-
-  spec {
-    route_name = google_cloud_run_service.api_server.name
-  }
-}
-
-# Add a record requiring a data map
-resource "cloudflare_record" "api_cname_record" {
-  zone_id = var.CLOUDFLARE_ZONE_ID
-  name    = "api.prixfixe.dev"
-  type    = "CNAME"
-  value   = "ghs.googlehosted.com"
-  ttl     = 3600
-}
