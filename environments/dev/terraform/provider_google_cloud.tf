@@ -11,10 +11,7 @@ provider "google" {
   credentials = var.GOOGLE_CLOUD_CREDENTIALS
 }
 
-resource "google_project_service" "cloudresourcemanager" {
-  project = local.project_id
-  service = "cloudresourcemanager.googleapis.com"
-}
+# you gotta enable this `cloudresourcemanager.googleapis.com` to enable the others, I think
 
 resource "google_project_service" "iam" {
   project = local.project_id
