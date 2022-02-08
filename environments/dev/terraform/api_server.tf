@@ -189,7 +189,7 @@ resource "google_cloud_run_service" "api_server" {
 
 resource "google_cloud_run_domain_mapping" "default" {
   location = local.gcp_region
-  name     = "api.prixfixe.dev"
+  name     = "prixfixe.dev"
 
   metadata {
     namespace = local.project_id
@@ -204,6 +204,6 @@ resource "cloudflare_record" "api_cname_record" {
   zone_id = var.CLOUDFLARE_ZONE_ID
   name    = "api.prixfixe.dev"
   type    = "CNAME"
-  value   = replace(google_cloud_run_service.api_server.status[0].url, "https://", "")
+  value   = "ghs.googlehosted.com."
   ttl     = 3600
 }
