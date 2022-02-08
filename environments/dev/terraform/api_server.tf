@@ -35,7 +35,7 @@ resource "google_cloud_run_service" "api_server" {
 
   template {
     spec {
-      # service_account_name = google_service_account.api_server_account.email
+      service_account_name = google_service_account.api_server_account.email
 
       containers {
         image = "gcr.io/prixfixe-dev/api_server"
