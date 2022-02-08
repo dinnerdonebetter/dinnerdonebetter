@@ -7,10 +7,19 @@ resource "google_service_account" "api_server_account" {
   display_name = "API Server"
 }
 
-resource "google_project_iam_member" "project" {
+resource "google_project_iam_member" "api_user" {
   project = local.project_id
-  role    = "roles/editor"
+  role    = "roles/viewer"
   member  = format("serviceAccount:%s", google_service_account.api_server_account.email)
+}
+
+resource "google_project_iam_binding" "project" {
+  project = local.project_id
+  role    = "roles/secretmanager.secretAccessor"
+
+  members = [
+    google_project_iam_member.api_user.member,
+  ]
 }
 
 resource "google_cloud_run_service" "api_server" {
