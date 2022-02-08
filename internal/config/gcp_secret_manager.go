@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/prixfixeco/api_server/internal/database"
 
@@ -28,6 +29,13 @@ func GetConfigFromCloudSecretManager(ctx context.Context) (*InstanceConfig, erro
 	if encodeErr := json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); encodeErr != nil || cfg == nil {
 		return nil, encodeErr
 	}
+
+	rawPort := os.Getenv("PORT")
+	port, err := strconv.ParseUint(rawPort, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("error parsing port: %w", err)
+	}
+	cfg.Server.HTTPPort = uint16(port)
 
 	socketDir, isSet := os.LookupEnv("DB_SOCKET_DIR")
 	if !isSet {
