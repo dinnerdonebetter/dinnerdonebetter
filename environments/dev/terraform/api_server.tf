@@ -11,12 +11,10 @@ resource "google_service_account_iam_binding" "api_server_account_iam" {
   service_account_id = google_service_account.api_server_account.name
   role               = "roles/secretmanager.secretAccessor"
 
-  members = [
-    format("serviceAccount:%s", google_service_account.api_server_account.email)
-  ]
+  members = []
 }
 
-resource "google_cloud_run_service" "default" {
+resource "google_cloud_run_service" "api_server" {
   name     = "api-server"
   location = "us-central1"
 

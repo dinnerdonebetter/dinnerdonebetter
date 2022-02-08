@@ -10,9 +10,10 @@ resource "random_password" "database_password" {
 }
 
 resource "google_sql_database_instance" "dev" {
-  name             = "dev"
-  database_version = "POSTGRES_13"
-  region           = "us-central1"
+  name                = "dev"
+  database_version    = "POSTGRES_13"
+  region              = "us-central1"
+  deletion_protection = false
 
   settings {
     tier = "db-f1-micro"
