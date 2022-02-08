@@ -30,3 +30,8 @@ resource "google_sql_user" "users" {
   instance = google_sql_database_instance.dev.name
   password = random_password.database_password.result
 }
+
+resource "google_sql_database" "api_database" {
+  name     = local.database_name
+  instance = google_sql_database_instance.dev.name
+}
