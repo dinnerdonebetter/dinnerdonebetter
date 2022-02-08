@@ -13,7 +13,7 @@ resource "google_project_iam_member" "api_user" {
   member  = format("serviceAccount:%s", google_service_account.api_server_account.email)
 }
 
-resource "google_project_iam_binding" "api_usersecret_accessor" {
+resource "google_project_iam_binding" "api_user_secret_accessor" {
   project = local.project_id
   role    = "roles/secretmanager.secretAccessor"
 
@@ -22,7 +22,7 @@ resource "google_project_iam_binding" "api_usersecret_accessor" {
   ]
 }
 
-resource "google_project_iam_binding" "api_usercloudsql_client" {
+resource "google_project_iam_binding" "api_user_cloud_sql_client" {
   project = local.project_id
   role    = "roles/cloudsql.client"
 
@@ -42,7 +42,7 @@ resource "google_project_iam_binding" "make_api_public" {
 
 resource "google_cloud_run_service" "api_server" {
   name     = "api-server"
-  location = "us-central1"
+  location = local.gcp_region
 
   traffic {
     percent         = 100
@@ -180,7 +180,7 @@ resource "google_cloud_run_service" "api_server" {
 }
 
 resource "google_cloud_run_domain_mapping" "default" {
-  location = "us-central1"
+  location = local.gcp_region
   name     = "api.prixfixe.dev"
 
   metadata {
@@ -192,11 +192,10 @@ resource "google_cloud_run_domain_mapping" "default" {
   }
 }
 
-# Add a record requiring a data map
-resource "cloudflare_record" "api_cname_record" {
-  zone_id = var.CLOUDFLARE_ZONE_ID
-  name    = "api.prixfixe.dev"
-  type    = "CNAME"
-  value   = "ghs.googlehosted.com"
-  ttl     = 3600
-}
+#resource "cloudflare_record" "api_cname_record" {
+#  zone_id = var.CLOUDFLARE_ZONE_ID
+#  name    = "api.prixfixe.dev"
+#  type    = "CNAME"
+#  value   = "ghs.googlehosted.com"
+#  ttl     = 3600
+#}
