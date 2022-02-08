@@ -204,6 +204,6 @@ resource "cloudflare_record" "api_cname_record" {
   zone_id = var.CLOUDFLARE_ZONE_ID
   name    = "api.prixfixe.dev"
   type    = "CNAME"
-  value   = google_cloud_run_service.api_server.status[0].url
+  value   = replace(google_cloud_run_service.api_server.status[0].url, "https://", "")
   ttl     = 3600
 }
