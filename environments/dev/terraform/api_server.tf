@@ -31,13 +31,21 @@ resource "google_project_iam_binding" "api_user_cloud_sql_client" {
   ]
 }
 
-resource "google_project_iam_binding" "make_api_public" {
-  project = local.project_id
-  role    = "roles/run.invoker"
+data "google_iam_policy" "public_access" {
+  binding {
+    role = "roles/run.invoker"
+    members = [
+      "allUsers",
+    ]
+  }
+}
 
-  members = [
-    "allUsers",
-  ]
+resource "google_cloud_run_service_iam_policy" "public_access" {
+  location = google_cloud_run_service.api_server.location
+  project  = google_cloud_run_service.api_server.project
+  service  = google_cloud_run_service.api_server.name
+
+  policy_data = data.google_iam_policy.public_access.policy_data
 }
 
 resource "google_cloud_run_service" "api_server" {
@@ -192,10 +200,10 @@ resource "google_cloud_run_domain_mapping" "default" {
   }
 }
 
-#resource "cloudflare_record" "api_cname_record" {
-#  zone_id = var.CLOUDFLARE_ZONE_ID
-#  name    = "api.prixfixe.dev"
-#  type    = "CNAME"
-#  value   = "ghs.googlehosted.com"
-#  ttl     = 3600
-#}
+resource "cloudflare_record" "api_cname_record" {
+  zone_id = var.CLOUDFLARE_ZONE_ID
+  name    = "api.prixfixe.dev"
+  type    = "CNAME"
+  value   = google_cloud_run_service.api_server.status[0].url
+  ttl     = 3600
+}
