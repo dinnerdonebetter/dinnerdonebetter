@@ -13,9 +13,18 @@ resource "google_project_iam_member" "api_user" {
   member  = format("serviceAccount:%s", google_service_account.api_server_account.email)
 }
 
-resource "google_project_iam_binding" "project" {
+resource "google_project_iam_binding" "api_usersecret_accessor" {
   project = local.project_id
   role    = "roles/secretmanager.secretAccessor"
+
+  members = [
+    google_project_iam_member.api_user.member,
+  ]
+}
+
+resource "google_project_iam_binding" "api_usercloudsql_client" {
+  project = local.project_id
+  role    = "roles/cloudsql.client"
 
   members = [
     google_project_iam_member.api_user.member,

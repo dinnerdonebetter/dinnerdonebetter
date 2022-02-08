@@ -46,6 +46,14 @@ func GetConfigFromCloudSecretManager(ctx context.Context) (*InstanceConfig, erro
 
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(dbURI)
 
+	logger.WithValues(map[string]interface{}{
+		"DB_SOCKET_DIR":                              os.Getenv("DB_SOCKET_DIR"),
+		"PRIXFIXE_DATABASE_USER":                     os.Getenv("PRIXFIXE_DATABASE_USER"),
+		"PRIXFIXE_DATABASE_PASSWORD":                 os.Getenv("PRIXFIXE_DATABASE_PASSWORD"),
+		"PRIXFIXE_DATABASE_NAME":                     os.Getenv("PRIXFIXE_DATABASE_NAME"),
+		"PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME": os.Getenv("PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME"),
+	}).Debug("fetched database values")
+
 	cfg.Services.Auth.Cookies.HashKey = os.Getenv("PRIXFIXE_COOKIE_HASH_KEY")
 	cfg.Services.Auth.Cookies.BlockKey = os.Getenv("PRIXFIXE_COOKIE_BLOCK_KEY")
 	cfg.Services.Auth.PASETO.LocalModeKey = []byte(os.Getenv("PRIXFIXE_PASETO_LOCAL_KEY"))
