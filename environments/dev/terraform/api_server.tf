@@ -187,19 +187,6 @@ resource "google_cloud_run_service" "api_server" {
   }
 }
 
-resource "google_cloud_run_domain_mapping" "default" {
-  location = local.gcp_region
-  name     = "prixfixe.dev"
-
-  metadata {
-    namespace = local.project_id
-  }
-
-  spec {
-    route_name = google_cloud_run_service.api_server.name
-  }
-}
-
 resource "cloudflare_record" "api_cname_record" {
   zone_id = var.CLOUDFLARE_ZONE_ID
   name    = "api.prixfixe.dev"
