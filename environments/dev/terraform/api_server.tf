@@ -56,13 +56,23 @@ resource "google_cloud_run_service" "api_server" {
         }
 
         env {
-          name = "PRIXFIXE_DATABASE_URL"
-          value_from {
-            secret_key_ref {
-              name = google_secret_manager_secret.database_connection_string.secret_id
-              key  = "latest"
-            }
-          }
+          name  = "PRIXFIXE_DATABASE_USER"
+          value = local.database_username
+        }
+
+        env {
+          name  = "PRIXFIXE_DATABASE_PASSWORD"
+          value = random_password.database_password.result
+        }
+
+        env {
+          name  = "PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME"
+          value = google_sql_database_instance.dev.connection_name
+        }
+
+        env {
+          name  = "PRIXFIXE_DATABASE_NAME"
+          value = local.database_name
         }
 
         env {

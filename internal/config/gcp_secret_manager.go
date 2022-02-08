@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 
 	"github.com/prixfixeco/api_server/internal/database"
@@ -29,7 +30,16 @@ func GetConfigFromCloudSecretManager(ctx context.Context) (*InstanceConfig, erro
 	}
 
 	// fetch supplementary data from env vars
-	cfg.Database.ConnectionDetails = database.ConnectionDetails(os.Getenv("PRIXFIXE_DATABASE_URL"))
+	dbURI := fmt.Sprintf(
+		"user=%s password=%s database=%s host=%s/%s",
+		os.Getenv("PRIXFIXE_DATABASE_USER"),
+		os.Getenv("PRIXFIXE_DATABASE_PASSWORD"),
+		os.Getenv("PRIXFIXE_DATABASE_NAME"),
+		os.Getenv("DB_SOCKET_DIR"),
+		os.Getenv("PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME"),
+	)
+
+	cfg.Database.ConnectionDetails = database.ConnectionDetails(dbURI)
 
 	cfg.Services.Auth.Cookies.HashKey = os.Getenv("PRIXFIXE_COOKIE_HASH_KEY")
 	cfg.Services.Auth.Cookies.BlockKey = os.Getenv("PRIXFIXE_COOKIE_BLOCK_KEY")
