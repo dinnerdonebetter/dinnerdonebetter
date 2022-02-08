@@ -10,7 +10,7 @@ resource "random_password" "database_password" {
 }
 
 resource "google_sql_database_instance" "dev" {
-  name                = "dev_whatever_testing"
+  name                = "dev-whatever-1644287446"
   database_version    = "POSTGRES_13"
   region              = "us-central1"
   deletion_protection = false
