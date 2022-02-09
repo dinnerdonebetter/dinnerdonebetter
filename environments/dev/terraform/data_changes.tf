@@ -7,6 +7,12 @@ resource "google_storage_bucket" "data_changes_cloud_function_bucket" {
   location = "US"
 }
 
+resource "google_storage_bucket_object" "archive" {
+  name   = "data_changes_function.zip"
+  bucket = google_storage_bucket.data_changes_cloud_function_bucket.name
+  source = "${path.module}/data_changes_function.zip"
+}
+
 resource "google_cloudfunctions_function" "data_changes" {
   name        = "data-changes"
   description = "Data Changes"
@@ -14,6 +20,7 @@ resource "google_cloudfunctions_function" "data_changes" {
 
   available_memory_mb   = 128
   source_archive_bucket = google_storage_bucket.data_changes_cloud_function_bucket.name
+  source_archive_object = google_storage_bucket_object.archive.name
 
   event_trigger {
     event_type = local.pubsub_topic_publish_event

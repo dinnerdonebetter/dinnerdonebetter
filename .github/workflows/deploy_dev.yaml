@@ -28,16 +28,11 @@ jobs:
         run: gcloud auth configure-docker
 
       - name: Build and Push Container
-        # these repositories don't need to be created ahead of time for this to work
         run: |
           docker build --tag gcr.io/prixfixe-dev/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
           docker push gcr.io/prixfixe-dev/api_server:${{  github.sha }}
           docker build --tag gcr.io/prixfixe-dev/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
           docker push gcr.io/prixfixe-dev/api_server:latest
-
-#      - name: Upload data changes cloud function
-#        # these buckets do need to exist before this works, though
-#        run: gsutil -m cp -r cmd/functions/data_changes gs://data-changes-cloud-function
 
   scaffold:
     runs-on: ubuntu-latest
@@ -63,6 +58,9 @@ jobs:
         working-directory: environments/dev/terraform
         id: fmt
         run: terraform fmt -check
+
+      - name: Build data changes worker archive
+        run: zip environments/dev/terraform/data_changes_function.zip cmd/functions/data_changes
 
       - name: copy server config file
         working-directory: environments/dev
@@ -103,5 +101,8 @@ jobs:
 #      - name: 'Set up Cloud SDK'
 #        uses: 'google-github-actions/setup-gcloud@v0'
 #
-#      - name: 'deploy'
-#        run: gcloud functions deploy data-changes --entry-point PublishDataChanges
+##      - id: 'deploy'
+##        uses: 'google-github-actions/deploy-cloudrun@v0'
+##        with:
+##          service: 'hello-cloud-run'
+##          image: 'gcr.io/cloudrun/hello'
