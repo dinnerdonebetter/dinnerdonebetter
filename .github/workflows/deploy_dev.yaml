@@ -59,8 +59,18 @@ jobs:
         id: fmt
         run: terraform fmt -check
 
+      - name: debug
+        run: pwd
+
       - name: Build data changes worker archive
         run: zip environments/dev/terraform/data_changes_worker.zip cmd/functions/data_changes
+
+      - name: debug
+        run: ls -Al .
+
+      - name: debug
+        working-directory: environments/dev/terraform
+        run: ls -Al .
 
       - name: copy server config file
         working-directory: environments/dev
