@@ -6,7 +6,7 @@ resource "google_storage_bucket" "bucket" {
 resource "google_storage_bucket_object" "archive" {
   name   = "data_changes_function.zip"
   bucket = google_storage_bucket.bucket.name
-  source = "data_changes_function.zip"
+  source = "../../../cmd/functions/data_changes"
 }
 
 resource "google_pubsub_topic" "data_changes_topic" {
