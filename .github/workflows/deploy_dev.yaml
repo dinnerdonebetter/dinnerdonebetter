@@ -34,6 +34,19 @@ jobs:
           docker build --tag gcr.io/prixfixe-dev/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
           docker push gcr.io/prixfixe-dev/api_server:latest
 
+      - name: Go vendor
+        run: go mod vendor
+
+      - name: Build data changes cloud function archive
+        run: zip data_changes_cloud_function.zip vendor internal/**/* pkg/**/* cmd/functions/data_changes/function.go go.mod go.sum
+
+      - name: Upload data changes cloud function
+        uses: actions/upload-artifact@v2
+        with:
+          name: data_changes_cloud_function
+          path: data_changes_cloud_function.zip
+          retention-days: 1
+
   scaffold:
     runs-on: ubuntu-latest
     needs: [
@@ -59,8 +72,11 @@ jobs:
         id: fmt
         run: terraform fmt -check
 
-      - name: Build data changes worker archive
-        run: zip environments/dev/terraform/data_changes_cloud_function.zip internal/**/* pkg/**/* cmd/functions/data_changes/function.go go.mod go.sum
+      - name: Download data changes cloud function
+        uses: actions/download-artifact@v2
+        with:
+          name: data_changes_cloud_function
+          path: environments/dev/terraform
 
       - name: copy server config file
         working-directory: environments/dev

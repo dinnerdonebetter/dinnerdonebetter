@@ -3,7 +3,6 @@ module github.com/prixfixeco/api_server
 go 1.17
 
 require (
-	cloud.google.com/go/pubsub v1.10.3
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/GuiaBolso/darwin v0.0.0-20191218124601-fd6d2aa3d244
 	github.com/Masterminds/squirrel v1.5.0
@@ -66,6 +65,7 @@ require (
 
 require (
 	cloud.google.com/go v0.81.0 // indirect
+	cloud.google.com/go/pubsub v1.10.3 // indirect
 	cloud.google.com/go/storage v1.15.0 // indirect
 	github.com/Azure/azure-pipeline-go v0.2.3 // indirect
 	github.com/Azure/azure-storage-blob-go v0.13.0 // indirect
