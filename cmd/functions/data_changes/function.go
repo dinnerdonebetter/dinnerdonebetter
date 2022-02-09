@@ -1,4 +1,4 @@
-package main
+package datachangesfunction
 
 import (
 	"context"
@@ -11,7 +11,7 @@ type PubSubMessage struct {
 	Data []byte `json:"data"`
 }
 
-// ProcessDataChange handles a data change
+// ProcessDataChange handles a data change.
 func ProcessDataChange(ctx context.Context, m PubSubMessage) error {
 	log.Println("invoked")
 
