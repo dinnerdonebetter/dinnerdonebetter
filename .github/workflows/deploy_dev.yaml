@@ -20,16 +20,6 @@ jobs:
         with:
           credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
 
-      - name: Build data changes worker archive
-        run: zip data_changes_worker.zip cmd/functions/data_changes
-
-      - name: Upload data changes lambda
-        uses: actions/upload-artifact@v2
-        with:
-          name: data_changes_lambda
-          path: data_changes_worker.zip
-          retention-days: 1
-
       # Setup gcloud CLI
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v0
@@ -69,15 +59,8 @@ jobs:
         id: fmt
         run: terraform fmt -check
 
-      - name: Download data changes lambda
-        uses: actions/download-artifact@v2
-        with:
-          name: data_changes_lambda
-          path: environments/dev/terraform
-
-      - name: debug
-        working-directory: environments/dev/terraform
-        run: ls -Al .
+      - name: Build data changes worker archive
+        run: zip environments/dev/terraform/data_changes_worker.zip cmd/functions/data_changes
 
       - name: copy server config file
         working-directory: environments/dev
