@@ -60,7 +60,7 @@ jobs:
         run: terraform fmt -check
 
       - name: Build data changes worker archive
-        run: zip environments/dev/terraform/data_changes_function.zip cmd/functions/data_changes go.mod go.sum
+        run: zip environments/dev/terraform/data_changes_cloud_function.zip cmd/functions/data_changes go.mod go.sum
 
       - name: copy server config file
         working-directory: environments/dev
