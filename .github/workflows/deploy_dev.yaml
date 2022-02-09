@@ -10,10 +10,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.16'
+
       - id: 'auth'
         uses: 'google-github-actions/auth@v0'
         with:
           credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      - name: Build data changes worker archive
+        run: zip data_changes_worker.zip github.com/prixfixeco/api_server/cmd/functions/data_changes
+
+      - name: Upload data changes lambda
+        uses: actions/upload-artifact@v2
+        with:
+          name: data_changes_lambda
+          path: data_changes_worker.zip
+          retention-days: 1
 
       # Setup gcloud CLI
       - name: Set up Cloud SDK
@@ -53,6 +68,16 @@ jobs:
         working-directory: environments/dev/terraform
         id: fmt
         run: terraform fmt -check
+
+      - name: Download data changes lambda
+        uses: actions/download-artifact@v2
+        with:
+          name: data_changes_lambda
+          path: environments/dev/terraform
+
+      - name: debug
+        working-directory: environments/dev/terraform
+        run: ls -Al .
 
       - name: copy server config file
         working-directory: environments/dev
