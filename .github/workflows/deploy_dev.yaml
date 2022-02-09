@@ -28,14 +28,16 @@ jobs:
         run: gcloud auth configure-docker
 
       - name: Build and Push Container
+        # these repositories don't need to be created ahead of time for this to work
         run: |
           docker build --tag gcr.io/prixfixe-dev/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
           docker push gcr.io/prixfixe-dev/api_server:${{  github.sha }}
           docker build --tag gcr.io/prixfixe-dev/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
           docker push gcr.io/prixfixe-dev/api_server:latest
 
-      - name: Upload data changes cloud function
-        run: gsutil -m cp -r cmd/functions/data_changes gs://data-changes-cloud-function
+#      - name: Upload data changes cloud function
+#        # these buckets do need to exist before this works, though
+#        run: gsutil -m cp -r cmd/functions/data_changes gs://data-changes-cloud-function
 
   scaffold:
     runs-on: ubuntu-latest
