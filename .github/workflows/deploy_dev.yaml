@@ -34,10 +34,6 @@ jobs:
           docker build --tag gcr.io/prixfixe-dev/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
           docker push gcr.io/prixfixe-dev/api_server:latest
 
-      - name: Deploy cloud function
-        run: |
-          gcloud functions deploy data-changes --trigger-resource TRIGGER_BUCKET_NAME --trigger-event google.pubsub.topic.publish
-
   scaffold:
     runs-on: ubuntu-latest
     needs: [
