@@ -34,6 +34,9 @@ jobs:
           docker build --tag gcr.io/prixfixe-dev/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
           docker push gcr.io/prixfixe-dev/api_server:latest
 
+      - name: Upload data changes cloud function
+        run: gsutil -m cp -r cmd/functions/data_changes gs://data-changes-cloud-function
+
   scaffold:
     runs-on: ubuntu-latest
     needs: [
@@ -59,9 +62,6 @@ jobs:
         id: fmt
         run: terraform fmt -check
 
-      - name: Build data changes worker archive
-        run: zip environments/dev/terraform/data_changes_function.zip cmd/functions/data_changes
-
       - name: copy server config file
         working-directory: environments/dev
         run: |
@@ -78,10 +78,6 @@ jobs:
       #   id: plan
       #   if: github.event_name == 'pull_request'
       #   run: terraform plan -no-color
-
-      - name: debug
-        run: ls -Al .
-        working-directory: environments/dev/terraform
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
@@ -105,8 +101,5 @@ jobs:
 #      - name: 'Set up Cloud SDK'
 #        uses: 'google-github-actions/setup-gcloud@v0'
 #
-##      - id: 'deploy'
-##        uses: 'google-github-actions/deploy-cloudrun@v0'
-##        with:
-##          service: 'hello-cloud-run'
-##          image: 'gcr.io/cloudrun/hello'
+#      - name: 'deploy'
+#        run: gcloud functions deploy data-changes --entry-point PublishDataChanges
