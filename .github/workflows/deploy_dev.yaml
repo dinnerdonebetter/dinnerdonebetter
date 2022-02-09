@@ -21,7 +21,7 @@ jobs:
           credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
 
       - name: Build data changes worker archive
-        run: zip data_changes_worker.zip github.com/prixfixeco/api_server/cmd/functions/data_changes
+        run: zip data_changes_worker.zip cmd/functions/data_changes
 
       - name: Upload data changes lambda
         uses: actions/upload-artifact@v2
