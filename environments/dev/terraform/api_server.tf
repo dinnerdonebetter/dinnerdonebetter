@@ -192,6 +192,6 @@ resource "cloudflare_record" "api_cname_record" {
   name    = "api.prixfixe.dev"
   type    = "CNAME"
   value   = "ghs.googlehosted.com."
-  ttl     = 3600
+  ttl     = 1
   proxied = true
 }
