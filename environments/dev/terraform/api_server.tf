@@ -193,4 +193,5 @@ resource "cloudflare_record" "api_cname_record" {
   type    = "CNAME"
   value   = "ghs.googlehosted.com."
   ttl     = 3600
+  proxied = true
 }
