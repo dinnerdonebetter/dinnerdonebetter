@@ -3,6 +3,8 @@ package datachangesfunction
 import (
 	"context"
 
+	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
+
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 )
 
