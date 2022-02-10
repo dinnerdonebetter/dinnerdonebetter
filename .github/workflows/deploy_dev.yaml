@@ -38,7 +38,8 @@ jobs:
         run: go mod vendor
 
       - name: Build data changes cloud function archive
-        run: zip data_changes_cloud_function.zip vendor internal/**/* pkg/**/* cmd/functions/data_changes/function.go go.mod go.sum
+        run: zip data_changes_cloud_function.zip vendor cmd/functions/data_changes/function.go .gcloudignore
+        # run: zip data_changes_cloud_function.zip vendor internal/**/* pkg/**/* cmd/functions/data_changes/function.go go.mod go.sum .gcloudignore
 
       - name: Upload data changes cloud function
         uses: actions/upload-artifact@v2

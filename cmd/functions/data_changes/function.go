@@ -2,7 +2,8 @@ package datachangesfunction
 
 import (
 	"context"
-	"log"
+
+	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 )
 
 // PubSubMessage is the payload of a Pub/Sub event. See the documentation for more details:
@@ -13,7 +14,9 @@ type PubSubMessage struct {
 
 // ProcessDataChange handles a data change.
 func ProcessDataChange(ctx context.Context, m PubSubMessage) error {
-	log.Println("invoked")
+	logger := zerolog.NewZerologLogger()
+
+	logger.Info("invoked")
 
 	return nil
 }
