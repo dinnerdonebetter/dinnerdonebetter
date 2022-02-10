@@ -45,6 +45,7 @@ jobs:
           cp go.mod data_changes_cloud_func/go.mod
           cd data_changes_cloud_func/
           zip data_changes_cloud_function.zip function.go vendor go.mod
+          mv data_changes_cloud_function.zip ../
 
       - name: Upload data changes cloud function
         uses: actions/upload-artifact@v2
