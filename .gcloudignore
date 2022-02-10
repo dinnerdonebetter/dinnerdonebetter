@@ -1,4 +1,1 @@
-.gcloudignore
 .git
-go.mod
-go.sum
