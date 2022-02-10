@@ -38,14 +38,7 @@ jobs:
         run: go mod vendor
 
       - name: Build data changes cloud function archive
-        run: |
-          mkdir -p data_changes_cloud_func/vendor
-          cp -rf vendor/** data_changes_cloud_func/vendor
-          cp cmd/functions/data_changes/function.go data_changes_cloud_func/function.go 
-          cp go.mod data_changes_cloud_func/go.mod
-          cd data_changes_cloud_func/
-          zip data_changes_cloud_function.zip function.go vendor go.mod
-          mv data_changes_cloud_function.zip ../
+        run: ./scripts/build_data_changes_cloud_function.sh
 
       - name: Upload data changes cloud function
         uses: actions/upload-artifact@v2
