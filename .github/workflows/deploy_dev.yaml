@@ -10,11 +10,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: '1.16'
-
       - id: 'auth'
         uses: 'google-github-actions/auth@v0'
         with:
@@ -33,32 +28,6 @@ jobs:
           docker push gcr.io/prixfixe-dev/api_server:${{  github.sha }}
           docker build --tag gcr.io/prixfixe-dev/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
           docker push gcr.io/prixfixe-dev/api_server:latest
-
-      - name: Go vendor
-        run: go mod vendor
-
-      - name: Build data changes cloud function archive
-        run: ./scripts/build_cloud_function.sh data_changes
-
-      - name: debug
-        run: ls -Al
-
-      - name: Upload data changes cloud function
-        uses: actions/upload-artifact@v2
-        with:
-          name: data_changes_cloud_function
-          path: data_changes_cloud_function.zip
-          retention-days: 1
-
-      - name: Build data changes cloud function archive
-        run: ./scripts/build_cloud_function.sh meal_plan_finalizer
-
-      - name: Upload meal plan finalizer cloud function
-        uses: actions/upload-artifact@v2
-        with:
-          name: meal_plan_finalizer_cloud_function
-          path: meal_plan_finalizer_cloud_function.zip
-          retention-days: 1
 
   scaffold:
     runs-on: ubuntu-latest
@@ -85,23 +54,21 @@ jobs:
         id: fmt
         run: terraform fmt -check
 
-      - name: Download data changes cloud function
-        uses: actions/download-artifact@v2
+      - name: Install Go
+        uses: actions/setup-go@v2
         with:
-          name: data_changes_cloud_function
-          path: environments/dev/terraform
+          go-version: '1.16'
 
-      - name: Download meal plan finalizer cloud function
-        uses: actions/download-artifact@v2
-        with:
-          name: meal_plan_finalizer_cloud_function
-          path: environments/dev/terraform
+      - name: Build data changes cloud function archive
+        run: ./scripts/build_cloud_function.sh data_changes
+
+      - name: Build data changes cloud function archive
+        run: ./scripts/build_cloud_function.sh meal_plan_finalizer
 
       - name: copy server config file
         working-directory: environments/dev
         run: |
           cp config_files/service-config.json terraform/service-config.json
-          cp config_files/worker-config.json terraform/worker-config.json
 
       - name: Terraform Validate
         working-directory: environments/dev/terraform
