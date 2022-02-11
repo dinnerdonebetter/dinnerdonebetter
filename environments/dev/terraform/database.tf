@@ -9,7 +9,7 @@ resource "google_sql_ssl_cert" "client_cert" {
 }
 
 resource "google_sql_database_instance" "dev" {
-  name                = "dev-whatever-1644302116"
+  name                = "dev-whatever-1644302117"
   database_version    = "POSTGRES_13"
   region              = local.gcp_region
   deletion_protection = false
