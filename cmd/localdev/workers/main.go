@@ -29,7 +29,7 @@ import (
 
 const (
 	dataChangesTopicName = "data_changes"
-	choresTopicName      = "chores"
+	choresTopicName      = "meal_plan_finalizer"
 
 	configFilepathEnvVar = "CONFIGURATION_FILEPATH"
 )

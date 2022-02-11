@@ -1,8 +1,8 @@
-module github.com/prixfixeco/api_server/cmd/functions/data_changes
+module github.com/prixfixeco/api_server/cmd/functions/meal_plan_finalizer
 
 go 1.16
 
-replace github.com/prixfixeco/api_server => ../
+replace github.com/prixfixeco/api_server => ../../../
 
 require (
 	github.com/GoogleCloudPlatform/functions-framework-go v1.5.2

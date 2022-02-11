@@ -2,7 +2,7 @@ locals {
   public_url = "api.prixfixe.dev"
 }
 
-resource "google_service_account" "api_server_account" {
+resource "google_service_account" "api_user_service_account" {
   account_id   = "api-server"
   display_name = "API Server"
 }
@@ -10,7 +10,7 @@ resource "google_service_account" "api_server_account" {
 resource "google_project_iam_member" "api_user" {
   project = local.project_id
   role    = "roles/viewer"
-  member  = format("serviceAccount:%s", google_service_account.api_server_account.email)
+  member  = format("serviceAccount:%s", google_service_account.api_user_service_account.email)
 }
 
 resource "google_project_iam_binding" "api_user_secret_accessor" {
@@ -61,7 +61,7 @@ resource "google_cloud_run_service" "api_server" {
 
   template {
     spec {
-      service_account_name = google_service_account.api_server_account.email
+      service_account_name = google_service_account.api_user_service_account.email
 
       containers {
         image = "gcr.io/prixfixe-dev/api_server"

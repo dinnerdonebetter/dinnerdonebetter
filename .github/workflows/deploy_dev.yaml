@@ -38,13 +38,23 @@ jobs:
         run: go mod vendor
 
       - name: Build data changes cloud function archive
-        run: ./scripts/build_data_changes_cloud_function.sh
+        run: ./scripts/build_data_changes_cloud_function.sh data_changes_cloud_func
 
       - name: Upload data changes cloud function
         uses: actions/upload-artifact@v2
         with:
           name: data_changes_cloud_function
           path: data_changes_cloud_function.zip
+          retention-days: 1
+
+      - name: Build data changes cloud function archive
+        run: ./scripts/build_data_changes_cloud_function.sh meal_plan_finalizer
+
+      - name: Upload meal plan finalizer cloud function
+        uses: actions/upload-artifact@v2
+        with:
+          name: meal_plan_finalizer_cloud_function
+          path: meal_plan_finalizer_cloud_function.zip
           retention-days: 1
 
   scaffold:
@@ -76,6 +86,12 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: data_changes_cloud_function
+          path: environments/dev/terraform
+
+      - name: Download meal plan finalizer cloud function
+        uses: actions/download-artifact@v2
+        with:
+          name: meal_plan_finalizer_cloud_function
           path: environments/dev/terraform
 
       - name: copy server config file
