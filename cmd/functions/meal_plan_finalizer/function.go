@@ -2,6 +2,7 @@ package mealplanfinalizerfunction
 
 import (
 	"context"
+	"fmt"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"go.opentelemetry.io/otel"
@@ -52,12 +53,12 @@ type PubSubMessage struct {
 }
 
 // FinalizeMealPlans is our cloud function entrypoint.
-func FinalizeMealPlans(ctx context.Context, m PubSubMessage) {
+func FinalizeMealPlans(ctx context.Context, m PubSubMessage) error {
 	logger := zerolog.NewZerologLogger()
 
 	cfg, err := config.GetConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {
-		logger.Fatal(err)
+		return fmt.Errorf("error getting config: %w", err)
 	}
 	cfg.Database.RunMigrations = false
 
@@ -67,7 +68,7 @@ func FinalizeMealPlans(ctx context.Context, m PubSubMessage) {
 
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, tracerProvider)
 	if err != nil {
-		logger.Fatal(err)
+		return fmt.Errorf("error setting up database client: %w", err)
 	}
 
 	// msgconfig.ProvidePublisherProvider
@@ -76,8 +77,10 @@ func FinalizeMealPlans(ctx context.Context, m PubSubMessage) {
 	// customerdataconfig.ProvideCollector
 
 	if err = finalizeMealPlans(ctx, logger, tracer, dataManager); err != nil {
-		logger.Fatal(err)
+		return fmt.Errorf("error finalizing meal plans: %w", err)
 	}
 
 	logger.Info("all done")
+
+	return nil
 }
