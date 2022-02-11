@@ -25,8 +25,14 @@ resource "google_storage_bucket" "meal_plan_finalizer_bucket" {
   location = "US"
 }
 
+data "archive_file" "meal_plan_finalizer_function" {
+  type        = "zip"
+  source_dir  = "${path.module}/meal_plan_finalizer_cloud_function"
+  output_path = "${path.module}/meal_plan_finalizer_cloud_function.zip"
+}
+
 resource "google_storage_bucket_object" "meal_plan_finalizer_archive" {
-  name   = "meal_plan_finalizer_function.zip"
+  name   = format("meal_plan_finalizer_function-%s.zip", data.archive_file.meal_plan_finalizer_function.output_md5)
   bucket = google_storage_bucket.meal_plan_finalizer_bucket.name
   source = "${path.module}/meal_plan_finalizer_cloud_function.zip"
 }

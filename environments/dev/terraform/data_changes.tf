@@ -10,13 +10,13 @@ resource "google_storage_bucket" "data_changes_bucket" {
 data "archive_file" "data_changes_function" {
   type        = "zip"
   source_dir  = "${path.module}/data_changes_cloud_function"
-  output_path = "${path.module}/data_changes_function.zip"
+  output_path = "${path.module}/data_changes_cloud_function.zip"
 }
 
 resource "google_storage_bucket_object" "data_changes_archive" {
   name   = format("data_changes_function-%s.zip", data.archive_file.data_changes_function.output_md5)
   bucket = google_storage_bucket.data_changes_bucket.name
-  source = "${path.module}/data_changes_function.zip"
+  source = "${path.module}/data_changes_cloud_function.zip"
 }
 
 resource "google_service_account" "data_changes_user_service_account" {
