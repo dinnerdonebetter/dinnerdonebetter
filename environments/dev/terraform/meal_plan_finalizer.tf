@@ -94,5 +94,19 @@ resource "google_cloudfunctions_function" "meal_plan_finalizer" {
     PRIXFIXE_DATABASE_PASSWORD                 = random_password.meal_plan_finalizer_user_database_password.result,
     PRIXFIXE_DATABASE_NAME                     = local.database_name,
     PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME = google_sql_database_instance.dev.connection_name,
+    GOOGLE_CLOUD_SECRET_STORE_PREFIX           = format("projects/%d/secrets", data.google_project.project.number)
   }
+
+  #  secret_environment_variables = {
+  #    key    = "PRIXFIXE_DATA_CHANGES_TOPIC_NAME"
+  #    secret = google_secret_manager_secret.data_changes_topic_name.id
+  #  }
+  #
+  #  secret_volumes = {
+  #    mount_path = "/config/"
+  #    secret     = google_secret_manager_secret.api_service_config.id
+  #    versions = {
+  #      path = "config.json"
+  #    }
+  #  }
 }

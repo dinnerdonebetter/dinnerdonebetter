@@ -121,7 +121,7 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 		return nil, fmt.Errorf("failed to create secretmanager client: %v", err)
 	}
 
-	secretPrefix := "projects/1078065238475/secrets" // os.Getenv("GOOGLE_CLOUD_SECRET_STORE_PREFIX")
+	secretPrefix := os.Getenv("GOOGLE_CLOUD_SECRET_STORE_PREFIX")
 	secretPath := fmt.Sprintf("%s/%s", secretPrefix, "api_service_config")
 
 	logger = logger.WithValue("secret_path", secretPath)
