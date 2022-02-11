@@ -56,7 +56,7 @@ type PubSubMessage struct {
 func FinalizeMealPlans(ctx context.Context, m PubSubMessage) error {
 	logger := zerolog.NewZerologLogger()
 
-	cfg, err := config.GetConfigFromGoogleCloudSecretManager(ctx)
+	cfg, err := config.GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}

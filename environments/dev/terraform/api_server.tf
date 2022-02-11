@@ -83,12 +83,12 @@ resource "google_cloud_run_service" "api_server" {
 
         env {
           name  = "PRIXFIXE_DATABASE_USER"
-          value = local.database_username
+          value = local.api_database_username
         }
 
         env {
           name  = "PRIXFIXE_DATABASE_PASSWORD"
-          value = random_password.database_password.result
+          value = random_password.api_user_database_password.result
         }
 
         env {

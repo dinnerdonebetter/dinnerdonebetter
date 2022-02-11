@@ -111,8 +111,8 @@ func fetchSecretFromSecretStore(ctx context.Context, client *secretmanager.Clien
 	return result.Payload.String(), nil
 }
 
-// GetConfigFromGoogleCloudSecretManager fetches and InstanceConfig from AWS SSM Parameter Store.
-func GetConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
+// GetMealPlanFinalizerConfigFromGoogleCloudSecretManager fetches and InstanceConfig from GCP Secret Manager.
+func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
 	logger := zerolog.NewZerologLogger()
 	logger.Debug("setting up secret manager client")
 
@@ -122,7 +122,10 @@ func GetConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig
 	}
 
 	var cfg *InstanceConfig
-	configFilepath := os.Getenv("CONFIGURATION_FILEPATH")
+	configFilepath, err := fetchSecretFromSecretStore(ctx, client, "api_service_config")
+	if err != nil {
+		return nil, fmt.Errorf("fetching config from secret store: %w", err)
+	}
 
 	configBytes, configReadErr := os.ReadFile(configFilepath)
 	if configReadErr != nil {
@@ -157,47 +160,14 @@ func GetConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig
 
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(dbURI)
 
-	logger.WithValues(map[string]interface{}{
-		"DB_SOCKET_DIR":                              os.Getenv("DB_SOCKET_DIR"),
-		"PRIXFIXE_DATABASE_USER":                     os.Getenv("PRIXFIXE_DATABASE_USER"),
-		"PRIXFIXE_DATABASE_PASSWORD":                 os.Getenv("PRIXFIXE_DATABASE_PASSWORD"),
-		"PRIXFIXE_DATABASE_NAME":                     os.Getenv("PRIXFIXE_DATABASE_NAME"),
-		"PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME": os.Getenv("PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME"),
-	}).Debug("fetched database values")
+	logger.Debug("fetched database values")
 
-	cfg.Services.Auth.Cookies.HashKey = os.Getenv("PRIXFIXE_COOKIE_HASH_KEY")
-	cfg.Services.Auth.Cookies.BlockKey = os.Getenv("PRIXFIXE_COOKIE_BLOCK_KEY")
-	cfg.Services.Auth.PASETO.LocalModeKey = []byte(os.Getenv("PRIXFIXE_PASETO_LOCAL_KEY"))
+	//dataChangesTopicName, err := fetchSecretFromSecretStore(ctx, client, "data_changes_topic_name")
+	//if err != nil {
+	//	return nil, fmt.Errorf("error getting data changes topic name from secret store: %w", err)
+	//}
 
-	dataChangesTopicName, err := fetchSecretFromSecretStore(ctx, client, "data_changes_topic_name")
-	if err != nil {
-		return nil, fmt.Errorf("error getting data changes topic name from secret store: %w", err)
-	}
-
-	cfg.Email.APIToken = os.Getenv("PRIXFIXE_SENDGRID_API_TOKEN")
-	cfg.CustomerData.APIToken = os.Getenv("PRIXFIXE_SEGMENT_API_TOKEN")
-
-	cfg.Services.ValidInstruments.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.ValidIngredients.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.ValidPreparations.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.ValidIngredientPreparations.DataChangesTopicName = dataChangesTopicName
-
-	cfg.Services.Recipes.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.RecipeSteps.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.RecipeStepProducts.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.RecipeStepInstruments.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.RecipeStepIngredients.DataChangesTopicName = dataChangesTopicName
-
-	cfg.Services.Meals.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.MealPlans.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.MealPlanOptions.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.MealPlanOptionVotes.DataChangesTopicName = dataChangesTopicName
-
-	cfg.Services.Households.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.HouseholdInvitations.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.Webhooks.DataChangesTopicName = dataChangesTopicName
-
-	if err := cfg.ValidateWithContext(ctx); err != nil {
+	if err = cfg.ValidateWithContext(ctx); err != nil {
 		return nil, err
 	}
 

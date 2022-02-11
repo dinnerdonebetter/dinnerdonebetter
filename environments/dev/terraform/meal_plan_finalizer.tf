@@ -1,3 +1,7 @@
+locals {
+  meal_plan_finalizer_database_username = "meal_plan_finalizer_db_user"
+}
+
 resource "google_pubsub_topic" "meal_plan_topic" {
   name = "meal_plan_finalization_work"
 }
@@ -56,20 +60,39 @@ resource "google_project_iam_binding" "meal_plan_finalizer_user_cloud_sql_client
   ]
 }
 
-resource "google_cloudfunctions_function" "meal_plan_finalizer" {
-  name        = "meal-plan-finalizer"
-  description = "Meal Plan Finalizer"
-  runtime     = local.go_runtime
+resource "random_password" "meal_plan_finalizer_user_database_password" {
+  length           = 64
+  special          = true
+  override_special = "#$*-_=+[]"
+}
 
-  available_memory_mb   = 128
+resource "google_sql_user" "meal_plan_finalizer_user" {
+  name     = local.meal_plan_finalizer_database_username
+  instance = google_sql_database_instance.dev.name
+  password = random_password.meal_plan_finalizer_user_database_password.result
+}
+
+resource "google_cloudfunctions_function" "meal_plan_finalizer" {
+  name                = "meal-plan-finalizer"
+  description         = "Meal Plan Finalizer"
+  runtime             = local.go_runtime
+  available_memory_mb = 128
+
   source_archive_bucket = google_storage_bucket.meal_plan_finalizer_bucket.name
   source_archive_object = google_storage_bucket_object.meal_plan_finalizer_archive.name
   service_account_email = google_service_account.meal_plan_finalizer_user_service_account.email
+
+  entry_point = "FinalizeMealPlans"
 
   event_trigger {
     event_type = local.pubsub_topic_publish_event
     resource   = google_pubsub_topic.meal_plan_topic.name
   }
 
-  entry_point = "FinalizeMealPlans"
+  environment_variables = {
+    PRIXFIXE_DATABASE_USER                     = google_sql_user.meal_plan_finalizer_user.name,
+    PRIXFIXE_DATABASE_PASSWORD                 = random_password.meal_plan_finalizer_user_database_password.result,
+    PRIXFIXE_DATABASE_NAME                     = local.database_name,
+    PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME = google_sql_database_instance.dev.connection_name,
+  }
 }
