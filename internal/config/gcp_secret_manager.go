@@ -128,17 +128,12 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 	logger.Info("trying to fetch api service configuration")
 
 	var cfg *InstanceConfig
-	configFilepath, err := fetchSecretFromSecretStore(ctx, client, secretPath)
+	configBytes, err := fetchSecretFromSecretStore(ctx, client, secretPath)
 	if err != nil {
 		return nil, fmt.Errorf("fetching config from secret store: %w", err)
 	}
 
-	configBytes, configReadErr := os.ReadFile(configFilepath)
-	if configReadErr != nil {
-		return nil, configReadErr
-	}
-
-	if encodeErr := json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); encodeErr != nil || cfg == nil {
+	if encodeErr := json.NewDecoder(bytes.NewReader([]byte(configBytes))).Decode(&cfg); encodeErr != nil || cfg == nil {
 		return nil, encodeErr
 	}
 
