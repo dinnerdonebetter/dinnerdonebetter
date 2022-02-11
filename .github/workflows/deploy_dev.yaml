@@ -38,7 +38,10 @@ jobs:
         run: go mod vendor
 
       - name: Build data changes cloud function archive
-        run: ./scripts/build_data_changes_cloud_function.sh data_changes_cloud_func
+        run: ./scripts/build_cloud_function.sh data_changes_cloud_func
+
+      - name: debug
+        run: ls -Al
 
       - name: Upload data changes cloud function
         uses: actions/upload-artifact@v2
@@ -48,7 +51,7 @@ jobs:
           retention-days: 1
 
       - name: Build data changes cloud function archive
-        run: ./scripts/build_data_changes_cloud_function.sh meal_plan_finalizer
+        run: ./scripts/build_cloud_function.sh meal_plan_finalizer
 
       - name: Upload meal plan finalizer cloud function
         uses: actions/upload-artifact@v2
