@@ -3,7 +3,7 @@ resource "google_pubsub_topic" "data_changes_topic" {
 }
 
 resource "google_storage_bucket" "data_changes_bucket" {
-  name     = "data-changes-function"
+  name     = "data-changes-cloud-function"
   location = "US"
 }
 

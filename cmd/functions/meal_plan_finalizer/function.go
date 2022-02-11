@@ -45,9 +45,14 @@ func finalizeMealPlans(ctx context.Context, logger logging.Logger, tracer tracin
 	return nil
 }
 
+// PubSubMessage is the payload of a Pub/Sub event. See the documentation for more details:
+// https://cloud.google.com/pubsub/docs/reference/rest/v1/PubsubMessage
+type PubSubMessage struct {
+	Data []byte `json:"data"`
+}
+
 // FinalizeMealPlans is our cloud function entrypoint.
-func FinalizeMealPlans() {
-	ctx := context.Background()
+func FinalizeMealPlans(ctx context.Context, m PubSubMessage) {
 	logger := zerolog.NewZerologLogger()
 
 	cfg, err := config.GetConfigFromGoogleCloudSecretManager(ctx)
