@@ -122,7 +122,7 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 	}
 
 	secretPrefix := os.Getenv("GOOGLE_CLOUD_SECRET_STORE_PREFIX")
-	secretPath := fmt.Sprintf("%s/%s", secretPrefix, "api_service_config")
+	secretPath := fmt.Sprintf("%s/%s/versions/latest", secretPrefix, "api_service_config")
 
 	logger = logger.WithValue("secret_path", secretPath)
 	logger.Info("trying to fetch api service configuration")
