@@ -114,7 +114,7 @@ func fetchSecretFromSecretStore(ctx context.Context, client *secretmanager.Clien
 // GetMealPlanFinalizerConfigFromGoogleCloudSecretManager fetches and InstanceConfig from GCP Secret Manager.
 func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
 	logger := zerolog.NewZerologLogger()
-	logger.Debug("setting up secret manager client")
+	logger.Info("setting up secret manager client")
 
 	client, err := secretmanager.NewClient(ctx)
 	if err != nil {
@@ -125,7 +125,7 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 	secretPath := fmt.Sprintf("%s/%s", secretPrefix, "api_service_config")
 
 	logger = logger.WithValue("secret_path", secretPath)
-	logger.Debug("trying to fetch api service configuration")
+	logger.Info("trying to fetch api service configuration")
 
 	var cfg *InstanceConfig
 	configFilepath, err := fetchSecretFromSecretStore(ctx, client, secretPath)
