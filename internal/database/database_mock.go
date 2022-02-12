@@ -74,6 +74,11 @@ func (m *MockDatabase) Migrate(ctx context.Context, maxAttempts uint8) error {
 	return m.Called(ctx, maxAttempts).Error(0)
 }
 
+// DB satisfies the DataManager interface.
+func (m *MockDatabase) DB() *sql.DB {
+	return m.Called().Get(0).(*sql.DB)
+}
+
 // IsReady satisfies the DataManager interface.
 func (m *MockDatabase) IsReady(ctx context.Context, maxAttempts uint8) (ready bool) {
 	return m.Called(ctx, maxAttempts).Bool(0)

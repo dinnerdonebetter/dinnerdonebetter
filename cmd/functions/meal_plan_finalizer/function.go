@@ -77,6 +77,10 @@ func FinalizeMealPlans(ctx context.Context, m PubSubMessage) error {
 		return fmt.Errorf("error finalizing meal plans: %w", err)
 	}
 
+	if closeErr := dataManager.DB().Close(); closeErr != nil {
+		observability.AcknowledgeError(closeErr, logger, nil, "closing database connection")
+	}
+
 	logger.Info("all done")
 
 	return nil
