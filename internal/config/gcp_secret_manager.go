@@ -163,7 +163,7 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 
 	logger.Debug("fetched database values")
 
-	dataChangesTopicSecretPath := fmt.Sprintf("%s/%s/versions/latest", secretPrefix, "api_service_config")
+	dataChangesTopicSecretPath := fmt.Sprintf("%s/%s/versions/latest", secretPrefix, "data_changes_topic_name")
 	dataChangesTopicName, err := fetchSecretFromSecretStore(ctx, client, dataChangesTopicSecretPath)
 	if err != nil {
 		return nil, fmt.Errorf("error getting data changes topic name from secret store: %w", err)
