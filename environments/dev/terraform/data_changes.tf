@@ -26,7 +26,7 @@ resource "google_service_account" "data_changes_user_service_account" {
 
 resource "google_project_iam_member" "data_changes_user" {
   project = local.project_id
-  role    = "roles/secretmanager.secretAccessor"
+  role    = google_project_iam_custom_role.data_changes_worker_role.id
   member  = format("serviceAccount:%s", google_service_account.data_changes_user_service_account.email)
 }
 

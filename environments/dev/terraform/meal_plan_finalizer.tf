@@ -44,13 +44,13 @@ resource "google_service_account" "meal_plan_finalizer_user_service_account" {
 
 resource "google_project_iam_member" "meal_plan_finalizer_user" {
   project = local.project_id
-  role    = "roles/cloudsql.client"
+  role    = "roles/secretmanager.secretAccessor"
   member  = format("serviceAccount:%s", google_service_account.meal_plan_finalizer_user_service_account.email)
 }
 
 resource "google_project_iam_binding" "meal_plan_finalizer_user_secret_accessor" {
   project = local.project_id
-  role    = "roles/secretmanager.secretAccessor"
+  role    = "roles/cloudsql.client"
 
   members = [
     google_project_iam_member.meal_plan_finalizer_user.member,
@@ -105,8 +105,9 @@ resource "google_cloudfunctions_function" "meal_plan_finalizer" {
   }
 
   environment_variables = {
-    # TODO: use the meal_plan_finalizer_user for this,
-    # currently it has permission denied for accessing tables
+    # TODO: use the meal_plan_finalizer_user for this, currently it has permission denied for accessing tables
+    # https://dba.stackexchange.com/questions/53914/permission-denied-for-relation-table
+    # https://www.postgresql.org/docs/13/sql-alterdefaultprivileges.html
     PRIXFIXE_DATABASE_USER                     = google_sql_user.api_user.name,
     PRIXFIXE_DATABASE_PASSWORD                 = random_password.api_user_database_password.result,
     PRIXFIXE_DATABASE_NAME                     = local.database_name,
