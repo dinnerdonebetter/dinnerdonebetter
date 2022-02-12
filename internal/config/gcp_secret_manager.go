@@ -159,6 +159,7 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 	)
 
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(dbURI)
+	cfg.Database.RunMigrations = false
 
 	logger.Debug("fetched database values")
 

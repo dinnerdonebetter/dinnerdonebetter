@@ -101,7 +101,7 @@ func (cfg *InstanceConfig) EncodeToFile(path string, marshaller func(v interface
 }
 
 // ValidateWithContext validates a InstanceConfig struct.
-func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, services bool) error {
+func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServices bool) error {
 	if err := cfg.Uploads.ValidateWithContext(ctx); err != nil {
 		return fmt.Errorf("error validating Uploads portion of config: %w", err)
 	}
@@ -138,7 +138,7 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, services boo
 		return fmt.Errorf("error validating Email portion of config: %w", err)
 	}
 
-	if services {
+	if validateServices {
 		if err := cfg.Services.Auth.ValidateWithContext(ctx); err != nil {
 			return fmt.Errorf("error validating Auth service portion of config: %w", err)
 		}

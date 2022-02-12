@@ -10,7 +10,7 @@ resource "google_service_account" "api_user_service_account" {
 
 resource "google_project_iam_member" "api_user" {
   project = local.project_id
-  role    = "roles/viewer"
+  role    = "roles/cloudsql.client"
   member  = format("serviceAccount:%s", google_service_account.api_user_service_account.email)
 }
 
@@ -23,14 +23,14 @@ resource "google_project_iam_binding" "api_user_secret_accessor" {
   ]
 }
 
-resource "google_project_iam_binding" "api_user_cloud_sql_client" {
-  project = local.project_id
-  role    = "roles/cloudsql.client"
-
-  members = [
-    google_project_iam_member.api_user.member,
-  ]
-}
+#resource "google_project_iam_binding" "api_user_cloud_sql_client" {
+#  project = local.project_id
+#  role    = "roles/cloudsql.client"
+#
+#  members = [
+#    google_project_iam_member.api_user.member,
+#  ]
+#}
 
 data "google_iam_policy" "public_access" {
   binding {
