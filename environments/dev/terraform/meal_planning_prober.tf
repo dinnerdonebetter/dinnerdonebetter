@@ -8,7 +8,7 @@ resource "google_project_iam_custom_role" "meal_plan_prober_role" {
 }
 
 resource "google_pubsub_topic" "meal_plan_prober_topic" {
-  name = "meal_plan_finalization_work"
+  name = "meal_plan_prober_work"
 }
 
 resource "google_cloud_scheduler_job" "meal_plan_prober_schedule" {
