@@ -58,6 +58,7 @@ resource "google_cloudfunctions_function" "meal_plan_prober" {
   description         = "Meal Planning Prober"
   runtime             = local.go_runtime
   available_memory_mb = 128
+  timeout             = 300
 
   source_archive_bucket = google_storage_bucket.meal_plan_prober_bucket.name
   source_archive_object = google_storage_bucket_object.meal_plan_prober_archive.name
