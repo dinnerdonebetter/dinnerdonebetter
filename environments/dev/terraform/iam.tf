@@ -18,7 +18,9 @@ resource "google_project_iam_custom_role" "data_changes_worker_role" {
   permissions = [
     "secretmanager.versions.access",
     "pubsub.topics.list",
-    "pubsub.topics.subscribe",
+    "pubsub.subscriptions.consume",
+    "pubsub.subscriptions.create",
+    "pubsub.subscriptions.delete",
   ]
 }
 
@@ -31,7 +33,9 @@ resource "google_project_iam_custom_role" "meal_plan_finalizer_role" {
     "cloudsql.instances.connect",
     "cloudsql.instances.get",
     "pubsub.topics.list",
-    "pubsub.topics.subscribe",
     "pubsub.topics.publish",
+    "pubsub.subscriptions.consume",
+    "pubsub.subscriptions.create",
+    "pubsub.subscriptions.delete",
   ]
 }
