@@ -122,13 +122,10 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 	}
 
 	secretPrefix := os.Getenv("GOOGLE_CLOUD_SECRET_STORE_PREFIX")
-	secretPath := fmt.Sprintf("%s/%s/versions/latest", secretPrefix, "api_service_config")
-
-	logger = logger.WithValue("secret_path", secretPath)
-	logger.Info("trying to fetch api service configuration")
+	configSecretPath := fmt.Sprintf("%s/%s/versions/latest", secretPrefix, "api_service_config")
 
 	var cfg *InstanceConfig
-	configBytes, err := fetchSecretFromSecretStore(ctx, client, secretPath)
+	configBytes, err := fetchSecretFromSecretStore(ctx, client, configSecretPath)
 	if err != nil {
 		return nil, fmt.Errorf("fetching config from secret store: %w", err)
 	}
@@ -169,6 +166,10 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 	//if err != nil {
 	//	return nil, fmt.Errorf("error getting data changes topic name from secret store: %w", err)
 	//}
+
+	// we don't actually need these, except for validation
+	cfg.CustomerData.APIToken = " "
+	cfg.Email.APIToken = " "
 
 	if err = cfg.ValidateWithContext(ctx); err != nil {
 		return nil, err
