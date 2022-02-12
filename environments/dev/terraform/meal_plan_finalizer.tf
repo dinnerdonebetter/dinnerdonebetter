@@ -44,36 +44,36 @@ resource "google_service_account" "meal_plan_finalizer_user_service_account" {
 
 resource "google_project_iam_member" "meal_plan_finalizer_user" {
   project = local.project_id
-  role    = "roles/secretmanager.secretAccessor"
+  role    = google_project_iam_custom_role.meal_plan_finalizer_role.id
   member  = format("serviceAccount:%s", google_service_account.meal_plan_finalizer_user_service_account.email)
 }
 
-resource "google_project_iam_binding" "meal_plan_finalizer_user_secret_accessor" {
-  project = local.project_id
-  role    = "roles/cloudsql.client"
-
-  members = [
-    google_project_iam_member.meal_plan_finalizer_user.member,
-  ]
-}
-
-resource "google_project_iam_binding" "meal_plan_finalizer_user_pubsub_publisher" {
-  project = local.project_id
-  role    = "roles/pubsub.publisher"
-
-  members = [
-    google_project_iam_member.meal_plan_finalizer_user.member,
-  ]
-}
-
-resource "google_project_iam_binding" "meal_plan_finalizer_user_pubsub_subscriber" {
-  project = local.project_id
-  role    = "roles/pubsub.subscriber"
-
-  members = [
-    google_project_iam_member.meal_plan_finalizer_user.member,
-  ]
-}
+#resource "google_project_iam_binding" "meal_plan_finalizer_user_secret_accessor" {
+#  project = local.project_id
+#  role    = "roles/cloudsql.client"
+#
+#  members = [
+#    google_project_iam_member.meal_plan_finalizer_user.member,
+#  ]
+#}
+#
+#resource "google_project_iam_binding" "meal_plan_finalizer_user_pubsub_publisher" {
+#  project = local.project_id
+#  role    = "roles/pubsub.publisher"
+#
+#  members = [
+#    google_project_iam_member.meal_plan_finalizer_user.member,
+#  ]
+#}
+#
+#resource "google_project_iam_binding" "meal_plan_finalizer_user_pubsub_subscriber" {
+#  project = local.project_id
+#  role    = "roles/pubsub.subscriber"
+#
+#  members = [
+#    google_project_iam_member.meal_plan_finalizer_user.member,
+#  ]
+#}
 
 resource "random_password" "meal_plan_finalizer_user_database_password" {
   length           = 64

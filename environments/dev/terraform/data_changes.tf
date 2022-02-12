@@ -30,23 +30,23 @@ resource "google_project_iam_member" "data_changes_user" {
   member  = format("serviceAccount:%s", google_service_account.data_changes_user_service_account.email)
 }
 
-resource "google_project_iam_binding" "data_changes_user_pubsub_publisher" {
-  project = local.project_id
-  role    = "roles/pubsub.publisher"
-
-  members = [
-    google_project_iam_member.data_changes_user.member,
-  ]
-}
-
-resource "google_project_iam_binding" "data_changes_user_pubsub_subscriber" {
-  project = local.project_id
-  role    = "roles/pubsub.subscriber"
-
-  members = [
-    google_project_iam_member.data_changes_user.member,
-  ]
-}
+#resource "google_project_iam_binding" "data_changes_user_pubsub_publisher" {
+#  project = local.project_id
+#  role    = "roles/pubsub.publisher"
+#
+#  members = [
+#    google_project_iam_member.data_changes_user.member,
+#  ]
+#}
+#
+#resource "google_project_iam_binding" "data_changes_user_pubsub_subscriber" {
+#  project = local.project_id
+#  role    = "roles/pubsub.subscriber"
+#
+#  members = [
+#    google_project_iam_member.data_changes_user.member,
+#  ]
+#}
 
 resource "google_cloudfunctions_function" "data_changes" {
   name        = "data-changes"
