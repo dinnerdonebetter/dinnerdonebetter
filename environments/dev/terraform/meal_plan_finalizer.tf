@@ -81,7 +81,7 @@ resource "random_password" "meal_plan_finalizer_user_database_password" {
   override_special = "#$*-_=+[]"
 }
 
-resource "google_sql_user" "meal_plan_finalizer_user" {
+resource "google_sql_user" "meal_plan_fimeal_plan_finalizer_usernalizer_user" {
   name     = local.meal_plan_finalizer_database_username
   instance = google_sql_database_instance.dev.name
   password = random_password.meal_plan_finalizer_user_database_password.result
@@ -105,8 +105,10 @@ resource "google_cloudfunctions_function" "meal_plan_finalizer" {
   }
 
   environment_variables = {
-    PRIXFIXE_DATABASE_USER                     = google_sql_user.meal_plan_finalizer_user.name,
-    PRIXFIXE_DATABASE_PASSWORD                 = random_password.meal_plan_finalizer_user_database_password.result,
+    # TODO: use the meal_plan_finalizer_user for this,
+    # currently it has permission denied for accessing tables
+    PRIXFIXE_DATABASE_USER                     = google_sql_user.api_user.name,
+    PRIXFIXE_DATABASE_PASSWORD                 = random_password.api_user_database_password.result,
     PRIXFIXE_DATABASE_NAME                     = local.database_name,
     PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME = google_sql_database_instance.dev.connection_name,
     GOOGLE_CLOUD_SECRET_STORE_PREFIX           = format("projects/%d/secrets", data.google_project.project.number)

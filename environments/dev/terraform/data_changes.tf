@@ -26,22 +26,22 @@ resource "google_service_account" "data_changes_user_service_account" {
 
 resource "google_project_iam_member" "data_changes_user" {
   project = local.project_id
-  role    = "roles/viewer"
+  role    = "roles/secretmanager.secretAccessor"
   member  = format("serviceAccount:%s", google_service_account.data_changes_user_service_account.email)
 }
 
-resource "google_project_iam_binding" "data_changes_user_secret_accessor" {
+resource "google_project_iam_binding" "data_changes_user_pubsub_publisher" {
   project = local.project_id
-  role    = "roles/secretmanager.secretAccessor"
+  role    = "roles/pubsub.publisher"
 
   members = [
     google_project_iam_member.data_changes_user.member,
   ]
 }
 
-resource "google_project_iam_binding" "data_changes_user_cloud_sql_client" {
+resource "google_project_iam_binding" "data_changes_user_pubsub_subscriber" {
   project = local.project_id
-  role    = "roles/cloudsql.client"
+  role    = "roles/pubsub.subscriber"
 
   members = [
     google_project_iam_member.data_changes_user.member,
