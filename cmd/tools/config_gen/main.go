@@ -132,7 +132,7 @@ func saveConfig(ctx context.Context, outputPath string, cfg *config.InstanceConf
 	}
 
 	if validate {
-		if err := cfg.ValidateWithContext(ctx); err != nil {
+		if err := cfg.ValidateWithContext(ctx, true); err != nil {
 			return err
 		}
 	}

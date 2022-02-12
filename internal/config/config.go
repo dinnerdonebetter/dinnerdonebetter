@@ -7,8 +7,6 @@ import (
 
 	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
@@ -102,10 +100,8 @@ func (cfg *InstanceConfig) EncodeToFile(path string, marshaller func(v interface
 	return os.WriteFile(path, byteSlice, 0600)
 }
 
-var _ validation.ValidatableWithContext = (*InstanceConfig)(nil)
-
 // ValidateWithContext validates a InstanceConfig struct.
-func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context) error {
+func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, services bool) error {
 	if err := cfg.Uploads.ValidateWithContext(ctx); err != nil {
 		return fmt.Errorf("error validating Uploads portion of config: %w", err)
 	}
@@ -142,60 +138,62 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context) error {
 		return fmt.Errorf("error validating Email portion of config: %w", err)
 	}
 
-	if err := cfg.Services.Auth.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating Auth service portion of config: %w", err)
-	}
+	if services {
+		if err := cfg.Services.Auth.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating Auth service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.Webhooks.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating Webhooks service portion of config: %w", err)
-	}
+		if err := cfg.Services.Webhooks.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating Webhooks service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.ValidInstruments.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating ValidInstruments service portion of config: %w", err)
-	}
+		if err := cfg.Services.ValidInstruments.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating ValidInstruments service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.ValidIngredients.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating ValidIngredients service portion of config: %w", err)
-	}
+		if err := cfg.Services.ValidIngredients.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating ValidIngredients service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.ValidPreparations.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating ValidPreparations service portion of config: %w", err)
-	}
+		if err := cfg.Services.ValidPreparations.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating ValidPreparations service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.ValidIngredientPreparations.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating ValidIngredientPreparations service portion of config: %w", err)
-	}
+		if err := cfg.Services.ValidIngredientPreparations.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating ValidIngredientPreparations service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.Recipes.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating Recipes service portion of config: %w", err)
-	}
+		if err := cfg.Services.Recipes.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating Recipes service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.RecipeSteps.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating RecipeSteps service portion of config: %w", err)
-	}
+		if err := cfg.Services.RecipeSteps.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating RecipeSteps service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.RecipeStepInstruments.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating RecipeStepInstruments service portion of config: %w", err)
-	}
+		if err := cfg.Services.RecipeStepInstruments.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating RecipeStepInstruments service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.RecipeStepIngredients.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating RecipeStepIngredients service portion of config: %w", err)
-	}
+		if err := cfg.Services.RecipeStepIngredients.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating RecipeStepIngredients service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.RecipeStepProducts.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating RecipeStepProducts service portion of config: %w", err)
-	}
+		if err := cfg.Services.RecipeStepProducts.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating RecipeStepProducts service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.MealPlans.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating MealPlans service portion of config: %w", err)
-	}
+		if err := cfg.Services.MealPlans.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating MealPlans service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.MealPlanOptions.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating MealPlanOptions service portion of config: %w", err)
-	}
+		if err := cfg.Services.MealPlanOptions.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating MealPlanOptions service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.MealPlanOptionVotes.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating MealPlanOptionVotes service portion of config: %w", err)
+		if err := cfg.Services.MealPlanOptionVotes.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating MealPlanOptionVotes service portion of config: %w", err)
+		}
 	}
 
 	return nil

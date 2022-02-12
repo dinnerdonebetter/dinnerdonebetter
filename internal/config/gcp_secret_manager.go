@@ -93,7 +93,7 @@ func GetConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*InstanceConfi
 	cfg.Services.HouseholdInvitations.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.Webhooks.DataChangesTopicName = dataChangesTopicName
 
-	if err := cfg.ValidateWithContext(ctx); err != nil {
+	if err = cfg.ValidateWithContext(ctx, true); err != nil {
 		return nil, err
 	}
 
@@ -171,7 +171,7 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 	cfg.CustomerData.APIToken = " "
 	cfg.Email.APIToken = " "
 
-	if err = cfg.ValidateWithContext(ctx); err != nil {
+	if err = cfg.ValidateWithContext(ctx, false); err != nil {
 		return nil, err
 	}
 
