@@ -44,7 +44,7 @@ resource "google_service_account" "meal_plan_finalizer_user_service_account" {
 
 resource "google_project_iam_member" "meal_plan_finalizer_user" {
   project = local.project_id
-  role    = "roles/viewer"
+  role    = "roles/cloudsql.client"
   member  = format("serviceAccount:%s", google_service_account.meal_plan_finalizer_user_service_account.email)
 }
 
@@ -57,9 +57,18 @@ resource "google_project_iam_binding" "meal_plan_finalizer_user_secret_accessor"
   ]
 }
 
-resource "google_project_iam_binding" "meal_plan_finalizer_user_cloud_sql_client" {
+resource "google_project_iam_binding" "meal_plan_finalizer_user_pubsub_publisher" {
   project = local.project_id
-  role    = "roles/cloudsql.client"
+  role    = "roles/pubsub.publisher"
+
+  members = [
+    google_project_iam_member.meal_plan_finalizer_user.member,
+  ]
+}
+
+resource "google_project_iam_binding" "meal_plan_finalizer_user_pubsub_subscriber" {
+  project = local.project_id
+  role    = "roles/pubsub.subscriber"
 
   members = [
     google_project_iam_member.meal_plan_finalizer_user.member,
