@@ -93,8 +93,8 @@ func GetConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*InstanceConfi
 	cfg.Services.HouseholdInvitations.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.Webhooks.DataChangesTopicName = dataChangesTopicName
 
-	if err = cfg.ValidateWithContext(ctx, true); err != nil {
-		return nil, err
+	if validationErr := cfg.ValidateWithContext(ctx, true); validationErr != nil {
+		return nil, validationErr
 	}
 
 	return cfg, nil
@@ -105,7 +105,7 @@ func fetchSecretFromSecretStore(ctx context.Context, client *secretmanager.Clien
 
 	result, err := client.AccessSecretVersion(ctx, req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to access secret version: %v", err)
+		return nil, fmt.Errorf("failed to access secret version: %w", err)
 	}
 
 	return result.Payload.Data, nil
@@ -118,7 +118,7 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 
 	client, err := secretmanager.NewClient(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create secretmanager client: %v", err)
+		return nil, fmt.Errorf("failed to create secretmanager client: %w", err)
 	}
 
 	secretPrefix := os.Getenv("GOOGLE_CLOUD_SECRET_STORE_PREFIX")
@@ -163,17 +163,19 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 
 	logger.Debug("fetched database values")
 
-	//dataChangesTopicName, err := fetchSecretFromSecretStore(ctx, client, "data_changes_topic_name")
-	//if err != nil {
-	//	return nil, fmt.Errorf("error getting data changes topic name from secret store: %w", err)
-	//}
+	dataChangesTopicName, err := fetchSecretFromSecretStore(ctx, client, "data_changes_topic_name")
+	if err != nil {
+		return nil, fmt.Errorf("error getting data changes topic name from secret store: %w", err)
+	}
+
+	cfg.Events.Publishers.PubSubConfig.TopicName = string(dataChangesTopicName)
 
 	// we don't actually need these, except for validation
 	cfg.CustomerData.APIToken = " "
 	cfg.Email.APIToken = " "
 
-	if err = cfg.ValidateWithContext(ctx, false); err != nil {
-		return nil, err
+	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
+		return nil, validationErr
 	}
 
 	return cfg, nil

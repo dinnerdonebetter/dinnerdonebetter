@@ -67,11 +67,6 @@ func main() {
 	}
 
 	// should make wire do these someday
-	//tracerProvider, initializeTracerErr := cfg.Observability.Tracing.Initialize(ctx, logger)
-	//if initializeTracerErr != nil {
-	//	logger.Error(initializeTracerErr, "initializing tracer")
-	//}
-
 	tracerProvider := tracing.NewNoopTracerProvider()
 
 	// should make wire do these someday
