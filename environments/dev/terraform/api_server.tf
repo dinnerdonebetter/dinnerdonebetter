@@ -3,6 +3,19 @@ locals {
   public_url            = "api.prixfixe.dev"
 }
 
+resource "google_project_iam_custom_role" "api_server_role" {
+  role_id     = "api_server_role"
+  title       = "API Server role"
+  description = "An IAM role for the API server"
+  permissions = [
+    "secretmanager.versions.access",
+    "cloudsql.instances.connect",
+    "cloudsql.instances.get",
+    "pubsub.topics.list",
+    "pubsub.topics.publish",
+  ]
+}
+
 resource "google_service_account" "api_user_service_account" {
   account_id   = "api-server"
   display_name = "API Server"

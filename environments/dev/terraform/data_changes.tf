@@ -2,6 +2,19 @@ resource "google_pubsub_topic" "data_changes_topic" {
   name = "data_changes"
 }
 
+resource "google_project_iam_custom_role" "data_changes_worker_role" {
+  role_id     = "data_changes_worker_role"
+  title       = "Data changes worker role"
+  description = "An IAM role for the data changes worker"
+  permissions = [
+    "secretmanager.versions.access",
+    "pubsub.topics.list",
+    "pubsub.subscriptions.consume",
+    "pubsub.subscriptions.create",
+    "pubsub.subscriptions.delete",
+  ]
+}
+
 resource "google_storage_bucket" "data_changes_bucket" {
   name     = "data-changes-cloud-function"
   location = "US"
@@ -29,24 +42,6 @@ resource "google_project_iam_member" "data_changes_user" {
   role    = google_project_iam_custom_role.data_changes_worker_role.id
   member  = format("serviceAccount:%s", google_service_account.data_changes_user_service_account.email)
 }
-
-#resource "google_project_iam_binding" "data_changes_user_pubsub_publisher" {
-#  project = local.project_id
-#  role    = "roles/pubsub.publisher"
-#
-#  members = [
-#    google_project_iam_member.data_changes_user.member,
-#  ]
-#}
-#
-#resource "google_project_iam_binding" "data_changes_user_pubsub_subscriber" {
-#  project = local.project_id
-#  role    = "roles/pubsub.subscriber"
-#
-#  members = [
-#    google_project_iam_member.data_changes_user.member,
-#  ]
-#}
 
 resource "google_cloudfunctions_function" "data_changes" {
   name        = "data-changes"
