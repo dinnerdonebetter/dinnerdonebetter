@@ -9,6 +9,8 @@ import (
 	"path"
 	"time"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/gorilla/websocket"
 	"github.com/moul/http2curl"
 
@@ -80,6 +82,10 @@ func NewClient(u *url.URL, tracerProvider tracing.TracerProvider, options ...opt
 
 	if u == nil {
 		return nil, ErrNoURLProvided
+	}
+
+	if tracerProvider == nil {
+		tracerProvider = trace.NewNoopTracerProvider()
 	}
 
 	c := &Client{
