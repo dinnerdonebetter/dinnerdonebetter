@@ -93,7 +93,7 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	householdsConfig := servicesConfigurations.Households
 	householdInvitationDataManager := database.ProvideHouseholdInvitationDataManager(dataManager)
 	config6 := &cfg.Events
-	publisherProvider, err := config4.ProvidePublisherProvider(logger, tracerProvider, config6)
+	publisherProvider, err := config4.ProvidePublisherProvider(ctx, logger, tracerProvider, config6)
 	if err != nil {
 		return nil, err
 	}

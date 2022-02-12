@@ -21,6 +21,8 @@ const (
 	ProviderJaeger = "jaeger"
 	// ProviderXRay represents the AWS tracing server.
 	ProviderXRay = "xray"
+	// ProviderCloudTrace represents the GCP Cloud Trace service.
+	ProviderCloudTrace = "cloudtrace"
 )
 
 type (
@@ -46,6 +48,9 @@ func (c *Config) Initialize(ctx context.Context, l logging.Logger) (traceProvide
 		return jaeger.SetupJaeger(ctx, c.Jaeger)
 	case ProviderXRay:
 		return xray.SetupXRay(ctx, c.XRay)
+	case ProviderCloudTrace:
+		// https://cloud.google.com/trace/docs/setup/go-ot
+		return trace.NewNoopTracerProvider(), nil
 	case "":
 		return trace.NewNoopTracerProvider(), nil
 	default:
