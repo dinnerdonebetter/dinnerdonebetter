@@ -133,7 +133,7 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 		return nil, fmt.Errorf("fetching config from secret store: %w", err)
 	}
 
-	logger.WithValue("raw_config", configBytes).Debug("config retrieved")
+	logger.WithValue("raw_config", configBytes).Info("config retrieved")
 
 	if encodeErr := json.NewDecoder(bytes.NewReader([]byte(configBytes))).Decode(&cfg); encodeErr != nil || cfg == nil {
 		return nil, encodeErr

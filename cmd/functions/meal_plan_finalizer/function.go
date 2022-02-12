@@ -55,6 +55,7 @@ type PubSubMessage struct {
 // FinalizeMealPlans is our cloud function entrypoint.
 func FinalizeMealPlans(ctx context.Context, m PubSubMessage) error {
 	logger := zerolog.NewZerologLogger()
+	logger.SetLevel(logging.DebugLevel)
 
 	cfg, err := config.GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {
