@@ -100,15 +100,15 @@ func GetConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*InstanceConfi
 	return cfg, nil
 }
 
-func fetchSecretFromSecretStore(ctx context.Context, client *secretmanager.Client, secretName string) (string, error) {
+func fetchSecretFromSecretStore(ctx context.Context, client *secretmanager.Client, secretName string) ([]byte, error) {
 	req := &secretmanagerpb.AccessSecretVersionRequest{Name: secretName}
 
 	result, err := client.AccessSecretVersion(ctx, req)
 	if err != nil {
-		return "", fmt.Errorf("failed to access secret version: %v", err)
+		return nil, fmt.Errorf("failed to access secret version: %v", err)
 	}
 
-	return result.Payload.String(), nil
+	return result.Payload.Data, nil
 }
 
 // GetMealPlanFinalizerConfigFromGoogleCloudSecretManager fetches and InstanceConfig from GCP Secret Manager.
@@ -133,9 +133,9 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 		return nil, fmt.Errorf("fetching config from secret store: %w", err)
 	}
 
-	logger.WithValue("raw_config", configBytes).Info("config retrieved")
+	logger.WithValue("raw_config", string(configBytes)).Info("config retrieved")
 
-	if encodeErr := json.NewDecoder(bytes.NewReader([]byte(configBytes))).Decode(&cfg); encodeErr != nil || cfg == nil {
+	if encodeErr := json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); encodeErr != nil || cfg == nil {
 		return nil, encodeErr
 	}
 
