@@ -68,9 +68,6 @@ jobs:
       - name: Build meal planning prober cloud function directory
         run: ./scripts/build_cloud_function.sh meal_planning_prober
 
-      - name: Build meal planning prober cloud function directory
-        run: ./scripts/build_cloud_function.sh meal_planning_prober
-
       - name: copy server config file
         working-directory: environments/dev
         run: |
