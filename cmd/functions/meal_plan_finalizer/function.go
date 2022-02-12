@@ -17,10 +17,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
 
-const (
-	dataChangesTopicName = "data_changes"
-)
-
 func finalizeMealPlans(ctx context.Context, logger logging.Logger, tracer tracing.Tracer, dataManager database.DataManager) error {
 	_, span := tracer.StartSpan(ctx)
 	defer span.End()

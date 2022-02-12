@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"time"
 
+	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
