@@ -2,6 +2,7 @@ package datachangesfunction
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 
@@ -38,8 +39,13 @@ func ProcessDataChange(ctx context.Context, m PubSubMessage) error {
 		return fmt.Errorf("error setting up customer data collector: %w", err)
 	}
 
+	rawMessage, err := base64.StdEncoding.DecodeString(m.Data)
+	if err != nil {
+		return fmt.Errorf("decoding raw pubsub message: %w", err)
+	}
+
 	var changeMessage types.DataChangeMessage
-	if unmarshalErr := json.Unmarshal([]byte(m.Data), &changeMessage); unmarshalErr != nil {
+	if unmarshalErr := json.Unmarshal(rawMessage, &changeMessage); unmarshalErr != nil {
 		logger = logger.WithValue("raw_data", m.Data)
 		observability.AcknowledgeError(unmarshalErr, logger, nil, "unmarshalling data change message")
 	}
