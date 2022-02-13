@@ -34,12 +34,6 @@ jobs:
           docker build --tag gcr.io/prixfixe-dev/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
           docker push gcr.io/prixfixe-dev/api_server:latest
 
-      - id: deploy
-        uses: google-github-actions/deploy-cloudrun@v0
-        with:
-          service: 'api-server'
-          image: 'gcr.io/prixfixe-dev/api_server'
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
@@ -85,3 +79,10 @@ jobs:
         run: terraform apply -auto-approve
         # if: github.event_name == 'release'
         working-directory: environments/dev/terraform
+
+      - id: deploy-api-server
+        uses: google-github-actions/deploy-cloudrun@v0
+        with:
+          service: 'api-server'
+          project_id: 'prixfixe-dev'
+          image: 'gcr.io/prixfixe-dev/api_server'
