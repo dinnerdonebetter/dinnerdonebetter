@@ -218,7 +218,6 @@ resource "google_cloud_run_service" "api_server" {
       annotations = {
         "autoscaling.knative.dev/maxScale"      = "1"
         "run.googleapis.com/cloudsql-instances" = google_sql_database_instance.dev.connection_name
-        "run.googleapis.com/client-name"        = "terraform"
       }
     }
   }
@@ -228,7 +227,7 @@ resource "cloudflare_record" "api_cname_record" {
   zone_id = var.CLOUDFLARE_ZONE_ID
   name    = "api.prixfixe.dev"
   type    = "CNAME"
-  value   = "ghs.googlehosted.com."
+  value   = "ghs.googlehosted.com"
   ttl     = 1
   proxied = true
 }

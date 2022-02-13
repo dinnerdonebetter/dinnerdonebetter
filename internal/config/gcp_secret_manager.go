@@ -208,6 +208,9 @@ func GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx context.Context)
 	}
 	cfg.Server.HTTPPort = uint16(port)
 
+	// don't worry about it
+	cfg.Database.ConnectionDetails = " "
+
 	cfg.Email.APIToken = os.Getenv("PRIXFIXE_SENDGRID_API_TOKEN")
 	cfg.CustomerData.APIToken = os.Getenv("PRIXFIXE_SEGMENT_API_TOKEN")
 
