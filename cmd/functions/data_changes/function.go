@@ -40,6 +40,7 @@ func ProcessDataChange(ctx context.Context, m PubSubMessage) error {
 
 	var changeMessage types.DataChangeMessage
 	if unmarshalErr := json.Unmarshal([]byte(m.Data), &changeMessage); unmarshalErr != nil {
+		logger = logger.WithValue("raw_data", m.Data)
 		observability.AcknowledgeError(unmarshalErr, logger, nil, "unmarshalling data change message")
 	}
 

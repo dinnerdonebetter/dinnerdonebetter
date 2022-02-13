@@ -69,12 +69,6 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
-      # - name: Terraform Plan
-      #   working-directory: environments/dev/terraform
-      #   id: plan
-      #   if: github.event_name == 'pull_request'
-      #   run: terraform plan -no-color
-
       - name: Terraform Apply
         run: terraform apply -auto-approve
         # if: github.event_name == 'release'

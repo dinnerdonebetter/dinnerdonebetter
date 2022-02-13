@@ -34,7 +34,6 @@ func (r *publisher) Publish(ctx context.Context, data interface{}) error {
 	defer span.End()
 
 	logger := r.logger.Clone()
-	logger.Debug("publishing message to pubsub topic")
 
 	var b bytes.Buffer
 	if err := r.encoder.Encode(ctx, &b, data); err != nil {
@@ -45,7 +44,6 @@ func (r *publisher) Publish(ctx context.Context, data interface{}) error {
 	result := r.publisher.Publish(ctx, msg)
 
 	<-result.Ready()
-	logger.Debug("publish response is ready")
 
 	// The Get method blocks until a server-generated ID or an error is returned for the published message.
 	_, err := result.Get(ctx)
