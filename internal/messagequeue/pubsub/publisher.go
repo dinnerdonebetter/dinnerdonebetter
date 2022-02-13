@@ -63,7 +63,7 @@ func providePubSubPublisher(logger logging.Logger, pubsubClient *pubsub.Topic, t
 	return &publisher{
 		topic:     topic,
 		encoder:   encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
-		logger:    logging.EnsureLogger(logger).WithValue("topic", topic),
+		logger:    logging.EnsureLogger(logger),
 		publisher: pubsubClient,
 		tracer:    tracing.NewTracer(tracerProvider.Tracer(fmt.Sprintf("%s_publisher", topic))),
 	}
@@ -89,7 +89,7 @@ func ProvidePubSubPublisherProvider(logger logging.Logger, tracerProvider tracin
 
 // ProviderPublisher returns a publisher for a given topic.
 func (p *publisherProvider) ProviderPublisher(topic string) (messagequeue.Publisher, error) {
-	logger := logging.EnsureLogger(p.logger).WithValue("topic", topic)
+	logger := logging.EnsureLogger(p.logger.Clone()).WithValue("topic", topic)
 
 	p.publisherCacheHat.Lock()
 	defer p.publisherCacheHat.Unlock()
