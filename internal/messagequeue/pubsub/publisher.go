@@ -49,10 +49,12 @@ func (r *publisher) Publish(ctx context.Context, data interface{}) error {
 	logger.Debug("publish response is ready")
 
 	// The Get method blocks until a server-generated ID or an error is returned for the published message.
-	if _, err := result.Get(ctx); err != nil {
+	id, err := result.Get(ctx)
+	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing pubsub message")
 	}
 
+	_ = id
 	logger.Debug("published message")
 
 	return nil
@@ -89,7 +91,7 @@ func ProvidePubSubPublisherProvider(logger logging.Logger, tracerProvider tracin
 
 // ProviderPublisher returns a publisher for a given topic.
 func (p *publisherProvider) ProviderPublisher(topic string) (messagequeue.Publisher, error) {
-	logger := logging.EnsureLogger(p.logger.Clone()).WithValue("topic", topic)
+	logger := logging.EnsureLogger(p.logger.Clone())
 
 	p.publisherCacheHat.Lock()
 	defer p.publisherCacheHat.Unlock()
