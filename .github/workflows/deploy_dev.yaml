@@ -24,6 +24,13 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v0
 
+      - id: deploy-api-server
+        uses: google-github-actions/deploy-cloudrun@v0
+        with:
+          service: 'api-server'
+          project_id: 'prixfixe-dev'
+          image: 'gcr.io/prixfixe-dev/api_server'
+
       - name: Authorize Docker push
         run: gcloud auth configure-docker
 
@@ -63,13 +70,6 @@ jobs:
         working-directory: environments/dev
         run: |
           cp config_files/service-config.json terraform/service-config.json
-
-      - id: deploy-api-server
-        uses: google-github-actions/deploy-cloudrun@v0
-        with:
-          service: 'api-server'
-          project_id: 'prixfixe-dev'
-          image: 'gcr.io/prixfixe-dev/api_server'
 
       - name: Terraform Validate
         working-directory: environments/dev/terraform
