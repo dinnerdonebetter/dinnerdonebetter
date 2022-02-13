@@ -103,6 +103,11 @@ resource "google_cloud_run_service" "api_server" {
         }
 
         env {
+          name  = "GOOGLE_CLOUD_SECRET_STORE_PREFIX"
+          value = format("projects/%d/secrets", data.google_project.project.number)
+        }
+
+        env {
           name  = "CONFIGURATION_FILEPATH"
           value = "/config/service-config.json"
         }

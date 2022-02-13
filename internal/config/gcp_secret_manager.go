@@ -20,6 +20,11 @@ func GetConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*InstanceConfi
 	logger := zerolog.NewZerologLogger()
 	logger.Debug("setting up secret manager client")
 
+	client, err := secretmanager.NewClient(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create secretmanager client: %w", err)
+	}
+
 	var cfg *InstanceConfig
 	configFilepath := os.Getenv("CONFIGURATION_FILEPATH")
 
@@ -68,7 +73,15 @@ func GetConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*InstanceConfi
 	cfg.Services.Auth.Cookies.BlockKey = os.Getenv("PRIXFIXE_COOKIE_BLOCK_KEY")
 	cfg.Services.Auth.PASETO.LocalModeKey = []byte(os.Getenv("PRIXFIXE_PASETO_LOCAL_KEY"))
 
-	dataChangesTopicName := os.Getenv("PRIXFIXE_DATA_CHANGES_TOPIC")
+	secretPrefix := os.Getenv("GOOGLE_CLOUD_SECRET_STORE_PREFIX")
+	dataChangesTopicSecretPath := fmt.Sprintf("%s/%s/versions/latest", secretPrefix, "data_changes_topic_name")
+	changesTopic, err := fetchSecretFromSecretStore(ctx, client, dataChangesTopicSecretPath)
+	if err != nil {
+		return nil, fmt.Errorf("error getting data changes topic name from secret store: %w", err)
+	}
+
+	dataChangesTopicName := string(changesTopic)
+	cfg.Events.Publishers.PubSubConfig.TopicName = dataChangesTopicName
 
 	cfg.Email.APIToken = os.Getenv("PRIXFIXE_SENDGRID_API_TOKEN")
 	cfg.CustomerData.APIToken = os.Getenv("PRIXFIXE_SEGMENT_API_TOKEN")
