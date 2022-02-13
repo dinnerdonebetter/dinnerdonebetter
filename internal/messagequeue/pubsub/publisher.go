@@ -44,17 +44,15 @@ func (r *publisher) Publish(ctx context.Context, data interface{}) error {
 	msg := &pubsub.Message{Data: b.Bytes()}
 	result := r.publisher.Publish(ctx, msg)
 
-	logger.Debug("waiting for publish response to be ready")
 	<-result.Ready()
 	logger.Debug("publish response is ready")
 
 	// The Get method blocks until a server-generated ID or an error is returned for the published message.
-	id, err := result.Get(ctx)
+	_, err := result.Get(ctx)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing pubsub message")
 	}
 
-	_ = id
 	logger.Debug("published message")
 
 	return nil
