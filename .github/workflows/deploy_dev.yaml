@@ -80,6 +80,7 @@ jobs:
         # if: github.event_name == 'release'
         working-directory: environments/dev/terraform
 
+      # if this step fails, you need to add the `Service Account User` role to the Github Actions IAM Principal.
       - id: deploy-api-server
         uses: google-github-actions/deploy-cloudrun@v0
         with:
