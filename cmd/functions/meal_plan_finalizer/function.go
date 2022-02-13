@@ -4,6 +4,11 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/prixfixeco/api_server/internal/messagequeue"
+	"github.com/prixfixeco/api_server/pkg/types"
+
+	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
+
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
@@ -17,7 +22,17 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
 
-func finalizeMealPlans(ctx context.Context, logger logging.Logger, tracer tracing.Tracer, dataManager database.DataManager) error {
+const (
+	dataChangesTopicName = "data_changes"
+)
+
+func finalizeMealPlans(
+	ctx context.Context,
+	logger logging.Logger,
+	tracer tracing.Tracer,
+	dataManager database.DataManager,
+	dataChangesPublisher messagequeue.Publisher,
+) (int, error) {
 	_, span := tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -28,18 +43,30 @@ func finalizeMealPlans(ctx context.Context, logger logging.Logger, tracer tracin
 		logger.Fatal(fetchMealPlansErr)
 	}
 
+	var changedCount int
 	for _, mealPlan := range mealPlans {
 		changed, err := dataManager.FinalizeMealPlanWithExpiredVotingPeriod(ctx, mealPlan.ID, mealPlan.BelongsToHousehold)
 		if err != nil {
-			return observability.PrepareError(err, logger, span, "finalizing meal plan")
+			return -1, observability.PrepareError(err, logger, span, "finalizing meal plan")
 		}
 
-		if !changed {
-			logger.Debug("meal plan was not changed")
+		if changed {
+			changedCount++
+
+			if dataChangePublishErr := dataChangesPublisher.Publish(ctx, &types.DataChangeMessage{
+				DataType:                  types.MealPlanDataType,
+				MessageType:               "meal_plan_finalized",
+				MealPlan:                  mealPlan,
+				MealPlanID:                mealPlan.ID,
+				Context:                   map[string]string{},
+				AttributableToHouseholdID: mealPlan.BelongsToHousehold,
+			}); dataChangePublishErr != nil {
+				observability.AcknowledgeError(dataChangePublishErr, logger, span, "publishing data change message")
+			}
 		}
 	}
 
-	return nil
+	return changedCount, nil
 }
 
 // PubSubMessage is the payload of a Pub/Sub event. See the documentation for more details:
@@ -57,7 +84,6 @@ func FinalizeMealPlans(ctx context.Context, m PubSubMessage) error {
 	if err != nil {
 		return fmt.Errorf("error getting config: %w", err)
 	}
-	cfg.Database.RunMigrations = false
 
 	tracerProvider := trace.NewNoopTracerProvider()
 	otel.SetTracerProvider(tracerProvider)
@@ -68,20 +94,28 @@ func FinalizeMealPlans(ctx context.Context, m PubSubMessage) error {
 		return fmt.Errorf("error setting up database client: %w", err)
 	}
 
-	// msgconfig.ProvidePublisherProvider
-	// publisherProvider.ProviderPublisher
-	// emailconfig.ProvideEmailer
-	// customerdataconfig.ProvideCollector
+	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
+	if err != nil {
+		logger.Fatal(err)
+	}
 
-	if err = finalizeMealPlans(ctx, logger, tracer, dataManager); err != nil {
-		return fmt.Errorf("error finalizing meal plans: %w", err)
+	dataChangesPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	changedCount, mealPlanFinalizationErr := finalizeMealPlans(ctx, logger, tracer, dataManager, dataChangesPublisher)
+	if mealPlanFinalizationErr != nil {
+		return fmt.Errorf("finalizing meal plans: %w", mealPlanFinalizationErr)
 	}
 
 	if closeErr := dataManager.DB().Close(); closeErr != nil {
 		observability.AcknowledgeError(closeErr, logger, nil, "closing database connection")
 	}
 
-	logger.Info("all done")
+	if changedCount > 0 {
+		logger.WithValue("count", changedCount).Info("finalized meal plans")
+	}
 
 	return nil
 }

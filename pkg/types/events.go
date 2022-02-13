@@ -117,6 +117,7 @@ type (
 		MealPlanOptionVoteID       string                      `json:"mealPlanOptionVoteID,omitempty"`
 		Webhook                    *Webhook                    `json:"webhook,omitempty"`
 		Household                  *Household                  `json:"household,omitempty"`
+		HouseholdID                string                      `json:"hosueholdID,omitempty"`
 		HouseholdInvitation        *HouseholdInvitation        `json:"householdInvitation,omitempty"`
 		UserMembership             *HouseholdUserMembership    `json:"userMembership,omitempty"`
 		Context                    map[string]string           `json:"context,omitempty"`

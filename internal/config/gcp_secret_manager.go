@@ -20,9 +20,9 @@ func GetConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*InstanceConfi
 	logger := zerolog.NewZerologLogger()
 	logger.Debug("setting up secret manager client")
 
-	client, err := secretmanager.NewClient(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create secretmanager client: %w", err)
+	client, secretManagerCreationErr := secretmanager.NewClient(ctx)
+	if secretManagerCreationErr != nil {
+		return nil, fmt.Errorf("failed to create secretmanager client: %w", secretManagerCreationErr)
 	}
 
 	var cfg *InstanceConfig
@@ -38,9 +38,9 @@ func GetConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*InstanceConfi
 	}
 
 	rawPort := os.Getenv("PORT")
-	port, err := strconv.ParseUint(rawPort, 10, 64)
-	if err != nil {
-		return nil, fmt.Errorf("error parsing port: %w", err)
+	port, portParseErr := strconv.ParseUint(rawPort, 10, 64)
+	if portParseErr != nil {
+		return nil, fmt.Errorf("parsing port: %w", portParseErr)
 	}
 	cfg.Server.HTTPPort = uint16(port)
 
@@ -60,24 +60,13 @@ func GetConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*InstanceConfi
 	)
 
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(dbURI)
-
-	logger.WithValues(map[string]interface{}{
-		"DB_SOCKET_DIR":                              os.Getenv("DB_SOCKET_DIR"),
-		"PRIXFIXE_DATABASE_USER":                     os.Getenv("PRIXFIXE_DATABASE_USER"),
-		"PRIXFIXE_DATABASE_PASSWORD":                 os.Getenv("PRIXFIXE_DATABASE_PASSWORD"),
-		"PRIXFIXE_DATABASE_NAME":                     os.Getenv("PRIXFIXE_DATABASE_NAME"),
-		"PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME": os.Getenv("PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME"),
-	}).Debug("fetched database values")
-
 	cfg.Services.Auth.Cookies.HashKey = os.Getenv("PRIXFIXE_COOKIE_HASH_KEY")
 	cfg.Services.Auth.Cookies.BlockKey = os.Getenv("PRIXFIXE_COOKIE_BLOCK_KEY")
 	cfg.Services.Auth.PASETO.LocalModeKey = []byte(os.Getenv("PRIXFIXE_PASETO_LOCAL_KEY"))
 
-	secretPrefix := os.Getenv("GOOGLE_CLOUD_SECRET_STORE_PREFIX")
-	dataChangesTopicSecretPath := fmt.Sprintf("%s/%s/versions/latest", secretPrefix, "data_changes_topic_name")
-	changesTopic, err := fetchSecretFromSecretStore(ctx, client, dataChangesTopicSecretPath)
-	if err != nil {
-		return nil, fmt.Errorf("error getting data changes topic name from secret store: %w", err)
+	changesTopic, dataChangesNameFetchErr := fetchSecretFromSecretStore(ctx, client, "data_changes_topic_name")
+	if dataChangesNameFetchErr != nil {
+		return nil, fmt.Errorf("getting data changes topic name from secret store: %w", dataChangesNameFetchErr)
 	}
 
 	dataChangesTopicName := string(changesTopic)
@@ -113,8 +102,20 @@ func GetConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*InstanceConfi
 	return cfg, nil
 }
 
+var secretStorePrefix = os.Getenv("GOOGLE_CLOUD_SECRET_STORE_PREFIX")
+
+func buildSecretPathForSecretStore(secretName string) string {
+	return fmt.Sprintf(
+		"%s/%s/versions/latest",
+		secretStorePrefix,
+		secretName,
+	)
+}
+
 func fetchSecretFromSecretStore(ctx context.Context, client *secretmanager.Client, secretName string) ([]byte, error) {
-	req := &secretmanagerpb.AccessSecretVersionRequest{Name: secretName}
+	req := &secretmanagerpb.AccessSecretVersionRequest{
+		Name: buildSecretPathForSecretStore(secretName),
+	}
 
 	result, err := client.AccessSecretVersion(ctx, req)
 	if err != nil {
@@ -127,32 +128,26 @@ func fetchSecretFromSecretStore(ctx context.Context, client *secretmanager.Clien
 // GetMealPlanFinalizerConfigFromGoogleCloudSecretManager fetches and InstanceConfig from GCP Secret Manager.
 func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
 	logger := zerolog.NewZerologLogger()
-	logger.Info("setting up secret manager client")
 
-	client, err := secretmanager.NewClient(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create secretmanager client: %w", err)
+	client, secretManagerCreationErr := secretmanager.NewClient(ctx)
+	if secretManagerCreationErr != nil {
+		return nil, fmt.Errorf("failed to create secretmanager client: %w", secretManagerCreationErr)
 	}
-
-	secretPrefix := os.Getenv("GOOGLE_CLOUD_SECRET_STORE_PREFIX")
-	configSecretPath := fmt.Sprintf("%s/%s/versions/latest", secretPrefix, "api_service_config")
 
 	var cfg *InstanceConfig
-	configBytes, err := fetchSecretFromSecretStore(ctx, client, configSecretPath)
-	if err != nil {
-		return nil, fmt.Errorf("fetching config from secret store: %w", err)
+	configBytes, configFetchErr := fetchSecretFromSecretStore(ctx, client, "api_service_config")
+	if configFetchErr != nil {
+		return nil, fmt.Errorf("fetching config from secret store: %w", configFetchErr)
 	}
-
-	logger.WithValue("raw_config", string(configBytes)).Info("config retrieved")
 
 	if encodeErr := json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); encodeErr != nil || cfg == nil {
 		return nil, encodeErr
 	}
 
 	rawPort := os.Getenv("PORT")
-	port, err := strconv.ParseUint(rawPort, 10, 64)
-	if err != nil {
-		return nil, fmt.Errorf("error parsing port: %w", err)
+	port, portParseErr := strconv.ParseUint(rawPort, 10, 64)
+	if portParseErr != nil {
+		return nil, fmt.Errorf("parsing port: %w", portParseErr)
 	}
 	cfg.Server.HTTPPort = uint16(port)
 
@@ -176,17 +171,45 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 
 	logger.Debug("fetched database values")
 
-	dataChangesTopicSecretPath := fmt.Sprintf("%s/%s/versions/latest", secretPrefix, "data_changes_topic_name")
-	dataChangesTopicName, err := fetchSecretFromSecretStore(ctx, client, dataChangesTopicSecretPath)
-	if err != nil {
-		return nil, fmt.Errorf("error getting data changes topic name from secret store: %w", err)
-	}
-
-	cfg.Events.Publishers.PubSubConfig.TopicName = string(dataChangesTopicName)
+	cfg.Events.Publishers.PubSubConfig.TopicName = "data_changes"
 
 	// we don't actually need these, except for validation
 	cfg.CustomerData.APIToken = " "
 	cfg.Email.APIToken = " "
+
+	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
+		return nil, validationErr
+	}
+
+	return cfg, nil
+}
+
+// GetDataChangesWorkerConfigFromGoogleCloudSecretManager fetches and InstanceConfig from GCP Secret Manager.
+func GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
+	client, err := secretmanager.NewClient(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create secretmanager client: %w", err)
+	}
+
+	var cfg *InstanceConfig
+	configBytes, configFetchErr := fetchSecretFromSecretStore(ctx, client, "api_service_config")
+	if configFetchErr != nil {
+		return nil, fmt.Errorf("fetching config from secret store: %w", configFetchErr)
+	}
+
+	if encodeErr := json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); encodeErr != nil || cfg == nil {
+		return nil, encodeErr
+	}
+
+	rawPort := os.Getenv("PORT")
+	port, portParseErr := strconv.ParseUint(rawPort, 10, 64)
+	if portParseErr != nil {
+		return nil, fmt.Errorf("parsing port: %w", portParseErr)
+	}
+	cfg.Server.HTTPPort = uint16(port)
+
+	cfg.Email.APIToken = os.Getenv("PRIXFIXE_SENDGRID_API_TOKEN")
+	cfg.CustomerData.APIToken = os.Getenv("PRIXFIXE_SEGMENT_API_TOKEN")
 
 	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
 		return nil, validationErr

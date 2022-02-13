@@ -58,5 +58,12 @@ resource "google_cloudfunctions_function" "data_changes" {
     resource   = google_pubsub_topic.data_changes_topic.name
   }
 
+  environment_variables = {
+    PRIXFIXE_SENDGRID_API_TOKEN      = var.SENDGRID_API_TOKEN
+    PRIXFIXE_SEGMENT_API_TOKEN       = var.SEGMENT_API_TOKEN
+    GOOGLE_CLOUD_SECRET_STORE_PREFIX = format("projects/%d/secrets", data.google_project.project.number)
+    GOOGLE_CLOUD_PROJECT_ID          = data.google_project.project.project_id
+  }
+
   entry_point = "ProcessDataChange"
 }
