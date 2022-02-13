@@ -59,12 +59,7 @@ const (
 	developmentEnv = "development"
 	testingEnv     = "testing"
 
-	localElasticsearchLocation = "http://elasticsearch:9200"
-
 	// message provider topics
-	preWritesTopicName   = "pre_writes"
-	preUpdatesTopicName  = "pre_updates"
-	preArchivesTopicName = "pre_archives"
 	dataChangesTopicName = "data_changes"
 
 	pasetoSecretSize      = 32
@@ -159,7 +154,6 @@ type configFunc func(ctx context.Context, filePath string) error
 
 var files = map[string]configFunc{
 	"environments/dev/config_files/service-config.json":               devEnvironmentServerConfig,
-	"environments/dev/config_files/worker-config.json":                devEnvironmentWorkerConfig,
 	"environments/local/config_files/service-config.json":             localDevelopmentConfig,
 	"environments/testing/config_files/integration-tests-config.json": integrationTestConfig,
 }
@@ -205,7 +199,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				Provider: msgconfig.ProviderRedis,
 			},
 			Publishers: msgconfig.ProviderConfig{
-				Provider: msgconfig.ProviderSQS,
+				Provider: msgconfig.ProviderPubSub,
 			},
 		},
 		Email:        emailConfig,
@@ -263,16 +257,6 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 
 func devEnvironmentServerConfig(ctx context.Context, filePath string) error {
 	cfg := buildDevEnvironmentServerConfig()
-
-	return saveConfig(ctx, filePath, cfg, false, false)
-}
-
-func devEnvironmentWorkerConfig(ctx context.Context, filePath string) error {
-	cfg := buildDevEnvironmentServerConfig()
-
-	cfg.Observability.Tracing.Provider = ""
-	cfg.Events.Consumers.Provider = ""
-	cfg.Database.RunMigrations = false
 
 	return saveConfig(ctx, filePath, cfg, false, false)
 }

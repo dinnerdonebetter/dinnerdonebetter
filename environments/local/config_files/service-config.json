@@ -10,6 +10,9 @@
 			"sqs": {
 				"messageQueueAddress": ""
 			},
+			"pubsub": {
+				"topicName": ""
+			},
 			"redis": {
 				"username": "",
 				"queueAddress": [
@@ -21,6 +24,9 @@
 			"provider": "redis",
 			"sqs": {
 				"messageQueueAddress": ""
+			},
+			"pubsub": {
+				"topicName": ""
 			},
 			"redis": {
 				"username": "",
@@ -140,7 +146,7 @@
 		"auth": {
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "8h2Vstqv/4V60HPNtKogvVlyhDYCNa4WgKNVo+anf18=",
+				"localModeKey": "aLoN4TufMHjoVo51ZALIujoHrW8v69V6V9jldfk8tcg=",
 				"lifetime": 60000000000
 			},
 			"cookies": {
