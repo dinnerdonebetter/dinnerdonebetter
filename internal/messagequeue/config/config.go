@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 
 	ps "cloud.google.com/go/pubsub"
@@ -78,7 +79,7 @@ func ProvidePublisherProvider(logger logging.Logger, tracerProvider tracing.Trac
 		return sqs.ProvideSQSPublisherProvider(logger, tracerProvider), nil
 	case ProviderPubSub:
 		ctx := context.Background()
-		client, err := ps.NewClient(ctx, "")
+		client, err := ps.NewClient(ctx, os.Getenv("GOOGLE_CLOUD_PROJECT_ID"))
 		if err != nil {
 			return nil, fmt.Errorf("establishing PubSub client: %w", err)
 		}
