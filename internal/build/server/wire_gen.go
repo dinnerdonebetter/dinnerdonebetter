@@ -8,6 +8,7 @@ package server
 
 import (
 	"context"
+
 	"github.com/prixfixeco/api_server/internal/authentication"
 	"github.com/prixfixeco/api_server/internal/config"
 	config3 "github.com/prixfixeco/api_server/internal/customerdata/config"
@@ -87,7 +88,7 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	householdsConfig := servicesConfigurations.Households
 	householdInvitationDataManager := database.ProvideHouseholdInvitationDataManager(dataManager)
 	config5 := &cfg.Events
-	publisherProvider, err := config4.ProvidePublisherProvider(ctx, logger, tracerProvider, config5)
+	publisherProvider, err := config4.ProvidePublisherProvider(logger, tracerProvider, config5)
 	if err != nil {
 		return nil, err
 	}

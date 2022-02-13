@@ -70,13 +70,14 @@ func ProvideConsumerProvider(logger logging.Logger, tracerProvider tracing.Trace
 }
 
 // ProvidePublisherProvider provides a PublisherProvider.
-func ProvidePublisherProvider(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, c *Config) (messagequeue.PublisherProvider, error) {
+func ProvidePublisherProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, c *Config) (messagequeue.PublisherProvider, error) {
 	switch cleanString(string(c.Publishers.Provider)) {
 	case ProviderRedis:
 		return redis.ProvideRedisPublisherProvider(logger, tracerProvider, c.Publishers.RedisConfig), nil
 	case ProviderSQS:
 		return sqs.ProvideSQSPublisherProvider(logger, tracerProvider), nil
 	case ProviderPubSub:
+		ctx := context.Background()
 		client, err := ps.NewClient(ctx, "")
 		if err != nil {
 			return nil, fmt.Errorf("establishing PubSub client: %w", err)

@@ -48,6 +48,8 @@ func (r *publisher) Publish(ctx context.Context, data interface{}) error {
 		observability.AcknowledgeError(err, logger, span, "publishing pubsub message")
 	}
 
+	logger.Debug("published message")
+
 	return nil
 }
 

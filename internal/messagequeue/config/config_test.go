@@ -1,7 +1,6 @@
 package config
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -56,7 +55,6 @@ func TestProvidePublisherProvider(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
 		logger := zerolog.NewZerologLogger()
 		cfg := &Config{
 			Publishers: ProviderConfig{
@@ -64,7 +62,7 @@ func TestProvidePublisherProvider(T *testing.T) {
 			},
 		}
 
-		provider, err := ProvidePublisherProvider(ctx, logger, trace.NewNoopTracerProvider(), cfg)
+		provider, err := ProvidePublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)
 		assert.NoError(t, err)
 		assert.NotNil(t, provider)
 	})
@@ -72,11 +70,10 @@ func TestProvidePublisherProvider(T *testing.T) {
 	T.Run("with invalid provider", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
 		logger := zerolog.NewZerologLogger()
 		cfg := &Config{}
 
-		provider, err := ProvidePublisherProvider(ctx, logger, trace.NewNoopTracerProvider(), cfg)
+		provider, err := ProvidePublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)
 		assert.Error(t, err)
 		assert.Nil(t, provider)
 	})
