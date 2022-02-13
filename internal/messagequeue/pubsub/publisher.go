@@ -34,7 +34,7 @@ func (r *publisher) Publish(ctx context.Context, data interface{}) error {
 	defer span.End()
 
 	logger := r.logger.Clone()
-	logger.Debug("publishing message")
+	logger.Debug("publishing message to pubsub topic")
 
 	var b bytes.Buffer
 	if err := r.encoder.Encode(ctx, &b, data); err != nil {
@@ -42,17 +42,14 @@ func (r *publisher) Publish(ctx context.Context, data interface{}) error {
 	}
 
 	result := r.publisher.Publish(ctx, &pubsub.Message{Data: b.Bytes()})
-	go func(res *pubsub.PublishResult) {
-		// The Get method blocks until a server-generated ID or an error is returned for the published message.
-		id, err := res.Get(ctx)
-		if err != nil {
-			// Error handling code can be added here.
-			observability.AcknowledgeError(err, logger, span, "publishing pubsub message")
-			return
-		}
+	// The Get method blocks until a server-generated ID or an error is returned for the published message.
+	id, err := result.Get(ctx)
+	if err != nil {
+		// Error handling code can be added here.
+		observability.AcknowledgeError(err, logger, span, "publishing pubsub message")
+	}
 
-		_ = id
-	}(result)
+	_ = id
 
 	return nil
 }
