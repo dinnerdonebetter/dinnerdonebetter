@@ -27,24 +27,16 @@ resource "google_project_iam_member" "api_user" {
   member  = format("serviceAccount:%s", google_service_account.api_user_service_account.email)
 }
 
-#resource "google_project_iam_binding" "api_user_secret_accessor" {
-#  project = local.project_id
-#  role    = "roles/secretmanager.secretAccessor"
-#
-#  members = [
-#    google_project_iam_member.api_user.member,
-#  ]
-#}
-#
-#resource "google_project_iam_binding" "api_user_cloud_pubsub_publisher" {
-#  project = local.project_id
-#  role    = "roles/pubsub.publisher"
-#
-#  members = [
-#    google_project_iam_member.api_user.member,
-#  ]
-#}
+resource "google_project_iam_binding" "api_user_secret_accessor" {
+  project = local.project_id
+  role    = "roles/iam.serviceAccountUser"
 
+  members = [
+    google_project_iam_member.api_user.member,
+  ]
+}
+
+# this allows the service to be on the public internet
 data "google_iam_policy" "public_access" {
   binding {
     role = "roles/run.invoker"
