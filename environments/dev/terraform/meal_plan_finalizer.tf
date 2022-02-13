@@ -102,6 +102,7 @@ resource "google_cloudfunctions_function" "meal_plan_finalizer" {
     PRIXFIXE_DATABASE_NAME                     = local.database_name,
     PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME = google_sql_database_instance.dev.connection_name,
     GOOGLE_CLOUD_SECRET_STORE_PREFIX           = format("projects/%d/secrets", data.google_project.project.number)
+    GOOGLE_CLOUD_PROJECT_ID                    = data.google_project.project.project_id
   }
 
   #  secret_environment_variables = {

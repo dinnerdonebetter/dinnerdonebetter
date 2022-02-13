@@ -33,7 +33,7 @@ func (r *publisher) Publish(ctx context.Context, data interface{}) error {
 	_, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.WithValue("topic", r.topic)
+	logger := r.logger.Clone()
 	logger.Debug("publishing message to pubsub topic")
 
 	var b bytes.Buffer
@@ -41,10 +41,15 @@ func (r *publisher) Publish(ctx context.Context, data interface{}) error {
 		return observability.PrepareError(err, r.logger, span, "encoding topic message")
 	}
 
-	result := r.publisher.Publish(ctx, &pubsub.Message{Data: b.Bytes()})
+	msg := &pubsub.Message{Data: b.Bytes()}
+	result := r.publisher.Publish(ctx, msg)
+
+	logger.Debug("waiting for publish response to be ready")
+	<-result.Ready()
+	logger.Debug("publish response is ready")
+
 	// The Get method blocks until a server-generated ID or an error is returned for the published message.
 	if _, err := result.Get(ctx); err != nil {
-		// Error handling code can be added here.
 		observability.AcknowledgeError(err, logger, span, "publishing pubsub message")
 	}
 
@@ -53,12 +58,12 @@ func (r *publisher) Publish(ctx context.Context, data interface{}) error {
 	return nil
 }
 
-// providePubSubPublisher provides a sqs-backed publisher.
+// providePubSubPublisher provides a Pub/Sub-backed publisher.
 func providePubSubPublisher(logger logging.Logger, pubsubClient *pubsub.Topic, tracerProvider tracing.TracerProvider, topic string) *publisher {
 	return &publisher{
 		topic:     topic,
 		encoder:   encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
-		logger:    logging.EnsureLogger(logger),
+		logger:    logging.EnsureLogger(logger).WithValue("topic", topic),
 		publisher: pubsubClient,
 		tracer:    tracing.NewTracer(tracerProvider.Tracer(fmt.Sprintf("%s_publisher", topic))),
 	}

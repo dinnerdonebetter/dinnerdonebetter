@@ -108,6 +108,11 @@ resource "google_cloud_run_service" "api_server" {
         }
 
         env {
+          name  = "GOOGLE_CLOUD_PROJECT_ID"
+          value = data.google_project.project.project_id
+        }
+
+        env {
           name  = "CONFIGURATION_FILEPATH"
           value = "/config/service-config.json"
         }

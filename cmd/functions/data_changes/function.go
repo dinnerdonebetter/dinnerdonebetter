@@ -18,7 +18,7 @@ type PubSubMessage struct {
 func ProcessDataChange(ctx context.Context, m PubSubMessage) error {
 	logger := zerolog.NewZerologLogger()
 
-	logger.Info("invoked")
+	logger.WithValue("payload", string(m.Data)).Info("invoked")
 
 	return nil
 }
