@@ -13,7 +13,6 @@ import (
 	config3 "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database"
 	config2 "github.com/prixfixeco/api_server/internal/database/config"
-	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	config4 "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -49,16 +48,11 @@ import (
 // Injectors from build.go:
 
 // Build builds a server.
-func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfig, tracerProvider tracing.TracerProvider, unitCounterProvider metrics.UnitCounterProvider, metricsHandler metrics.Handler) (*server.HTTPServer, error) {
+func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfig, tracerProvider tracing.TracerProvider, unitCounterProvider metrics.UnitCounterProvider, metricsHandler metrics.Handler, dataManager database.DataManager) (*server.HTTPServer, error) {
 	serverConfig := cfg.Server
 	servicesConfigurations := &cfg.Services
 	authenticationConfig := &servicesConfigurations.Auth
 	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
-	configConfig := &cfg.Database
-	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, configConfig, tracerProvider)
-	if err != nil {
-		return nil, err
-	}
 	userDataManager := database.ProvideUserDataManager(dataManager)
 	apiClientDataManager := database.ProvideAPIClientDataManager(dataManager)
 	householdUserMembershipDataManager := database.ProvideHouseholdUserMembershipDataManager(dataManager)
@@ -70,8 +64,8 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	encodingConfig := cfg.Encoding
 	contentType := encoding.ProvideContentType(encodingConfig)
 	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, contentType)
-	config5 := &cfg.CustomerData
-	collector, err := config3.ProvideCollector(config5, logger)
+	configConfig := &cfg.CustomerData
+	collector, err := config3.ProvideCollector(configConfig, logger)
 	if err != nil {
 		return nil, err
 	}
@@ -92,8 +86,8 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	userDataService := users.ProvideUsersService(authenticationConfig, logger, userDataManager, householdDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, imageUploadProcessor, uploadManager, routeParamManager, collector, tracerProvider)
 	householdsConfig := servicesConfigurations.Households
 	householdInvitationDataManager := database.ProvideHouseholdInvitationDataManager(dataManager)
-	config6 := &cfg.Events
-	publisherProvider, err := config4.ProvidePublisherProvider(ctx, logger, tracerProvider, config6)
+	config5 := &cfg.Events
+	publisherProvider, err := config4.ProvidePublisherProvider(ctx, logger, tracerProvider, config5)
 	if err != nil {
 		return nil, err
 	}

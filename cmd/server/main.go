@@ -8,7 +8,14 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
+	"time"
+
+	"github.com/prixfixeco/api_server/internal/observability"
+
+	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 
@@ -85,8 +92,15 @@ func main() {
 	ctx, cancel := context.WithTimeout(ctx, cfg.Server.StartupDeadline)
 	ctx, initSpan := tracing.StartSpan(ctx)
 
+	dbConfig := &cfg.Database
+	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, dbConfig, tracerProvider)
+	if err != nil {
+		logger.Fatal(fmt.Errorf("initializing database client: %w", err))
+	}
+
 	// build our server struct.
-	srv, err := server.Build(ctx, logger, cfg, tracerProvider, metricsProvider, metricsHandler)
+	// NOTE: we should, at some point, return a function that we can defer that will end any database connections and such
+	srv, err := server.Build(ctx, logger, cfg, tracerProvider, metricsProvider, metricsHandler, dataManager)
 	if err != nil {
 		logger.Fatal(fmt.Errorf("initializing HTTP server: %w", err))
 	}
@@ -98,4 +112,33 @@ func main() {
 	//   I awoke and saw that life was service.
 	//   	I acted and behold, service deployed.
 	srv.Serve()
+
+	// Run server
+	go srv.Serve()
+
+	signalChan := make(chan os.Signal, 1)
+
+	signal.Notify(
+		signalChan,
+		syscall.SIGHUP,
+		syscall.SIGINT,
+		syscall.SIGQUIT,
+	)
+
+	// os.Interrupt
+	<-signalChan
+
+	go func() {
+		// os.Kill
+		<-signalChan
+	}()
+
+	_, cancelShutdown := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancelShutdown()
+
+	if dbCloseErr := dataManager.DB().Close(); dbCloseErr != nil {
+		observability.AcknowledgeError(err, logger, nil, "closing database connection")
+	}
+
+	cancel()
 }

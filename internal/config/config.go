@@ -49,6 +49,9 @@ type (
 	// runMode describes what method of operation the server is under.
 	runMode string
 
+	// CloserFunc calls all io.Closers in the service.
+	CloserFunc func()
+
 	// InstanceConfig configures an instance of the service. It is composed of all the other setting structs.
 	InstanceConfig struct {
 		_             struct{}
