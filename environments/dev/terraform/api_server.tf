@@ -13,6 +13,7 @@ resource "google_project_iam_custom_role" "api_server_role" {
     "cloudsql.instances.get",
     "pubsub.topics.list",
     "pubsub.topics.publish",
+    "iam.serviceaccounts.actAs",
   ]
 }
 
@@ -25,15 +26,6 @@ resource "google_project_iam_member" "api_user" {
   project = local.project_id
   role    = google_project_iam_custom_role.api_server_role.id
   member  = format("serviceAccount:%s", google_service_account.api_user_service_account.email)
-}
-
-resource "google_project_iam_binding" "api_user_secret_accessor" {
-  project = local.project_id
-  role    = "roles/iam.serviceAccountUser"
-
-  members = [
-    google_project_iam_member.api_user.member,
-  ]
 }
 
 # this allows the service to be on the public internet
