@@ -15,7 +15,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 )
 
-// GetAPIServerConfigFromGoogleCloudRunEnvironment fetches and InstanceConfig from AWS SSM Parameter Store.
+// GetAPIServerConfigFromGoogleCloudRunEnvironment fetches and InstanceConfig from GCP Secret Manager.
 func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*InstanceConfig, error) {
 	logger := zerolog.NewZerologLogger()
 	logger.Debug("setting up secret manager client")

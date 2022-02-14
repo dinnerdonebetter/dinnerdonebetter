@@ -28,9 +28,6 @@ var (
 	// ErrNilConfig denotes that the provided configuration is nil.
 	ErrNilConfig = errors.New("nil config provided")
 
-	// ErrInvalidConfiguration denotes that the provided configuration is invalid.
-	ErrInvalidConfiguration = errors.New("configuration invalid")
-
 	// ErrBucketIsUnavailable denotes that the requested bucket is invalid.
 	ErrBucketIsUnavailable = errors.New("bucket is unavailable")
 )
