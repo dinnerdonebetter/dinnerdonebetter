@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	mockauthn "github.com/prixfixeco/api_server/internal/authentication/mock"
-	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -64,7 +63,6 @@ func TestProvideAPIClientsService(T *testing.T) {
 			},
 			rpm,
 			&config{},
-			&customerdata.MockCollector{},
 			trace.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, s)

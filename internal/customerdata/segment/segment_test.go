@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"github.com/prixfixeco/api_server/pkg/types"
+
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/stretchr/testify/require"
@@ -90,6 +92,6 @@ func TestCustomerDataCollector_EventOccurred(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 
-		require.NoError(t, collector.EventOccurred(ctx, t.Name(), exampleUserID, properties))
+		require.NoError(t, collector.EventOccurred(ctx, types.CustomerEventType(t.Name()), exampleUserID, properties))
 	})
 }

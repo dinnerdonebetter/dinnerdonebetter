@@ -122,7 +122,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.HouseholdDataType,
-			MessageType:               "household_created",
+			EventType:                 types.HouseholdCreatedCustomerEventType,
 			Household:                 household,
 			AttributableToUserID:      requester,
 			AttributableToHouseholdID: household.ID,
@@ -130,12 +130,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			observability.AcknowledgeError(err, logger, span, "publishing data change message for created household")
 		}
-	}
-
-	if err = s.customerDataCollector.EventOccurred(ctx, "household_created", requester, map[string]interface{}{
-		keys.HouseholdIDKey: household.ID,
-	}); err != nil {
-		logger.Error(err, "notifying customer data platform")
 	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, household, http.StatusCreated)
@@ -285,7 +279,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.HouseholdDataType,
-			MessageType:               "household_updated",
+			EventType:                 types.HouseholdUpdatedCustomerEventType,
 			Household:                 household,
 			AttributableToUserID:      requester,
 			AttributableToHouseholdID: household.ID,
@@ -293,12 +287,6 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			observability.AcknowledgeError(err, logger, span, "publishing data change message for created household")
 		}
-	}
-
-	if err = s.customerDataCollector.EventOccurred(ctx, "household_updated", requester, map[string]interface{}{
-		keys.HouseholdIDKey: household.ID,
-	}); err != nil {
-		logger.Error(err, "notifying customer data platform")
 	}
 
 	// encode our response and peace.
@@ -344,7 +332,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.HouseholdDataType,
-			MessageType:               "household_archived",
+			EventType:                 types.HouseholdArchivedCustomerEventType,
 			AttributableToUserID:      requester,
 			AttributableToHouseholdID: householdID,
 		}
@@ -353,13 +341,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	// notify relevant parties.
 	s.householdCounter.Decrement(ctx)
-	if err = s.customerDataCollector.EventOccurred(ctx, "household_archived", requester, map[string]interface{}{
-		keys.HouseholdIDKey: householdID,
-	}); err != nil {
-		logger.Error(err, "notifying customer data platform")
-	}
 
 	// encode our response and peace.
 	res.WriteHeader(http.StatusNoContent)
@@ -420,21 +402,13 @@ func (s *service) ModifyMemberPermissionsHandler(res http.ResponseWriter, req *h
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.UserMembershipDataType,
-			MessageType:               "membership_permissions_updated",
+			EventType:                 types.HouseholdMembershipPermissionsUpdatedCustomerEventType,
 			AttributableToUserID:      requester,
 			AttributableToHouseholdID: householdID,
 		}
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			observability.AcknowledgeError(err, logger, span, "publishing data change message for created household")
 		}
-	}
-
-	if err = s.customerDataCollector.EventOccurred(ctx, "user_permissions_modified", requester, map[string]interface{}{
-		keys.HouseholdIDKey: householdID,
-		"new_permissions":   input.NewRoles,
-		keys.ReasonKey:      input.Reason,
-	}); err != nil {
-		logger.Error(err, "notifying customer data platform")
 	}
 
 	res.WriteHeader(http.StatusAccepted)
@@ -491,7 +465,7 @@ func (s *service) TransferHouseholdOwnershipHandler(res http.ResponseWriter, req
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.HouseholdDataType,
-			MessageType:               "household_ownership_transferred",
+			EventType:                 types.HouseholdOwnershipTransferredCustomerEventType,
 			AttributableToUserID:      requester,
 			AttributableToHouseholdID: householdID,
 		}
@@ -545,7 +519,7 @@ func (s *service) RemoveMemberHandler(res http.ResponseWriter, req *http.Request
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.UserMembershipDataType,
-			MessageType:               "household_member_removed",
+			EventType:                 types.HouseholdMemberRemovedCustomerEventType,
 			AttributableToUserID:      userID,
 			AttributableToHouseholdID: householdID,
 		}
@@ -591,7 +565,7 @@ func (s *service) MarkAsDefaultHouseholdHandler(res http.ResponseWriter, req *ht
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.UserMembershipDataType,
-			MessageType:               "household_member_removed",
+			EventType:                 types.HouseholdMemberRemovedCustomerEventType,
 			AttributableToUserID:      requester,
 			AttributableToHouseholdID: householdID,
 		}

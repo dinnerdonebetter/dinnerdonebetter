@@ -95,7 +95,7 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.HouseholdInvitationDataType,
-			MessageType:               "household_invitation_created",
+			EventType:                 types.HouseholdInvitationCreatedCustomerEventType,
 			HouseholdInvitation:       householdInvitation,
 			AttributableToUserID:      requester,
 			AttributableToHouseholdID: householdID,
@@ -103,15 +103,6 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			observability.AcknowledgeError(err, logger, span, "publishing data change message")
 		}
-	}
-
-	if err = s.customerDataCollector.EventOccurred(ctx, "household_invitation_created", requester, map[string]interface{}{
-		keys.HouseholdInvitationIDKey: input.ID,
-		keys.HouseholdIDKey:           householdID,
-		"from_user":                   input.FromUser,
-		"to_user":                     input.ToUser,
-	}); err != nil {
-		logger.Error(err, "notifying customer data platform")
 	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, householdInvitation, http.StatusCreated)
@@ -275,11 +266,18 @@ func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	if err = s.customerDataCollector.EventOccurred(ctx, "household_invitation_cancelled", userID, map[string]interface{}{
-		keys.HouseholdInvitationIDKey: householdInvitationID,
-		keys.HouseholdIDKey:           householdID,
-	}); err != nil {
-		logger.Error(err, "notifying customer data platform")
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.HouseholdInvitationDataType,
+			EventType:                 types.HouseholdInvitationCanceledCustomerEventType,
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: householdID,
+			HouseholdInvitationID:     householdInvitationID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	res.WriteHeader(http.StatusAccepted)
@@ -327,11 +325,18 @@ func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	if err = s.customerDataCollector.EventOccurred(ctx, "household_invitation_accepted", userID, map[string]interface{}{
-		keys.HouseholdInvitationIDKey: householdInvitationID,
-		keys.HouseholdIDKey:           householdID,
-	}); err != nil {
-		logger.Error(err, "notifying customer data platform")
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.HouseholdInvitationDataType,
+			EventType:                 types.HouseholdInvitationAcceptedCustomerEventType,
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: householdID,
+			HouseholdInvitationID:     householdInvitationID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	res.WriteHeader(http.StatusAccepted)
@@ -379,11 +384,18 @@ func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	if err = s.customerDataCollector.EventOccurred(ctx, "household_invitation_rejected", userID, map[string]interface{}{
-		keys.HouseholdIDKey:           householdID,
-		keys.HouseholdInvitationIDKey: householdInvitationID,
-	}); err != nil {
-		logger.Error(err, "notifying customer data platform")
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.HouseholdInvitationDataType,
+			EventType:                 types.HouseholdInvitationRejectedCustomerEventType,
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: householdID,
+			HouseholdInvitationID:     householdInvitationID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	res.WriteHeader(http.StatusAccepted)

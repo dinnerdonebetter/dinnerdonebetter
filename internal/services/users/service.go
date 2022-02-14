@@ -1,11 +1,12 @@
 package users
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/authentication"
-	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
+	"github.com/prixfixeco/api_server/internal/messagequeue"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -45,13 +46,14 @@ type (
 		secretGenerator           random.Generator
 		imageUploadProcessor      images.ImageUploadProcessor
 		uploadManager             uploads.UploadManager
-		customerDataCollector     customerdata.Collector
+		dataChangesPublisher      messagequeue.Publisher
 		tracer                    tracing.Tracer
 	}
 )
 
 // ProvideUsersService builds a new UsersService.
 func ProvideUsersService(
+	cfg *Config,
 	authSettings *authservice.Config,
 	logger logging.Logger,
 	userDataManager types.UserDataManager,
@@ -62,10 +64,15 @@ func ProvideUsersService(
 	imageUploadProcessor images.ImageUploadProcessor,
 	uploadManager uploads.UploadManager,
 	routeParamManager routing.RouteParamManager,
-	customerDataCollector customerdata.Collector,
 	tracerProvider tracing.TracerProvider,
-) types.UserDataService {
-	return &service{
+	publisherProvider messagequeue.PublisherProvider,
+) (types.UserDataService, error) {
+	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up users service data changes publisher: %w", err)
+	}
+
+	s := &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
 		userDataManager:           userDataManager,
 		householdDataManager:      householdDataManager,
@@ -79,6 +86,8 @@ func ProvideUsersService(
 		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 		imageUploadProcessor:      imageUploadProcessor,
 		uploadManager:             uploadManager,
-		customerDataCollector:     customerDataCollector,
+		dataChangesPublisher:      dataChangesPublisher,
 	}
+
+	return s, nil
 }

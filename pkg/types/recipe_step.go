@@ -11,6 +11,13 @@ import (
 const (
 	// RecipeStepDataType indicates an event is related to a recipe step.
 	RecipeStepDataType dataType = "recipe_step"
+
+	// RecipeStepCreatedCustomerEventType indicates a recipe step was created.
+	RecipeStepCreatedCustomerEventType CustomerEventType = "recipe_step_created"
+	// RecipeStepUpdatedCustomerEventType indicates a recipe step was updated.
+	RecipeStepUpdatedCustomerEventType CustomerEventType = "recipe_step_updated"
+	// RecipeStepArchivedCustomerEventType indicates a recipe step was archived.
+	RecipeStepArchivedCustomerEventType CustomerEventType = "recipe_step_archived"
 )
 
 func init() {

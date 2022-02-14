@@ -11,6 +11,13 @@ import (
 const (
 	// ValidInstrumentDataType indicates an event is related to a valid instrument.
 	ValidInstrumentDataType dataType = "valid_instrument"
+
+	// ValidInstrumentCreatedCustomerEventType indicates a valid instrument was created.
+	ValidInstrumentCreatedCustomerEventType CustomerEventType = "valid_instrument_created"
+	// ValidInstrumentUpdatedCustomerEventType indicates a valid instrument was updated.
+	ValidInstrumentUpdatedCustomerEventType CustomerEventType = "valid_instrument_updated"
+	// ValidInstrumentArchivedCustomerEventType indicates a valid instrument was archived.
+	ValidInstrumentArchivedCustomerEventType CustomerEventType = "valid_instrument_archived"
 )
 
 func init() {

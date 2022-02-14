@@ -56,7 +56,7 @@ func main() {
 	)
 
 	if os.Getenv(googleCloudIndicatorEnvVar) != "" {
-		cfg, err = config.GetConfigFromGoogleCloudRunEnvironment(ctx)
+		cfg, err = config.GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx)
 		if err != nil {
 			logger.Fatal(err)
 		}

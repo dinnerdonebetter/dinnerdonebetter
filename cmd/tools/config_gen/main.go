@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"time"
 
+	usersservice "github.com/prixfixeco/api_server/internal/services/users"
+
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
@@ -316,6 +318,9 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 			},
 		},
 		Services: config.ServicesConfigurations{
+			Users: usersservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 			Households: householdsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -333,6 +338,7 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 				EnableUserSignup:      true,
 				MinimumUsernameLength: 4,
 				MinimumPasswordLength: 8,
+				DataChangesTopicName:  dataChangesTopicName,
 			},
 			Webhooks: webhooksservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
@@ -437,6 +443,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			},
 		},
 		Services: config.ServicesConfigurations{
+			Users: usersservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 			Households: householdsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -461,6 +470,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				EnableUserSignup:      true,
 				MinimumUsernameLength: 4,
 				MinimumPasswordLength: 8,
+				DataChangesTopicName:  dataChangesTopicName,
 			},
 			Webhooks: webhooksservice.Config{
 				DataChangesTopicName: dataChangesTopicName,

@@ -10,13 +10,14 @@ import (
 	"strings"
 	"testing"
 
+	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/otel/trace"
 
 	mockauthn "github.com/prixfixeco/api_server/internal/authentication/mock"
-	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
@@ -386,15 +387,6 @@ func TestService_CreateHandler(T *testing.T) {
 		unitCounter.On("Increment", testutils.ContextMatcher).Return()
 		helper.service.userCounter = unitCounter
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"AddUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-			map[string]interface{}{},
-		).Return(nil)
-		helper.service.customerDataCollector = cdc
-
 		helper.req = helper.req.WithContext(
 			context.WithValue(
 				helper.req.Context(),
@@ -403,12 +395,20 @@ func TestService_CreateHandler(T *testing.T) {
 			),
 		)
 
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
 		helper.service.authSettings.EnableUserSignup = true
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, auth, db, unitCounter, cdc)
+		mock.AssertExpectationsForObjects(t, auth, db, unitCounter, dataChangesPublisher)
 	})
 
 	T.Run("with user creation disabled", func(t *testing.T) {
@@ -638,68 +638,6 @@ func TestService_CreateHandler(T *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, auth, db)
-	})
-
-	T.Run("with error informing customer data platform", func(t *testing.T) {
-		t.Parallel()
-
-		helper := newTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleInput := fakes.BuildFakeUserRegistrationInputFromUser(helper.exampleUser)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.BelongsToUser = helper.exampleUser.ID
-
-		auth := &mockauthn.Authenticator{}
-		auth.On(
-			"HashPassword",
-			testutils.ContextMatcher,
-			exampleInput.Password,
-		).Return(helper.exampleUser.HashedPassword, nil)
-		helper.service.authenticator = auth
-
-		db := database.NewMockDatabase()
-		db.UserDataManager.On(
-			"CreateUser",
-			testutils.ContextMatcher,
-			mock.IsType(&types.UserDataStoreCreationInput{}),
-		).Return(helper.exampleUser, nil)
-		helper.service.userDataManager = db
-
-		unitCounter := &mockmetrics.UnitCounter{}
-		unitCounter.On("Increment", testutils.ContextMatcher).Return()
-		helper.service.userCounter = unitCounter
-
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"AddUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-			map[string]interface{}{},
-		).Return(errors.New("blah"))
-		helper.service.customerDataCollector = cdc
-
-		helper.req = helper.req.WithContext(
-			context.WithValue(
-				helper.req.Context(),
-				types.UserRegistrationInputContextKey,
-				exampleInput,
-			),
-		)
-
-		helper.service.authSettings.EnableUserSignup = true
-		helper.service.CreateHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusCreated, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, auth, db, unitCounter, cdc)
 	})
 }
 
@@ -949,21 +887,19 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.userDataManager = mockDB
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
 			testutils.ContextMatcher,
-			"two_factor_secret_verified",
-			helper.exampleUser.ID,
-			testutils.MapOfStringToInterfaceMatcher,
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(nil)
-		helper.service.customerDataCollector = cdc
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.TOTPSecretVerificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, cdc)
+		mock.AssertExpectationsForObjects(t, mockDB, dataChangesPublisher)
 	})
 
 	T.Run("without input attached to request", func(t *testing.T) {
@@ -1180,52 +1116,6 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
-	})
-
-	T.Run("with error writing to customer data platform", func(t *testing.T) {
-		t.Parallel()
-
-		helper := newTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleInput := fakes.BuildFakeTOTPSecretVerificationInputForUser(helper.exampleUser)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		helper.exampleUser.TwoFactorSecretVerifiedOn = nil
-
-		mockDB := database.NewMockDatabase()
-		mockDB.UserDataManager.On(
-			"GetUserWithUnverifiedTwoFactorSecret",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return(helper.exampleUser, nil)
-		mockDB.UserDataManager.On(
-			"MarkUserTwoFactorSecretAsVerified",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return(nil)
-		helper.service.userDataManager = mockDB
-
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"two_factor_secret_verified",
-			helper.exampleUser.ID,
-			testutils.MapOfStringToInterfaceMatcher,
-		).Return(errors.New("blah"))
-		helper.service.customerDataCollector = cdc
-
-		helper.service.TOTPSecretVerificationHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, mockDB, cdc)
 	})
 }
 

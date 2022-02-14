@@ -18,6 +18,8 @@ import (
 	"testing"
 	"time"
 
+	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
+
 	"github.com/gorilla/securecookie"
 	"github.com/o1egl/paseto"
 	"github.com/stretchr/testify/assert"
@@ -28,9 +30,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/authentication"
 	mockauthn "github.com/prixfixeco/api_server/internal/authentication/mock"
 	"github.com/prixfixeco/api_server/internal/authorization"
-	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/random"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -224,22 +224,20 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		).Return(helper.exampleHousehold.ID, nil)
 		helper.service.householdMembershipManager = membershipDB
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
 			testutils.ContextMatcher,
-			"logged_in",
-			helper.exampleUser.ID,
-			map[string]interface{}{},
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(nil)
-		helper.service.customerDataCollector = cdc
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.BeginSessionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB, cdc)
+		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB, dataChangesPublisher)
 	})
 
 	T.Run("with requested cookie domain", func(t *testing.T) {
@@ -285,15 +283,13 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		).Return(helper.exampleHousehold.ID, nil)
 		helper.service.householdMembershipManager = membershipDB
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
 			testutils.ContextMatcher,
-			"logged_in",
-			helper.exampleUser.ID,
-			map[string]interface{}{},
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(nil)
-		helper.service.customerDataCollector = cdc
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.BeginSessionHandler(helper.res, helper.req)
 
@@ -302,7 +298,7 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		rawCookie := helper.res.Header().Get("Set-Cookie")
 		assert.Contains(t, rawCookie, fmt.Sprintf("Domain=%s", strings.TrimPrefix(expectedCookieDomain, ".")))
 
-		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB, cdc)
+		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB, dataChangesPublisher)
 	})
 
 	T.Run("with missing login data", func(t *testing.T) {
@@ -913,7 +909,7 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, cb, userDataManager, authenticator, membershipDB)
 	})
 
-	T.Run("with error writing to customer data platform", func(t *testing.T) {
+	T.Run("with error publishing service event", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -953,22 +949,20 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		).Return(helper.exampleHousehold.ID, nil)
 		helper.service.householdMembershipManager = membershipDB
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
 			testutils.ContextMatcher,
-			"logged_in",
-			helper.exampleUser.ID,
-			map[string]interface{}{},
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.customerDataCollector = cdc
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.BeginSessionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB, cdc)
+		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB, dataChangesPublisher)
 	})
 }
 
@@ -998,25 +992,20 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.householdMembershipManager = householdMembershipManager
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
 			testutils.ContextMatcher,
-			"changed_active_household",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				"old_household_id":        helper.exampleHousehold.ID,
-				keys.ActiveHouseholdIDKey: exampleInput.HouseholdID,
-			},
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(nil)
-		helper.service.customerDataCollector = cdc
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, householdMembershipManager, cdc)
+		mock.AssertExpectationsForObjects(t, householdMembershipManager, dataChangesPublisher)
 	})
 
 	T.Run("with error fetching session context data", func(t *testing.T) {
@@ -1316,7 +1305,7 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, householdMembershipManager)
 	})
 
-	T.Run("with error writing to customer data platform", func(t *testing.T) {
+	T.Run("with error publishing service event", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -1339,25 +1328,20 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.householdMembershipManager = householdMembershipManager
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
 			testutils.ContextMatcher,
-			"changed_active_household",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				"old_household_id":        helper.exampleHousehold.ID,
-				keys.ActiveHouseholdIDKey: exampleInput.HouseholdID,
-			},
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.customerDataCollector = cdc
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
 
-		mock.AssertExpectationsForObjects(t, householdMembershipManager, cdc)
+		mock.AssertExpectationsForObjects(t, householdMembershipManager, dataChangesPublisher)
 	})
 }
 
@@ -1368,18 +1352,15 @@ func TestAuthenticationService_EndSessionHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.ctx, helper.req, _ = attachCookieToRequestForTest(t, helper.service, helper.req, helper.exampleUser)
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
 			testutils.ContextMatcher,
-			"logged_out",
-			helper.exampleUser.ID,
-			map[string]interface{}{},
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(nil)
-		helper.service.customerDataCollector = cdc
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.EndSessionHandler(helper.res, helper.req)
 
@@ -1387,7 +1368,7 @@ func TestAuthenticationService_EndSessionHandler(T *testing.T) {
 		actualCookie := helper.res.Header().Get("Set-Cookie")
 		assert.Contains(t, actualCookie, "Max-Age=0")
 
-		mock.AssertExpectationsForObjects(t, cdc)
+		mock.AssertExpectationsForObjects(t, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -1456,22 +1437,19 @@ func TestAuthenticationService_EndSessionHandler(T *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 	})
 
-	T.Run("with error writing to customer data platform", func(t *testing.T) {
+	T.Run("with error publishing service event", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.ctx, helper.req, _ = attachCookieToRequestForTest(t, helper.service, helper.req, helper.exampleUser)
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
 			testutils.ContextMatcher,
-			"logged_out",
-			helper.exampleUser.ID,
-			map[string]interface{}{},
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.customerDataCollector = cdc
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.EndSessionHandler(helper.res, helper.req)
 
@@ -1479,7 +1457,7 @@ func TestAuthenticationService_EndSessionHandler(T *testing.T) {
 		actualCookie := helper.res.Header().Get("Set-Cookie")
 		assert.Contains(t, actualCookie, "Max-Age=0")
 
-		mock.AssertExpectationsForObjects(t, cdc)
+		mock.AssertExpectationsForObjects(t, dataChangesPublisher)
 	})
 }
 

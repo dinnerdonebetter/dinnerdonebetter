@@ -1,7 +1,46 @@
 {
-	"server": {
-		"startupDeadline": 60000000000,
-		"httpPort": 8000,
+	"observability": {
+		"metrics": {},
+		"tracing": {
+			"jaeger": {
+				"collector_endpoint": "http://tracing-server:14268/api/traces",
+				"service_name": "prixfixe_service",
+				"spanCollectionProbability": 1
+			},
+			"provider": "jaeger"
+		}
+	},
+	"email": {
+		"provider": "",
+		"apiToken": ""
+	},
+	"customerData": {
+		"provider": "",
+		"apiToken": ""
+	},
+	"logging": {
+		"level": 0,
+		"provider": "zerolog"
+	},
+	"encoding": {
+		"contentType": "application/json"
+	},
+	"uploads": {
+		"storageConfig": {
+			"bucketName": "avatars",
+			"provider": "memory"
+		},
+		"debug": false
+	},
+	"routing": {},
+	"database": {
+		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable",
+		"debug": false,
+		"runMigrations": true,
+		"maxPingAttempts": 50
+	},
+	"meta": {
+		"runMode": "testing",
 		"debug": false
 	},
 	"events": {
@@ -36,48 +75,9 @@
 			}
 		}
 	},
-	"email": {
-		"provider": "",
-		"apiToken": ""
-	},
-	"customerData": {
-		"provider": "",
-		"apiToken": ""
-	},
-	"encoding": {
-		"contentType": "application/json"
-	},
-	"uploads": {
-		"storageConfig": {
-			"bucketName": "avatars",
-			"provider": "memory"
-		},
-		"debug": false
-	},
-	"observability": {
-		"metrics": {},
-		"tracing": {
-			"jaeger": {
-				"collector_endpoint": "http://tracing-server:14268/api/traces",
-				"service_name": "prixfixe_service",
-				"spanCollectionProbability": 1
-			},
-			"provider": "jaeger"
-		}
-	},
-	"routing": {},
-	"database": {
-		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable",
-		"debug": false,
-		"runMigrations": true,
-		"maxPingAttempts": 50
-	},
-	"logging": {
-		"level": 0,
-		"provider": "zerolog"
-	},
-	"meta": {
-		"runMode": "testing",
+	"server": {
+		"startupDeadline": 60000000000,
+		"httpPort": 8000,
 		"debug": false
 	},
 	"services": {
@@ -134,18 +134,22 @@
 			"dataChangesTopicName": "data_changes",
 			"debug": false
 		},
+		"users": {
+			"dataChangesTopicName": "data_changes"
+		},
 		"auth": {
-			"paseto": {
-				"issuer": "prixfixe_service",
-				"localModeKey": "aLoN4TufMHjoVo51ZALIujoHrW8v69V6V9jldfk8tcg=",
-				"lifetime": 60000000000
-			},
+			"dataChanges": "data_changes",
 			"cookies": {
 				"name": "prixfixecookie",
 				"domain": ".prixfixe.local",
 				"hashKey": "HEREISA32CHARSECRETWHICHISMADEUP",
 				"blockKey": "DIFFERENT32CHARSECRETTHATIMADEUP",
 				"lifetime": 86400000000000
+			},
+			"paseto": {
+				"issuer": "prixfixe_service",
+				"localModeKey": "NRa8yXEFjqJjJSShmcWlOqBwQuIzJHLXsf5jBMfACeU=",
+				"lifetime": 60000000000
 			},
 			"enableUserSignup": true,
 			"minimumUsernameLength": 4,

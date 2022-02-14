@@ -55,7 +55,7 @@ func finalizeMealPlans(
 
 			if dataChangePublishErr := dataChangesPublisher.Publish(ctx, &types.DataChangeMessage{
 				DataType:                  types.MealPlanDataType,
-				MessageType:               "meal_plan_finalized",
+				EventType:                 types.MealPlanFinalizedCustomerEventType,
 				MealPlan:                  mealPlan,
 				MealPlanID:                mealPlan.ID,
 				Context:                   map[string]string{},

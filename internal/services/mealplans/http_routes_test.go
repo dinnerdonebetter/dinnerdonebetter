@@ -12,12 +12,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/otel/trace"
 
-	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
@@ -58,21 +56,11 @@ func TestMealPlansService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"meal_plan_created",
-			helper.exampleUser.ID,
-			testutils.MapOfStringToInterfaceMatcher,
-		).Return(nil)
-		helper.service.customerDataCollector = cdc
-
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher, cdc)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 
 	T.Run("without input attached", func(t *testing.T) {
@@ -190,68 +178,11 @@ func TestMealPlansService_CreateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"meal_plan_created",
-			helper.exampleUser.ID,
-			testutils.MapOfStringToInterfaceMatcher,
-		).Return(nil)
-		helper.service.customerDataCollector = cdc
-
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher, cdc)
-	})
-
-	T.Run("with error writing to customer data platform", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeMealPlanDatabaseCreationInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanDataManager.On(
-			"CreateMealPlan",
-			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.MealPlanDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleMealPlan, nil)
-		helper.service.mealPlanDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.DataChangeMessageMatcher),
-		).Return(nil)
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"meal_plan_created",
-			helper.exampleUser.ID,
-			testutils.MapOfStringToInterfaceMatcher,
-		).Return(errors.New("blah"))
-		helper.service.customerDataCollector = cdc
-
-		helper.service.CreateHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusCreated, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher, cdc)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
@@ -527,24 +458,11 @@ func TestMealPlansService_UpdateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"meal_plan_updated",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				keys.HouseholdIDKey: helper.exampleHousehold.ID,
-				keys.MealPlanIDKey:  helper.exampleMealPlan.ID,
-			},
-		).Return(nil)
-		helper.service.customerDataCollector = cdc
-
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher, cdc)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -726,82 +644,11 @@ func TestMealPlansService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"meal_plan_updated",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				keys.HouseholdIDKey: helper.exampleHousehold.ID,
-				keys.MealPlanIDKey:  helper.exampleMealPlan.ID,
-			},
-		).Return(nil)
-		helper.service.customerDataCollector = cdc
-
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher, cdc)
-	})
-
-	T.Run("with error writing to customer data platform", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeMealPlanUpdateRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanDataManager.On(
-			"GetMealPlan",
-			testutils.ContextMatcher,
-			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
-		).Return(helper.exampleMealPlan, nil)
-
-		dbManager.MealPlanDataManager.On(
-			"UpdateMealPlan",
-			testutils.ContextMatcher,
-			helper.exampleMealPlan,
-		).Return(nil)
-		helper.service.mealPlanDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.DataChangeMessageMatcher),
-		).Return(nil)
-
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"meal_plan_updated",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				keys.HouseholdIDKey: helper.exampleHousehold.ID,
-				keys.MealPlanIDKey:  helper.exampleMealPlan.ID,
-			},
-		).Return(errors.New("blah"))
-		helper.service.customerDataCollector = cdc
-
-		helper.service.UpdateHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher, cdc)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
 
@@ -837,24 +684,11 @@ func TestMealPlansService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"meal_plan_archived",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				keys.HouseholdIDKey: helper.exampleHousehold.ID,
-				keys.MealPlanIDKey:  helper.exampleMealPlan.ID,
-			},
-		).Return(nil)
-		helper.service.customerDataCollector = cdc
-
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher, cdc)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -988,72 +822,10 @@ func TestMealPlansService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"meal_plan_archived",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				keys.HouseholdIDKey: helper.exampleHousehold.ID,
-				keys.MealPlanIDKey:  helper.exampleMealPlan.ID,
-			},
-		).Return(nil)
-		helper.service.customerDataCollector = cdc
-
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher, cdc)
-	})
-
-	T.Run("with error writing to customer data platform", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanDataManager.On(
-			"MealPlanExists",
-			testutils.ContextMatcher,
-			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
-		).Return(true, nil)
-
-		dbManager.MealPlanDataManager.On(
-			"ArchiveMealPlan",
-			testutils.ContextMatcher,
-			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
-		).Return(nil)
-		helper.service.mealPlanDataManager = dbManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.DataChangeMessageMatcher),
-		).Return(nil)
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"meal_plan_archived",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				keys.HouseholdIDKey: helper.exampleHousehold.ID,
-				keys.MealPlanIDKey:  helper.exampleMealPlan.ID,
-			},
-		).Return(errors.New("blah"))
-		helper.service.customerDataCollector = cdc
-
-		helper.service.ArchiveHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusNoContent, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher, cdc)
+		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }

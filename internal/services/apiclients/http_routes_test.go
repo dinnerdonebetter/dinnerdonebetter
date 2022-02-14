@@ -8,17 +8,17 @@ import (
 	"net/http"
 	"testing"
 
+	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/otel/trace"
 
 	mockauthn "github.com/prixfixeco/api_server/internal/authentication/mock"
-	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	mockmetrics "github.com/prixfixeco/api_server/internal/observability/metrics/mock"
 	mockrandom "github.com/prixfixeco/api_server/internal/random/mock"
@@ -204,27 +204,22 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleAPIClient, nil)
 		helper.service.apiClientDataManager = mockDB
 
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
 		uc := &mockmetrics.UnitCounter{}
 		uc.On("Increment", testutils.ContextMatcher).Return()
 		helper.service.apiClientCounter = uc
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"api_client_created",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				keys.APIClientDatabaseIDKey: helper.exampleAPIClient.ID,
-				"api_client.name":           helper.exampleAPIClient.Name,
-			},
-		).Return(nil)
-		helper.service.customerDataCollector = cdc
-
 		helper.service.CreateHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, a, sg, uc, cdc)
+		mock.AssertExpectationsForObjects(t, mockDB, a, sg, uc, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -562,7 +557,7 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, mockDB, a, sg)
 	})
 
-	T.Run("with error writing to customer data platform", func(t *testing.T) {
+	T.Run("with error publishing service event", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -614,27 +609,22 @@ func TestAPIClientsService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleAPIClient, nil)
 		helper.service.apiClientDataManager = mockDB
 
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+		).Return(errors.New("blah"))
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
 		uc := &mockmetrics.UnitCounter{}
 		uc.On("Increment", testutils.ContextMatcher).Return()
 		helper.service.apiClientCounter = uc
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"api_client_created",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				keys.APIClientDatabaseIDKey: helper.exampleAPIClient.ID,
-				"api_client.name":           helper.exampleAPIClient.Name,
-			},
-		).Return(errors.New("blah"))
-		helper.service.customerDataCollector = cdc
-
 		helper.service.CreateHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, a, sg, uc, cdc)
+		mock.AssertExpectationsForObjects(t, mockDB, a, sg, uc, dataChangesPublisher)
 	})
 }
 
@@ -774,23 +764,19 @@ func TestAPIClientsService_ArchiveHandler(T *testing.T) {
 		unitCounter.On("Decrement", testutils.ContextMatcher).Return()
 		helper.service.apiClientCounter = unitCounter
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
 			testutils.ContextMatcher,
-			"api_client_archived",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				keys.APIClientDatabaseIDKey: helper.exampleAPIClient.ID,
-			},
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(nil)
-		helper.service.customerDataCollector = cdc
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, apiClientDataManager, unitCounter, cdc)
+		mock.AssertExpectationsForObjects(t, apiClientDataManager, unitCounter, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -874,7 +860,7 @@ func TestAPIClientsService_ArchiveHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, apiClientDataManager, encoderDecoder)
 	})
 
-	T.Run("with error writing to customer data platform", func(t *testing.T) {
+	T.Run("with error publishing service event", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -892,22 +878,18 @@ func TestAPIClientsService_ArchiveHandler(T *testing.T) {
 		unitCounter.On("Decrement", testutils.ContextMatcher).Return()
 		helper.service.apiClientCounter = unitCounter
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
 			testutils.ContextMatcher,
-			"api_client_archived",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				keys.APIClientDatabaseIDKey: helper.exampleAPIClient.ID,
-			},
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
 		).Return(errors.New("blah"))
-		helper.service.customerDataCollector = cdc
+		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, apiClientDataManager, unitCounter, cdc)
+		mock.AssertExpectationsForObjects(t, apiClientDataManager, unitCounter, dataChangesPublisher)
 	})
 }

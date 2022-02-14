@@ -47,7 +47,7 @@ func ProvideService(
 ) (types.ValidIngredientPreparationDataService, error) {
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
 	if err != nil {
-		return nil, fmt.Errorf("setting up recipe step product queue data changes publisher: %w", err)
+		return nil, fmt.Errorf("setting up valid ingredient preprarations service data changes publisher: %w", err)
 	}
 
 	svc := &service{

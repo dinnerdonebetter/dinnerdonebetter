@@ -9,6 +9,13 @@ import (
 const (
 	// UserMembershipDataType indicates an event is user membership-related.
 	UserMembershipDataType dataType = "user_membership"
+
+	// HouseholdUserMembershipCreatedCustomerEventType indicates a household user membership was created.
+	HouseholdUserMembershipCreatedCustomerEventType CustomerEventType = "household_user_membership_created"
+	// HouseholdUserMembershipUpdatedCustomerEventType indicates a household user membership was updated.
+	HouseholdUserMembershipUpdatedCustomerEventType CustomerEventType = "household_user_membership_updated"
+	// HouseholdUserMembershipArchivedCustomerEventType indicates a household user membership was archived.
+	HouseholdUserMembershipArchivedCustomerEventType CustomerEventType = "household_user_membership_archived"
 )
 
 type (

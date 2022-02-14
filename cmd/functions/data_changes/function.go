@@ -22,7 +22,7 @@ import (
 // PubSubMessage is the payload of a Pub/Sub event. See the documentation for more details:
 // https://cloud.google.com/pubsub/docs/reference/rest/v1/PubsubMessage
 type PubSubMessage struct {
-	Data string `json:"data"`
+	Base64EncodedDataChangeMessage string `json:"data"`
 }
 
 // ProcessDataChange handles a data change.
@@ -39,29 +39,103 @@ func ProcessDataChange(ctx context.Context, m PubSubMessage) error {
 		return fmt.Errorf("error setting up customer data collector: %w", err)
 	}
 
-	rawMessage, err := base64.StdEncoding.DecodeString(m.Data)
+	rawMessage, err := base64.StdEncoding.DecodeString(m.Base64EncodedDataChangeMessage)
 	if err != nil {
 		return fmt.Errorf("decoding raw pubsub message: %w", err)
 	}
 
 	var changeMessage types.DataChangeMessage
 	if unmarshalErr := json.Unmarshal(rawMessage, &changeMessage); unmarshalErr != nil {
-		logger = logger.WithValue("raw_data", m.Data)
+		logger = logger.WithValue("raw_data", rawMessage)
 		observability.AcknowledgeError(unmarshalErr, logger, nil, "unmarshalling data change message")
 	}
 
-	switch changeMessage.MessageType {
-	case "meal_plan_finalized":
-		// alert family members or whatever
-		if err = customerDataCollector.EventOccurred(ctx, "meal_plan_finalized", "meal-plan-finalizer", map[string]interface{}{
-			keys.HouseholdIDKey: changeMessage.MealPlan.BelongsToHousehold,
-			keys.MealPlanIDKey:  changeMessage.MealPlan.ID,
-		}); err != nil {
-			observability.AcknowledgeError(err, logger, nil, "notifying customer data platform")
-		}
+	logger = logger.WithValue("event_type", changeMessage.EventType)
+
+	eventContext := map[string]interface{}{
+		keys.HouseholdIDKey: changeMessage.AttributableToHouseholdID,
+		keys.UserIDKey:      changeMessage.AttributableToUserID,
 	}
 
-	logger.WithValue("payload", changeMessage).Info("invoked")
+	for k, v := range changeMessage.Context {
+		eventContext[k] = v
+	}
+
+	switch changeMessage.EventType {
+	case types.UserSignedUpCustomerEventType:
+		if err = customerDataCollector.AddUser(ctx, changeMessage.AttributableToUserID, eventContext); err != nil {
+			return observability.PrepareError(err, logger, nil, "notifying customer data platform")
+		}
+		return nil
+	case types.UserLoggedInCustomerEventType:
+		break
+	case types.UserChangedActiveHouseholdCustomerEventType:
+		break
+	case types.UserLoggedOutCustomerEventType:
+		break
+	case types.TwoFactorSecretVerifiedCustomerEventType:
+		break
+	case types.APIClientCreatedCustomerEventType:
+		eventContext[keys.APIClientDatabaseIDKey] = changeMessage.APIClientID
+	case types.APIClientArchivedCustomerEventType:
+		eventContext[keys.APIClientDatabaseIDKey] = changeMessage.APIClientID
+	case types.HouseholdCreatedCustomerEventType:
+		eventContext[keys.HouseholdIDKey] = changeMessage.Household.ID
+	case types.HouseholdUpdatedCustomerEventType:
+		eventContext[keys.HouseholdIDKey] = changeMessage.Household.ID
+	case types.HouseholdArchivedCustomerEventType:
+		eventContext[keys.HouseholdIDKey] = changeMessage.Household.ID
+	case types.HouseholdMembershipPermissionsUpdatedCustomerEventType:
+		eventContext[keys.HouseholdIDKey] = changeMessage.Household.ID
+	case types.HouseholdInvitationCreatedCustomerEventType:
+		eventContext[keys.HouseholdIDKey] = changeMessage.Household.ID
+	case types.HouseholdInvitationCanceledCustomerEventType:
+		eventContext[keys.HouseholdIDKey] = changeMessage.Household.ID
+	case types.HouseholdInvitationAcceptedCustomerEventType:
+		eventContext[keys.HouseholdIDKey] = changeMessage.Household.ID
+	case types.HouseholdInvitationRejectedCustomerEventType:
+		eventContext[keys.HouseholdIDKey] = changeMessage.Household.ID
+	case types.MealPlanCreatedCustomerEventType:
+		eventContext[keys.HouseholdIDKey] = changeMessage.MealPlan.BelongsToHousehold
+		eventContext[keys.MealPlanIDKey] = changeMessage.MealPlan.ID
+	case types.MealPlanUpdatedCustomerEventType:
+		eventContext[keys.HouseholdIDKey] = changeMessage.MealPlan.BelongsToHousehold
+		eventContext[keys.MealPlanIDKey] = changeMessage.MealPlan.ID
+	case types.MealPlanArchivedCustomerEventType:
+		eventContext[keys.HouseholdIDKey] = changeMessage.MealPlan.BelongsToHousehold
+		eventContext[keys.MealPlanIDKey] = changeMessage.MealPlan.ID
+	case types.MealPlanFinalizedCustomerEventType:
+		eventContext[keys.HouseholdIDKey] = changeMessage.MealPlan.BelongsToHousehold
+		eventContext[keys.MealPlanIDKey] = changeMessage.MealPlan.ID
+	case types.MealPlanOptionVoteCreatedCustomerEventType:
+		eventContext[keys.MealPlanIDKey] = changeMessage.MealPlanID
+		eventContext[keys.MealPlanOptionVoteIDKey] = changeMessage.MealPlanOptionVote.ID
+		eventContext[keys.MealPlanOptionIDKey] = changeMessage.MealPlanOptionVote.BelongsToMealPlanOption
+	case types.MealPlanOptionVoteUpdatedCustomerEventType:
+		eventContext[keys.MealPlanIDKey] = changeMessage.MealPlanID
+		eventContext[keys.MealPlanOptionVoteIDKey] = changeMessage.MealPlanOptionVote.ID
+		eventContext[keys.MealPlanOptionIDKey] = changeMessage.MealPlanOptionVote.BelongsToMealPlanOption
+	case types.MealPlanOptionVoteArchivedCustomerEventType:
+		eventContext[keys.MealPlanIDKey] = changeMessage.MealPlanID
+		eventContext[keys.MealPlanOptionVoteIDKey] = changeMessage.MealPlanOptionVote.ID
+		eventContext[keys.MealPlanOptionIDKey] = changeMessage.MealPlanOptionVote.BelongsToMealPlanOption
+	case types.MealCreatedCustomerEventType:
+		eventContext[keys.MealIDKey] = changeMessage.Meal.ID
+	case types.MealArchivedCustomerEventType:
+		eventContext[keys.MealIDKey] = changeMessage.Meal.ID
+	case types.RecipeCreatedCustomerEventType:
+		eventContext[keys.RecipeIDKey] = changeMessage.Recipe.ID
+	case types.RecipeUpdatedCustomerEventType:
+		eventContext[keys.RecipeIDKey] = changeMessage.Recipe.ID
+	case types.RecipeArchivedCustomerEventType:
+		eventContext[keys.RecipeIDKey] = changeMessage.Recipe.ID
+	default:
+		logger.Debug("unknown event type")
+	}
+
+	if dataCollectionErr := customerDataCollector.EventOccurred(ctx, changeMessage.EventType, changeMessage.AttributableToUserID, eventContext); dataCollectionErr != nil {
+		observability.AcknowledgeError(dataCollectionErr, logger, nil, "notifying customer data platform")
+	}
 
 	return nil
 }

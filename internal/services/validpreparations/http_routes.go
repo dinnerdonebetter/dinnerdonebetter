@@ -66,7 +66,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:             types.ValidPreparationDataType,
-			MessageType:          "valid_preparation_created",
+			EventType:            types.ValidPreparationCreatedCustomerEventType,
 			ValidPreparation:     validPreparation,
 			AttributableToUserID: sessionCtxData.Requester.UserID,
 		}
@@ -260,7 +260,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:             types.ValidPreparationDataType,
-			MessageType:          "valid_preparation_updated",
+			EventType:            types.ValidPreparationUpdatedCustomerEventType,
 			ValidPreparation:     validPreparation,
 			AttributableToUserID: sessionCtxData.Requester.UserID,
 		}
@@ -317,7 +317,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:             types.ValidPreparationDataType,
-			MessageType:          "valid_preparation_archived",
+			EventType:            types.ValidPreparationArchivedCustomerEventType,
 			AttributableToUserID: sessionCtxData.Requester.UserID,
 		}
 

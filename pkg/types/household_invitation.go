@@ -11,6 +11,15 @@ const (
 	// HouseholdInvitationDataType indicates an event is related to a household invitation.
 	HouseholdInvitationDataType dataType = "household_invitation"
 
+	// HouseholdInvitationCreatedCustomerEventType indicates a household invitation was created.
+	HouseholdInvitationCreatedCustomerEventType CustomerEventType = "household_invitation_created"
+	// HouseholdInvitationCanceledCustomerEventType indicates a household invitation was created.
+	HouseholdInvitationCanceledCustomerEventType CustomerEventType = "household_invitation_canceled"
+	// HouseholdInvitationAcceptedCustomerEventType indicates a household invitation was created.
+	HouseholdInvitationAcceptedCustomerEventType CustomerEventType = "household_invitation_accepted"
+	// HouseholdInvitationRejectedCustomerEventType indicates a household invitation was created.
+	HouseholdInvitationRejectedCustomerEventType CustomerEventType = "household_invitation_rejected"
+
 	// PendingHouseholdInvitationStatus indicates a household invitation is pending.
 	PendingHouseholdInvitationStatus HouseholdInvitationStatus = "pending"
 	// CancelledHouseholdInvitationStatus indicates a household invitation was accepted.

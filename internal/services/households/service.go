@@ -6,7 +6,6 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/messagequeue"
 
-	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
@@ -38,7 +37,6 @@ type (
 		sessionContextDataFetcher      func(*http.Request) (*types.SessionContextData, error)
 		userIDFetcher                  func(*http.Request) string
 		householdIDFetcher             func(*http.Request) string
-		customerDataCollector          customerdata.Collector
 	}
 )
 
@@ -53,7 +51,6 @@ func ProvideService(
 	counterProvider metrics.UnitCounterProvider,
 	routeParamManager routing.RouteParamManager,
 	publisherProvider messagequeue.PublisherProvider,
-	customerDataCollector customerdata.Collector,
 	tracerProvider tracing.TracerProvider,
 ) (types.HouseholdDataService, error) {
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
@@ -73,7 +70,6 @@ func ProvideService(
 		dataChangesPublisher:           dataChangesPublisher,
 		householdCounter:               metrics.EnsureUnitCounter(counterProvider, logger, counterName, counterDescription),
 		tracer:                         tracing.NewTracer(tracerProvider.Tracer(serviceName)),
-		customerDataCollector:          customerDataCollector,
 	}
 
 	return s, nil

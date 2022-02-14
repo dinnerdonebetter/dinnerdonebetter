@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/mock"
 	"go.opentelemetry.io/otel/trace"
 
-	"github.com/prixfixeco/api_server/internal/customerdata"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -68,7 +67,6 @@ func TestProvideMealPlanOptionVotesService(T *testing.T) {
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
-			&customerdata.MockCollector{},
 			trace.NewNoopTracerProvider(),
 		)
 
@@ -97,7 +95,6 @@ func TestProvideMealPlanOptionVotesService(T *testing.T) {
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,
-			&customerdata.MockCollector{},
 			trace.NewNoopTracerProvider(),
 		)
 

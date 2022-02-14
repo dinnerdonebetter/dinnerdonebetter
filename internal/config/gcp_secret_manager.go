@@ -15,8 +15,8 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 )
 
-// GetConfigFromGoogleCloudRunEnvironment fetches and InstanceConfig from AWS SSM Parameter Store.
-func GetConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*InstanceConfig, error) {
+// GetAPIServerConfigFromGoogleCloudRunEnvironment fetches and InstanceConfig from AWS SSM Parameter Store.
+func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*InstanceConfig, error) {
 	logger := zerolog.NewZerologLogger()
 	logger.Debug("setting up secret manager client")
 
@@ -93,7 +93,9 @@ func GetConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*InstanceConfi
 
 	cfg.Services.Households.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.HouseholdInvitations.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.Users.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.Webhooks.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.Auth.DataChangesTopicName = dataChangesTopicName
 
 	if validationErr := cfg.ValidateWithContext(ctx, true); validationErr != nil {
 		return nil, validationErr

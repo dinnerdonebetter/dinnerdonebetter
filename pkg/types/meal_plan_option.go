@@ -13,6 +13,15 @@ const (
 	// MealPlanOptionDataType indicates an event is related to a meal plan option.
 	MealPlanOptionDataType dataType = "meal_plan_option"
 
+	// MealPlanOptionCreatedCustomerEventType indicates a meal plan option was created.
+	MealPlanOptionCreatedCustomerEventType CustomerEventType = "meal_plan_option_created"
+	// MealPlanOptionUpdatedCustomerEventType indicates a meal plan option was updated.
+	MealPlanOptionUpdatedCustomerEventType CustomerEventType = "meal_plan_option_updated"
+	// MealPlanOptionArchivedCustomerEventType indicates a meal plan option was archived.
+	MealPlanOptionArchivedCustomerEventType CustomerEventType = "meal_plan_option_archived"
+	// MealPlanOptionFinalizedCreatedCustomerEventType indicates a meal plan option was created.
+	MealPlanOptionFinalizedCreatedCustomerEventType CustomerEventType = "meal_plan_option_finalized"
+
 	// BreakfastMealName represents breakfast.
 	BreakfastMealName MealName = "breakfast"
 	// SecondBreakfastMealName represents second breakfast.

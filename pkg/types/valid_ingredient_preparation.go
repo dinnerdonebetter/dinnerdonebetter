@@ -11,6 +11,13 @@ import (
 const (
 	// ValidIngredientPreparationDataType indicates an event is related to a valid ingredient preparation.
 	ValidIngredientPreparationDataType dataType = "valid_ingredient_preparation"
+
+	// ValidIngredientPreparationCreatedCustomerEventType indicates a valid ingredient preparation was created.
+	ValidIngredientPreparationCreatedCustomerEventType CustomerEventType = "valid_ingredient_preparation_created"
+	// ValidIngredientPreparationUpdatedCustomerEventType indicates a valid ingredient preparation was updated.
+	ValidIngredientPreparationUpdatedCustomerEventType CustomerEventType = "valid_ingredient_preparation_updated"
+	// ValidIngredientPreparationArchivedCustomerEventType indicates a valid ingredient preparation was archived.
+	ValidIngredientPreparationArchivedCustomerEventType CustomerEventType = "valid_ingredient_preparation_archived"
 )
 
 func init() {

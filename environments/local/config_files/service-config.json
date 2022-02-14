@@ -1,7 +1,55 @@
 {
-	"server": {
-		"startupDeadline": 60000000000,
-		"httpPort": 8000,
+	"observability": {
+		"metrics": {
+			"prometheus": {
+				"runtimeMetricsCollectionInterval": 1000000000
+			},
+			"provider": "prometheus"
+		},
+		"tracing": {
+			"jaeger": {
+				"collector_endpoint": "http://tracing-server:14268/api/traces",
+				"service_name": "prixfixe_service",
+				"spanCollectionProbability": 1
+			},
+			"provider": "jaeger"
+		}
+	},
+	"email": {
+		"provider": "",
+		"apiToken": ""
+	},
+	"customerData": {
+		"provider": "",
+		"apiToken": ""
+	},
+	"logging": {
+		"level": 0,
+		"provider": "zerolog"
+	},
+	"encoding": {
+		"contentType": "application/json"
+	},
+	"uploads": {
+		"storageConfig": {
+			"filesystem": {
+				"rootDirectory": "/avatars"
+			},
+			"bucketName": "avatars.prixfixe.dev",
+			"uploadFilenameKey": "avatar",
+			"provider": "filesystem"
+		},
+		"debug": true
+	},
+	"routing": {},
+	"database": {
+		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable",
+		"debug": true,
+		"runMigrations": true,
+		"maxPingAttempts": 50
+	},
+	"meta": {
+		"runMode": "development",
 		"debug": true
 	},
 	"events": {
@@ -36,57 +84,9 @@
 			}
 		}
 	},
-	"email": {
-		"provider": "",
-		"apiToken": ""
-	},
-	"customerData": {
-		"provider": "",
-		"apiToken": ""
-	},
-	"encoding": {
-		"contentType": "application/json"
-	},
-	"uploads": {
-		"storageConfig": {
-			"filesystem": {
-				"rootDirectory": "/avatars"
-			},
-			"bucketName": "avatars.prixfixe.dev",
-			"uploadFilenameKey": "avatar",
-			"provider": "filesystem"
-		},
-		"debug": true
-	},
-	"observability": {
-		"metrics": {
-			"prometheus": {
-				"runtimeMetricsCollectionInterval": 1000000000
-			},
-			"provider": "prometheus"
-		},
-		"tracing": {
-			"jaeger": {
-				"collector_endpoint": "http://tracing-server:14268/api/traces",
-				"service_name": "prixfixe_service",
-				"spanCollectionProbability": 1
-			},
-			"provider": "jaeger"
-		}
-	},
-	"routing": {},
-	"database": {
-		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable",
-		"debug": true,
-		"runMigrations": true,
-		"maxPingAttempts": 50
-	},
-	"logging": {
-		"level": 0,
-		"provider": "zerolog"
-	},
-	"meta": {
-		"runMode": "development",
+	"server": {
+		"startupDeadline": 60000000000,
+		"httpPort": 8000,
 		"debug": true
 	},
 	"services": {
@@ -143,12 +143,11 @@
 			"dataChangesTopicName": "data_changes",
 			"debug": false
 		},
+		"users": {
+			"dataChangesTopicName": "data_changes"
+		},
 		"auth": {
-			"paseto": {
-				"issuer": "prixfixe_service",
-				"localModeKey": "aLoN4TufMHjoVo51ZALIujoHrW8v69V6V9jldfk8tcg=",
-				"lifetime": 60000000000
-			},
+			"dataChanges": "data_changes",
 			"cookies": {
 				"name": "prixfixecookie",
 				"domain": ".prixfixe.local",
@@ -156,6 +155,11 @@
 				"blockKey": "DIFFERENT32CHARSECRETTHATIMADEUP",
 				"lifetime": 86400000000000,
 				"secureOnly": true
+			},
+			"paseto": {
+				"issuer": "prixfixe_service",
+				"localModeKey": "NRa8yXEFjqJjJSShmcWlOqBwQuIzJHLXsf5jBMfACeU=",
+				"lifetime": 60000000000
 			},
 			"debug": true,
 			"enableUserSignup": true,

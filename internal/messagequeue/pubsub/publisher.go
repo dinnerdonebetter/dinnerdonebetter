@@ -46,9 +46,8 @@ func (r *publisher) Publish(ctx context.Context, data interface{}) error {
 	<-result.Ready()
 
 	// The Get method blocks until a server-generated ID or an error is returned for the published message.
-	_, err := result.Get(ctx)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing pubsub message")
+	if _, resultCheckErr := result.Get(ctx); resultCheckErr != nil {
+		observability.AcknowledgeError(resultCheckErr, logger, span, "publishing pubsub message")
 	}
 
 	logger.Debug("published message")

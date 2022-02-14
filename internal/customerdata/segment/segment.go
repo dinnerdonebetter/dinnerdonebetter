@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 
+	"github.com/prixfixeco/api_server/pkg/types"
+
 	"gopkg.in/segmentio/analytics-go.v3"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -68,7 +70,7 @@ func (c *CustomerDataCollector) AddUser(ctx context.Context, userID string, prop
 }
 
 // EventOccurred associates events with a user.
-func (c *CustomerDataCollector) EventOccurred(ctx context.Context, event, userID string, properties map[string]interface{}) error {
+func (c *CustomerDataCollector) EventOccurred(ctx context.Context, event types.CustomerEventType, userID string, properties map[string]interface{}) error {
 	_, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -80,7 +82,7 @@ func (c *CustomerDataCollector) EventOccurred(ctx context.Context, event, userID
 	i := analytics.NewIntegrations().EnableAll()
 
 	return c.client.Enqueue(analytics.Track{
-		Event:        event,
+		Event:        string(event),
 		UserId:       userID,
 		Properties:   p,
 		Integrations: i,

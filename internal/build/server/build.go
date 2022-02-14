@@ -10,7 +10,6 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/authentication"
 	"github.com/prixfixeco/api_server/internal/config"
-	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
 	"github.com/prixfixeco/api_server/internal/encoding"
@@ -59,7 +58,6 @@ func Build(
 		config.Providers,
 		database.Providers,
 		dbconfig.Providers,
-		customerdataconfig.Providers,
 		encoding.Providers,
 		msgconfig.Providers,
 		server.Providers,

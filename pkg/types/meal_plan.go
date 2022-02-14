@@ -13,6 +13,15 @@ const (
 	// MealPlanDataType indicates an event is related to a meal plan.
 	MealPlanDataType dataType = "meal_plan"
 
+	// MealPlanCreatedCustomerEventType indicates a meal plan was created.
+	MealPlanCreatedCustomerEventType CustomerEventType = "meal_plan_created"
+	// MealPlanUpdatedCustomerEventType indicates a meal plan was updated.
+	MealPlanUpdatedCustomerEventType CustomerEventType = "meal_plan_updated"
+	// MealPlanArchivedCustomerEventType indicates a meal plan was archived.
+	MealPlanArchivedCustomerEventType CustomerEventType = "meal_plan_archived"
+	// MealPlanFinalizedCustomerEventType indicates a meal plan was finalized.
+	MealPlanFinalizedCustomerEventType CustomerEventType = "meal_plan_finalized"
+
 	// AwaitingVotesMealPlanStatus indicates a household invitation is pending.
 	AwaitingVotesMealPlanStatus MealPlanStatus = "awaiting_votes"
 	// FinalizedMealPlanStatus indicates a household invitation was accepted.
