@@ -4,8 +4,6 @@ import (
 	"net/http"
 	"testing"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/alexedwards/scs/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -14,6 +12,7 @@ import (
 	mockauthn "github.com/prixfixeco/api_server/internal/authentication/mock"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
@@ -36,9 +35,9 @@ func buildTestService(t *testing.T) *service {
 		&mockauthn.Authenticator{},
 		&mocktypes.AdminUserDataManager{},
 		scs.New(),
-		encoding.ProvideServerEncoderDecoder(logger, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON),
+		encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON),
 		rpm,
-		trace.NewNoopTracerProvider(),
+		tracing.NewNoopTracerProvider(),
 	)
 
 	mock.AssertExpectationsForObjects(t, rpm)
@@ -69,9 +68,9 @@ func TestProvideAdminService(T *testing.T) {
 			&mockauthn.Authenticator{},
 			&mocktypes.AdminUserDataManager{},
 			scs.New(),
-			encoding.ProvideServerEncoderDecoder(logger, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON),
+			encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON),
 			rpm,
-			trace.NewNoopTracerProvider(),
+			tracing.NewNoopTracerProvider(),
 		)
 
 		assert.NotNil(t, s)

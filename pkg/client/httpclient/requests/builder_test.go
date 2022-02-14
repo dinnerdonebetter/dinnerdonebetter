@@ -8,14 +8,13 @@ import (
 	"net/url"
 	"testing"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	mockpanicking "github.com/prixfixeco/api_server/internal/panicking/mock"
 )
 
@@ -36,8 +35,8 @@ func TestNewBuilder(T *testing.T) {
 		t.Parallel()
 
 		logger := logging.NewNoopLogger()
-		encoder := encoding.ProvideClientEncoder(logger, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-		c, err := NewBuilder(mustParseURL(exampleURI), logger, trace.NewNoopTracerProvider(), encoder)
+		encoder := encoding.ProvideClientEncoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		c, err := NewBuilder(mustParseURL(exampleURI), logger, tracing.NewNoopTracerProvider(), encoder)
 
 		require.NotNil(t, c)
 		require.NoError(t, err)
@@ -47,8 +46,8 @@ func TestNewBuilder(T *testing.T) {
 		t.Parallel()
 
 		logger := logging.NewNoopLogger()
-		encoder := encoding.ProvideClientEncoder(logger, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-		c, err := NewBuilder(nil, logger, trace.NewNoopTracerProvider(), encoder)
+		encoder := encoding.ProvideClientEncoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		c, err := NewBuilder(nil, logger, tracing.NewNoopTracerProvider(), encoder)
 
 		require.Nil(t, c)
 		require.Error(t, err)
@@ -58,7 +57,7 @@ func TestNewBuilder(T *testing.T) {
 		t.Parallel()
 
 		logger := logging.NewNoopLogger()
-		c, err := NewBuilder(mustParseURL(exampleURI), logger, trace.NewNoopTracerProvider(), nil)
+		c, err := NewBuilder(mustParseURL(exampleURI), logger, tracing.NewNoopTracerProvider(), nil)
 
 		require.Nil(t, c)
 		require.Error(t, err)
@@ -104,9 +103,9 @@ func TestBuilder_BuildURL(T *testing.T) {
 		t.Parallel()
 
 		logger := logging.NewNoopLogger()
-		encoder := encoding.ProvideClientEncoder(logger, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		encoder := encoding.ProvideClientEncoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		c, _ := NewBuilder(mustParseURL(exampleURI), logger, trace.NewNoopTracerProvider(), encoder)
+		c, _ := NewBuilder(mustParseURL(exampleURI), logger, tracing.NewNoopTracerProvider(), encoder)
 		ctx := context.Background()
 
 		testCases := []struct {
@@ -207,8 +206,8 @@ func TestBuilder_buildUnversionedURL(T *testing.T) {
 		t.Parallel()
 
 		logger := logging.NewNoopLogger()
-		encoder := encoding.ProvideClientEncoder(logger, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-		b, err := NewBuilder(mustParseURL(exampleURI), logger, trace.NewNoopTracerProvider(), encoder)
+		encoder := encoding.ProvideClientEncoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		b, err := NewBuilder(mustParseURL(exampleURI), logger, tracing.NewNoopTracerProvider(), encoder)
 
 		require.NoError(t, err)
 
@@ -260,8 +259,8 @@ func TestBuilder_BuildWebsocketURL(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		encoder := encoding.ProvideClientEncoder(logger, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-		c, err := NewBuilder(mustParseURL(exampleURI), logger, trace.NewNoopTracerProvider(), encoder)
+		encoder := encoding.ProvideClientEncoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		c, err := NewBuilder(mustParseURL(exampleURI), logger, tracing.NewNoopTracerProvider(), encoder)
 
 		require.NoError(t, err)
 

@@ -4,12 +4,11 @@ import (
 	"net/http"
 	"time"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/gorilla/websocket"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/client/httpclient/requests"
 )
 
@@ -29,13 +28,13 @@ func (c *Client) SetOptions(opts ...option) error {
 // UsingJSON sets the url on the client.
 func UsingJSON() func(*Client) error {
 	return func(c *Client) error {
-		requestBuilder, err := requests.NewBuilder(c.url, c.logger, trace.NewNoopTracerProvider(), encoding.ProvideClientEncoder(c.logger, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON))
+		requestBuilder, err := requests.NewBuilder(c.url, c.logger, tracing.NewNoopTracerProvider(), encoding.ProvideClientEncoder(c.logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON))
 		if err != nil {
 			return err
 		}
 
 		c.requestBuilder = requestBuilder
-		c.encoder = encoding.ProvideClientEncoder(c.logger, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		c.encoder = encoding.ProvideClientEncoder(c.logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		return nil
 	}
@@ -44,13 +43,13 @@ func UsingJSON() func(*Client) error {
 // UsingXML sets the url on the client.
 func UsingXML() func(*Client) error {
 	return func(c *Client) error {
-		requestBuilder, err := requests.NewBuilder(c.url, c.logger, trace.NewNoopTracerProvider(), encoding.ProvideClientEncoder(c.logger, trace.NewNoopTracerProvider(), encoding.ContentTypeXML))
+		requestBuilder, err := requests.NewBuilder(c.url, c.logger, tracing.NewNoopTracerProvider(), encoding.ProvideClientEncoder(c.logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeXML))
 		if err != nil {
 			return err
 		}
 
 		c.requestBuilder = requestBuilder
-		c.encoder = encoding.ProvideClientEncoder(c.logger, trace.NewNoopTracerProvider(), encoding.ContentTypeXML)
+		c.encoder = encoding.ProvideClientEncoder(c.logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeXML)
 
 		return nil
 	}

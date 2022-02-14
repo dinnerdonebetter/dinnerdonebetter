@@ -4,8 +4,6 @@ import (
 	"net/http"
 	"testing"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
@@ -63,7 +61,7 @@ func TestProvideAPIClientsService(T *testing.T) {
 			},
 			rpm,
 			&config{},
-			trace.NewNoopTracerProvider(),
+			tracing.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, s)
 

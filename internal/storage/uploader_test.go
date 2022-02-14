@@ -6,12 +6,11 @@ import (
 	"os"
 	"testing"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
 )
 
@@ -47,7 +46,7 @@ func TestNewUploadManager(T *testing.T) {
 		rpm := &mockrouting.RouteParamManager{}
 		rpm.On("BuildRouteParamStringIDFetcher", cfg.UploadFilenameKey).Return(func(*http.Request) string { return t.Name() })
 
-		x, err := NewUploadManager(ctx, l, trace.NewNoopTracerProvider(), cfg, rpm)
+		x, err := NewUploadManager(ctx, l, tracing.NewNoopTracerProvider(), cfg, rpm)
 		assert.NotNil(t, x)
 		assert.NoError(t, err)
 
@@ -61,7 +60,7 @@ func TestNewUploadManager(T *testing.T) {
 		l := logging.NewNoopLogger()
 		rpm := &mockrouting.RouteParamManager{}
 
-		x, err := NewUploadManager(ctx, l, trace.NewNoopTracerProvider(), nil, rpm)
+		x, err := NewUploadManager(ctx, l, tracing.NewNoopTracerProvider(), nil, rpm)
 		assert.Nil(t, x)
 		assert.Error(t, err)
 
@@ -77,7 +76,7 @@ func TestNewUploadManager(T *testing.T) {
 		rpm := &mockrouting.RouteParamManager{}
 		rpm.On("BuildRouteParamStringIDFetcher", cfg.UploadFilenameKey).Return(func(*http.Request) string { return t.Name() })
 
-		x, err := NewUploadManager(ctx, l, trace.NewNoopTracerProvider(), cfg, rpm)
+		x, err := NewUploadManager(ctx, l, tracing.NewNoopTracerProvider(), cfg, rpm)
 		assert.Nil(t, x)
 		assert.Error(t, err)
 

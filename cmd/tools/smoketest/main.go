@@ -6,8 +6,7 @@ import (
 	"net/url"
 	"time"
 
-	"go.opentelemetry.io/otel/trace"
-
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/client/httpclient"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
@@ -44,7 +43,7 @@ func main() {
 		panic(err)
 	}
 
-	client, err := httpclient.NewClient(parsedURI, trace.NewNoopTracerProvider(), httpclient.UsingCookie(cookie))
+	client, err := httpclient.NewClient(parsedURI, tracing.NewNoopTracerProvider(), httpclient.UsingCookie(cookie))
 	if err != nil {
 		panic(err)
 	}

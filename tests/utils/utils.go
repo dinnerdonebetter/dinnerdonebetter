@@ -13,10 +13,9 @@ import (
 	"strings"
 	"time"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/pquerna/otp/totp"
 
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/client/httpclient"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -36,7 +35,7 @@ func CreateServiceUser(ctx context.Context, address string, in *types.UserRegist
 		return nil, err
 	}
 
-	c, err := httpclient.NewClient(parsedAddress, trace.NewNoopTracerProvider())
+	c, err := httpclient.NewClient(parsedAddress, tracing.NewNoopTracerProvider())
 	if err != nil {
 		return nil, fmt.Errorf("initializing client: %w", err)
 	}

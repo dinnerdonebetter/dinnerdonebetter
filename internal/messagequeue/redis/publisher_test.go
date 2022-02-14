@@ -7,12 +7,12 @@ import (
 	"testing"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"go.opentelemetry.io/otel/trace"
 
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
@@ -36,7 +36,7 @@ func Test_redisPublisher_Publish(T *testing.T) {
 		cfg := Config{
 			QueueAddresses: []string{t.Name()},
 		}
-		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)
+		provider := ProvideRedisPublisherProvider(logger, tracing.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, provider)
 
 		a, err := provider.ProviderPublisher(t.Name())
@@ -77,7 +77,7 @@ func Test_redisPublisher_Publish(T *testing.T) {
 		cfg := Config{
 			QueueAddresses: []string{t.Name()},
 		}
-		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)
+		provider := ProvideRedisPublisherProvider(logger, tracing.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, provider)
 
 		a, err := provider.ProviderPublisher(t.Name())
@@ -110,7 +110,7 @@ func TestProvideRedisPublisherProvider(T *testing.T) {
 		cfg := Config{
 			QueueAddresses: []string{t.Name()},
 		}
-		actual := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)
+		actual := ProvideRedisPublisherProvider(logger, tracing.NewNoopTracerProvider(), cfg)
 		assert.NotNil(t, actual)
 	})
 }
@@ -126,7 +126,7 @@ func Test_publisherProvider_ProviderPublisher(T *testing.T) {
 		cfg := Config{
 			QueueAddresses: []string{t.Name()},
 		}
-		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)
+		provider := ProvideRedisPublisherProvider(logger, tracing.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, provider)
 
 		actual, err := provider.ProviderPublisher(t.Name())
@@ -142,7 +142,7 @@ func Test_publisherProvider_ProviderPublisher(T *testing.T) {
 		cfg := Config{
 			QueueAddresses: []string{t.Name()},
 		}
-		provider := ProvideRedisPublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)
+		provider := ProvideRedisPublisherProvider(logger, tracing.NewNoopTracerProvider(), cfg)
 		require.NotNil(t, provider)
 
 		actual, err := provider.ProviderPublisher(t.Name())

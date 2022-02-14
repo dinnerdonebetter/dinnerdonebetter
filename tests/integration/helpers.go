@@ -10,8 +10,6 @@ import (
 
 	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/brianvoe/gofakeit/v5"
 
 	"github.com/pquerna/otp/totp"
@@ -91,7 +89,7 @@ func initializeCookiePoweredClient(cookie *http.Cookie) (*httpclient.Client, err
 	logger := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
 
 	c, err := httpclient.NewClient(parsedURLToUse,
-		trace.NewNoopTracerProvider(),
+		tracing.NewNoopTracerProvider(),
 		httpclient.UsingLogger(logger),
 		httpclient.UsingCookie(cookie),
 	)
@@ -110,7 +108,7 @@ func initializeCookiePoweredClient(cookie *http.Cookie) (*httpclient.Client, err
 
 func initializePASETOPoweredClient(clientID string, secretKey []byte) (*httpclient.Client, error) {
 	c, err := httpclient.NewClient(parsedURLToUse,
-		trace.NewNoopTracerProvider(),
+		tracing.NewNoopTracerProvider(),
 		httpclient.UsingLogger(logging.NewNoopLogger()),
 		httpclient.UsingPASETO(clientID, secretKey),
 	)
@@ -130,7 +128,7 @@ func initializePASETOPoweredClient(clientID string, secretKey []byte) (*httpclie
 func buildSimpleClient(t *testing.T) *httpclient.Client {
 	t.Helper()
 
-	c, err := httpclient.NewClient(parsedURLToUse, trace.NewNoopTracerProvider())
+	c, err := httpclient.NewClient(parsedURLToUse, tracing.NewNoopTracerProvider())
 	require.NoError(t, err)
 
 	return c

@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/prixfixeco/api_server/internal/observability/tracing/cloudtrace"
+
 	usersservice "github.com/prixfixeco/api_server/internal/services/users"
 
 	"github.com/prixfixeco/api_server/internal/config"
@@ -25,7 +27,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/metrics/prometheus"
 	tracingcfg "github.com/prixfixeco/api_server/internal/observability/tracing/config"
 	"github.com/prixfixeco/api_server/internal/observability/tracing/jaeger"
-	"github.com/prixfixeco/api_server/internal/observability/tracing/xray"
 	"github.com/prixfixeco/api_server/internal/server"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
@@ -219,11 +220,11 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 		Observability: observability.Config{
 			Metrics: metricscfg.Config{},
 			Tracing: tracingcfg.Config{
-				Provider: tracingcfg.ProviderXRay,
-				XRay: &xray.Config{
-					CollectorEndpoint:         "0.0.0.0:4317",
+				Provider: tracingcfg.ProviderCloudTrace,
+				CloudTrace: &cloudtrace.Config{
+					ProjectID:                 "prixfixe-dev",
 					ServiceName:               "prixfixe_api",
-					SpanCollectionProbability: 0.1,
+					SpanCollectionProbability: 1,
 				},
 			},
 		},

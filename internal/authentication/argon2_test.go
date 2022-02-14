@@ -5,13 +5,12 @@ import (
 	"testing"
 	"time"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/prixfixeco/api_server/internal/authentication"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
 
 const (
@@ -21,7 +20,7 @@ const (
 func TestArgon2_HashPassword(T *testing.T) {
 	T.Parallel()
 
-	x := authentication.ProvideArgon2Authenticator(logging.NewNoopLogger(), trace.NewNoopTracerProvider())
+	x := authentication.ProvideArgon2Authenticator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider())
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -37,7 +36,7 @@ func TestArgon2_HashPassword(T *testing.T) {
 func TestArgon2_ValidateLogin(T *testing.T) {
 	T.Parallel()
 
-	x := authentication.ProvideArgon2Authenticator(logging.NewNoopLogger(), trace.NewNoopTracerProvider())
+	x := authentication.ProvideArgon2Authenticator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider())
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -116,6 +115,6 @@ func TestProvideArgon2Authenticator(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		authentication.ProvideArgon2Authenticator(logging.NewNoopLogger(), trace.NewNoopTracerProvider())
+		authentication.ProvideArgon2Authenticator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider())
 	})
 }

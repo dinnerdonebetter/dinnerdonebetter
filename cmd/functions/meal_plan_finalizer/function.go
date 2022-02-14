@@ -11,7 +11,6 @@ import (
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/config"
 	"github.com/prixfixeco/api_server/internal/database"
@@ -85,7 +84,7 @@ func FinalizeMealPlans(ctx context.Context, m PubSubMessage) error {
 		return fmt.Errorf("error getting config: %w", err)
 	}
 
-	tracerProvider := trace.NewNoopTracerProvider()
+	tracerProvider := tracing.NewNoopTracerProvider()
 	otel.SetTracerProvider(tracerProvider)
 	tracer := tracing.NewTracer(tracerProvider.Tracer("meal_plan_finalizer"))
 

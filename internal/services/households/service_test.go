@@ -7,7 +7,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"go.opentelemetry.io/otel/trace"
 
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
@@ -68,7 +67,7 @@ func TestProvideHouseholdsService(T *testing.T) {
 			ucp,
 			rpm,
 			pp,
-			trace.NewNoopTracerProvider(),
+			tracing.NewNoopTracerProvider(),
 		)
 
 		assert.NotNil(t, s)
@@ -102,7 +101,7 @@ func TestProvideHouseholdsService(T *testing.T) {
 			ucp,
 			rpm,
 			pp,
-			trace.NewNoopTracerProvider(),
+			tracing.NewNoopTracerProvider(),
 		)
 
 		assert.Nil(t, s)

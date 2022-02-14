@@ -12,7 +12,6 @@ import (
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/unrolled/secure"
-	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -140,7 +139,7 @@ func NewRouter(logger logging.Logger, tracerProvider tracing.TracerProvider, cfg
 }
 
 func (r *router) clone() *router {
-	return buildRouter(r.router, r.logger, trace.NewNoopTracerProvider(), r.cfg)
+	return buildRouter(r.router, r.logger, tracing.NewNoopTracerProvider(), r.cfg)
 }
 
 // WithMiddleware returns a router with certain middleware applied.
@@ -169,7 +168,7 @@ func (r *router) LogRoutes() {
 // Route lets you apply a set of routes to a subrouter with a provided pattern.
 func (r *router) Route(pattern string, fn func(r routing.Router)) routing.Router {
 	r.router.Route(pattern, func(subrouter chi.Router) {
-		fn(buildRouter(subrouter, r.logger, trace.NewNoopTracerProvider(), r.cfg))
+		fn(buildRouter(subrouter, r.logger, tracing.NewNoopTracerProvider(), r.cfg))
 	})
 
 	return r

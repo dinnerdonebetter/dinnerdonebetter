@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/prixfixeco/api_server/internal/observability/tracing/cloudtrace"
+
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/observability/tracing/xray"
-
-	"go.opentelemetry.io/otel/trace"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
@@ -30,9 +30,10 @@ type (
 	Config struct {
 		_ struct{}
 
-		XRay     *xray.Config   `json:"xray,omitempty" mapstructure:"xray" toml:"xray,omitempty"`
-		Jaeger   *jaeger.Config `json:"jaeger,omitempty" mapstructure:"jaeger" toml:"jaeger,omitempty"`
-		Provider string         `json:"provider,omitempty" mapstructure:"provider" toml:"provider,omitempty"`
+		CloudTrace *cloudtrace.Config `json:"cloudTrace,omitempty" mapstructure:"cloud_trace" toml:"cloud_trace,omitempty"`
+		XRay       *xray.Config       `json:"xray,omitempty" mapstructure:"xray" toml:"xray,omitempty"`
+		Jaeger     *jaeger.Config     `json:"jaeger,omitempty" mapstructure:"jaeger" toml:"jaeger,omitempty"`
+		Provider   string             `json:"provider,omitempty" mapstructure:"provider" toml:"provider,omitempty"`
 	}
 )
 
@@ -49,10 +50,9 @@ func (c *Config) Initialize(ctx context.Context, l logging.Logger) (traceProvide
 	case ProviderXRay:
 		return xray.SetupXRay(ctx, c.XRay)
 	case ProviderCloudTrace:
-		// https://cloud.google.com/trace/docs/setup/go-ot
-		return trace.NewNoopTracerProvider(), nil
+		return cloudtrace.SetupCloudTrace(ctx, c.CloudTrace)
 	case "":
-		return trace.NewNoopTracerProvider(), nil
+		return tracing.NewNoopTracerProvider(), nil
 	default:
 		logger.Debug("invalid tracing provider")
 		return nil, fmt.Errorf("invalid tracing provider: %q", p)

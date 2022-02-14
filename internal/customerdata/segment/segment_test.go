@@ -6,11 +6,10 @@ import (
 
 	"github.com/prixfixeco/api_server/pkg/types"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
@@ -22,7 +21,7 @@ func TestNewSegmentCustomerDataCollector(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		collector, err := NewSegmentCustomerDataCollector(logger, trace.NewNoopTracerProvider(), t.Name())
+		collector, err := NewSegmentCustomerDataCollector(logger, tracing.NewNoopTracerProvider(), t.Name())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 	})
@@ -32,7 +31,7 @@ func TestNewSegmentCustomerDataCollector(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		collector, err := NewSegmentCustomerDataCollector(logger, trace.NewNoopTracerProvider(), "")
+		collector, err := NewSegmentCustomerDataCollector(logger, tracing.NewNoopTracerProvider(), "")
 		require.Error(t, err)
 		require.Nil(t, collector)
 	})
@@ -46,7 +45,7 @@ func TestCustomerDataCollector_Close(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		collector, err := NewSegmentCustomerDataCollector(logger, trace.NewNoopTracerProvider(), t.Name())
+		collector, err := NewSegmentCustomerDataCollector(logger, tracing.NewNoopTracerProvider(), t.Name())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 
@@ -67,7 +66,7 @@ func TestCustomerDataCollector_AddUser(T *testing.T) {
 			"test.name": t.Name(),
 		}
 
-		collector, err := NewSegmentCustomerDataCollector(logger, trace.NewNoopTracerProvider(), t.Name())
+		collector, err := NewSegmentCustomerDataCollector(logger, tracing.NewNoopTracerProvider(), t.Name())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 
@@ -88,7 +87,7 @@ func TestCustomerDataCollector_EventOccurred(T *testing.T) {
 			"test.name": t.Name(),
 		}
 
-		collector, err := NewSegmentCustomerDataCollector(logger, trace.NewNoopTracerProvider(), t.Name())
+		collector, err := NewSegmentCustomerDataCollector(logger, tracing.NewNoopTracerProvider(), t.Name())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 

@@ -4,9 +4,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
 
 func Test_cleanString(T *testing.T) {
@@ -32,7 +32,7 @@ func TestProvideConsumerProvider(T *testing.T) {
 			},
 		}
 
-		provider, err := ProvideConsumerProvider(logger, trace.NewNoopTracerProvider(), cfg)
+		provider, err := ProvideConsumerProvider(logger, tracing.NewNoopTracerProvider(), cfg)
 		assert.NoError(t, err)
 		assert.NotNil(t, provider)
 	})
@@ -43,7 +43,7 @@ func TestProvideConsumerProvider(T *testing.T) {
 		logger := zerolog.NewZerologLogger()
 		cfg := &Config{}
 
-		provider, err := ProvideConsumerProvider(logger, trace.NewNoopTracerProvider(), cfg)
+		provider, err := ProvideConsumerProvider(logger, tracing.NewNoopTracerProvider(), cfg)
 		assert.Error(t, err)
 		assert.Nil(t, provider)
 	})
@@ -62,7 +62,7 @@ func TestProvidePublisherProvider(T *testing.T) {
 			},
 		}
 
-		provider, err := ProvidePublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)
+		provider, err := ProvidePublisherProvider(logger, tracing.NewNoopTracerProvider(), cfg)
 		assert.NoError(t, err)
 		assert.NotNil(t, provider)
 	})
@@ -73,7 +73,7 @@ func TestProvidePublisherProvider(T *testing.T) {
 		logger := zerolog.NewZerologLogger()
 		cfg := &Config{}
 
-		provider, err := ProvidePublisherProvider(logger, trace.NewNoopTracerProvider(), cfg)
+		provider, err := ProvidePublisherProvider(logger, tracing.NewNoopTracerProvider(), cfg)
 		assert.Error(t, err)
 		assert.Nil(t, provider)
 	})

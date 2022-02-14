@@ -8,8 +8,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
@@ -19,6 +17,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	mockmetrics "github.com/prixfixeco/api_server/internal/observability/metrics/mock"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/routing/chi"
 	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
@@ -59,7 +58,7 @@ func buildTestService(t *testing.T) *service {
 		&images.MockImageUploadProcessor{},
 		&mockuploads.UploadManager{},
 		chi.NewRouteParamManager(),
-		trace.NewNoopTracerProvider(),
+		tracing.NewNoopTracerProvider(),
 		pp,
 	)
 
@@ -100,7 +99,7 @@ func TestProvideUsersService(T *testing.T) {
 			&images.MockImageUploadProcessor{},
 			&mockuploads.UploadManager{},
 			rpm,
-			trace.NewNoopTracerProvider(),
+			tracing.NewNoopTracerProvider(),
 			pp,
 		)
 

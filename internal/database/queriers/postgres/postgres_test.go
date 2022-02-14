@@ -10,8 +10,6 @@ import (
 	"testing"
 	"time"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/Masterminds/squirrel"
 	"github.com/segmentio/ksuid"
@@ -195,7 +193,7 @@ func TestProvideDatabaseClient(T *testing.T) {
 			MaxPingAttempts: 1,
 		}
 
-		actual, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), exampleConfig, trace.NewNoopTracerProvider())
+		actual, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), exampleConfig, tracing.NewNoopTracerProvider())
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 	})

@@ -7,10 +7,10 @@ import (
 	"time"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
-	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/client/httpclient"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
@@ -54,7 +54,7 @@ func getClientForUser(ctx context.Context, logger logging.Logger) (*types.User, 
 
 	logger.Debug("initializing client")
 
-	client, err := httpclient.NewClient(parsedURI, trace.NewNoopTracerProvider(), httpclient.UsingCookie(cookie))
+	client, err := httpclient.NewClient(parsedURI, tracing.NewNoopTracerProvider(), httpclient.UsingCookie(cookie))
 	if err != nil {
 		return nil, nil, fmt.Errorf("initializing REST API client: %w", err)
 	}
