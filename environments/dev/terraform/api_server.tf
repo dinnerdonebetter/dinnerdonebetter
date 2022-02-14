@@ -13,6 +13,7 @@ resource "google_project_iam_custom_role" "api_server_role" {
     "cloudsql.instances.get",
     "pubsub.topics.list",
     "pubsub.topics.publish",
+    "cloudtrace.traces.patch",
   ]
 }
 
