@@ -31,7 +31,6 @@ resource "google_monitoring_dashboard" "api_service_dashboard" {
         "widget": {
           "title": "Container CPU Utilization [95TH PERCENTILE]",
           "xyChart": {
-            "height": 2,
             "width": 2,
             "chartOptions": {
               "mode": "COLOR"
@@ -71,7 +70,6 @@ resource "google_monitoring_dashboard" "api_service_dashboard" {
         "widget": {
           "title": "Container Memory Utilization [95TH PERCENTILE]",
           "xyChart": {
-            "height": 2,
             "width": 2,
             "chartOptions": {
               "mode": "COLOR"
@@ -111,7 +109,6 @@ resource "google_monitoring_dashboard" "api_service_dashboard" {
         "widget": {
           "title": "Sent Bytes [MEAN]",
           "xyChart": {
-            "height": 2,
             "width": 2,
             "chartOptions": {
               "mode": "COLOR"
@@ -156,7 +153,6 @@ resource "google_monitoring_dashboard" "api_service_dashboard" {
         "widget": {
           "title": "Received Bytes [MEAN]",
           "xyChart": {
-            "height": 2,
             "width": 2,
             "chartOptions": {
               "mode": "COLOR"
