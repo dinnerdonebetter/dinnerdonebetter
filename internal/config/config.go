@@ -11,7 +11,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/encoding"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability"
-	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 	"github.com/prixfixeco/api_server/internal/routing"
 	"github.com/prixfixeco/api_server/internal/server"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
@@ -58,7 +57,6 @@ type (
 		Observability observability.Config      `json:"observability" mapstructure:"observability" toml:"observability,omitempty"`
 		Email         emailconfig.Config        `json:"email" mapstructure:"email" toml:"email,omitempty"`
 		CustomerData  customerdataconfig.Config `json:"customerData" mapstructure:"customer_data" toml:"customer_data,omitempty"`
-		Logging       logcfg.Config             `json:"logging,omitempty" mapstructure:"logging" toml:"logging,omitempty"`
 		Encoding      encoding.Config           `json:"encoding" mapstructure:"encoding" toml:"encoding,omitempty"`
 		Uploads       uploads.Config            `json:"uploads" mapstructure:"uploads" toml:"uploads,omitempty"`
 		Routing       routing.Config            `json:"routing" mapstructure:"routing" toml:"routing,omitempty"`

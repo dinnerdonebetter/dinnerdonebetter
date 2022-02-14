@@ -103,6 +103,13 @@ var (
 		SecureOnly: true,
 	}
 
+	localMetricsConfig = metricscfg.Config{
+		Provider: "prometheus",
+		Prometheus: &prometheus.Config{
+			RuntimeMetricsCollectionInterval: time.Second,
+		},
+	}
+
 	localTracingConfig = tracingcfg.Config{
 		Provider: "jaeger",
 		Jaeger: &jaeger.Config{
@@ -189,7 +196,6 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 	}
 
 	cfg := &config.InstanceConfig{
-		Logging: devEnvLogConfig,
 		Meta: config.MetaSettings{
 			Debug:   true,
 			RunMode: developmentEnv,
@@ -218,6 +224,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 			MaxPingAttempts: maxAttempts,
 		},
 		Observability: observability.Config{
+			Logging: devEnvLogConfig,
 			Metrics: metricscfg.Config{},
 			Tracing: tracingcfg.Config{
 				Provider: tracingcfg.ProviderCloudTrace,
@@ -266,7 +273,6 @@ func devEnvironmentServerConfig(ctx context.Context, filePath string) error {
 
 func localDevelopmentConfig(ctx context.Context, filePath string) error {
 	cfg := &config.InstanceConfig{
-		Logging: localLogConfig,
 		Meta: config.MetaSettings{
 			Debug:   true,
 			RunMode: developmentEnv,
@@ -298,12 +304,8 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 			ConnectionDetails: devPostgresDBConnDetails,
 		},
 		Observability: observability.Config{
-			Metrics: metricscfg.Config{
-				Provider: "prometheus",
-				Prometheus: &prometheus.Config{
-					RuntimeMetricsCollectionInterval: time.Second,
-				},
-			},
+			Logging: localLogConfig,
+			Metrics: localMetricsConfig,
 			Tracing: localTracingConfig,
 		},
 		Uploads: uploads.Config{
@@ -394,7 +396,6 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 
 func buildIntegrationTestsConfig() *config.InstanceConfig {
 	return &config.InstanceConfig{
-		Logging: localLogConfig,
 		Meta: config.MetaSettings{
 			Debug:   false,
 			RunMode: testingEnv,
@@ -430,9 +431,8 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			ConnectionDetails: devPostgresDBConnDetails,
 		},
 		Observability: observability.Config{
-			Metrics: metricscfg.Config{
-				Provider: "",
-			},
+			Logging: localLogConfig,
+			Metrics: localMetricsConfig,
 			Tracing: localTracingConfig,
 		},
 		Uploads: uploads.Config{

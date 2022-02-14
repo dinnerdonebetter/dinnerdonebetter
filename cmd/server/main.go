@@ -38,8 +38,6 @@ func main() {
 		logger = (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
 	)
 
-	logger.SetLevel(logging.DebugLevel)
-
 	logger.SetRequestIDFunc(func(req *http.Request) string {
 		return chimiddleware.GetReqID(req.Context())
 	})
@@ -72,6 +70,8 @@ func main() {
 	} else {
 		log.Fatal("no config provided")
 	}
+
+	logger.SetLevel(cfg.Observability.Logging.Level)
 
 	// should make wire do these someday
 	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.Initialize(ctx, logger)

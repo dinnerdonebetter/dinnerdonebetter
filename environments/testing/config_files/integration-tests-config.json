@@ -1,6 +1,15 @@
 {
 	"observability": {
-		"metrics": {},
+		"logging": {
+			"level": 0,
+			"provider": "zerolog"
+		},
+		"metrics": {
+			"prometheus": {
+				"runtimeMetricsCollectionInterval": 1000000000
+			},
+			"provider": "prometheus"
+		},
 		"tracing": {
 			"jaeger": {
 				"collector_endpoint": "http://tracing-server:14268/api/traces",
@@ -17,10 +26,6 @@
 	"customerData": {
 		"provider": "",
 		"apiToken": ""
-	},
-	"logging": {
-		"level": 0,
-		"provider": "zerolog"
 	},
 	"encoding": {
 		"contentType": "application/json"
@@ -148,7 +153,7 @@
 			},
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "egLkSTRLmolPWWKwGB12IbKhgX0KckYinqNvnklmTeQ=",
+				"localModeKey": "3N7D/Zph5QHMRdwFWoSiPBuhF6dG3kUOUVWuVi/Fq5c=",
 				"lifetime": 60000000000
 			},
 			"enableUserSignup": true,

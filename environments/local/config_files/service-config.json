@@ -1,5 +1,9 @@
 {
 	"observability": {
+		"logging": {
+			"level": 0,
+			"provider": "zerolog"
+		},
 		"metrics": {
 			"prometheus": {
 				"runtimeMetricsCollectionInterval": 1000000000
@@ -22,10 +26,6 @@
 	"customerData": {
 		"provider": "",
 		"apiToken": ""
-	},
-	"logging": {
-		"level": 0,
-		"provider": "zerolog"
 	},
 	"encoding": {
 		"contentType": "application/json"
@@ -158,7 +158,7 @@
 			},
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "egLkSTRLmolPWWKwGB12IbKhgX0KckYinqNvnklmTeQ=",
+				"localModeKey": "3N7D/Zph5QHMRdwFWoSiPBuhF6dG3kUOUVWuVi/Fq5c=",
 				"lifetime": 60000000000
 			},
 			"debug": true,
