@@ -31,6 +31,8 @@ resource "google_monitoring_dashboard" "api_service_dashboard" {
         "widget": {
           "title": "Container CPU Utilization [95TH PERCENTILE]",
           "xyChart": {
+            "height": 2,
+            "width": 2,
             "chartOptions": {
               "mode": "COLOR"
             },
@@ -47,12 +49,7 @@ resource "google_monitoring_dashboard" "api_service_dashboard" {
                       "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_PERCENTILE_95"
                     },
-                    "filter": "metric.type=\"run.googleapis.com/container/cpu/utilizations\" resource.type=\"cloud_run_revision\"",
-                    "secondaryAggregation": {
-                      "alignmentPeriod": "60s",
-                      "crossSeriesReducer": "REDUCE_NONE",
-                      "perSeriesAligner": "ALIGN_NONE"
-                    }
+                    "filter": "metric.type=\"run.googleapis.com/container/cpu/utilizations\" resource.type=\"cloud_run_revision\""
                   }
                 }
               }
@@ -74,6 +71,8 @@ resource "google_monitoring_dashboard" "api_service_dashboard" {
         "widget": {
           "title": "Container Memory Utilization [95TH PERCENTILE]",
           "xyChart": {
+            "height": 2,
+            "width": 2,
             "chartOptions": {
               "mode": "COLOR"
             },
@@ -90,12 +89,7 @@ resource "google_monitoring_dashboard" "api_service_dashboard" {
                       "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_PERCENTILE_95"
                     },
-                    "filter": "metric.type=\"run.googleapis.com/container/memory/utilizations\" resource.type=\"cloud_run_revision\"",
-                    "secondaryAggregation": {
-                      "alignmentPeriod": "60s",
-                      "crossSeriesReducer": "REDUCE_NONE",
-                      "perSeriesAligner": "ALIGN_NONE"
-                    }
+                    "filter": "metric.type=\"run.googleapis.com/container/memory/utilizations\" resource.type=\"cloud_run_revision\""
                   }
                 }
               }
@@ -117,6 +111,8 @@ resource "google_monitoring_dashboard" "api_service_dashboard" {
         "widget": {
           "title": "Sent Bytes [MEAN]",
           "xyChart": {
+            "height": 2,
+            "width": 2,
             "chartOptions": {
               "mode": "COLOR"
             },
@@ -160,6 +156,8 @@ resource "google_monitoring_dashboard" "api_service_dashboard" {
         "widget": {
           "title": "Received Bytes [MEAN]",
           "xyChart": {
+            "height": 2,
+            "width": 2,
             "chartOptions": {
               "mode": "COLOR"
             },
