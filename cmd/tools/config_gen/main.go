@@ -9,10 +9,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/prixfixeco/api_server/internal/observability/tracing/cloudtrace"
-
-	usersservice "github.com/prixfixeco/api_server/internal/services/users"
-
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
@@ -25,8 +21,10 @@ import (
 	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 	metricscfg "github.com/prixfixeco/api_server/internal/observability/metrics/config"
 	"github.com/prixfixeco/api_server/internal/observability/metrics/prometheus"
+	"github.com/prixfixeco/api_server/internal/observability/tracing/cloudtrace"
 	tracingcfg "github.com/prixfixeco/api_server/internal/observability/tracing/config"
 	"github.com/prixfixeco/api_server/internal/observability/tracing/jaeger"
+	"github.com/prixfixeco/api_server/internal/routing"
 	"github.com/prixfixeco/api_server/internal/server"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
@@ -40,6 +38,7 @@ import (
 	recipestepinstrumentsservice "github.com/prixfixeco/api_server/internal/services/recipestepinstruments"
 	recipestepproductsservice "github.com/prixfixeco/api_server/internal/services/recipestepproducts"
 	recipestepsservice "github.com/prixfixeco/api_server/internal/services/recipesteps"
+	usersservice "github.com/prixfixeco/api_server/internal/services/users"
 	validingredientpreparationsservice "github.com/prixfixeco/api_server/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/prixfixeco/api_server/internal/services/validingredients"
 	validinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validinstruments"
@@ -77,6 +76,16 @@ const (
 
 var (
 	examplePASETOKey = generatePASETOKey()
+
+	localRoutingConfig = routing.Config{
+		Provider:            routing.ChiProvider,
+		SilenceRouteLogging: false,
+	}
+
+	devRoutingConfig = routing.Config{
+		Provider:            routing.ChiProvider,
+		SilenceRouteLogging: true,
+	}
 
 	devEnvLogConfig = logcfg.Config{
 		Level:    logging.InfoLevel,
@@ -196,6 +205,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 	}
 
 	cfg := &config.InstanceConfig{
+		Routing: devRoutingConfig,
 		Meta: config.MetaSettings{
 			Debug:   true,
 			RunMode: developmentEnv,
@@ -273,6 +283,7 @@ func devEnvironmentServerConfig(ctx context.Context, filePath string) error {
 
 func localDevelopmentConfig(ctx context.Context, filePath string) error {
 	cfg := &config.InstanceConfig{
+		Routing: localRoutingConfig,
 		Meta: config.MetaSettings{
 			Debug:   true,
 			RunMode: developmentEnv,
@@ -396,6 +407,7 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 
 func buildIntegrationTestsConfig() *config.InstanceConfig {
 	return &config.InstanceConfig{
+		Routing: localRoutingConfig,
 		Meta: config.MetaSettings{
 			Debug:   false,
 			RunMode: testingEnv,

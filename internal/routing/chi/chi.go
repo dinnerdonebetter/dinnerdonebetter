@@ -37,7 +37,7 @@ type router struct {
 	logger logging.Logger
 }
 
-func buildChiMux(logger logging.Logger, tracer tracing.Tracer, _ *routing.Config) chi.Router {
+func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Config) chi.Router {
 	ch := cors.New(cors.Options{
 		// AllowedOrigins: []string{"https://foo.com"}, // Use this to allow specific origin hosts,
 		AllowedOrigins: []string{
@@ -94,7 +94,7 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, _ *routing.Config
 		chimiddleware.RequestID,
 		chimiddleware.RealIP,
 		chimiddleware.Timeout(maxTimeout),
-		buildLoggingMiddleware(logging.EnsureLogger(logger).WithName("router")),
+		buildLoggingMiddleware(logging.EnsureLogger(logger).WithName("router"), cfg),
 		ch.Handler,
 	)
 

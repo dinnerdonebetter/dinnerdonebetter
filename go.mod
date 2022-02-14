@@ -6,6 +6,7 @@ require (
 	cloud.google.com/go/pubsub v1.10.3
 	cloud.google.com/go/secretmanager v1.1.0
 	github.com/DATA-DOG/go-sqlmock v1.5.0
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.26.0
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.3.0
 	github.com/GuiaBolso/darwin v0.0.0-20191218124601-fd6d2aa3d244
 	github.com/Masterminds/squirrel v1.5.0
@@ -69,6 +70,7 @@ require (
 	cloud.google.com/go/compute v1.2.0 // indirect
 	cloud.google.com/go/iam v0.1.0 // indirect
 	cloud.google.com/go/kms v1.2.0 // indirect
+	cloud.google.com/go/monitoring v1.2.0 // indirect
 	cloud.google.com/go/trace v1.0.0 // indirect
 	github.com/aead/chacha20 v0.0.0-20180709150244-8b13a72661da // indirect
 	github.com/aead/chacha20poly1305 v0.0.0-20170617001512-233f39982aeb // indirect

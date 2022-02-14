@@ -49,6 +49,8 @@ cloud.google.com/go/iam v0.1.0 h1:W2vbGCrE3Z7J/x3WXLxxGl9LMSB2uhsAA7Ss/6u/qRY=
 cloud.google.com/go/iam v0.1.0/go.mod h1:vcUNEa0pEm0qRVpmWepWaFMIAI8/hjB9mO8rNCJtF6c=
 cloud.google.com/go/kms v1.2.0 h1:4wZHCsSgCW3JhTlTYLi8gBHDYa/uQujOMjWOCKwGNHY=
 cloud.google.com/go/kms v1.2.0/go.mod h1:o3goAYwBWMzsalQbiksm9/gRIrLeDv2kssHn4h/mEoo=
+cloud.google.com/go/monitoring v1.2.0 h1:fEvQITrhVcPM6vuDQcgPMbU5kZFeQFwZmE7v6+S8BPo=
+cloud.google.com/go/monitoring v1.2.0/go.mod h1:tE8I08OzjWmXLhCopnPaUDpfGOEJOonfWXGR9E9SsFo=
 cloud.google.com/go/pubsub v1.0.1/go.mod h1:R0Gpsv3s54REJCy4fxDixWD93lHJMoZTyQ2kNxGRt3I=
 cloud.google.com/go/pubsub v1.1.0/go.mod h1:EwwdRX2sKPjnvnqCa270oGRyludottCI76h+R3AArQw=
 cloud.google.com/go/pubsub v1.2.0/go.mod h1:jhfEVHT8odbXTkndysNHCcx0awwzvfOlguIAii9o8iA=
@@ -105,6 +107,8 @@ github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym
 github.com/DATA-DOG/go-sqlmock v1.5.0 h1:Shsta01QNfFxHCfpW6YH2STWB0MudeXXEWMr20OEh60=
 github.com/DATA-DOG/go-sqlmock v1.5.0/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
 github.com/GoogleCloudPlatform/cloudsql-proxy v1.22.0/go.mod h1:mAm5O/zik2RFmcpigNjg6nMotDL8ZXJaxKzgGVcSMFA=
+github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.26.0 h1:W5wZekY1XeYeGTEakhI1pAZBIIlk71aFYWV/penzLJw=
+github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.26.0/go.mod h1:KKljpKOZZUG9ljcNQJgKV88u8CXbXibh6OqM9rMVlIA=
 github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.3.0 h1:JLLDOHEcoREA54hzOnjr8KQcZCvX0E8KhosjE0F1jaQ=
 github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.3.0/go.mod h1:Pe8G2QFgCaohbU/zHRBjn0YaFh9z8/HtuEDh/Lyo04E=
 github.com/GuiaBolso/darwin v0.0.0-20191218124601-fd6d2aa3d244 h1:dqzm54OhCqY8RinR/cx+Ppb0y56Ds5I3wwWhx4XybDg=

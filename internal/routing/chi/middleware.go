@@ -6,11 +6,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/routing"
 )
 
 var doNotLog = map[string]struct{}{
@@ -19,7 +19,7 @@ var doNotLog = map[string]struct{}{
 }
 
 // buildLoggingMiddleware builds a logging middleware.
-func buildLoggingMiddleware(logger logging.Logger) func(next http.Handler) http.Handler {
+func buildLoggingMiddleware(logger logging.Logger, cfg *routing.Config) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 			ww := chimiddleware.NewWrapResponseWriter(res, req.ProtoMajor)
@@ -27,20 +27,22 @@ func buildLoggingMiddleware(logger logging.Logger) func(next http.Handler) http.
 			start := time.Now()
 			next.ServeHTTP(ww, req)
 
-			shouldLog := true
-			for route := range doNotLog {
-				if strings.HasPrefix(req.URL.Path, route) || req.URL.Path == route {
-					shouldLog = false
-					break
+			if !cfg.SilenceRouteLogging {
+				shouldLog := true
+				for route := range doNotLog {
+					if strings.HasPrefix(req.URL.Path, route) || req.URL.Path == route {
+						shouldLog = false
+						break
+					}
 				}
-			}
 
-			if shouldLog {
-				logger.WithRequest(req).WithValues(map[string]interface{}{
-					"status":  ww.Status(),
-					"elapsed": time.Since(start).Milliseconds(),
-					"written": ww.BytesWritten(),
-				}).Debug("response served")
+				if shouldLog {
+					logger.WithRequest(req).WithValues(map[string]interface{}{
+						"status":  ww.Status(),
+						"elapsed": time.Since(start).Milliseconds(),
+						"written": ww.BytesWritten(),
+					}).Debug("response served")
+				}
 			}
 		})
 	}

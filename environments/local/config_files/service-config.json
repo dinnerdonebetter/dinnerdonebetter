@@ -41,7 +41,9 @@
 		},
 		"debug": true
 	},
-	"routing": {},
+	"routing": {
+		"provider": "chi"
+	},
 	"database": {
 		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable",
 		"debug": true,
@@ -158,7 +160,7 @@
 			},
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "3N7D/Zph5QHMRdwFWoSiPBuhF6dG3kUOUVWuVi/Fq5c=",
+				"localModeKey": "AR6bjTvDn25qxXcAHEfhd34CJsHFD3xoXkcWKNWLURA=",
 				"lifetime": 60000000000
 			},
 			"debug": true,

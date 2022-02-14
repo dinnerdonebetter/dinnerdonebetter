@@ -50,7 +50,7 @@ func Test_initiatePrometheusExporter(T *testing.T) {
 			RuntimeMetricsCollectionInterval: minimumRuntimeCollectionInterval,
 		}
 
-		_, _, err := cfg.initiatePrometheusExporter()
+		_, _, err := cfg.initiateExporter()
 		assert.NoError(t, err)
 	})
 }
