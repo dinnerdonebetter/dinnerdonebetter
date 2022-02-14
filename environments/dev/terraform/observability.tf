@@ -3,7 +3,7 @@ resource "google_monitoring_uptime_check_config" "api_uptime" {
   timeout      = "60s"
 
   http_check {
-    path         = "/_meta_/health"
+    path         = "/_meta_/ready"
     port         = "443"
     use_ssl      = true
     validate_ssl = true
