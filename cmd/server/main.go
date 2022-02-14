@@ -79,6 +79,12 @@ func main() {
 		logger.Error(initializeTracerErr, "initializing tracer")
 	}
 
+	defer func() {
+		if flushErr := tracerProvider.ForceFlush(ctx); flushErr != nil {
+			logger.Error(flushErr, "flushing traces")
+		}
+	}()
+
 	// should make wire do these someday
 	metricsProvider, initializeMetricsErr := cfg.Observability.Metrics.ProvideUnitCounterProvider(ctx, logger)
 	if initializeMetricsErr != nil {
