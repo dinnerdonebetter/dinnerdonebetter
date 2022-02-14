@@ -404,6 +404,7 @@ func (s *service) ModifyMemberPermissionsHandler(res http.ResponseWriter, req *h
 			DataType:                  types.UserMembershipDataType,
 			EventType:                 types.HouseholdMembershipPermissionsUpdatedCustomerEventType,
 			AttributableToUserID:      requester,
+			HouseholdID:               householdID,
 			AttributableToHouseholdID: householdID,
 		}
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

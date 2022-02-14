@@ -248,6 +248,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.MealDataType,
 			EventType:                 types.MealArchivedCustomerEventType,
+			MealID:                    mealID,
 			AttributableToUserID:      sessionCtxData.Requester.UserID,
 			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 		}

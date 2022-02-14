@@ -84,17 +84,17 @@ func ProcessDataChange(ctx context.Context, m PubSubMessage) error {
 	case types.HouseholdUpdatedCustomerEventType:
 		eventContext[keys.HouseholdIDKey] = changeMessage.Household.ID
 	case types.HouseholdArchivedCustomerEventType:
-		eventContext[keys.HouseholdIDKey] = changeMessage.Household.ID
+		break
 	case types.HouseholdMembershipPermissionsUpdatedCustomerEventType:
-		eventContext[keys.HouseholdIDKey] = changeMessage.Household.ID
+		eventContext[keys.HouseholdIDKey] = changeMessage.HouseholdID
 	case types.HouseholdInvitationCreatedCustomerEventType:
-		eventContext[keys.HouseholdIDKey] = changeMessage.Household.ID
+		eventContext[keys.HouseholdIDKey] = changeMessage.HouseholdID
 	case types.HouseholdInvitationCanceledCustomerEventType:
-		eventContext[keys.HouseholdIDKey] = changeMessage.Household.ID
+		eventContext[keys.HouseholdIDKey] = changeMessage.HouseholdID
 	case types.HouseholdInvitationAcceptedCustomerEventType:
-		eventContext[keys.HouseholdIDKey] = changeMessage.Household.ID
+		eventContext[keys.HouseholdIDKey] = changeMessage.HouseholdID
 	case types.HouseholdInvitationRejectedCustomerEventType:
-		eventContext[keys.HouseholdIDKey] = changeMessage.Household.ID
+		eventContext[keys.HouseholdIDKey] = changeMessage.HouseholdID
 	case types.MealPlanCreatedCustomerEventType:
 		eventContext[keys.HouseholdIDKey] = changeMessage.MealPlan.BelongsToHousehold
 		eventContext[keys.MealPlanIDKey] = changeMessage.MealPlan.ID
@@ -102,11 +102,10 @@ func ProcessDataChange(ctx context.Context, m PubSubMessage) error {
 		eventContext[keys.HouseholdIDKey] = changeMessage.MealPlan.BelongsToHousehold
 		eventContext[keys.MealPlanIDKey] = changeMessage.MealPlan.ID
 	case types.MealPlanArchivedCustomerEventType:
-		eventContext[keys.HouseholdIDKey] = changeMessage.MealPlan.BelongsToHousehold
-		eventContext[keys.MealPlanIDKey] = changeMessage.MealPlan.ID
+		eventContext[keys.MealPlanIDKey] = changeMessage.MealPlanID
 	case types.MealPlanFinalizedCustomerEventType:
 		eventContext[keys.HouseholdIDKey] = changeMessage.MealPlan.BelongsToHousehold
-		eventContext[keys.MealPlanIDKey] = changeMessage.MealPlan.ID
+		eventContext[keys.MealPlanIDKey] = changeMessage.MealPlanID
 	case types.MealPlanOptionVoteCreatedCustomerEventType:
 		eventContext[keys.MealPlanIDKey] = changeMessage.MealPlanID
 		eventContext[keys.MealPlanOptionVoteIDKey] = changeMessage.MealPlanOptionVote.ID
@@ -117,18 +116,18 @@ func ProcessDataChange(ctx context.Context, m PubSubMessage) error {
 		eventContext[keys.MealPlanOptionIDKey] = changeMessage.MealPlanOptionVote.BelongsToMealPlanOption
 	case types.MealPlanOptionVoteArchivedCustomerEventType:
 		eventContext[keys.MealPlanIDKey] = changeMessage.MealPlanID
-		eventContext[keys.MealPlanOptionVoteIDKey] = changeMessage.MealPlanOptionVote.ID
-		eventContext[keys.MealPlanOptionIDKey] = changeMessage.MealPlanOptionVote.BelongsToMealPlanOption
+		eventContext[keys.MealPlanOptionVoteIDKey] = changeMessage.MealPlanOptionVoteID
+		eventContext[keys.MealPlanOptionIDKey] = changeMessage.MealPlanOptionID
 	case types.MealCreatedCustomerEventType:
 		eventContext[keys.MealIDKey] = changeMessage.Meal.ID
 	case types.MealArchivedCustomerEventType:
-		eventContext[keys.MealIDKey] = changeMessage.Meal.ID
+		eventContext[keys.MealIDKey] = changeMessage.MealID
 	case types.RecipeCreatedCustomerEventType:
 		eventContext[keys.RecipeIDKey] = changeMessage.Recipe.ID
 	case types.RecipeUpdatedCustomerEventType:
 		eventContext[keys.RecipeIDKey] = changeMessage.Recipe.ID
 	case types.RecipeArchivedCustomerEventType:
-		eventContext[keys.RecipeIDKey] = changeMessage.Recipe.ID
+		eventContext[keys.RecipeIDKey] = changeMessage.RecipeID
 	default:
 		logger.Debug("unknown event type")
 	}

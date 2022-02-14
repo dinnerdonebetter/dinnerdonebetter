@@ -98,6 +98,7 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 			EventType:                 types.HouseholdInvitationCreatedCustomerEventType,
 			HouseholdInvitation:       householdInvitation,
 			AttributableToUserID:      requester,
+			HouseholdID:               householdID,
 			AttributableToHouseholdID: householdID,
 		}
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -271,6 +272,7 @@ func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request
 			DataType:                  types.HouseholdInvitationDataType,
 			EventType:                 types.HouseholdInvitationCanceledCustomerEventType,
 			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			HouseholdID:               householdID,
 			AttributableToHouseholdID: householdID,
 			HouseholdInvitationID:     householdInvitationID,
 		}
@@ -331,6 +333,7 @@ func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request
 			EventType:                 types.HouseholdInvitationAcceptedCustomerEventType,
 			AttributableToUserID:      sessionCtxData.Requester.UserID,
 			AttributableToHouseholdID: householdID,
+			HouseholdID:               householdID,
 			HouseholdInvitationID:     householdInvitationID,
 		}
 
@@ -389,6 +392,7 @@ func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request
 			DataType:                  types.HouseholdInvitationDataType,
 			EventType:                 types.HouseholdInvitationRejectedCustomerEventType,
 			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			HouseholdID:               householdID,
 			AttributableToHouseholdID: householdID,
 			HouseholdInvitationID:     householdInvitationID,
 		}
