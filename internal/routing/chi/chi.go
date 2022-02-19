@@ -41,6 +41,10 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Conf
 	ch := cors.New(cors.Options{
 		// AllowedOrigins: []string{"https://foo.com"}, // Use this to allow specific origin hosts,
 		AllowedOrigins: []string{
+			"https://prixfixe.dev",
+			"https://www.prixfixe.dev",
+			"https://api.prixfixe.dev",
+			"https://admin.prixfixe.dev",
 			"https://prixfixe.local",
 			"https://www.prixfixe.local",
 			"https://api.prixfixe.local",
