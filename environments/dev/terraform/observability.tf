@@ -1,6 +1,7 @@
 resource "google_monitoring_uptime_check_config" "api_uptime" {
   display_name = "api-server-uptime-check"
   timeout      = "60s"
+  period = "5m"
 
   http_check {
     path         = "/_meta_/ready"
