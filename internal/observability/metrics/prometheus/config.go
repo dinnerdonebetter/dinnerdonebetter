@@ -51,7 +51,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	)
 }
 
-func (cfg *Config) initiatePrometheusExporter() (*prometheus.Exporter, metric.MeterProvider, error) {
+func (cfg *Config) initiateExporter() (*prometheus.Exporter, metric.MeterProvider, error) {
 	config := prometheus.Config{
 		// copied from go.opentelemetry.io/otel/sdk/metric/aggregator
 		DefaultHistogramBoundaries: []float64{.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10},
@@ -82,7 +82,7 @@ func (cfg *Config) initiatePrometheusExporter() (*prometheus.Exporter, metric.Me
 
 // ProvideMetricsHandler provides an instrumentation handler.
 func (cfg *Config) ProvideMetricsHandler() (metrics.Handler, error) {
-	mh, _, err := cfg.initiatePrometheusExporter()
+	mh, _, err := cfg.initiateExporter()
 
 	return mh, err
 }
@@ -91,7 +91,7 @@ func (cfg *Config) ProvideMetricsHandler() (metrics.Handler, error) {
 func (cfg *Config) ProvideUnitCounterProvider(logger logging.Logger) (metrics.UnitCounterProvider, error) {
 	logger.Debug("setting up meter")
 
-	_, meterProvider, err := cfg.initiatePrometheusExporter()
+	_, meterProvider, err := cfg.initiateExporter()
 	if err != nil {
 		return nil, err
 	}

@@ -71,7 +71,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		if s.dataChangesPublisher != nil {
 			dcm := &types.DataChangeMessage{
 				DataType:                  types.MealPlanOptionVoteDataType,
-				MessageType:               "meal_plan_option_vote_created",
+				EventType:                 types.MealPlanOptionVoteCreatedCustomerEventType,
 				MealPlanID:                mealPlanID,
 				MealPlanOptionID:          vote.BelongsToMealPlanOption,
 				MealPlanOptionVote:        vote,
@@ -103,7 +103,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			// fire event
 			dcm := &types.DataChangeMessage{
 				DataType:                  types.MealPlanOptionDataType,
-				MessageType:               "meal_plan_option_finalized",
+				EventType:                 types.MealPlanOptionFinalizedCreatedCustomerEventType,
 				MealPlanID:                mealPlanID,
 				MealPlanOptionID:          lastVote.BelongsToMealPlanOption,
 				MealPlanOptionVote:        lastVote,
@@ -128,7 +128,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 				// fire event
 				dcm = &types.DataChangeMessage{
 					DataType:                  types.MealPlanDataType,
-					MessageType:               "meal_plan_finalized",
+					EventType:                 types.MealPlanFinalizedCustomerEventType,
 					MealPlanID:                mealPlanID,
 					MealPlanOptionID:          lastVote.BelongsToMealPlanOption,
 					MealPlanOptionVote:        lastVote,
@@ -140,14 +140,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 					observability.AcknowledgeError(dataChangePublishErr, logger, span, "publishing data change message about meal plan finalization")
 				}
 			}
-		}
-
-		if eventOccurredErr := s.customerDataCollector.EventOccurred(ctx, "meal_plan_option_vote_created", sessionCtxData.Requester.UserID, map[string]interface{}{
-			keys.MealPlanIDKey:       mealPlanID,
-			keys.MealPlanOptionIDKey: lastVote.BelongsToMealPlanOption,
-			keys.HouseholdIDKey:      sessionCtxData.ActiveHouseholdID,
-		}); eventOccurredErr != nil {
-			logger.Error(eventOccurredErr, "notifying customer data platform")
 		}
 	}
 
@@ -323,7 +315,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.MealPlanOptionVoteDataType,
-			MessageType:               "meal_plan_option_vote_updated",
+			EventType:                 types.MealPlanOptionVoteUpdatedCustomerEventType,
 			MealPlanID:                mealPlanID,
 			MealPlanOptionID:          mealPlanOptionID,
 			MealPlanOptionVote:        mealPlanOptionVote,
@@ -335,14 +327,6 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			observability.AcknowledgeError(err, logger, span, "publishing data change message")
 		}
-	}
-
-	if err = s.customerDataCollector.EventOccurred(ctx, "meal_plan_option_vote_updated", sessionCtxData.Requester.UserID, map[string]interface{}{
-		keys.MealPlanIDKey:       mealPlanID,
-		keys.MealPlanOptionIDKey: mealPlanOptionID,
-		keys.HouseholdIDKey:      sessionCtxData.ActiveHouseholdID,
-	}); err != nil {
-		logger.Error(err, "notifying customer data platform")
 	}
 
 	// encode our response and peace.
@@ -402,7 +386,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.MealPlanOptionVoteDataType,
-			MessageType:               "meal_plan_option_vote_archived",
+			EventType:                 types.MealPlanOptionVoteArchivedCustomerEventType,
 			MealPlanID:                mealPlanID,
 			MealPlanOptionID:          mealPlanOptionID,
 			MealPlanOptionVoteID:      mealPlanOptionVoteID,
@@ -413,14 +397,6 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			observability.AcknowledgeError(err, logger, span, "publishing data change message")
 		}
-	}
-
-	if err = s.customerDataCollector.EventOccurred(ctx, "meal_plan_option_vote_archived", sessionCtxData.Requester.UserID, map[string]interface{}{
-		keys.MealPlanIDKey:       mealPlanID,
-		keys.MealPlanOptionIDKey: mealPlanOptionID,
-		keys.HouseholdIDKey:      sessionCtxData.ActiveHouseholdID,
-	}); err != nil {
-		logger.Error(err, "notifying customer data platform")
 	}
 
 	// encode our response and peace.

@@ -5,10 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
-
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
@@ -29,6 +25,7 @@ import (
 	recipestepinstrumentsservice "github.com/prixfixeco/api_server/internal/services/recipestepinstruments"
 	recipestepproductsservice "github.com/prixfixeco/api_server/internal/services/recipestepproducts"
 	recipestepsservice "github.com/prixfixeco/api_server/internal/services/recipesteps"
+	usersservice "github.com/prixfixeco/api_server/internal/services/users"
 	validingredientpreparationsservice "github.com/prixfixeco/api_server/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/prixfixeco/api_server/internal/services/validingredients"
 	validinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validinstruments"
@@ -51,20 +48,22 @@ type (
 	// runMode describes what method of operation the server is under.
 	runMode string
 
+	// CloserFunc calls all io.Closers in the service.
+	CloserFunc func()
+
 	// InstanceConfig configures an instance of the service. It is composed of all the other setting structs.
 	InstanceConfig struct {
 		_             struct{}
-		Server        server.Config             `json:"server" mapstructure:"server" toml:"server,omitempty"`
-		Events        msgconfig.Config          `json:"events" mapstructure:"events" toml:"events,omitempty"`
+		Observability observability.Config      `json:"observability" mapstructure:"observability" toml:"observability,omitempty"`
 		Email         emailconfig.Config        `json:"email" mapstructure:"email" toml:"email,omitempty"`
 		CustomerData  customerdataconfig.Config `json:"customerData" mapstructure:"customer_data" toml:"customer_data,omitempty"`
 		Encoding      encoding.Config           `json:"encoding" mapstructure:"encoding" toml:"encoding,omitempty"`
 		Uploads       uploads.Config            `json:"uploads" mapstructure:"uploads" toml:"uploads,omitempty"`
-		Observability observability.Config      `json:"observability" mapstructure:"observability" toml:"observability,omitempty"`
 		Routing       routing.Config            `json:"routing" mapstructure:"routing" toml:"routing,omitempty"`
 		Database      dbconfig.Config           `json:"database" mapstructure:"database" toml:"database,omitempty"`
-		Logging       logcfg.Config             `json:"logging,omitempty" mapstructure:"logging" toml:"logging,omitempty"`
 		Meta          MetaSettings              `json:"meta" mapstructure:"meta" toml:"meta,omitempty"`
+		Events        msgconfig.Config          `json:"events" mapstructure:"events" toml:"events,omitempty"`
+		Server        server.Config             `json:"server" mapstructure:"server" toml:"server,omitempty"`
 		Services      ServicesConfigurations    `json:"services" mapstructure:"services" toml:"services,omitempty"`
 	}
 
@@ -88,6 +87,7 @@ type (
 		HouseholdInvitations        householdinvitationsservice.Config        `json:"householdInvitations" mapstructure:"household_invitations" toml:"household_invitations,omitempty"`
 		Websockets                  websocketsservice.Config                  `json:"websockets" mapstructure:"websockets" toml:"websockets,omitempty"`
 		Webhooks                    webhooksservice.Config                    `json:"webhooks" mapstructure:"webhooks" toml:"webhooks,omitempty"`
+		Users                       usersservice.Config                       `json:"users" mapstructure:"users" toml:"users,omitempty"`
 		Auth                        authservice.Config                        `json:"auth" mapstructure:"auth" toml:"auth,omitempty"`
 	}
 )
@@ -102,10 +102,8 @@ func (cfg *InstanceConfig) EncodeToFile(path string, marshaller func(v interface
 	return os.WriteFile(path, byteSlice, 0600)
 }
 
-var _ validation.ValidatableWithContext = (*InstanceConfig)(nil)
-
 // ValidateWithContext validates a InstanceConfig struct.
-func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context) error {
+func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServices bool) error {
 	if err := cfg.Uploads.ValidateWithContext(ctx); err != nil {
 		return fmt.Errorf("error validating Uploads portion of config: %w", err)
 	}
@@ -142,60 +140,62 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context) error {
 		return fmt.Errorf("error validating Email portion of config: %w", err)
 	}
 
-	if err := cfg.Services.Auth.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating Auth service portion of config: %w", err)
-	}
+	if validateServices {
+		if err := cfg.Services.Auth.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating Auth service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.Webhooks.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating Webhooks service portion of config: %w", err)
-	}
+		if err := cfg.Services.Webhooks.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating Webhooks service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.ValidInstruments.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating ValidInstruments service portion of config: %w", err)
-	}
+		if err := cfg.Services.ValidInstruments.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating ValidInstruments service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.ValidIngredients.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating ValidIngredients service portion of config: %w", err)
-	}
+		if err := cfg.Services.ValidIngredients.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating ValidIngredients service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.ValidPreparations.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating ValidPreparations service portion of config: %w", err)
-	}
+		if err := cfg.Services.ValidPreparations.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating ValidPreparations service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.ValidIngredientPreparations.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating ValidIngredientPreparations service portion of config: %w", err)
-	}
+		if err := cfg.Services.ValidIngredientPreparations.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating ValidIngredientPreparations service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.Recipes.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating Recipes service portion of config: %w", err)
-	}
+		if err := cfg.Services.Recipes.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating Recipes service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.RecipeSteps.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating RecipeSteps service portion of config: %w", err)
-	}
+		if err := cfg.Services.RecipeSteps.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating RecipeSteps service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.RecipeStepInstruments.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating RecipeStepInstruments service portion of config: %w", err)
-	}
+		if err := cfg.Services.RecipeStepInstruments.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating RecipeStepInstruments service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.RecipeStepIngredients.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating RecipeStepIngredients service portion of config: %w", err)
-	}
+		if err := cfg.Services.RecipeStepIngredients.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating RecipeStepIngredients service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.RecipeStepProducts.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating RecipeStepProducts service portion of config: %w", err)
-	}
+		if err := cfg.Services.RecipeStepProducts.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating RecipeStepProducts service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.MealPlans.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating MealPlans service portion of config: %w", err)
-	}
+		if err := cfg.Services.MealPlans.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating MealPlans service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.MealPlanOptions.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating MealPlanOptions service portion of config: %w", err)
-	}
+		if err := cfg.Services.MealPlanOptions.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating MealPlanOptions service portion of config: %w", err)
+		}
 
-	if err := cfg.Services.MealPlanOptionVotes.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("error validating MealPlanOptionVotes service portion of config: %w", err)
+		if err := cfg.Services.MealPlanOptionVotes.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating MealPlanOptionVotes service portion of config: %w", err)
+		}
 	}
 
 	return nil

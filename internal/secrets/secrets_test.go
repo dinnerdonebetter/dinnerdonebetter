@@ -6,14 +6,13 @@ import (
 	"encoding/json"
 	"testing"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gocloud.dev/secrets"
 	"gocloud.dev/secrets/localsecrets"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/random"
 )
 
@@ -50,7 +49,7 @@ func buildTestSecretManager(t *testing.T) SecretManager {
 	k := buildTestSecretKeeper(ctx, t)
 	require.NotNil(t, k)
 
-	sm, err := ProvideSecretManager(logger, trace.NewNoopTracerProvider(), k)
+	sm, err := ProvideSecretManager(logger, tracing.NewNoopTracerProvider(), k)
 	require.NotNil(t, sm)
 	require.NoError(t, err)
 
@@ -67,7 +66,7 @@ func TestProvideSecretManager(T *testing.T) {
 
 		k := buildTestSecretKeeper(ctx, t)
 
-		sm, err := ProvideSecretManager(nil, trace.NewNoopTracerProvider(), k)
+		sm, err := ProvideSecretManager(nil, tracing.NewNoopTracerProvider(), k)
 		require.NoError(t, err)
 		require.NotNil(t, sm)
 	})
@@ -75,7 +74,7 @@ func TestProvideSecretManager(T *testing.T) {
 	T.Run("with nil keeper", func(t *testing.T) {
 		t.Parallel()
 
-		k, err := ProvideSecretManager(nil, trace.NewNoopTracerProvider(), nil)
+		k, err := ProvideSecretManager(nil, tracing.NewNoopTracerProvider(), nil)
 		require.Nil(t, k)
 		require.Error(t, err)
 	})
@@ -111,7 +110,7 @@ func Test_secretManager_Encrypt(T *testing.T) {
 		require.NotNil(t, k)
 		require.NoError(t, err)
 
-		sm, err := ProvideSecretManager(logger, trace.NewNoopTracerProvider(), k)
+		sm, err := ProvideSecretManager(logger, tracing.NewNoopTracerProvider(), k)
 		require.NotNil(t, sm)
 		require.NoError(t, err)
 
@@ -145,7 +144,7 @@ func Test_secretManager_Encrypt(T *testing.T) {
 		require.NotNil(t, k)
 		require.NoError(t, err)
 
-		sm, err := ProvideSecretManager(logger, trace.NewNoopTracerProvider(), k)
+		sm, err := ProvideSecretManager(logger, tracing.NewNoopTracerProvider(), k)
 		require.NotNil(t, sm)
 		require.NoError(t, err)
 

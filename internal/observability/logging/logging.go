@@ -56,7 +56,7 @@ type Logger interface {
 	WithSpan(span trace.Span) Logger
 }
 
-// EnsureLogger guarantees that a zerologLogger is available.
+// EnsureLogger guarantees that a Logger is available.
 func EnsureLogger(logger Logger) Logger {
 	if logger != nil {
 		return logger

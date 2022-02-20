@@ -196,8 +196,16 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		TwoFactorQRCode: s.buildQRCode(ctx, user.Username, user.TwoFactorSecret),
 	}
 
-	if err = s.customerDataCollector.AddUser(ctx, ucr.CreatedUserID, map[string]interface{}{}); err != nil {
-		logger.Error(err, "notifying customer data platform")
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:             types.UserDataType,
+			EventType:            types.UserSignedUpCustomerEventType,
+			AttributableToUserID: user.ID,
+		}
+
+		if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
+			observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
+		}
 	}
 
 	// encode and peace.
@@ -367,8 +375,16 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 		return
 	}
 
-	if err := s.customerDataCollector.EventOccurred(ctx, "two_factor_secret_verified", user.ID, map[string]interface{}{}); err != nil {
-		logger.Error(err, "notifying customer data platform")
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:             types.UserDataType,
+			EventType:            types.TwoFactorSecretVerifiedCustomerEventType,
+			AttributableToUserID: user.ID,
+		}
+
+		if publishErr := s.dataChangesPublisher.Publish(ctx, dcm); publishErr != nil {
+			observability.AcknowledgeError(publishErr, logger, span, "publishing data change message")
+		}
 	}
 
 	res.WriteHeader(http.StatusAccepted)

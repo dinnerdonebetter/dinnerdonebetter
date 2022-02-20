@@ -66,7 +66,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.WebhookDataType,
-			MessageType:               "webhook_created",
+			EventType:                 types.WebhookCreatedCustomerEventType,
 			Webhook:                   webhook,
 			AttributableToUserID:      sessionCtxData.Requester.UserID,
 			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
@@ -207,7 +207,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.WebhookDataType,
-			MessageType:               "webhook_archived",
+			EventType:                 types.WebhookArchivedCustomerEventType,
 			AttributableToUserID:      userID,
 			AttributableToHouseholdID: householdID,
 		}

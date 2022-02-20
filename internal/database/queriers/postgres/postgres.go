@@ -100,7 +100,15 @@ func ProvideDatabaseClient(
 		c.logger.Debug("querier migrated!")
 	}
 
+	c.db.SetMaxOpenConns(5)
+	c.db.SetMaxOpenConns(7)
+
 	return c, nil
+}
+
+// DB provides the scs Store for MySQL.
+func (q *SQLQuerier) DB() *sql.DB {
+	return q.db
 }
 
 // ProvideSessionStore provides the scs Store for MySQL.

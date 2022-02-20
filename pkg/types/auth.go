@@ -22,6 +22,16 @@ const (
 	HouseholdIDContextKey ContextKey = "household_id"
 	// UserRegistrationInputContextKey is the non-string type we use for referencing SessionContextData structs.
 	UserRegistrationInputContextKey ContextKey = "user_registration_input"
+
+	// TwoFactorSecretVerifiedCustomerEventType indicates a user's two factor secret was verified.
+	/* #nosec G101 */
+	TwoFactorSecretVerifiedCustomerEventType CustomerEventType = "two_factor_secret_verified"
+	// UserLoggedInCustomerEventType indicates a user has logged in.
+	UserLoggedInCustomerEventType CustomerEventType = "user_logged_in"
+	// UserLoggedOutCustomerEventType indicates a user has logged in.
+	UserLoggedOutCustomerEventType CustomerEventType = "user_logged_out"
+	// UserChangedActiveHouseholdCustomerEventType indicates a user has logged in.
+	UserChangedActiveHouseholdCustomerEventType CustomerEventType = "changed_active_household"
 )
 
 func init() {

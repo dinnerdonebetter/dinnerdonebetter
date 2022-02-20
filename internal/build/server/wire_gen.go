@@ -10,12 +10,10 @@ import (
 	"context"
 	"github.com/prixfixeco/api_server/internal/authentication"
 	"github.com/prixfixeco/api_server/internal/config"
-	config3 "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database"
 	config2 "github.com/prixfixeco/api_server/internal/database/config"
-	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	"github.com/prixfixeco/api_server/internal/encoding"
-	config4 "github.com/prixfixeco/api_server/internal/messagequeue/config"
+	config3 "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -49,16 +47,11 @@ import (
 // Injectors from build.go:
 
 // Build builds a server.
-func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfig, tracerProvider tracing.TracerProvider, unitCounterProvider metrics.UnitCounterProvider, metricsHandler metrics.Handler) (*server.HTTPServer, error) {
+func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfig, tracerProvider tracing.TracerProvider, unitCounterProvider metrics.UnitCounterProvider, metricsHandler metrics.Handler, dataManager database.DataManager) (*server.HTTPServer, error) {
 	serverConfig := cfg.Server
 	servicesConfigurations := &cfg.Services
 	authenticationConfig := &servicesConfigurations.Auth
 	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
-	configConfig := &cfg.Database
-	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, configConfig, tracerProvider)
-	if err != nil {
-		return nil, err
-	}
 	userDataManager := database.ProvideUserDataManager(dataManager)
 	apiClientDataManager := database.ProvideAPIClientDataManager(dataManager)
 	householdUserMembershipDataManager := database.ProvideHouseholdUserMembershipDataManager(dataManager)
@@ -70,15 +63,16 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	encodingConfig := cfg.Encoding
 	contentType := encoding.ProvideContentType(encodingConfig)
 	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, contentType)
-	config5 := &cfg.CustomerData
-	collector, err := config3.ProvideCollector(config5, logger)
+	configConfig := &cfg.Events
+	publisherProvider, err := config3.ProvidePublisherProvider(logger, tracerProvider, configConfig)
 	if err != nil {
 		return nil, err
 	}
-	authService, err := authentication2.ProvideService(logger, authenticationConfig, authenticator, userDataManager, apiClientDataManager, householdUserMembershipDataManager, sessionManager, serverEncoderDecoder, collector, tracerProvider)
+	authService, err := authentication2.ProvideService(logger, authenticationConfig, authenticator, userDataManager, apiClientDataManager, householdUserMembershipDataManager, sessionManager, serverEncoderDecoder, tracerProvider, publisherProvider)
 	if err != nil {
 		return nil, err
 	}
+	usersConfig := &servicesConfigurations.Users
 	householdDataManager := database.ProvideHouseholdDataManager(dataManager)
 	imageUploadProcessor := images.NewImageUploadProcessor(logger, tracerProvider)
 	uploadsConfig := &cfg.Uploads
@@ -89,25 +83,23 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 		return nil, err
 	}
 	uploadManager := uploads.ProvideUploadManager(uploader)
-	userDataService := users.ProvideUsersService(authenticationConfig, logger, userDataManager, householdDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, imageUploadProcessor, uploadManager, routeParamManager, collector, tracerProvider)
-	householdsConfig := servicesConfigurations.Households
-	householdInvitationDataManager := database.ProvideHouseholdInvitationDataManager(dataManager)
-	config6 := &cfg.Events
-	publisherProvider, err := config4.ProvidePublisherProvider(logger, tracerProvider, config6)
+	userDataService, err := users.ProvideUsersService(usersConfig, authenticationConfig, logger, userDataManager, householdDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, imageUploadProcessor, uploadManager, routeParamManager, tracerProvider, publisherProvider)
 	if err != nil {
 		return nil, err
 	}
-	householdDataService, err := households.ProvideService(logger, householdsConfig, householdDataManager, householdInvitationDataManager, householdUserMembershipDataManager, serverEncoderDecoder, unitCounterProvider, routeParamManager, publisherProvider, collector, tracerProvider)
+	householdsConfig := servicesConfigurations.Households
+	householdInvitationDataManager := database.ProvideHouseholdInvitationDataManager(dataManager)
+	householdDataService, err := households.ProvideService(logger, householdsConfig, householdDataManager, householdInvitationDataManager, householdUserMembershipDataManager, serverEncoderDecoder, unitCounterProvider, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
 	householdinvitationsConfig := &servicesConfigurations.HouseholdInvitations
-	householdInvitationDataService, err := householdinvitations.ProvideHouseholdInvitationsService(logger, householdinvitationsConfig, userDataManager, householdInvitationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, collector, tracerProvider)
+	householdInvitationDataService, err := householdinvitations.ProvideHouseholdInvitationsService(logger, householdinvitationsConfig, userDataManager, householdInvitationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
 	apiclientsConfig := apiclients.ProvideConfig(authenticationConfig)
-	apiClientDataService := apiclients.ProvideAPIClientsService(logger, apiClientDataManager, userDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, routeParamManager, apiclientsConfig, collector, tracerProvider)
+	apiClientDataService := apiclients.ProvideAPIClientsService(logger, apiClientDataManager, userDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, routeParamManager, apiclientsConfig, tracerProvider)
 	validinstrumentsConfig := &servicesConfigurations.ValidInstruments
 	validInstrumentDataManager := database.ProvideValidInstrumentDataManager(dataManager)
 	validInstrumentDataService, err := validinstruments.ProvideService(ctx, logger, validinstrumentsConfig, validInstrumentDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
@@ -134,13 +126,13 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	}
 	mealsConfig := &servicesConfigurations.Meals
 	mealDataManager := database.ProvideMealDataManager(dataManager)
-	mealDataService, err := meals.ProvideService(ctx, logger, mealsConfig, mealDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, collector, tracerProvider)
+	mealDataService, err := meals.ProvideService(ctx, logger, mealsConfig, mealDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
 	recipesConfig := &servicesConfigurations.Recipes
 	recipeDataManager := database.ProvideRecipeDataManager(dataManager)
-	recipeDataService, err := recipes.ProvideService(ctx, logger, recipesConfig, recipeDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, collector, tracerProvider)
+	recipeDataService, err := recipes.ProvideService(ctx, logger, recipesConfig, recipeDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -170,7 +162,7 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	}
 	mealplansConfig := &servicesConfigurations.MealPlans
 	mealPlanDataManager := database.ProvideMealPlanDataManager(dataManager)
-	mealPlanDataService, err := mealplans.ProvideService(ctx, logger, mealplansConfig, mealPlanDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, collector, tracerProvider)
+	mealPlanDataService, err := mealplans.ProvideService(ctx, logger, mealplansConfig, mealPlanDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -181,7 +173,7 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 		return nil, err
 	}
 	mealplanoptionvotesConfig := &servicesConfigurations.MealPlanOptionVotes
-	mealPlanOptionVoteDataService, err := mealplanoptionvotes.ProvideService(ctx, logger, mealplanoptionvotesConfig, dataManager, serverEncoderDecoder, routeParamManager, publisherProvider, collector, tracerProvider)
+	mealPlanOptionVoteDataService, err := mealplanoptionvotes.ProvideService(ctx, logger, mealplanoptionvotesConfig, dataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}

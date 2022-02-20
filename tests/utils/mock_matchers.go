@@ -37,14 +37,5 @@ var HTTPResponseWriterMatcher interface{} = mock.MatchedBy(func(http.ResponseWri
 	return true
 })
 
-// PreWriteMessageMatcher matches the types.PreWriteMessage type.
-func PreWriteMessageMatcher(*types.PreWriteMessage) bool { return true }
-
-// PreUpdateMessageMatcher matches the types.PreUpdateMessage type.
-func PreUpdateMessageMatcher(*types.PreUpdateMessage) bool { return true }
-
-// PreArchiveMessageMatcher matches the types.PreArchiveMessage type.
-func PreArchiveMessageMatcher(*types.PreArchiveMessage) bool { return true }
-
 // DataChangeMessageMatcher matches the types.PreWriteMessage type.
 func DataChangeMessageMatcher(*types.DataChangeMessage) bool { return true }

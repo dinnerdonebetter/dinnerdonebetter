@@ -6,11 +6,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/stretchr/testify/assert"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
 
 func TestProvideClientEncoder(T *testing.T) {
@@ -19,7 +18,7 @@ func TestProvideClientEncoder(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		assert.NotNil(t, ProvideClientEncoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), ContentTypeJSON))
+		assert.NotNil(t, ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON))
 	})
 }
 
@@ -30,7 +29,7 @@ func Test_clientEncoder_Unmarshal(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		e := ProvideClientEncoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), ContentTypeJSON)
+		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
 
 		expected := &example{Name: "name"}
 		actual := &example{}
@@ -43,7 +42,7 @@ func Test_clientEncoder_Unmarshal(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		e := ProvideClientEncoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), ContentTypeXML)
+		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeXML)
 
 		expected := &example{Name: "name"}
 		actual := &example{}
@@ -56,7 +55,7 @@ func Test_clientEncoder_Unmarshal(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		e := ProvideClientEncoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), ContentTypeJSON)
+		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
 
 		actual := &example{}
 
@@ -72,7 +71,7 @@ func Test_clientEncoder_Encode(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		e := ProvideClientEncoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), ContentTypeJSON)
+		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
 
 		res := httptest.NewRecorder()
 
@@ -83,7 +82,7 @@ func Test_clientEncoder_Encode(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		e := ProvideClientEncoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), ContentTypeXML)
+		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeXML)
 
 		res := httptest.NewRecorder()
 
@@ -94,7 +93,7 @@ func Test_clientEncoder_Encode(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		e := ProvideClientEncoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), ContentTypeJSON)
+		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
 
 		assert.Error(t, e.Encode(ctx, nil, &broken{Name: json.Number(t.Name())}))
 	})
@@ -107,7 +106,7 @@ func Test_clientEncoder_EncodeReader(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		e := ProvideClientEncoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), ContentTypeJSON)
+		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
 
 		actual, err := e.EncodeReader(ctx, &example{Name: t.Name()})
 		assert.NoError(t, err)
@@ -118,7 +117,7 @@ func Test_clientEncoder_EncodeReader(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		e := ProvideClientEncoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), ContentTypeXML)
+		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeXML)
 
 		actual, err := e.EncodeReader(ctx, &example{Name: t.Name()})
 		assert.NoError(t, err)
@@ -129,7 +128,7 @@ func Test_clientEncoder_EncodeReader(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		e := ProvideClientEncoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), ContentTypeJSON)
+		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
 
 		actual, err := e.EncodeReader(ctx, &broken{Name: json.Number(t.Name())})
 		assert.Error(t, err)

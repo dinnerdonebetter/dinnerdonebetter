@@ -1,10 +1,15 @@
 package config
 
 import (
+	"context"
 	"fmt"
+	"os"
 	"strings"
 
+	ps "cloud.google.com/go/pubsub"
+
 	"github.com/prixfixeco/api_server/internal/messagequeue"
+	"github.com/prixfixeco/api_server/internal/messagequeue/pubsub"
 	"github.com/prixfixeco/api_server/internal/messagequeue/redis"
 	"github.com/prixfixeco/api_server/internal/messagequeue/sqs"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -16,6 +21,8 @@ const (
 	ProviderRedis = "redis"
 	// ProviderSQS is used to refer to sqs.
 	ProviderSQS = "sqs"
+	// ProviderPubSub is used to refer to GCP Pub/Sub.
+	ProviderPubSub = "pubsub"
 )
 
 type (
@@ -34,10 +41,11 @@ type (
 
 	// ProviderConfig is used to indicate how the messaging provider should be configured.
 	ProviderConfig struct {
-		_           struct{}
-		Provider    Provider     `json:"provider,omitempty" mapstructure:"provider" toml:"provider,omitempty"`
-		SQSConfig   sqs.Config   `json:"sqs,omitempty" mapstructure:"sqs" toml:"sqs,omitempty"`
-		RedisConfig redis.Config `json:"redis,omitempty" mapstructure:"redis" toml:"redis,omitempty"`
+		_            struct{}
+		Provider     Provider      `json:"provider,omitempty" mapstructure:"provider" toml:"provider,omitempty"`
+		SQSConfig    sqs.Config    `json:"sqs,omitempty" mapstructure:"sqs" toml:"sqs,omitempty"`
+		PubSubConfig pubsub.Config `json:"pubsub,omitempty" mapstructure:"pubsub" toml:"pubsub,omitempty"`
+		RedisConfig  redis.Config  `json:"redis,omitempty" mapstructure:"redis" toml:"redis,omitempty"`
 	}
 
 	// Config is used to indicate how the messaging provider should be configured.
@@ -69,6 +77,14 @@ func ProvidePublisherProvider(logger logging.Logger, tracerProvider tracing.Trac
 		return redis.ProvideRedisPublisherProvider(logger, tracerProvider, c.Publishers.RedisConfig), nil
 	case ProviderSQS:
 		return sqs.ProvideSQSPublisherProvider(logger, tracerProvider), nil
+	case ProviderPubSub:
+		ctx := context.Background()
+		client, err := ps.NewClient(ctx, os.Getenv("GOOGLE_CLOUD_PROJECT_ID"))
+		if err != nil {
+			return nil, fmt.Errorf("establishing PubSub client: %w", err)
+		}
+
+		return pubsub.ProvidePubSubPublisherProvider(logger, tracerProvider, client), nil
 	default:
 		return nil, fmt.Errorf("invalid publisher provider: %q", c.Publishers.Provider)
 	}

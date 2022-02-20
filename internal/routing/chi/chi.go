@@ -12,7 +12,6 @@ import (
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/unrolled/secure"
-	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -38,10 +37,14 @@ type router struct {
 	logger logging.Logger
 }
 
-func buildChiMux(logger logging.Logger, tracer tracing.Tracer, _ *routing.Config) chi.Router {
+func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Config) chi.Router {
 	ch := cors.New(cors.Options{
 		// AllowedOrigins: []string{"https://foo.com"}, // Use this to allow specific origin hosts,
 		AllowedOrigins: []string{
+			"https://prixfixe.dev",
+			"https://www.prixfixe.dev",
+			"https://api.prixfixe.dev",
+			"https://admin.prixfixe.dev",
 			"https://prixfixe.local",
 			"https://www.prixfixe.local",
 			"https://api.prixfixe.local",
@@ -95,7 +98,7 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, _ *routing.Config
 		chimiddleware.RequestID,
 		chimiddleware.RealIP,
 		chimiddleware.Timeout(maxTimeout),
-		buildLoggingMiddleware(logging.EnsureLogger(logger).WithName("router")),
+		buildLoggingMiddleware(logging.EnsureLogger(logger).WithName("router"), cfg),
 		ch.Handler,
 	)
 
@@ -140,7 +143,7 @@ func NewRouter(logger logging.Logger, tracerProvider tracing.TracerProvider, cfg
 }
 
 func (r *router) clone() *router {
-	return buildRouter(r.router, r.logger, trace.NewNoopTracerProvider(), r.cfg)
+	return buildRouter(r.router, r.logger, tracing.NewNoopTracerProvider(), r.cfg)
 }
 
 // WithMiddleware returns a router with certain middleware applied.
@@ -169,7 +172,7 @@ func (r *router) LogRoutes() {
 // Route lets you apply a set of routes to a subrouter with a provided pattern.
 func (r *router) Route(pattern string, fn func(r routing.Router)) routing.Router {
 	r.router.Route(pattern, func(subrouter chi.Router) {
-		fn(buildRouter(subrouter, r.logger, trace.NewNoopTracerProvider(), r.cfg))
+		fn(buildRouter(subrouter, r.logger, tracing.NewNoopTracerProvider(), r.cfg))
 	})
 
 	return r

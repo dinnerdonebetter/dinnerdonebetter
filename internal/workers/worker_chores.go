@@ -14,10 +14,10 @@ import (
 )
 
 const (
-	name = "chores"
+	name = "meal_plan_finalizer"
 )
 
-// ChoresWorker performs chores.
+// ChoresWorker performs meal_plan_finalizer.
 type ChoresWorker struct {
 	logger                logging.Logger
 	tracer                tracing.Tracer

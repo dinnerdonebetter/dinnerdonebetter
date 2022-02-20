@@ -1,356 +1,248 @@
 locals {
-  public_url = "api.prixfixe.dev"
+  api_database_username = "api_db_user"
+  public_url            = "api.prixfixe.dev"
 }
 
-resource "aws_ecr_repository" "api_server" {
-  name = "api_server"
-  # do not set image_tag_mutability to "IMMUTABLE", or else we cannot use :latest tags.
-
-  image_scanning_configuration {
-    scan_on_push = true
-  }
+resource "google_project_iam_custom_role" "api_server_role" {
+  role_id     = "api_server_role"
+  title       = "API Server role"
+  description = "An IAM role for the API server"
+  permissions = [
+    "secretmanager.versions.access",
+    "cloudsql.instances.connect",
+    "cloudsql.instances.get",
+    "pubsub.topics.list",
+    "pubsub.topics.publish",
+    "cloudtrace.traces.patch",
+  ]
 }
 
-resource "aws_security_group" "api_service" {
-  name        = "prixfixe_api"
-  description = "HTTP traffic"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    from_port        = 80
-    to_port          = 80
-    protocol         = "TCP"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    from_port        = 443
-    to_port          = 443
-    protocol         = "TCP"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    from_port        = 8000
-    to_port          = 8000
-    protocol         = "TCP"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
+resource "google_service_account" "api_user_service_account" {
+  account_id   = "api-server"
+  display_name = "API Server"
 }
 
-resource "aws_security_group" "load_balancer" {
-  name        = "load_balancer"
-  description = "public internet traffic"
-  vpc_id      = aws_vpc.main.id
+resource "google_project_iam_member" "api_user" {
+  project = local.project_id
+  role    = google_project_iam_custom_role.api_server_role.id
+  member  = format("serviceAccount:%s", google_service_account.api_user_service_account.email)
+}
 
-  ingress {
-    from_port        = 80
-    to_port          = 80
-    protocol         = "TCP"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
+resource "google_project_iam_binding" "api_user_service_account_user" {
+  project = local.project_id
+  role    = "roles/iam.serviceAccountUser"
 
-  ingress {
-    from_port        = 443
-    to_port          = 443
-    protocol         = "TCP"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
+  members = [
+    google_project_iam_member.api_user.member,
+  ]
+}
 
-  ingress {
-    from_port        = 8000
-    to_port          = 8000
-    protocol         = "TCP"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
+resource "google_project_iam_binding" "api_user_cloud_run_admin" {
+  project = local.project_id
+  role    = "roles/run.admin"
 
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
+  members = [
+    google_project_iam_member.api_user.member,
+  ]
+}
+
+# this allows the service to be on the public internet
+data "google_iam_policy" "public_access" {
+  binding {
+    role = "roles/run.invoker"
+    members = [
+      "allUsers",
+    ]
   }
 }
 
-resource "aws_cloudwatch_log_group" "api_server" {
-  name              = "/ecs/api_server"
-  retention_in_days = local.log_retention_period_in_days
+resource "google_cloud_run_service_iam_policy" "public_access" {
+  location = google_cloud_run_service.api_server.location
+  project  = google_cloud_run_service.api_server.project
+  service  = google_cloud_run_service.api_server.name
+
+  policy_data = data.google_iam_policy.public_access.policy_data
 }
 
-resource "aws_cloudwatch_log_group" "api_sidecar" {
-  name              = "/ecs/ecs-aws-otel-sidecar-collector"
-  retention_in_days = local.log_retention_period_in_days
+resource "random_password" "api_user_database_password" {
+  length           = 64
+  special          = true
+  override_special = "#$*-_=+[]"
 }
 
-resource "aws_ecs_task_definition" "api_server" {
-  family = "api_server"
+resource "google_secret_manager_secret" "api_user_database_password" {
+  secret_id = "api_user_database_password"
 
-  container_definitions = jsonencode([
-    {
-      name : "aws-otel-collector",
-      image : "amazon/aws-otel-collector",
-      essential : true,
-      secrets : [
-        {
-          "name" : "AOT_CONFIG_CONTENT",
-          "valueFrom" : aws_ssm_parameter.opentelemetry_collector_config.arn,
+  replication {
+    automatic = true
+  }
+}
+
+resource "google_secret_manager_secret_version" "api_user_database_password" {
+  secret = google_secret_manager_secret.api_user_database_password.id
+
+  secret_data = random_password.api_user_database_password.result
+}
+
+resource "google_sql_user" "api_user" {
+  name     = local.api_database_username
+  instance = google_sql_database_instance.dev.name
+  password = random_password.api_user_database_password.result
+}
+
+resource "google_cloud_run_service" "api_server" {
+  name     = "api-server"
+  location = local.gcp_region
+
+  traffic {
+    percent         = 100
+    latest_revision = true
+  }
+
+  autogenerate_revision_name = true
+
+  template {
+    spec {
+      service_account_name = google_service_account.api_user_service_account.email
+
+      containers {
+        image = "gcr.io/prixfixe-dev/api_server"
+
+        volume_mounts {
+          name       = "config"
+          mount_path = "/config"
         }
-      ],
-      logConfiguration : {
-        "logDriver" : "awslogs",
-        "options" : {
-          "awslogs-group" : aws_cloudwatch_log_group.api_sidecar.name,
-          "awslogs-region" : local.aws_region,
-          "awslogs-stream-prefix" : "ecs",
-          "awslogs-create-group" : "True"
+
+        env {
+          name  = "RUNNING_IN_GOOGLE_CLOUD_RUN"
+          value = "true"
+        }
+
+        env {
+          name  = "GOOGLE_CLOUD_SECRET_STORE_PREFIX"
+          value = format("projects/%d/secrets", data.google_project.project.number)
+        }
+
+        env {
+          name  = "GOOGLE_CLOUD_PROJECT_ID"
+          value = data.google_project.project.project_id
+        }
+
+        env {
+          name  = "CONFIGURATION_FILEPATH"
+          value = "/config/service-config.json"
+        }
+
+        env {
+          name  = "PRIXFIXE_DATABASE_USER"
+          value = local.api_database_username
+        }
+
+        env {
+          name  = "PRIXFIXE_DATABASE_PASSWORD"
+          value = random_password.api_user_database_password.result
+        }
+
+        env {
+          name  = "PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME"
+          value = google_sql_database_instance.dev.connection_name
+        }
+
+        env {
+          name  = "PRIXFIXE_DATABASE_NAME"
+          value = local.database_name
+        }
+
+        env {
+          name = "PRIXFIXE_COOKIE_HASH_KEY"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.cookie_hash_key.secret_id
+              key  = "latest"
+            }
+          }
+        }
+
+        env {
+          name = "PRIXFIXE_COOKIE_BLOCK_KEY"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.cookie_block_key.secret_id
+              key  = "latest"
+            }
+          }
+        }
+
+        env {
+          name = "PRIXFIXE_PASETO_LOCAL_KEY"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.paseto_local_key.secret_id
+              key  = "latest"
+            }
+          }
+        }
+
+        env {
+          name = "PRIXFIXE_DATA_CHANGES_TOPIC"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.data_changes_topic_name.secret_id
+              key  = "latest"
+            }
+          }
+        }
+
+        env {
+          name = "PRIXFIXE_SENDGRID_API_TOKEN"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.sendgrid_api_token.secret_id
+              key  = "latest"
+            }
+          }
+        }
+
+        env {
+          name = "PRIXFIXE_SEGMENT_API_TOKEN"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.segment_api_token.secret_id
+              key  = "latest"
+            }
+          }
+        }
+
+      }
+
+      volumes {
+        name = "config"
+        secret {
+          secret_name  = google_secret_manager_secret.api_service_config.secret_id
+          default_mode = 256 # 0400
+          items {
+            key  = "latest"
+            path = "service-config.json"
+            mode = 256 # 0400
+          }
         }
       }
-    },
-    {
-      name  = "api_server",
-      image = format("%s:latest", aws_ecr_repository.api_server.repository_url),
-      portMappings : [
-        {
-          containerPort : 8000,
-          protocol : "tcp",
-        },
-      ],
-      essential : true,
-      logConfiguration : {
-        logDriver : "awslogs",
-        options : {
-          awslogs-region : local.aws_region,
-          awslogs-group : aws_cloudwatch_log_group.api_server.name,
-          awslogs-stream-prefix : "ecs",
-        },
-      },
-    },
-  ])
+    }
 
-  execution_role_arn = aws_iam_role.api_task_execution_role.arn
-  task_role_arn      = aws_iam_role.api_task_role.arn
-
-  # These are the minimum values for Fargate containers.
-  cpu                      = 256
-  memory                   = 512
-  requires_compatibilities = ["FARGATE"]
-
-  network_mode = "awsvpc"
-}
-
-resource "aws_ecs_cluster" "api" {
-  name = "api_servers"
-}
-
-resource "aws_ecs_service" "api_server" {
-  name                               = "api_server"
-  task_definition                    = aws_ecs_task_definition.api_server.arn
-  cluster                            = aws_ecs_cluster.api.id
-  launch_type                        = "FARGATE"
-  deployment_maximum_percent         = 200
-  deployment_minimum_healthy_percent = 100
-  desired_count                      = 1
-
-  deployment_controller {
-    type = "ECS"
-  }
-
-  deployment_circuit_breaker {
-    enable   = true
-    rollback = true
-  }
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.api.arn
-    container_name   = "api_server"
-    container_port   = 8000
-  }
-
-  network_configuration {
-    assign_public_ip = true
-
-    security_groups = [
-      aws_security_group.api_service.id,
-    ]
-
-    subnets = concat(
-      [for x in aws_subnet.public_subnets : x.id],
-      [for x in aws_subnet.private_subnets : x.id],
-    )
-  }
-
-  depends_on = [
-    aws_lb_listener.api_http,
-  ]
-}
-
-data "aws_iam_policy_document" "ecs_task_execution_assume_role" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
+    metadata {
+      annotations = {
+        "autoscaling.knative.dev/maxScale"      = "1"
+        "run.googleapis.com/cloudsql-instances" = google_sql_database_instance.dev.connection_name
+      }
     }
   }
 }
 
-resource "aws_iam_role" "api_task_execution_role" {
-  name               = "api-task-execution-role"
-  assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_assume_role.json
-}
-
-# Normally we'd prefer not to hardcode an ARN in our Terraform, but since these are an AWS-managed policy, it's okay.
-resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
-  role       = aws_iam_role.api_task_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
-
-resource "aws_iam_role_policy_attachment" "cloudwatch_logs_full_access_role" {
-  role       = aws_iam_role.api_task_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
-}
-
-resource "aws_iam_role_policy_attachment" "ssm_read_only_access_role" {
-  role       = aws_iam_role.api_task_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
-}
-
-data "aws_iam_policy_document" "ecs_task_assume_role" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
-    }
-  }
-}
-
-resource "aws_iam_role" "api_task_role" {
-  name = "api-task-role"
-
-  assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
-
-  inline_policy {
-    name   = "allow_sqs_queue_access"
-    policy = data.aws_iam_policy_document.allow_to_manipulate_queues.json
-  }
-
-  inline_policy {
-    name   = "allow_ssm_access"
-    policy = data.aws_iam_policy_document.allow_parameter_store_access.json
-  }
-
-  inline_policy {
-    name   = "allow_decrypt_ssm_parameters"
-    policy = data.aws_iam_policy_document.allow_to_decrypt_parameters.json
-  }
-
-  inline_policy {
-    name   = "ECS-AWSOTel"
-    policy = data.aws_iam_policy_document.opentelemetry_collector_policy.json
-  }
-}
-
-resource "aws_acm_certificate" "api_dot" {
-  domain_name       = local.public_url
-  validation_method = "DNS"
-}
-
-resource "aws_lb" "api" {
-  name               = "api-lb"
-  internal           = false
-  load_balancer_type = "application"
-
-  subnets = [for x in aws_subnet.public_subnets : x.id]
-
-  security_groups = [
-    aws_security_group.load_balancer.id,
-  ]
-
-  depends_on = [aws_internet_gateway.main]
-}
-
-resource "aws_lb_target_group" "api" {
-  name        = "api"
-  port        = 8000
-  protocol    = "HTTP"
-  target_type = "ip"
-  vpc_id      = aws_vpc.main.id
-
-  health_check {
-    enabled  = true
-    path     = "/_meta_/ready"
-    port     = "traffic-port"
-    matcher  = "200"
-    protocol = "HTTP"
-    timeout  = 15
-  }
-
-  depends_on = [aws_lb.api]
-}
-
-resource "aws_lb_listener" "api_http" {
-  load_balancer_arn = aws_lb.api.arn
-  port              = 80
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.api.arn
-  }
-}
-
-resource "aws_lb_listener" "api_https" {
-  load_balancer_arn = aws_lb.api.arn
-  port              = "443"
-  protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = aws_acm_certificate.api_dot.arn
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.api.arn
-  }
-}
-
-resource "aws_lb_listener_certificate" "api_dot" {
-  listener_arn    = aws_lb_listener.api_https.arn
-  certificate_arn = aws_acm_certificate.api_dot.arn
-}
-
-resource "cloudflare_record" "api_dot_prixfixe_dot_dev" {
-  zone_id         = var.CLOUDFLARE_ZONE_ID
-  name            = local.public_url
-  value           = aws_lb.api.dns_name
-  type            = "CNAME"
-  proxied         = true
-  allow_overwrite = true
-  ttl             = 1
-}
-
-resource "cloudflare_record" "api_dot_prixfixe_dot_dev_ssl_validation" {
-  zone_id         = var.CLOUDFLARE_ZONE_ID
-  name            = one(aws_acm_certificate.api_dot.domain_validation_options).resource_record_name
-  value           = one(aws_acm_certificate.api_dot.domain_validation_options).resource_record_value
-  type            = one(aws_acm_certificate.api_dot.domain_validation_options).resource_record_type
-  proxied         = false
-  allow_overwrite = true
-  ttl             = 60
+resource "cloudflare_record" "api_cname_record" {
+  zone_id = var.CLOUDFLARE_ZONE_ID
+  name    = "api.prixfixe.dev"
+  type    = "CNAME"
+  value   = "ghs.googlehosted.com"
+  ttl     = 1
+  proxied = true
 }

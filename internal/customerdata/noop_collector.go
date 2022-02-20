@@ -2,6 +2,8 @@ package customerdata
 
 import (
 	"context"
+
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 var _ Collector = (*NoopCollector)(nil)
@@ -29,6 +31,6 @@ func (c *NoopCollector) AddUser(context.Context, string, map[string]interface{})
 }
 
 // EventOccurred does nothing.
-func (c *NoopCollector) EventOccurred(context.Context, string, string, map[string]interface{}) error {
+func (c *NoopCollector) EventOccurred(context.Context, types.CustomerEventType, string, map[string]interface{}) error {
 	return nil
 }

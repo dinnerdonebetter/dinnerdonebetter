@@ -4,18 +4,20 @@ import (
 	"net/http"
 	"testing"
 
-	"go.opentelemetry.io/otel/trace"
+	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
+
+	"github.com/stretchr/testify/require"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
 	mockauthn "github.com/prixfixeco/api_server/internal/authentication/mock"
-	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/database"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	mockmetrics "github.com/prixfixeco/api_server/internal/observability/metrics/mock"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/routing/chi"
 	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
@@ -37,7 +39,13 @@ func buildTestService(t *testing.T) *service {
 		testutils.ContextMatcher,
 	).Return(expectedUserCount, nil)
 
-	s := ProvideUsersService(
+	cfg := &Config{}
+
+	pp := &mockpublishers.ProducerProvider{}
+	pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+
+	s, err := ProvideUsersService(
+		cfg,
 		&authservice.Config{},
 		logging.NewNoopLogger(),
 		&mocktypes.UserDataManager{},
@@ -50,10 +58,11 @@ func buildTestService(t *testing.T) *service {
 		&images.MockImageUploadProcessor{},
 		&mockuploads.UploadManager{},
 		chi.NewRouteParamManager(),
-		&customerdata.MockCollector{},
-		trace.NewNoopTracerProvider(),
+		tracing.NewNoopTracerProvider(),
+		pp,
 	)
 
+	require.NoError(t, err)
 	mock.AssertExpectationsForObjects(t, mockDB, uc)
 
 	return s.(*service)
@@ -71,7 +80,13 @@ func TestProvideUsersService(T *testing.T) {
 			UserIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
-		s := ProvideUsersService(
+		cfg := &Config{}
+
+		pp := &mockpublishers.ProducerProvider{}
+		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+
+		s, err := ProvideUsersService(
+			cfg,
 			&authservice.Config{},
 			logging.NewNoopLogger(),
 			&mocktypes.UserDataManager{},
@@ -84,11 +99,12 @@ func TestProvideUsersService(T *testing.T) {
 			&images.MockImageUploadProcessor{},
 			&mockuploads.UploadManager{},
 			rpm,
-			&customerdata.MockCollector{},
-			trace.NewNoopTracerProvider(),
+			tracing.NewNoopTracerProvider(),
+			pp,
 		)
 
 		assert.NotNil(t, s)
+		require.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, rpm)
 	})

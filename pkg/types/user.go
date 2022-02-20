@@ -9,6 +9,12 @@ import (
 )
 
 const (
+	// UserDataType indicates an event is user membership-related.
+	UserDataType dataType = "user"
+
+	// UserSignedUpCustomerEventType indicates a user signed up.
+	UserSignedUpCustomerEventType CustomerEventType = "user_signed_up"
+
 	// GoodStandingHouseholdStatus indicates a User's household is in good standing.
 	GoodStandingHouseholdStatus householdStatus = "good"
 	// UnverifiedHouseholdStatus indicates a User's household requires two factor secret verification.

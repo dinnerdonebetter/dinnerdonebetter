@@ -21,9 +21,10 @@ import (
 	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 	metricscfg "github.com/prixfixeco/api_server/internal/observability/metrics/config"
 	"github.com/prixfixeco/api_server/internal/observability/metrics/prometheus"
+	"github.com/prixfixeco/api_server/internal/observability/tracing/cloudtrace"
 	tracingcfg "github.com/prixfixeco/api_server/internal/observability/tracing/config"
 	"github.com/prixfixeco/api_server/internal/observability/tracing/jaeger"
-	"github.com/prixfixeco/api_server/internal/observability/tracing/xray"
+	"github.com/prixfixeco/api_server/internal/routing"
 	"github.com/prixfixeco/api_server/internal/server"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"
@@ -37,6 +38,7 @@ import (
 	recipestepinstrumentsservice "github.com/prixfixeco/api_server/internal/services/recipestepinstruments"
 	recipestepproductsservice "github.com/prixfixeco/api_server/internal/services/recipestepproducts"
 	recipestepsservice "github.com/prixfixeco/api_server/internal/services/recipesteps"
+	usersservice "github.com/prixfixeco/api_server/internal/services/users"
 	validingredientpreparationsservice "github.com/prixfixeco/api_server/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/prixfixeco/api_server/internal/services/validingredients"
 	validinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validinstruments"
@@ -59,12 +61,7 @@ const (
 	developmentEnv = "development"
 	testingEnv     = "testing"
 
-	localElasticsearchLocation = "http://elasticsearch:9200"
-
 	// message provider topics
-	preWritesTopicName   = "pre_writes"
-	preUpdatesTopicName  = "pre_updates"
-	preArchivesTopicName = "pre_archives"
 	dataChangesTopicName = "data_changes"
 
 	pasetoSecretSize      = 32
@@ -79,6 +76,16 @@ const (
 
 var (
 	examplePASETOKey = generatePASETOKey()
+
+	localRoutingConfig = routing.Config{
+		Provider:            routing.ChiProvider,
+		SilenceRouteLogging: false,
+	}
+
+	devRoutingConfig = routing.Config{
+		Provider:            routing.ChiProvider,
+		SilenceRouteLogging: true,
+	}
 
 	devEnvLogConfig = logcfg.Config{
 		Level:    logging.InfoLevel,
@@ -103,6 +110,13 @@ var (
 		BlockKey:   debugCookieSigningKey,
 		Lifetime:   authservice.DefaultCookieLifetime,
 		SecureOnly: true,
+	}
+
+	localMetricsConfig = metricscfg.Config{
+		Provider: "prometheus",
+		Prometheus: &prometheus.Config{
+			RuntimeMetricsCollectionInterval: time.Second,
+		},
 	}
 
 	localTracingConfig = tracingcfg.Config{
@@ -132,7 +146,7 @@ func saveConfig(ctx context.Context, outputPath string, cfg *config.InstanceConf
 	}
 
 	if validate {
-		if err := cfg.ValidateWithContext(ctx); err != nil {
+		if err := cfg.ValidateWithContext(ctx, true); err != nil {
 			return err
 		}
 	}
@@ -159,7 +173,6 @@ type configFunc func(ctx context.Context, filePath string) error
 
 var files = map[string]configFunc{
 	"environments/dev/config_files/service-config.json":               devEnvironmentServerConfig,
-	"environments/dev/config_files/worker-config.json":                devEnvironmentWorkerConfig,
 	"environments/local/config_files/service-config.json":             localDevelopmentConfig,
 	"environments/testing/config_files/integration-tests-config.json": integrationTestConfig,
 }
@@ -192,7 +205,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 	}
 
 	cfg := &config.InstanceConfig{
-		Logging: devEnvLogConfig,
+		Routing: devRoutingConfig,
 		Meta: config.MetaSettings{
 			Debug:   true,
 			RunMode: developmentEnv,
@@ -205,7 +218,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				Provider: msgconfig.ProviderRedis,
 			},
 			Publishers: msgconfig.ProviderConfig{
-				Provider: msgconfig.ProviderSQS,
+				Provider: msgconfig.ProviderPubSub,
 			},
 		},
 		Email:        emailConfig,
@@ -221,13 +234,14 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 			MaxPingAttempts: maxAttempts,
 		},
 		Observability: observability.Config{
+			Logging: devEnvLogConfig,
 			Metrics: metricscfg.Config{},
 			Tracing: tracingcfg.Config{
-				Provider: tracingcfg.ProviderXRay,
-				XRay: &xray.Config{
-					CollectorEndpoint:         "0.0.0.0:4317",
+				Provider: tracingcfg.ProviderCloudTrace,
+				CloudTrace: &cloudtrace.Config{
+					ProjectID:                 "prixfixe-dev",
 					ServiceName:               "prixfixe_api",
-					SpanCollectionProbability: 0.1,
+					SpanCollectionProbability: 1,
 				},
 			},
 		},
@@ -267,19 +281,9 @@ func devEnvironmentServerConfig(ctx context.Context, filePath string) error {
 	return saveConfig(ctx, filePath, cfg, false, false)
 }
 
-func devEnvironmentWorkerConfig(ctx context.Context, filePath string) error {
-	cfg := buildDevEnvironmentServerConfig()
-
-	cfg.Observability.Tracing.Provider = ""
-	cfg.Events.Consumers.Provider = ""
-	cfg.Database.RunMigrations = false
-
-	return saveConfig(ctx, filePath, cfg, false, false)
-}
-
 func localDevelopmentConfig(ctx context.Context, filePath string) error {
 	cfg := &config.InstanceConfig{
-		Logging: localLogConfig,
+		Routing: localRoutingConfig,
 		Meta: config.MetaSettings{
 			Debug:   true,
 			RunMode: developmentEnv,
@@ -311,12 +315,8 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 			ConnectionDetails: devPostgresDBConnDetails,
 		},
 		Observability: observability.Config{
-			Metrics: metricscfg.Config{
-				Provider: "prometheus",
-				Prometheus: &prometheus.Config{
-					RuntimeMetricsCollectionInterval: time.Second,
-				},
-			},
+			Logging: localLogConfig,
+			Metrics: localMetricsConfig,
 			Tracing: localTracingConfig,
 		},
 		Uploads: uploads.Config{
@@ -332,6 +332,9 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 			},
 		},
 		Services: config.ServicesConfigurations{
+			Users: usersservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 			Households: householdsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -349,6 +352,7 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 				EnableUserSignup:      true,
 				MinimumUsernameLength: 4,
 				MinimumPasswordLength: 8,
+				DataChangesTopicName:  dataChangesTopicName,
 			},
 			Webhooks: webhooksservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
@@ -403,7 +407,7 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 
 func buildIntegrationTestsConfig() *config.InstanceConfig {
 	return &config.InstanceConfig{
-		Logging: localLogConfig,
+		Routing: localRoutingConfig,
 		Meta: config.MetaSettings{
 			Debug:   false,
 			RunMode: testingEnv,
@@ -439,9 +443,8 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			ConnectionDetails: devPostgresDBConnDetails,
 		},
 		Observability: observability.Config{
-			Metrics: metricscfg.Config{
-				Provider: "",
-			},
+			Logging: localLogConfig,
+			Metrics: localMetricsConfig,
 			Tracing: localTracingConfig,
 		},
 		Uploads: uploads.Config{
@@ -453,6 +456,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			},
 		},
 		Services: config.ServicesConfigurations{
+			Users: usersservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 			Households: householdsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -477,6 +483,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				EnableUserSignup:      true,
 				MinimumUsernameLength: 4,
 				MinimumPasswordLength: 8,
+				DataChangesTopicName:  dataChangesTopicName,
 			},
 			Webhooks: webhooksservice.Config{
 				DataChangesTopicName: dataChangesTopicName,

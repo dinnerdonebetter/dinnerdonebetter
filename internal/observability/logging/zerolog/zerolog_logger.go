@@ -52,7 +52,7 @@ func (l *zerologLogger) WithName(name string) logging.Logger {
 	return &zerologLogger{logger: l2}
 }
 
-// SetLevel sets the log level for our zerologLogger.
+// SetLevel sets the log level for our zerolog logger.
 func (l *zerologLogger) SetLevel(level logging.Level) {
 	var lvl zerolog.Level
 
@@ -68,6 +68,8 @@ func (l *zerologLogger) SetLevel(level logging.Level) {
 	case logging.ErrorLevel:
 		l.logger = l.logger.With().Caller().Logger()
 		lvl = zerolog.ErrorLevel
+	default:
+		lvl = zerolog.InfoLevel
 	}
 
 	l.logger = l.logger.Level(lvl)

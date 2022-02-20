@@ -163,11 +163,18 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachAPIClientDatabaseIDToSpan(span, client.ID)
 	s.apiClientCounter.Increment(ctx)
 
-	if err = s.customerDataCollector.EventOccurred(ctx, "api_client_created", user.ID, map[string]interface{}{
-		keys.APIClientDatabaseIDKey: client.ID,
-		"api_client.name":           client.Name,
-	}); err != nil {
-		logger.Error(err, "notifying customer data platform")
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.APIClientDataType,
+			EventType:                 types.APIClientCreatedCustomerEventType,
+			APIClientID:               client.ID,
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	resObj := &types.APIClientCreationResponse{
@@ -254,13 +261,22 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                  types.APIClientDataType,
+			EventType:                 types.APIClientArchivedCustomerEventType,
+			APIClientID:               apiClientID,
+			AttributableToUserID:      sessionCtxData.Requester.UserID,
+			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
+	}
+
 	// notify relevant parties.
 	s.apiClientCounter.Decrement(ctx)
-	if err = s.customerDataCollector.EventOccurred(ctx, "api_client_archived", sessionCtxData.Requester.UserID, map[string]interface{}{
-		keys.APIClientDatabaseIDKey: apiClientID,
-	}); err != nil {
-		logger.Error(err, "notifying customer data platform")
-	}
 
 	// encode our response and peace.
 	res.WriteHeader(http.StatusNoContent)

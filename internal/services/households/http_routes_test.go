@@ -14,14 +14,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"go.opentelemetry.io/otel/trace"
 
-	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
-	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	mockmetrics "github.com/prixfixeco/api_server/internal/observability/metrics/mock"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
@@ -153,7 +151,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeHouseholdCreationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -183,30 +181,18 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"household_created",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				keys.HouseholdIDKey: helper.exampleHousehold.ID,
-			},
-		).Return(nil)
-		helper.service.customerDataCollector = cdc
-
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, unitCounter, dataChangesPublisher, cdc)
+		mock.AssertExpectationsForObjects(t, householdDataManager, unitCounter, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeHouseholdCreationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -227,7 +213,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
@@ -243,7 +229,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := &types.HouseholdCreationRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -262,7 +248,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeHouseholdCreationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -291,7 +277,7 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeHouseholdCreationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -321,68 +307,11 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"household_created",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				keys.HouseholdIDKey: helper.exampleHousehold.ID,
-			},
-		).Return(nil)
-		helper.service.customerDataCollector = cdc
-
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, unitCounter, dataChangesPublisher, cdc)
-	})
-
-	T.Run("with error writing to customer data platform", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeHouseholdCreationInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		householdDataManager := &mocktypes.HouseholdDataManager{}
-		householdDataManager.On(
-			"CreateHousehold",
-			testutils.ContextMatcher,
-			mock.IsType(&types.HouseholdDatabaseCreationInput{}),
-		).Return(helper.exampleHousehold, nil)
-		helper.service.householdDataManager = householdDataManager
-
-		unitCounter := &mockmetrics.UnitCounter{}
-		unitCounter.On("Increment", testutils.ContextMatcher).Return()
-		helper.service.householdCounter = unitCounter
-
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"household_created",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				keys.HouseholdIDKey: helper.exampleHousehold.ID,
-			},
-		).Return(errors.New("blah"))
-		helper.service.customerDataCollector = cdc
-
-		helper.service.CreateHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusCreated, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, householdDataManager, unitCounter, cdc)
+		mock.AssertExpectationsForObjects(t, householdDataManager, unitCounter, dataChangesPublisher)
 	})
 }
 
@@ -625,7 +554,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeHouseholdUpdateInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -657,30 +586,18 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"household_updated",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				keys.HouseholdIDKey: helper.exampleHousehold.ID,
-			},
-		).Return(nil)
-		helper.service.customerDataCollector = cdc
-
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, dataChangesPublisher, cdc)
+		mock.AssertExpectationsForObjects(t, householdDataManager, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeHouseholdUpdateInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -701,7 +618,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
@@ -717,7 +634,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := &types.HouseholdUpdateInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -736,7 +653,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeHouseholdUpdateInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -766,7 +683,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeHouseholdUpdateInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -796,7 +713,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeHouseholdUpdateInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -834,7 +751,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeHouseholdUpdateInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
@@ -866,78 +783,11 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"household_updated",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				keys.HouseholdIDKey: helper.exampleHousehold.ID,
-			},
-		).Return(nil)
-		helper.service.customerDataCollector = cdc
-
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, dataChangesPublisher, cdc)
-	})
-
-	T.Run("with error writing to customer data platform", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleCreationInput := fakes.BuildFakeHouseholdUpdateInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		householdDataManager := &mocktypes.HouseholdDataManager{}
-		householdDataManager.On(
-			"GetHousehold",
-			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
-		).Return(helper.exampleHousehold, nil)
-		householdDataManager.On(
-			"UpdateHousehold",
-			testutils.ContextMatcher,
-			mock.IsType(&types.Household{}),
-		).Return(nil)
-		helper.service.householdDataManager = householdDataManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.DataChangeMessageMatcher),
-		).Return(nil)
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"household_updated",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				keys.HouseholdIDKey: helper.exampleHousehold.ID,
-			},
-		).Return(errors.New("blah"))
-		helper.service.customerDataCollector = cdc
-
-		helper.service.UpdateHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, householdDataManager, dataChangesPublisher, cdc)
+		mock.AssertExpectationsForObjects(t, householdDataManager, dataChangesPublisher)
 	})
 }
 
@@ -970,23 +820,11 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"household_archived",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				keys.HouseholdIDKey: helper.exampleHousehold.ID,
-			},
-		).Return(nil)
-		helper.service.customerDataCollector = cdc
-
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, unitCounter, dataChangesPublisher, cdc)
+		mock.AssertExpectationsForObjects(t, householdDataManager, unitCounter, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -1096,68 +934,11 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"household_archived",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				keys.HouseholdIDKey: helper.exampleHousehold.ID,
-			},
-		).Return(nil)
-		helper.service.customerDataCollector = cdc
-
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, unitCounter, dataChangesPublisher, cdc)
-	})
-
-	T.Run("with error writing to customer data platform", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		householdDataManager := &mocktypes.HouseholdDataManager{}
-		householdDataManager.On(
-			"ArchiveHousehold",
-			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
-			helper.exampleUser.ID,
-		).Return(nil)
-		helper.service.householdDataManager = householdDataManager
-
-		unitCounter := &mockmetrics.UnitCounter{}
-		unitCounter.On("Decrement", testutils.ContextMatcher).Return()
-		helper.service.householdCounter = unitCounter
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.DataChangeMessageMatcher),
-		).Return(nil)
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"household_archived",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				keys.HouseholdIDKey: helper.exampleHousehold.ID,
-			},
-		).Return(errors.New("blah"))
-		helper.service.customerDataCollector = cdc
-
-		helper.service.ArchiveHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusNoContent, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, householdDataManager, unitCounter, dataChangesPublisher, cdc)
+		mock.AssertExpectationsForObjects(t, householdDataManager, unitCounter, dataChangesPublisher)
 	})
 }
 
@@ -1168,7 +949,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleInput := fakes.BuildFakeUserPermissionModificationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
@@ -1196,32 +977,18 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"user_permissions_modified",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				keys.HouseholdIDKey: helper.exampleHousehold.ID,
-				"new_permissions":   exampleInput.NewRoles,
-				keys.ReasonKey:      exampleInput.Reason,
-			},
-		).Return(nil)
-		helper.service.customerDataCollector = cdc
-
 		helper.service.ModifyMemberPermissionsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, dataChangesPublisher, cdc)
+		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, dataChangesPublisher)
 	})
 
 	T.Run("with missing input", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
@@ -1237,7 +1004,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleInput := &types.ModifyUserPermissionsInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
@@ -1257,7 +1024,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleInput := fakes.BuildFakeUserPermissionModificationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
@@ -1276,7 +1043,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleInput := fakes.BuildFakeUserPermissionModificationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
@@ -1307,7 +1074,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleInput := fakes.BuildFakeUserPermissionModificationInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
@@ -1335,78 +1102,11 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"user_permissions_modified",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				keys.HouseholdIDKey: helper.exampleHousehold.ID,
-				"new_permissions":   exampleInput.NewRoles,
-				keys.ReasonKey:      exampleInput.Reason,
-			},
-		).Return(nil)
-		helper.service.customerDataCollector = cdc
-
 		helper.service.ModifyMemberPermissionsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, dataChangesPublisher, cdc)
-	})
-
-	T.Run("with error writing to customer data platform", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		exampleInput := fakes.BuildFakeUserPermissionModificationInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManager{}
-		householdMembershipDataManager.On(
-			"ModifyUserPermissions",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-			helper.exampleHousehold.ID,
-			exampleInput,
-		).Return(nil)
-		helper.service.householdMembershipDataManager = householdMembershipDataManager
-
-		dataChangesPublisher := &mockpublishers.Publisher{}
-		dataChangesPublisher.On(
-			"Publish",
-			testutils.ContextMatcher,
-			mock.MatchedBy(testutils.DataChangeMessageMatcher),
-		).Return(nil)
-		helper.service.dataChangesPublisher = dataChangesPublisher
-
-		cdc := &customerdata.MockCollector{}
-		cdc.On(
-			"EventOccurred",
-			testutils.ContextMatcher,
-			"user_permissions_modified",
-			helper.exampleUser.ID,
-			map[string]interface{}{
-				keys.HouseholdIDKey: helper.exampleHousehold.ID,
-				"new_permissions":   exampleInput.NewRoles,
-				keys.ReasonKey:      exampleInput.Reason,
-			},
-		).Return(errors.New("blah"))
-		helper.service.customerDataCollector = cdc
-
-		helper.service.ModifyMemberPermissionsHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, dataChangesPublisher, cdc)
+		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, dataChangesPublisher)
 	})
 }
 
@@ -1417,7 +1117,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleInput := fakes.BuildFakeTransferHouseholdOwnershipInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
@@ -1455,7 +1155,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(nil))
@@ -1471,7 +1171,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleInput := &types.HouseholdOwnershipTransferInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
@@ -1491,7 +1191,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleInput := fakes.BuildFakeTransferHouseholdOwnershipInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
@@ -1510,7 +1210,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleInput := fakes.BuildFakeTransferHouseholdOwnershipInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
@@ -1540,7 +1240,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleInput := fakes.BuildFakeTransferHouseholdOwnershipInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)

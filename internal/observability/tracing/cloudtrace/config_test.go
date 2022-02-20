@@ -1,4 +1,4 @@
-package xray
+package cloudtrace
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestXRayConfig_ValidateWithContext(T *testing.T) {
+func TestCloudTraceConfig_ValidateWithContext(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -15,8 +15,8 @@ func TestXRayConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
-			CollectorEndpoint: t.Name(),
-			ServiceName:       t.Name(),
+			ProjectID:   t.Name(),
+			ServiceName: t.Name(),
 		}
 
 		assert.NoError(t, cfg.ValidateWithContext(ctx))

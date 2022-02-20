@@ -14,12 +14,11 @@ import (
 	"testing"
 	"time"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
 
 const (
@@ -114,7 +113,7 @@ func buildTestClient(t *testing.T, ts *httptest.Server) *Client {
 
 	client, err := NewClient(
 		mustParseURL("https://prixfixe.verygoodsoftwarenotvirus.ru"),
-		trace.NewNoopTracerProvider(),
+		tracing.NewNoopTracerProvider(),
 		UsingLogger(logging.NewNoopLogger()),
 		UsingJSON(),
 	)
@@ -143,7 +142,7 @@ func buildTestClientWithInvalidURL(t *testing.T) *Client {
 	u := mustParseURL("https://prixfixe.verygoodsoftwarenotvirus.ru")
 	u.Scheme = fmt.Sprintf(`%s://`, asciiControlChar)
 
-	c, err := NewClient(u, trace.NewNoopTracerProvider(), UsingLogger(l), UsingDebug(true))
+	c, err := NewClient(u, tracing.NewNoopTracerProvider(), UsingLogger(l), UsingDebug(true))
 	require.NotNil(t, c)
 	require.NoError(t, err)
 

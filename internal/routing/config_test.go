@@ -15,9 +15,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
-			Provider:       ChiProvider,
-			AllowedOrigins: nil,
-			AllowedHeaders: nil,
+			Provider: ChiProvider,
 		}
 
 		assert.NoError(t, cfg.ValidateWithContext(ctx))

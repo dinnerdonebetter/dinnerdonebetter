@@ -5,8 +5,7 @@ import (
 	"testing"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
-
-	"go.opentelemetry.io/otel/trace"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 
 	"github.com/stretchr/testify/assert"
 
@@ -24,7 +23,7 @@ func TestProvideDataChangesWorker(T *testing.T) {
 			zerolog.NewZerologLogger(),
 			&email.MockEmailer{},
 			&customerdata.MockCollector{},
-			trace.NewNoopTracerProvider(),
+			tracing.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, actual)
 	})
@@ -40,7 +39,7 @@ func TestDataChangesWorker_HandleMessage(T *testing.T) {
 			zerolog.NewZerologLogger(),
 			&email.MockEmailer{},
 			&customerdata.MockCollector{},
-			trace.NewNoopTracerProvider(),
+			tracing.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, actual)
 
@@ -55,7 +54,7 @@ func TestDataChangesWorker_HandleMessage(T *testing.T) {
 			zerolog.NewZerologLogger(),
 			&email.MockEmailer{},
 			&customerdata.MockCollector{},
-			trace.NewNoopTracerProvider(),
+			tracing.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, actual)
 

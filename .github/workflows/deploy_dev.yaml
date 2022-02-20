@@ -4,7 +4,7 @@ on:
       - dev
 name: Deploy
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -13,52 +13,26 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v2
         with:
-          go-version: '1.17.3'
+          go-version: '1.16'
 
-      - name: Build data changes worker lambda
-        run: go build -o data_changes_worker github.com/prixfixeco/api_server/cmd/lambdas/data_changes
-
-      - name: Zip data changes lambda
-        run: zip data_changes_worker.zip data_changes_worker
-
-      - name: Upload data changes lambda
-        uses: actions/upload-artifact@v2
+      - id: auth
+        uses: google-github-actions/auth@v0
         with:
-          name: data_changes_lambda
-          path: data_changes_worker.zip
-          retention-days: 1
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
 
-      - name: Build chores worker lambda
-        run: go build -o chores_worker github.com/prixfixeco/api_server/cmd/lambdas/chores
+      # Setup gcloud CLI
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
 
-      - name: Zip chores lambda
-        run: zip chores_worker.zip chores_worker
+      - name: Authorize Docker push
+        run: gcloud auth configure-docker
 
-      - name: Upload chores lambda
-        uses: actions/upload-artifact@v2
-        with:
-          name: chores_lambda
-          path: chores_worker.zip
-          retention-days: 1
-
-      - name: Build meal planning prober lambda
-        run: go build -o prober_meal_planning github.com/prixfixeco/api_server/cmd/lambdas/probers/meal_planning
-
-      - name: Zip meal planning prober lambda
-        run: zip meal_planning_prober_lambda.zip prober_meal_planning
-
-      - name: Upload chores lambda
-        uses: actions/upload-artifact@v2
-        with:
-          name: meal_planning_prober_lambda
-          path: meal_planning_prober_lambda.zip
-          retention-days: 1
-
-  scaffold:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Build and Push Container
+        run: |
+          docker build --tag gcr.io/prixfixe-dev/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
+          docker push gcr.io/prixfixe-dev/api_server:${{  github.sha }}
+          docker build --tag gcr.io/prixfixe-dev/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
+          docker push gcr.io/prixfixe-dev/api_server:latest
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
@@ -76,89 +50,34 @@ jobs:
         id: fmt
         run: terraform fmt -check
 
+      - name: Build data changes cloud function directory
+        run: ./scripts/build_cloud_function.sh data_changes
+
+      - name: Build meal plan finalizer cloud function directory
+        run: ./scripts/build_cloud_function.sh meal_plan_finalizer
+
+      - name: Build meal planning prober cloud function directory
+        run: ./scripts/build_cloud_function.sh meal_planning_prober
+
       - name: copy server config file
         working-directory: environments/dev
         run: |
           cp config_files/service-config.json terraform/service-config.json
-          cp config_files/worker-config.json terraform/worker-config.json
-          cp config_files/opentelemetry/config.yaml terraform/opentelemetry-config.yaml
 
       - name: Terraform Validate
         working-directory: environments/dev/terraform
         id: validate
         run: terraform validate -no-color
 
-      # - name: Terraform Plan
-      #   working-directory: environments/dev/terraform
-      #   id: plan
-      #   if: github.event_name == 'pull_request'
-      #   run: terraform plan -no-color
-
       - name: Terraform Apply
         run: terraform apply -auto-approve
         # if: github.event_name == 'release'
         working-directory: environments/dev/terraform
 
-  deploy:
-    needs: [
-      scaffold,
-      build,
-    ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      # if this step fails, you need to add the `Service Account User` role to the Github Actions IAM Principal.
+      - id: deploy-api-server
+        uses: google-github-actions/deploy-cloudrun@v0
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build, tag, and push image to Amazon ECR
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build --tag $ECR_REGISTRY/api_server:$IMAGE_TAG --file environments/dev/dockerfiles/api_server.Dockerfile .
-          docker push $ECR_REGISTRY/api_server:$IMAGE_TAG
-          docker build --tag $ECR_REGISTRY/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
-          docker push $ECR_REGISTRY/api_server:latest
-
-      - name: deploy to ECS
-        run: aws ecs update-service --cluster api_servers --service api_server --force-new-deployment
-
-      - name: Download data changes lambda
-        uses: actions/download-artifact@v2
-        with:
-          name: data_changes_lambda
-          path: artifacts
-
-      - name: Deploy data changes lambda
-        working-directory: artifacts
-        run: aws lambda update-function-code --function-name data_changes_worker --zip-file fileb://data_changes_worker.zip
-
-      - name: Download chores lambda
-        uses: actions/download-artifact@v2
-        with:
-          name: chores_lambda
-          path: artifacts
-
-      - name: Deploy data changes lambda
-        working-directory: artifacts
-        run: aws lambda update-function-code --function-name chores_worker --zip-file fileb://chores_worker.zip
-
-      - name: Download meal planning prober lambda
-        uses: actions/download-artifact@v2
-        with:
-          name: meal_planning_prober_lambda
-          path: artifacts
-
-      - name: Deploy meal planning prober lambda
-        working-directory: artifacts
-        run: aws lambda update-function-code --function-name prober_meal_planning --zip-file fileb://meal_planning_prober_lambda.zip
+          service: 'api-server'
+          project_id: 'prixfixe-dev'
+          image: 'gcr.io/prixfixe-dev/api_server'

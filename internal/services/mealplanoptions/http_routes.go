@@ -72,7 +72,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.MealPlanDataType,
-			MessageType:               "meal_plan_option_created",
+			EventType:                 types.MealPlanOptionCreatedCustomerEventType,
 			MealPlanID:                mealPlanID,
 			MealPlanOption:            mealPlanOption,
 			AttributableToUserID:      sessionCtxData.Requester.UserID,
@@ -243,7 +243,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.MealPlanOptionDataType,
-			MessageType:               "meal_plan_option_updated",
+			EventType:                 types.MealPlanOptionUpdatedCustomerEventType,
 			MealPlanID:                mealPlanID,
 			MealPlanOption:            mealPlanOption,
 			AttributableToUserID:      sessionCtxData.Requester.UserID,
@@ -307,7 +307,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.MealPlanOptionDataType,
-			MessageType:               "meal_plan_option_archived",
+			EventType:                 types.MealPlanOptionArchivedCustomerEventType,
 			MealPlanID:                mealPlanID,
 			MealPlanOptionID:          mealPlanOptionID,
 			AttributableToUserID:      sessionCtxData.Requester.UserID,

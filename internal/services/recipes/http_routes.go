@@ -74,7 +74,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.RecipeDataType,
-			MessageType:               "recipe_created",
+			EventType:                 types.RecipeCreatedCustomerEventType,
 			Recipe:                    recipe,
 			AttributableToUserID:      sessionCtxData.Requester.UserID,
 			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
@@ -85,13 +85,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 		}
 		logger.Debug("published to data change")
-	}
-
-	if err = s.customerDataCollector.EventOccurred(ctx, "recipe_created", sessionCtxData.Requester.UserID, map[string]interface{}{
-		keys.HouseholdIDKey: sessionCtxData.ActiveHouseholdID,
-		keys.RecipeIDKey:    input.ID,
-	}); err != nil {
-		logger.Error(err, "notifying customer data platform")
 	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, recipe, http.StatusCreated)
@@ -279,7 +272,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.RecipeDataType,
-			MessageType:               "recipe_updated",
+			EventType:                 types.RecipeUpdatedCustomerEventType,
 			Recipe:                    recipe,
 			AttributableToUserID:      sessionCtxData.Requester.UserID,
 			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
@@ -288,13 +281,6 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			observability.AcknowledgeError(err, logger, span, "publishing data change message")
 		}
-	}
-
-	if err = s.customerDataCollector.EventOccurred(ctx, "recipe_updated", sessionCtxData.Requester.UserID, map[string]interface{}{
-		keys.HouseholdIDKey: sessionCtxData.ActiveHouseholdID,
-		keys.RecipeIDKey:    recipeID,
-	}); err != nil {
-		logger.Error(err, "notifying customer data platform")
 	}
 
 	// encode our response and peace.
@@ -344,7 +330,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.RecipeDataType,
-			MessageType:               "recipe_archived",
+			EventType:                 types.RecipeArchivedCustomerEventType,
+			RecipeID:                  recipeID,
 			AttributableToUserID:      sessionCtxData.Requester.UserID,
 			AttributableToHouseholdID: sessionCtxData.ActiveHouseholdID,
 		}
@@ -352,13 +339,6 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 			observability.AcknowledgeError(err, logger, span, "publishing data change message")
 		}
-	}
-
-	if err = s.customerDataCollector.EventOccurred(ctx, "recipe_archived", sessionCtxData.Requester.UserID, map[string]interface{}{
-		keys.HouseholdIDKey: sessionCtxData.ActiveHouseholdID,
-		keys.RecipeIDKey:    recipeID,
-	}); err != nil {
-		logger.Error(err, "notifying customer data platform")
 	}
 
 	// encode our response and peace.

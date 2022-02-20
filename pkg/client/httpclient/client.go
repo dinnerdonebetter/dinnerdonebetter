@@ -82,6 +82,10 @@ func NewClient(u *url.URL, tracerProvider tracing.TracerProvider, options ...opt
 		return nil, ErrNoURLProvided
 	}
 
+	if tracerProvider == nil {
+		tracerProvider = tracing.NewNoopTracerProvider()
+	}
+
 	c := &Client{
 		url:                   u,
 		logger:                l,

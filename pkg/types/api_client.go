@@ -7,6 +7,18 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
+const (
+	// APIClientDataType reference API client events.
+	APIClientDataType dataType = "api_client"
+
+	// APIClientCreatedCustomerEventType indicates an API client was created.
+	APIClientCreatedCustomerEventType CustomerEventType = "api_client_created"
+	// APIClientUpdatedCustomerEventType indicates an API client was updated.
+	APIClientUpdatedCustomerEventType CustomerEventType = "api_client_updated"
+	// APIClientArchivedCustomerEventType indicates an API client was archived.
+	APIClientArchivedCustomerEventType CustomerEventType = "api_client_archived"
+)
+
 type (
 	// APIClient represents a user-authorized API client.
 	APIClient struct {

@@ -6,11 +6,11 @@ import (
 	"strings"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/email/sendgrid"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
 
 const (
@@ -39,7 +39,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 func (cfg *Config) ProvideEmailer(logger logging.Logger, client *http.Client) (email.Emailer, error) {
 	switch strings.ToLower(strings.TrimSpace(cfg.Provider)) {
 	case ProviderSendgrid:
-		return sendgrid.NewSendGridEmailer(cfg.APIToken, logger, trace.NewNoopTracerProvider(), client)
+		return sendgrid.NewSendGridEmailer(cfg.APIToken, logger, tracing.NewNoopTracerProvider(), client)
 	default:
 		return email.NewNoopEmailer()
 	}

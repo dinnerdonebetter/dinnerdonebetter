@@ -2,6 +2,8 @@ package config
 
 import (
 	"github.com/google/wire"
+
+	"github.com/prixfixeco/api_server/internal/database"
 )
 
 var (
@@ -24,6 +26,7 @@ var (
 		wire.FieldsOf(
 			new(*ServicesConfigurations),
 			"Auth",
+			"Users",
 			"Webhooks",
 			"Websockets",
 			"Households",
@@ -44,3 +47,15 @@ var (
 		),
 	)
 )
+
+// ProvideCloserFunc provides a closer function.
+func ProvideCloserFunc(dbm database.DataManager) func() error {
+	return func() error {
+		db := dbm.DB()
+		if err := db.Close(); err != nil {
+			return err
+		}
+
+		return nil
+	}
+}

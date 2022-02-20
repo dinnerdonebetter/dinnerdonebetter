@@ -1,33 +1,22 @@
 {
-	"server": {
-		"startupDeadline": 60000000000,
-		"httpPort": 8000,
-		"debug": false
-	},
-	"events": {
-		"consumers": {
-			"provider": "redis",
-			"sqs": {
-				"messageQueueAddress": ""
-			},
-			"redis": {
-				"username": "",
-				"queueAddress": [
-					"worker_queue:6379"
-				]
-			}
+	"observability": {
+		"logging": {
+			"level": 0,
+			"provider": "zerolog"
 		},
-		"publishers": {
-			"provider": "redis",
-			"sqs": {
-				"messageQueueAddress": ""
+		"metrics": {
+			"prometheus": {
+				"runtimeMetricsCollectionInterval": 1000000000
 			},
-			"redis": {
-				"username": "",
-				"queueAddress": [
-					"worker_queue:6379"
-				]
-			}
+			"provider": "prometheus"
+		},
+		"tracing": {
+			"jaeger": {
+				"collector_endpoint": "http://tracing-server:14268/api/traces",
+				"service_name": "prixfixe_service",
+				"spanCollectionProbability": 1
+			},
+			"provider": "jaeger"
 		}
 	},
 	"email": {
@@ -48,30 +37,54 @@
 		},
 		"debug": false
 	},
-	"observability": {
-		"metrics": {},
-		"tracing": {
-			"jaeger": {
-				"collector_endpoint": "http://tracing-server:14268/api/traces",
-				"service_name": "prixfixe_service",
-				"spanCollectionProbability": 1
-			},
-			"provider": "jaeger"
-		}
+	"routing": {
+		"provider": "chi"
 	},
-	"routing": {},
 	"database": {
 		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable",
 		"debug": false,
 		"runMigrations": true,
 		"maxPingAttempts": 50
 	},
-	"logging": {
-		"level": 0,
-		"provider": "zerolog"
-	},
 	"meta": {
 		"runMode": "testing",
+		"debug": false
+	},
+	"events": {
+		"consumers": {
+			"provider": "redis",
+			"sqs": {
+				"messageQueueAddress": ""
+			},
+			"pubsub": {
+				"topicName": ""
+			},
+			"redis": {
+				"username": "",
+				"queueAddress": [
+					"worker_queue:6379"
+				]
+			}
+		},
+		"publishers": {
+			"provider": "redis",
+			"sqs": {
+				"messageQueueAddress": ""
+			},
+			"pubsub": {
+				"topicName": ""
+			},
+			"redis": {
+				"username": "",
+				"queueAddress": [
+					"worker_queue:6379"
+				]
+			}
+		}
+	},
+	"server": {
+		"startupDeadline": 60000000000,
+		"httpPort": 8000,
 		"debug": false
 	},
 	"services": {
@@ -128,18 +141,22 @@
 			"dataChangesTopicName": "data_changes",
 			"debug": false
 		},
+		"users": {
+			"dataChangesTopicName": "data_changes"
+		},
 		"auth": {
-			"paseto": {
-				"issuer": "prixfixe_service",
-				"localModeKey": "8h2Vstqv/4V60HPNtKogvVlyhDYCNa4WgKNVo+anf18=",
-				"lifetime": 60000000000
-			},
+			"dataChanges": "data_changes",
 			"cookies": {
 				"name": "prixfixecookie",
 				"domain": ".prixfixe.local",
 				"hashKey": "HEREISA32CHARSECRETWHICHISMADEUP",
 				"blockKey": "DIFFERENT32CHARSECRETTHATIMADEUP",
 				"lifetime": 86400000000000
+			},
+			"paseto": {
+				"issuer": "prixfixe_service",
+				"localModeKey": "YzWDaGULKOp2M2p+Qw0kAx4dk2lScsQFiIXpriiNcBg=",
+				"lifetime": 60000000000
 			},
 			"enableUserSignup": true,
 			"minimumUsernameLength": 4,

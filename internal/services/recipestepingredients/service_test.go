@@ -8,7 +8,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"go.opentelemetry.io/otel/trace"
 
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
@@ -66,7 +65,7 @@ func TestProvideRecipeStepIngredientsService(T *testing.T) {
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
-			trace.NewNoopTracerProvider(),
+			tracing.NewNoopTracerProvider(),
 		)
 
 		assert.NotNil(t, s)
@@ -94,7 +93,7 @@ func TestProvideRecipeStepIngredientsService(T *testing.T) {
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,
-			trace.NewNoopTracerProvider(),
+			tracing.NewNoopTracerProvider(),
 		)
 
 		assert.Nil(t, s)

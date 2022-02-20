@@ -7,12 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
 
 func TestNewSendGridEmailer(T *testing.T) {
@@ -23,7 +22,7 @@ func TestNewSendGridEmailer(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		client, err := NewSendGridEmailer(t.Name(), logger, trace.NewNoopTracerProvider(), &http.Client{})
+		client, err := NewSendGridEmailer(t.Name(), logger, tracing.NewNoopTracerProvider(), &http.Client{})
 		require.NotNil(t, client)
 		require.NoError(t, err)
 	})
@@ -37,7 +36,7 @@ func TestSendGridEmailer_SendEmail(T *testing.T) {
 			res.WriteHeader(http.StatusOK)
 		}))
 
-		c, err := NewSendGridEmailer(t.Name(), logger, trace.NewNoopTracerProvider(), ts.Client())
+		c, err := NewSendGridEmailer(t.Name(), logger, tracing.NewNoopTracerProvider(), ts.Client())
 		require.NotNil(t, c)
 		require.NoError(t, err)
 
@@ -65,7 +64,7 @@ func TestSendGridEmailer_SendEmail(T *testing.T) {
 		client := ts.Client()
 		client.Timeout = time.Millisecond
 
-		c, err := NewSendGridEmailer(t.Name(), logger, trace.NewNoopTracerProvider(), client)
+		c, err := NewSendGridEmailer(t.Name(), logger, tracing.NewNoopTracerProvider(), client)
 		require.NotNil(t, c)
 		require.NoError(t, err)
 
@@ -92,7 +91,7 @@ func TestSendGridEmailer_SendEmail(T *testing.T) {
 			res.WriteHeader(http.StatusInternalServerError)
 		}))
 
-		c, err := NewSendGridEmailer(t.Name(), logger, trace.NewNoopTracerProvider(), ts.Client())
+		c, err := NewSendGridEmailer(t.Name(), logger, tracing.NewNoopTracerProvider(), ts.Client())
 		require.NotNil(t, c)
 		require.NoError(t, err)
 

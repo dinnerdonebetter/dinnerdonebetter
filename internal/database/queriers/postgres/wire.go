@@ -6,7 +6,5 @@ import (
 
 var (
 	// Providers are what we offer to dependency injection.
-	Providers = wire.NewSet(
-		ProvideDatabaseClient,
-	)
+	Providers = wire.NewSet()
 )

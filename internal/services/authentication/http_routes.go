@@ -159,8 +159,16 @@ func (s *service) BeginSessionHandler(res http.ResponseWriter, req *http.Request
 		return
 	}
 
-	if err = s.customerDataCollector.EventOccurred(ctx, "logged_in", user.ID, map[string]interface{}{}); err != nil {
-		logger.Error(err, "notifying customer data platform of login")
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:             types.UserDataType,
+			EventType:            types.UserLoggedInCustomerEventType,
+			AttributableToUserID: user.ID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	http.SetCookie(res, cookie)
@@ -238,11 +246,20 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 		return
 	}
 
-	if err = s.customerDataCollector.EventOccurred(ctx, "changed_active_household", requesterID, map[string]interface{}{
-		"old_household_id":        sessionCtxData.ActiveHouseholdID,
-		keys.ActiveHouseholdIDKey: householdID,
-	}); err != nil {
-		logger.Error(err, "notifying customer data platform of login")
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:             types.UserDataType,
+			EventType:            types.UserLoggedInCustomerEventType,
+			AttributableToUserID: requesterID,
+			Context: map[string]string{
+				"old_household_id": sessionCtxData.ActiveHouseholdID,
+			},
+			HouseholdID: householdID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	logger.Info("successfully changed active session household")
@@ -299,8 +316,16 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 	newCookie.MaxAge = -1
 	http.SetCookie(res, newCookie)
 
-	if err = s.customerDataCollector.EventOccurred(ctx, "logged_out", sessionCtxData.Requester.UserID, map[string]interface{}{}); err != nil {
-		logger.Error(err, "notifying customer data platform of login")
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:             types.UserDataType,
+			EventType:            types.UserLoggedOutCustomerEventType,
+			AttributableToUserID: sessionCtxData.Requester.UserID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
 	}
 
 	logger.Debug("user logged out")

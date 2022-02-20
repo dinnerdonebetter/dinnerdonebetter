@@ -9,7 +9,6 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/messagequeue"
 
-	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -44,7 +43,6 @@ type (
 		dataChangesPublisher        messagequeue.Publisher
 		encoderDecoder              encoding.ServerEncoderDecoder
 		tracer                      tracing.Tracer
-		customerDataCollector       customerdata.Collector
 	}
 )
 
@@ -57,12 +55,11 @@ func ProvideService(
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
 	publisherProvider messagequeue.PublisherProvider,
-	customerDataCollector customerdata.Collector,
 	tracerProvider tracing.TracerProvider,
 ) (types.MealPlanOptionVoteDataService, error) {
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
 	if err != nil {
-		return nil, fmt.Errorf("setting up recipe step product queue data changes publisher: %w", err)
+		return nil, fmt.Errorf("setting up meal plan option votes service data changes publisher: %w", err)
 	}
 
 	svc := &service{
@@ -75,7 +72,6 @@ func ProvideService(
 		dataChangesPublisher:        dataChangesPublisher,
 		encoderDecoder:              encoder,
 		tracer:                      tracing.NewTracer(tracerProvider.Tracer(serviceName)),
-		customerDataCollector:       customerDataCollector,
 	}
 
 	return svc, nil

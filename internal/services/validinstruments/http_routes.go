@@ -66,7 +66,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:             types.ValidInstrumentDataType,
-			MessageType:          "valid_instrument_created",
+			EventType:            types.ValidInstrumentCreatedCustomerEventType,
 			ValidInstrument:      validInstrument,
 			AttributableToUserID: sessionCtxData.Requester.UserID,
 		}
@@ -260,7 +260,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:             types.ValidInstrumentDataType,
-			MessageType:          "valid_instrument_updated",
+			EventType:            types.ValidInstrumentUpdatedCustomerEventType,
 			ValidInstrument:      validInstrument,
 			AttributableToUserID: sessionCtxData.Requester.UserID,
 		}
@@ -317,7 +317,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:             types.ValidInstrumentDataType,
-			MessageType:          "valid_instrument_archived",
+			EventType:            types.ValidInstrumentArchivedCustomerEventType,
 			AttributableToUserID: sessionCtxData.Requester.UserID,
 		}
 

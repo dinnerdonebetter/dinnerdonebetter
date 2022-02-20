@@ -3,11 +3,10 @@ package encoding
 import (
 	"testing"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/stretchr/testify/assert"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
 
 func Test_clientEncoder_ContentType(T *testing.T) {
@@ -16,7 +15,7 @@ func Test_clientEncoder_ContentType(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		e := ProvideClientEncoder(logging.NewNoopLogger(), trace.NewNoopTracerProvider(), ContentTypeJSON)
+		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
 
 		assert.NotEmpty(t, e.ContentType())
 	})

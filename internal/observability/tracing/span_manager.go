@@ -15,7 +15,7 @@ type otelTraceWrapper struct {
 // NewTracerForTest creates a Tracer.
 func NewTracerForTest(name string) Tracer {
 	return &otelTraceWrapper{
-		tracer: trace.NewNoopTracerProvider().Tracer(name),
+		tracer: NewNoopTracerProvider().Tracer(name),
 	}
 }
 

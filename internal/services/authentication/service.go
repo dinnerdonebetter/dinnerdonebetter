@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/prixfixeco/api_server/internal/messagequeue"
+
 	"github.com/alexedwards/scs/v2"
 	"github.com/gorilla/securecookie"
 
 	"github.com/prixfixeco/api_server/internal/authentication"
-	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -43,7 +44,7 @@ type (
 		sessionManager             sessionManager
 		sessionContextDataFetcher  func(*http.Request) (*types.SessionContextData, error)
 		tracer                     tracing.Tracer
-		customerDataCollector      customerdata.Collector
+		dataChangesPublisher       messagequeue.Publisher
 	}
 )
 
@@ -57,12 +58,17 @@ func ProvideService(
 	householdMembershipManager types.HouseholdUserMembershipDataManager,
 	sessionManager *scs.SessionManager,
 	encoder encoding.ServerEncoderDecoder,
-	customerDataCollector customerdata.Collector,
 	tracerProvider tracing.TracerProvider,
+	publisherProvider messagequeue.PublisherProvider,
 ) (types.AuthService, error) {
 	hashKey := []byte(cfg.Cookies.HashKey)
 	if len(hashKey) == 0 {
 		hashKey = securecookie.GenerateRandomKey(cookieSecretSize)
+	}
+
+	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
+	if err != nil {
+		return nil, fmt.Errorf("setting up auth service data changes publisher: %w", err)
 	}
 
 	svc := &service{
@@ -77,7 +83,7 @@ func ProvideService(
 		sessionContextDataFetcher:  FetchContextFromRequest,
 		cookieManager:              securecookie.New(hashKey, []byte(cfg.Cookies.BlockKey)),
 		tracer:                     tracing.NewTracer(tracerProvider.Tracer(serviceName)),
-		customerDataCollector:      customerDataCollector,
+		dataChangesPublisher:       dataChangesPublisher,
 	}
 
 	if _, err := svc.cookieManager.Encode(cfg.Cookies.Name, "blah"); err != nil {

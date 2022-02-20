@@ -10,10 +10,8 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/authentication"
 	"github.com/prixfixeco/api_server/internal/config"
-	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
-	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -54,16 +52,15 @@ func Build(
 	tracerProvider tracing.TracerProvider,
 	unitCounterProvider metrics.UnitCounterProvider,
 	metricsHandler metrics.Handler,
+	dataManager database.DataManager,
 ) (*server.HTTPServer, error) {
 	wire.Build(
 		config.Providers,
 		database.Providers,
 		dbconfig.Providers,
-		customerdataconfig.Providers,
 		encoding.Providers,
 		msgconfig.Providers,
 		server.Providers,
-		postgres.Providers,
 		images.Providers,
 		uploads.Providers,
 		storage.Providers,

@@ -11,6 +11,13 @@ import (
 const (
 	// MealDataType indicates an event is related to a meal.
 	MealDataType dataType = "meal"
+
+	// MealCreatedCustomerEventType indicates a meal was created.
+	MealCreatedCustomerEventType CustomerEventType = "meal_created"
+	// MealUpdatedCustomerEventType indicates a meal was updated.
+	MealUpdatedCustomerEventType CustomerEventType = "meal_updated"
+	// MealArchivedCustomerEventType indicates a meal was archived.
+	MealArchivedCustomerEventType CustomerEventType = "meal_archived"
 )
 
 func init() {

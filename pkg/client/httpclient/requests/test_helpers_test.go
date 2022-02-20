@@ -9,8 +9,6 @@ import (
 	"strings"
 	"testing"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -111,7 +109,7 @@ func buildTestRequestBuilder() *Builder {
 		url:     parsedExampleURL,
 		logger:  l,
 		tracer:  tracing.NewTracerForTest("test"),
-		encoder: encoding.ProvideClientEncoder(l, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON),
+		encoder: encoding.ProvideClientEncoder(l, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON),
 	}
 }
 
@@ -145,6 +143,6 @@ func buildTestRequestBuilderWithInvalidURL() *Builder {
 		url:     invalidParsedURL,
 		logger:  l,
 		tracer:  tracing.NewTracerForTest("test"),
-		encoder: encoding.ProvideClientEncoder(l, trace.NewNoopTracerProvider(), encoding.ContentTypeJSON),
+		encoder: encoding.ProvideClientEncoder(l, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON),
 	}
 }
