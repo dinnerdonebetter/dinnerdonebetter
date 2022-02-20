@@ -70,7 +70,21 @@ resource "random_password" "meal_plan_finalizer_user_database_password" {
   override_special = "#$*-_=+[]"
 }
 
-resource "google_sql_user" "meal_plan_fimeal_plan_finalizer_usernalizer_user" {
+resource "google_secret_manager_secret" "meal_plan_finalizer_user_database_password" {
+  secret_id = "meal_plan_finalizer_user_database_password"
+
+  replication {
+    automatic = true
+  }
+}
+
+resource "google_secret_manager_secret_version" "meal_plan_finalizer_user_database_password" {
+  secret = google_secret_manager_secret.meal_plan_finalizer_user_database_password.id
+
+  secret_data = random_password.meal_plan_finalizer_user_database_password.result
+}
+
+resource "google_sql_user" "meal_plan_fimeal_plan_finalizer_user" {
   name     = local.meal_plan_finalizer_database_username
   instance = google_sql_database_instance.dev.name
   password = random_password.meal_plan_finalizer_user_database_password.result

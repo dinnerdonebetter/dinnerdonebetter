@@ -70,6 +70,20 @@ resource "random_password" "api_user_database_password" {
   override_special = "#$*-_=+[]"
 }
 
+resource "google_secret_manager_secret" "api_user_database_password" {
+  secret_id = "api_user_database_password"
+
+  replication {
+    automatic = true
+  }
+}
+
+resource "google_secret_manager_secret_version" "api_user_database_password" {
+  secret = google_secret_manager_secret.api_user_database_password.id
+
+  secret_data = random_password.api_user_database_password.result
+}
+
 resource "google_sql_user" "api_user" {
   name     = local.api_database_username
   instance = google_sql_database_instance.dev.name

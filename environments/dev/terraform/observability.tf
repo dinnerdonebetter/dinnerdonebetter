@@ -17,3 +17,25 @@ resource "google_monitoring_uptime_check_config" "api_uptime" {
     }
   }
 }
+
+resource "google_monitoring_alert_policy" "alert_policy" {
+  display_name = "Dev API Alert Policy"
+  combiner     = "OR"
+  conditions {
+    display_name = "request latency"
+    condition_monitoring_query_language {
+      duration = ""
+      query    = <<END
+        fetch uptime_url
+        | metric 'monitoring.googleapis.com/uptime_check/request_latency'
+        | filter (metric.check_id == 'webapp-uptime-check')
+        | group_by 5m, [value_request_latency_max: max(value.request_latency)]
+        | every 5m
+        | group_by [], [value_request_latency_max_max: max(value_request_latency_max)]
+        | group_by [],
+            [value_request_latency_max_max_mean: mean(value_request_latency_max_max)]
+        | condition val() > 999 'ms'
+      END
+    }
+  }
+}
