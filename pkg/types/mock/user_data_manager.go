@@ -52,6 +52,12 @@ func (m *UserDataManager) GetUserByUsername(ctx context.Context, username string
 	return args.Get(0).(*types.User), args.Error(1)
 }
 
+// GetAdminUserByUsername is a mock function.
+func (m *UserDataManager) GetAdminUserByUsername(ctx context.Context, username string) (*types.User, error) {
+	args := m.Called(ctx, username)
+	return args.Get(0).(*types.User), args.Error(1)
+}
+
 // SearchForUsersByUsername is a mock function.
 func (m *UserDataManager) SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*types.User, error) {
 	args := m.Called(ctx, usernameQuery)

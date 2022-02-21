@@ -66,7 +66,8 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 	authenticatedRouter.Get("/auth/status", s.authService.StatusHandler)
 
 	router.Route("/users", func(userRouter routing.Router) {
-		userRouter.Post("/login", s.authService.BeginSessionHandler)
+		userRouter.Post("/login", s.authService.BuildLoginHandler(false))
+		userRouter.Post("/login/admin", s.authService.BuildLoginHandler(true))
 		userRouter.WithMiddleware(s.authService.UserAttributionMiddleware, s.authService.CookieRequirementMiddleware).Post("/logout", s.authService.EndSessionHandler)
 		userRouter.Post(root, s.usersService.CreateHandler)
 		userRouter.Post("/totp_secret/verify", s.usersService.TOTPSecretVerificationHandler)

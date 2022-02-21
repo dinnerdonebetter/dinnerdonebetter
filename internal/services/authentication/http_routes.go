@@ -63,124 +63,117 @@ func (s *service) determineCookieDomain(ctx context.Context, req *http.Request) 
 	return requestedCookieDomain
 }
 
-func (s *service) authenticateUserAndBuildCookie(ctx context.Context, loginData *types.UserLoginInput, requestedCookieDomain string) (*types.User, *http.Cookie, error) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
+// BuildLoginHandler is our login route.
+func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *http.Request) {
+	return func(res http.ResponseWriter, req *http.Request) {
+		ctx, span := s.tracer.StartSpan(req.Context())
+		defer span.End()
 
-	logger := s.logger.WithValue(keys.UsernameKey, loginData.Username)
+		logger := s.logger.WithRequest(req)
+		tracing.AttachRequestToSpan(span, req)
 
-	user, err := s.userDataManager.GetUserByUsername(ctx, loginData.Username)
-	if err != nil || user == nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil, ErrUserNotFound
-		}
-		return nil, nil, observability.PrepareError(err, logger, span, "fetching user")
-	}
-
-	logger = logger.WithValue(keys.UserIDKey, user.ID)
-	tracing.AttachUserToSpan(span, user)
-
-	if user.IsBanned() {
-		return user, nil, ErrUserBanned
-	}
-
-	loginValid, err := s.validateLogin(ctx, user, loginData)
-	logger.WithValue("login_valid", loginValid)
-
-	if err != nil {
-		if errors.Is(err, authentication.ErrInvalidTOTPToken) {
-			return user, nil, ErrInvalidCredentials
-		} else if errors.Is(err, authentication.ErrPasswordDoesNotMatch) {
-			return user, nil, ErrInvalidCredentials
+		loginData := new(types.UserLoginInput)
+		if err := s.encoderDecoder.DecodeRequest(ctx, req, loginData); err != nil {
+			observability.AcknowledgeError(err, logger, span, "decoding request body")
+			s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+			return
 		}
 
-		logger.Error(err, "error encountered validating login")
+		if err := loginData.ValidateWithContext(ctx, s.config.MinimumUsernameLength, s.config.MinimumPasswordLength); err != nil {
+			observability.AcknowledgeError(err, logger, span, "validating input")
+			s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+			return
+		}
 
-		return user, nil, observability.PrepareError(err, logger, span, "validating login")
-	} else if !loginValid {
-		logger.Debug("login was invalid")
-		return user, nil, ErrInvalidCredentials
-	}
+		logger = logger.WithValue(keys.UsernameKey, loginData.Username)
 
-	defaultHouseholdID, err := s.householdMembershipManager.GetDefaultHouseholdIDForUser(ctx, user.ID)
-	if err != nil {
-		return user, nil, observability.PrepareError(err, logger, span, "fetching user memberships")
-	}
+		requestedCookieDomain := s.determineCookieDomain(ctx, req)
+		if requestedCookieDomain != "" {
+			logger = logger.WithValue("cookie_domain", requestedCookieDomain)
+		}
 
-	cookie, err := s.issueSessionManagedCookie(ctx, defaultHouseholdID, user.ID, requestedCookieDomain)
-	if err != nil {
-		return user, nil, observability.PrepareError(err, logger, span, "issuing cookie")
-	}
+		var userFunc = s.userDataManager.GetUserByUsername
+		if adminOnly {
+			userFunc = s.userDataManager.GetAdminUserByUsername
+		}
 
-	return user, cookie, nil
-}
+		user, err := userFunc(ctx, loginData.Username)
+		if err != nil || user == nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+				return
+			}
 
-// BeginSessionHandler is our login route.
-func (s *service) BeginSessionHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
+			observability.AcknowledgeError(err, logger, span, "fetching user")
+			s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
+			return
+		}
 
-	logger := s.logger.WithRequest(req)
-	tracing.AttachRequestToSpan(span, req)
+		logger = logger.WithValue(keys.UserIDKey, user.ID)
+		tracing.AttachUserToSpan(span, user)
 
-	loginData := new(types.UserLoginInput)
-	if err := s.encoderDecoder.DecodeRequest(ctx, req, loginData); err != nil {
-		observability.AcknowledgeError(err, logger, span, "decoding request body")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
-		return
-	}
-
-	if err := loginData.ValidateWithContext(ctx, s.config.MinimumUsernameLength, s.config.MinimumPasswordLength); err != nil {
-		observability.AcknowledgeError(err, logger, span, "validating input")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	logger = logger.WithValue(keys.UsernameKey, loginData.Username)
-
-	requestedCookieDomain := s.determineCookieDomain(ctx, req)
-	if requestedCookieDomain != "" {
-		logger = logger.WithValue("cookie_domain", requestedCookieDomain)
-	}
-
-	user, cookie, err := s.authenticateUserAndBuildCookie(ctx, loginData, requestedCookieDomain)
-	if err != nil {
-		switch {
-		case errors.Is(err, ErrUserNotFound):
-			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
-		case errors.Is(err, ErrUserBanned):
+		if user.IsBanned() {
 			s.encoderDecoder.EncodeErrorResponse(ctx, res, user.ReputationExplanation, http.StatusForbidden)
-		case errors.Is(err, ErrInvalidCredentials):
+			return
+		}
+
+		loginValid, err := s.validateLogin(ctx, user, loginData)
+		logger.WithValue("login_valid", loginValid)
+
+		if err != nil {
+			if errors.Is(err, authentication.ErrInvalidTOTPToken) || errors.Is(err, authentication.ErrPasswordDoesNotMatch) {
+				s.encoderDecoder.EncodeErrorResponse(ctx, res, "login was invalid", http.StatusUnauthorized)
+				return
+			}
+
+			logger.Error(err, "error encountered validating login")
+
+			observability.AcknowledgeError(err, logger, span, "validating login")
+			s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
+			return
+		} else if !loginValid {
+			logger.Debug("login was invalid")
 			s.encoderDecoder.EncodeErrorResponse(ctx, res, "login was invalid", http.StatusUnauthorized)
-		default:
+			return
+		}
+
+		defaultHouseholdID, err := s.householdMembershipManager.GetDefaultHouseholdIDForUser(ctx, user.ID)
+		if err != nil {
+			observability.AcknowledgeError(err, logger, span, "fetching user memberships")
+			s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
+			return
+		}
+
+		cookie, err := s.issueSessionManagedCookie(ctx, defaultHouseholdID, user.ID, requestedCookieDomain)
+		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "issuing cookie")
 			s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
-		}
-		return
-	}
-
-	if s.dataChangesPublisher != nil {
-		dcm := &types.DataChangeMessage{
-			DataType:             types.UserDataType,
-			EventType:            types.UserLoggedInCustomerEventType,
-			AttributableToUserID: user.ID,
+			return
 		}
 
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		if s.dataChangesPublisher != nil {
+			dcm := &types.DataChangeMessage{
+				DataType:             types.UserDataType,
+				EventType:            types.UserLoggedInCustomerEventType,
+				AttributableToUserID: user.ID,
+			}
+
+			if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+				observability.AcknowledgeError(err, logger, span, "publishing data change message")
+			}
 		}
+
+		http.SetCookie(res, cookie)
+
+		statusResponse := &types.UserStatusResponse{
+			UserIsAuthenticated:       true,
+			UserReputation:            user.ServiceHouseholdStatus,
+			UserReputationExplanation: user.ReputationExplanation,
+		}
+
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, statusResponse, http.StatusAccepted)
+		logger.Debug("user logged in")
 	}
-
-	http.SetCookie(res, cookie)
-
-	statusResponse := &types.UserStatusResponse{
-		UserIsAuthenticated:       true,
-		UserReputation:            user.ServiceHouseholdStatus,
-		UserReputationExplanation: user.ReputationExplanation,
-	}
-
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, statusResponse, http.StatusAccepted)
-	logger.Debug("user logged in")
 }
 
 // ChangeActiveHouseholdHandler is our login route.
