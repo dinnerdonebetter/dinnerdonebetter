@@ -307,6 +307,58 @@ func (q *SQLQuerier) GetUserByUsername(ctx context.Context, username string) (*t
 	return u, nil
 }
 
+const getAdminUserByUsernameQuery = `
+	SELECT
+		users.id,
+		users.username,
+		users.email_address,
+		users.avatar_src,
+		users.hashed_password,
+		users.requires_password_change,
+		users.password_last_changed_on,
+		users.two_factor_secret,
+		users.two_factor_secret_verified_on,
+		users.service_roles,
+		users.reputation,
+		users.reputation_explanation,
+		users.created_on,
+		users.last_updated_on,
+		users.archived_on
+	FROM users
+	WHERE users.archived_on IS NULL
+	WHERE users.service_roles ILIKE '%service_admin%'IS NULL
+	AND users.username = $1
+	AND users.two_factor_secret_verified_on IS NOT NULL
+`
+
+// GetAdminUserByUsername fetches a user by their username.
+func (q *SQLQuerier) GetAdminUserByUsername(ctx context.Context, username string) (*types.User, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if username == "" {
+		return nil, ErrEmptyInputProvided
+	}
+
+	tracing.AttachUsernameToSpan(span, username)
+	logger := q.logger.WithValue(keys.UsernameKey, username)
+
+	args := []interface{}{username}
+
+	row := q.getOneRow(ctx, q.db, "admin user fetch", getAdminUserByUsernameQuery, args)
+
+	u, _, _, err := q.scanUser(ctx, row, false)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, err
+		}
+
+		return nil, observability.PrepareError(err, logger, span, "scanning user")
+	}
+
+	return u, nil
+}
+
 const getUserByEmailQuery = `
 	SELECT
 		users.id

@@ -181,7 +181,7 @@ func TestAuthenticationService_issueSessionManagedCookie(T *testing.T) {
 	})
 }
 
-func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
+func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -232,7 +232,7 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.BeginSessionHandler(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
@@ -291,7 +291,7 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.BeginSessionHandler(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
@@ -312,7 +312,7 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.BeginSessionHandler(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -331,7 +331,7 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.BeginSessionHandler(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -358,7 +358,7 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		).Return((*types.User)(nil), sql.ErrNoRows)
 		helper.service.userDataManager = userDataManager
 
-		helper.service.BeginSessionHandler(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -387,7 +387,7 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		).Return((*types.User)(nil), errors.New("blah"))
 		helper.service.userDataManager = userDataManager
 
-		helper.service.BeginSessionHandler(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -419,7 +419,7 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
 
-		helper.service.BeginSessionHandler(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusForbidden, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -459,7 +459,7 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		).Return(false, nil)
 		helper.service.authenticator = authenticator
 
-		helper.service.BeginSessionHandler(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -499,7 +499,7 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		).Return(true, errors.New("blah"))
 		helper.service.authenticator = authenticator
 
-		helper.service.BeginSessionHandler(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -539,7 +539,7 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		).Return(false, authentication.ErrInvalidTOTPToken)
 		helper.service.authenticator = authenticator
 
-		helper.service.BeginSessionHandler(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -579,7 +579,7 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		).Return(false, authentication.ErrPasswordDoesNotMatch)
 		helper.service.authenticator = authenticator
 
-		helper.service.BeginSessionHandler(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -627,7 +627,7 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		).Return("", errors.New("blah"))
 		helper.service.householdMembershipManager = membershipDB
 
-		helper.service.BeginSessionHandler(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -679,7 +679,7 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		sm.On("Load", testutils.ContextMatcher, "").Return(helper.ctx, errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		helper.service.BeginSessionHandler(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -732,7 +732,7 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		sm.On("RenewToken", testutils.ContextMatcher).Return(errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		helper.service.BeginSessionHandler(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -788,7 +788,7 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		sm.On("Commit", testutils.ContextMatcher).Return("", time.Now(), errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		helper.service.BeginSessionHandler(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -845,7 +845,7 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		).Return(helper.exampleHousehold.ID, nil)
 		helper.service.householdMembershipManager = membershipDB
 
-		helper.service.BeginSessionHandler(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -901,7 +901,7 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		).Return(helper.exampleHousehold.ID, nil)
 		helper.service.householdMembershipManager = membershipDB
 
-		helper.service.BeginSessionHandler(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
@@ -957,7 +957,7 @@ func TestAuthenticationService_BeginSessionHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.BeginSessionHandler(helper.res, helper.req)
+		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
