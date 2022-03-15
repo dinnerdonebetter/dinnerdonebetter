@@ -81,6 +81,8 @@ func buildMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
 				&step.TemperatureInCelsius,
 				&step.Notes,
 				&step.Why,
+				&step.Yields,
+				&step.Optional,
 				&step.CreatedOn,
 				&step.LastUpdatedOn,
 				&step.ArchivedOn,
@@ -132,6 +134,8 @@ func buildInvalidMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
 	for _, step := range recipe.Steps {
 		for range step.Ingredients {
 			exampleRows.AddRow(
+				driver.Value(nil),
+				driver.Value(nil),
 				driver.Value(nil),
 				driver.Value(nil),
 				driver.Value(nil),
@@ -1017,6 +1021,8 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 				step.TemperatureInCelsius,
 				step.Notes,
 				step.Why,
+				step.Yields,
+				step.Optional,
 				step.BelongsToRecipe,
 			}
 
@@ -1195,6 +1201,8 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleInput.Steps[0].TemperatureInCelsius,
 			exampleInput.Steps[0].Notes,
 			exampleInput.Steps[0].Why,
+			exampleInput.Steps[0].Yields,
+			exampleInput.Steps[0].Optional,
 			exampleInput.Steps[0].BelongsToRecipe,
 		}
 

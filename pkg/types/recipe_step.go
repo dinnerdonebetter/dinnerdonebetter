@@ -67,6 +67,8 @@ type (
 		ID                        string                                      `json:"-"`
 		Ingredients               []*RecipeStepIngredientCreationRequestInput `json:"ingredients"`
 		Index                     uint                                        `json:"index"`
+		Yields                    string                                      `json:"yields"`
+		Optional                  bool                                        `json:"optional"`
 		PrerequisiteStep          uint64                                      `json:"prerequisiteStep"`
 		MinEstimatedTimeInSeconds uint32                                      `json:"minEstimatedTimeInSeconds"`
 		MaxEstimatedTimeInSeconds uint32                                      `json:"maxEstimatedTimeInSeconds"`
@@ -83,6 +85,8 @@ type (
 		ID                        string                                       `json:"id"`
 		Ingredients               []*RecipeStepIngredientDatabaseCreationInput `json:"ingredients"`
 		Index                     uint                                         `json:"index"`
+		Yields                    string                                       `json:"yields"`
+		Optional                  bool                                         `json:"optional"`
 		PrerequisiteStep          uint64                                       `json:"prerequisiteStep"`
 		MinEstimatedTimeInSeconds uint32                                       `json:"minEstimatedTimeInSeconds"`
 		MaxEstimatedTimeInSeconds uint32                                       `json:"maxEstimatedTimeInSeconds"`
@@ -97,6 +101,8 @@ type (
 		BelongsToRecipe           string           `json:"belongsToRecipe"`
 		Preparation               ValidPreparation `json:"preparation"`
 		Index                     uint             `json:"index"`
+		Yields                    string           `json:"yields"`
+		Optional                  bool             `json:"optional"`
 		PrerequisiteStep          uint64           `json:"prerequisiteStep"`
 		MinEstimatedTimeInSeconds uint32           `json:"minEstimatedTimeInSeconds"`
 		MaxEstimatedTimeInSeconds uint32           `json:"maxEstimatedTimeInSeconds"`

@@ -42,6 +42,8 @@ func buildMockRowsFromRecipeSteps(includeCounts bool, filteredCount uint64, reci
 			x.TemperatureInCelsius,
 			x.Notes,
 			x.Why,
+			x.Yields,
+			x.Optional,
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,
@@ -580,6 +582,8 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 			exampleInput.TemperatureInCelsius,
 			exampleInput.Notes,
 			exampleInput.Why,
+			exampleInput.Yields,
+			exampleInput.Optional,
 			exampleInput.BelongsToRecipe,
 		}
 
@@ -629,6 +633,8 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 			exampleInput.TemperatureInCelsius,
 			exampleInput.Notes,
 			exampleInput.Why,
+			exampleInput.Yields,
+			exampleInput.Optional,
 			exampleInput.BelongsToRecipe,
 		}
 
@@ -680,6 +686,8 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.TemperatureInCelsius,
 			exampleInput.Notes,
 			exampleInput.Why,
+			exampleInput.Yields,
+			exampleInput.Optional,
 			exampleInput.BelongsToRecipe,
 		}
 
@@ -743,6 +751,8 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.TemperatureInCelsius,
 			exampleInput.Notes,
 			exampleInput.Why,
+			exampleInput.Yields,
+			exampleInput.Optional,
 			exampleInput.BelongsToRecipe,
 		}
 
@@ -797,6 +807,8 @@ func TestQuerier_UpdateRecipeStep(T *testing.T) {
 			exampleRecipeStep.TemperatureInCelsius,
 			exampleRecipeStep.Notes,
 			exampleRecipeStep.Why,
+			exampleRecipeStep.Yields,
+			exampleRecipeStep.Optional,
 			exampleRecipeStep.BelongsToRecipe,
 			exampleRecipeStep.ID,
 		}
@@ -836,6 +848,8 @@ func TestQuerier_UpdateRecipeStep(T *testing.T) {
 			exampleRecipeStep.TemperatureInCelsius,
 			exampleRecipeStep.Notes,
 			exampleRecipeStep.Why,
+			exampleRecipeStep.Yields,
+			exampleRecipeStep.Optional,
 			exampleRecipeStep.BelongsToRecipe,
 			exampleRecipeStep.ID,
 		}
