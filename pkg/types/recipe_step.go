@@ -37,6 +37,8 @@ type (
 		Why                       string                  `json:"why"`
 		ID                        string                  `json:"id"`
 		Notes                     string                  `json:"notes"`
+		Yields                    string                  `json:"yields"`
+		Optional                  bool                    `json:"optional"`
 		BelongsToRecipe           string                  `json:"belongsToRecipe"`
 		Preparation               ValidPreparation        `json:"preparation"`
 		Ingredients               []*RecipeStepIngredient `json:"ingredients"`

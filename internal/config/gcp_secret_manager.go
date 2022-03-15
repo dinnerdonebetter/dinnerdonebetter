@@ -79,13 +79,10 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*Inst
 	cfg.Services.ValidIngredients.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ValidPreparations.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ValidIngredientPreparations.DataChangesTopicName = dataChangesTopicName
-
 	cfg.Services.Recipes.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.RecipeSteps.DataChangesTopicName = dataChangesTopicName
-	cfg.Services.RecipeStepProducts.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.RecipeStepInstruments.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.RecipeStepIngredients.DataChangesTopicName = dataChangesTopicName
-
 	cfg.Services.Meals.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.MealPlans.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.MealPlanOptions.DataChangesTopicName = dataChangesTopicName
