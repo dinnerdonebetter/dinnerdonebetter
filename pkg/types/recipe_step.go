@@ -35,7 +35,6 @@ type (
 		LastUpdatedOn             *uint64                 `json:"lastUpdatedOn"`
 		TemperatureInCelsius      *uint16                 `json:"temperatureInCelsius"`
 		Notes                     string                  `json:"notes"`
-		Why                       string                  `json:"why"`
 		ID                        string                  `json:"id"`
 		Yields                    string                  `json:"yields"`
 		BelongsToRecipe           string                  `json:"belongsToRecipe"`
@@ -62,7 +61,6 @@ type (
 		TemperatureInCelsius      *uint16                                     `json:"temperatureInCelsius"`
 		Yields                    string                                      `json:"yields"`
 		Notes                     string                                      `json:"notes"`
-		Why                       string                                      `json:"why"`
 		PreparationID             string                                      `json:"preparationID"`
 		BelongsToRecipe           string                                      `json:"-"`
 		ID                        string                                      `json:"-"`
@@ -80,7 +78,6 @@ type (
 		TemperatureInCelsius      *uint16                                      `json:"temperatureInCelsius"`
 		Yields                    string                                       `json:"yields"`
 		Notes                     string                                       `json:"notes"`
-		Why                       string                                       `json:"why"`
 		PreparationID             string                                       `json:"preparationID"`
 		BelongsToRecipe           string                                       `json:"belongsToRecipe"`
 		ID                        string                                       `json:"id"`
