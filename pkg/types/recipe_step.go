@@ -32,19 +32,20 @@ type (
 	RecipeStep struct {
 		_                         struct{}
 		ArchivedOn                *uint64                 `json:"archivedOn"`
-		TemperatureInCelsius      *uint16                 `json:"temperatureInCelsius"`
 		LastUpdatedOn             *uint64                 `json:"lastUpdatedOn"`
-		Why                       string                  `json:"why"`
-		ID                        string                  `json:"id"`
+		TemperatureInCelsius      *uint16                 `json:"temperatureInCelsius"`
 		Notes                     string                  `json:"notes"`
+		ID                        string                  `json:"id"`
+		Yields                    string                  `json:"yields"`
 		BelongsToRecipe           string                  `json:"belongsToRecipe"`
 		Preparation               ValidPreparation        `json:"preparation"`
 		Ingredients               []*RecipeStepIngredient `json:"ingredients"`
+		PrerequisiteStep          uint64                  `json:"prerequisiteStep"`
 		Index                     uint                    `json:"index"`
 		CreatedOn                 uint64                  `json:"createdOn"`
-		PrerequisiteStep          uint64                  `json:"prerequisiteStep"`
-		MinEstimatedTimeInSeconds uint32                  `json:"minEstimatedTimeInSeconds"`
 		MaxEstimatedTimeInSeconds uint32                  `json:"maxEstimatedTimeInSeconds"`
+		MinEstimatedTimeInSeconds uint32                  `json:"minEstimatedTimeInSeconds"`
+		Optional                  bool                    `json:"optional"`
 	}
 
 	// RecipeStepList represents a list of recipe steps.
@@ -58,8 +59,8 @@ type (
 	RecipeStepCreationRequestInput struct {
 		_                         struct{}
 		TemperatureInCelsius      *uint16                                     `json:"temperatureInCelsius"`
+		Yields                    string                                      `json:"yields"`
 		Notes                     string                                      `json:"notes"`
-		Why                       string                                      `json:"why"`
 		PreparationID             string                                      `json:"preparationID"`
 		BelongsToRecipe           string                                      `json:"-"`
 		ID                        string                                      `json:"-"`
@@ -68,14 +69,15 @@ type (
 		PrerequisiteStep          uint64                                      `json:"prerequisiteStep"`
 		MinEstimatedTimeInSeconds uint32                                      `json:"minEstimatedTimeInSeconds"`
 		MaxEstimatedTimeInSeconds uint32                                      `json:"maxEstimatedTimeInSeconds"`
+		Optional                  bool                                        `json:"optional"`
 	}
 
 	// RecipeStepDatabaseCreationInput represents what a user could set as input for creating recipe steps.
 	RecipeStepDatabaseCreationInput struct {
 		_                         struct{}
 		TemperatureInCelsius      *uint16                                      `json:"temperatureInCelsius"`
+		Yields                    string                                       `json:"yields"`
 		Notes                     string                                       `json:"notes"`
-		Why                       string                                       `json:"why"`
 		PreparationID             string                                       `json:"preparationID"`
 		BelongsToRecipe           string                                       `json:"belongsToRecipe"`
 		ID                        string                                       `json:"id"`
@@ -84,6 +86,7 @@ type (
 		PrerequisiteStep          uint64                                       `json:"prerequisiteStep"`
 		MinEstimatedTimeInSeconds uint32                                       `json:"minEstimatedTimeInSeconds"`
 		MaxEstimatedTimeInSeconds uint32                                       `json:"maxEstimatedTimeInSeconds"`
+		Optional                  bool                                         `json:"optional"`
 	}
 
 	// RecipeStepUpdateRequestInput represents what a user could set as input for updating recipe steps.
@@ -93,11 +96,13 @@ type (
 		Notes                     string           `json:"notes"`
 		Why                       string           `json:"why"`
 		BelongsToRecipe           string           `json:"belongsToRecipe"`
+		Yields                    string           `json:"yields"`
 		Preparation               ValidPreparation `json:"preparation"`
 		Index                     uint             `json:"index"`
 		PrerequisiteStep          uint64           `json:"prerequisiteStep"`
 		MinEstimatedTimeInSeconds uint32           `json:"minEstimatedTimeInSeconds"`
 		MaxEstimatedTimeInSeconds uint32           `json:"maxEstimatedTimeInSeconds"`
+		Optional                  bool             `json:"optional"`
 	}
 
 	// RecipeStepDataManager describes a structure capable of storing recipe steps permanently.

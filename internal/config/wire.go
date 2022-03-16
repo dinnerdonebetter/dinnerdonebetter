@@ -40,7 +40,6 @@ var (
 			"RecipeSteps",
 			"RecipeStepInstruments",
 			"RecipeStepIngredients",
-			"RecipeStepProducts",
 			"MealPlans",
 			"MealPlanOptions",
 			"MealPlanOptionVotes",

@@ -1,4 +1,4 @@
-    CREATE TABLE IF NOT EXISTS recipe_steps (
+CREATE TABLE IF NOT EXISTS recipe_steps (
 	"id" CHAR(27) NOT NULL PRIMARY KEY,
 	"index" INTEGER NOT NULL,
 	"preparation_id" CHAR(27) NOT NULL REFERENCES valid_preparations("id") ON DELETE CASCADE,

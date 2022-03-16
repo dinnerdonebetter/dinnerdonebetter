@@ -128,9 +128,6 @@
 		"mealPlanOptions": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipeStepProducts": {
-			"dataChangesTopicName": "data_changes"
-		},
 		"households": {
 			"dataChangesTopicName": "data_changes"
 		},
@@ -160,7 +157,7 @@
 			},
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "YzWDaGULKOp2M2p+Qw0kAx4dk2lScsQFiIXpriiNcBg=",
+				"localModeKey": "ZvkCZQEkXtl3HmQL6iVtCQ5ihwnweekbY2WNb9s8A10=",
 				"lifetime": 60000000000
 			},
 			"debug": true,
