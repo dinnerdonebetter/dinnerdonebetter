@@ -32,10 +32,6 @@ resource "google_monitoring_alert_policy" "alert_policy" {
   display_name = "Dev API Alert Policy"
   combiner     = "OR"
 
-  notification_channels = [
-    google_monitoring_notification_channel.api_server_monitor_notification_channel.name,
-  ]
-
   conditions {
     display_name = "request latency"
     condition_monitoring_query_language {
