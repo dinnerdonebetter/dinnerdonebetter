@@ -69,13 +69,15 @@ func (a *Argon2Authenticator) ValidateLogin(ctx context.Context, hash, password,
 		return false, ErrPasswordDoesNotMatch
 	}
 
-	if !totp.Validate(totpCode, totpSecret) {
-		logger.WithValues(map[string]interface{}{
-			"password_matches": passwordMatches,
-			"provided_code":    totpCode,
-		}).Debug("invalid code provided")
+	if totpSecret != "" && totpCode != "" {
+		if !totp.Validate(totpCode, totpSecret) {
+			logger.WithValues(map[string]interface{}{
+				"password_matches": passwordMatches,
+				"provided_code":    totpCode,
+			}).Debug("invalid code provided")
 
-		return passwordMatches, ErrInvalidTOTPToken
+			return passwordMatches, ErrInvalidTOTPToken
+		}
 	}
 
 	return passwordMatches, nil

@@ -57,6 +57,21 @@ func TestArgon2_ValidateLogin(T *testing.T) {
 		assert.True(t, valid)
 	})
 
+	T.Run("without two factor secret", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		valid, err := x.ValidateLogin(
+			ctx,
+			argon2HashedExamplePassword,
+			examplePassword,
+			"",
+			"",
+		)
+		assert.NoError(t, err, "unexpected error encountered validating login: %v", err)
+		assert.True(t, valid)
+	})
+
 	T.Run("with error determining if password matches", func(t *testing.T) {
 		t.Parallel()
 

@@ -118,7 +118,7 @@ func (q *SQLQuerier) scanUsers(ctx context.Context, rows database.ResultIterator
 	return users, filteredCount, totalCount, nil
 }
 
-const getUserQuery = `
+const getUserByIDQuery = `
 	SELECT
 		users.id,
 		users.username,
@@ -138,30 +138,10 @@ const getUserQuery = `
 	FROM users
 	WHERE users.archived_on IS NULL
 	AND users.id = $1
-	AND users.two_factor_secret_verified_on IS NOT NULL
 `
 
-const getUserWithUnverifiedTwoFactorQuery = `
-	SELECT
-		users.id,
-		users.username,
-		users.email_address,
-		users.avatar_src,
-		users.hashed_password,
-		users.requires_password_change,
-		users.password_last_changed_on,
-		users.two_factor_secret,
-		users.two_factor_secret_verified_on,
-		users.service_roles,
-		users.reputation,
-		users.reputation_explanation,
-		users.created_on,
-		users.last_updated_on,
-		users.archived_on
-	FROM users
-	WHERE users.archived_on IS NULL
-	AND users.id = $1
-	AND users.two_factor_secret_verified_on IS NULL
+const getUserWithVerified2FAQuery = getUserByIDQuery + `
+	AND users.two_factor_secret_verified_on IS NOT NULL
 `
 
 // getUser fetches a user.
@@ -180,9 +160,9 @@ func (q *SQLQuerier) getUser(ctx context.Context, userID string, withVerifiedTOT
 	args := []interface{}{userID}
 
 	if withVerifiedTOTPSecret {
-		query = getUserQuery
+		query = getUserWithVerified2FAQuery
 	} else {
-		query = getUserWithUnverifiedTwoFactorQuery
+		query = getUserByIDQuery
 	}
 
 	row := q.getOneRow(ctx, q.db, "user", query, args)
@@ -239,7 +219,7 @@ func (q *SQLQuerier) GetUser(ctx context.Context, userID string) (*types.User, e
 
 	tracing.AttachUserIDToSpan(span, userID)
 
-	return q.getUser(ctx, userID, true)
+	return q.getUser(ctx, userID, false)
 }
 
 // GetUserWithUnverifiedTwoFactorSecret fetches a user with an unverified 2FA secret.
@@ -276,7 +256,6 @@ const getUserByUsernameQuery = `
 	FROM users
 	WHERE users.archived_on IS NULL
 	AND users.username = $1
-	AND users.two_factor_secret_verified_on IS NOT NULL
 `
 
 // GetUserByUsername fetches a user by their username.
