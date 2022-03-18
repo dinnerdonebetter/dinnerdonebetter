@@ -121,7 +121,7 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 
 		userRetrievalArgs := []interface{}{exampleUser.ID}
 
-		db.ExpectQuery(formatQueryForSQLMock(getUserQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getUserByIDQuery)).
 			WithArgs(interfaceToDriverValue(userRetrievalArgs)...).
 			WillReturnRows(buildMockRowsFromUsers(false, 0, exampleUser))
 
@@ -180,7 +180,7 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 
 		userRetrievalArgs := []interface{}{exampleUser.ID}
 
-		db.ExpectQuery(formatQueryForSQLMock(getUserQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getUserWithVerified2FAQuery)).
 			WithArgs(interfaceToDriverValue(userRetrievalArgs)...).
 			WillReturnError(errors.New("blah"))
 
@@ -214,7 +214,7 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 
 		userRetrievalArgs := []interface{}{exampleUser.ID}
 
-		db.ExpectQuery(formatQueryForSQLMock(getUserQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getUserWithVerified2FAQuery)).
 			WithArgs(interfaceToDriverValue(userRetrievalArgs)...).
 			WillReturnRows(buildMockRowsFromUsers(false, 0, exampleUser))
 
@@ -254,7 +254,7 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 
 		userRetrievalArgs := []interface{}{exampleUser.ID}
 
-		db.ExpectQuery(formatQueryForSQLMock(getUserQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getUserWithVerified2FAQuery)).
 			WithArgs(interfaceToDriverValue(userRetrievalArgs)...).
 			WillReturnRows(buildMockRowsFromUsers(false, 0, exampleUser))
 

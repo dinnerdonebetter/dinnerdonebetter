@@ -119,7 +119,7 @@ func (s *TestSuite) TestLogin_ShouldNotBeAbleToLoginAsANonexistentUser() {
 }
 
 func (s *TestSuite) TestLogin_ShouldNotBeAbleToLoginWithoutValidating2FASecret() {
-	s.Run("should not be able to login without validating 2FA secret", func() {
+	s.Run("should be able to login without validating 2FA secret", func() {
 		t := s.T()
 
 		ctx, span := tracing.StartSpan(context.Background())
@@ -143,8 +143,8 @@ func (s *TestSuite) TestLogin_ShouldNotBeAbleToLoginWithoutValidating2FASecret()
 		}
 
 		cookie, err := testClient.BeginSession(ctx, r)
-		assert.Nil(t, cookie)
-		assert.Error(t, err)
+		assert.NotNil(t, cookie)
+		assert.NoError(t, err)
 	})
 }
 

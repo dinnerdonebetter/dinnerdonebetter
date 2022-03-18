@@ -183,7 +183,7 @@ func TestQuerier_getUser(T *testing.T) {
 
 		args := []interface{}{exampleUser.ID}
 
-		db.ExpectQuery(formatQueryForSQLMock(getUserQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getUserWithVerified2FAQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromUsers(false, 0, exampleUser))
 
@@ -215,7 +215,7 @@ func TestQuerier_getUser(T *testing.T) {
 
 		args := []interface{}{exampleUser.ID}
 
-		db.ExpectQuery(formatQueryForSQLMock(getUserWithUnverifiedTwoFactorQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getUserByIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromUsers(false, 0, exampleUser))
 
@@ -236,7 +236,7 @@ func TestQuerier_getUser(T *testing.T) {
 
 		args := []interface{}{exampleUser.ID}
 
-		db.ExpectQuery(formatQueryForSQLMock(getUserQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getUserWithVerified2FAQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
@@ -261,7 +261,7 @@ func TestQuerier_GetUser(T *testing.T) {
 
 		args := []interface{}{exampleUser.ID}
 
-		db.ExpectQuery(formatQueryForSQLMock(getUserQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getUserByIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromUsers(false, 0, exampleUser))
 
@@ -293,7 +293,7 @@ func TestQuerier_GetUser(T *testing.T) {
 
 		args := []interface{}{exampleUser.ID}
 
-		db.ExpectQuery(formatQueryForSQLMock(getUserQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getUserByIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
@@ -318,7 +318,7 @@ func TestQuerier_GetUserWithUnverifiedTwoFactorSecret(T *testing.T) {
 
 		args := []interface{}{exampleUser.ID}
 
-		db.ExpectQuery(formatQueryForSQLMock(getUserWithUnverifiedTwoFactorQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getUserByIDQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromUsers(false, 0, exampleUser))
 

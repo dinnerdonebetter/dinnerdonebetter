@@ -2,7 +2,7 @@ PWD                           := $(shell pwd)
 GOPATH                        := $(GOPATH)
 ARTIFACTS_DIR                 := artifacts
 COVERAGE_OUT                  := $(ARTIFACTS_DIR)/coverage.out
-GO                            := docker run --interactive --tty --volume $(PWD):$(PWD) --workdir $(PWD) --user $(shell id -u):$(shell id -g) golang:1.17-stretch go
+GO                            := docker run --interactive --tty --volume $(PWD):$(PWD) --workdir $(PWD) --user $(shell id -u):$(shell id -g) golang:1.18-stretch go
 GO_FORMAT                     := gofmt -s -w
 THIS                          := github.com/prixfixeco/api_server
 TOTAL_PACKAGE_LIST            := `go list $(THIS)/...`
@@ -128,7 +128,8 @@ check_formatting: vendor
 
 .PHONY: pre_lint
 pre_lint:
-	@until fieldalignment -fix ./...; do true; done > /dev/null
+	# @until fieldalignment -fix ./...; do true; done > /dev/null
+	@echo ""
 
 .PHONY: docker_lint
 docker_lint:
@@ -137,7 +138,7 @@ docker_lint:
 
 .PHONY: lint
 lint: pre_lint docker_lint check_terraform
-	@docker pull golangci/golangci-lint:v1.42
+	@docker pull golangci/golangci-lint:v1.44.2
 	docker run \
 		--rm \
 		--volume $(PWD):$(PWD) \
@@ -198,7 +199,6 @@ wipe_local_postgres: ensure_postgres_is_up
 wipe_local_elasticsearch:
 	@echo "wiping elasticsearch"
 	@docker run --interactive --tty --network=host curlimages/curl:7.79.1 curl -X DELETE "http://localhost:9200/*"
-
 
 .PHONY: lintegration_tests # this is just a handy lil' helper I use sometimes
 lintegration_tests: lint clear integration-tests
