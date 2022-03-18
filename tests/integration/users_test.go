@@ -54,6 +54,29 @@ func (s *TestSuite) TestUsers_Creating() {
 			assert.NoError(t, testClients.admin.ArchiveUser(ctx, createdUser.CreatedUserID))
 		}
 	})
+
+	s.runForEachClientExcept("should return 400 for duplicate user registration", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			// Create user.
+			exampleUserInput := fakes.BuildFakeUserCreationInput()
+			createdUser, err := testClients.main.CreateUser(ctx, exampleUserInput)
+			requireNotNilAndNoProblems(t, createdUser, err)
+
+			// attempt to create user again.
+			_, err = testClients.main.CreateUser(ctx, exampleUserInput)
+			require.Error(t, err)
+
+			// Assert user equality.
+			checkUserCreationEquality(t, exampleUserInput, createdUser)
+
+			assert.NoError(t, testClients.admin.ArchiveUser(ctx, createdUser.CreatedUserID))
+		}
+	})
 }
 
 func (s *TestSuite) TestUsers_Reading_Returns404ForNonexistentUser() {

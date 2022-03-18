@@ -224,12 +224,21 @@ func (i *UserRegistrationInput) ValidateWithContext(ctx context.Context, minUser
 	)
 }
 
+var _ validation.ValidatableWithContext = (*TOTPSecretVerificationInput)(nil)
+
+// ValidateWithContext ensures our provided TOTPSecretVerificationInput meets expectations.
+func (i *TOTPSecretVerificationInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(ctx, i,
+		validation.Field(&i.UserID, validation.Required),
+		validation.Field(&i.TOTPToken, validation.Required, totpTokenLengthRule),
+	)
+}
+
 // ValidateWithContext ensures our provided UserLoginInput meets expectations.
 func (i *UserLoginInput) ValidateWithContext(ctx context.Context, minUsernameLength, minPasswordLength uint8) error {
 	return validation.ValidateStructWithContext(ctx, i,
 		validation.Field(&i.Username, validation.Required, validation.Length(int(minUsernameLength), math.MaxInt8)),
 		validation.Field(&i.Password, validation.Required, validation.Length(int(minPasswordLength), math.MaxInt8)),
-		validation.Field(&i.TOTPToken, validation.Required, totpTokenLengthRule),
 	)
 }
 
@@ -248,16 +257,6 @@ var _ validation.ValidatableWithContext = (*TOTPSecretRefreshInput)(nil)
 func (i *TOTPSecretRefreshInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, i,
 		validation.Field(&i.CurrentPassword, validation.Required),
-		validation.Field(&i.TOTPToken, validation.Required, totpTokenLengthRule),
-	)
-}
-
-var _ validation.ValidatableWithContext = (*TOTPSecretVerificationInput)(nil)
-
-// ValidateWithContext ensures our provided TOTPSecretVerificationInput meets expectations.
-func (i *TOTPSecretVerificationInput) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(ctx, i,
-		validation.Field(&i.UserID, validation.Required),
 		validation.Field(&i.TOTPToken, validation.Required, totpTokenLengthRule),
 	)
 }

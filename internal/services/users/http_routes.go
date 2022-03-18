@@ -10,6 +10,8 @@ import (
 	"image/png"
 	"net/http"
 
+	"github.com/prixfixeco/api_server/internal/database"
+
 	"github.com/boombuler/barcode"
 	"github.com/boombuler/barcode/qr"
 	"github.com/pquerna/otp/totp"
@@ -177,7 +179,11 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	// create the user.
 	user, userCreationErr := s.userDataManager.CreateUser(ctx, input)
 	if userCreationErr != nil {
-		observability.AcknowledgeError(err, logger, span, "creating user")
+		if errors.Is(userCreationErr, database.ErrUserAlreadyExists) {
+			observability.AcknowledgeError(err, logger, span, "creating user")
+			s.encoderDecoder.EncodeErrorResponse(ctx, res, "username already registered", http.StatusBadRequest)
+		}
+
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}

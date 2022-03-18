@@ -38,9 +38,9 @@ type (
 		Webhook                    *Webhook                    `json:"webhook,omitempty"`
 		Household                  *Household                  `json:"household,omitempty"`
 		APIClientID                string                      `json:"apiClientID,omitempty"`
-		HouseholdID                string                      `json:"hosueholdID,omitempty"`
+		HouseholdID                string                      `json:"householdID,omitempty"`
 		HouseholdInvitation        *HouseholdInvitation        `json:"householdInvitation,omitempty"`
-		HouseholdInvitationID      string                      `json:"hosueholdInvitationID,omitempty"`
+		HouseholdInvitationID      string                      `json:"householdInvitationID,omitempty"`
 		UserMembership             *HouseholdUserMembership    `json:"userMembership,omitempty"`
 		Context                    map[string]string           `json:"context,omitempty"`
 		AttributableToUserID       string                      `json:"attributableToUserID,omitempty"`

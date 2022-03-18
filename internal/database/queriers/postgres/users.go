@@ -6,6 +6,8 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/lib/pq"
+
 	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/internal/authorization"
@@ -508,6 +510,15 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDataStoreC
 
 	if writeErr := q.performWriteQuery(ctx, tx, "user creation", userCreationQuery, userCreationArgs); writeErr != nil {
 		q.rollbackTransaction(ctx, tx)
+
+		var e *pq.Error
+		if errors.As(err, &e) {
+			if e.Code == "23505" {
+				observability.AcknowledgeError(database.ErrUserAlreadyExists, logger, span, "creating user")
+				return nil, database.ErrUserAlreadyExists
+			}
+		}
+
 		return nil, observability.PrepareError(writeErr, logger, span, "creating user")
 	}
 

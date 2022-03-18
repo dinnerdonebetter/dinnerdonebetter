@@ -15,6 +15,9 @@ import (
 var (
 	// ErrDatabaseNotReady indicates the given database is not ready.
 	ErrDatabaseNotReady = errors.New("database is not ready yet")
+
+	// ErrUserAlreadyExists indicates that a user with that username has already been created.
+	ErrUserAlreadyExists = errors.New("user already exists")
 )
 
 type (
