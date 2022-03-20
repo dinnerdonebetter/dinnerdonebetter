@@ -244,7 +244,7 @@ func (c *Client) fetchResponseToRequest(ctx context.Context, client *http.Client
 	logger := c.logger.WithRequest(req)
 
 	if command, err := http2curl.GetCurlCommand(req); err == nil && c.debug {
-		logger = c.logger.WithValue("curl", command.String())
+		logger = logger.WithValue("curl", command.String())
 	}
 
 	// this should be the only use of .Do in this package
