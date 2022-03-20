@@ -166,7 +166,7 @@ func (s *TestSuite) TestUsers_Searching() {
 				in := &types.UserRegistrationInput{
 					EmailAddress: gofakeit.Email(),
 					Username:     fmt.Sprintf("%s%d", exampleUsername, i),
-					Password:     gofakeit.Password(true, true, true, true, true, 64),
+					Password:     gofakeit.Password(true, true, true, true, false, 64),
 				}
 				user, err := testutils.CreateServiceUser(ctx, urlToUse, in)
 				require.NoError(t, err)

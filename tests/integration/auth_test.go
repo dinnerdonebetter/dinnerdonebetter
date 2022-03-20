@@ -134,12 +134,9 @@ func (s *TestSuite) TestLogin_ShouldNotBeAbleToLoginWithoutValidating2FASecret()
 		requireNotNilAndNoProblems(t, ucr, err)
 
 		// create login request.
-		token, err := totp.GenerateCode(ucr.TwoFactorSecret, time.Now().UTC())
-		requireNotNilAndNoProblems(t, token, err)
 		r := &types.UserLoginInput{
-			Username:  exampleUserCreationInput.Username,
-			Password:  exampleUserCreationInput.Password,
-			TOTPToken: token,
+			Username: exampleUserCreationInput.Username,
+			Password: exampleUserCreationInput.Password,
 		}
 
 		cookie, err := testClient.BeginSession(ctx, r)

@@ -338,7 +338,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 			_, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
 				EmailAddress: inviteReq.ToEmail,
 				Username:     fakes.BuildFakeUser().Username,
-				Password:     gofakeit.Password(true, true, true, true, true, 64),
+				Password:     gofakeit.Password(true, true, true, true, false, 64),
 			})
 
 			t.Logf("checking for invitation")
@@ -419,7 +419,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCan
 			_, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
 				EmailAddress: inviteReq.ToEmail,
 				Username:     fakes.BuildFakeUser().Username,
-				Password:     gofakeit.Password(true, true, true, true, true, 64),
+				Password:     gofakeit.Password(true, true, true, true, false, 64),
 			})
 
 			t.Logf("checking for invitation")
@@ -487,7 +487,7 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 			_, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
 				EmailAddress:         inviteReq.ToEmail,
 				Username:             fakes.BuildFakeUser().Username,
-				Password:             gofakeit.Password(true, true, true, true, true, 64),
+				Password:             gofakeit.Password(true, true, true, true, false, 64),
 				DestinationHousehold: relevantHouseholdID,
 				InvitationToken:      createdInvitation.Token,
 			})
@@ -557,7 +557,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeCancelled() {
 			_, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
 				EmailAddress: inviteReq.ToEmail,
 				Username:     fakes.BuildFakeUser().Username,
-				Password:     gofakeit.Password(true, true, true, true, true, 64),
+				Password:     gofakeit.Password(true, true, true, true, false, 64),
 			})
 
 			t.Logf("checking for invitation")
