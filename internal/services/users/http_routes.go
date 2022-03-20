@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"image/png"
 	"net/http"
+	"strings"
 
 	"github.com/prixfixeco/api_server/internal/database"
 
@@ -131,6 +132,9 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
 		return
 	}
+
+	registrationInput.Password = strings.TrimSpace(registrationInput.Password)
+	registrationInput.Username = strings.TrimSpace(registrationInput.Username)
 
 	if err := registrationInput.ValidateWithContext(ctx, s.authSettings.MinimumUsernameLength, s.authSettings.MinimumPasswordLength); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")

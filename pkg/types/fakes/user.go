@@ -64,7 +64,7 @@ func BuildFakeUserCreationInput() *types.UserRegistrationInput {
 	return &types.UserRegistrationInput{
 		Username:     exampleUser.Username,
 		EmailAddress: fake.Email(),
-		Password:     fake.Password(true, true, true, true, true, 32),
+		Password:     fake.Password(true, true, true, true, false, 32),
 	}
 }
 
@@ -73,7 +73,7 @@ func BuildFakeUserRegistrationInputFromUser(user *types.User) *types.UserRegistr
 	return &types.UserRegistrationInput{
 		Username:     user.Username,
 		EmailAddress: user.EmailAddress,
-		Password:     fake.Password(true, true, true, true, true, 32),
+		Password:     fake.Password(true, true, true, true, false, 32),
 	}
 }
 
@@ -101,7 +101,7 @@ func BuildFakeUserReputationUpdateInputFromUser(user *types.User) *types.UserRep
 func BuildFakeUserRegistrationInput() *types.UserRegistrationInput {
 	return &types.UserRegistrationInput{
 		Username:     fake.Username(),
-		Password:     fake.Password(true, true, true, true, true, 32),
+		Password:     fake.Password(true, true, true, true, false, 32),
 		EmailAddress: fake.Email(),
 	}
 }
@@ -110,7 +110,7 @@ func BuildFakeUserRegistrationInput() *types.UserRegistrationInput {
 func BuildFakeUserLoginInputFromUser(user *types.User) *types.UserLoginInput {
 	return &types.UserLoginInput{
 		Username:  user.Username,
-		Password:  fake.Password(true, true, true, true, true, 32),
+		Password:  fake.Password(true, true, true, true, false, 32),
 		TOTPToken: fmt.Sprintf("0%s", fake.Zip()),
 	}
 }
@@ -118,8 +118,8 @@ func BuildFakeUserLoginInputFromUser(user *types.User) *types.UserLoginInput {
 // BuildFakePasswordUpdateInput builds a faked PasswordUpdateInput.
 func BuildFakePasswordUpdateInput() *types.PasswordUpdateInput {
 	return &types.PasswordUpdateInput{
-		NewPassword:     fake.Password(true, true, true, true, true, 32),
-		CurrentPassword: fake.Password(true, true, true, true, true, 32),
+		NewPassword:     fake.Password(true, true, true, true, false, 32),
+		CurrentPassword: fake.Password(true, true, true, true, false, 32),
 		TOTPToken:       fmt.Sprintf("0%s", fake.Zip()),
 	}
 }
@@ -127,7 +127,7 @@ func BuildFakePasswordUpdateInput() *types.PasswordUpdateInput {
 // BuildFakeTOTPSecretRefreshInput builds a faked TOTPSecretRefreshInput.
 func BuildFakeTOTPSecretRefreshInput() *types.TOTPSecretRefreshInput {
 	return &types.TOTPSecretRefreshInput{
-		CurrentPassword: fake.Password(true, true, true, true, true, 32),
+		CurrentPassword: fake.Password(true, true, true, true, false, 32),
 		TOTPToken:       fmt.Sprintf("0%s", fake.Zip()),
 	}
 }

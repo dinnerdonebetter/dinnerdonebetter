@@ -15,7 +15,7 @@ func BuildFakeAPIClient() *types.APIClient {
 		ID:            ksuid.New().String(),
 		Name:          fake.Password(true, true, true, false, false, 32),
 		ClientID:      ksuid.New().String(),
-		ClientSecret:  []byte(fake.Password(true, true, true, true, true, 32)),
+		ClientSecret:  []byte(fake.Password(true, true, true, true, false, 32)),
 		BelongsToUser: fake.UUID(),
 		CreatedOn:     uint64(uint32(fake.Date().Unix())),
 	}
@@ -55,7 +55,7 @@ func BuildFakeAPIClientCreationInput() *types.APIClientCreationInput {
 	return &types.APIClientCreationInput{
 		UserLoginInput: types.UserLoginInput{
 			Username:  fake.Username(),
-			Password:  fake.Password(true, true, true, true, true, 32),
+			Password:  fake.Password(true, true, true, true, false, 32),
 			TOTPToken: fmt.Sprintf("0%s", fake.Zip()),
 		},
 		Name:          client.Name,
@@ -70,7 +70,7 @@ func BuildFakeAPIClientCreationInputFromClient(client *types.APIClient) *types.A
 		ID: client.ID,
 		UserLoginInput: types.UserLoginInput{
 			Username:  fake.Username(),
-			Password:  fake.Password(true, true, true, true, true, 32),
+			Password:  fake.Password(true, true, true, true, false, 32),
 			TOTPToken: fmt.Sprintf("0%s", fake.Zip()),
 		},
 		Name:          client.Name,

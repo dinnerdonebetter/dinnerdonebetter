@@ -164,6 +164,18 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
 	if input.Notes != "" && input.Notes != x.Notes {
 		x.Notes = input.Notes
 	}
+
+	if input.Yields != "" && input.Yields != x.Yields {
+		x.Yields = input.Yields
+	}
+
+	if input.Optional != x.Optional {
+		x.Optional = input.Optional
+	}
+
+	if input.TemperatureInCelsius != nil && (x.TemperatureInCelsius == nil || (*input.TemperatureInCelsius != 0 && *input.TemperatureInCelsius != *x.TemperatureInCelsius)) {
+		x.TemperatureInCelsius = input.TemperatureInCelsius
+	}
 }
 
 var _ validation.ValidatableWithContext = (*RecipeStepCreationRequestInput)(nil)
@@ -174,6 +186,7 @@ func (x *RecipeStepCreationRequestInput) ValidateWithContext(ctx context.Context
 		ctx,
 		x,
 		validation.Field(&x.PreparationID, validation.Required),
+		validation.Field(&x.Yields, validation.Required),
 		validation.Field(&x.Ingredients, validation.Required),
 	)
 }
@@ -186,6 +199,7 @@ func (x *RecipeStepDatabaseCreationInput) ValidateWithContext(ctx context.Contex
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
+		validation.Field(&x.Yields, validation.Required),
 		validation.Field(&x.PreparationID, validation.Required),
 	)
 }
@@ -205,6 +219,8 @@ func RecipeStepDatabaseCreationInputFromRecipeStepCreationInput(input *RecipeSte
 		MaxEstimatedTimeInSeconds: input.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      input.TemperatureInCelsius,
 		Notes:                     input.Notes,
+		Yields:                    input.Yields,
+		Optional:                  input.Optional,
 		Ingredients:               ingredients,
 	}
 
@@ -224,6 +240,7 @@ func (x *RecipeStepUpdateRequestInput) ValidateWithContext(ctx context.Context) 
 		validation.Field(&x.MinEstimatedTimeInSeconds, validation.Required),
 		validation.Field(&x.MaxEstimatedTimeInSeconds, validation.Required),
 		validation.Field(&x.TemperatureInCelsius, validation.Required),
+		validation.Field(&x.Yields, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
 	)
 }

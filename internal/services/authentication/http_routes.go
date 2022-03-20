@@ -9,6 +9,7 @@ import (
 	"errors"
 	"math"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -24,13 +25,6 @@ import (
 )
 
 var (
-	// ErrUserNotFound indicates a user was not located.
-	ErrUserNotFound = errors.New("user not found")
-	// ErrUserBanned indicates a user is banned from using the service.
-	ErrUserBanned = errors.New("user is banned")
-	// ErrInvalidCredentials indicates a user provided invalid credentials.
-	ErrInvalidCredentials = errors.New("invalid credentials")
-
 	customCookieDomainHeader = "X-PRIXFIXE-COOKIE-DOMAIN"
 
 	allowedCookiesHat    sync.Mutex
@@ -79,6 +73,10 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 			return
 		}
 
+		loginData.TOTPToken = strings.TrimSpace(loginData.TOTPToken)
+		loginData.Password = strings.TrimSpace(loginData.Password)
+		loginData.Username = strings.TrimSpace(loginData.Username)
+
 		if err := loginData.ValidateWithContext(ctx, s.config.MinimumUsernameLength, s.config.MinimumPasswordLength); err != nil {
 			observability.AcknowledgeError(err, logger, span, "validating input")
 			s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
@@ -121,7 +119,14 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		logger.WithValue("login_valid", loginValid)
 
 		if err != nil {
-			if errors.Is(err, authentication.ErrInvalidTOTPToken) || errors.Is(err, authentication.ErrPasswordDoesNotMatch) {
+			if errors.Is(err, authentication.ErrInvalidTOTPToken) {
+				observability.AcknowledgeError(err, logger, span, "validating TOTP token")
+				s.encoderDecoder.EncodeErrorResponse(ctx, res, "login was invalid", http.StatusUnauthorized)
+				return
+			}
+
+			if errors.Is(err, authentication.ErrPasswordDoesNotMatch) {
+				observability.AcknowledgeError(err, logger, span, "validating password")
 				s.encoderDecoder.EncodeErrorResponse(ctx, res, "login was invalid", http.StatusUnauthorized)
 				return
 			}
@@ -134,6 +139,12 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		} else if !loginValid {
 			logger.Debug("login was invalid")
 			s.encoderDecoder.EncodeErrorResponse(ctx, res, "login was invalid", http.StatusUnauthorized)
+			return
+		}
+
+		if loginValid && user.TwoFactorSecretVerifiedOn != nil && loginData.TOTPToken == "" {
+			logger.Debug("user with two factor verification active attempted to log in without providing TOTP")
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, "TOTP required", http.StatusResetContent)
 			return
 		}
 

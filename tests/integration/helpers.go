@@ -8,15 +8,13 @@ import (
 	"testing"
 	"time"
 
-	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
-
 	"github.com/brianvoe/gofakeit/v5"
-
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/client/httpclient"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -47,7 +45,7 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.
 		input = &types.UserRegistrationInput{
 			EmailAddress: gofakeit.Email(),
 			Username:     fakes.BuildFakeUser().Username,
-			Password:     gofakeit.Password(true, true, true, true, true, 64),
+			Password:     gofakeit.Password(true, true, true, true, false, 64),
 		}
 	}
 

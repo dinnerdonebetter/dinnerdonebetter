@@ -240,6 +240,62 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB, dataChangesPublisher)
 	})
 
+	T.Run("standard with admin", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleLoginInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager.On(
+			"GetAdminUserByUsername",
+			testutils.ContextMatcher,
+			helper.exampleUser.Username,
+		).Return(helper.exampleUser, nil)
+		helper.service.userDataManager = userDataManager
+
+		authenticator := &mockauthn.Authenticator{}
+		authenticator.On(
+			"ValidateLogin",
+			testutils.ContextMatcher,
+			helper.exampleUser.HashedPassword,
+			helper.exampleLoginInput.Password,
+			helper.exampleUser.TwoFactorSecret,
+			helper.exampleLoginInput.TOTPToken,
+		).Return(true, nil)
+		helper.service.authenticator = authenticator
+
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB.On(
+			"GetDefaultHouseholdIDForUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleHousehold.ID, nil)
+		helper.service.householdMembershipManager = membershipDB
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		helper.service.BuildLoginHandler(true)(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
+
+		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB, dataChangesPublisher)
+	})
+
 	T.Run("with requested cookie domain", func(t *testing.T) {
 		t.Parallel()
 
@@ -582,6 +638,47 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
+
+		mock.AssertExpectationsForObjects(t, userDataManager, authenticator)
+	})
+
+	T.Run("with verified two factor secret but without TOTP", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		helper.exampleLoginInput.TOTPToken = ""
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleLoginInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager.On(
+			"GetUserByUsername",
+			testutils.ContextMatcher,
+			helper.exampleUser.Username,
+		).Return(helper.exampleUser, nil)
+		helper.service.userDataManager = userDataManager
+
+		authenticator := &mockauthn.Authenticator{}
+		authenticator.On(
+			"ValidateLogin",
+			testutils.ContextMatcher,
+			helper.exampleUser.HashedPassword,
+			helper.exampleLoginInput.Password,
+			helper.exampleUser.TwoFactorSecret,
+			helper.exampleLoginInput.TOTPToken,
+		).Return(true, nil)
+		helper.service.authenticator = authenticator
+
+		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusResetContent, helper.res.Code)
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
 
 		mock.AssertExpectationsForObjects(t, userDataManager, authenticator)
