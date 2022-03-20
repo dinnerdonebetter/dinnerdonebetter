@@ -1,5 +1,6 @@
 module github.com/prixfixeco/api_server/cmd/functions/meal_planning_prober
 
+// these have to be at 1.16 per Cloud Functions requirements: https://cloud.google.com/functions/docs/concepts/exec#runtimes
 go 1.16
 
 replace github.com/prixfixeco/api_server => ../../../
