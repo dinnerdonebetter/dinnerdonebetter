@@ -30,7 +30,7 @@ func init() {
 }
 
 // SetupJaeger creates a new trace provider instance and registers it as global trace provider.
-func SetupJaeger(_ context.Context, c *Config) (tracing.TracerProvider, error) {
+func SetupJaeger(ctx context.Context, c *Config) (tracing.TracerProvider, error) {
 	// Create and install Jaeger export pipeline.
 	exporter, err := jaeger.New(
 		jaeger.WithCollectorEndpoint(
@@ -42,8 +42,15 @@ func SetupJaeger(_ context.Context, c *Config) (tracing.TracerProvider, error) {
 		return nil, fmt.Errorf("initializing Jaeger: %w", err)
 	}
 
+	res, err := resource.New(ctx, resource.WithProcess())
+	if err != nil {
+		return nil, fmt.Errorf("setting up process runtime version: %w", err)
+	}
+
 	tp := sdktrace.NewTracerProvider(
 		sdktrace.WithBatcher(exporter),
+		sdktrace.WithResource(res),
+		sdktrace.WithSampler(sdktrace.TraceIDRatioBased(c.SpanCollectionProbability)),
 		sdktrace.WithResource(resource.NewSchemaless(
 			semconv.ServiceNameKey.String(c.ServiceName),
 			// attribute.String(tagKey, tagVal),

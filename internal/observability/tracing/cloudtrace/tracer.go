@@ -2,7 +2,9 @@ package cloudtrace
 
 import (
 	"context"
-	"log"
+	"fmt"
+
+	"go.opentelemetry.io/otel/sdk/resource"
 
 	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
 	"go.opentelemetry.io/otel"
@@ -25,14 +27,20 @@ func init() {
 }
 
 // SetupCloudTrace creates a new trace provider instance and registers it as global trace provider.
-func SetupCloudTrace(_ context.Context, cfg *Config) (tracing.TracerProvider, error) {
+func SetupCloudTrace(ctx context.Context, cfg *Config) (tracing.TracerProvider, error) {
 	exporter, err := texporter.New(texporter.WithProjectID(cfg.ProjectID))
 	if err != nil {
-		log.Fatalf("texporter.NewExporter: %v", err)
+		return nil, fmt.Errorf("setting up trace exporter: %w", err)
+	}
+
+	res, err := resource.New(ctx, resource.WithProcess())
+	if err != nil {
+		return nil, fmt.Errorf("setting up process runtime version: %w", err)
 	}
 
 	tp := sdktrace.NewTracerProvider(
 		sdktrace.WithBatcher(exporter),
+		sdktrace.WithResource(res),
 		sdktrace.WithSampler(sdktrace.TraceIDRatioBased(cfg.SpanCollectionProbability)),
 	)
 
