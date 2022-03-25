@@ -38,17 +38,15 @@ type router struct {
 }
 
 func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Config) chi.Router {
-	ch := cors.New(cors.Options{
-		// AllowedOrigins: []string{"https://foo.com"}, // Use this to allow specific origin hosts,
+	corsHandler := cors.New(cors.Options{
+		// Use this to allow specific origin hosts,
 		AllowedOrigins: []string{
+			"http://localhost:9000",
+			"http://localhost:7000",
 			"https://prixfixe.dev",
 			"https://www.prixfixe.dev",
 			"https://api.prixfixe.dev",
 			"https://admin.prixfixe.dev",
-			"https://prixfixe.local",
-			"https://www.prixfixe.local",
-			"https://api.prixfixe.local",
-			"https://admin.prixfixe.local",
 		},
 		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
 		AllowedMethods: []string{
@@ -58,7 +56,7 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Conf
 			http.MethodDelete,
 			http.MethodOptions,
 		},
-		AllowedHeaders:   []string{"Cookie"},
+		AllowedHeaders:   []string{"Cookie", "Content-Type"},
 		ExposedHeaders:   []string{"Set-Cookie"},
 		AllowCredentials: true,
 		MaxAge:           maxCORSAge,
@@ -99,7 +97,7 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Conf
 		chimiddleware.RealIP,
 		chimiddleware.Timeout(maxTimeout),
 		buildLoggingMiddleware(logging.EnsureLogger(logger).WithName("router"), cfg),
-		ch.Handler,
+		corsHandler.Handler,
 	)
 
 	// all middleware must be defined before routes on a mux.
