@@ -84,12 +84,6 @@ services:
       ports:
         - '8000:8000'
       volumes:
-        - source: '../../environments/local/certificates/cert.pem'
-          target: '/etc/certs/cert.pem'
-          type: 'bind'
-        - source: '../../environments/local/certificates/key.pem'
-          target: '/etc/certs/key.pem'
-          type: 'bind'
         - source: '../../environments/local/config_files/service-config.json'
           target: '/etc/service.config'
           type: 'bind'

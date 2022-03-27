@@ -108,7 +108,7 @@ var (
 		HashKey:    debugCookieSecret,
 		BlockKey:   debugCookieSigningKey,
 		Lifetime:   authservice.DefaultCookieLifetime,
-		SecureOnly: true,
+		SecureOnly: false,
 	}
 
 	localMetricsConfig = metricscfg.Config{

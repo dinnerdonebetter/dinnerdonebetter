@@ -35,8 +35,6 @@ func finalizeMealPlans(
 	_, span := tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger.Debug("finalize meal plan chore invoked")
-
 	mealPlans, fetchMealPlansErr := dataManager.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
 	if fetchMealPlansErr != nil {
 		logger.Fatal(fetchMealPlansErr)

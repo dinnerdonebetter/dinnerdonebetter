@@ -11,7 +11,6 @@ func (w *ChoresWorker) finalizeExpiredMealPlans(ctx context.Context) error {
 	defer span.End()
 
 	logger := w.logger
-	logger.Debug("finalize meal plan chore invoked")
 
 	mealPlans, fetchMealPlansErr := w.dataManager.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
 	if fetchMealPlansErr != nil {
