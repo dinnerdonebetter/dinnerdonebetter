@@ -152,12 +152,11 @@
 				"domain": ".prixfixe.local",
 				"hashKey": "HEREISA32CHARSECRETWHICHISMADEUP",
 				"blockKey": "DIFFERENT32CHARSECRETTHATIMADEUP",
-				"lifetime": 86400000000000,
-				"secureOnly": true
+				"lifetime": 86400000000000
 			},
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "ZvkCZQEkXtl3HmQL6iVtCQ5ihwnweekbY2WNb9s8A10=",
+				"localModeKey": "uS4NlBB+Kbk90D4BkEKzQf8ht+CbjPtOumLCVdrnYEE=",
 				"lifetime": 60000000000
 			},
 			"debug": true,

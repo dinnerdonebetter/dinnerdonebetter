@@ -43,6 +43,8 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Conf
 		AllowedOrigins: []string{
 			"http://localhost:9000",
 			"http://localhost:7000",
+			"http://www.prixfixe.local:5555",
+			"http://admin.prixfixe.local:5555",
 			"https://prixfixe.dev",
 			"https://www.prixfixe.dev",
 			"https://api.prixfixe.dev",
