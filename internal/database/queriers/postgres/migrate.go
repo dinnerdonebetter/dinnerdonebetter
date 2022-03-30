@@ -72,6 +72,9 @@ var (
 	//go:embed migrations/00015_recipe_step_updates.sql
 	recipeStepsAdjustmentMigration1 string
 
+	//go:embed migrations/00016_recipe_step_products.sql
+	recipeStepProductsReintroductionMigration string
+
 	migrations = []darwin.Migration{
 		{
 			Version:     1,
@@ -147,6 +150,11 @@ var (
 			Version:     15,
 			Description: "create meal plan option votes table",
 			Script:      recipeStepsAdjustmentMigration1,
+		},
+		{
+			Version:     16,
+			Description: "reintroduce recipe step products table",
+			Script:      recipeStepProductsReintroductionMigration,
 		},
 	}
 )

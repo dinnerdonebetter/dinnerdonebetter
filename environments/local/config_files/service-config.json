@@ -116,6 +116,9 @@
 		"recipeSteps": {
 			"dataChangesTopicName": "data_changes"
 		},
+		"recipeStepProducts": {
+			"dataChangesTopicName": "data_changes"
+		},
 		"recipeStepInstruments": {
 			"dataChangesTopicName": "data_changes"
 		},
@@ -156,7 +159,7 @@
 			},
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "uS4NlBB+Kbk90D4BkEKzQf8ht+CbjPtOumLCVdrnYEE=",
+				"localModeKey": "tYLnDeGdw4RlsXZJKN4NBAkc7NlZA4aTzyVPAaBoy6k=",
 				"lifetime": 60000000000
 			},
 			"debug": true,

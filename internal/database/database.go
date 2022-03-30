@@ -68,6 +68,7 @@ type (
 		types.MealDataManager
 		types.RecipeDataManager
 		types.RecipeStepDataManager
+		types.RecipeStepProductDataManager
 		types.RecipeStepInstrumentDataManager
 		types.RecipeStepIngredientDataManager
 		types.MealPlanDataManager
