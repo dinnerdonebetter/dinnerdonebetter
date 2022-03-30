@@ -42,6 +42,7 @@ type (
 		validIngredientPreparationsService types.ValidIngredientPreparationDataService
 		recipesService                     types.RecipeDataService
 		recipeStepsService                 types.RecipeStepDataService
+		recipeStepProductsService          types.RecipeStepProductDataService
 		recipeStepInstrumentsService       types.RecipeStepInstrumentDataService
 		recipeStepIngredientsService       types.RecipeStepIngredientDataService
 		mealsService                       types.MealDataService
@@ -74,6 +75,7 @@ func ProvideHTTPServer(
 	mealsService types.MealDataService,
 	recipesService types.RecipeDataService,
 	recipeStepsService types.RecipeStepDataService,
+	recipeStepProductsService types.RecipeStepProductDataService,
 	recipeStepInstrumentsService types.RecipeStepInstrumentDataService,
 	recipeStepIngredientsService types.RecipeStepIngredientDataService,
 	mealPlansService types.MealPlanDataService,
@@ -111,6 +113,7 @@ func ProvideHTTPServer(
 		mealsService:                       mealsService,
 		recipesService:                     recipesService,
 		recipeStepsService:                 recipeStepsService,
+		recipeStepProductsService:          recipeStepProductsService,
 		recipeStepInstrumentsService:       recipeStepInstrumentsService,
 		recipeStepIngredientsService:       recipeStepIngredientsService,
 		mealPlansService:                   mealPlansService,

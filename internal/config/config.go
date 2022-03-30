@@ -23,6 +23,7 @@ import (
 	recipesservice "github.com/prixfixeco/api_server/internal/services/recipes"
 	recipestepingredientsservice "github.com/prixfixeco/api_server/internal/services/recipestepingredients"
 	recipestepinstrumentsservice "github.com/prixfixeco/api_server/internal/services/recipestepinstruments"
+	recipestepproductsservice "github.com/prixfixeco/api_server/internal/services/recipestepproducts"
 	recipestepsservice "github.com/prixfixeco/api_server/internal/services/recipesteps"
 	usersservice "github.com/prixfixeco/api_server/internal/services/users"
 	validingredientpreparationsservice "github.com/prixfixeco/api_server/internal/services/validingredientpreparations"
@@ -77,6 +78,7 @@ type (
 		Meals                       mealsservice.Config                       `json:"meals" mapstructure:"meals" toml:"meals,omitempty"`
 		Recipes                     recipesservice.Config                     `json:"recipes" mapstructure:"recipes" toml:"recipes,omitempty"`
 		RecipeSteps                 recipestepsservice.Config                 `json:"recipeSteps" mapstructure:"recipe_steps" toml:"recipe_steps,omitempty"`
+		RecipeStepProducts          recipestepproductsservice.Config          `json:"recipeStepProducts" mapstructure:"recipe_step_products" toml:"recipe_step_products,omitempty"`
 		RecipeStepInstruments       recipestepinstrumentsservice.Config       `json:"recipeStepInstruments" mapstructure:"recipe_step_instruments" toml:"recipe_step_instruments,omitempty"`
 		RecipeStepIngredients       recipestepingredientsservice.Config       `json:"recipeStepIngredients" mapstructure:"recipe_step_ingredients" toml:"recipe_step_ingredients,omitempty"`
 		MealPlans                   mealplansservice.Config                   `json:"mealPlans" mapstructure:"meal_plans" toml:"meal_plans,omitempty"`

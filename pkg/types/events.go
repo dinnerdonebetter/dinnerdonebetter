@@ -27,6 +27,7 @@ type (
 		Recipe                     *Recipe                     `json:"recipe,omitempty"`
 		RecipeStepID               string                      `json:"recipeStepID,omitempty"`
 		RecipeStep                 *RecipeStep                 `json:"recipeStep,omitempty"`
+		RecipeStepProduct          *RecipeStepProduct          `json:"recipeStepProduct,omitempty"`
 		RecipeStepInstrument       *RecipeStepInstrument       `json:"recipeStepInstrument,omitempty"`
 		RecipeStepIngredient       *RecipeStepIngredient       `json:"recipeStepIngredient,omitempty"`
 		MealPlan                   *MealPlan                   `json:"mealPlan,omitempty"`

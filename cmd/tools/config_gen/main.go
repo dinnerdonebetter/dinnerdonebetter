@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"time"
 
+	recipestepproductsservice "github.com/prixfixeco/api_server/internal/services/recipestepproducts"
+
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
@@ -380,6 +382,9 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 			RecipeSteps: recipestepsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			RecipeStepProducts: recipestepproductsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 			RecipeStepInstruments: recipestepinstrumentsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -512,6 +517,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			RecipeStepIngredients: recipestepingredientsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			RecipeStepProducts: recipestepproductsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			MealPlans: mealplansservice.Config{
