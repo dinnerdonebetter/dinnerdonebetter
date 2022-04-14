@@ -41,7 +41,6 @@ func buildMockRowsFromRecipeSteps(includeCounts bool, filteredCount uint64, reci
 			x.MaxEstimatedTimeInSeconds,
 			x.TemperatureInCelsius,
 			x.Notes,
-			x.Yields,
 			x.Optional,
 			x.CreatedOn,
 			x.LastUpdatedOn,
@@ -211,6 +210,7 @@ func TestQuerier_GetRecipeStep(T *testing.T) {
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStep := fakes.BuildFakeRecipeStep()
 		exampleRecipeStep.Ingredients = nil
+		exampleRecipeStep.Products = nil
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -338,6 +338,7 @@ func TestQuerier_GetRecipeSteps(T *testing.T) {
 
 		for i := range exampleRecipeStepList.RecipeSteps {
 			exampleRecipeStepList.RecipeSteps[i].Ingredients = nil
+			exampleRecipeStepList.RecipeSteps[i].Products = nil
 		}
 
 		ctx := context.Background()
@@ -379,6 +380,7 @@ func TestQuerier_GetRecipeSteps(T *testing.T) {
 		exampleRecipeStepList.Limit = 0
 		for i := range exampleRecipeStepList.RecipeSteps {
 			exampleRecipeStepList.RecipeSteps[i].Ingredients = nil
+			exampleRecipeStepList.RecipeSteps[i].Products = nil
 		}
 
 		ctx := context.Background()
@@ -455,6 +457,7 @@ func TestQuerier_GetRecipeStepsWithIDs(T *testing.T) {
 		for i, x := range exampleRecipeStepList.RecipeSteps {
 			exampleIDs = append(exampleIDs, x.ID)
 			exampleRecipeStepList.RecipeSteps[i].Ingredients = nil
+			exampleRecipeStepList.RecipeSteps[i].Products = nil
 		}
 
 		ctx := context.Background()
@@ -565,6 +568,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 		exampleRecipeStep := fakes.BuildFakeRecipeStep()
 		exampleRecipeStep.ID = "1"
 		exampleRecipeStep.Ingredients = nil
+		exampleRecipeStep.Products = nil
 		exampleRecipeStep.Preparation = types.ValidPreparation{}
 		exampleInput := fakes.BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(exampleRecipeStep)
 
@@ -580,7 +584,6 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 			exampleInput.MaxEstimatedTimeInSeconds,
 			exampleInput.TemperatureInCelsius,
 			exampleInput.Notes,
-			exampleInput.Yields,
 			exampleInput.Optional,
 			exampleInput.BelongsToRecipe,
 		}
@@ -630,7 +633,6 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 			exampleInput.MaxEstimatedTimeInSeconds,
 			exampleInput.TemperatureInCelsius,
 			exampleInput.Notes,
-			exampleInput.Yields,
 			exampleInput.Optional,
 			exampleInput.BelongsToRecipe,
 		}
@@ -666,6 +668,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleRecipeStep.Ingredients[i].ID = "3"
 			exampleRecipeStep.Ingredients[i].BelongsToRecipeStep = "2"
 			exampleRecipeStep.Ingredients[i].Ingredient = types.ValidIngredient{}
+			exampleRecipeStep.Products = nil
 		}
 
 		exampleInput := fakes.BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(exampleRecipeStep)
@@ -682,7 +685,6 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.MaxEstimatedTimeInSeconds,
 			exampleInput.TemperatureInCelsius,
 			exampleInput.Notes,
-			exampleInput.Yields,
 			exampleInput.Optional,
 			exampleInput.BelongsToRecipe,
 		}
@@ -746,7 +748,6 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.MaxEstimatedTimeInSeconds,
 			exampleInput.TemperatureInCelsius,
 			exampleInput.Notes,
-			exampleInput.Yields,
 			exampleInput.Optional,
 			exampleInput.BelongsToRecipe,
 		}
@@ -801,7 +802,6 @@ func TestQuerier_UpdateRecipeStep(T *testing.T) {
 			exampleRecipeStep.MaxEstimatedTimeInSeconds,
 			exampleRecipeStep.TemperatureInCelsius,
 			exampleRecipeStep.Notes,
-			exampleRecipeStep.Yields,
 			exampleRecipeStep.Optional,
 			exampleRecipeStep.BelongsToRecipe,
 			exampleRecipeStep.ID,
@@ -841,7 +841,6 @@ func TestQuerier_UpdateRecipeStep(T *testing.T) {
 			exampleRecipeStep.MaxEstimatedTimeInSeconds,
 			exampleRecipeStep.TemperatureInCelsius,
 			exampleRecipeStep.Notes,
-			exampleRecipeStep.Yields,
 			exampleRecipeStep.Optional,
 			exampleRecipeStep.BelongsToRecipe,
 			exampleRecipeStep.ID,

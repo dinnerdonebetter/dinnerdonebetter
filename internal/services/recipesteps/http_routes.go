@@ -58,6 +58,10 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		input.Ingredients[i].ID = ksuid.New().String()
 	}
 
+	for j := range input.Products {
+		input.Products[j].ID = ksuid.New().String()
+	}
+
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
 	tracing.AttachRecipeIDToSpan(span, recipeID)

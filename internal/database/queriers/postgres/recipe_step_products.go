@@ -314,7 +314,7 @@ func (q *SQLQuerier) GetRecipeStepProductsWithIDs(ctx context.Context, recipeSte
 const recipeStepProductCreationQuery = "INSERT INTO recipe_step_products (id,name,recipe_step_id,belongs_to_recipe_step) VALUES ($1,$2,$3,$4)"
 
 // CreateRecipeStepProduct creates a recipe step product in the database.
-func (q *SQLQuerier) CreateRecipeStepProduct(ctx context.Context, input *types.RecipeStepProductDatabaseCreationInput) (*types.RecipeStepProduct, error) {
+func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepProductDatabaseCreationInput) (*types.RecipeStepProduct, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -324,6 +324,8 @@ func (q *SQLQuerier) CreateRecipeStepProduct(ctx context.Context, input *types.R
 
 	logger := q.logger.WithValue(keys.RecipeStepProductIDKey, input.ID)
 
+	logger.WithValue("input", input).Info("input arrived at createRecipeStepProduct")
+
 	args := []interface{}{
 		input.ID,
 		input.Name,
@@ -332,7 +334,7 @@ func (q *SQLQuerier) CreateRecipeStepProduct(ctx context.Context, input *types.R
 	}
 
 	// create the recipe step product.
-	if err := q.performWriteQuery(ctx, q.db, "recipe step product creation", recipeStepProductCreationQuery, args); err != nil {
+	if err := q.performWriteQuery(ctx, db, "recipe step product creation", recipeStepProductCreationQuery, args); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "performing recipe step product creation query")
 	}
 
@@ -348,6 +350,11 @@ func (q *SQLQuerier) CreateRecipeStepProduct(ctx context.Context, input *types.R
 	logger.Info("recipe step product created")
 
 	return x, nil
+}
+
+// CreateRecipeStepProduct creates a recipe step product in the database.
+func (q *SQLQuerier) CreateRecipeStepProduct(ctx context.Context, input *types.RecipeStepProductDatabaseCreationInput) (*types.RecipeStepProduct, error) {
+	return q.createRecipeStepProduct(ctx, q.db, input)
 }
 
 const updateRecipeStepProductQuery = "UPDATE recipe_step_products SET name = $1, recipe_step_id = $2, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $3 AND id = $4"

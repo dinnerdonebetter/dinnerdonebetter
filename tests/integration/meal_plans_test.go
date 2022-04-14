@@ -27,7 +27,7 @@ func checkMealPlanEquality(t *testing.T, expected, actual *types.MealPlan) {
 	assert.NotZero(t, actual.CreatedOn)
 }
 
-func createMealPlanWithNotificationChannel(ctx context.Context, t *testing.T, client *httpclient.Client) *types.MealPlan {
+func createMealPlanForTest(ctx context.Context, t *testing.T, client *httpclient.Client) *types.MealPlan {
 	t.Helper()
 
 	t.Log("creating meal plan")
@@ -488,7 +488,7 @@ func (s *TestSuite) TestMealPlans_Listing() {
 			t.Log("creating meal plans")
 			var expected []*types.MealPlan
 			for i := 0; i < 5; i++ {
-				createdMealPlan := createMealPlanWithNotificationChannel(ctx, t, testClients.main)
+				createdMealPlan := createMealPlanForTest(ctx, t, testClients.main)
 				expected = append(expected, createdMealPlan)
 			}
 

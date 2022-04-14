@@ -41,7 +41,7 @@ func (s *TestSuite) TestMealPlanOptionVotes_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdMealPlan := createMealPlanWithNotificationChannel(ctx, t, testClients.main)
+			createdMealPlan := createMealPlanForTest(ctx, t, testClients.main)
 
 			var createdMealPlanOption *types.MealPlanOption
 			for _, opt := range createdMealPlan.Options {
@@ -101,7 +101,7 @@ func (s *TestSuite) TestMealPlanOptionVotes_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdMealPlan := createMealPlanWithNotificationChannel(ctx, t, testClients.main)
+			createdMealPlan := createMealPlanForTest(ctx, t, testClients.main)
 
 			var createdMealPlanOption *types.MealPlanOption
 			for _, opt := range createdMealPlan.Options {

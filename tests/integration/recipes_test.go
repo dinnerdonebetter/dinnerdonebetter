@@ -49,7 +49,6 @@ func createRecipeForTest(ctx context.Context, t *testing.T, client *httpclient.C
 	t.Logf("valid preparation %q created", createdValidPreparation.ID)
 
 	t.Log("creating recipe")
-
 	exampleRecipe := fakes.BuildFakeRecipe()
 	if recipe != nil {
 		exampleRecipe = recipe
@@ -63,8 +62,6 @@ func createRecipeForTest(ctx context.Context, t *testing.T, client *httpclient.C
 			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
 			createdValidIngredient, createdValidIngredientErr := client.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, createdValidIngredientErr)
-
-			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
 			createdValidIngredients = append(createdValidIngredients, createdValidIngredient)
 

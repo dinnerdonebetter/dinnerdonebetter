@@ -75,6 +75,9 @@ var (
 	//go:embed migrations/00016_recipe_step_products.sql
 	recipeStepProductsReintroductionMigration string
 
+	//go:embed migrations/00017_remove_yields_from_recipe_steps.sql
+	recipeStepProductsRemoveYieldsMigration string
+
 	migrations = []darwin.Migration{
 		{
 			Version:     1,
@@ -155,6 +158,11 @@ var (
 			Version:     16,
 			Description: "reintroduce recipe step products table",
 			Script:      recipeStepProductsReintroductionMigration,
+		},
+		{
+			Version:     17,
+			Description: "remove yields from recipe steps table",
+			Script:      recipeStepProductsRemoveYieldsMigration,
 		},
 	}
 )

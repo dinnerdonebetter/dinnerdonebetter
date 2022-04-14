@@ -96,7 +96,6 @@ func (q *SQLQuerier) scanCompleteRecipeRow(ctx context.Context, scan database.Sc
 		&recipeStep.MaxEstimatedTimeInSeconds,
 		&recipeStep.TemperatureInCelsius,
 		&recipeStep.Notes,
-		&recipeStep.Yields,
 		&recipeStep.Optional,
 		&recipeStep.CreatedOn,
 		&recipeStep.LastUpdatedOn,
@@ -263,7 +262,6 @@ var completeRecipeColumns = []string{
 	"recipe_steps.max_estimated_time_in_seconds",
 	"recipe_steps.temperature_in_celsius",
 	"recipe_steps.notes",
-	"recipe_steps.yields",
 	"recipe_steps.optional",
 	"recipe_steps.created_on",
 	"recipe_steps.last_updated_on",
@@ -328,7 +326,6 @@ const getCompleteRecipeByIDQuery = `SELECT
 	recipe_steps.max_estimated_time_in_seconds,
 	recipe_steps.temperature_in_celsius,
 	recipe_steps.notes,
-	recipe_steps.yields,
 	recipe_steps.optional,
 	recipe_steps.created_on,
 	recipe_steps.last_updated_on,
@@ -429,7 +426,6 @@ const getCompleteRecipeByIDAndAuthorIDQuery = `SELECT
 	recipe_steps.max_estimated_time_in_seconds,
 	recipe_steps.temperature_in_celsius,
 	recipe_steps.notes,
-	recipe_steps.yields,
 	recipe_steps.optional,
 	recipe_steps.created_on,
 	recipe_steps.last_updated_on,
@@ -664,6 +660,8 @@ func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeDataba
 	}
 
 	logger := q.logger.WithValue(keys.RecipeIDKey, input.ID)
+
+	logger.WithValue("input", input).Info("input arrived at CreateRecipe")
 
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {

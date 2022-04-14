@@ -193,6 +193,13 @@ func TestQuerier_GetMeal(T *testing.T) {
 
 		exampleMeal := fakes.BuildFakeMeal()
 
+		// TODO: remove me
+		for i := range exampleMeal.Recipes {
+			for j := range exampleMeal.Recipes[i].Steps {
+				exampleMeal.Recipes[i].Steps[j].Products = nil
+			}
+		}
+
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
