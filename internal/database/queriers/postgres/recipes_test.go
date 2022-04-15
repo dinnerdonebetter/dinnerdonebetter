@@ -942,7 +942,6 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 				exampleRecipe.Steps[i].Ingredients[j].Ingredient = types.ValidIngredient{}
 			}
 
-			// TODO: remove me
 			step.Products = nil
 		}
 
