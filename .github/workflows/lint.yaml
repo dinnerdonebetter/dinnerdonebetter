@@ -21,9 +21,6 @@ jobs:
      - name: Checkout code
        uses: actions/checkout@v2
 
-     - name: vendor
-       run: go mod vendor
-
      - name: check formatting
        run: if [ $(gofmt -l . | grep -Ev '^vendor\/' | head -c1 | wc -c) -ne 0 ]; then exit 1; fi
  lint:
@@ -32,6 +29,9 @@ jobs:
        linter-version: [ 'v1.42' ]
    runs-on: ubuntu-latest
    steps:
+     - name: vendor
+       run: go mod vendor
+
      - uses: actions/checkout@v2
      - name: golangci-lint
        uses: golangci/golangci-lint-action@v2
