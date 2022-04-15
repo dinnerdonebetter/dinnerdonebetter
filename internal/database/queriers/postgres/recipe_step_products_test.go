@@ -360,6 +360,34 @@ func TestQuerier_GetTotalRecipeStepProductCount(T *testing.T) {
 	})
 }
 
+func TestQuerier_getRecipeStepProductsForRecipe(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipeID := fakes.BuildFakeID()
+		exampleRecipeStepProductList := fakes.BuildFakeRecipeStepProductList()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{
+			exampleRecipeID,
+			exampleRecipeID,
+		}
+		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromRecipeStepProducts(false, exampleRecipeStepProductList.FilteredCount, exampleRecipeStepProductList.RecipeStepProducts...))
+
+		actual, err := c.getRecipeStepProductsForRecipe(ctx, exampleRecipeID)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleRecipeStepProductList.RecipeStepProducts, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_GetRecipeStepProducts(T *testing.T) {
 	T.Parallel()
 
@@ -374,7 +402,7 @@ func TestQuerier_GetRecipeStepProducts(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_products", getRecipeStepProductsJoins, nil, nil, householdOwnershipColumn, recipeStepProductsTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "recipe_step_products", getRecipeStepProductsJoins, nil, nil, householdOwnershipColumn, recipeStepProductsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -428,7 +456,7 @@ func TestQuerier_GetRecipeStepProducts(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_products", getRecipeStepProductsJoins, nil, nil, householdOwnershipColumn, recipeStepProductsTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "recipe_step_products", getRecipeStepProductsJoins, nil, nil, householdOwnershipColumn, recipeStepProductsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -451,7 +479,7 @@ func TestQuerier_GetRecipeStepProducts(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_products", getRecipeStepProductsJoins, nil, nil, householdOwnershipColumn, recipeStepProductsTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "recipe_step_products", getRecipeStepProductsJoins, nil, nil, householdOwnershipColumn, recipeStepProductsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -474,7 +502,7 @@ func TestQuerier_GetRecipeStepProducts(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_products", getRecipeStepProductsJoins, nil, nil, householdOwnershipColumn, recipeStepProductsTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "recipe_step_products", getRecipeStepProductsJoins, nil, nil, householdOwnershipColumn, recipeStepProductsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).

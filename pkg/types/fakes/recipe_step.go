@@ -9,18 +9,24 @@ import (
 
 // BuildFakeRecipeStep builds a faked recipe step.
 func BuildFakeRecipeStep() *types.RecipeStep {
+	recipeStepID := ksuid.New().String()
+
 	var ingredients []*types.RecipeStepIngredient
 	for i := 0; i < exampleQuantity; i++ {
-		ingredients = append(ingredients, BuildFakeRecipeStepIngredient())
+		ing := BuildFakeRecipeStepIngredient()
+		ing.BelongsToRecipeStep = recipeStepID
+		ingredients = append(ingredients, ing)
 	}
 
 	var products []*types.RecipeStepProduct
 	for i := 0; i < exampleQuantity; i++ {
-		products = append(products, BuildFakeRecipeStepProduct())
+		p := BuildFakeRecipeStepProduct()
+		p.BelongsToRecipeStep = recipeStepID
+		products = append(products, p)
 	}
 
 	return &types.RecipeStep{
-		ID:                        ksuid.New().String(),
+		ID:                        recipeStepID,
 		Index:                     uint(fake.Uint32()),
 		Preparation:               *BuildFakeValidPreparation(),
 		PrerequisiteStep:          uint64(fake.Uint32()),

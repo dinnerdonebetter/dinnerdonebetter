@@ -17,19 +17,19 @@ func (c *Client) GetRecipeStepIngredient(ctx context.Context, recipeID, recipeSt
 	logger := c.logger.Clone()
 
 	if recipeID == "" {
-		return nil, ErrInvalidIDProvided
+		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if recipeStepID == "" {
-		return nil, ErrInvalidIDProvided
+		return nil, buildInvalidIDError("recipe step")
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
 	if recipeStepIngredientID == "" {
-		return nil, ErrInvalidIDProvided
+		return nil, buildInvalidIDError("recipe step ingredient")
 	}
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 	tracing.AttachRecipeStepIngredientIDToSpan(span, recipeStepIngredientID)
@@ -56,13 +56,13 @@ func (c *Client) GetRecipeStepIngredients(ctx context.Context, recipeID, recipeS
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if recipeID == "" {
-		return nil, ErrInvalidIDProvided
+		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if recipeStepID == "" {
-		return nil, ErrInvalidIDProvided
+		return nil, buildInvalidIDError("recipe step")
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
@@ -88,7 +88,7 @@ func (c *Client) CreateRecipeStepIngredient(ctx context.Context, recipeID string
 	logger := c.logger.Clone()
 
 	if recipeID == "" {
-		return nil, ErrInvalidIDProvided
+		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)

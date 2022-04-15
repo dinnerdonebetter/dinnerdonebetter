@@ -75,7 +75,7 @@ func TestPostgres_buildListQuery(T *testing.T) {
 			"key": "value",
 		}
 
-		actualQuery, actualArgs := q.buildListQuery(ctx, exampleTableName, exampleJoins, nil, exampleWhere, exampleOwnershipColumn, exampleColumns, exampleUser.ID, false, filter)
+		actualQuery, actualArgs := q.buildListQuery(ctx, exampleTableName, exampleJoins, nil, exampleWhere, exampleOwnershipColumn, exampleColumns, exampleUser.ID, false, filter, true)
 
 		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
@@ -102,7 +102,7 @@ func TestPostgres_buildListQuery(T *testing.T) {
 			filter.UpdatedAfter,
 			filter.UpdatedBefore,
 		}
-		actualQuery, actualArgs := q.buildListQuery(ctx, exampleTableName, nil, nil, nil, exampleOwnershipColumn, exampleColumns, exampleUser.ID, true, filter)
+		actualQuery, actualArgs := q.buildListQuery(ctx, exampleTableName, nil, nil, nil, exampleOwnershipColumn, exampleColumns, exampleUser.ID, true, filter, true)
 
 		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)
@@ -130,7 +130,7 @@ func TestPostgres_buildListQuery(T *testing.T) {
 			filter.UpdatedAfter,
 			filter.UpdatedBefore,
 		}
-		actualQuery, actualArgs := q.buildListQuery(ctx, exampleTableName, nil, nil, nil, exampleOwnershipColumn, exampleColumns, exampleUser.ID, true, filter)
+		actualQuery, actualArgs := q.buildListQuery(ctx, exampleTableName, nil, nil, nil, exampleOwnershipColumn, exampleColumns, exampleUser.ID, true, filter, true)
 
 		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
 		assert.Equal(t, expectedQuery, actualQuery)

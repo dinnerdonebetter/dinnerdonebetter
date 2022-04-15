@@ -241,7 +241,7 @@ func (q *SQLQuerier) GetValidIngredients(ctx context.Context, filter *types.Quer
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildListQuery(ctx, "valid_ingredients", nil, nil, nil, householdOwnershipColumn, validIngredientsTableColumns, "", false, filter)
+	query, args := q.buildListQuery(ctx, "valid_ingredients", nil, nil, nil, householdOwnershipColumn, validIngredientsTableColumns, "", false, filter, true)
 
 	rows, err := q.performReadQuery(ctx, q.db, "validIngredients", query, args)
 	if err != nil {

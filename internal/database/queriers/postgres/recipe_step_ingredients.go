@@ -14,7 +14,8 @@ import (
 )
 
 const (
-	recipeStepsOnRecipeStepIngredientsJoinClause = "recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id"
+	recipeStepsOnRecipeStepIngredientsJoinClause      = "recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id"
+	recipeStepIngredientsOnValidIngredientsJoinClause = "valid_ingredients ON recipe_step_ingredients.ingredient_id=valid_ingredients.id"
 )
 
 var (
@@ -33,11 +34,34 @@ var (
 		"recipe_step_ingredients.last_updated_on",
 		"recipe_step_ingredients.archived_on",
 		"recipe_step_ingredients.belongs_to_recipe_step",
+		"valid_ingredients.id",
+		"valid_ingredients.name",
+		"valid_ingredients.variant",
+		"valid_ingredients.description",
+		"valid_ingredients.warning",
+		"valid_ingredients.contains_egg",
+		"valid_ingredients.contains_dairy",
+		"valid_ingredients.contains_peanut",
+		"valid_ingredients.contains_tree_nut",
+		"valid_ingredients.contains_soy",
+		"valid_ingredients.contains_wheat",
+		"valid_ingredients.contains_shellfish",
+		"valid_ingredients.contains_sesame",
+		"valid_ingredients.contains_fish",
+		"valid_ingredients.contains_gluten",
+		"valid_ingredients.animal_flesh",
+		"valid_ingredients.animal_derived",
+		"valid_ingredients.volumetric",
+		"valid_ingredients.icon_path",
+		"valid_ingredients.created_on",
+		"valid_ingredients.last_updated_on",
+		"valid_ingredients.archived_on",
 	}
 
 	getRecipeStepIngredientsJoins = []string{
 		recipeStepsOnRecipeStepIngredientsJoinClause,
 		recipesOnRecipeStepsJoinClause,
+		recipeStepIngredientsOnValidIngredientsJoinClause,
 	}
 )
 
@@ -62,6 +86,28 @@ func (q *SQLQuerier) scanRecipeStepIngredient(ctx context.Context, scan database
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
 		&x.BelongsToRecipeStep,
+		&x.Ingredient.ID,
+		&x.Ingredient.Name,
+		&x.Ingredient.Variant,
+		&x.Ingredient.Description,
+		&x.Ingredient.Warning,
+		&x.Ingredient.ContainsEgg,
+		&x.Ingredient.ContainsDairy,
+		&x.Ingredient.ContainsPeanut,
+		&x.Ingredient.ContainsTreeNut,
+		&x.Ingredient.ContainsSoy,
+		&x.Ingredient.ContainsWheat,
+		&x.Ingredient.ContainsShellfish,
+		&x.Ingredient.ContainsSesame,
+		&x.Ingredient.ContainsFish,
+		&x.Ingredient.ContainsGluten,
+		&x.Ingredient.AnimalFlesh,
+		&x.Ingredient.AnimalDerived,
+		&x.Ingredient.Volumetric,
+		&x.Ingredient.IconPath,
+		&x.Ingredient.CreatedOn,
+		&x.Ingredient.LastUpdatedOn,
+		&x.Ingredient.ArchivedOn,
 	}
 
 	if includeCounts {
@@ -151,7 +197,7 @@ func (q *SQLQuerier) RecipeStepIngredientExists(ctx context.Context, recipeID, r
 	return result, nil
 }
 
-const getRecipeStepIngredientQuery = `SELECT 
+const getRecipeStepIngredientQuery = `SELECT
 	recipe_step_ingredients.id,
 	recipe_step_ingredients.ingredient_id,
 	recipe_step_ingredients.quantity_type,
@@ -160,19 +206,42 @@ const getRecipeStepIngredientQuery = `SELECT
 	recipe_step_ingredients.product_of_recipe_step,
 	recipe_step_ingredients.ingredient_notes,
 	recipe_step_ingredients.created_on,
-	recipe_step_ingredients.last_updated_on, 
+	recipe_step_ingredients.last_updated_on,
 	recipe_step_ingredients.archived_on,
-	recipe_step_ingredients.belongs_to_recipe_step 
-FROM recipe_step_ingredients 
-JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id 
-JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id 
-WHERE recipe_step_ingredients.archived_on IS NULL 
-AND recipe_step_ingredients.belongs_to_recipe_step = $1 
-AND recipe_step_ingredients.id = $2 
-AND recipe_steps.archived_on IS NULL 
-AND recipe_steps.belongs_to_recipe = $3 
-AND recipe_steps.id = $4 
-AND recipes.archived_on IS NULL 
+	recipe_step_ingredients.belongs_to_recipe_step,
+	valid_ingredients.id,
+	valid_ingredients.name,
+	valid_ingredients.variant,
+	valid_ingredients.description,
+	valid_ingredients.warning,
+	valid_ingredients.contains_egg,
+	valid_ingredients.contains_dairy,
+	valid_ingredients.contains_peanut,
+	valid_ingredients.contains_tree_nut,
+	valid_ingredients.contains_soy,
+	valid_ingredients.contains_wheat,
+	valid_ingredients.contains_shellfish,
+	valid_ingredients.contains_sesame,
+	valid_ingredients.contains_fish,
+	valid_ingredients.contains_gluten,
+	valid_ingredients.animal_flesh,
+	valid_ingredients.animal_derived,
+	valid_ingredients.volumetric,
+	valid_ingredients.icon_path,
+	valid_ingredients.created_on,
+	valid_ingredients.last_updated_on,
+	valid_ingredients.archived_on
+FROM recipe_step_ingredients
+JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id
+JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id=valid_ingredients.id
+WHERE recipe_step_ingredients.archived_on IS NULL
+AND recipe_step_ingredients.belongs_to_recipe_step = $1
+AND recipe_step_ingredients.id = $2
+AND recipe_steps.archived_on IS NULL
+AND recipe_steps.belongs_to_recipe = $3
+AND recipe_steps.id = $4
+AND recipes.archived_on IS NULL
 AND recipes.id = $5
 `
 
@@ -236,6 +305,33 @@ func (q *SQLQuerier) GetTotalRecipeStepIngredientCount(ctx context.Context) (uin
 	return count, nil
 }
 
+// getRecipeStepIngredientsForRecipe fetches a list of recipe step ingredients from the database that meet a particular filter.
+func (q *SQLQuerier) getRecipeStepIngredientsForRecipe(ctx context.Context, recipeID string) ([]*types.RecipeStepIngredient, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if recipeID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+
+	query, args := q.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
+	rows, err := q.performReadQuery(ctx, q.db, "recipe step ingredients", query, args)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "executing recipe step ingredients list retrieval query")
+	}
+
+	recipeStepIngredients, _, _, err := q.scanRecipeStepIngredients(ctx, rows, false)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "scanning recipe step ingredients")
+	}
+
+	return recipeStepIngredients, nil
+}
+
 // GetRecipeStepIngredients fetches a list of recipe step ingredients from the database that meet a particular filter.
 func (q *SQLQuerier) GetRecipeStepIngredients(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (x *types.RecipeStepIngredientList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -263,8 +359,7 @@ func (q *SQLQuerier) GetRecipeStepIngredients(ctx context.Context, recipeID, rec
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, nil, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter)
-
+	query, args := q.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
 	rows, err := q.performReadQuery(ctx, q.db, "recipeStepIngredients", query, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "executing recipe step ingredients list retrieval query")
@@ -384,7 +479,6 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 	}
 
 	tracing.AttachRecipeStepIngredientIDToSpan(span, x.ID)
-	logger.Info("recipe step ingredient created")
 
 	return x, nil
 }

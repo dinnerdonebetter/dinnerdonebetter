@@ -17,7 +17,7 @@ func (c *Client) GetRecipe(ctx context.Context, recipeID string) (*types.Recipe,
 	logger := c.logger.Clone()
 
 	if recipeID == "" {
-		return nil, ErrInvalidIDProvided
+		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)

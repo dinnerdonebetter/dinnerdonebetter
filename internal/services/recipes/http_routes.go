@@ -67,8 +67,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	logger.WithValue("input", input).Info("input manipulated")
-
 	input.CreatedByUser = sessionCtxData.Requester.UserID
 	tracing.AttachRecipeIDToSpan(span, input.ID)
 

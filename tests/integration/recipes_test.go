@@ -79,9 +79,12 @@ func createRecipeForTest(ctx context.Context, t *testing.T, client *httpclient.C
 	t.Logf("recipe %q created", createdRecipe.ID)
 	checkRecipeEquality(t, exampleRecipe, createdRecipe)
 
+	// DEBUG (4/14/22): right now, this doesn't work, because the recipe isn't being returned with steps in it.
 	createdRecipe, err = client.GetRecipe(ctx, createdRecipe.ID)
 	requireNotNilAndNoProblems(t, createdRecipe, err)
 	checkRecipeEquality(t, exampleRecipe, createdRecipe)
+
+	require.NotEmpty(t, createdRecipe.Steps, "created recipe must have steps")
 
 	return createdValidIngredients, createdValidPreparation, createdRecipe
 }

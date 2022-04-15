@@ -441,7 +441,7 @@ func (q *SQLQuerier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildListQuery(ctx, "users", nil, nil, nil, "", usersTableColumns, "", false, filter)
+	query, args := q.buildListQuery(ctx, "users", nil, nil, nil, "", usersTableColumns, "", false, filter, true)
 
 	rows, err := q.performReadQuery(ctx, q.db, "users", query, args)
 	if err != nil {

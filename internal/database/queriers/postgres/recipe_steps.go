@@ -262,7 +262,7 @@ func (q *SQLQuerier) GetRecipeSteps(ctx context.Context, recipeID string, filter
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildListQuery(ctx, "recipe_steps", getRecipeStepsJoins, []string{"valid_preparations.id"}, nil, householdOwnershipColumn, recipeStepsTableColumns, "", false, filter)
+	query, args := q.buildListQuery(ctx, "recipe_steps", getRecipeStepsJoins, []string{"valid_preparations.id"}, nil, householdOwnershipColumn, recipeStepsTableColumns, "", false, filter, true)
 
 	rows, err := q.performReadQuery(ctx, q.db, "recipeSteps", query, args)
 	if err != nil {
@@ -354,8 +354,6 @@ func (q *SQLQuerier) createRecipeStep(ctx context.Context, db database.SQLQueryE
 
 	logger := q.logger.WithValue(keys.RecipeStepIDKey, input.ID)
 
-	logger.WithValue("input", input).Info("input arrived at createRecipeStep")
-
 	args := []interface{}{
 		input.ID,
 		input.Index,
@@ -408,7 +406,6 @@ func (q *SQLQuerier) createRecipeStep(ctx context.Context, db database.SQLQueryE
 	}
 
 	tracing.AttachRecipeStepIDToSpan(span, x.ID)
-	logger.Info("recipe step created")
 
 	return x, nil
 }

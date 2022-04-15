@@ -265,7 +265,7 @@ func (q *SQLQuerier) GetMealPlanOptions(ctx context.Context, mealPlanID string, 
 	}
 
 	groupBys := []string{"meal_plan_options.id", "meals.id"}
-	query, args := q.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, groupBys, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter)
+	query, args := q.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, groupBys, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter, true)
 
 	rows, err := q.performReadQuery(ctx, q.db, "mealPlanOptions", query, args)
 	if err != nil {

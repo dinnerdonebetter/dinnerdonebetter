@@ -213,7 +213,7 @@ func (q *SQLQuerier) GetValidInstruments(ctx context.Context, filter *types.Quer
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildListQuery(ctx, "valid_instruments", nil, nil, nil, householdOwnershipColumn, validInstrumentsTableColumns, "", false, filter)
+	query, args := q.buildListQuery(ctx, "valid_instruments", nil, nil, nil, householdOwnershipColumn, validInstrumentsTableColumns, "", false, filter, true)
 
 	rows, err := q.performReadQuery(ctx, q.db, "validInstruments", query, args)
 	if err != nil {
