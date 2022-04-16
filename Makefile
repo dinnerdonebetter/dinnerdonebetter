@@ -15,6 +15,10 @@ DEFAULT_CERT_TARGETS          := $(LOCAL_ADDRESS) prixfixe.local localhost 127.0
 
 ## non-PHONY folders/files
 
+.PHONY: blah
+blah:
+	echo "blah"
+
 clear:
 	@printf "\033[2J\033[3J\033[1;1H"
 
