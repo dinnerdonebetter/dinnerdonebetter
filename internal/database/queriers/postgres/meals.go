@@ -249,7 +249,7 @@ func (q *SQLQuerier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildListQuery(ctx, "meals", nil, nil, nil, "", mealsTableColumns, "", false, filter)
+	query, args := q.buildListQuery(ctx, "meals", nil, nil, nil, "", mealsTableColumns, "", false, filter, true)
 
 	rows, err := q.performReadQuery(ctx, q.db, "meals", query, args)
 	if err != nil {

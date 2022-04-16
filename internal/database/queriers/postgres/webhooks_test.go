@@ -356,7 +356,7 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "webhooks", nil, nil, nil, "belongs_to_household", webhooksTableColumns, exampleHouseholdID, false, filter)
+		query, args := c.buildListQuery(ctx, "webhooks", nil, nil, nil, "belongs_to_household", webhooksTableColumns, exampleHouseholdID, false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -384,7 +384,7 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "webhooks", nil, nil, nil, "belongs_to_household", webhooksTableColumns, exampleHouseholdID, false, filter)
+		query, args := c.buildListQuery(ctx, "webhooks", nil, nil, nil, "belongs_to_household", webhooksTableColumns, exampleHouseholdID, false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -421,7 +421,7 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "webhooks", nil, nil, nil, "belongs_to_household", webhooksTableColumns, exampleHouseholdID, false, filter)
+		query, args := c.buildListQuery(ctx, "webhooks", nil, nil, nil, "belongs_to_household", webhooksTableColumns, exampleHouseholdID, false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -442,7 +442,7 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "webhooks", nil, nil, nil, "belongs_to_household", webhooksTableColumns, exampleHouseholdID, false, filter)
+		query, args := c.buildListQuery(ctx, "webhooks", nil, nil, nil, "belongs_to_household", webhooksTableColumns, exampleHouseholdID, false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).

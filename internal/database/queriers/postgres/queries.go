@@ -255,6 +255,7 @@ func (q *SQLQuerier) buildListQuery(
 	ownerID string,
 	forAdmin bool,
 	filter *types.QueryFilter,
+	includeCountQueries bool,
 ) (query string, args []interface{}) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -271,14 +272,15 @@ func (q *SQLQuerier) buildListQuery(
 	filteredCountQuery, filteredCountQueryArgs := q.buildFilteredCountQuery(ctx, tableName, joins, where, ownershipColumn, ownerID, forAdmin, includeArchived, filter)
 	totalCountQuery, totalCountQueryArgs := q.buildTotalCountQuery(ctx, tableName, joins, where, ownershipColumn, ownerID, forAdmin, includeArchived)
 
-	builder := q.sqlBuilder.
-		Select(append(
+	if includeCountQueries {
+		columns = append(
 			columns,
 			fmt.Sprintf("(%s) as total_count", totalCountQuery),
 			fmt.Sprintf("(%s) as filtered_count", filteredCountQuery),
-		)...).
-		From(tableName)
+		)
+	}
 
+	builder := q.sqlBuilder.Select(columns...).From(tableName)
 	for _, join := range joins {
 		builder = builder.Join(join)
 	}
@@ -308,9 +310,12 @@ func (q *SQLQuerier) buildListQuery(
 		builder = applyFilterToQueryBuilder(filter, tableName, builder)
 	}
 
-	query, selectArgs := q.buildQuery(span, builder)
+	query, args = q.buildQuery(span, builder)
+	if includeCountQueries {
+		args = append(append(filteredCountQueryArgs, totalCountQueryArgs...), args...)
+	}
 
-	return query, append(append(filteredCountQueryArgs, totalCountQueryArgs...), selectArgs...)
+	return query, args
 }
 
 // BuildListQueryWithILike builds a SQL query selecting rows that adhere to a given QueryFilter and belong to a given household,

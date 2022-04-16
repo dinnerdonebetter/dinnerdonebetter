@@ -36,7 +36,7 @@ type (
 		TemperatureInCelsius      *uint16                 `json:"temperatureInCelsius"`
 		Notes                     string                  `json:"notes"`
 		ID                        string                  `json:"id"`
-		Yields                    string                  `json:"yields"`
+		Products                  []*RecipeStepProduct    `json:"products"`
 		BelongsToRecipe           string                  `json:"belongsToRecipe"`
 		Preparation               ValidPreparation        `json:"preparation"`
 		Ingredients               []*RecipeStepIngredient `json:"ingredients"`
@@ -59,7 +59,7 @@ type (
 	RecipeStepCreationRequestInput struct {
 		_                         struct{}
 		TemperatureInCelsius      *uint16                                     `json:"temperatureInCelsius"`
-		Yields                    string                                      `json:"yields"`
+		Products                  []*RecipeStepProductCreationRequestInput    `json:"products"`
 		Notes                     string                                      `json:"notes"`
 		PreparationID             string                                      `json:"preparationID"`
 		BelongsToRecipe           string                                      `json:"-"`
@@ -76,7 +76,7 @@ type (
 	RecipeStepDatabaseCreationInput struct {
 		_                         struct{}
 		TemperatureInCelsius      *uint16                                      `json:"temperatureInCelsius"`
-		Yields                    string                                       `json:"yields"`
+		Products                  []*RecipeStepProductDatabaseCreationInput    `json:"products"`
 		Notes                     string                                       `json:"notes"`
 		PreparationID             string                                       `json:"preparationID"`
 		BelongsToRecipe           string                                       `json:"belongsToRecipe"`
@@ -92,17 +92,17 @@ type (
 	// RecipeStepUpdateRequestInput represents what a user could set as input for updating recipe steps.
 	RecipeStepUpdateRequestInput struct {
 		_                         struct{}
-		TemperatureInCelsius      *uint16          `json:"temperatureInCelsius"`
-		Notes                     string           `json:"notes"`
-		Why                       string           `json:"why"`
-		BelongsToRecipe           string           `json:"belongsToRecipe"`
-		Yields                    string           `json:"yields"`
-		Preparation               ValidPreparation `json:"preparation"`
-		Index                     uint             `json:"index"`
-		PrerequisiteStep          uint64           `json:"prerequisiteStep"`
-		MinEstimatedTimeInSeconds uint32           `json:"minEstimatedTimeInSeconds"`
-		MaxEstimatedTimeInSeconds uint32           `json:"maxEstimatedTimeInSeconds"`
-		Optional                  bool             `json:"optional"`
+		TemperatureInCelsius      *uint16              `json:"temperatureInCelsius"`
+		Notes                     string               `json:"notes"`
+		Why                       string               `json:"why"`
+		BelongsToRecipe           string               `json:"belongsToRecipe"`
+		Products                  []*RecipeStepProduct `json:"products"`
+		Preparation               ValidPreparation     `json:"preparation"`
+		Index                     uint                 `json:"index"`
+		PrerequisiteStep          uint64               `json:"prerequisiteStep"`
+		MinEstimatedTimeInSeconds uint32               `json:"minEstimatedTimeInSeconds"`
+		MaxEstimatedTimeInSeconds uint32               `json:"maxEstimatedTimeInSeconds"`
+		Optional                  bool                 `json:"optional"`
 	}
 
 	// RecipeStepDataManager describes a structure capable of storing recipe steps permanently.
@@ -165,9 +165,7 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
 		x.Notes = input.Notes
 	}
 
-	if input.Yields != "" && input.Yields != x.Yields {
-		x.Yields = input.Yields
-	}
+	// TODO: do something about products here
 
 	if input.Optional != x.Optional {
 		x.Optional = input.Optional
@@ -186,7 +184,7 @@ func (x *RecipeStepCreationRequestInput) ValidateWithContext(ctx context.Context
 		ctx,
 		x,
 		validation.Field(&x.PreparationID, validation.Required),
-		validation.Field(&x.Yields, validation.Required),
+		validation.Field(&x.Products, validation.Required),
 		validation.Field(&x.Ingredients, validation.Required),
 	)
 }
@@ -199,7 +197,7 @@ func (x *RecipeStepDatabaseCreationInput) ValidateWithContext(ctx context.Contex
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
-		validation.Field(&x.Yields, validation.Required),
+		validation.Field(&x.Products, validation.Required),
 		validation.Field(&x.PreparationID, validation.Required),
 	)
 }
@@ -211,6 +209,11 @@ func RecipeStepDatabaseCreationInputFromRecipeStepCreationInput(input *RecipeSte
 		ingredients = append(ingredients, RecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredientCreationInput(ingredient))
 	}
 
+	products := []*RecipeStepProductDatabaseCreationInput{}
+	for _, product := range input.Products {
+		products = append(products, RecipeStepProductDatabaseCreationInputFromRecipeStepProductCreationInput(product))
+	}
+
 	x := &RecipeStepDatabaseCreationInput{
 		Index:                     input.Index,
 		PreparationID:             input.PreparationID,
@@ -219,7 +222,7 @@ func RecipeStepDatabaseCreationInputFromRecipeStepCreationInput(input *RecipeSte
 		MaxEstimatedTimeInSeconds: input.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      input.TemperatureInCelsius,
 		Notes:                     input.Notes,
-		Yields:                    input.Yields,
+		Products:                  products,
 		Optional:                  input.Optional,
 		Ingredients:               ingredients,
 	}
@@ -240,7 +243,7 @@ func (x *RecipeStepUpdateRequestInput) ValidateWithContext(ctx context.Context) 
 		validation.Field(&x.MinEstimatedTimeInSeconds, validation.Required),
 		validation.Field(&x.MaxEstimatedTimeInSeconds, validation.Required),
 		validation.Field(&x.TemperatureInCelsius, validation.Required),
-		validation.Field(&x.Yields, validation.Required),
+		// validation.Field(&x.Products, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
 	)
 }

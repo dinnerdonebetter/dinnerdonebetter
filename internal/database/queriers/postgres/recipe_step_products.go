@@ -143,7 +143,26 @@ func (q *SQLQuerier) RecipeStepProductExists(ctx context.Context, recipeID, reci
 	return result, nil
 }
 
-const getRecipeStepProductQuery = "SELECT recipe_step_products.id, recipe_step_products.name, recipe_step_products.recipe_step_id, recipe_step_products.created_on, recipe_step_products.last_updated_on, recipe_step_products.archived_on, recipe_step_products.belongs_to_recipe_step FROM recipe_step_products JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_products.archived_on IS NULL AND recipe_step_products.belongs_to_recipe_step = $1 AND recipe_step_products.id = $2 AND recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_on IS NULL AND recipes.id = $5"
+const getRecipeStepProductQuery = `SELECT
+	recipe_step_products.id,
+	recipe_step_products.name,
+	recipe_step_products.recipe_step_id,
+	recipe_step_products.created_on,
+	recipe_step_products.last_updated_on,
+	recipe_step_products.archived_on,
+	recipe_step_products.belongs_to_recipe_step
+FROM recipe_step_products
+JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id
+JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+WHERE recipe_step_products.archived_on IS NULL
+AND recipe_step_products.belongs_to_recipe_step = $1 
+AND recipe_step_products.id = $2
+AND recipe_steps.archived_on IS NULL
+AND recipe_steps.belongs_to_recipe = $3
+AND recipe_steps.id = $4
+AND recipes.archived_on IS NULL 
+AND recipes.id = $5
+`
 
 // GetRecipeStepProduct fetches a recipe step product from the database.
 func (q *SQLQuerier) GetRecipeStepProduct(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) (*types.RecipeStepProduct, error) {
@@ -205,6 +224,55 @@ func (q *SQLQuerier) GetTotalRecipeStepProductCount(ctx context.Context) (uint64
 	return count, nil
 }
 
+const getRecipeStepProductsForRecipeQuery = `SELECT
+	recipe_step_products.id,
+	recipe_step_products.name,
+	recipe_step_products.recipe_step_id,
+	recipe_step_products.created_on,
+	recipe_step_products.last_updated_on,
+	recipe_step_products.archived_on,
+	recipe_step_products.belongs_to_recipe_step
+FROM recipe_step_products
+JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id
+JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+WHERE recipe_step_products.archived_on IS NULL
+AND recipe_steps.archived_on IS NULL
+AND recipe_steps.belongs_to_recipe = $1
+AND recipes.archived_on IS NULL 
+AND recipes.id = $2
+`
+
+// getRecipeStepProductsForRecipe fetches a list of recipe step products from the database that meet a particular filter.
+func (q *SQLQuerier) getRecipeStepProductsForRecipe(ctx context.Context, recipeID string) ([]*types.RecipeStepProduct, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if recipeID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+
+	args := []interface{}{
+		recipeID,
+		recipeID,
+	}
+
+	rows, err := q.performReadQuery(ctx, q.db, "recipe step products", getRecipeStepProductsForRecipeQuery, args)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "executing recipe step products list retrieval query")
+	}
+
+	recipeStepProducts, _, _, err := q.scanRecipeStepProducts(ctx, rows, false)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "scanning recipe step products")
+	}
+
+	return recipeStepProducts, nil
+}
+
 // GetRecipeStepProducts fetches a list of recipe step products from the database that meet a particular filter.
 func (q *SQLQuerier) GetRecipeStepProducts(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (x *types.RecipeStepProductList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -232,9 +300,9 @@ func (q *SQLQuerier) GetRecipeStepProducts(ctx context.Context, recipeID, recipe
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildListQuery(ctx, "recipe_step_products", getRecipeStepProductsJoins, nil, nil, householdOwnershipColumn, recipeStepProductsTableColumns, "", false, filter)
+	query, args := q.buildListQuery(ctx, "recipe_step_products", getRecipeStepProductsJoins, nil, nil, householdOwnershipColumn, recipeStepProductsTableColumns, "", false, filter, true)
 
-	rows, err := q.performReadQuery(ctx, q.db, "recipeStepProducts", query, args)
+	rows, err := q.performReadQuery(ctx, q.db, "recipe step products", query, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "executing recipe step products list retrieval query")
 	}
@@ -314,7 +382,7 @@ func (q *SQLQuerier) GetRecipeStepProductsWithIDs(ctx context.Context, recipeSte
 const recipeStepProductCreationQuery = "INSERT INTO recipe_step_products (id,name,recipe_step_id,belongs_to_recipe_step) VALUES ($1,$2,$3,$4)"
 
 // CreateRecipeStepProduct creates a recipe step product in the database.
-func (q *SQLQuerier) CreateRecipeStepProduct(ctx context.Context, input *types.RecipeStepProductDatabaseCreationInput) (*types.RecipeStepProduct, error) {
+func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepProductDatabaseCreationInput) (*types.RecipeStepProduct, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -332,7 +400,7 @@ func (q *SQLQuerier) CreateRecipeStepProduct(ctx context.Context, input *types.R
 	}
 
 	// create the recipe step product.
-	if err := q.performWriteQuery(ctx, q.db, "recipe step product creation", recipeStepProductCreationQuery, args); err != nil {
+	if err := q.performWriteQuery(ctx, db, "recipe step product creation", recipeStepProductCreationQuery, args); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "performing recipe step product creation query")
 	}
 
@@ -345,9 +413,13 @@ func (q *SQLQuerier) CreateRecipeStepProduct(ctx context.Context, input *types.R
 	}
 
 	tracing.AttachRecipeStepProductIDToSpan(span, x.ID)
-	logger.Info("recipe step product created")
 
 	return x, nil
+}
+
+// CreateRecipeStepProduct creates a recipe step product in the database.
+func (q *SQLQuerier) CreateRecipeStepProduct(ctx context.Context, input *types.RecipeStepProductDatabaseCreationInput) (*types.RecipeStepProduct, error) {
+	return q.createRecipeStepProduct(ctx, q.db, input)
 }
 
 const updateRecipeStepProductQuery = "UPDATE recipe_step_products SET name = $1, recipe_step_id = $2, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $3 AND id = $4"

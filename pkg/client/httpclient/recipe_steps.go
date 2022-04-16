@@ -17,13 +17,13 @@ func (c *Client) GetRecipeStep(ctx context.Context, recipeID, recipeStepID strin
 	logger := c.logger.Clone()
 
 	if recipeID == "" {
-		return nil, ErrInvalidIDProvided
+		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	if recipeStepID == "" {
-		return nil, ErrInvalidIDProvided
+		return nil, buildInvalidIDError("recipe step")
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
@@ -50,7 +50,7 @@ func (c *Client) GetRecipeSteps(ctx context.Context, recipeID string, filter *ty
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	if recipeID == "" {
-		return nil, ErrInvalidIDProvided
+		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)

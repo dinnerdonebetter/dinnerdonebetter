@@ -375,7 +375,7 @@ func TestQuerier_GetRecipeStepInstruments(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepInstrumentsJoins, nil, nil, householdOwnershipColumn, recipeStepInstrumentsTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepInstrumentsJoins, nil, nil, householdOwnershipColumn, recipeStepInstrumentsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -429,7 +429,7 @@ func TestQuerier_GetRecipeStepInstruments(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepInstrumentsJoins, nil, nil, householdOwnershipColumn, recipeStepInstrumentsTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepInstrumentsJoins, nil, nil, householdOwnershipColumn, recipeStepInstrumentsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -452,7 +452,7 @@ func TestQuerier_GetRecipeStepInstruments(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepInstrumentsJoins, nil, nil, householdOwnershipColumn, recipeStepInstrumentsTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepInstrumentsJoins, nil, nil, householdOwnershipColumn, recipeStepInstrumentsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -475,7 +475,7 @@ func TestQuerier_GetRecipeStepInstruments(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepInstrumentsJoins, nil, nil, householdOwnershipColumn, recipeStepInstrumentsTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepInstrumentsJoins, nil, nil, householdOwnershipColumn, recipeStepInstrumentsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).

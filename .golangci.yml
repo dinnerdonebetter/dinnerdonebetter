@@ -222,7 +222,7 @@ linters:
     - goconst          # Finds repeated strings that could be replaced by a constant
     - gocritic         # Provides many diagnostics that check for bugs, performance and style issues.
     - godot            # Check if comments end in a period
-    - godox            # Tool for detection of FIXME, TODO and other comment keywords
+    # - godox            # Tool for detection of FIXME, TODO and other comment keywords
     - gofmt            # Gofmt checks whether code was gofmt-ed. By default this tool runs with -s option to check for code simplification
     # - gofumpt          # Gofumpt checks whether code was gofumpt-ed.
     - goheader         # Checks is file header matches to pattern

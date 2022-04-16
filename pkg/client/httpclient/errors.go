@@ -2,6 +2,7 @@ package httpclient
 
 import (
 	"errors"
+	"fmt"
 )
 
 var (
@@ -56,3 +57,8 @@ var (
 	// ErrArgumentIsNotPointer indicates we received a non-pointer interface argument.
 	ErrArgumentIsNotPointer = errors.New("value is not a pointer")
 )
+
+// buildInvalidIDError indicates a required ID was passed in as zero.
+func buildInvalidIDError(name string) error {
+	return fmt.Errorf("%s ID provided is empty", name)
+}

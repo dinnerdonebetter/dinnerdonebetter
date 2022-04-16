@@ -22,7 +22,12 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 			MaxEstimatedTimeInSeconds: fake.Uint32(),
 			TemperatureInCelsius:      func(x uint16) *uint16 { return &x }(fake.Uint16()),
 			Notes:                     fake.LoremIpsumSentence(exampleQuantity),
-			Yields:                    fake.LoremIpsumSentence(exampleQuantity),
+			Products: []*RecipeStepProductCreationRequestInput{
+				{
+					Name:         fake.LoremIpsumSentence(exampleQuantity),
+					RecipeStepID: fake.LoremIpsumSentence(exampleQuantity),
+				},
+			},
 			Ingredients: []*RecipeStepIngredientCreationRequestInput{
 				{
 					IngredientID:        func(s string) *string { return &s }(fake.LoremIpsumSentence(exampleQuantity)),
@@ -62,9 +67,14 @@ func TestRecipeStepUpdateRequestInput_Validate(T *testing.T) {
 			PrerequisiteStep:          uint64(fake.Uint32()),
 			MinEstimatedTimeInSeconds: fake.Uint32(),
 			MaxEstimatedTimeInSeconds: fake.Uint32(),
-			Yields:                    fake.LoremIpsumSentence(exampleQuantity),
-			TemperatureInCelsius:      func(x uint16) *uint16 { return &x }(fake.Uint16()),
-			Notes:                     fake.LoremIpsumSentence(exampleQuantity),
+			Products: []*RecipeStepProduct{
+				{
+					Name:         fake.LoremIpsumSentence(exampleQuantity),
+					RecipeStepID: fake.LoremIpsumSentence(exampleQuantity),
+				},
+			},
+			TemperatureInCelsius: func(x uint16) *uint16 { return &x }(fake.Uint16()),
+			Notes:                fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

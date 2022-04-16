@@ -49,7 +49,6 @@ func createRecipeForTest(ctx context.Context, t *testing.T, client *httpclient.C
 	t.Logf("valid preparation %q created", createdValidPreparation.ID)
 
 	t.Log("creating recipe")
-
 	exampleRecipe := fakes.BuildFakeRecipe()
 	if recipe != nil {
 		exampleRecipe = recipe
@@ -63,8 +62,6 @@ func createRecipeForTest(ctx context.Context, t *testing.T, client *httpclient.C
 			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
 			createdValidIngredient, createdValidIngredientErr := client.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, createdValidIngredientErr)
-
-			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
 			createdValidIngredients = append(createdValidIngredients, createdValidIngredient)
 
@@ -82,9 +79,12 @@ func createRecipeForTest(ctx context.Context, t *testing.T, client *httpclient.C
 	t.Logf("recipe %q created", createdRecipe.ID)
 	checkRecipeEquality(t, exampleRecipe, createdRecipe)
 
+	// DEBUG (4/14/22): right now, this doesn't work, because the recipe isn't being returned with steps in it.
 	createdRecipe, err = client.GetRecipe(ctx, createdRecipe.ID)
 	requireNotNilAndNoProblems(t, createdRecipe, err)
 	checkRecipeEquality(t, exampleRecipe, createdRecipe)
+
+	require.NotEmpty(t, createdRecipe.Steps, "created recipe must have steps")
 
 	return createdValidIngredients, createdValidPreparation, createdRecipe
 }

@@ -446,7 +446,7 @@ func TestQuerier_GetMealPlans(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -473,7 +473,7 @@ func TestQuerier_GetMealPlans(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -494,7 +494,7 @@ func TestQuerier_GetMealPlans(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -515,7 +515,7 @@ func TestQuerier_GetMealPlans(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).

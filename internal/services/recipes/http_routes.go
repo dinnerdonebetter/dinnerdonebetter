@@ -58,6 +58,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		input.Steps[i].ID = ksuid.New().String()
 		for j := range step.Ingredients {
 			input.Steps[i].Ingredients[j].ID = ksuid.New().String()
+			input.Steps[i].Ingredients[j].BelongsToRecipeStep = input.Steps[i].ID
+		}
+
+		for j := range step.Products {
+			input.Steps[i].Products[j].ID = ksuid.New().String()
+			input.Steps[i].Products[j].BelongsToRecipeStep = input.Steps[i].ID
 		}
 	}
 
