@@ -53,6 +53,8 @@ type (
 		ServiceRoles              []string        `json:"serviceRoles"`
 		CreatedOn                 uint64          `json:"createdOn"`
 		RequiresPasswordChange    bool            `json:"requiresPasswordChange"`
+		BirthMonth                uint8           `json:"birthMonth"`
+		BirthDay                  uint8           `json:"birthYear"`
 	}
 
 	// UserList represents a list of users.
@@ -65,13 +67,14 @@ type (
 
 	// UserRegistrationInput represents the input required from users to register an account.
 	UserRegistrationInput struct {
-		_ struct{}
-
+		_                    struct{}
 		Username             string `json:"username"`
 		Password             string `json:"password"`
 		EmailAddress         string `json:"emailAddress"`
 		InvitationToken      string `json:"invitationToken,omitempty"`
 		DestinationHousehold string `json:"destinationHousehold,omitempty"`
+		BirthMonth           uint8  `json:"birthMonth,omitempty"`
+		BirthDay             uint8  `json:"birthYear,omitempty"`
 	}
 
 	// UserDataStoreCreationInput is used by the User creation route to communicate with the data store.
@@ -85,6 +88,8 @@ type (
 		TwoFactorSecret      string `json:"-"`
 		InvitationToken      string `json:"-"`
 		DestinationHousehold string `json:"-"`
+		BirthMonth           uint8  `json:"-"`
+		BirthDay             uint8  `json:"-"`
 	}
 
 	// UserCreationResponse is a response structure for Users that doesn't contain passwords fields, but does contain the two factor secret.
@@ -99,6 +104,8 @@ type (
 		CreatedUserID   string          `json:"createdUserID"`
 		CreatedOn       uint64          `json:"createdOn"`
 		IsAdmin         bool            `json:"isAdmin"`
+		BirthMonth      uint8           `json:"birthMonth"`
+		BirthDay        uint8           `json:"birthYear"`
 	}
 
 	// UserLoginInput represents the payload used to log in a User.
@@ -194,6 +201,14 @@ func (u *User) Update(input *User) {
 
 	if input.TwoFactorSecret != "" && input.TwoFactorSecret != u.TwoFactorSecret {
 		u.TwoFactorSecret = input.TwoFactorSecret
+	}
+
+	if input.BirthDay != 0 && input.BirthDay != u.BirthDay {
+		u.BirthDay = input.BirthDay
+	}
+
+	if input.BirthMonth != 0 && input.BirthMonth != u.BirthMonth {
+		u.BirthMonth = input.BirthMonth
 	}
 }
 

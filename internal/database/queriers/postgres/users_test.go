@@ -42,6 +42,8 @@ func buildMockRowsFromUsers(includeCounts bool, filteredCount uint64, users ...*
 			strings.Join(user.ServiceRoles, serviceRolesSeparator),
 			user.ServiceHouseholdStatus,
 			user.ReputationExplanation,
+			user.BirthDay,
+			user.BirthMonth,
 			user.CreatedOn,
 			user.LastUpdatedOn,
 			user.ArchivedOn,
@@ -353,7 +355,7 @@ func TestQuerier_GetUserIDByEmail(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{exampleUser.EmailAddress}
-		db.ExpectQuery(formatQueryForSQLMock(getUserByEmailQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getUserIDByEmailQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(newDatabaseIDResponse(exampleUser.ID))
 
@@ -386,7 +388,7 @@ func TestQuerier_GetUserIDByEmail(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{exampleUser.EmailAddress}
-		db.ExpectQuery(formatQueryForSQLMock(getUserByEmailQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getUserIDByEmailQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
@@ -745,6 +747,8 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleUserCreationInput.HashedPassword,
 			exampleUserCreationInput.TwoFactorSecret,
 			types.UnverifiedHouseholdStatus,
+			exampleUserCreationInput.BirthDay,
+			exampleUserCreationInput.BirthMonth,
 			authorization.ServiceUserRole.String(),
 		}
 
@@ -873,6 +877,8 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleUserCreationInput.HashedPassword,
 			exampleUserCreationInput.TwoFactorSecret,
 			types.UnverifiedHouseholdStatus,
+			exampleUserCreationInput.BirthDay,
+			exampleUserCreationInput.BirthMonth,
 			authorization.ServiceUserRole.String(),
 		}
 
@@ -922,6 +928,8 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleUserCreationInput.HashedPassword,
 			exampleUserCreationInput.TwoFactorSecret,
 			types.UnverifiedHouseholdStatus,
+			exampleUserCreationInput.BirthDay,
+			exampleUserCreationInput.BirthMonth,
 			authorization.ServiceUserRole.String(),
 		}
 
@@ -1007,6 +1015,8 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleUserCreationInput.HashedPassword,
 			exampleUserCreationInput.TwoFactorSecret,
 			types.UnverifiedHouseholdStatus,
+			exampleUserCreationInput.BirthDay,
+			exampleUserCreationInput.BirthMonth,
 			authorization.ServiceUserRole.String(),
 		}
 
@@ -1065,6 +1075,8 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleUserCreationInput.HashedPassword,
 			exampleUserCreationInput.TwoFactorSecret,
 			types.UnverifiedHouseholdStatus,
+			exampleUserCreationInput.BirthDay,
+			exampleUserCreationInput.BirthMonth,
 			authorization.ServiceUserRole.String(),
 		}
 
@@ -1135,6 +1147,8 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleUserCreationInput.HashedPassword,
 			exampleUserCreationInput.TwoFactorSecret,
 			types.UnverifiedHouseholdStatus,
+			exampleUserCreationInput.BirthDay,
+			exampleUserCreationInput.BirthMonth,
 			authorization.ServiceUserRole.String(),
 		}
 
@@ -1197,6 +1211,8 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleUserCreationInput.HashedPassword,
 			exampleUserCreationInput.TwoFactorSecret,
 			types.UnverifiedHouseholdStatus,
+			exampleUserCreationInput.BirthDay,
+			exampleUserCreationInput.BirthMonth,
 			authorization.ServiceUserRole.String(),
 		}
 
@@ -1272,6 +1288,8 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleUserCreationInput.HashedPassword,
 			exampleUserCreationInput.TwoFactorSecret,
 			types.UnverifiedHouseholdStatus,
+			exampleUserCreationInput.BirthDay,
+			exampleUserCreationInput.BirthMonth,
 			authorization.ServiceUserRole.String(),
 		}
 
@@ -1357,6 +1375,8 @@ func TestQuerier_CreateUser(T *testing.T) {
 			exampleUserCreationInput.HashedPassword,
 			exampleUserCreationInput.TwoFactorSecret,
 			types.UnverifiedHouseholdStatus,
+			exampleUserCreationInput.BirthDay,
+			exampleUserCreationInput.BirthMonth,
 			authorization.ServiceUserRole.String(),
 		}
 
@@ -1430,6 +1450,8 @@ func TestQuerier_UpdateUser(T *testing.T) {
 			exampleUser.AvatarSrc,
 			exampleUser.TwoFactorSecret,
 			exampleUser.TwoFactorSecretVerifiedOn,
+			exampleUser.BirthDay,
+			exampleUser.BirthMonth,
 			exampleUser.ID,
 		}
 
@@ -1465,6 +1487,8 @@ func TestQuerier_UpdateUser(T *testing.T) {
 			exampleUser.AvatarSrc,
 			exampleUser.TwoFactorSecret,
 			exampleUser.TwoFactorSecretVerifiedOn,
+			exampleUser.BirthDay,
+			exampleUser.BirthMonth,
 			exampleUser.ID,
 		}
 

@@ -35,6 +35,8 @@ var (
 		"users.service_roles",
 		"users.reputation",
 		"users.reputation_explanation",
+		"users.birth_day",
+		"users.birth_month",
 		"users.created_on",
 		"users.last_updated_on",
 		"users.archived_on",
@@ -69,6 +71,8 @@ func (q *SQLQuerier) scanUser(ctx context.Context, scan database.Scanner, includ
 		&rawRoles,
 		&user.ServiceHouseholdStatus,
 		&user.ReputationExplanation,
+		&user.BirthDay,
+		&user.BirthMonth,
 		&user.CreatedOn,
 		&user.LastUpdatedOn,
 		&user.ArchivedOn,
@@ -134,6 +138,8 @@ const getUserByIDQuery = `
 		users.service_roles,
 		users.reputation,
 		users.reputation_explanation,
+		users.birth_day,
+		users.birth_month,
 		users.created_on,
 		users.last_updated_on,
 		users.archived_on
@@ -252,6 +258,8 @@ const getUserByUsernameQuery = `
 		users.service_roles,
 		users.reputation,
 		users.reputation_explanation,
+		users.birth_day,
+		users.birth_month,
 		users.created_on,
 		users.last_updated_on,
 		users.archived_on
@@ -302,6 +310,8 @@ const getAdminUserByUsernameQuery = `
 		users.service_roles,
 		users.reputation,
 		users.reputation_explanation,
+		users.birth_day,
+		users.birth_month,
 		users.created_on,
 		users.last_updated_on,
 		users.archived_on
@@ -340,7 +350,7 @@ func (q *SQLQuerier) GetAdminUserByUsername(ctx context.Context, username string
 	return u, nil
 }
 
-const getUserByEmailQuery = `
+const getUserIDByEmailQuery = `
 	SELECT
 		users.id
 	FROM users
@@ -362,8 +372,7 @@ func (q *SQLQuerier) GetUserIDByEmail(ctx context.Context, email string) (string
 	logger := q.logger.WithValue(keys.UserEmailAddressKey, email)
 
 	args := []interface{}{email}
-
-	row := q.getOneRow(ctx, q.db, "user", getUserByEmailQuery, args)
+	row := q.getOneRow(ctx, q.db, "user", getUserIDByEmailQuery, args)
 
 	var userID string
 	if err := row.Scan(&userID); err != nil {
@@ -373,8 +382,28 @@ func (q *SQLQuerier) GetUserIDByEmail(ctx context.Context, email string) (string
 	return userID, nil
 }
 
-const searchForUserByUsernameQuery = `
-	SELECT users.id, users.username, users.email_address, users.avatar_src, users.hashed_password, users.requires_password_change, users.password_last_changed_on, users.two_factor_secret, users.two_factor_secret_verified_on, users.service_roles, users.reputation, users.reputation_explanation, users.created_on, users.last_updated_on, users.archived_on FROM users WHERE users.username ILIKE $1 AND users.archived_on IS NULL AND users.two_factor_secret_verified_on IS NOT NULL
+const searchForUserByUsernameQuery = `SELECT 
+	users.id,
+	users.username,
+	users.email_address,
+	users.avatar_src,
+	users.hashed_password,
+	users.requires_password_change,
+	users.password_last_changed_on,
+	users.two_factor_secret,
+	users.two_factor_secret_verified_on,
+	users.service_roles,
+	users.reputation,
+	users.reputation_explanation,
+	users.birth_day,
+	users.birth_month,
+	users.created_on,
+	users.last_updated_on,
+	users.archived_on 
+FROM users
+WHERE users.username ILIKE $1
+AND users.archived_on IS NULL
+AND users.two_factor_secret_verified_on IS NOT NULL
 `
 
 // SearchForUsersByUsername fetches a list of users whose usernames begin with a given query.
@@ -456,7 +485,7 @@ func (q *SQLQuerier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x
 }
 
 const userCreationQuery = `
-	INSERT INTO users (id,username,email_address,hashed_password,two_factor_secret,reputation,service_roles) VALUES ($1,$2,$3,$4,$5,$6,$7)
+	INSERT INTO users (id,username,email_address,hashed_password,two_factor_secret,reputation,birth_day,birth_month,service_roles) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
 `
 
 const createHouseholdMembershipForNewUserQuery = `
@@ -483,6 +512,8 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDataStoreC
 		input.HashedPassword,
 		input.TwoFactorSecret,
 		types.UnverifiedHouseholdStatus,
+		input.BirthDay,
+		input.BirthMonth,
 		authorization.ServiceUserRole.String(),
 	}
 
@@ -492,6 +523,8 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDataStoreC
 		EmailAddress:    input.EmailAddress,
 		HashedPassword:  input.HashedPassword,
 		TwoFactorSecret: input.TwoFactorSecret,
+		BirthMonth:      input.BirthMonth,
+		BirthDay:        input.BirthDay,
 		ServiceRoles:    []string{authorization.ServiceUserRole.String()},
 		CreatedOn:       q.currentTime(),
 	}
@@ -588,8 +621,17 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDataStoreC
 	return user, nil
 }
 
-const updateUserQuery = `
-	UPDATE users SET username = $1, hashed_password = $2, avatar_src = $3, two_factor_secret = $4, two_factor_secret_verified_on = $5, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $6
+const updateUserQuery = `UPDATE users SET 
+	username = $1,
+	hashed_password = $2,
+	avatar_src = $3,
+	two_factor_secret = $4,
+	two_factor_secret_verified_on = $5,
+	birth_day = $6,
+	birth_month = $7,
+	last_updated_on = extract(epoch FROM NOW()) 
+WHERE archived_on IS NULL 
+AND id = $8
 `
 
 // UpdateUser receives a complete Requester struct and updates its record in the database.
@@ -611,6 +653,8 @@ func (q *SQLQuerier) UpdateUser(ctx context.Context, updated *types.User) error 
 		updated.AvatarSrc,
 		updated.TwoFactorSecret,
 		updated.TwoFactorSecretVerifiedOn,
+		updated.BirthDay,
+		updated.BirthMonth,
 		updated.ID,
 	}
 
@@ -624,8 +668,13 @@ func (q *SQLQuerier) UpdateUser(ctx context.Context, updated *types.User) error 
 }
 
 /* #nosec G101 */
-const updateUserPasswordQuery = `
-	UPDATE users SET hashed_password = $1, requires_password_change = $2, password_last_changed_on = extract(epoch FROM NOW()), last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $3
+const updateUserPasswordQuery = `UPDATE users SET
+	hashed_password = $1,
+	requires_password_change = $2,
+	password_last_changed_on = extract(epoch FROM NOW()),
+	last_updated_on = extract(epoch FROM NOW())
+WHERE archived_on IS NULL
+AND id = $3
 `
 
 // UpdateUserPassword updates a user's passwords hash in the database.
@@ -660,8 +709,11 @@ func (q *SQLQuerier) UpdateUserPassword(ctx context.Context, userID, newHash str
 }
 
 /* #nosec G101 */
-const updateUserTwoFactorSecretQuery = `
-	query := "UPDATE users SET two_factor_secret_verified_on = $1, two_factor_secret = $2 WHERE archived_on IS NULL AND id = $3"
+const updateUserTwoFactorSecretQuery = `UPDATE users SET 
+	two_factor_secret_verified_on = $1,
+	two_factor_secret = $2
+WHERE archived_on IS NULL
+AND id = $3
 `
 
 // UpdateUserTwoFactorSecret marks a user's two factor secret as validated.
@@ -695,8 +747,11 @@ func (q *SQLQuerier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newS
 }
 
 /* #nosec G101 */
-const markUserTwoFactorSecretAsVerified = `
-	UPDATE users SET two_factor_secret_verified_on = extract(epoch FROM NOW()), reputation = $1 WHERE archived_on IS NULL AND id = $2
+const markUserTwoFactorSecretAsVerified = `UPDATE users SET
+	two_factor_secret_verified_on = extract(epoch FROM NOW()),
+	reputation = $1
+WHERE archived_on IS NULL
+AND id = $2
 `
 
 // MarkUserTwoFactorSecretAsVerified marks a user's two factor secret as validated.
@@ -725,12 +780,16 @@ func (q *SQLQuerier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, user
 	return nil
 }
 
-const archiveUserQuery = `
-	UPDATE users SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $1
+const archiveUserQuery = `UPDATE users SET
+	archived_on = extract(epoch FROM NOW())
+WHERE archived_on IS NULL
+AND id = $1
 `
 
-const archiveMembershipsQuery = `
-	UPDATE household_user_memberships SET archived_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_user = $1
+const archiveMembershipsQuery = `UPDATE household_user_memberships SET
+	archived_on = extract(epoch FROM NOW())
+WHERE archived_on IS NULL
+AND belongs_to_user = $1
 `
 
 // ArchiveUser archives a user.

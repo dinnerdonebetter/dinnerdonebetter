@@ -1,0 +1,2 @@
+ALTER TABLE users ADD COLUMN "birth_day" SMALLINT;
+ALTER TABLE users ADD COLUMN "birth_month" SMALLINT;
