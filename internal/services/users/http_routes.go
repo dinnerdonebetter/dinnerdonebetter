@@ -171,6 +171,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		TwoFactorSecret:      "",
 		InvitationToken:      registrationInput.InvitationToken,
 		DestinationHousehold: registrationInput.DestinationHousehold,
+		BirthDay:             registrationInput.BirthDay,
+		BirthMonth:           registrationInput.BirthMonth,
 	}
 
 	// generate a two factor secret.
@@ -203,6 +205,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		EmailAddress:    user.EmailAddress,
 		CreatedOn:       user.CreatedOn,
 		TwoFactorSecret: user.TwoFactorSecret,
+		BirthDay:        user.BirthDay,
+		BirthMonth:      user.BirthMonth,
 		TwoFactorQRCode: s.buildQRCode(ctx, user.Username, user.TwoFactorSecret),
 	}
 

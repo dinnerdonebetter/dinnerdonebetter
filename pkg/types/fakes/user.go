@@ -17,11 +17,11 @@ import (
 // BuildFakeUser builds a faked User.
 func BuildFakeUser() *types.User {
 	return &types.User{
-		ID:           ksuid.New().String(),
-		EmailAddress: fake.Email(),
-		Username:     fake.Password(true, true, true, false, false, 32),
-		// HashedPassword: "",
-		// Salt:           []byte(fakes.LoremIpsumSentence(exampleQuantity)),
+		ID:                        ksuid.New().String(),
+		EmailAddress:              fake.Email(),
+		Username:                  fake.Password(true, true, true, false, false, 32),
+		BirthDay:                  fake.Uint8(),
+		BirthMonth:                fake.Uint8(),
 		ServiceHouseholdStatus:    types.GoodStandingHouseholdStatus,
 		TwoFactorSecret:           base32.StdEncoding.EncodeToString([]byte(fake.Password(false, true, true, false, false, 32))),
 		TwoFactorSecretVerifiedOn: func(i uint64) *uint64 { return &i }(uint64(uint32(fake.Date().Unix()))),
@@ -65,6 +65,8 @@ func BuildFakeUserCreationInput() *types.UserRegistrationInput {
 		Username:     exampleUser.Username,
 		EmailAddress: fake.Email(),
 		Password:     fake.Password(true, true, true, true, false, 32),
+		BirthDay:     exampleUser.BirthDay,
+		BirthMonth:   exampleUser.BirthMonth,
 	}
 }
 
@@ -74,6 +76,8 @@ func BuildFakeUserRegistrationInputFromUser(user *types.User) *types.UserRegistr
 		Username:     user.Username,
 		EmailAddress: user.EmailAddress,
 		Password:     fake.Password(true, true, true, true, false, 32),
+		BirthDay:     user.BirthDay,
+		BirthMonth:   user.BirthMonth,
 	}
 }
 
@@ -85,6 +89,8 @@ func BuildFakeUserDataStoreCreationInputFromUser(user *types.User) *types.UserDa
 		Username:        user.Username,
 		HashedPassword:  user.HashedPassword,
 		TwoFactorSecret: user.TwoFactorSecret,
+		BirthDay:        user.BirthDay,
+		BirthMonth:      user.BirthMonth,
 	}
 }
 
@@ -103,6 +109,8 @@ func BuildFakeUserRegistrationInput() *types.UserRegistrationInput {
 		Username:     fake.Username(),
 		Password:     fake.Password(true, true, true, true, false, 32),
 		EmailAddress: fake.Email(),
+		BirthDay:     fake.Uint8(),
+		BirthMonth:   fake.Uint8(),
 	}
 }
 
