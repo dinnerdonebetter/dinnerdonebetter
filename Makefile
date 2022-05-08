@@ -128,7 +128,7 @@ check_formatting: vendor
 
 .PHONY: pre_lint
 pre_lint:
-	# @until fieldalignment -fix ./...; do true; done > /dev/null
+	@until fieldalignment -fix ./...; do true; done > /dev/null
 	@echo ""
 
 .PHONY: docker_lint

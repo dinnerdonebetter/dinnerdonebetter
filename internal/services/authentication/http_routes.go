@@ -131,8 +131,6 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 				return
 			}
 
-			logger.Error(err, "error encountered validating login")
-
 			observability.AcknowledgeError(err, logger, span, "validating login")
 			s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
 			return
