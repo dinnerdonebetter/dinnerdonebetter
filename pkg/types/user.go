@@ -36,25 +36,24 @@ type (
 
 	// User represents a User.
 	User struct {
-		_ struct{}
-
+		_                         struct{}
 		PasswordLastChangedOn     *uint64         `json:"passwordLastChangedOn"`
 		ArchivedOn                *uint64         `json:"archivedOn"`
 		LastUpdatedOn             *uint64         `json:"lastUpdatedOn"`
 		TwoFactorSecretVerifiedOn *uint64         `json:"-"`
 		AvatarSrc                 *string         `json:"avatar"`
-		ServiceHouseholdStatus    householdStatus `json:"reputation"`
-		ReputationExplanation     string          `json:"reputationExplanation"`
+		BirthMonth                *uint8          `json:"birthMonth"`
+		BirthDay                  *uint8          `json:"birthYear"`
 		EmailAddress              string          `json:"emailAddress"`
-		Username                  string          `json:"username"`
+		ReputationExplanation     string          `json:"reputationExplanation"`
 		TwoFactorSecret           string          `json:"-"`
 		HashedPassword            string          `json:"-"`
 		ID                        string          `json:"id"`
+		ServiceHouseholdStatus    householdStatus `json:"reputation"`
+		Username                  string          `json:"username"`
 		ServiceRoles              []string        `json:"serviceRoles"`
 		CreatedOn                 uint64          `json:"createdOn"`
 		RequiresPasswordChange    bool            `json:"requiresPasswordChange"`
-		BirthMonth                uint8           `json:"birthMonth"`
-		BirthDay                  uint8           `json:"birthYear"`
 	}
 
 	// UserList represents a list of users.
@@ -68,44 +67,42 @@ type (
 	// UserRegistrationInput represents the input required from users to register an account.
 	UserRegistrationInput struct {
 		_                    struct{}
-		Username             string `json:"username"`
+		BirthDay             *uint8 `json:"birthYear,omitempty"`
+		BirthMonth           *uint8 `json:"birthMonth,omitempty"`
 		Password             string `json:"password"`
 		EmailAddress         string `json:"emailAddress"`
 		InvitationToken      string `json:"invitationToken,omitempty"`
 		DestinationHousehold string `json:"destinationHousehold,omitempty"`
-		BirthMonth           uint8  `json:"birthMonth,omitempty"`
-		BirthDay             uint8  `json:"birthYear,omitempty"`
+		Username             string `json:"username"`
 	}
 
 	// UserDataStoreCreationInput is used by the User creation route to communicate with the data store.
 	UserDataStoreCreationInput struct {
-		_ struct{}
-
+		_                    struct{}
+		BirthMonth           *uint8 `json:"-"`
+		BirthDay             *uint8 `json:"-"`
 		ID                   string `json:"-"`
-		Username             string `json:"-"`
-		EmailAddress         string `json:"-"`
 		HashedPassword       string `json:"-"`
 		TwoFactorSecret      string `json:"-"`
 		InvitationToken      string `json:"-"`
 		DestinationHousehold string `json:"-"`
-		BirthMonth           uint8  `json:"-"`
-		BirthDay             uint8  `json:"-"`
+		Username             string `json:"-"`
+		EmailAddress         string `json:"-"`
 	}
 
 	// UserCreationResponse is a response structure for Users that doesn't contain passwords fields, but does contain the two factor secret.
 	UserCreationResponse struct {
-		_ struct{}
-
+		_               struct{}
+		BirthMonth      *uint8          `json:"birthMonth"`
+		BirthDay        *uint8          `json:"birthYear"`
 		Username        string          `json:"username"`
 		EmailAddress    string          `json:"emailAddress"`
-		HouseholdStatus householdStatus `json:"householdStatus"`
-		TwoFactorSecret string          `json:"twoFactorSecret"`
 		TwoFactorQRCode string          `json:"qrCode"`
 		CreatedUserID   string          `json:"createdUserID"`
+		HouseholdStatus householdStatus `json:"householdStatus"`
+		TwoFactorSecret string          `json:"twoFactorSecret"`
 		CreatedOn       uint64          `json:"createdOn"`
 		IsAdmin         bool            `json:"isAdmin"`
-		BirthMonth      uint8           `json:"birthMonth"`
-		BirthDay        uint8           `json:"birthYear"`
 	}
 
 	// UserLoginInput represents the payload used to log in a User.
@@ -203,11 +200,11 @@ func (u *User) Update(input *User) {
 		u.TwoFactorSecret = input.TwoFactorSecret
 	}
 
-	if input.BirthDay != 0 && input.BirthDay != u.BirthDay {
+	if input.BirthDay != nil && *input.BirthDay != 0 && input.BirthDay != u.BirthDay {
 		u.BirthDay = input.BirthDay
 	}
 
-	if input.BirthMonth != 0 && input.BirthMonth != u.BirthMonth {
+	if input.BirthMonth != nil && *input.BirthMonth != 0 && input.BirthMonth != u.BirthMonth {
 		u.BirthMonth = input.BirthMonth
 	}
 }

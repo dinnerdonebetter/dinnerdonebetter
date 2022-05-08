@@ -20,8 +20,8 @@ func BuildFakeUser() *types.User {
 		ID:                        ksuid.New().String(),
 		EmailAddress:              fake.Email(),
 		Username:                  fake.Password(true, true, true, false, false, 32),
-		BirthDay:                  fake.Uint8(),
-		BirthMonth:                fake.Uint8(),
+		BirthDay:                  func(x uint8) *uint8 { return &x }(fake.Uint8()),
+		BirthMonth:                func(x uint8) *uint8 { return &x }(fake.Uint8()),
 		ServiceHouseholdStatus:    types.GoodStandingHouseholdStatus,
 		TwoFactorSecret:           base32.StdEncoding.EncodeToString([]byte(fake.Password(false, true, true, false, false, 32))),
 		TwoFactorSecretVerifiedOn: func(i uint64) *uint64 { return &i }(uint64(uint32(fake.Date().Unix()))),
@@ -109,8 +109,8 @@ func BuildFakeUserRegistrationInput() *types.UserRegistrationInput {
 		Username:     fake.Username(),
 		Password:     fake.Password(true, true, true, true, false, 32),
 		EmailAddress: fake.Email(),
-		BirthDay:     fake.Uint8(),
-		BirthMonth:   fake.Uint8(),
+		BirthDay:     func(x uint8) *uint8 { return &x }(fake.Uint8()),
+		BirthMonth:   func(x uint8) *uint8 { return &x }(fake.Uint8()),
 	}
 }
 
