@@ -122,7 +122,19 @@ func (q *SQLQuerier) ValidPreparationExists(ctx context.Context, validPreparatio
 	return result, nil
 }
 
-const getValidPreparationQuery = "SELECT valid_preparations.id, valid_preparations.name, valid_preparations.description, valid_preparations.icon_path, valid_preparations.created_on, valid_preparations.last_updated_on, valid_preparations.archived_on FROM valid_preparations WHERE valid_preparations.archived_on IS NULL AND valid_preparations.id = $1"
+const getValidPreparationBaseQuery = `SELECT
+	valid_preparations.id,
+	valid_preparations.name,
+	valid_preparations.description,
+	valid_preparations.icon_path,
+	valid_preparations.created_on,
+	valid_preparations.last_updated_on,
+	valid_preparations.archived_on
+FROM valid_preparations
+WHERE valid_preparations.archived_on IS NULL
+`
+
+const getValidPreparationQuery = getValidPreparationBaseQuery + `AND valid_preparations.id = $1`
 
 // GetValidPreparation fetches a valid preparation from the database.
 func (q *SQLQuerier) GetValidPreparation(ctx context.Context, validPreparationID string) (*types.ValidPreparation, error) {
@@ -142,6 +154,26 @@ func (q *SQLQuerier) GetValidPreparation(ctx context.Context, validPreparationID
 	}
 
 	row := q.getOneRow(ctx, q.db, "validPreparation", getValidPreparationQuery, args)
+
+	validPreparation, _, _, err := q.scanValidPreparation(ctx, row, false)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "scanning validPreparation")
+	}
+
+	return validPreparation, nil
+}
+
+const getRandomValidPreparationQuery = getValidPreparationBaseQuery + `ORDER BY random() LIMIT 1`
+
+// GetRandomValidPreparation fetches a valid preparation from the database.
+func (q *SQLQuerier) GetRandomValidPreparation(ctx context.Context) (*types.ValidPreparation, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+	args := []interface{}{}
+
+	row := q.getOneRow(ctx, q.db, "validPreparation", getRandomValidPreparationQuery, args)
 
 	validPreparation, _, _, err := q.scanValidPreparation(ctx, row, false)
 	if err != nil {

@@ -225,6 +225,50 @@ func TestQuerier_GetValidPreparation(T *testing.T) {
 	})
 }
 
+func TestQuerier_GetRandomValidPreparation(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleValidPreparation := fakes.BuildFakeValidPreparation()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{}
+
+		db.ExpectQuery(formatQueryForSQLMock(getRandomValidPreparationQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromValidPreparations(false, 0, exampleValidPreparation))
+
+		actual, err := c.GetRandomValidPreparation(ctx)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidPreparation, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{}
+
+		db.ExpectQuery(formatQueryForSQLMock(getRandomValidPreparationQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.GetRandomValidPreparation(ctx)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_SearchForValidPreparations(T *testing.T) {
 	T.Parallel()
 

@@ -148,7 +148,34 @@ func (q *SQLQuerier) ValidIngredientExists(ctx context.Context, validIngredientI
 	return result, nil
 }
 
-const getValidIngredientQuery = "SELECT valid_ingredients.id, valid_ingredients.name, valid_ingredients.variant, valid_ingredients.description, valid_ingredients.warning, valid_ingredients.contains_egg, valid_ingredients.contains_dairy, valid_ingredients.contains_peanut, valid_ingredients.contains_tree_nut, valid_ingredients.contains_soy, valid_ingredients.contains_wheat, valid_ingredients.contains_shellfish, valid_ingredients.contains_sesame, valid_ingredients.contains_fish, valid_ingredients.contains_gluten, valid_ingredients.animal_flesh, valid_ingredients.animal_derived, valid_ingredients.volumetric, valid_ingredients.icon_path, valid_ingredients.created_on, valid_ingredients.last_updated_on, valid_ingredients.archived_on FROM valid_ingredients WHERE valid_ingredients.archived_on IS NULL AND valid_ingredients.id = $1"
+const getValidIngredientBaseQuery = `SELECT 
+	valid_ingredients.id,
+	valid_ingredients.name,
+	valid_ingredients.variant,
+	valid_ingredients.description,
+	valid_ingredients.warning,
+	valid_ingredients.contains_egg,
+	valid_ingredients.contains_dairy,
+	valid_ingredients.contains_peanut,
+	valid_ingredients.contains_tree_nut,
+	valid_ingredients.contains_soy,
+	valid_ingredients.contains_wheat,
+	valid_ingredients.contains_shellfish,
+	valid_ingredients.contains_sesame,
+	valid_ingredients.contains_fish,
+	valid_ingredients.contains_gluten,
+	valid_ingredients.animal_flesh,
+	valid_ingredients.animal_derived,
+	valid_ingredients.volumetric,
+	valid_ingredients.icon_path,
+	valid_ingredients.created_on, 
+	valid_ingredients.last_updated_on, 
+	valid_ingredients.archived_on 
+FROM valid_ingredients 
+WHERE valid_ingredients.archived_on IS NULL
+`
+
+const getValidIngredientQuery = getValidIngredientBaseQuery + `AND valid_ingredients.id = $1`
 
 // GetValidIngredient fetches a valid ingredient from the database.
 func (q *SQLQuerier) GetValidIngredient(ctx context.Context, validIngredientID string) (*types.ValidIngredient, error) {
@@ -168,6 +195,26 @@ func (q *SQLQuerier) GetValidIngredient(ctx context.Context, validIngredientID s
 	}
 
 	row := q.getOneRow(ctx, q.db, "valid ingredient", getValidIngredientQuery, args)
+
+	validIngredient, _, _, err := q.scanValidIngredient(ctx, row, false)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "scanning valid ingredient")
+	}
+
+	return validIngredient, nil
+}
+
+const getRandomValidIngredientQuery = getValidIngredientBaseQuery + `ORDER BY random() LIMIT 1`
+
+// GetRandomValidIngredient fetches a valid ingredient from the database.
+func (q *SQLQuerier) GetRandomValidIngredient(ctx context.Context) (*types.ValidIngredient, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+	args := []interface{}{}
+
+	row := q.getOneRow(ctx, q.db, "valid ingredient", getRandomValidIngredientQuery, args)
 
 	validIngredient, _, _, err := q.scanValidIngredient(ctx, row, false)
 	if err != nil {

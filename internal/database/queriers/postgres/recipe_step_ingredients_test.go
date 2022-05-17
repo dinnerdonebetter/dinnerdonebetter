@@ -33,7 +33,7 @@ func buildMockRowsFromRecipeStepIngredients(includeCounts bool, filteredCount ui
 			x.QuantityValue,
 			x.QuantityNotes,
 			x.ProductOfRecipeStep,
-			x.IngredientNotes,
+			x.Notes,
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,
@@ -810,7 +810,7 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 			exampleRecipeStepIngredient.QuantityValue,
 			exampleRecipeStepIngredient.QuantityNotes,
 			exampleRecipeStepIngredient.ProductOfRecipeStep,
-			exampleRecipeStepIngredient.IngredientNotes,
+			exampleRecipeStepIngredient.Notes,
 			exampleRecipeStepIngredient.BelongsToRecipeStep,
 			exampleRecipeStepIngredient.ID,
 		}
@@ -847,7 +847,7 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 			exampleRecipeStepIngredient.QuantityValue,
 			exampleRecipeStepIngredient.QuantityNotes,
 			exampleRecipeStepIngredient.ProductOfRecipeStep,
-			exampleRecipeStepIngredient.IngredientNotes,
+			exampleRecipeStepIngredient.Notes,
 			exampleRecipeStepIngredient.BelongsToRecipeStep,
 			exampleRecipeStepIngredient.ID,
 		}

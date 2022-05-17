@@ -240,6 +240,50 @@ func TestQuerier_GetValidIngredient(T *testing.T) {
 	})
 }
 
+func TestQuerier_GetRandomValidIngredient(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleValidIngredient := fakes.BuildFakeValidIngredient()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{}
+
+		db.ExpectQuery(formatQueryForSQLMock(getRandomValidIngredientQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromValidIngredients(false, 0, exampleValidIngredient))
+
+		actual, err := c.GetRandomValidIngredient(ctx)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidIngredient, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{}
+
+		db.ExpectQuery(formatQueryForSQLMock(getRandomValidIngredientQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.GetRandomValidIngredient(ctx)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_SearchForValidIngredients(T *testing.T) {
 	T.Parallel()
 

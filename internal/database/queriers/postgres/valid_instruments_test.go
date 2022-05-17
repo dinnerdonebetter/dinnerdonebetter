@@ -226,6 +226,50 @@ func TestQuerier_GetValidInstrument(T *testing.T) {
 	})
 }
 
+func TestQuerier_GetRandomValidInstrument(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleValidInstrument := fakes.BuildFakeValidInstrument()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{}
+
+		db.ExpectQuery(formatQueryForSQLMock(getRandomValidInstrumentQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromValidInstruments(false, 0, exampleValidInstrument))
+
+		actual, err := c.GetRandomValidInstrument(ctx)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidInstrument, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{}
+
+		db.ExpectQuery(formatQueryForSQLMock(getRandomValidInstrumentQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.GetRandomValidInstrument(ctx)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_SearchForValidInstruments(T *testing.T) {
 	T.Parallel()
 

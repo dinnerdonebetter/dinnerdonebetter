@@ -31,13 +31,13 @@ type (
 	// RecipeStepIngredient represents a recipe step ingredient.
 	RecipeStepIngredient struct {
 		_                   struct{}
-		IngredientID        *string         `json:"ingredientID"`
 		LastUpdatedOn       *uint64         `json:"lastUpdatedOn"`
+		IngredientID        *string         `json:"ingredientID"`
 		ArchivedOn          *uint64         `json:"archivedOn"`
-		IngredientNotes     string          `json:"ingredientNotes"`
 		QuantityNotes       string          `json:"quantityNotes"`
-		ID                  string          `json:"id"`
 		QuantityType        string          `json:"quantityType"`
+		Notes               string          `json:"notes"`
+		ID                  string          `json:"id"`
 		BelongsToRecipeStep string          `json:"belongsToRecipeStep"`
 		Ingredient          ValidIngredient `json:"ingredient"`
 		CreatedOn           uint64          `json:"createdOn"`
@@ -134,8 +134,8 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 		x.ProductOfRecipeStep = input.ProductOfRecipe
 	}
 
-	if input.IngredientNotes != "" && input.IngredientNotes != x.IngredientNotes {
-		x.IngredientNotes = input.IngredientNotes
+	if input.IngredientNotes != "" && input.IngredientNotes != x.Notes {
+		x.Notes = input.IngredientNotes
 	}
 }
 

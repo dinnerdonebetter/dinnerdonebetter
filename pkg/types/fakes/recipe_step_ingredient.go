@@ -17,7 +17,7 @@ func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 		QuantityValue:       float32(fake.Uint32()),
 		QuantityNotes:       fake.LoremIpsumSentence(exampleQuantity),
 		ProductOfRecipeStep: fake.Bool(),
-		IngredientNotes:     fake.LoremIpsumSentence(exampleQuantity),
+		Notes:               fake.LoremIpsumSentence(exampleQuantity),
 		CreatedOn:           uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipeStep: ksuid.New().String(),
 	}
@@ -50,7 +50,7 @@ func BuildFakeRecipeStepIngredientUpdateRequestInput() *types.RecipeStepIngredie
 		QuantityValue:       recipeStepIngredient.QuantityValue,
 		QuantityNotes:       recipeStepIngredient.QuantityNotes,
 		ProductOfRecipe:     recipeStepIngredient.ProductOfRecipeStep,
-		IngredientNotes:     recipeStepIngredient.IngredientNotes,
+		IngredientNotes:     recipeStepIngredient.Notes,
 		BelongsToRecipeStep: recipeStepIngredient.BelongsToRecipeStep,
 	}
 }
@@ -63,7 +63,7 @@ func BuildFakeRecipeStepIngredientUpdateRequestInputFromRecipeStepIngredient(rec
 		QuantityValue:       recipeStepIngredient.QuantityValue,
 		QuantityNotes:       recipeStepIngredient.QuantityNotes,
 		ProductOfRecipe:     recipeStepIngredient.ProductOfRecipeStep,
-		IngredientNotes:     recipeStepIngredient.IngredientNotes,
+		IngredientNotes:     recipeStepIngredient.Notes,
 		BelongsToRecipeStep: recipeStepIngredient.BelongsToRecipeStep,
 	}
 }
@@ -83,7 +83,7 @@ func BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(r
 		QuantityValue:       recipeStepIngredient.QuantityValue,
 		QuantityNotes:       recipeStepIngredient.QuantityNotes,
 		ProductOfRecipe:     recipeStepIngredient.ProductOfRecipeStep,
-		IngredientNotes:     recipeStepIngredient.IngredientNotes,
+		IngredientNotes:     recipeStepIngredient.Notes,
 		BelongsToRecipeStep: recipeStepIngredient.BelongsToRecipeStep,
 	}
 }
@@ -103,7 +103,7 @@ func BuildFakeRecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredient(
 		QuantityValue:       recipeStepIngredient.QuantityValue,
 		QuantityNotes:       recipeStepIngredient.QuantityNotes,
 		ProductOfRecipe:     recipeStepIngredient.ProductOfRecipeStep,
-		IngredientNotes:     recipeStepIngredient.IngredientNotes,
+		IngredientNotes:     recipeStepIngredient.Notes,
 		BelongsToRecipeStep: recipeStepIngredient.BelongsToRecipeStep,
 	}
 }
