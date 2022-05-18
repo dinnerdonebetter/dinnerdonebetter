@@ -70,6 +70,32 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 	})
 }
 
+func (s *TestSuite) TestValidInstruments_GetRandom() {
+	s.runForEachClient("should be able to get a random valid instrument", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			t.Log("creating valid instrument")
+			exampleValidInstrument := fakes.BuildFakeValidInstrument()
+			exampleValidInstrumentInput := fakes.BuildFakeValidInstrumentCreationRequestInputFromValidInstrument(exampleValidInstrument)
+			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
+			require.NoError(t, err)
+			t.Logf("valid instrument %q created", createdValidInstrument.ID)
+			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
+
+			t.Log("fetching changed valid instrument")
+			actual, err := testClients.admin.GetRandomValidInstrument(ctx)
+			requireNotNilAndNoProblems(t, actual, err)
+
+			t.Log("cleaning up valid instrument")
+			assert.NoError(t, testClients.admin.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
+		}
+	})
+}
+
 func (s *TestSuite) TestValidInstruments_Listing() {
 	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
