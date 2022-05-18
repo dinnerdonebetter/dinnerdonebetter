@@ -948,3 +948,113 @@ func TestValidPreparationsService_ArchiveHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
+
+func TestValidPreparationsService_RandomHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
+		validPreparationDataManager.On(
+			"GetRandomValidPreparation",
+			testutils.ContextMatcher,
+		).Return(helper.exampleValidPreparation, nil)
+		helper.service.validPreparationDataManager = validPreparationDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"RespondWithData",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			mock.IsType(&types.ValidPreparation{}),
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.RandomHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager, encoderDecoder)
+	})
+
+	T.Run("with error retrieving session context data", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeErrorResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			"unauthenticated",
+			http.StatusUnauthorized,
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+
+		helper.service.RandomHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, encoderDecoder)
+	})
+
+	T.Run("with no such valid preparation in the database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
+		validPreparationDataManager.On(
+			"GetRandomValidPreparation",
+			testutils.ContextMatcher,
+		).Return((*types.ValidPreparation)(nil), sql.ErrNoRows)
+		helper.service.validPreparationDataManager = validPreparationDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeNotFoundResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+		).Return()
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.RandomHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager, encoderDecoder)
+	})
+
+	T.Run("with error fetching from database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
+		validPreparationDataManager.On(
+			"GetRandomValidPreparation",
+			testutils.ContextMatcher,
+		).Return((*types.ValidPreparation)(nil), errors.New("blah"))
+		helper.service.validPreparationDataManager = validPreparationDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeUnspecifiedInternalServerErrorResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.RandomHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validPreparationDataManager, encoderDecoder)
+	})
+}

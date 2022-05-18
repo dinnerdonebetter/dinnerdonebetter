@@ -35,6 +35,26 @@ func (c *Client) GetValidPreparation(ctx context.Context, validPreparationID str
 	return validPreparation, nil
 }
 
+// GetRandomValidPreparation gets a valid preparation.
+func (c *Client) GetRandomValidPreparation(ctx context.Context) (*types.ValidPreparation, error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := c.logger.Clone()
+
+	req, err := c.requestBuilder.BuildGetRandomValidPreparationRequest(ctx)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building get valid preparation request")
+	}
+
+	var validPreparation *types.ValidPreparation
+	if err = c.fetchAndUnmarshal(ctx, req, &validPreparation); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "retrieving valid preparation")
+	}
+
+	return validPreparation, nil
+}
+
 // SearchValidPreparations searches through a list of valid preparations.
 func (c *Client) SearchValidPreparations(ctx context.Context, query string, limit uint8) ([]*types.ValidPreparation, error) {
 	ctx, span := c.tracer.StartSpan(ctx)

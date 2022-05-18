@@ -86,6 +86,43 @@ func (s *validInstrumentsTestSuite) TestClient_GetValidInstrument() {
 	})
 }
 
+func (s *validInstrumentsTestSuite) TestClient_GetRandomValidInstrument() {
+	const expectedPath = "/api/v1/valid_instruments/random"
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPath)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidInstrument)
+		actual, err := c.GetRandomValidInstrument(s.ctx)
+
+		require.NotNil(t, actual)
+		assert.NoError(t, err)
+		assert.Equal(t, s.exampleValidInstrument, actual)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		c := buildTestClientWithInvalidURL(t)
+		actual, err := c.GetRandomValidInstrument(s.ctx)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error executing request", func() {
+		t := s.T()
+
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPath)
+		c := buildTestClientWithInvalidResponse(t, spec)
+		actual, err := c.GetRandomValidInstrument(s.ctx)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
 func (s *validInstrumentsTestSuite) TestClient_GetValidInstruments() {
 	const expectedPath = "/api/v1/valid_instruments"
 

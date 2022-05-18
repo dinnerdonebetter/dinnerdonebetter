@@ -329,3 +329,37 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	// encode our response and peace.
 	res.WriteHeader(http.StatusNoContent)
 }
+
+// RandomHandler returns a GET handler that returns a valid preparation.
+func (s *service) RandomHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// fetch valid preparation from database.
+	x, err := s.validPreparationDataManager.GetRandomValidPreparation(ctx)
+	if errors.Is(err, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		return
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving valid preparation")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, x)
+}

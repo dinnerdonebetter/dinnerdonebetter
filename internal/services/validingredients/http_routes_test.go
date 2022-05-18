@@ -947,3 +947,113 @@ func TestValidIngredientsService_ArchiveHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
 }
+
+func TestValidIngredientsService_RandomHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		validIngredientDataManager := &mocktypes.ValidIngredientDataManager{}
+		validIngredientDataManager.On(
+			"GetRandomValidIngredient",
+			testutils.ContextMatcher,
+		).Return(helper.exampleValidIngredient, nil)
+		helper.service.validIngredientDataManager = validIngredientDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"RespondWithData",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			mock.IsType(&types.ValidIngredient{}),
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.RandomHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validIngredientDataManager, encoderDecoder)
+	})
+
+	T.Run("with error retrieving session context data", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeErrorResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			"unauthenticated",
+			http.StatusUnauthorized,
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+
+		helper.service.RandomHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, encoderDecoder)
+	})
+
+	T.Run("with no such valid ingredient in the database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		validIngredientDataManager := &mocktypes.ValidIngredientDataManager{}
+		validIngredientDataManager.On(
+			"GetRandomValidIngredient",
+			testutils.ContextMatcher,
+		).Return((*types.ValidIngredient)(nil), sql.ErrNoRows)
+		helper.service.validIngredientDataManager = validIngredientDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeNotFoundResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+		).Return()
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.RandomHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validIngredientDataManager, encoderDecoder)
+	})
+
+	T.Run("with error fetching from database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		validIngredientDataManager := &mocktypes.ValidIngredientDataManager{}
+		validIngredientDataManager.On(
+			"GetRandomValidIngredient",
+			testutils.ContextMatcher,
+		).Return((*types.ValidIngredient)(nil), errors.New("blah"))
+		helper.service.validIngredientDataManager = validIngredientDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeUnspecifiedInternalServerErrorResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.RandomHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validIngredientDataManager, encoderDecoder)
+	})
+}

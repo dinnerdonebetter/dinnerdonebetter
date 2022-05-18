@@ -86,6 +86,43 @@ func (s *validIngredientsTestSuite) TestClient_GetValidIngredient() {
 	})
 }
 
+func (s *validIngredientsTestSuite) TestClient_GetRandomValidIngredient() {
+	const expectedPath = "/api/v1/valid_ingredients/random"
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPath)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredient)
+		actual, err := c.GetRandomValidIngredient(s.ctx)
+
+		require.NotNil(t, actual)
+		assert.NoError(t, err)
+		assert.Equal(t, s.exampleValidIngredient, actual)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		c := buildTestClientWithInvalidURL(t)
+		actual, err := c.GetRandomValidIngredient(s.ctx)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error executing request", func() {
+		t := s.T()
+
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPath)
+		c := buildTestClientWithInvalidResponse(t, spec)
+		actual, err := c.GetRandomValidIngredient(s.ctx)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
 func (s *validIngredientsTestSuite) TestClient_GetValidIngredients() {
 	const expectedPath = "/api/v1/valid_ingredients"
 

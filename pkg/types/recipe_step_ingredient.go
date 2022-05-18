@@ -36,7 +36,7 @@ type (
 		ArchivedOn          *uint64         `json:"archivedOn"`
 		QuantityNotes       string          `json:"quantityNotes"`
 		QuantityType        string          `json:"quantityType"`
-		Notes               string          `json:"notes"`
+		IngredientNotes     string          `json:"ingredientNotes"`
 		ID                  string          `json:"id"`
 		BelongsToRecipeStep string          `json:"belongsToRecipeStep"`
 		Ingredient          ValidIngredient `json:"ingredient"`
@@ -134,8 +134,8 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 		x.ProductOfRecipeStep = input.ProductOfRecipe
 	}
 
-	if input.IngredientNotes != "" && input.IngredientNotes != x.Notes {
-		x.Notes = input.IngredientNotes
+	if input.IngredientNotes != "" && input.IngredientNotes != x.IngredientNotes {
+		x.IngredientNotes = input.IngredientNotes
 	}
 }
 
@@ -190,7 +190,5 @@ func (x *RecipeStepIngredientUpdateRequestInput) ValidateWithContext(ctx context
 		validation.Field(&x.IngredientID, validation.Required),
 		validation.Field(&x.QuantityType, validation.Required),
 		validation.Field(&x.QuantityValue, validation.Required),
-		validation.Field(&x.QuantityNotes, validation.Required),
-		validation.Field(&x.IngredientNotes, validation.Required),
 	)
 }

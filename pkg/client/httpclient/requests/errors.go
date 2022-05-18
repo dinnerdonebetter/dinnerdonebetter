@@ -4,6 +4,10 @@ import (
 	"errors"
 )
 
+const (
+	randomBasePath = "random"
+)
+
 var (
 	// ErrNoURLProvided is a handy error to return when we expect a *url.URL and don't receive one.
 	ErrNoURLProvided = errors.New("no URL provided")

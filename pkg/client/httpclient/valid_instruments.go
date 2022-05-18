@@ -35,6 +35,26 @@ func (c *Client) GetValidInstrument(ctx context.Context, validInstrumentID strin
 	return validInstrument, nil
 }
 
+// GetRandomValidInstrument gets a valid instrument.
+func (c *Client) GetRandomValidInstrument(ctx context.Context) (*types.ValidInstrument, error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := c.logger.Clone()
+
+	req, err := c.requestBuilder.BuildGetRandomValidInstrumentRequest(ctx)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building get valid instrument request")
+	}
+
+	var validInstrument *types.ValidInstrument
+	if err = c.fetchAndUnmarshal(ctx, req, &validInstrument); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "retrieving valid instrument")
+	}
+
+	return validInstrument, nil
+}
+
 // SearchValidInstruments searches through a list of valid instruments.
 func (c *Client) SearchValidInstruments(ctx context.Context, query string, limit uint8) ([]*types.ValidInstrument, error) {
 	ctx, span := c.tracer.StartSpan(ctx)

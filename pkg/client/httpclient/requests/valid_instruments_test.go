@@ -54,6 +54,36 @@ func TestBuilder_BuildGetValidInstrumentRequest(T *testing.T) {
 	})
 }
 
+func TestBuilder_BuildGetRandomValidInstrumentRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPath = "/api/v1/valid_instruments/random"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPath)
+
+		actual, err := helper.builder.BuildGetRandomValidInstrumentRequest(helper.ctx)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+
+		actual, err := helper.builder.BuildGetRandomValidInstrumentRequest(helper.ctx)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
 func TestBuilder_BuildGetValidInstrumentsRequest(T *testing.T) {
 	T.Parallel()
 

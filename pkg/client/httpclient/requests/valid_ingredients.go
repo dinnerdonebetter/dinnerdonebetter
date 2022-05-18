@@ -45,6 +45,29 @@ func (b *Builder) BuildGetValidIngredientRequest(ctx context.Context, validIngre
 	return req, nil
 }
 
+// BuildGetRandomValidIngredientRequest builds an HTTP request for fetching a valid ingredient.
+func (b *Builder) BuildGetRandomValidIngredientRequest(ctx context.Context) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := b.logger.Clone()
+
+	uri := b.BuildURL(
+		ctx,
+		nil,
+		validIngredientsBasePath,
+		randomBasePath,
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building user status request")
+	}
+
+	return req, nil
+}
+
 // BuildSearchValidIngredientsRequest builds an HTTP request for querying valid ingredients.
 func (b *Builder) BuildSearchValidIngredientsRequest(ctx context.Context, query string, limit uint8) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)

@@ -86,6 +86,43 @@ func (s *validPreparationsTestSuite) TestClient_GetValidPreparation() {
 	})
 }
 
+func (s *validPreparationsTestSuite) TestClient_GetRandomValidPreparation() {
+	const expectedPath = "/api/v1/valid_preparations/random"
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPath)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparation)
+		actual, err := c.GetRandomValidPreparation(s.ctx)
+
+		require.NotNil(t, actual)
+		assert.NoError(t, err)
+		assert.Equal(t, s.exampleValidPreparation, actual)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		c := buildTestClientWithInvalidURL(t)
+		actual, err := c.GetRandomValidPreparation(s.ctx)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error executing request", func() {
+		t := s.T()
+
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPath)
+		c := buildTestClientWithInvalidResponse(t, spec)
+		actual, err := c.GetRandomValidPreparation(s.ctx)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
 func (s *validPreparationsTestSuite) TestClient_GetValidPreparations() {
 	const expectedPath = "/api/v1/valid_preparations"
 
