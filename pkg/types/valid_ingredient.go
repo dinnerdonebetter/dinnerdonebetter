@@ -137,6 +137,7 @@ type (
 	ValidIngredientDataManager interface {
 		ValidIngredientExists(ctx context.Context, validIngredientID string) (bool, error)
 		GetValidIngredient(ctx context.Context, validIngredientID string) (*ValidIngredient, error)
+		GetRandomValidIngredient(ctx context.Context) (*ValidIngredient, error)
 		GetTotalValidIngredientCount(ctx context.Context) (uint64, error)
 		GetValidIngredients(ctx context.Context, filter *QueryFilter) (*ValidIngredientList, error)
 		SearchForValidIngredients(ctx context.Context, query string) ([]*ValidIngredient, error)
@@ -152,6 +153,7 @@ type (
 		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
 		ReadHandler(res http.ResponseWriter, req *http.Request)
+		RandomHandler(res http.ResponseWriter, req *http.Request)
 		UpdateHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 	}

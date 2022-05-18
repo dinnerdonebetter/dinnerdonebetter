@@ -27,6 +27,12 @@ func (m *ValidInstrumentDataManager) GetValidInstrument(ctx context.Context, val
 	return args.Get(0).(*types.ValidInstrument), args.Error(1)
 }
 
+// GetRandomValidInstrument is a mock function.
+func (m *ValidInstrumentDataManager) GetRandomValidInstrument(ctx context.Context) (*types.ValidInstrument, error) {
+	args := m.Called(ctx)
+	return args.Get(0).(*types.ValidInstrument), args.Error(1)
+}
+
 // SearchForValidInstruments is a mock function.
 func (m *ValidInstrumentDataManager) SearchForValidInstruments(ctx context.Context, query string) ([]*types.ValidInstrument, error) {
 	args := m.Called(ctx, query)

@@ -18,7 +18,7 @@ func checkRecipeStepInstrumentEquality(t *testing.T, expected, actual *types.Rec
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.InstrumentID, actual.InstrumentID, "expected InstrumentID for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.InstrumentID, actual.InstrumentID)
 	assert.Equal(t, expected.RecipeStepID, actual.RecipeStepID, "expected RecipeStepID for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.RecipeStepID, actual.RecipeStepID)
-	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
+	assert.Equal(t, expected.Notes, actual.Notes, "expected IngredientNotes for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.NotZero(t, actual.CreatedOn)
 }
 

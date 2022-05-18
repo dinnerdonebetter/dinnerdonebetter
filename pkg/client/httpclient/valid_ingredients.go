@@ -35,6 +35,26 @@ func (c *Client) GetValidIngredient(ctx context.Context, validIngredientID strin
 	return validIngredient, nil
 }
 
+// GetRandomValidIngredient gets a valid ingredient.
+func (c *Client) GetRandomValidIngredient(ctx context.Context) (*types.ValidIngredient, error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := c.logger.Clone()
+
+	req, err := c.requestBuilder.BuildGetRandomValidIngredientRequest(ctx)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building get valid ingredient request")
+	}
+
+	var validIngredient *types.ValidIngredient
+	if err = c.fetchAndUnmarshal(ctx, req, &validIngredient); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "retrieving valid ingredient")
+	}
+
+	return validIngredient, nil
+}
+
 // SearchValidIngredients searches through a list of valid ingredients.
 func (c *Client) SearchValidIngredients(ctx context.Context, query string, limit uint8) ([]*types.ValidIngredient, error) {
 	ctx, span := c.tracer.StartSpan(ctx)

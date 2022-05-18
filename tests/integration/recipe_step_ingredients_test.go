@@ -52,16 +52,14 @@ func (s *TestSuite) TestRecipeStepIngredients_CompleteLifecycle() {
 				createdRecipeStepID,
 				createdRecipeStepIngredientID string
 			)
-			for i, step := range createdRecipe.Steps {
+			for _, step := range createdRecipe.Steps {
 				createdRecipeStepID = step.ID
-				t.Logf("ingredient count for step %d: %d", i+1, len(step.Ingredients))
 				for _, ingredient := range step.Ingredients {
 					createdRecipeStepIngredientID = ingredient.ID
 					break
 				}
 			}
 
-			t.Logf("step count: %d", len(createdRecipe.Steps))
 			require.NotEmpty(t, createdRecipeStepID, "created recipe step ID must not be empty")
 			require.NotEmpty(t, createdRecipeStepIngredientID, "created recipe step ingredient ID must not be empty")
 

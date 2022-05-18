@@ -33,6 +33,7 @@ import (
 
 const (
 	root       = "/"
+	randomRoot = "/random"
 	searchRoot = "/search"
 )
 
@@ -212,6 +213,9 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			validInstrumentsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidInstrumentsPermission)).
 				Get(searchRoot, s.validInstrumentsService.SearchHandler)
+			validInstrumentsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidInstrumentsPermission)).
+				Get(randomRoot, s.validInstrumentsService.RandomHandler)
 
 			validInstrumentsRouter.Route(validInstrumentIDRouteParam, func(singleValidInstrumentRouter routing.Router) {
 				singleValidInstrumentRouter.
@@ -240,6 +244,9 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			validIngredientsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientsPermission)).
 				Get(searchRoot, s.validIngredientsService.SearchHandler)
+			validIngredientsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientsPermission)).
+				Get(randomRoot, s.validIngredientsService.RandomHandler)
 
 			validIngredientsRouter.Route(validIngredientIDRouteParam, func(singleValidIngredientRouter routing.Router) {
 				singleValidIngredientRouter.
@@ -268,6 +275,9 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			validPreparationsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationsPermission)).
 				Get(searchRoot, s.validPreparationsService.SearchHandler)
+			validPreparationsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationsPermission)).
+				Get(randomRoot, s.validPreparationsService.RandomHandler)
 
 			validPreparationsRouter.Route(validPreparationIDRouteParam, func(singleValidPreparationRouter routing.Router) {
 				singleValidPreparationRouter.

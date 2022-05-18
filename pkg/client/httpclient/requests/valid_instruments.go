@@ -45,6 +45,29 @@ func (b *Builder) BuildGetValidInstrumentRequest(ctx context.Context, validInstr
 	return req, nil
 }
 
+// BuildGetRandomValidInstrumentRequest builds an HTTP request for fetching a valid instrument.
+func (b *Builder) BuildGetRandomValidInstrumentRequest(ctx context.Context) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := b.logger.Clone()
+
+	uri := b.BuildURL(
+		ctx,
+		nil,
+		validInstrumentsBasePath,
+		randomBasePath,
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building user status request")
+	}
+
+	return req, nil
+}
+
 // BuildSearchValidInstrumentsRequest builds an HTTP request for querying valid instruments.
 func (b *Builder) BuildSearchValidInstrumentsRequest(ctx context.Context, query string, limit uint8) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)

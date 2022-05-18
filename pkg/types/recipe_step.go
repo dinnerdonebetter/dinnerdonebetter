@@ -31,18 +31,18 @@ type (
 	// RecipeStep represents a recipe step.
 	RecipeStep struct {
 		_                         struct{}
-		ArchivedOn                *uint64                 `json:"archivedOn"`
 		LastUpdatedOn             *uint64                 `json:"lastUpdatedOn"`
 		TemperatureInCelsius      *uint16                 `json:"temperatureInCelsius"`
+		ArchivedOn                *uint64                 `json:"archivedOn"`
+		BelongsToRecipe           string                  `json:"belongsToRecipe"`
 		Notes                     string                  `json:"notes"`
 		ID                        string                  `json:"id"`
-		Products                  []*RecipeStepProduct    `json:"products"`
-		BelongsToRecipe           string                  `json:"belongsToRecipe"`
 		Preparation               ValidPreparation        `json:"preparation"`
+		Products                  []*RecipeStepProduct    `json:"products"`
 		Ingredients               []*RecipeStepIngredient `json:"ingredients"`
-		PrerequisiteStep          uint64                  `json:"prerequisiteStep"`
 		Index                     uint                    `json:"index"`
 		CreatedOn                 uint64                  `json:"createdOn"`
+		PrerequisiteStep          uint64                  `json:"prerequisiteStep"`
 		MaxEstimatedTimeInSeconds uint32                  `json:"maxEstimatedTimeInSeconds"`
 		MinEstimatedTimeInSeconds uint32                  `json:"minEstimatedTimeInSeconds"`
 		Optional                  bool                    `json:"optional"`

@@ -84,6 +84,7 @@ type (
 	ValidInstrumentDataManager interface {
 		ValidInstrumentExists(ctx context.Context, validInstrumentID string) (bool, error)
 		GetValidInstrument(ctx context.Context, validInstrumentID string) (*ValidInstrument, error)
+		GetRandomValidInstrument(ctx context.Context) (*ValidInstrument, error)
 		GetTotalValidInstrumentCount(ctx context.Context) (uint64, error)
 		GetValidInstruments(ctx context.Context, filter *QueryFilter) (*ValidInstrumentList, error)
 		SearchForValidInstruments(ctx context.Context, query string) ([]*ValidInstrument, error)
@@ -99,6 +100,7 @@ type (
 		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
 		ReadHandler(res http.ResponseWriter, req *http.Request)
+		RandomHandler(res http.ResponseWriter, req *http.Request)
 		UpdateHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 	}

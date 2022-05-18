@@ -120,7 +120,20 @@ func (q *SQLQuerier) ValidInstrumentExists(ctx context.Context, validInstrumentI
 	return result, nil
 }
 
-const getValidInstrumentQuery = "SELECT valid_instruments.id, valid_instruments.name, valid_instruments.variant, valid_instruments.description, valid_instruments.icon_path, valid_instruments.created_on, valid_instruments.last_updated_on, valid_instruments.archived_on FROM valid_instruments WHERE valid_instruments.archived_on IS NULL AND valid_instruments.id = $1"
+const getValidInstrumentBaseQuery = `SELECT
+	valid_instruments.id,
+	valid_instruments.name,
+	valid_instruments.variant,
+	valid_instruments.description,
+	valid_instruments.icon_path,
+	valid_instruments.created_on,
+	valid_instruments.last_updated_on,
+	valid_instruments.archived_on
+FROM valid_instruments
+WHERE valid_instruments.archived_on IS NULL
+`
+
+const getValidInstrumentQuery = getValidInstrumentBaseQuery + `AND valid_instruments.id = $1`
 
 // GetValidInstrument fetches a valid instrument from the database.
 func (q *SQLQuerier) GetValidInstrument(ctx context.Context, validInstrumentID string) (*types.ValidInstrument, error) {
@@ -149,7 +162,27 @@ func (q *SQLQuerier) GetValidInstrument(ctx context.Context, validInstrumentID s
 	return validInstrument, nil
 }
 
-const validInstrumentSearchQuery = "SELECT valid_instruments.id, valid_instruments.name, valid_instruments.variant, valid_instruments.description, valid_instruments.icon_path, valid_instruments.created_on, valid_instruments.last_updated_on, valid_instruments.archived_on FROM valid_instruments WHERE valid_instruments.archived_on IS NULL AND valid_instruments.name ILIKE $1 LIMIT 50"
+const getRandomValidInstrumentQuery = getValidInstrumentBaseQuery + `ORDER BY random() LIMIT 1`
+
+// GetRandomValidInstrument fetches a valid instrument from the database.
+func (q *SQLQuerier) GetRandomValidInstrument(ctx context.Context) (*types.ValidInstrument, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+	args := []interface{}{}
+
+	row := q.getOneRow(ctx, q.db, "validInstrument", getRandomValidInstrumentQuery, args)
+
+	validInstrument, _, _, err := q.scanValidInstrument(ctx, row, false)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "scanning validInstrument")
+	}
+
+	return validInstrument, nil
+}
+
+const validInstrumentSearchQuery = `SELECT valid_instruments.id, valid_instruments.name, valid_instruments.variant, valid_instruments.description, valid_instruments.icon_path, valid_instruments.created_on, valid_instruments.last_updated_on, valid_instruments.archived_on FROM valid_instruments WHERE valid_instruments.archived_on IS NULL AND valid_instruments.name ILIKE $1 LIMIT 50`
 
 // SearchForValidInstruments fetches a valid instrument from the database.
 func (q *SQLQuerier) SearchForValidInstruments(ctx context.Context, query string) ([]*types.ValidInstrument, error) {

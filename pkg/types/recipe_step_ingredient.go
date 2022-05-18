@@ -31,13 +31,13 @@ type (
 	// RecipeStepIngredient represents a recipe step ingredient.
 	RecipeStepIngredient struct {
 		_                   struct{}
-		IngredientID        *string         `json:"ingredientID"`
 		LastUpdatedOn       *uint64         `json:"lastUpdatedOn"`
+		IngredientID        *string         `json:"ingredientID"`
 		ArchivedOn          *uint64         `json:"archivedOn"`
-		IngredientNotes     string          `json:"ingredientNotes"`
 		QuantityNotes       string          `json:"quantityNotes"`
-		ID                  string          `json:"id"`
 		QuantityType        string          `json:"quantityType"`
+		IngredientNotes     string          `json:"ingredientNotes"`
+		ID                  string          `json:"id"`
 		BelongsToRecipeStep string          `json:"belongsToRecipeStep"`
 		Ingredient          ValidIngredient `json:"ingredient"`
 		CreatedOn           uint64          `json:"createdOn"`
@@ -190,7 +190,5 @@ func (x *RecipeStepIngredientUpdateRequestInput) ValidateWithContext(ctx context
 		validation.Field(&x.IngredientID, validation.Required),
 		validation.Field(&x.QuantityType, validation.Required),
 		validation.Field(&x.QuantityValue, validation.Required),
-		validation.Field(&x.QuantityNotes, validation.Required),
-		validation.Field(&x.IngredientNotes, validation.Required),
 	)
 }

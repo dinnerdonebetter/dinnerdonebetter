@@ -948,3 +948,113 @@ func TestValidInstrumentsService_ArchiveHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, dataChangesPublisher)
 	})
 }
+
+func TestValidInstrumentsService_RandomHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager.On(
+			"GetRandomValidInstrument",
+			testutils.ContextMatcher,
+		).Return(helper.exampleValidInstrument, nil)
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"RespondWithData",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			mock.IsType(&types.ValidInstrument{}),
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.RandomHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, encoderDecoder)
+	})
+
+	T.Run("with error retrieving session context data", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeErrorResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			"unauthenticated",
+			http.StatusUnauthorized,
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+
+		helper.service.RandomHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, encoderDecoder)
+	})
+
+	T.Run("with no such valid instrument in the database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager.On(
+			"GetRandomValidInstrument",
+			testutils.ContextMatcher,
+		).Return((*types.ValidInstrument)(nil), sql.ErrNoRows)
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeNotFoundResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+		).Return()
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.RandomHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, encoderDecoder)
+	})
+
+	T.Run("with error fetching from database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager.On(
+			"GetRandomValidInstrument",
+			testutils.ContextMatcher,
+		).Return((*types.ValidInstrument)(nil), errors.New("blah"))
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeUnspecifiedInternalServerErrorResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.RandomHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, encoderDecoder)
+	})
+}

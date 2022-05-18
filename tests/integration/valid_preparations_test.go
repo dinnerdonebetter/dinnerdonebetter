@@ -72,6 +72,31 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 	})
 }
 
+func (s *TestSuite) TestValidPreparations_GetRandom() {
+	s.runForEachClient("should be able to get a random valid preparation", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			t.Log("creating valid preparation")
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			require.NoError(t, err)
+			t.Logf("valid preparation %q created", createdValidPreparation.ID)
+			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
+
+			createdValidPreparation, err = testClients.admin.GetRandomValidPreparation(ctx)
+			requireNotNilAndNoProblems(t, createdValidPreparation, err)
+
+			t.Log("cleaning up valid preparation")
+			assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
+		}
+	})
+}
+
 func (s *TestSuite) TestValidPreparations_Listing() {
 	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {

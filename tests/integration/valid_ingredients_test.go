@@ -100,6 +100,31 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 	})
 }
 
+func (s *TestSuite) TestValidIngredients_GetRandom() {
+	s.runForEachClient("should be able to get a random valid ingredient", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			t.Log("creating valid ingredient")
+			exampleValidIngredient := fakes.BuildFakeValidIngredient()
+			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
+			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			require.NoError(t, err)
+			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
+			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
+
+			createdValidIngredient, err = testClients.admin.GetRandomValidIngredient(ctx)
+			requireNotNilAndNoProblems(t, createdValidIngredient, err)
+
+			t.Log("cleaning up valid ingredient")
+			assert.NoError(t, testClients.admin.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
+		}
+	})
+}
+
 func (s *TestSuite) TestValidIngredients_Listing() {
 	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {

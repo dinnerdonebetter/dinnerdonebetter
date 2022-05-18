@@ -45,6 +45,29 @@ func (b *Builder) BuildGetValidPreparationRequest(ctx context.Context, validPrep
 	return req, nil
 }
 
+// BuildGetRandomValidPreparationRequest builds an HTTP request for fetching a valid preparation.
+func (b *Builder) BuildGetRandomValidPreparationRequest(ctx context.Context) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := b.logger.Clone()
+
+	uri := b.BuildURL(
+		ctx,
+		nil,
+		validPreparationsBasePath,
+		randomBasePath,
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building user status request")
+	}
+
+	return req, nil
+}
+
 // BuildSearchValidPreparationsRequest builds an HTTP request for querying valid preparations.
 func (b *Builder) BuildSearchValidPreparationsRequest(ctx context.Context, query string, limit uint8) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
