@@ -494,7 +494,7 @@ const createHouseholdMembershipForNewUserQuery = `
 `
 
 // CreateUser creates a user.
-func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDataStoreCreationInput) (*types.User, error) {
+func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDatabaseCreationInput) (*types.User, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -571,7 +571,7 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDataStoreC
 
 		if err = q.performWriteQuery(ctx, tx, "household user membership creation", createHouseholdMembershipForNewUserQuery, createHouseholdMembershipForNewUserArgs); err != nil {
 			q.rollbackTransaction(ctx, tx)
-			return nil, observability.PrepareError(err, logger, span, "writing household user membership")
+			return nil, observability.PrepareError(err, logger, span, "writing destination household membership")
 		}
 	} else {
 		// standard registration: we need to create the household

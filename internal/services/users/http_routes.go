@@ -163,7 +163,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	input := &types.UserDataStoreCreationInput{
+	input := &types.UserDatabaseCreationInput{
 		ID:                   ksuid.New().String(),
 		Username:             registrationInput.Username,
 		EmailAddress:         registrationInput.EmailAddress,

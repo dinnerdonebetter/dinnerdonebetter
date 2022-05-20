@@ -379,7 +379,7 @@ func TestService_CreateHandler(T *testing.T) {
 		db.UserDataManager.On(
 			"CreateUser",
 			testutils.ContextMatcher,
-			mock.IsType(&types.UserDataStoreCreationInput{}),
+			mock.IsType(&types.UserDatabaseCreationInput{}),
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = db
 
@@ -566,7 +566,7 @@ func TestService_CreateHandler(T *testing.T) {
 		db.UserDataManager.On(
 			"CreateUser",
 			testutils.ContextMatcher,
-			mock.IsType(&types.UserDataStoreCreationInput{}),
+			mock.IsType(&types.UserDatabaseCreationInput{}),
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = db
 
@@ -620,7 +620,7 @@ func TestService_CreateHandler(T *testing.T) {
 		db.UserDataManager.On(
 			"CreateUser",
 			testutils.ContextMatcher,
-			mock.IsType(&types.UserDataStoreCreationInput{}),
+			mock.IsType(&types.UserDatabaseCreationInput{}),
 		).Return(helper.exampleUser, errors.New("blah"))
 		helper.service.userDataManager = db
 

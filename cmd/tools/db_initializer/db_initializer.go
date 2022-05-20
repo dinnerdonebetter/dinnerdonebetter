@@ -1,82 +1,24 @@
 package main
 
 import (
-	"bytes"
 	"context"
-	"database/sql"
 	_ "embed"
-	"errors"
-	"text/template"
-	"time"
+	"fmt"
+	"log"
 
-	"github.com/segmentio/ksuid"
+	"github.com/prixfixeco/api_server/internal/database"
+	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
+	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
+	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 
 	_ "github.com/lib/pq"
 	flag "github.com/spf13/pflag"
-
-	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 )
 
-const defaultDBURL = "postgres://dbuser:hunter2@localhost:5432/prixfixe?sslmode=disable"
-
-var (
-	dbString string
-	debug    bool
-
-	//go:embed init.sql.tmpl
-	initScriptTemplate string
-)
-
-func init() {
-	flag.StringVarP(&dbString, "dburl", "u", defaultDBURL, "where the database is hosted")
-	flag.BoolVarP(&debug, "debug", "d", false, "whether debug mode is enabled")
-}
-
-func main() {
-	flag.Parse()
-
-	ctx := context.Background()
-	logger := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
-
-	if dbString == "" {
-		logger.Fatal(errors.New("uri must be valid"))
-	}
-
-	if dbString == "" {
-		logger.Fatal(errors.New("database connection string must be provided"))
-	}
-
-	db, err := sql.Open("postgres", dbString)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	generatedIDs := map[string]string{}
-
-	templateFuncs := map[string]interface{}{
-		"timestamp": func() int64 {
-			return time.Now().Unix()
-		},
-		"getID": func(key string) string {
-			if id, ok := generatedIDs[key]; ok {
-				return id
-			}
-
-			newID := ksuid.New().String()
-			generatedIDs[key] = newID
-
-			return newID
-		},
-	}
-
-	t := template.Must(template.New("init").Funcs(templateFuncs).Parse(initScriptTemplate))
-
-	var query bytes.Buffer
-	if err = t.Execute(&query, struct{}{}); err != nil {
-		logger.Fatal(err)
-	}
-
-	_, err = db.ExecContext(ctx, `
+const (
+	defaultDBURL  = "postgres://dbuser:hunter2@localhost:5432/prixfixe?sslmode=disable"
+	clearAllQuery = `
 DELETE FROM "users" WHERE id IS NOT NULL;
 DELETE FROM "households" WHERE id IS NOT NULL;
 DELETE FROM "household_user_memberships" WHERE id IS NOT NULL;
@@ -91,15 +33,68 @@ DELETE FROM "meal_recipes" WHERE id IS NOT NULL;
 DELETE FROM "meal_plans" WHERE id IS NOT NULL;
 DELETE FROM "meal_plan_options" WHERE id IS NOT NULL;
 DELETE FROM "sessions" WHERE data IS NOT NULL;
-`)
-	if err != nil {
-		logger.Fatal(err)
+`
+)
+
+var (
+	dbString string
+	debug    bool
+)
+
+func init() {
+	flag.StringVarP(&dbString, "dburl", "u", defaultDBURL, "where the database is hosted")
+	flag.BoolVarP(&debug, "debug", "d", false, "whether debug mode is enabled")
+}
+
+func main() {
+	flag.Parse()
+
+	ctx := context.Background()
+	logger := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
+
+	dbConfig := &dbconfig.Config{
+		ConnectionDetails: database.ConnectionDetails(dbString),
 	}
 
-	q := query.String()
-
-	_, err = db.ExecContext(ctx, q)
+	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, dbConfig, tracing.NewNoopTracerProvider())
 	if err != nil {
-		logger.Fatal(err)
+		logger.Fatal(fmt.Errorf("initializing database client: %w", err))
 	}
+
+	_, err = dataManager.DB().ExecContext(ctx, clearAllQuery)
+	if err != nil {
+		log.Fatal(fmt.Errorf("error clearing database: %w", err))
+	}
+
+	if err = scaffoldUsers(ctx, dataManager); err != nil {
+		log.Fatal(fmt.Errorf("error creating users: %w", err))
+	}
+
+	if err = scaffoldValidIngredients(ctx, dataManager); err != nil {
+		log.Fatal(fmt.Errorf("error creating valid ingredients: %w", err))
+	}
+
+	if err = scaffoldValidPreparations(ctx, dataManager); err != nil {
+		log.Fatal(fmt.Errorf("error creating valid preparations: %w", err))
+	}
+
+	if err = scaffoldValidInstruments(ctx, dataManager); err != nil {
+		log.Fatal(fmt.Errorf("error creating valid instruments: %w", err))
+	}
+
+	if err = scaffoldRecipes(ctx, dataManager); err != nil {
+		log.Fatal(fmt.Errorf("error creating recipes: %w", err))
+	}
+
+	if err = scaffoldMeals(ctx, dataManager); err != nil {
+		log.Fatal(fmt.Errorf("error creating meals: %w", err))
+	}
+
+	if err = scaffoldMealPlans(ctx, dataManager); err != nil {
+		log.Fatal(fmt.Errorf("error creating meals: %w", err))
+	}
+}
+
+func sp(s string) *string {
+	return &s
 }
