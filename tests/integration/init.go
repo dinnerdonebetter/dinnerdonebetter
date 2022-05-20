@@ -83,7 +83,7 @@ func init() {
 	}
 
 	if _, err = dbmanager.GetUserByUsername(ctx, premadeAdminUser.Username); err != nil {
-		_, creationErr := dbmanager.CreateUser(ctx, &types.UserDataStoreCreationInput{
+		_, creationErr := dbmanager.CreateUser(ctx, &types.UserDatabaseCreationInput{
 			ID:              premadeAdminUser.ID,
 			Username:        premadeAdminUser.Username,
 			EmailAddress:    premadeAdminUser.EmailAddress,

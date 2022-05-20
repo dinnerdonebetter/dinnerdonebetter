@@ -81,9 +81,9 @@ func BuildFakeUserRegistrationInputFromUser(user *types.User) *types.UserRegistr
 	}
 }
 
-// BuildFakeUserDataStoreCreationInputFromUser builds a faked UserDataStoreCreationInput.
-func BuildFakeUserDataStoreCreationInputFromUser(user *types.User) *types.UserDataStoreCreationInput {
-	return &types.UserDataStoreCreationInput{
+// BuildFakeUserDataStoreCreationInputFromUser builds a faked UserDatabaseCreationInput.
+func BuildFakeUserDataStoreCreationInputFromUser(user *types.User) *types.UserDatabaseCreationInput {
+	return &types.UserDatabaseCreationInput{
 		ID:              user.ID,
 		EmailAddress:    user.EmailAddress,
 		Username:        user.Username,

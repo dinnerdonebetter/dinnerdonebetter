@@ -76,8 +76,8 @@ type (
 		Username             string `json:"username"`
 	}
 
-	// UserDataStoreCreationInput is used by the User creation route to communicate with the data store.
-	UserDataStoreCreationInput struct {
+	// UserDatabaseCreationInput is used by the User creation route to communicate with the data store.
+	UserDatabaseCreationInput struct {
 		_                    struct{}
 		BirthMonth           *uint8 `json:"-"`
 		BirthDay             *uint8 `json:"-"`
@@ -165,7 +165,7 @@ type (
 		SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*User, error)
 		GetAllUsersCount(ctx context.Context) (uint64, error)
 		GetUsers(ctx context.Context, filter *QueryFilter) (*UserList, error)
-		CreateUser(ctx context.Context, input *UserDataStoreCreationInput) (*User, error)
+		CreateUser(ctx context.Context, input *UserDatabaseCreationInput) (*User, error)
 		UpdateUser(ctx context.Context, updated *User) error
 		UpdateUserPassword(ctx context.Context, userID, newHash string) error
 		ArchiveUser(ctx context.Context, userID string) error
