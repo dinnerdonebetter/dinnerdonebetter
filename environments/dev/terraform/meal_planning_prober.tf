@@ -11,19 +11,19 @@ resource "google_pubsub_topic" "meal_plan_prober_topic" {
   name = "meal_plan_prober_work"
 }
 
-resource "google_cloud_scheduler_job" "meal_plan_prober_schedule" {
-  project = local.project_id
-  region  = local.gcp_region
-  name    = "meal-plan-prober-scheduler"
-
-  schedule  = "*/5 * * * *" # every five minutes
-  time_zone = "America/Chicago"
-
-  pubsub_target {
-    topic_name = google_pubsub_topic.meal_plan_prober_topic.id
-    data       = base64encode("{}")
-  }
-}
+#resource "google_cloud_scheduler_job" "meal_plan_prober_schedule" {
+#  project = local.project_id
+#  region  = local.gcp_region
+#  name    = "meal-plan-prober-scheduler"
+#
+#  schedule  = "*/5 * * * *" # every five minutes
+#  time_zone = "America/Chicago"
+#
+#  pubsub_target {
+#    topic_name = google_pubsub_topic.meal_plan_prober_topic.id
+#    data       = base64encode("{}")
+#  }
+#}
 
 resource "google_storage_bucket" "meal_plan_prober_bucket" {
   name     = "meal-plan-prober-cloud-function"

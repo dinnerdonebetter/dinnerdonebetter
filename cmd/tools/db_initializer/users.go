@@ -6,8 +6,6 @@ import (
 
 	"github.com/segmentio/ksuid"
 
-	"github.com/prixfixeco/api_server/internal/authorization"
-
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
@@ -114,18 +112,7 @@ func scaffoldUsers(ctx context.Context, db database.DataManager) error {
 		return fmt.Errorf("creating admin user: %w", err)
 	}
 
-	adminHouseholdID, err := db.GetDefaultHouseholdIDForUser(ctx, userCollection.Admin.ID)
-	if err != nil {
-		return fmt.Errorf("fetching default household for admin user: %w", err)
-	}
-
-	err = db.ModifyUserPermissions(ctx, adminHouseholdID, userCollection.Admin.ID, &types.ModifyUserPermissionsInput{
-		Reason: "scaffold",
-		NewRoles: []string{
-			authorization.ServiceAdminRole.String(),
-			authorization.ServiceUserRole.String(),
-		},
-	})
+	_, err = db.DB().ExecContext(ctx, `UPDATE users SET service_roles='service_admin', two_factor_secret_verified_on=extract(epoch FROM NOW()) WHERE username = 'admin';`)
 	if err != nil {
 		return fmt.Errorf("modifying admin user permissions: %w", err)
 	}
