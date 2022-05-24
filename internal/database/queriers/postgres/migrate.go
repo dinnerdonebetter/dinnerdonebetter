@@ -105,6 +105,11 @@ var (
 			Description: "add birthdate fields to user table",
 			Script:      fetchMigration("migrations/00018_add_user_birthdate_data.sql"),
 		},
+		{
+			Version:     19,
+			Description: "add miscellaneous indices",
+			Script:      fetchMigration("migrations/00019_indices_catchup.sql"),
+		},
 	}
 )
 
