@@ -40,7 +40,7 @@ func (s *TestSuite) TestMealPlanOptions_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdMealPlan := createMealPlanForTest(ctx, t, testClients.main)
+			createdMealPlan := createMealPlanForTest(ctx, t, testClients.admin, testClients.main)
 
 			var createdMealPlanOption *types.MealPlanOption
 			for _, opt := range createdMealPlan.Options {
@@ -81,7 +81,7 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdMealPlan := createMealPlanForTest(ctx, t, testClients.main)
+			createdMealPlan := createMealPlanForTest(ctx, t, testClients.admin, testClients.main)
 
 			t.Log("creating meal plan options")
 			var expected []*types.MealPlanOption
@@ -89,7 +89,7 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 				exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 				exampleMealPlanOption.BelongsToMealPlan = createdMealPlan.ID
 
-				createdMeal := createMealForTest(ctx, t, testClients.main, nil)
+				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.main, nil)
 				exampleMealPlanOption.Meal.ID = createdMeal.ID
 
 				exampleMealPlanOptionInput := fakes.BuildFakeMealPlanOptionCreationRequestInputFromMealPlanOption(exampleMealPlanOption)

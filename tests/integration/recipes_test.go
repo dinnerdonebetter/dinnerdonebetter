@@ -38,13 +38,13 @@ func convertRecipeToRecipeUpdateInput(x *types.Recipe) *types.RecipeUpdateReques
 	}
 }
 
-func createRecipeForTest(ctx context.Context, t *testing.T, client *httpclient.Client, recipe *types.Recipe) ([]*types.ValidIngredient, *types.ValidPreparation, *types.Recipe) {
+func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client *httpclient.Client, recipe *types.Recipe) ([]*types.ValidIngredient, *types.ValidPreparation, *types.Recipe) {
 	t.Helper()
 
 	t.Log("creating prerequisite valid preparation")
 	exampleValidPreparation := fakes.BuildFakeValidPreparation()
 	exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
-	createdValidPreparation, err := client.CreateValidPreparation(ctx, exampleValidPreparationInput)
+	createdValidPreparation, err := adminClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
 	require.NoError(t, err)
 	t.Logf("valid preparation %q created", createdValidPreparation.ID)
 
@@ -60,7 +60,7 @@ func createRecipeForTest(ctx context.Context, t *testing.T, client *httpclient.C
 			t.Log("creating prerequisite valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, createdValidIngredientErr := client.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			createdValidIngredient, createdValidIngredientErr := adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, createdValidIngredientErr)
 
 			createdValidIngredients = append(createdValidIngredients, createdValidIngredient)
@@ -97,7 +97,7 @@ func (s *TestSuite) TestRecipes_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.main, nil)
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.main, nil)
 
 			t.Log("changing recipe")
 			newRecipe := fakes.BuildFakeRecipe()
@@ -129,7 +129,7 @@ func (s *TestSuite) TestRecipes_Listing() {
 			t.Log("creating prerequisite valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
 			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
@@ -142,7 +142,7 @@ func (s *TestSuite) TestRecipes_Listing() {
 			t.Log("creating prerequisite valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
 			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
 			t.Logf("valid preparation %q created", createdValidPreparation.ID)
 
@@ -155,7 +155,7 @@ func (s *TestSuite) TestRecipes_Listing() {
 			t.Log("creating recipes")
 			var expected []*types.Recipe
 			for i := 0; i < 5; i++ {
-				_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.main, nil)
+				_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.main, nil)
 
 				expected = append(expected, createdRecipe)
 			}
@@ -190,7 +190,7 @@ func (s *TestSuite) TestRecipes_Searching() {
 			t.Log("creating prerequisite valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
 			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
@@ -203,7 +203,7 @@ func (s *TestSuite) TestRecipes_Searching() {
 			t.Log("creating prerequisite valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
 			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
 			t.Logf("valid preparation %q created", createdValidPreparation.ID)
 
@@ -219,7 +219,7 @@ func (s *TestSuite) TestRecipes_Searching() {
 			var expected []*types.Recipe
 			for i := 0; i < 5; i++ {
 				exampleRecipe.Name = fmt.Sprintf("example%d", i)
-				_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.main, exampleRecipe)
+				_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.main, exampleRecipe)
 
 				expected = append(expected, createdRecipe)
 			}

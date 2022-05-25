@@ -26,13 +26,13 @@ func checkMealEquality(t *testing.T, expected, actual *types.Meal) {
 	assert.NotZero(t, actual.CreatedOn)
 }
 
-func createMealForTest(ctx context.Context, t *testing.T, client *httpclient.Client, mealInput *types.Meal) *types.Meal {
+func createMealForTest(ctx context.Context, t *testing.T, adminClient, client *httpclient.Client, mealInput *types.Meal) *types.Meal {
 	t.Helper()
 
 	createdRecipes := []*types.Recipe{}
 	createdRecipeIDs := []string{}
 	for i := 0; i < 3; i++ {
-		_, _, recipe := createRecipeForTest(ctx, t, client, nil)
+		_, _, recipe := createRecipeForTest(ctx, t, adminClient, client, nil)
 		createdRecipes = append(createdRecipes, recipe)
 		createdRecipeIDs = append(createdRecipeIDs, recipe.ID)
 	}
@@ -66,7 +66,7 @@ func (s *TestSuite) TestMeals_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdMeal := createMealForTest(ctx, t, testClients.main, nil)
+			createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.main, nil)
 
 			t.Log("cleaning up meal")
 			assert.NoError(t, testClients.main.ArchiveMeal(ctx, createdMeal.ID))
@@ -85,7 +85,7 @@ func (s *TestSuite) TestMeals_Listing() {
 			t.Log("creating prerequisite valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
 			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
@@ -98,7 +98,7 @@ func (s *TestSuite) TestMeals_Listing() {
 			t.Log("creating prerequisite valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
 			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
 			t.Logf("valid preparation %q created", createdValidPreparation.ID)
 
@@ -111,7 +111,7 @@ func (s *TestSuite) TestMeals_Listing() {
 			t.Log("creating meals")
 			var expected []*types.Meal
 			for i := 0; i < 5; i++ {
-				createdMeal := createMealForTest(ctx, t, testClients.main, nil)
+				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.main, nil)
 
 				expected = append(expected, createdMeal)
 			}
@@ -146,7 +146,7 @@ func (s *TestSuite) TestMeals_Searching() {
 			t.Log("creating prerequisite valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
-			createdValidIngredient, err := testClients.main.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
 			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
@@ -159,7 +159,7 @@ func (s *TestSuite) TestMeals_Searching() {
 			t.Log("creating prerequisite valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
 			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
-			createdValidPreparation, err := testClients.main.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
 			t.Logf("valid preparation %q created", createdValidPreparation.ID)
 
@@ -174,7 +174,7 @@ func (s *TestSuite) TestMeals_Searching() {
 			var expected []*types.Meal
 			for i := 0; i < 5; i++ {
 				exampleMeal.Name = fmt.Sprintf("example%d", i)
-				createdMeal := createMealForTest(ctx, t, testClients.main, exampleMeal)
+				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.main, exampleMeal)
 
 				expected = append(expected, createdMeal)
 			}
