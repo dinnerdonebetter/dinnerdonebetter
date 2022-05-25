@@ -205,6 +205,11 @@ var (
 		UpdateUserStatusPermission.ID():  UpdateUserStatusPermission,
 		ReadUserPermission.ID():          ReadUserPermission,
 		SearchUserPermission.ID():        SearchUserPermission,
+
+		CreateValidInstrumentsPermission.ID():            CreateValidInstrumentsPermission,
+		CreateValidIngredientsPermission.ID():            CreateValidIngredientsPermission,
+		CreateValidPreparationsPermission.ID():           CreateValidPreparationsPermission,
+		CreateValidIngredientPreparationsPermission.ID(): CreateValidIngredientPreparationsPermission,
 	}
 
 	// household admin permissions.
@@ -219,25 +224,21 @@ var (
 		UpdateWebhooksPermission.ID():                      UpdateWebhooksPermission,
 		ArchiveWebhooksPermission.ID():                     ArchiveWebhooksPermission,
 
-		CreateValidInstrumentsPermission.ID():  CreateValidInstrumentsPermission,
 		ReadValidInstrumentsPermission.ID():    ReadValidInstrumentsPermission,
 		SearchValidInstrumentsPermission.ID():  SearchValidInstrumentsPermission,
 		UpdateValidInstrumentsPermission.ID():  UpdateValidInstrumentsPermission,
 		ArchiveValidInstrumentsPermission.ID(): ArchiveValidInstrumentsPermission,
 
-		CreateValidIngredientsPermission.ID():  CreateValidIngredientsPermission,
 		ReadValidIngredientsPermission.ID():    ReadValidIngredientsPermission,
 		SearchValidIngredientsPermission.ID():  SearchValidIngredientsPermission,
 		UpdateValidIngredientsPermission.ID():  UpdateValidIngredientsPermission,
 		ArchiveValidIngredientsPermission.ID(): ArchiveValidIngredientsPermission,
 
-		CreateValidPreparationsPermission.ID():  CreateValidPreparationsPermission,
 		ReadValidPreparationsPermission.ID():    ReadValidPreparationsPermission,
 		SearchValidPreparationsPermission.ID():  SearchValidPreparationsPermission,
 		UpdateValidPreparationsPermission.ID():  UpdateValidPreparationsPermission,
 		ArchiveValidPreparationsPermission.ID(): ArchiveValidPreparationsPermission,
 
-		CreateValidIngredientPreparationsPermission.ID():  CreateValidIngredientPreparationsPermission,
 		ReadValidIngredientPreparationsPermission.ID():    ReadValidIngredientPreparationsPermission,
 		SearchValidIngredientPreparationsPermission.ID():  SearchValidIngredientPreparationsPermission,
 		UpdateValidIngredientPreparationsPermission.ID():  UpdateValidIngredientPreparationsPermission,

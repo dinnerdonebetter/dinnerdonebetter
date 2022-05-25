@@ -39,7 +39,7 @@ func (s *TestSuite) TestRecipeStepInstruments_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.main, nil)
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.main, nil)
 
 			var createdRecipeStepID string
 			for _, step := range createdRecipe.Steps {
@@ -97,7 +97,7 @@ func (s *TestSuite) TestRecipeStepInstruments_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.main, nil)
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.main, nil)
 
 			var createdRecipeStepID string
 			for _, step := range createdRecipe.Steps {

@@ -27,13 +27,13 @@ func checkMealPlanEquality(t *testing.T, expected, actual *types.MealPlan) {
 	assert.NotZero(t, actual.CreatedOn)
 }
 
-func createMealPlanForTest(ctx context.Context, t *testing.T, client *httpclient.Client) *types.MealPlan {
+func createMealPlanForTest(ctx context.Context, t *testing.T, adminClient, client *httpclient.Client) *types.MealPlan {
 	t.Helper()
 
 	t.Log("creating meal plan")
 	exampleMealPlan := fakes.BuildFakeMealPlan()
 	for i := range exampleMealPlan.Options {
-		createdMeal := createMealForTest(ctx, t, client, nil)
+		createdMeal := createMealForTest(ctx, t, adminClient, client, nil)
 		exampleMealPlan.Options[i].Meal.ID = createdMeal.ID
 	}
 
@@ -135,7 +135,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			// create recipes for meal plan
 			createdMeals := []*types.Meal{}
 			for i := 0; i < 3; i++ {
-				createdMeal := createMealForTest(ctx, t, testClients.main, nil)
+				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.main, nil)
 				createdMeals = append(createdMeals, createdMeal)
 			}
 
@@ -343,7 +343,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			// create recipes for meal plan
 			createdMeals := []*types.Meal{}
 			for i := 0; i < 3; i++ {
-				createdMeal := createMealForTest(ctx, t, testClients.main, nil)
+				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.main, nil)
 				createdMeals = append(createdMeals, createdMeal)
 			}
 
@@ -488,7 +488,7 @@ func (s *TestSuite) TestMealPlans_Listing() {
 			t.Log("creating meal plans")
 			var expected []*types.MealPlan
 			for i := 0; i < 5; i++ {
-				createdMealPlan := createMealPlanForTest(ctx, t, testClients.main)
+				createdMealPlan := createMealPlanForTest(ctx, t, testClients.admin, testClients.main)
 				expected = append(expected, createdMealPlan)
 			}
 
