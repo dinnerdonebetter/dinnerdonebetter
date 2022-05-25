@@ -110,6 +110,11 @@ var (
 			Description: "add miscellaneous indices",
 			Script:      fetchMigration("migrations/00019_indices_catchup.sql"),
 		},
+		{
+			Version:     20,
+			Description: "replace invalid uniqueness constraint on valid_ingredients table",
+			Script:      fetchMigration("migrations/00020_instrument_uniqueness_constraint_fix.sql"),
+		},
 	}
 )
 
