@@ -79,7 +79,7 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 
 		if err := loginData.ValidateWithContext(ctx, s.config.MinimumUsernameLength, s.config.MinimumPasswordLength); err != nil {
 			observability.AcknowledgeError(err, logger, span, "validating input")
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+			s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid login body", http.StatusBadRequest)
 			return
 		}
 
@@ -111,7 +111,7 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		tracing.AttachUserToSpan(span, user)
 
 		if user.IsBanned() {
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, user.ReputationExplanation, http.StatusForbidden)
+			s.encoderDecoder.EncodeErrorResponse(ctx, res, "user is banned", http.StatusForbidden)
 			return
 		}
 

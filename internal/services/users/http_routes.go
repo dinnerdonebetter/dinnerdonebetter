@@ -138,7 +138,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err := registrationInput.ValidateWithContext(ctx, s.authSettings.MinimumUsernameLength, s.authSettings.MinimumPasswordLength); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "password is too short", http.StatusBadRequest)
 		return
 	}
 
@@ -151,7 +151,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	// ensure the password is not garbage-tier
 	if err := passwordvalidator.Validate(registrationInput.Password, minimumPasswordEntropy); err != nil {
 		logger.WithValue("password_validation_error", err).Debug("weak password provided to user creation route")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "password too weak", http.StatusBadRequest)
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "password not strong or diverse enough", http.StatusBadRequest)
 		return
 	}
 
@@ -178,7 +178,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	// generate a two factor secret.
 	if input.TwoFactorSecret, err = s.secretGenerator.GenerateBase32EncodedString(ctx, totpSecretSize); err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating user")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "internal error", http.StatusInternalServerError)
 		return
 	}
 
@@ -187,7 +187,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	if userCreationErr != nil {
 		if errors.Is(userCreationErr, database.ErrUserAlreadyExists) {
 			observability.AcknowledgeError(err, logger, span, "creating user")
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, "username already registered", http.StatusBadRequest)
+			s.encoderDecoder.EncodeErrorResponse(ctx, res, "username taken", http.StatusBadRequest)
+			return
 		}
 
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
