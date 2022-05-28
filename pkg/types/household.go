@@ -83,8 +83,8 @@ type (
 		BelongsToUser string `json:"-"`
 	}
 
-	// HouseholdUpdateInput represents what a User could set as input for updating households.
-	HouseholdUpdateInput struct {
+	// HouseholdUpdateRequestInput represents what a User could set as input for updating households.
+	HouseholdUpdateRequestInput struct {
 		_ struct{}
 
 		Name          string `json:"name"`
@@ -121,7 +121,7 @@ type (
 )
 
 // Update merges a householdUpdateInput with a household.
-func (x *Household) Update(input *HouseholdUpdateInput) {
+func (x *Household) Update(input *HouseholdUpdateRequestInput) {
 	if input.Name != "" && input.Name != x.Name {
 		x.Name = input.Name
 	}
@@ -136,10 +136,10 @@ func (x *HouseholdCreationRequestInput) ValidateWithContext(ctx context.Context)
 	)
 }
 
-var _ validation.ValidatableWithContext = (*HouseholdUpdateInput)(nil)
+var _ validation.ValidatableWithContext = (*HouseholdUpdateRequestInput)(nil)
 
-// ValidateWithContext validates a HouseholdUpdateInput.
-func (x *HouseholdUpdateInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a HouseholdUpdateRequestInput.
+func (x *HouseholdUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, x,
 		validation.Field(&x.Name, validation.Required),
 	)

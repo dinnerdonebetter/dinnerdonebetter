@@ -41,17 +41,8 @@ type (
 		Pagination
 	}
 
-	// HouseholdUserMembershipCreationInput represents what a User could set as input for creating household user memberships.
-	HouseholdUserMembershipCreationInput struct {
-		_ struct{}
-
-		ID                 string `json:"-"`
-		BelongsToUser      string `json:"belongsToUser"`
-		BelongsToHousehold string `json:"belongsToHousehold"`
-	}
-
-	// HouseholdUserMembershipUpdateInput represents what a User could set as input for updating household user memberships.
-	HouseholdUserMembershipUpdateInput struct {
+	// HouseholdUserMembershipUpdateRequestInput represents what a User could set as input for updating household user memberships.
+	HouseholdUserMembershipUpdateRequestInput struct {
 		_ struct{}
 
 		BelongsToUser      string `json:"belongsToUser"`

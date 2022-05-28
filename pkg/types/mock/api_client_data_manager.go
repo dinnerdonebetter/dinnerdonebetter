@@ -40,7 +40,7 @@ func (m *APIClientDataManager) GetAPIClients(ctx context.Context, userID string,
 }
 
 // CreateAPIClient is a mock function.
-func (m *APIClientDataManager) CreateAPIClient(ctx context.Context, input *types.APIClientCreationInput) (*types.APIClient, error) {
+func (m *APIClientDataManager) CreateAPIClient(ctx context.Context, input *types.APIClientCreationRequestInput) (*types.APIClient, error) {
 	args := m.Called(ctx, input)
 	return args.Get(0).(*types.APIClient), args.Error(1)
 }

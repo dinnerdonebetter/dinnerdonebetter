@@ -170,6 +170,15 @@ frontend_tests:
 	--always-recreate-deps \
 	--abort-on-container-exit
 
+## Generated files
+
+clean_ts:
+	rm -rf $(ARTIFACTS_DIR)/typescript
+
+typescript: clean_ts
+	mkdir -p $(ARTIFACTS_DIR)/typescript
+	go run cmd/tools/gen_ts/main.go
+
 ## Integration tests
 
 .PHONY: wipe_docker
