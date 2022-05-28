@@ -87,7 +87,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// fetch creation input from session context data.
-	input := new(types.APIClientCreationInput)
+	input := new(types.APIClientCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		s.logger.Error(err, "error encountered decoding request body")
 		observability.AcknowledgeError(err, logger, span, "decoding request body")

@@ -48,11 +48,11 @@ func BuildFakeAPIClientList() *types.APIClientList {
 	}
 }
 
-// BuildFakeAPIClientCreationInput builds a faked APIClientCreationInput.
-func BuildFakeAPIClientCreationInput() *types.APIClientCreationInput {
+// BuildFakeAPIClientCreationInput builds a faked APIClientCreationRequestInput.
+func BuildFakeAPIClientCreationInput() *types.APIClientCreationRequestInput {
 	client := BuildFakeAPIClient()
 
-	return &types.APIClientCreationInput{
+	return &types.APIClientCreationRequestInput{
 		UserLoginInput: types.UserLoginInput{
 			Username:  fake.Username(),
 			Password:  fake.Password(true, true, true, true, false, 32),
@@ -64,9 +64,9 @@ func BuildFakeAPIClientCreationInput() *types.APIClientCreationInput {
 	}
 }
 
-// BuildFakeAPIClientCreationInputFromClient builds a faked APIClientCreationInput.
-func BuildFakeAPIClientCreationInputFromClient(client *types.APIClient) *types.APIClientCreationInput {
-	return &types.APIClientCreationInput{
+// BuildFakeAPIClientCreationInputFromClient builds a faked APIClientCreationRequestInput.
+func BuildFakeAPIClientCreationInputFromClient(client *types.APIClient) *types.APIClientCreationRequestInput {
+	return &types.APIClientCreationRequestInput{
 		ID: client.ID,
 		UserLoginInput: types.UserLoginInput{
 			Username:  fake.Username(),

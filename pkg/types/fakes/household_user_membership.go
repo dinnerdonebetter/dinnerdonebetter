@@ -37,25 +37,3 @@ func BuildFakeHouseholdUserMembershipList() *types.HouseholdUserMembershipList {
 		HouseholdUserMemberships: examples,
 	}
 }
-
-// BuildFakeHouseholdUserMembershipUpdateInputFromHouseholdUserMembership builds a faked HouseholdUserMembershipUpdateInput from a household user membership.
-func BuildFakeHouseholdUserMembershipUpdateInputFromHouseholdUserMembership(householdUserMembership *types.HouseholdUserMembership) *types.HouseholdUserMembershipUpdateInput {
-	return &types.HouseholdUserMembershipUpdateInput{
-		BelongsToUser:      householdUserMembership.BelongsToUser,
-		BelongsToHousehold: householdUserMembership.BelongsToHousehold,
-	}
-}
-
-// BuildFakeHouseholdUserMembershipCreationInput builds a faked HouseholdUserMembershipCreationInput.
-func BuildFakeHouseholdUserMembershipCreationInput() *types.HouseholdUserMembershipCreationInput {
-	return BuildFakeHouseholdUserMembershipCreationInputFromHouseholdUserMembership(BuildFakeHouseholdUserMembership())
-}
-
-// BuildFakeHouseholdUserMembershipCreationInputFromHouseholdUserMembership builds a faked HouseholdUserMembershipCreationInput from a household user membership.
-func BuildFakeHouseholdUserMembershipCreationInputFromHouseholdUserMembership(householdUserMembership *types.HouseholdUserMembership) *types.HouseholdUserMembershipCreationInput {
-	return &types.HouseholdUserMembershipCreationInput{
-		ID:                 householdUserMembership.ID,
-		BelongsToUser:      householdUserMembership.BelongsToUser,
-		BelongsToHousehold: householdUserMembership.BelongsToHousehold,
-	}
-}

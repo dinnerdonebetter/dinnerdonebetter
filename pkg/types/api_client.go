@@ -42,8 +42,8 @@ type (
 		Pagination
 	}
 
-	// APIClientCreationInput is a struct for use when creating API clients.
-	APIClientCreationInput struct {
+	// APIClientCreationRequestInput is a struct for use when creating API clients.
+	APIClientCreationRequestInput struct {
 		_ struct{}
 
 		UserLoginInput
@@ -69,7 +69,7 @@ type (
 		GetAPIClientByDatabaseID(ctx context.Context, clientID, ownerUserID string) (*APIClient, error)
 		GetTotalAPIClientCount(ctx context.Context) (uint64, error)
 		GetAPIClients(ctx context.Context, owneruserID string, filter *QueryFilter) (*APIClientList, error)
-		CreateAPIClient(ctx context.Context, input *APIClientCreationInput) (*APIClient, error)
+		CreateAPIClient(ctx context.Context, input *APIClientCreationRequestInput) (*APIClient, error)
 		ArchiveAPIClient(ctx context.Context, clientID, ownerUserID string) error
 	}
 
@@ -83,7 +83,7 @@ type (
 )
 
 // ValidateWithContext validates an APICreationInput.
-func (x *APIClientCreationInput) ValidateWithContext(ctx context.Context, minUsernameLength, minPasswordLength uint8) error {
+func (x *APIClientCreationRequestInput) ValidateWithContext(ctx context.Context, minUsernameLength, minPasswordLength uint8) error {
 	if err := x.UserLoginInput.ValidateWithContext(ctx, minUsernameLength, minPasswordLength); err != nil {
 		return err
 	}

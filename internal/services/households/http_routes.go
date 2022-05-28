@@ -232,7 +232,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	input := new(types.HouseholdUpdateInput)
+	input := new(types.HouseholdUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)

@@ -636,7 +636,7 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := &types.HouseholdUpdateInput{}
+		exampleCreationInput := &types.HouseholdUpdateRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error

@@ -14,7 +14,7 @@ func TestAPIClientCreationInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		x := &APIClientCreationInput{
+		x := &APIClientCreationRequestInput{
 			UserLoginInput: UserLoginInput{
 				Username:  t.Name(),
 				Password:  t.Name(),
@@ -30,7 +30,7 @@ func TestAPIClientCreationInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		x := &APIClientCreationInput{
+		x := &APIClientCreationRequestInput{
 			UserLoginInput: UserLoginInput{
 				Username:  "",
 				Password:  "",

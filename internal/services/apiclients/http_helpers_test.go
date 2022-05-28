@@ -23,7 +23,7 @@ type apiClientsServiceHTTPRoutesTestHelper struct {
 	exampleUser      *types.User
 	exampleHousehold *types.Household
 	exampleAPIClient *types.APIClient
-	exampleInput     *types.APIClientCreationInput
+	exampleInput     *types.APIClientCreationRequestInput
 }
 
 func buildTestHelper(t *testing.T) *apiClientsServiceHTTPRoutesTestHelper {
