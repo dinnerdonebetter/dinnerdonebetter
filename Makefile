@@ -240,6 +240,15 @@ dev: $(ARTIFACTS_DIR)
 	--no-recreate \
 	--always-recreate-deps
 
+.PHONY: init_database
+init_database: initialize_database
+
+.PHONY: init_db
+init_db: initialize_database
+
+.PHONY: db_init
+db_init: initialize_database
+
 .PHONY: initialize_database
 initialize_database:
 	go run github.com/prixfixeco/api_server/cmd/tools/db_initializer

@@ -3,6 +3,7 @@ module github.com/prixfixeco/api_server
 go 1.18
 
 require (
+	cloud.google.com/go/logging v1.4.2
 	cloud.google.com/go/pubsub v1.10.3
 	cloud.google.com/go/secretmanager v1.1.0
 	github.com/DATA-DOG/go-sqlmock v1.5.0

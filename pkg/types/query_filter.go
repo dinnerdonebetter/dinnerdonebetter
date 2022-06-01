@@ -31,6 +31,14 @@ const (
 	sortByQueryKey          = "sortBy"
 )
 
+type QueryFilteredResult[T any] struct {
+	Data          []T    `json:"data"`
+	Page          uint64 `json:"page"`
+	FilteredCount uint64 `json:"filteredCount"`
+	TotalCount    uint64 `json:"totalCount"`
+	Limit         uint8  `json:"limit"`
+}
+
 // QueryFilter represents all the filters a User could apply to a list query.
 type QueryFilter struct {
 	_ struct{}

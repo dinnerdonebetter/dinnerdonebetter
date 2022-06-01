@@ -47,7 +47,7 @@ func BuildFakeMealUpdateRequestInput() *types.MealUpdateRequestInput {
 	recipe := BuildFakeMeal()
 
 	recipeIDs := []string{}
-	for _, r := range BuildFakeRecipeList().Recipes {
+	for _, r := range BuildFakeRecipeList().Data {
 		recipeIDs = append(recipeIDs, r.ID)
 	}
 
@@ -62,7 +62,7 @@ func BuildFakeMealUpdateRequestInput() *types.MealUpdateRequestInput {
 // BuildFakeMealUpdateRequestInputFromMeal builds a faked MealUpdateRequestInput from a recipe.
 func BuildFakeMealUpdateRequestInputFromMeal(recipe *types.Meal) *types.MealUpdateRequestInput {
 	recipeIDs := []string{}
-	for _, r := range BuildFakeRecipeList().Recipes {
+	for _, r := range BuildFakeRecipeList().Data {
 		recipeIDs = append(recipeIDs, r.ID)
 	}
 
@@ -83,7 +83,7 @@ func BuildFakeMealCreationRequestInput() *types.MealCreationRequestInput {
 // BuildFakeMealCreationRequestInputFromMeal builds a faked MealCreationRequestInput from a recipe.
 func BuildFakeMealCreationRequestInputFromMeal(recipe *types.Meal) *types.MealCreationRequestInput {
 	recipeIDs := []string{}
-	for _, r := range BuildFakeRecipeList().Recipes {
+	for _, r := range BuildFakeRecipeList().Data {
 		recipeIDs = append(recipeIDs, r.ID)
 	}
 
@@ -105,7 +105,7 @@ func BuildFakeMealDatabaseCreationInput() *types.MealDatabaseCreationInput {
 // BuildFakeMealDatabaseCreationInputFromMeal builds a faked MealDatabaseCreationInput from a recipe.
 func BuildFakeMealDatabaseCreationInputFromMeal(recipe *types.Meal) *types.MealDatabaseCreationInput {
 	recipeIDs := []string{}
-	for _, r := range BuildFakeRecipeList().Recipes {
+	for _, r := range BuildFakeRecipeList().Data {
 		recipeIDs = append(recipeIDs, r.ID)
 	}
 
