@@ -191,7 +191,7 @@ func ExtractQueryFilter(req *http.Request) *QueryFilter {
 }
 
 // QueryFilteredResult represents a result filtered by a QueryFilter.
-type QueryFilteredResult[T any] struct {
+type QueryFilteredResult[T interface{}] struct {
 	Data          []T    `json:"data"`
 	Page          uint64 `json:"page"`
 	FilteredCount uint64 `json:"filteredCount"`
