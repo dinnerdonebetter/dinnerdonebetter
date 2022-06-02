@@ -35,7 +35,7 @@ func (b *Builder) BuildGetHouseholdInvitationRequest(ctx context.Context, househ
 		invitationID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
@@ -52,7 +52,7 @@ func (b *Builder) BuildGetPendingHouseholdInvitationsFromUserRequest(ctx context
 
 	uri := b.BuildURL(ctx, filter.ToValues(), "household_invitations", "sent")
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
@@ -69,7 +69,7 @@ func (b *Builder) BuildGetPendingHouseholdInvitationsForUserRequest(ctx context.
 
 	uri := b.BuildURL(ctx, filter.ToValues(), "household_invitations", "received")
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}

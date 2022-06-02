@@ -14,9 +14,9 @@ var (
 	)
 )
 
-// ProvideConfig converts an auth config to a local config.
-func ProvideConfig(cfg *authservice.Config) *config {
-	return &config{
+// ProvideConfig converts an auth Config to a local Config.
+func ProvideConfig(cfg *authservice.Config) *Config {
+	return &Config{
 		minimumUsernameLength: cfg.MinimumUsernameLength,
 		minimumPasswordLength: cfg.MinimumPasswordLength,
 	}

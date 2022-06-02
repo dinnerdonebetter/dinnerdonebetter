@@ -74,7 +74,7 @@ func GetLoginCookie(ctx context.Context, serviceURL string, u *types.User) (*htt
 		panic(err)
 	}
 
-	lu, err := url.Parse(strings.Join([]string{"users", "login"}, "/"))
+	lu, err := url.Parse("users/login")
 	if err != nil {
 		panic(err)
 	}
@@ -109,8 +109,7 @@ func GetLoginCookie(ctx context.Context, serviceURL string, u *types.User) (*htt
 		log.Println("error closing body")
 	}
 
-	cookies := res.Cookies()
-	if len(cookies) > 0 {
+	if cookies := res.Cookies(); len(cookies) > 0 {
 		return cookies[0], nil
 	}
 
@@ -160,7 +159,7 @@ func EnsureServerIsUp(ctx context.Context, address string) {
 func IsUp(ctx context.Context, address string) bool {
 	uri := fmt.Sprintf("%s/_meta_/ready", address)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		panic(err)
 	}

@@ -99,7 +99,7 @@ func (cfg *InstanceConfig) EncodeToFile(path string, marshaller func(v interface
 		return err
 	}
 
-	return os.WriteFile(path, byteSlice, 0600)
+	return os.WriteFile(path, byteSlice, 0o600)
 }
 
 // ValidateWithContext validates a InstanceConfig struct.

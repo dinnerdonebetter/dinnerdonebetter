@@ -43,7 +43,7 @@ func (b *Builder) BuildGetMealPlanOptionRequest(ctx context.Context, mealPlanID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
@@ -74,7 +74,7 @@ func (b *Builder) BuildGetMealPlanOptionsRequest(ctx context.Context, mealPlanID
 	tracing.AttachRequestURIToSpan(span, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
@@ -183,7 +183,7 @@ func (b *Builder) BuildArchiveMealPlanOptionRequest(ctx context.Context, mealPla
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}

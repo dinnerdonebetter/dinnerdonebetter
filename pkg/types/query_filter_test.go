@@ -173,7 +173,7 @@ func TestExtractQueryFilter(T *testing.T) {
 			sortByQueryKey:        []string{string(expected.SortBy)},
 		}
 
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://verygoodsoftwarenotvirus.ru", nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://verygoodsoftwarenotvirus.ru", http.NoBody)
 		assert.NoError(t, err)
 		require.NotNil(t, req)
 

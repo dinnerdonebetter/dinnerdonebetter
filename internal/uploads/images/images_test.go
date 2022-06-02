@@ -216,7 +216,7 @@ func Test_uploadProcessor_Process(T *testing.T) {
 		p := NewImageUploadProcessor(nil, tracing.NewNoopTracerProvider())
 		expectedFieldName := "avatar"
 
-		req, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://tests.verygoodsoftwarenotvirus.ru", nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://tests.verygoodsoftwarenotvirus.ru", http.NoBody)
 		require.NoError(t, err)
 
 		actual, err := p.Process(ctx, req, expectedFieldName)

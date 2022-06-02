@@ -28,7 +28,7 @@ func (b *Builder) BuildGetWebhookRequest(ctx context.Context, webhookID string) 
 
 	uri := b.BuildURL(ctx, nil, webhooksBasePath, webhookID)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
@@ -45,7 +45,7 @@ func (b *Builder) BuildGetWebhooksRequest(ctx context.Context, filter *types.Que
 	tracing.AttachQueryFilterToSpan(span, filter)
 	uri := b.BuildURL(ctx, filter.ToValues(), webhooksBasePath)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
@@ -87,7 +87,7 @@ func (b *Builder) BuildArchiveWebhookRequest(ctx context.Context, webhookID stri
 
 	uri := b.BuildURL(ctx, nil, webhooksBasePath, webhookID)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}

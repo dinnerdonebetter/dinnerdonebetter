@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/capitalism"
@@ -130,7 +130,7 @@ func (s *stripePaymentManager) HandleSubscriptionEventWebhook(req *http.Request)
 
 	logger := s.logger.WithRequest(req)
 
-	b, err := ioutil.ReadAll(req.Body)
+	b, err := io.ReadAll(req.Body)
 	if err != nil {
 		return observability.PrepareError(err, logger, span, "parsing received webhook content")
 	}

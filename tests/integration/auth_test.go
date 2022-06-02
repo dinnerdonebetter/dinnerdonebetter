@@ -59,7 +59,7 @@ func (s *TestSuite) TestLogin_WithoutBodyFails() {
 		require.NoError(t, err)
 		u.Path = "/users/login"
 
-		req, err := http.NewRequestWithContext(ctx, http.MethodPost, u.String(), nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, u.String(), http.NoBody)
 		requireNotNilAndNoProblems(t, req, err)
 
 		// execute login request.

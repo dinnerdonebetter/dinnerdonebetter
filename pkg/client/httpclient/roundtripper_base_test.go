@@ -41,7 +41,7 @@ func Test_defaultRoundTripper_RoundTrip(T *testing.T) {
 		transport := newDefaultRoundTripper(0)
 		assert.NotNil(t, transport)
 
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, ts.URL, nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, ts.URL, http.NoBody)
 		assert.NotNil(t, req)
 		assert.NoError(t, err)
 
