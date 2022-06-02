@@ -49,7 +49,7 @@ func (b *Builder) BuildGetCurrentHouseholdRequest(ctx context.Context) (*http.Re
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
@@ -77,7 +77,7 @@ func (b *Builder) BuildGetHouseholdRequest(ctx context.Context, householdID stri
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
@@ -96,7 +96,7 @@ func (b *Builder) BuildGetHouseholdsRequest(ctx context.Context, filter *types.Q
 	tracing.AttachRequestURIToSpan(span, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
@@ -164,7 +164,7 @@ func (b *Builder) BuildArchiveHouseholdRequest(ctx context.Context, householdID 
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
@@ -203,7 +203,7 @@ func (b *Builder) BuildMarkAsDefaultRequest(ctx context.Context, householdID str
 	uri := b.BuildURL(ctx, nil, householdsBasePath, householdID, "default")
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
@@ -234,7 +234,7 @@ func (b *Builder) BuildRemoveUserRequest(ctx context.Context, householdID, userI
 
 	tracing.AttachURLToSpan(span, u)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, u.String(), http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}

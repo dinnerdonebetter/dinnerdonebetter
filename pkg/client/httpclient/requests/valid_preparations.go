@@ -37,7 +37,7 @@ func (b *Builder) BuildGetValidPreparationRequest(ctx context.Context, validPrep
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
@@ -60,7 +60,7 @@ func (b *Builder) BuildGetRandomValidPreparationRequest(ctx context.Context) (*h
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
@@ -87,7 +87,7 @@ func (b *Builder) BuildSearchValidPreparationsRequest(ctx context.Context, query
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
@@ -110,7 +110,7 @@ func (b *Builder) BuildGetValidPreparationsRequest(ctx context.Context, filter *
 	tracing.AttachRequestURIToSpan(span, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
@@ -199,7 +199,7 @@ func (b *Builder) BuildArchiveValidPreparationRequest(ctx context.Context, valid
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}

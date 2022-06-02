@@ -55,8 +55,7 @@ func (c *Client) BeginSession(ctx context.Context, input *types.UserLoginInput) 
 
 	c.closeResponseBody(ctx, res)
 
-	cookies := res.Cookies()
-	if len(cookies) > 0 {
+	if cookies := res.Cookies(); len(cookies) > 0 {
 		return cookies[0], nil
 	}
 

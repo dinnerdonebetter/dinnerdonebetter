@@ -248,7 +248,7 @@ func TestAttachRequestToSpan(T *testing.T) {
 		t.Parallel()
 
 		ctx, span := StartSpan(context.Background())
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/", nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/", http.NoBody)
 		req.Header.Set(t.Name(), "blah")
 		require.NoError(t, err)
 

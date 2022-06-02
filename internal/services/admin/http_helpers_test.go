@@ -63,7 +63,7 @@ func buildTestHelper(t *testing.T) *adminServiceHTTPRoutesTestHelper {
 	helper.exampleInput = fakes.BuildFakeUserReputationUpdateInput()
 
 	helper.res = httptest.NewRecorder()
-	helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://blah.com", nil)
+	helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://blah.com", http.NoBody)
 	require.NoError(t, err)
 	require.NotNil(t, helper.req)
 

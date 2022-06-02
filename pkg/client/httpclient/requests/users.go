@@ -34,7 +34,7 @@ func (b *Builder) BuildGetUserRequest(ctx context.Context, userID string) (*http
 
 	uri := b.BuildURL(ctx, nil, usersBasePath, userID)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
@@ -51,7 +51,7 @@ func (b *Builder) BuildGetUsersRequest(ctx context.Context, filter *types.QueryF
 	tracing.AttachQueryFilterToSpan(span, filter)
 	uri := b.BuildURL(ctx, filter.ToValues(), usersBasePath)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
@@ -77,7 +77,7 @@ func (b *Builder) BuildSearchForUsersByUsernameRequest(ctx context.Context, user
 	u.RawQuery = q.Encode()
 	uri := u.String()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
@@ -126,7 +126,7 @@ func (b *Builder) BuildArchiveUserRequest(ctx context.Context, userID string) (*
 
 	uri := b.buildAPIV1URL(ctx, nil, usersBasePath, userID).String()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
