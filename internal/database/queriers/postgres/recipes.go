@@ -337,7 +337,7 @@ func (q *SQLQuerier) GetRecipes(ctx context.Context, filter *types.QueryFilter) 
 		return nil, observability.PrepareError(err, logger, span, "executing recipes list retrieval query")
 	}
 
-	if x.Recipes, x.FilteredCount, x.TotalCount, err = q.scanRecipes(ctx, rows, true); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanRecipes(ctx, rows, true); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "scanning recipes")
 	}
 
@@ -367,7 +367,7 @@ func (q *SQLQuerier) SearchForRecipes(ctx context.Context, recipeNameQuery strin
 		return nil, observability.PrepareError(err, logger, span, "executing recipes search query")
 	}
 
-	if x.Recipes, x.FilteredCount, x.TotalCount, err = q.scanRecipes(ctx, rows, true); err != nil {
+	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanRecipes(ctx, rows, true); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "scanning recipes")
 	}
 

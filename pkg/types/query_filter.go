@@ -189,3 +189,12 @@ func ExtractQueryFilter(req *http.Request) *QueryFilter {
 
 	return qf
 }
+
+// QueryFilteredResult represents a result filtered by a QueryFilter.
+type QueryFilteredResult[T any] struct {
+	Data          []T    `json:"data"`
+	Page          uint64 `json:"page"`
+	FilteredCount uint64 `json:"filteredCount"`
+	TotalCount    uint64 `json:"totalCount"`
+	Limit         uint8  `json:"limit"`
+}

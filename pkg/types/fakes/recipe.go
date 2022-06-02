@@ -34,13 +34,11 @@ func BuildFakeRecipeList() *types.RecipeList {
 	}
 
 	return &types.RecipeList{
-		Pagination: types.Pagination{
-			Page:          1,
-			Limit:         20,
-			FilteredCount: exampleQuantity / 2,
-			TotalCount:    exampleQuantity,
-		},
-		Recipes: examples,
+		Page:          1,
+		Limit:         20,
+		FilteredCount: exampleQuantity / 2,
+		TotalCount:    exampleQuantity,
+		Data:          examples,
 	}
 }
 

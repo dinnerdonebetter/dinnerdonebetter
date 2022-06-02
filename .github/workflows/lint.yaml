@@ -7,22 +7,6 @@ on:
       - tests/**
 name: Lint go code
 jobs:
- formatting:
-   runs-on: ubuntu-latest
-   strategy:
-     matrix:
-       go: [ '1.18.x' ]
-   steps:
-     - name: Install Go
-       uses: actions/setup-go@v2
-       with:
-         go-version: ${{ matrix.go }}
-
-     - name: Checkout code
-       uses: actions/checkout@v2
-
-     - name: check formatting
-       run: if [ $(gofmt -l . | grep -Ev '^vendor\/' | head -c1 | wc -c) -ne 0 ]; then exit 1; fi
  lint:
    strategy:
      matrix:

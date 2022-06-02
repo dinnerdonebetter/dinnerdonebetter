@@ -651,8 +651,8 @@ func TestQuerier_GetRecipes(T *testing.T) {
 
 		filter := types.DefaultQueryFilter()
 		exampleRecipeList := fakes.BuildFakeRecipeList()
-		for i := range exampleRecipeList.Recipes {
-			exampleRecipeList.Recipes[i].Steps = nil
+		for i := range exampleRecipeList.Data {
+			exampleRecipeList.Data[i].Steps = nil
 		}
 
 		ctx := context.Background()
@@ -662,7 +662,7 @@ func TestQuerier_GetRecipes(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipes(true, exampleRecipeList.FilteredCount, exampleRecipeList.Recipes...))
+			WillReturnRows(buildMockRowsFromRecipes(true, exampleRecipeList.FilteredCount, exampleRecipeList.Data...))
 
 		actual, err := c.GetRecipes(ctx, filter)
 		assert.NoError(t, err)
@@ -678,8 +678,8 @@ func TestQuerier_GetRecipes(T *testing.T) {
 		exampleRecipeList := fakes.BuildFakeRecipeList()
 		exampleRecipeList.Page = 0
 		exampleRecipeList.Limit = 0
-		for i := range exampleRecipeList.Recipes {
-			exampleRecipeList.Recipes[i].Steps = nil
+		for i := range exampleRecipeList.Data {
+			exampleRecipeList.Data[i].Steps = nil
 		}
 
 		ctx := context.Background()
@@ -689,7 +689,7 @@ func TestQuerier_GetRecipes(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipes(true, exampleRecipeList.FilteredCount, exampleRecipeList.Recipes...))
+			WillReturnRows(buildMockRowsFromRecipes(true, exampleRecipeList.FilteredCount, exampleRecipeList.Data...))
 
 		actual, err := c.GetRecipes(ctx, filter)
 		assert.NoError(t, err)
@@ -749,8 +749,8 @@ func TestQuerier_SearchForRecipes(T *testing.T) {
 
 		filter := types.DefaultQueryFilter()
 		exampleRecipeList := fakes.BuildFakeRecipeList()
-		for i := range exampleRecipeList.Recipes {
-			exampleRecipeList.Recipes[i].Steps = nil
+		for i := range exampleRecipeList.Data {
+			exampleRecipeList.Data[i].Steps = nil
 		}
 
 		ctx := context.Background()
@@ -762,7 +762,7 @@ func TestQuerier_SearchForRecipes(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipes(true, exampleRecipeList.FilteredCount, exampleRecipeList.Recipes...))
+			WillReturnRows(buildMockRowsFromRecipes(true, exampleRecipeList.FilteredCount, exampleRecipeList.Data...))
 
 		actual, err := c.SearchForRecipes(ctx, recipeNameQuery, filter)
 		assert.NoError(t, err)
@@ -776,8 +776,8 @@ func TestQuerier_SearchForRecipes(T *testing.T) {
 
 		filter := types.DefaultQueryFilter()
 		exampleRecipeList := fakes.BuildFakeRecipeList()
-		for i := range exampleRecipeList.Recipes {
-			exampleRecipeList.Recipes[i].Steps = nil
+		for i := range exampleRecipeList.Data {
+			exampleRecipeList.Data[i].Steps = nil
 		}
 
 		ctx := context.Background()
@@ -803,8 +803,8 @@ func TestQuerier_SearchForRecipes(T *testing.T) {
 
 		filter := types.DefaultQueryFilter()
 		exampleRecipeList := fakes.BuildFakeRecipeList()
-		for i := range exampleRecipeList.Recipes {
-			exampleRecipeList.Recipes[i].Steps = nil
+		for i := range exampleRecipeList.Data {
+			exampleRecipeList.Data[i].Steps = nil
 		}
 
 		ctx := context.Background()
@@ -834,12 +834,12 @@ func TestQuerier_GetRecipesWithIDs(T *testing.T) {
 
 		exampleHouseholdID := fakes.BuildFakeID()
 		exampleRecipeList := fakes.BuildFakeRecipeList()
-		for i := range exampleRecipeList.Recipes {
-			exampleRecipeList.Recipes[i].Steps = nil
+		for i := range exampleRecipeList.Data {
+			exampleRecipeList.Data[i].Steps = nil
 		}
 
 		var exampleIDs []string
-		for _, x := range exampleRecipeList.Recipes {
+		for _, x := range exampleRecipeList.Data {
 			exampleIDs = append(exampleIDs, x.ID)
 		}
 
@@ -849,11 +849,11 @@ func TestQuerier_GetRecipesWithIDs(T *testing.T) {
 		query, args := c.buildGetRecipesWithIDsQuery(ctx, exampleHouseholdID, defaultLimit, exampleIDs)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipes(false, 0, exampleRecipeList.Recipes...))
+			WillReturnRows(buildMockRowsFromRecipes(false, 0, exampleRecipeList.Data...))
 
 		actual, err := c.GetRecipesWithIDs(ctx, exampleHouseholdID, 0, exampleIDs)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeList.Recipes, actual)
+		assert.Equal(t, exampleRecipeList.Data, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -878,7 +878,7 @@ func TestQuerier_GetRecipesWithIDs(T *testing.T) {
 		exampleRecipeList := fakes.BuildFakeRecipeList()
 
 		var exampleIDs []string
-		for _, x := range exampleRecipeList.Recipes {
+		for _, x := range exampleRecipeList.Data {
 			exampleIDs = append(exampleIDs, x.ID)
 		}
 
@@ -904,7 +904,7 @@ func TestQuerier_GetRecipesWithIDs(T *testing.T) {
 		exampleRecipeList := fakes.BuildFakeRecipeList()
 
 		var exampleIDs []string
-		for _, x := range exampleRecipeList.Recipes {
+		for _, x := range exampleRecipeList.Data {
 			exampleIDs = append(exampleIDs, x.ID)
 		}
 

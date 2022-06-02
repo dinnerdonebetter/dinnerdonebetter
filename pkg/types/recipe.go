@@ -45,12 +45,7 @@ type (
 	}
 
 	// RecipeList represents a list of recipes.
-	RecipeList struct {
-		_ struct{}
-
-		Recipes []*Recipe `json:"recipes"`
-		Pagination
-	}
+	RecipeList QueryFilteredResult[*Recipe]
 
 	// RecipeCreationRequestInput represents what a user could set as input for creating recipes.
 	RecipeCreationRequestInput struct {
