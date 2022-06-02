@@ -57,7 +57,7 @@ type (
 	HouseholdList struct {
 		_ struct{}
 
-		Households []*Household `json:"households"`
+		Households []*Household `json:"data"`
 		Pagination
 	}
 

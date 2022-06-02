@@ -38,7 +38,7 @@ type (
 	APIClientList struct {
 		_ struct{}
 
-		Clients []*APIClient `json:"clients"`
+		Clients []*APIClient `json:"data"`
 		Pagination
 	}
 

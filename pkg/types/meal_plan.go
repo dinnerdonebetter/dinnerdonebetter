@@ -58,7 +58,7 @@ type (
 	// MealPlanList represents a list of meal plans.
 	MealPlanList struct {
 		_         struct{}
-		MealPlans []*MealPlan `json:"mealPlans"`
+		MealPlans []*MealPlan `json:"data"`
 		Pagination
 	}
 

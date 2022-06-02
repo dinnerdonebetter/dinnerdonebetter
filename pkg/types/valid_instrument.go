@@ -44,7 +44,7 @@ type (
 	// ValidInstrumentList represents a list of valid instruments.
 	ValidInstrumentList struct {
 		_                struct{}
-		ValidInstruments []*ValidInstrument `json:"validInstruments"`
+		ValidInstruments []*ValidInstrument `json:"data"`
 		Pagination
 	}
 

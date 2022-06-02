@@ -37,7 +37,7 @@ type (
 	HouseholdUserMembershipList struct {
 		_ struct{}
 
-		HouseholdUserMemberships []*HouseholdUserMembership `json:"householdUserMemberships"`
+		HouseholdUserMemberships []*HouseholdUserMembership `json:"data"`
 		Pagination
 	}
 

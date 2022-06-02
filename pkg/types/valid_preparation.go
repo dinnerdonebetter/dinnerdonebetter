@@ -43,7 +43,7 @@ type (
 	// ValidPreparationList represents a list of valid preparations.
 	ValidPreparationList struct {
 		_                 struct{}
-		ValidPreparations []*ValidPreparation `json:"validPreparations"`
+		ValidPreparations []*ValidPreparation `json:"data"`
 		Pagination
 	}
 

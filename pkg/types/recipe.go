@@ -48,7 +48,7 @@ type (
 	RecipeList struct {
 		_ struct{}
 
-		Recipes []*Recipe `json:"recipes"`
+		Recipes []*Recipe `json:"data"`
 		Pagination
 	}
 
