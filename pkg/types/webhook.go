@@ -70,7 +70,7 @@ type (
 	WebhookList struct {
 		_ struct{}
 
-		Webhooks []*Webhook `json:"webhooks"`
+		Webhooks []*Webhook `json:"data"`
 		Pagination
 	}
 

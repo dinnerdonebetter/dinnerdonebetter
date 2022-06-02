@@ -45,7 +45,7 @@ type (
 	// MealPlanOptionVoteList represents a list of meal plan option votes.
 	MealPlanOptionVoteList struct {
 		_                   struct{}
-		MealPlanOptionVotes []*MealPlanOptionVote `json:"mealPlanOptionVotes"`
+		MealPlanOptionVotes []*MealPlanOptionVote `json:"data"`
 		Pagination
 	}
 

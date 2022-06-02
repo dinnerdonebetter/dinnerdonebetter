@@ -43,7 +43,7 @@ type (
 	// ValidIngredientPreparationList represents a list of valid ingredient preparations.
 	ValidIngredientPreparationList struct {
 		_                           struct{}
-		ValidIngredientPreparations []*ValidIngredientPreparation `json:"validIngredientPreparations"`
+		ValidIngredientPreparations []*ValidIngredientPreparation `json:"data"`
 		Pagination
 	}
 

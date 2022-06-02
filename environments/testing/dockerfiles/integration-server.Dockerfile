@@ -7,7 +7,7 @@ RUN apt-get update -y && apt-get install -y make git gcc musl-dev
 
 COPY . .
 
-RUN go build -trimpath -o /prixfixe -v github.com/prixfixeco/api_server/cmd/server
+RUN go build -trimpath -o /prixfixe github.com/prixfixeco/api_server/cmd/server
 
 # final stage
 FROM debian:stretch

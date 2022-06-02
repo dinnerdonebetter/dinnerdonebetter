@@ -44,7 +44,7 @@ type (
 	// RecipeStepInstrumentList represents a list of recipe step instruments.
 	RecipeStepInstrumentList struct {
 		_                     struct{}
-		RecipeStepInstruments []*RecipeStepInstrument `json:"recipeStepInstruments"`
+		RecipeStepInstruments []*RecipeStepInstrument `json:"data"`
 		Pagination
 	}
 

@@ -48,7 +48,7 @@ type (
 	// RecipeStepIngredientList represents a list of recipe step ingredients.
 	RecipeStepIngredientList struct {
 		_                     struct{}
-		RecipeStepIngredients []*RecipeStepIngredient `json:"recipeStepIngredients"`
+		RecipeStepIngredients []*RecipeStepIngredient `json:"data"`
 		Pagination
 	}
 

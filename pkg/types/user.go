@@ -60,7 +60,7 @@ type (
 	UserList struct {
 		_ struct{}
 
-		Users []*User `json:"users"`
+		Users []*User `json:"data"`
 		Pagination
 	}
 

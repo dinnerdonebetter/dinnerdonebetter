@@ -80,7 +80,7 @@ type (
 	HouseholdInvitationList struct {
 		_ struct{}
 
-		HouseholdInvitations []*HouseholdInvitation `json:"householdInvitations"`
+		HouseholdInvitations []*HouseholdInvitation `json:"data"`
 		Pagination
 	}
 

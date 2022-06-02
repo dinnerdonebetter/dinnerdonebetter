@@ -43,7 +43,7 @@ type (
 	// RecipeStepProductList represents a list of recipe step products.
 	RecipeStepProductList struct {
 		_                  struct{}
-		RecipeStepProducts []*RecipeStepProduct `json:"recipeStepProducts"`
+		RecipeStepProducts []*RecipeStepProduct `json:"data"`
 		Pagination
 	}
 

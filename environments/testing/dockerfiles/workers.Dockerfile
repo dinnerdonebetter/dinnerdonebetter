@@ -7,7 +7,7 @@ RUN apt-get update -y && apt-get install -y make git gcc musl-dev
 
 COPY . .
 
-RUN go build -trimpath -o /workers -v github.com/prixfixeco/api_server/cmd/localdev/workers
+RUN go build -trimpath -o /workers github.com/prixfixeco/api_server/cmd/localdev/workers
 
 # final stage
 FROM debian:bullseye
