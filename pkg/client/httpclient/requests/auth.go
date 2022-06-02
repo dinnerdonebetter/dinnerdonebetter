@@ -23,7 +23,7 @@ func (b *Builder) BuildUserStatusRequest(ctx context.Context) (*http.Request, er
 	logger := b.logger.Clone()
 	uri := b.buildUnversionedURL(ctx, nil, authBasePath, "status")
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
@@ -56,7 +56,7 @@ func (b *Builder) BuildLogoutRequest(ctx context.Context) (*http.Request, error)
 
 	uri := b.buildUnversionedURL(ctx, nil, usersBasePath, "logout")
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, b.logger, span, "building user status request")
 	}

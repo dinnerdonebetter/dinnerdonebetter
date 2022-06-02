@@ -66,7 +66,7 @@ func buildTestHelper(t *testing.T) *householdsServiceHTTPRoutesTestHelper {
 		helper.ctx,
 		http.MethodGet,
 		"https://prixfixe.verygoodsoftwarenotvirus.ru",
-		nil,
+		http.NoBody,
 	)
 	require.NotNil(t, helper.req)
 	require.NoError(t, err)

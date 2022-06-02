@@ -624,7 +624,7 @@ func TestFetchContextFromRequest(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.WithValue(context.Background(), types.SessionContextDataKey, &types.SessionContextData{})
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/", nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/", http.NoBody)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
@@ -636,7 +636,7 @@ func TestFetchContextFromRequest(T *testing.T) {
 	T.Run("missing data", func(t *testing.T) {
 		t.Parallel()
 
-		req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "/", nil)
+		req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "/", http.NoBody)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 

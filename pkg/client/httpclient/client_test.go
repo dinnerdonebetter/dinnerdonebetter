@@ -291,7 +291,7 @@ func TestClient_fetchAndUnmarshal(T *testing.T) {
 		spec := newRequestSpec(true, http.MethodPost, "", "/")
 		c, ts := buildTestClientWithJSONResponse(t, spec, exampleResponse)
 
-		req, err := http.NewRequestWithContext(ctx, spec.method, ts.URL, nil)
+		req, err := http.NewRequestWithContext(ctx, spec.method, ts.URL, http.NoBody)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -307,7 +307,7 @@ func TestClient_fetchAndUnmarshal(T *testing.T) {
 		spec := newRequestSpec(true, http.MethodPost, "", "/")
 		c, ts := buildTestClientThatWaitsTooLong(t)
 
-		req, err := http.NewRequestWithContext(ctx, spec.method, ts.URL, nil)
+		req, err := http.NewRequestWithContext(ctx, spec.method, ts.URL, http.NoBody)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -323,7 +323,7 @@ func TestClient_fetchAndUnmarshal(T *testing.T) {
 		spec := newRequestSpec(true, http.MethodPost, "", "/")
 		c, ts := buildTestClientWithStatusCodeResponse(t, spec, http.StatusUnauthorized)
 
-		req, err := http.NewRequestWithContext(ctx, spec.method, ts.URL, nil)
+		req, err := http.NewRequestWithContext(ctx, spec.method, ts.URL, http.NoBody)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -338,7 +338,7 @@ func TestClient_fetchAndUnmarshal(T *testing.T) {
 		spec := newRequestSpec(true, http.MethodPost, "", "/")
 		c, ts := buildTestClientWithStatusCodeResponse(t, spec, http.StatusNotFound)
 
-		req, err := http.NewRequestWithContext(ctx, spec.method, ts.URL, nil)
+		req, err := http.NewRequestWithContext(ctx, spec.method, ts.URL, http.NoBody)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -353,7 +353,7 @@ func TestClient_fetchAndUnmarshal(T *testing.T) {
 		spec := newRequestSpec(true, http.MethodPost, "", "/")
 		c, ts := buildTestClientWithJSONResponse(t, spec, exampleResponse)
 
-		req, err := http.NewRequestWithContext(ctx, spec.method, ts.URL, nil)
+		req, err := http.NewRequestWithContext(ctx, spec.method, ts.URL, http.NoBody)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -373,7 +373,7 @@ func TestClient_fetchResponseToRequest(T *testing.T) {
 
 		c, ts := buildTestClientThatWaitsTooLong(t)
 
-		req, err := http.NewRequestWithContext(ctx, expectedMethod, ts.URL, nil)
+		req, err := http.NewRequestWithContext(ctx, expectedMethod, ts.URL, http.NoBody)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -410,7 +410,7 @@ func TestClient_checkExistence(T *testing.T) {
 		spec := newRequestSpec(true, expectedMethod, "", "/")
 		c, ts := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
 
-		req, err := http.NewRequestWithContext(ctx, expectedMethod, ts.URL, nil)
+		req, err := http.NewRequestWithContext(ctx, expectedMethod, ts.URL, http.NoBody)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -427,7 +427,7 @@ func TestClient_checkExistence(T *testing.T) {
 		expectedMethod := http.MethodHead
 		c, ts := buildTestClientThatWaitsTooLong(t)
 
-		req, err := http.NewRequestWithContext(ctx, expectedMethod, ts.URL, nil)
+		req, err := http.NewRequestWithContext(ctx, expectedMethod, ts.URL, http.NoBody)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -452,7 +452,7 @@ func TestClient_retrieve(T *testing.T) {
 		spec := newRequestSpec(false, expectedMethod, "", "/")
 		c, ts := buildTestClientWithJSONResponse(t, spec, exampleResponse)
 
-		req, err := http.NewRequestWithContext(ctx, expectedMethod, ts.URL, nil)
+		req, err := http.NewRequestWithContext(ctx, expectedMethod, ts.URL, http.NoBody)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -467,7 +467,7 @@ func TestClient_retrieve(T *testing.T) {
 
 		c, ts := buildSimpleTestClient(t)
 
-		req, err := http.NewRequestWithContext(ctx, http.MethodPost, ts.URL, nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, ts.URL, http.NoBody)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -484,7 +484,7 @@ func TestClient_retrieve(T *testing.T) {
 
 		c, ts := buildTestClientThatWaitsTooLong(t)
 
-		req, err := http.NewRequestWithContext(ctx, expectedMethod, ts.URL, nil)
+		req, err := http.NewRequestWithContext(ctx, expectedMethod, ts.URL, http.NoBody)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -501,7 +501,7 @@ func TestClient_retrieve(T *testing.T) {
 		spec := newRequestSpec(true, expectedMethod, "", "/")
 		c, ts := buildTestClientWithStatusCodeResponse(t, spec, http.StatusNotFound)
 
-		req, err := http.NewRequestWithContext(ctx, expectedMethod, ts.URL, nil)
+		req, err := http.NewRequestWithContext(ctx, expectedMethod, ts.URL, http.NoBody)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 
@@ -629,7 +629,7 @@ func TestClient_fetchAndUnmarshalWithoutAuthentication(T *testing.T) {
 		spec := newRequestSpec(false, expectedMethod, "", "/")
 		c, ts := buildTestClientWithJSONResponse(t, spec, exampleResponse)
 
-		req, err := http.NewRequestWithContext(ctx, expectedMethod, ts.URL, nil)
+		req, err := http.NewRequestWithContext(ctx, expectedMethod, ts.URL, http.NoBody)
 		require.NotNil(t, req)
 		require.NoError(t, err)
 

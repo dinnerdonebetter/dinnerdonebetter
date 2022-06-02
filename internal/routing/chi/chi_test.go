@@ -293,7 +293,7 @@ func Test_router_BuildRouteParamIDFetcher(T *testing.T) {
 		rf := r.BuildRouteParamIDFetcher(l, exampleKey, "desc")
 		assert.NotNil(t, rf)
 
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/blah", nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/blah", http.NoBody)
 		assert.NoError(t, err)
 		require.NotNil(t, req)
 
@@ -321,7 +321,7 @@ func Test_router_BuildRouteParamIDFetcher(T *testing.T) {
 		rf := r.BuildRouteParamIDFetcher(l, exampleKey, "desc")
 		assert.NotNil(t, rf)
 
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/blah", nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/blah", http.NoBody)
 		assert.NoError(t, err)
 		require.NotNil(t, req)
 
@@ -343,7 +343,7 @@ func Test_router_BuildRouteParamStringIDFetcher(T *testing.T) {
 		rf := r.BuildRouteParamStringIDFetcher(exampleKey)
 		assert.NotNil(t, rf)
 
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/blah", nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/blah", http.NoBody)
 		assert.NoError(t, err)
 		require.NotNil(t, req)
 

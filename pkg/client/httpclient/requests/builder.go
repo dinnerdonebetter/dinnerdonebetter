@@ -173,7 +173,7 @@ func (b *Builder) BuildHealthCheckRequest(ctx context.Context) (*http.Request, e
 	u := *b.url
 	uri := fmt.Sprintf("%s://%s/_meta_/ready", u.Scheme, u.Host)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, b.logger, span, "building user status request")
 	}

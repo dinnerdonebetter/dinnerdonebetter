@@ -64,7 +64,7 @@ func BuildTestRequest(t *testing.T) *http.Request {
 		ctx,
 		http.MethodOptions,
 		"https://prixfixe.verygoodsoftwarenotvirus.ru",
-		nil,
+		http.NoBody,
 	)
 
 	require.NotNil(t, req)

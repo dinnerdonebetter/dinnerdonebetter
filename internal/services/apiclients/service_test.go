@@ -33,7 +33,7 @@ func buildTestService(t *testing.T) *service {
 		apiClientCounter:          &mockmetrics.UnitCounter{},
 		secretGenerator:           &mockrandom.Generator{},
 		tracer:                    tracing.NewTracerForTest(serviceName),
-		cfg:                       &config{},
+		cfg:                       &Config{},
 	}
 }
 
@@ -60,7 +60,7 @@ func TestProvideAPIClientsService(T *testing.T) {
 				return nil
 			},
 			rpm,
-			&config{},
+			&Config{},
 			tracing.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, s)

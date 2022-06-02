@@ -24,14 +24,16 @@ const (
 var _ types.APIClientDataService = (*service)(nil)
 
 type (
-	config struct {
-		minimumUsernameLength, minimumPasswordLength uint8
+	// Config manages our body valdation.
+	Config struct {
+		minimumUsernameLength,
+		minimumPasswordLength uint8
 	}
 
 	// service manages our API clients via HTTP.
 	service struct {
 		logger                    logging.Logger
-		cfg                       *config
+		cfg                       *Config
 		apiClientDataManager      types.APIClientDataManager
 		userDataManager           types.UserDataManager
 		authenticator             authentication.Authenticator
@@ -54,7 +56,7 @@ func ProvideAPIClientsService(
 	encoderDecoder encoding.ServerEncoderDecoder,
 	counterProvider metrics.UnitCounterProvider,
 	routeParamManager routing.RouteParamManager,
-	cfg *config,
+	cfg *Config,
 	tracerProvider tracing.TracerProvider,
 ) types.APIClientDataService {
 	return &service{

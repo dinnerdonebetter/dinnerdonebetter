@@ -32,7 +32,7 @@ func (b *Builder) BuildGetAPIClientRequest(ctx context.Context, clientID string)
 		clientID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
@@ -50,7 +50,7 @@ func (b *Builder) BuildGetAPIClientsRequest(ctx context.Context, filter *types.Q
 
 	uri := b.BuildURL(ctx, filter.ToValues(), apiClientsBasePath)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
@@ -101,7 +101,7 @@ func (b *Builder) BuildArchiveAPIClientRequest(ctx context.Context, clientID str
 		clientID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building user status request")
 	}
