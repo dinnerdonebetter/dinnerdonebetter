@@ -5,7 +5,7 @@ on:
       - cmd/**
       - internal/**
       - tests/**
-name: Lint go code
+name: Linting
 jobs:
  lint:
    strategy:

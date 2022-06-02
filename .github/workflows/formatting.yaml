@@ -5,9 +5,9 @@ on:
       - cmd/**
       - internal/**
       - tests/**
-name: Lint go code
+name: Formatting
 jobs:
- formatting:
+ check:
    runs-on: ubuntu-latest
    strategy:
      matrix:
