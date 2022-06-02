@@ -264,7 +264,6 @@ linters:
     - gocognit         # Computes and checks the cognitive complexity of functions
     - gocyclo          # Computes and checks the cyclomatic complexity of functions
     - nestif           # Reports deeply nested if statements
-    # Normally enabled:
     - dupl             # Tool for code clone detection
     - exhaustivestruct # Checks if all struct's fields are initialized
     - funlen           # Tool for detection of long functions
