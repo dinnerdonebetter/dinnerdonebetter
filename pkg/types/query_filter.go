@@ -187,5 +187,12 @@ func ExtractQueryFilter(req *http.Request) *QueryFilter {
 	qf := &QueryFilter{}
 	qf.FromParams(req.URL.Query())
 
+	if qf.Page == 0 {
+		qf.Page = 1
+	}
+	if qf.Limit == 0 {
+		qf.Limit = DefaultLimit
+	}
+
 	return qf
 }
