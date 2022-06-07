@@ -504,6 +504,7 @@ func TestQuerier_GetHouseholdsForAdmin(T *testing.T) {
 		t.Parallel()
 
 		filter := types.DefaultQueryFilter()
+		exampleUserID := fakes.BuildFakeID()
 		exampleHouseholdList := fakes.BuildFakeHouseholdList()
 
 		ctx := context.Background()
@@ -515,7 +516,7 @@ func TestQuerier_GetHouseholdsForAdmin(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromHouseholds(true, exampleHouseholdList.FilteredCount, exampleHouseholdList.Households...))
 
-		actual, err := c.GetHouseholdsForAdmin(ctx, filter)
+		actual, err := c.GetHouseholdsForAdmin(ctx, exampleUserID, filter)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleHouseholdList, actual)
 
@@ -526,6 +527,7 @@ func TestQuerier_GetHouseholdsForAdmin(T *testing.T) {
 		t.Parallel()
 
 		filter := (*types.QueryFilter)(nil)
+		exampleUserID := fakes.BuildFakeID()
 		exampleHouseholdList := fakes.BuildFakeHouseholdList()
 		exampleHouseholdList.Page, exampleHouseholdList.Limit = 0, 0
 
@@ -538,7 +540,7 @@ func TestQuerier_GetHouseholdsForAdmin(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromHouseholds(true, exampleHouseholdList.FilteredCount, exampleHouseholdList.Households...))
 
-		actual, err := c.GetHouseholdsForAdmin(ctx, filter)
+		actual, err := c.GetHouseholdsForAdmin(ctx, exampleUserID, filter)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleHouseholdList, actual)
 
@@ -549,6 +551,7 @@ func TestQuerier_GetHouseholdsForAdmin(T *testing.T) {
 		t.Parallel()
 
 		filter := types.DefaultQueryFilter()
+		exampleUserID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -559,7 +562,7 @@ func TestQuerier_GetHouseholdsForAdmin(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
 
-		actual, err := c.GetHouseholdsForAdmin(ctx, filter)
+		actual, err := c.GetHouseholdsForAdmin(ctx, exampleUserID, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -570,6 +573,7 @@ func TestQuerier_GetHouseholdsForAdmin(T *testing.T) {
 		t.Parallel()
 
 		filter := types.DefaultQueryFilter()
+		exampleUserID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -580,7 +584,7 @@ func TestQuerier_GetHouseholdsForAdmin(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.GetHouseholdsForAdmin(ctx, filter)
+		actual, err := c.GetHouseholdsForAdmin(ctx, exampleUserID, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 

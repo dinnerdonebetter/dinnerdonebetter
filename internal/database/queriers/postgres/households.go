@@ -318,8 +318,8 @@ func (q *SQLQuerier) buildGetHouseholdsQuery(ctx context.Context, userID string,
 
 	builder := q.sqlBuilder.Select(append(
 		append(householdsTableColumns, householdsUserMembershipTableColumns...),
-		fmt.Sprintf("(%s) as total_count", totalCountQuery),
 		fmt.Sprintf("(%s) as filtered_count", filteredCountQuery),
+		fmt.Sprintf("(%s) as total_count", totalCountQuery),
 	)...).
 		From(householdsTableName).
 		Join(householdUserMembershipsOnHouseholdsJoinClause)
@@ -353,8 +353,8 @@ func (q *SQLQuerier) buildGetHouseholdsQuery(ctx context.Context, userID string,
 	return query, append(append(filteredCountQueryArgs, totalCountQueryArgs...), selectArgs...)
 }
 
-// GetHouseholds fetches a list of households from the database that meet a particular filter.
-func (q *SQLQuerier) GetHouseholds(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.HouseholdList, err error) {
+// getHouseholds fetches a list of households from the database that meet a particular filter.
+func (q *SQLQuerier) getHouseholds(ctx context.Context, userID string, forAdmin bool, filter *types.QueryFilter) (x *types.HouseholdList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -362,7 +362,7 @@ func (q *SQLQuerier) GetHouseholds(ctx context.Context, userID string, filter *t
 		return nil, ErrInvalidIDProvided
 	}
 
-	logger := filter.AttachToLogger(q.logger).WithValue(keys.UserIDKey, userID)
+	logger := filter.AttachToLogger(q.logger).WithValue(keys.UserIDKey, userID).WithValue("filter_is_nil", filter == nil)
 	tracing.AttachQueryFilterToSpan(span, filter)
 	tracing.AttachUserIDToSpan(span, userID)
 
@@ -371,7 +371,7 @@ func (q *SQLQuerier) GetHouseholds(ctx context.Context, userID string, filter *t
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildGetHouseholdsQuery(ctx, userID, false, filter)
+	query, args := q.buildGetHouseholdsQuery(ctx, userID, forAdmin, filter)
 
 	rows, err := q.performReadQuery(ctx, q.db, "households", query, args)
 	if err != nil {
@@ -385,31 +385,14 @@ func (q *SQLQuerier) GetHouseholds(ctx context.Context, userID string, filter *t
 	return x, nil
 }
 
+// GetHouseholds fetches a list of households from the database that meet a particular filter.
+func (q *SQLQuerier) GetHouseholds(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.HouseholdList, err error) {
+	return q.getHouseholds(ctx, userID, false, filter)
+}
+
 // GetHouseholdsForAdmin fetches a list of households from the database that meet a particular filter for all users.
-func (q *SQLQuerier) GetHouseholdsForAdmin(ctx context.Context, filter *types.QueryFilter) (x *types.HouseholdList, err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := filter.AttachToLogger(q.logger)
-	tracing.AttachQueryFilterToSpan(span, filter)
-
-	x = &types.HouseholdList{}
-	if filter != nil {
-		x.Page, x.Limit = filter.Page, filter.Limit
-	}
-
-	query, args := q.buildGetHouseholdsQuery(ctx, "", true, filter)
-
-	rows, err := q.performReadQuery(ctx, q.db, "households for admin", query, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "querying database for households")
-	}
-
-	if x.Households, x.FilteredCount, x.TotalCount, err = q.scanHouseholds(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning households")
-	}
-
-	return x, nil
+func (q *SQLQuerier) GetHouseholdsForAdmin(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.HouseholdList, err error) {
+	return q.getHouseholds(ctx, userID, true, filter)
 }
 
 const householdCreationQuery = `
