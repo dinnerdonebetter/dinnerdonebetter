@@ -47,7 +47,15 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.RequesterIDKey, requester)
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 
-	households, err := s.householdDataManager.GetHouseholds(ctx, requester, filter)
+	filter.AttachToLogger(logger)
+	logger.Debug("filtering?!")
+
+	fetchFunc := s.householdDataManager.GetHouseholds
+	if sessionCtxData.ServiceRolePermissionChecker().IsServiceAdmin() {
+		fetchFunc = s.householdDataManager.GetHouseholdsForAdmin
+	}
+
+	households, err := fetchFunc(ctx, requester, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		households = &types.HouseholdList{Households: []*types.Household{}}

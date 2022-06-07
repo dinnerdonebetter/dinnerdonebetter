@@ -99,7 +99,7 @@ type (
 		GetHouseholdByID(ctx context.Context, householdID string) (*Household, error)
 		GetAllHouseholdsCount(ctx context.Context) (uint64, error)
 		GetHouseholds(ctx context.Context, userID string, filter *QueryFilter) (*HouseholdList, error)
-		GetHouseholdsForAdmin(ctx context.Context, filter *QueryFilter) (*HouseholdList, error)
+		GetHouseholdsForAdmin(ctx context.Context, userID string, filter *QueryFilter) (*HouseholdList, error)
 		CreateHousehold(ctx context.Context, input *HouseholdDatabaseCreationInput) (*Household, error)
 		UpdateHousehold(ctx context.Context, updated *Household) error
 		ArchiveHousehold(ctx context.Context, householdID string, userID string) error

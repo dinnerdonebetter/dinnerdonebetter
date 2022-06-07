@@ -52,8 +52,8 @@ func (m *HouseholdDataManager) GetHouseholds(ctx context.Context, userID string,
 }
 
 // GetHouseholdsForAdmin is a mock function.
-func (m *HouseholdDataManager) GetHouseholdsForAdmin(ctx context.Context, filter *types.QueryFilter) (*types.HouseholdList, error) {
-	args := m.Called(ctx, filter)
+func (m *HouseholdDataManager) GetHouseholdsForAdmin(ctx context.Context, userID string, filter *types.QueryFilter) (*types.HouseholdList, error) {
+	args := m.Called(ctx, userID, filter)
 	return args.Get(0).(*types.HouseholdList), args.Error(1)
 }
 

@@ -275,8 +275,8 @@ func (q *SQLQuerier) buildListQuery(
 	if includeCountQueries {
 		columns = append(
 			columns,
-			fmt.Sprintf("(%s) as total_count", totalCountQuery),
 			fmt.Sprintf("(%s) as filtered_count", filteredCountQuery),
+			fmt.Sprintf("(%s) as total_count", totalCountQuery),
 		)
 	}
 
@@ -350,8 +350,8 @@ func (q *SQLQuerier) buildListQueryWithILike(
 	builder := q.sqlBuilder.
 		Select(append(
 			columns,
-			fmt.Sprintf("(%s) as total_count", totalCountQuery),
 			fmt.Sprintf("(%s) as filtered_count", filteredCountQuery),
+			fmt.Sprintf("(%s) as total_count", totalCountQuery),
 		)...).
 		From(tableName).
 		Where(where)

@@ -329,8 +329,8 @@ func (q *SQLQuerier) BuildGetPendingHouseholdInvitationsFromUserQuery(ctx contex
 	queryBuilder := q.sqlBuilder.Select(
 		append(
 			householdInvitationsTableColumns,
-			fmt.Sprintf("(%s) as total_count", totalCountQuery),
 			fmt.Sprintf("(%s) as filtered_count", filteredCountQuery),
+			fmt.Sprintf("(%s) as total_count", totalCountQuery),
 		)...,
 	).
 		From("household_invitations").
@@ -394,8 +394,8 @@ func (q *SQLQuerier) BuildGetPendingHouseholdInvitationsForUserQuery(ctx context
 	queryBuilder := q.sqlBuilder.Select(
 		append(
 			householdInvitationsTableColumns,
-			fmt.Sprintf("(%s) as total_count", totalCountQuery),
 			fmt.Sprintf("(%s) as filtered_count", filteredCountQuery),
+			fmt.Sprintf("(%s) as total_count", totalCountQuery),
 		)...,
 	).
 		From("household_invitations").
