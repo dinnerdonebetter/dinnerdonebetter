@@ -21,6 +21,7 @@ const (
 	clearAllQuery = `
 DELETE FROM "users" WHERE id IS NOT NULL;
 DELETE FROM "households" WHERE id IS NOT NULL;
+DELETE FROM "household_invitations" WHERE id IS NOT NULL;
 DELETE FROM "household_user_memberships" WHERE id IS NOT NULL;
 DELETE FROM "valid_ingredients" WHERE id IS NOT NULL;
 DELETE FROM "valid_instruments" WHERE id IS NOT NULL;

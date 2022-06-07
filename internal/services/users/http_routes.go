@@ -163,23 +163,24 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	// generate a two factor secret.
+	tfs, err := s.secretGenerator.GenerateBase32EncodedString(ctx, totpSecretSize)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "creating user")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "internal error", http.StatusInternalServerError)
+		return
+	}
+
 	input := &types.UserDatabaseCreationInput{
 		ID:                   ksuid.New().String(),
 		Username:             registrationInput.Username,
 		EmailAddress:         registrationInput.EmailAddress,
 		HashedPassword:       hp,
-		TwoFactorSecret:      "",
+		TwoFactorSecret:      tfs,
 		InvitationToken:      registrationInput.InvitationToken,
 		DestinationHousehold: registrationInput.DestinationHousehold,
 		BirthDay:             registrationInput.BirthDay,
 		BirthMonth:           registrationInput.BirthMonth,
-	}
-
-	// generate a two factor secret.
-	if input.TwoFactorSecret, err = s.secretGenerator.GenerateBase32EncodedString(ctx, totpSecretSize); err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating user")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "internal error", http.StatusInternalServerError)
-		return
 	}
 
 	// create the user.

@@ -85,36 +85,101 @@ var userCollection = struct {
 }
 
 func scaffoldUsers(ctx context.Context, db database.DataManager) error {
-	var err error
-	if _, err = db.CreateUser(ctx, userCollection.MomJones); err != nil {
-		return fmt.Errorf("creating mom user: %w", err)
+	if err := scaffoldJonesFamily(ctx, db); err != nil {
+		return fmt.Errorf("creating jones family: %w", err)
+	}
+
+	if _, err := db.CreateUser(ctx, userCollection.Admin); err != nil {
+		return fmt.Errorf("creating admin input: %w", err)
+	}
+
+	const adminUpdateQuery = `UPDATE users SET service_roles='service_admin', two_factor_secret_verified_on=extract(epoch FROM NOW()) WHERE username = 'admin';`
+	if _, err := db.DB().ExecContext(ctx, adminUpdateQuery); err != nil {
+		return fmt.Errorf("modifying admin input permissions: %w", err)
+	}
+
+	return nil
+}
+
+func scaffoldJonesFamily(ctx context.Context, db database.DataManager) error {
+	momJones, err := db.CreateUser(ctx, userCollection.MomJones)
+	if err != nil {
+		return fmt.Errorf("creating mom input: %w", err)
 	}
 
 	jonesHouseholdID, err = db.GetDefaultHouseholdIDForUser(ctx, userCollection.MomJones.ID)
 	if err != nil {
-		return fmt.Errorf("fetching default household for mom user: %w", err)
+		return fmt.Errorf("fetching default household for mom input: %w", err)
 	}
 
-	jonesUsers := []*types.UserDatabaseCreationInput{
-		userCollection.DadJones,
-		userCollection.KidJones1,
-		userCollection.KidJones2,
+	type userContainer struct {
+		input  *types.UserDatabaseCreationInput
+		invite *types.HouseholdInvitation
 	}
 
-	for _, input := range jonesUsers {
-		input.DestinationHousehold = jonesHouseholdID
-		if _, err = db.CreateUser(ctx, input); err != nil {
-			return fmt.Errorf("creating Jones family user %q: %w", input.Username, err)
-		}
+	dadsInviteInput := &types.HouseholdInvitationDatabaseCreationInput{
+		ID:                   ksuid.New().String(),
+		FromUser:             momJones.ID,
+		Note:                 "",
+		ToEmail:              userCollection.DadJones.EmailAddress,
+		Token:                "example_invite_token_dad",
+		DestinationHousehold: jonesHouseholdID,
 	}
 
-	if _, err = db.CreateUser(ctx, userCollection.Admin); err != nil {
-		return fmt.Errorf("creating admin user: %w", err)
-	}
-
-	_, err = db.DB().ExecContext(ctx, `UPDATE users SET service_roles='service_admin', two_factor_secret_verified_on=extract(epoch FROM NOW()) WHERE username = 'admin';`)
+	dadsInvite, err := db.CreateHouseholdInvitation(ctx, dadsInviteInput)
 	if err != nil {
-		return fmt.Errorf("modifying admin user permissions: %w", err)
+		return fmt.Errorf("creating dad's invite: %w", err)
+	}
+
+	sallysInviteInput := &types.HouseholdInvitationDatabaseCreationInput{
+		ID:                   ksuid.New().String(),
+		FromUser:             momJones.ID,
+		Note:                 "",
+		ToEmail:              userCollection.KidJones1.EmailAddress,
+		Token:                "example_invite_token_sally",
+		DestinationHousehold: jonesHouseholdID,
+	}
+
+	sallysInvite, err := db.CreateHouseholdInvitation(ctx, sallysInviteInput)
+	if err != nil {
+		return fmt.Errorf("creating sally's invite: %w", err)
+	}
+
+	billysInviteInput := &types.HouseholdInvitationDatabaseCreationInput{
+		ID:                   ksuid.New().String(),
+		FromUser:             momJones.ID,
+		Note:                 "",
+		ToEmail:              userCollection.KidJones2.EmailAddress,
+		Token:                "example_invite_token_billy",
+		DestinationHousehold: jonesHouseholdID,
+	}
+
+	billysInvite, err := db.CreateHouseholdInvitation(ctx, billysInviteInput)
+	if err != nil {
+		return fmt.Errorf("creating billy's invite: %w", err)
+	}
+
+	jonesUsers := map[string]userContainer{
+		userCollection.DadJones.Username: {
+			input:  userCollection.DadJones,
+			invite: dadsInvite,
+		},
+		userCollection.KidJones1.Username: {
+			input:  userCollection.KidJones1,
+			invite: sallysInvite,
+		},
+		userCollection.KidJones2.Username: {
+			input:  userCollection.KidJones2,
+			invite: billysInvite,
+		},
+	}
+
+	for username, cfg := range jonesUsers {
+		cfg.input.InvitationToken = cfg.invite.Token
+		cfg.input.DestinationHousehold = cfg.invite.DestinationHousehold
+		if _, err = db.CreateUser(ctx, cfg.input); err != nil {
+			return fmt.Errorf("creating Jones family input %q: %w", username, err)
+		}
 	}
 
 	return nil
