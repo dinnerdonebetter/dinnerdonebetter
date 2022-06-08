@@ -40,8 +40,23 @@ func buildMockRowsFromHouseholds(includeCounts bool, filteredCount uint64, house
 				x.LastUpdatedOn,
 				x.ArchivedOn,
 				x.BelongsToUser,
+				&y.BelongsToUser.ID,
+				&y.BelongsToUser.Username,
+				&y.BelongsToUser.EmailAddress,
+				&y.BelongsToUser.AvatarSrc,
+				&y.BelongsToUser.RequiresPasswordChange,
+				&y.BelongsToUser.PasswordLastChangedOn,
+				&y.BelongsToUser.TwoFactorSecretVerifiedOn,
+				strings.Join(y.BelongsToUser.ServiceRoles, serviceRolesSeparator),
+				&y.BelongsToUser.ServiceHouseholdStatus,
+				&y.BelongsToUser.ReputationExplanation,
+				&y.BelongsToUser.BirthDay,
+				&y.BelongsToUser.BirthMonth,
+				&y.BelongsToUser.CreatedOn,
+				&y.BelongsToUser.LastUpdatedOn,
+				&y.BelongsToUser.ArchivedOn,
 				y.ID,
-				y.BelongsToUser,
+				y.BelongsToUser.ID,
 				y.BelongsToHousehold,
 				strings.Join(y.HouseholdRoles, householdMemberRolesSeparator),
 				y.DefaultHousehold,
@@ -603,7 +618,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		exampleHousehold.BillingStatus = types.UnpaidHouseholdBillingStatus
 		exampleHousehold.PaymentProcessorCustomerID = ""
 		exampleHousehold.BelongsToUser = exampleUserID
-		exampleHousehold.Members = []*types.HouseholdUserMembership(nil)
+		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser(nil)
 		exampleInput := fakes.BuildFakeHouseholdDatabaseCreationInputFromHousehold(exampleHousehold)
 
 		ctx := context.Background()
@@ -668,7 +683,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleHousehold.ID = ""
 		exampleHousehold.BelongsToUser = exampleUserID
-		exampleHousehold.Members = []*types.HouseholdUserMembership(nil)
+		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser(nil)
 		exampleCreationInput := fakes.BuildFakeHouseholdDatabaseCreationInputFromHousehold(exampleHousehold)
 
 		ctx := context.Background()
@@ -690,7 +705,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleHousehold.ID = ""
 		exampleHousehold.BelongsToUser = exampleUserID
-		exampleHousehold.Members = []*types.HouseholdUserMembership{}
+		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{}
 		exampleInput := fakes.BuildFakeHouseholdDatabaseCreationInputFromHousehold(exampleHousehold)
 
 		ctx := context.Background()
@@ -730,7 +745,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		exampleUserID := fakes.BuildFakeID()
 		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleHousehold.BelongsToUser = exampleUserID
-		exampleHousehold.Members = []*types.HouseholdUserMembership(nil)
+		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser(nil)
 		exampleInput := fakes.BuildFakeHouseholdDatabaseCreationInputFromHousehold(exampleHousehold)
 
 		ctx := context.Background()
@@ -780,7 +795,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		exampleUserID := fakes.BuildFakeID()
 		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleHousehold.BelongsToUser = exampleUserID
-		exampleHousehold.Members = []*types.HouseholdUserMembership(nil)
+		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser(nil)
 		exampleInput := fakes.BuildFakeHouseholdDatabaseCreationInputFromHousehold(exampleHousehold)
 
 		ctx := context.Background()

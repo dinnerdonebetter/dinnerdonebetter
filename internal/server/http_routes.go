@@ -118,7 +118,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		v1Router.Route("/households", func(householdsRouter routing.Router) {
 			householdsRouter.Post(root, s.householdsService.CreateHandler)
 			householdsRouter.Get(root, s.householdsService.ListHandler)
-			householdsRouter.Get("/current", s.householdsService.InfoHandler)
+			householdsRouter.Get("/current", s.householdsService.CurrentInfoHandler)
 
 			singleUserRoute := buildURLVarChunk(householdsservice.UserIDURIParamKey, "")
 			singleHouseholdRoute := buildURLVarChunk(householdsservice.HouseholdIDURIParamKey, "")

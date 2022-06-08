@@ -20,6 +20,21 @@ func BuildFakeHouseholdUserMembership() *types.HouseholdUserMembership {
 	}
 }
 
+// BuildFakeHouseholdUserMembershipWithUser builds a faked HouseholdUserMembershipWithUser.
+func BuildFakeHouseholdUserMembershipWithUser() *types.HouseholdUserMembershipWithUser {
+	u := BuildFakeUser()
+	u.TwoFactorSecret = ""
+
+	return &types.HouseholdUserMembershipWithUser{
+		ID:                 ksuid.New().String(),
+		BelongsToUser:      u,
+		BelongsToHousehold: fake.UUID(),
+		HouseholdRoles:     []string{authorization.HouseholdMemberRole.String()},
+		CreatedOn:          0,
+		ArchivedOn:         nil,
+	}
+}
+
 // BuildFakeHouseholdUserMembershipList builds a faked HouseholdUserMembershipList.
 func BuildFakeHouseholdUserMembershipList() *types.HouseholdUserMembershipList {
 	var examples []*types.HouseholdUserMembership

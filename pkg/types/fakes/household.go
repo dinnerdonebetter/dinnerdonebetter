@@ -11,9 +11,9 @@ import (
 func BuildFakeHousehold() *types.Household {
 	householdID := ksuid.New().String()
 
-	var memberships []*types.HouseholdUserMembership
+	var memberships []*types.HouseholdUserMembershipWithUser
 	for i := 0; i < exampleQuantity; i++ {
-		membership := BuildFakeHouseholdUserMembership()
+		membership := BuildFakeHouseholdUserMembershipWithUser()
 		membership.BelongsToHousehold = householdID
 		memberships = append(memberships, membership)
 	}

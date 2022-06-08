@@ -4,11 +4,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 
 WORKDIR /go/src/github.com/prixfixeco/api_server
 
-COPY . .
+COPY cmd cmd
+COPY internal internal
+COPY pkg pkg
+COPY tests tests
+COPY vendor vendor
+COPY go.mod go.mod
+COPY go.sum go.sum
 
 ENV SKIP_PASETO_TESTS=FALSE
 
 # to debug a specific test:
-# ENTRYPOINT [ "go", "test", "-parallel", "1", "-v", "-failfast", "github.com/prixfixeco/api_server/tests/integration", "-run", "TestIntegration/TestValidIngredients_GetRandom" ]
+# ENTRYPOINT [ "go", "test", "-parallel", "1", "-v", "-failfast", "github.com/prixfixeco/api_server/tests/integration", "-run", "TestIntegration/TestHouseholds_Updating/should_be_possible_to_update_a_household_via_cookie" ]
 
 ENTRYPOINT [ "go", "test", "-v", "-failfast", "github.com/prixfixeco/api_server/tests/integration" ]

@@ -22,6 +22,7 @@ const (
 	householdsTableName = "households"
 
 	householdUserMembershipsOnHouseholdsJoinClause = "household_user_memberships ON household_user_memberships.belongs_to_household = households.id"
+	usersOnHouseholdUserMembershipsJoinClause      = "users ON household_user_memberships.belongs_to_user = users.id"
 )
 
 var (
@@ -39,21 +40,37 @@ var (
 		"households.last_updated_on",
 		"households.archived_on",
 		"households.belongs_to_user",
+		"users.id",
+		"users.username",
+		"users.email_address",
+		"users.avatar_src",
+		"users.requires_password_change",
+		"users.password_last_changed_on",
+		"users.two_factor_secret_verified_on",
+		"users.service_roles",
+		"users.reputation",
+		"users.reputation_explanation",
+		"users.birth_day",
+		"users.birth_month",
+		"users.created_on",
+		"users.last_updated_on",
+		"users.archived_on",
 	}
 )
 
 // scanHousehold takes a database Scanner (i.e. *sql.Row) and scans the result into a Household struct.
-func (q *SQLQuerier) scanHousehold(ctx context.Context, scan database.Scanner, includeCounts bool) (household *types.Household, membership *types.HouseholdUserMembership, filteredCount, totalCount uint64, err error) {
+func (q *SQLQuerier) scanHousehold(ctx context.Context, scan database.Scanner, includeCounts bool) (household *types.Household, membership *types.HouseholdUserMembershipWithUser, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.WithValue("include_counts", includeCounts)
 
-	household = &types.Household{Members: []*types.HouseholdUserMembership{}}
-	membership = &types.HouseholdUserMembership{}
+	household = &types.Household{Members: []*types.HouseholdUserMembershipWithUser{}}
+	membership = &types.HouseholdUserMembershipWithUser{BelongsToUser: &types.User{}}
 
 	var (
-		rawRoles string
+		rawHouseholdRoles,
+		rawServiceRoles string
 	)
 
 	targetVars := []interface{}{
@@ -68,10 +85,25 @@ func (q *SQLQuerier) scanHousehold(ctx context.Context, scan database.Scanner, i
 		&household.LastUpdatedOn,
 		&household.ArchivedOn,
 		&household.BelongsToUser,
+		&membership.BelongsToUser.ID,
+		&membership.BelongsToUser.Username,
+		&membership.BelongsToUser.EmailAddress,
+		&membership.BelongsToUser.AvatarSrc,
+		&membership.BelongsToUser.RequiresPasswordChange,
+		&membership.BelongsToUser.PasswordLastChangedOn,
+		&membership.BelongsToUser.TwoFactorSecretVerifiedOn,
+		&rawServiceRoles,
+		&membership.BelongsToUser.ServiceHouseholdStatus,
+		&membership.BelongsToUser.ReputationExplanation,
+		&membership.BelongsToUser.BirthDay,
+		&membership.BelongsToUser.BirthMonth,
+		&membership.BelongsToUser.CreatedOn,
+		&membership.BelongsToUser.LastUpdatedOn,
+		&membership.BelongsToUser.ArchivedOn,
 		&membership.ID,
-		&membership.BelongsToUser,
+		&membership.BelongsToUser.ID,
 		&membership.BelongsToHousehold,
-		&rawRoles,
+		&rawHouseholdRoles,
 		&membership.DefaultHousehold,
 		&membership.CreatedOn,
 		&membership.LastUpdatedOn,
@@ -86,7 +118,8 @@ func (q *SQLQuerier) scanHousehold(ctx context.Context, scan database.Scanner, i
 		return nil, nil, 0, 0, observability.PrepareError(err, logger, span, "fetching memberships from database")
 	}
 
-	membership.HouseholdRoles = strings.Split(rawRoles, householdMemberRolesSeparator)
+	membership.HouseholdRoles = strings.Split(rawHouseholdRoles, householdMemberRolesSeparator)
+	membership.BelongsToUser.ServiceRoles = strings.Split(rawServiceRoles, serviceRolesSeparator)
 
 	return household, membership, filteredCount, totalCount, nil
 }
@@ -153,6 +186,21 @@ const getHouseholdQuery = `
 		households.last_updated_on,
 		households.archived_on,
 		households.belongs_to_user,
+        users.id,
+        users.username,
+        users.email_address,
+        users.avatar_src,
+        users.requires_password_change,
+        users.password_last_changed_on,
+        users.two_factor_secret_verified_on,
+        users.service_roles,
+        users.reputation,
+        users.reputation_explanation,
+        users.birth_day,
+        users.birth_month,
+        users.created_on,
+        users.last_updated_on,
+        users.archived_on,
 		household_user_memberships.id,
 		household_user_memberships.belongs_to_user,
 		household_user_memberships.belongs_to_household,
@@ -163,6 +211,7 @@ const getHouseholdQuery = `
 		household_user_memberships.archived_on
 	FROM households
 	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
+	JOIN users ON household_user_memberships.belongs_to_user = users.id
 	WHERE households.archived_on IS NULL
 	AND households.belongs_to_user = $1
 	AND households.id = $2
@@ -225,6 +274,21 @@ const getHouseholdByIDQuery = `
 		households.last_updated_on,
 		households.archived_on,
 		households.belongs_to_user,
+        users.id,
+        users.username,
+        users.email_address,
+        users.avatar_src,
+        users.requires_password_change,
+        users.password_last_changed_on,
+        users.two_factor_secret_verified_on,
+        users.service_roles,
+        users.reputation,
+        users.reputation_explanation,
+        users.birth_day,
+        users.birth_month,
+        users.created_on,
+        users.last_updated_on,
+        users.archived_on,
 		household_user_memberships.id,
 		household_user_memberships.belongs_to_user,
 		household_user_memberships.belongs_to_household,
@@ -235,6 +299,7 @@ const getHouseholdByIDQuery = `
 		household_user_memberships.archived_on
 	FROM households
 	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
+	JOIN users ON household_user_memberships.belongs_to_user = users.id
 	WHERE households.archived_on IS NULL
 	AND households.id = $1
 `
@@ -313,8 +378,13 @@ func (q *SQLQuerier) buildGetHouseholdsQuery(ctx context.Context, userID string,
 		includeArchived = filter.IncludeArchived
 	}
 
-	filteredCountQuery, filteredCountQueryArgs := q.buildFilteredCountQuery(ctx, householdsTableName, nil, nil, userOwnershipColumn, userID, forAdmin, includeArchived, filter)
-	totalCountQuery, totalCountQueryArgs := q.buildTotalCountQuery(ctx, householdsTableName, nil, nil, userOwnershipColumn, userID, forAdmin, includeArchived)
+	joins := []string{
+		"household_user_memberships ON household_user_memberships.belongs_to_household = households.id",
+		"users ON household_user_memberships.belongs_to_user = users.id",
+	}
+
+	filteredCountQuery, filteredCountQueryArgs := q.buildFilteredCountQuery(ctx, householdsTableName, joins, nil, userOwnershipColumn, userID, forAdmin, includeArchived, filter)
+	totalCountQuery, totalCountQueryArgs := q.buildTotalCountQuery(ctx, householdsTableName, joins, nil, userOwnershipColumn, userID, forAdmin, includeArchived)
 
 	builder := q.sqlBuilder.Select(append(
 		append(householdsTableColumns, householdsUserMembershipTableColumns...),
@@ -322,7 +392,8 @@ func (q *SQLQuerier) buildGetHouseholdsQuery(ctx context.Context, userID string,
 		fmt.Sprintf("(%s) as total_count", totalCountQuery),
 	)...).
 		From(householdsTableName).
-		Join(householdUserMembershipsOnHouseholdsJoinClause)
+		Join(householdUserMembershipsOnHouseholdsJoinClause).
+		Join(usersOnHouseholdUserMembershipsJoinClause)
 
 	if !forAdmin {
 		where := squirrel.Eq{
@@ -337,10 +408,12 @@ func (q *SQLQuerier) buildGetHouseholdsQuery(ctx context.Context, userID string,
 	}
 
 	builder = builder.GroupBy(fmt.Sprintf(
-		"%s.%s, %s.%s",
+		"%s.%s, %s.%s, %s.%s",
 		householdsTableName,
 		"id",
 		householdsUserMembershipTableName,
+		"id",
+		"users",
 		"id",
 	))
 
@@ -498,6 +571,8 @@ func (q *SQLQuerier) UpdateHousehold(ctx context.Context, updated *types.Househo
 		updated.BelongsToUser,
 		updated.ID,
 	}
+
+	logger.WithValue("query", updateHouseholdQuery).WithValue("args", args).Info("making query for households")
 
 	if err := q.performWriteQuery(ctx, q.db, "household update", updateHouseholdQuery, args); err != nil {
 		return observability.PrepareError(err, logger, span, "updating household")

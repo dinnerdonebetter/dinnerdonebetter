@@ -33,6 +33,20 @@ type (
 		DefaultHousehold   bool     `json:"defaultHousehold"`
 	}
 
+	// HouseholdUserMembershipWithUser defines a relationship between a user and a household.
+	HouseholdUserMembershipWithUser struct {
+		_ struct{}
+
+		ArchivedOn         *uint64  `json:"archivedOn"`
+		LastUpdatedOn      *uint64  `json:"lastUpdatedOn"`
+		ID                 string   `json:"id"`
+		BelongsToUser      *User    `json:"belongsToUser"`
+		BelongsToHousehold string   `json:"belongsToHousehold"`
+		HouseholdRoles     []string `json:"householdRole"`
+		CreatedOn          uint64   `json:"createdOn"`
+		DefaultHousehold   bool     `json:"defaultHousehold"`
+	}
+
 	// HouseholdUserMembershipList represents a list of household user memberships.
 	HouseholdUserMembershipList struct {
 		_ struct{}

@@ -1092,25 +1092,25 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 
 		ctx := context.Background()
 		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.Members = []*types.HouseholdUserMembership{
+		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID1,
+				BelongsToUser:      &types.User{ID: userID1},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID2,
+				BelongsToUser:      &types.User{ID: userID2},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID3,
+				BelongsToUser:      &types.User{ID: userID3},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID4,
+				BelongsToUser:      &types.User{ID: userID4},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 		}
@@ -1261,25 +1261,25 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 
 		ctx := context.Background()
 		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.Members = []*types.HouseholdUserMembership{
+		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID1,
+				BelongsToUser:      &types.User{ID: userID1},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID2,
+				BelongsToUser:      &types.User{ID: userID2},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID3,
+				BelongsToUser:      &types.User{ID: userID3},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID4,
+				BelongsToUser:      &types.User{ID: userID4},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 		}
@@ -1394,25 +1394,25 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 
 		ctx := context.Background()
 		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.Members = []*types.HouseholdUserMembership{
+		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID1,
+				BelongsToUser:      &types.User{ID: userID1},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID2,
+				BelongsToUser:      &types.User{ID: userID2},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID3,
+				BelongsToUser:      &types.User{ID: userID3},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID4,
+				BelongsToUser:      &types.User{ID: userID4},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 		}
@@ -1528,25 +1528,25 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 
 		ctx := context.Background()
 		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.Members = []*types.HouseholdUserMembership{
+		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID1,
+				BelongsToUser:      &types.User{ID: userID1},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID2,
+				BelongsToUser:      &types.User{ID: userID2},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID3,
+				BelongsToUser:      &types.User{ID: userID3},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID4,
+				BelongsToUser:      &types.User{ID: userID4},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 		}
@@ -1772,25 +1772,25 @@ func TestQuerier_FinalizeMealPlanWithExpiredVotingPeriod(T *testing.T) {
 
 		ctx := context.Background()
 		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.Members = []*types.HouseholdUserMembership{
+		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID1,
+				BelongsToUser:      &types.User{ID: userID1},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID2,
+				BelongsToUser:      &types.User{ID: userID2},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID3,
+				BelongsToUser:      &types.User{ID: userID3},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID4,
+				BelongsToUser:      &types.User{ID: userID4},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 		}
@@ -1968,25 +1968,25 @@ func TestQuerier_FinalizeMealPlanWithExpiredVotingPeriod(T *testing.T) {
 
 		ctx := context.Background()
 		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.Members = []*types.HouseholdUserMembership{
+		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID1,
+				BelongsToUser:      &types.User{ID: userID1},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID2,
+				BelongsToUser:      &types.User{ID: userID2},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID3,
+				BelongsToUser:      &types.User{ID: userID3},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID4,
+				BelongsToUser:      &types.User{ID: userID4},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 		}
@@ -2130,25 +2130,25 @@ func TestQuerier_FinalizeMealPlanWithExpiredVotingPeriod(T *testing.T) {
 
 		ctx := context.Background()
 		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.Members = []*types.HouseholdUserMembership{
+		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID1,
+				BelongsToUser:      &types.User{ID: userID1},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID2,
+				BelongsToUser:      &types.User{ID: userID2},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID3,
+				BelongsToUser:      &types.User{ID: userID3},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID4,
+				BelongsToUser:      &types.User{ID: userID4},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 		}
@@ -2281,25 +2281,25 @@ func TestQuerier_FinalizeMealPlanWithExpiredVotingPeriod(T *testing.T) {
 
 		ctx := context.Background()
 		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.Members = []*types.HouseholdUserMembership{
+		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID1,
+				BelongsToUser:      &types.User{ID: userID1},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID2,
+				BelongsToUser:      &types.User{ID: userID2},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID3,
+				BelongsToUser:      &types.User{ID: userID3},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID4,
+				BelongsToUser:      &types.User{ID: userID4},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 		}
@@ -2447,25 +2447,25 @@ func TestQuerier_FinalizeMealPlanWithExpiredVotingPeriod(T *testing.T) {
 
 		ctx := context.Background()
 		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.Members = []*types.HouseholdUserMembership{
+		exampleHousehold.Members = []*types.HouseholdUserMembershipWithUser{
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID1,
+				BelongsToUser:      &types.User{ID: userID1},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID2,
+				BelongsToUser:      &types.User{ID: userID2},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID3,
+				BelongsToUser:      &types.User{ID: userID3},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 			{
 				ID:                 fakes.BuildFakeID(),
-				BelongsToUser:      userID4,
+				BelongsToUser:      &types.User{ID: userID4},
 				BelongsToHousehold: exampleHousehold.ID,
 			},
 		}
