@@ -17,40 +17,19 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
-func buildMockRowsFromHouseholdUserMemberships(memberships ...*types.HouseholdUserMembership) *sqlmock.Rows {
+func buildMockRowsFromHouseholdUserMembershipsWithUsers(memberships ...*types.HouseholdUserMembershipWithUser) *sqlmock.Rows {
 	exampleRows := sqlmock.NewRows(householdsUserMembershipTableColumns)
 
 	for _, x := range memberships {
 		rowValues := []driver.Value{
 			&x.ID,
-			&x.BelongsToUser,
+			&x.BelongsToUser.ID,
 			&x.BelongsToHousehold,
 			strings.Join(x.HouseholdRoles, householdMemberRolesSeparator),
 			&x.DefaultHousehold,
 			&x.CreatedOn,
 			&x.LastUpdatedOn,
 			&x.ArchivedOn,
-		}
-
-		exampleRows.AddRow(rowValues...)
-	}
-
-	return exampleRows
-}
-
-func buildInvalidMockRowsFromHouseholdUserMemberships(memberships ...*types.HouseholdUserMembership) *sqlmock.Rows {
-	exampleRows := sqlmock.NewRows(householdsUserMembershipTableColumns)
-
-	for _, x := range memberships {
-		rowValues := []driver.Value{
-			&x.DefaultHousehold,
-			&x.BelongsToUser,
-			&x.BelongsToHousehold,
-			strings.Join(x.HouseholdRoles, householdMemberRolesSeparator),
-			&x.CreatedOn,
-			&x.LastUpdatedOn,
-			&x.ArchivedOn,
-			&x.ID,
 		}
 
 		exampleRows.AddRow(rowValues...)
@@ -129,7 +108,7 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(getHouseholdMembershipsForUserQuery)).
 			WithArgs(interfaceToDriverValue(getHouseholdMembershipsForUserArgs)...).
-			WillReturnRows(buildMockRowsFromHouseholdUserMemberships(exampleHousehold.Members...))
+			WillReturnRows(buildMockRowsFromHouseholdUserMembershipsWithUsers(exampleHousehold.Members...))
 
 		expectedActiveHouseholdID := exampleHousehold.Members[0].BelongsToHousehold
 
@@ -262,7 +241,7 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 
 		db.ExpectQuery(formatQueryForSQLMock(getHouseholdMembershipsForUserQuery)).
 			WithArgs(interfaceToDriverValue(getHouseholdMembershipsForUserArgs)...).
-			WillReturnRows(buildInvalidMockRowsFromHouseholdUserMemberships(exampleHousehold.Members...))
+			WillReturnRows(buildMockRowsFromHouseholdUserMembershipsWithUsers(exampleHousehold.Members...))
 
 		actual, err := c.BuildSessionContextDataForUser(ctx, exampleUser.ID)
 		assert.Error(t, err)

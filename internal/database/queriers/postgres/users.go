@@ -485,7 +485,7 @@ func (q *SQLQuerier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x
 }
 
 const userCreationQuery = `
-	INSERT INTO users (id,username,email_address,hashed_password,two_factor_secret,reputation,birth_day,birth_month,service_roles) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+	INSERT INTO users (id,username,email_address,hashed_password,two_factor_secret,avatar_src,reputation,birth_day,birth_month,service_roles) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
 `
 
 const createHouseholdMembershipForNewUserQuery = `
@@ -511,6 +511,7 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDatabaseCr
 		input.EmailAddress,
 		input.HashedPassword,
 		input.TwoFactorSecret,
+		input.AvatarSrc,
 		types.UnverifiedHouseholdStatus,
 		input.BirthDay,
 		input.BirthMonth,

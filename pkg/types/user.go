@@ -79,15 +79,16 @@ type (
 	// UserDatabaseCreationInput is used by the User creation route to communicate with the data store.
 	UserDatabaseCreationInput struct {
 		_                    struct{}
-		BirthMonth           *uint8 `json:"-"`
-		BirthDay             *uint8 `json:"-"`
-		ID                   string `json:"-"`
-		HashedPassword       string `json:"-"`
-		TwoFactorSecret      string `json:"-"`
-		InvitationToken      string `json:"-"`
-		DestinationHousehold string `json:"-"`
-		Username             string `json:"-"`
-		EmailAddress         string `json:"-"`
+		BirthMonth           *uint8  `json:"-"`
+		BirthDay             *uint8  `json:"-"`
+		ID                   string  `json:"-"`
+		AvatarSrc            *string `json:"-"`
+		HashedPassword       string  `json:"-"`
+		TwoFactorSecret      string  `json:"-"`
+		InvitationToken      string  `json:"-"`
+		DestinationHousehold string  `json:"-"`
+		Username             string  `json:"-"`
+		EmailAddress         string  `json:"-"`
 	}
 
 	// UserCreationResponse is a response structure for Users that doesn't contain passwords fields, but does contain the two factor secret.
@@ -96,6 +97,7 @@ type (
 		BirthMonth      *uint8          `json:"birthMonth"`
 		BirthDay        *uint8          `json:"birthYear"`
 		Username        string          `json:"username"`
+		AvatarSrc       *string         `json:"avatar"`
 		EmailAddress    string          `json:"emailAddress"`
 		TwoFactorQRCode string          `json:"qrCode"`
 		CreatedUserID   string          `json:"createdUserID"`

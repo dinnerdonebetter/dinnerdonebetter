@@ -39,18 +39,18 @@ type (
 	Household struct {
 		_ struct{}
 
-		ArchivedOn                 *uint64                    `json:"archivedOn"`
-		SubscriptionPlanID         *uint64                    `json:"subscriptionPlanID"`
-		LastUpdatedOn              *uint64                    `json:"lastUpdatedOn"`
-		Name                       string                     `json:"name"`
-		BillingStatus              HouseholdBillingStatus     `json:"billingStatus"`
-		ContactEmail               string                     `json:"contactEmail"`
-		ContactPhone               string                     `json:"contactPhone"`
-		PaymentProcessorCustomerID string                     `json:"paymentProcessorCustomer"`
-		BelongsToUser              string                     `json:"belongsToUser"`
-		ID                         string                     `json:"id"`
-		Members                    []*HouseholdUserMembership `json:"members"`
-		CreatedOn                  uint64                     `json:"createdOn"`
+		ArchivedOn                 *uint64                            `json:"archivedOn"`
+		SubscriptionPlanID         *uint64                            `json:"subscriptionPlanID"`
+		LastUpdatedOn              *uint64                            `json:"lastUpdatedOn"`
+		Name                       string                             `json:"name"`
+		BillingStatus              HouseholdBillingStatus             `json:"billingStatus"`
+		ContactEmail               string                             `json:"contactEmail"`
+		ContactPhone               string                             `json:"contactPhone"`
+		PaymentProcessorCustomerID string                             `json:"paymentProcessorCustomer"`
+		BelongsToUser              string                             `json:"belongsToUser"`
+		ID                         string                             `json:"id"`
+		Members                    []*HouseholdUserMembershipWithUser `json:"members"`
+		CreatedOn                  uint64                             `json:"createdOn"`
 	}
 
 	// HouseholdList represents a list of households.
@@ -109,7 +109,7 @@ type (
 	HouseholdDataService interface {
 		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
-		InfoHandler(res http.ResponseWriter, req *http.Request)
+		CurrentInfoHandler(res http.ResponseWriter, req *http.Request)
 		ReadHandler(res http.ResponseWriter, req *http.Request)
 		UpdateHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)

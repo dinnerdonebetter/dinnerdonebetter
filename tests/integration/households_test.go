@@ -494,6 +494,7 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 
 			t.Logf("fetching households")
 			households, err := c.GetHouseholds(ctx, nil)
+			require.NoError(t, err)
 
 			var found bool
 			for _, household := range households.Households {

@@ -92,6 +92,11 @@ func (s *householdsTestSuite) TestClient_GetCurrentHousehold() {
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHousehold)
 
 		actual, err := c.GetCurrentHousehold(s.ctx)
+
+		for i := range actual.Members {
+			actual.Members[i].BelongsToUser.TwoFactorSecretVerifiedOn = s.exampleHousehold.Members[i].BelongsToUser.TwoFactorSecretVerifiedOn
+		}
+
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
 		assert.Equal(t, s.exampleHousehold, actual)
@@ -131,6 +136,11 @@ func (s *householdsTestSuite) TestClient_GetHousehold() {
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHousehold)
 
 		actual, err := c.GetHousehold(s.ctx, s.exampleHousehold.ID)
+
+		for i := range actual.Members {
+			actual.Members[i].BelongsToUser.TwoFactorSecretVerifiedOn = s.exampleHousehold.Members[i].BelongsToUser.TwoFactorSecretVerifiedOn
+		}
+
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
 		assert.Equal(t, s.exampleHousehold, actual)
@@ -181,6 +191,12 @@ func (s *householdsTestSuite) TestClient_GetHouseholds() {
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdList)
 		actual, err := c.GetHouseholds(s.ctx, filter)
 
+		for i, household := range actual.Households {
+			for j := range household.Members {
+				actual.Households[i].Members[j].BelongsToUser.TwoFactorSecretVerifiedOn = s.exampleHouseholdList.Households[i].Members[j].BelongsToUser.TwoFactorSecretVerifiedOn
+			}
+		}
+
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
 		assert.Equal(t, s.exampleHouseholdList, actual)
@@ -220,6 +236,10 @@ func (s *householdsTestSuite) TestClient_CreateHousehold() {
 
 		c := buildTestClientWithRequestBodyValidation(t, spec, exampleInput, exampleInput, s.exampleHousehold)
 		actual, err := c.CreateHousehold(s.ctx, exampleInput)
+
+		for i := range actual.Members {
+			actual.Members[i].BelongsToUser.TwoFactorSecretVerifiedOn = s.exampleHousehold.Members[i].BelongsToUser.TwoFactorSecretVerifiedOn
+		}
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)

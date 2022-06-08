@@ -578,7 +578,7 @@ func (q *SQLQuerier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mea
 		for _, option := range relevantOptions {
 			memberVoteFound := false
 			for _, vote := range option.Votes {
-				if vote.ByUser == member.BelongsToUser {
+				if vote.ByUser == member.BelongsToUser.ID {
 					memberVoteFound = true
 					break
 				}

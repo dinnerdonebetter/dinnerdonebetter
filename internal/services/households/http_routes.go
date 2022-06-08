@@ -143,8 +143,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, household, http.StatusCreated)
 }
 
-// InfoHandler returns a handler that returns the current household.
-func (s *service) InfoHandler(res http.ResponseWriter, req *http.Request) {
+// CurrentInfoHandler returns a handler that returns the current household.
+func (s *service) CurrentInfoHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -207,7 +207,13 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	// fetch household from database.
-	household, err := s.householdDataManager.GetHousehold(ctx, householdID, requester)
+	var household *types.Household
+	if sessionCtxData.ServiceRolePermissionChecker().IsServiceAdmin() {
+		household, err = s.householdDataManager.GetHouseholdByID(ctx, householdID)
+	} else {
+		household, err = s.householdDataManager.GetHousehold(ctx, householdID, requester)
+	}
+
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -264,7 +270,13 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	// fetch household from database.
-	household, err := s.householdDataManager.GetHousehold(ctx, householdID, requester)
+	var household *types.Household
+	if sessionCtxData.ServiceRolePermissionChecker().IsServiceAdmin() {
+		household, err = s.householdDataManager.GetHouseholdByID(ctx, householdID)
+	} else {
+		household, err = s.householdDataManager.GetHousehold(ctx, householdID, requester)
+	}
+
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return

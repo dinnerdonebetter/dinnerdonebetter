@@ -341,7 +341,7 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.InfoHandler(helper.res, helper.req)
+		helper.service.CurrentInfoHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
@@ -365,7 +365,7 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.InfoHandler(helper.res, helper.req)
+		helper.service.CurrentInfoHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
@@ -394,7 +394,7 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.InfoHandler(helper.res, helper.req)
+		helper.service.CurrentInfoHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
@@ -423,7 +423,7 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.InfoHandler(helper.res, helper.req)
+		helper.service.CurrentInfoHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
