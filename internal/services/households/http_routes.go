@@ -4,6 +4,9 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+	"strings"
+
+	"github.com/prixfixeco/api_server/internal/authorization"
 
 	"github.com/segmentio/ksuid"
 
@@ -222,6 +225,18 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
+
+	admins := []*types.HouseholdUserMembershipWithUser{}
+	plainUsers := []*types.HouseholdUserMembershipWithUser{}
+	for _, member := range household.Members {
+		if strings.Contains(strings.Join(member.HouseholdRoles, ", "), authorization.HouseholdAdminRole.String()) {
+			admins = append(admins, member)
+		} else {
+			plainUsers = append(plainUsers, member)
+		}
+	}
+
+	household.Members = append(admins, plainUsers...)
 
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, household)

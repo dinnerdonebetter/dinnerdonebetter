@@ -99,3 +99,7 @@ func main() {
 func sp(s string) *string {
 	return &s
 }
+
+func uint8p(n uint8) *uint8 {
+	return &n
+}

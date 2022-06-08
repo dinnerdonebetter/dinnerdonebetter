@@ -43,7 +43,7 @@ type (
 		TwoFactorSecretVerifiedOn *uint64         `json:"-"`
 		AvatarSrc                 *string         `json:"avatar"`
 		BirthMonth                *uint8          `json:"birthMonth"`
-		BirthDay                  *uint8          `json:"birthYear"`
+		BirthDay                  *uint8          `json:"birthDay"`
 		EmailAddress              string          `json:"emailAddress"`
 		ReputationExplanation     string          `json:"reputationExplanation"`
 		TwoFactorSecret           string          `json:"-"`
@@ -67,7 +67,7 @@ type (
 	// UserRegistrationInput represents the input required from users to register an account.
 	UserRegistrationInput struct {
 		_                    struct{}
-		BirthDay             *uint8 `json:"birthYear,omitempty"`
+		BirthDay             *uint8 `json:"birthDay,omitempty"`
 		BirthMonth           *uint8 `json:"birthMonth,omitempty"`
 		Password             string `json:"password"`
 		EmailAddress         string `json:"emailAddress"`
@@ -95,7 +95,7 @@ type (
 	UserCreationResponse struct {
 		_               struct{}
 		BirthMonth      *uint8          `json:"birthMonth"`
-		BirthDay        *uint8          `json:"birthYear"`
+		BirthDay        *uint8          `json:"birthDay"`
 		Username        string          `json:"username"`
 		AvatarSrc       *string         `json:"avatar"`
 		EmailAddress    string          `json:"emailAddress"`
