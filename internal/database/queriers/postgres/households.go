@@ -378,13 +378,8 @@ func (q *SQLQuerier) buildGetHouseholdsQuery(ctx context.Context, userID string,
 		includeArchived = filter.IncludeArchived
 	}
 
-	joins := []string{
-		"household_user_memberships ON household_user_memberships.belongs_to_household = households.id",
-		"users ON household_user_memberships.belongs_to_user = users.id",
-	}
-
-	filteredCountQuery, filteredCountQueryArgs := q.buildFilteredCountQuery(ctx, householdsTableName, joins, nil, userOwnershipColumn, userID, forAdmin, includeArchived, filter)
-	totalCountQuery, totalCountQueryArgs := q.buildTotalCountQuery(ctx, householdsTableName, joins, nil, userOwnershipColumn, userID, forAdmin, includeArchived)
+	filteredCountQuery, filteredCountQueryArgs := q.buildFilteredCountQuery(ctx, householdsTableName, nil, nil, userOwnershipColumn, userID, forAdmin, includeArchived, filter)
+	totalCountQuery, totalCountQueryArgs := q.buildTotalCountQuery(ctx, householdsTableName, nil, nil, userOwnershipColumn, userID, forAdmin, includeArchived)
 
 	builder := q.sqlBuilder.Select(append(
 		append(householdsTableColumns, householdsUserMembershipTableColumns...),
@@ -408,13 +403,9 @@ func (q *SQLQuerier) buildGetHouseholdsQuery(ctx context.Context, userID string,
 	}
 
 	builder = builder.GroupBy(fmt.Sprintf(
-		"%s.%s, %s.%s, %s.%s",
+		"%s.id, users.id, %s.id",
 		householdsTableName,
-		"id",
 		householdsUserMembershipTableName,
-		"id",
-		"users",
-		"id",
 	))
 
 	if filter != nil {

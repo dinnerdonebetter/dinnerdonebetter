@@ -39,8 +39,8 @@ var userCollection = struct {
 		EmailAddress:         "admin@prixfixe.email",
 	},
 	MomJones: &types.UserDatabaseCreationInput{
-		BirthMonth:           nil,
-		BirthDay:             nil,
+		BirthMonth:           uint8p(1),
+		BirthDay:             uint8p(3),
 		ID:                   ksuid.New().String(),
 		HashedPassword:       defaultHashedPassword,
 		TwoFactorSecret:      default2FASekret,
@@ -51,8 +51,8 @@ var userCollection = struct {
 		EmailAddress:         "mom@jones.com",
 	},
 	DadJones: &types.UserDatabaseCreationInput{
-		BirthMonth:           nil,
-		BirthDay:             nil,
+		BirthMonth:           uint8p(2),
+		BirthDay:             uint8p(10),
 		ID:                   ksuid.New().String(),
 		HashedPassword:       defaultHashedPassword,
 		TwoFactorSecret:      default2FASekret,
@@ -63,8 +63,8 @@ var userCollection = struct {
 		EmailAddress:         "dad@jones.com",
 	},
 	KidJones1: &types.UserDatabaseCreationInput{
-		BirthMonth:           nil,
-		BirthDay:             nil,
+		BirthMonth:           uint8p(3),
+		BirthDay:             uint8p(19),
 		ID:                   ksuid.New().String(),
 		HashedPassword:       defaultHashedPassword,
 		TwoFactorSecret:      default2FASekret,
@@ -75,8 +75,8 @@ var userCollection = struct {
 		EmailAddress:         "sally@jones.com",
 	},
 	KidJones2: &types.UserDatabaseCreationInput{
-		BirthMonth:           nil,
-		BirthDay:             nil,
+		BirthMonth:           uint8p(4),
+		BirthDay:             uint8p(26),
 		ID:                   ksuid.New().String(),
 		HashedPassword:       defaultHashedPassword,
 		TwoFactorSecret:      default2FASekret,
