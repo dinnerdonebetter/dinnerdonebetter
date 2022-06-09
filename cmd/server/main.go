@@ -97,6 +97,13 @@ func main() {
 		logger.Error(metricsHandlerErr, "initializing metrics handler")
 	}
 
+	client := &http.Client{Transport: tracing.BuildTracedHTTPTransport(10 * time.Second), Timeout: 10 * time.Second}
+	// should make wire do these someday
+	emailer, emailerSetupErr := cfg.Email.ProvideEmailer(logger, client)
+	if emailerSetupErr != nil {
+		logger.Error(emailerSetupErr, "initializing metrics handler")
+	}
+
 	// only allow initialization to take so long.
 	ctx, cancel := context.WithTimeout(ctx, cfg.Server.StartupDeadline)
 	ctx, initSpan := tracing.StartSpan(ctx)
@@ -109,7 +116,7 @@ func main() {
 
 	// build our server struct.
 	// NOTE: we should, at some point, return a function that we can defer that will end any database connections and such
-	srv, err := server.Build(ctx, logger, cfg, tracerProvider, metricsProvider, metricsHandler, dataManager)
+	srv, err := server.Build(ctx, logger, cfg, tracerProvider, metricsProvider, metricsHandler, dataManager, emailer)
 	if err != nil {
 		logger.Fatal(fmt.Errorf("initializing HTTP server: %w", err))
 	}

@@ -964,6 +964,17 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WithArgs(interfaceToDriverValue(createHouseholdMembershipForNewUserArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
+		invitationStatusUpdateArgs := []interface{}{
+			types.AcceptedHouseholdInvitationStatus,
+			"",
+			exampleHouseholdInvitation.DestinationHousehold,
+			exampleHouseholdInvitation.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(setInvitationStatusQuery)).
+			WithArgs(interfaceToDriverValue(invitationStatusUpdateArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
 		// create household user membership for created user
 		attachInvitationsToUsersArgs := []interface{}{
 			&idMatcher{},

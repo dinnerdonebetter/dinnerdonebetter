@@ -414,6 +414,19 @@ func TestQuerier_getRecipeStepIngredientsForRecipe(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
+
+	T.Run("with missing recipe ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		actual, err := c.getRecipeStepIngredientsForRecipe(ctx, "")
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
 }
 
 func TestQuerier_GetRecipeStepIngredients(T *testing.T) {

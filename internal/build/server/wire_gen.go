@@ -12,6 +12,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/config"
 	"github.com/prixfixeco/api_server/internal/database"
 	config2 "github.com/prixfixeco/api_server/internal/database/config"
+	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	config3 "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -47,7 +48,7 @@ import (
 // Injectors from build.go:
 
 // Build builds a server.
-func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfig, tracerProvider tracing.TracerProvider, unitCounterProvider metrics.UnitCounterProvider, metricsHandler metrics.Handler, dataManager database.DataManager) (*server.HTTPServer, error) {
+func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfig, tracerProvider tracing.TracerProvider, unitCounterProvider metrics.UnitCounterProvider, metricsHandler metrics.Handler, dataManager database.DataManager, emailer email.Emailer) (*server.HTTPServer, error) {
 	serverConfig := cfg.Server
 	servicesConfigurations := &cfg.Services
 	authenticationConfig := &servicesConfigurations.Auth
@@ -94,7 +95,7 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 		return nil, err
 	}
 	householdinvitationsConfig := &servicesConfigurations.HouseholdInvitations
-	householdInvitationDataService, err := householdinvitations.ProvideHouseholdInvitationsService(logger, householdinvitationsConfig, userDataManager, householdInvitationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	householdInvitationDataService, err := householdinvitations.ProvideHouseholdInvitationsService(logger, householdinvitationsConfig, userDataManager, householdInvitationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, emailer)
 	if err != nil {
 		return nil, err
 	}
