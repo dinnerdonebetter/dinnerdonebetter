@@ -199,7 +199,6 @@ linters:
     - ineffassign      # Detects when assignments to existing variables are not used
     - staticcheck      # Staticcheck is a go vet on steroids, applying a ton of static analysis checks
     - structcheck      # Finds unused struct fields
-    - typecheck        # Like the front-end of a Go compiler, parses and type-checks Go code
     - unused           # Checks Go code for unused constants, variables, functions and types
     - varcheck         # Finds unused global variables and constants
     - bodyclose        # checks whether HTTP response body is closed successfully  # NOTE: disabled because of go 1.18
@@ -265,6 +264,7 @@ linters:
     - gocognit         # Computes and checks the cognitive complexity of functions
     - gocyclo          # Computes and checks the cyclomatic complexity of functions
     - nestif           # Reports deeply nested if statements
+    - typecheck        # Like the front-end of a Go compiler, parses and type-checks Go code
     # Normally enabled:
     - dupl             # Tool for code clone detection
     - exhaustivestruct # Checks if all struct's fields are initialized
@@ -284,7 +284,7 @@ linters:
 
 issues:
   # List of regexps of issue texts to exclude, empty list by default.
-  # But independently from this option we use default exclude patterns,
+  # But independently of this option we use default exclude patterns,
   # it can be disabled by `exclude-use-default: false`. To list all
   # excluded by default patterns execute `golangci-lint run --help`
   # exclude:
