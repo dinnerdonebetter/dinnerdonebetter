@@ -20,7 +20,7 @@ var (
 )
 
 type inviteContent struct {
-	BaseURL              string
+	WebAppURL            string
 	Token                string
 	DestinationHousehold string
 }
@@ -34,7 +34,7 @@ func BuildInviteMemberEmail(householdInvitation *types.HouseholdInvitation) (*Ou
 	}
 
 	content := &inviteContent{
-		BaseURL:              envAddr,
+		WebAppURL:            envAddr,
 		Token:                householdInvitation.Token,
 		DestinationHousehold: householdInvitation.DestinationHousehold,
 	}
