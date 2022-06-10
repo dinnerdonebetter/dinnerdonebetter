@@ -137,7 +137,7 @@ docker_lint:
 	docker run --interactive --tty --rm --volume $(PWD):$(PWD) --workdir=$(PWD) openpolicyagent/conftest:v0.21.0 test --policy docker_security.rego `find . -type f -name "*.Dockerfile"`
 
 .PHONY: lint
-lint: pre_lint docker_lint # check_terraform
+lint: docker_lint # check_terraform
 	@docker pull golangci/golangci-lint:v1.46.2
 	docker run \
 		--rm \
