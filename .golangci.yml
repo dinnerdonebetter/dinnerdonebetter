@@ -22,7 +22,7 @@ run:
   #   	vendor$, third_party$, testdata$, examples$, Godeps$, builtin$
   skip-dirs:
     - cmd/tools
-    - cmd/playground
+    - cmd/email_debugger
     - tests/integration
 
   # which files to skip: they will be analyzed, but issues from them
