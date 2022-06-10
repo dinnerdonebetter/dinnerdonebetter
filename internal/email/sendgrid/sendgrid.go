@@ -72,12 +72,13 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundMessageD
 	to := mail.NewEmail(details.ToName, details.ToAddress)
 	from := mail.NewEmail(details.FromName, details.FromAddress)
 	message := mail.NewSingleEmail(from, details.Subject, to, "", details.HTMLContent)
+
 	res, err := e.client.SendWithContext(ctx, message)
 	if err != nil {
 		return observability.PrepareError(err, logger, span, "sending email")
 	}
 
-	if res.StatusCode != http.StatusOK {
+	if res.StatusCode != http.StatusAccepted {
 		return observability.PrepareError(ErrSendgridAPIIssue, logger, span, "sending email yielded a %d response", res.StatusCode)
 	}
 

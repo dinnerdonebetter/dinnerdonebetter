@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/prixfixeco/api_server/internal/email"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
@@ -19,11 +21,10 @@ import (
 
 func buildTestService() *service {
 	return &service{
-		logger:                         logging.NewNoopLogger(),
-		householdInvitationDataManager: &mocktypes.HouseholdInvitationDataManager{},
-		householdInvitationIDFetcher:   func(req *http.Request) string { return "" },
-		encoderDecoder:                 mockencoding.NewMockEncoderDecoder(),
-		tracer:                         tracing.NewTracerForTest("test"),
+		logger:                       logging.NewNoopLogger(),
+		householdInvitationIDFetcher: func(req *http.Request) string { return "" },
+		encoderDecoder:               mockencoding.NewMockEncoderDecoder(),
+		tracer:                       tracing.NewTracerForTest("test"),
 	}
 }
 
@@ -59,6 +60,7 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 			rpm,
 			pp,
 			tracing.NewNoopTracerProvider(),
+			&email.MockEmailer{},
 		)
 
 		assert.NotNil(t, actual)
@@ -86,6 +88,7 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 			nil,
 			pp,
 			tracing.NewNoopTracerProvider(),
+			&email.MockEmailer{},
 		)
 
 		assert.Nil(t, actual)

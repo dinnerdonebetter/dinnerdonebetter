@@ -33,7 +33,7 @@ func TestSendGridEmailer_SendEmail(T *testing.T) {
 		logger := logging.NewNoopLogger()
 
 		ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-			res.WriteHeader(http.StatusOK)
+			res.WriteHeader(http.StatusAccepted)
 		}))
 
 		c, err := NewSendGridEmailer(t.Name(), logger, tracing.NewNoopTracerProvider(), ts.Client())

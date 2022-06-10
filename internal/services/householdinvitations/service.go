@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/prixfixeco/api_server/internal/email"
+
 	"github.com/prixfixeco/api_server/internal/messagequeue"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
@@ -32,6 +34,7 @@ type (
 		householdInvitationDataManager types.HouseholdInvitationDataManager
 		tracer                         tracing.Tracer
 		encoderDecoder                 encoding.ServerEncoderDecoder
+		emailer                        email.Emailer
 		secretGenerator                random.Generator
 		dataChangesPublisher           messagequeue.Publisher
 		householdIDFetcher             func(*http.Request) string
@@ -50,6 +53,7 @@ func ProvideHouseholdInvitationsService(
 	routeParamManager routing.RouteParamManager,
 	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
+	emailer email.Emailer,
 ) (types.HouseholdInvitationDataService, error) {
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
 	if err != nil {
@@ -62,6 +66,7 @@ func ProvideHouseholdInvitationsService(
 		householdInvitationDataManager: householdInvitationDataManager,
 		encoderDecoder:                 encoder,
 		dataChangesPublisher:           dataChangesPublisher,
+		emailer:                        emailer,
 		secretGenerator:                random.NewGenerator(logger, tracerProvider),
 		sessionContextDataFetcher:      authservice.FetchContextFromRequest,
 		householdIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(householdsservice.HouseholdIDURIParamKey),

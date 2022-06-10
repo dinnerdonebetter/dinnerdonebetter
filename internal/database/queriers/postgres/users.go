@@ -532,10 +532,6 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDatabaseCr
 	logger = logger.WithValue(keys.UserIDKey, user.ID)
 	tracing.AttachUserIDToSpan(span, user.ID)
 
-	householdID := ksuid.New().String()
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
-
 	// begin user creation transaction
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -557,7 +553,8 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDatabaseCr
 	}
 
 	if input.InvitationToken != "" && input.DestinationHousehold != "" {
-		if _, tokenCheckErr := q.GetHouseholdInvitationByEmailAndToken(ctx, input.EmailAddress, input.InvitationToken); tokenCheckErr != nil {
+		invitation, tokenCheckErr := q.GetHouseholdInvitationByEmailAndToken(ctx, input.EmailAddress, input.InvitationToken)
+		if tokenCheckErr != nil {
 			q.rollbackTransaction(ctx, tx)
 			return nil, observability.PrepareError(tokenCheckErr, logger, span, "creating user")
 		}
@@ -574,8 +571,17 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDatabaseCr
 			q.rollbackTransaction(ctx, tx)
 			return nil, observability.PrepareError(err, logger, span, "writing destination household membership")
 		}
+
+		if err = q.setInvitationStatus(ctx, tx, invitation.DestinationHousehold, invitation.ID, "", types.AcceptedHouseholdInvitationStatus); err != nil {
+			q.rollbackTransaction(ctx, tx)
+			return nil, observability.PrepareError(err, logger, span, "accepting household invitation")
+		}
 	} else {
 		// standard registration: we need to create the household
+		householdID := ksuid.New().String()
+		logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+		tracing.AttachHouseholdIDToSpan(span, householdID)
+
 		householdCreationInput := types.HouseholdCreationInputForNewUser(user)
 		householdCreationInput.ID = householdID
 

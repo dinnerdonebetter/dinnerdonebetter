@@ -12,6 +12,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/config"
 	"github.com/prixfixeco/api_server/internal/database"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
+	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -53,6 +54,7 @@ func Build(
 	unitCounterProvider metrics.UnitCounterProvider,
 	metricsHandler metrics.Handler,
 	dataManager database.DataManager,
+	emailer email.Emailer,
 ) (*server.HTTPServer, error) {
 	wire.Build(
 		config.Providers,

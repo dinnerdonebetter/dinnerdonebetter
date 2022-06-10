@@ -119,6 +119,11 @@ resource "google_cloud_run_service" "api_server" {
         }
 
         env {
+          name  = "PF_ENVIRONMENT"
+          value = "dev"
+        }
+
+        env {
           name  = "GOOGLE_CLOUD_SECRET_STORE_PREFIX"
           value = format("projects/%d/secrets", data.google_project.project.number)
         }
