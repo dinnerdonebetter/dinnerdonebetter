@@ -5,8 +5,20 @@ on:
 name: Integration Tests
 jobs:
   integration_tests:
+    strategy:
+      matrix:
+        go-version: [ '1.18.x' ]
     runs-on: ubuntu-latest
     steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
+
       - uses: actions/checkout@v2
+
+      - name: Run the integration tests
+        run: make vendor
+
       - name: Run the integration tests
         run: make integration_tests
