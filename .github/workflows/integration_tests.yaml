@@ -1,17 +1,24 @@
-on: [gollum]
+on:
+  pull_request:
+    branches:
+      - dev
 name: Integration Tests
 jobs:
   integration_tests:
+    strategy:
+      matrix:
+        go-version: [ '1.18.x' ]
     runs-on: ubuntu-latest
     steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
+
       - uses: actions/checkout@v2
+
       - name: Run the integration tests
-        run: |
-          docker-compose \
-          --file environments/testing/compose_files/integration-tests.yaml up \
-          --build \
-          --force-recreate \
-          --remove-orphans \
-          --renew-anon-volumes \
-          --always-recreate-deps \
-          --abort-on-container-exit
+        run: make vendor
+
+      - name: Run the integration tests
+        run: make integration_tests

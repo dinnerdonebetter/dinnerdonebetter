@@ -163,6 +163,19 @@ func scaffoldJonesFamily(ctx context.Context, db database.DataManager) error {
 		return fmt.Errorf("creating billy's invite: %w", err)
 	}
 
+	mittensInviteInput := &types.HouseholdInvitationDatabaseCreationInput{
+		ID:                   ksuid.New().String(),
+		FromUser:             momJones.ID,
+		Note:                 "for teh cat",
+		ToEmail:              "mittens@jones.com",
+		Token:                "example_invite_token_mittens",
+		DestinationHousehold: jonesHouseholdID,
+	}
+
+	if _, err = db.CreateHouseholdInvitation(ctx, mittensInviteInput); err != nil {
+		return fmt.Errorf("creating mittens' invite: %w", err)
+	}
+
 	jonesUsers := map[string]userContainer{
 		userCollection.DadJones.Username: {
 			input:  userCollection.DadJones,
