@@ -1,4 +1,7 @@
-on: [gollum]
+on:
+  push:
+    branches:
+      - dev
 name: Integration Tests
 jobs:
   integration_tests:
@@ -6,12 +9,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run the integration tests
-        run: |
-          docker-compose \
-          --file environments/testing/compose_files/integration-tests.yaml up \
-          --build \
-          --force-recreate \
-          --remove-orphans \
-          --renew-anon-volumes \
-          --always-recreate-deps \
-          --abort-on-container-exit
+        run: make integration_tests
