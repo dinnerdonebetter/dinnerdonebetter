@@ -940,6 +940,35 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WithArgs(interfaceToDriverValue(userCreationArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
+		// create household for created user
+		householdCreationInput := types.HouseholdCreationInputForNewUser(exampleUser)
+		householdCreationInput.ID = exampleHousehold.ID
+		householdCreationArgs := []interface{}{
+			&idMatcher{},
+			householdCreationInput.Name,
+			types.UnpaidHouseholdBillingStatus,
+			householdCreationInput.ContactEmail,
+			householdCreationInput.ContactPhone,
+			&idMatcher{},
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(householdCreationQuery)).
+			WithArgs(interfaceToDriverValue(householdCreationArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		// create household user membership for created user
+		createHouseholdMembershipForNewUserArgs := []interface{}{
+			&idMatcher{},
+			&idMatcher{},
+			&idMatcher{},
+			false,
+			authorization.HouseholdAdminRole.String(),
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(createHouseholdMembershipForNewUserQuery)).
+			WithArgs(interfaceToDriverValue(createHouseholdMembershipForNewUserArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
 		args := []interface{}{
 			exampleUserCreationInput.EmailAddress,
 			exampleUserCreationInput.InvitationToken,
@@ -952,7 +981,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WillReturnRows(buildMockRowsFromHouseholdInvitations(false, 0, exampleHouseholdInvitation))
 
 		// create household user membership for created user
-		createHouseholdMembershipForNewUserArgs := []interface{}{
+		createHouseholdMembershipForNewUserArgs = []interface{}{
 			&idMatcher{},
 			&idMatcher{},
 			&idMatcher{},
@@ -1039,6 +1068,35 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WithArgs(interfaceToDriverValue(userCreationArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
+		// create household for created user
+		householdCreationInput := types.HouseholdCreationInputForNewUser(exampleUser)
+		householdCreationInput.ID = exampleHousehold.ID
+		householdCreationArgs := []interface{}{
+			&idMatcher{},
+			householdCreationInput.Name,
+			types.UnpaidHouseholdBillingStatus,
+			householdCreationInput.ContactEmail,
+			householdCreationInput.ContactPhone,
+			&idMatcher{},
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(householdCreationQuery)).
+			WithArgs(interfaceToDriverValue(householdCreationArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		// create household user membership for created user
+		createHouseholdMembershipForNewUserArgs := []interface{}{
+			&idMatcher{},
+			&idMatcher{},
+			&idMatcher{},
+			false,
+			authorization.HouseholdAdminRole.String(),
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(createHouseholdMembershipForNewUserQuery)).
+			WithArgs(interfaceToDriverValue(createHouseholdMembershipForNewUserArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
 		args := []interface{}{
 			exampleUserCreationInput.EmailAddress,
 			exampleUserCreationInput.InvitationToken,
@@ -1100,6 +1158,35 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WithArgs(interfaceToDriverValue(userCreationArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
+		// create household for created user
+		householdCreationInput := types.HouseholdCreationInputForNewUser(exampleUser)
+		householdCreationInput.ID = exampleHousehold.ID
+		householdCreationArgs := []interface{}{
+			&idMatcher{},
+			householdCreationInput.Name,
+			types.UnpaidHouseholdBillingStatus,
+			householdCreationInput.ContactEmail,
+			householdCreationInput.ContactPhone,
+			&idMatcher{},
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(householdCreationQuery)).
+			WithArgs(interfaceToDriverValue(householdCreationArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		// create household user membership for created user
+		createHouseholdMembershipForNewUserArgs := []interface{}{
+			&idMatcher{},
+			&idMatcher{},
+			&idMatcher{},
+			false,
+			authorization.HouseholdAdminRole.String(),
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(createHouseholdMembershipForNewUserQuery)).
+			WithArgs(interfaceToDriverValue(createHouseholdMembershipForNewUserArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
 		args := []interface{}{
 			exampleUserCreationInput.EmailAddress,
 			exampleUserCreationInput.InvitationToken,
@@ -1112,7 +1199,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 			WillReturnRows(buildMockRowsFromHouseholdInvitations(false, 0, exampleHouseholdInvitation))
 
 		// create household user membership for created user
-		createHouseholdMembershipForNewUserArgs := []interface{}{
+		createHouseholdMembershipForNewUserArgs = []interface{}{
 			&idMatcher{},
 			&idMatcher{},
 			&idMatcher{},

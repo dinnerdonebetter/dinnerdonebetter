@@ -552,14 +552,51 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDatabaseCr
 		return nil, observability.PrepareError(writeErr, logger, span, "creating user")
 	}
 
-	if input.InvitationToken != "" && input.DestinationHousehold != "" {
+	hasValidInvite := input.InvitationToken != "" && input.DestinationHousehold != ""
+
+	// standard registration: we need to create the household
+	householdID := ksuid.New().String()
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
+
+	householdCreationInput := types.HouseholdCreationInputForNewUser(user)
+	householdCreationInput.ID = householdID
+
+	householdCreationArgs := []interface{}{
+		householdCreationInput.ID,
+		householdCreationInput.Name,
+		types.UnpaidHouseholdBillingStatus,
+		householdCreationInput.ContactEmail,
+		householdCreationInput.ContactPhone,
+		householdCreationInput.BelongsToUser,
+	}
+
+	if writeErr := q.performWriteQuery(ctx, tx, "household creation", householdCreationQuery, householdCreationArgs); writeErr != nil {
+		q.rollbackTransaction(ctx, tx)
+		return nil, observability.PrepareError(writeErr, logger, span, "create household")
+	}
+
+	createHouseholdMembershipForNewUserArgs := []interface{}{
+		ksuid.New().String(),
+		user.ID,
+		householdID,
+		!hasValidInvite,
+		authorization.HouseholdAdminRole.String(),
+	}
+
+	if err = q.performWriteQuery(ctx, tx, "household user membership creation", createHouseholdMembershipForNewUserQuery, createHouseholdMembershipForNewUserArgs); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return nil, observability.PrepareError(err, logger, span, "writing household user membership")
+	}
+
+	if hasValidInvite {
 		invitation, tokenCheckErr := q.GetHouseholdInvitationByEmailAndToken(ctx, input.EmailAddress, input.InvitationToken)
 		if tokenCheckErr != nil {
 			q.rollbackTransaction(ctx, tx)
 			return nil, observability.PrepareError(tokenCheckErr, logger, span, "creating user")
 		}
 
-		createHouseholdMembershipForNewUserArgs := []interface{}{
+		createHouseholdMembershipForNewUserArgs = []interface{}{
 			ksuid.New().String(),
 			user.ID,
 			input.DestinationHousehold,
@@ -575,41 +612,6 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDatabaseCr
 		if err = q.setInvitationStatus(ctx, tx, invitation.DestinationHousehold, invitation.ID, "", types.AcceptedHouseholdInvitationStatus); err != nil {
 			q.rollbackTransaction(ctx, tx)
 			return nil, observability.PrepareError(err, logger, span, "accepting household invitation")
-		}
-	} else {
-		// standard registration: we need to create the household
-		householdID := ksuid.New().String()
-		logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-		tracing.AttachHouseholdIDToSpan(span, householdID)
-
-		householdCreationInput := types.HouseholdCreationInputForNewUser(user)
-		householdCreationInput.ID = householdID
-
-		householdCreationArgs := []interface{}{
-			householdCreationInput.ID,
-			householdCreationInput.Name,
-			types.UnpaidHouseholdBillingStatus,
-			householdCreationInput.ContactEmail,
-			householdCreationInput.ContactPhone,
-			householdCreationInput.BelongsToUser,
-		}
-
-		if writeErr := q.performWriteQuery(ctx, tx, "household creation", householdCreationQuery, householdCreationArgs); writeErr != nil {
-			q.rollbackTransaction(ctx, tx)
-			return nil, observability.PrepareError(writeErr, logger, span, "create household")
-		}
-
-		createHouseholdMembershipForNewUserArgs := []interface{}{
-			ksuid.New().String(),
-			user.ID,
-			householdID,
-			true,
-			authorization.HouseholdAdminRole.String(),
-		}
-
-		if err = q.performWriteQuery(ctx, tx, "household user membership creation", createHouseholdMembershipForNewUserQuery, createHouseholdMembershipForNewUserArgs); err != nil {
-			q.rollbackTransaction(ctx, tx)
-			return nil, observability.PrepareError(err, logger, span, "writing household user membership")
 		}
 	}
 
