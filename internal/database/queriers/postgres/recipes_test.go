@@ -263,6 +263,146 @@ func TestQuerier_RecipeExists(T *testing.T) {
 	})
 }
 
+func TestQuerier_getRecipe(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipe := fakes.BuildFakeRecipe()
+		exampleUserID := fakes.BuildFakeID()
+		exampleRecipe.Steps = []*types.RecipeStep{
+			fakes.BuildFakeRecipeStep(),
+			fakes.BuildFakeRecipeStep(),
+			fakes.BuildFakeRecipeStep(),
+		}
+
+		allIngredients := []*types.RecipeStepIngredient{}
+		allProducts := []*types.RecipeStepProduct{}
+		for _, step := range exampleRecipe.Steps {
+			allIngredients = append(allIngredients, step.Ingredients...)
+			allProducts = append(allProducts, step.Products...)
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{
+			exampleRecipe.ID,
+			exampleRecipe.ID,
+			exampleUserID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getRecipeByIDAndAuthorIDQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockFullRowsFromRecipe(exampleRecipe))
+
+		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
+		db.ExpectQuery(formatQueryForSQLMock(query)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromRecipeStepIngredients(false, 0, allIngredients...))
+
+		productsArgs := []interface{}{
+			exampleRecipe.ID,
+			exampleRecipe.ID,
+		}
+		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).
+			WithArgs(interfaceToDriverValue(productsArgs)...).
+			WillReturnRows(buildMockRowsFromRecipeStepProducts(false, 0, allProducts...))
+
+		actual, err := c.getRecipe(ctx, exampleRecipe.ID, exampleUserID)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleRecipe, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error fetching recipe step ingredients", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipe := fakes.BuildFakeRecipe()
+		exampleUserID := fakes.BuildFakeID()
+		exampleRecipe.Steps = []*types.RecipeStep{
+			fakes.BuildFakeRecipeStep(),
+			fakes.BuildFakeRecipeStep(),
+			fakes.BuildFakeRecipeStep(),
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{
+			exampleRecipe.ID,
+			exampleRecipe.ID,
+			exampleUserID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getRecipeByIDAndAuthorIDQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockFullRowsFromRecipe(exampleRecipe))
+
+		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
+		db.ExpectQuery(formatQueryForSQLMock(query)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.getRecipe(ctx, exampleRecipe.ID, exampleUserID)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error retrieving recipe step products", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipe := fakes.BuildFakeRecipe()
+		exampleUserID := fakes.BuildFakeID()
+		exampleRecipe.Steps = []*types.RecipeStep{
+			fakes.BuildFakeRecipeStep(),
+			fakes.BuildFakeRecipeStep(),
+			fakes.BuildFakeRecipeStep(),
+		}
+
+		allIngredients := []*types.RecipeStepIngredient{}
+		for _, step := range exampleRecipe.Steps {
+			allIngredients = append(allIngredients, step.Ingredients...)
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{
+			exampleRecipe.ID,
+			exampleRecipe.ID,
+			exampleUserID,
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(getRecipeByIDAndAuthorIDQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockFullRowsFromRecipe(exampleRecipe))
+
+		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
+		db.ExpectQuery(formatQueryForSQLMock(query)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromRecipeStepIngredients(false, 0, allIngredients...))
+
+		productsArgs := []interface{}{
+			exampleRecipe.ID,
+			exampleRecipe.ID,
+		}
+		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).
+			WithArgs(interfaceToDriverValue(productsArgs)...).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.getRecipe(ctx, exampleRecipe.ID, exampleUserID)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_GetRecipe(T *testing.T) {
 	T.Parallel()
 

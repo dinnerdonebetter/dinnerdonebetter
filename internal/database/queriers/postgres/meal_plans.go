@@ -678,7 +678,7 @@ func (q *SQLQuerier) FinalizeMealPlanWithExpiredVotingPeriod(ctx context.Context
 		for _, mealName := range allMealNames {
 			options := byDayAndMeal(mealPlan.Options, day, mealName)
 			if len(options) > 0 {
-				winner, tiebroken, chosen := q.decideOptionWinner(options)
+				winner, tiebroken, chosen := q.decideOptionWinner(ctx, options)
 
 				if chosen {
 					args := []interface{}{

@@ -104,10 +104,6 @@ func (q *SQLQuerier) buildTotalCountQueryWithILike(
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if where == nil {
-		where = squirrel.ILike{}
-	}
-
 	totalCountQueryBuilder := q.sqlBuilder.
 		PlaceholderFormat(squirrel.Question).
 		Select(fmt.Sprintf(columnCountQueryTemplate, tableName)).
@@ -128,7 +124,10 @@ func (q *SQLQuerier) buildTotalCountQueryWithILike(
 		equalsWhere[fmt.Sprintf("%s.archived_on", tableName)] = nil
 	}
 
-	totalCountQueryBuilder = totalCountQueryBuilder.Where(where)
+	if where != nil {
+		totalCountQueryBuilder = totalCountQueryBuilder.Where(where)
+	}
+
 	if len(equalsWhere) > 0 {
 		totalCountQueryBuilder = totalCountQueryBuilder.Where(equalsWhere)
 	}
@@ -204,10 +203,6 @@ func (q *SQLQuerier) buildFilteredCountQueryWithILike(
 
 	if filter != nil {
 		tracing.AttachFilterToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
-	}
-
-	if where == nil {
-		where = squirrel.ILike{}
 	}
 
 	filteredCountQueryBuilder := q.sqlBuilder.

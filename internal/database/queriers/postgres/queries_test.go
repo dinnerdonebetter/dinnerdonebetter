@@ -5,6 +5,8 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/prixfixeco/api_server/pkg/types"
+
 	"github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/assert"
 
@@ -267,6 +269,64 @@ func TestPostgres_buildListQueryWithILike(T *testing.T) {
 		actualQuery, actualArgs := q.buildListQueryWithILike(ctx, exampleTableName, exampleJoins, nil, exampleWhere, exampleOwnershipColumn, exampleColumns, exampleUser.ID, true, filter)
 
 		assertArgCountMatchesQuery(t, actualQuery, actualArgs)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+}
+
+func TestSQLQuerier_buildTotalCountQueryWithILike(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		q, _ := buildTestClient(t)
+
+		expectedValue := "stuff"
+
+		expectedQuery := "SELECT COUNT(table.id) FROM table JOIN thing on another thing WHERE things ILIKE ? AND table.archived_on IS NULL"
+		expectedArgs := []interface{}{
+			expectedValue,
+		}
+
+		actualQuery, actualArgs := q.buildTotalCountQueryWithILike(ctx, "table", []string{"thing on another thing"}, squirrel.ILike{"things": expectedValue}, "belongs_to_user", "user_id", true, false)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+
+	T.Run("with nil where", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		q, _ := buildTestClient(t)
+
+		expectedQuery := "SELECT COUNT(table.id) FROM table JOIN thing on another thing WHERE table.archived_on IS NULL"
+		expectedArgs := []interface{}(nil)
+
+		actualQuery, actualArgs := q.buildTotalCountQueryWithILike(ctx, "table", []string{"thing on another thing"}, nil, "belongs_to_user", "user_id", true, false)
+		assert.Equal(t, expectedQuery, actualQuery)
+		assert.Equal(t, expectedArgs, actualArgs)
+	})
+}
+
+func TestSQLQuerier_buildFilteredCountQueryWithILike(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		q, _ := buildTestClient(t)
+
+		expectedValue := "stuff"
+
+		expectedQuery := "SELECT COUNT(table.id) FROM table JOIN thing on another thing WHERE things ILIKE ? AND table.archived_on IS NULL"
+		expectedArgs := []interface{}{
+			expectedValue,
+		}
+
+		actualQuery, actualArgs := q.buildFilteredCountQueryWithILike(ctx, "table", []string{"thing on another thing"}, squirrel.ILike{"things": expectedValue}, "belongs_to_user", "user_id", true, false, types.DefaultQueryFilter())
 		assert.Equal(t, expectedQuery, actualQuery)
 		assert.Equal(t, expectedArgs, actualArgs)
 	})

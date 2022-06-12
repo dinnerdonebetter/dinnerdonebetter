@@ -165,11 +165,9 @@ const getRecipeByIDAndAuthorIDQuery = getRecipeByIDQuery + `
 `
 
 // scanRecipeAndStep takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe struct.
-func (q *SQLQuerier) scanRecipeAndStep(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.Recipe, y *types.RecipeStep, filteredCount, totalCount uint64, err error) {
+func (q *SQLQuerier) scanRecipeAndStep(ctx context.Context, scan database.Scanner) (x *types.Recipe, y *types.RecipeStep, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := q.logger.WithValue("include_counts", includeCounts)
 
 	x = &types.Recipe{}
 	y = &types.RecipeStep{}
@@ -205,12 +203,8 @@ func (q *SQLQuerier) scanRecipeAndStep(ctx context.Context, scan database.Scanne
 		&y.BelongsToRecipe,
 	}
 
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
-	}
-
 	if err = scan.Scan(targetVars...); err != nil {
-		return nil, nil, 0, 0, observability.PrepareError(err, logger, span, "")
+		return nil, nil, 0, 0, observability.PrepareError(err, q.logger, span, "")
 	}
 
 	return x, y, filteredCount, totalCount, nil
@@ -247,7 +241,7 @@ func (q *SQLQuerier) getRecipe(ctx context.Context, recipeID, userID string) (*t
 
 	var x *types.Recipe
 	for rows.Next() {
-		recipe, recipeStep, _, _, recipeScanErr := q.scanRecipeAndStep(ctx, rows, false)
+		recipe, recipeStep, _, _, recipeScanErr := q.scanRecipeAndStep(ctx, rows)
 		if recipeScanErr != nil {
 			return nil, observability.PrepareError(recipeScanErr, logger, span, "scanning recipe")
 		}

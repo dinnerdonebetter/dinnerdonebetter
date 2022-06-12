@@ -666,9 +666,13 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 		exampleRecipeStep.Preparation = types.ValidPreparation{}
 		for i := range exampleRecipeStep.Ingredients {
 			exampleRecipeStep.Ingredients[i].ID = "3"
-			exampleRecipeStep.Ingredients[i].BelongsToRecipeStep = "2"
+			exampleRecipeStep.Ingredients[i].BelongsToRecipeStep = exampleRecipeStep.ID
 			exampleRecipeStep.Ingredients[i].Ingredient = types.ValidIngredient{}
-			exampleRecipeStep.Products = nil
+		}
+
+		for i := range exampleRecipeStep.Products {
+			exampleRecipeStep.Products[i].ID = "3"
+			exampleRecipeStep.Products[i].BelongsToRecipeStep = exampleRecipeStep.ID
 		}
 
 		exampleInput := fakes.BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(exampleRecipeStep)
@@ -707,6 +711,19 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 
 			db.ExpectExec(formatQueryForSQLMock(recipeStepIngredientCreationQuery)).
 				WithArgs(interfaceToDriverValue(recipeStepIngredientCreationArgs)...).
+				WillReturnResult(newArbitraryDatabaseResult())
+		}
+
+		for _, product := range exampleInput.Products {
+			args := []interface{}{
+				product.ID,
+				product.Name,
+				product.RecipeStepID,
+				product.BelongsToRecipeStep,
+			}
+
+			db.ExpectExec(formatQueryForSQLMock(recipeStepProductCreationQuery)).
+				WithArgs(interfaceToDriverValue(args)...).
 				WillReturnResult(newArbitraryDatabaseResult())
 		}
 
@@ -769,6 +786,85 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(recipeStepIngredientCreationQuery)).
 			WithArgs(interfaceToDriverValue(recipeStepIngredientCreationArgs)...).
+			WillReturnError(errors.New("blah"))
+
+		c.timeFunc = func() uint64 {
+			return exampleRecipeStep.CreatedOn
+		}
+
+		actual, err := c.createRecipeStep(ctx, c.db, exampleInput)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error creating recipe step product", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipeStep := fakes.BuildFakeRecipeStep()
+		exampleRecipeStep.ID = "2"
+		exampleRecipeStep.BelongsToRecipe = "1"
+		exampleRecipeStep.Preparation = types.ValidPreparation{}
+		for i := range exampleRecipeStep.Ingredients {
+			exampleRecipeStep.Ingredients[i].ID = "3"
+			exampleRecipeStep.Ingredients[i].BelongsToRecipeStep = exampleRecipeStep.ID
+			exampleRecipeStep.Ingredients[i].Ingredient = types.ValidIngredient{}
+		}
+
+		for i := range exampleRecipeStep.Products {
+			exampleRecipeStep.Products[i].ID = "3"
+			exampleRecipeStep.Products[i].BelongsToRecipeStep = exampleRecipeStep.ID
+		}
+
+		exampleInput := fakes.BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(exampleRecipeStep)
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		recipeStepCreationArgs := []interface{}{
+			exampleInput.ID,
+			exampleInput.Index,
+			exampleInput.PreparationID,
+			exampleInput.PrerequisiteStep,
+			exampleInput.MinEstimatedTimeInSeconds,
+			exampleInput.MaxEstimatedTimeInSeconds,
+			exampleInput.TemperatureInCelsius,
+			exampleInput.Notes,
+			exampleInput.Optional,
+			exampleInput.BelongsToRecipe,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(recipeStepCreationQuery)).
+			WithArgs(interfaceToDriverValue(recipeStepCreationArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		for _, ingredient := range exampleInput.Ingredients {
+			recipeStepIngredientCreationArgs := []interface{}{
+				ingredient.ID,
+				ingredient.IngredientID,
+				ingredient.QuantityType,
+				ingredient.QuantityValue,
+				ingredient.QuantityNotes,
+				ingredient.ProductOfRecipe,
+				ingredient.IngredientNotes,
+				ingredient.BelongsToRecipeStep,
+			}
+
+			db.ExpectExec(formatQueryForSQLMock(recipeStepIngredientCreationQuery)).
+				WithArgs(interfaceToDriverValue(recipeStepIngredientCreationArgs)...).
+				WillReturnResult(newArbitraryDatabaseResult())
+		}
+
+		args := []interface{}{
+			exampleInput.Products[0].ID,
+			exampleInput.Products[0].Name,
+			exampleInput.Products[0].RecipeStepID,
+			exampleInput.Products[0].BelongsToRecipeStep,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(recipeStepProductCreationQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
 		c.timeFunc = func() uint64 {
