@@ -41,6 +41,17 @@ type (
 		QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row
 	}
 
+	// SQLTransactionManager is a subset interface for sql.{DB|Tx} objects.
+	SQLTransactionManager interface {
+		Rollback() error
+	}
+
+	// SQLQueryExecutorAndTransactionManager is a subset interface for sql.{DB|Tx} objects.
+	SQLQueryExecutorAndTransactionManager interface {
+		SQLQueryExecutor
+		SQLTransactionManager
+	}
+
 	// MetricsCollectionInterval defines the interval at which we collect database metrics.
 	MetricsCollectionInterval time.Duration
 

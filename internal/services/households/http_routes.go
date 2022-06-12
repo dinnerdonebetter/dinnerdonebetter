@@ -552,6 +552,8 @@ func (s *service) RemoveMemberHandler(res http.ResponseWriter, req *http.Request
 		return
 	}
 
+	logger.Info("user removed from household")
+
 	if s.dataChangesPublisher != nil {
 		dcm := &types.DataChangeMessage{
 			DataType:                  types.UserMembershipDataType,

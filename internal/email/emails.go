@@ -11,7 +11,8 @@ import (
 )
 
 var urlMap = map[string]string{
-	"dev": "https://www.prixfixe.dev",
+	"dev":     "https://www.prixfixe.dev",
+	"testing": "https://not.real.lol",
 }
 
 var (
@@ -28,6 +29,10 @@ type inviteContent struct {
 // BuildInviteMemberEmail builds an email notifying a user that they've been invited to join a household.
 func BuildInviteMemberEmail(householdInvitation *types.HouseholdInvitation) (*OutboundMessageDetails, error) {
 	env := os.Getenv("PF_ENVIRONMENT")
+	if env == "" {
+		env = "testing"
+	}
+
 	envAddr, ok := urlMap[env]
 	if !ok {
 		return nil, fmt.Errorf("no available URL for")

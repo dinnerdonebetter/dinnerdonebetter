@@ -82,7 +82,7 @@ func ProvideDatabaseClient(
 		logQueries:    false,
 		timeFunc:      defaultTimeFunc,
 		connectionURL: string(cfg.ConnectionDetails),
-		logger:        logging.EnsureLogger(logger),
+		logger:        logging.EnsureLogger(logger).WithName("querier"),
 		sqlBuilder:    squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
 	}
 
@@ -175,9 +175,11 @@ func (q *SQLQuerier) checkRowsForErrorAndClose(ctx context.Context, rows databas
 	return nil
 }
 
-func (q *SQLQuerier) rollbackTransaction(ctx context.Context, tx *sql.Tx) {
+func (q *SQLQuerier) rollbackTransaction(ctx context.Context, tx database.SQLQueryExecutorAndTransactionManager) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	q.logger.Debug("rolling back transaction")
 
 	if err := tx.Rollback(); err != nil {
 		observability.AcknowledgeError(err, q.logger, span, "rolling back transaction")

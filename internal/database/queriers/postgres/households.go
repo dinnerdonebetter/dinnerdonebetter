@@ -418,11 +418,11 @@ func (q *SQLQuerier) buildGetHouseholdsQuery(ctx context.Context, userID string,
 }
 
 // getHouseholds fetches a list of households from the database that meet a particular filter.
-func (q *SQLQuerier) getHouseholds(ctx context.Context, userID string, forAdmin bool, filter *types.QueryFilter) (x *types.HouseholdList, err error) {
+func (q *SQLQuerier) getHouseholds(ctx context.Context, querier database.SQLQueryExecutor, userID string, forAdmin bool, filter *types.QueryFilter) (x *types.HouseholdList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if userID == "" {
+	if userID == "" && !forAdmin {
 		return nil, ErrInvalidIDProvided
 	}
 
@@ -437,7 +437,7 @@ func (q *SQLQuerier) getHouseholds(ctx context.Context, userID string, forAdmin 
 
 	query, args := q.buildGetHouseholdsQuery(ctx, userID, forAdmin, filter)
 
-	rows, err := q.performReadQuery(ctx, q.db, "households", query, args)
+	rows, err := q.performReadQuery(ctx, querier, "households", query, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "executing households list retrieval query")
 	}
@@ -451,12 +451,12 @@ func (q *SQLQuerier) getHouseholds(ctx context.Context, userID string, forAdmin 
 
 // GetHouseholds fetches a list of households from the database that meet a particular filter.
 func (q *SQLQuerier) GetHouseholds(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.HouseholdList, err error) {
-	return q.getHouseholds(ctx, userID, false, filter)
+	return q.getHouseholds(ctx, q.db, userID, false, filter)
 }
 
 // GetHouseholdsForAdmin fetches a list of households from the database that meet a particular filter for all users.
 func (q *SQLQuerier) GetHouseholdsForAdmin(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.HouseholdList, err error) {
-	return q.getHouseholds(ctx, userID, true, filter)
+	return q.getHouseholds(ctx, q.db, userID, true, filter)
 }
 
 const householdCreationQuery = `

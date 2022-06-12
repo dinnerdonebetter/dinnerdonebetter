@@ -754,8 +754,11 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 		ctx := context.Background()
 		exampleUserID := fakes.BuildFakeID()
 		exampleHouseholdID := fakes.BuildFakeID()
+		exampleHouseholdList := fakes.BuildFakeHouseholdList()
 
 		c, db := buildTestClient(t)
+
+		db.ExpectBegin()
 
 		args := []interface{}{
 			exampleHouseholdID,
@@ -765,6 +768,24 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 		db.ExpectExec(formatQueryForSQLMock(removeUserFromHouseholdQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnResult(newArbitraryDatabaseResult())
+
+		query, args := c.buildGetHouseholdsQuery(ctx, exampleUserID, false, nil)
+
+		db.ExpectQuery(formatQueryForSQLMock(query)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromHouseholds(true, 0, exampleHouseholdList.Households...))
+
+		markHouseholdAsUserDefaultArgs := []interface{}{
+			exampleUserID,
+			exampleHouseholdList.Households[0].ID,
+			exampleUserID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(markHouseholdAsUserDefaultQuery)).
+			WithArgs(interfaceToDriverValue(markHouseholdAsUserDefaultArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		db.ExpectCommit()
 
 		assert.NoError(t, c.RemoveUserFromHousehold(ctx, exampleUserID, exampleHouseholdID))
 	})
