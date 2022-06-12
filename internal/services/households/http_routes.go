@@ -157,6 +157,7 @@ func (s *service) CurrentInfoHandler(res http.ResponseWriter, req *http.Request)
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
+		logger.Info("session context data missing from request")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
 		return
 	}
@@ -173,9 +174,11 @@ func (s *service) CurrentInfoHandler(res http.ResponseWriter, req *http.Request)
 	// fetch household from database.
 	household, err := s.householdDataManager.GetHousehold(ctx, householdID, requester)
 	if errors.Is(err, sql.ErrNoRows) {
+		logger.Info("household ID is invalid")
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	} else if err != nil {
+		logger.Info("something is fucked!")
 		observability.AcknowledgeError(err, logger, span, "fetching household from database")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return

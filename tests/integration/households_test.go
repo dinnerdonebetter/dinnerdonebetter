@@ -3,6 +3,8 @@ package integration
 import (
 	"testing"
 
+	testutils "github.com/prixfixeco/api_server/tests/utils"
+
 	"github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/require"
 
@@ -834,6 +836,90 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 			// Clean up.
 			require.Error(t, testClients.main.ArchiveWebhook(ctx, createdWebhook.ID))
 			require.NoError(t, testClients.admin.ArchiveUser(ctx, futureOwner.ID))
+		}
+	})
+}
+
+func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRemovedFromLastHousehold() {
+	s.runForEachClient("should be possible to invite a user via referral link", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			t.Logf("determining household ID")
+			currentStatus, statusErr := testClients.main.UserStatus(s.ctx)
+			requireNotNilAndNoProblems(t, currentStatus, statusErr)
+			relevantHouseholdID := currentStatus.ActiveHousehold
+			t.Logf("initial household is %s; initial user ID is %s", relevantHouseholdID, s.user.ID)
+
+			t.Logf("inviting user")
+			inviteReq := &types.HouseholdInvitationCreationRequestInput{
+				FromUser:             s.user.ID,
+				Note:                 t.Name(),
+				ToEmail:              gofakeit.Email(),
+				DestinationHousehold: relevantHouseholdID,
+			}
+			createdInvitation, err := testClients.main.InviteUserToHousehold(ctx, inviteReq)
+			require.NoError(t, err)
+
+			createdInvitation, err = testClients.main.GetHouseholdInvitation(ctx, relevantHouseholdID, createdInvitation.ID)
+			requireNotNilAndNoProblems(t, createdInvitation, err)
+
+			t.Logf("checking for sent invitation")
+			sentInvitations, err := testClients.main.GetPendingHouseholdInvitationsFromUser(ctx, nil)
+			requireNotNilAndNoProblems(t, sentInvitations, err)
+			assert.NotEmpty(t, sentInvitations.HouseholdInvitations)
+
+			t.Logf("creating user to invite")
+
+			regInput := &types.UserRegistrationInput{
+				EmailAddress:         inviteReq.ToEmail,
+				Username:             fakes.BuildFakeUser().Username,
+				Password:             gofakeit.Password(true, true, true, true, false, 64),
+				DestinationHousehold: relevantHouseholdID,
+				InvitationToken:      createdInvitation.Token,
+			}
+			u, _, c, _ := createUserAndClientForTest(ctx, t, regInput)
+
+			t.Logf("fetching households")
+			households, err := c.GetHouseholds(ctx, nil)
+			require.NoError(t, err)
+
+			assert.Len(t, households.Households, 2)
+
+			var (
+				found            bool
+				otherHouseholdID string
+			)
+
+			for _, household := range households.Households {
+				if household.ID == relevantHouseholdID {
+					if !found {
+						found = true
+					}
+				} else {
+					otherHouseholdID = household.ID
+				}
+			}
+
+			require.NotEmpty(t, otherHouseholdID)
+			require.True(t, found)
+
+			require.NoError(t, testClients.main.RemoveUserFromHousehold(ctx, relevantHouseholdID, u.ID))
+
+			u.HashedPassword = regInput.Password
+
+			newCookie, err := testutils.GetLoginCookie(ctx, urlToUse, u)
+			require.NoError(t, err)
+
+			require.NoError(t, c.SetOptions(httpclient.UsingCookie(newCookie)))
+
+			household, err := c.GetCurrentHousehold(ctx)
+			requireNotNilAndNoProblems(t, household, err)
+
+			require.True(t, found)
 		}
 	})
 }

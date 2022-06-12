@@ -42,18 +42,3 @@ func TestAcknowledgeError(T *testing.T) {
 		AcknowledgeError(err, logger, span, descriptionFmt, descriptionArgs)
 	})
 }
-
-func TestNoteEvent(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		descriptionFmt, descriptionArgs := "things and %s", "stuff"
-		logger := logging.NewNoopLogger()
-		_, span := tracing.StartSpan(ctx)
-
-		NoteEvent(logger, span, descriptionFmt, descriptionArgs)
-	})
-}
