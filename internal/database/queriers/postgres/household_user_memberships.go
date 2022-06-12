@@ -430,7 +430,9 @@ func (q *SQLQuerier) addUserToHousehold(ctx context.Context, querier database.SQ
 }
 
 const removeUserFromHouseholdQuery = `
-	DELETE FROM household_user_memberships 
+	UPDATE household_user_memberships
+	SET archived_on = extract(epoch from NOW()), 
+		default_household = 'false'
 	WHERE household_user_memberships.archived_on IS NULL
 	AND household_user_memberships.belongs_to_household = $1 
 	AND household_user_memberships.belongs_to_user = $2
