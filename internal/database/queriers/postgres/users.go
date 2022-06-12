@@ -544,7 +544,7 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDatabaseCr
 
 		var e *pq.Error
 		if errors.As(writeErr, &e) {
-			if e.Code == "23505" {
+			if e.Code == postgresDuplicateEntryErrorCode {
 				return nil, database.ErrUserAlreadyExists
 			}
 		}
@@ -589,10 +589,10 @@ func (q *SQLQuerier) createHouseholdForUser(ctx context.Context, querier databas
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	householdCreationInput := &types.HouseholdCreationRequestInput{
+		ID:            householdID,
 		Name:          fmt.Sprintf("%s_default", userID),
 		BelongsToUser: userID,
 	}
-	householdCreationInput.ID = householdID
 
 	householdCreationArgs := []interface{}{
 		householdCreationInput.ID,
@@ -619,39 +619,6 @@ func (q *SQLQuerier) createHouseholdForUser(ctx context.Context, querier databas
 	if err := q.performWriteQuery(ctx, querier, "household user membership creation", createHouseholdMembershipForNewUserQuery, createHouseholdMembershipForNewUserArgs); err != nil {
 		q.rollbackTransaction(ctx, querier)
 		return observability.PrepareError(err, logger, span, "writing household user membership")
-	}
-
-	return nil
-}
-
-func (q *SQLQuerier) acceptInvitationForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.UserDatabaseCreationInput, userID string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.WithValue(keys.UsernameKey, input.Username)
-
-	invitation, tokenCheckErr := q.GetHouseholdInvitationByEmailAndToken(ctx, input.EmailAddress, input.InvitationToken)
-	if tokenCheckErr != nil {
-		q.rollbackTransaction(ctx, querier)
-		return observability.PrepareError(tokenCheckErr, logger, span, "fetching household invitation")
-	}
-
-	createHouseholdMembershipForNewUserArgs := []interface{}{
-		ksuid.New().String(),
-		userID,
-		input.DestinationHousehold,
-		true,
-		authorization.HouseholdMemberRole.String(),
-	}
-
-	if err := q.performWriteQuery(ctx, querier, "household user membership creation", createHouseholdMembershipForNewUserQuery, createHouseholdMembershipForNewUserArgs); err != nil {
-		q.rollbackTransaction(ctx, querier)
-		return observability.PrepareError(err, logger, span, "writing destination household membership")
-	}
-
-	if err := q.setInvitationStatus(ctx, querier, invitation.DestinationHousehold, invitation.ID, "", types.AcceptedHouseholdInvitationStatus); err != nil {
-		q.rollbackTransaction(ctx, querier)
-		return observability.PrepareError(err, logger, span, "accepting household invitation")
 	}
 
 	return nil

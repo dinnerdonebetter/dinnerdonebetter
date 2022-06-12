@@ -137,14 +137,14 @@ func (q *SQLQuerier) BuildSessionContextDataForUser(ctx context.Context, userID 
 
 	getHouseholdMembershipsArgs := []interface{}{userID}
 
-	membershipRows, err := q.performReadQuery(ctx, q.db, "household memberships for user", getHouseholdMembershipsForUserQuery, getHouseholdMembershipsArgs)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching user's memberships from database")
+	membershipRows, membershipReadErr := q.performReadQuery(ctx, q.db, "household memberships for user", getHouseholdMembershipsForUserQuery, getHouseholdMembershipsArgs)
+	if membershipReadErr != nil {
+		return nil, observability.PrepareError(membershipReadErr, logger, span, "fetching user's memberships from database")
 	}
 
-	defaultHouseholdID, householdRolesMap, err := q.scanHouseholdUserMemberships(ctx, membershipRows)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning user's memberships from database")
+	defaultHouseholdID, householdRolesMap, membershipsScanErr := q.scanHouseholdUserMemberships(ctx, membershipRows)
+	if membershipsScanErr != nil {
+		return nil, observability.PrepareError(membershipsScanErr, logger, span, "scanning user's memberships from database")
 	}
 
 	actualHouseholdRolesMap := map[string]authorization.HouseholdRolePermissionsChecker{}
@@ -491,6 +491,7 @@ func (q *SQLQuerier) RemoveUserFromHousehold(ctx context.Context, userID, househ
 		if err := q.createHouseholdForUser(ctx, tx, false, userID); err != nil {
 			return observability.PrepareError(err, logger, span, "creating household for new user")
 		}
+		return nil
 	}
 
 	household := remainingHouseholds.Households[0]

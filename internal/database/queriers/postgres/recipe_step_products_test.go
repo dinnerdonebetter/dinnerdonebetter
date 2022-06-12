@@ -386,6 +386,65 @@ func TestQuerier_getRecipeStepProductsForRecipe(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
+
+	T.Run("with missing recipe ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		actual, err := c.getRecipeStepProductsForRecipe(ctx, "")
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipeID := fakes.BuildFakeID()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{
+			exampleRecipeID,
+			exampleRecipeID,
+		}
+		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.getRecipeStepProductsForRecipe(ctx, exampleRecipeID)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error scanning query results", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipeID := fakes.BuildFakeID()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{
+			exampleRecipeID,
+			exampleRecipeID,
+		}
+		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildInvalidMockRowsFromListOfIDs([]string{"whatever"}))
+
+		actual, err := c.getRecipeStepProductsForRecipe(ctx, exampleRecipeID)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
 }
 
 func TestQuerier_GetRecipeStepProducts(T *testing.T) {

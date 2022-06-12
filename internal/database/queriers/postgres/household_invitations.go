@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/prixfixeco/api_server/internal/authorization"
+
 	"github.com/Masterminds/squirrel"
 	"github.com/segmentio/ksuid"
 
@@ -587,6 +589,39 @@ func (q *SQLQuerier) attachInvitationsToUser(ctx context.Context, querier databa
 	}
 
 	logger.Info("invitations associated with user")
+
+	return nil
+}
+
+func (q *SQLQuerier) acceptInvitationForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.UserDatabaseCreationInput, userID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.WithValue(keys.UsernameKey, input.Username)
+
+	invitation, tokenCheckErr := q.GetHouseholdInvitationByEmailAndToken(ctx, input.EmailAddress, input.InvitationToken)
+	if tokenCheckErr != nil {
+		q.rollbackTransaction(ctx, querier)
+		return observability.PrepareError(tokenCheckErr, logger, span, "fetching household invitation")
+	}
+
+	createHouseholdMembershipForNewUserArgs := []interface{}{
+		ksuid.New().String(),
+		userID,
+		input.DestinationHousehold,
+		true,
+		authorization.HouseholdMemberRole.String(),
+	}
+
+	if err := q.performWriteQuery(ctx, querier, "household user membership creation", createHouseholdMembershipForNewUserQuery, createHouseholdMembershipForNewUserArgs); err != nil {
+		q.rollbackTransaction(ctx, querier)
+		return observability.PrepareError(err, logger, span, "writing destination household membership")
+	}
+
+	if err := q.setInvitationStatus(ctx, querier, invitation.DestinationHousehold, invitation.ID, "", types.AcceptedHouseholdInvitationStatus); err != nil {
+		q.rollbackTransaction(ctx, querier)
+		return observability.PrepareError(err, logger, span, "accepting household invitation")
+	}
 
 	return nil
 }

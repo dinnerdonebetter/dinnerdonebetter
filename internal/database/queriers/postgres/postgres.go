@@ -25,6 +25,9 @@ import (
 const (
 	name        = "db_client"
 	tracingName = name
+
+	// https://www.postgresql.org/docs/current/errcodes-appendix.html
+	postgresDuplicateEntryErrorCode = "23505"
 )
 
 var _ database.DataManager = (*SQLQuerier)(nil)

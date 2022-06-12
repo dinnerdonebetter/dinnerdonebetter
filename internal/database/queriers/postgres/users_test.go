@@ -8,6 +8,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/lib/pq"
+
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -478,6 +480,86 @@ func TestQuerier_GetUserByUsername(T *testing.T) {
 	})
 }
 
+func TestQuerier_GetAdminUserByUsername(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleUser := fakes.BuildFakeUser()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{exampleUser.Username}
+
+		db.ExpectQuery(formatQueryForSQLMock(getAdminUserByUsernameQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromUsers(false, 0, exampleUser))
+
+		actual, err := c.GetAdminUserByUsername(ctx, exampleUser.Username)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleUser, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with empty username", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		actual, err := c.GetAdminUserByUsername(ctx, "")
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error fetching data", func(t *testing.T) {
+		t.Parallel()
+
+		exampleUser := fakes.BuildFakeUser()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{exampleUser.Username}
+
+		db.ExpectQuery(formatQueryForSQLMock(getAdminUserByUsernameQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.GetAdminUserByUsername(ctx, exampleUser.Username)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with missing user", func(t *testing.T) {
+		t.Parallel()
+
+		exampleUser := fakes.BuildFakeUser()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{exampleUser.Username}
+
+		db.ExpectQuery(formatQueryForSQLMock(getAdminUserByUsernameQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(sql.ErrNoRows)
+
+		actual, err := c.GetAdminUserByUsername(ctx, exampleUser.Username)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_SearchForUsersByUsername(T *testing.T) {
 	T.Parallel()
 
@@ -887,6 +969,55 @@ func TestQuerier_CreateUser(T *testing.T) {
 		db.ExpectExec(formatQueryForSQLMock(userCreationQuery)).
 			WithArgs(interfaceToDriverValue(userCreationArgs)...).
 			WillReturnError(errors.New("blah"))
+
+		db.ExpectRollback()
+
+		actual, err := c.CreateUser(ctx, exampleUserCreationInput)
+		assert.Error(t, err)
+		require.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with already existent user", func(t *testing.T) {
+		t.Parallel()
+
+		exampleCreationTime := fakes.BuildFakeTime()
+
+		exampleUser := fakes.BuildFakeUser()
+		exampleUser.TwoFactorSecretVerifiedOn = nil
+		exampleUser.CreatedOn = exampleCreationTime
+		exampleUser.ServiceHouseholdStatus = ""
+		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
+
+		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
+		exampleHousehold.CreatedOn = exampleCreationTime
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		c.timeFunc = func() uint64 {
+			return exampleCreationTime
+		}
+
+		db.ExpectBegin()
+
+		userCreationArgs := []interface{}{
+			exampleUserCreationInput.ID,
+			exampleUserCreationInput.Username,
+			exampleUserCreationInput.EmailAddress,
+			exampleUserCreationInput.HashedPassword,
+			exampleUserCreationInput.TwoFactorSecret,
+			exampleUserCreationInput.AvatarSrc,
+			types.UnverifiedHouseholdStatus,
+			exampleUserCreationInput.BirthDay,
+			exampleUserCreationInput.BirthMonth,
+			authorization.ServiceUserRole.String(),
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(userCreationQuery)).
+			WithArgs(interfaceToDriverValue(userCreationArgs)...).
+			WillReturnError(&pq.Error{Code: postgresDuplicateEntryErrorCode})
 
 		db.ExpectRollback()
 

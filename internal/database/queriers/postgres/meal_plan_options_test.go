@@ -859,6 +859,7 @@ func Test_decideOptionWinner(T *testing.T) {
 	T.Run("with clear winner", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		expected := optionA
@@ -947,7 +948,7 @@ func Test_decideOptionWinner(T *testing.T) {
 			},
 		}
 
-		actual, tiebroken, chosen := c.decideOptionWinner(exampleOptions)
+		actual, tiebroken, chosen := c.decideOptionWinner(ctx, exampleOptions)
 		assert.Equal(t, expected, actual)
 		assert.False(t, tiebroken)
 		assert.True(t, chosen)
@@ -956,6 +957,7 @@ func Test_decideOptionWinner(T *testing.T) {
 	T.Run("with tie", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		exampleOptions := []*types.MealPlanOption{
@@ -985,7 +987,7 @@ func Test_decideOptionWinner(T *testing.T) {
 			},
 		}
 
-		actual, tiebroken, chosen := c.decideOptionWinner(exampleOptions)
+		actual, tiebroken, chosen := c.decideOptionWinner(ctx, exampleOptions)
 		assert.NotEmpty(t, actual)
 		assert.True(t, tiebroken)
 		assert.True(t, chosen)
@@ -994,6 +996,7 @@ func Test_decideOptionWinner(T *testing.T) {
 	T.Run("without enough votes", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		exampleOptions := []*types.MealPlanOption{
@@ -1005,7 +1008,7 @@ func Test_decideOptionWinner(T *testing.T) {
 			},
 		}
 
-		actual, tiebroken, chosen := c.decideOptionWinner(exampleOptions)
+		actual, tiebroken, chosen := c.decideOptionWinner(ctx, exampleOptions)
 		assert.Empty(t, actual)
 		assert.False(t, tiebroken)
 		assert.False(t, chosen)

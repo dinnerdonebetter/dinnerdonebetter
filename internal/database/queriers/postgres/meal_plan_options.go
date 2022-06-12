@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"time"
 
 	"github.com/Masterminds/squirrel"
 	"resenje.org/schulze"
@@ -50,6 +51,10 @@ var (
 		mealsOnMealPlanOptionsJoinClause,
 	}
 )
+
+func init() {
+	rand.Seed(time.Now().Unix())
+}
 
 // scanMealPlanOption takes a database Scanner (i.e. *sql.Row) and scans the result into a meal plan option struct.
 func (q *SQLQuerier) scanMealPlanOption(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.MealPlanOption, filteredCount, totalCount uint64, err error) {
@@ -479,7 +484,10 @@ func (q *SQLQuerier) determineWinner(winners []schulze.Score) string {
 	return scoreWinners[rand.Intn(len(scoreWinners))]
 }
 
-func (q *SQLQuerier) decideOptionWinner(options []*types.MealPlanOption) (winner string, tiebroken, decided bool) {
+func (q *SQLQuerier) decideOptionWinner(ctx context.Context, options []*types.MealPlanOption) (winner string, tiebroken, decided bool) {
+	_, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
 	candidateMap := map[string]struct{}{}
 	votesByUser := map[string]schulze.Ballot{}
 
@@ -508,7 +516,7 @@ func (q *SQLQuerier) decideOptionWinner(options []*types.MealPlanOption) (winner
 	for _, vote := range votesByUser {
 		if voteErr := e.Vote(vote); voteErr != nil {
 			// this actually can never happen, lol
-			logger.Error(voteErr, "an invalid vote occurred")
+			observability.AcknowledgeError(voteErr, logger, span, "an invalid vote was received")
 		}
 	}
 
@@ -590,7 +598,7 @@ func (q *SQLQuerier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mea
 		}
 	}
 
-	winner, tiebroken, chosen := q.decideOptionWinner(relevantOptions)
+	winner, tiebroken, chosen := q.decideOptionWinner(ctx, relevantOptions)
 	if chosen {
 		args := []interface{}{
 			mealPlanID,
@@ -603,9 +611,7 @@ func (q *SQLQuerier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mea
 		}
 
 		logger.Debug("finalized meal plan option")
-
-		return true, nil
 	}
 
-	return false, nil
+	return chosen, nil
 }

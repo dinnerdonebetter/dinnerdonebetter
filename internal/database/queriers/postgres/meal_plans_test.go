@@ -1900,7 +1900,7 @@ func TestQuerier_FinalizeMealPlanWithExpiredVotingPeriod(T *testing.T) {
 			for _, mealName := range allMealNames {
 				options := byDayAndMeal(exampleMealPlan.Options, day, mealName)
 				if len(options) > 0 {
-					winner, tiebroken, _ := c.decideOptionWinner(options)
+					winner, tiebroken, _ := c.decideOptionWinner(ctx, options)
 
 					finalizeMealPlanOptionsArgs := []interface{}{
 						exampleMealPlan.ID,
@@ -2255,7 +2255,7 @@ func TestQuerier_FinalizeMealPlanWithExpiredVotingPeriod(T *testing.T) {
 		db.ExpectBegin()
 
 		options := byDayAndMeal(exampleMealPlan.Options, time.Monday, types.BreakfastMealName)
-		winner, tiebroken, _ := c.decideOptionWinner(options)
+		winner, tiebroken, _ := c.decideOptionWinner(ctx, options)
 
 		finalizeMealPlanOptionsArgs := []interface{}{
 			exampleMealPlan.ID,
@@ -2409,7 +2409,7 @@ func TestQuerier_FinalizeMealPlanWithExpiredVotingPeriod(T *testing.T) {
 			for _, mealName := range allMealNames {
 				options := byDayAndMeal(exampleMealPlan.Options, day, mealName)
 				if len(options) > 0 {
-					winner, tiebroken, _ := c.decideOptionWinner(options)
+					winner, tiebroken, _ := c.decideOptionWinner(ctx, options)
 
 					finalizeMealPlanOptionsArgs := []interface{}{
 						exampleMealPlan.ID,
@@ -2575,7 +2575,7 @@ func TestQuerier_FinalizeMealPlanWithExpiredVotingPeriod(T *testing.T) {
 			for _, mealName := range allMealNames {
 				options := byDayAndMeal(exampleMealPlan.Options, day, mealName)
 				if len(options) > 0 {
-					winner, tiebroken, _ := c.decideOptionWinner(options)
+					winner, tiebroken, _ := c.decideOptionWinner(ctx, options)
 
 					finalizeMealPlanOptionsArgs := []interface{}{
 						exampleMealPlan.ID,

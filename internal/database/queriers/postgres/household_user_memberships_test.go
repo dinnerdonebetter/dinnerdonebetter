@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql/driver"
 	"errors"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -30,6 +31,27 @@ func buildMockRowsFromHouseholdUserMembershipsWithUsers(memberships ...*types.Ho
 			&x.CreatedOn,
 			&x.LastUpdatedOn,
 			&x.ArchivedOn,
+		}
+
+		exampleRows.AddRow(rowValues...)
+	}
+
+	return exampleRows
+}
+
+func buildInvalidRowsFromHouseholdUserMembershipsWithUsers(memberships ...*types.HouseholdUserMembershipWithUser) *sqlmock.Rows {
+	exampleRows := sqlmock.NewRows(householdsUserMembershipTableColumns)
+
+	for _, x := range memberships {
+		rowValues := []driver.Value{
+			&x.ArchivedOn,
+			&x.ID,
+			&x.BelongsToUser.ID,
+			&x.BelongsToHousehold,
+			strings.Join(x.HouseholdRoles, householdMemberRolesSeparator),
+			&x.DefaultHousehold,
+			&x.CreatedOn,
+			&x.LastUpdatedOn,
 		}
 
 		exampleRows.AddRow(rowValues...)
@@ -174,6 +196,7 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 		ctx := context.Background()
 		exampleUser := fakes.BuildFakeUser()
 		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.Members[0].DefaultHousehold = true
 
 		examplePermsMap := map[string]*types.UserHouseholdMembershipInfo{}
 		for _, membership := range exampleHousehold.Members {
@@ -193,7 +216,7 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 
 		userRetrievalArgs := []interface{}{exampleUser.ID}
 
-		db.ExpectQuery(formatQueryForSQLMock(getUserWithVerified2FAQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getUserByIDQuery)).
 			WithArgs(interfaceToDriverValue(userRetrievalArgs)...).
 			WillReturnRows(buildMockRowsFromUsers(false, 0, exampleUser))
 
@@ -232,16 +255,14 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		userRetrievalArgs := []interface{}{exampleUser.ID}
-
-		db.ExpectQuery(formatQueryForSQLMock(getUserWithVerified2FAQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getUserByIDQuery)).
 			WithArgs(interfaceToDriverValue(userRetrievalArgs)...).
 			WillReturnRows(buildMockRowsFromUsers(false, 0, exampleUser))
 
 		getHouseholdMembershipsForUserArgs := []interface{}{exampleUser.ID}
-
 		db.ExpectQuery(formatQueryForSQLMock(getHouseholdMembershipsForUserQuery)).
 			WithArgs(interfaceToDriverValue(getHouseholdMembershipsForUserArgs)...).
-			WillReturnRows(buildMockRowsFromHouseholdUserMembershipsWithUsers(exampleHousehold.Members...))
+			WillReturnRows(buildInvalidRowsFromHouseholdUserMembershipsWithUsers(exampleHousehold.Members...))
 
 		actual, err := c.BuildSessionContextDataForUser(ctx, exampleUser.ID)
 		assert.Error(t, err)
@@ -812,6 +833,51 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 		assert.Error(t, c.RemoveUserFromHousehold(ctx, exampleUser.ID, ""))
 	})
 
+	T.Run("with error creating transaction", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleUserID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
+
+		c, db := buildTestClient(t)
+
+		db.ExpectBegin().WillReturnError(errors.New("blah"))
+
+		assert.Error(t, c.RemoveUserFromHousehold(ctx, exampleUserID, exampleHouseholdID))
+	})
+
+	T.Run("with error fetching households", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleUserID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
+
+		c, db := buildTestClient(t)
+
+		db.ExpectBegin()
+
+		args := []interface{}{
+			exampleHouseholdID,
+			exampleUserID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(removeUserFromHouseholdQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		query, args := c.buildGetHouseholdsQuery(ctx, exampleUserID, false, nil)
+
+		db.ExpectQuery(formatQueryForSQLMock(query)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		db.ExpectRollback()
+
+		assert.Error(t, c.RemoveUserFromHousehold(ctx, exampleUserID, exampleHouseholdID))
+	})
+
 	T.Run("with error writing removal to database", func(t *testing.T) {
 		t.Parallel()
 
@@ -821,6 +887,8 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
+		db.ExpectBegin()
+
 		args := []interface{}{
 			exampleHouseholdID,
 			exampleUserID,
@@ -829,6 +897,205 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 		db.ExpectExec(formatQueryForSQLMock(removeUserFromHouseholdQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
+
+		assert.Error(t, c.RemoveUserFromHousehold(ctx, exampleUserID, exampleHouseholdID))
+	})
+
+	T.Run("creates new household when none are left", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleUserID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
+		exampleHouseholdList := fakes.BuildFakeHouseholdList()
+		exampleHouseholdList.Households = []*types.Household{}
+
+		c, db := buildTestClient(t)
+
+		db.ExpectBegin()
+
+		args := []interface{}{
+			exampleHouseholdID,
+			exampleUserID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(removeUserFromHouseholdQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		query, args := c.buildGetHouseholdsQuery(ctx, exampleUserID, false, nil)
+
+		db.ExpectQuery(formatQueryForSQLMock(query)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromHouseholds(true, 0, exampleHouseholdList.Households...))
+
+		// create household user membership for created user
+		householdCreationInput := &types.HouseholdCreationRequestInput{
+			Name:          fmt.Sprintf("%s_default", exampleUserID),
+			BelongsToUser: exampleUserID,
+		}
+		createHouseholdForNewUserArgs := []interface{}{
+			&idMatcher{},
+			householdCreationInput.Name,
+			types.UnpaidHouseholdBillingStatus,
+			householdCreationInput.ContactEmail,
+			householdCreationInput.ContactPhone,
+			householdCreationInput.BelongsToUser,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(householdCreationQuery)).
+			WithArgs(interfaceToDriverValue(createHouseholdForNewUserArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		// create household user membership for created user
+		createHouseholdMembershipForNewUserArgs := []interface{}{
+			&idMatcher{},
+			&idMatcher{},
+			&idMatcher{},
+			true,
+			authorization.HouseholdAdminRole.String(),
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(createHouseholdMembershipForNewUserQuery)).
+			WithArgs(interfaceToDriverValue(createHouseholdMembershipForNewUserArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		db.ExpectCommit()
+
+		assert.NoError(t, c.RemoveUserFromHousehold(ctx, exampleUserID, exampleHouseholdID))
+	})
+
+	T.Run("with error creating new household when none are left", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleUserID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
+		exampleHouseholdList := fakes.BuildFakeHouseholdList()
+		exampleHouseholdList.Households = []*types.Household{}
+
+		c, db := buildTestClient(t)
+
+		db.ExpectBegin()
+
+		args := []interface{}{
+			exampleHouseholdID,
+			exampleUserID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(removeUserFromHouseholdQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		query, args := c.buildGetHouseholdsQuery(ctx, exampleUserID, false, nil)
+
+		db.ExpectQuery(formatQueryForSQLMock(query)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromHouseholds(true, 0, exampleHouseholdList.Households...))
+
+		// create household user membership for created user
+		householdCreationInput := &types.HouseholdCreationRequestInput{
+			Name:          fmt.Sprintf("%s_default", exampleUserID),
+			BelongsToUser: exampleUserID,
+		}
+		createHouseholdForNewUserArgs := []interface{}{
+			&idMatcher{},
+			householdCreationInput.Name,
+			types.UnpaidHouseholdBillingStatus,
+			householdCreationInput.ContactEmail,
+			householdCreationInput.ContactPhone,
+			householdCreationInput.BelongsToUser,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(householdCreationQuery)).
+			WithArgs(interfaceToDriverValue(createHouseholdForNewUserArgs)...).
+			WillReturnError(errors.New("blah"))
+
+		db.ExpectRollback()
+
+		assert.Error(t, c.RemoveUserFromHousehold(ctx, exampleUserID, exampleHouseholdID))
+	})
+
+	T.Run("with error marking new household as user default", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleUserID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
+		exampleHouseholdList := fakes.BuildFakeHouseholdList()
+
+		c, db := buildTestClient(t)
+
+		db.ExpectBegin()
+
+		args := []interface{}{
+			exampleHouseholdID,
+			exampleUserID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(removeUserFromHouseholdQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		query, args := c.buildGetHouseholdsQuery(ctx, exampleUserID, false, nil)
+
+		db.ExpectQuery(formatQueryForSQLMock(query)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromHouseholds(true, 0, exampleHouseholdList.Households...))
+
+		markHouseholdAsUserDefaultArgs := []interface{}{
+			exampleUserID,
+			exampleHouseholdList.Households[0].ID,
+			exampleUserID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(markHouseholdAsUserDefaultQuery)).
+			WithArgs(interfaceToDriverValue(markHouseholdAsUserDefaultArgs)...).
+			WillReturnError(errors.New("blah"))
+
+		db.ExpectRollback()
+
+		assert.Error(t, c.RemoveUserFromHousehold(ctx, exampleUserID, exampleHouseholdID))
+	})
+
+	T.Run("with error committing transaction", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleUserID := fakes.BuildFakeID()
+		exampleHouseholdID := fakes.BuildFakeID()
+		exampleHouseholdList := fakes.BuildFakeHouseholdList()
+
+		c, db := buildTestClient(t)
+
+		db.ExpectBegin()
+
+		args := []interface{}{
+			exampleHouseholdID,
+			exampleUserID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(removeUserFromHouseholdQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		query, args := c.buildGetHouseholdsQuery(ctx, exampleUserID, false, nil)
+
+		db.ExpectQuery(formatQueryForSQLMock(query)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromHouseholds(true, 0, exampleHouseholdList.Households...))
+
+		markHouseholdAsUserDefaultArgs := []interface{}{
+			exampleUserID,
+			exampleHouseholdList.Households[0].ID,
+			exampleUserID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(markHouseholdAsUserDefaultQuery)).
+			WithArgs(interfaceToDriverValue(markHouseholdAsUserDefaultArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		db.ExpectCommit().WillReturnError(errors.New("blah"))
 
 		assert.Error(t, c.RemoveUserFromHousehold(ctx, exampleUserID, exampleHouseholdID))
 	})
