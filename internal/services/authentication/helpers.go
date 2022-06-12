@@ -142,7 +142,7 @@ func (s *service) issueSessionManagedCookie(ctx context.Context, householdID, re
 		return nil, err
 	}
 
-	cookie, err = s.buildCookie(cookieDomain, token, expiry)
+	cookie, err = s.buildCookie(ctx, cookieDomain, token, expiry)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "building cookie")
 		return nil, err
@@ -151,8 +151,32 @@ func (s *service) issueSessionManagedCookie(ctx context.Context, householdID, re
 	return cookie, nil
 }
 
+func (s *service) buildLogoutCookie(ctx context.Context, req *http.Request) (*http.Cookie, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+
+	requestedCookieDomain := s.determineCookieDomain(ctx, req)
+	if requestedCookieDomain != "" {
+		logger = logger.WithValue("cookie_domain", requestedCookieDomain)
+	}
+
+	newCookie, cookieBuildingErr := s.buildCookie(ctx, requestedCookieDomain, "deleted", time.Time{})
+	if cookieBuildingErr != nil || newCookie == nil {
+		return nil, observability.PrepareError(cookieBuildingErr, logger, span, "building cookie")
+	}
+
+	newCookie.MaxAge = -1
+
+	return newCookie, nil
+}
+
 // buildCookie provides a consistent way of constructing an HTTP cookie.
-func (s *service) buildCookie(cookieDomain, value string, expiry time.Time) (*http.Cookie, error) {
+func (s *service) buildCookie(ctx context.Context, cookieDomain, value string, expiry time.Time) (*http.Cookie, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
 	encoded, err := s.cookieManager.Encode(s.config.Cookies.Name, value)
 	if err != nil {
 		// NOTE: these errors should be infrequent, and should cause alarm when they do occur

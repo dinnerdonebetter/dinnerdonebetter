@@ -201,8 +201,8 @@ const markHouseholdAsUserDefaultQuery = `
 	AND belongs_to_user = $3
 `
 
-// MarkHouseholdAsUserDefault does a thing.
-func (q *SQLQuerier) MarkHouseholdAsUserDefault(ctx context.Context, userID, householdID string) error {
+// markHouseholdAsUserDefault does a thing.
+func (q *SQLQuerier) markHouseholdAsUserDefault(ctx context.Context, querier database.SQLQueryExecutor, userID, householdID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -225,13 +225,18 @@ func (q *SQLQuerier) MarkHouseholdAsUserDefault(ctx context.Context, userID, hou
 	}
 
 	// create the household.
-	if err := q.performWriteQuery(ctx, q.db, "user default household assignment", markHouseholdAsUserDefaultQuery, args); err != nil {
+	if err := q.performWriteQuery(ctx, querier, "user default household assignment", markHouseholdAsUserDefaultQuery, args); err != nil {
 		return observability.PrepareError(err, logger, span, "assigning user default household")
 	}
 
-	logger.Info("household marked as default")
+	logger.Debug("household marked as default")
 
 	return nil
+}
+
+// MarkHouseholdAsUserDefault does a thing.
+func (q *SQLQuerier) MarkHouseholdAsUserDefault(ctx context.Context, userID, householdID string) error {
+	return q.markHouseholdAsUserDefault(ctx, q.db, userID, householdID)
 }
 
 const userIsMemberOfHouseholdQuery = `
@@ -436,29 +441,73 @@ func (q *SQLQuerier) RemoveUserFromHousehold(ctx context.Context, userID, househ
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if userID == "" || householdID == "" {
+	if userID == "" {
 		return ErrInvalidIDProvided
 	}
+	tracing.AttachUserIDToSpan(span, userID)
+
+	if householdID == "" {
+		return ErrInvalidIDProvided
+	}
+	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	logger := q.logger.WithValues(map[string]interface{}{
 		keys.UserIDKey:      userID,
 		keys.HouseholdIDKey: householdID,
 	})
 
-	tracing.AttachUserIDToSpan(span, userID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	logger.Info("creating")
+
+	tx, createTransactionErr := q.db.BeginTx(ctx, nil)
+	if createTransactionErr != nil {
+		return observability.PrepareError(createTransactionErr, logger, span, "beginning transaction")
+	}
+
+	logger.Info("created transaction")
 
 	args := []interface{}{
 		householdID,
 		userID,
 	}
 
-	// create the membership.
-	if err := q.performWriteQuery(ctx, q.db, "user membership removal", removeUserFromHouseholdQuery, args); err != nil {
+	// remove the membership.
+	if err := q.performWriteQuery(ctx, tx, "user membership removal", removeUserFromHouseholdQuery, args); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, logger, span, "removing user from household")
 	}
 
 	logger.Info("user removed from household")
+
+	remainingHouseholds, fetchRemainingHouseholdsErr := q.getHouseholds(ctx, tx, userID, false, nil)
+	if fetchRemainingHouseholdsErr != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(fetchRemainingHouseholdsErr, logger, span, "fetching remaining households")
+	}
+
+	logger = logger.WithValue("count", len(remainingHouseholds.Households))
+	logger.Info("remaining households fetched")
+
+	if len(remainingHouseholds.Households) == 0 {
+		if err := q.createHouseholdForUser(ctx, tx, false, userID); err != nil {
+			return observability.PrepareError(err, logger, span, "creating household for new user")
+		}
+	}
+
+	household := remainingHouseholds.Households[0]
+
+	logger = logger.WithValue(keys.HouseholdIDKey, household.ID)
+	logger.Info("about to mark household as default")
+
+	if err := q.markHouseholdAsUserDefault(ctx, tx, userID, household.ID); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, logger, span, "marking household as default")
+	}
+
+	logger.Info("marked household as default, committing transaction")
+
+	if err := tx.Commit(); err != nil {
+		return observability.PrepareError(err, logger, span, "committing transaction")
+	}
 
 	return nil
 }

@@ -142,13 +142,13 @@ func (s *service) AuthorizationMiddleware(next http.Handler) http.Handler {
 			logger = sessionCtxData.AttachToLogger(logger)
 
 			if sessionCtxData.Requester.Reputation == types.BannedUserHouseholdStatus || sessionCtxData.Requester.Reputation == types.TerminatedUserReputation {
-				logger.Debug("banned user attempted to make request")
+				logger.Info("banned user attempted to make request")
 				http.Redirect(res, req, "/", http.StatusForbidden)
 				return
 			}
 
 			if _, authorizedForHousehold := sessionCtxData.HouseholdPermissions[sessionCtxData.ActiveHouseholdID]; !authorizedForHousehold {
-				logger.Debug("user trying to access household they are not authorized for")
+				logger.Info("user trying to access household they are not authorized for")
 				http.Redirect(res, req, "/", http.StatusUnauthorized)
 				return
 			}

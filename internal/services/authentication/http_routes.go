@@ -279,9 +279,9 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 	tracing.AttachRequestToSpan(span, req)
 
 	// determine user ID.
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "fetching session context data")
+	sessionCtxData, fetchSessionContextErr := s.sessionContextDataFetcher(req)
+	if fetchSessionContextErr != nil {
+		observability.AcknowledgeError(fetchSessionContextErr, logger, span, "fetching session context data")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
 		return
 	}
@@ -292,13 +292,13 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 	ctx, loadErr := s.sessionManager.Load(ctx, "")
 	if loadErr != nil {
 		// this can literally never happen in this version of scs, because the token is empty
-		observability.AcknowledgeError(err, logger, span, "loading token")
+		observability.AcknowledgeError(loadErr, logger, span, "loading token")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
 	if destroyErr := s.sessionManager.Destroy(ctx); destroyErr != nil {
-		observability.AcknowledgeError(err, logger, span, "destroying session")
+		observability.AcknowledgeError(destroyErr, logger, span, "destroying session")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -308,14 +308,13 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 		logger = logger.WithValue("cookie_domain", requestedCookieDomain)
 	}
 
-	newCookie, cookieBuildingErr := s.buildCookie(requestedCookieDomain, "deleted", time.Time{})
+	newCookie, cookieBuildingErr := s.buildLogoutCookie(ctx, req)
 	if cookieBuildingErr != nil || newCookie == nil {
-		observability.AcknowledgeError(err, logger, span, "building cookie")
+		observability.AcknowledgeError(cookieBuildingErr, logger, span, "building cookie")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	newCookie.MaxAge = -1
 	http.SetCookie(res, newCookie)
 
 	if s.dataChangesPublisher != nil {
@@ -325,8 +324,8 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 			AttributableToUserID: sessionCtxData.Requester.UserID,
 		}
 
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		if dataPublishErr := s.dataChangesPublisher.Publish(ctx, dcm); dataPublishErr != nil {
+			observability.AcknowledgeError(dataPublishErr, logger, span, "publishing data change message")
 		}
 	}
 

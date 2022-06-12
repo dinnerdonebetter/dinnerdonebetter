@@ -34,7 +34,7 @@ func attachCookieToRequestForTest(t *testing.T, s *service, req *http.Request, u
 	assert.NotEmpty(t, token)
 	assert.NoError(t, err)
 
-	c, err := s.buildCookie(s.config.Cookies.Domain, token, time.Now().Add(s.config.Cookies.Lifetime))
+	c, err := s.buildCookie(ctx, s.config.Cookies.Domain, token, time.Now().Add(s.config.Cookies.Lifetime))
 	require.NoError(t, err)
 	req.AddCookie(c)
 

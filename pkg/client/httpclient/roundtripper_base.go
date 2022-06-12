@@ -15,7 +15,7 @@ const (
 	userAgentHeader = "User-Agent"
 	userAgent       = "Prixfixe Service Client"
 
-	maxRetryCount = 2
+	maxRetryCount = 0
 	minRetryWait  = 100 * time.Millisecond
 	maxRetryWait  = time.Second
 )

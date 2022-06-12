@@ -148,7 +148,7 @@ func (x *HouseholdUpdateRequestInput) ValidateWithContext(ctx context.Context) e
 // HouseholdCreationInputForNewUser creates a new HouseholdInputCreation struct for a given user.
 func HouseholdCreationInputForNewUser(u *User) *HouseholdCreationRequestInput {
 	return &HouseholdCreationRequestInput{
-		Name:          fmt.Sprintf("%s_default", u.Username),
+		Name:          fmt.Sprintf("%s_default", u.ID),
 		BelongsToUser: u.ID,
 	}
 }

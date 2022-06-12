@@ -2,9 +2,6 @@ package observability
 
 import (
 	"fmt"
-	"time"
-
-	"go.opentelemetry.io/otel/trace"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -33,11 +30,4 @@ func AcknowledgeError(err error, logger logging.Logger, span tracing.Span, descr
 	if span != nil {
 		tracing.AttachErrorToSpan(span, desc, err)
 	}
-}
-
-// NoteEvent standardizes our logging and tracing notifications.
-func NoteEvent(logger logging.Logger, span tracing.Span, descriptionFmt string, descriptionArgs ...interface{}) {
-	desc := fmt.Sprintf(descriptionFmt, descriptionArgs...)
-	logging.EnsureLogger(logger).Debug(desc)
-	span.AddEvent(desc, trace.WithTimestamp(time.Now().UTC()))
 }

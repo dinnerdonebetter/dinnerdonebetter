@@ -77,7 +77,7 @@ func TestAuthenticationService_getUserIDFromCookie(T *testing.T) {
 		sm.On("Load", testutils.ContextMatcher, expectedToken).Return(helper.ctx, errors.New("blah"))
 		helper.service.sessionManager = sm
 
-		c, err := helper.service.buildCookie(helper.service.config.Cookies.Domain, expectedToken, time.Now().Add(helper.service.config.Cookies.Lifetime))
+		c, err := helper.service.buildCookie(helper.ctx, helper.service.config.Cookies.Domain, expectedToken, time.Now().Add(helper.service.config.Cookies.Lifetime))
 		require.NoError(t, err)
 		helper.req.AddCookie(c)
 
@@ -98,7 +98,7 @@ func TestAuthenticationService_getUserIDFromCookie(T *testing.T) {
 		assert.NotEmpty(t, token)
 		assert.NoError(t, err)
 
-		c, err := helper.service.buildCookie(helper.service.config.Cookies.Domain, token, time.Now().Add(helper.service.config.Cookies.Lifetime))
+		c, err := helper.service.buildCookie(helper.ctx, helper.service.config.Cookies.Domain, token, time.Now().Add(helper.service.config.Cookies.Lifetime))
 		require.NoError(t, err)
 		helper.req.AddCookie(c)
 
@@ -272,7 +272,7 @@ func TestAuthenticationService_buildCookie(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		cookie, err := helper.service.buildCookie(helper.service.config.Cookies.Domain, "example", time.Now().Add(helper.service.config.Cookies.Lifetime))
+		cookie, err := helper.service.buildCookie(helper.ctx, helper.service.config.Cookies.Domain, "example", time.Now().Add(helper.service.config.Cookies.Lifetime))
 		assert.NotNil(t, cookie)
 		assert.NoError(t, err)
 	})
@@ -287,7 +287,7 @@ func TestAuthenticationService_buildCookie(T *testing.T) {
 			[]byte(""),
 		)
 
-		cookie, err := helper.service.buildCookie(helper.service.config.Cookies.Domain, "example", time.Now().Add(helper.service.config.Cookies.Lifetime))
+		cookie, err := helper.service.buildCookie(helper.ctx, helper.service.config.Cookies.Domain, "example", time.Now().Add(helper.service.config.Cookies.Lifetime))
 		assert.Nil(t, cookie)
 		assert.Error(t, err)
 	})
