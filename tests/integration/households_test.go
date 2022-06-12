@@ -918,6 +918,7 @@ func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRem
 
 			household, err := c.GetCurrentHousehold(ctx)
 			requireNotNilAndNoProblems(t, household, err)
+			assert.NotEqual(t, relevantHouseholdID, household.ID)
 
 			require.True(t, found)
 		}

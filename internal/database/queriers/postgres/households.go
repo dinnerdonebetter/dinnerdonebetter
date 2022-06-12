@@ -392,7 +392,8 @@ func (q *SQLQuerier) buildGetHouseholdsQuery(ctx context.Context, userID string,
 
 	if !forAdmin {
 		where := squirrel.Eq{
-			"households.archived_on": nil,
+			"households.archived_on":                 nil,
+			"household_user_memberships.archived_on": nil,
 		}
 
 		if userID != "" {
