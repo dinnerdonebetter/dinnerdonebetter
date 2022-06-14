@@ -515,7 +515,7 @@ func (q *SQLQuerier) decideOptionWinner(ctx context.Context, options []*types.Me
 	e := schulze.NewVoting(candidates...)
 	for _, vote := range votesByUser {
 		if voteErr := e.Vote(vote); voteErr != nil {
-			// this actually can never happen, lol
+			// this actually can never happen because we use uints for ranks, lol
 			observability.AcknowledgeError(voteErr, logger, span, "an invalid vote was received")
 		}
 	}
