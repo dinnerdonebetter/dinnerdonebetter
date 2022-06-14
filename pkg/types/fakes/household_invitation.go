@@ -72,7 +72,8 @@ func BuildFakeHouseholdInvitationCreationInputFromHouseholdInvitation(householdI
 // BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation builds a faked HouseholdInvitationUpdateRequestInput.
 func BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation(householdInvitation *types.HouseholdInvitation) *types.HouseholdInvitationUpdateRequestInput {
 	return &types.HouseholdInvitationUpdateRequestInput{
-		Note: householdInvitation.Note,
+		Token: householdInvitation.Token,
+		Note:  householdInvitation.Note,
 	}
 }
 

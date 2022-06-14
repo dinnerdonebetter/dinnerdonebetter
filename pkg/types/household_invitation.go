@@ -86,21 +86,23 @@ type (
 
 	// HouseholdInvitationUpdateRequestInput is used by users to update the status of a given household invitation.
 	HouseholdInvitationUpdateRequestInput struct {
-		Note string `json:"note"`
+		Token string `json:"token"`
+		Note  string `json:"note"`
 	}
 
 	// HouseholdInvitationDataManager describes a structure capable of storing household invitations permanently.
 	HouseholdInvitationDataManager interface {
 		HouseholdInvitationExists(ctx context.Context, householdInvitationID string) (bool, error)
 		GetHouseholdInvitationByHouseholdAndID(ctx context.Context, householdID, householdInvitationID string) (*HouseholdInvitation, error)
+		GetHouseholdInvitationByTokenAndID(ctx context.Context, token, invitationID string) (*HouseholdInvitation, error)
 		GetHouseholdInvitationByEmailAndToken(ctx context.Context, emailAddress, token string) (*HouseholdInvitation, error)
 		GetAllHouseholdInvitationsCount(ctx context.Context) (uint64, error)
 		GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *QueryFilter) (*HouseholdInvitationList, error)
 		GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *QueryFilter) (*HouseholdInvitationList, error)
 		CreateHouseholdInvitation(ctx context.Context, input *HouseholdInvitationDatabaseCreationInput) (*HouseholdInvitation, error)
-		CancelHouseholdInvitation(ctx context.Context, householdID, householdInvitationID, note string) error
-		AcceptHouseholdInvitation(ctx context.Context, householdID, householdInvitationID, note string) error
-		RejectHouseholdInvitation(ctx context.Context, householdID, householdInvitationID, note string) error
+		CancelHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error
+		AcceptHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error
+		RejectHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error
 	}
 
 	// HouseholdInvitationDataService describes a structure capable of serving traffic related to household invitations.
@@ -140,11 +142,11 @@ func HouseholdInvitationDatabaseCreationInputFromHouseholdInvitationCreationInpu
 
 var _ validation.ValidatableWithContext = (*HouseholdInvitationUpdateRequestInput)(nil)
 
-// ValidateWithContext validates a RecipeCreationRequestInput.
+// ValidateWithContext validates a HouseholdInvitationUpdateRequestInput.
 func (x *HouseholdInvitationUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		// no real validation happening here yet
+		validation.Field(&x.Token, validation.Required),
 	)
 }

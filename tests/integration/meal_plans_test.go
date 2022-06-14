@@ -124,7 +124,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 				assert.NotEmpty(t, invitations.HouseholdInvitations)
 
 				t.Logf("accepting invitation")
-				require.NoError(t, c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitation.ID, t.Name()))
+				require.NoError(t, c.AcceptHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name()))
 
 				require.NoError(t, c.SwitchActiveHousehold(ctx, relevantHouseholdID))
 
@@ -332,7 +332,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 				assert.NotEmpty(t, invitations.HouseholdInvitations)
 
 				t.Logf("accepting invitation")
-				require.NoError(t, c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitation.ID, t.Name()))
+				require.NoError(t, c.AcceptHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name()))
 
 				require.NoError(t, c.SwitchActiveHousehold(ctx, relevantHouseholdID))
 

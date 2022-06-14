@@ -80,24 +80,23 @@ func (c *Client) GetPendingHouseholdInvitationsForUser(ctx context.Context, filt
 	return invitationList, nil
 }
 
-// CancelHouseholdInvitation cancels a given household invitation.
-func (c *Client) CancelHouseholdInvitation(ctx context.Context, householdID, householdInvitationID, note string) error {
+// AcceptHouseholdInvitation accepts a given household invitation.
+func (c *Client) AcceptHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
-
-	if householdID == "" {
-		return ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
 	if householdInvitationID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
 
-	req, err := c.requestBuilder.BuildCancelHouseholdInvitationRequest(ctx, householdID, householdInvitationID, note)
+	if token == "" {
+		return ErrInvalidIDProvided
+	}
+
+	req, err := c.requestBuilder.BuildAcceptHouseholdInvitationRequest(ctx, householdInvitationID, token, note)
 	if err != nil {
 		return observability.PrepareError(err, logger, span, "building reject invitation request")
 	}
@@ -109,24 +108,23 @@ func (c *Client) CancelHouseholdInvitation(ctx context.Context, householdID, hou
 	return nil
 }
 
-// AcceptHouseholdInvitation accepts a given household invitation.
-func (c *Client) AcceptHouseholdInvitation(ctx context.Context, householdID, householdInvitationID, note string) error {
+// CancelHouseholdInvitation cancels a given household invitation.
+func (c *Client) CancelHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
-
-	if householdID == "" {
-		return ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
 	if householdInvitationID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
 
-	req, err := c.requestBuilder.BuildAcceptHouseholdInvitationRequest(ctx, householdID, householdInvitationID, note)
+	if token == "" {
+		return ErrInvalidIDProvided
+	}
+
+	req, err := c.requestBuilder.BuildCancelHouseholdInvitationRequest(ctx, householdInvitationID, token, note)
 	if err != nil {
 		return observability.PrepareError(err, logger, span, "building reject invitation request")
 	}
@@ -139,23 +137,22 @@ func (c *Client) AcceptHouseholdInvitation(ctx context.Context, householdID, hou
 }
 
 // RejectHouseholdInvitation rejects a given household invitation.
-func (c *Client) RejectHouseholdInvitation(ctx context.Context, householdID, householdInvitationID, note string) error {
+func (c *Client) RejectHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
-
-	if householdID == "" {
-		return ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
 	if householdInvitationID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
 
-	req, err := c.requestBuilder.BuildRejectHouseholdInvitationRequest(ctx, householdID, householdInvitationID, note)
+	if token == "" {
+		return ErrInvalidIDProvided
+	}
+
+	req, err := c.requestBuilder.BuildRejectHouseholdInvitationRequest(ctx, householdInvitationID, token, note)
 	if err != nil {
 		return observability.PrepareError(err, logger, span, "building reject invitation request")
 	}

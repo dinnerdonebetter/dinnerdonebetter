@@ -427,6 +427,31 @@ func TestQuerier_getRecipeStepIngredientsForRecipe(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
+
+	T.Run("with error scanning results", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipeID := fakes.BuildFakeID()
+		exampleRecipeStepIngredientList := fakes.BuildFakeRecipeStepIngredientList()
+
+		for i := range exampleRecipeStepIngredientList.RecipeStepIngredients {
+			exampleRecipeStepIngredientList.RecipeStepIngredients[i].Ingredient = types.ValidIngredient{}
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
+		db.ExpectQuery(formatQueryForSQLMock(query)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildErroneousMockRow())
+
+		actual, err := c.getRecipeStepIngredientsForRecipe(ctx, exampleRecipeID)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
 }
 
 func TestQuerier_GetRecipeStepIngredients(T *testing.T) {

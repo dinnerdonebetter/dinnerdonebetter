@@ -97,8 +97,8 @@ func (b *Builder) BuildCreateUserRequest(ctx context.Context, input *types.UserR
 	tracing.AttachUsernameToSpan(span, input.Username)
 
 	qp := url.Values{}
-	if input.DestinationHousehold != "" && input.InvitationToken != "" {
-		qp.Set("dh", input.DestinationHousehold)
+	if input.InvitationID != "" && input.InvitationToken != "" {
+		qp.Set("i", input.InvitationID)
 		qp.Set("t", input.InvitationToken)
 	}
 

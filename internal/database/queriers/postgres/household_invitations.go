@@ -191,6 +191,59 @@ func (q *SQLQuerier) GetHouseholdInvitationByHouseholdAndID(ctx context.Context,
 }
 
 /* #nosec G101 */
+const getHouseholdInvitationByTokenAndIDQuery = `
+SELECT
+	household_invitations.id,
+	household_invitations.destination_household,
+	household_invitations.to_email,
+	household_invitations.to_user,
+	household_invitations.from_user,
+	household_invitations.status,
+	household_invitations.note,
+	household_invitations.status_note,
+	household_invitations.token,
+	household_invitations.created_on,
+	household_invitations.last_updated_on,
+	household_invitations.archived_on
+FROM household_invitations 
+WHERE household_invitations.archived_on IS NULL
+AND household_invitations.token = $1
+AND household_invitations.id = $2
+`
+
+// GetHouseholdInvitationByTokenAndID fetches an invitation from the database.
+func (q *SQLQuerier) GetHouseholdInvitationByTokenAndID(ctx context.Context, token, invitationID string) (*types.HouseholdInvitation, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if token == "" {
+		return nil, ErrInvalidIDProvided
+	}
+
+	if invitationID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.HouseholdInvitationIDKey, invitationID)
+	tracing.AttachHouseholdInvitationIDToSpan(span, invitationID)
+
+	args := []interface{}{
+		token,
+		invitationID,
+	}
+
+	row := q.getOneRow(ctx, q.db, "household invitation", getHouseholdInvitationByTokenAndIDQuery, args)
+
+	householdInvitation, _, _, err := q.scanHouseholdInvitation(ctx, row, false)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "scanning household invitation")
+	}
+
+	return householdInvitation, nil
+}
+
+/* #nosec G101 */
 const getHouseholdInvitationByEmailAndTokenQuery = `
 SELECT
 	household_invitations.id,
@@ -451,21 +504,14 @@ UPDATE household_invitations SET
 	last_updated_on = extract(epoch FROM NOW()), 
 	archived_on = extract(epoch FROM NOW())
 WHERE archived_on IS NULL 
-AND destination_household = $3
-AND id = $4
+AND id = $3
 `
 
-func (q *SQLQuerier) setInvitationStatus(ctx context.Context, querier database.SQLQueryExecutor, householdID, householdInvitationID, note string, status types.HouseholdInvitationStatus) error {
+func (q *SQLQuerier) setInvitationStatus(ctx context.Context, querier database.SQLQueryExecutor, householdInvitationID, note string, status types.HouseholdInvitationStatus) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.WithValue("new_status", status)
-
-	if householdID == "" {
-		return ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	if householdInvitationID == "" {
 		return ErrInvalidIDProvided
@@ -476,7 +522,6 @@ func (q *SQLQuerier) setInvitationStatus(ctx context.Context, querier database.S
 	args := []interface{}{
 		status,
 		note,
-		householdID,
 		householdInvitationID,
 	}
 
@@ -490,22 +535,16 @@ func (q *SQLQuerier) setInvitationStatus(ctx context.Context, querier database.S
 }
 
 // CancelHouseholdInvitation cancels a household invitation by its ID with a note.
-func (q *SQLQuerier) CancelHouseholdInvitation(ctx context.Context, householdID, householdInvitationID, note string) error {
-	return q.setInvitationStatus(ctx, q.db, householdID, householdInvitationID, note, types.CancelledHouseholdInvitationStatus)
+func (q *SQLQuerier) CancelHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error {
+	return q.setInvitationStatus(ctx, q.db, householdInvitationID, note, types.CancelledHouseholdInvitationStatus)
 }
 
 // AcceptHouseholdInvitation accepts a household invitation by its ID with a note.
-func (q *SQLQuerier) AcceptHouseholdInvitation(ctx context.Context, householdID, householdInvitationID, note string) error {
+func (q *SQLQuerier) AcceptHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
-
-	if householdID == "" {
-		return ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	if householdInvitationID == "" {
 		return ErrInvalidIDProvided
@@ -518,28 +557,28 @@ func (q *SQLQuerier) AcceptHouseholdInvitation(ctx context.Context, householdID,
 		return observability.PrepareError(err, logger, span, "beginning transaction")
 	}
 
-	if err = q.setInvitationStatus(ctx, tx, householdID, householdInvitationID, note, types.AcceptedHouseholdInvitationStatus); err != nil {
+	if err = q.setInvitationStatus(ctx, tx, householdInvitationID, note, types.AcceptedHouseholdInvitationStatus); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, logger, span, "accepting household invitation")
 	}
 
-	invitation, err := q.GetHouseholdInvitationByHouseholdAndID(ctx, householdID, householdInvitationID)
+	invitation, err := q.GetHouseholdInvitationByTokenAndID(ctx, token, householdInvitationID)
 	if err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, logger, span, "fetching household invitation")
 	}
 
-	input := &types.HouseholdUserMembershipDatabaseCreationInput{
+	addUserInput := &types.HouseholdUserMembershipDatabaseCreationInput{
 		ID:             ksuid.New().String(),
 		Reason:         fmt.Sprintf("accepted household invitation %q", householdInvitationID),
-		HouseholdID:    householdID,
+		HouseholdID:    invitation.DestinationHousehold,
 		HouseholdRoles: []string{"household_member"},
 	}
 	if invitation.ToUser != nil {
-		input.UserID = *invitation.ToUser
+		addUserInput.UserID = *invitation.ToUser
 	}
 
-	if err = q.addUserToHousehold(ctx, tx, input); err != nil {
+	if err = q.addUserToHousehold(ctx, tx, addUserInput); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, logger, span, "adding user to household")
 	}
@@ -552,8 +591,8 @@ func (q *SQLQuerier) AcceptHouseholdInvitation(ctx context.Context, householdID,
 }
 
 // RejectHouseholdInvitation rejects a household invitation by its ID with a note.
-func (q *SQLQuerier) RejectHouseholdInvitation(ctx context.Context, householdID, householdInvitationID, note string) error {
-	return q.setInvitationStatus(ctx, q.db, householdID, householdInvitationID, note, types.RejectedHouseholdInvitationStatus)
+func (q *SQLQuerier) RejectHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error {
+	return q.setInvitationStatus(ctx, q.db, householdInvitationID, note, types.RejectedHouseholdInvitationStatus)
 }
 
 const attachInvitationsToUserIDQuery = `
@@ -593,7 +632,7 @@ func (q *SQLQuerier) attachInvitationsToUser(ctx context.Context, querier databa
 	return nil
 }
 
-func (q *SQLQuerier) acceptInvitationForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.UserDatabaseCreationInput, userID string) error {
+func (q *SQLQuerier) acceptInvitationForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.UserDatabaseCreationInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -607,7 +646,7 @@ func (q *SQLQuerier) acceptInvitationForUser(ctx context.Context, querier databa
 
 	createHouseholdMembershipForNewUserArgs := []interface{}{
 		ksuid.New().String(),
-		userID,
+		input.ID,
 		input.DestinationHousehold,
 		true,
 		authorization.HouseholdMemberRole.String(),
@@ -618,7 +657,7 @@ func (q *SQLQuerier) acceptInvitationForUser(ctx context.Context, querier databa
 		return observability.PrepareError(err, logger, span, "writing destination household membership")
 	}
 
-	if err := q.setInvitationStatus(ctx, querier, invitation.DestinationHousehold, invitation.ID, "", types.AcceptedHouseholdInvitationStatus); err != nil {
+	if err := q.setInvitationStatus(ctx, querier, invitation.ID, "", types.AcceptedHouseholdInvitationStatus); err != nil {
 		q.rollbackTransaction(ctx, querier)
 		return observability.PrepareError(err, logger, span, "accepting household invitation")
 	}

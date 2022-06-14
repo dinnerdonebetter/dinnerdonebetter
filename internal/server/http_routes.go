@@ -147,9 +147,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					singleHouseholdInvitationRoute := buildURLVarChunk(householdinvitationsservice.HouseholdInvitationIDURIParamKey, "")
 					invitationsRouter.Route(singleHouseholdInvitationRoute, func(singleHouseholdInvitationRouter routing.Router) {
 						singleHouseholdInvitationRouter.Get(root, s.householdInvitationsService.ReadHandler)
-						singleHouseholdInvitationRouter.Put("/cancel", s.householdInvitationsService.CancelInviteHandler)
-						singleHouseholdInvitationRouter.Put("/accept", s.householdInvitationsService.AcceptInviteHandler)
-						singleHouseholdInvitationRouter.Put("/reject", s.householdInvitationsService.RejectInviteHandler)
 					})
 				})
 			})
@@ -158,6 +155,14 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		v1Router.Route("/household_invitations", func(householdInvitationsRouter routing.Router) {
 			householdInvitationsRouter.Get("/sent", s.householdInvitationsService.OutboundInvitesHandler)
 			householdInvitationsRouter.Get("/received", s.householdInvitationsService.InboundInvitesHandler)
+
+			singleHouseholdInvitationRoute := buildURLVarChunk(householdinvitationsservice.HouseholdInvitationIDURIParamKey, "")
+			householdInvitationsRouter.Route(singleHouseholdInvitationRoute, func(singleHouseholdInvitationRouter routing.Router) {
+				singleHouseholdInvitationRouter.Get(root, s.householdInvitationsService.ReadHandler)
+				singleHouseholdInvitationRouter.Put("/cancel", s.householdInvitationsService.CancelInviteHandler)
+				singleHouseholdInvitationRouter.Put("/accept", s.householdInvitationsService.AcceptInviteHandler)
+				singleHouseholdInvitationRouter.Put("/reject", s.householdInvitationsService.RejectInviteHandler)
+			})
 		})
 
 		// API Clients
