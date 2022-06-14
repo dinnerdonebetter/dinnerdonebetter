@@ -21,9 +21,9 @@ var (
 )
 
 type inviteContent struct {
-	WebAppURL            string
-	Token                string
-	DestinationHousehold string
+	WebAppURL    string
+	Token        string
+	InvitationID string
 }
 
 // BuildInviteMemberEmail builds an email notifying a user that they've been invited to join a household.
@@ -39,9 +39,9 @@ func BuildInviteMemberEmail(householdInvitation *types.HouseholdInvitation) (*Ou
 	}
 
 	content := &inviteContent{
-		WebAppURL:            envAddr,
-		Token:                householdInvitation.Token,
-		DestinationHousehold: householdInvitation.DestinationHousehold,
+		WebAppURL:    envAddr,
+		Token:        householdInvitation.Token,
+		InvitationID: householdInvitation.ID,
 	}
 
 	tmpl := template.Must(template.New("").Funcs(map[string]any{}).Parse(outgoingInviteTemplate))

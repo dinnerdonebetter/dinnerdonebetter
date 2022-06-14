@@ -438,7 +438,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			StartupDeadline: time.Minute,
 		},
 		Database: dbconfig.Config{
-			Debug:             false,
+			Debug:             true,
 			RunMigrations:     true,
 			MaxPingAttempts:   maxAttempts,
 			ConnectionDetails: devPostgresDBConnDetails,

@@ -11,13 +11,18 @@ import (
 )
 
 const (
-	invitationsBasePath = "invitations"
+	invitationsBasePath          = "invitations"
+	householdInvitationsBasePath = "household_invitations"
 )
 
-// BuildGetHouseholdInvitationRequest builds an HTTP request for fetching a webhook.
+// BuildGetHouseholdInvitationRequest builds an HTTP request for fetching a household invitation.
 func (b *Builder) BuildGetHouseholdInvitationRequest(ctx context.Context, householdID, invitationID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if householdID == "" {
+		return nil, ErrInvalidIDProvided
+	}
 
 	if invitationID == "" {
 		return nil, ErrInvalidIDProvided
@@ -50,7 +55,7 @@ func (b *Builder) BuildGetPendingHouseholdInvitationsFromUserRequest(ctx context
 
 	logger := b.logger.Clone()
 
-	uri := b.BuildURL(ctx, filter.ToValues(), "household_invitations", "sent")
+	uri := b.BuildURL(ctx, filter.ToValues(), householdInvitationsBasePath, "sent")
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -67,7 +72,7 @@ func (b *Builder) BuildGetPendingHouseholdInvitationsForUserRequest(ctx context.
 
 	logger := b.logger.Clone()
 
-	uri := b.BuildURL(ctx, filter.ToValues(), "household_invitations", "received")
+	uri := b.BuildURL(ctx, filter.ToValues(), householdInvitationsBasePath, "received")
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -77,8 +82,8 @@ func (b *Builder) BuildGetPendingHouseholdInvitationsForUserRequest(ctx context.
 	return req, nil
 }
 
-// BuildCancelHouseholdInvitationRequest builds an HTTP request that cancels a given household invitation.
-func (b *Builder) BuildCancelHouseholdInvitationRequest(ctx context.Context, householdID, invitationID, note string) (*http.Request, error) {
+// BuildAcceptHouseholdInvitationRequest builds an HTTP request that accepts a given household invitation.
+func (b *Builder) BuildAcceptHouseholdInvitationRequest(ctx context.Context, invitationID, token, note string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -87,15 +92,16 @@ func (b *Builder) BuildCancelHouseholdInvitationRequest(ctx context.Context, hou
 	uri := b.BuildURL(
 		ctx,
 		nil,
-		householdsBasePath,
-		householdID,
-		invitationsBasePath,
+		householdInvitationsBasePath,
 		invitationID,
-		"cancel",
+		"accept",
 	)
 	logger = logger.WithValue(keys.URLKey, uri)
 
-	input := &types.HouseholdInvitationUpdateRequestInput{Note: note}
+	input := &types.HouseholdInvitationUpdateRequestInput{
+		Token: token,
+		Note:  note,
+	}
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building request")
@@ -104,8 +110,8 @@ func (b *Builder) BuildCancelHouseholdInvitationRequest(ctx context.Context, hou
 	return req, nil
 }
 
-// BuildAcceptHouseholdInvitationRequest builds an HTTP request that accepts a given household invitation.
-func (b *Builder) BuildAcceptHouseholdInvitationRequest(ctx context.Context, householdID, invitationID, note string) (*http.Request, error) {
+// BuildCancelHouseholdInvitationRequest builds an HTTP request that cancels a given household invitation.
+func (b *Builder) BuildCancelHouseholdInvitationRequest(ctx context.Context, invitationID, token, note string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -114,15 +120,16 @@ func (b *Builder) BuildAcceptHouseholdInvitationRequest(ctx context.Context, hou
 	uri := b.BuildURL(
 		ctx,
 		nil,
-		householdsBasePath,
-		householdID,
-		invitationsBasePath,
+		householdInvitationsBasePath,
 		invitationID,
-		"accept",
+		"cancel",
 	)
 	logger = logger.WithValue(keys.URLKey, uri)
 
-	input := &types.HouseholdInvitationUpdateRequestInput{Note: note}
+	input := &types.HouseholdInvitationUpdateRequestInput{
+		Token: token,
+		Note:  note,
+	}
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building request")
@@ -132,7 +139,7 @@ func (b *Builder) BuildAcceptHouseholdInvitationRequest(ctx context.Context, hou
 }
 
 // BuildRejectHouseholdInvitationRequest builds an HTTP request that rejects a given household invitation.
-func (b *Builder) BuildRejectHouseholdInvitationRequest(ctx context.Context, householdID, invitationID, note string) (*http.Request, error) {
+func (b *Builder) BuildRejectHouseholdInvitationRequest(ctx context.Context, invitationID, token, note string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -141,15 +148,16 @@ func (b *Builder) BuildRejectHouseholdInvitationRequest(ctx context.Context, hou
 	uri := b.BuildURL(
 		ctx,
 		nil,
-		householdsBasePath,
-		householdID,
-		invitationsBasePath,
+		householdInvitationsBasePath,
 		invitationID,
 		"reject",
 	)
 	logger = logger.WithValue(keys.URLKey, uri)
 
-	input := &types.HouseholdInvitationUpdateRequestInput{Note: note}
+	input := &types.HouseholdInvitationUpdateRequestInput{
+		Token: token,
+		Note:  note,
+	}
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building request")

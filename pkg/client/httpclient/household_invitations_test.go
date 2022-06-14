@@ -193,18 +193,71 @@ func (s *householdInvitationsTestSuite) TestClient_GetPendingHouseholdInvitation
 	})
 }
 
-func (s *householdInvitationsTestSuite) TestClient_CancelHouseholdInvitation() {
-	const expectedPath = "/api/v1/households/%s/invitations/%s/cancel"
+func (s *householdInvitationsTestSuite) TestClient_AcceptHouseholdInvitation() {
+	const expectedPath = "/api/v1/household_invitations/%s/accept"
 
 	s.Run("standard", func() {
 		t := s.T()
 
 		s.exampleHousehold.BelongsToUser = ""
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHouseholdInvitation.ID)
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
 
-		assert.NoError(t, c.CancelHouseholdInvitation(s.ctx, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID, t.Name()))
+		assert.NoError(t, c.AcceptHouseholdInvitation(s.ctx, s.exampleHouseholdInvitation.ID, s.exampleHouseholdInvitation.Token, t.Name()))
+	})
+
+	s.Run("with invalid token", func() {
+		t := s.T()
+
+		s.exampleHousehold.BelongsToUser = ""
+
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHouseholdInvitation.ID)
+		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
+
+		assert.Error(t, c.AcceptHouseholdInvitation(s.ctx, s.exampleHouseholdInvitation.ID, "", t.Name()))
+	})
+
+	s.Run("with invalid household invitation ID", func() {
+		t := s.T()
+
+		s.exampleHousehold.BelongsToUser = ""
+
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHouseholdInvitation.ID)
+		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
+
+		assert.Error(t, c.AcceptHouseholdInvitation(s.ctx, "", s.exampleHouseholdInvitation.Token, t.Name()))
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		c := buildTestClientWithInvalidURL(t)
+
+		assert.Error(t, c.AcceptHouseholdInvitation(s.ctx, s.exampleHouseholdInvitation.ID, s.exampleHouseholdInvitation.Token, t.Name()))
+	})
+
+	s.Run("with error executing request", func() {
+		t := s.T()
+
+		c, _ := buildTestClientThatWaitsTooLong(t)
+
+		assert.Error(t, c.AcceptHouseholdInvitation(s.ctx, s.exampleHouseholdInvitation.ID, s.exampleHouseholdInvitation.Token, t.Name()))
+	})
+}
+
+func (s *householdInvitationsTestSuite) TestClient_CancelHouseholdInvitation() {
+	const expectedPath = "/api/v1/household_invitations/%s/cancel"
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		s.exampleHousehold.BelongsToUser = ""
+
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHouseholdInvitation.ID)
+		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
+
+		assert.NoError(t, c.CancelHouseholdInvitation(s.ctx, s.exampleHouseholdInvitation.ID, s.exampleHouseholdInvitation.Token, t.Name()))
 	})
 
 	s.Run("with invalid household ID", func() {
@@ -212,7 +265,7 @@ func (s *householdInvitationsTestSuite) TestClient_CancelHouseholdInvitation() {
 
 		s.exampleHousehold.BelongsToUser = ""
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHouseholdInvitation.ID)
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
 
 		assert.Error(t, c.CancelHouseholdInvitation(s.ctx, "", s.exampleHouseholdInvitation.ID, t.Name()))
@@ -223,10 +276,10 @@ func (s *householdInvitationsTestSuite) TestClient_CancelHouseholdInvitation() {
 
 		s.exampleHousehold.BelongsToUser = ""
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHouseholdInvitation.ID)
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
 
-		assert.Error(t, c.CancelHouseholdInvitation(s.ctx, s.exampleHousehold.ID, "", t.Name()))
+		assert.Error(t, c.CancelHouseholdInvitation(s.ctx, s.exampleHouseholdInvitation.ID, "", t.Name()))
 	})
 
 	s.Run("with error building request", func() {
@@ -234,7 +287,7 @@ func (s *householdInvitationsTestSuite) TestClient_CancelHouseholdInvitation() {
 
 		c := buildTestClientWithInvalidURL(t)
 
-		assert.Error(t, c.CancelHouseholdInvitation(s.ctx, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID, t.Name()))
+		assert.Error(t, c.CancelHouseholdInvitation(s.ctx, s.exampleHouseholdInvitation.ID, s.exampleHouseholdInvitation.Token, t.Name()))
 	})
 
 	s.Run("with error executing request", func() {
@@ -244,75 +297,22 @@ func (s *householdInvitationsTestSuite) TestClient_CancelHouseholdInvitation() {
 
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
-		assert.Error(t, c.CancelHouseholdInvitation(s.ctx, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID, t.Name()))
-	})
-}
-
-func (s *householdInvitationsTestSuite) TestClient_AcceptHouseholdInvitation() {
-	const expectedPath = "/api/v1/households/%s/invitations/%s/accept"
-
-	s.Run("standard", func() {
-		t := s.T()
-
-		s.exampleHousehold.BelongsToUser = ""
-
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
-
-		assert.NoError(t, c.AcceptHouseholdInvitation(s.ctx, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID, t.Name()))
-	})
-
-	s.Run("with invalid household ID", func() {
-		t := s.T()
-
-		s.exampleHousehold.BelongsToUser = ""
-
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
-
-		assert.Error(t, c.AcceptHouseholdInvitation(s.ctx, "", s.exampleHouseholdInvitation.ID, t.Name()))
-	})
-
-	s.Run("with invalid household invitation ID", func() {
-		t := s.T()
-
-		s.exampleHousehold.BelongsToUser = ""
-
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
-
-		assert.Error(t, c.AcceptHouseholdInvitation(s.ctx, s.exampleHousehold.ID, "", t.Name()))
-	})
-
-	s.Run("with error building request", func() {
-		t := s.T()
-
-		c := buildTestClientWithInvalidURL(t)
-
-		assert.Error(t, c.AcceptHouseholdInvitation(s.ctx, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID, t.Name()))
-	})
-
-	s.Run("with error executing request", func() {
-		t := s.T()
-
-		c, _ := buildTestClientThatWaitsTooLong(t)
-
-		assert.Error(t, c.AcceptHouseholdInvitation(s.ctx, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID, t.Name()))
+		assert.Error(t, c.CancelHouseholdInvitation(s.ctx, s.exampleHouseholdInvitation.ID, s.exampleHouseholdInvitation.Token, t.Name()))
 	})
 }
 
 func (s *householdInvitationsTestSuite) TestClient_RejectHouseholdInvitation() {
-	const expectedPath = "/api/v1/households/%s/invitations/%s/reject"
+	const expectedPath = "/api/v1/household_invitations/%s/reject"
 
 	s.Run("standard", func() {
 		t := s.T()
 
 		s.exampleHousehold.BelongsToUser = ""
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHouseholdInvitation.ID)
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
 
-		assert.NoError(t, c.RejectHouseholdInvitation(s.ctx, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID, t.Name()))
+		assert.NoError(t, c.RejectHouseholdInvitation(s.ctx, s.exampleHouseholdInvitation.ID, s.exampleHouseholdInvitation.Token, t.Name()))
 	})
 
 	s.Run("with invalid household ID", func() {
@@ -320,7 +320,7 @@ func (s *householdInvitationsTestSuite) TestClient_RejectHouseholdInvitation() {
 
 		s.exampleHousehold.BelongsToUser = ""
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHouseholdInvitation.ID)
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
 
 		assert.Error(t, c.RejectHouseholdInvitation(s.ctx, "", s.exampleHouseholdInvitation.ID, t.Name()))
@@ -331,10 +331,10 @@ func (s *householdInvitationsTestSuite) TestClient_RejectHouseholdInvitation() {
 
 		s.exampleHousehold.BelongsToUser = ""
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHouseholdInvitation.ID)
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
 
-		assert.Error(t, c.RejectHouseholdInvitation(s.ctx, s.exampleHousehold.ID, "", t.Name()))
+		assert.Error(t, c.RejectHouseholdInvitation(s.ctx, s.exampleHouseholdInvitation.ID, "", t.Name()))
 	})
 
 	s.Run("with error building request", func() {
@@ -342,7 +342,7 @@ func (s *householdInvitationsTestSuite) TestClient_RejectHouseholdInvitation() {
 
 		c := buildTestClientWithInvalidURL(t)
 
-		assert.Error(t, c.RejectHouseholdInvitation(s.ctx, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID, t.Name()))
+		assert.Error(t, c.RejectHouseholdInvitation(s.ctx, s.exampleHouseholdInvitation.ID, s.exampleHouseholdInvitation.Token, t.Name()))
 	})
 
 	s.Run("with error executing request", func() {
@@ -350,6 +350,6 @@ func (s *householdInvitationsTestSuite) TestClient_RejectHouseholdInvitation() {
 
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
-		assert.Error(t, c.RejectHouseholdInvitation(s.ctx, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID, t.Name()))
+		assert.Error(t, c.RejectHouseholdInvitation(s.ctx, s.exampleHouseholdInvitation.ID, s.exampleHouseholdInvitation.Token, t.Name()))
 	})
 }

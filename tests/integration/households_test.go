@@ -268,7 +268,7 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 			assert.NotEmpty(t, invitations.HouseholdInvitations)
 
 			t.Logf("accepting invitation")
-			err = c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitation.ID, t.Name())
+			err = c.AcceptHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name())
 			require.NoError(t, err)
 
 			t.Logf("checking for sent invitation")
@@ -349,7 +349,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 			assert.NotEmpty(t, invitations.HouseholdInvitations)
 
 			t.Logf("accepting invitation")
-			err = c.AcceptHouseholdInvitation(ctx, relevantHouseholdID, invitation.ID, t.Name())
+			err = c.AcceptHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name())
 			require.NoError(t, err)
 
 			t.Logf("fetching households")
@@ -430,7 +430,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCan
 			assert.NotEmpty(t, invitations.HouseholdInvitations)
 
 			t.Logf("cancelling invitation")
-			err = testClients.main.CancelHouseholdInvitation(ctx, relevantHouseholdID, invitation.ID, t.Name())
+			err = testClients.main.CancelHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name())
 			require.NoError(t, err)
 
 			t.Logf("checking for sent invitation")
@@ -487,11 +487,11 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 
 			t.Logf("creating user to invite")
 			_, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
-				EmailAddress:         inviteReq.ToEmail,
-				Username:             fakes.BuildFakeUser().Username,
-				Password:             gofakeit.Password(true, true, true, true, false, 64),
-				DestinationHousehold: relevantHouseholdID,
-				InvitationToken:      createdInvitation.Token,
+				EmailAddress:    inviteReq.ToEmail,
+				Username:        fakes.BuildFakeUser().Username,
+				Password:        gofakeit.Password(true, true, true, true, false, 64),
+				InvitationID:    createdInvitation.ID,
+				InvitationToken: createdInvitation.Token,
 			})
 
 			t.Logf("fetching households")
@@ -549,7 +549,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeCancelled() {
 			invitation, err := testClients.main.InviteUserToHousehold(ctx, inviteReq)
 			require.NoError(t, err)
 
-			require.NoError(t, testClients.main.CancelHouseholdInvitation(ctx, relevantHouseholdID, invitation.ID, t.Name()))
+			require.NoError(t, testClients.main.CancelHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name()))
 
 			t.Logf("checking for sent invitation")
 			sentInvitations, err := testClients.main.GetPendingHouseholdInvitationsFromUser(ctx, nil)
@@ -620,7 +620,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeRejected() {
 			assert.NotEmpty(t, invitations.HouseholdInvitations)
 
 			t.Logf("accepting invitation")
-			err = c.RejectHouseholdInvitation(ctx, relevantHouseholdID, invitation.ID, t.Name())
+			err = c.RejectHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name())
 			require.NoError(t, err)
 
 			t.Logf("checking for sent invitation")
@@ -714,7 +714,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 				assert.NotEmpty(t, invitations.HouseholdInvitations)
 
 				t.Logf("accepting invitation")
-				err = clients[i].AcceptHouseholdInvitation(ctx, household.ID, invitation.ID, t.Name())
+				err = clients[i].AcceptHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name())
 				require.NoError(t, err)
 
 				t.Logf("setting user %q's client to household %s", users[i].ID, household.ID)
@@ -875,11 +875,11 @@ func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRem
 			t.Logf("creating user to invite")
 
 			regInput := &types.UserRegistrationInput{
-				EmailAddress:         inviteReq.ToEmail,
-				Username:             fakes.BuildFakeUser().Username,
-				Password:             gofakeit.Password(true, true, true, true, false, 64),
-				DestinationHousehold: relevantHouseholdID,
-				InvitationToken:      createdInvitation.Token,
+				EmailAddress:    inviteReq.ToEmail,
+				Username:        fakes.BuildFakeUser().Username,
+				Password:        gofakeit.Password(true, true, true, true, false, 64),
+				InvitationID:    createdInvitation.ID,
+				InvitationToken: createdInvitation.Token,
 			}
 			u, _, c, _ := createUserAndClientForTest(ctx, t, regInput)
 

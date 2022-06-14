@@ -75,6 +75,7 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	}
 	usersConfig := &servicesConfigurations.Users
 	householdDataManager := database.ProvideHouseholdDataManager(dataManager)
+	householdInvitationDataManager := database.ProvideHouseholdInvitationDataManager(dataManager)
 	imageUploadProcessor := images.NewImageUploadProcessor(logger, tracerProvider)
 	uploadsConfig := &cfg.Uploads
 	storageConfig := &uploadsConfig.Storage
@@ -84,12 +85,11 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 		return nil, err
 	}
 	uploadManager := uploads.ProvideUploadManager(uploader)
-	userDataService, err := users.ProvideUsersService(usersConfig, authenticationConfig, logger, userDataManager, householdDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, imageUploadProcessor, uploadManager, routeParamManager, tracerProvider, publisherProvider)
+	userDataService, err := users.ProvideUsersService(usersConfig, authenticationConfig, logger, userDataManager, householdDataManager, householdInvitationDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, imageUploadProcessor, uploadManager, routeParamManager, tracerProvider, publisherProvider)
 	if err != nil {
 		return nil, err
 	}
 	householdsConfig := servicesConfigurations.Households
-	householdInvitationDataManager := database.ProvideHouseholdInvitationDataManager(dataManager)
 	householdDataService, err := households.ProvideService(logger, householdsConfig, householdDataManager, householdInvitationDataManager, householdUserMembershipDataManager, serverEncoderDecoder, unitCounterProvider, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err

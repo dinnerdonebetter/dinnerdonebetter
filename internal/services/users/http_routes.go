@@ -133,20 +133,11 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	registrationInput.Password = strings.TrimSpace(registrationInput.Password)
-	registrationInput.Username = strings.TrimSpace(registrationInput.Username)
-
 	if err := registrationInput.ValidateWithContext(ctx, s.authSettings.MinimumUsernameLength, s.authSettings.MinimumPasswordLength); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "password is too short", http.StatusBadRequest)
 		return
 	}
-
-	// NOTE: I feel comfortable letting username be in the logger, since
-	// the logging statements below are only in the event of errs. If
-	// and when that changes, this can/should be removed.
-	logger = logger.WithValue(keys.UsernameKey, registrationInput.Username)
-	tracing.AttachUsernameToSpan(span, registrationInput.Username)
 
 	// ensure the password is not garbage-tier
 	if err := passwordvalidator.Validate(registrationInput.Password, minimumPasswordEntropy); err != nil {
@@ -154,6 +145,26 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "password not strong or diverse enough", http.StatusBadRequest)
 		return
 	}
+
+	registrationInput.Password = strings.TrimSpace(registrationInput.Password)
+	registrationInput.Username = strings.TrimSpace(registrationInput.Username)
+
+	var invitation *types.HouseholdInvitation
+	if registrationInput.InvitationID != "" && registrationInput.InvitationToken != "" {
+		i, err := s.householdInvitationDataManager.GetHouseholdInvitationByTokenAndID(ctx, registrationInput.InvitationToken, registrationInput.InvitationID)
+		if errors.Is(err, sql.ErrNoRows) {
+			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+			return
+		} else if err != nil {
+			observability.AcknowledgeError(err, logger, span, "retrieving invitation")
+			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+			return
+		}
+		invitation = i
+	}
+
+	logger = logger.WithValue(keys.UsernameKey, registrationInput.Username)
+	tracing.AttachUsernameToSpan(span, registrationInput.Username)
 
 	// hash the password
 	hp, err := s.authenticator.HashPassword(ctx, registrationInput.Password)
@@ -172,15 +183,19 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	input := &types.UserDatabaseCreationInput{
-		ID:                   ksuid.New().String(),
-		Username:             registrationInput.Username,
-		EmailAddress:         registrationInput.EmailAddress,
-		HashedPassword:       hp,
-		TwoFactorSecret:      tfs,
-		InvitationToken:      registrationInput.InvitationToken,
-		DestinationHousehold: registrationInput.DestinationHousehold,
-		BirthDay:             registrationInput.BirthDay,
-		BirthMonth:           registrationInput.BirthMonth,
+		ID:              ksuid.New().String(),
+		Username:        registrationInput.Username,
+		EmailAddress:    registrationInput.EmailAddress,
+		HashedPassword:  hp,
+		TwoFactorSecret: tfs,
+		InvitationToken: registrationInput.InvitationToken,
+		BirthDay:        registrationInput.BirthDay,
+		BirthMonth:      registrationInput.BirthMonth,
+	}
+
+	if invitation != nil {
+		input.DestinationHousehold = invitation.DestinationHousehold
+		input.InvitationToken = invitation.Token
 	}
 
 	// create the user.

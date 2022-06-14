@@ -34,20 +34,21 @@ type (
 
 	// service handles our users.
 	service struct {
-		userDataManager           types.UserDataManager
-		householdDataManager      types.HouseholdDataManager
-		authSettings              *authservice.Config
-		authenticator             authentication.Authenticator
-		logger                    logging.Logger
-		encoderDecoder            encoding.ServerEncoderDecoder
-		userIDFetcher             func(*http.Request) string
-		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
-		userCounter               metrics.UnitCounter
-		secretGenerator           random.Generator
-		imageUploadProcessor      images.ImageUploadProcessor
-		uploadManager             uploads.UploadManager
-		dataChangesPublisher      messagequeue.Publisher
-		tracer                    tracing.Tracer
+		userDataManager                types.UserDataManager
+		householdDataManager           types.HouseholdDataManager
+		householdInvitationDataManager types.HouseholdInvitationDataManager
+		authSettings                   *authservice.Config
+		authenticator                  authentication.Authenticator
+		logger                         logging.Logger
+		encoderDecoder                 encoding.ServerEncoderDecoder
+		userIDFetcher                  func(*http.Request) string
+		sessionContextDataFetcher      func(*http.Request) (*types.SessionContextData, error)
+		userCounter                    metrics.UnitCounter
+		secretGenerator                random.Generator
+		imageUploadProcessor           images.ImageUploadProcessor
+		uploadManager                  uploads.UploadManager
+		dataChangesPublisher           messagequeue.Publisher
+		tracer                         tracing.Tracer
 	}
 )
 
@@ -58,6 +59,7 @@ func ProvideUsersService(
 	logger logging.Logger,
 	userDataManager types.UserDataManager,
 	householdDataManager types.HouseholdDataManager,
+	householdInvitationDataManager types.HouseholdInvitationDataManager,
 	authenticator authentication.Authenticator,
 	encoder encoding.ServerEncoderDecoder,
 	counterProvider metrics.UnitCounterProvider,
@@ -73,20 +75,21 @@ func ProvideUsersService(
 	}
 
 	s := &service{
-		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
-		userDataManager:           userDataManager,
-		householdDataManager:      householdDataManager,
-		authenticator:             authenticator,
-		userIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(UserIDURIParamKey),
-		sessionContextDataFetcher: authservice.FetchContextFromRequest,
-		encoderDecoder:            encoder,
-		authSettings:              authSettings,
-		userCounter:               metrics.EnsureUnitCounter(counterProvider, logger, counterName, counterDescription),
-		secretGenerator:           random.NewGenerator(logger, tracerProvider),
-		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),
-		imageUploadProcessor:      imageUploadProcessor,
-		uploadManager:             uploadManager,
-		dataChangesPublisher:      dataChangesPublisher,
+		logger:                         logging.EnsureLogger(logger).WithName(serviceName),
+		userDataManager:                userDataManager,
+		householdDataManager:           householdDataManager,
+		householdInvitationDataManager: householdInvitationDataManager,
+		authenticator:                  authenticator,
+		userIDFetcher:                  routeParamManager.BuildRouteParamStringIDFetcher(UserIDURIParamKey),
+		sessionContextDataFetcher:      authservice.FetchContextFromRequest,
+		encoderDecoder:                 encoder,
+		authSettings:                   authSettings,
+		userCounter:                    metrics.EnsureUnitCounter(counterProvider, logger, counterName, counterDescription),
+		secretGenerator:                random.NewGenerator(logger, tracerProvider),
+		tracer:                         tracing.NewTracer(tracerProvider.Tracer(serviceName)),
+		imageUploadProcessor:           imageUploadProcessor,
+		uploadManager:                  uploadManager,
+		dataChangesPublisher:           dataChangesPublisher,
 	}
 
 	return s, nil

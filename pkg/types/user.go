@@ -66,14 +66,14 @@ type (
 
 	// UserRegistrationInput represents the input required from users to register an account.
 	UserRegistrationInput struct {
-		_                    struct{}
-		BirthDay             *uint8 `json:"birthDay,omitempty"`
-		BirthMonth           *uint8 `json:"birthMonth,omitempty"`
-		Password             string `json:"password"`
-		EmailAddress         string `json:"emailAddress"`
-		InvitationToken      string `json:"invitationToken,omitempty"`
-		DestinationHousehold string `json:"destinationHousehold,omitempty"`
-		Username             string `json:"username"`
+		_               struct{}
+		BirthDay        *uint8 `json:"birthDay,omitempty"`
+		BirthMonth      *uint8 `json:"birthMonth,omitempty"`
+		Password        string `json:"password"`
+		EmailAddress    string `json:"emailAddress"`
+		InvitationToken string `json:"invitationToken,omitempty"`
+		InvitationID    string `json:"invitationID,omitempty"`
+		Username        string `json:"username"`
 	}
 
 	// UserDatabaseCreationInput is used by the User creation route to communicate with the data store.

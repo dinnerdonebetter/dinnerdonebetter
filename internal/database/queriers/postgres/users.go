@@ -559,7 +559,7 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDatabaseCr
 	}
 
 	if hasValidInvite {
-		if err := q.acceptInvitationForUser(ctx, tx, input, user.ID); err != nil {
+		if err := q.acceptInvitationForUser(ctx, tx, input); err != nil {
 			return nil, observability.PrepareError(err, logger, span, "accepting household invitation")
 		}
 	}

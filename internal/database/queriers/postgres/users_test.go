@@ -1127,7 +1127,6 @@ func TestQuerier_CreateUser(T *testing.T) {
 		invitationStatusUpdateArgs := []interface{}{
 			types.AcceptedHouseholdInvitationStatus,
 			"",
-			exampleHouseholdInvitation.DestinationHousehold,
 			exampleHouseholdInvitation.ID,
 		}
 
