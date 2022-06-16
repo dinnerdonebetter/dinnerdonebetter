@@ -154,6 +154,8 @@ func (q *SQLQuerier) BuildSessionContextDataForUser(ctx context.Context, userID 
 
 	sessionCtxData := &types.SessionContextData{
 		Requester: types.RequesterInfo{
+			Username:              user.Username,
+			EmailAddress:          user.EmailAddress,
 			UserID:                user.ID,
 			Reputation:            user.ServiceHouseholdStatus,
 			ReputationExplanation: user.ReputationExplanation,

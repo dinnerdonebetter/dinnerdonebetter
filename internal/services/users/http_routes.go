@@ -11,14 +11,13 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/prixfixeco/api_server/internal/database"
-
 	"github.com/boombuler/barcode"
 	"github.com/boombuler/barcode/qr"
 	"github.com/pquerna/otp/totp"
 	"github.com/segmentio/ksuid"
 	passwordvalidator "github.com/wagslane/go-password-validator"
 
+	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -135,14 +134,14 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err := registrationInput.ValidateWithContext(ctx, s.authSettings.MinimumUsernameLength, s.authSettings.MinimumPasswordLength); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "password is too short", http.StatusBadRequest)
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	// ensure the password is not garbage-tier
 	if err := passwordvalidator.Validate(registrationInput.Password, minimumPasswordEntropy); err != nil {
 		logger.WithValue("password_validation_error", err).Debug("weak password provided to user creation route")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "password not strong or diverse enough", http.StatusBadRequest)
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "password too weak", http.StatusBadRequest)
 		return
 	}
 

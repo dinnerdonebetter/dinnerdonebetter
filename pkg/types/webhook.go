@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
 
 const (
@@ -99,7 +100,7 @@ var _ validation.ValidatableWithContext = (*WebhookCreationRequestInput)(nil)
 func (w *WebhookCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, w,
 		validation.Field(&w.Name, validation.Required),
-		validation.Field(&w.URL, validation.Required, &urlValidator{}),
+		validation.Field(&w.URL, validation.Required, is.URL),
 		validation.Field(&w.Method, validation.Required, validation.In(http.MethodGet, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete)),
 		validation.Field(&w.ContentType, validation.Required, validation.In("application/json", "application/xml")),
 		validation.Field(&w.Events, validation.Required),
@@ -129,7 +130,7 @@ func (w *WebhookDatabaseCreationInput) ValidateWithContext(ctx context.Context) 
 	return validation.ValidateStructWithContext(ctx, w,
 		validation.Field(&w.ID, validation.Required),
 		validation.Field(&w.Name, validation.Required),
-		validation.Field(&w.URL, validation.Required, &urlValidator{}),
+		validation.Field(&w.URL, validation.Required, is.URL),
 		validation.Field(&w.Method, validation.Required, validation.In(http.MethodGet, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete)),
 		validation.Field(&w.ContentType, validation.Required, validation.In("application/json", "application/xml")),
 		validation.Field(&w.Events, validation.Required),
