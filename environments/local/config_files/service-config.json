@@ -159,12 +159,12 @@
 			},
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "hwU6vYbGqx9+LKd1AkwyHcPOIfmouuvQRlTlLBW7Fmg=",
+				"localModeKey": "Zsx5eKtOMG1gnIzaQ/09qWlncsAVAC53OIE3szgp3bw=",
 				"lifetime": 60000000000
 			},
 			"debug": true,
 			"enableUserSignup": true,
-			"minimumUsernameLength": 4,
+			"minimumUsernameLength": 3,
 			"minimumPasswordLength": 8
 		}
 	}
