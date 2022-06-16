@@ -136,6 +136,8 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 
 		expected := &types.SessionContextData{
 			Requester: types.RequesterInfo{
+				Username:              exampleUser.Username,
+				EmailAddress:          exampleUser.EmailAddress,
 				UserID:                exampleUser.ID,
 				Reputation:            exampleUser.ServiceHouseholdStatus,
 				ReputationExplanation: exampleUser.ReputationExplanation,

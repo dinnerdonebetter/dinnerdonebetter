@@ -67,6 +67,7 @@ require (
 	cloud.google.com/go/compute v1.2.0 // indirect
 	cloud.google.com/go/iam v0.1.0 // indirect
 	cloud.google.com/go/kms v1.2.0 // indirect
+	cloud.google.com/go/logging v1.4.2
 	cloud.google.com/go/trace v1.0.0 // indirect
 	github.com/aead/chacha20 v0.0.0-20180709150244-8b13a72661da // indirect
 	github.com/aead/chacha20poly1305 v0.0.0-20170617001512-233f39982aeb // indirect
