@@ -65,6 +65,8 @@ type (
 		Reputation            householdStatus                            `json:"-"`
 		ReputationExplanation string                                     `json:"-"`
 		UserID                string                                     `json:"-"`
+		EmailAddress          string                                     `json:"-"`
+		Username              string                                     `json:"-"`
 	}
 
 	// UserStatusResponse is what we encode when the frontend wants to check auth status.

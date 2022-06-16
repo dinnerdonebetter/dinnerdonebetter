@@ -3,7 +3,6 @@ module github.com/prixfixeco/api_server
 go 1.18
 
 require (
-	cloud.google.com/go/logging v1.4.2
 	cloud.google.com/go/pubsub v1.10.3
 	cloud.google.com/go/secretmanager v1.1.0
 	github.com/DATA-DOG/go-sqlmock v1.5.0
@@ -72,6 +71,7 @@ require (
 	github.com/aead/chacha20 v0.0.0-20180709150244-8b13a72661da // indirect
 	github.com/aead/chacha20poly1305 v0.0.0-20170617001512-233f39982aeb // indirect
 	github.com/aead/poly1305 v0.0.0-20180717145839-3fee0db0b635 // indirect
+	github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect

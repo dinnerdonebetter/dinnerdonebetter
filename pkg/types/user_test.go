@@ -115,6 +115,20 @@ func TestUserCreationInput_ValidateWithContext(T *testing.T) {
 
 		assert.NoError(t, x.ValidateWithContext(ctx, 1, 1))
 	})
+
+	T.Run("invalid", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		x := &UserRegistrationInput{
+			Username:     "",
+			EmailAddress: "",
+			Password:     "",
+		}
+
+		err := x.ValidateWithContext(ctx, 1, 1)
+		assert.Error(t, err)
+	})
 }
 
 func TestUserLoginInput_ValidateWithContext(T *testing.T) {
