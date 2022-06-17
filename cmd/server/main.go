@@ -12,16 +12,14 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/prixfixeco/api_server/internal/observability"
-
-	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
-
-	chimiddleware "github.com/go-chi/chi/v5/middleware"
-
 	"github.com/prixfixeco/api_server/internal/build/server"
 	"github.com/prixfixeco/api_server/internal/config"
+	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
+	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
+
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
 )
 
 const (

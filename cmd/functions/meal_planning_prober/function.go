@@ -6,8 +6,6 @@ import (
 	"net/url"
 	"time"
 
-	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
-
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -15,6 +13,8 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
+
+	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 )
 
 const (
