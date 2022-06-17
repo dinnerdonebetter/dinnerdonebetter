@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -288,6 +289,8 @@ func (q *SQLQuerier) performBooleanQuery(ctx context.Context, querier database.S
 func (q *SQLQuerier) performWriteQuery(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []interface{}) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	query = strings.TrimSpace(query)
 
 	logger := q.logger.WithValue("query_desc", queryDescription)
 	if q.logQueries {

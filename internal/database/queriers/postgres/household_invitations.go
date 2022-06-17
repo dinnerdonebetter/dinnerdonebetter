@@ -635,13 +635,15 @@ func (q *SQLQuerier) acceptInvitationForUser(ctx context.Context, querier databa
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue(keys.UsernameKey, input.Username)
+	logger := q.logger.WithValue(keys.UsernameKey, input.Username).WithValue(keys.UserEmailAddressKey, input.EmailAddress)
 
 	invitation, tokenCheckErr := q.GetHouseholdInvitationByEmailAndToken(ctx, input.EmailAddress, input.InvitationToken)
 	if tokenCheckErr != nil {
 		q.rollbackTransaction(ctx, querier)
 		return observability.PrepareError(tokenCheckErr, logger, span, "fetching household invitation")
 	}
+
+	logger.Debug("fetched invitation to accept for user")
 
 	createHouseholdMembershipForNewUserArgs := []interface{}{
 		ksuid.New().String(),
@@ -656,10 +658,14 @@ func (q *SQLQuerier) acceptInvitationForUser(ctx context.Context, querier databa
 		return observability.PrepareError(err, logger, span, "writing destination household membership")
 	}
 
+	logger.Debug("created membership via invitation")
+
 	if err := q.setInvitationStatus(ctx, querier, invitation.ID, "", types.AcceptedHouseholdInvitationStatus); err != nil {
 		q.rollbackTransaction(ctx, querier)
 		return observability.PrepareError(err, logger, span, "accepting household invitation")
 	}
+
+	logger.Debug("marked invitation as accepted")
 
 	return nil
 }

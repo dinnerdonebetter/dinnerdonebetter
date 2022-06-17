@@ -3,8 +3,6 @@ package keys
 const (
 	// HouseholdSubscriptionPlanIDKey is the standard key for referring to a household subscription plan ID.
 	HouseholdSubscriptionPlanIDKey = "household_subscription_plan.id"
-	// PermissionsKey is the standard key for referring to a household user membership ID.
-	PermissionsKey = "user.permissions"
 	// RequesterIDKey is the standard key for referring to a requesting user's ID.
 	RequesterIDKey = "request.made_by"
 	// HouseholdIDKey is the standard key for referring to a household ID.
@@ -83,12 +81,8 @@ const (
 	UserAgentBotKey = "is_bot"
 	// UserAgentMobileKey is the standard key for referring to a search query parameter value.
 	UserAgentMobileKey = "is_mobile"
-	// RollbackErrorKey is the standard key for referring to an error rolling back a transaction.
-	RollbackErrorKey = "ROLLBACK_ERROR"
 	// QueryErrorKey is the standard key for referring to an error building a query.
 	QueryErrorKey = "QUERY_ERROR"
-	// RowIDErrorKey is the standard key for referring to an error fetching a row ID.
-	RowIDErrorKey = "ROW_ID_ERROR"
 	// ValidationErrorKey is the standard key for referring to a struct validation error.
 	ValidationErrorKey = "validation_error"
 
