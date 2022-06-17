@@ -170,6 +170,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 		invitation = i
 		logger = logger.WithValue(keys.HouseholdInvitationIDKey, invitation.ID)
+		logger.Debug("retrieved household invitation")
 	}
 
 	logger.Debug("completed invitation check")

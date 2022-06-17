@@ -196,6 +196,8 @@ func (q *SQLQuerier) getOneRow(ctx context.Context, querier database.SQLQueryExe
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	query = strings.TrimSpace(query)
+
 	logger := q.logger.WithValue("query_desc", queryDescription)
 	if q.logQueries {
 		logger = logger.WithValue("query", query).WithValue("args", args)
@@ -215,6 +217,8 @@ func (q *SQLQuerier) getOneRow(ctx context.Context, querier database.SQLQueryExe
 func (q *SQLQuerier) performReadQuery(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []interface{}) (*sql.Rows, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	query = strings.TrimSpace(query)
 
 	logger := q.logger.WithValue("query_desc", queryDescription)
 	if q.logQueries {
@@ -243,6 +247,8 @@ func (q *SQLQuerier) performCountQuery(ctx context.Context, querier database.SQL
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	query = strings.TrimSpace(query)
+
 	logger := q.logger.WithValue("query_desc", queryDesc)
 	if q.logQueries {
 		logger = logger.WithValue("query", query)
@@ -267,6 +273,7 @@ func (q *SQLQuerier) performBooleanQuery(ctx context.Context, querier database.S
 	defer span.End()
 
 	var exists bool
+	query = strings.TrimSpace(query)
 
 	logger := q.logger.WithValue(keys.DatabaseQueryKey, query).WithValue("args", args)
 	tracing.AttachDatabaseQueryToSpan(span, "boolean query", query, args)

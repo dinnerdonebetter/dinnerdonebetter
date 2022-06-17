@@ -227,6 +227,8 @@ func (q *SQLQuerier) GetHouseholdInvitationByTokenAndID(ctx context.Context, tok
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, invitationID)
 	tracing.AttachHouseholdInvitationIDToSpan(span, invitationID)
 
+	logger.Debug("fetching household invitation")
+
 	args := []interface{}{
 		token,
 		invitationID,
