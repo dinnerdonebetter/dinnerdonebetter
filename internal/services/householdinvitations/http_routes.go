@@ -214,6 +214,8 @@ func (s *service) OutboundInvitesHandler(res http.ResponseWriter, req *http.Requ
 	filter := types.ExtractQueryFilter(req)
 	filter.AttachToLogger(logger)
 
+	logger.Debug("fetching outbound invites for household")
+
 	// determine relevant user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
@@ -236,6 +238,8 @@ func (s *service) OutboundInvitesHandler(res http.ResponseWriter, req *http.Requ
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
+
+	logger.Debug("responding with outbound invites for household")
 
 	s.encoderDecoder.RespondWithData(ctx, res, invitations)
 }

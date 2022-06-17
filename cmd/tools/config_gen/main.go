@@ -443,7 +443,10 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			ConnectionDetails: devPostgresDBConnDetails,
 		},
 		Observability: observability.Config{
-			Logging: localLogConfig,
+			Logging: logcfg.Config{
+				Level:    logging.InfoLevel,
+				Provider: logcfg.ProviderZerolog,
+			},
 			Metrics: localMetricsConfig,
 			Tracing: localTracingConfig,
 		},

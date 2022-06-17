@@ -153,6 +153,8 @@ func (s *service) CurrentInfoHandler(res http.ResponseWriter, req *http.Request)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	logger.Debug("current household info requested")
+
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
@@ -182,6 +184,8 @@ func (s *service) CurrentInfoHandler(res http.ResponseWriter, req *http.Request)
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
+
+	logger.Debug("responding with current household info")
 
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, household)
