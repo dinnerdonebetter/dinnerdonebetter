@@ -132,6 +132,7 @@ func newEntryLogger(l *gcpLogger) logging.Logger {
 		logger: l.logger,
 		entry: gcplogging.Entry{
 			Severity: gcplogging.Default,
+			Labels:   map[string]string{},
 		},
 	}
 }
