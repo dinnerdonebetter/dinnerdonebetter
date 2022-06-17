@@ -124,7 +124,6 @@ func TestQuerier_GetHousehold(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleUserID,
 			exampleHousehold.ID,
 		}
 
@@ -183,7 +182,6 @@ func TestQuerier_GetHousehold(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleUserID,
 			exampleHousehold.ID,
 		}
 
@@ -210,7 +208,6 @@ func TestQuerier_GetHousehold(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleUserID,
 			exampleHousehold.ID,
 		}
 
@@ -239,7 +236,6 @@ func TestQuerier_GetHousehold(T *testing.T) {
 		columns := append(householdsTableColumns, householdsUserMembershipTableColumns...)
 
 		args := []interface{}{
-			exampleUserID,
 			exampleHousehold.ID,
 		}
 

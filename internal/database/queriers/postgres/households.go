@@ -209,12 +209,11 @@ const getHouseholdQuery = `
 		household_user_memberships.created_on,
 		household_user_memberships.last_updated_on,
 		household_user_memberships.archived_on
-	FROM households
-	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
+	FROM household_user_memberships
+	JOIN households ON household_user_memberships.belongs_to_household = households.id
 	JOIN users ON household_user_memberships.belongs_to_user = users.id
 	WHERE households.archived_on IS NULL
-	AND household_user_memberships.belongs_to_user = $1
-	AND households.id = $2
+	AND households.id = $1
 `
 
 // GetHousehold fetches a household from the database.
@@ -235,7 +234,6 @@ func (q *SQLQuerier) GetHousehold(ctx context.Context, householdID, userID strin
 	})
 
 	args := []interface{}{
-		userID,
 		householdID,
 	}
 
