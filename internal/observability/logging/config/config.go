@@ -1,13 +1,18 @@
 package config
 
 import (
+	"context"
+
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/logging/googlecloud"
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 )
 
 const (
 	// ProviderZerolog indicates you'd like to use the zerolog Logger.
 	ProviderZerolog = "zerolog"
+	// ProviderGoogleCloud indicates you'd like to use the googlecloud Logger.
+	ProviderGoogleCloud = "googlecloud"
 )
 
 type (
@@ -21,17 +26,25 @@ type (
 )
 
 // ProvideLogger builds a Logger according to the provided config.
-func (cfg *Config) ProvideLogger() logging.Logger {
-	var l logging.Logger
+func (cfg *Config) ProvideLogger(ctx context.Context) (logging.Logger, error) {
+	var (
+		l   logging.Logger
+		err error
+	)
 
 	switch cfg.Provider {
 	case ProviderZerolog:
 		l = zerolog.NewZerologLogger()
+	case ProviderGoogleCloud:
+		l, err = googlecloud.NewLogger(ctx)
+		if err != nil {
+			return nil, err
+		}
 	default:
 		l = logging.NewNoopLogger()
 	}
 
 	l.SetLevel(cfg.Level)
 
-	return l
+	return l, nil
 }

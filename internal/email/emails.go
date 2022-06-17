@@ -46,7 +46,7 @@ func BuildInviteMemberEmail(householdInvitation *types.HouseholdInvitation) (*Ou
 		Note:         householdInvitation.Note,
 	}
 
-	tmpl := template.Must(template.New("").Funcs(map[string]any{}).Parse(outgoingInviteTemplate))
+	tmpl := template.Must(template.New("").Funcs(map[string]interface{}{}).Parse(outgoingInviteTemplate))
 	var b bytes.Buffer
 	if err := tmpl.Execute(&b, content); err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)

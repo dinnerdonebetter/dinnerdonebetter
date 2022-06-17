@@ -92,9 +92,9 @@ func (l *zerologLogger) Debug(input string) {
 }
 
 // Error satisfies our contract for the logging.Logger Error method.
-func (l *zerologLogger) Error(err error, input string) {
+func (l *zerologLogger) Error(err error, whatWasHappeningWhenErrorOccurred string) {
 	if err != nil {
-		l.logger.Error().Stack().Caller().Err(err).Msg(input)
+		l.logger.Error().Stack().Caller().Err(err).Msg(whatWasHappeningWhenErrorOccurred)
 	}
 }
 
@@ -157,7 +157,7 @@ func (l *zerologLogger) attachRequestToLog(req *http.Request) zerolog.Logger {
 		if req.URL != nil {
 			l2 = l2.With().Str("path", req.URL.Path).Logger()
 			if req.URL.RawQuery != "" {
-				l2 = l2.With().Str("query", req.URL.RawQuery).Logger()
+				l2 = l2.With().Str(keys.URLQueryKey, req.URL.RawQuery).Logger()
 			}
 		}
 

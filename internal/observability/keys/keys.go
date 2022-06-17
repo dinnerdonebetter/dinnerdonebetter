@@ -61,6 +61,10 @@ const (
 	RequestMethodKey = "request.method"
 	// RequestURIKey is the standard key for referring to an http.Request's URI.
 	RequestURIKey = "request.uri"
+	// RequestURIPathKey is the standard key for referring to an http.Request's URI.
+	RequestURIPathKey = "request.uri.path"
+	// RequestURIQueryKey is the standard key for referring to an http.Request's URI.
+	RequestURIQueryKey = "request.uri.query"
 	// ResponseStatusKey is the standard key for referring to an http.Request's URI.
 	ResponseStatusKey = "response.status"
 	// ResponseHeadersKey is the standard key for referring to an http.Response's Headers.
@@ -71,8 +75,6 @@ const (
 	DatabaseQueryKey = "database_query"
 	// URLQueryKey is the standard key for referring to a url query.
 	URLQueryKey = "url.query"
-	// ConnectionDetailsKey is the standard key for referring to a database's URI.
-	ConnectionDetailsKey = "database.connection_details"
 	// SearchQueryKey is the standard key for referring to a search query parameter value.
 	SearchQueryKey = "search_query"
 	// UserAgentOSKey is the standard key for referring to a search query parameter value.

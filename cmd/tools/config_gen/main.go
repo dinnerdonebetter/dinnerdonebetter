@@ -90,7 +90,7 @@ var (
 
 	devEnvLogConfig = logcfg.Config{
 		Level:    logging.InfoLevel,
-		Provider: logcfg.ProviderZerolog,
+		Provider: logcfg.ProviderGoogleCloud,
 	}
 
 	localLogConfig = logcfg.Config{
