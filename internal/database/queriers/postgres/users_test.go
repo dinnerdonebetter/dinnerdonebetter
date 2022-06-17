@@ -8,9 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/lib/pq"
-
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"

@@ -6,13 +6,12 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/observability/logging"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/internal/routing"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )

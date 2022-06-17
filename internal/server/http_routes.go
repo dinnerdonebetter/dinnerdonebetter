@@ -5,11 +5,10 @@ import (
 	"fmt"
 	"path"
 
-	"github.com/prixfixeco/api_server/internal/observability/metrics"
-
 	"github.com/heptiolabs/healthcheck"
 
 	"github.com/prixfixeco/api_server/internal/authorization"
+	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/routing"
 	apiclientsservice "github.com/prixfixeco/api_server/internal/services/apiclients"
 	householdinvitationsservice "github.com/prixfixeco/api_server/internal/services/householdinvitations"

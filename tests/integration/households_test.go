@@ -3,19 +3,16 @@ package integration
 import (
 	"testing"
 
-	testutils "github.com/prixfixeco/api_server/tests/utils"
-
 	"github.com/brianvoe/gofakeit/v5"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/client/httpclient"
-	"github.com/prixfixeco/api_server/pkg/types/fakes"
-
-	"github.com/stretchr/testify/assert"
-
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/prixfixeco/api_server/pkg/types/fakes"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 func checkHouseholdEquality(t *testing.T, expected, actual *types.Household) {

@@ -6,11 +6,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/prixfixeco/api_server/internal/authorization"
-
 	"github.com/Masterminds/squirrel"
 	"github.com/segmentio/ksuid"
 
+	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"

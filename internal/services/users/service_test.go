@@ -4,16 +4,14 @@ import (
 	"net/http"
 	"testing"
 
-	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
-
-	"github.com/stretchr/testify/require"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 
 	mockauthn "github.com/prixfixeco/api_server/internal/authentication/mock"
 	"github.com/prixfixeco/api_server/internal/database"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
+	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	mockmetrics "github.com/prixfixeco/api_server/internal/observability/metrics/mock"

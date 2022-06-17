@@ -4,10 +4,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/prixfixeco/api_server/pkg/types"
-
 	"github.com/stretchr/testify/assert"
 
+	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 

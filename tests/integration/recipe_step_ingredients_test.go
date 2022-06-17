@@ -3,12 +3,10 @@ package integration
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
-
-	"github.com/stretchr/testify/assert"
-
 	"github.com/prixfixeco/api_server/pkg/types"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )

@@ -8,11 +8,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/prixfixeco/api_server/internal/messagequeue"
-
 	"github.com/gorilla/websocket"
 
 	"github.com/prixfixeco/api_server/internal/encoding"
+	"github.com/prixfixeco/api_server/internal/messagequeue"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"

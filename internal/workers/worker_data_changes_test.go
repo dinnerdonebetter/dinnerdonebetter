@@ -4,13 +4,12 @@ import (
 	"context"
 	"testing"
 
-	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
-	"github.com/prixfixeco/api_server/internal/observability/tracing"
-
 	"github.com/stretchr/testify/assert"
 
 	"github.com/prixfixeco/api_server/internal/customerdata"
 	"github.com/prixfixeco/api_server/internal/email"
+	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
 
 func TestProvideDataChangesWorker(T *testing.T) {
