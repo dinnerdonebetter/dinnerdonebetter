@@ -145,6 +145,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	registrationInput.EmailAddress = strings.TrimSpace(strings.ToLower(registrationInput.EmailAddress))
 	registrationInput.Password = strings.TrimSpace(registrationInput.Password)
 	registrationInput.Username = strings.TrimSpace(registrationInput.Username)
 

@@ -260,7 +260,7 @@ SELECT
 	household_invitations.archived_on
 FROM household_invitations 
 WHERE household_invitations.archived_on IS NULL 
-AND household_invitations.to_email = $1
+AND household_invitations.to_email = LOWER($1)
 AND household_invitations.token = $2
 `
 
@@ -600,7 +600,7 @@ UPDATE household_invitations SET
 	to_user = $1,
 	last_updated_on = extract(epoch FROM NOW())
 WHERE archived_on IS NULL 
-AND to_email = $2
+AND to_email = LOWER($2)
 `
 
 func (q *SQLQuerier) attachInvitationsToUser(ctx context.Context, querier database.SQLQueryExecutor, userEmail, userID string) error {
