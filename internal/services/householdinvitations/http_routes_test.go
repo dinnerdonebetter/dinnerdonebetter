@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/prixfixeco/api_server/internal/email"
@@ -48,7 +49,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		udm.On(
 			"GetUserIDByEmail",
 			testutils.ContextMatcher,
-			exampleInput.ToEmail,
+			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
 		).Return(helper.exampleUser.ID, nil)
 		helper.service.userDataManager = udm
 
@@ -206,7 +207,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		udm.On(
 			"GetUserIDByEmail",
 			testutils.ContextMatcher,
-			exampleInput.ToEmail,
+			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
 		).Return("", errors.New("blah"))
 		helper.service.userDataManager = udm
 
@@ -234,7 +235,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		udm.On(
 			"GetUserIDByEmail",
 			testutils.ContextMatcher,
-			exampleInput.ToEmail,
+			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
 		).Return(helper.exampleUser.ID, nil)
 		helper.service.userDataManager = udm
 
@@ -278,7 +279,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		udm.On(
 			"GetUserIDByEmail",
 			testutils.ContextMatcher,
-			exampleInput.ToEmail,
+			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
 		).Return(helper.exampleUser.ID, nil)
 		helper.service.userDataManager = udm
 
@@ -330,7 +331,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		udm.On(
 			"GetUserIDByEmail",
 			testutils.ContextMatcher,
-			exampleInput.ToEmail,
+			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
 		).Return(helper.exampleUser.ID, nil)
 		helper.service.userDataManager = udm
 
@@ -382,7 +383,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		udm.On(
 			"GetUserIDByEmail",
 			testutils.ContextMatcher,
-			exampleInput.ToEmail,
+			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
 		).Return(helper.exampleUser.ID, nil)
 		helper.service.userDataManager = udm
 
