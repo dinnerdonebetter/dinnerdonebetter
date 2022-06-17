@@ -89,7 +89,7 @@ var (
 
 	devEnvLogConfig = logcfg.Config{
 		Level:    logging.DebugLevel,
-		Provider: logcfg.ProviderGoogleCloud,
+		Provider: logcfg.ProviderZerolog,
 	}
 
 	localLogConfig = logcfg.Config{
