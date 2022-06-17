@@ -230,6 +230,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 		},
 		Database: dbconfig.Config{
 			Debug:           true,
+			LogQueries:      true,
 			RunMigrations:   true,
 			MaxPingAttempts: maxAttempts,
 		},
@@ -311,6 +312,7 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 		Database: dbconfig.Config{
 			Debug:             true,
 			RunMigrations:     true,
+			LogQueries:        true,
 			MaxPingAttempts:   maxAttempts,
 			ConnectionDetails: devPostgresDBConnDetails,
 		},
@@ -439,6 +441,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 		Database: dbconfig.Config{
 			Debug:             true,
 			RunMigrations:     true,
+			LogQueries:        true,
 			MaxPingAttempts:   maxAttempts,
 			ConnectionDetails: devPostgresDBConnDetails,
 		},
