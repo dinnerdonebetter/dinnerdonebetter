@@ -1,0 +1,27 @@
+on:
+  pull_request:
+    paths:
+      - pkg/**
+      - cmd/**
+      - internal/**
+name: Build
+jobs:
+  functions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.16.x'
+
+      - name: Build data changes cloud function directory
+        run: ./scripts/build_cloud_function.sh data_changes
+
+      - name: Build meal plan finalizer cloud function directory
+        run: ./scripts/build_cloud_function.sh meal_plan_finalizer
+
+      - name: Build meal planning prober cloud function directory
+        run: ./scripts/build_cloud_function.sh meal_planning_prober
