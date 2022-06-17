@@ -14,6 +14,10 @@ resource "google_project_iam_custom_role" "api_server_role" {
     "pubsub.topics.list",
     "pubsub.topics.publish",
     "cloudtrace.traces.patch",
+    "logging.buckets.create",
+    "logging.buckets.write",
+    "logging.buckets.list",
+    "logging.buckets.get",
   ]
 }
 
