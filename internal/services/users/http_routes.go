@@ -116,10 +116,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
-	// in the event that we don't want new users to be able to sign up (a config setting)
-	// just decline the request from the get-go
+	// in the event that we don't want new users to be able to sign up (a config setting) just decline the request from the get-go
 	if !s.authSettings.EnableUserSignup {
-		logger.Info("disallowing user creation")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "user creation is disabled", http.StatusForbidden)
 		return
 	}
@@ -131,6 +129,19 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
 		return
 	}
+
+	registrationInput.Username = strings.TrimSpace(registrationInput.Username)
+	tracing.AttachUsernameToSpan(span, registrationInput.Username)
+	registrationInput.EmailAddress = strings.TrimSpace(strings.ToLower(registrationInput.EmailAddress))
+	tracing.AttachEmailAddressToSpan(span, registrationInput.EmailAddress)
+	registrationInput.Password = strings.TrimSpace(registrationInput.Password)
+
+	logger = logger.WithValues(map[string]interface{}{
+		keys.UsernameKey:                 registrationInput.Username,
+		keys.UserEmailAddressKey:         registrationInput.EmailAddress,
+		keys.HouseholdInvitationIDKey:    registrationInput.InvitationID,
+		keys.HouseholdInvitationTokenKey: registrationInput.InvitationToken,
+	})
 
 	if err := registrationInput.ValidateWithContext(ctx, s.authSettings.MinimumUsernameLength, s.authSettings.MinimumPasswordLength); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
@@ -145,10 +156,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	registrationInput.EmailAddress = strings.TrimSpace(strings.ToLower(registrationInput.EmailAddress))
-	registrationInput.Password = strings.TrimSpace(registrationInput.Password)
-	registrationInput.Username = strings.TrimSpace(registrationInput.Username)
-
 	var invitation *types.HouseholdInvitation
 	if registrationInput.InvitationID != "" && registrationInput.InvitationToken != "" {
 		i, err := s.householdInvitationDataManager.GetHouseholdInvitationByTokenAndID(ctx, registrationInput.InvitationToken, registrationInput.InvitationID)
@@ -160,11 +167,13 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 			return
 		}
+
 		invitation = i
+		logger = logger.WithValue(keys.HouseholdInvitationIDKey, invitation.ID)
+		logger.Debug("retrieved household invitation")
 	}
 
-	logger = logger.WithValue(keys.UsernameKey, registrationInput.Username)
-	tracing.AttachUsernameToSpan(span, registrationInput.Username)
+	logger.Debug("completed invitation check")
 
 	// hash the password
 	hp, err := s.authenticator.HashPassword(ctx, registrationInput.Password)
@@ -194,6 +203,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	if invitation != nil {
+		logger.Debug("supplementing user creation input with invitation data")
 		input.DestinationHousehold = invitation.DestinationHousehold
 		input.InvitationToken = invitation.Token
 	}
@@ -210,6 +220,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
+
+	logger.Debug("user created")
 
 	// notify the relevant parties.
 	tracing.AttachUserIDToSpan(span, user.ID)

@@ -503,7 +503,12 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDatabaseCr
 	}
 
 	tracing.AttachUsernameToSpan(span, input.Username)
-	logger := q.logger.WithValue(keys.UsernameKey, input.Username)
+	logger := q.logger.WithValues(map[string]interface{}{
+		keys.UsernameKey:                 input.Username,
+		keys.UserEmailAddressKey:         input.EmailAddress,
+		keys.HouseholdInvitationTokenKey: input.InvitationToken,
+		"destination_household":          input.DestinationHousehold,
+	})
 
 	userCreationArgs := []interface{}{
 		input.ID,
@@ -557,10 +562,13 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDatabaseCr
 		return nil, observability.PrepareError(err, logger, span, "creating household for new user")
 	}
 
+	logger.Debug("household created")
+
 	if hasValidInvite {
 		if err := q.acceptInvitationForUser(ctx, tx, input); err != nil {
 			return nil, observability.PrepareError(err, logger, span, "accepting household invitation")
 		}
+		logger.Debug("accepted invitation and joined household for user")
 	}
 
 	if err := q.attachInvitationsToUser(ctx, tx, user.EmailAddress, user.ID); err != nil {
@@ -584,7 +592,11 @@ func (q *SQLQuerier) createHouseholdForUser(ctx context.Context, querier databas
 
 	// standard registration: we need to create the household
 	householdID := ksuid.New().String()
-	logger := q.logger.WithValue(keys.HouseholdIDKey, householdID)
+	logger := q.logger.WithValues(map[string]interface{}{
+		keys.HouseholdIDKey: householdID,
+		"has_valid_invite":  hasValidInvite,
+		keys.UserIDKey:      userID,
+	})
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	householdCreationInput := &types.HouseholdCreationRequestInput{

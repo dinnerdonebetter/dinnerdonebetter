@@ -40,7 +40,6 @@ type Logger interface {
 	Info(string)
 	Debug(string)
 	Error(err error, whatWasHappeningWhenErrorOccurred string)
-	Fatal(error)
 	Printf(string, ...interface{})
 
 	SetLevel(Level)

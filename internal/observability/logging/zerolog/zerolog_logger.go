@@ -1,6 +1,7 @@
 package zerolog
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"strconv"
@@ -94,13 +95,8 @@ func (l *zerologLogger) Debug(input string) {
 // Error satisfies our contract for the logging.Logger Error method.
 func (l *zerologLogger) Error(err error, whatWasHappeningWhenErrorOccurred string) {
 	if err != nil {
-		l.logger.Error().Stack().Caller().Err(err).Msg(whatWasHappeningWhenErrorOccurred)
+		l.logger.Error().Stack().Caller().Msg(fmt.Sprintf("error %s: %s", whatWasHappeningWhenErrorOccurred, err.Error()))
 	}
-}
-
-// Fatal satisfies our contract for the logging.Logger Fatal method.
-func (l *zerologLogger) Fatal(err error) {
-	l.logger.Fatal().Caller().Err(err).Msg(err.Error())
 }
 
 // Printf satisfies our contract for the logging.Logger Printf method.

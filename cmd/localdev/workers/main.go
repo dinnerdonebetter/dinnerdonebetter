@@ -52,12 +52,12 @@ func main() {
 
 	configBytes, err := os.ReadFile(configFilepath)
 	if err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
 	}
 
 	var cfg *config.InstanceConfig
 	if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
-		logger.Fatal(err)
+		log.Fatal(err)
 	}
 
 	cfg.Observability.Tracing.Jaeger.ServiceName = "workers"
@@ -71,17 +71,17 @@ func main() {
 
 	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, client)
 	if err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
 	}
 
 	cdp, err := customerdataconfig.ProvideCollector(&cfg.CustomerData, logger)
 	if err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
 	}
 
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, tracerProvider)
 	if err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
 	}
 
 	urlToUse := testutils.DetermineServiceURL().String()
@@ -93,12 +93,12 @@ func main() {
 
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
 	if err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
 	}
 
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
 	if err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
 	}
 
 	everySecond := time.Tick(time.Second)
@@ -113,20 +113,20 @@ func main() {
 
 	choresConsumer, err := consumerProvider.ProvideConsumer(ctx, choresTopicName, choresWorker.HandleMessage)
 	if err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
 	}
 
 	go choresConsumer.Consume(nil, nil)
 
 	choresPublisher, err := publisherProvider.ProviderPublisher(choresTopicName)
 	if err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
 	}
 
 	go func() {
 		for range everySecond {
 			if err = choresPublisher.Publish(ctx, &types.ChoreMessage{ChoreType: types.FinalizeMealPlansWithExpiredVotingPeriodsChoreType}); err != nil {
-				logger.Fatal(err)
+				log.Fatal(err)
 			}
 		}
 	}()
