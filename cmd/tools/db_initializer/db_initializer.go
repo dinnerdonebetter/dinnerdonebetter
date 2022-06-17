@@ -62,7 +62,7 @@ func main() {
 
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, dbConfig, tracing.NewNoopTracerProvider())
 	if err != nil {
-		logger.Fatal(fmt.Errorf("initializing database client: %w", err))
+		log.Fatal(fmt.Errorf("initializing database client: %w", err))
 	}
 
 	_, err = dataManager.DB().ExecContext(ctx, clearAllQuery)

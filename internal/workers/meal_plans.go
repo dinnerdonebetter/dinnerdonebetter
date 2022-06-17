@@ -14,7 +14,7 @@ func (w *ChoresWorker) finalizeExpiredMealPlans(ctx context.Context) error {
 
 	mealPlans, fetchMealPlansErr := w.dataManager.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
 	if fetchMealPlansErr != nil {
-		logger.Fatal(fetchMealPlansErr)
+		return fetchMealPlansErr
 	}
 
 	for _, mealPlan := range mealPlans {

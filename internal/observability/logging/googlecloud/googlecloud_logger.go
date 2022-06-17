@@ -154,11 +154,6 @@ func (l *entryLogger) Error(err error, whatWasHappeningWhenErrorOccurred string)
 	l.logger.Log(l.entry)
 }
 
-func (l *entryLogger) Fatal(err error) {
-	l.entry.Severity = gcplogging.Emergency
-	l.logger.Log(l.entry)
-}
-
 func (l *entryLogger) Printf(s string, i ...interface{}) {
 	l.logger.Log(l.entry)
 }

@@ -3,6 +3,7 @@ package mealplanfinalizerfunction
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/prixfixeco/api_server/internal/config"
 	"github.com/prixfixeco/api_server/internal/database"
@@ -35,7 +36,7 @@ func finalizeMealPlans(
 
 	mealPlans, fetchMealPlansErr := dataManager.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
 	if fetchMealPlansErr != nil {
-		logger.Fatal(fetchMealPlansErr)
+		log.Fatal(fetchMealPlansErr)
 	}
 
 	var changedCount int
@@ -91,12 +92,12 @@ func FinalizeMealPlans(ctx context.Context, m PubSubMessage) error {
 
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
 	if err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
 	}
 
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(dataChangesTopicName)
 	if err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
 	}
 
 	changedCount, mealPlanFinalizationErr := finalizeMealPlans(ctx, logger, tracer, dataManager, dataChangesPublisher)
