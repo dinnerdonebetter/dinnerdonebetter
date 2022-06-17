@@ -43,6 +43,7 @@
 	"database": {
 		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/prixfixe?sslmode=disable",
 		"debug": true,
+		"logQueries": true,
 		"runMigrations": true,
 		"maxPingAttempts": 50
 	},
@@ -155,7 +156,7 @@
 			},
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "iY74/naDC/RjY/p5aFNX77r/WpxZ5AVXmySxhQ9llHk=",
+				"localModeKey": "3mYue5lhqeeZtwn+uRu5JVBOcX5JYzJnKmIcwCKFuCE=",
 				"lifetime": 60000000000
 			},
 			"enableUserSignup": true,

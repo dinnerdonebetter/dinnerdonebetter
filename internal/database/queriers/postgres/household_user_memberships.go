@@ -165,6 +165,8 @@ func (q *SQLQuerier) BuildSessionContextDataForUser(ctx context.Context, userID 
 		ActiveHouseholdID:    defaultHouseholdID,
 	}
 
+	logger.WithValue("session_context_data", sessionCtxData).Debug("fetched session context data for user")
+
 	return sessionCtxData, nil
 }
 
