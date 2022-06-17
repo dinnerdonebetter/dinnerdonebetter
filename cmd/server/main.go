@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -108,14 +107,16 @@ func main() {
 	dbConfig := &cfg.Database
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, dbConfig, tracerProvider)
 	if err != nil {
-		log.Fatal(fmt.Errorf("initializing database client: %w", err))
+		logger.Error(err, "initializing database client")
+		return
 	}
 
 	// build our server struct.
 	// NOTE: we should, at some point, return a function that we can defer that will end any database connections and such
 	srv, err := server.Build(ctx, logger, cfg, tracerProvider, metricsProvider, metricsHandler, dataManager, emailer)
 	if err != nil {
-		log.Fatal(fmt.Errorf("initializing HTTP server: %w", err))
+		logger.Error(err, "initializing HTTP server")
+		return
 	}
 
 	initSpan.End()
