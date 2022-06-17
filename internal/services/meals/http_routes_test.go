@@ -8,12 +8,11 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/prixfixeco/api_server/internal/database"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"

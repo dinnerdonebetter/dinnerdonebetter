@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
-
-	"github.com/stretchr/testify/assert"
 
 	"github.com/prixfixeco/api_server/pkg/types"
 )

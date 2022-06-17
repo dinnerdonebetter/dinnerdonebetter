@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/prixfixeco/api_server/internal/email"
 
@@ -56,9 +57,11 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
 		return
 	}
+
 	providedInput.ID = ksuid.New().String()
 	providedInput.DestinationHousehold = householdID
 	providedInput.FromUser = requester
+	providedInput.ToEmail = strings.TrimSpace(strings.ToLower(providedInput.ToEmail))
 
 	if err = providedInput.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")

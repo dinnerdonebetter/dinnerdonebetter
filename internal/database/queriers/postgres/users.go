@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/lib/pq"
-
 	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/internal/authorization"

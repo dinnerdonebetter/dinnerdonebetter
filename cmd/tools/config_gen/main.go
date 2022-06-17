@@ -9,8 +9,6 @@ import (
 	"path/filepath"
 	"time"
 
-	recipestepproductsservice "github.com/prixfixeco/api_server/internal/services/recipestepproducts"
-
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
@@ -38,6 +36,7 @@ import (
 	recipesservice "github.com/prixfixeco/api_server/internal/services/recipes"
 	recipestepingredientsservice "github.com/prixfixeco/api_server/internal/services/recipestepingredients"
 	recipestepinstrumentsservice "github.com/prixfixeco/api_server/internal/services/recipestepinstruments"
+	recipestepproductsservice "github.com/prixfixeco/api_server/internal/services/recipestepproducts"
 	recipestepsservice "github.com/prixfixeco/api_server/internal/services/recipesteps"
 	usersservice "github.com/prixfixeco/api_server/internal/services/users"
 	validingredientpreparationsservice "github.com/prixfixeco/api_server/internal/services/validingredientpreparations"
@@ -90,7 +89,7 @@ var (
 
 	devEnvLogConfig = logcfg.Config{
 		Level:    logging.DebugLevel,
-		Provider: logcfg.ProviderZerolog,
+		Provider: logcfg.ProviderGoogleCloud,
 	}
 
 	localLogConfig = logcfg.Config{

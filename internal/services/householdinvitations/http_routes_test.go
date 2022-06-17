@@ -5,16 +5,15 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+	"strings"
 	"testing"
-
-	"github.com/prixfixeco/api_server/internal/email"
-
-	"github.com/prixfixeco/api_server/internal/database"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
@@ -48,7 +47,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		udm.On(
 			"GetUserIDByEmail",
 			testutils.ContextMatcher,
-			exampleInput.ToEmail,
+			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
 		).Return(helper.exampleUser.ID, nil)
 		helper.service.userDataManager = udm
 
@@ -206,7 +205,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		udm.On(
 			"GetUserIDByEmail",
 			testutils.ContextMatcher,
-			exampleInput.ToEmail,
+			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
 		).Return("", errors.New("blah"))
 		helper.service.userDataManager = udm
 
@@ -234,7 +233,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		udm.On(
 			"GetUserIDByEmail",
 			testutils.ContextMatcher,
-			exampleInput.ToEmail,
+			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
 		).Return(helper.exampleUser.ID, nil)
 		helper.service.userDataManager = udm
 
@@ -278,7 +277,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		udm.On(
 			"GetUserIDByEmail",
 			testutils.ContextMatcher,
-			exampleInput.ToEmail,
+			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
 		).Return(helper.exampleUser.ID, nil)
 		helper.service.userDataManager = udm
 
@@ -330,7 +329,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		udm.On(
 			"GetUserIDByEmail",
 			testutils.ContextMatcher,
-			exampleInput.ToEmail,
+			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
 		).Return(helper.exampleUser.ID, nil)
 		helper.service.userDataManager = udm
 
@@ -382,7 +381,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		udm.On(
 			"GetUserIDByEmail",
 			testutils.ContextMatcher,
-			exampleInput.ToEmail,
+			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
 		).Return(helper.exampleUser.ID, nil)
 		helper.service.userDataManager = udm
 

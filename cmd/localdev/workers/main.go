@@ -11,20 +11,17 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/prixfixeco/api_server/internal/observability/keys"
-	testutils "github.com/prixfixeco/api_server/tests/utils"
-
-	"github.com/prixfixeco/api_server/internal/messagequeue/redis"
-
-	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
-
 	"github.com/prixfixeco/api_server/internal/config"
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
+	"github.com/prixfixeco/api_server/internal/messagequeue/redis"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
+	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 	"github.com/prixfixeco/api_server/internal/workers"
 	"github.com/prixfixeco/api_server/pkg/types"
+	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
 const (

@@ -7,9 +7,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/Masterminds/squirrel"
-
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 

@@ -7,8 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/prixfixeco/api_server/internal/observability/metrics/config"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -16,6 +14,7 @@ import (
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/metrics/config"
 	server "github.com/prixfixeco/api_server/internal/server"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
 )

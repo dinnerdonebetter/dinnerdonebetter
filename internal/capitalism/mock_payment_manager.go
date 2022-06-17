@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/prixfixeco/api_server/pkg/types"
-
 	"github.com/stretchr/testify/mock"
+
+	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 var _ PaymentManager = (*MockPaymentManager)(nil)
