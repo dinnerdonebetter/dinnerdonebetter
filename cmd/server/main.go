@@ -22,7 +22,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/build/server"
 	"github.com/prixfixeco/api_server/internal/config"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
-	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 )
 
@@ -33,10 +32,33 @@ const (
 )
 
 func main() {
-	var (
-		ctx    = context.Background()
-		logger = (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
-	)
+	ctx := context.Background()
+
+	var cfg *config.InstanceConfig
+	if os.Getenv(googleCloudIndicatorEnvVar) != "" {
+		c, cfgHydrateErr := config.GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx)
+		if cfgHydrateErr != nil {
+			log.Fatal(cfgHydrateErr)
+		}
+		cfg = c
+	} else if configFilepath := os.Getenv(configFilepathEnvVar); configFilepath != "" {
+		configBytes, configReadErr := os.ReadFile(configFilepath)
+		if configReadErr != nil {
+			log.Fatal(configReadErr)
+		}
+
+		if err := json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
+			log.Fatal(err)
+		}
+	} else {
+		log.Fatal("no config provided")
+	}
+
+	// find and validate our configuration filepath.
+	logger, err := cfg.Observability.Logging.ProvideLogger(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	logger.SetRequestIDFunc(func(req *http.Request) string {
 		return chimiddleware.GetReqID(req.Context())
@@ -44,31 +66,6 @@ func main() {
 
 	if x, parseErr := strconv.ParseBool(os.Getenv(useNoOpLoggerEnvVar)); x && parseErr == nil {
 		logger = logging.NewNoopLogger()
-	}
-
-	// find and validate our configuration filepath.
-
-	var (
-		cfg *config.InstanceConfig
-		err error
-	)
-
-	if os.Getenv(googleCloudIndicatorEnvVar) != "" {
-		cfg, err = config.GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx)
-		if err != nil {
-			logger.Fatal(err)
-		}
-	} else if configFilepath := os.Getenv(configFilepathEnvVar); configFilepath != "" {
-		configBytes, configReadErr := os.ReadFile(configFilepath)
-		if configReadErr != nil {
-			logger.Fatal(configReadErr)
-		}
-
-		if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
-			logger.Fatal(err)
-		}
-	} else {
-		log.Fatal("no config provided")
 	}
 
 	logger.SetLevel(cfg.Observability.Logging.Level)
@@ -111,14 +108,14 @@ func main() {
 	dbConfig := &cfg.Database
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, dbConfig, tracerProvider)
 	if err != nil {
-		logger.Fatal(fmt.Errorf("initializing database client: %w", err))
+		log.Fatal(fmt.Errorf("initializing database client: %w", err))
 	}
 
 	// build our server struct.
 	// NOTE: we should, at some point, return a function that we can defer that will end any database connections and such
 	srv, err := server.Build(ctx, logger, cfg, tracerProvider, metricsProvider, metricsHandler, dataManager, emailer)
 	if err != nil {
-		logger.Fatal(fmt.Errorf("initializing HTTP server: %w", err))
+		log.Fatal(fmt.Errorf("initializing HTTP server: %w", err))
 	}
 
 	initSpan.End()

@@ -5,12 +5,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"net/url"
 	"os"
 	"strings"
 	"time"
-
-	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 
 	_ "github.com/lib/pq"
 	"github.com/segmentio/ksuid"
@@ -21,6 +20,7 @@ import (
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
 	"github.com/prixfixeco/api_server/internal/database/queriers/postgres"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
+	logcfg "github.com/prixfixeco/api_server/internal/observability/logging/config"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
 	testutils "github.com/prixfixeco/api_server/tests/utils"
@@ -49,7 +49,10 @@ func init() {
 	ctx, span := tracing.StartSpan(context.Background())
 	defer span.End()
 
-	logger := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
+	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	parsedURLToUse = testutils.DetermineServiceURL()
 	urlToUse = parsedURLToUse.String()

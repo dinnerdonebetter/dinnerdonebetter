@@ -22,11 +22,6 @@ import (
 	testutils "github.com/prixfixeco/api_server/tests/utils"
 )
 
-const (
-	creationTimeout = 10 * time.Second
-	waitPeriod      = 1000 * time.Millisecond
-)
-
 func stringPointer(s string) *string {
 	return &s
 }
@@ -57,7 +52,7 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.
 	cookie, err = testutils.GetLoginCookie(ctx, urlToUse, user)
 	require.NoError(t, err)
 
-	cookieClient, err = initializeCookiePoweredClient(cookie)
+	cookieClient, err = initializeCookiePoweredClient(ctx, cookie)
 	require.NoError(t, err)
 
 	apiClient, err := cookieClient.CreateAPIClient(ctx, cookie, &types.APIClientCreationRequestInput{
@@ -79,12 +74,15 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.
 	return user, cookie, cookieClient, pasetoClient
 }
 
-func initializeCookiePoweredClient(cookie *http.Cookie) (*httpclient.Client, error) {
+func initializeCookiePoweredClient(ctx context.Context, cookie *http.Cookie) (*httpclient.Client, error) {
 	if parsedURLToUse == nil {
 		panic("url not set!")
 	}
 
-	logger := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
+	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	c, err := httpclient.NewClient(parsedURLToUse,
 		tracing.NewNoopTracerProvider(),
@@ -150,7 +148,9 @@ func buildAdminCookieAndPASETOClients(ctx context.Context, t *testing.T) (cookie
 
 	u := testutils.DetermineServiceURL()
 	urlToUse = u.String()
-	logger := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
+
+	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger(ctx)
+	require.NoError(t, err)
 
 	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
 	testutils.EnsureServerIsUp(ctx, urlToUse)
@@ -158,7 +158,7 @@ func buildAdminCookieAndPASETOClients(ctx context.Context, t *testing.T) (cookie
 	adminCookie, err := testutils.GetLoginCookie(ctx, urlToUse, premadeAdminUser)
 	require.NoError(t, err)
 
-	cClient, err := initializeCookiePoweredClient(adminCookie)
+	cClient, err := initializeCookiePoweredClient(ctx, adminCookie)
 	require.NoError(t, err)
 
 	code, err := totp.GenerateCode(premadeAdminUser.TwoFactorSecret, time.Now().UTC())

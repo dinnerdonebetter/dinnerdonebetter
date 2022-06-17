@@ -36,8 +36,10 @@ const (
 
 func main() {
 	ctx := context.Background()
-
-	logger := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
+	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	logger.Info("starting workers...")
 
