@@ -186,21 +186,21 @@ const getHouseholdQuery = `
 		households.last_updated_on,
 		households.archived_on,
 		households.belongs_to_user,
-        users.id,
-        users.username,
-        users.email_address,
-        users.avatar_src,
-        users.requires_password_change,
-        users.password_last_changed_on,
-        users.two_factor_secret_verified_on,
-        users.service_roles,
-        users.reputation,
-        users.reputation_explanation,
-        users.birth_day,
-        users.birth_month,
-        users.created_on,
-        users.last_updated_on,
-        users.archived_on,
+		users.id,
+		users.username,
+		users.email_address,
+		users.avatar_src,
+		users.requires_password_change,
+		users.password_last_changed_on,
+		users.two_factor_secret_verified_on,
+		users.service_roles,
+		users.reputation,
+		users.reputation_explanation,
+		users.birth_day,
+		users.birth_month,
+		users.created_on,
+		users.last_updated_on,
+		users.archived_on,
 		household_user_memberships.id,
 		household_user_memberships.belongs_to_user,
 		household_user_memberships.belongs_to_household,
@@ -213,7 +213,7 @@ const getHouseholdQuery = `
 	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
 	JOIN users ON household_user_memberships.belongs_to_user = users.id
 	WHERE households.archived_on IS NULL
-	AND households.belongs_to_user = $1
+	AND household_user_memberships.belongs_to_user = $1
 	AND households.id = $2
 `
 
