@@ -60,15 +60,14 @@ services:
       container_name: workers
       environment:
         TARGET_ADDRESS: 'http://api_server:8000'
-        PRIXFIXE_WORKERS_LOCAL_CONFIG_STORE_KEY: 'SUFNQVdBUkVUSEFUVEhJU1NFQ1JFVElTVU5TRUNVUkU='
-        CONFIGURATION_FILEPATH: '/etc/service.config'
+        CONFIGURATION_FILEPATH: '/etc/config'
         JAEGER_DISABLED: 'false'
       volumes:
         - source: '../..'
           target: '/go/src/github.com/prixfixeco/api_server'
           type: 'bind'
-        - source: '../../environments/local/config_files/service-config.json'
-          target: '/etc/service.config'
+        - source: '../../environments/local/config_files/worker-config.json'
+          target: '/etc/config'
           type: 'bind'
       build:
         context: '../../'
@@ -78,14 +77,13 @@ services:
       depends_on:
         - workers
       environment:
-        PRIXFIXE_SERVER_LOCAL_CONFIG_STORE_KEY: 'SUFNQVdBUkVUSEFUVEhJU1NFQ1JFVElTVU5TRUNVUkU='
-        CONFIGURATION_FILEPATH: '/etc/service.config'
+        CONFIGURATION_FILEPATH: '/etc/config'
         JAEGER_DISABLED: 'false'
       ports:
         - '8000:8000'
       volumes:
         - source: '../../environments/local/config_files/service-config.json'
-          target: '/etc/service.config'
+          target: '/etc/config'
           type: 'bind'
         - source: '../../'
           target: '/go/src/github.com/prixfixeco/api_server'

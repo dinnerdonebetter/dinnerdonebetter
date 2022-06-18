@@ -156,7 +156,7 @@
 			},
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "3mYue5lhqeeZtwn+uRu5JVBOcX5JYzJnKmIcwCKFuCE=",
+				"localModeKey": "HhNuIZA6rbM7OCf14N6L6AvmqhJsmSgueY9nGg5mlgo=",
 				"lifetime": 60000000000
 			},
 			"enableUserSignup": true,

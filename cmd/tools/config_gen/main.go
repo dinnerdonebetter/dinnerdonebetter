@@ -173,7 +173,8 @@ type configFunc func(ctx context.Context, filePath string) error
 
 var files = map[string]configFunc{
 	"environments/dev/config_files/service-config.json":               devEnvironmentServerConfig,
-	"environments/local/config_files/service-config.json":             localDevelopmentConfig,
+	"environments/local/config_files/service-config.json":             localDevelopmentServiceConfig,
+	"environments/local/config_files/worker-config.json":              localDevelopmentWorkerConfig,
 	"environments/testing/config_files/integration-tests-config.json": integrationTestConfig,
 }
 
@@ -282,8 +283,8 @@ func devEnvironmentServerConfig(ctx context.Context, filePath string) error {
 	return saveConfig(ctx, filePath, cfg, false, false)
 }
 
-func localDevelopmentConfig(ctx context.Context, filePath string) error {
-	cfg := &config.InstanceConfig{
+func buildLocalDevConfig() *config.InstanceConfig {
+	return &config.InstanceConfig{
 		Routing: localRoutingConfig,
 		Meta: config.MetaSettings{
 			Debug:   true,
@@ -403,6 +404,17 @@ func localDevelopmentConfig(ctx context.Context, filePath string) error {
 			},
 		},
 	}
+}
+
+func localDevelopmentServiceConfig(ctx context.Context, filePath string) error {
+	cfg := buildLocalDevConfig()
+
+	return saveConfig(ctx, filePath, cfg, true, true)
+}
+
+func localDevelopmentWorkerConfig(ctx context.Context, filePath string) error {
+	cfg := buildLocalDevConfig()
+	cfg.Database.LogQueries = false
 
 	return saveConfig(ctx, filePath, cfg, true, true)
 }
