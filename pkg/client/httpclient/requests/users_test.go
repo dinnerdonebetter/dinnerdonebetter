@@ -321,3 +321,43 @@ func TestBuilder_BuildAvatarUploadRequest(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 }
+
+func TestBuilder_BuildCheckUserPermissionsRequests(T *testing.T) {
+	T.Parallel()
+
+	const expectedPath = "/api/v1/users/permissions/check"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
+
+		actual, err := helper.builder.BuildCheckUserPermissionsRequests(helper.ctx, t.Name())
+		assert.NoError(t, err)
+		assert.NotNil(t, actual)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid permissions", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		actual, err := helper.builder.BuildCheckUserPermissionsRequests(helper.ctx)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+
+		actual, err := helper.builder.BuildCheckUserPermissionsRequests(helper.ctx, t.Name())
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+	})
+}

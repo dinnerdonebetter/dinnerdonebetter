@@ -165,3 +165,27 @@ func (c *Client) UploadNewAvatar(ctx context.Context, avatar []byte, extension s
 
 	return nil
 }
+
+// CheckUserPermissions checks if a user has certain permissions.
+func (c *Client) CheckUserPermissions(ctx context.Context, permissions ...string) (*types.UserPermissionsResponse, error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := c.logger.Clone()
+
+	if permissions == nil {
+		return nil, ErrNilInputProvided
+	}
+
+	req, err := c.requestBuilder.BuildCheckUserPermissionsRequests(ctx, permissions...)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building permission check request")
+	}
+
+	var res *types.UserPermissionsResponse
+	if err = c.fetchAndUnmarshal(ctx, req, &res); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "checking permission")
+	}
+
+	return res, nil
+}

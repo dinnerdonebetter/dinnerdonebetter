@@ -504,6 +504,185 @@ func TestService_CreateHandler(T *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 	})
 
+	T.Run("with invitation", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeUserRegistrationInputWithInviteFromUser(helper.exampleUser)
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = helper.exampleUser.ID
+		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
+		exampleHouseholdInvitation.ID = exampleInput.InvitationID
+		exampleHouseholdInvitation.Token = exampleInput.InvitationToken
+		exampleHouseholdInvitation.DestinationHousehold = exampleHousehold.ID
+
+		auth := &mockauthn.Authenticator{}
+		auth.On(
+			"HashPassword",
+			testutils.ContextMatcher,
+			exampleInput.Password,
+		).Return(helper.exampleUser.HashedPassword, nil)
+		helper.service.authenticator = auth
+
+		db := database.NewMockDatabase()
+		db.UserDataManager.On(
+			"CreateUser",
+			testutils.ContextMatcher,
+			mock.IsType(&types.UserDatabaseCreationInput{}),
+		).Return(helper.exampleUser, nil)
+
+		db.HouseholdInvitationDataManager.On(
+			"GetHouseholdInvitationByTokenAndID",
+			testutils.ContextMatcher,
+			exampleInput.InvitationToken,
+			exampleInput.InvitationID,
+		).Return(exampleHouseholdInvitation, nil)
+		helper.service.userDataManager = db
+		helper.service.householdInvitationDataManager = db
+
+		unitCounter := &mockmetrics.UnitCounter{}
+		unitCounter.On("Increment", testutils.ContextMatcher).Return()
+		helper.service.userCounter = unitCounter
+
+		helper.req = helper.req.WithContext(
+			context.WithValue(
+				helper.req.Context(),
+				types.UserRegistrationInputContextKey,
+				exampleInput,
+			),
+		)
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		helper.service.authSettings.EnableUserSignup = true
+		helper.service.CreateHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusCreated, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, auth, db, unitCounter, dataChangesPublisher)
+	})
+
+	T.Run("with invitation and no invite found", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeUserRegistrationInputWithInviteFromUser(helper.exampleUser)
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = helper.exampleUser.ID
+		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
+		exampleHouseholdInvitation.ID = exampleInput.InvitationID
+		exampleHouseholdInvitation.Token = exampleInput.InvitationToken
+		exampleHouseholdInvitation.DestinationHousehold = exampleHousehold.ID
+
+		db := database.NewMockDatabase()
+		db.UserDataManager.On(
+			"CreateUser",
+			testutils.ContextMatcher,
+			mock.IsType(&types.UserDatabaseCreationInput{}),
+		).Return(helper.exampleUser, nil)
+
+		db.HouseholdInvitationDataManager.On(
+			"GetHouseholdInvitationByTokenAndID",
+			testutils.ContextMatcher,
+			exampleInput.InvitationToken,
+			exampleInput.InvitationID,
+		).Return((*types.HouseholdInvitation)(nil), sql.ErrNoRows)
+		helper.service.userDataManager = db
+		helper.service.householdInvitationDataManager = db
+
+		helper.req = helper.req.WithContext(
+			context.WithValue(
+				helper.req.Context(),
+				types.UserRegistrationInputContextKey,
+				exampleInput,
+			),
+		)
+
+		helper.service.authSettings.EnableUserSignup = true
+		helper.service.CreateHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invitation and error fetching invite from database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeUserRegistrationInputWithInviteFromUser(helper.exampleUser)
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = helper.exampleUser.ID
+		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
+		exampleHouseholdInvitation.ID = exampleInput.InvitationID
+		exampleHouseholdInvitation.Token = exampleInput.InvitationToken
+		exampleHouseholdInvitation.DestinationHousehold = exampleHousehold.ID
+
+		db := database.NewMockDatabase()
+		db.UserDataManager.On(
+			"CreateUser",
+			testutils.ContextMatcher,
+			mock.IsType(&types.UserDatabaseCreationInput{}),
+		).Return(helper.exampleUser, nil)
+
+		db.HouseholdInvitationDataManager.On(
+			"GetHouseholdInvitationByTokenAndID",
+			testutils.ContextMatcher,
+			exampleInput.InvitationToken,
+			exampleInput.InvitationID,
+		).Return((*types.HouseholdInvitation)(nil), errors.New("blah"))
+		helper.service.userDataManager = db
+		helper.service.householdInvitationDataManager = db
+
+		helper.req = helper.req.WithContext(
+			context.WithValue(
+				helper.req.Context(),
+				types.UserRegistrationInputContextKey,
+				exampleInput,
+			),
+		)
+
+		helper.service.authSettings.EnableUserSignup = true
+		helper.service.CreateHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
 	T.Run("with error hashing password", func(t *testing.T) {
 		t.Parallel()
 
@@ -621,7 +800,7 @@ func TestService_CreateHandler(T *testing.T) {
 			"CreateUser",
 			testutils.ContextMatcher,
 			mock.IsType(&types.UserDatabaseCreationInput{}),
-		).Return(helper.exampleUser, errors.New("blah"))
+		).Return((*types.User)(nil), errors.New("blah"))
 		helper.service.userDataManager = db
 
 		helper.req = helper.req.WithContext(
@@ -638,6 +817,113 @@ func TestService_CreateHandler(T *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, auth, db)
+	})
+
+	T.Run("with already existent user", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeUserRegistrationInputFromUser(helper.exampleUser)
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		auth := &mockauthn.Authenticator{}
+		auth.On(
+			"HashPassword",
+			testutils.ContextMatcher,
+			exampleInput.Password,
+		).Return(helper.exampleUser.HashedPassword, nil)
+		helper.service.authenticator = auth
+
+		db := database.NewMockDatabase()
+		db.UserDataManager.On(
+			"CreateUser",
+			testutils.ContextMatcher,
+			mock.IsType(&types.UserDatabaseCreationInput{}),
+		).Return((*types.User)(nil), database.ErrUserAlreadyExists)
+		helper.service.userDataManager = db
+
+		helper.req = helper.req.WithContext(
+			context.WithValue(
+				helper.req.Context(),
+				types.UserRegistrationInputContextKey,
+				exampleInput,
+			),
+		)
+
+		helper.service.authSettings.EnableUserSignup = true
+		helper.service.CreateHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, auth, db)
+	})
+
+	T.Run("with error publishing data change event", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeUserRegistrationInputFromUser(helper.exampleUser)
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = helper.exampleUser.ID
+
+		auth := &mockauthn.Authenticator{}
+		auth.On(
+			"HashPassword",
+			testutils.ContextMatcher,
+			exampleInput.Password,
+		).Return(helper.exampleUser.HashedPassword, nil)
+		helper.service.authenticator = auth
+
+		db := database.NewMockDatabase()
+		db.UserDataManager.On(
+			"CreateUser",
+			testutils.ContextMatcher,
+			mock.IsType(&types.UserDatabaseCreationInput{}),
+		).Return(helper.exampleUser, nil)
+		helper.service.userDataManager = db
+
+		unitCounter := &mockmetrics.UnitCounter{}
+		unitCounter.On("Increment", testutils.ContextMatcher).Return()
+		helper.service.userCounter = unitCounter
+
+		helper.req = helper.req.WithContext(
+			context.WithValue(
+				helper.req.Context(),
+				types.UserRegistrationInputContextKey,
+				exampleInput,
+			),
+		)
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+		).Return(errors.New("blah"))
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		helper.service.authSettings.EnableUserSignup = true
+		helper.service.CreateHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusCreated, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, auth, db, unitCounter, dataChangesPublisher)
 	})
 }
 
@@ -763,6 +1049,86 @@ func TestService_SelfHandler(T *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mockDB, encoderDecoder)
+	})
+}
+
+func TestService_PermissionsHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+
+		exampleInput := fakes.BuildFakeUserPermissionsRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		helper.service.PermissionsHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+	})
+
+	T.Run("with error retrieving session context data", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeUnauthorizedResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+		).Return()
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.PermissionsHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, encoderDecoder)
+	})
+
+	T.Run("with error decoding input", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+
+		exampleInput := fakes.BuildFakeUserPermissionsRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"DecodeRequest",
+			testutils.ContextMatcher,
+			testutils.HTTPRequestMatcher,
+			mock.IsType(&types.UserPermissionsRequestInput{}),
+		).Return(errors.New("blah"))
+
+		encoderDecoder.On(
+			"EncodeErrorResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			"invalid request content",
+			http.StatusBadRequest,
+		).Return(errors.New("blah"))
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.PermissionsHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, encoderDecoder)
 	})
 }
 
@@ -1116,6 +1482,50 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+
+	T.Run("with error publishing data change event", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeTOTPSecretVerificationInputForUser(helper.exampleUser)
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		helper.exampleUser.TwoFactorSecretVerifiedOn = nil
+
+		mockDB := database.NewMockDatabase()
+		mockDB.UserDataManager.On(
+			"GetUserWithUnverifiedTwoFactorSecret",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleUser, nil)
+		mockDB.UserDataManager.On(
+			"MarkUserTwoFactorSecretAsVerified",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(nil)
+		helper.service.userDataManager = mockDB
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			mock.MatchedBy(testutils.DataChangeMessageMatcher),
+		).Return(errors.New("blah"))
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		helper.service.TOTPSecretVerificationHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, dataChangesPublisher)
 	})
 }
 

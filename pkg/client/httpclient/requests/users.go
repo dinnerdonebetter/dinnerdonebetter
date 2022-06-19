@@ -186,3 +186,24 @@ func (b *Builder) BuildAvatarUploadRequest(ctx context.Context, avatar []byte, e
 
 	return req, nil
 }
+
+// BuildCheckUserPermissionsRequests builds an HTTP request for checking a user's permissions.
+func (b *Builder) BuildCheckUserPermissionsRequests(ctx context.Context, permissions ...string) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if len(permissions) == 0 {
+		return nil, ErrNilInputProvided
+	}
+
+	logger := b.logger.WithValue("permissions", permissions)
+	uri := b.BuildURL(ctx, nil, usersBasePath, "permissions", "check")
+	body := &types.UserPermissionsRequestInput{Permissions: permissions}
+
+	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, body)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building user status request")
+	}
+
+	return req, nil
+}

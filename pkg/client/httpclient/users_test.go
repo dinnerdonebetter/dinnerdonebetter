@@ -329,3 +329,52 @@ func (s *usersTestSuite) TestClient_UploadNewAvatar() {
 		assert.Error(t, err)
 	})
 }
+
+func (s *usersTestSuite) TestClient_CheckUserPermissions() {
+	const expectedPath = "/api/v1/users/permissions/check"
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		exampleResponse := &types.UserPermissionsResponse{Permissions: map[string]bool{"things": true}}
+
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
+		c, _ := buildTestClientWithJSONResponse(t, spec, exampleResponse)
+
+		perms, err := c.CheckUserPermissions(s.ctx, t.Name())
+		assert.NoError(t, err)
+		assert.NotNil(t, perms)
+		assert.NotEmpty(t, perms)
+	})
+
+	s.Run("with nil permissions ", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+
+		perms, err := c.CheckUserPermissions(s.ctx)
+		assert.Error(t, err)
+		assert.Nil(t, perms)
+	})
+
+	s.Run("with invalid request builder", func() {
+		t := s.T()
+
+		c := buildTestClientWithInvalidURL(t)
+
+		perms, err := c.CheckUserPermissions(s.ctx, t.Name())
+		assert.Error(t, err)
+		assert.Nil(t, perms)
+	})
+
+	s.Run("with invalid response", func() {
+		t := s.T()
+
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
+		c := buildTestClientWithInvalidResponse(t, spec)
+
+		perms, err := c.CheckUserPermissions(s.ctx, t.Name())
+		assert.Error(t, err)
+		assert.Nil(t, perms)
+	})
+}

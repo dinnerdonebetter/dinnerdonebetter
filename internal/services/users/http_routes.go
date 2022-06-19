@@ -17,6 +17,7 @@ import (
 	"github.com/segmentio/ksuid"
 	passwordvalidator "github.com/wagslane/go-password-validator"
 
+	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
@@ -333,6 +334,47 @@ func (s *service) SelfHandler(res http.ResponseWriter, req *http.Request) {
 
 	// encode response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, user)
+}
+
+// PermissionsHandler returns information about the user making the request.
+func (s *service) PermissionsHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	sessionCtxData, sessionCtxDataErr := s.sessionContextDataFetcher(req)
+	if sessionCtxDataErr != nil {
+		observability.AcknowledgeError(sessionCtxDataErr, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// decode the request.
+	permissionsInput := new(types.UserPermissionsRequestInput)
+	if decodeErr := s.encoderDecoder.DecodeRequest(ctx, req, permissionsInput); decodeErr != nil {
+		observability.AcknowledgeError(decodeErr, logger, span, "decoding request body")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		return
+	}
+
+	body := &types.UserPermissionsResponse{
+		Permissions: make(map[string]bool),
+	}
+
+	for _, perm := range permissionsInput.Permissions {
+		p := authorization.Permission(perm)
+		hasHouseholdPerm := sessionCtxData.HouseholdPermissions[sessionCtxData.ActiveHouseholdID].HasPermission(p)
+		hasServicePerm := sessionCtxData.Requester.ServicePermissions.HasPermission(p)
+		body.Permissions[perm] = hasHouseholdPerm || hasServicePerm
+	}
+
+	// encode response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, body)
 }
 
 // ReadHandler is our read route.
