@@ -85,7 +85,7 @@ func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
 			newValidIngredientPreparation.ValidIngredientID = createdValidIngredient.ID
 			newValidIngredientPreparation.ValidPreparationID = createdValidPreparation.ID
 			createdValidIngredientPreparation.Update(convertValidIngredientPreparationToValidIngredientPreparationUpdateInput(newValidIngredientPreparation))
-			assert.NoError(t, testClients.main.UpdateValidIngredientPreparation(ctx, createdValidIngredientPreparation))
+			assert.NoError(t, testClients.admin.UpdateValidIngredientPreparation(ctx, createdValidIngredientPreparation))
 
 			t.Log("fetching changed valid ingredient preparation")
 			actual, err := testClients.main.GetValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID)
@@ -96,7 +96,7 @@ func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedOn)
 
 			t.Log("cleaning up valid ingredient preparation")
-			assert.NoError(t, testClients.main.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID))
+			assert.NoError(t, testClients.admin.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID))
 		}
 	})
 }
@@ -163,7 +163,7 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing() {
 
 			t.Log("cleaning up")
 			for _, createdValidIngredientPreparation := range expected {
-				assert.NoError(t, testClients.main.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID))
+				assert.NoError(t, testClients.admin.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID))
 			}
 		}
 	})

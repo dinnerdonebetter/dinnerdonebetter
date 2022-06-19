@@ -91,7 +91,7 @@ const (
 	ArchiveValidIngredientPreparationsPermission Permission = "archive.valid_ingredient_preparations"
 
 	// CreateMealsPermission is a household user permission.
-	CreateMealsPermission Permission = "create.mealss"
+	CreateMealsPermission Permission = "create.meals"
 	// ReadMealsPermission is a household user permission.
 	ReadMealsPermission Permission = "read.meals"
 	// UpdateMealsPermission is a household user permission.
@@ -206,60 +206,50 @@ var (
 		ReadUserPermission.ID():          ReadUserPermission,
 		SearchUserPermission.ID():        SearchUserPermission,
 
-		CreateValidInstrumentsPermission.ID():            CreateValidInstrumentsPermission,
-		CreateValidIngredientsPermission.ID():            CreateValidIngredientsPermission,
-		CreateValidPreparationsPermission.ID():           CreateValidPreparationsPermission,
-		CreateValidIngredientPreparationsPermission.ID(): CreateValidIngredientPreparationsPermission,
+		CreateValidInstrumentsPermission.ID():  CreateValidInstrumentsPermission,
+		UpdateValidInstrumentsPermission.ID():  UpdateValidInstrumentsPermission,
+		ArchiveValidInstrumentsPermission.ID(): ArchiveValidInstrumentsPermission,
+
+		CreateValidIngredientsPermission.ID():  CreateValidIngredientsPermission,
+		UpdateValidIngredientsPermission.ID():  UpdateValidIngredientsPermission,
+		ArchiveValidIngredientsPermission.ID(): ArchiveValidIngredientsPermission,
+
+		CreateValidPreparationsPermission.ID():  CreateValidPreparationsPermission,
+		UpdateValidPreparationsPermission.ID():  UpdateValidPreparationsPermission,
+		ArchiveValidPreparationsPermission.ID(): ArchiveValidPreparationsPermission,
+
+		CreateValidIngredientPreparationsPermission.ID():  CreateValidIngredientPreparationsPermission,
+		UpdateValidIngredientPreparationsPermission.ID():  UpdateValidIngredientPreparationsPermission,
+		ArchiveValidIngredientPreparationsPermission.ID(): ArchiveValidIngredientPreparationsPermission,
 	}
 
 	// household admin permissions.
 	householdAdminPermissions = map[string]gorbac.Permission{
-		UpdateHouseholdPermission.ID():                     UpdateHouseholdPermission,
-		ArchiveHouseholdPermission.ID():                    ArchiveHouseholdPermission,
+		UpdateHouseholdPermission.ID():   UpdateHouseholdPermission,
+		ArchiveHouseholdPermission.ID():  ArchiveHouseholdPermission,
+		TransferHouseholdPermission.ID(): TransferHouseholdPermission,
+
 		InviteUserToHouseholdPermission.ID():               InviteUserToHouseholdPermission,
 		ModifyMemberPermissionsForHouseholdPermission.ID(): ModifyMemberPermissionsForHouseholdPermission,
 		RemoveMemberHouseholdPermission.ID():               RemoveMemberHouseholdPermission,
-		TransferHouseholdPermission.ID():                   TransferHouseholdPermission,
-		CreateWebhooksPermission.ID():                      CreateWebhooksPermission,
-		UpdateWebhooksPermission.ID():                      UpdateWebhooksPermission,
-		ArchiveWebhooksPermission.ID():                     ArchiveWebhooksPermission,
 
-		ReadValidInstrumentsPermission.ID():    ReadValidInstrumentsPermission,
-		SearchValidInstrumentsPermission.ID():  SearchValidInstrumentsPermission,
-		UpdateValidInstrumentsPermission.ID():  UpdateValidInstrumentsPermission,
-		ArchiveValidInstrumentsPermission.ID(): ArchiveValidInstrumentsPermission,
-
-		ReadValidIngredientsPermission.ID():    ReadValidIngredientsPermission,
-		SearchValidIngredientsPermission.ID():  SearchValidIngredientsPermission,
-		UpdateValidIngredientsPermission.ID():  UpdateValidIngredientsPermission,
-		ArchiveValidIngredientsPermission.ID(): ArchiveValidIngredientsPermission,
-
-		ReadValidPreparationsPermission.ID():    ReadValidPreparationsPermission,
-		SearchValidPreparationsPermission.ID():  SearchValidPreparationsPermission,
-		UpdateValidPreparationsPermission.ID():  UpdateValidPreparationsPermission,
-		ArchiveValidPreparationsPermission.ID(): ArchiveValidPreparationsPermission,
-
-		ReadValidIngredientPreparationsPermission.ID():    ReadValidIngredientPreparationsPermission,
-		SearchValidIngredientPreparationsPermission.ID():  SearchValidIngredientPreparationsPermission,
-		UpdateValidIngredientPreparationsPermission.ID():  UpdateValidIngredientPreparationsPermission,
-		ArchiveValidIngredientPreparationsPermission.ID(): ArchiveValidIngredientPreparationsPermission,
+		CreateWebhooksPermission.ID():  CreateWebhooksPermission,
+		UpdateWebhooksPermission.ID():  UpdateWebhooksPermission,
+		ArchiveWebhooksPermission.ID(): ArchiveWebhooksPermission,
 
 		CreateMealPlansPermission.ID():  CreateMealPlansPermission,
-		ReadMealPlansPermission.ID():    ReadMealPlansPermission,
-		SearchMealPlansPermission.ID():  SearchMealPlansPermission,
 		UpdateMealPlansPermission.ID():  UpdateMealPlansPermission,
 		ArchiveMealPlansPermission.ID(): ArchiveMealPlansPermission,
 
 		CreateMealPlanOptionsPermission.ID():  CreateMealPlanOptionsPermission,
-		ReadMealPlanOptionsPermission.ID():    ReadMealPlanOptionsPermission,
-		SearchMealPlanOptionsPermission.ID():  SearchMealPlanOptionsPermission,
 		UpdateMealPlanOptionsPermission.ID():  UpdateMealPlanOptionsPermission,
 		ArchiveMealPlanOptionsPermission.ID(): ArchiveMealPlanOptionsPermission,
 	}
 
 	// household member permissions.
 	householdMemberPermissions = map[string]gorbac.Permission{
-		ReadWebhooksPermission.ID():      ReadWebhooksPermission,
+		ReadWebhooksPermission.ID(): ReadWebhooksPermission,
+
 		CreateAPIClientsPermission.ID():  CreateAPIClientsPermission,
 		ReadAPIClientsPermission.ID():    ReadAPIClientsPermission,
 		ArchiveAPIClientsPermission.ID(): ArchiveAPIClientsPermission,
@@ -298,6 +288,24 @@ var (
 		SearchRecipeStepProductsPermission.ID():  SearchRecipeStepProductsPermission,
 		UpdateRecipeStepProductsPermission.ID():  UpdateRecipeStepProductsPermission,
 		ArchiveRecipeStepProductsPermission.ID(): ArchiveRecipeStepProductsPermission,
+
+		ReadValidInstrumentsPermission.ID():   ReadValidInstrumentsPermission,
+		SearchValidInstrumentsPermission.ID(): SearchValidInstrumentsPermission,
+
+		ReadValidIngredientsPermission.ID():   ReadValidIngredientsPermission,
+		SearchValidIngredientsPermission.ID(): SearchValidIngredientsPermission,
+
+		ReadValidPreparationsPermission.ID():   ReadValidPreparationsPermission,
+		SearchValidPreparationsPermission.ID(): SearchValidPreparationsPermission,
+
+		ReadValidIngredientPreparationsPermission.ID():   ReadValidIngredientPreparationsPermission,
+		SearchValidIngredientPreparationsPermission.ID(): SearchValidIngredientPreparationsPermission,
+
+		ReadMealPlansPermission.ID():   ReadMealPlansPermission,
+		SearchMealPlansPermission.ID(): SearchMealPlansPermission,
+
+		ReadMealPlanOptionsPermission.ID():   ReadMealPlanOptionsPermission,
+		SearchMealPlanOptionsPermission.ID(): SearchMealPlanOptionsPermission,
 
 		CreateMealPlanOptionVotesPermission.ID():  CreateMealPlanOptionVotesPermission,
 		ReadMealPlanOptionVotesPermission.ID():    ReadMealPlanOptionVotesPermission,
