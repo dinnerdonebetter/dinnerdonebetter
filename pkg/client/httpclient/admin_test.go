@@ -34,17 +34,17 @@ func (s *adminTestSuite) SetupTest() {
 	s.exampleHouseholdList = fakes.BuildFakeHouseholdList()
 }
 
-func (s *adminTestSuite) TestClient_UpdateUserReputation() {
+func (s *adminTestSuite) TestClient_UpdateAccountStatus() {
 	const expectedPath = "/api/v1/admin/users/status"
 
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeUserReputationUpdateInput()
+		exampleInput := fakes.BuildFakeUserAccountStatusUpdateInput()
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
 
-		assert.NoError(t, c.UpdateUserReputation(s.ctx, exampleInput))
+		assert.NoError(t, c.UpdateUserAccountStatus(s.ctx, exampleInput))
 	})
 
 	s.Run("with nil input", func() {
@@ -53,54 +53,54 @@ func (s *adminTestSuite) TestClient_UpdateUserReputation() {
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
 
-		assert.Error(t, c.UpdateUserReputation(s.ctx, nil))
+		assert.Error(t, c.UpdateUserAccountStatus(s.ctx, nil))
 	})
 
 	s.Run("with invalid input", func() {
 		t := s.T()
 
-		exampleInput := &types.UserReputationUpdateInput{}
+		exampleInput := &types.UserAccountStatusUpdateInput{}
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
 
-		assert.Error(t, c.UpdateUserReputation(s.ctx, exampleInput))
+		assert.Error(t, c.UpdateUserAccountStatus(s.ctx, exampleInput))
 	})
 
 	s.Run("with bad request response", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeUserReputationUpdateInput()
+		exampleInput := fakes.BuildFakeUserAccountStatusUpdateInput()
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusBadRequest)
 
-		assert.Error(t, c.UpdateUserReputation(s.ctx, exampleInput))
+		assert.Error(t, c.UpdateUserAccountStatus(s.ctx, exampleInput))
 	})
 
 	s.Run("with otherwise invalid status code response", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeUserReputationUpdateInput()
+		exampleInput := fakes.BuildFakeUserAccountStatusUpdateInput()
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusInternalServerError)
 
-		assert.Error(t, c.UpdateUserReputation(s.ctx, exampleInput))
+		assert.Error(t, c.UpdateUserAccountStatus(s.ctx, exampleInput))
 	})
 
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeUserReputationUpdateInput()
+		exampleInput := fakes.BuildFakeUserAccountStatusUpdateInput()
 		c := buildTestClientWithInvalidURL(t)
 
-		assert.Error(t, c.UpdateUserReputation(s.ctx, exampleInput))
+		assert.Error(t, c.UpdateUserAccountStatus(s.ctx, exampleInput))
 	})
 
 	s.Run("with timeout", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeUserReputationUpdateInput()
+		exampleInput := fakes.BuildFakeUserAccountStatusUpdateInput()
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
-		assert.Error(t, c.UpdateUserReputation(s.ctx, exampleInput))
+		assert.Error(t, c.UpdateUserAccountStatus(s.ctx, exampleInput))
 	})
 }

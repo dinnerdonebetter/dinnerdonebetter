@@ -15,7 +15,7 @@ type AdminUserDataManager struct {
 	mock.Mock
 }
 
-// UpdateUserReputation is a mock function.
-func (m *AdminUserDataManager) UpdateUserReputation(ctx context.Context, userID string, input *types.UserReputationUpdateInput) error {
+// UpdateUserAccountStatus is a mock function.
+func (m *AdminUserDataManager) UpdateUserAccountStatus(ctx context.Context, userID string, input *types.UserAccountStatusUpdateInput) error {
 	return m.Called(ctx, userID, input).Error(0)
 }

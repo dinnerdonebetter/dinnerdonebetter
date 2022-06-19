@@ -33,8 +33,8 @@ var (
 		"users.two_factor_secret",
 		"users.two_factor_secret_verified_on",
 		"users.service_roles",
-		"users.reputation",
-		"users.reputation_explanation",
+		"users.user_account_status",
+		"users.user_account_status_explanation",
 		"users.birth_day",
 		"users.birth_month",
 		"users.created_on",
@@ -69,8 +69,8 @@ func (q *SQLQuerier) scanUser(ctx context.Context, scan database.Scanner, includ
 		&user.TwoFactorSecret,
 		&user.TwoFactorSecretVerifiedOn,
 		&rawRoles,
-		&user.ServiceHouseholdStatus,
-		&user.ReputationExplanation,
+		&user.AccountStatus,
+		&user.AccountStatusExplanation,
 		&user.BirthDay,
 		&user.BirthMonth,
 		&user.CreatedOn,
@@ -136,8 +136,8 @@ const getUserByIDQuery = `
 		users.two_factor_secret,
 		users.two_factor_secret_verified_on,
 		users.service_roles,
-		users.reputation,
-		users.reputation_explanation,
+		users.user_account_status,
+		users.user_account_status_explanation,
 		users.birth_day,
 		users.birth_month,
 		users.created_on,
@@ -184,7 +184,7 @@ func (q *SQLQuerier) getUser(ctx context.Context, userID string, withVerifiedTOT
 }
 
 const userHasStatusQuery = `
-	SELECT EXISTS ( SELECT users.id FROM users WHERE users.archived_on IS NULL AND users.id = $1 AND (users.reputation = $2 OR users.reputation = $3) )
+	SELECT EXISTS ( SELECT users.id FROM users WHERE users.archived_on IS NULL AND users.id = $1 AND (users.user_account_status = $2 OR users.user_account_status = $3) )
 `
 
 // UserHasStatus fetches whether an user has a particular status.
@@ -256,8 +256,8 @@ const getUserByUsernameQuery = `
 		users.two_factor_secret,
 		users.two_factor_secret_verified_on,
 		users.service_roles,
-		users.reputation,
-		users.reputation_explanation,
+		users.user_account_status,
+		users.user_account_status_explanation,
 		users.birth_day,
 		users.birth_month,
 		users.created_on,
@@ -308,8 +308,8 @@ const getAdminUserByUsernameQuery = `
 		users.two_factor_secret,
 		users.two_factor_secret_verified_on,
 		users.service_roles,
-		users.reputation,
-		users.reputation_explanation,
+		users.user_account_status,
+		users.user_account_status_explanation,
 		users.birth_day,
 		users.birth_month,
 		users.created_on,
@@ -393,8 +393,8 @@ const searchForUserByUsernameQuery = `SELECT
 	users.two_factor_secret,
 	users.two_factor_secret_verified_on,
 	users.service_roles,
-	users.reputation,
-	users.reputation_explanation,
+	users.user_account_status,
+	users.user_account_status_explanation,
 	users.birth_day,
 	users.birth_month,
 	users.created_on,
@@ -485,7 +485,7 @@ func (q *SQLQuerier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x
 }
 
 const userCreationQuery = `
-	INSERT INTO users (id,username,email_address,hashed_password,two_factor_secret,avatar_src,reputation,birth_day,birth_month,service_roles) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+	INSERT INTO users (id,username,email_address,hashed_password,two_factor_secret,avatar_src,user_account_status,birth_day,birth_month,service_roles) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
 `
 
 const createHouseholdMembershipForNewUserQuery = `
@@ -763,7 +763,7 @@ func (q *SQLQuerier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newS
 /* #nosec G101 */
 const markUserTwoFactorSecretAsVerified = `UPDATE users SET
 	two_factor_secret_verified_on = extract(epoch FROM NOW()),
-	reputation = $1
+	user_account_status = $1
 WHERE archived_on IS NULL
 AND id = $2
 `
@@ -781,7 +781,7 @@ func (q *SQLQuerier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, user
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
 	args := []interface{}{
-		types.GoodStandingHouseholdStatus,
+		types.GoodStandingUserAccountStatus,
 		userID,
 	}
 

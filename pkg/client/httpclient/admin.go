@@ -9,8 +9,8 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-// UpdateUserReputation updates a user's reputation.
-func (c *Client) UpdateUserReputation(ctx context.Context, input *types.UserReputationUpdateInput) error {
+// UpdateUserAccountStatus updates a user's account status.
+func (c *Client) UpdateUserAccountStatus(ctx context.Context, input *types.UserAccountStatusUpdateInput) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -25,14 +25,14 @@ func (c *Client) UpdateUserReputation(ctx context.Context, input *types.UserRepu
 		return observability.PrepareError(err, logger, span, "validating input")
 	}
 
-	req, err := c.requestBuilder.BuildUserReputationUpdateInputRequest(ctx, input)
+	req, err := c.requestBuilder.BuildUserAccountStatusUpdateInputRequest(ctx, input)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "building user reputation update request")
+		return observability.PrepareError(err, logger, span, "building user account status update request")
 	}
 
 	res, err := c.fetchResponseToRequest(ctx, c.authedClient, req)
 	if err != nil {
-		return observability.PrepareError(err, logger, span, "updating user reputation")
+		return observability.PrepareError(err, logger, span, "updating user account status")
 	}
 
 	c.closeResponseBody(ctx, res)

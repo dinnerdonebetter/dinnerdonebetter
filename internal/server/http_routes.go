@@ -89,7 +89,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				Post("/cycle_cookie_secret", s.authService.CycleCookieSecretHandler)
 			adminRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateUserStatusPermission)).
-				Post("/users/status", s.adminService.UserReputationChangeHandler)
+				Post("/users/status", s.adminService.UserAccountStatusChangeHandler)
 		})
 
 		// Users

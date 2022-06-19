@@ -13,7 +13,7 @@ func TestIsValidHouseholdStatus(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		assert.True(t, IsValidHouseholdStatus(string(GoodStandingHouseholdStatus)))
+		assert.True(t, IsValidHouseholdStatus(string(GoodStandingUserAccountStatus)))
 		assert.False(t, IsValidHouseholdStatus("blah"))
 	})
 }
@@ -45,7 +45,7 @@ func TestUser_IsBanned(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		x := &User{ServiceHouseholdStatus: BannedUserHouseholdStatus}
+		x := &User{AccountStatus: BannedUserAccountStatus}
 
 		assert.True(t, x.IsBanned())
 	})

@@ -10,7 +10,7 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
-func TestBuilder_BuildUserReputationUpdateInputRequest(T *testing.T) {
+func TestBuilder_BuildUserAccountStatusUpdateInputRequest(T *testing.T) {
 	T.Parallel()
 
 	const expectedPathFormat = "/api/v1/admin/users/status"
@@ -20,10 +20,10 @@ func TestBuilder_BuildUserReputationUpdateInputRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		exampleInput := fakes.BuildFakeUserReputationUpdateInputFromUser(helper.exampleUser)
+		exampleInput := fakes.BuildFakeUserAccountStatusUpdateInputFromUser(helper.exampleUser)
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat)
 
-		actual, err := helper.builder.BuildUserReputationUpdateInputRequest(helper.ctx, exampleInput)
+		actual, err := helper.builder.BuildUserAccountStatusUpdateInputRequest(helper.ctx, exampleInput)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -34,7 +34,7 @@ func TestBuilder_BuildUserReputationUpdateInputRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildUserReputationUpdateInputRequest(helper.ctx, nil)
+		actual, err := helper.builder.BuildUserAccountStatusUpdateInputRequest(helper.ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -44,7 +44,7 @@ func TestBuilder_BuildUserReputationUpdateInputRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildUserReputationUpdateInputRequest(helper.ctx, &types.UserReputationUpdateInput{})
+		actual, err := helper.builder.BuildUserAccountStatusUpdateInputRequest(helper.ctx, &types.UserAccountStatusUpdateInput{})
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})

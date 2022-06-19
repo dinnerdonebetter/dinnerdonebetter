@@ -7,17 +7,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestUserReputationUpdateInput_ValidateWithContext(T *testing.T) {
+func TestUserAccountStatusUpdateInput_ValidateWithContext(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		x := &UserReputationUpdateInput{
-			NewReputation: GoodStandingHouseholdStatus,
-			Reason:        t.Name(),
-			TargetUserID:  "123",
+		x := &UserAccountStatusUpdateInput{
+			NewStatus:    GoodStandingUserAccountStatus,
+			Reason:       t.Name(),
+			TargetUserID: "123",
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))

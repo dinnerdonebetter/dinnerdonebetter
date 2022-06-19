@@ -154,12 +154,12 @@ func (q *SQLQuerier) BuildSessionContextDataForUser(ctx context.Context, userID 
 
 	sessionCtxData := &types.SessionContextData{
 		Requester: types.RequesterInfo{
-			Username:              user.Username,
-			EmailAddress:          user.EmailAddress,
-			UserID:                user.ID,
-			Reputation:            user.ServiceHouseholdStatus,
-			ReputationExplanation: user.ReputationExplanation,
-			ServicePermissions:    authorization.NewServiceRolePermissionChecker(user.ServiceRoles...),
+			Username:                 user.Username,
+			EmailAddress:             user.EmailAddress,
+			UserID:                   user.ID,
+			AccountStatus:            user.AccountStatus,
+			AccountStatusExplanation: user.AccountStatusExplanation,
+			ServicePermissions:       authorization.NewServiceRolePermissionChecker(user.ServiceRoles...),
 		},
 		HouseholdPermissions: actualHouseholdRolesMap,
 		ActiveHouseholdID:    defaultHouseholdID,

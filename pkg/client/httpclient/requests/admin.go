@@ -13,8 +13,8 @@ const (
 	adminBasePath = "admin"
 )
 
-// BuildUserReputationUpdateInputRequest builds a request to change a user's reputation.
-func (b *Builder) BuildUserReputationUpdateInputRequest(ctx context.Context, input *types.UserReputationUpdateInput) (*http.Request, error) {
+// BuildUserAccountStatusUpdateInputRequest builds a request to change a user's account status.
+func (b *Builder) BuildUserAccountStatusUpdateInputRequest(ctx context.Context, input *types.UserAccountStatusUpdateInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 

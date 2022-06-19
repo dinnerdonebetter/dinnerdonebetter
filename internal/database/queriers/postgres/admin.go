@@ -11,12 +11,12 @@ import (
 
 var _ types.AdminUserDataManager = (*SQLQuerier)(nil)
 
-const setUserReputationQuery = `
-	UPDATE users SET reputation = $1, reputation_explanation = $2 WHERE archived_on IS NULL AND id = $3
+const setUserAccountStatusQuery = `
+	UPDATE users SET user_account_status = $1, user_account_status_explanation = $2 WHERE archived_on IS NULL AND id = $3
 `
 
-// UpdateUserReputation updates a user's household status.
-func (q *SQLQuerier) UpdateUserReputation(ctx context.Context, userID string, input *types.UserReputationUpdateInput) error {
+// UpdateUserAccountStatus updates a user's household status.
+func (q *SQLQuerier) UpdateUserAccountStatus(ctx context.Context, userID string, input *types.UserAccountStatusUpdateInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -24,16 +24,16 @@ func (q *SQLQuerier) UpdateUserReputation(ctx context.Context, userID string, in
 	tracing.AttachUserIDToSpan(span, userID)
 
 	args := []interface{}{
-		input.NewReputation,
+		input.NewStatus,
 		input.Reason,
 		input.TargetUserID,
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "user status update query", setUserReputationQuery, args); err != nil {
+	if err := q.performWriteQuery(ctx, q.db, "user status update query", setUserAccountStatusQuery, args); err != nil {
 		return observability.PrepareError(err, logger, span, "user status update")
 	}
 
-	logger.Info("user reputation updated")
+	logger.Info("user account status updated")
 
 	return nil
 }

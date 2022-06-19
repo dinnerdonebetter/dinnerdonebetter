@@ -10,16 +10,16 @@ import (
 type (
 	// AdminService describes a structure capable of serving traffic related to users.
 	AdminService interface {
-		UserReputationChangeHandler(res http.ResponseWriter, req *http.Request)
+		UserAccountStatusChangeHandler(res http.ResponseWriter, req *http.Request)
 	}
 
-	// UserReputationUpdateInput represents what an admin User could provide as input for changing statuses.
-	UserReputationUpdateInput struct {
+	// UserAccountStatusUpdateInput represents what an admin User could provide as input for changing statuses.
+	UserAccountStatusUpdateInput struct {
 		_ struct{}
 
-		NewReputation householdStatus `json:"newReputation"`
-		Reason        string          `json:"reason"`
-		TargetUserID  string          `json:"targetUserID"`
+		NewStatus    userAccountStatus `json:"newStatus"`
+		Reason       string            `json:"reason"`
+		TargetUserID string            `json:"targetUserID"`
 	}
 
 	// FrontendService serves static frontend files.
@@ -28,12 +28,12 @@ type (
 	}
 )
 
-var _ validation.ValidatableWithContext = (*UserReputationUpdateInput)(nil)
+var _ validation.ValidatableWithContext = (*UserAccountStatusUpdateInput)(nil)
 
 // ValidateWithContext ensures our struct is validatable.
-func (i *UserReputationUpdateInput) ValidateWithContext(ctx context.Context) error {
+func (i *UserAccountStatusUpdateInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, i,
-		validation.Field(&i.NewReputation, validation.Required),
+		validation.Field(&i.NewStatus, validation.Required),
 		validation.Field(&i.Reason, validation.Required),
 		validation.Field(&i.TargetUserID, validation.Required),
 	)

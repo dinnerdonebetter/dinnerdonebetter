@@ -22,7 +22,7 @@ func BuildFakeUser() *types.User {
 		Username:                  fake.Password(true, true, true, false, false, 32),
 		BirthDay:                  func(x uint8) *uint8 { return &x }(fake.Uint8()),
 		BirthMonth:                func(x uint8) *uint8 { return &x }(fake.Uint8()),
-		ServiceHouseholdStatus:    types.GoodStandingHouseholdStatus,
+		AccountStatus:             types.GoodStandingUserAccountStatus,
 		TwoFactorSecret:           base32.StdEncoding.EncodeToString([]byte(fake.Password(false, true, true, false, false, 32))),
 		TwoFactorSecretVerifiedOn: func(i uint64) *uint64 { return &i }(uint64(uint32(fake.Date().Unix()))),
 		ServiceRoles:              []string{authorization.ServiceUserRole.String()},
@@ -94,12 +94,12 @@ func BuildFakeUserDataStoreCreationInputFromUser(user *types.User) *types.UserDa
 	}
 }
 
-// BuildFakeUserReputationUpdateInputFromUser builds a faked UserReputationUpdateInput.
-func BuildFakeUserReputationUpdateInputFromUser(user *types.User) *types.UserReputationUpdateInput {
-	return &types.UserReputationUpdateInput{
-		TargetUserID:  ksuid.New().String(),
-		NewReputation: user.ServiceHouseholdStatus,
-		Reason:        fake.Sentence(10),
+// BuildFakeUserAccountStatusUpdateInputFromUser builds a faked UserAccountStatusUpdateInput.
+func BuildFakeUserAccountStatusUpdateInputFromUser(user *types.User) *types.UserAccountStatusUpdateInput {
+	return &types.UserAccountStatusUpdateInput{
+		TargetUserID: ksuid.New().String(),
+		NewStatus:    user.AccountStatus,
+		Reason:       fake.Sentence(10),
 	}
 }
 

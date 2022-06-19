@@ -16,7 +16,7 @@ func writeFile(filename, content string) error {
 func buildConverterMap() map[string]*typescriptify.TypeScriptify {
 
 	adminConverter := typescriptify.New().
-		Add(types.UserReputationUpdateInput{})
+		Add(types.UserAccountStatusUpdateInput{})
 
 	apiClientConverter := typescriptify.New().
 		Add(types.APIClient{}).
