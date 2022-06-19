@@ -13,6 +13,7 @@ type (
 	// HouseholdRolePermissionsChecker checks permissions for one or more household Roles.
 	HouseholdRolePermissionsChecker interface {
 		HasPermission(Permission) bool
+		PermissionSummary() map[string]bool
 
 		CanUpdateHouseholds() bool
 		CanDeleteHouseholds() bool
@@ -133,4 +134,22 @@ func (r householdRoleCollection) CanSeeAPIClients() bool {
 // CanDeleteAPIClients returns whether a user can delete API clients or not.
 func (r householdRoleCollection) CanDeleteAPIClients() bool {
 	return hasPermission(ArchiveAPIClientsPermission, r.Roles...)
+}
+
+// PermissionSummary renders a permission summary.
+func (r householdRoleCollection) PermissionSummary() map[string]bool {
+	return map[string]bool{
+		"CanUpdateHouseholds":            r.CanUpdateHouseholds(),
+		"CanDeleteHouseholds":            r.CanDeleteHouseholds(),
+		"CanAddMemberToHouseholds":       r.CanAddMemberToHouseholds(),
+		"CanRemoveMemberFromHouseholds":  r.CanRemoveMemberFromHouseholds(),
+		"CanTransferHouseholdToNewOwner": r.CanTransferHouseholdToNewOwner(),
+		"CanCreateWebhooks":              r.CanCreateWebhooks(),
+		"CanSeeWebhooks":                 r.CanSeeWebhooks(),
+		"CanUpdateWebhooks":              r.CanUpdateWebhooks(),
+		"CanArchiveWebhooks":             r.CanArchiveWebhooks(),
+		"CanCreateAPIClients":            r.CanCreateAPIClients(),
+		"CanSeeAPIClients":               r.CanSeeAPIClients(),
+		"CanDeleteAPIClients":            r.CanDeleteAPIClients(),
+	}
 }

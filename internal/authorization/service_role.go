@@ -18,6 +18,7 @@ type (
 	// ServiceRolePermissionChecker checks permissions for one or more service Roles.
 	ServiceRolePermissionChecker interface {
 		HasPermission(Permission) bool
+		PermissionSummary() map[string]bool
 
 		AsHouseholdRolePermissionChecker() HouseholdRolePermissionsChecker
 		IsServiceAdmin() bool
@@ -108,4 +109,15 @@ func (r serviceRoleCollection) CanSeeUserData() bool {
 // CanSearchUsers returns whether a user can search for users or not.
 func (r serviceRoleCollection) CanSearchUsers() bool {
 	return hasPermission(SearchUserPermission, r.Roles...)
+}
+
+// PermissionSummary renders a permission summary.
+func (r serviceRoleCollection) PermissionSummary() map[string]bool {
+	return map[string]bool{
+		"IsServiceAdmin":               r.IsServiceAdmin(),
+		"CanCycleCookieSecrets":        r.CanCycleCookieSecrets(),
+		"CanUpdateUserAccountStatuses": r.CanUpdateUserAccountStatuses(),
+		"CanSeeUserData":               r.CanSeeUserData(),
+		"CanSearchUsers":               r.CanSearchUsers(),
+	}
 }

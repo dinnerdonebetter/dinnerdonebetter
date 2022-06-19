@@ -73,8 +73,8 @@ type (
 	UserStatusResponse struct {
 		_ struct{}
 
-		AccountStatus            userAccountStatus `json:"userAccountStatus,omitempty"`
-		AccountStatusExplanation string            `json:"userAccountStatusExplanation"`
+		AccountStatus            userAccountStatus `json:"accountStatus,omitempty"`
+		AccountStatusExplanation string            `json:"accountStatusExplanation"`
 		ActiveHousehold          string            `json:"activeHousehold,omitempty"`
 		UserIsAuthenticated      bool              `json:"isAuthenticated"`
 	}

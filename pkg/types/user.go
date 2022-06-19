@@ -101,8 +101,8 @@ type (
 		AvatarSrc       *string           `json:"avatar"`
 		EmailAddress    string            `json:"emailAddress"`
 		TwoFactorQRCode string            `json:"qrCode"`
-		CreatedUserID   string            `json:"createdUserID"`
-		HouseholdStatus userAccountStatus `json:"userAccountStatus"`
+		CreatedUserID   string            `json:"createdUserID"`git
+		AccountStatus   userAccountStatus `json:"accountStatus"`
 		TwoFactorSecret string            `json:"twoFactorSecret"`
 		CreatedOn       uint64            `json:"createdOn"`
 		IsAdmin         bool              `json:"isAdmin"`
