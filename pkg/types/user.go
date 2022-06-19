@@ -16,14 +16,14 @@ const (
 	// UserSignedUpCustomerEventType indicates a user signed up.
 	UserSignedUpCustomerEventType CustomerEventType = "user_signed_up"
 
-	// GoodStandingHouseholdStatus indicates a User's household is in good standing.
-	GoodStandingHouseholdStatus householdStatus = "good"
+	// GoodStandingUserAccountStatus indicates a User's household is in good standing.
+	GoodStandingUserAccountStatus userAccountStatus = "good"
 	// UnverifiedHouseholdStatus indicates a User's household requires two factor secret verification.
-	UnverifiedHouseholdStatus householdStatus = "unverified"
-	// BannedUserHouseholdStatus indicates a User's household is banned.
-	BannedUserHouseholdStatus householdStatus = "banned"
-	// TerminatedUserReputation indicates a User's household is banned.
-	TerminatedUserReputation householdStatus = "terminated"
+	UnverifiedHouseholdStatus userAccountStatus = "unverified"
+	// BannedUserAccountStatus indicates a User's household is banned.
+	BannedUserAccountStatus userAccountStatus = "banned"
+	// TerminatedUserAccountStatus indicates a User's household is banned.
+	TerminatedUserAccountStatus userAccountStatus = "terminated"
 
 	validTOTPTokenLength = 6
 )
@@ -33,28 +33,28 @@ var (
 )
 
 type (
-	householdStatus string
+	userAccountStatus string
 
 	// User represents a User.
 	User struct {
 		_                         struct{}
-		PasswordLastChangedOn     *uint64         `json:"passwordLastChangedOn"`
-		ArchivedOn                *uint64         `json:"archivedOn"`
-		LastUpdatedOn             *uint64         `json:"lastUpdatedOn"`
-		TwoFactorSecretVerifiedOn *uint64         `json:"-"`
-		AvatarSrc                 *string         `json:"avatar"`
-		BirthMonth                *uint8          `json:"birthMonth"`
-		BirthDay                  *uint8          `json:"birthDay"`
-		EmailAddress              string          `json:"emailAddress"`
-		ReputationExplanation     string          `json:"reputationExplanation"`
-		TwoFactorSecret           string          `json:"-"`
-		HashedPassword            string          `json:"-"`
-		ID                        string          `json:"id"`
-		ServiceHouseholdStatus    householdStatus `json:"reputation"`
-		Username                  string          `json:"username"`
-		ServiceRoles              []string        `json:"serviceRoles"`
-		CreatedOn                 uint64          `json:"createdOn"`
-		RequiresPasswordChange    bool            `json:"requiresPasswordChange"`
+		PasswordLastChangedOn     *uint64           `json:"passwordLastChangedOn"`
+		ArchivedOn                *uint64           `json:"archivedOn"`
+		LastUpdatedOn             *uint64           `json:"lastUpdatedOn"`
+		TwoFactorSecretVerifiedOn *uint64           `json:"-"`
+		AvatarSrc                 *string           `json:"avatar"`
+		BirthMonth                *uint8            `json:"birthMonth"`
+		BirthDay                  *uint8            `json:"birthDay"`
+		EmailAddress              string            `json:"emailAddress"`
+		AccountStatusExplanation  string            `json:"accountStatusExplanation"`
+		TwoFactorSecret           string            `json:"-"`
+		HashedPassword            string            `json:"-"`
+		ID                        string            `json:"id"`
+		AccountStatus             userAccountStatus `json:"accountStatus"`
+		Username                  string            `json:"username"`
+		ServiceRoles              []string          `json:"serviceRoles"`
+		CreatedOn                 uint64            `json:"createdOn"`
+		RequiresPasswordChange    bool              `json:"requiresPasswordChange"`
 	}
 
 	// UserList represents a list of users.
@@ -95,17 +95,17 @@ type (
 	// UserCreationResponse is a response structure for Users that doesn't contain passwords fields, but does contain the two factor secret.
 	UserCreationResponse struct {
 		_               struct{}
-		BirthMonth      *uint8          `json:"birthMonth"`
-		BirthDay        *uint8          `json:"birthDay"`
-		Username        string          `json:"username"`
-		AvatarSrc       *string         `json:"avatar"`
-		EmailAddress    string          `json:"emailAddress"`
-		TwoFactorQRCode string          `json:"qrCode"`
-		CreatedUserID   string          `json:"createdUserID"`
-		HouseholdStatus householdStatus `json:"householdStatus"`
-		TwoFactorSecret string          `json:"twoFactorSecret"`
-		CreatedOn       uint64          `json:"createdOn"`
-		IsAdmin         bool            `json:"isAdmin"`
+		BirthMonth      *uint8            `json:"birthMonth"`
+		BirthDay        *uint8            `json:"birthDay"`
+		Username        string            `json:"username"`
+		AvatarSrc       *string           `json:"avatar"`
+		EmailAddress    string            `json:"emailAddress"`
+		TwoFactorQRCode string            `json:"qrCode"`
+		CreatedUserID   string            `json:"createdUserID"`
+		HouseholdStatus userAccountStatus `json:"userAccountStatus"`
+		TwoFactorSecret string            `json:"twoFactorSecret"`
+		CreatedOn       uint64            `json:"createdOn"`
+		IsAdmin         bool              `json:"isAdmin"`
 	}
 
 	// UserLoginInput represents the payload used to log in a User.
@@ -153,7 +153,7 @@ type (
 	// AdminUserDataManager contains administrative User functions that we don't necessarily want to expose
 	// to, say, the collection of handlers.
 	AdminUserDataManager interface {
-		UpdateUserReputation(ctx context.Context, userID string, input *UserReputationUpdateInput) error
+		UpdateUserAccountStatus(ctx context.Context, userID string, input *UserAccountStatusUpdateInput) error
 	}
 
 	// UserDataManager describes a structure which can manage users in permanent storage.
@@ -212,13 +212,13 @@ func (u *User) Update(input *User) {
 	}
 }
 
-// IsValidHouseholdStatus returns whether the provided string is a valid householdStatus.
+// IsValidHouseholdStatus returns whether the provided string is a valid userAccountStatus.
 func IsValidHouseholdStatus(s string) bool {
 	switch s {
-	case string(GoodStandingHouseholdStatus),
+	case string(GoodStandingUserAccountStatus),
 		string(UnverifiedHouseholdStatus),
-		string(BannedUserHouseholdStatus),
-		string(TerminatedUserReputation):
+		string(BannedUserAccountStatus),
+		string(TerminatedUserAccountStatus):
 		return true
 	default:
 		return false
@@ -227,7 +227,7 @@ func IsValidHouseholdStatus(s string) bool {
 
 // IsBanned is a handy helper function.
 func (u *User) IsBanned() bool {
-	return u.ServiceHouseholdStatus == BannedUserHouseholdStatus
+	return u.AccountStatus == BannedUserAccountStatus
 }
 
 // ValidateWithContext ensures our provided UserRegistrationInput meets expectations.

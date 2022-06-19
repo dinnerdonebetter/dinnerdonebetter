@@ -47,10 +47,10 @@ func buildTestHelper(t *testing.T) *validIngredientPreparationsServiceHTTPRoutes
 
 	sessionCtxData := &types.SessionContextData{
 		Requester: types.RequesterInfo{
-			UserID:                helper.exampleUser.ID,
-			Reputation:            helper.exampleUser.ServiceHouseholdStatus,
-			ReputationExplanation: helper.exampleUser.ReputationExplanation,
-			ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+			UserID:                   helper.exampleUser.ID,
+			AccountStatus:            helper.exampleUser.AccountStatus,
+			AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
+			ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 		},
 		ActiveHouseholdID: helper.exampleHousehold.ID,
 		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{

@@ -18,108 +18,113 @@ var (
 		{
 			Version:     1,
 			Description: "basic infrastructural tables",
-			Script:      fetchMigration("migrations/00001_initial.sql"),
+			Script:      fetchMigration("00001_initial"),
 		},
 		{
 			Version:     2,
 			Description: "create valid instruments table",
-			Script:      fetchMigration("migrations/00002_valid_instruments.sql"),
+			Script:      fetchMigration("00002_valid_instruments"),
 		},
 		{
 			Version:     3,
 			Description: "create valid ingredients table",
-			Script:      fetchMigration("migrations/00003_valid_ingredients.sql"),
+			Script:      fetchMigration("00003_valid_ingredients"),
 		},
 		{
 			Version:     4,
 			Description: "create valid preparations table",
-			Script:      fetchMigration("migrations/00004_valid_preparations.sql"),
+			Script:      fetchMigration("00004_valid_preparations"),
 		},
 		{
 			Version:     5,
 			Description: "create valid ingredient preparations table",
-			Script:      fetchMigration("migrations/00005_valid_ingredient_preparations.sql"),
+			Script:      fetchMigration("00005_valid_ingredient_preparations"),
 		},
 		{
 			Version:     6,
 			Description: "create recipes table",
-			Script:      fetchMigration("migrations/00006_recipes.sql"),
+			Script:      fetchMigration("00006_recipes"),
 		},
 		{
 			Version:     7,
 			Description: "create recipe steps table",
-			Script:      fetchMigration("migrations/00007_recipe_steps.sql"),
+			Script:      fetchMigration("00007_recipe_steps"),
 		},
 		{
 			Version:     8,
 			Description: "create recipe step instruments table",
-			Script:      fetchMigration("migrations/00008_recipe_step_instruments.sql"),
+			Script:      fetchMigration("00008_recipe_step_instruments"),
 		},
 		{
 			Version:     9,
 			Description: "create recipe step ingredients table",
-			Script:      fetchMigration("migrations/00009_recipe_step_ingredients.sql"),
+			Script:      fetchMigration("00009_recipe_step_ingredients"),
 		},
 		{
 			Version:     10,
 			Description: "create recipe step products table",
-			Script:      fetchMigration("migrations/00010_recipe_step_products.sql"),
+			Script:      fetchMigration("00010_recipe_step_products"),
 		},
 		{
 			Version:     11,
 			Description: "create meals table",
-			Script:      fetchMigration("migrations/00011_meals.sql"),
+			Script:      fetchMigration("00011_meals"),
 		},
 		{
 			Version:     12,
 			Description: "create meal plans table",
-			Script:      fetchMigration("migrations/00012_meal_plans.sql"),
+			Script:      fetchMigration("00012_meal_plans"),
 		},
 		{
 			Version:     13,
 			Description: "create meal plan options table",
-			Script:      fetchMigration("migrations/00013_meal_plan_options.sql"),
+			Script:      fetchMigration("00013_meal_plan_options"),
 		},
 		{
 			Version:     14,
 			Description: "create meal plan option votes table",
-			Script:      fetchMigration("migrations/00014_meal_plan_option_votes.sql"),
+			Script:      fetchMigration("00014_meal_plan_option_votes"),
 		},
 		{
 			Version:     15,
 			Description: "create meal plan option votes table",
-			Script:      fetchMigration("migrations/00015_recipe_step_updates.sql"),
+			Script:      fetchMigration("00015_recipe_step_updates"),
 		},
 		{
 			Version:     16,
 			Description: "reintroduce recipe step products table",
-			Script:      fetchMigration("migrations/00016_recipe_step_products.sql"),
+			Script:      fetchMigration("00016_recipe_step_products"),
 		},
 		{
 			Version:     17,
 			Description: "remove yields from recipe steps table",
-			Script:      fetchMigration("migrations/00017_remove_yields_from_recipe_steps.sql"),
+			Script:      fetchMigration("00017_remove_yields_from_recipe_steps"),
 		},
 		{
 			Version:     18,
 			Description: "add birthdate fields to user table",
-			Script:      fetchMigration("migrations/00018_add_user_birthdate_data.sql"),
+			Script:      fetchMigration("00018_add_user_birthdate_data"),
 		},
 		{
 			Version:     19,
 			Description: "add miscellaneous indices",
-			Script:      fetchMigration("migrations/00019_indices_catchup.sql"),
+			Script:      fetchMigration("00019_indices_catchup"),
 		},
 		{
 			Version:     20,
 			Description: "replace invalid uniqueness constraint on valid_ingredients table",
-			Script:      fetchMigration("migrations/00020_instrument_uniqueness_constraint_fix.sql"),
+			Script:      fetchMigration("00020_instrument_uniqueness_constraint_fix"),
+		},
+		{
+			Version:     21,
+			Description: "replace invalid uniqueness constraint on valid_ingredients table",
+			Script:      fetchMigration("00021_rename_user_status_column"),
 		},
 	}
 )
 
 func fetchMigration(name string) string {
-	file, err := rawMigrations.ReadFile(name)
+	file, err := rawMigrations.ReadFile(fmt.Sprintf("migrations/%s.sql", name))
 	if err != nil {
 		panic(err)
 	}

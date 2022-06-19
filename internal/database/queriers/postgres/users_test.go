@@ -41,8 +41,8 @@ func buildMockRowsFromUsers(includeCounts bool, filteredCount uint64, users ...*
 			user.TwoFactorSecret,
 			user.TwoFactorSecretVerifiedOn,
 			strings.Join(user.ServiceRoles, serviceRolesSeparator),
-			user.ServiceHouseholdStatus,
-			user.ReputationExplanation,
+			user.AccountStatus,
+			user.AccountStatusExplanation,
 			user.BirthDay,
 			user.BirthMonth,
 			user.CreatedOn,
@@ -112,7 +112,7 @@ func TestQuerier_UserHasStatus(T *testing.T) {
 		c, db := buildTestClient(t)
 		ctx := context.Background()
 		exampleUserID := fakes.BuildFakeID()
-		exampleStatus := string(types.GoodStandingHouseholdStatus)
+		exampleStatus := string(types.GoodStandingUserAccountStatus)
 
 		args := []interface{}{exampleUserID, exampleStatus}
 
@@ -132,7 +132,7 @@ func TestQuerier_UserHasStatus(T *testing.T) {
 
 		c, _ := buildTestClient(t)
 		ctx := context.Background()
-		exampleStatus := string(types.GoodStandingHouseholdStatus)
+		exampleStatus := string(types.GoodStandingUserAccountStatus)
 
 		actual, err := c.UserHasStatus(ctx, "", exampleStatus)
 		assert.Error(t, err)
@@ -157,7 +157,7 @@ func TestQuerier_UserHasStatus(T *testing.T) {
 		c, db := buildTestClient(t)
 		ctx := context.Background()
 		exampleUserID := fakes.BuildFakeID()
-		exampleStatus := string(types.GoodStandingHouseholdStatus)
+		exampleStatus := string(types.GoodStandingUserAccountStatus)
 
 		args := []interface{}{exampleUserID, exampleStatus}
 
@@ -806,7 +806,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 		exampleUser.TwoFactorSecretVerifiedOn = nil
 		exampleUser.CreatedOn = exampleCreationTime
-		exampleUser.ServiceHouseholdStatus = ""
+		exampleUser.AccountStatus = ""
 		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
@@ -907,7 +907,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 		exampleUser.TwoFactorSecretVerifiedOn = nil
 		exampleUser.CreatedOn = exampleCreationTime
-		exampleUser.ServiceHouseholdStatus = ""
+		exampleUser.AccountStatus = ""
 		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
@@ -937,7 +937,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 		exampleUser.TwoFactorSecretVerifiedOn = nil
 		exampleUser.CreatedOn = exampleCreationTime
-		exampleUser.ServiceHouseholdStatus = ""
+		exampleUser.AccountStatus = ""
 		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
@@ -986,7 +986,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 		exampleUser.TwoFactorSecretVerifiedOn = nil
 		exampleUser.CreatedOn = exampleCreationTime
-		exampleUser.ServiceHouseholdStatus = ""
+		exampleUser.AccountStatus = ""
 		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
@@ -1035,7 +1035,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 		exampleUser.TwoFactorSecretVerifiedOn = nil
 		exampleUser.CreatedOn = exampleCreationTime
-		exampleUser.ServiceHouseholdStatus = ""
+		exampleUser.AccountStatus = ""
 		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
@@ -1162,7 +1162,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 		exampleUser.TwoFactorSecretVerifiedOn = nil
 		exampleUser.CreatedOn = exampleCreationTime
-		exampleUser.ServiceHouseholdStatus = ""
+		exampleUser.AccountStatus = ""
 		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
@@ -1252,7 +1252,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 		exampleUser.TwoFactorSecretVerifiedOn = nil
 		exampleUser.CreatedOn = exampleCreationTime
-		exampleUser.ServiceHouseholdStatus = ""
+		exampleUser.AccountStatus = ""
 		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
@@ -1357,7 +1357,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 		exampleUser.TwoFactorSecretVerifiedOn = nil
 		exampleUser.CreatedOn = exampleCreationTime
-		exampleUser.ServiceHouseholdStatus = ""
+		exampleUser.AccountStatus = ""
 		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
@@ -1422,7 +1422,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 		exampleUser.TwoFactorSecretVerifiedOn = nil
 		exampleUser.CreatedOn = exampleCreationTime
-		exampleUser.ServiceHouseholdStatus = ""
+		exampleUser.AccountStatus = ""
 		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
@@ -1500,7 +1500,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 		exampleUser.TwoFactorSecretVerifiedOn = nil
 		exampleUser.CreatedOn = exampleCreationTime
-		exampleUser.ServiceHouseholdStatus = ""
+		exampleUser.AccountStatus = ""
 		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
@@ -1588,7 +1588,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 		exampleUser.TwoFactorSecretVerifiedOn = nil
 		exampleUser.CreatedOn = exampleCreationTime
-		exampleUser.ServiceHouseholdStatus = ""
+		exampleUser.AccountStatus = ""
 		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
@@ -1676,7 +1676,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 		exampleUser.TwoFactorSecretVerifiedOn = nil
 		exampleUser.CreatedOn = exampleCreationTime
-		exampleUser.ServiceHouseholdStatus = ""
+		exampleUser.AccountStatus = ""
 		exampleUserCreationInput := fakes.BuildFakeUserDataStoreCreationInputFromUser(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
@@ -2011,7 +2011,7 @@ func TestQuerier_VerifyUserTwoFactorSecret(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			types.GoodStandingHouseholdStatus,
+			types.GoodStandingUserAccountStatus,
 			exampleUserID,
 		}
 
@@ -2042,7 +2042,7 @@ func TestQuerier_VerifyUserTwoFactorSecret(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			types.GoodStandingHouseholdStatus,
+			types.GoodStandingUserAccountStatus,
 			exampleUserID,
 		}
 

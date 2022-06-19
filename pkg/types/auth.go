@@ -61,22 +61,22 @@ type (
 	RequesterInfo struct {
 		_ struct{}
 
-		ServicePermissions    authorization.ServiceRolePermissionChecker `json:"-"`
-		Reputation            householdStatus                            `json:"-"`
-		ReputationExplanation string                                     `json:"-"`
-		UserID                string                                     `json:"-"`
-		EmailAddress          string                                     `json:"-"`
-		Username              string                                     `json:"-"`
+		ServicePermissions       authorization.ServiceRolePermissionChecker `json:"-"`
+		AccountStatus            userAccountStatus                          `json:"-"`
+		AccountStatusExplanation string                                     `json:"-"`
+		UserID                   string                                     `json:"-"`
+		EmailAddress             string                                     `json:"-"`
+		Username                 string                                     `json:"-"`
 	}
 
 	// UserStatusResponse is what we encode when the frontend wants to check auth status.
 	UserStatusResponse struct {
 		_ struct{}
 
-		UserReputation            householdStatus `json:"householdStatus,omitempty"`
-		UserReputationExplanation string          `json:"reputationExplanation"`
-		ActiveHousehold           string          `json:"activeHousehold,omitempty"`
-		UserIsAuthenticated       bool            `json:"isAuthenticated"`
+		AccountStatus            userAccountStatus `json:"userAccountStatus,omitempty"`
+		AccountStatusExplanation string            `json:"userAccountStatusExplanation"`
+		ActiveHousehold          string            `json:"activeHousehold,omitempty"`
+		UserIsAuthenticated      bool              `json:"isAuthenticated"`
 	}
 
 	// ChangeActiveHouseholdInput represents what a User could set as input for switching households.

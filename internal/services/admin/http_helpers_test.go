@@ -21,7 +21,7 @@ type adminServiceHTTPRoutesTestHelper struct {
 	service          *service
 	exampleUser      *types.User
 	exampleHousehold *types.Household
-	exampleInput     *types.UserReputationUpdateInput
+	exampleInput     *types.UserAccountStatusUpdateInput
 
 	req *http.Request
 	res *httptest.ResponseRecorder
@@ -32,10 +32,10 @@ func (helper *adminServiceHTTPRoutesTestHelper) neuterAdminUser() {
 	helper.service.sessionContextDataFetcher = func(*http.Request) (*types.SessionContextData, error) {
 		return &types.SessionContextData{
 			Requester: types.RequesterInfo{
-				UserID:                helper.exampleUser.ID,
-				Reputation:            helper.exampleUser.ServiceHouseholdStatus,
-				ReputationExplanation: helper.exampleUser.ReputationExplanation,
-				ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+				UserID:                   helper.exampleUser.ID,
+				AccountStatus:            helper.exampleUser.AccountStatus,
+				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 			},
 			ActiveHouseholdID: helper.exampleHousehold.ID,
 			HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
@@ -60,7 +60,7 @@ func buildTestHelper(t *testing.T) *adminServiceHTTPRoutesTestHelper {
 	helper.exampleUser.ServiceRoles = []string{authorization.ServiceAdminRole.String()}
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
-	helper.exampleInput = fakes.BuildFakeUserReputationUpdateInput()
+	helper.exampleInput = fakes.BuildFakeUserAccountStatusUpdateInput()
 
 	helper.res = httptest.NewRecorder()
 	helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://blah.com", http.NoBody)
@@ -69,10 +69,10 @@ func buildTestHelper(t *testing.T) *adminServiceHTTPRoutesTestHelper {
 
 	sessionCtxData := &types.SessionContextData{
 		Requester: types.RequesterInfo{
-			UserID:                helper.exampleUser.ID,
-			Reputation:            helper.exampleUser.ServiceHouseholdStatus,
-			ReputationExplanation: helper.exampleUser.ReputationExplanation,
-			ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+			UserID:                   helper.exampleUser.ID,
+			AccountStatus:            helper.exampleUser.AccountStatus,
+			AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
+			ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 		},
 		ActiveHouseholdID: helper.exampleHousehold.ID,
 		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{

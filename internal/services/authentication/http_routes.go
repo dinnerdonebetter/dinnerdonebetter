@@ -175,9 +175,9 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		http.SetCookie(res, cookie)
 
 		statusResponse := &types.UserStatusResponse{
-			UserIsAuthenticated:       true,
-			UserReputation:            user.ServiceHouseholdStatus,
-			UserReputationExplanation: user.ReputationExplanation,
+			UserIsAuthenticated:      true,
+			AccountStatus:            user.AccountStatus,
+			AccountStatusExplanation: user.AccountStatusExplanation,
 		}
 
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, statusResponse, http.StatusAccepted)
@@ -354,10 +354,10 @@ func (s *service) StatusHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 
 	statusResponse = &types.UserStatusResponse{
-		ActiveHousehold:           sessionCtxData.ActiveHouseholdID,
-		UserReputation:            sessionCtxData.Requester.Reputation,
-		UserReputationExplanation: sessionCtxData.Requester.ReputationExplanation,
-		UserIsAuthenticated:       true,
+		ActiveHousehold:          sessionCtxData.ActiveHouseholdID,
+		AccountStatus:            sessionCtxData.Requester.AccountStatus,
+		AccountStatusExplanation: sessionCtxData.Requester.AccountStatusExplanation,
+		UserIsAuthenticated:      true,
 	}
 
 	s.encoderDecoder.RespondWithData(ctx, res, statusResponse)

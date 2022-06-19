@@ -19,10 +19,10 @@ func BuildFakeSessionContextData() *types.SessionContextData {
 			fakeHouseholdID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdAdminRole.String()),
 		},
 		Requester: types.RequesterInfo{
-			Reputation:            types.GoodStandingHouseholdStatus,
-			ReputationExplanation: "",
-			UserID:                ksuid.New().String(),
-			ServicePermissions:    authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
+			AccountStatus:            types.GoodStandingUserAccountStatus,
+			AccountStatusExplanation: "",
+			UserID:                   ksuid.New().String(),
+			ServicePermissions:       authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
 		},
 		ActiveHouseholdID: fakeHouseholdID,
 	}
@@ -37,10 +37,10 @@ func BuildFakeSessionContextDataForHousehold(household *types.Household) *types.
 			household.ID: authorization.NewHouseholdRolePermissionChecker(authorization.ServiceUserRole.String()),
 		},
 		Requester: types.RequesterInfo{
-			Reputation:            types.GoodStandingHouseholdStatus,
-			ReputationExplanation: "",
-			UserID:                ksuid.New().String(),
-			ServicePermissions:    authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
+			AccountStatus:            types.GoodStandingUserAccountStatus,
+			AccountStatusExplanation: "",
+			UserID:                   ksuid.New().String(),
+			ServicePermissions:       authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
 		},
 		ActiveHouseholdID: fakeHouseholdID,
 	}

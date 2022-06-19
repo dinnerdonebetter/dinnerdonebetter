@@ -175,10 +175,10 @@ func TestAuthenticationService_UserAttributionMiddleware(T *testing.T) {
 
 		sessionCtxData := &types.SessionContextData{
 			Requester: types.RequesterInfo{
-				UserID:                helper.exampleUser.ID,
-				Reputation:            helper.exampleUser.ServiceHouseholdStatus,
-				ReputationExplanation: helper.exampleUser.ReputationExplanation,
-				ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+				UserID:                   helper.exampleUser.ID,
+				AccountStatus:            helper.exampleUser.AccountStatus,
+				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 			},
 			ActiveHouseholdID:    helper.exampleHousehold.ID,
 			HouseholdPermissions: helper.examplePermCheckers,
@@ -284,10 +284,10 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 
 		sessionCtxData := &types.SessionContextData{
 			Requester: types.RequesterInfo{
-				UserID:                helper.exampleUser.ID,
-				Reputation:            helper.exampleUser.ServiceHouseholdStatus,
-				ReputationExplanation: helper.exampleUser.ReputationExplanation,
-				ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+				UserID:                   helper.exampleUser.ID,
+				AccountStatus:            helper.exampleUser.AccountStatus,
+				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 			},
 			ActiveHouseholdID:    helper.exampleHousehold.ID,
 			HouseholdPermissions: helper.examplePermCheckers,
@@ -322,15 +322,15 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		helper.exampleUser.ServiceHouseholdStatus = types.BannedUserHouseholdStatus
+		helper.exampleUser.AccountStatus = types.BannedUserAccountStatus
 		helper.setContextFetcher(t)
 
 		sessionCtxData := &types.SessionContextData{
 			Requester: types.RequesterInfo{
-				UserID:                helper.exampleUser.ID,
-				Reputation:            helper.exampleUser.ServiceHouseholdStatus,
-				ReputationExplanation: helper.exampleUser.ReputationExplanation,
-				ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+				UserID:                   helper.exampleUser.ID,
+				AccountStatus:            helper.exampleUser.AccountStatus,
+				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 			},
 			ActiveHouseholdID:    helper.exampleHousehold.ID,
 			HouseholdPermissions: helper.examplePermCheckers,
@@ -385,10 +385,10 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 
 		sessionCtxData := &types.SessionContextData{
 			Requester: types.RequesterInfo{
-				UserID:                helper.exampleUser.ID,
-				Reputation:            helper.exampleUser.ServiceHouseholdStatus,
-				ReputationExplanation: helper.exampleUser.ReputationExplanation,
-				ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+				UserID:                   helper.exampleUser.ID,
+				AccountStatus:            helper.exampleUser.AccountStatus,
+				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 			},
 			ActiveHouseholdID:    helper.exampleHousehold.ID,
 			HouseholdPermissions: helper.examplePermCheckers,
@@ -420,10 +420,10 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 
 		sessionCtxData := &types.SessionContextData{
 			Requester: types.RequesterInfo{
-				UserID:                helper.exampleUser.ID,
-				Reputation:            helper.exampleUser.ServiceHouseholdStatus,
-				ReputationExplanation: helper.exampleUser.ReputationExplanation,
-				ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+				UserID:                   helper.exampleUser.ID,
+				AccountStatus:            helper.exampleUser.AccountStatus,
+				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 			},
 			ActiveHouseholdID:    helper.exampleHousehold.ID,
 			HouseholdPermissions: helper.examplePermCheckers,
@@ -472,10 +472,10 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 
 		sessionCtxData := &types.SessionContextData{
 			Requester: types.RequesterInfo{
-				UserID:                helper.exampleUser.ID,
-				Reputation:            helper.exampleUser.ServiceHouseholdStatus,
-				ReputationExplanation: helper.exampleUser.ReputationExplanation,
-				ServicePermissions:    authorization.NewServiceRolePermissionChecker(),
+				UserID:                   helper.exampleUser.ID,
+				AccountStatus:            helper.exampleUser.AccountStatus,
+				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(),
 			},
 			ActiveHouseholdID:    "different household, lol",
 			HouseholdPermissions: helper.examplePermCheckers,
@@ -501,10 +501,10 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 
 		sessionCtxData := &types.SessionContextData{
 			Requester: types.RequesterInfo{
-				UserID:                helper.exampleUser.ID,
-				Reputation:            helper.exampleUser.ServiceHouseholdStatus,
-				ReputationExplanation: helper.exampleUser.ReputationExplanation,
-				ServicePermissions:    authorization.NewServiceRolePermissionChecker(authorization.InviteUserToHouseholdPermission.ID()),
+				UserID:                   helper.exampleUser.ID,
+				AccountStatus:            helper.exampleUser.AccountStatus,
+				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(authorization.InviteUserToHouseholdPermission.ID()),
 			},
 			ActiveHouseholdID: helper.exampleHousehold.ID,
 			HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
@@ -536,10 +536,10 @@ func TestAuthenticationService_AdminMiddleware(T *testing.T) {
 
 		sessionCtxData := &types.SessionContextData{
 			Requester: types.RequesterInfo{
-				UserID:                helper.exampleUser.ID,
-				Reputation:            helper.exampleUser.ServiceHouseholdStatus,
-				ReputationExplanation: helper.exampleUser.ReputationExplanation,
-				ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+				UserID:                   helper.exampleUser.ID,
+				AccountStatus:            helper.exampleUser.AccountStatus,
+				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 			},
 			ActiveHouseholdID:    helper.exampleHousehold.ID,
 			HouseholdPermissions: helper.examplePermCheckers,
@@ -571,10 +571,10 @@ func TestAuthenticationService_AdminMiddleware(T *testing.T) {
 
 		sessionCtxData := &types.SessionContextData{
 			Requester: types.RequesterInfo{
-				UserID:                helper.exampleUser.ID,
-				Reputation:            helper.exampleUser.ServiceHouseholdStatus,
-				ReputationExplanation: helper.exampleUser.ReputationExplanation,
-				ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+				UserID:                   helper.exampleUser.ID,
+				AccountStatus:            helper.exampleUser.AccountStatus,
+				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 			},
 			ActiveHouseholdID:    helper.exampleHousehold.ID,
 			HouseholdPermissions: helper.examplePermCheckers,
@@ -597,10 +597,10 @@ func TestAuthenticationService_AdminMiddleware(T *testing.T) {
 
 		sessionCtxData := &types.SessionContextData{
 			Requester: types.RequesterInfo{
-				UserID:                helper.exampleUser.ID,
-				Reputation:            helper.exampleUser.ServiceHouseholdStatus,
-				ReputationExplanation: helper.exampleUser.ReputationExplanation,
-				ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+				UserID:                   helper.exampleUser.ID,
+				AccountStatus:            helper.exampleUser.AccountStatus,
+				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 			},
 			ActiveHouseholdID:    helper.exampleHousehold.ID,
 			HouseholdPermissions: helper.examplePermCheckers,

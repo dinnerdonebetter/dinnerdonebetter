@@ -141,7 +141,7 @@ func (s *service) AuthorizationMiddleware(next http.Handler) http.Handler {
 			tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 			logger = sessionCtxData.AttachToLogger(logger)
 
-			if sessionCtxData.Requester.Reputation == types.BannedUserHouseholdStatus || sessionCtxData.Requester.Reputation == types.TerminatedUserReputation {
+			if sessionCtxData.Requester.AccountStatus == types.BannedUserAccountStatus || sessionCtxData.Requester.AccountStatus == types.TerminatedUserAccountStatus {
 				logger.Info("banned user attempted to make request")
 				http.Redirect(res, req, "/", http.StatusForbidden)
 				return

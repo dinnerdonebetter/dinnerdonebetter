@@ -12,7 +12,7 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types/fakes"
 )
 
-func (s *TestSuite) TestAdmin_Returns404WhenModifyingUserReputation() {
+func (s *TestSuite) TestAdmin_Returns404WhenModifyingUserAccountStatus() {
 	s.runForEachClientExcept("should not be possible to ban a user that does not exist", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
@@ -20,11 +20,11 @@ func (s *TestSuite) TestAdmin_Returns404WhenModifyingUserReputation() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			input := fakes.BuildFakeUserReputationUpdateInput()
+			input := fakes.BuildFakeUserAccountStatusUpdateInput()
 			input.TargetUserID = nonexistentID
 
 			// Ban user.
-			assert.Error(t, testClients.admin.UpdateUserReputation(ctx, input))
+			assert.Error(t, testClients.admin.UpdateUserAccountStatus(ctx, input))
 		}
 	})
 }
@@ -55,13 +55,13 @@ func (s *TestSuite) TestAdmin_BanningUsers() {
 			_, initialCheckErr := userClient.GetAPIClients(ctx, nil)
 			require.NoError(t, initialCheckErr)
 
-			input := &types.UserReputationUpdateInput{
-				TargetUserID:  user.ID,
-				NewReputation: types.BannedUserHouseholdStatus,
-				Reason:        "testing",
+			input := &types.UserAccountStatusUpdateInput{
+				TargetUserID: user.ID,
+				NewStatus:    types.BannedUserAccountStatus,
+				Reason:       "testing",
 			}
 
-			assert.NoError(t, testClients.admin.UpdateUserReputation(ctx, input))
+			assert.NoError(t, testClients.admin.UpdateUserAccountStatus(ctx, input))
 
 			// Assert user can no longer access service
 			_, subsequentCheckErr := userClient.GetAPIClients(ctx, nil)

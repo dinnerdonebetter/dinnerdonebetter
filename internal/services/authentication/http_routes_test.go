@@ -456,8 +456,8 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 
 		helper := buildTestHelper(t)
 
-		helper.exampleUser.ServiceHouseholdStatus = types.BannedUserHouseholdStatus
-		helper.exampleUser.ReputationExplanation = "bad behavior"
+		helper.exampleUser.AccountStatus = types.BannedUserAccountStatus
+		helper.exampleUser.AccountStatusExplanation = "bad behavior"
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleLoginInput)
@@ -1661,10 +1661,10 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 
 		expected := &types.SessionContextData{
 			Requester: types.RequesterInfo{
-				UserID:                helper.exampleUser.ID,
-				Reputation:            helper.exampleUser.ServiceHouseholdStatus,
-				ReputationExplanation: helper.exampleUser.ReputationExplanation,
-				ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+				UserID:                   helper.exampleUser.ID,
+				AccountStatus:            helper.exampleUser.AccountStatus,
+				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 			},
 			ActiveHouseholdID:    helper.exampleHousehold.ID,
 			HouseholdPermissions: helper.examplePermCheckers,
@@ -1758,10 +1758,10 @@ func TestAuthenticationService_PASETOHandler(T *testing.T) {
 
 		expected := &types.SessionContextData{
 			Requester: types.RequesterInfo{
-				UserID:                helper.exampleUser.ID,
-				Reputation:            helper.exampleUser.ServiceHouseholdStatus,
-				ReputationExplanation: helper.exampleUser.ReputationExplanation,
-				ServicePermissions:    authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
+				UserID:                   helper.exampleUser.ID,
+				AccountStatus:            helper.exampleUser.AccountStatus,
+				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRoles...),
 			},
 			ActiveHouseholdID:    helper.exampleHousehold.ID,
 			HouseholdPermissions: helper.examplePermCheckers,

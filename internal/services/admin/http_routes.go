@@ -16,8 +16,8 @@ const (
 	UserIDURIParamKey = "userID"
 )
 
-// UserReputationChangeHandler changes a user's status.
-func (s *service) UserReputationChangeHandler(res http.ResponseWriter, req *http.Request) {
+// UserAccountStatusChangeHandler changes a user's status.
+func (s *service) UserAccountStatusChangeHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -35,7 +35,7 @@ func (s *service) UserReputationChangeHandler(res http.ResponseWriter, req *http
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// read parsed input struct from request body.
-	input := new(types.UserReputationUpdateInput)
+	input := new(types.UserAccountStatusUpdateInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
@@ -48,9 +48,9 @@ func (s *service) UserReputationChangeHandler(res http.ResponseWriter, req *http
 		return
 	}
 
-	logger = logger.WithValue("new_status", input.NewReputation)
+	logger = logger.WithValue("new_status", input.NewStatus)
 
-	if !sessionCtxData.Requester.ServicePermissions.CanUpdateUserReputations() {
+	if !sessionCtxData.Requester.ServicePermissions.CanUpdateUserAccountStatuses() {
 		// this should never happen in production
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "inadequate permissions for route", http.StatusForbidden)
 		return
@@ -60,7 +60,7 @@ func (s *service) UserReputationChangeHandler(res http.ResponseWriter, req *http
 	logger = logger.WithValue("ban_giver", requester)
 	logger = logger.WithValue("status_change_recipient", input.TargetUserID)
 
-	if err = s.userDB.UpdateUserReputation(ctx, input.TargetUserID, input); err != nil {
+	if err = s.userDB.UpdateUserAccountStatus(ctx, input.TargetUserID, input); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		} else {
@@ -70,8 +70,6 @@ func (s *service) UserReputationChangeHandler(res http.ResponseWriter, req *http
 
 		return
 	}
-
-	// handle reputation change here
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, nil, http.StatusAccepted)
 }

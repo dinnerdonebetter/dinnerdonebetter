@@ -16,7 +16,7 @@ func TestServiceRoles(T *testing.T) {
 
 		assert.False(t, r.IsServiceAdmin())
 		assert.False(t, r.CanCycleCookieSecrets())
-		assert.False(t, r.CanUpdateUserReputations())
+		assert.False(t, r.CanUpdateUserAccountStatuses())
 		assert.False(t, r.CanSeeUserData())
 		assert.False(t, r.CanSearchUsers())
 	})
@@ -28,7 +28,7 @@ func TestServiceRoles(T *testing.T) {
 
 		assert.True(t, r.IsServiceAdmin())
 		assert.True(t, r.CanCycleCookieSecrets())
-		assert.True(t, r.CanUpdateUserReputations())
+		assert.True(t, r.CanUpdateUserAccountStatuses())
 		assert.True(t, r.CanSeeUserData())
 		assert.True(t, r.CanSearchUsers())
 	})
@@ -40,7 +40,7 @@ func TestServiceRoles(T *testing.T) {
 
 		assert.True(t, r.IsServiceAdmin())
 		assert.True(t, r.CanCycleCookieSecrets())
-		assert.True(t, r.CanUpdateUserReputations())
+		assert.True(t, r.CanUpdateUserAccountStatuses())
 		assert.True(t, r.CanSeeUserData())
 		assert.True(t, r.CanSearchUsers())
 	})

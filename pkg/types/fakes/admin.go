@@ -7,11 +7,11 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
-// BuildFakeUserReputationUpdateInput builds a faked UserReputationUpdateInput.
-func BuildFakeUserReputationUpdateInput() *types.UserReputationUpdateInput {
-	return &types.UserReputationUpdateInput{
-		TargetUserID:  ksuid.New().String(),
-		NewReputation: types.GoodStandingHouseholdStatus,
-		Reason:        fake.Sentence(10),
+// BuildFakeUserAccountStatusUpdateInput builds a faked UserAccountStatusUpdateInput.
+func BuildFakeUserAccountStatusUpdateInput() *types.UserAccountStatusUpdateInput {
+	return &types.UserAccountStatusUpdateInput{
+		TargetUserID: ksuid.New().String(),
+		NewStatus:    types.GoodStandingUserAccountStatus,
+		Reason:       fake.Sentence(10),
 	}
 }
