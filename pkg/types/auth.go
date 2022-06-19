@@ -79,6 +79,20 @@ type (
 		UserIsAuthenticated      bool              `json:"isAuthenticated"`
 	}
 
+	// UserPermissionsRequestInput is what we decode when the frontend wants to check permission status.
+	UserPermissionsRequestInput struct {
+		_ struct{}
+
+		Permissions []string `json:"permissions"`
+	}
+
+	// UserPermissionsResponse is what we encode when the frontend wants to check permission status.
+	UserPermissionsResponse struct {
+		_ struct{}
+
+		Permissions map[string]bool `json:"permissions"`
+	}
+
 	// ChangeActiveHouseholdInput represents what a User could set as input for switching households.
 	ChangeActiveHouseholdInput struct {
 		_ struct{}

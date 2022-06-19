@@ -2,6 +2,7 @@ package integration
 
 import (
 	"fmt"
+	"github.com/prixfixeco/api_server/internal/authorization"
 	"strings"
 	"testing"
 
@@ -114,6 +115,32 @@ func (s *TestSuite) TestUsers_Reading() {
 
 			// Clean up.
 			assert.NoError(t, testClients.admin.ArchiveUser(ctx, actual.ID))
+		}
+	})
+}
+
+func (s *TestSuite) TestUsers_PermissionsChecking() {
+	s.runForEachClientExcept("should be able to check users permissions", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			user, _, _, _ := createUserAndClientForTest(ctx, t, nil)
+
+			permissions, err := testClients.main.CheckUserPermissions(ctx, authorization.ReadWebhooksPermission.ID())
+			if err != nil {
+				t.Logf("error encountered trying to fetch user %q: %v\n", user.Username, err)
+			}
+			requireNotNilAndNoProblems(t, permissions, err)
+
+			for _, status := range permissions.Permissions {
+				assert.True(t, status)
+			}
+
+			// Clean up.
+			assert.NoError(t, testClients.admin.ArchiveUser(ctx, user.ID))
 		}
 	})
 }

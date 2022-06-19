@@ -81,6 +81,19 @@ func BuildFakeUserRegistrationInputFromUser(user *types.User) *types.UserRegistr
 	}
 }
 
+// BuildFakeUserRegistrationInputWithInviteFromUser builds a faked UserRegistrationInput.
+func BuildFakeUserRegistrationInputWithInviteFromUser(user *types.User) *types.UserRegistrationInput {
+	return &types.UserRegistrationInput{
+		Username:        user.Username,
+		EmailAddress:    user.EmailAddress,
+		Password:        fake.Password(true, true, true, true, false, 32),
+		BirthDay:        user.BirthDay,
+		BirthMonth:      user.BirthMonth,
+		InvitationToken: fake.UUID(),
+		InvitationID:    BuildFakeID(),
+	}
+}
+
 // BuildFakeUserDataStoreCreationInputFromUser builds a faked UserDatabaseCreationInput.
 func BuildFakeUserDataStoreCreationInputFromUser(user *types.User) *types.UserDatabaseCreationInput {
 	return &types.UserDatabaseCreationInput{
@@ -137,6 +150,17 @@ func BuildFakeTOTPSecretRefreshInput() *types.TOTPSecretRefreshInput {
 	return &types.TOTPSecretRefreshInput{
 		CurrentPassword: fake.Password(true, true, true, true, false, 32),
 		TOTPToken:       fmt.Sprintf("0%s", fake.Zip()),
+	}
+}
+
+// BuildFakeUserPermissionsRequestInput builds a faked UserPermissionsRequestInput.
+func BuildFakeUserPermissionsRequestInput() *types.UserPermissionsRequestInput {
+	return &types.UserPermissionsRequestInput{
+		Permissions: []string{
+			fake.LoremIpsumSentence(exampleQuantity),
+			fake.LoremIpsumSentence(exampleQuantity),
+			fake.LoremIpsumSentence(exampleQuantity),
+		},
 	}
 }
 

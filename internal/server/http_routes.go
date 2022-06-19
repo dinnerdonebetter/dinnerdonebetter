@@ -101,7 +101,9 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.SearchUserPermission)).
 				Get("/search", s.usersService.UsernameSearchHandler)
 			usersRouter.Post("/avatar/upload", s.usersService.AvatarUploadHandler)
+
 			usersRouter.Get("/self", s.usersService.SelfHandler)
+			usersRouter.Post("/permissions/check", s.usersService.PermissionsHandler)
 
 			singleUserRoute := buildURLVarChunk(usersservice.UserIDURIParamKey, "")
 			usersRouter.Route(singleUserRoute, func(singleUserRouter routing.Router) {
