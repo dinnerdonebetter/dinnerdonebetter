@@ -19,6 +19,9 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 			Source:             fake.LoremIpsumSentence(exampleQuantity),
 			Description:        fake.LoremIpsumSentence(exampleQuantity),
 			InspiredByRecipeID: func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
+			Steps: []*RecipeStepCreationRequestInput{
+				buildValidRecipeStepCreationRequestInput(),
+			},
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -29,6 +32,23 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeCreationRequestInput{}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.Error(t, actual)
+	})
+
+	T.Run("with invalid step", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeCreationRequestInput{
+			Name:               fake.LoremIpsumSentence(exampleQuantity),
+			Source:             fake.LoremIpsumSentence(exampleQuantity),
+			Description:        fake.LoremIpsumSentence(exampleQuantity),
+			InspiredByRecipeID: func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
+			Steps: []*RecipeStepCreationRequestInput{
+				{},
+			},
+		}
 
 		actual := x.ValidateWithContext(context.Background())
 		assert.Error(t, actual)
