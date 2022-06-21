@@ -213,6 +213,7 @@ const getHouseholdQuery = `
 	JOIN households ON household_user_memberships.belongs_to_household = households.id
 	JOIN users ON household_user_memberships.belongs_to_user = users.id
 	WHERE households.archived_on IS NULL
+	AND household_user_memberships.archived_on IS NULL
 	AND households.id = $1
 `
 
