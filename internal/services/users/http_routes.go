@@ -508,18 +508,30 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	// make sure this is all on the up-and-up
-	user, httpStatus := s.validateCredentialChangeRequest(
-		ctx,
-		sessionCtxData.Requester.UserID,
-		input.CurrentPassword,
-		input.TOTPToken,
-	)
-
-	// if the above function returns something other than 200, it means some error occurred.
-	if httpStatus != http.StatusOK {
-		res.WriteHeader(httpStatus)
+	// fetch user
+	user, err := s.userDataManager.GetUser(ctx, sessionCtxData.Requester.UserID)
+	if errors.Is(err, sql.ErrNoRows) {
+		logger.Debug("no such user")
+		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "fetching user from database")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	if user.TwoFactorSecretVerifiedOn != nil {
+		// validate login.
+		valid, validationErr := s.authenticator.ValidateLogin(ctx, user.HashedPassword, input.CurrentPassword, user.TwoFactorSecret, input.TOTPToken)
+		if validationErr != nil {
+			observability.AcknowledgeError(validationErr, logger, span, "validating credentials")
+			s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+			return
+		} else if !valid {
+			observability.AcknowledgeError(validationErr, logger, span, "invalid credentials")
+			s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+			return
+		}
 	}
 
 	// document who this is for.
