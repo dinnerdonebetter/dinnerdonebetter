@@ -1577,6 +1577,66 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, mockDB, auth)
 	})
 
+	T.Run("with no matching user in database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeTOTPSecretRefreshInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.UserDataManager.On(
+			"GetUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return((*types.User)(nil), sql.ErrNoRows)
+
+		helper.service.userDataManager = mockDB
+
+		helper.service.NewTOTPSecretHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+
+	T.Run("with error getting user from database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeTOTPSecretRefreshInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.UserDataManager.On(
+			"GetUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return((*types.User)(nil), errors.New("blah"))
+
+		helper.service.userDataManager = mockDB
+
+		helper.service.NewTOTPSecretHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+
 	T.Run("without input attached to request", func(t *testing.T) {
 		t.Parallel()
 
@@ -1631,6 +1691,51 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		helper.service.NewTOTPSecretHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+	})
+
+	T.Run("with invalid auth input info", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakeTOTPSecretRefreshInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.UserDataManager.On(
+			"GetUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleUser, nil)
+		mockDB.UserDataManager.On(
+			"UpdateUser",
+			testutils.ContextMatcher,
+			mock.IsType(&types.User{}),
+		).Return(nil)
+		helper.service.userDataManager = mockDB
+
+		auth := &mockauthn.Authenticator{}
+		auth.On(
+			"ValidateLogin",
+			testutils.ContextMatcher,
+			helper.exampleUser.HashedPassword,
+			exampleInput.CurrentPassword,
+			helper.exampleUser.TwoFactorSecret,
+			exampleInput.TOTPToken,
+		).Return(false, nil)
+		helper.service.authenticator = auth
+
+		helper.service.NewTOTPSecretHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, auth)
 	})
 
 	T.Run("with error validating login", func(t *testing.T) {
