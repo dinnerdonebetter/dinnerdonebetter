@@ -36,7 +36,7 @@ func (s *householdInvitationsTestSuite) SetupTest() {
 	s.exampleHousehold = fakes.BuildFakeHousehold()
 	s.exampleHousehold.BelongsToUser = s.exampleUser.ID
 	s.exampleHouseholdInvitation = fakes.BuildFakeHouseholdInvitation()
-	s.exampleHouseholdInvitation.FromUser = s.exampleUser.ID
+	s.exampleHouseholdInvitation.FromUser = *s.exampleUser
 	s.exampleHouseholdInvitation.ToUser = func(s string) *string { return &s }(fakes.BuildFakeUser().ID)
 	s.exampleHouseholdList = fakes.BuildFakeHouseholdList()
 }

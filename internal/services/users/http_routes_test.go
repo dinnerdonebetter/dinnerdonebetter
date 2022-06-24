@@ -10,8 +10,6 @@ import (
 	"strings"
 	"testing"
 
-	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -20,6 +18,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
+	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	mockmetrics "github.com/prixfixeco/api_server/internal/observability/metrics/mock"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -523,7 +522,7 @@ func TestService_CreateHandler(T *testing.T) {
 		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
 		exampleHouseholdInvitation.ID = exampleInput.InvitationID
 		exampleHouseholdInvitation.Token = exampleInput.InvitationToken
-		exampleHouseholdInvitation.DestinationHousehold = exampleHousehold
+		exampleHouseholdInvitation.DestinationHousehold = *exampleHousehold
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
@@ -596,7 +595,7 @@ func TestService_CreateHandler(T *testing.T) {
 		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
 		exampleHouseholdInvitation.ID = exampleInput.InvitationID
 		exampleHouseholdInvitation.Token = exampleInput.InvitationToken
-		exampleHouseholdInvitation.DestinationHousehold = exampleHousehold
+		exampleHouseholdInvitation.DestinationHousehold = *exampleHousehold
 
 		db := database.NewMockDatabase()
 		db.UserDataManager.On(
@@ -649,7 +648,7 @@ func TestService_CreateHandler(T *testing.T) {
 		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
 		exampleHouseholdInvitation.ID = exampleInput.InvitationID
 		exampleHouseholdInvitation.Token = exampleInput.InvitationToken
-		exampleHouseholdInvitation.DestinationHousehold = exampleHousehold
+		exampleHouseholdInvitation.DestinationHousehold = *exampleHousehold
 
 		db := database.NewMockDatabase()
 		db.UserDataManager.On(
