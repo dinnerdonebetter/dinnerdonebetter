@@ -49,7 +49,7 @@ func main() {
 	householdInvitation := &types.HouseholdInvitation{
 		ToEmail:              destinationEmail,
 		Token:                "blah_example_token_blah",
-		DestinationHousehold: "__te$ting__",
+		DestinationHousehold: &types.Household{ID: "__te$ting__"},
 	}
 
 	msg, emailGenerationErr := email.BuildInviteMemberEmail(householdInvitation)

@@ -29,7 +29,17 @@ func buildMockRowsFromHouseholdInvitations(includeCounts bool, filteredCount uin
 	for _, w := range householdInvitations {
 		rowValues := []driver.Value{
 			w.ID,
-			w.DestinationHousehold,
+			w.DestinationHousehold.ID,
+			w.DestinationHousehold.Name,
+			w.DestinationHousehold.BillingStatus,
+			w.DestinationHousehold.ContactEmail,
+			w.DestinationHousehold.ContactPhone,
+			w.DestinationHousehold.PaymentProcessorCustomerID,
+			w.DestinationHousehold.SubscriptionPlanID,
+			w.DestinationHousehold.CreatedOn,
+			w.DestinationHousehold.LastUpdatedOn,
+			w.DestinationHousehold.ArchivedOn,
+			w.DestinationHousehold.BelongsToUser,
 			w.ToEmail,
 			w.ToUser,
 			w.FromUser,
@@ -65,7 +75,17 @@ func buildErroneousMockRowsFromHouseholdInvitations(includeCounts bool, filtered
 		rowValues := []driver.Value{
 			w.ArchivedOn,
 			w.ID,
-			w.DestinationHousehold,
+			w.DestinationHousehold.ID,
+			w.DestinationHousehold.Name,
+			w.DestinationHousehold.BillingStatus,
+			w.DestinationHousehold.ContactEmail,
+			w.DestinationHousehold.ContactPhone,
+			w.DestinationHousehold.PaymentProcessorCustomerID,
+			w.DestinationHousehold.SubscriptionPlanID,
+			w.DestinationHousehold.CreatedOn,
+			w.DestinationHousehold.LastUpdatedOn,
+			w.DestinationHousehold.ArchivedOn,
+			w.DestinationHousehold.BelongsToUser,
 			w.ToEmail,
 			w.ToUser,
 			w.FromUser,
@@ -211,6 +231,7 @@ func TestQuerier_GetHouseholdInvitationByTokenAndID(T *testing.T) {
 
 		exampleHouseholdID := fakes.BuildFakeID()
 		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
+		exampleHouseholdInvitation.DestinationHousehold.Members = nil
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -285,6 +306,7 @@ func TestQuerier_GetHouseholdInvitationByHouseholdAndID(T *testing.T) {
 
 		exampleHouseholdID := fakes.BuildFakeID()
 		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
+		exampleHouseholdInvitation.DestinationHousehold.Members = nil
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -358,6 +380,7 @@ func TestQuerier_GetHouseholdInvitationByEmailAndToken(T *testing.T) {
 		t.Parallel()
 
 		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
+		exampleHouseholdInvitation.DestinationHousehold.Members = nil
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -470,6 +493,7 @@ func TestQuerier_CreateHouseholdInvitation(T *testing.T) {
 
 		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
 		exampleHouseholdInvitation.StatusNote = ""
+		exampleHouseholdInvitation.DestinationHousehold = &types.Household{ID: exampleHouseholdInvitation.DestinationHousehold.ID}
 		exampleInput := fakes.BuildFakeHouseholdInvitationDatabaseCreationInputFromHouseholdInvitation(exampleHouseholdInvitation)
 
 		ctx := context.Background()
@@ -482,7 +506,7 @@ func TestQuerier_CreateHouseholdInvitation(T *testing.T) {
 			exampleInput.Note,
 			exampleInput.ToEmail,
 			exampleInput.Token,
-			exampleInput.DestinationHousehold,
+			exampleInput.DestinationHouseholdID,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(createHouseholdInvitationQuery)).
@@ -516,6 +540,7 @@ func TestQuerier_CreateHouseholdInvitation(T *testing.T) {
 
 		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
 		exampleHouseholdInvitation.StatusNote = ""
+		exampleHouseholdInvitation.DestinationHousehold = &types.Household{ID: exampleHouseholdInvitation.DestinationHousehold.ID}
 		exampleInput := fakes.BuildFakeHouseholdInvitationDatabaseCreationInputFromHouseholdInvitation(exampleHouseholdInvitation)
 
 		ctx := context.Background()
@@ -528,7 +553,7 @@ func TestQuerier_CreateHouseholdInvitation(T *testing.T) {
 			exampleInput.Note,
 			exampleInput.ToEmail,
 			exampleInput.Token,
-			exampleInput.DestinationHousehold,
+			exampleInput.DestinationHouseholdID,
 		}
 
 		db.ExpectExec(formatQueryForSQLMock(createHouseholdInvitationQuery)).
@@ -557,7 +582,7 @@ func TestSQLQuerier_BuildGetPendingHouseholdInvitationsFromUserQuery(T *testing.
 		userID := fakes.BuildFakeID()
 		filter := types.DefaultQueryFilter()
 
-		expectedQuery := "SELECT household_invitations.id, household_invitations.destination_household, household_invitations.to_email, household_invitations.to_user, household_invitations.from_user, household_invitations.status, household_invitations.note, household_invitations.status_note, household_invitations.token, household_invitations.created_on, household_invitations.last_updated_on, household_invitations.archived_on, (SELECT COUNT(household_invitations.id) FROM household_invitations WHERE household_invitations.archived_on IS NULL AND household_invitations.from_user = $1 AND household_invitations.status = $2) as filtered_count, (SELECT COUNT(household_invitations.id) FROM household_invitations WHERE household_invitations.archived_on IS NULL AND household_invitations.from_user = $3 AND household_invitations.status = $4) as total_count FROM household_invitations WHERE household_invitations.archived_on IS NULL AND household_invitations.from_user = $5 AND household_invitations.status = $6 LIMIT 20"
+		expectedQuery := "SELECT household_invitations.id, households.id, households.name, households.billing_status, households.contact_email, households.contact_phone, households.payment_processor_customer_id, households.subscription_plan_id, households.created_on, households.last_updated_on, households.archived_on, households.belongs_to_user, household_invitations.to_email, household_invitations.to_user, household_invitations.from_user, household_invitations.status, household_invitations.note, household_invitations.status_note, household_invitations.token, household_invitations.created_on, household_invitations.last_updated_on, household_invitations.archived_on, (SELECT COUNT(household_invitations.id) FROM household_invitations JOIN households ON household_invitations.destination_household = households.id WHERE household_invitations.archived_on IS NULL AND household_invitations.from_user = $1 AND household_invitations.status = $2) as filtered_count, (SELECT COUNT(household_invitations.id) FROM household_invitations JOIN households ON household_invitations.destination_household = households.id WHERE household_invitations.archived_on IS NULL AND household_invitations.from_user = $3 AND household_invitations.status = $4) as total_count FROM household_invitations JOIN households ON household_invitations.destination_household = households.id WHERE household_invitations.archived_on IS NULL AND household_invitations.from_user = $5 AND household_invitations.status = $6 LIMIT 20"
 		expectedArgs := []interface{}{
 			userID,
 			types.PendingHouseholdInvitationStatus,
@@ -583,9 +608,12 @@ func TestSQLQuerier_GetPendingHouseholdInvitationsFromUser(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
+		filter := types.DefaultQueryFilter()
 		exampleUserID := fakes.BuildFakeID()
 		exampleHouseholdInvitationList := fakes.BuildFakeHouseholdInvitationList()
-		filter := types.DefaultQueryFilter()
+		for i := range exampleHouseholdInvitationList.HouseholdInvitations {
+			exampleHouseholdInvitationList.HouseholdInvitations[i].DestinationHousehold.Members = nil
+		}
 
 		c, db := buildTestClient(t)
 
@@ -606,8 +634,12 @@ func TestSQLQuerier_GetPendingHouseholdInvitationsFromUser(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleUserID := fakes.BuildFakeID()
 		filter := types.DefaultQueryFilter()
+		exampleUserID := fakes.BuildFakeID()
+		exampleHouseholdInvitationList := fakes.BuildFakeHouseholdInvitationList()
+		for i := range exampleHouseholdInvitationList.HouseholdInvitations {
+			exampleHouseholdInvitationList.HouseholdInvitations[i].DestinationHousehold.Members = nil
+		}
 
 		c, db := buildTestClient(t)
 
@@ -628,9 +660,12 @@ func TestSQLQuerier_GetPendingHouseholdInvitationsFromUser(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
+		filter := types.DefaultQueryFilter()
 		exampleUserID := fakes.BuildFakeID()
 		exampleHouseholdInvitationList := fakes.BuildFakeHouseholdInvitationList()
-		filter := types.DefaultQueryFilter()
+		for i := range exampleHouseholdInvitationList.HouseholdInvitations {
+			exampleHouseholdInvitationList.HouseholdInvitations[i].DestinationHousehold.Members = nil
+		}
 
 		c, db := buildTestClient(t)
 
@@ -658,7 +693,7 @@ func TestSQLQuerier_BuildGetPendingHouseholdInvitationsForUserQuery(T *testing.T
 		userID := fakes.BuildFakeID()
 		filter := types.DefaultQueryFilter()
 
-		expectedQuery := "SELECT household_invitations.id, household_invitations.destination_household, household_invitations.to_email, household_invitations.to_user, household_invitations.from_user, household_invitations.status, household_invitations.note, household_invitations.status_note, household_invitations.token, household_invitations.created_on, household_invitations.last_updated_on, household_invitations.archived_on, (SELECT COUNT(household_invitations.id) FROM household_invitations WHERE household_invitations.archived_on IS NULL AND household_invitations.status = $1 AND household_invitations.to_user = $2) as filtered_count, (SELECT COUNT(household_invitations.id) FROM household_invitations WHERE household_invitations.archived_on IS NULL AND household_invitations.status = $3 AND household_invitations.to_user = $4) as total_count FROM household_invitations WHERE household_invitations.archived_on IS NULL AND household_invitations.status = $5 AND household_invitations.to_user = $6 LIMIT 20"
+		expectedQuery := "SELECT household_invitations.id, households.id, households.name, households.billing_status, households.contact_email, households.contact_phone, households.payment_processor_customer_id, households.subscription_plan_id, households.created_on, households.last_updated_on, households.archived_on, households.belongs_to_user, household_invitations.to_email, household_invitations.to_user, household_invitations.from_user, household_invitations.status, household_invitations.note, household_invitations.status_note, household_invitations.token, household_invitations.created_on, household_invitations.last_updated_on, household_invitations.archived_on, (SELECT COUNT(household_invitations.id) FROM household_invitations JOIN households ON household_invitations.destination_household = households.id WHERE household_invitations.archived_on IS NULL AND household_invitations.status = $1 AND household_invitations.to_user = $2) as filtered_count, (SELECT COUNT(household_invitations.id) FROM household_invitations JOIN households ON household_invitations.destination_household = households.id WHERE household_invitations.archived_on IS NULL AND household_invitations.status = $3 AND household_invitations.to_user = $4) as total_count FROM household_invitations JOIN households ON household_invitations.destination_household = households.id WHERE household_invitations.archived_on IS NULL AND household_invitations.status = $5 AND household_invitations.to_user = $6 LIMIT 20"
 		expectedArgs := []interface{}{
 			types.PendingHouseholdInvitationStatus,
 			userID,
@@ -684,9 +719,12 @@ func TestSQLQuerier_GetPendingHouseholdInvitationsForUser(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
+		filter := types.DefaultQueryFilter()
 		exampleUserID := fakes.BuildFakeID()
 		exampleHouseholdInvitationList := fakes.BuildFakeHouseholdInvitationList()
-		filter := types.DefaultQueryFilter()
+		for i := range exampleHouseholdInvitationList.HouseholdInvitations {
+			exampleHouseholdInvitationList.HouseholdInvitations[i].DestinationHousehold.Members = nil
+		}
 
 		c, db := buildTestClient(t)
 
@@ -875,7 +913,7 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 		addUserToHouseholdArgs := []interface{}{
 			&idMatcher{},
 			*exampleHouseholdInvitation.ToUser,
-			exampleHouseholdInvitation.DestinationHousehold,
+			exampleHouseholdInvitation.DestinationHousehold.ID,
 			strings.Join([]string{"household_member"}, householdMemberRolesSeparator),
 		}
 
@@ -1030,7 +1068,7 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 		addUserToHouseholdArgs := []interface{}{
 			&idMatcher{},
 			*exampleHouseholdInvitation.ToUser,
-			exampleHouseholdInvitation.DestinationHousehold,
+			exampleHouseholdInvitation.DestinationHousehold.ID,
 			strings.Join([]string{"household_member"}, householdMemberRolesSeparator),
 		}
 
@@ -1077,7 +1115,7 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 		addUserToHouseholdArgs := []interface{}{
 			&idMatcher{},
 			*exampleHouseholdInvitation.ToUser,
-			exampleHouseholdInvitation.DestinationHousehold,
+			exampleHouseholdInvitation.DestinationHousehold.ID,
 			strings.Join([]string{"household_member"}, householdMemberRolesSeparator),
 		}
 

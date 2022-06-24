@@ -374,7 +374,7 @@ func (s *householdsTestSuite) TestClient_InviteUserToHousehold() {
 
 		invitation := fakes.BuildFakeHouseholdInvitation()
 		exampleInput := fakes.BuildFakeHouseholdInvitationCreationInputFromHouseholdInvitation(invitation)
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, exampleInput.DestinationHousehold)
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, exampleInput.DestinationHouseholdID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, invitation)
 
 		householdInvite, err := c.InviteUserToHousehold(s.ctx, exampleInput)

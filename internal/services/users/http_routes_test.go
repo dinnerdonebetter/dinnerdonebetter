@@ -523,7 +523,7 @@ func TestService_CreateHandler(T *testing.T) {
 		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
 		exampleHouseholdInvitation.ID = exampleInput.InvitationID
 		exampleHouseholdInvitation.Token = exampleInput.InvitationToken
-		exampleHouseholdInvitation.DestinationHousehold = exampleHousehold.ID
+		exampleHouseholdInvitation.DestinationHousehold = exampleHousehold
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
@@ -596,7 +596,7 @@ func TestService_CreateHandler(T *testing.T) {
 		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
 		exampleHouseholdInvitation.ID = exampleInput.InvitationID
 		exampleHouseholdInvitation.Token = exampleInput.InvitationToken
-		exampleHouseholdInvitation.DestinationHousehold = exampleHousehold.ID
+		exampleHouseholdInvitation.DestinationHousehold = exampleHousehold
 
 		db := database.NewMockDatabase()
 		db.UserDataManager.On(
@@ -649,7 +649,7 @@ func TestService_CreateHandler(T *testing.T) {
 		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
 		exampleHouseholdInvitation.ID = exampleInput.InvitationID
 		exampleHouseholdInvitation.Token = exampleInput.InvitationToken
-		exampleHouseholdInvitation.DestinationHousehold = exampleHousehold.ID
+		exampleHouseholdInvitation.DestinationHousehold = exampleHousehold
 
 		db := database.NewMockDatabase()
 		db.UserDataManager.On(

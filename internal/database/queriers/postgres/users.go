@@ -507,7 +507,7 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDatabaseCr
 		keys.UsernameKey:                 input.Username,
 		keys.UserEmailAddressKey:         input.EmailAddress,
 		keys.HouseholdInvitationTokenKey: input.InvitationToken,
-		"destination_household":          input.DestinationHousehold,
+		"destination_household":          input.DestinationHouseholdID,
 	})
 
 	userCreationArgs := []interface{}{
@@ -556,7 +556,7 @@ func (q *SQLQuerier) CreateUser(ctx context.Context, input *types.UserDatabaseCr
 		return nil, observability.PrepareError(writeErr, logger, span, "creating user")
 	}
 
-	hasValidInvite := input.InvitationToken != "" && input.DestinationHousehold != ""
+	hasValidInvite := input.InvitationToken != "" && input.DestinationHouseholdID != ""
 
 	if err := q.createHouseholdForUser(ctx, tx, hasValidInvite, user.ID); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "creating household for new user")
