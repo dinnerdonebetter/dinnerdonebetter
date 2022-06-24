@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/segmentio/ksuid"
@@ -19,6 +20,7 @@ import (
 
 const (
 	householdOnHouseholdInvitationsJoin = "households ON household_invitations.destination_household = households.id"
+	usersOnHouseholdInvitationsJoin     = "users ON household_invitations.from_user = users.id"
 )
 
 var (
@@ -40,7 +42,23 @@ var (
 		"households.belongs_to_user",
 		"household_invitations.to_email",
 		"household_invitations.to_user",
-		"household_invitations.from_user",
+		"users.id",
+		"users.username",
+		"users.email_address",
+		"users.avatar_src",
+		"users.hashed_password",
+		"users.requires_password_change",
+		"users.password_last_changed_on",
+		"users.two_factor_secret",
+		"users.two_factor_secret_verified_on",
+		"users.service_roles",
+		"users.user_account_status",
+		"users.user_account_status_explanation",
+		"users.birth_day",
+		"users.birth_month",
+		"users.created_on",
+		"users.last_updated_on",
+		"users.archived_on",
 		"household_invitations.status",
 		"household_invitations.note",
 		"household_invitations.status_note",
@@ -58,8 +76,12 @@ func (q *SQLQuerier) scanHouseholdInvitation(ctx context.Context, scan database.
 
 	logger := q.logger.WithValue("include_counts", includeCounts)
 	householdInvitation = &types.HouseholdInvitation{
-		DestinationHousehold: &types.Household{},
+		DestinationHousehold: types.Household{},
 	}
+
+	var (
+		rawServiceRoles string
+	)
 
 	targetVars := []interface{}{
 		&householdInvitation.ID,
@@ -76,7 +98,23 @@ func (q *SQLQuerier) scanHouseholdInvitation(ctx context.Context, scan database.
 		&householdInvitation.DestinationHousehold.BelongsToUser,
 		&householdInvitation.ToEmail,
 		&householdInvitation.ToUser,
-		&householdInvitation.FromUser,
+		&householdInvitation.FromUser.ID,
+		&householdInvitation.FromUser.Username,
+		&householdInvitation.FromUser.EmailAddress,
+		&householdInvitation.FromUser.AvatarSrc,
+		&householdInvitation.FromUser.HashedPassword,
+		&householdInvitation.FromUser.RequiresPasswordChange,
+		&householdInvitation.FromUser.PasswordLastChangedOn,
+		&householdInvitation.FromUser.TwoFactorSecret,
+		&householdInvitation.FromUser.TwoFactorSecretVerifiedOn,
+		&rawServiceRoles,
+		&householdInvitation.FromUser.AccountStatus,
+		&householdInvitation.FromUser.AccountStatusExplanation,
+		&householdInvitation.FromUser.BirthDay,
+		&householdInvitation.FromUser.BirthMonth,
+		&householdInvitation.FromUser.CreatedOn,
+		&householdInvitation.FromUser.LastUpdatedOn,
+		&householdInvitation.FromUser.ArchivedOn,
 		&householdInvitation.Status,
 		&householdInvitation.Note,
 		&householdInvitation.StatusNote,
@@ -93,6 +131,8 @@ func (q *SQLQuerier) scanHouseholdInvitation(ctx context.Context, scan database.
 	if err = scan.Scan(targetVars...); err != nil {
 		return nil, 0, 0, observability.PrepareError(err, logger, span, "scanning household invitation")
 	}
+
+	householdInvitation.FromUser.ServiceRoles = strings.Split(rawServiceRoles, serviceRolesSeparator)
 
 	return householdInvitation, filteredCount, totalCount, nil
 }
@@ -177,7 +217,23 @@ SELECT
 	households.belongs_to_user,
 	household_invitations.to_email,
 	household_invitations.to_user,
-	household_invitations.from_user,
+	users.id,
+	users.username,
+	users.email_address,
+	users.avatar_src,
+	users.hashed_password,
+	users.requires_password_change,
+	users.password_last_changed_on,
+	users.two_factor_secret,
+	users.two_factor_secret_verified_on,
+	users.service_roles,
+	users.user_account_status,
+	users.user_account_status_explanation,
+	users.birth_day,
+	users.birth_month,
+	users.created_on,
+	users.last_updated_on,
+	users.archived_on,
 	household_invitations.status,
 	household_invitations.note,
 	household_invitations.status_note,
@@ -185,8 +241,9 @@ SELECT
 	household_invitations.created_on,
 	household_invitations.last_updated_on,
 	household_invitations.archived_on
-FROM household_invitations 
+FROM household_invitations
 JOIN households ON household_invitations.destination_household = households.id
+JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_on IS NULL
 AND household_invitations.destination_household = $1
 AND household_invitations.id = $2
@@ -243,7 +300,23 @@ SELECT
 	households.belongs_to_user,
 	household_invitations.to_email,
 	household_invitations.to_user,
-	household_invitations.from_user,
+	users.id,
+	users.username,
+	users.email_address,
+	users.avatar_src,
+	users.hashed_password,
+	users.requires_password_change,
+	users.password_last_changed_on,
+	users.two_factor_secret,
+	users.two_factor_secret_verified_on,
+	users.service_roles,
+	users.user_account_status,
+	users.user_account_status_explanation,
+	users.birth_day,
+	users.birth_month,
+	users.created_on,
+	users.last_updated_on,
+	users.archived_on,
 	household_invitations.status,
 	household_invitations.note,
 	household_invitations.status_note,
@@ -251,8 +324,9 @@ SELECT
 	household_invitations.created_on,
 	household_invitations.last_updated_on,
 	household_invitations.archived_on
-FROM household_invitations 
+FROM household_invitations
 JOIN households ON household_invitations.destination_household = households.id
+JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_on IS NULL
 AND household_invitations.token = $1
 AND household_invitations.id = $2
@@ -309,7 +383,23 @@ SELECT
 	households.belongs_to_user,
 	household_invitations.to_email,
 	household_invitations.to_user,
-	household_invitations.from_user,
+	users.id,
+	users.username,
+	users.email_address,
+	users.avatar_src,
+	users.hashed_password,
+	users.requires_password_change,
+	users.password_last_changed_on,
+	users.two_factor_secret,
+	users.two_factor_secret_verified_on,
+	users.service_roles,
+	users.user_account_status,
+	users.user_account_status_explanation,
+	users.birth_day,
+	users.birth_month,
+	users.created_on,
+	users.last_updated_on,
+	users.archived_on,
 	household_invitations.status,
 	household_invitations.note,
 	household_invitations.status_note,
@@ -319,6 +409,7 @@ SELECT
 	household_invitations.archived_on
 FROM household_invitations
 JOIN households ON household_invitations.destination_household = households.id
+JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_on IS NULL
 AND household_invitations.to_email = LOWER($1)
 AND household_invitations.token = $2
@@ -408,14 +499,14 @@ func (q *SQLQuerier) CreateHouseholdInvitation(ctx context.Context, input *types
 
 	x := &types.HouseholdInvitation{
 		ID:                   input.ID,
-		FromUser:             input.FromUser,
+		FromUser:             types.User{ID: input.FromUser},
 		ToUser:               input.ToUser,
 		Note:                 input.Note,
 		ToEmail:              input.ToEmail,
 		Token:                input.Token,
 		StatusNote:           "",
 		Status:               types.PendingHouseholdInvitationStatus,
-		DestinationHousehold: &types.Household{ID: input.DestinationHouseholdID},
+		DestinationHousehold: types.Household{ID: input.DestinationHouseholdID},
 		CreatedOn:            q.currentTime(),
 	}
 
@@ -438,7 +529,7 @@ func (q *SQLQuerier) BuildGetPendingHouseholdInvitationsFromUserQuery(ctx contex
 		"household_invitations.status":      types.PendingHouseholdInvitationStatus,
 	}
 
-	joins := []string{householdOnHouseholdInvitationsJoin}
+	joins := []string{householdOnHouseholdInvitationsJoin, usersOnHouseholdInvitationsJoin}
 
 	filteredCountQuery, filteredCountQueryArgs := q.buildFilteredCountQuery(ctx, "household_invitations", joins, where, "", "", false, false, filter)
 	totalCountQuery, totalCountQueryArgs := q.buildTotalCountQuery(ctx, "household_invitations", joins, where, "", "", false, false)
@@ -452,6 +543,7 @@ func (q *SQLQuerier) BuildGetPendingHouseholdInvitationsFromUserQuery(ctx contex
 	).
 		From("household_invitations").
 		Join(householdOnHouseholdInvitationsJoin).
+		Join(usersOnHouseholdInvitationsJoin).
 		Where(where)
 
 	queryBuilder = applyFilterToQueryBuilder(filter, "household_invitations", queryBuilder)
@@ -506,7 +598,7 @@ func (q *SQLQuerier) BuildGetPendingHouseholdInvitationsForUserQuery(ctx context
 		"household_invitations.status":      types.PendingHouseholdInvitationStatus,
 	}
 
-	joins := []string{householdOnHouseholdInvitationsJoin}
+	joins := []string{householdOnHouseholdInvitationsJoin, usersOnHouseholdInvitationsJoin}
 
 	filteredCountQuery, filteredCountQueryArgs := q.buildFilteredCountQuery(ctx, "household_invitations", joins, where, "", "", false, false, filter)
 	totalCountQuery, totalCountQueryArgs := q.buildTotalCountQuery(ctx, "household_invitations", joins, where, "", "", false, false)
@@ -520,6 +612,7 @@ func (q *SQLQuerier) BuildGetPendingHouseholdInvitationsForUserQuery(ctx context
 	).
 		From("household_invitations").
 		Join(householdOnHouseholdInvitationsJoin).
+		Join(usersOnHouseholdInvitationsJoin).
 		Where(where)
 
 	queryBuilder = applyFilterToQueryBuilder(filter, "household_invitations", queryBuilder)
@@ -567,9 +660,9 @@ const setInvitationStatusQuery = `
 UPDATE household_invitations SET
 	status = $1,
 	status_note = $2,
-	last_updated_on = extract(epoch FROM NOW()), 
+	last_updated_on = extract(epoch FROM NOW()),
 	archived_on = extract(epoch FROM NOW())
-WHERE archived_on IS NULL 
+WHERE archived_on IS NULL
 AND id = $3
 `
 
@@ -665,7 +758,7 @@ const attachInvitationsToUserIDQuery = `
 UPDATE household_invitations SET
 	to_user = $1,
 	last_updated_on = extract(epoch FROM NOW())
-WHERE archived_on IS NULL 
+WHERE archived_on IS NULL
 AND to_email = LOWER($2)
 `
 

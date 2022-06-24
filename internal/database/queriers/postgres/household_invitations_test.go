@@ -42,7 +42,23 @@ func buildMockRowsFromHouseholdInvitations(includeCounts bool, filteredCount uin
 			w.DestinationHousehold.BelongsToUser,
 			w.ToEmail,
 			w.ToUser,
-			w.FromUser,
+			w.FromUser.ID,
+			w.FromUser.Username,
+			w.FromUser.EmailAddress,
+			w.FromUser.AvatarSrc,
+			w.FromUser.HashedPassword,
+			w.FromUser.RequiresPasswordChange,
+			w.FromUser.PasswordLastChangedOn,
+			w.FromUser.TwoFactorSecret,
+			w.FromUser.TwoFactorSecretVerifiedOn,
+			strings.Join(w.FromUser.ServiceRoles, serviceRolesSeparator),
+			w.FromUser.AccountStatus,
+			w.FromUser.AccountStatusExplanation,
+			w.FromUser.BirthDay,
+			w.FromUser.BirthMonth,
+			w.FromUser.CreatedOn,
+			w.FromUser.LastUpdatedOn,
+			w.FromUser.ArchivedOn,
 			w.Status,
 			w.Note,
 			w.StatusNote,
@@ -88,7 +104,23 @@ func buildErroneousMockRowsFromHouseholdInvitations(includeCounts bool, filtered
 			w.DestinationHousehold.BelongsToUser,
 			w.ToEmail,
 			w.ToUser,
-			w.FromUser,
+			w.FromUser.ID,
+			w.FromUser.Username,
+			w.FromUser.EmailAddress,
+			w.FromUser.AvatarSrc,
+			w.FromUser.HashedPassword,
+			w.FromUser.RequiresPasswordChange,
+			w.FromUser.PasswordLastChangedOn,
+			w.FromUser.TwoFactorSecret,
+			w.FromUser.TwoFactorSecretVerifiedOn,
+			strings.Join(w.FromUser.ServiceRoles, serviceRolesSeparator),
+			w.FromUser.AccountStatus,
+			w.FromUser.AccountStatusExplanation,
+			w.FromUser.BirthDay,
+			w.FromUser.BirthMonth,
+			w.FromUser.CreatedOn,
+			w.FromUser.LastUpdatedOn,
+			w.FromUser.ArchivedOn,
 			w.Status,
 			w.Note,
 			w.StatusNote,
@@ -493,7 +525,9 @@ func TestQuerier_CreateHouseholdInvitation(T *testing.T) {
 
 		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
 		exampleHouseholdInvitation.StatusNote = ""
-		exampleHouseholdInvitation.DestinationHousehold = &types.Household{ID: exampleHouseholdInvitation.DestinationHousehold.ID}
+		exampleHouseholdInvitation.DestinationHousehold = types.Household{ID: exampleHouseholdInvitation.DestinationHousehold.ID}
+		exampleHouseholdInvitation.FromUser = types.User{ID: exampleHouseholdInvitation.FromUser.ID}
+
 		exampleInput := fakes.BuildFakeHouseholdInvitationDatabaseCreationInputFromHouseholdInvitation(exampleHouseholdInvitation)
 
 		ctx := context.Background()
@@ -540,7 +574,7 @@ func TestQuerier_CreateHouseholdInvitation(T *testing.T) {
 
 		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
 		exampleHouseholdInvitation.StatusNote = ""
-		exampleHouseholdInvitation.DestinationHousehold = &types.Household{ID: exampleHouseholdInvitation.DestinationHousehold.ID}
+		exampleHouseholdInvitation.DestinationHousehold = types.Household{ID: exampleHouseholdInvitation.DestinationHousehold.ID}
 		exampleInput := fakes.BuildFakeHouseholdInvitationDatabaseCreationInputFromHouseholdInvitation(exampleHouseholdInvitation)
 
 		ctx := context.Background()
@@ -582,7 +616,7 @@ func TestSQLQuerier_BuildGetPendingHouseholdInvitationsFromUserQuery(T *testing.
 		userID := fakes.BuildFakeID()
 		filter := types.DefaultQueryFilter()
 
-		expectedQuery := "SELECT household_invitations.id, households.id, households.name, households.billing_status, households.contact_email, households.contact_phone, households.payment_processor_customer_id, households.subscription_plan_id, households.created_on, households.last_updated_on, households.archived_on, households.belongs_to_user, household_invitations.to_email, household_invitations.to_user, household_invitations.from_user, household_invitations.status, household_invitations.note, household_invitations.status_note, household_invitations.token, household_invitations.created_on, household_invitations.last_updated_on, household_invitations.archived_on, (SELECT COUNT(household_invitations.id) FROM household_invitations JOIN households ON household_invitations.destination_household = households.id WHERE household_invitations.archived_on IS NULL AND household_invitations.from_user = $1 AND household_invitations.status = $2) as filtered_count, (SELECT COUNT(household_invitations.id) FROM household_invitations JOIN households ON household_invitations.destination_household = households.id WHERE household_invitations.archived_on IS NULL AND household_invitations.from_user = $3 AND household_invitations.status = $4) as total_count FROM household_invitations JOIN households ON household_invitations.destination_household = households.id WHERE household_invitations.archived_on IS NULL AND household_invitations.from_user = $5 AND household_invitations.status = $6 LIMIT 20"
+		expectedQuery := "SELECT household_invitations.id, households.id, households.name, households.billing_status, households.contact_email, households.contact_phone, households.payment_processor_customer_id, households.subscription_plan_id, households.created_on, households.last_updated_on, households.archived_on, households.belongs_to_user, household_invitations.to_email, household_invitations.to_user, users.id, users.username, users.email_address, users.avatar_src, users.hashed_password, users.requires_password_change, users.password_last_changed_on, users.two_factor_secret, users.two_factor_secret_verified_on, users.service_roles, users.user_account_status, users.user_account_status_explanation, users.birth_day, users.birth_month, users.created_on, users.last_updated_on, users.archived_on, household_invitations.status, household_invitations.note, household_invitations.status_note, household_invitations.token, household_invitations.created_on, household_invitations.last_updated_on, household_invitations.archived_on, (SELECT COUNT(household_invitations.id) FROM household_invitations JOIN households ON household_invitations.destination_household = households.id JOIN users ON household_invitations.from_user = users.id WHERE household_invitations.archived_on IS NULL AND household_invitations.from_user = $1 AND household_invitations.status = $2) as filtered_count, (SELECT COUNT(household_invitations.id) FROM household_invitations JOIN households ON household_invitations.destination_household = households.id JOIN users ON household_invitations.from_user = users.id WHERE household_invitations.archived_on IS NULL AND household_invitations.from_user = $3 AND household_invitations.status = $4) as total_count FROM household_invitations JOIN households ON household_invitations.destination_household = households.id JOIN users ON household_invitations.from_user = users.id WHERE household_invitations.archived_on IS NULL AND household_invitations.from_user = $5 AND household_invitations.status = $6 LIMIT 20"
 		expectedArgs := []interface{}{
 			userID,
 			types.PendingHouseholdInvitationStatus,
@@ -693,7 +727,7 @@ func TestSQLQuerier_BuildGetPendingHouseholdInvitationsForUserQuery(T *testing.T
 		userID := fakes.BuildFakeID()
 		filter := types.DefaultQueryFilter()
 
-		expectedQuery := "SELECT household_invitations.id, households.id, households.name, households.billing_status, households.contact_email, households.contact_phone, households.payment_processor_customer_id, households.subscription_plan_id, households.created_on, households.last_updated_on, households.archived_on, households.belongs_to_user, household_invitations.to_email, household_invitations.to_user, household_invitations.from_user, household_invitations.status, household_invitations.note, household_invitations.status_note, household_invitations.token, household_invitations.created_on, household_invitations.last_updated_on, household_invitations.archived_on, (SELECT COUNT(household_invitations.id) FROM household_invitations JOIN households ON household_invitations.destination_household = households.id WHERE household_invitations.archived_on IS NULL AND household_invitations.status = $1 AND household_invitations.to_user = $2) as filtered_count, (SELECT COUNT(household_invitations.id) FROM household_invitations JOIN households ON household_invitations.destination_household = households.id WHERE household_invitations.archived_on IS NULL AND household_invitations.status = $3 AND household_invitations.to_user = $4) as total_count FROM household_invitations JOIN households ON household_invitations.destination_household = households.id WHERE household_invitations.archived_on IS NULL AND household_invitations.status = $5 AND household_invitations.to_user = $6 LIMIT 20"
+		expectedQuery := "SELECT household_invitations.id, households.id, households.name, households.billing_status, households.contact_email, households.contact_phone, households.payment_processor_customer_id, households.subscription_plan_id, households.created_on, households.last_updated_on, households.archived_on, households.belongs_to_user, household_invitations.to_email, household_invitations.to_user, users.id, users.username, users.email_address, users.avatar_src, users.hashed_password, users.requires_password_change, users.password_last_changed_on, users.two_factor_secret, users.two_factor_secret_verified_on, users.service_roles, users.user_account_status, users.user_account_status_explanation, users.birth_day, users.birth_month, users.created_on, users.last_updated_on, users.archived_on, household_invitations.status, household_invitations.note, household_invitations.status_note, household_invitations.token, household_invitations.created_on, household_invitations.last_updated_on, household_invitations.archived_on, (SELECT COUNT(household_invitations.id) FROM household_invitations JOIN households ON household_invitations.destination_household = households.id JOIN users ON household_invitations.from_user = users.id WHERE household_invitations.archived_on IS NULL AND household_invitations.status = $1 AND household_invitations.to_user = $2) as filtered_count, (SELECT COUNT(household_invitations.id) FROM household_invitations JOIN households ON household_invitations.destination_household = households.id JOIN users ON household_invitations.from_user = users.id WHERE household_invitations.archived_on IS NULL AND household_invitations.status = $3 AND household_invitations.to_user = $4) as total_count FROM household_invitations JOIN households ON household_invitations.destination_household = households.id JOIN users ON household_invitations.from_user = users.id WHERE household_invitations.archived_on IS NULL AND household_invitations.status = $5 AND household_invitations.to_user = $6 LIMIT 20"
 		expectedArgs := []interface{}{
 			types.PendingHouseholdInvitationStatus,
 			userID,

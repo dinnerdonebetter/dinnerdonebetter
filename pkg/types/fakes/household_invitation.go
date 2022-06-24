@@ -9,13 +9,13 @@ import (
 // BuildFakeHouseholdInvitation builds a faked HouseholdInvitation.
 func BuildFakeHouseholdInvitation() *types.HouseholdInvitation {
 	return &types.HouseholdInvitation{
-		FromUser:             fake.LoremIpsumSentence(exampleQuantity),
+		FromUser:             *BuildFakeUser(),
 		ToEmail:              fake.LoremIpsumSentence(exampleQuantity),
 		ToUser:               func(s string) *string { return &s }(fake.LoremIpsumSentence(exampleQuantity)),
 		Note:                 fake.LoremIpsumSentence(exampleQuantity),
 		StatusNote:           fake.LoremIpsumSentence(exampleQuantity),
 		Token:                fake.UUID(),
-		DestinationHousehold: BuildFakeHousehold(),
+		DestinationHousehold: *BuildFakeHousehold(),
 		ID:                   fake.LoremIpsumSentence(exampleQuantity),
 		Status:               types.PendingHouseholdInvitationStatus,
 		CreatedOn:            uint64(uint32(fake.Date().Unix())),
@@ -62,7 +62,7 @@ func BuildFakeHouseholdInvitationDatabaseCreationInput() *types.HouseholdInvitat
 func BuildFakeHouseholdInvitationCreationInputFromHouseholdInvitation(householdInvitation *types.HouseholdInvitation) *types.HouseholdInvitationCreationRequestInput {
 	return &types.HouseholdInvitationCreationRequestInput{
 		ID:                     householdInvitation.ID,
-		FromUser:               householdInvitation.FromUser,
+		FromUser:               householdInvitation.FromUser.ID,
 		Note:                   householdInvitation.Note,
 		ToEmail:                householdInvitation.ToEmail,
 		DestinationHouseholdID: householdInvitation.DestinationHousehold.ID,
@@ -81,7 +81,7 @@ func BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation(householdInv
 func BuildFakeHouseholdInvitationDatabaseCreationInputFromHouseholdInvitation(householdInvitation *types.HouseholdInvitation) *types.HouseholdInvitationDatabaseCreationInput {
 	return &types.HouseholdInvitationDatabaseCreationInput{
 		ID:                     householdInvitation.ID,
-		FromUser:               householdInvitation.FromUser,
+		FromUser:               householdInvitation.FromUser.ID,
 		ToUser:                 householdInvitation.ToUser,
 		Note:                   householdInvitation.Note,
 		ToEmail:                householdInvitation.ToEmail,
