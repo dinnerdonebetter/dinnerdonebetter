@@ -183,7 +183,7 @@ func (b *Builder) BuildInviteUserToHouseholdRequest(ctx context.Context, input *
 
 	// we don't validate here because it needs to have the user ID
 
-	uri := b.BuildURL(ctx, nil, householdsBasePath, input.DestinationHousehold, "invite")
+	uri := b.BuildURL(ctx, nil, householdsBasePath, input.DestinationHouseholdID, "invite")
 	tracing.AttachRequestURIToSpan(span, uri)
 
 	return b.buildDataRequest(ctx, http.MethodPost, uri, input)

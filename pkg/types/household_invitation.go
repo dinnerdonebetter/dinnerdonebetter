@@ -38,24 +38,24 @@ type (
 	HouseholdInvitationCreationRequestInput struct {
 		_ struct{}
 
-		ID                   string `json:"-"`
-		FromUser             string `json:"-"`
-		Note                 string `json:"note"`
-		ToEmail              string `json:"toEmail"`
-		DestinationHousehold string `json:"-"`
+		ID                     string `json:"-"`
+		FromUser               string `json:"-"`
+		Note                   string `json:"note"`
+		ToEmail                string `json:"toEmail"`
+		DestinationHouseholdID string `json:"-"`
 	}
 
 	// HouseholdInvitationDatabaseCreationInput represents what a User could set as input for creating household invitations.
 	HouseholdInvitationDatabaseCreationInput struct {
 		_ struct{}
 
-		ID                   string  `json:"id"`
-		FromUser             string  `json:"fromUser"`
-		ToUser               *string `json:"toUser"`
-		Note                 string  `json:"note"`
-		ToEmail              string  `json:"toEmail"`
-		Token                string  `json:"token"`
-		DestinationHousehold string  `json:"destinationHousehold"`
+		ID                     string  `json:"id"`
+		FromUser               string  `json:"fromUser"`
+		ToUser                 *string `json:"toUser"`
+		Note                   string  `json:"note"`
+		ToEmail                string  `json:"toEmail"`
+		Token                  string  `json:"token"`
+		DestinationHouseholdID string  `json:"destinationHousehold"`
 	}
 
 	// HouseholdInvitation represents a household invitation.
@@ -70,7 +70,7 @@ type (
 		Note                 string                    `json:"note"`
 		StatusNote           string                    `json:"statusNote"`
 		Token                string                    `json:"token"`
-		DestinationHousehold string                    `json:"destinationHousehold"`
+		DestinationHousehold *Household                `json:"destinationHousehold"`
 		ID                   string                    `json:"id"`
 		Status               HouseholdInvitationStatus `json:"status"`
 		CreatedOn            uint64                    `json:"createdOn"`
@@ -124,17 +124,17 @@ func (x *HouseholdInvitationCreationRequestInput) ValidateWithContext(ctx contex
 	return validation.ValidateStructWithContext(ctx, x,
 		validation.Field(&x.ToEmail, validation.Required),
 		validation.Field(&x.FromUser, validation.Required),
-		validation.Field(&x.DestinationHousehold, validation.Required),
+		validation.Field(&x.DestinationHouseholdID, validation.Required),
 	)
 }
 
 // HouseholdInvitationDatabaseCreationInputFromHouseholdInvitationCreationInput creates a DatabaseCreationInput from a CreationInput.
 func HouseholdInvitationDatabaseCreationInputFromHouseholdInvitationCreationInput(input *HouseholdInvitationCreationRequestInput) *HouseholdInvitationDatabaseCreationInput {
 	x := &HouseholdInvitationDatabaseCreationInput{
-		ID:                   input.ID,
-		FromUser:             input.FromUser,
-		ToEmail:              input.ToEmail,
-		DestinationHousehold: input.DestinationHousehold,
+		ID:                     input.ID,
+		FromUser:               input.FromUser,
+		ToEmail:                input.ToEmail,
+		DestinationHouseholdID: input.DestinationHouseholdID,
 	}
 
 	return x

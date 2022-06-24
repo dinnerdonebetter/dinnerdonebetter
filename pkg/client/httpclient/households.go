@@ -189,8 +189,8 @@ func (c *Client) InviteUserToHousehold(ctx context.Context, input *types.Househo
 		return nil, ErrNilInputProvided
 	}
 
-	logger := c.logger.WithValue(keys.HouseholdIDKey, input.DestinationHousehold)
-	tracing.AttachHouseholdIDToSpan(span, input.DestinationHousehold)
+	logger := c.logger.WithValue(keys.HouseholdIDKey, input.DestinationHouseholdID)
+	tracing.AttachHouseholdIDToSpan(span, input.DestinationHouseholdID)
 
 	// we don't validate here because it needs to have the user ID
 

@@ -1041,7 +1041,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
 		exampleHousehold.CreatedOn = exampleCreationTime
 
-		exampleUserCreationInput.DestinationHousehold = exampleHousehold.ID
+		exampleUserCreationInput.DestinationHouseholdID = exampleHousehold.ID
 		exampleUserCreationInput.InvitationToken = t.Name()
 
 		ctx := context.Background()
@@ -1168,7 +1168,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
 		exampleHousehold.CreatedOn = exampleCreationTime
 
-		exampleUserCreationInput.DestinationHousehold = exampleHousehold.ID
+		exampleUserCreationInput.DestinationHouseholdID = exampleHousehold.ID
 		exampleUserCreationInput.InvitationToken = t.Name()
 
 		ctx := context.Background()
@@ -1258,7 +1258,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
 		exampleHousehold.CreatedOn = exampleCreationTime
 
-		exampleUserCreationInput.DestinationHousehold = exampleHousehold.ID
+		exampleUserCreationInput.DestinationHouseholdID = exampleHousehold.ID
 		exampleUserCreationInput.InvitationToken = t.Name()
 
 		ctx := context.Background()
@@ -1682,7 +1682,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
 		exampleHousehold.CreatedOn = exampleCreationTime
 
-		exampleUserCreationInput.DestinationHousehold = exampleHousehold.ID
+		exampleUserCreationInput.DestinationHouseholdID = exampleHousehold.ID
 		exampleUserCreationInput.InvitationToken = t.Name()
 
 		ctx := context.Background()

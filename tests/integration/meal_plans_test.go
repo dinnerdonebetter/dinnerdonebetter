@@ -104,10 +104,10 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 
 				t.Logf("inviting user")
 				invitation, err := testClients.main.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
-					FromUser:             s.user.ID,
-					Note:                 t.Name(),
-					ToEmail:              u.EmailAddress,
-					DestinationHousehold: relevantHouseholdID,
+					FromUser:               s.user.ID,
+					Note:                   t.Name(),
+					ToEmail:                u.EmailAddress,
+					DestinationHouseholdID: relevantHouseholdID,
 				})
 				require.NoError(t, err)
 
@@ -312,10 +312,10 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 
 				t.Logf("inviting user")
 				invitation, err := testClients.main.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
-					FromUser:             s.user.ID,
-					Note:                 t.Name(),
-					ToEmail:              u.EmailAddress,
-					DestinationHousehold: relevantHouseholdID,
+					FromUser:               s.user.ID,
+					Note:                   t.Name(),
+					ToEmail:                u.EmailAddress,
+					DestinationHouseholdID: relevantHouseholdID,
 				})
 				require.NoError(t, err)
 

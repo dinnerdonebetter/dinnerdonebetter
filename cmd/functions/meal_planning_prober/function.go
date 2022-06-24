@@ -193,10 +193,10 @@ func ProbeMealPlanning(ctx context.Context, m PubSubMessage) error {
 
 		logger.WithValue("i", i).Debug("inviting user")
 		invitation, invitationCreationErr := householdLeaderClient.InviteUserToHousehold(ctx, &types.HouseholdInvitationCreationRequestInput{
-			FromUser:             householdLeader.ID,
-			Note:                 "prober testing",
-			ToEmail:              u.EmailAddress,
-			DestinationHousehold: relevantHouseholdID,
+			FromUser:               householdLeader.ID,
+			Note:                   "prober testing",
+			ToEmail:                u.EmailAddress,
+			DestinationHouseholdID: relevantHouseholdID,
 		})
 		if invitationCreationErr != nil {
 			return fmt.Errorf("inviting user #%d: %w", i, invitationCreationErr)

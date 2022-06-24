@@ -17,13 +17,27 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
+const (
+	householdOnHouseholdInvitationsJoin = "households ON household_invitations.destination_household = households.id"
+)
+
 var (
 	_ types.HouseholdInvitationDataManager = (*SQLQuerier)(nil)
 
 	// householdInvitationsTableColumns are the columns for the household invitations table.
 	householdInvitationsTableColumns = []string{
 		"household_invitations.id",
-		"household_invitations.destination_household",
+		"households.id",
+		"households.name",
+		"households.billing_status",
+		"households.contact_email",
+		"households.contact_phone",
+		"households.payment_processor_customer_id",
+		"households.subscription_plan_id",
+		"households.created_on",
+		"households.last_updated_on",
+		"households.archived_on",
+		"households.belongs_to_user",
 		"household_invitations.to_email",
 		"household_invitations.to_user",
 		"household_invitations.from_user",
@@ -43,11 +57,23 @@ func (q *SQLQuerier) scanHouseholdInvitation(ctx context.Context, scan database.
 	defer span.End()
 
 	logger := q.logger.WithValue("include_counts", includeCounts)
-	householdInvitation = &types.HouseholdInvitation{}
+	householdInvitation = &types.HouseholdInvitation{
+		DestinationHousehold: &types.Household{},
+	}
 
 	targetVars := []interface{}{
 		&householdInvitation.ID,
-		&householdInvitation.DestinationHousehold,
+		&householdInvitation.DestinationHousehold.ID,
+		&householdInvitation.DestinationHousehold.Name,
+		&householdInvitation.DestinationHousehold.BillingStatus,
+		&householdInvitation.DestinationHousehold.ContactEmail,
+		&householdInvitation.DestinationHousehold.ContactPhone,
+		&householdInvitation.DestinationHousehold.PaymentProcessorCustomerID,
+		&householdInvitation.DestinationHousehold.SubscriptionPlanID,
+		&householdInvitation.DestinationHousehold.CreatedOn,
+		&householdInvitation.DestinationHousehold.LastUpdatedOn,
+		&householdInvitation.DestinationHousehold.ArchivedOn,
+		&householdInvitation.DestinationHousehold.BelongsToUser,
 		&householdInvitation.ToEmail,
 		&householdInvitation.ToUser,
 		&householdInvitation.FromUser,
@@ -138,7 +164,17 @@ func (q *SQLQuerier) HouseholdInvitationExists(ctx context.Context, householdInv
 const getHouseholdInvitationByHouseholdAndIDQuery = `
 SELECT
 	household_invitations.id,
-	household_invitations.destination_household,
+	households.id,
+	households.name,
+	households.billing_status,
+	households.contact_email,
+	households.contact_phone,
+	households.payment_processor_customer_id,
+	households.subscription_plan_id,
+	households.created_on,
+	households.last_updated_on,
+	households.archived_on,
+	households.belongs_to_user,
 	household_invitations.to_email,
 	household_invitations.to_user,
 	household_invitations.from_user,
@@ -150,6 +186,7 @@ SELECT
 	household_invitations.last_updated_on,
 	household_invitations.archived_on
 FROM household_invitations 
+JOIN households ON household_invitations.destination_household = households.id
 WHERE household_invitations.archived_on IS NULL
 AND household_invitations.destination_household = $1
 AND household_invitations.id = $2
@@ -193,7 +230,17 @@ func (q *SQLQuerier) GetHouseholdInvitationByHouseholdAndID(ctx context.Context,
 const getHouseholdInvitationByTokenAndIDQuery = `
 SELECT
 	household_invitations.id,
-	household_invitations.destination_household,
+	households.id,
+	households.name,
+	households.billing_status,
+	households.contact_email,
+	households.contact_phone,
+	households.payment_processor_customer_id,
+	households.subscription_plan_id,
+	households.created_on,
+	households.last_updated_on,
+	households.archived_on,
+	households.belongs_to_user,
 	household_invitations.to_email,
 	household_invitations.to_user,
 	household_invitations.from_user,
@@ -205,6 +252,7 @@ SELECT
 	household_invitations.last_updated_on,
 	household_invitations.archived_on
 FROM household_invitations 
+JOIN households ON household_invitations.destination_household = households.id
 WHERE household_invitations.archived_on IS NULL
 AND household_invitations.token = $1
 AND household_invitations.id = $2
@@ -248,7 +296,17 @@ func (q *SQLQuerier) GetHouseholdInvitationByTokenAndID(ctx context.Context, tok
 const getHouseholdInvitationByEmailAndTokenQuery = `
 SELECT
 	household_invitations.id,
-	household_invitations.destination_household,
+	households.id,
+	households.name,
+	households.billing_status,
+	households.contact_email,
+	households.contact_phone,
+	households.payment_processor_customer_id,
+	households.subscription_plan_id,
+	households.created_on,
+	households.last_updated_on,
+	households.archived_on,
+	households.belongs_to_user,
 	household_invitations.to_email,
 	household_invitations.to_user,
 	household_invitations.from_user,
@@ -259,8 +317,9 @@ SELECT
 	household_invitations.created_on,
 	household_invitations.last_updated_on,
 	household_invitations.archived_on
-FROM household_invitations 
-WHERE household_invitations.archived_on IS NULL 
+FROM household_invitations
+JOIN households ON household_invitations.destination_household = households.id
+WHERE household_invitations.archived_on IS NULL
 AND household_invitations.to_email = LOWER($1)
 AND household_invitations.token = $2
 `
@@ -340,7 +399,7 @@ func (q *SQLQuerier) CreateHouseholdInvitation(ctx context.Context, input *types
 		input.Note,
 		input.ToEmail,
 		input.Token,
-		input.DestinationHousehold,
+		input.DestinationHouseholdID,
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "household invitation creation", createHouseholdInvitationQuery, args); err != nil {
@@ -356,7 +415,7 @@ func (q *SQLQuerier) CreateHouseholdInvitation(ctx context.Context, input *types
 		Token:                input.Token,
 		StatusNote:           "",
 		Status:               types.PendingHouseholdInvitationStatus,
-		DestinationHousehold: input.DestinationHousehold,
+		DestinationHousehold: &types.Household{ID: input.DestinationHouseholdID},
 		CreatedOn:            q.currentTime(),
 	}
 
@@ -379,8 +438,10 @@ func (q *SQLQuerier) BuildGetPendingHouseholdInvitationsFromUserQuery(ctx contex
 		"household_invitations.status":      types.PendingHouseholdInvitationStatus,
 	}
 
-	filteredCountQuery, filteredCountQueryArgs := q.buildFilteredCountQuery(ctx, "household_invitations", nil, where, "", "", false, false, filter)
-	totalCountQuery, totalCountQueryArgs := q.buildTotalCountQuery(ctx, "household_invitations", nil, where, "", "", false, false)
+	joins := []string{householdOnHouseholdInvitationsJoin}
+
+	filteredCountQuery, filteredCountQueryArgs := q.buildFilteredCountQuery(ctx, "household_invitations", joins, where, "", "", false, false, filter)
+	totalCountQuery, totalCountQueryArgs := q.buildTotalCountQuery(ctx, "household_invitations", joins, where, "", "", false, false)
 
 	queryBuilder := q.sqlBuilder.Select(
 		append(
@@ -390,6 +451,7 @@ func (q *SQLQuerier) BuildGetPendingHouseholdInvitationsFromUserQuery(ctx contex
 		)...,
 	).
 		From("household_invitations").
+		Join(householdOnHouseholdInvitationsJoin).
 		Where(where)
 
 	queryBuilder = applyFilterToQueryBuilder(filter, "household_invitations", queryBuilder)
@@ -444,8 +506,10 @@ func (q *SQLQuerier) BuildGetPendingHouseholdInvitationsForUserQuery(ctx context
 		"household_invitations.status":      types.PendingHouseholdInvitationStatus,
 	}
 
-	filteredCountQuery, filteredCountQueryArgs := q.buildFilteredCountQuery(ctx, "household_invitations", nil, where, "", "", false, false, filter)
-	totalCountQuery, totalCountQueryArgs := q.buildTotalCountQuery(ctx, "household_invitations", nil, where, "", "", false, false)
+	joins := []string{householdOnHouseholdInvitationsJoin}
+
+	filteredCountQuery, filteredCountQueryArgs := q.buildFilteredCountQuery(ctx, "household_invitations", joins, where, "", "", false, false, filter)
+	totalCountQuery, totalCountQueryArgs := q.buildTotalCountQuery(ctx, "household_invitations", joins, where, "", "", false, false)
 
 	queryBuilder := q.sqlBuilder.Select(
 		append(
@@ -455,6 +519,7 @@ func (q *SQLQuerier) BuildGetPendingHouseholdInvitationsForUserQuery(ctx context
 		)...,
 	).
 		From("household_invitations").
+		Join(householdOnHouseholdInvitationsJoin).
 		Where(where)
 
 	queryBuilder = applyFilterToQueryBuilder(filter, "household_invitations", queryBuilder)
@@ -572,7 +637,7 @@ func (q *SQLQuerier) AcceptHouseholdInvitation(ctx context.Context, householdInv
 	addUserInput := &types.HouseholdUserMembershipDatabaseCreationInput{
 		ID:             ksuid.New().String(),
 		Reason:         fmt.Sprintf("accepted household invitation %q", householdInvitationID),
-		HouseholdID:    invitation.DestinationHousehold,
+		HouseholdID:    invitation.DestinationHousehold.ID,
 		HouseholdRoles: []string{"household_member"},
 	}
 	if invitation.ToUser != nil {
@@ -650,7 +715,7 @@ func (q *SQLQuerier) acceptInvitationForUser(ctx context.Context, querier databa
 	createHouseholdMembershipForNewUserArgs := []interface{}{
 		ksuid.New().String(),
 		input.ID,
-		input.DestinationHousehold,
+		input.DestinationHouseholdID,
 		true,
 		authorization.HouseholdMemberRole.String(),
 	}

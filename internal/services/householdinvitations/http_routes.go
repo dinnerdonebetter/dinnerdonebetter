@@ -59,7 +59,7 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	providedInput.ID = ksuid.New().String()
-	providedInput.DestinationHousehold = householdID
+	providedInput.DestinationHouseholdID = householdID
 	providedInput.FromUser = requester
 	providedInput.ToEmail = strings.TrimSpace(strings.ToLower(providedInput.ToEmail))
 
@@ -303,8 +303,8 @@ func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request
 			DataType:                  types.HouseholdInvitationDataType,
 			EventType:                 types.HouseholdInvitationAcceptedCustomerEventType,
 			AttributableToUserID:      sessionCtxData.Requester.UserID,
-			AttributableToHouseholdID: invitation.DestinationHousehold,
-			HouseholdID:               invitation.DestinationHousehold,
+			AttributableToHouseholdID: invitation.DestinationHousehold.ID,
+			HouseholdID:               invitation.DestinationHousehold.ID,
 			HouseholdInvitationID:     householdInvitationID,
 		}
 
@@ -376,8 +376,8 @@ func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request
 			DataType:                  types.HouseholdInvitationDataType,
 			EventType:                 types.HouseholdInvitationCanceledCustomerEventType,
 			AttributableToUserID:      sessionCtxData.Requester.UserID,
-			HouseholdID:               invitation.DestinationHousehold,
-			AttributableToHouseholdID: invitation.DestinationHousehold,
+			HouseholdID:               invitation.DestinationHousehold.ID,
+			AttributableToHouseholdID: invitation.DestinationHousehold.ID,
 			HouseholdInvitationID:     householdInvitationID,
 		}
 
@@ -448,8 +448,8 @@ func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request
 			DataType:                  types.HouseholdInvitationDataType,
 			EventType:                 types.HouseholdInvitationRejectedCustomerEventType,
 			AttributableToUserID:      sessionCtxData.Requester.UserID,
-			HouseholdID:               invitation.DestinationHousehold,
-			AttributableToHouseholdID: invitation.DestinationHousehold,
+			HouseholdID:               invitation.DestinationHousehold.ID,
+			AttributableToHouseholdID: invitation.DestinationHousehold.ID,
 			HouseholdInvitationID:     householdInvitationID,
 		}
 

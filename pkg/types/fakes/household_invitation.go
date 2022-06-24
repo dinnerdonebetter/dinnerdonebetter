@@ -15,7 +15,7 @@ func BuildFakeHouseholdInvitation() *types.HouseholdInvitation {
 		Note:                 fake.LoremIpsumSentence(exampleQuantity),
 		StatusNote:           fake.LoremIpsumSentence(exampleQuantity),
 		Token:                fake.UUID(),
-		DestinationHousehold: fake.LoremIpsumSentence(exampleQuantity),
+		DestinationHousehold: BuildFakeHousehold(),
 		ID:                   fake.LoremIpsumSentence(exampleQuantity),
 		Status:               types.PendingHouseholdInvitationStatus,
 		CreatedOn:            uint64(uint32(fake.Date().Unix())),
@@ -61,11 +61,11 @@ func BuildFakeHouseholdInvitationDatabaseCreationInput() *types.HouseholdInvitat
 // BuildFakeHouseholdInvitationCreationInputFromHouseholdInvitation builds a faked HouseholdInvitationCreationRequestInput.
 func BuildFakeHouseholdInvitationCreationInputFromHouseholdInvitation(householdInvitation *types.HouseholdInvitation) *types.HouseholdInvitationCreationRequestInput {
 	return &types.HouseholdInvitationCreationRequestInput{
-		ID:                   householdInvitation.ID,
-		FromUser:             householdInvitation.FromUser,
-		Note:                 householdInvitation.Note,
-		ToEmail:              householdInvitation.ToEmail,
-		DestinationHousehold: householdInvitation.DestinationHousehold,
+		ID:                     householdInvitation.ID,
+		FromUser:               householdInvitation.FromUser,
+		Note:                   householdInvitation.Note,
+		ToEmail:                householdInvitation.ToEmail,
+		DestinationHouseholdID: householdInvitation.DestinationHousehold.ID,
 	}
 }
 
@@ -80,12 +80,12 @@ func BuildFakeHouseholdInvitationUpdateInputFromHouseholdInvitation(householdInv
 // BuildFakeHouseholdInvitationDatabaseCreationInputFromHouseholdInvitation builds a faked HouseholdInvitationCreationRequestInput.
 func BuildFakeHouseholdInvitationDatabaseCreationInputFromHouseholdInvitation(householdInvitation *types.HouseholdInvitation) *types.HouseholdInvitationDatabaseCreationInput {
 	return &types.HouseholdInvitationDatabaseCreationInput{
-		ID:                   householdInvitation.ID,
-		FromUser:             householdInvitation.FromUser,
-		ToUser:               householdInvitation.ToUser,
-		Note:                 householdInvitation.Note,
-		ToEmail:              householdInvitation.ToEmail,
-		Token:                householdInvitation.Token,
-		DestinationHousehold: householdInvitation.DestinationHousehold,
+		ID:                     householdInvitation.ID,
+		FromUser:               householdInvitation.FromUser,
+		ToUser:                 householdInvitation.ToUser,
+		Note:                   householdInvitation.Note,
+		ToEmail:                householdInvitation.ToEmail,
+		Token:                  householdInvitation.Token,
+		DestinationHouseholdID: householdInvitation.DestinationHousehold.ID,
 	}
 }

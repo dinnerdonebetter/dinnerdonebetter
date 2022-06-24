@@ -205,7 +205,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if invitation != nil {
 		logger.Debug("supplementing user creation input with invitation data")
-		input.DestinationHousehold = invitation.DestinationHousehold
+		input.DestinationHouseholdID = invitation.DestinationHousehold.ID
 		input.InvitationToken = invitation.Token
 	}
 
