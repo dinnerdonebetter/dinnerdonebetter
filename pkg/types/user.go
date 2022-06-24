@@ -41,7 +41,7 @@ type (
 		PasswordLastChangedOn     *uint64           `json:"passwordLastChangedOn"`
 		ArchivedOn                *uint64           `json:"archivedOn"`
 		LastUpdatedOn             *uint64           `json:"lastUpdatedOn"`
-		TwoFactorSecretVerifiedOn *uint64           `json:"-"`
+		TwoFactorSecretVerifiedOn *uint64           `json:"twoFactorSecretVerifiedOn"`
 		AvatarSrc                 *string           `json:"avatar"`
 		BirthMonth                *uint8            `json:"birthMonth"`
 		BirthDay                  *uint8            `json:"birthDay"`
