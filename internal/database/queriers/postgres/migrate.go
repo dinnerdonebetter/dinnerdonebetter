@@ -120,6 +120,11 @@ var (
 			Description: "replace invalid uniqueness constraint on valid_ingredients table",
 			Script:      fetchMigration("00021_rename_user_status_column"),
 		},
+		{
+			Version:     22,
+			Description: "modify valid ingredient fields",
+			Script:      fetchMigration("00022_modify_valid_ingredient_fields"),
+		},
 	}
 )
 

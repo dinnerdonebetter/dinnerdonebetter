@@ -12,7 +12,6 @@ func BuildFakeValidIngredient() *types.ValidIngredient {
 	return &types.ValidIngredient{
 		ID:                ksuid.New().String(),
 		Name:              fake.LoremIpsumSentence(exampleQuantity),
-		Variant:           fake.LoremIpsumSentence(exampleQuantity),
 		Description:       fake.LoremIpsumSentence(exampleQuantity),
 		Warning:           fake.LoremIpsumSentence(exampleQuantity),
 		ContainsEgg:       fake.Bool(),
@@ -26,7 +25,6 @@ func BuildFakeValidIngredient() *types.ValidIngredient {
 		ContainsFish:      fake.Bool(),
 		ContainsGluten:    fake.Bool(),
 		AnimalFlesh:       fake.Bool(),
-		AnimalDerived:     fake.Bool(),
 		Volumetric:        fake.Bool(),
 		IconPath:          fake.LoremIpsumSentence(exampleQuantity),
 		CreatedOn:         uint64(uint32(fake.Date().Unix())),
@@ -56,7 +54,6 @@ func BuildFakeValidIngredientUpdateRequestInput() *types.ValidIngredientUpdateRe
 	validIngredient := BuildFakeValidIngredient()
 	return &types.ValidIngredientUpdateRequestInput{
 		Name:              validIngredient.Name,
-		Variant:           validIngredient.Variant,
 		Description:       validIngredient.Description,
 		Warning:           validIngredient.Warning,
 		ContainsEgg:       validIngredient.ContainsEgg,
@@ -70,7 +67,6 @@ func BuildFakeValidIngredientUpdateRequestInput() *types.ValidIngredientUpdateRe
 		ContainsFish:      validIngredient.ContainsFish,
 		ContainsGluten:    validIngredient.ContainsGluten,
 		AnimalFlesh:       validIngredient.AnimalFlesh,
-		AnimalDerived:     validIngredient.AnimalDerived,
 		Volumetric:        validIngredient.Volumetric,
 		IconPath:          validIngredient.IconPath,
 	}
@@ -80,7 +76,6 @@ func BuildFakeValidIngredientUpdateRequestInput() *types.ValidIngredientUpdateRe
 func BuildFakeValidIngredientUpdateRequestInputFromValidIngredient(validIngredient *types.ValidIngredient) *types.ValidIngredientUpdateRequestInput {
 	return &types.ValidIngredientUpdateRequestInput{
 		Name:              validIngredient.Name,
-		Variant:           validIngredient.Variant,
 		Description:       validIngredient.Description,
 		Warning:           validIngredient.Warning,
 		ContainsEgg:       validIngredient.ContainsEgg,
@@ -94,7 +89,6 @@ func BuildFakeValidIngredientUpdateRequestInputFromValidIngredient(validIngredie
 		ContainsFish:      validIngredient.ContainsFish,
 		ContainsGluten:    validIngredient.ContainsGluten,
 		AnimalFlesh:       validIngredient.AnimalFlesh,
-		AnimalDerived:     validIngredient.AnimalDerived,
 		Volumetric:        validIngredient.Volumetric,
 		IconPath:          validIngredient.IconPath,
 	}
@@ -111,7 +105,6 @@ func BuildFakeValidIngredientCreationRequestInputFromValidIngredient(validIngred
 	return &types.ValidIngredientCreationRequestInput{
 		ID:                validIngredient.ID,
 		Name:              validIngredient.Name,
-		Variant:           validIngredient.Variant,
 		Description:       validIngredient.Description,
 		Warning:           validIngredient.Warning,
 		ContainsEgg:       validIngredient.ContainsEgg,
@@ -125,7 +118,6 @@ func BuildFakeValidIngredientCreationRequestInputFromValidIngredient(validIngred
 		ContainsFish:      validIngredient.ContainsFish,
 		ContainsGluten:    validIngredient.ContainsGluten,
 		AnimalFlesh:       validIngredient.AnimalFlesh,
-		AnimalDerived:     validIngredient.AnimalDerived,
 		Volumetric:        validIngredient.Volumetric,
 		IconPath:          validIngredient.IconPath,
 	}
@@ -142,7 +134,6 @@ func BuildFakeValidIngredientDatabaseCreationInputFromValidIngredient(validIngre
 	return &types.ValidIngredientDatabaseCreationInput{
 		ID:                validIngredient.ID,
 		Name:              validIngredient.Name,
-		Variant:           validIngredient.Variant,
 		Description:       validIngredient.Description,
 		Warning:           validIngredient.Warning,
 		ContainsEgg:       validIngredient.ContainsEgg,
@@ -156,7 +147,6 @@ func BuildFakeValidIngredientDatabaseCreationInputFromValidIngredient(validIngre
 		ContainsFish:      validIngredient.ContainsFish,
 		ContainsGluten:    validIngredient.ContainsGluten,
 		AnimalFlesh:       validIngredient.AnimalFlesh,
-		AnimalDerived:     validIngredient.AnimalDerived,
 		Volumetric:        validIngredient.Volumetric,
 		IconPath:          validIngredient.IconPath,
 	}

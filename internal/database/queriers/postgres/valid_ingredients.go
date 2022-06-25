@@ -20,7 +20,6 @@ var (
 	validIngredientsTableColumns = []string{
 		"valid_ingredients.id",
 		"valid_ingredients.name",
-		"valid_ingredients.variant",
 		"valid_ingredients.description",
 		"valid_ingredients.warning",
 		"valid_ingredients.contains_egg",
@@ -34,7 +33,6 @@ var (
 		"valid_ingredients.contains_fish",
 		"valid_ingredients.contains_gluten",
 		"valid_ingredients.animal_flesh",
-		"valid_ingredients.animal_derived",
 		"valid_ingredients.volumetric",
 		"valid_ingredients.icon_path",
 		"valid_ingredients.created_on",
@@ -55,7 +53,6 @@ func (q *SQLQuerier) scanValidIngredient(ctx context.Context, scan database.Scan
 	targetVars := []interface{}{
 		&x.ID,
 		&x.Name,
-		&x.Variant,
 		&x.Description,
 		&x.Warning,
 		&x.ContainsEgg,
@@ -69,7 +66,6 @@ func (q *SQLQuerier) scanValidIngredient(ctx context.Context, scan database.Scan
 		&x.ContainsFish,
 		&x.ContainsGluten,
 		&x.AnimalFlesh,
-		&x.AnimalDerived,
 		&x.Volumetric,
 		&x.IconPath,
 		&x.CreatedOn,
@@ -151,7 +147,6 @@ func (q *SQLQuerier) ValidIngredientExists(ctx context.Context, validIngredientI
 const getValidIngredientBaseQuery = `SELECT 
 	valid_ingredients.id,
 	valid_ingredients.name,
-	valid_ingredients.variant,
 	valid_ingredients.description,
 	valid_ingredients.warning,
 	valid_ingredients.contains_egg,
@@ -165,7 +160,6 @@ const getValidIngredientBaseQuery = `SELECT
 	valid_ingredients.contains_fish,
 	valid_ingredients.contains_gluten,
 	valid_ingredients.animal_flesh,
-	valid_ingredients.animal_derived,
 	valid_ingredients.volumetric,
 	valid_ingredients.icon_path,
 	valid_ingredients.created_on, 
@@ -224,7 +218,7 @@ func (q *SQLQuerier) GetRandomValidIngredient(ctx context.Context) (*types.Valid
 	return validIngredient, nil
 }
 
-const validIngredientSearchQuery = "SELECT valid_ingredients.id, valid_ingredients.name, valid_ingredients.variant, valid_ingredients.description, valid_ingredients.warning, valid_ingredients.contains_egg, valid_ingredients.contains_dairy, valid_ingredients.contains_peanut, valid_ingredients.contains_tree_nut, valid_ingredients.contains_soy, valid_ingredients.contains_wheat, valid_ingredients.contains_shellfish, valid_ingredients.contains_sesame, valid_ingredients.contains_fish, valid_ingredients.contains_gluten, valid_ingredients.animal_flesh, valid_ingredients.animal_derived, valid_ingredients.volumetric, valid_ingredients.icon_path, valid_ingredients.created_on, valid_ingredients.last_updated_on, valid_ingredients.archived_on FROM valid_ingredients WHERE valid_ingredients.name ILIKE $1 AND valid_ingredients.archived_on IS NULL LIMIT 50"
+const validIngredientSearchQuery = "SELECT valid_ingredients.id, valid_ingredients.name, valid_ingredients.description, valid_ingredients.warning, valid_ingredients.contains_egg, valid_ingredients.contains_dairy, valid_ingredients.contains_peanut, valid_ingredients.contains_tree_nut, valid_ingredients.contains_soy, valid_ingredients.contains_wheat, valid_ingredients.contains_shellfish, valid_ingredients.contains_sesame, valid_ingredients.contains_fish, valid_ingredients.contains_gluten, valid_ingredients.animal_flesh, valid_ingredients.volumetric, valid_ingredients.icon_path, valid_ingredients.created_on, valid_ingredients.last_updated_on, valid_ingredients.archived_on FROM valid_ingredients WHERE valid_ingredients.name ILIKE $1 AND valid_ingredients.archived_on IS NULL LIMIT 50"
 
 // SearchForValidIngredients fetches a valid ingredient from the database.
 func (q *SQLQuerier) SearchForValidIngredients(ctx context.Context, query string) ([]*types.ValidIngredient, error) {
@@ -360,7 +354,7 @@ func (q *SQLQuerier) GetValidIngredientsWithIDs(ctx context.Context, limit uint8
 	return validIngredients, nil
 }
 
-const validIngredientCreationQuery = "INSERT INTO valid_ingredients (id,name,variant,description,warning,contains_egg,contains_dairy,contains_peanut,contains_tree_nut,contains_soy,contains_wheat,contains_shellfish,contains_sesame,contains_fish,contains_gluten,animal_flesh,animal_derived,volumetric,icon_path) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)"
+const validIngredientCreationQuery = "INSERT INTO valid_ingredients (id,name,description,warning,contains_egg,contains_dairy,contains_peanut,contains_tree_nut,contains_soy,contains_wheat,contains_shellfish,contains_sesame,contains_fish,contains_gluten,animal_flesh,volumetric,icon_path) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)"
 
 // CreateValidIngredient creates a valid ingredient in the database.
 func (q *SQLQuerier) CreateValidIngredient(ctx context.Context, input *types.ValidIngredientDatabaseCreationInput) (*types.ValidIngredient, error) {
@@ -376,7 +370,6 @@ func (q *SQLQuerier) CreateValidIngredient(ctx context.Context, input *types.Val
 	args := []interface{}{
 		input.ID,
 		input.Name,
-		input.Variant,
 		input.Description,
 		input.Warning,
 		input.ContainsEgg,
@@ -390,7 +383,6 @@ func (q *SQLQuerier) CreateValidIngredient(ctx context.Context, input *types.Val
 		input.ContainsFish,
 		input.ContainsGluten,
 		input.AnimalFlesh,
-		input.AnimalDerived,
 		input.Volumetric,
 		input.IconPath,
 	}
@@ -403,7 +395,6 @@ func (q *SQLQuerier) CreateValidIngredient(ctx context.Context, input *types.Val
 	x := &types.ValidIngredient{
 		ID:                input.ID,
 		Name:              input.Name,
-		Variant:           input.Variant,
 		Description:       input.Description,
 		Warning:           input.Warning,
 		ContainsEgg:       input.ContainsEgg,
@@ -417,7 +408,6 @@ func (q *SQLQuerier) CreateValidIngredient(ctx context.Context, input *types.Val
 		ContainsFish:      input.ContainsFish,
 		ContainsGluten:    input.ContainsGluten,
 		AnimalFlesh:       input.AnimalFlesh,
-		AnimalDerived:     input.AnimalDerived,
 		Volumetric:        input.Volumetric,
 		IconPath:          input.IconPath,
 		CreatedOn:         q.currentTime(),
@@ -429,7 +419,7 @@ func (q *SQLQuerier) CreateValidIngredient(ctx context.Context, input *types.Val
 	return x, nil
 }
 
-const updateValidIngredientQuery = "UPDATE valid_ingredients SET name = $1, variant = $2, description = $3, warning = $4, contains_egg = $5, contains_dairy = $6, contains_peanut = $7, contains_tree_nut = $8, contains_soy = $9, contains_wheat = $10, contains_shellfish = $11, contains_sesame = $12, contains_fish = $13, contains_gluten = $14, animal_flesh = $15, animal_derived = $16, volumetric = $17, icon_path = $18, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $19"
+const updateValidIngredientQuery = "UPDATE valid_ingredients SET name = $1, description = $2, warning = $3, contains_egg = $4, contains_dairy = $5, contains_peanut = $6, contains_tree_nut = $7, contains_soy = $8, contains_wheat = $9, contains_shellfish = $10, contains_sesame = $11, contains_fish = $12, contains_gluten = $13, animal_flesh = $14, volumetric = $15, icon_path = $16, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND id = $17"
 
 // UpdateValidIngredient updates a particular valid ingredient.
 func (q *SQLQuerier) UpdateValidIngredient(ctx context.Context, updated *types.ValidIngredient) error {
@@ -445,7 +435,6 @@ func (q *SQLQuerier) UpdateValidIngredient(ctx context.Context, updated *types.V
 
 	args := []interface{}{
 		updated.Name,
-		updated.Variant,
 		updated.Description,
 		updated.Warning,
 		updated.ContainsEgg,
@@ -459,7 +448,6 @@ func (q *SQLQuerier) UpdateValidIngredient(ctx context.Context, updated *types.V
 		updated.ContainsFish,
 		updated.ContainsGluten,
 		updated.AnimalFlesh,
-		updated.AnimalDerived,
 		updated.Volumetric,
 		updated.IconPath,
 		updated.ID,

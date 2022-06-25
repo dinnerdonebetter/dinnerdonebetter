@@ -29,7 +29,6 @@ func buildMockRowsFromValidIngredients(includeCounts bool, filteredCount uint64,
 		rowValues := []driver.Value{
 			x.ID,
 			x.Name,
-			x.Variant,
 			x.Description,
 			x.Warning,
 			x.ContainsEgg,
@@ -43,7 +42,6 @@ func buildMockRowsFromValidIngredients(includeCounts bool, filteredCount uint64,
 			x.ContainsFish,
 			x.ContainsGluten,
 			x.AnimalFlesh,
-			x.AnimalDerived,
 			x.Volumetric,
 			x.IconPath,
 			x.CreatedOn,
@@ -605,7 +603,6 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 		args := []interface{}{
 			exampleInput.ID,
 			exampleInput.Name,
-			exampleInput.Variant,
 			exampleInput.Description,
 			exampleInput.Warning,
 			exampleInput.ContainsEgg,
@@ -619,7 +616,6 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 			exampleInput.ContainsFish,
 			exampleInput.ContainsGluten,
 			exampleInput.AnimalFlesh,
-			exampleInput.AnimalDerived,
 			exampleInput.Volumetric,
 			exampleInput.IconPath,
 		}
@@ -663,7 +659,6 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 		args := []interface{}{
 			exampleInput.ID,
 			exampleInput.Name,
-			exampleInput.Variant,
 			exampleInput.Description,
 			exampleInput.Warning,
 			exampleInput.ContainsEgg,
@@ -677,7 +672,6 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 			exampleInput.ContainsFish,
 			exampleInput.ContainsGluten,
 			exampleInput.AnimalFlesh,
-			exampleInput.AnimalDerived,
 			exampleInput.Volumetric,
 			exampleInput.IconPath,
 		}
@@ -712,7 +706,6 @@ func TestQuerier_UpdateValidIngredient(T *testing.T) {
 
 		args := []interface{}{
 			exampleValidIngredient.Name,
-			exampleValidIngredient.Variant,
 			exampleValidIngredient.Description,
 			exampleValidIngredient.Warning,
 			exampleValidIngredient.ContainsEgg,
@@ -726,7 +719,6 @@ func TestQuerier_UpdateValidIngredient(T *testing.T) {
 			exampleValidIngredient.ContainsFish,
 			exampleValidIngredient.ContainsGluten,
 			exampleValidIngredient.AnimalFlesh,
-			exampleValidIngredient.AnimalDerived,
 			exampleValidIngredient.Volumetric,
 			exampleValidIngredient.IconPath,
 			exampleValidIngredient.ID,
@@ -760,7 +752,6 @@ func TestQuerier_UpdateValidIngredient(T *testing.T) {
 
 		args := []interface{}{
 			exampleValidIngredient.Name,
-			exampleValidIngredient.Variant,
 			exampleValidIngredient.Description,
 			exampleValidIngredient.Warning,
 			exampleValidIngredient.ContainsEgg,
@@ -774,7 +765,6 @@ func TestQuerier_UpdateValidIngredient(T *testing.T) {
 			exampleValidIngredient.ContainsFish,
 			exampleValidIngredient.ContainsGluten,
 			exampleValidIngredient.AnimalFlesh,
-			exampleValidIngredient.AnimalDerived,
 			exampleValidIngredient.Volumetric,
 			exampleValidIngredient.IconPath,
 			exampleValidIngredient.ID,

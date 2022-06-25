@@ -17,7 +17,6 @@ func checkValidIngredientEquality(t *testing.T, expected, actual *types.ValidIng
 
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for valid ingredient %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
-	assert.Equal(t, expected.Variant, actual.Variant, "expected Variant for valid ingredient %s to be %v, but it was %v", expected.ID, expected.Variant, actual.Variant)
 	assert.Equal(t, expected.Description, actual.Description, "expected Description for valid ingredient %s to be %v, but it was %v", expected.ID, expected.Description, actual.Description)
 	assert.Equal(t, expected.Warning, actual.Warning, "expected Warning for valid ingredient %s to be %v, but it was %v", expected.ID, expected.Warning, actual.Warning)
 	assert.Equal(t, expected.ContainsEgg, actual.ContainsEgg, "expected ContainsEgg for valid ingredient %s to be %v, but it was %v", expected.ID, expected.ContainsEgg, actual.ContainsEgg)
@@ -31,7 +30,6 @@ func checkValidIngredientEquality(t *testing.T, expected, actual *types.ValidIng
 	assert.Equal(t, expected.ContainsFish, actual.ContainsFish, "expected ContainsFish for valid ingredient %s to be %v, but it was %v", expected.ID, expected.ContainsFish, actual.ContainsFish)
 	assert.Equal(t, expected.ContainsGluten, actual.ContainsGluten, "expected ContainsGluten for valid ingredient %s to be %v, but it was %v", expected.ID, expected.ContainsGluten, actual.ContainsGluten)
 	assert.Equal(t, expected.AnimalFlesh, actual.AnimalFlesh, "expected AnimalFlesh for valid ingredient %s to be %v, but it was %v", expected.ID, expected.AnimalFlesh, actual.AnimalFlesh)
-	assert.Equal(t, expected.AnimalDerived, actual.AnimalDerived, "expected AnimalDerived for valid ingredient %s to be %v, but it was %v", expected.ID, expected.AnimalDerived, actual.AnimalDerived)
 	assert.Equal(t, expected.Volumetric, actual.Volumetric, "expected Volumetric for valid ingredient %s to be %v, but it was %v", expected.ID, expected.Volumetric, actual.Volumetric)
 	assert.Equal(t, expected.IconPath, actual.IconPath, "expected IconPath for valid ingredient %s to be %v, but it was %v", expected.ID, expected.IconPath, actual.IconPath)
 	assert.NotZero(t, actual.CreatedOn)
@@ -41,7 +39,6 @@ func checkValidIngredientEquality(t *testing.T, expected, actual *types.ValidIng
 func convertValidIngredientToValidIngredientUpdateInput(x *types.ValidIngredient) *types.ValidIngredientUpdateRequestInput {
 	return &types.ValidIngredientUpdateRequestInput{
 		Name:              x.Name,
-		Variant:           x.Variant,
 		Description:       x.Description,
 		Warning:           x.Warning,
 		ContainsEgg:       x.ContainsEgg,
@@ -55,7 +52,6 @@ func convertValidIngredientToValidIngredientUpdateInput(x *types.ValidIngredient
 		ContainsFish:      x.ContainsFish,
 		ContainsGluten:    x.ContainsGluten,
 		AnimalFlesh:       x.AnimalFlesh,
-		AnimalDerived:     x.AnimalDerived,
 		Volumetric:        x.Volumetric,
 		IconPath:          x.IconPath,
 	}

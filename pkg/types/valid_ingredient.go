@@ -38,7 +38,6 @@ type (
 		Warning           string  `json:"warning"`
 		ID                string  `json:"id"`
 		IconPath          string  `json:"iconPath"`
-		Variant           string  `json:"variant"`
 		CreatedOn         uint64  `json:"createdOn"`
 		ContainsSesame    bool    `json:"containsSesame"`
 		ContainsSoy       bool    `json:"containsSoy"`
@@ -47,7 +46,6 @@ type (
 		ContainsFish      bool    `json:"containsFish"`
 		ContainsGluten    bool    `json:"containsGluten"`
 		AnimalFlesh       bool    `json:"animalFlesh"`
-		AnimalDerived     bool    `json:"animalDerived"`
 		Volumetric        bool    `json:"volumetric"`
 		ContainsPeanut    bool    `json:"containsPeanut"`
 		ContainsDairy     bool    `json:"containsDairy"`
@@ -67,7 +65,6 @@ type (
 		_                 struct{}
 		ID                string `json:"-"`
 		Name              string `json:"name"`
-		Variant           string `json:"variant"`
 		Description       string `json:"description"`
 		Warning           string `json:"warning"`
 		IconPath          string `json:"iconPath"`
@@ -81,7 +78,6 @@ type (
 		ContainsFish      bool   `json:"containsFish"`
 		ContainsGluten    bool   `json:"containsGluten"`
 		AnimalFlesh       bool   `json:"animalFlesh"`
-		AnimalDerived     bool   `json:"animalDerived"`
 		Volumetric        bool   `json:"volumetric"`
 		ContainsSoy       bool   `json:"containsSoy"`
 	}
@@ -91,7 +87,6 @@ type (
 		_                 struct{}
 		ID                string `json:"id"`
 		Name              string `json:"name"`
-		Variant           string `json:"variant"`
 		Description       string `json:"description"`
 		Warning           string `json:"warning"`
 		IconPath          string `json:"iconPath"`
@@ -105,7 +100,6 @@ type (
 		ContainsFish      bool   `json:"containsFish"`
 		ContainsGluten    bool   `json:"containsGluten"`
 		AnimalFlesh       bool   `json:"animalFlesh"`
-		AnimalDerived     bool   `json:"animalDerived"`
 		Volumetric        bool   `json:"volumetric"`
 		ContainsSoy       bool   `json:"containsSoy"`
 	}
@@ -114,7 +108,6 @@ type (
 	ValidIngredientUpdateRequestInput struct {
 		_                 struct{}
 		Name              string `json:"name"`
-		Variant           string `json:"variant"`
 		Description       string `json:"description"`
 		Warning           string `json:"warning"`
 		IconPath          string `json:"iconPath"`
@@ -128,7 +121,6 @@ type (
 		ContainsFish      bool   `json:"containsFish"`
 		ContainsGluten    bool   `json:"containsGluten"`
 		AnimalFlesh       bool   `json:"animalFlesh"`
-		AnimalDerived     bool   `json:"animalDerived"`
 		Volumetric        bool   `json:"volumetric"`
 		ContainsSoy       bool   `json:"containsSoy"`
 	}
@@ -163,10 +155,6 @@ type (
 func (x *ValidIngredient) Update(input *ValidIngredientUpdateRequestInput) {
 	if input.Name != "" && input.Name != x.Name {
 		x.Name = input.Name
-	}
-
-	if input.Variant != "" && input.Variant != x.Variant {
-		x.Variant = input.Variant
 	}
 
 	if input.Description != "" && input.Description != x.Description {
@@ -221,10 +209,6 @@ func (x *ValidIngredient) Update(input *ValidIngredientUpdateRequestInput) {
 		x.AnimalFlesh = input.AnimalFlesh
 	}
 
-	if input.AnimalDerived != x.AnimalDerived {
-		x.AnimalDerived = input.AnimalDerived
-	}
-
 	if input.Volumetric != x.Volumetric {
 		x.Volumetric = input.Volumetric
 	}
@@ -261,7 +245,6 @@ func (x *ValidIngredientDatabaseCreationInput) ValidateWithContext(ctx context.C
 func ValidIngredientDatabaseCreationInputFromValidIngredientCreationInput(input *ValidIngredientCreationRequestInput) *ValidIngredientDatabaseCreationInput {
 	x := &ValidIngredientDatabaseCreationInput{
 		Name:              input.Name,
-		Variant:           input.Variant,
 		Description:       input.Description,
 		Warning:           input.Warning,
 		ContainsEgg:       input.ContainsEgg,
@@ -275,7 +258,6 @@ func ValidIngredientDatabaseCreationInputFromValidIngredientCreationInput(input 
 		ContainsFish:      input.ContainsFish,
 		ContainsGluten:    input.ContainsGluten,
 		AnimalFlesh:       input.AnimalFlesh,
-		AnimalDerived:     input.AnimalDerived,
 		Volumetric:        input.Volumetric,
 		IconPath:          input.IconPath,
 	}

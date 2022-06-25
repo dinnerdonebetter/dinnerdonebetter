@@ -16,7 +16,6 @@ func TestValidIngredientCreationRequestInput_Validate(T *testing.T) {
 
 		x := &ValidIngredientCreationRequestInput{
 			Name:              fake.LoremIpsumSentence(exampleQuantity),
-			Variant:           fake.LoremIpsumSentence(exampleQuantity),
 			Description:       fake.LoremIpsumSentence(exampleQuantity),
 			Warning:           fake.LoremIpsumSentence(exampleQuantity),
 			ContainsEgg:       fake.Bool(),
@@ -30,7 +29,6 @@ func TestValidIngredientCreationRequestInput_Validate(T *testing.T) {
 			ContainsFish:      fake.Bool(),
 			ContainsGluten:    fake.Bool(),
 			AnimalFlesh:       fake.Bool(),
-			AnimalDerived:     fake.Bool(),
 			Volumetric:        fake.Bool(),
 			IconPath:          fake.LoremIpsumSentence(exampleQuantity),
 		}
@@ -57,7 +55,6 @@ func TestValidIngredientUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &ValidIngredientUpdateRequestInput{
 			Name:              fake.LoremIpsumSentence(exampleQuantity),
-			Variant:           fake.LoremIpsumSentence(exampleQuantity),
 			Description:       fake.LoremIpsumSentence(exampleQuantity),
 			Warning:           fake.LoremIpsumSentence(exampleQuantity),
 			ContainsEgg:       fake.Bool(),
@@ -71,7 +68,6 @@ func TestValidIngredientUpdateRequestInput_Validate(T *testing.T) {
 			ContainsFish:      fake.Bool(),
 			ContainsGluten:    fake.Bool(),
 			AnimalFlesh:       fake.Bool(),
-			AnimalDerived:     fake.Bool(),
 			Volumetric:        fake.Bool(),
 			IconPath:          fake.LoremIpsumSentence(exampleQuantity),
 		}
