@@ -36,7 +36,6 @@ var (
 		"recipe_step_ingredients.belongs_to_recipe_step",
 		"valid_ingredients.id",
 		"valid_ingredients.name",
-		"valid_ingredients.variant",
 		"valid_ingredients.description",
 		"valid_ingredients.warning",
 		"valid_ingredients.contains_egg",
@@ -50,8 +49,8 @@ var (
 		"valid_ingredients.contains_fish",
 		"valid_ingredients.contains_gluten",
 		"valid_ingredients.animal_flesh",
-		"valid_ingredients.animal_derived",
 		"valid_ingredients.volumetric",
+		"valid_ingredients.is_liquid",
 		"valid_ingredients.icon_path",
 		"valid_ingredients.created_on",
 		"valid_ingredients.last_updated_on",
@@ -88,7 +87,6 @@ func (q *SQLQuerier) scanRecipeStepIngredient(ctx context.Context, scan database
 		&x.BelongsToRecipeStep,
 		&x.Ingredient.ID,
 		&x.Ingredient.Name,
-		&x.Ingredient.Variant,
 		&x.Ingredient.Description,
 		&x.Ingredient.Warning,
 		&x.Ingredient.ContainsEgg,
@@ -102,8 +100,8 @@ func (q *SQLQuerier) scanRecipeStepIngredient(ctx context.Context, scan database
 		&x.Ingredient.ContainsFish,
 		&x.Ingredient.ContainsGluten,
 		&x.Ingredient.AnimalFlesh,
-		&x.Ingredient.AnimalDerived,
-		&x.Ingredient.Volumetric,
+		&x.Ingredient.IsMeasuredVolumetrically,
+		&x.Ingredient.IsLiquid,
 		&x.Ingredient.IconPath,
 		&x.Ingredient.CreatedOn,
 		&x.Ingredient.LastUpdatedOn,
@@ -211,7 +209,6 @@ const getRecipeStepIngredientQuery = `SELECT
 	recipe_step_ingredients.belongs_to_recipe_step,
 	valid_ingredients.id,
 	valid_ingredients.name,
-	valid_ingredients.variant,
 	valid_ingredients.description,
 	valid_ingredients.warning,
 	valid_ingredients.contains_egg,
@@ -225,8 +222,8 @@ const getRecipeStepIngredientQuery = `SELECT
 	valid_ingredients.contains_fish,
 	valid_ingredients.contains_gluten,
 	valid_ingredients.animal_flesh,
-	valid_ingredients.animal_derived,
 	valid_ingredients.volumetric,
+	valid_ingredients.is_liquid,
 	valid_ingredients.icon_path,
 	valid_ingredients.created_on,
 	valid_ingredients.last_updated_on,
@@ -278,7 +275,7 @@ func (q *SQLQuerier) GetRecipeStepIngredient(ctx context.Context, recipeID, reci
 		recipeID,
 	}
 
-	row := q.getOneRow(ctx, q.db, "recipeStepIngredient", getRecipeStepIngredientQuery, args)
+	row := q.getOneRow(ctx, q.db, "get recipe step ingredient", getRecipeStepIngredientQuery, args)
 
 	recipeStepIngredient, _, _, err := q.scanRecipeStepIngredient(ctx, row, false)
 	if err != nil {
