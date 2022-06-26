@@ -15,7 +15,7 @@ func checkRecipeStepIngredientEquality(t *testing.T, expected, actual *types.Rec
 	t.Helper()
 
 	assert.NotZero(t, actual.ID)
-	assert.Equal(t, expected.IngredientID, actual.IngredientID, "expected IngredientID for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.IngredientID, actual.IngredientID)
+	assert.Equal(t, *expected.IngredientID, *actual.IngredientID, "expected IngredientID for recipe step ingredient %s to be %v, but it was %v", expected.ID, *expected.IngredientID, *actual.IngredientID)
 	assert.Equal(t, expected.QuantityType, actual.QuantityType, "expected QuantityType for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.QuantityType, actual.QuantityType)
 	assert.Equal(t, expected.QuantityValue, actual.QuantityValue, "expected QuantityValue for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.QuantityValue, actual.QuantityValue)
 	assert.Equal(t, expected.QuantityNotes, actual.QuantityNotes, "expected QuantityNotes for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.QuantityNotes, actual.QuantityNotes)
@@ -50,13 +50,9 @@ func (s *TestSuite) TestRecipeStepIngredients_CompleteLifecycle() {
 				createdRecipeStepID,
 				createdRecipeStepIngredientID string
 			)
-			for _, step := range createdRecipe.Steps {
-				createdRecipeStepID = step.ID
-				for _, ingredient := range step.Ingredients {
-					createdRecipeStepIngredientID = ingredient.ID
-					break
-				}
-			}
+
+			createdRecipeStepID = createdRecipe.Steps[0].ID
+			createdRecipeStepIngredientID = createdRecipe.Steps[0].Ingredients[0].ID
 
 			require.NotEmpty(t, createdRecipeStepID, "created recipe step ID must not be empty")
 			require.NotEmpty(t, createdRecipeStepIngredientID, "created recipe step ingredient ID must not be empty")
@@ -65,12 +61,15 @@ func (s *TestSuite) TestRecipeStepIngredients_CompleteLifecycle() {
 			createdRecipeStepIngredient, err := testClients.main.GetRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepIngredientID)
 			requireNotNilAndNoProblems(t, createdRecipeStepIngredient, err)
 
+			t.Logf("%+v", createdRecipeStepIngredient)
+
 			t.Log("changing recipe step ingredient")
 			newRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 			newRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStepID
 			newRecipeStepIngredient.IngredientID = &createdValidIngredients[0].ID
+			newRecipeStepIngredient.ID = createdRecipeStepIngredientID
 			createdRecipeStepIngredient.Update(convertRecipeStepIngredientToRecipeStepIngredientUpdateInput(newRecipeStepIngredient))
-			assert.NoError(t, testClients.main.UpdateRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepIngredient))
+			require.NoError(t, testClients.main.UpdateRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepIngredient))
 
 			t.Log("fetching changed recipe step ingredient")
 			actual, err := testClients.main.GetRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepIngredientID)

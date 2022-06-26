@@ -42,7 +42,8 @@ func buildMockRowsFromValidIngredients(includeCounts bool, filteredCount uint64,
 			x.ContainsFish,
 			x.ContainsGluten,
 			x.AnimalFlesh,
-			x.Volumetric,
+			x.IsMeasuredVolumetrically,
+			x.IsLiquid,
 			x.IconPath,
 			x.CreatedOn,
 			x.LastUpdatedOn,
@@ -616,7 +617,8 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 			exampleInput.ContainsFish,
 			exampleInput.ContainsGluten,
 			exampleInput.AnimalFlesh,
-			exampleInput.Volumetric,
+			exampleInput.IsMeasuredVolumetrically,
+			exampleInput.IsLiquid,
 			exampleInput.IconPath,
 		}
 
@@ -672,7 +674,8 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 			exampleInput.ContainsFish,
 			exampleInput.ContainsGluten,
 			exampleInput.AnimalFlesh,
-			exampleInput.Volumetric,
+			exampleInput.IsMeasuredVolumetrically,
+			exampleInput.IsLiquid,
 			exampleInput.IconPath,
 		}
 
@@ -719,7 +722,8 @@ func TestQuerier_UpdateValidIngredient(T *testing.T) {
 			exampleValidIngredient.ContainsFish,
 			exampleValidIngredient.ContainsGluten,
 			exampleValidIngredient.AnimalFlesh,
-			exampleValidIngredient.Volumetric,
+			exampleValidIngredient.IsMeasuredVolumetrically,
+			exampleValidIngredient.IsLiquid,
 			exampleValidIngredient.IconPath,
 			exampleValidIngredient.ID,
 		}
@@ -765,7 +769,8 @@ func TestQuerier_UpdateValidIngredient(T *testing.T) {
 			exampleValidIngredient.ContainsFish,
 			exampleValidIngredient.ContainsGluten,
 			exampleValidIngredient.AnimalFlesh,
-			exampleValidIngredient.Volumetric,
+			exampleValidIngredient.IsMeasuredVolumetrically,
+			exampleValidIngredient.IsLiquid,
 			exampleValidIngredient.IconPath,
 			exampleValidIngredient.ID,
 		}

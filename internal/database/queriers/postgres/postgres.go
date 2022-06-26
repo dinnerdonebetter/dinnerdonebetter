@@ -305,7 +305,6 @@ func (q *SQLQuerier) performWriteQuery(ctx context.Context, querier database.SQL
 	}
 
 	tracing.AttachDatabaseQueryToSpan(span, queryDescription, query, args)
-	logger.Debug("performing write query called")
 
 	res, err := querier.ExecContext(ctx, query, args...)
 	if err != nil {

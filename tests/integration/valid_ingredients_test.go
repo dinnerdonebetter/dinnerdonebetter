@@ -30,7 +30,7 @@ func checkValidIngredientEquality(t *testing.T, expected, actual *types.ValidIng
 	assert.Equal(t, expected.ContainsFish, actual.ContainsFish, "expected ContainsFish for valid ingredient %s to be %v, but it was %v", expected.ID, expected.ContainsFish, actual.ContainsFish)
 	assert.Equal(t, expected.ContainsGluten, actual.ContainsGluten, "expected ContainsGluten for valid ingredient %s to be %v, but it was %v", expected.ID, expected.ContainsGluten, actual.ContainsGluten)
 	assert.Equal(t, expected.AnimalFlesh, actual.AnimalFlesh, "expected AnimalFlesh for valid ingredient %s to be %v, but it was %v", expected.ID, expected.AnimalFlesh, actual.AnimalFlesh)
-	assert.Equal(t, expected.Volumetric, actual.Volumetric, "expected Volumetric for valid ingredient %s to be %v, but it was %v", expected.ID, expected.Volumetric, actual.Volumetric)
+	assert.Equal(t, expected.IsMeasuredVolumetrically, actual.IsMeasuredVolumetrically, "expected IsMeasuredVolumetrically for valid ingredient %s to be %v, but it was %v", expected.ID, expected.IsMeasuredVolumetrically, actual.IsMeasuredVolumetrically)
 	assert.Equal(t, expected.IconPath, actual.IconPath, "expected IconPath for valid ingredient %s to be %v, but it was %v", expected.ID, expected.IconPath, actual.IconPath)
 	assert.NotZero(t, actual.CreatedOn)
 }
@@ -38,22 +38,22 @@ func checkValidIngredientEquality(t *testing.T, expected, actual *types.ValidIng
 // convertValidIngredientToValidIngredientUpdateInput creates an ValidIngredientUpdateRequestInput struct from a valid ingredient.
 func convertValidIngredientToValidIngredientUpdateInput(x *types.ValidIngredient) *types.ValidIngredientUpdateRequestInput {
 	return &types.ValidIngredientUpdateRequestInput{
-		Name:              x.Name,
-		Description:       x.Description,
-		Warning:           x.Warning,
-		ContainsEgg:       x.ContainsEgg,
-		ContainsDairy:     x.ContainsDairy,
-		ContainsPeanut:    x.ContainsPeanut,
-		ContainsTreeNut:   x.ContainsTreeNut,
-		ContainsSoy:       x.ContainsSoy,
-		ContainsWheat:     x.ContainsWheat,
-		ContainsShellfish: x.ContainsShellfish,
-		ContainsSesame:    x.ContainsSesame,
-		ContainsFish:      x.ContainsFish,
-		ContainsGluten:    x.ContainsGluten,
-		AnimalFlesh:       x.AnimalFlesh,
-		Volumetric:        x.Volumetric,
-		IconPath:          x.IconPath,
+		Name:                     x.Name,
+		Description:              x.Description,
+		Warning:                  x.Warning,
+		ContainsEgg:              x.ContainsEgg,
+		ContainsDairy:            x.ContainsDairy,
+		ContainsPeanut:           x.ContainsPeanut,
+		ContainsTreeNut:          x.ContainsTreeNut,
+		ContainsSoy:              x.ContainsSoy,
+		ContainsWheat:            x.ContainsWheat,
+		ContainsShellfish:        x.ContainsShellfish,
+		ContainsSesame:           x.ContainsSesame,
+		ContainsFish:             x.ContainsFish,
+		ContainsGluten:           x.ContainsGluten,
+		AnimalFlesh:              x.AnimalFlesh,
+		IsMeasuredVolumetrically: x.IsMeasuredVolumetrically,
+		IconPath:                 x.IconPath,
 	}
 }
 

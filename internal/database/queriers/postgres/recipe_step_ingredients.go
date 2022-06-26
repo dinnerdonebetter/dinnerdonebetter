@@ -50,6 +50,7 @@ var (
 		"valid_ingredients.contains_gluten",
 		"valid_ingredients.animal_flesh",
 		"valid_ingredients.volumetric",
+		"valid_ingredients.is_liquid",
 		"valid_ingredients.icon_path",
 		"valid_ingredients.created_on",
 		"valid_ingredients.last_updated_on",
@@ -99,7 +100,8 @@ func (q *SQLQuerier) scanRecipeStepIngredient(ctx context.Context, scan database
 		&x.Ingredient.ContainsFish,
 		&x.Ingredient.ContainsGluten,
 		&x.Ingredient.AnimalFlesh,
-		&x.Ingredient.Volumetric,
+		&x.Ingredient.IsMeasuredVolumetrically,
+		&x.Ingredient.IsLiquid,
 		&x.Ingredient.IconPath,
 		&x.Ingredient.CreatedOn,
 		&x.Ingredient.LastUpdatedOn,
@@ -221,6 +223,7 @@ const getRecipeStepIngredientQuery = `SELECT
 	valid_ingredients.contains_gluten,
 	valid_ingredients.animal_flesh,
 	valid_ingredients.volumetric,
+	valid_ingredients.is_liquid,
 	valid_ingredients.icon_path,
 	valid_ingredients.created_on,
 	valid_ingredients.last_updated_on,
@@ -272,7 +275,7 @@ func (q *SQLQuerier) GetRecipeStepIngredient(ctx context.Context, recipeID, reci
 		recipeID,
 	}
 
-	row := q.getOneRow(ctx, q.db, "recipeStepIngredient", getRecipeStepIngredientQuery, args)
+	row := q.getOneRow(ctx, q.db, "get recipe step ingredient", getRecipeStepIngredientQuery, args)
 
 	recipeStepIngredient, _, _, err := q.scanRecipeStepIngredient(ctx, row, false)
 	if err != nil {
