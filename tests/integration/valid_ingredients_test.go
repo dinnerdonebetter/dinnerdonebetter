@@ -54,6 +54,7 @@ func convertValidIngredientToValidIngredientUpdateInput(x *types.ValidIngredient
 		ContainsGluten:           x.ContainsGluten,
 		AnimalFlesh:              x.AnimalFlesh,
 		IsMeasuredVolumetrically: x.IsMeasuredVolumetrically,
+		IsLiquid:                 x.IsLiquid,
 		IconPath:                 x.IconPath,
 	}
 }

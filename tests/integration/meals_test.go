@@ -83,10 +83,10 @@ func (s *TestSuite) TestMeals_Listing() {
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
 			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			require.NoError(t, err)
-			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
+			require.NoError(t, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
+			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
 			createdValidIngredient, err = testClients.main.GetValidIngredient(ctx, createdValidIngredient.ID)
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)

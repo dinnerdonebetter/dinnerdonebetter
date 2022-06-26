@@ -267,6 +267,7 @@ func ValidIngredientDatabaseCreationInputFromValidIngredientCreationInput(input 
 		ContainsGluten:           input.ContainsGluten,
 		AnimalFlesh:              input.AnimalFlesh,
 		IsMeasuredVolumetrically: input.IsMeasuredVolumetrically,
+		IsLiquid:                 input.IsLiquid,
 		IconPath:                 input.IconPath,
 	}
 
