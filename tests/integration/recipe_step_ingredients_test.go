@@ -44,30 +44,37 @@ func (s *TestSuite) TestRecipeStepIngredients_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidIngredients, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.main, nil)
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.main, nil)
 
-			var (
-				createdRecipeStepID,
-				createdRecipeStepIngredientID string
-			)
-
-			createdRecipeStepID = createdRecipe.Steps[0].ID
-			createdRecipeStepIngredientID = createdRecipe.Steps[0].Ingredients[0].ID
+			firstStep := createdRecipe.Steps[0]
+			createdRecipeStepID := firstStep.ID
+			createdRecipeStepIngredientID := firstStep.Ingredients[0].ID
 
 			require.NotEmpty(t, createdRecipeStepID, "created recipe step ID must not be empty")
 			require.NotEmpty(t, createdRecipeStepIngredientID, "created recipe step ingredient ID must not be empty")
 
-			t.Log("fetching changed recipe step ingredient")
+			t.Log("fetching recipe step ingredient")
 			createdRecipeStepIngredient, err := testClients.main.GetRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepIngredientID)
 			requireNotNilAndNoProblems(t, createdRecipeStepIngredient, err)
 
-			t.Logf("%+v", createdRecipeStepIngredient)
+			t.Log("creating new valid ingredient for recipe step ingredient")
+			exampleValidIngredient := fakes.BuildFakeValidIngredient()
+			exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
+			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			require.NoError(t, err)
+			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
+			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
+
+			createdValidIngredient, err = testClients.admin.GetValidIngredient(ctx, createdValidIngredient.ID)
+			requireNotNilAndNoProblems(t, createdValidIngredient, err)
+			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
 			t.Log("changing recipe step ingredient")
 			newRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 			newRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStepID
-			newRecipeStepIngredient.IngredientID = &createdValidIngredients[0].ID
+			newRecipeStepIngredient.IngredientID = &createdValidIngredient.ID
 			newRecipeStepIngredient.ID = createdRecipeStepIngredientID
+
 			createdRecipeStepIngredient.Update(convertRecipeStepIngredientToRecipeStepIngredientUpdateInput(newRecipeStepIngredient))
 			require.NoError(t, testClients.main.UpdateRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepIngredient))
 
