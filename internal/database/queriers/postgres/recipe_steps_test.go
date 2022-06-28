@@ -667,7 +667,6 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 		for i := range exampleRecipeStep.Ingredients {
 			exampleRecipeStep.Ingredients[i].ID = "3"
 			exampleRecipeStep.Ingredients[i].BelongsToRecipeStep = exampleRecipeStep.ID
-			exampleRecipeStep.Ingredients[i].Ingredient = types.ValidIngredient{}
 		}
 
 		for i := range exampleRecipeStep.Products {
@@ -704,7 +703,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				ingredient.QuantityType,
 				ingredient.QuantityValue,
 				ingredient.QuantityNotes,
-				ingredient.ProductOfRecipe,
+				ingredient.ProductOfRecipeStep,
 				ingredient.IngredientNotes,
 				ingredient.BelongsToRecipeStep,
 			}
@@ -718,7 +717,9 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			args := []interface{}{
 				product.ID,
 				product.Name,
-				product.RecipeStepID,
+				product.QuantityType,
+				product.QuantityValue,
+				product.QuantityNotes,
 				product.BelongsToRecipeStep,
 			}
 
@@ -748,7 +749,6 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 		for i := range exampleRecipeStep.Ingredients {
 			exampleRecipeStep.Ingredients[i].ID = "3"
 			exampleRecipeStep.Ingredients[i].BelongsToRecipeStep = "2"
-			exampleRecipeStep.Ingredients[i].Ingredient = types.ValidIngredient{}
 		}
 
 		exampleInput := fakes.BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(exampleRecipeStep)
@@ -779,7 +779,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.Ingredients[0].QuantityType,
 			exampleInput.Ingredients[0].QuantityValue,
 			exampleInput.Ingredients[0].QuantityNotes,
-			exampleInput.Ingredients[0].ProductOfRecipe,
+			exampleInput.Ingredients[0].ProductOfRecipeStep,
 			exampleInput.Ingredients[0].IngredientNotes,
 			exampleInput.Ingredients[0].BelongsToRecipeStep,
 		}
@@ -809,7 +809,6 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 		for i := range exampleRecipeStep.Ingredients {
 			exampleRecipeStep.Ingredients[i].ID = "3"
 			exampleRecipeStep.Ingredients[i].BelongsToRecipeStep = exampleRecipeStep.ID
-			exampleRecipeStep.Ingredients[i].Ingredient = types.ValidIngredient{}
 		}
 
 		for i := range exampleRecipeStep.Products {
@@ -846,7 +845,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				ingredient.QuantityType,
 				ingredient.QuantityValue,
 				ingredient.QuantityNotes,
-				ingredient.ProductOfRecipe,
+				ingredient.ProductOfRecipeStep,
 				ingredient.IngredientNotes,
 				ingredient.BelongsToRecipeStep,
 			}
@@ -859,7 +858,9 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 		args := []interface{}{
 			exampleInput.Products[0].ID,
 			exampleInput.Products[0].Name,
-			exampleInput.Products[0].RecipeStepID,
+			exampleInput.Products[0].QuantityType,
+			exampleInput.Products[0].QuantityValue,
+			exampleInput.Products[0].QuantityNotes,
 			exampleInput.Products[0].BelongsToRecipeStep,
 		}
 

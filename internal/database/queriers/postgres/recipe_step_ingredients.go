@@ -34,27 +34,6 @@ var (
 		"recipe_step_ingredients.last_updated_on",
 		"recipe_step_ingredients.archived_on",
 		"recipe_step_ingredients.belongs_to_recipe_step",
-		"valid_ingredients.id",
-		"valid_ingredients.name",
-		"valid_ingredients.description",
-		"valid_ingredients.warning",
-		"valid_ingredients.contains_egg",
-		"valid_ingredients.contains_dairy",
-		"valid_ingredients.contains_peanut",
-		"valid_ingredients.contains_tree_nut",
-		"valid_ingredients.contains_soy",
-		"valid_ingredients.contains_wheat",
-		"valid_ingredients.contains_shellfish",
-		"valid_ingredients.contains_sesame",
-		"valid_ingredients.contains_fish",
-		"valid_ingredients.contains_gluten",
-		"valid_ingredients.animal_flesh",
-		"valid_ingredients.volumetric",
-		"valid_ingredients.is_liquid",
-		"valid_ingredients.icon_path",
-		"valid_ingredients.created_on",
-		"valid_ingredients.last_updated_on",
-		"valid_ingredients.archived_on",
 	}
 
 	getRecipeStepIngredientsJoins = []string{
@@ -80,32 +59,11 @@ func (q *SQLQuerier) scanRecipeStepIngredient(ctx context.Context, scan database
 		&x.QuantityValue,
 		&x.QuantityNotes,
 		&x.ProductOfRecipeStep,
-		&x.IngredientNotes,
+		&x.Notes,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
 		&x.BelongsToRecipeStep,
-		&x.Ingredient.ID,
-		&x.Ingredient.Name,
-		&x.Ingredient.Description,
-		&x.Ingredient.Warning,
-		&x.Ingredient.ContainsEgg,
-		&x.Ingredient.ContainsDairy,
-		&x.Ingredient.ContainsPeanut,
-		&x.Ingredient.ContainsTreeNut,
-		&x.Ingredient.ContainsSoy,
-		&x.Ingredient.ContainsWheat,
-		&x.Ingredient.ContainsShellfish,
-		&x.Ingredient.ContainsSesame,
-		&x.Ingredient.ContainsFish,
-		&x.Ingredient.ContainsGluten,
-		&x.Ingredient.AnimalFlesh,
-		&x.Ingredient.IsMeasuredVolumetrically,
-		&x.Ingredient.IsLiquid,
-		&x.Ingredient.IconPath,
-		&x.Ingredient.CreatedOn,
-		&x.Ingredient.LastUpdatedOn,
-		&x.Ingredient.ArchivedOn,
 	}
 
 	if includeCounts {
@@ -206,28 +164,7 @@ const getRecipeStepIngredientQuery = `SELECT
 	recipe_step_ingredients.created_on,
 	recipe_step_ingredients.last_updated_on,
 	recipe_step_ingredients.archived_on,
-	recipe_step_ingredients.belongs_to_recipe_step,
-	valid_ingredients.id,
-	valid_ingredients.name,
-	valid_ingredients.description,
-	valid_ingredients.warning,
-	valid_ingredients.contains_egg,
-	valid_ingredients.contains_dairy,
-	valid_ingredients.contains_peanut,
-	valid_ingredients.contains_tree_nut,
-	valid_ingredients.contains_soy,
-	valid_ingredients.contains_wheat,
-	valid_ingredients.contains_shellfish,
-	valid_ingredients.contains_sesame,
-	valid_ingredients.contains_fish,
-	valid_ingredients.contains_gluten,
-	valid_ingredients.animal_flesh,
-	valid_ingredients.volumetric,
-	valid_ingredients.is_liquid,
-	valid_ingredients.icon_path,
-	valid_ingredients.created_on,
-	valid_ingredients.last_updated_on,
-	valid_ingredients.archived_on
+	recipe_step_ingredients.belongs_to_recipe_step
 FROM recipe_step_ingredients
 JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id
 JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
@@ -453,7 +390,7 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 		input.QuantityType,
 		input.QuantityValue,
 		input.QuantityNotes,
-		input.ProductOfRecipe,
+		input.ProductOfRecipeStep,
 		input.IngredientNotes,
 		input.BelongsToRecipeStep,
 	}
@@ -463,16 +400,32 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 		return nil, observability.PrepareError(err, logger, span, "performing recipe step ingredient creation query")
 	}
 
+	var (
+		product            *types.RecipeStepProduct
+		productCreationErr error
+	)
+
+	if input.RecipeStepProduct != nil {
+		product, productCreationErr = q.createRecipeStepProduct(ctx, db, input.RecipeStepProduct)
+		if productCreationErr != nil {
+			return nil, observability.PrepareError(productCreationErr, logger, span, "performing recipe step product creation query for recipe step ingredient")
+		}
+	}
+
 	x := &types.RecipeStepIngredient{
 		ID:                  input.ID,
 		IngredientID:        input.IngredientID,
 		QuantityType:        input.QuantityType,
 		QuantityValue:       input.QuantityValue,
 		QuantityNotes:       input.QuantityNotes,
-		ProductOfRecipeStep: input.ProductOfRecipe,
-		IngredientNotes:     input.IngredientNotes,
+		ProductOfRecipeStep: input.ProductOfRecipeStep,
+		Notes:               input.IngredientNotes,
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		CreatedOn:           q.currentTime(),
+	}
+
+	if product != nil {
+		x.RecipeStepProductID = func(s string) *string { return &s }(product.ID)
 	}
 
 	tracing.AttachRecipeStepIngredientIDToSpan(span, x.ID)
@@ -505,7 +458,7 @@ func (q *SQLQuerier) UpdateRecipeStepIngredient(ctx context.Context, updated *ty
 		updated.QuantityValue,
 		updated.QuantityNotes,
 		updated.ProductOfRecipeStep,
-		updated.IngredientNotes,
+		updated.Notes,
 		updated.BelongsToRecipeStep,
 		updated.ID,
 	}

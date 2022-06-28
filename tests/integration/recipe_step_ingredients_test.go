@@ -20,19 +20,19 @@ func checkRecipeStepIngredientEquality(t *testing.T, expected, actual *types.Rec
 	assert.Equal(t, expected.QuantityValue, actual.QuantityValue, "expected QuantityValue for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.QuantityValue, actual.QuantityValue)
 	assert.Equal(t, expected.QuantityNotes, actual.QuantityNotes, "expected QuantityNotes for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.QuantityNotes, actual.QuantityNotes)
 	assert.Equal(t, expected.ProductOfRecipeStep, actual.ProductOfRecipeStep, "expected ProductOfRecipeStep for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.ProductOfRecipeStep, actual.ProductOfRecipeStep)
-	assert.Equal(t, expected.IngredientNotes, actual.IngredientNotes, "expected IngredientNotes for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.IngredientNotes, actual.IngredientNotes)
+	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
 // convertRecipeStepIngredientToRecipeStepIngredientUpdateInput creates an RecipeStepIngredientUpdateRequestInput struct from a recipe step ingredient.
 func convertRecipeStepIngredientToRecipeStepIngredientUpdateInput(x *types.RecipeStepIngredient) *types.RecipeStepIngredientUpdateRequestInput {
 	return &types.RecipeStepIngredientUpdateRequestInput{
-		IngredientID:    x.IngredientID,
-		QuantityType:    x.QuantityType,
-		QuantityValue:   x.QuantityValue,
-		QuantityNotes:   x.QuantityNotes,
-		ProductOfRecipe: x.ProductOfRecipeStep,
-		IngredientNotes: x.IngredientNotes,
+		IngredientID:        x.IngredientID,
+		QuantityType:        x.QuantityType,
+		QuantityValue:       x.QuantityValue,
+		QuantityNotes:       x.QuantityNotes,
+		ProductOfRecipeStep: x.ProductOfRecipeStep,
+		IngredientNotes:     x.Notes,
 	}
 }
 

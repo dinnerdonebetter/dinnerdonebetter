@@ -12,12 +12,11 @@ func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 	return &types.RecipeStepIngredient{
 		ID:                  ksuid.New().String(),
 		IngredientID:        func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
-		Ingredient:          *BuildFakeValidIngredient(),
 		QuantityType:        fake.LoremIpsumSentence(exampleQuantity),
 		QuantityValue:       float32(fake.Uint32()),
 		QuantityNotes:       fake.LoremIpsumSentence(exampleQuantity),
 		ProductOfRecipeStep: fake.Bool(),
-		IngredientNotes:     fake.LoremIpsumSentence(exampleQuantity),
+		Notes:               fake.LoremIpsumSentence(exampleQuantity),
 		CreatedOn:           uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipeStep: ksuid.New().String(),
 	}
@@ -49,8 +48,8 @@ func BuildFakeRecipeStepIngredientUpdateRequestInput() *types.RecipeStepIngredie
 		QuantityType:        recipeStepIngredient.QuantityType,
 		QuantityValue:       recipeStepIngredient.QuantityValue,
 		QuantityNotes:       recipeStepIngredient.QuantityNotes,
-		ProductOfRecipe:     recipeStepIngredient.ProductOfRecipeStep,
-		IngredientNotes:     recipeStepIngredient.IngredientNotes,
+		ProductOfRecipeStep: recipeStepIngredient.ProductOfRecipeStep,
+		IngredientNotes:     recipeStepIngredient.Notes,
 		BelongsToRecipeStep: recipeStepIngredient.BelongsToRecipeStep,
 	}
 }
@@ -62,8 +61,8 @@ func BuildFakeRecipeStepIngredientUpdateRequestInputFromRecipeStepIngredient(rec
 		QuantityType:        recipeStepIngredient.QuantityType,
 		QuantityValue:       recipeStepIngredient.QuantityValue,
 		QuantityNotes:       recipeStepIngredient.QuantityNotes,
-		ProductOfRecipe:     recipeStepIngredient.ProductOfRecipeStep,
-		IngredientNotes:     recipeStepIngredient.IngredientNotes,
+		ProductOfRecipeStep: recipeStepIngredient.ProductOfRecipeStep,
+		IngredientNotes:     recipeStepIngredient.Notes,
 		BelongsToRecipeStep: recipeStepIngredient.BelongsToRecipeStep,
 	}
 }
@@ -82,8 +81,8 @@ func BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(r
 		QuantityType:        recipeStepIngredient.QuantityType,
 		QuantityValue:       recipeStepIngredient.QuantityValue,
 		QuantityNotes:       recipeStepIngredient.QuantityNotes,
-		ProductOfRecipe:     recipeStepIngredient.ProductOfRecipeStep,
-		IngredientNotes:     recipeStepIngredient.IngredientNotes,
+		ProductOfRecipeStep: recipeStepIngredient.ProductOfRecipeStep,
+		IngredientNotes:     recipeStepIngredient.Notes,
 		BelongsToRecipeStep: recipeStepIngredient.BelongsToRecipeStep,
 	}
 }
@@ -102,8 +101,8 @@ func BuildFakeRecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredient(
 		QuantityType:        recipeStepIngredient.QuantityType,
 		QuantityValue:       recipeStepIngredient.QuantityValue,
 		QuantityNotes:       recipeStepIngredient.QuantityNotes,
-		ProductOfRecipe:     recipeStepIngredient.ProductOfRecipeStep,
-		IngredientNotes:     recipeStepIngredient.IngredientNotes,
+		ProductOfRecipeStep: recipeStepIngredient.ProductOfRecipeStep,
+		IngredientNotes:     recipeStepIngredient.Notes,
 		BelongsToRecipeStep: recipeStepIngredient.BelongsToRecipeStep,
 	}
 }

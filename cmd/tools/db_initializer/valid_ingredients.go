@@ -57,6 +57,7 @@ var validIngredientCollection = struct {
 		ContainsGluten:           false,
 		AnimalFlesh:              false,
 		IsMeasuredVolumetrically: false,
+		IsLiquid:                 true,
 		ContainsSoy:              false,
 	},
 	Onion: &types.ValidIngredientDatabaseCreationInput{
@@ -132,12 +133,13 @@ var validIngredientCollection = struct {
 		ContainsFish:             false,
 		ContainsGluten:           false,
 		AnimalFlesh:              false,
-		IsMeasuredVolumetrically: false,
+		IsMeasuredVolumetrically: true,
+		IsLiquid:                 true,
 		ContainsSoy:              false,
 	},
 	Coffee: &types.ValidIngredientDatabaseCreationInput{
 		ID:                       ksuid.New().String(),
-		Name:                     "coffee",
+		Name:                     "brewed coffee",
 		Description:              "",
 		Warning:                  "",
 		IconPath:                 "",
@@ -151,7 +153,8 @@ var validIngredientCollection = struct {
 		ContainsFish:             false,
 		ContainsGluten:           false,
 		AnimalFlesh:              false,
-		IsMeasuredVolumetrically: false,
+		IsMeasuredVolumetrically: true,
+		IsLiquid:                 true,
 		ContainsSoy:              false,
 	},
 	Pasta: &types.ValidIngredientDatabaseCreationInput{

@@ -19,8 +19,10 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 		Notes:                     fake.LoremIpsumSentence(exampleQuantity),
 		Products: []*RecipeStepProductCreationRequestInput{
 			{
-				Name:         fake.LoremIpsumSentence(exampleQuantity),
-				RecipeStepID: fake.LoremIpsumSentence(exampleQuantity),
+				Name:          fake.LoremIpsumSentence(exampleQuantity),
+				QuantityType:  fake.LoremIpsumSentence(exampleQuantity),
+				QuantityValue: fake.Float32(),
+				QuantityNotes: fake.LoremIpsumSentence(exampleQuantity),
 			},
 		},
 		Ingredients: []*RecipeStepIngredientCreationRequestInput{
@@ -71,8 +73,7 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 			Notes:                     fake.LoremIpsumSentence(exampleQuantity),
 			Products: []*RecipeStepProductCreationRequestInput{
 				{
-					Name:         fake.LoremIpsumSentence(exampleQuantity),
-					RecipeStepID: fake.LoremIpsumSentence(exampleQuantity),
+					Name: fake.LoremIpsumSentence(exampleQuantity),
 				},
 			},
 			Ingredients: []*RecipeStepIngredientCreationRequestInput{},
@@ -109,8 +110,7 @@ func TestRecipeStepUpdateRequestInput_Validate(T *testing.T) {
 			MaxEstimatedTimeInSeconds: fake.Uint32(),
 			Products: []*RecipeStepProduct{
 				{
-					Name:         fake.LoremIpsumSentence(exampleQuantity),
-					RecipeStepID: fake.LoremIpsumSentence(exampleQuantity),
+					Name: fake.LoremIpsumSentence(exampleQuantity),
 				},
 			},
 			TemperatureInCelsius: func(x uint16) *uint16 { return &x }(fake.Uint16()),

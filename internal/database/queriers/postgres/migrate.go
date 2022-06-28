@@ -125,6 +125,11 @@ var (
 			Description: "modify valid ingredient fields",
 			Script:      fetchMigration("00022_modify_valid_ingredient_fields"),
 		},
+		{
+			Version:     23,
+			Description: "add quantity fields to recipe step products",
+			Script:      fetchMigration("00023_add_quantity_fields_to_recipe_step_products"),
+		},
 	}
 )
 

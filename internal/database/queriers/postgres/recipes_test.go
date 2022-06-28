@@ -1079,7 +1079,6 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			for j := range step.Ingredients {
 				exampleRecipe.Steps[i].Ingredients[j].ID = "3"
 				exampleRecipe.Steps[i].Ingredients[j].BelongsToRecipeStep = "2"
-				exampleRecipe.Steps[i].Ingredients[j].Ingredient = types.ValidIngredient{}
 			}
 
 			step.Products = nil
@@ -1130,7 +1129,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					ingredient.QuantityType,
 					ingredient.QuantityValue,
 					ingredient.QuantityNotes,
-					ingredient.ProductOfRecipe,
+					ingredient.ProductOfRecipeStep,
 					ingredient.IngredientNotes,
 					ingredient.BelongsToRecipeStep,
 				}
@@ -1260,7 +1259,6 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			for j := range step.Ingredients {
 				exampleRecipe.Steps[i].Ingredients[j].ID = "3"
 				exampleRecipe.Steps[i].Ingredients[j].BelongsToRecipeStep = "2"
-				exampleRecipe.Steps[i].Ingredients[j].Ingredient = types.ValidIngredient{}
 			}
 		}
 
