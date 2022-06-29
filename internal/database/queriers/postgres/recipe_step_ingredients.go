@@ -415,18 +415,6 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 		return nil, observability.PrepareError(err, logger, span, "performing recipe step ingredient creation query")
 	}
 
-	var (
-		product            *types.RecipeStepProduct
-		productCreationErr error
-	)
-
-	if input.RecipeStepProduct != nil {
-		product, productCreationErr = q.createRecipeStepProduct(ctx, db, input.RecipeStepProduct)
-		if productCreationErr != nil {
-			return nil, observability.PrepareError(productCreationErr, logger, span, "performing recipe step product creation query for recipe step ingredient")
-		}
-	}
-
 	x := &types.RecipeStepIngredient{
 		ID:                  input.ID,
 		Name:                input.Name,
@@ -440,9 +428,14 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 		CreatedOn:           q.currentTime(),
 	}
 
-	if product != nil {
-		x.RecipeStepProductID = func(s string) *string { return &s }(product.ID)
-	}
+	//if input.RecipeStepProduct != nil {
+	//	product, productCreationErr := q.createRecipeStepProduct(ctx, db, input.RecipeStepProduct)
+	//	if productCreationErr != nil {
+	//		return nil, observability.PrepareError(productCreationErr, logger, span, "performing recipe step product creation query for recipe step ingredient")
+	//	}
+	//
+	//	x.RecipeStepProductID = &product.ID
+	//}
 
 	tracing.AttachRecipeStepIngredientIDToSpan(span, x.ID)
 

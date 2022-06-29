@@ -131,7 +131,6 @@ func (x *RecipeStepProductCreationRequestInput) ValidateWithContext(ctx context.
 		x,
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.QuantityType, validation.Required),
-		validation.Field(&x.QuantityNotes, validation.Required),
 		validation.Field(&x.QuantityValue, validation.Required),
 	)
 }
@@ -146,7 +145,6 @@ func (x *RecipeStepProductDatabaseCreationInput) ValidateWithContext(ctx context
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.QuantityType, validation.Required),
-		validation.Field(&x.QuantityNotes, validation.Required),
 		validation.Field(&x.QuantityValue, validation.Required),
 	)
 }
@@ -176,7 +174,6 @@ func (x *RecipeStepProductUpdateRequestInput) ValidateWithContext(ctx context.Co
 		x,
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.QuantityType, validation.Required),
-		validation.Field(&x.QuantityNotes, validation.Required),
 		validation.Field(&x.QuantityValue, validation.Required),
 	)
 }
