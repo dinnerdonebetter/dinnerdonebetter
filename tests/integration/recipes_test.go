@@ -76,7 +76,6 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 	t.Logf("recipe %q created", createdRecipe.ID)
 	checkRecipeEquality(t, exampleRecipe, createdRecipe)
 
-	// DEBUG (4/14/22): right now, this doesn't work, because the recipe isn't being returned with steps in it.
 	createdRecipe, err = client.GetRecipe(ctx, createdRecipe.ID)
 	requireNotNilAndNoProblems(t, createdRecipe, err)
 	checkRecipeEquality(t, exampleRecipe, createdRecipe)
@@ -84,6 +83,81 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 	require.NotEmpty(t, createdRecipe.Steps, "created recipe must have steps")
 
 	return createdValidIngredients, createdValidPreparation, createdRecipe
+}
+
+func (s *TestSuite) TestRecipes_Realistic() {
+	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			t.SkipNow()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			t.Log("creating prerequisite valid preparation")
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			require.NoError(t, err)
+			t.Logf("valid preparation %q created", createdValidPreparation.ID)
+
+			t.Log("creating recipe")
+
+			expected := &types.Recipe{
+				Name:        "sopa de frijol",
+				Description: "",
+				Steps: []*types.RecipeStep{
+					{
+						TemperatureInCelsius: nil,
+						Products: []*types.RecipeStepProduct{
+							//{},
+						},
+						Notes:           "",
+						Preparation:     *createdValidPreparation,
+						BelongsToRecipe: "",
+						Ingredients: []*types.RecipeStepIngredient{
+							//{},
+						},
+						Index:                     0,
+						PrerequisiteStep:          0,
+						MinEstimatedTimeInSeconds: 0,
+						MaxEstimatedTimeInSeconds: 0,
+						Optional:                  false,
+					},
+				},
+			}
+
+			exampleRecipeInput := &types.RecipeCreationRequestInput{
+				Name:        expected.Name,
+				Description: expected.Description,
+				Steps: []*types.RecipeStepCreationRequestInput{
+					{
+						TemperatureInCelsius:      nil,
+						Products:                  nil,
+						Notes:                     "",
+						PreparationID:             "",
+						BelongsToRecipe:           "",
+						Ingredients:               nil,
+						Index:                     0,
+						PrerequisiteStep:          0,
+						MinEstimatedTimeInSeconds: 0,
+						MaxEstimatedTimeInSeconds: 0,
+						Optional:                  false,
+					},
+				},
+			}
+
+			created, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
+			require.NoError(t, err)
+			t.Logf("recipe %q created", created.ID)
+			checkRecipeEquality(t, expected, created)
+
+			created, err = testClients.main.GetRecipe(ctx, created.ID)
+			requireNotNilAndNoProblems(t, created, err)
+			checkRecipeEquality(t, expected, created)
+		}
+	})
 }
 
 func (s *TestSuite) TestRecipes_CompleteLifecycle() {

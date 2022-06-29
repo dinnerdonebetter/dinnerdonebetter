@@ -39,8 +39,7 @@ type (
 
 	// WebhookCreationRequestInput represents what a User could set as input for creating a webhook.
 	WebhookCreationRequestInput struct {
-		_ struct{}
-
+		_                  struct{}
 		ID                 string   `json:"-"`
 		Name               string   `json:"name"`
 		ContentType        string   `json:"contentType"`

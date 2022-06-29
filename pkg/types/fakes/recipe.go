@@ -81,7 +81,6 @@ func BuildFakeRecipeCreationRequestInputFromRecipe(recipe *types.Recipe) *types.
 	}
 
 	return &types.RecipeCreationRequestInput{
-		ID:                 recipe.ID,
 		Name:               recipe.Name,
 		Source:             recipe.Source,
 		Description:        recipe.Description,

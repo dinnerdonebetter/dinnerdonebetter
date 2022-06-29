@@ -50,8 +50,7 @@ type (
 
 	// ValidInstrumentCreationRequestInput represents what a user could set as input for creating valid instruments.
 	ValidInstrumentCreationRequestInput struct {
-		_ struct{}
-
+		_           struct{}
 		ID          string `json:"-"`
 		Name        string `json:"name"`
 		Variant     string `json:"variant"`
