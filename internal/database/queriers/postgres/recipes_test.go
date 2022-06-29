@@ -1125,6 +1125,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			for _, ingredient := range step.Ingredients {
 				recipeStepIngredientCreationArgs := []interface{}{
 					ingredient.ID,
+					ingredient.Name,
 					ingredient.IngredientID,
 					ingredient.QuantityType,
 					ingredient.QuantityValue,

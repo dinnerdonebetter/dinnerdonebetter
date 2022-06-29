@@ -38,12 +38,12 @@ type (
 		Name                string  `json:"name"`
 		QuantityType        string  `json:"quantityType"`
 		QuantityNotes       string  `json:"quantityNotes"`
-		Notes               string  `json:"notes"`
+		IngredientNotes     string  `json:"ingredientNotes"`
 		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
 		ID                  string  `json:"id"`
 		CreatedOn           uint64  `json:"createdOn"`
 		QuantityValue       float32 `json:"quantityValue"`
-		ProductOfRecipeStep bool    `json:"productOfRecipe"`
+		ProductOfRecipeStep bool    `json:"productOfRecipeStep"`
 	}
 
 	// RecipeStepIngredientList represents a list of recipe step ingredients.
@@ -129,6 +129,10 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 		x.RecipeStepProductID = input.RecipeStepProductID
 	}
 
+	if input.Name != "" && input.Name != x.Name {
+		x.Name = input.Name
+	}
+
 	if input.QuantityType != "" && input.QuantityType != x.QuantityType {
 		x.QuantityType = input.QuantityType
 	}
@@ -145,8 +149,8 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 		x.ProductOfRecipeStep = input.ProductOfRecipeStep
 	}
 
-	if input.IngredientNotes != "" && input.IngredientNotes != x.Notes {
-		x.Notes = input.IngredientNotes
+	if input.IngredientNotes != "" && input.IngredientNotes != x.IngredientNotes {
+		x.IngredientNotes = input.IngredientNotes
 	}
 }
 
@@ -179,12 +183,14 @@ func (x *RecipeStepIngredientDatabaseCreationInput) ValidateWithContext(ctx cont
 func RecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredientCreationInput(input *RecipeStepIngredientCreationRequestInput) *RecipeStepIngredientDatabaseCreationInput {
 	x := &RecipeStepIngredientDatabaseCreationInput{
 		IngredientID:        input.IngredientID,
+		Name:                input.Name,
 		RecipeStepProduct:   RecipeStepProductDatabaseCreationInputFromRecipeStepProductCreationInput(input.RecipeStepProduct),
 		QuantityType:        input.QuantityType,
 		QuantityValue:       input.QuantityValue,
 		QuantityNotes:       input.QuantityNotes,
 		ProductOfRecipeStep: input.ProductOfRecipeStep,
 		IngredientNotes:     input.IngredientNotes,
+		BelongsToRecipeStep: input.BelongsToRecipeStep,
 	}
 
 	return x

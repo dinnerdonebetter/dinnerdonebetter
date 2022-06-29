@@ -28,12 +28,13 @@ func buildMockRowsFromRecipeStepIngredients(includeCounts bool, filteredCount ui
 	for _, x := range recipeStepIngredients {
 		rowValues := []driver.Value{
 			x.ID,
+			x.Name,
 			x.IngredientID,
 			x.QuantityType,
 			x.QuantityValue,
 			x.QuantityNotes,
 			x.ProductOfRecipeStep,
-			x.Notes,
+			x.IngredientNotes,
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,
@@ -674,6 +675,7 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 
 		args := []interface{}{
 			exampleInput.ID,
+			exampleInput.Name,
 			exampleInput.IngredientID,
 			exampleInput.QuantityType,
 			exampleInput.QuantityValue,
@@ -721,6 +723,7 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 
 		args := []interface{}{
 			exampleInput.ID,
+			exampleInput.Name,
 			exampleInput.IngredientID,
 			exampleInput.QuantityType,
 			exampleInput.QuantityValue,
@@ -764,6 +767,7 @@ func TestSQLQuerier_createRecipeStepIngredient(T *testing.T) {
 
 		recipeStepIngredientCreationArgs := []interface{}{
 			exampleInput.ID,
+			exampleInput.Name,
 			exampleInput.IngredientID,
 			exampleInput.QuantityType,
 			exampleInput.QuantityValue,
@@ -802,11 +806,12 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 
 		args := []interface{}{
 			exampleRecipeStepIngredient.IngredientID,
+			exampleRecipeStepIngredient.Name,
 			exampleRecipeStepIngredient.QuantityType,
 			exampleRecipeStepIngredient.QuantityValue,
 			exampleRecipeStepIngredient.QuantityNotes,
 			exampleRecipeStepIngredient.ProductOfRecipeStep,
-			exampleRecipeStepIngredient.Notes,
+			exampleRecipeStepIngredient.IngredientNotes,
 			exampleRecipeStepIngredient.BelongsToRecipeStep,
 			exampleRecipeStepIngredient.ID,
 		}
@@ -839,11 +844,12 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 
 		args := []interface{}{
 			exampleRecipeStepIngredient.IngredientID,
+			exampleRecipeStepIngredient.Name,
 			exampleRecipeStepIngredient.QuantityType,
 			exampleRecipeStepIngredient.QuantityValue,
 			exampleRecipeStepIngredient.QuantityNotes,
 			exampleRecipeStepIngredient.ProductOfRecipeStep,
-			exampleRecipeStepIngredient.Notes,
+			exampleRecipeStepIngredient.IngredientNotes,
 			exampleRecipeStepIngredient.BelongsToRecipeStep,
 			exampleRecipeStepIngredient.ID,
 		}

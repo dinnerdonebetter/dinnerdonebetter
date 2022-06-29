@@ -699,6 +699,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 		for _, ingredient := range exampleInput.Ingredients {
 			recipeStepIngredientCreationArgs := []interface{}{
 				ingredient.ID,
+				ingredient.Name,
 				ingredient.IngredientID,
 				ingredient.QuantityType,
 				ingredient.QuantityValue,
@@ -775,6 +776,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 
 		recipeStepIngredientCreationArgs := []interface{}{
 			exampleInput.Ingredients[0].ID,
+			exampleInput.Ingredients[0].Name,
 			exampleInput.Ingredients[0].IngredientID,
 			exampleInput.Ingredients[0].QuantityType,
 			exampleInput.Ingredients[0].QuantityValue,
@@ -841,6 +843,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 		for _, ingredient := range exampleInput.Ingredients {
 			recipeStepIngredientCreationArgs := []interface{}{
 				ingredient.ID,
+				ingredient.Name,
 				ingredient.IngredientID,
 				ingredient.QuantityType,
 				ingredient.QuantityValue,

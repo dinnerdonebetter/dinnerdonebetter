@@ -24,6 +24,7 @@ var (
 	// recipeStepIngredientsTableColumns are the columns for the recipe_step_ingredients table.
 	recipeStepIngredientsTableColumns = []string{
 		"recipe_step_ingredients.id",
+		"recipe_step_ingredients.name",
 		"recipe_step_ingredients.ingredient_id",
 		"recipe_step_ingredients.quantity_type",
 		"recipe_step_ingredients.quantity_value",
@@ -54,12 +55,13 @@ func (q *SQLQuerier) scanRecipeStepIngredient(ctx context.Context, scan database
 
 	targetVars := []interface{}{
 		&x.ID,
+		&x.Name,
 		&x.IngredientID,
 		&x.QuantityType,
 		&x.QuantityValue,
 		&x.QuantityNotes,
 		&x.ProductOfRecipeStep,
-		&x.Notes,
+		&x.IngredientNotes,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
@@ -155,6 +157,7 @@ func (q *SQLQuerier) RecipeStepIngredientExists(ctx context.Context, recipeID, r
 
 const getRecipeStepIngredientQuery = `SELECT
 	recipe_step_ingredients.id,
+	recipe_step_ingredients.name,
 	recipe_step_ingredients.ingredient_id,
 	recipe_step_ingredients.quantity_type,
 	recipe_step_ingredients.quantity_value,
@@ -371,7 +374,18 @@ func (q *SQLQuerier) GetRecipeStepIngredientsWithIDs(ctx context.Context, recipe
 	return recipeStepIngredients, nil
 }
 
-const recipeStepIngredientCreationQuery = "INSERT INTO recipe_step_ingredients (id,ingredient_id,quantity_type,quantity_value,quantity_notes,product_of_recipe_step,ingredient_notes,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)"
+const recipeStepIngredientCreationQuery = `INSERT INTO recipe_step_ingredients (
+	id,
+	name,
+	ingredient_id,
+	quantity_type,
+	quantity_value,
+	quantity_notes,
+	product_of_recipe_step,
+	ingredient_notes,
+	belongs_to_recipe_step
+) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+`
 
 // createRecipeStepIngredient creates a recipe step ingredient in the database.
 func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepIngredientDatabaseCreationInput) (*types.RecipeStepIngredient, error) {
@@ -386,6 +400,7 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 
 	args := []interface{}{
 		input.ID,
+		input.Name,
 		input.IngredientID,
 		input.QuantityType,
 		input.QuantityValue,
@@ -414,12 +429,13 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 
 	x := &types.RecipeStepIngredient{
 		ID:                  input.ID,
+		Name:                input.Name,
 		IngredientID:        input.IngredientID,
 		QuantityType:        input.QuantityType,
 		QuantityValue:       input.QuantityValue,
 		QuantityNotes:       input.QuantityNotes,
 		ProductOfRecipeStep: input.ProductOfRecipeStep,
-		Notes:               input.IngredientNotes,
+		IngredientNotes:     input.IngredientNotes,
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		CreatedOn:           q.currentTime(),
 	}
@@ -438,7 +454,19 @@ func (q *SQLQuerier) CreateRecipeStepIngredient(ctx context.Context, input *type
 	return q.createRecipeStepIngredient(ctx, q.db, input)
 }
 
-const updateRecipeStepIngredientQuery = "UPDATE recipe_step_ingredients SET ingredient_id = $1, quantity_type = $2, quantity_value = $3, quantity_notes = $4, product_of_recipe_step = $5, ingredient_notes = $6, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $7 AND id = $8"
+const updateRecipeStepIngredientQuery = `
+UPDATE recipe_step_ingredients SET
+	ingredient_id = $1,
+	name = $2,
+	quantity_type = $3,
+	quantity_value = $4,
+	quantity_notes = $5,
+	product_of_recipe_step = $6,
+	ingredient_notes = $7,
+	last_updated_on = extract(epoch FROM NOW()) 
+WHERE archived_on IS NULL AND belongs_to_recipe_step = $8
+AND id = $9
+`
 
 // UpdateRecipeStepIngredient updates a particular recipe step ingredient.
 func (q *SQLQuerier) UpdateRecipeStepIngredient(ctx context.Context, updated *types.RecipeStepIngredient) error {
@@ -454,11 +482,12 @@ func (q *SQLQuerier) UpdateRecipeStepIngredient(ctx context.Context, updated *ty
 
 	args := []interface{}{
 		updated.IngredientID,
+		updated.Name,
 		updated.QuantityType,
 		updated.QuantityValue,
 		updated.QuantityNotes,
 		updated.ProductOfRecipeStep,
-		updated.Notes,
+		updated.IngredientNotes,
 		updated.BelongsToRecipeStep,
 		updated.ID,
 	}
