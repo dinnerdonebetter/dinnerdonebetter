@@ -110,13 +110,13 @@ func (s *TestSuite) TestRecipes_Realistic() {
 				Steps: []*types.RecipeStep{
 					{
 						TemperatureInCelsius: nil,
-						Products: []*types.RecipeStepProduct{
+						Products:             []*types.RecipeStepProduct{
 							//{},
 						},
 						Notes:           "",
 						Preparation:     *createdValidPreparation,
 						BelongsToRecipe: "",
-						Ingredients: []*types.RecipeStepIngredient{
+						Ingredients:     []*types.RecipeStepIngredient{
 							//{},
 						},
 						Index:                     0,
