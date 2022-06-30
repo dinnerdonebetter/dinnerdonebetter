@@ -6,3 +6,4 @@ ALTER TABLE recipe_step_ingredients ADD COLUMN "recipe_step_product_id" CHAR(27)
 ALTER TABLE recipe_step_products ADD COLUMN "quantity_type" TEXT NOT NULL;
 ALTER TABLE recipe_step_products ADD COLUMN "quantity_value" DOUBLE PRECISION NOT NULL;
 ALTER TABLE recipe_step_products ADD COLUMN "quantity_notes" TEXT NOT NULL;
+ALTER TABLE recipe_step_ingredients ADD CONSTRAINT valid_instrument_or_product check (recipe_step_product_id is not null or ingredient_id is not null)
