@@ -1820,7 +1820,7 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 			exampleRecipeInput.Steps = append(exampleRecipeInput.Steps, newStep)
 		}
 
-		for stepIndex, _ := range exampleRecipeInput.Steps {
+		for stepIndex := range exampleRecipeInput.Steps {
 			findCreatedRecipeStepProducts(exampleRecipeInput, stepIndex)
 		}
 
