@@ -15,8 +15,10 @@ func TestRecipeStepProductCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepProductCreationRequestInput{
-			Name:         fake.LoremIpsumSentence(exampleQuantity),
-			RecipeStepID: fake.LoremIpsumSentence(exampleQuantity),
+			Name:          fake.LoremIpsumSentence(exampleQuantity),
+			QuantityType:  fake.LoremIpsumSentence(exampleQuantity),
+			QuantityValue: fake.Float32(),
+			QuantityNotes: fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -40,8 +42,10 @@ func TestRecipeStepProductUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepProductUpdateRequestInput{
-			Name:         fake.LoremIpsumSentence(exampleQuantity),
-			RecipeStepID: fake.LoremIpsumSentence(exampleQuantity),
+			Name:          fake.LoremIpsumSentence(exampleQuantity),
+			QuantityType:  fake.LoremIpsumSentence(exampleQuantity),
+			QuantityValue: fake.Float32(),
+			QuantityNotes: fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

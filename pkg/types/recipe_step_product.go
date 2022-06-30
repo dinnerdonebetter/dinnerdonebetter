@@ -35,9 +35,11 @@ type (
 		ArchivedOn          *uint64 `json:"archivedOn"`
 		ID                  string  `json:"id"`
 		Name                string  `json:"name"`
-		RecipeStepID        string  `json:"recipeStepID"`
+		QuantityType        string  `json:"quantityType"`
+		QuantityNotes       string  `json:"quantityNotes"`
 		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
 		CreatedOn           uint64  `json:"createdOn"`
+		QuantityValue       float32 `json:"quantityValue"`
 	}
 
 	// RecipeStepProductList represents a list of recipe step products.
@@ -49,31 +51,34 @@ type (
 
 	// RecipeStepProductCreationRequestInput represents what a user could set as input for creating recipe step products.
 	RecipeStepProductCreationRequestInput struct {
-		_ struct{}
-
-		ID                  string `json:"-"`
-		Name                string `json:"name"`
-		RecipeStepID        string `json:"recipeStepID"`
-		BelongsToRecipeStep string `json:"-"`
+		_                   struct{}
+		ID                  string  `json:"-"`
+		Name                string  `json:"name"`
+		QuantityType        string  `json:"quantityType"`
+		QuantityNotes       string  `json:"quantityNotes"`
+		BelongsToRecipeStep string  `json:"-"`
+		QuantityValue       float32 `json:"quantityValue"`
 	}
 
 	// RecipeStepProductDatabaseCreationInput represents what a user could set as input for creating recipe step products.
 	RecipeStepProductDatabaseCreationInput struct {
-		_ struct{}
-
-		ID                  string `json:"id"`
-		Name                string `json:"name"`
-		RecipeStepID        string `json:"recipeStepID"`
-		BelongsToRecipeStep string `json:"belongsToRecipeStep"`
+		_                   struct{}
+		ID                  string  `json:"id"`
+		Name                string  `json:"name"`
+		QuantityType        string  `json:"quantityType"`
+		QuantityNotes       string  `json:"quantityNotes"`
+		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
+		QuantityValue       float32 `json:"quantityValue"`
 	}
 
 	// RecipeStepProductUpdateRequestInput represents what a user could set as input for updating recipe step products.
 	RecipeStepProductUpdateRequestInput struct {
-		_ struct{}
-
-		Name                string `json:"name"`
-		RecipeStepID        string `json:"recipeStepID"`
-		BelongsToRecipeStep string `json:"belongsToRecipeStep"`
+		_                   struct{}
+		Name                string  `json:"name"`
+		QuantityType        string  `json:"quantityType"`
+		QuantityNotes       string  `json:"quantityNotes"`
+		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
+		QuantityValue       float32 `json:"quantityValue"`
 	}
 
 	// RecipeStepProductDataManager describes a structure capable of storing recipe step products permanently.
@@ -104,8 +109,16 @@ func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateRequestInput) {
 		x.Name = input.Name
 	}
 
-	if input.RecipeStepID != "" && input.RecipeStepID != x.RecipeStepID {
-		x.RecipeStepID = input.RecipeStepID
+	if input.QuantityType != "" && input.QuantityType != x.QuantityType {
+		x.QuantityType = input.QuantityType
+	}
+
+	if input.QuantityValue != 0 && input.QuantityValue != x.QuantityValue {
+		x.QuantityValue = input.QuantityValue
+	}
+
+	if input.QuantityNotes != "" && input.QuantityNotes != x.QuantityNotes {
+		x.QuantityNotes = input.QuantityNotes
 	}
 }
 
@@ -117,7 +130,8 @@ func (x *RecipeStepProductCreationRequestInput) ValidateWithContext(ctx context.
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.RecipeStepID, validation.Required),
+		validation.Field(&x.QuantityType, validation.Required),
+		validation.Field(&x.QuantityValue, validation.Required),
 	)
 }
 
@@ -130,15 +144,22 @@ func (x *RecipeStepProductDatabaseCreationInput) ValidateWithContext(ctx context
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.RecipeStepID, validation.Required),
+		validation.Field(&x.QuantityType, validation.Required),
+		validation.Field(&x.QuantityValue, validation.Required),
 	)
 }
 
 // RecipeStepProductDatabaseCreationInputFromRecipeStepProductCreationInput creates a DatabaseCreationInput from a CreationInput.
 func RecipeStepProductDatabaseCreationInputFromRecipeStepProductCreationInput(input *RecipeStepProductCreationRequestInput) *RecipeStepProductDatabaseCreationInput {
+	if input == nil {
+		return nil
+	}
+
 	x := &RecipeStepProductDatabaseCreationInput{
-		Name:         input.Name,
-		RecipeStepID: input.RecipeStepID,
+		Name:          input.Name,
+		QuantityType:  input.QuantityType,
+		QuantityNotes: input.QuantityNotes,
+		QuantityValue: input.QuantityValue,
 	}
 
 	return x
@@ -152,6 +173,7 @@ func (x *RecipeStepProductUpdateRequestInput) ValidateWithContext(ctx context.Co
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.RecipeStepID, validation.Required),
+		validation.Field(&x.QuantityType, validation.Required),
+		validation.Field(&x.QuantityValue, validation.Required),
 	)
 }

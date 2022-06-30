@@ -41,11 +41,10 @@ type (
 		Notes                     string                  `json:"notes"`
 		ID                        string                  `json:"id"`
 		Preparation               ValidPreparation        `json:"preparation"`
-		Products                  []*RecipeStepProduct    `json:"products"`
 		Ingredients               []*RecipeStepIngredient `json:"ingredients"`
-		Index                     uint                    `json:"index"`
+		Products                  []*RecipeStepProduct    `json:"products"`
 		CreatedOn                 uint64                  `json:"createdOn"`
-		PrerequisiteStep          uint64                  `json:"prerequisiteStep"`
+		Index                     uint32                  `json:"index"`
 		MaxEstimatedTimeInSeconds uint32                  `json:"maxEstimatedTimeInSeconds"`
 		MinEstimatedTimeInSeconds uint32                  `json:"minEstimatedTimeInSeconds"`
 		Optional                  bool                    `json:"optional"`
@@ -68,8 +67,7 @@ type (
 		BelongsToRecipe           string                                      `json:"-"`
 		ID                        string                                      `json:"-"`
 		Ingredients               []*RecipeStepIngredientCreationRequestInput `json:"ingredients"`
-		Index                     uint                                        `json:"index"`
-		PrerequisiteStep          uint64                                      `json:"prerequisiteStep"`
+		Index                     uint32                                      `json:"index"`
 		MinEstimatedTimeInSeconds uint32                                      `json:"minEstimatedTimeInSeconds"`
 		MaxEstimatedTimeInSeconds uint32                                      `json:"maxEstimatedTimeInSeconds"`
 		Optional                  bool                                        `json:"optional"`
@@ -85,8 +83,7 @@ type (
 		BelongsToRecipe           string                                       `json:"belongsToRecipe"`
 		ID                        string                                       `json:"id"`
 		Ingredients               []*RecipeStepIngredientDatabaseCreationInput `json:"ingredients"`
-		Index                     uint                                         `json:"index"`
-		PrerequisiteStep          uint64                                       `json:"prerequisiteStep"`
+		Index                     uint32                                       `json:"index"`
 		MinEstimatedTimeInSeconds uint32                                       `json:"minEstimatedTimeInSeconds"`
 		MaxEstimatedTimeInSeconds uint32                                       `json:"maxEstimatedTimeInSeconds"`
 		Optional                  bool                                         `json:"optional"`
@@ -101,8 +98,7 @@ type (
 		BelongsToRecipe           string               `json:"belongsToRecipe"`
 		Products                  []*RecipeStepProduct `json:"products"`
 		Preparation               ValidPreparation     `json:"preparation"`
-		Index                     uint                 `json:"index"`
-		PrerequisiteStep          uint64               `json:"prerequisiteStep"`
+		Index                     uint32               `json:"index"`
 		MinEstimatedTimeInSeconds uint32               `json:"minEstimatedTimeInSeconds"`
 		MaxEstimatedTimeInSeconds uint32               `json:"maxEstimatedTimeInSeconds"`
 		Optional                  bool                 `json:"optional"`
@@ -146,10 +142,6 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
 
 	if input.Preparation.IconPath != "" && input.Preparation.IconPath != x.Preparation.IconPath {
 		x.Preparation.IconPath = input.Preparation.IconPath
-	}
-
-	if input.PrerequisiteStep != 0 && input.PrerequisiteStep != x.PrerequisiteStep {
-		x.PrerequisiteStep = input.PrerequisiteStep
 	}
 
 	if input.MinEstimatedTimeInSeconds != 0 && input.MinEstimatedTimeInSeconds != x.MinEstimatedTimeInSeconds {
@@ -220,7 +212,6 @@ func RecipeStepDatabaseCreationInputFromRecipeStepCreationInput(input *RecipeSte
 	x := &RecipeStepDatabaseCreationInput{
 		Index:                     input.Index,
 		PreparationID:             input.PreparationID,
-		PrerequisiteStep:          input.PrerequisiteStep,
 		MinEstimatedTimeInSeconds: input.MinEstimatedTimeInSeconds,
 		MaxEstimatedTimeInSeconds: input.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      input.TemperatureInCelsius,
@@ -242,7 +233,6 @@ func (x *RecipeStepUpdateRequestInput) ValidateWithContext(ctx context.Context) 
 		x,
 		validation.Field(&x.Index, validation.Required),
 		validation.Field(&x.Preparation, validation.Required),
-		validation.Field(&x.PrerequisiteStep, validation.Required),
 		validation.Field(&x.MinEstimatedTimeInSeconds, validation.Required),
 		validation.Field(&x.MaxEstimatedTimeInSeconds, validation.Required),
 		validation.Field(&x.TemperatureInCelsius, validation.Required),

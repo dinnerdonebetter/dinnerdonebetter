@@ -28,37 +28,18 @@ func buildMockRowsFromRecipeStepIngredients(includeCounts bool, filteredCount ui
 	for _, x := range recipeStepIngredients {
 		rowValues := []driver.Value{
 			x.ID,
+			x.Name,
 			x.IngredientID,
 			x.QuantityType,
 			x.QuantityValue,
 			x.QuantityNotes,
 			x.ProductOfRecipeStep,
+			x.RecipeStepProductID,
 			x.IngredientNotes,
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,
 			x.BelongsToRecipeStep,
-			x.Ingredient.ID,
-			x.Ingredient.Name,
-			x.Ingredient.Description,
-			x.Ingredient.Warning,
-			x.Ingredient.ContainsEgg,
-			x.Ingredient.ContainsDairy,
-			x.Ingredient.ContainsPeanut,
-			x.Ingredient.ContainsTreeNut,
-			x.Ingredient.ContainsSoy,
-			x.Ingredient.ContainsWheat,
-			x.Ingredient.ContainsShellfish,
-			x.Ingredient.ContainsSesame,
-			x.Ingredient.ContainsFish,
-			x.Ingredient.ContainsGluten,
-			x.Ingredient.AnimalFlesh,
-			x.Ingredient.IsMeasuredVolumetrically,
-			x.Ingredient.IsLiquid,
-			x.Ingredient.IconPath,
-			x.Ingredient.CreatedOn,
-			x.Ingredient.LastUpdatedOn,
-			x.Ingredient.ArchivedOn,
 		}
 
 		if includeCounts {
@@ -249,7 +230,6 @@ func TestQuerier_GetRecipeStepIngredient(T *testing.T) {
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepID := fakes.BuildFakeID()
 		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-		exampleRecipeStepIngredient.Ingredient = types.ValidIngredient{}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -395,14 +375,10 @@ func TestQuerier_getRecipeStepIngredientsForRecipe(T *testing.T) {
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepIngredientList := fakes.BuildFakeRecipeStepIngredientList()
 
-		for i := range exampleRecipeStepIngredientList.RecipeStepIngredients {
-			exampleRecipeStepIngredientList.RecipeStepIngredients[i].Ingredient = types.ValidIngredient{}
-		}
-
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
+		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromRecipeStepIngredients(false, 0, exampleRecipeStepIngredientList.RecipeStepIngredients...))
@@ -431,16 +407,11 @@ func TestQuerier_getRecipeStepIngredientsForRecipe(T *testing.T) {
 		t.Parallel()
 
 		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipeStepIngredientList := fakes.BuildFakeRecipeStepIngredientList()
-
-		for i := range exampleRecipeStepIngredientList.RecipeStepIngredients {
-			exampleRecipeStepIngredientList.RecipeStepIngredients[i].Ingredient = types.ValidIngredient{}
-		}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
+		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
@@ -464,14 +435,10 @@ func TestQuerier_GetRecipeStepIngredients(T *testing.T) {
 		exampleRecipeStepID := fakes.BuildFakeID()
 		exampleRecipeStepIngredientList := fakes.BuildFakeRecipeStepIngredientList()
 
-		for i := range exampleRecipeStepIngredientList.RecipeStepIngredients {
-			exampleRecipeStepIngredientList.RecipeStepIngredients[i].Ingredient = types.ValidIngredient{}
-		}
-
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromRecipeStepIngredients(true, exampleRecipeStepIngredientList.FilteredCount, exampleRecipeStepIngredientList.RecipeStepIngredients...))
@@ -520,14 +487,11 @@ func TestQuerier_GetRecipeStepIngredients(T *testing.T) {
 		exampleRecipeStepIngredientList := fakes.BuildFakeRecipeStepIngredientList()
 		exampleRecipeStepIngredientList.Page = 0
 		exampleRecipeStepIngredientList.Limit = 0
-		for i := range exampleRecipeStepIngredientList.RecipeStepIngredients {
-			exampleRecipeStepIngredientList.RecipeStepIngredients[i].Ingredient = types.ValidIngredient{}
-		}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromRecipeStepIngredients(true, exampleRecipeStepIngredientList.FilteredCount, exampleRecipeStepIngredientList.RecipeStepIngredients...))
@@ -549,7 +513,7 @@ func TestQuerier_GetRecipeStepIngredients(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
@@ -571,7 +535,7 @@ func TestQuerier_GetRecipeStepIngredients(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
@@ -594,9 +558,8 @@ func TestQuerier_GetRecipeStepIngredientsWithIDs(T *testing.T) {
 		exampleRecipeStepIngredientList := fakes.BuildFakeRecipeStepIngredientList()
 
 		var exampleIDs []string
-		for i, x := range exampleRecipeStepIngredientList.RecipeStepIngredients {
+		for _, x := range exampleRecipeStepIngredientList.RecipeStepIngredients {
 			exampleIDs = append(exampleIDs, x.ID)
-			exampleRecipeStepIngredientList.RecipeStepIngredients[i].Ingredient = types.ValidIngredient{}
 		}
 
 		ctx := context.Background()
@@ -706,7 +669,6 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 
 		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 		exampleRecipeStepIngredient.ID = "1"
-		exampleRecipeStepIngredient.Ingredient = types.ValidIngredient{}
 		exampleInput := fakes.BuildFakeRecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
 
 		ctx := context.Background()
@@ -714,11 +676,13 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 
 		args := []interface{}{
 			exampleInput.ID,
+			exampleInput.Name,
 			exampleInput.IngredientID,
 			exampleInput.QuantityType,
 			exampleInput.QuantityValue,
 			exampleInput.QuantityNotes,
-			exampleInput.ProductOfRecipe,
+			exampleInput.ProductOfRecipeStep,
+			exampleInput.RecipeStepProductID,
 			exampleInput.IngredientNotes,
 			exampleInput.BelongsToRecipeStep,
 		}
@@ -761,11 +725,13 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 
 		args := []interface{}{
 			exampleInput.ID,
+			exampleInput.Name,
 			exampleInput.IngredientID,
 			exampleInput.QuantityType,
 			exampleInput.QuantityValue,
 			exampleInput.QuantityNotes,
-			exampleInput.ProductOfRecipe,
+			exampleInput.ProductOfRecipeStep,
+			exampleInput.RecipeStepProductID,
 			exampleInput.IngredientNotes,
 			exampleInput.BelongsToRecipeStep,
 		}
@@ -796,7 +762,6 @@ func TestSQLQuerier_createRecipeStepIngredient(T *testing.T) {
 		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 		exampleRecipeStepIngredient.ID = "3"
 		exampleRecipeStepIngredient.BelongsToRecipeStep = "2"
-		exampleRecipeStepIngredient.Ingredient = types.ValidIngredient{}
 
 		exampleInput := fakes.BuildFakeRecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
 
@@ -805,11 +770,13 @@ func TestSQLQuerier_createRecipeStepIngredient(T *testing.T) {
 
 		recipeStepIngredientCreationArgs := []interface{}{
 			exampleInput.ID,
+			exampleInput.Name,
 			exampleInput.IngredientID,
 			exampleInput.QuantityType,
 			exampleInput.QuantityValue,
 			exampleInput.QuantityNotes,
-			exampleInput.ProductOfRecipe,
+			exampleInput.ProductOfRecipeStep,
+			exampleInput.RecipeStepProductID,
 			exampleInput.IngredientNotes,
 			exampleInput.BelongsToRecipeStep,
 		}
@@ -843,10 +810,12 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 
 		args := []interface{}{
 			exampleRecipeStepIngredient.IngredientID,
+			exampleRecipeStepIngredient.Name,
 			exampleRecipeStepIngredient.QuantityType,
 			exampleRecipeStepIngredient.QuantityValue,
 			exampleRecipeStepIngredient.QuantityNotes,
 			exampleRecipeStepIngredient.ProductOfRecipeStep,
+			exampleRecipeStepIngredient.RecipeStepProductID,
 			exampleRecipeStepIngredient.IngredientNotes,
 			exampleRecipeStepIngredient.BelongsToRecipeStep,
 			exampleRecipeStepIngredient.ID,
@@ -880,10 +849,12 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 
 		args := []interface{}{
 			exampleRecipeStepIngredient.IngredientID,
+			exampleRecipeStepIngredient.Name,
 			exampleRecipeStepIngredient.QuantityType,
 			exampleRecipeStepIngredient.QuantityValue,
 			exampleRecipeStepIngredient.QuantityNotes,
 			exampleRecipeStepIngredient.ProductOfRecipeStep,
+			exampleRecipeStepIngredient.RecipeStepProductID,
 			exampleRecipeStepIngredient.IngredientNotes,
 			exampleRecipeStepIngredient.BelongsToRecipeStep,
 			exampleRecipeStepIngredient.ID,

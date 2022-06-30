@@ -2,6 +2,7 @@ package integration
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -63,6 +64,7 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 			createdValidIngredients = append(createdValidIngredients, createdValidIngredient)
 
 			exampleRecipe.Steps[i].Ingredients[j].IngredientID = stringPointer(createdValidIngredient.ID)
+			exampleRecipe.Steps[i].Ingredients[j].ProductOfRecipeStep = false
 		}
 	}
 
@@ -76,7 +78,6 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 	t.Logf("recipe %q created", createdRecipe.ID)
 	checkRecipeEquality(t, exampleRecipe, createdRecipe)
 
-	// DEBUG (4/14/22): right now, this doesn't work, because the recipe isn't being returned with steps in it.
 	createdRecipe, err = client.GetRecipe(ctx, createdRecipe.ID)
 	requireNotNilAndNoProblems(t, createdRecipe, err)
 	checkRecipeEquality(t, exampleRecipe, createdRecipe)
@@ -84,6 +85,181 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 	require.NotEmpty(t, createdRecipe.Steps, "created recipe must have steps")
 
 	return createdValidIngredients, createdValidPreparation, createdRecipe
+}
+
+func (s *TestSuite) TestRecipes_Realistic() {
+	s.runForEachClient("sopa de frijol", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			t.Log("creating prerequisite valid preparation")
+			soakBase := fakes.BuildFakeValidPreparation()
+			soakInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(soakBase)
+			soak, err := testClients.admin.CreateValidPreparation(ctx, soakInput)
+			require.NoError(t, err)
+			t.Logf("valid preparation %q created", soak.ID)
+
+			t.Log("creating prerequisite valid ingredient")
+			pintoBeanBase := fakes.BuildFakeValidIngredient()
+			pintoBeanInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(pintoBeanBase)
+			pintoBeans, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, pintoBeanInput)
+			require.NoError(t, createdValidIngredientErr)
+
+			t.Log("creating prerequisite valid ingredient")
+			waterBase := fakes.BuildFakeValidIngredient()
+			waterInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(waterBase)
+			water, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, waterInput)
+			require.NoError(t, createdValidIngredientErr)
+
+			t.Log("creating prerequisite valid ingredient")
+			garlicPaste := fakes.BuildFakeValidIngredient()
+			garlicPasteInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(garlicPaste)
+			garlicPaste, garlicPasteErr := testClients.admin.CreateValidIngredient(ctx, garlicPasteInput)
+			require.NoError(t, garlicPasteErr)
+
+			t.Log("creating recipe")
+			expected := &types.Recipe{
+				Name:        "sopa de frijol",
+				Description: "",
+				Steps: []*types.RecipeStep{
+					{
+						TemperatureInCelsius: nil,
+						Products: []*types.RecipeStepProduct{
+							{
+								Name:          "soaked pinto beans",
+								QuantityType:  "grams",
+								QuantityNotes: "",
+								QuantityValue: 1000,
+							},
+						},
+						Notes:       "first step",
+						Preparation: *soak,
+						Ingredients: []*types.RecipeStepIngredient{
+							{
+								RecipeStepProductID: nil,
+								IngredientID:        &pintoBeans.ID,
+								Name:                "pinto beans",
+								QuantityType:        "grams",
+								QuantityValue:       500,
+								ProductOfRecipeStep: false,
+							},
+							{
+								RecipeStepProductID: nil,
+								IngredientID:        &water.ID,
+								Name:                "water",
+								QuantityType:        "cups",
+								QuantityValue:       5,
+								ProductOfRecipeStep: false,
+							},
+						},
+						Index: 0,
+					},
+					{
+						TemperatureInCelsius: nil,
+						Products: []*types.RecipeStepProduct{
+							{
+								Name:          "final output",
+								QuantityType:  "grams",
+								QuantityNotes: "",
+								QuantityValue: 1010,
+							},
+						},
+						Notes:       "first step",
+						Preparation: *soak,
+						Ingredients: []*types.RecipeStepIngredient{
+							{
+								Name:                "soaked pinto beans",
+								QuantityType:        "grams",
+								QuantityValue:       1000,
+								ProductOfRecipeStep: true,
+							},
+							{
+								IngredientID:        &garlicPaste.ID,
+								Name:                "garlic paste",
+								QuantityType:        "grams",
+								QuantityValue:       10,
+								ProductOfRecipeStep: false,
+							},
+						},
+						Index: 1,
+					},
+				},
+			}
+
+			exampleRecipeInput := &types.RecipeCreationRequestInput{
+				Name:        expected.Name,
+				Description: expected.Description,
+			}
+			for _, step := range expected.Steps {
+				newStep := &types.RecipeStepCreationRequestInput{
+					TemperatureInCelsius:      step.TemperatureInCelsius,
+					Notes:                     step.Notes,
+					PreparationID:             step.Preparation.ID,
+					BelongsToRecipe:           step.BelongsToRecipe,
+					ID:                        step.ID,
+					Index:                     step.Index,
+					MinEstimatedTimeInSeconds: step.MinEstimatedTimeInSeconds,
+					MaxEstimatedTimeInSeconds: step.MaxEstimatedTimeInSeconds,
+					Optional:                  step.Optional,
+				}
+
+				for _, ingredient := range step.Ingredients {
+					newIngredient := &types.RecipeStepIngredientCreationRequestInput{
+						IngredientID:        ingredient.IngredientID,
+						ID:                  ingredient.ID,
+						BelongsToRecipeStep: ingredient.BelongsToRecipeStep,
+						Name:                ingredient.Name,
+						QuantityType:        ingredient.QuantityType,
+						QuantityNotes:       ingredient.QuantityNotes,
+						IngredientNotes:     ingredient.IngredientNotes,
+						QuantityValue:       ingredient.QuantityValue,
+						ProductOfRecipeStep: ingredient.ProductOfRecipeStep,
+					}
+					newStep.Ingredients = append(newStep.Ingredients, newIngredient)
+				}
+
+				for _, product := range step.Products {
+					newProduct := &types.RecipeStepProductCreationRequestInput{
+						ID:                  product.ID,
+						Name:                product.Name,
+						QuantityType:        product.QuantityType,
+						QuantityNotes:       product.QuantityNotes,
+						BelongsToRecipeStep: product.BelongsToRecipeStep,
+						QuantityValue:       product.QuantityValue,
+					}
+					newStep.Products = append(newStep.Products, newProduct)
+				}
+
+				exampleRecipeInput.Steps = append(exampleRecipeInput.Steps, newStep)
+			}
+
+			created, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
+			require.NoError(t, err)
+			t.Logf("recipe %q created", created.ID)
+			checkRecipeEquality(t, expected, created)
+
+			created, err = testClients.main.GetRecipe(ctx, created.ID)
+			requireNotNilAndNoProblems(t, created, err)
+			checkRecipeEquality(t, expected, created)
+
+			createdJSON, _ := json.Marshal(created)
+			t.Log(string(createdJSON))
+
+			recipeStepProductIndex := -1
+			for i, ingredient := range created.Steps[1].Ingredients {
+				if ingredient.RecipeStepProductID != nil {
+					recipeStepProductIndex = i
+				}
+			}
+
+			assert.NotEqual(t, -1, recipeStepProductIndex)
+			require.NotNil(t, created.Steps[1].Ingredients[recipeStepProductIndex].RecipeStepProductID)
+			assert.Equal(t, created.Steps[0].Products[0].ID, *created.Steps[1].Ingredients[recipeStepProductIndex].RecipeStepProductID)
+		}
+	})
 }
 
 func (s *TestSuite) TestRecipes_CompleteLifecycle() {

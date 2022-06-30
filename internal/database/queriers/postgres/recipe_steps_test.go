@@ -36,7 +36,6 @@ func buildMockRowsFromRecipeSteps(includeCounts bool, filteredCount uint64, reci
 			x.Preparation.CreatedOn,
 			x.Preparation.LastUpdatedOn,
 			x.Preparation.ArchivedOn,
-			x.PrerequisiteStep,
 			x.MinEstimatedTimeInSeconds,
 			x.MaxEstimatedTimeInSeconds,
 			x.TemperatureInCelsius,
@@ -579,7 +578,6 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 			exampleInput.ID,
 			exampleInput.Index,
 			exampleInput.PreparationID,
-			exampleInput.PrerequisiteStep,
 			exampleInput.MinEstimatedTimeInSeconds,
 			exampleInput.MaxEstimatedTimeInSeconds,
 			exampleInput.TemperatureInCelsius,
@@ -628,7 +626,6 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 			exampleInput.ID,
 			exampleInput.Index,
 			exampleInput.PreparationID,
-			exampleInput.PrerequisiteStep,
 			exampleInput.MinEstimatedTimeInSeconds,
 			exampleInput.MaxEstimatedTimeInSeconds,
 			exampleInput.TemperatureInCelsius,
@@ -667,7 +664,6 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 		for i := range exampleRecipeStep.Ingredients {
 			exampleRecipeStep.Ingredients[i].ID = "3"
 			exampleRecipeStep.Ingredients[i].BelongsToRecipeStep = exampleRecipeStep.ID
-			exampleRecipeStep.Ingredients[i].Ingredient = types.ValidIngredient{}
 		}
 
 		for i := range exampleRecipeStep.Products {
@@ -684,7 +680,6 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.ID,
 			exampleInput.Index,
 			exampleInput.PreparationID,
-			exampleInput.PrerequisiteStep,
 			exampleInput.MinEstimatedTimeInSeconds,
 			exampleInput.MaxEstimatedTimeInSeconds,
 			exampleInput.TemperatureInCelsius,
@@ -700,11 +695,13 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 		for _, ingredient := range exampleInput.Ingredients {
 			recipeStepIngredientCreationArgs := []interface{}{
 				ingredient.ID,
+				ingredient.Name,
 				ingredient.IngredientID,
 				ingredient.QuantityType,
 				ingredient.QuantityValue,
 				ingredient.QuantityNotes,
-				ingredient.ProductOfRecipe,
+				ingredient.ProductOfRecipeStep,
+				ingredient.RecipeStepProductID,
 				ingredient.IngredientNotes,
 				ingredient.BelongsToRecipeStep,
 			}
@@ -718,7 +715,9 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			args := []interface{}{
 				product.ID,
 				product.Name,
-				product.RecipeStepID,
+				product.QuantityType,
+				product.QuantityValue,
+				product.QuantityNotes,
 				product.BelongsToRecipeStep,
 			}
 
@@ -748,7 +747,6 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 		for i := range exampleRecipeStep.Ingredients {
 			exampleRecipeStep.Ingredients[i].ID = "3"
 			exampleRecipeStep.Ingredients[i].BelongsToRecipeStep = "2"
-			exampleRecipeStep.Ingredients[i].Ingredient = types.ValidIngredient{}
 		}
 
 		exampleInput := fakes.BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(exampleRecipeStep)
@@ -760,7 +758,6 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.ID,
 			exampleInput.Index,
 			exampleInput.PreparationID,
-			exampleInput.PrerequisiteStep,
 			exampleInput.MinEstimatedTimeInSeconds,
 			exampleInput.MaxEstimatedTimeInSeconds,
 			exampleInput.TemperatureInCelsius,
@@ -775,11 +772,13 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 
 		recipeStepIngredientCreationArgs := []interface{}{
 			exampleInput.Ingredients[0].ID,
+			exampleInput.Ingredients[0].Name,
 			exampleInput.Ingredients[0].IngredientID,
 			exampleInput.Ingredients[0].QuantityType,
 			exampleInput.Ingredients[0].QuantityValue,
 			exampleInput.Ingredients[0].QuantityNotes,
-			exampleInput.Ingredients[0].ProductOfRecipe,
+			exampleInput.Ingredients[0].ProductOfRecipeStep,
+			exampleInput.Ingredients[0].RecipeStepProductID,
 			exampleInput.Ingredients[0].IngredientNotes,
 			exampleInput.Ingredients[0].BelongsToRecipeStep,
 		}
@@ -809,7 +808,6 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 		for i := range exampleRecipeStep.Ingredients {
 			exampleRecipeStep.Ingredients[i].ID = "3"
 			exampleRecipeStep.Ingredients[i].BelongsToRecipeStep = exampleRecipeStep.ID
-			exampleRecipeStep.Ingredients[i].Ingredient = types.ValidIngredient{}
 		}
 
 		for i := range exampleRecipeStep.Products {
@@ -826,7 +824,6 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleInput.ID,
 			exampleInput.Index,
 			exampleInput.PreparationID,
-			exampleInput.PrerequisiteStep,
 			exampleInput.MinEstimatedTimeInSeconds,
 			exampleInput.MaxEstimatedTimeInSeconds,
 			exampleInput.TemperatureInCelsius,
@@ -842,11 +839,13 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 		for _, ingredient := range exampleInput.Ingredients {
 			recipeStepIngredientCreationArgs := []interface{}{
 				ingredient.ID,
+				ingredient.Name,
 				ingredient.IngredientID,
 				ingredient.QuantityType,
 				ingredient.QuantityValue,
 				ingredient.QuantityNotes,
-				ingredient.ProductOfRecipe,
+				ingredient.ProductOfRecipeStep,
+				ingredient.RecipeStepProductID,
 				ingredient.IngredientNotes,
 				ingredient.BelongsToRecipeStep,
 			}
@@ -859,7 +858,9 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 		args := []interface{}{
 			exampleInput.Products[0].ID,
 			exampleInput.Products[0].Name,
-			exampleInput.Products[0].RecipeStepID,
+			exampleInput.Products[0].QuantityType,
+			exampleInput.Products[0].QuantityValue,
+			exampleInput.Products[0].QuantityNotes,
 			exampleInput.Products[0].BelongsToRecipeStep,
 		}
 
@@ -893,7 +894,6 @@ func TestQuerier_UpdateRecipeStep(T *testing.T) {
 		args := []interface{}{
 			exampleRecipeStep.Index,
 			exampleRecipeStep.Preparation.ID,
-			exampleRecipeStep.PrerequisiteStep,
 			exampleRecipeStep.MinEstimatedTimeInSeconds,
 			exampleRecipeStep.MaxEstimatedTimeInSeconds,
 			exampleRecipeStep.TemperatureInCelsius,
@@ -932,7 +932,6 @@ func TestQuerier_UpdateRecipeStep(T *testing.T) {
 		args := []interface{}{
 			exampleRecipeStep.Index,
 			exampleRecipeStep.Preparation.ID,
-			exampleRecipeStep.PrerequisiteStep,
 			exampleRecipeStep.MinEstimatedTimeInSeconds,
 			exampleRecipeStep.MaxEstimatedTimeInSeconds,
 			exampleRecipeStep.TemperatureInCelsius,

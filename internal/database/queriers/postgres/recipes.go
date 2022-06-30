@@ -141,7 +141,6 @@ const getRecipeByIDQuery = `SELECT
 	valid_preparations.created_on,
 	valid_preparations.last_updated_on,
 	valid_preparations.archived_on,
-	recipe_steps.prerequisite_step,
 	recipe_steps.min_estimated_time_in_seconds,
 	recipe_steps.max_estimated_time_in_seconds,
 	recipe_steps.temperature_in_celsius,
@@ -158,10 +157,46 @@ WHERE recipe_steps.archived_on IS NULL
 	AND recipe_steps.belongs_to_recipe = $1
 	AND recipes.archived_on IS NULL
 	AND recipes.id = $2
+ORDER BY recipe_steps.index
 `
 
-const getRecipeByIDAndAuthorIDQuery = getRecipeByIDQuery + `
+const getRecipeByIDAndAuthorIDQuery = `SELECT 
+	recipes.id,
+	recipes.name,
+	recipes.source,
+	recipes.description,
+	recipes.inspired_by_recipe_id,
+	recipes.created_on,
+	recipes.last_updated_on,
+	recipes.archived_on,
+	recipes.created_by_user,
+	recipe_steps.id,
+	recipe_steps.index,
+	valid_preparations.id,
+	valid_preparations.name,
+	valid_preparations.description,
+	valid_preparations.icon_path,
+	valid_preparations.created_on,
+	valid_preparations.last_updated_on,
+	valid_preparations.archived_on,
+	recipe_steps.min_estimated_time_in_seconds,
+	recipe_steps.max_estimated_time_in_seconds,
+	recipe_steps.temperature_in_celsius,
+	recipe_steps.notes,
+	recipe_steps.optional,
+	recipe_steps.created_on,
+	recipe_steps.last_updated_on,
+	recipe_steps.archived_on,
+	recipe_steps.belongs_to_recipe
+FROM recipes
+	FULL OUTER JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
+	FULL OUTER JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
+WHERE recipe_steps.archived_on IS NULL
+	AND recipe_steps.belongs_to_recipe = $1
+	AND recipes.archived_on IS NULL
+	AND recipes.id = $2
 	AND recipes.created_by_user = $3
+ORDER BY recipe_steps.index
 `
 
 // scanRecipeAndStep takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe struct.
@@ -191,7 +226,6 @@ func (q *SQLQuerier) scanRecipeAndStep(ctx context.Context, scan database.Scanne
 		&y.Preparation.CreatedOn,
 		&y.Preparation.LastUpdatedOn,
 		&y.Preparation.ArchivedOn,
-		&y.PrerequisiteStep,
 		&y.MinEstimatedTimeInSeconds,
 		&y.MaxEstimatedTimeInSeconds,
 		&y.TemperatureInCelsius,
@@ -234,7 +268,7 @@ func (q *SQLQuerier) getRecipe(ctx context.Context, recipeID, userID string) (*t
 		args = append(args, userID)
 	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "recipe", query, args)
+	rows, err := q.performReadQuery(ctx, q.db, "get recipe", query, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "scanning recipe")
 	}
@@ -473,13 +507,21 @@ func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeDataba
 		CreatedOn:          q.currentTime(),
 	}
 
-	for _, stepInput := range input.Steps {
+	for i, stepInput := range input.Steps {
+		stepInput.Index = uint32(i)
 		stepInput.BelongsToRecipe = x.ID
+
+		// we need to go through all the prior steps and see
+		// if the names of a product matches any ingredients
+		// used in this step and not used in prior steps
+		findCreatedRecipeStepProducts(input, i)
+
 		s, createErr := q.createRecipeStep(ctx, tx, stepInput)
 		if createErr != nil {
 			q.rollbackTransaction(ctx, tx)
 			return nil, observability.PrepareError(createErr, logger, span, "creating recipe step")
 		}
+
 		x.Steps = append(x.Steps, s)
 	}
 
@@ -491,6 +533,41 @@ func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeDataba
 	logger.Info("recipe created")
 
 	return x, nil
+}
+
+func findCreatedRecipeStepProducts(recipe *types.RecipeDatabaseCreationInput, stepIndex int) {
+	step := recipe.Steps[stepIndex]
+
+	priorSteps := []*types.RecipeStepDatabaseCreationInput{}
+	for i, s := range recipe.Steps {
+		if i < stepIndex {
+			priorSteps = append(priorSteps, s)
+		} else {
+			break
+		}
+	}
+
+	// created products is everything available to the step at the provided stepIndex.
+	createdProducts := map[string]*types.RecipeStepProductDatabaseCreationInput{}
+	for _, s := range priorSteps {
+		for _, product := range s.Products {
+			createdProducts[product.Name] = product
+		}
+
+		for _, ingredient := range s.Ingredients {
+			if ingredient.ProductOfRecipeStep && ingredient.IngredientID == nil {
+				delete(createdProducts, ingredient.Name)
+			}
+		}
+	}
+
+	for _, ingredient := range step.Ingredients {
+		createdProduct, availableAsACreatedProduct := createdProducts[ingredient.Name]
+
+		if ingredient.ProductOfRecipeStep && availableAsACreatedProduct {
+			ingredient.RecipeStepProductID = &createdProduct.ID
+		}
+	}
 }
 
 const updateRecipeQuery = "UPDATE recipes SET name = $1, source = $2, description = $3, inspired_by_recipe_id = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND created_by_user = $5 AND id = $6"

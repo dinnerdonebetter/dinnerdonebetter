@@ -15,7 +15,7 @@ func checkValidIngredientPreparationEquality(t *testing.T, expected, actual *typ
 	t.Helper()
 
 	assert.NotZero(t, actual.ID)
-	assert.Equal(t, expected.Notes, actual.Notes, "expected IngredientNotes for valid ingredient preparation %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
+	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for valid ingredient preparation %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.ValidPreparationID, actual.ValidPreparationID, "expected ValidPreparationID for valid ingredient preparation %s to be %v, but it was %v", expected.ID, expected.ValidPreparationID, actual.ValidPreparationID)
 	assert.Equal(t, expected.ValidIngredientID, actual.ValidIngredientID, "expected ValidIngredientID for valid ingredient preparation %s to be %v, but it was %v", expected.ID, expected.ValidIngredientID, actual.ValidIngredientID)
 	assert.NotZero(t, actual.CreatedOn)
