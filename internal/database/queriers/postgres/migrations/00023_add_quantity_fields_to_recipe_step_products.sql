@@ -1,4 +1,5 @@
 ALTER TABLE recipe_step_products DROP COLUMN IF EXISTS "recipe_step_id";
+ALTER TABLE recipe_steps DROP COLUMN IF EXISTS "prerequisite_step";
 
 ALTER TABLE recipe_step_ingredients ADD COLUMN "name" TEXT NOT NULL;
 ALTER TABLE recipe_step_ingredients ADD COLUMN "recipe_step_product_id" CHAR(27) REFERENCES recipe_step_products("id") ON DELETE RESTRICT;

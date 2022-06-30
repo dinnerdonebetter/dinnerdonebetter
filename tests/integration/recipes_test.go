@@ -109,6 +109,12 @@ func (s *TestSuite) TestRecipes_Realistic() {
 			require.NoError(t, createdValidIngredientErr)
 
 			t.Log("creating prerequisite valid ingredient")
+			waterBase := fakes.BuildFakeValidIngredient()
+			waterInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(waterBase)
+			water, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, waterInput)
+			require.NoError(t, createdValidIngredientErr)
+
+			t.Log("creating prerequisite valid ingredient")
 			garlicPaste := fakes.BuildFakeValidIngredient()
 			garlicPasteInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(garlicPaste)
 			garlicPaste, garlicPasteErr := testClients.admin.CreateValidIngredient(ctx, garlicPasteInput)
@@ -138,6 +144,14 @@ func (s *TestSuite) TestRecipes_Realistic() {
 								Name:                "pinto beans",
 								QuantityType:        "grams",
 								QuantityValue:       500,
+								ProductOfRecipeStep: false,
+							},
+							{
+								RecipeStepProductID: nil,
+								IngredientID:        &water.ID,
+								Name:                "water",
+								QuantityType:        "cups",
+								QuantityValue:       5,
 								ProductOfRecipeStep: false,
 							},
 						},
@@ -187,7 +201,6 @@ func (s *TestSuite) TestRecipes_Realistic() {
 					BelongsToRecipe:           step.BelongsToRecipe,
 					ID:                        step.ID,
 					Index:                     step.Index,
-					PrerequisiteStep:          step.PrerequisiteStep,
 					MinEstimatedTimeInSeconds: step.MinEstimatedTimeInSeconds,
 					MaxEstimatedTimeInSeconds: step.MaxEstimatedTimeInSeconds,
 					Optional:                  step.Optional,

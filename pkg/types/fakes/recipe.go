@@ -11,7 +11,9 @@ import (
 func BuildFakeRecipe() *types.Recipe {
 	var steps []*types.RecipeStep
 	for i := 0; i < exampleQuantity; i++ {
-		steps = append(steps, BuildFakeRecipeStep())
+		step := BuildFakeRecipeStep()
+		step.Index = uint32(i)
+		steps = append(steps, step)
 	}
 
 	return &types.Recipe{

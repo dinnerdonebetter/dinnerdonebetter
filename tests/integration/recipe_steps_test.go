@@ -17,7 +17,6 @@ func checkRecipeStepEquality(t *testing.T, expected, actual *types.RecipeStep) {
 
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Index, actual.Index, "expected Index for recipe step %s to be %v, but it was %v", expected.ID, expected.Index, actual.Index)
-	assert.Equal(t, expected.PrerequisiteStep, actual.PrerequisiteStep, "expected PrerequisiteStep for recipe step %s to be %v, but it was %v", expected.ID, expected.PrerequisiteStep, actual.PrerequisiteStep)
 	assert.Equal(t, expected.MinEstimatedTimeInSeconds, actual.MinEstimatedTimeInSeconds, "expected MinEstimatedTimeInSeconds for recipe step %s to be %v, but it was %v", expected.ID, expected.MinEstimatedTimeInSeconds, actual.MinEstimatedTimeInSeconds)
 	assert.Equal(t, expected.MaxEstimatedTimeInSeconds, actual.MaxEstimatedTimeInSeconds, "expected MaxEstimatedTimeInSeconds for recipe step %s to be %v, but it was %v", expected.ID, expected.MaxEstimatedTimeInSeconds, actual.MaxEstimatedTimeInSeconds)
 	assert.Equal(t, expected.TemperatureInCelsius, actual.TemperatureInCelsius, "expected TemperatureInCelsius for recipe step %s to be %v, but it was %v", expected.ID, expected.TemperatureInCelsius, actual.TemperatureInCelsius)
@@ -29,7 +28,6 @@ func checkRecipeStepEquality(t *testing.T, expected, actual *types.RecipeStep) {
 func convertRecipeStepToRecipeStepUpdateInput(x *types.RecipeStep) *types.RecipeStepUpdateRequestInput {
 	return &types.RecipeStepUpdateRequestInput{
 		Index:                     x.Index,
-		PrerequisiteStep:          x.PrerequisiteStep,
 		MinEstimatedTimeInSeconds: x.MinEstimatedTimeInSeconds,
 		MaxEstimatedTimeInSeconds: x.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      x.TemperatureInCelsius,

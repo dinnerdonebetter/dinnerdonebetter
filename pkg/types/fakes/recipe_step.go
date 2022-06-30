@@ -27,9 +27,8 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 
 	return &types.RecipeStep{
 		ID:                        recipeStepID,
-		Index:                     uint(fake.Uint32()),
+		Index:                     fake.Uint32(),
 		Preparation:               *BuildFakeValidPreparation(),
-		PrerequisiteStep:          uint64(fake.Uint32()),
 		MinEstimatedTimeInSeconds: fake.Uint32(),
 		MaxEstimatedTimeInSeconds: fake.Uint32(),
 		TemperatureInCelsius:      func(x uint16) *uint16 { return &x }(fake.Uint16()),
@@ -66,7 +65,6 @@ func BuildFakeRecipeStepUpdateRequestInput() *types.RecipeStepUpdateRequestInput
 	return &types.RecipeStepUpdateRequestInput{
 		Index:                     recipeStep.Index,
 		Preparation:               recipeStep.Preparation,
-		PrerequisiteStep:          recipeStep.PrerequisiteStep,
 		MinEstimatedTimeInSeconds: recipeStep.MinEstimatedTimeInSeconds,
 		MaxEstimatedTimeInSeconds: recipeStep.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,
@@ -84,7 +82,6 @@ func BuildFakeRecipeStepUpdateRequestInputFromRecipeStep(recipeStep *types.Recip
 		Optional:                  recipeStep.Optional,
 		Index:                     recipeStep.Index,
 		Preparation:               recipeStep.Preparation,
-		PrerequisiteStep:          recipeStep.PrerequisiteStep,
 		MinEstimatedTimeInSeconds: recipeStep.MinEstimatedTimeInSeconds,
 		MaxEstimatedTimeInSeconds: recipeStep.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,
@@ -117,7 +114,6 @@ func BuildFakeRecipeStepCreationRequestInputFromRecipeStep(recipeStep *types.Rec
 		Optional:                  recipeStep.Optional,
 		Index:                     recipeStep.Index,
 		PreparationID:             recipeStep.Preparation.ID,
-		PrerequisiteStep:          recipeStep.PrerequisiteStep,
 		MinEstimatedTimeInSeconds: recipeStep.MinEstimatedTimeInSeconds,
 		MaxEstimatedTimeInSeconds: recipeStep.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,
@@ -150,7 +146,6 @@ func BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(recipeStep *types.Re
 		Index:                     recipeStep.Index,
 		PreparationID:             recipeStep.Preparation.ID,
 		Optional:                  recipeStep.Optional,
-		PrerequisiteStep:          recipeStep.PrerequisiteStep,
 		MinEstimatedTimeInSeconds: recipeStep.MinEstimatedTimeInSeconds,
 		MaxEstimatedTimeInSeconds: recipeStep.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,

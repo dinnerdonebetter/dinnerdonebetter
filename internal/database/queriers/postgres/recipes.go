@@ -141,7 +141,6 @@ const getRecipeByIDQuery = `SELECT
 	valid_preparations.created_on,
 	valid_preparations.last_updated_on,
 	valid_preparations.archived_on,
-	recipe_steps.prerequisite_step,
 	recipe_steps.min_estimated_time_in_seconds,
 	recipe_steps.max_estimated_time_in_seconds,
 	recipe_steps.temperature_in_celsius,
@@ -180,7 +179,6 @@ const getRecipeByIDAndAuthorIDQuery = `SELECT
 	valid_preparations.created_on,
 	valid_preparations.last_updated_on,
 	valid_preparations.archived_on,
-	recipe_steps.prerequisite_step,
 	recipe_steps.min_estimated_time_in_seconds,
 	recipe_steps.max_estimated_time_in_seconds,
 	recipe_steps.temperature_in_celsius,
@@ -228,7 +226,6 @@ func (q *SQLQuerier) scanRecipeAndStep(ctx context.Context, scan database.Scanne
 		&y.Preparation.CreatedOn,
 		&y.Preparation.LastUpdatedOn,
 		&y.Preparation.ArchivedOn,
-		&y.PrerequisiteStep,
 		&y.MinEstimatedTimeInSeconds,
 		&y.MaxEstimatedTimeInSeconds,
 		&y.TemperatureInCelsius,
@@ -511,9 +508,11 @@ func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeDataba
 	}
 
 	for i, stepInput := range input.Steps {
+		stepInput.Index = uint32(i)
 		stepInput.BelongsToRecipe = x.ID
 
-		// we need to go through all the prior steps and see if the names of a product matches any ingredients
+		// we need to go through all the prior steps and see
+		// if the names of a product matches any ingredients
 		// used in this step and not used in prior steps
 		findCreatedRecipeStepProducts(input, i)
 
@@ -556,7 +555,7 @@ func findCreatedRecipeStepProducts(recipe *types.RecipeDatabaseCreationInput, st
 		}
 
 		for _, ingredient := range s.Ingredients {
-			if ingredient.ProductOfRecipeStep {
+			if ingredient.ProductOfRecipeStep && ingredient.IngredientID == nil {
 				delete(createdProducts, ingredient.Name)
 			}
 		}
