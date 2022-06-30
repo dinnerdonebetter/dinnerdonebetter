@@ -8,6 +8,7 @@ import (
 )
 
 // BuildFakeRecipeStepIngredient builds a faked recipe step ingredient.
+// NOTE: this currently represents a typical recipe step ingredient with a valid ingredient and not a product.
 func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 	return &types.RecipeStepIngredient{
 		ID:                  ksuid.New().String(),
@@ -16,7 +17,7 @@ func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 		QuantityType:        fake.LoremIpsumSentence(exampleQuantity),
 		QuantityValue:       float32(fake.Uint32()),
 		QuantityNotes:       fake.LoremIpsumSentence(exampleQuantity),
-		ProductOfRecipeStep: fake.Bool(),
+		ProductOfRecipeStep: false,
 		IngredientNotes:     fake.LoremIpsumSentence(exampleQuantity),
 		CreatedOn:           uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipeStep: ksuid.New().String(),

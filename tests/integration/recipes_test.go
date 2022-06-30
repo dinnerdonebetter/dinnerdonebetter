@@ -2,6 +2,7 @@ package integration
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -63,6 +64,7 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 			createdValidIngredients = append(createdValidIngredients, createdValidIngredient)
 
 			exampleRecipe.Steps[i].Ingredients[j].IngredientID = stringPointer(createdValidIngredient.ID)
+			exampleRecipe.Steps[i].Ingredients[j].ProductOfRecipeStep = false
 		}
 	}
 
@@ -86,7 +88,7 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 }
 
 func (s *TestSuite) TestRecipes_Realistic() {
-	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("sopa de frijol", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -155,7 +157,6 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						Preparation: *soak,
 						Ingredients: []*types.RecipeStepIngredient{
 							{
-								IngredientID:        &pintoBeans.ID,
 								Name:                "soaked pinto beans",
 								QuantityType:        "grams",
 								QuantityValue:       1000,
@@ -231,8 +232,19 @@ func (s *TestSuite) TestRecipes_Realistic() {
 			requireNotNilAndNoProblems(t, created, err)
 			checkRecipeEquality(t, expected, created)
 
-			require.NotNil(t, created.Steps[1].Ingredients[0].RecipeStepProductID)
-			assert.Equal(t, created.Steps[0].Products[0].ID, *created.Steps[1].Ingredients[0].RecipeStepProductID)
+			createdJSON, _ := json.Marshal(created)
+			t.Log(string(createdJSON))
+
+			recipeStepProductIndex := -1
+			for i, ingredient := range created.Steps[1].Ingredients {
+				if ingredient.RecipeStepProductID != nil {
+					recipeStepProductIndex = i
+				}
+			}
+
+			assert.NotEqual(t, -1, recipeStepProductIndex)
+			require.NotNil(t, created.Steps[1].Ingredients[recipeStepProductIndex].RecipeStepProductID)
+			assert.Equal(t, created.Steps[0].Products[0].ID, *created.Steps[1].Ingredients[recipeStepProductIndex].RecipeStepProductID)
 		}
 	})
 }

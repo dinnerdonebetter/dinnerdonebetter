@@ -71,16 +71,16 @@ type (
 	// RecipeStepIngredientDatabaseCreationInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientDatabaseCreationInput struct {
 		_                   struct{}
-		IngredientID        *string                                 `json:"ingredientID"`
-		RecipeStepProduct   *RecipeStepProductDatabaseCreationInput `json:"recipeStepProduct"`
-		ID                  string                                  `json:"id"`
-		Name                string                                  `json:"name"`
-		QuantityType        string                                  `json:"quantityType"`
-		QuantityNotes       string                                  `json:"quantityNotes"`
-		IngredientNotes     string                                  `json:"ingredientNotes"`
-		BelongsToRecipeStep string                                  `json:"belongsToRecipeStep"`
-		QuantityValue       float32                                 `json:"quantityValue"`
-		ProductOfRecipeStep bool                                    `json:"productOfRecipeStep"`
+		IngredientID        *string `json:"ingredientID"`
+		RecipeStepProductID *string `json:"recipeStepProductID"`
+		ID                  string  `json:"id"`
+		Name                string  `json:"name"`
+		QuantityType        string  `json:"quantityType"`
+		QuantityNotes       string  `json:"quantityNotes"`
+		IngredientNotes     string  `json:"ingredientNotes"`
+		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
+		QuantityValue       float32 `json:"quantityValue"`
+		ProductOfRecipeStep bool    `json:"productOfRecipeStep"`
 	}
 
 	// RecipeStepIngredientUpdateRequestInput represents what a user could set as input for updating recipe step ingredients.
@@ -184,7 +184,6 @@ func RecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredientCreationIn
 	x := &RecipeStepIngredientDatabaseCreationInput{
 		IngredientID:        input.IngredientID,
 		Name:                input.Name,
-		RecipeStepProduct:   RecipeStepProductDatabaseCreationInputFromRecipeStepProductCreationInput(input.RecipeStepProduct),
 		QuantityType:        input.QuantityType,
 		QuantityValue:       input.QuantityValue,
 		QuantityNotes:       input.QuantityNotes,

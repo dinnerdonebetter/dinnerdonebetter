@@ -297,7 +297,7 @@ func TestQuerier_getRecipe(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockFullRowsFromRecipe(exampleRecipe))
 
-		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
+		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromRecipeStepIngredients(false, 0, allIngredients...))
@@ -341,7 +341,7 @@ func TestQuerier_getRecipe(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockFullRowsFromRecipe(exampleRecipe))
 
-		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
+		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
@@ -382,7 +382,7 @@ func TestQuerier_getRecipe(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockFullRowsFromRecipe(exampleRecipe))
 
-		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
+		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromRecipeStepIngredients(false, 0, allIngredients...))
@@ -436,7 +436,7 @@ func TestQuerier_GetRecipe(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockFullRowsFromRecipe(exampleRecipe))
 
-		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
+		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromRecipeStepIngredients(false, 0, allIngredients...))
@@ -594,7 +594,7 @@ func TestQuerier_GetRecipeByUser(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockFullRowsFromRecipe(exampleRecipe))
 
-		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
+		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromRecipeStepIngredients(false, 0, allIngredients...))
@@ -1131,6 +1131,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					ingredient.QuantityValue,
 					ingredient.QuantityNotes,
 					ingredient.ProductOfRecipeStep,
+					ingredient.RecipeStepProductID,
 					ingredient.IngredientNotes,
 					ingredient.BelongsToRecipeStep,
 				}
@@ -1148,7 +1149,8 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		}
 
 		actual, err := c.CreateRecipe(ctx, exampleInput)
-		assert.NoError(t, err)
+		require.NotNil(t, actual)
+		require.NoError(t, err)
 		require.Equal(t, len(exampleRecipe.Steps), len(actual.Steps))
 
 		for i, step := range exampleRecipe.Steps {
@@ -1487,5 +1489,136 @@ func TestQuerier_ArchiveRecipe(T *testing.T) {
 		assert.Error(t, c.ArchiveRecipe(ctx, exampleRecipe.ID, exampleHouseholdID))
 
 		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func Test_findCreatedRecipeStepProducts(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		soak := fakes.BuildFakeValidPreparation()
+		pintoBeans := fakes.BuildFakeValidIngredient()
+		garlicPaste := fakes.BuildFakeValidIngredient()
+		productName := "soaked pinto beans"
+
+		expected := &types.Recipe{
+			Name:        "sopa de frijol",
+			Description: "",
+			Steps: []*types.RecipeStep{
+				{
+					TemperatureInCelsius: nil,
+					Products: []*types.RecipeStepProduct{
+						{
+							ID:            fakes.BuildFakeID(),
+							Name:          productName,
+							QuantityType:  "grams",
+							QuantityNotes: "",
+							QuantityValue: 1000,
+						},
+					},
+					Notes:       "first step",
+					Preparation: *soak,
+					Ingredients: []*types.RecipeStepIngredient{
+						{
+							RecipeStepProductID: nil,
+							IngredientID:        &pintoBeans.ID,
+							Name:                "pinto beans",
+							QuantityType:        "grams",
+							QuantityValue:       500,
+							ProductOfRecipeStep: false,
+						},
+					},
+					Index: 0,
+				},
+				{
+					TemperatureInCelsius: nil,
+					Products: []*types.RecipeStepProduct{
+						{
+							Name:          "final output",
+							QuantityType:  "grams",
+							QuantityNotes: "",
+							QuantityValue: 1010,
+						},
+					},
+					Notes:       "first step",
+					Preparation: *soak,
+					Ingredients: []*types.RecipeStepIngredient{
+						{
+							IngredientID:        nil,
+							RecipeStepProductID: nil,
+							Name:                productName,
+							QuantityType:        "grams",
+							QuantityValue:       1000,
+							ProductOfRecipeStep: true,
+						},
+						{
+							RecipeStepProductID: nil,
+							IngredientID:        &garlicPaste.ID,
+							Name:                "garlic paste",
+							QuantityType:        "grams",
+							QuantityValue:       10,
+							ProductOfRecipeStep: false,
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		exampleRecipeInput := &types.RecipeDatabaseCreationInput{
+			Name:        expected.Name,
+			Description: expected.Description,
+		}
+
+		for _, step := range expected.Steps {
+			newStep := &types.RecipeStepDatabaseCreationInput{
+				TemperatureInCelsius:      step.TemperatureInCelsius,
+				Notes:                     step.Notes,
+				PreparationID:             step.Preparation.ID,
+				BelongsToRecipe:           step.BelongsToRecipe,
+				ID:                        step.ID,
+				Index:                     step.Index,
+				PrerequisiteStep:          step.PrerequisiteStep,
+				MinEstimatedTimeInSeconds: step.MinEstimatedTimeInSeconds,
+				MaxEstimatedTimeInSeconds: step.MaxEstimatedTimeInSeconds,
+				Optional:                  step.Optional,
+			}
+
+			for _, ingredient := range step.Ingredients {
+				newIngredient := &types.RecipeStepIngredientDatabaseCreationInput{
+					IngredientID:        ingredient.IngredientID,
+					ID:                  ingredient.ID,
+					BelongsToRecipeStep: ingredient.BelongsToRecipeStep,
+					Name:                ingredient.Name,
+					QuantityType:        ingredient.QuantityType,
+					QuantityNotes:       ingredient.QuantityNotes,
+					IngredientNotes:     ingredient.IngredientNotes,
+					QuantityValue:       ingredient.QuantityValue,
+					ProductOfRecipeStep: ingredient.ProductOfRecipeStep,
+				}
+				newStep.Ingredients = append(newStep.Ingredients, newIngredient)
+			}
+
+			for _, product := range step.Products {
+				newProduct := &types.RecipeStepProductDatabaseCreationInput{
+					ID:                  product.ID,
+					Name:                product.Name,
+					QuantityType:        product.QuantityType,
+					QuantityNotes:       product.QuantityNotes,
+					BelongsToRecipeStep: product.BelongsToRecipeStep,
+					QuantityValue:       product.QuantityValue,
+				}
+				newStep.Products = append(newStep.Products, newProduct)
+			}
+
+			exampleRecipeInput.Steps = append(exampleRecipeInput.Steps, newStep)
+		}
+
+		findCreatedRecipeStepProducts(exampleRecipeInput, 1)
+
+		require.NotNil(t, exampleRecipeInput.Steps[1].Ingredients[0].RecipeStepProductID)
+		assert.Equal(t, exampleRecipeInput.Steps[0].Products[0].ID, *exampleRecipeInput.Steps[1].Ingredients[0].RecipeStepProductID)
 	})
 }

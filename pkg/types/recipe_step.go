@@ -41,8 +41,8 @@ type (
 		Notes                     string                  `json:"notes"`
 		ID                        string                  `json:"id"`
 		Preparation               ValidPreparation        `json:"preparation"`
-		Products                  []*RecipeStepProduct    `json:"products"`
 		Ingredients               []*RecipeStepIngredient `json:"ingredients"`
+		Products                  []*RecipeStepProduct    `json:"products"`
 		Index                     uint                    `json:"index"`
 		CreatedOn                 uint64                  `json:"createdOn"`
 		PrerequisiteStep          uint64                  `json:"prerequisiteStep"`
