@@ -9,8 +9,6 @@ import (
 )
 
 const (
-	maximumNumberOfStepsPerRecipe = 250
-
 	// RecipeDataType indicates an event is related to a recipe.
 	RecipeDataType dataType = "recipe"
 
@@ -143,7 +141,6 @@ func (x *RecipeCreationRequestInput) ValidateWithContext(ctx context.Context) er
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.Steps, validation.Required, validation.Length(1, maximumNumberOfStepsPerRecipe)),
 	)
 }
 
