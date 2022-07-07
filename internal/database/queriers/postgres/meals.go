@@ -366,7 +366,7 @@ func (q *SQLQuerier) CreateMeal(ctx context.Context, input *types.MealDatabaseCr
 		return nil, ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue(keys.MealIDKey, input.ID)
+	logger := q.logger.WithValue(keys.MealIDKey, input.ID).WithValue("meal.name", input.Name)
 
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {

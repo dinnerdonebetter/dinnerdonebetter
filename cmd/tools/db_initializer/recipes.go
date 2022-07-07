@@ -22,16 +22,32 @@ var (
 	capreseSaladStep1ID = ksuid.New().String()
 	capreseSaladStep2ID = ksuid.New().String()
 
-	spaghettiWithNeatballsID      = ksuid.New().String()
-	spaghettiWithNeatballsStep1ID = ksuid.New().String()
-	spaghettiWithNeatballsStep2ID = ksuid.New().String()
+	spaghettiID               = ksuid.New().String()
+	grilledCheeseSandwichesID = ksuid.New().String()
+	bakedPotatoID             = ksuid.New().String()
+	ramenID                   = ksuid.New().String()
+	lasagnaID                 = ksuid.New().String()
+	tacosID                   = ksuid.New().String()
+	eggFriedRiceID            = ksuid.New().String()
+	mashedPotatoesID          = ksuid.New().String()
+	collardGreensID           = ksuid.New().String()
+	neatballsID               = ksuid.New().String()
 )
 
 var recipeCollection = struct {
 	MushroomRisotto,
 	GrilledChicken,
 	CapreseSalad,
-	SpaghettiWithNeatballs *types.RecipeDatabaseCreationInput
+	Spaghetti,
+	GrilledCheeseSandwiches,
+	BakedPotato,
+	Ramen,
+	Lasagna,
+	Tacos,
+	EggFriedRice,
+	MashedPotatoes,
+	CollardGreens,
+	Neatballs *types.RecipeDatabaseCreationInput
 }{
 	MushroomRisotto: &types.RecipeDatabaseCreationInput{
 		InspiredByRecipeID: nil,
@@ -247,73 +263,86 @@ var recipeCollection = struct {
 			},
 		},
 	},
-	SpaghettiWithNeatballs: &types.RecipeDatabaseCreationInput{
+	Spaghetti: &types.RecipeDatabaseCreationInput{
 		InspiredByRecipeID: nil,
-		ID:                 spaghettiWithNeatballsID,
+		ID:                 spaghettiID,
 		Name:               "spaghetti with neatballs",
 		Source:             "",
 		Description:        "",
 		CreatedByUser:      userCollection.MomJones.ID,
-		Steps: []*types.RecipeStepDatabaseCreationInput{
-			{
-				TemperatureInCelsius: nil,
-				Products:             nil,
-				Notes:                "",
-				PreparationID:        validPreparationCollection.Boil.ID,
-				BelongsToRecipe:      spaghettiWithNeatballsID,
-				ID:                   spaghettiWithNeatballsStep1ID,
-				Ingredients: []*types.RecipeStepIngredientDatabaseCreationInput{
-					{
-						IngredientID:        sp(validIngredientCollection.Pasta.ID),
-						ID:                  ksuid.New().String(),
-						QuantityType:        "grams",
-						QuantityNotes:       "",
-						IngredientNotes:     "",
-						BelongsToRecipeStep: spaghettiWithNeatballsStep1ID,
-						QuantityValue:       420,
-						ProductOfRecipeStep: false,
-					},
-					{
-						IngredientID:        sp(validIngredientCollection.Water.ID),
-						ID:                  ksuid.New().String(),
-						QuantityType:        "grams",
-						QuantityNotes:       "",
-						IngredientNotes:     "",
-						BelongsToRecipeStep: spaghettiWithNeatballsStep1ID,
-						QuantityValue:       420,
-						ProductOfRecipeStep: false,
-					},
-				},
-				Index:                     0,
-				MinEstimatedTimeInSeconds: 600,
-				MaxEstimatedTimeInSeconds: 900,
-				Optional:                  false,
-			},
-			{
-				TemperatureInCelsius: nil,
-				Products:             nil,
-				Notes:                "",
-				PreparationID:        validPreparationCollection.Drain.ID,
-				BelongsToRecipe:      spaghettiWithNeatballsID,
-				ID:                   spaghettiWithNeatballsStep2ID,
-				Ingredients: []*types.RecipeStepIngredientDatabaseCreationInput{
-					{
-						IngredientID:        sp(validIngredientCollection.Pasta.ID),
-						ID:                  ksuid.New().String(),
-						QuantityType:        "grams",
-						QuantityNotes:       "",
-						IngredientNotes:     "",
-						BelongsToRecipeStep: spaghettiWithNeatballsStep1ID,
-						QuantityValue:       420,
-						ProductOfRecipeStep: false,
-					},
-				},
-				Index:                     0,
-				MinEstimatedTimeInSeconds: 0,
-				MaxEstimatedTimeInSeconds: 0,
-				Optional:                  false,
-			},
-		},
+	},
+	Neatballs: &types.RecipeDatabaseCreationInput{
+		InspiredByRecipeID: nil,
+		ID:                 neatballsID,
+		Name:               "neatballs",
+		Source:             "",
+		Description:        "",
+		CreatedByUser:      userCollection.MomJones.ID,
+	},
+
+	GrilledCheeseSandwiches: &types.RecipeDatabaseCreationInput{
+		InspiredByRecipeID: nil,
+		ID:                 grilledCheeseSandwichesID,
+		Name:               "grilled cheese sandwiches",
+		Source:             "",
+		Description:        "",
+		CreatedByUser:      userCollection.MomJones.ID,
+	},
+	BakedPotato: &types.RecipeDatabaseCreationInput{
+		InspiredByRecipeID: nil,
+		ID:                 bakedPotatoID,
+		Name:               "baked potato",
+		Source:             "",
+		Description:        "",
+		CreatedByUser:      userCollection.MomJones.ID,
+	},
+	Ramen: &types.RecipeDatabaseCreationInput{
+		InspiredByRecipeID: nil,
+		ID:                 ramenID,
+		Name:               "ramen",
+		Source:             "",
+		Description:        "",
+		CreatedByUser:      userCollection.MomJones.ID,
+	},
+	Lasagna: &types.RecipeDatabaseCreationInput{
+		InspiredByRecipeID: nil,
+		ID:                 lasagnaID,
+		Name:               "lasagna",
+		Source:             "",
+		Description:        "",
+		CreatedByUser:      userCollection.MomJones.ID,
+	},
+	Tacos: &types.RecipeDatabaseCreationInput{
+		InspiredByRecipeID: nil,
+		ID:                 tacosID,
+		Name:               "tacos",
+		Source:             "",
+		Description:        "",
+		CreatedByUser:      userCollection.MomJones.ID,
+	},
+	EggFriedRice: &types.RecipeDatabaseCreationInput{
+		InspiredByRecipeID: nil,
+		ID:                 eggFriedRiceID,
+		Name:               "egg fried rice",
+		Source:             "",
+		Description:        "",
+		CreatedByUser:      userCollection.MomJones.ID,
+	},
+	MashedPotatoes: &types.RecipeDatabaseCreationInput{
+		InspiredByRecipeID: nil,
+		ID:                 mashedPotatoesID,
+		Name:               "mashed potatoes",
+		Source:             "",
+		Description:        "",
+		CreatedByUser:      userCollection.MomJones.ID,
+	},
+	CollardGreens: &types.RecipeDatabaseCreationInput{
+		InspiredByRecipeID: nil,
+		ID:                 collardGreensID,
+		Name:               "collard greens",
+		Source:             "",
+		Description:        "",
+		CreatedByUser:      userCollection.MomJones.ID,
 	},
 }
 
@@ -322,7 +351,16 @@ func scaffoldRecipes(ctx context.Context, db database.DataManager) error {
 		recipeCollection.MushroomRisotto,
 		recipeCollection.GrilledChicken,
 		recipeCollection.CapreseSalad,
-		recipeCollection.SpaghettiWithNeatballs,
+		recipeCollection.Spaghetti,
+		recipeCollection.GrilledCheeseSandwiches,
+		recipeCollection.BakedPotato,
+		recipeCollection.Ramen,
+		recipeCollection.Lasagna,
+		recipeCollection.Tacos,
+		recipeCollection.EggFriedRice,
+		recipeCollection.MashedPotatoes,
+		recipeCollection.CollardGreens,
+		recipeCollection.Neatballs,
 	}
 
 	for _, input := range recipes {
