@@ -12,7 +12,7 @@ const (
 	// HouseholdInvitationTokenKey is the standard key for referring to a household ID.
 	HouseholdInvitationTokenKey = "household_invitation.token"
 	// ActiveHouseholdIDKey is the standard key for referring to an active household ID.
-	ActiveHouseholdIDKey = "active_household_id"
+	ActiveHouseholdIDKey = "active_household.id"
 	// UserIDKey is the standard key for referring to a user ID.
 	UserIDKey = "user.id"
 	// UserEmailAddressKey is the standard key for referring to a user's email address.
@@ -46,7 +46,7 @@ const (
 	// FilterIsNilKey is the standard key for referring to a types.QueryFilter's null status.
 	FilterIsNilKey = "query_filter.is_nil"
 	// APIClientClientIDKey is the standard key for referring to an API client's database ID.
-	APIClientClientIDKey = "api_client.client_id"
+	APIClientClientIDKey = "api_client.client.id"
 	// APIClientDatabaseIDKey is the standard key for referring to an API client's database ID.
 	APIClientDatabaseIDKey = "api_client.id"
 	// WebhookIDKey is the standard key for referring to a webhook's ID.
@@ -87,41 +87,41 @@ const (
 	ValidationErrorKey = "validation_error"
 
 	// ValidInstrumentIDKey is the standard key for referring to a valid instrument ID.
-	ValidInstrumentIDKey = "valid_instrument_id"
+	ValidInstrumentIDKey = "valid_instrument.id"
 
 	// ValidIngredientIDKey is the standard key for referring to a valid ingredient ID.
-	ValidIngredientIDKey = "valid_ingredient_id"
+	ValidIngredientIDKey = "valid_ingredient.id"
 
 	// ValidPreparationIDKey is the standard key for referring to a valid preparation ID.
-	ValidPreparationIDKey = "valid_preparation_id"
+	ValidPreparationIDKey = "valid_preparation.id"
 
 	// ValidIngredientPreparationIDKey is the standard key for referring to a valid ingredient preparation ID.
-	ValidIngredientPreparationIDKey = "valid_ingredient_preparation_id"
+	ValidIngredientPreparationIDKey = "valid_ingredient_preparation.id"
 
 	// MealIDKey is the standard key for referring to a meal ID.
-	MealIDKey = "meal_id"
+	MealIDKey = "meal.id"
 
 	// RecipeIDKey is the standard key for referring to a recipe ID.
-	RecipeIDKey = "recipe_id"
+	RecipeIDKey = "recipe.id"
 
 	// RecipeStepIDKey is the standard key for referring to a recipe step ID.
-	RecipeStepIDKey = "recipe_step_id"
+	RecipeStepIDKey = "recipe_step.id"
 
 	// RecipeStepInstrumentIDKey is the standard key for referring to a recipe step instrument ID.
-	RecipeStepInstrumentIDKey = "recipe_step_instrument_id"
+	RecipeStepInstrumentIDKey = "recipe_step_instrument.id"
 
 	// RecipeStepIngredientIDKey is the standard key for referring to a recipe step ingredient ID.
-	RecipeStepIngredientIDKey = "recipe_step_ingredient_id"
+	RecipeStepIngredientIDKey = "recipe_step_ingredient.id"
 
 	// RecipeStepProductIDKey is the standard key for referring to a recipe step product ID.
-	RecipeStepProductIDKey = "recipe_step_product_id"
+	RecipeStepProductIDKey = "recipe_step_product.id"
 
 	// MealPlanIDKey is the standard key for referring to a meal plan ID.
-	MealPlanIDKey = "meal_plan_id"
+	MealPlanIDKey = "meal_plan.id"
 
 	// MealPlanOptionIDKey is the standard key for referring to a meal plan option ID.
-	MealPlanOptionIDKey = "meal_plan_option_id"
+	MealPlanOptionIDKey = "meal_plan_option.id"
 
 	// MealPlanOptionVoteIDKey is the standard key for referring to a meal plan option vote ID.
-	MealPlanOptionVoteIDKey = "meal_plan_option_vote_id"
+	MealPlanOptionVoteIDKey = "meal_plan_option_vote.id"
 )
