@@ -1,7 +1,6 @@
 package mealplans
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -33,14 +32,13 @@ func TestProvideMealPlansService(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
 			MealPlanIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
-		cfg := Config{
+		cfg := &Config{
 			DataChangesTopicName: "data_changes",
 		}
 
@@ -48,9 +46,8 @@ func TestProvideMealPlansService(T *testing.T) {
 		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
-			ctx,
 			logging.NewNoopLogger(),
-			&cfg,
+			cfg,
 			&mocktypes.MealPlanDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
@@ -67,8 +64,7 @@ func TestProvideMealPlansService(T *testing.T) {
 	T.Run("with error providing pre-writes producer", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
-		cfg := Config{
+		cfg := &Config{
 			DataChangesTopicName: "data_changes",
 		}
 
@@ -76,9 +72,8 @@ func TestProvideMealPlansService(T *testing.T) {
 		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		s, err := ProvideService(
-			ctx,
 			logging.NewNoopLogger(),
-			&cfg,
+			cfg,
 			&mocktypes.MealPlanDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,

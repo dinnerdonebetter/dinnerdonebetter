@@ -1,7 +1,6 @@
 package validinstruments
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
@@ -36,7 +35,6 @@ type (
 
 // ProvideService builds a new ValidInstrumentsService.
 func ProvideService(
-	_ context.Context,
 	logger logging.Logger,
 	cfg *Config,
 	validInstrumentDataManager types.ValidInstrumentDataManager,

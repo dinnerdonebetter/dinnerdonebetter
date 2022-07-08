@@ -42,7 +42,6 @@ func TestProvideService(T *testing.T) {
 
 		ctx := context.Background()
 		authCfg := &authservice.Config{}
-		cfg := Config{}
 		logger := logging.NewNoopLogger()
 		encoder := encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
@@ -60,7 +59,6 @@ func TestProvideService(T *testing.T) {
 		actual, err := ProvideService(
 			ctx,
 			authCfg,
-			cfg,
 			logger,
 			encoder,
 			consumerProvider,
@@ -78,7 +76,6 @@ func TestProvideService(T *testing.T) {
 
 		ctx := context.Background()
 		authCfg := &authservice.Config{}
-		cfg := Config{}
 		logger := logging.NewNoopLogger()
 		encoder := encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
@@ -93,7 +90,6 @@ func TestProvideService(T *testing.T) {
 		actual, err := ProvideService(
 			ctx,
 			authCfg,
-			cfg,
 			logger,
 			encoder,
 			consumerProvider,

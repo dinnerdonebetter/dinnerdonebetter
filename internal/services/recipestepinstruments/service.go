@@ -1,7 +1,6 @@
 package recipestepinstruments
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
@@ -40,7 +39,6 @@ type (
 
 // ProvideService builds a new RecipeStepInstrumentsService.
 func ProvideService(
-	_ context.Context,
 	logger logging.Logger,
 	cfg *Config,
 	recipeStepInstrumentDataManager types.RecipeStepInstrumentDataManager,

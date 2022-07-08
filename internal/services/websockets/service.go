@@ -53,7 +53,6 @@ const (
 func ProvideService(
 	ctx context.Context,
 	authCfg *authservice.Config,
-	_ Config,
 	logger logging.Logger,
 	encoder encoding.ServerEncoderDecoder,
 	consumerProvider messagequeue.ConsumerProvider,

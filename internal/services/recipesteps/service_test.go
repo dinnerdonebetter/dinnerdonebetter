@@ -1,7 +1,6 @@
 package recipesteps
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -34,7 +33,6 @@ func TestProvideRecipeStepsService(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
@@ -45,7 +43,7 @@ func TestProvideRecipeStepsService(T *testing.T) {
 			RecipeStepIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
-		cfg := Config{
+		cfg := &Config{
 			DataChangesTopicName: "data_changes",
 		}
 
@@ -53,9 +51,8 @@ func TestProvideRecipeStepsService(T *testing.T) {
 		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
-			ctx,
 			logging.NewNoopLogger(),
-			&cfg,
+			cfg,
 			&mocktypes.RecipeStepDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
@@ -72,8 +69,7 @@ func TestProvideRecipeStepsService(T *testing.T) {
 	T.Run("with error providing data changes producer", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
-		cfg := Config{
+		cfg := &Config{
 			DataChangesTopicName: "data_changes",
 		}
 
@@ -81,9 +77,8 @@ func TestProvideRecipeStepsService(T *testing.T) {
 		pp.On("ProviderPublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		s, err := ProvideService(
-			ctx,
 			logging.NewNoopLogger(),
-			&cfg,
+			cfg,
 			&mocktypes.RecipeStepDataManager{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
