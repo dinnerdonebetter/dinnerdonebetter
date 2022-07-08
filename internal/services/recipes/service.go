@@ -1,7 +1,6 @@
 package recipes
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
@@ -35,7 +34,6 @@ type (
 
 // ProvideService builds a new RecipesService.
 func ProvideService(
-	_ context.Context,
 	logger logging.Logger,
 	cfg *Config,
 	recipeDataManager types.RecipeDataManager,

@@ -1,7 +1,6 @@
 package mealplanoptionvotes
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
@@ -48,7 +47,6 @@ type (
 
 // ProvideService builds a new MealPlanOptionVotesService.
 func ProvideService(
-	_ context.Context,
 	logger logging.Logger,
 	cfg *Config,
 	dataManager database.DataManager,

@@ -1,7 +1,6 @@
 package meals
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
@@ -35,7 +34,6 @@ type (
 
 // ProvideService builds a new MealsService.
 func ProvideService(
-	_ context.Context,
 	logger logging.Logger,
 	cfg *Config,
 	mealDataManager types.MealDataManager,

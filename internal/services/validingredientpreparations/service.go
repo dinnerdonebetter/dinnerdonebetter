@@ -1,7 +1,6 @@
 package validingredientpreparations
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
@@ -36,7 +35,6 @@ type (
 
 // ProvideService builds a new ValidIngredientPreparationsService.
 func ProvideService(
-	_ context.Context,
 	logger logging.Logger,
 	cfg *Config,
 	validIngredientPreparationDataManager types.ValidIngredientPreparationDataManager,

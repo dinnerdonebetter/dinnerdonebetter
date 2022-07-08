@@ -1,7 +1,6 @@
 package mealplanoptions
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
@@ -38,7 +37,6 @@ type (
 
 // ProvideService builds a new MealPlanOptionsService.
 func ProvideService(
-	_ context.Context,
 	logger logging.Logger,
 	cfg *Config,
 	mealPlanOptionDataManager types.MealPlanOptionDataManager,
