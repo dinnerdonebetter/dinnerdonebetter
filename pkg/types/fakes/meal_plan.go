@@ -20,13 +20,17 @@ func BuildFakeMealPlan() *types.MealPlan {
 		options = append(options, option)
 	}
 
+	now := time.Now()
+	inTenMinutes := time.Now().Add(time.Minute * 10)
+	inOneWeek := time.Now().Add((time.Hour * 24) * 7)
+
 	return &types.MealPlan{
 		ID:                 mealPlanID,
 		Notes:              fake.LoremIpsumSentence(exampleQuantity),
 		Status:             types.AwaitingVotesMealPlanStatus,
-		VotingDeadline:     uint64(uint32(time.Now().Add(72 * time.Hour).Unix())),
-		StartsAt:           uint64(fake.Uint32()),
-		EndsAt:             uint64(fake.Uint32()),
+		VotingDeadline:     uint64(now.Unix()),
+		StartsAt:           uint64(inTenMinutes.Unix()),
+		EndsAt:             uint64(inOneWeek.Unix()),
 		CreatedOn:          uint64(uint32(fake.Date().Unix())),
 		BelongsToHousehold: fake.UUID(),
 		Options:            options,

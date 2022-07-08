@@ -54,28 +54,28 @@ type (
 
 	// RecipeCreationRequestInput represents what a user could set as input for creating recipes.
 	RecipeCreationRequestInput struct {
-		_ struct{}
-
+		_                  struct{}
 		InspiredByRecipeID *string                           `json:"inspiredByRecipeID"`
+		CreatedByUser      string                            `json:"-"`
 		ID                 string                            `json:"-"`
 		Name               string                            `json:"name"`
 		Source             string                            `json:"source"`
 		Description        string                            `json:"description"`
-		CreatedByUser      string                            `json:"-"`
 		Steps              []*RecipeStepCreationRequestInput `json:"steps"`
+		AlsoCreateMeal     bool                              `json:"alsoCreateMeal"`
 	}
 
 	// RecipeDatabaseCreationInput represents what a user could set as input for creating recipes.
 	RecipeDatabaseCreationInput struct {
-		_ struct{}
-
+		_                  struct{}
 		InspiredByRecipeID *string                            `json:"inspiredByRecipeID"`
+		CreatedByUser      string                             `json:"belongsToHousehold"`
 		ID                 string                             `json:"id"`
 		Name               string                             `json:"name"`
 		Source             string                             `json:"source"`
 		Description        string                             `json:"description"`
-		CreatedByUser      string                             `json:"belongsToHousehold"`
 		Steps              []*RecipeStepDatabaseCreationInput `json:"steps"`
+		AlsoCreateMeal     bool                               `json:"alsoCreateMeal"`
 	}
 
 	// RecipeUpdateRequestInput represents what a user could set as input for updating recipes.
@@ -165,6 +165,7 @@ func RecipeDatabaseCreationInputFromRecipeCreationInput(input *RecipeCreationReq
 	}
 
 	x := &RecipeDatabaseCreationInput{
+		AlsoCreateMeal:     input.AlsoCreateMeal,
 		Name:               input.Name,
 		Source:             input.Source,
 		Description:        input.Description,
