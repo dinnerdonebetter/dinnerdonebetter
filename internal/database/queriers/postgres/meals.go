@@ -358,6 +358,51 @@ func (q *SQLQuerier) GetMealsWithIDs(ctx context.Context, userID string, limit u
 const mealCreationQuery = "INSERT INTO meals (id,name,description,created_by_user) VALUES ($1,$2,$3,$4)"
 
 // CreateMeal creates a meal in the database.
+func (q *SQLQuerier) createMeal(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.MealDatabaseCreationInput) (*types.Meal, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil {
+		return nil, ErrNilInputProvided
+	}
+
+	logger := q.logger.WithValue(keys.MealIDKey, input.ID).WithValue("meal.name", input.Name)
+
+	args := []interface{}{
+		input.ID,
+		input.Name,
+		input.Description,
+		input.CreatedByUser,
+	}
+
+	// create the meal.
+	if err := q.performWriteQuery(ctx, querier, "meal creation", mealCreationQuery, args); err != nil {
+		q.rollbackTransaction(ctx, querier)
+		return nil, observability.PrepareError(err, logger, span, "performing meal creation query")
+	}
+
+	x := &types.Meal{
+		ID:            input.ID,
+		Name:          input.Name,
+		Description:   input.Description,
+		CreatedByUser: input.CreatedByUser,
+		CreatedOn:     q.currentTime(),
+	}
+
+	for _, recipeID := range input.Recipes {
+		if err := q.CreateMealRecipe(ctx, querier, x.ID, recipeID); err != nil {
+			q.rollbackTransaction(ctx, querier)
+			return nil, observability.PrepareError(err, logger, span, "creating meal recipe")
+		}
+	}
+
+	tracing.AttachMealIDToSpan(span, x.ID)
+	logger.Info("meal created")
+
+	return x, nil
+}
+
+// CreateMeal creates a meal in the database.
 func (q *SQLQuerier) CreateMeal(ctx context.Context, input *types.MealDatabaseCreationInput) (*types.Meal, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -373,40 +418,14 @@ func (q *SQLQuerier) CreateMeal(ctx context.Context, input *types.MealDatabaseCr
 		return nil, observability.PrepareError(err, logger, span, "beginning transaction")
 	}
 
-	args := []interface{}{
-		input.ID,
-		input.Name,
-		input.Description,
-		input.CreatedByUser,
-	}
-
-	// create the meal.
-	if err = q.performWriteQuery(ctx, tx, "meal creation", mealCreationQuery, args); err != nil {
-		q.rollbackTransaction(ctx, tx)
-		return nil, observability.PrepareError(err, logger, span, "performing meal creation query")
-	}
-
-	x := &types.Meal{
-		ID:            input.ID,
-		Name:          input.Name,
-		Description:   input.Description,
-		CreatedByUser: input.CreatedByUser,
-		CreatedOn:     q.currentTime(),
-	}
-
-	for _, recipeID := range input.Recipes {
-		if err = q.CreateMealRecipe(ctx, tx, x.ID, recipeID); err != nil {
-			q.rollbackTransaction(ctx, tx)
-			return nil, observability.PrepareError(err, logger, span, "creating meal recipe")
-		}
+	x, err := q.createMeal(ctx, tx, input)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "creating meal")
 	}
 
 	if err = tx.Commit(); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "committing transaction")
 	}
-
-	tracing.AttachMealIDToSpan(span, x.ID)
-	logger.Info("meal created")
 
 	return x, nil
 }

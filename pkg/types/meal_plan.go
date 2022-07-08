@@ -3,6 +3,7 @@ package types
 import (
 	"context"
 	"encoding/gob"
+	"errors"
 	"net/http"
 	"time"
 
@@ -142,13 +143,36 @@ func (x *MealPlan) Update(input *MealPlanUpdateRequestInput) {
 	}
 }
 
+var errTooFewUniqueMeals = errors.New("too many instances of the same meal")
+var errStartsAfterItEnds = errors.New("invalid start and end dates")
+
 var _ validation.ValidatableWithContext = (*MealPlanCreationRequestInput)(nil)
 
 // ValidateWithContext validates a MealPlanCreationRequestInput.
 func (x *MealPlanCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	// NOTE: we should almost certainly also make sure that:
-	// 		EndsAt > StartsAt and
-	//		the VotingDeadline is not after StartsAt.
+	startTime := time.Unix(int64(x.StartsAt), 0)
+	endTime := time.Unix(int64(x.EndsAt), 0)
+	votingDeadline := time.Unix(int64(x.VotingDeadline), 0)
+
+	if x.StartsAt == x.EndsAt || startTime.After(endTime) {
+		return errStartsAfterItEnds
+	}
+
+	if x.StartsAt == x.VotingDeadline || (votingDeadline.After(startTime)) {
+		return errStartsAfterItEnds
+	}
+
+	mealCounts := map[string]uint{}
+	for _, option := range x.Options {
+		if _, ok := mealCounts[option.MealID]; !ok {
+			mealCounts[option.MealID] = 1
+		} else {
+			mealCounts[option.MealID]++
+			if mealCounts[option.MealID] >= 3 {
+				return errTooFewUniqueMeals
+			}
+		}
+	}
 
 	return validation.ValidateStructWithContext(
 		ctx,

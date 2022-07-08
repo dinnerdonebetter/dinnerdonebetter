@@ -15,10 +15,14 @@ func TestMealPlanCreationRequestInput_Validate(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		now := time.Now()
+		inTenMinutes := time.Now().Add(time.Minute * 10)
+		inOneWeek := time.Now().Add((time.Hour * 24) * 7)
+
 		x := &MealPlanCreationRequestInput{
-			VotingDeadline: uint64(time.Now().Unix()),
-			StartsAt:       uint64(fake.Uint32()),
-			EndsAt:         uint64(fake.Uint32()),
+			VotingDeadline: uint64(now.Unix()),
+			StartsAt:       uint64(inTenMinutes.Unix()),
+			EndsAt:         uint64(inOneWeek.Unix()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

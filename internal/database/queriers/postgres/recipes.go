@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
+	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -523,6 +524,21 @@ func (q *SQLQuerier) CreateRecipe(ctx context.Context, input *types.RecipeDataba
 		}
 
 		x.Steps = append(x.Steps, s)
+	}
+
+	if input.AlsoCreateMeal {
+		_, mealCreateErr := q.createMeal(ctx, tx, &types.MealDatabaseCreationInput{
+			ID:            ksuid.New().String(),
+			Name:          x.Name,
+			Description:   x.Description,
+			CreatedByUser: x.CreatedByUser,
+			Recipes:       []string{x.ID},
+		})
+
+		if mealCreateErr != nil {
+			q.rollbackTransaction(ctx, tx)
+			return nil, observability.PrepareError(mealCreateErr, logger, span, "creating meal from recipe")
+		}
 	}
 
 	if err = tx.Commit(); err != nil {

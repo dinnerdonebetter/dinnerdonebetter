@@ -130,6 +130,11 @@ var (
 			Description: "add quantity fields to recipe step products",
 			Script:      fetchMigration("00023_add_quantity_fields_to_recipe_step_products"),
 		},
+		{
+			Version:     24,
+			Description: "drop uniqueness constraints on meal plan optinos",
+			Script:      fetchMigration("00024_remove_meal_plan_uniqueness_constraint"),
+		},
 	}
 )
 

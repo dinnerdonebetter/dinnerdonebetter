@@ -1165,6 +1165,82 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, db)
 	})
 
+	T.Run("while also creating meal", func(t *testing.T) {
+		t.Parallel()
+
+		exampleRecipe := fakes.BuildFakeRecipe()
+		exampleRecipe.Steps = nil
+		exampleRecipe.ID = "1"
+
+		exampleInput := fakes.BuildFakeRecipeDatabaseCreationInputFromRecipe(exampleRecipe)
+		exampleInput.AlsoCreateMeal = true
+		exampleInput.Steps = []*types.RecipeStepDatabaseCreationInput{}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		db.ExpectBegin()
+
+		recipeCreationArgs := []interface{}{
+			exampleRecipe.ID,
+			exampleRecipe.Name,
+			exampleRecipe.Source,
+			exampleRecipe.Description,
+			exampleRecipe.InspiredByRecipeID,
+			exampleRecipe.CreatedByUser,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(recipeCreationQuery)).
+			WithArgs(interfaceToDriverValue(recipeCreationArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		mealCreationArgs := []interface{}{
+			&idMatcher{},
+			exampleRecipe.Name,
+			exampleRecipe.Description,
+			exampleRecipe.CreatedByUser,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(mealCreationQuery)).
+			WithArgs(interfaceToDriverValue(mealCreationArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		mealRecipeCreationArgs := []interface{}{
+			&idMatcher{},
+			&idMatcher{},
+			exampleRecipe.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(mealRecipeCreationQuery)).
+			WithArgs(interfaceToDriverValue(mealRecipeCreationArgs)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		db.ExpectCommit()
+
+		c.timeFunc = func() uint64 {
+			return exampleRecipe.CreatedOn
+		}
+
+		actual, err := c.CreateRecipe(ctx, exampleInput)
+		require.NotNil(t, actual)
+		require.NoError(t, err)
+		require.Equal(t, len(exampleRecipe.Steps), len(actual.Steps))
+
+		for i, step := range exampleRecipe.Steps {
+			step.BelongsToRecipe = actual.ID
+			step.CreatedOn = actual.Steps[i].CreatedOn
+
+			for j, ingredient := range step.Ingredients {
+				ingredient.BelongsToRecipeStep = step.ID
+				ingredient.CreatedOn = actual.Steps[i].Ingredients[j].CreatedOn
+			}
+		}
+
+		assert.Equal(t, exampleRecipe, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
 	T.Run("with error beginning transaction", func(t *testing.T) {
 		t.Parallel()
 

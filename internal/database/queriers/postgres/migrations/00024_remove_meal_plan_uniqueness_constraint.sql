@@ -1,0 +1,1 @@
+ALTER TABLE meal_plan_options DROP CONSTRAINT  meal_plan_options_meal_id_belongs_to_meal_plan_key;

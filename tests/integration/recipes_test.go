@@ -291,6 +291,71 @@ func (s *TestSuite) TestRecipes_CompleteLifecycle() {
 	})
 }
 
+func (s *TestSuite) TestRecipes_AlsoCreateMeal() {
+	s.runForEachClient("should be able to create a meal and a recipe", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			exampleValidPreparation := fakes.BuildFakeValidPreparation()
+			exampleValidPreparationInput := fakes.BuildFakeValidPreparationCreationRequestInputFromValidPreparation(exampleValidPreparation)
+			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
+			require.NoError(t, err)
+
+			exampleRecipe := fakes.BuildFakeRecipe()
+			createdValidIngredients := []*types.ValidIngredient{}
+			for i, recipeStep := range exampleRecipe.Steps {
+				for j := range recipeStep.Ingredients {
+					t.Log("creating prerequisite valid ingredient")
+					exampleValidIngredient := fakes.BuildFakeValidIngredient()
+					exampleValidIngredientInput := fakes.BuildFakeValidIngredientCreationRequestInputFromValidIngredient(exampleValidIngredient)
+					createdValidIngredient, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
+					require.NoError(t, createdValidIngredientErr)
+
+					createdValidIngredients = append(createdValidIngredients, createdValidIngredient)
+
+					exampleRecipe.Steps[i].Ingredients[j].IngredientID = stringPointer(createdValidIngredient.ID)
+					exampleRecipe.Steps[i].Ingredients[j].ProductOfRecipeStep = false
+				}
+			}
+
+			exampleRecipeInput := fakes.BuildFakeRecipeCreationRequestInputFromRecipe(exampleRecipe)
+			for i := range exampleRecipeInput.Steps {
+				exampleRecipeInput.Steps[i].PreparationID = createdValidPreparation.ID
+			}
+
+			exampleRecipeInput.AlsoCreateMeal = true
+
+			createdRecipe, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
+			require.NoError(t, err)
+			t.Logf("recipe %q created", createdRecipe.ID)
+			checkRecipeEquality(t, exampleRecipe, createdRecipe)
+
+			mealResults, err := testClients.main.SearchForMeals(ctx, createdRecipe.Name, nil)
+			requireNotNilAndNoProblems(t, mealResults, err)
+
+			foundMealID := ""
+			for _, m := range mealResults.Meals {
+				meal, mealFetchErr := testClients.main.GetMeal(ctx, m.ID)
+				requireNotNilAndNoProblems(t, meal, mealFetchErr)
+
+				for _, r := range meal.Recipes {
+					if r.ID == createdRecipe.ID {
+						foundMealID = r.ID
+					}
+				}
+			}
+
+			require.NotEmpty(t, foundMealID)
+
+			t.Log("cleaning up recipe")
+			assert.NoError(t, testClients.main.ArchiveRecipe(ctx, createdRecipe.ID))
+		}
+	})
+}
+
 func (s *TestSuite) TestRecipes_Listing() {
 	s.runForEachClient("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
