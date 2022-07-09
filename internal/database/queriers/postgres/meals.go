@@ -206,9 +206,9 @@ func (q *SQLQuerier) GetMeal(ctx context.Context, mealID string) (*types.Meal, e
 	}
 
 	for _, id := range recipeIDs {
-		r, err := q.GetRecipe(ctx, id)
-		if err != nil {
-			return nil, observability.PrepareError(err, logger, span, "fetching recipe for meal")
+		r, getRecipeErr := q.GetRecipe(ctx, id)
+		if getRecipeErr != nil {
+			return nil, observability.PrepareError(getRecipeErr, logger, span, "fetching recipe for meal")
 		}
 
 		m.Recipes = append(m.Recipes, r)

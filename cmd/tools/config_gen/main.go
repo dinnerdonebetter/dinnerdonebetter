@@ -191,7 +191,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 	cookieConfig := authservice.CookieConfig{
 		Name:       defaultCookieName,
 		Domain:     ".prixfixe.dev",
-		Lifetime:   authservice.DefaultCookieLifetime,
+		Lifetime:   (24 * time.Hour) * 30,
 		SecureOnly: true,
 	}
 
