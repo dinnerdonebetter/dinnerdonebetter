@@ -149,8 +149,15 @@ func (x *MealPlanOptionCreationRequestInput) ValidateWithContext(ctx context.Con
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.MealName, validation.Required),
 		validation.Field(&x.MealID, validation.Required),
+		validation.Field(&x.MealName, validation.In(
+			BreakfastMealName,
+			SecondBreakfastMealName,
+			BrunchMealName,
+			LunchMealName,
+			SupperMealName,
+			DinnerMealName,
+		)),
 		validation.Field(&x.Day, validation.In(
 			time.Monday,
 			time.Tuesday,

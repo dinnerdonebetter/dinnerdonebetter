@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/segmentio/ksuid"
 
@@ -25,7 +26,7 @@ var mealPlanCollection = struct {
 				Notes:             "",
 				MealName:          "dinner",
 				BelongsToMealPlan: "",
-				Day:               3,
+				Day:               time.Tuesday,
 			},
 			{
 				ID:                ksuid.New().String(),
@@ -33,20 +34,92 @@ var mealPlanCollection = struct {
 				Notes:             "",
 				MealName:          "dinner",
 				BelongsToMealPlan: "",
-				Day:               3,
+				Day:               time.Tuesday,
 			},
 			{
 				ID:                ksuid.New().String(),
-				MealID:            mealCollection.SpaghettiWithNeatballsAndGrilledChicken.ID,
+				MealID:            mealCollection.EggFriedRice.ID,
 				Notes:             "",
 				MealName:          "dinner",
 				BelongsToMealPlan: "",
-				Day:               3,
+				Day:               time.Tuesday,
+			},
+			{
+				ID:                ksuid.New().String(),
+				MealID:            mealCollection.TacosAndCollardGreens.ID,
+				Notes:             "",
+				MealName:          "dinner",
+				BelongsToMealPlan: "",
+				Day:               time.Wednesday,
+			},
+			{
+				ID:                ksuid.New().String(),
+				MealID:            mealCollection.LasagnaAndRamen.ID,
+				Notes:             "",
+				MealName:          "dinner",
+				BelongsToMealPlan: "",
+				Day:               time.Wednesday,
+			},
+			{
+				ID:                ksuid.New().String(),
+				MealID:            mealCollection.GrilledCheeseSandwiches.ID,
+				Notes:             "",
+				MealName:          "dinner",
+				BelongsToMealPlan: "",
+				Day:               time.Wednesday,
+			},
+			{
+				ID:                ksuid.New().String(),
+				MealID:            mealCollection.GrilledCheeseSandwichesWithBakedPotato.ID,
+				Notes:             "",
+				MealName:          "dinner",
+				BelongsToMealPlan: "",
+				Day:               time.Thursday,
+			},
+			{
+				ID:                ksuid.New().String(),
+				MealID:            mealCollection.EggFriedRice.ID,
+				Notes:             "",
+				MealName:          "dinner",
+				BelongsToMealPlan: "",
+				Day:               time.Thursday,
+			},
+			{
+				ID:                ksuid.New().String(),
+				MealID:            mealCollection.Lasagna.ID,
+				Notes:             "",
+				MealName:          "dinner",
+				BelongsToMealPlan: "",
+				Day:               time.Thursday,
+			},
+			{
+				ID:                ksuid.New().String(),
+				MealID:            mealCollection.TacosAndEggFriedRice.ID,
+				Notes:             "",
+				MealName:          "dinner",
+				BelongsToMealPlan: "",
+				Day:               time.Friday,
+			},
+			{
+				ID:                ksuid.New().String(),
+				MealID:            mealCollection.BakedPotatoAndMashedPotatoes.ID,
+				Notes:             "",
+				MealName:          "dinner",
+				BelongsToMealPlan: "",
+				Day:               time.Friday,
+			},
+			{
+				ID:                ksuid.New().String(),
+				MealID:            mealCollection.Ramen.ID,
+				Notes:             "",
+				MealName:          "dinner",
+				BelongsToMealPlan: "",
+				Day:               time.Friday,
 			},
 		},
-		VotingDeadline: 0,
-		StartsAt:       0,
-		EndsAt:         0,
+		VotingDeadline: uint64(time.Now().Add(-10 * time.Minute).Unix()),
+		StartsAt:       uint64(time.Now().Unix()),
+		EndsAt:         uint64(time.Now().Add((24 * time.Hour) * 7).Unix()),
 	},
 }
 
