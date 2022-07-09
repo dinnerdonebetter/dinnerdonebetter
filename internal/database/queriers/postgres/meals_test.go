@@ -219,7 +219,6 @@ func TestQuerier_GetMeal(T *testing.T) {
 
 			getRecipeArgs := []interface{}{
 				recipe.ID,
-				recipe.ID,
 			}
 
 			db.ExpectQuery(formatQueryForSQLMock(getRecipeByIDQuery)).
@@ -321,7 +320,6 @@ func TestQuerier_GetMeal(T *testing.T) {
 			WillReturnRows(buildMockFullRowsFromMeal(exampleMeal))
 
 		getRecipeArgs := []interface{}{
-			exampleMeal.Recipes[0].ID,
 			exampleMeal.Recipes[0].ID,
 		}
 

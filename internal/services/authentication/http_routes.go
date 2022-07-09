@@ -66,6 +66,10 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		logger := s.logger.WithRequest(req)
 		tracing.AttachRequestToSpan(span, req)
 
+		if adminOnly {
+			logger = logger.WithValue("admin_only", adminOnly)
+		}
+
 		loginData := new(types.UserLoginInput)
 		if err := s.encoderDecoder.DecodeRequest(ctx, req, loginData); err != nil {
 			observability.AcknowledgeError(err, logger, span, "decoding request body")

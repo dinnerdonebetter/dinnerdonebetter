@@ -287,7 +287,6 @@ func TestQuerier_getRecipe(T *testing.T) {
 
 		args := []interface{}{
 			exampleRecipe.ID,
-			exampleRecipe.ID,
 			exampleUserID,
 		}
 
@@ -331,7 +330,6 @@ func TestQuerier_getRecipe(T *testing.T) {
 
 		args := []interface{}{
 			exampleRecipe.ID,
-			exampleRecipe.ID,
 			exampleUserID,
 		}
 
@@ -371,7 +369,6 @@ func TestQuerier_getRecipe(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleRecipe.ID,
 			exampleRecipe.ID,
 			exampleUserID,
 		}
@@ -427,7 +424,6 @@ func TestQuerier_GetRecipe(T *testing.T) {
 
 		args := []interface{}{
 			exampleRecipe.ID,
-			exampleRecipe.ID,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeByIDQuery)).
@@ -474,7 +470,6 @@ func TestQuerier_GetRecipe(T *testing.T) {
 
 		args := []interface{}{
 			exampleRecipe.ID,
-			exampleRecipe.ID,
 		}
 
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeByIDQuery)).
@@ -503,7 +498,6 @@ func TestQuerier_GetRecipe(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleRecipe.ID,
 			exampleRecipe.ID,
 		}
 
@@ -541,7 +535,6 @@ func TestQuerier_GetRecipe(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleRecipe.ID,
 			exampleRecipe.ID,
 		}
 
@@ -583,7 +576,6 @@ func TestQuerier_GetRecipeByUser(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleRecipe.ID,
 			exampleRecipe.ID,
 			exampleRecipe.CreatedByUser,
 		}
@@ -645,7 +637,6 @@ func TestQuerier_GetRecipeByUser(T *testing.T) {
 
 		args := []interface{}{
 			exampleRecipe.ID,
-			exampleRecipe.ID,
 			exampleRecipe.CreatedByUser,
 		}
 
@@ -684,7 +675,6 @@ func TestQuerier_GetRecipeByUser(T *testing.T) {
 
 		args := []interface{}{
 			exampleRecipe.ID,
-			exampleRecipe.ID,
 			exampleRecipe.CreatedByUser,
 		}
 
@@ -722,7 +712,6 @@ func TestQuerier_GetRecipeByUser(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		args := []interface{}{
-			exampleRecipe.ID,
 			exampleRecipe.ID,
 			exampleRecipe.CreatedByUser,
 		}

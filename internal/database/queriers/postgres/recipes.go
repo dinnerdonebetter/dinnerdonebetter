@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
@@ -154,10 +155,8 @@ const getRecipeByIDQuery = `SELECT
 FROM recipes
 	FULL OUTER JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
 	FULL OUTER JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
-WHERE recipe_steps.archived_on IS NULL
-	AND recipe_steps.belongs_to_recipe = $1
-	AND recipes.archived_on IS NULL
-	AND recipes.id = $2
+WHERE recipes.archived_on IS NULL
+	AND recipes.id = $1
 ORDER BY recipe_steps.index
 `
 
@@ -192,11 +191,9 @@ const getRecipeByIDAndAuthorIDQuery = `SELECT
 FROM recipes
 	FULL OUTER JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
 	FULL OUTER JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
-WHERE recipe_steps.archived_on IS NULL
-	AND recipe_steps.belongs_to_recipe = $1
-	AND recipes.archived_on IS NULL
-	AND recipes.id = $2
-	AND recipes.created_by_user = $3
+WHERE recipes.archived_on IS NULL
+	AND recipes.id = $1
+	AND recipes.created_by_user = $2
 ORDER BY recipe_steps.index
 `
 
@@ -208,6 +205,30 @@ func (q *SQLQuerier) scanRecipeAndStep(ctx context.Context, scan database.Scanne
 	x = &types.Recipe{}
 	y = &types.RecipeStep{}
 
+	// because a recipe is allowed to have no steps, currently, we have to
+	// create temporary nil values and assign them afterwards if they're not nil
+	// it sucks but we are prototyping
+	var (
+		recipeStepID                        *string
+		recipeStepIndex                     *uint32
+		recipeStepPreparationID             *string
+		recipeStepPreparationName           *string
+		recipeStepPreparationDescription    *string
+		recipeStepPreparationIconPath       *string
+		recipeStepPreparationCreatedOn      *uint64
+		recipeStepPreparationLastUpdatedOn  *uint64
+		recipeStepPreparationArchivedOn     *uint64
+		recipeStepMinEstimatedTimeInSeconds *uint32
+		recipeStepMaxEstimatedTimeInSeconds *uint32
+		recipeStepTemperatureInCelsius      *uint16
+		recipeStepNotes                     *string
+		recipeStepOptional                  *bool
+		recipeStepCreatedOn                 *uint64
+		recipeStepLastUpdatedOn             *uint64
+		recipeStepArchivedOn                *uint64
+		recipeStepBelongsToRecipe           *string
+	)
+
 	targetVars := []interface{}{
 		&x.ID,
 		&x.Name,
@@ -218,28 +239,83 @@ func (q *SQLQuerier) scanRecipeAndStep(ctx context.Context, scan database.Scanne
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
 		&x.CreatedByUser,
-		&y.ID,
-		&y.Index,
-		&y.Preparation.ID,
-		&y.Preparation.Name,
-		&y.Preparation.Description,
-		&y.Preparation.IconPath,
-		&y.Preparation.CreatedOn,
-		&y.Preparation.LastUpdatedOn,
-		&y.Preparation.ArchivedOn,
-		&y.MinEstimatedTimeInSeconds,
-		&y.MaxEstimatedTimeInSeconds,
-		&y.TemperatureInCelsius,
-		&y.Notes,
-		&y.Optional,
-		&y.CreatedOn,
-		&y.LastUpdatedOn,
-		&y.ArchivedOn,
-		&y.BelongsToRecipe,
+		&recipeStepID,
+		&recipeStepIndex,
+		&recipeStepPreparationID,
+		&recipeStepPreparationName,
+		&recipeStepPreparationDescription,
+		&recipeStepPreparationIconPath,
+		&recipeStepPreparationCreatedOn,
+		&recipeStepPreparationLastUpdatedOn,
+		&recipeStepPreparationArchivedOn,
+		&recipeStepMinEstimatedTimeInSeconds,
+		&recipeStepMaxEstimatedTimeInSeconds,
+		&recipeStepTemperatureInCelsius,
+		&recipeStepNotes,
+		&recipeStepOptional,
+		&recipeStepCreatedOn,
+		&recipeStepLastUpdatedOn,
+		&recipeStepArchivedOn,
+		&recipeStepBelongsToRecipe,
 	}
 
 	if err = scan.Scan(targetVars...); err != nil {
 		return nil, nil, 0, 0, observability.PrepareError(err, q.logger, span, "")
+	}
+
+	if recipeStepID != nil {
+		y.ID = *recipeStepID
+	}
+	if recipeStepIndex != nil {
+		y.Index = *recipeStepIndex
+	}
+	if recipeStepPreparationID != nil {
+		y.Preparation.ID = *recipeStepPreparationID
+	}
+	if recipeStepPreparationName != nil {
+		y.Preparation.Name = *recipeStepPreparationName
+	}
+	if recipeStepPreparationDescription != nil {
+		y.Preparation.Description = *recipeStepPreparationDescription
+	}
+	if recipeStepPreparationIconPath != nil {
+		y.Preparation.IconPath = *recipeStepPreparationIconPath
+	}
+	if recipeStepPreparationCreatedOn != nil {
+		y.Preparation.CreatedOn = *recipeStepPreparationCreatedOn
+	}
+	if recipeStepPreparationLastUpdatedOn != nil {
+		y.Preparation.LastUpdatedOn = recipeStepPreparationLastUpdatedOn
+	}
+	if recipeStepPreparationArchivedOn != nil {
+		y.Preparation.ArchivedOn = recipeStepPreparationArchivedOn
+	}
+	if recipeStepMinEstimatedTimeInSeconds != nil {
+		y.MinEstimatedTimeInSeconds = *recipeStepMinEstimatedTimeInSeconds
+	}
+	if recipeStepMaxEstimatedTimeInSeconds != nil {
+		y.MaxEstimatedTimeInSeconds = *recipeStepMaxEstimatedTimeInSeconds
+	}
+	if recipeStepTemperatureInCelsius != nil {
+		y.TemperatureInCelsius = recipeStepTemperatureInCelsius
+	}
+	if recipeStepNotes != nil {
+		y.Notes = *recipeStepNotes
+	}
+	if recipeStepOptional != nil {
+		y.Optional = *recipeStepOptional
+	}
+	if recipeStepCreatedOn != nil {
+		y.CreatedOn = *recipeStepCreatedOn
+	}
+	if recipeStepLastUpdatedOn != nil {
+		y.LastUpdatedOn = recipeStepLastUpdatedOn
+	}
+	if recipeStepArchivedOn != nil {
+		y.ArchivedOn = recipeStepArchivedOn
+	}
+	if recipeStepBelongsToRecipe != nil {
+		y.BelongsToRecipe = *recipeStepBelongsToRecipe
 	}
 
 	return x, y, filteredCount, totalCount, nil
@@ -259,7 +335,6 @@ func (q *SQLQuerier) getRecipe(ctx context.Context, recipeID, userID string) (*t
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
 	args := []interface{}{
-		recipeID,
 		recipeID,
 	}
 
@@ -286,6 +361,10 @@ func (q *SQLQuerier) getRecipe(ctx context.Context, recipeID, userID string) (*t
 		}
 
 		x.Steps = append(x.Steps, recipeStep)
+	}
+
+	if x == nil {
+		return nil, errors.New("nil result for recipe")
 	}
 
 	// need to grab ingredients here and add them to steps
