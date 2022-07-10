@@ -339,7 +339,7 @@ func (q *SQLQuerier) CreateMealPlanOptionVote(ctx context.Context, input *types.
 		return nil, ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue("vote_count", len(input.Votes))
+	logger := q.logger.WithValue("vote_count", len(input.Votes)).WithValue(keys.UserIDKey, input.ByUser)
 
 	// begin transaction
 	tx, err := q.db.BeginTx(ctx, nil)
@@ -361,7 +361,7 @@ func (q *SQLQuerier) CreateMealPlanOptionVote(ctx context.Context, input *types.
 		// create the meal plan option vote.
 		if err = q.performWriteQuery(ctx, tx, "meal plan option vote creation", mealPlanOptionVoteCreationQuery, args); err != nil {
 			q.rollbackTransaction(ctx, tx)
-			return nil, observability.PrepareError(err, logger, span, "creating meal plan option vote")
+			return nil, observability.PrepareError(err, logger.WithValue("vote", vote), span, "creating meal plan option vote")
 		}
 
 		x := &types.MealPlanOptionVote{

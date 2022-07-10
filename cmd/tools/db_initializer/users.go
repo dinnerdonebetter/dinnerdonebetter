@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-
 	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/internal/database"

@@ -33,6 +33,7 @@ DELETE FROM "meals" WHERE id IS NOT NULL;
 DELETE FROM "meal_recipes" WHERE id IS NOT NULL;
 DELETE FROM "meal_plans" WHERE id IS NOT NULL;
 DELETE FROM "meal_plan_options" WHERE id IS NOT NULL;
+DELETE FROM "meal_plan_option_votes" WHERE id IS NOT NULL;
 DELETE FROM "sessions" WHERE data IS NOT NULL;
 `
 )
@@ -95,6 +96,10 @@ func main() {
 	}
 
 	if err = scaffoldMealPlans(ctx, dataManager); err != nil {
+		log.Fatal(fmt.Errorf("error creating meals: %w", err))
+	}
+
+	if err = scaffoldMealPlanVotes(ctx, dataManager); err != nil {
 		log.Fatal(fmt.Errorf("error creating meals: %w", err))
 	}
 }
