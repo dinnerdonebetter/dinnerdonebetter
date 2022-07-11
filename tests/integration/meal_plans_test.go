@@ -137,13 +137,15 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 				createdMeals = append(createdMeals, createdMeal)
 			}
 
+			const baseDeadline = 10 * time.Second
+
 			t.Log("creating meal plan")
 			exampleMealPlan := &types.MealPlan{
 				Notes:          t.Name(),
 				Status:         types.AwaitingVotesMealPlanStatus,
 				StartsAt:       uint64(time.Now().Add(24 * time.Hour).Unix()),
 				EndsAt:         uint64(time.Now().Add(72 * time.Hour).Unix()),
-				VotingDeadline: uint64(time.Now().Add(10 * time.Minute).Unix()),
+				VotingDeadline: uint64(time.Now().Add(baseDeadline).Unix()),
 				Options: []*types.MealPlanOption{
 					{
 						Meal:     types.Meal{ID: createdMeals[0].ID},
@@ -232,38 +234,17 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			require.NotNil(t, createdMealPlanOptionVotesA)
 			t.Logf("meal plan option votes created for user A")
 
-			//checkMealPlanOptionVoteEquality(t, vote, createdMealPlanOptionVotesA)
-
-			//createdMealPlanOptionVotesA, err = createdClients[0].GetMealPlanOptionVote(ctx, createdMealPlan.ID, vote.BelongsToMealPlanOption, createdMealPlanOptionVotesA.ID)
-			//requireNotNilAndNoProblems(t, createdMealPlanOptionVotesA, err)
-			//require.Equal(t, vote.BelongsToMealPlanOption, createdMealPlanOptionVotesA.BelongsToMealPlanOption)
-			//checkMealPlanOptionVoteEquality(t, vote, createdMealPlanOptionVotesA)
-
 			createdMealPlanOptionVotesB, err := createdClients[1].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, userBVotes)
 			require.NoError(t, err)
 			require.NotNil(t, createdMealPlanOptionVotesB)
 			t.Logf("meal plan option votes created for user B")
-
-			//checkMealPlanOptionVoteEquality(t, vote, createdMealPlanOptionVotesB)
-
-			//createdMealPlanOptionVotesB, err = createdClients[1].GetMealPlanOptionVote(ctx, createdMealPlan.ID, vote.BelongsToMealPlanOption, createdMealPlanOptionVotesB.ID)
-			//requireNotNilAndNoProblems(t, createdMealPlanOptionVotesB, err)
-			//require.Equal(t, vote.BelongsToMealPlanOption, createdMealPlanOptionVotesB.BelongsToMealPlanOption)
-			//checkMealPlanOptionVoteEquality(t, vote, createdMealPlanOptionVotesB)
 
 			createdMealPlanOptionVotesC, err := testClients.main.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, userCVotes)
 			require.NoError(t, err)
 			require.NotNil(t, createdMealPlanOptionVotesC)
 			t.Logf("meal plan option votes created for user C")
 
-			//checkMealPlanOptionVoteEquality(t, vote, createdMealPlanOptionVotesC)
-
-			//createdMealPlanOptionVotesC, err = testClients.main.GetMealPlanOptionVote(ctx, createdMealPlan.ID, vote.BelongsToMealPlanOption, createdMealPlanOptionVotesC.ID)
-			//requireNotNilAndNoProblems(t, createdMealPlanOptionVotesC, err)
-			//require.Equal(t, vote.BelongsToMealPlanOption, createdMealPlanOptionVotesC.BelongsToMealPlanOption)
-			//checkMealPlanOptionVoteEquality(t, vote, createdMealPlanOptionVotesC)
-
-			time.Sleep(5 * time.Second)
+			time.Sleep(baseDeadline * 2)
 
 			createdMealPlan, err = testClients.main.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
@@ -345,13 +326,15 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 				createdMeals = append(createdMeals, createdMeal)
 			}
 
+			const baseDeadline = 10 * time.Second
+
 			t.Log("creating meal plan")
 			exampleMealPlan := &types.MealPlan{
 				Notes:          t.Name(),
 				Status:         types.AwaitingVotesMealPlanStatus,
 				StartsAt:       uint64(time.Now().Add(24 * time.Hour).Unix()),
 				EndsAt:         uint64(time.Now().Add(72 * time.Hour).Unix()),
-				VotingDeadline: uint64(time.Now().Add(10 * time.Minute).Unix()),
+				VotingDeadline: uint64(time.Now().Add(baseDeadline).Unix()),
 				Options: []*types.MealPlanOption{
 					{
 						Meal:     types.Meal{ID: createdMeals[0].ID},
@@ -424,24 +407,10 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			require.NotNil(t, createdMealPlanOptionVotesA)
 			t.Logf("meal plan option votes created for user A")
 
-			//checkMealPlanOptionVoteEquality(t, vote, createdMealPlanOptionVotesA)
-
-			//createdMealPlanOptionVotesA, err = createdClients[0].GetMealPlanOptionVote(ctx, createdMealPlan.ID, vote.BelongsToMealPlanOption, createdMealPlanOptionVotesA.ID)
-			//requireNotNilAndNoProblems(t, createdMealPlanOptionVotesA, err)
-			//require.Equal(t, vote.BelongsToMealPlanOption, createdMealPlanOptionVotesA.BelongsToMealPlanOption)
-			//checkMealPlanOptionVoteEquality(t, vote, createdMealPlanOptionVotesA)
-
 			createdMealPlanOptionVotesB, err := createdClients[1].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, userBVotes)
 			require.NoError(t, err)
 			require.NotNil(t, createdMealPlanOptionVotesB)
 			t.Logf("meal plan option votes created for user B")
-
-			//checkMealPlanOptionVoteEquality(t, vote, createdMealPlanOptionVotesB)
-
-			//createdMealPlanOptionVotesB, err = createdClients[1].GetMealPlanOptionVote(ctx, createdMealPlan.ID, vote.BelongsToMealPlanOption, createdMealPlanOptionVotesB.ID)
-			//requireNotNilAndNoProblems(t, createdMealPlanOptionVotesB, err)
-			//require.Equal(t, vote.BelongsToMealPlanOption, createdMealPlanOptionVotesB.BelongsToMealPlanOption)
-			//checkMealPlanOptionVoteEquality(t, vote, createdMealPlanOptionVotesB)
 
 			createdMealPlan, err = testClients.main.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
@@ -450,7 +419,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			createdMealPlan.VotingDeadline = uint64(time.Now().Add(-10 * time.Hour).Unix())
 			require.NoError(t, dbmanager.UpdateMealPlan(ctx, createdMealPlan))
 
-			time.Sleep(5 * time.Second)
+			time.Sleep(baseDeadline * 2)
 
 			createdMealPlan, err = testClients.main.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)

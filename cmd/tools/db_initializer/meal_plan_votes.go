@@ -3,11 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/segmentio/ksuid"
-	"log"
-
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
+	"github.com/segmentio/ksuid"
 )
 
 func scaffoldMealPlanVotes(ctx context.Context, db database.DataManager) error {
@@ -569,7 +567,7 @@ func scaffoldMealPlanVotes(ctx context.Context, db database.DataManager) error {
 		},
 	}
 
-	mealPlans := []*types.MealPlanOptionVoteDatabaseCreationInput{
+	mealPlanVotes := []*types.MealPlanOptionVoteDatabaseCreationInput{
 		mealPlanVotesCollection.MomJonesPastHouseholdMealPlanVotes,
 		mealPlanVotesCollection.DadJonesPastHouseholdMealPlanVotes,
 		mealPlanVotesCollection.KidJones1PastHouseholdMealPlanVotes,
@@ -579,17 +577,7 @@ func scaffoldMealPlanVotes(ctx context.Context, db database.DataManager) error {
 		mealPlanVotesCollection.KidJones1CurrentHouseholdMealPlanVotes,
 	}
 
-	log.Printf(`
-
-
-
-		MomJones ID: %s
-
-
-
-`, userCollection.MomJones.ID)
-
-	for _, input := range mealPlans {
+	for _, input := range mealPlanVotes {
 		if _, err := db.CreateMealPlanOptionVote(ctx, input); err != nil {
 			return fmt.Errorf("voting for meal plan: %w", err)
 		}

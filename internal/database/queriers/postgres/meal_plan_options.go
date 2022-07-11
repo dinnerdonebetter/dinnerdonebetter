@@ -484,7 +484,7 @@ func (q *SQLQuerier) determineWinner(winners []schulze.Score) string {
 	return scoreWinners[rand.Intn(len(scoreWinners))]
 }
 
-func (q *SQLQuerier) decideOptionWinner(ctx context.Context, options []*types.MealPlanOption) (winner string, tiebroken, decided bool) {
+func (q *SQLQuerier) decideOptionWinner(ctx context.Context, options []*types.MealPlanOption) (_ string, _, _ bool) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -529,7 +529,7 @@ func (q *SQLQuerier) decideOptionWinner(ctx context.Context, options []*types.Me
 		return winners[0].Choice, false, true
 	}
 
-	return winner, false, false
+	return "", false, false
 }
 
 const finalizeMealPlanOptionQuery = `
