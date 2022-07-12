@@ -63,7 +63,7 @@ func TestChoresWorker_HandleMessage(T *testing.T) {
 
 		for _, mealPlan := range exampleMealPlans {
 			dbm.MealPlanDataManager.On(
-				"FinalizeMealPlanWithExpiredVotingPeriod",
+				"AttemptToFinalizeMealPlan",
 				testutils.ContextMatcher,
 				mealPlan.ID,
 				mealPlan.BelongsToHousehold,

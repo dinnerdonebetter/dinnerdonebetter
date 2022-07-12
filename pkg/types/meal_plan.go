@@ -109,8 +109,7 @@ type (
 		CreateMealPlan(ctx context.Context, input *MealPlanDatabaseCreationInput) (*MealPlan, error)
 		UpdateMealPlan(ctx context.Context, updated *MealPlan) error
 		ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error
-		AttemptToFinalizeCompleteMealPlan(ctx context.Context, mealPlanID, householdID string) (changed bool, err error)
-		FinalizeMealPlanWithExpiredVotingPeriod(ctx context.Context, mealPlanID, householdID string) (changed bool, err error)
+		AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, householdID string) (changed bool, err error)
 		GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Context) ([]*MealPlan, error)
 	}
 

@@ -353,7 +353,7 @@ func scaffoldMealPlans(ctx context.Context, db database.DataManager) error {
 		return fmt.Errorf("voting for meal plan: %w", err)
 	}
 
-	if _, finalizationErr := db.AttemptToFinalizeCompleteMealPlan(ctx, mealPlanCollection.JonesPastHouseholdMealPlanInput.ID, jonesHouseholdID); finalizationErr != nil {
+	if _, finalizationErr := db.AttemptToFinalizeMealPlan(ctx, mealPlanCollection.JonesPastHouseholdMealPlanInput.ID, jonesHouseholdID); finalizationErr != nil {
 		return fmt.Errorf("finalizing meal plan: %w", finalizationErr)
 	}
 
@@ -362,7 +362,7 @@ func scaffoldMealPlans(ctx context.Context, db database.DataManager) error {
 		return fmt.Errorf("voting for meal plan: %w", err)
 	}
 
-	if _, finalizationErr := db.AttemptToFinalizeCompleteMealPlan(ctx, mealPlanCollection.JonesCurrentHouseholdMealPlanInput.ID, jonesHouseholdID); finalizationErr != nil {
+	if _, finalizationErr := db.AttemptToFinalizeMealPlan(ctx, mealPlanCollection.JonesCurrentHouseholdMealPlanInput.ID, jonesHouseholdID); finalizationErr != nil {
 		return fmt.Errorf("finalizing meal plan: %w", finalizationErr)
 	}
 
@@ -371,7 +371,7 @@ func scaffoldMealPlans(ctx context.Context, db database.DataManager) error {
 		return fmt.Errorf("voting for meal plan: %w", err)
 	}
 
-	if _, finalizationErr := db.AttemptToFinalizeCompleteMealPlan(ctx, mealPlanCollection.JonesFutureHouseholdMealPlanInput.ID, jonesHouseholdID); finalizationErr != nil {
+	if _, finalizationErr := db.AttemptToFinalizeMealPlan(ctx, mealPlanCollection.JonesFutureHouseholdMealPlanInput.ID, jonesHouseholdID); finalizationErr != nil {
 		return fmt.Errorf("finalizing meal plan: %w", finalizationErr)
 	}
 

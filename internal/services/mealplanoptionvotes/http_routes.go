@@ -116,7 +116,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 				observability.AcknowledgeError(dataChangePublishErr, logger, span, "publishing data change message about meal plan option finalization")
 			}
 
-			mealPlanFinalized, finalizationErr := s.dataManager.AttemptToFinalizeCompleteMealPlan(ctx, mealPlanID, sessionCtxData.ActiveHouseholdID)
+			mealPlanFinalized, finalizationErr := s.dataManager.AttemptToFinalizeMealPlan(ctx, mealPlanID, sessionCtxData.ActiveHouseholdID)
 			if finalizationErr != nil {
 				observability.AcknowledgeError(err, logger, span, "finalizing meal plan option vote")
 				s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)

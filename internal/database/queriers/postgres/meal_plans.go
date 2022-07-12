@@ -255,6 +255,7 @@ ORDER BY meal_plan_options.id
 `
 
 const getMealPlanPastVotingDeadlineQuery = baseGetMealPlanQuery + `
+AND meal_plans.status = 'awaiting_votes'
 AND extract(epoch from NOW()) > meal_plans.voting_deadline
 ORDER BY meal_plan_options.id
 `
@@ -610,8 +611,8 @@ const finalizeMealPlanQuery = `
 	UPDATE meal_plans SET status = $1 WHERE archived_on IS NULL AND id = $2
 `
 
-// AttemptToFinalizeCompleteMealPlan finalizes a meal plan if all of its options have a selection.
-func (q *SQLQuerier) AttemptToFinalizeCompleteMealPlan(ctx context.Context, mealPlanID, householdID string) (changed bool, err error) {
+// AttemptToFinalizeMealPlan finalizes a meal plan if all of its options have a selection.
+func (q *SQLQuerier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, householdID string) (finalized bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -634,7 +635,6 @@ func (q *SQLQuerier) AttemptToFinalizeCompleteMealPlan(ctx context.Context, meal
 	if err != nil {
 		return false, observability.PrepareError(err, logger, span, "fetching household")
 	}
-	_ = household
 
 	// fetch meal plan
 	mealPlan, err := q.GetMealPlan(ctx, mealPlanID, householdID)
@@ -715,93 +715,14 @@ func (q *SQLQuerier) AttemptToFinalizeCompleteMealPlan(ctx context.Context, meal
 			return false, observability.PrepareError(err, logger, span, "finalizing meal plan")
 		}
 
-		if commitErr := tx.Commit(); commitErr != nil {
-			return false, observability.PrepareError(err, logger, span, "committing transaction")
-		}
-
-		return true, nil
+		finalized = true
 	}
 
 	if commitErr := tx.Commit(); commitErr != nil {
-		return false, observability.PrepareError(err, logger, span, "committing transaction")
+		return false, observability.PrepareError(commitErr, logger, span, "committing transaction")
 	}
 
-	return false, nil
-}
-
-// FinalizeMealPlanWithExpiredVotingPeriod finalizes a meal plan if all of its options have a selection.
-func (q *SQLQuerier) FinalizeMealPlanWithExpiredVotingPeriod(ctx context.Context, mealPlanID, householdID string) (changed bool, err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if mealPlanID == "" {
-		return false, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
-
-	if householdID == "" {
-		return false, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
-
-	// fetch meal plan
-	mealPlan, err := q.getMealPlan(ctx, mealPlanID, householdID, true)
-	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "fetching meal plan")
-	}
-
-	tx, err := q.db.BeginTx(ctx, nil)
-	if err != nil {
-		return false, observability.PrepareError(err, logger, span, "beginning transaction")
-	}
-
-	for _, day := range allDays {
-		for _, mealName := range allMealNames {
-			options := byDayAndMeal(mealPlan.Options, day, mealName)
-			if len(options) > 0 {
-				winner, tiebroken, chosen := q.decideOptionWinner(ctx, options)
-
-				if chosen {
-					args := []interface{}{
-						mealPlanID,
-						winner,
-						tiebroken,
-					}
-
-					logger = logger.WithValue("winner", winner).WithValue("tiebroken", tiebroken)
-
-					if err = q.performWriteQuery(ctx, tx, "meal plan option finalization", finalizeMealPlanOptionQuery, args); err != nil {
-						q.rollbackTransaction(ctx, tx)
-						return false, observability.PrepareError(err, logger, span, "finalizing meal plan option")
-					}
-
-					logger.Debug("finalized meal plan option")
-				}
-			}
-		}
-	}
-
-	args := []interface{}{
-		types.FinalizedMealPlanStatus,
-		mealPlanID,
-	}
-
-	if err = q.performWriteQuery(ctx, tx, "meal plan finalization", finalizeMealPlanQuery, args); err != nil {
-		q.rollbackTransaction(ctx, tx)
-		return false, observability.PrepareError(err, logger, span, "finalizing meal plan")
-	}
-
-	if err = tx.Commit(); err != nil {
-		return false, observability.PrepareError(err, logger, span, "committing transaction")
-	}
-
-	logger.Debug("finalized meal plan")
-
-	return true, nil
+	return finalized, nil
 }
 
 const getExpiredAndUnresolvedMealPlanIDsQuery = `

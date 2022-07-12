@@ -583,11 +583,11 @@ func scaffoldMealPlanVotes(ctx context.Context, db database.DataManager) error {
 		}
 	}
 
-	if _, finalizationErr := db.AttemptToFinalizeCompleteMealPlan(ctx, mealPlanCollection.JonesPastHouseholdMealPlan.ID, jonesHouseholdID); finalizationErr != nil {
+	if _, finalizationErr := db.AttemptToFinalizeMealPlan(ctx, mealPlanCollection.JonesPastHouseholdMealPlan.ID, jonesHouseholdID); finalizationErr != nil {
 		return fmt.Errorf("finalizing meal plan: %w", finalizationErr)
 	}
 
-	if _, finalizationErr := db.AttemptToFinalizeCompleteMealPlan(ctx, mealPlanCollection.JonesCurrentHouseholdMealPlan.ID, jonesHouseholdID); finalizationErr != nil {
+	if _, finalizationErr := db.AttemptToFinalizeMealPlan(ctx, mealPlanCollection.JonesCurrentHouseholdMealPlan.ID, jonesHouseholdID); finalizationErr != nil {
 		return fmt.Errorf("finalizing meal plan: %w", finalizationErr)
 	}
 

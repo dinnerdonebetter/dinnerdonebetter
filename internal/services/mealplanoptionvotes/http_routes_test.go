@@ -70,7 +70,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		).Return(nil)
 
 		dbManager.MealPlanDataManager.On(
-			"AttemptToFinalizeCompleteMealPlan",
+			"AttemptToFinalizeMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleHousehold.ID,
@@ -200,7 +200,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		).Return(nil)
 
 		dbManager.MealPlanDataManager.On(
-			"AttemptToFinalizeCompleteMealPlan",
+			"AttemptToFinalizeMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleHousehold.ID,
@@ -312,7 +312,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 
 		dbManager.MealPlanDataManager.On(
-			"AttemptToFinalizeCompleteMealPlan",
+			"AttemptToFinalizeMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleHousehold.ID,
@@ -377,7 +377,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		dbManager.MealPlanDataManager.On(
-			"AttemptToFinalizeCompleteMealPlan",
+			"AttemptToFinalizeMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleHousehold.ID,
@@ -435,7 +435,7 @@ func TestMealPlanOptionVotesService_CreateHandler(T *testing.T) {
 		).Return(nil)
 
 		dbManager.MealPlanDataManager.On(
-			"AttemptToFinalizeCompleteMealPlan",
+			"AttemptToFinalizeMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleHousehold.ID,
