@@ -18,7 +18,7 @@ func (w *ChoresWorker) finalizeExpiredMealPlans(ctx context.Context) error {
 	}
 
 	for _, mealPlan := range mealPlans {
-		changed, err := w.dataManager.FinalizeMealPlanWithExpiredVotingPeriod(ctx, mealPlan.ID, mealPlan.BelongsToHousehold)
+		changed, err := w.dataManager.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, mealPlan.BelongsToHousehold)
 		if err != nil {
 			return observability.PrepareError(err, logger, span, "finalizing meal plan")
 		}

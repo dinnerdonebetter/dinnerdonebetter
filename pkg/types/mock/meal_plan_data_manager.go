@@ -61,14 +61,8 @@ func (m *MealPlanDataManager) ArchiveMealPlan(ctx context.Context, mealPlanID, h
 	return m.Called(ctx, mealPlanID, householdID).Error(0)
 }
 
-// AttemptToFinalizeCompleteMealPlan is a mock function.
-func (m *MealPlanDataManager) AttemptToFinalizeCompleteMealPlan(ctx context.Context, mealPlanID, householdID string) (changed bool, err error) {
-	args := m.Called(ctx, mealPlanID, householdID)
-	return args.Bool(0), args.Error(1)
-}
-
-// FinalizeMealPlanWithExpiredVotingPeriod is a mock function.
-func (m *MealPlanDataManager) FinalizeMealPlanWithExpiredVotingPeriod(ctx context.Context, mealPlanID, householdID string) (changed bool, err error) {
+// AttemptToFinalizeMealPlan is a mock function.
+func (m *MealPlanDataManager) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, householdID string) (changed bool, err error) {
 	args := m.Called(ctx, mealPlanID, householdID)
 	return args.Bool(0), args.Error(1)
 }

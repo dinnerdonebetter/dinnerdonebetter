@@ -41,9 +41,10 @@ func finalizeMealPlans(
 
 	var changedCount int
 	for _, mealPlan := range mealPlans {
-		changed, err := dataManager.FinalizeMealPlanWithExpiredVotingPeriod(ctx, mealPlan.ID, mealPlan.BelongsToHousehold)
+		changed, err := dataManager.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, mealPlan.BelongsToHousehold)
 		if err != nil {
-			return -1, observability.PrepareError(err, logger, span, "finalizing meal plan")
+			observability.AcknowledgeError(err, logger, span, "finalizing meal plan")
+			continue
 		}
 
 		if changed {
