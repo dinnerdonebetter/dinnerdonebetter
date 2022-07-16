@@ -437,6 +437,7 @@ func TestQuerier_GetMealPlans(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		exampleHouseholdID := fakes.BuildFakeID()
 		filter := types.DefaultQueryFilter()
 		exampleMealPlanList := fakes.BuildFakeMealPlanList()
 		for i := range exampleMealPlanList.MealPlans {
@@ -446,13 +447,13 @@ func TestQuerier_GetMealPlans(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, exampleHouseholdID, false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromMealPlans(true, exampleMealPlanList.FilteredCount, exampleMealPlanList.MealPlans...))
 
-		actual, err := c.GetMealPlans(ctx, filter)
+		actual, err := c.GetMealPlans(ctx, exampleHouseholdID, filter)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleMealPlanList, actual)
 
@@ -462,6 +463,7 @@ func TestQuerier_GetMealPlans(T *testing.T) {
 	T.Run("with nil filter", func(t *testing.T) {
 		t.Parallel()
 
+		exampleHouseholdID := fakes.BuildFakeID()
 		filter := (*types.QueryFilter)(nil)
 		exampleMealPlanList := fakes.BuildFakeMealPlanList()
 		exampleMealPlanList.Page = 0
@@ -473,13 +475,13 @@ func TestQuerier_GetMealPlans(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, exampleHouseholdID, false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromMealPlans(true, exampleMealPlanList.FilteredCount, exampleMealPlanList.MealPlans...))
 
-		actual, err := c.GetMealPlans(ctx, filter)
+		actual, err := c.GetMealPlans(ctx, exampleHouseholdID, filter)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleMealPlanList, actual)
 
@@ -489,18 +491,19 @@ func TestQuerier_GetMealPlans(T *testing.T) {
 	T.Run("with error executing query", func(t *testing.T) {
 		t.Parallel()
 
+		exampleHouseholdID := fakes.BuildFakeID()
 		filter := types.DefaultQueryFilter()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, exampleHouseholdID, false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.GetMealPlans(ctx, filter)
+		actual, err := c.GetMealPlans(ctx, exampleHouseholdID, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -510,18 +513,19 @@ func TestQuerier_GetMealPlans(T *testing.T) {
 	T.Run("with erroneous response from database", func(t *testing.T) {
 		t.Parallel()
 
+		exampleHouseholdID := fakes.BuildFakeID()
 		filter := types.DefaultQueryFilter()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, exampleHouseholdID, false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
 
-		actual, err := c.GetMealPlans(ctx, filter)
+		actual, err := c.GetMealPlans(ctx, exampleHouseholdID, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 

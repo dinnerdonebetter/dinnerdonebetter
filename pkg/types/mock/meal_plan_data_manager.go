@@ -34,8 +34,8 @@ func (m *MealPlanDataManager) GetTotalMealPlanCount(ctx context.Context) (uint64
 }
 
 // GetMealPlans is a mock function.
-func (m *MealPlanDataManager) GetMealPlans(ctx context.Context, filter *types.QueryFilter) (*types.MealPlanList, error) {
-	args := m.Called(ctx, filter)
+func (m *MealPlanDataManager) GetMealPlans(ctx context.Context, householdID string, filter *types.QueryFilter) (*types.MealPlanList, error) {
+	args := m.Called(ctx, householdID, filter)
 	return args.Get(0).(*types.MealPlanList), args.Error(1)
 }
 
