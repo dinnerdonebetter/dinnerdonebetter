@@ -316,6 +316,7 @@ func TestMealPlansService_ListHandler(T *testing.T) {
 		mealPlanDataManager.On(
 			"GetMealPlans",
 			testutils.ContextMatcher,
+			helper.exampleHousehold.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return(exampleMealPlanList, nil)
 		helper.service.mealPlanDataManager = mealPlanDataManager
@@ -369,6 +370,7 @@ func TestMealPlansService_ListHandler(T *testing.T) {
 		mealPlanDataManager.On(
 			"GetMealPlans",
 			testutils.ContextMatcher,
+			helper.exampleHousehold.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.MealPlanList)(nil), sql.ErrNoRows)
 		helper.service.mealPlanDataManager = mealPlanDataManager
@@ -398,6 +400,7 @@ func TestMealPlansService_ListHandler(T *testing.T) {
 		mealPlanDataManager.On(
 			"GetMealPlans",
 			testutils.ContextMatcher,
+			helper.exampleHousehold.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.MealPlanList)(nil), errors.New("blah"))
 		helper.service.mealPlanDataManager = mealPlanDataManager

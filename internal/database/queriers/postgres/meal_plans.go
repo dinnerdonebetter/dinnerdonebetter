@@ -352,7 +352,7 @@ func (q *SQLQuerier) GetTotalMealPlanCount(ctx context.Context) (uint64, error) 
 }
 
 // GetMealPlans fetches a list of meal plans from the database that meet a particular filter.
-func (q *SQLQuerier) GetMealPlans(ctx context.Context, filter *types.QueryFilter) (x *types.MealPlanList, err error) {
+func (q *SQLQuerier) GetMealPlans(ctx context.Context, householdID string, filter *types.QueryFilter) (x *types.MealPlanList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -366,7 +366,7 @@ func (q *SQLQuerier) GetMealPlans(ctx context.Context, filter *types.QueryFilter
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, "", false, filter, true)
+	query, args := q.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, householdID, false, filter, true)
 
 	rows, err := q.performReadQuery(ctx, q.db, "mealPlans", query, args)
 	if err != nil {

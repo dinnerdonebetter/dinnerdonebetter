@@ -266,7 +266,7 @@ var recipeCollection = struct {
 	Spaghetti: &types.RecipeDatabaseCreationInput{
 		InspiredByRecipeID: nil,
 		ID:                 spaghettiID,
-		Name:               "spaghetti with neatballs",
+		Name:               "spaghetti",
 		Source:             "https://www.google.com/search?&q=spaghetti+with+neatballs",
 		Description:        "",
 		CreatedByUser:      userCollection.MomJones.ID,
