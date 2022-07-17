@@ -74,10 +74,11 @@ type (
 	RecipeStepInstrumentUpdateRequestInput struct {
 		_ struct{}
 
+		// InstrumentID is already a pointer, I'm not about to make it a double pointer.
 		InstrumentID        *string `json:"instrumentID"`
-		RecipeStepID        string  `json:"recipeStepID"`
-		Notes               string  `json:"notes"`
-		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
+		RecipeStepID        *string `json:"recipeStepID"`
+		Notes               *string `json:"notes"`
+		BelongsToRecipeStep *string `json:"belongsToRecipeStep"`
 	}
 
 	// RecipeStepInstrumentDataManager describes a structure capable of storing recipe step instruments permanently.
@@ -108,12 +109,12 @@ func (x *RecipeStepInstrument) Update(input *RecipeStepInstrumentUpdateRequestIn
 		x.InstrumentID = input.InstrumentID
 	}
 
-	if input.RecipeStepID != "" && input.RecipeStepID != x.RecipeStepID {
-		x.RecipeStepID = input.RecipeStepID
+	if input.RecipeStepID != nil && *input.RecipeStepID != x.RecipeStepID {
+		x.RecipeStepID = *input.RecipeStepID
 	}
 
-	if input.Notes != "" && input.Notes != x.Notes {
-		x.Notes = input.Notes
+	if input.Notes != nil && *input.Notes != x.Notes {
+		x.Notes = *input.Notes
 	}
 }
 
@@ -163,7 +164,6 @@ func (x *RecipeStepInstrumentUpdateRequestInput) ValidateWithContext(ctx context
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.InstrumentID, validation.Required),
 		validation.Field(&x.RecipeStepID, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
 	)

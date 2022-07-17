@@ -14,7 +14,9 @@ func TestHousehold_Update(T *testing.T) {
 		t.Parallel()
 
 		x := &Household{}
-		x.Update(&HouseholdUpdateRequestInput{Name: t.Name()})
+		name := t.Name()
+
+		x.Update(&HouseholdUpdateRequestInput{Name: &name})
 	})
 }
 
@@ -40,8 +42,10 @@ func TestHouseholdUpdateInput_ValidateWithContext(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
+		name := t.Name()
+
 		x := &HouseholdUpdateRequestInput{
-			Name: t.Name(),
+			Name: &name,
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))

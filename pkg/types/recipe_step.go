@@ -93,15 +93,15 @@ type (
 	RecipeStepUpdateRequestInput struct {
 		_                         struct{}
 		TemperatureInCelsius      *uint16              `json:"temperatureInCelsius"`
-		Notes                     string               `json:"notes"`
-		Why                       string               `json:"why"`
-		BelongsToRecipe           string               `json:"belongsToRecipe"`
+		Notes                     *string              `json:"notes"`
+		Why                       *string              `json:"why"`
+		BelongsToRecipe           *string              `json:"belongsToRecipe"`
+		Preparation               *ValidPreparation    `json:"preparation"`
+		Index                     *uint32              `json:"index"`
+		MinEstimatedTimeInSeconds *uint32              `json:"minEstimatedTimeInSeconds"`
+		MaxEstimatedTimeInSeconds *uint32              `json:"maxEstimatedTimeInSeconds"`
+		Optional                  *bool                `json:"optional"`
 		Products                  []*RecipeStepProduct `json:"products"`
-		Preparation               ValidPreparation     `json:"preparation"`
-		Index                     uint32               `json:"index"`
-		MinEstimatedTimeInSeconds uint32               `json:"minEstimatedTimeInSeconds"`
-		MaxEstimatedTimeInSeconds uint32               `json:"maxEstimatedTimeInSeconds"`
-		Optional                  bool                 `json:"optional"`
 	}
 
 	// RecipeStepDataManager describes a structure capable of storing recipe steps permanently.
@@ -128,8 +128,8 @@ type (
 
 // Update merges an RecipeStepUpdateRequestInput with a recipe step.
 func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
-	if input.Index != 0 && input.Index != x.Index {
-		x.Index = input.Index
+	if input.Index != nil && *input.Index != x.Index {
+		x.Index = *input.Index
 	}
 
 	if input.Preparation.Name != "" && input.Preparation.Name != x.Preparation.Name {
@@ -144,26 +144,26 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
 		x.Preparation.IconPath = input.Preparation.IconPath
 	}
 
-	if input.MinEstimatedTimeInSeconds != 0 && input.MinEstimatedTimeInSeconds != x.MinEstimatedTimeInSeconds {
-		x.MinEstimatedTimeInSeconds = input.MinEstimatedTimeInSeconds
+	if input.MinEstimatedTimeInSeconds != nil && *input.MinEstimatedTimeInSeconds != x.MinEstimatedTimeInSeconds {
+		x.MinEstimatedTimeInSeconds = *input.MinEstimatedTimeInSeconds
 	}
 
-	if input.MaxEstimatedTimeInSeconds != 0 && input.MaxEstimatedTimeInSeconds != x.MaxEstimatedTimeInSeconds {
-		x.MaxEstimatedTimeInSeconds = input.MaxEstimatedTimeInSeconds
+	if input.MaxEstimatedTimeInSeconds != nil && *input.MaxEstimatedTimeInSeconds != x.MaxEstimatedTimeInSeconds {
+		x.MaxEstimatedTimeInSeconds = *input.MaxEstimatedTimeInSeconds
 	}
 
 	if input.TemperatureInCelsius != nil && (x.TemperatureInCelsius == nil || (*input.TemperatureInCelsius != 0 && *input.TemperatureInCelsius != *x.TemperatureInCelsius)) {
 		x.TemperatureInCelsius = input.TemperatureInCelsius
 	}
 
-	if input.Notes != "" && input.Notes != x.Notes {
-		x.Notes = input.Notes
+	if input.Notes != nil && *input.Notes != x.Notes {
+		x.Notes = *input.Notes
 	}
 
 	// TODO: do something about products here
 
-	if input.Optional != x.Optional {
-		x.Optional = input.Optional
+	if input.Optional != nil && *input.Optional != x.Optional {
+		x.Optional = *input.Optional
 	}
 
 	if input.TemperatureInCelsius != nil && (x.TemperatureInCelsius == nil || (*input.TemperatureInCelsius != 0 && *input.TemperatureInCelsius != *x.TemperatureInCelsius)) {

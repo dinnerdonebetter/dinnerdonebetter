@@ -29,14 +29,14 @@ func checkRecipeStepIngredientEquality(t *testing.T, expected, actual *types.Rec
 func convertRecipeStepIngredientToRecipeStepIngredientUpdateInput(x *types.RecipeStepIngredient) *types.RecipeStepIngredientUpdateRequestInput {
 	return &types.RecipeStepIngredientUpdateRequestInput{
 		IngredientID:        x.IngredientID,
-		Name:                x.Name,
-		QuantityType:        x.QuantityType,
-		QuantityValue:       x.QuantityValue,
-		QuantityNotes:       x.QuantityNotes,
-		ProductOfRecipeStep: x.ProductOfRecipeStep,
-		IngredientNotes:     x.IngredientNotes,
+		Name:                &x.Name,
+		QuantityType:        &x.QuantityType,
+		QuantityValue:       &x.QuantityValue,
+		QuantityNotes:       &x.QuantityNotes,
+		ProductOfRecipeStep: &x.ProductOfRecipeStep,
+		IngredientNotes:     &x.IngredientNotes,
 		RecipeStepProductID: x.RecipeStepProductID,
-		BelongsToRecipeStep: x.BelongsToRecipeStep,
+		BelongsToRecipeStep: &x.BelongsToRecipeStep,
 	}
 }
 

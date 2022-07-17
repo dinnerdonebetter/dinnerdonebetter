@@ -41,20 +41,20 @@ func BuildFakeValidInstrumentList() *types.ValidInstrumentList {
 func BuildFakeValidInstrumentUpdateRequestInput() *types.ValidInstrumentUpdateRequestInput {
 	validInstrument := BuildFakeValidInstrument()
 	return &types.ValidInstrumentUpdateRequestInput{
-		Name:        validInstrument.Name,
-		Variant:     validInstrument.Variant,
-		Description: validInstrument.Description,
-		IconPath:    validInstrument.IconPath,
+		Name:        &validInstrument.Name,
+		Variant:     &validInstrument.Variant,
+		Description: &validInstrument.Description,
+		IconPath:    &validInstrument.IconPath,
 	}
 }
 
 // BuildFakeValidInstrumentUpdateRequestInputFromValidInstrument builds a faked ValidInstrumentUpdateRequestInput from a valid instrument.
 func BuildFakeValidInstrumentUpdateRequestInputFromValidInstrument(validInstrument *types.ValidInstrument) *types.ValidInstrumentUpdateRequestInput {
 	return &types.ValidInstrumentUpdateRequestInput{
-		Name:        validInstrument.Name,
-		Variant:     validInstrument.Variant,
-		Description: validInstrument.Description,
-		IconPath:    validInstrument.IconPath,
+		Name:        &validInstrument.Name,
+		Variant:     &validInstrument.Variant,
+		Description: &validInstrument.Description,
+		IconPath:    &validInstrument.IconPath,
 	}
 }
 

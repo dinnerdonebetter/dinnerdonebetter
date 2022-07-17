@@ -101,17 +101,17 @@ func TestRecipeStepUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepUpdateRequestInput{
-			Index:                     fake.Uint32(),
-			Preparation:               ValidPreparation{},
-			MinEstimatedTimeInSeconds: fake.Uint32(),
-			MaxEstimatedTimeInSeconds: fake.Uint32(),
+			Index:                     uint32Pointer(fake.Uint32()),
+			Preparation:               &ValidPreparation{},
+			MinEstimatedTimeInSeconds: uint32Pointer(fake.Uint32()),
+			MaxEstimatedTimeInSeconds: uint32Pointer(fake.Uint32()),
 			Products: []*RecipeStepProduct{
 				{
 					Name: fake.LoremIpsumSentence(exampleQuantity),
 				},
 			},
 			TemperatureInCelsius: func(x uint16) *uint16 { return &x }(fake.Uint16()),
-			Notes:                fake.LoremIpsumSentence(exampleQuantity),
+			Notes:                stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

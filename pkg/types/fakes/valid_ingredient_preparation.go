@@ -40,18 +40,18 @@ func BuildFakeValidIngredientPreparationList() *types.ValidIngredientPreparation
 func BuildFakeValidIngredientPreparationUpdateRequestInput() *types.ValidIngredientPreparationUpdateRequestInput {
 	validIngredientPreparation := BuildFakeValidIngredientPreparation()
 	return &types.ValidIngredientPreparationUpdateRequestInput{
-		Notes:              validIngredientPreparation.Notes,
-		ValidPreparationID: validIngredientPreparation.ValidPreparationID,
-		ValidIngredientID:  validIngredientPreparation.ValidIngredientID,
+		Notes:              &validIngredientPreparation.Notes,
+		ValidPreparationID: &validIngredientPreparation.ValidPreparationID,
+		ValidIngredientID:  &validIngredientPreparation.ValidIngredientID,
 	}
 }
 
 // BuildFakeValidIngredientPreparationUpdateRequestInputFromValidIngredientPreparation builds a faked ValidIngredientPreparationUpdateRequestInput from a valid ingredient preparation.
 func BuildFakeValidIngredientPreparationUpdateRequestInputFromValidIngredientPreparation(validIngredientPreparation *types.ValidIngredientPreparation) *types.ValidIngredientPreparationUpdateRequestInput {
 	return &types.ValidIngredientPreparationUpdateRequestInput{
-		Notes:              validIngredientPreparation.Notes,
-		ValidPreparationID: validIngredientPreparation.ValidPreparationID,
-		ValidIngredientID:  validIngredientPreparation.ValidIngredientID,
+		Notes:              &validIngredientPreparation.Notes,
+		ValidPreparationID: &validIngredientPreparation.ValidPreparationID,
+		ValidIngredientID:  &validIngredientPreparation.ValidIngredientID,
 	}
 }
 

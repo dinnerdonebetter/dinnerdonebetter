@@ -70,9 +70,9 @@ type (
 	ValidIngredientPreparationUpdateRequestInput struct {
 		_ struct{}
 
-		Notes              string `json:"notes"`
-		ValidPreparationID string `json:"validPreparationID"`
-		ValidIngredientID  string `json:"validIngredientID"`
+		Notes              *string `json:"notes"`
+		ValidPreparationID *string `json:"validPreparationID"`
+		ValidIngredientID  *string `json:"validIngredientID"`
 	}
 
 	// ValidIngredientPreparationDataManager describes a structure capable of storing valid ingredient preparations permanently.
@@ -99,16 +99,16 @@ type (
 
 // Update merges an ValidIngredientPreparationUpdateRequestInput with a valid ingredient preparation.
 func (x *ValidIngredientPreparation) Update(input *ValidIngredientPreparationUpdateRequestInput) {
-	if input.Notes != "" && input.Notes != x.Notes {
-		x.Notes = input.Notes
+	if input.Notes != nil && *input.Notes != x.Notes {
+		x.Notes = *input.Notes
 	}
 
-	if input.ValidPreparationID != "" && input.ValidPreparationID != x.ValidPreparationID {
-		x.ValidPreparationID = input.ValidPreparationID
+	if input.ValidPreparationID != nil && *input.ValidPreparationID != x.ValidPreparationID {
+		x.ValidPreparationID = *input.ValidPreparationID
 	}
 
-	if input.ValidIngredientID != "" && input.ValidIngredientID != x.ValidIngredientID {
-		x.ValidIngredientID = input.ValidIngredientID
+	if input.ValidIngredientID != nil && *input.ValidIngredientID != x.ValidIngredientID {
+		x.ValidIngredientID = *input.ValidIngredientID
 	}
 }
 

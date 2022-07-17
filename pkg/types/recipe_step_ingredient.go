@@ -85,16 +85,19 @@ type (
 
 	// RecipeStepIngredientUpdateRequestInput represents what a user could set as input for updating recipe step ingredients.
 	RecipeStepIngredientUpdateRequestInput struct {
-		_                   struct{}
-		IngredientID        *string `json:"ingredientID"`
-		RecipeStepProductID *string `json:"recipeStepProductID"`
-		Name                string  `json:"name"`
-		QuantityType        string  `json:"quantityType"`
-		QuantityNotes       string  `json:"quantityNotes"`
-		IngredientNotes     string  `json:"ingredientNotes"`
-		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
-		QuantityValue       float32 `json:"quantityValue"`
-		ProductOfRecipeStep bool    `json:"productOfRecipeStep"`
+		_ struct{}
+
+		// IngredientID is already a pointer, and I don't feel like making it a double pointer.
+		IngredientID *string `json:"ingredientID"`
+		// RecipeStepProductID is already a pointer, and I don't feel like making it a double pointer.
+		RecipeStepProductID *string  `json:"recipeStepProductID"`
+		Name                *string  `json:"name"`
+		QuantityType        *string  `json:"quantityType"`
+		QuantityNotes       *string  `json:"quantityNotes"`
+		IngredientNotes     *string  `json:"ingredientNotes"`
+		BelongsToRecipeStep *string  `json:"belongsToRecipeStep"`
+		QuantityValue       *float32 `json:"quantityValue"`
+		ProductOfRecipeStep *bool    `json:"productOfRecipeStep"`
 	}
 
 	// RecipeStepIngredientDataManager describes a structure capable of storing recipe step ingredients permanently.
@@ -129,28 +132,28 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 		x.RecipeStepProductID = input.RecipeStepProductID
 	}
 
-	if input.Name != "" && input.Name != x.Name {
-		x.Name = input.Name
+	if input.Name != nil && *input.Name != x.Name {
+		x.Name = *input.Name
 	}
 
-	if input.QuantityType != "" && input.QuantityType != x.QuantityType {
-		x.QuantityType = input.QuantityType
+	if input.QuantityType != nil && *input.QuantityType != x.QuantityType {
+		x.QuantityType = *input.QuantityType
 	}
 
-	if input.QuantityValue != 0 && input.QuantityValue != x.QuantityValue {
-		x.QuantityValue = input.QuantityValue
+	if input.QuantityValue != nil && *input.QuantityValue != x.QuantityValue {
+		x.QuantityValue = *input.QuantityValue
 	}
 
-	if input.QuantityNotes != "" && input.QuantityNotes != x.QuantityNotes {
-		x.QuantityNotes = input.QuantityNotes
+	if input.QuantityNotes != nil && *input.QuantityNotes != x.QuantityNotes {
+		x.QuantityNotes = *input.QuantityNotes
 	}
 
-	if input.ProductOfRecipeStep != x.ProductOfRecipeStep {
-		x.ProductOfRecipeStep = input.ProductOfRecipeStep
+	if input.ProductOfRecipeStep != nil && *input.ProductOfRecipeStep != x.ProductOfRecipeStep {
+		x.ProductOfRecipeStep = *input.ProductOfRecipeStep
 	}
 
-	if input.IngredientNotes != "" && input.IngredientNotes != x.IngredientNotes {
-		x.IngredientNotes = input.IngredientNotes
+	if input.IngredientNotes != nil && *input.IngredientNotes != x.IngredientNotes {
+		x.IngredientNotes = *input.IngredientNotes
 	}
 }
 

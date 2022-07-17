@@ -27,11 +27,11 @@ func checkRecipeStepEquality(t *testing.T, expected, actual *types.RecipeStep) {
 // convertRecipeStepToRecipeStepUpdateInput creates an RecipeStepUpdateRequestInput struct from a recipe step.
 func convertRecipeStepToRecipeStepUpdateInput(x *types.RecipeStep) *types.RecipeStepUpdateRequestInput {
 	return &types.RecipeStepUpdateRequestInput{
-		Index:                     x.Index,
-		MinEstimatedTimeInSeconds: x.MinEstimatedTimeInSeconds,
-		MaxEstimatedTimeInSeconds: x.MaxEstimatedTimeInSeconds,
+		Index:                     &x.Index,
+		MinEstimatedTimeInSeconds: &x.MinEstimatedTimeInSeconds,
+		MaxEstimatedTimeInSeconds: &x.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      x.TemperatureInCelsius,
-		Notes:                     x.Notes,
+		Notes:                     &x.Notes,
 	}
 }
 
@@ -59,7 +59,7 @@ func (s *TestSuite) TestRecipeSteps_CompleteLifecycle() {
 			}
 
 			updateInput := convertRecipeStepToRecipeStepUpdateInput(newRecipeStep)
-			updateInput.Preparation = *createdValidPreparation
+			updateInput.Preparation = createdValidPreparation
 			createdRecipeStep.Update(updateInput)
 			assert.NoError(t, testClients.main.UpdateRecipeStep(ctx, createdRecipeStep))
 

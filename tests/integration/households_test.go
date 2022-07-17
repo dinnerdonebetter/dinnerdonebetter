@@ -146,7 +146,7 @@ func (s *TestSuite) TestHouseholds_Updating_Returns404ForNonexistentHousehold() 
 // convertHouseholdToHouseholdUpdateInput creates a householdUpdateInput struct from a household.
 func convertHouseholdToHouseholdUpdateInput(x *types.Household) *types.HouseholdUpdateRequestInput {
 	return &types.HouseholdUpdateRequestInput{
-		Name:          x.Name,
+		Name:          &x.Name,
 		BelongsToUser: x.BelongsToUser,
 	}
 }

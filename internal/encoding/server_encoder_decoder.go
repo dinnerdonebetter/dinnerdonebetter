@@ -220,7 +220,12 @@ func (e *serverEncoderDecoder) DecodeRequest(ctx context.Context, req *http.Requ
 		// this could be cool, but it would also break a lot of how my client works:
 		// dec := json.NewDecoder(req.Body)
 		// dec.DisallowUnknownFields()
-		d = json.NewDecoder(req.Body)
+		dec := json.NewDecoder(req.Body)
+
+		// uncomment the below line if you want to be a grownup one day
+		dec.DisallowUnknownFields()
+
+		d = dec
 	}
 
 	defer func() {

@@ -63,15 +63,15 @@ func BuildFakeRecipeStepList() *types.RecipeStepList {
 func BuildFakeRecipeStepUpdateRequestInput() *types.RecipeStepUpdateRequestInput {
 	recipeStep := BuildFakeRecipeStep()
 	return &types.RecipeStepUpdateRequestInput{
-		Index:                     recipeStep.Index,
-		Preparation:               recipeStep.Preparation,
-		MinEstimatedTimeInSeconds: recipeStep.MinEstimatedTimeInSeconds,
-		MaxEstimatedTimeInSeconds: recipeStep.MaxEstimatedTimeInSeconds,
+		Index:                     &recipeStep.Index,
+		Preparation:               &recipeStep.Preparation,
+		MinEstimatedTimeInSeconds: &recipeStep.MinEstimatedTimeInSeconds,
+		MaxEstimatedTimeInSeconds: &recipeStep.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,
-		Notes:                     recipeStep.Notes,
+		Notes:                     &recipeStep.Notes,
 		Products:                  recipeStep.Products,
-		Optional:                  recipeStep.Optional,
-		BelongsToRecipe:           recipeStep.BelongsToRecipe,
+		Optional:                  &recipeStep.Optional,
+		BelongsToRecipe:           &recipeStep.BelongsToRecipe,
 	}
 }
 
@@ -79,14 +79,14 @@ func BuildFakeRecipeStepUpdateRequestInput() *types.RecipeStepUpdateRequestInput
 func BuildFakeRecipeStepUpdateRequestInputFromRecipeStep(recipeStep *types.RecipeStep) *types.RecipeStepUpdateRequestInput {
 	return &types.RecipeStepUpdateRequestInput{
 		Products:                  recipeStep.Products,
-		Optional:                  recipeStep.Optional,
-		Index:                     recipeStep.Index,
-		Preparation:               recipeStep.Preparation,
-		MinEstimatedTimeInSeconds: recipeStep.MinEstimatedTimeInSeconds,
-		MaxEstimatedTimeInSeconds: recipeStep.MaxEstimatedTimeInSeconds,
+		Optional:                  &recipeStep.Optional,
+		Index:                     &recipeStep.Index,
+		Preparation:               &recipeStep.Preparation,
+		MinEstimatedTimeInSeconds: &recipeStep.MinEstimatedTimeInSeconds,
+		MaxEstimatedTimeInSeconds: &recipeStep.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,
-		Notes:                     recipeStep.Notes,
-		BelongsToRecipe:           recipeStep.BelongsToRecipe,
+		Notes:                     &recipeStep.Notes,
+		BelongsToRecipe:           &recipeStep.BelongsToRecipe,
 	}
 }
 

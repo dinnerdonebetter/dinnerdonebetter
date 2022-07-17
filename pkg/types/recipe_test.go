@@ -18,7 +18,7 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 			Name:               fake.LoremIpsumSentence(exampleQuantity),
 			Source:             fake.LoremIpsumSentence(exampleQuantity),
 			Description:        fake.LoremIpsumSentence(exampleQuantity),
-			InspiredByRecipeID: func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
+			InspiredByRecipeID: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Steps: []*RecipeStepCreationRequestInput{
 				buildValidRecipeStepCreationRequestInput(),
 			},
@@ -45,10 +45,10 @@ func TestRecipeUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeUpdateRequestInput{
-			Name:               fake.LoremIpsumSentence(exampleQuantity),
-			Source:             fake.LoremIpsumSentence(exampleQuantity),
-			Description:        fake.LoremIpsumSentence(exampleQuantity),
-			InspiredByRecipeID: func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:               stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Source:             stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Description:        stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			InspiredByRecipeID: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

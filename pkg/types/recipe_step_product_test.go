@@ -42,10 +42,10 @@ func TestRecipeStepProductUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepProductUpdateRequestInput{
-			Name:          fake.LoremIpsumSentence(exampleQuantity),
-			QuantityType:  fake.LoremIpsumSentence(exampleQuantity),
-			QuantityValue: fake.Float32(),
-			QuantityNotes: fake.LoremIpsumSentence(exampleQuantity),
+			Name:          stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			QuantityType:  stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			QuantityValue: float32Pointer(fake.Float32()),
+			QuantityNotes: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

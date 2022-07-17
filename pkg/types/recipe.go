@@ -82,11 +82,12 @@ type (
 	RecipeUpdateRequestInput struct {
 		_ struct{}
 
-		Name               string  `json:"name"`
-		Source             string  `json:"source"`
-		Description        string  `json:"description"`
+		Name        *string `json:"name"`
+		Source      *string `json:"source"`
+		Description *string `json:"description"`
+		// InspiredByRecipeID is already a pointer, I'm not about to make it a double pointer.
 		InspiredByRecipeID *string `json:"inspiredByRecipeID"`
-		CreatedByUser      string  `json:"-"`
+		CreatedByUser      *string `json:"-"`
 	}
 
 	// RecipeDataManager describes a structure capable of storing recipes permanently.
@@ -116,16 +117,16 @@ type (
 
 // Update merges an RecipeUpdateRequestInput with a recipe.
 func (x *Recipe) Update(input *RecipeUpdateRequestInput) {
-	if input.Name != "" && input.Name != x.Name {
-		x.Name = input.Name
+	if input.Name != nil && *input.Name != x.Name {
+		x.Name = *input.Name
 	}
 
-	if input.Source != "" && input.Source != x.Source {
-		x.Source = input.Source
+	if input.Source != nil && *input.Source != x.Source {
+		x.Source = *input.Source
 	}
 
-	if input.Description != "" && input.Description != x.Description {
-		x.Description = input.Description
+	if input.Description != nil && *input.Description != x.Description {
+		x.Description = *input.Description
 	}
 
 	if input.InspiredByRecipeID != nil && (x.InspiredByRecipeID == nil || (*input.InspiredByRecipeID != "" && *input.InspiredByRecipeID != *x.InspiredByRecipeID)) {

@@ -42,9 +42,9 @@ func BuildFakeRecipeStepInstrumentUpdateRequestInput() *types.RecipeStepInstrume
 	recipeStepInstrument := BuildFakeRecipeStepInstrument()
 	return &types.RecipeStepInstrumentUpdateRequestInput{
 		InstrumentID:        recipeStepInstrument.InstrumentID,
-		RecipeStepID:        recipeStepInstrument.RecipeStepID,
-		Notes:               recipeStepInstrument.Notes,
-		BelongsToRecipeStep: recipeStepInstrument.BelongsToRecipeStep,
+		RecipeStepID:        &recipeStepInstrument.RecipeStepID,
+		Notes:               &recipeStepInstrument.Notes,
+		BelongsToRecipeStep: &recipeStepInstrument.BelongsToRecipeStep,
 	}
 }
 
@@ -52,9 +52,9 @@ func BuildFakeRecipeStepInstrumentUpdateRequestInput() *types.RecipeStepInstrume
 func BuildFakeRecipeStepInstrumentUpdateRequestInputFromRecipeStepInstrument(recipeStepInstrument *types.RecipeStepInstrument) *types.RecipeStepInstrumentUpdateRequestInput {
 	return &types.RecipeStepInstrumentUpdateRequestInput{
 		InstrumentID:        recipeStepInstrument.InstrumentID,
-		RecipeStepID:        recipeStepInstrument.RecipeStepID,
-		Notes:               recipeStepInstrument.Notes,
-		BelongsToRecipeStep: recipeStepInstrument.BelongsToRecipeStep,
+		RecipeStepID:        &recipeStepInstrument.RecipeStepID,
+		Notes:               &recipeStepInstrument.Notes,
+		BelongsToRecipeStep: &recipeStepInstrument.BelongsToRecipeStep,
 	}
 }
 

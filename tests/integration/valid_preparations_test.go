@@ -25,9 +25,9 @@ func checkValidPreparationEquality(t *testing.T, expected, actual *types.ValidPr
 // convertValidPreparationToValidPreparationUpdateInput creates an ValidPreparationUpdateRequestInput struct from a valid preparation.
 func convertValidPreparationToValidPreparationUpdateInput(x *types.ValidPreparation) *types.ValidPreparationUpdateRequestInput {
 	return &types.ValidPreparationUpdateRequestInput{
-		Name:        x.Name,
-		Description: x.Description,
-		IconPath:    x.IconPath,
+		Name:        &x.Name,
+		Description: &x.Description,
+		IconPath:    &x.IconPath,
 	}
 }
 

@@ -42,22 +42,22 @@ func BuildFakeRecipeStepProductList() *types.RecipeStepProductList {
 func BuildFakeRecipeStepProductUpdateRequestInput() *types.RecipeStepProductUpdateRequestInput {
 	recipeStepProduct := BuildFakeRecipeStepProduct()
 	return &types.RecipeStepProductUpdateRequestInput{
-		Name:                recipeStepProduct.Name,
-		QuantityValue:       recipeStepProduct.QuantityValue,
-		QuantityNotes:       recipeStepProduct.QuantityNotes,
-		QuantityType:        recipeStepProduct.QuantityType,
-		BelongsToRecipeStep: recipeStepProduct.BelongsToRecipeStep,
+		Name:                &recipeStepProduct.Name,
+		QuantityValue:       &recipeStepProduct.QuantityValue,
+		QuantityNotes:       &recipeStepProduct.QuantityNotes,
+		QuantityType:        &recipeStepProduct.QuantityType,
+		BelongsToRecipeStep: &recipeStepProduct.BelongsToRecipeStep,
 	}
 }
 
 // BuildFakeRecipeStepProductUpdateRequestInputFromRecipeStepProduct builds a faked RecipeStepProductUpdateRequestInput from a recipe step product.
 func BuildFakeRecipeStepProductUpdateRequestInputFromRecipeStepProduct(recipeStepProduct *types.RecipeStepProduct) *types.RecipeStepProductUpdateRequestInput {
 	return &types.RecipeStepProductUpdateRequestInput{
-		Name:                recipeStepProduct.Name,
-		QuantityValue:       recipeStepProduct.QuantityValue,
-		QuantityNotes:       recipeStepProduct.QuantityNotes,
-		QuantityType:        recipeStepProduct.QuantityType,
-		BelongsToRecipeStep: recipeStepProduct.BelongsToRecipeStep,
+		Name:                &recipeStepProduct.Name,
+		QuantityValue:       &recipeStepProduct.QuantityValue,
+		QuantityNotes:       &recipeStepProduct.QuantityNotes,
+		QuantityType:        &recipeStepProduct.QuantityType,
+		BelongsToRecipeStep: &recipeStepProduct.BelongsToRecipeStep,
 	}
 }
 

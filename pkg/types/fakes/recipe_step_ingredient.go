@@ -46,28 +46,28 @@ func BuildFakeRecipeStepIngredientList() *types.RecipeStepIngredientList {
 func BuildFakeRecipeStepIngredientUpdateRequestInput() *types.RecipeStepIngredientUpdateRequestInput {
 	recipeStepIngredient := BuildFakeRecipeStepIngredient()
 	return &types.RecipeStepIngredientUpdateRequestInput{
-		Name:                recipeStepIngredient.Name,
+		Name:                &recipeStepIngredient.Name,
 		IngredientID:        recipeStepIngredient.IngredientID,
-		QuantityType:        recipeStepIngredient.QuantityType,
-		QuantityValue:       recipeStepIngredient.QuantityValue,
-		QuantityNotes:       recipeStepIngredient.QuantityNotes,
-		ProductOfRecipeStep: recipeStepIngredient.ProductOfRecipeStep,
-		IngredientNotes:     recipeStepIngredient.IngredientNotes,
-		BelongsToRecipeStep: recipeStepIngredient.BelongsToRecipeStep,
+		QuantityType:        &recipeStepIngredient.QuantityType,
+		QuantityValue:       &recipeStepIngredient.QuantityValue,
+		QuantityNotes:       &recipeStepIngredient.QuantityNotes,
+		ProductOfRecipeStep: &recipeStepIngredient.ProductOfRecipeStep,
+		IngredientNotes:     &recipeStepIngredient.IngredientNotes,
+		BelongsToRecipeStep: &recipeStepIngredient.BelongsToRecipeStep,
 	}
 }
 
 // BuildFakeRecipeStepIngredientUpdateRequestInputFromRecipeStepIngredient builds a faked RecipeStepIngredientUpdateRequestInput from a recipe step ingredient.
 func BuildFakeRecipeStepIngredientUpdateRequestInputFromRecipeStepIngredient(recipeStepIngredient *types.RecipeStepIngredient) *types.RecipeStepIngredientUpdateRequestInput {
 	return &types.RecipeStepIngredientUpdateRequestInput{
-		Name:                recipeStepIngredient.Name,
+		Name:                &recipeStepIngredient.Name,
 		IngredientID:        recipeStepIngredient.IngredientID,
-		QuantityType:        recipeStepIngredient.QuantityType,
-		QuantityValue:       recipeStepIngredient.QuantityValue,
-		QuantityNotes:       recipeStepIngredient.QuantityNotes,
-		ProductOfRecipeStep: recipeStepIngredient.ProductOfRecipeStep,
-		IngredientNotes:     recipeStepIngredient.IngredientNotes,
-		BelongsToRecipeStep: recipeStepIngredient.BelongsToRecipeStep,
+		QuantityType:        &recipeStepIngredient.QuantityType,
+		QuantityValue:       &recipeStepIngredient.QuantityValue,
+		QuantityNotes:       &recipeStepIngredient.QuantityNotes,
+		ProductOfRecipeStep: &recipeStepIngredient.ProductOfRecipeStep,
+		IngredientNotes:     &recipeStepIngredient.IngredientNotes,
+		BelongsToRecipeStep: &recipeStepIngredient.BelongsToRecipeStep,
 	}
 }
 
