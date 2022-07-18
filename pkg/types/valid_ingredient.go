@@ -249,6 +249,31 @@ func (x *ValidIngredientDatabaseCreationInput) ValidateWithContext(ctx context.C
 	)
 }
 
+// ValidIngredientUpdateRequestInputFromValidIngredient creates a DatabaseCreationInput from a CreationInput.
+func ValidIngredientUpdateRequestInputFromValidIngredient(input *ValidIngredient) *ValidIngredientUpdateRequestInput {
+	x := &ValidIngredientUpdateRequestInput{
+		Name:                     &input.Name,
+		Description:              &input.Description,
+		Warning:                  &input.Warning,
+		IconPath:                 &input.IconPath,
+		ContainsDairy:            &input.ContainsDairy,
+		ContainsPeanut:           &input.ContainsPeanut,
+		ContainsTreeNut:          &input.ContainsTreeNut,
+		ContainsEgg:              &input.ContainsEgg,
+		ContainsWheat:            &input.ContainsWheat,
+		ContainsShellfish:        &input.ContainsShellfish,
+		ContainsSesame:           &input.ContainsSesame,
+		ContainsFish:             &input.ContainsFish,
+		ContainsGluten:           &input.ContainsGluten,
+		AnimalFlesh:              &input.AnimalFlesh,
+		IsMeasuredVolumetrically: &input.IsMeasuredVolumetrically,
+		IsLiquid:                 &input.IsLiquid,
+		ContainsSoy:              &input.ContainsSoy,
+	}
+
+	return x
+}
+
 // ValidIngredientDatabaseCreationInputFromValidIngredientCreationInput creates a DatabaseCreationInput from a CreationInput.
 func ValidIngredientDatabaseCreationInputFromValidIngredientCreationInput(input *ValidIngredientCreationRequestInput) *ValidIngredientDatabaseCreationInput {
 	x := &ValidIngredientDatabaseCreationInput{

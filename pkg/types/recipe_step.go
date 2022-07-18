@@ -92,16 +92,14 @@ type (
 	// RecipeStepUpdateRequestInput represents what a user could set as input for updating recipe steps.
 	RecipeStepUpdateRequestInput struct {
 		_                         struct{}
-		TemperatureInCelsius      *uint16              `json:"temperatureInCelsius"`
-		Notes                     *string              `json:"notes"`
-		Why                       *string              `json:"why"`
-		BelongsToRecipe           *string              `json:"belongsToRecipe"`
-		Preparation               *ValidPreparation    `json:"preparation"`
-		Index                     *uint32              `json:"index"`
-		MinEstimatedTimeInSeconds *uint32              `json:"minEstimatedTimeInSeconds"`
-		MaxEstimatedTimeInSeconds *uint32              `json:"maxEstimatedTimeInSeconds"`
-		Optional                  *bool                `json:"optional"`
-		Products                  []*RecipeStepProduct `json:"products"`
+		TemperatureInCelsius      *uint16           `json:"temperatureInCelsius"`
+		Notes                     *string           `json:"notes"`
+		Preparation               *ValidPreparation `json:"preparation"`
+		Index                     *uint32           `json:"index"`
+		MinEstimatedTimeInSeconds *uint32           `json:"minEstimatedTimeInSeconds"`
+		MaxEstimatedTimeInSeconds *uint32           `json:"maxEstimatedTimeInSeconds"`
+		Optional                  *bool             `json:"optional"`
+		BelongsToRecipe           string            `json:"belongsToRecipe"`
 	}
 
 	// RecipeStepDataManager describes a structure capable of storing recipe steps permanently.
@@ -195,6 +193,22 @@ func (x *RecipeStepDatabaseCreationInput) ValidateWithContext(ctx context.Contex
 		validation.Field(&x.Products, validation.Required),
 		validation.Field(&x.PreparationID, validation.Required),
 	)
+}
+
+// RecipeStepUpdateRequestInputFromRecipeStep creates a DatabaseCreationInput from a CreationInput.
+func RecipeStepUpdateRequestInputFromRecipeStep(input *RecipeStep) *RecipeStepUpdateRequestInput {
+	x := &RecipeStepUpdateRequestInput{
+		TemperatureInCelsius:      input.TemperatureInCelsius,
+		Notes:                     &input.Notes,
+		BelongsToRecipe:           input.BelongsToRecipe,
+		Preparation:               &input.Preparation,
+		Index:                     &input.Index,
+		MinEstimatedTimeInSeconds: &input.MinEstimatedTimeInSeconds,
+		MaxEstimatedTimeInSeconds: &input.MaxEstimatedTimeInSeconds,
+		Optional:                  &input.Optional,
+	}
+
+	return x
 }
 
 // RecipeStepDatabaseCreationInputFromRecipeStepCreationInput creates a DatabaseCreationInput from a CreationInput.

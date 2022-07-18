@@ -173,3 +173,15 @@ func HouseholdDatabaseCreationInputFromHouseholdCreationInput(input *HouseholdCr
 
 	return x
 }
+
+// HouseholdUpdateRequestInputFromHousehold creates a HouseholdCreationRequestInput from a CreationInput.
+func HouseholdUpdateRequestInputFromHousehold(input *Household) *HouseholdUpdateRequestInput {
+	x := &HouseholdUpdateRequestInput{
+		Name:          &input.Name,
+		ContactEmail:  &input.ContactEmail,
+		ContactPhone:  &input.ContactPhone,
+		BelongsToUser: input.BelongsToUser,
+	}
+
+	return x
+}

@@ -35,7 +35,7 @@ func TestValidIngredientsService_CreateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidIngredientDatabaseCreationInput()
+		exampleCreationInput := fakes.BuildFakeValidIngredientCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -107,7 +107,7 @@ func TestValidIngredientsService_CreateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidIngredientDatabaseCreationInput()
+		exampleCreationInput := fakes.BuildFakeValidIngredientCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -128,7 +128,7 @@ func TestValidIngredientsService_CreateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidIngredientDatabaseCreationInput()
+		exampleCreationInput := fakes.BuildFakeValidIngredientCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -157,7 +157,7 @@ func TestValidIngredientsService_CreateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidIngredientDatabaseCreationInput()
+		exampleCreationInput := fakes.BuildFakeValidIngredientCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error

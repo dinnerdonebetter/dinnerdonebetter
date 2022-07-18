@@ -139,6 +139,17 @@ func (x *ValidIngredientPreparationDatabaseCreationInput) ValidateWithContext(ct
 	)
 }
 
+// ValidIngredientPreparationFromValidIngredientPreparation creates a DatabaseCreationInput from a CreationInput.
+func ValidIngredientPreparationFromValidIngredientPreparation(input *ValidIngredientPreparation) *ValidIngredientPreparationUpdateRequestInput {
+	x := &ValidIngredientPreparationUpdateRequestInput{
+		Notes:              &input.Notes,
+		ValidPreparationID: &input.ValidPreparationID,
+		ValidIngredientID:  &input.ValidIngredientID,
+	}
+
+	return x
+}
+
 // ValidIngredientPreparationDatabaseCreationInputFromValidIngredientPreparationCreationInput creates a DatabaseCreationInput from a CreationInput.
 func ValidIngredientPreparationDatabaseCreationInputFromValidIngredientPreparationCreationInput(input *ValidIngredientPreparationCreationRequestInput) *ValidIngredientPreparationDatabaseCreationInput {
 	x := &ValidIngredientPreparationDatabaseCreationInput{

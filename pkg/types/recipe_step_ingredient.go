@@ -182,6 +182,23 @@ func (x *RecipeStepIngredientDatabaseCreationInput) ValidateWithContext(ctx cont
 	)
 }
 
+// RecipeStepIngredientUpdateRequestInputFromRecipeStepIngredient creates a DatabaseCreationInput from a CreationInput.
+func RecipeStepIngredientUpdateRequestInputFromRecipeStepIngredient(input *RecipeStepIngredient) *RecipeStepIngredientUpdateRequestInput {
+	x := &RecipeStepIngredientUpdateRequestInput{
+		IngredientID:        input.IngredientID,
+		RecipeStepProductID: input.RecipeStepProductID,
+		Name:                &input.Name,
+		QuantityType:        &input.QuantityType,
+		QuantityNotes:       &input.QuantityNotes,
+		IngredientNotes:     &input.IngredientNotes,
+		BelongsToRecipeStep: &input.BelongsToRecipeStep,
+		QuantityValue:       &input.QuantityValue,
+		ProductOfRecipeStep: &input.ProductOfRecipeStep,
+	}
+
+	return x
+}
+
 // RecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredientCreationInput creates a DatabaseCreationInput from a CreationInput.
 func RecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredientCreationInput(input *RecipeStepIngredientCreationRequestInput) *RecipeStepIngredientDatabaseCreationInput {
 	x := &RecipeStepIngredientDatabaseCreationInput{

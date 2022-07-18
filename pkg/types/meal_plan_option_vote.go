@@ -77,10 +77,10 @@ type (
 	// MealPlanOptionVoteUpdateRequestInput represents what a user could set as input for updating meal plan option votes.
 	MealPlanOptionVoteUpdateRequestInput struct {
 		_                       struct{}
-		Notes                   string `json:"notes"`
-		BelongsToMealPlanOption string `json:"belongsToMealPlanOption"`
-		Rank                    uint8  `json:"rank"`
-		Abstain                 bool   `json:"abstain"`
+		Notes                   *string `json:"notes"`
+		Rank                    *uint8  `json:"rank"`
+		Abstain                 *bool   `json:"abstain"`
+		BelongsToMealPlanOption string  `json:"belongsToMealPlanOption"`
 	}
 
 	// MealPlanOptionVoteDataManager describes a structure capable of storing meal plan option votes permanently.
@@ -107,16 +107,16 @@ type (
 
 // Update merges an MealPlanOptionVoteUpdateRequestInput with a meal plan option vote.
 func (x *MealPlanOptionVote) Update(input *MealPlanOptionVoteUpdateRequestInput) {
-	if input.Rank != 0 && input.Rank != x.Rank {
-		x.Rank = input.Rank
+	if input.Rank != nil && *input.Rank != x.Rank {
+		x.Rank = *input.Rank
 	}
 
-	if input.Abstain != x.Abstain {
-		x.Abstain = input.Abstain
+	if input.Abstain != nil && *input.Abstain != x.Abstain {
+		x.Abstain = *input.Abstain
 	}
 
-	if input.Notes != "" && input.Notes != x.Notes {
-		x.Notes = input.Notes
+	if input.Notes != nil && *input.Notes != x.Notes {
+		x.Notes = *input.Notes
 	}
 }
 
@@ -141,6 +141,18 @@ func (x *MealPlanOptionVoteDatabaseCreationInput) ValidateWithContext(ctx contex
 		x,
 		validation.Field(&x.Votes, validation.Required),
 	)
+}
+
+// MealPlanOptionVoteUpdateRequestInputFromMealPlanOptionVote creates a DatabaseCreationInput from a CreationInput.
+func MealPlanOptionVoteUpdateRequestInputFromMealPlanOptionVote(input *MealPlanOptionVote) *MealPlanOptionVoteUpdateRequestInput {
+	x := &MealPlanOptionVoteUpdateRequestInput{
+		Notes:                   &input.Notes,
+		BelongsToMealPlanOption: input.BelongsToMealPlanOption,
+		Rank:                    &input.Rank,
+		Abstain:                 &input.Abstain,
+	}
+
+	return x
 }
 
 // MealPlanOptionVoteDatabaseCreationInputFromMealPlanOptionVoteCreationInput creates a DatabaseCreationInput from a CreationInput.

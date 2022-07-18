@@ -147,6 +147,18 @@ func (x *ValidInstrumentDatabaseCreationInput) ValidateWithContext(ctx context.C
 	)
 }
 
+// ValidInstrumentUpdateRequestInputFromValidInstrument creates a DatabaseCreationInput from a CreationInput.
+func ValidInstrumentUpdateRequestInputFromValidInstrument(input *ValidInstrument) *ValidInstrumentUpdateRequestInput {
+	x := &ValidInstrumentUpdateRequestInput{
+		Name:        &input.Name,
+		Variant:     &input.Variant,
+		Description: &input.Description,
+		IconPath:    &input.IconPath,
+	}
+
+	return x
+}
+
 // ValidInstrumentDatabaseCreationInputFromValidInstrumentCreationInput creates a DatabaseCreationInput from a CreationInput.
 func ValidInstrumentDatabaseCreationInputFromValidInstrumentCreationInput(input *ValidInstrumentCreationRequestInput) *ValidInstrumentDatabaseCreationInput {
 	x := &ValidInstrumentDatabaseCreationInput{

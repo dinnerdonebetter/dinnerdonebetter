@@ -158,6 +158,19 @@ func (x *RecipeDatabaseCreationInput) ValidateWithContext(ctx context.Context) e
 	)
 }
 
+// RecipeUpdateRequestInputFromRecipe creates a DatabaseCreationInput from a CreationInput.
+func RecipeUpdateRequestInputFromRecipe(input *Recipe) *RecipeUpdateRequestInput {
+	x := &RecipeUpdateRequestInput{
+		Name:               &input.Name,
+		Source:             &input.Source,
+		Description:        &input.Description,
+		InspiredByRecipeID: input.InspiredByRecipeID,
+		CreatedByUser:      &input.CreatedByUser,
+	}
+
+	return x
+}
+
 // RecipeDatabaseCreationInputFromRecipeCreationInput creates a DatabaseCreationInput from a CreationInput.
 func RecipeDatabaseCreationInputFromRecipeCreationInput(input *RecipeCreationRequestInput) *RecipeDatabaseCreationInput {
 	steps := []*RecipeStepDatabaseCreationInput{}

@@ -69,16 +69,14 @@ func BuildFakeRecipeStepUpdateRequestInput() *types.RecipeStepUpdateRequestInput
 		MaxEstimatedTimeInSeconds: &recipeStep.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,
 		Notes:                     &recipeStep.Notes,
-		Products:                  recipeStep.Products,
 		Optional:                  &recipeStep.Optional,
-		BelongsToRecipe:           &recipeStep.BelongsToRecipe,
+		BelongsToRecipe:           recipeStep.BelongsToRecipe,
 	}
 }
 
 // BuildFakeRecipeStepUpdateRequestInputFromRecipeStep builds a faked RecipeStepUpdateRequestInput from a recipe step.
 func BuildFakeRecipeStepUpdateRequestInputFromRecipeStep(recipeStep *types.RecipeStep) *types.RecipeStepUpdateRequestInput {
 	return &types.RecipeStepUpdateRequestInput{
-		Products:                  recipeStep.Products,
 		Optional:                  &recipeStep.Optional,
 		Index:                     &recipeStep.Index,
 		Preparation:               &recipeStep.Preparation,
@@ -86,7 +84,7 @@ func BuildFakeRecipeStepUpdateRequestInputFromRecipeStep(recipeStep *types.Recip
 		MaxEstimatedTimeInSeconds: &recipeStep.MaxEstimatedTimeInSeconds,
 		TemperatureInCelsius:      recipeStep.TemperatureInCelsius,
 		Notes:                     &recipeStep.Notes,
-		BelongsToRecipe:           &recipeStep.BelongsToRecipe,
+		BelongsToRecipe:           recipeStep.BelongsToRecipe,
 	}
 }
 

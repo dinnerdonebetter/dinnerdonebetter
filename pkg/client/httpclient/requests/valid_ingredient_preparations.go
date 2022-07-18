@@ -118,7 +118,9 @@ func (b *Builder) BuildUpdateValidIngredientPreparationRequest(ctx context.Conte
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, validIngredientPreparation)
+	input := types.ValidIngredientPreparationFromValidIngredientPreparation(validIngredientPreparation)
+
+	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building request")
 	}
