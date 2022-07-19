@@ -48,7 +48,6 @@ func buildConverterMap() map[string]*typescriptify.TypeScriptify {
 	householdUserMembershipConverter := typescriptify.New().
 		Add(types.HouseholdUserMembership{}).
 		Add(types.HouseholdUserMembershipList{}).
-		Add(types.HouseholdUserMembershipUpdateRequestInput{}).
 		Add(types.HouseholdUserMembershipCreationRequestInput{}).
 		Add(types.HouseholdOwnershipTransferInput{}).
 		Add(types.ModifyUserPermissionsInput{})

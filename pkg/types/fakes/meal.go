@@ -52,9 +52,9 @@ func BuildFakeMealUpdateRequestInput() *types.MealUpdateRequestInput {
 	}
 
 	return &types.MealUpdateRequestInput{
-		Name:          recipe.Name,
-		Description:   recipe.Description,
-		CreatedByUser: recipe.CreatedByUser,
+		Name:          &recipe.Name,
+		Description:   &recipe.Description,
+		CreatedByUser: &recipe.CreatedByUser,
 		Recipes:       recipeIDs,
 	}
 }
@@ -67,9 +67,9 @@ func BuildFakeMealUpdateRequestInputFromMeal(recipe *types.Meal) *types.MealUpda
 	}
 
 	return &types.MealUpdateRequestInput{
-		Name:          recipe.Name,
-		Description:   recipe.Description,
-		CreatedByUser: recipe.CreatedByUser,
+		Name:          &recipe.Name,
+		Description:   &recipe.Description,
+		CreatedByUser: &recipe.CreatedByUser,
 		Recipes:       recipeIDs,
 	}
 }

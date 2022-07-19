@@ -15,6 +15,11 @@ func uint32Pointer(x uint32) *uint32 {
 	return &x
 }
 
+// uint64Pointer returns a pointer to the provided uint64.
+func uint64Pointer(x uint64) *uint64 {
+	return &x
+}
+
 // boolPointer returns a pointer to the provided string.
 func boolPointer(x bool) *bool {
 	return &x

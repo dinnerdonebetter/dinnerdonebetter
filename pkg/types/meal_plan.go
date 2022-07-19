@@ -91,12 +91,12 @@ type (
 	// MealPlanUpdateRequestInput represents what a user could set as input for updating meal plans.
 	MealPlanUpdateRequestInput struct {
 		_                  struct{}
-		Status             MealPlanStatus `json:"status"`
-		BelongsToHousehold string         `json:"-"`
-		Notes              string         `json:"notes"`
-		VotingDeadline     uint64         `json:"votingDeadline"`
-		StartsAt           uint64         `json:"startsAt"`
-		EndsAt             uint64         `json:"endsAt"`
+		Status             *MealPlanStatus `json:"status"`
+		BelongsToHousehold *string         `json:"-"`
+		Notes              *string         `json:"notes"`
+		VotingDeadline     *uint64         `json:"votingDeadline"`
+		StartsAt           *uint64         `json:"startsAt"`
+		EndsAt             *uint64         `json:"endsAt"`
 	}
 
 	// MealPlanDataManager describes a structure capable of storing meal plans permanently.
@@ -125,20 +125,20 @@ type (
 
 // Update merges an MealPlanUpdateRequestInput with a meal plan.
 func (x *MealPlan) Update(input *MealPlanUpdateRequestInput) {
-	if input.Notes != "" && input.Notes != x.Notes {
-		x.Notes = input.Notes
+	if input.Notes != nil && *input.Notes != x.Notes {
+		x.Notes = *input.Notes
 	}
 
-	if input.Status != "" && input.Status != x.Status {
-		x.Status = input.Status
+	if input.Status != nil && *input.Status != x.Status {
+		x.Status = *input.Status
 	}
 
-	if input.StartsAt != 0 && input.StartsAt != x.StartsAt {
-		x.StartsAt = input.StartsAt
+	if input.StartsAt != nil && *input.StartsAt != x.StartsAt {
+		x.StartsAt = *input.StartsAt
 	}
 
-	if input.EndsAt != 0 && input.EndsAt != x.EndsAt {
-		x.EndsAt = input.EndsAt
+	if input.EndsAt != nil && *input.EndsAt != x.EndsAt {
+		x.EndsAt = *input.EndsAt
 	}
 }
 
@@ -203,12 +203,12 @@ func (x *MealPlanDatabaseCreationInput) ValidateWithContext(ctx context.Context)
 // MealPlanUpdateRequestInputFromMealPlan creates a DatabaseCreationInput from a CreationInput.
 func MealPlanUpdateRequestInputFromMealPlan(input *MealPlan) *MealPlanUpdateRequestInput {
 	x := &MealPlanUpdateRequestInput{
-		Status:             input.Status,
-		BelongsToHousehold: input.BelongsToHousehold,
-		Notes:              input.Notes,
-		VotingDeadline:     input.VotingDeadline,
-		StartsAt:           input.StartsAt,
-		EndsAt:             input.EndsAt,
+		Status:             &input.Status,
+		BelongsToHousehold: &input.BelongsToHousehold,
+		Notes:              &input.Notes,
+		VotingDeadline:     &input.VotingDeadline,
+		StartsAt:           &input.StartsAt,
+		EndsAt:             &input.EndsAt,
 	}
 
 	return x

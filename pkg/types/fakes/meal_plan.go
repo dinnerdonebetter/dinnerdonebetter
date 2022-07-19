@@ -59,24 +59,24 @@ func BuildFakeMealPlanList() *types.MealPlanList {
 func BuildFakeMealPlanUpdateRequestInput() *types.MealPlanUpdateRequestInput {
 	mealPlan := BuildFakeMealPlan()
 	return &types.MealPlanUpdateRequestInput{
-		Notes:              mealPlan.Notes,
-		Status:             mealPlan.Status,
-		VotingDeadline:     mealPlan.VotingDeadline,
-		StartsAt:           mealPlan.StartsAt,
-		EndsAt:             mealPlan.EndsAt,
-		BelongsToHousehold: mealPlan.BelongsToHousehold,
+		Notes:              &mealPlan.Notes,
+		Status:             &mealPlan.Status,
+		VotingDeadline:     &mealPlan.VotingDeadline,
+		StartsAt:           &mealPlan.StartsAt,
+		EndsAt:             &mealPlan.EndsAt,
+		BelongsToHousehold: &mealPlan.BelongsToHousehold,
 	}
 }
 
 // BuildFakeMealPlanUpdateRequestInputFromMealPlan builds a faked MealPlanUpdateRequestInput from a meal plan.
 func BuildFakeMealPlanUpdateRequestInputFromMealPlan(mealPlan *types.MealPlan) *types.MealPlanUpdateRequestInput {
 	return &types.MealPlanUpdateRequestInput{
-		Notes:              mealPlan.Notes,
-		Status:             mealPlan.Status,
-		VotingDeadline:     mealPlan.VotingDeadline,
-		StartsAt:           mealPlan.StartsAt,
-		EndsAt:             mealPlan.EndsAt,
-		BelongsToHousehold: mealPlan.BelongsToHousehold,
+		Notes:              &mealPlan.Notes,
+		Status:             &mealPlan.Status,
+		VotingDeadline:     &mealPlan.VotingDeadline,
+		StartsAt:           &mealPlan.StartsAt,
+		EndsAt:             &mealPlan.EndsAt,
+		BelongsToHousehold: &mealPlan.BelongsToHousehold,
 	}
 }
 

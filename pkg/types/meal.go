@@ -74,9 +74,9 @@ type (
 	// MealUpdateRequestInput represents what a user could set as input for updating meals.
 	MealUpdateRequestInput struct {
 		_             struct{}
-		Name          string   `json:"name"`
-		Description   string   `json:"description"`
-		CreatedByUser string   `json:"-"`
+		Name          *string  `json:"name"`
+		Description   *string  `json:"description"`
+		CreatedByUser *string  `json:"-"`
 		Recipes       []string `json:"recipes"`
 	}
 
@@ -104,12 +104,12 @@ type (
 
 // Update merges an MealUpdateRequestInput with a meal.
 func (x *Meal) Update(input *MealUpdateRequestInput) {
-	if input.Name != "" && input.Name != x.Name {
-		x.Name = input.Name
+	if input.Name != nil && *input.Name != x.Name {
+		x.Name = *input.Name
 	}
 
-	if input.Description != "" && input.Description != x.Description {
-		x.Description = input.Description
+	if input.Description != nil && *input.Description != x.Description {
+		x.Description = *input.Description
 	}
 }
 

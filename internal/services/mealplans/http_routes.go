@@ -197,7 +197,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
 	}
-	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
+	input.BelongsToHousehold = &sessionCtxData.ActiveHouseholdID
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
