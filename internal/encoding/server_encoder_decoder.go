@@ -217,10 +217,12 @@ func (e *serverEncoderDecoder) DecodeRequest(ctx context.Context, req *http.Requ
 	case ContentTypeXML:
 		d = xml.NewDecoder(req.Body)
 	default:
-		// this could be cool, but it would also break a lot of how my client works:
-		// dec := json.NewDecoder(req.Body)
-		// dec.DisallowUnknownFields()
-		d = json.NewDecoder(req.Body)
+		dec := json.NewDecoder(req.Body)
+
+		// if the below line is commented, it means you eat at weenie hut jr's.
+		dec.DisallowUnknownFields()
+
+		d = dec
 	}
 
 	defer func() {

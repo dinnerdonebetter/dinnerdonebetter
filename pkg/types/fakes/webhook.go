@@ -44,8 +44,8 @@ func BuildFakeWebhookList() *types.WebhookList {
 	}
 }
 
-// BuildFakeWebhookCreationInput builds a faked WebhookCreationRequestInput from a webhook.
-func BuildFakeWebhookCreationInput() *types.WebhookCreationRequestInput {
+// BuildFakeWebhookCreationRequestInput builds a faked WebhookCreationRequestInput from a webhook.
+func BuildFakeWebhookCreationRequestInput() *types.WebhookCreationRequestInput {
 	webhook := BuildFakeWebhook()
 	return BuildFakeWebhookCreationInputFromWebhook(webhook)
 }

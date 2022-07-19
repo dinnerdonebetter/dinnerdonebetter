@@ -24,9 +24,9 @@ func checkValidIngredientPreparationEquality(t *testing.T, expected, actual *typ
 // convertValidIngredientPreparationToValidIngredientPreparationUpdateInput creates an ValidIngredientPreparationUpdateRequestInput struct from a valid ingredient preparation.
 func convertValidIngredientPreparationToValidIngredientPreparationUpdateInput(x *types.ValidIngredientPreparation) *types.ValidIngredientPreparationUpdateRequestInput {
 	return &types.ValidIngredientPreparationUpdateRequestInput{
-		Notes:              x.Notes,
-		ValidPreparationID: x.ValidPreparationID,
-		ValidIngredientID:  x.ValidIngredientID,
+		Notes:              &x.Notes,
+		ValidPreparationID: &x.ValidPreparationID,
+		ValidIngredientID:  &x.ValidIngredientID,
 	}
 }
 

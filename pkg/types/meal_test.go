@@ -41,9 +41,9 @@ func TestMealUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealUpdateRequestInput{
-			Name:          fake.LoremIpsumSentence(exampleQuantity),
-			Description:   fake.LoremIpsumSentence(exampleQuantity),
-			CreatedByUser: fake.LoremIpsumSentence(exampleQuantity),
+			Name:          stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Description:   stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			CreatedByUser: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			Recipes:       []string{fake.LoremIpsumSentence(exampleQuantity)},
 		}
 

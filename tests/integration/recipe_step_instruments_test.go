@@ -26,8 +26,8 @@ func checkRecipeStepInstrumentEquality(t *testing.T, expected, actual *types.Rec
 func convertRecipeStepInstrumentToRecipeStepInstrumentUpdateInput(x *types.RecipeStepInstrument) *types.RecipeStepInstrumentUpdateRequestInput {
 	return &types.RecipeStepInstrumentUpdateRequestInput{
 		InstrumentID: x.InstrumentID,
-		RecipeStepID: x.RecipeStepID,
-		Notes:        x.Notes,
+		RecipeStepID: &x.RecipeStepID,
+		Notes:        &x.Notes,
 	}
 }
 

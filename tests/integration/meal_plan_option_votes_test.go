@@ -24,9 +24,9 @@ func checkMealPlanOptionVoteEquality(t *testing.T, expected, actual *types.MealP
 // convertMealPlanOptionVoteToMealPlanOptionVoteUpdateInput creates an MealPlanOptionVoteUpdateRequestInput struct from a meal plan option vote.
 func convertMealPlanOptionVoteToMealPlanOptionVoteUpdateInput(x *types.MealPlanOptionVote) *types.MealPlanOptionVoteUpdateRequestInput {
 	return &types.MealPlanOptionVoteUpdateRequestInput{
-		Rank:                    x.Rank,
-		Abstain:                 x.Abstain,
-		Notes:                   x.Notes,
+		Rank:                    &x.Rank,
+		Abstain:                 &x.Abstain,
+		Notes:                   &x.Notes,
 		BelongsToMealPlanOption: x.BelongsToMealPlanOption,
 	}
 }

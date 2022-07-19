@@ -71,9 +71,9 @@ type (
 	ValidPreparationUpdateRequestInput struct {
 		_ struct{}
 
-		Name        string `json:"name"`
-		Description string `json:"description"`
-		IconPath    string `json:"iconPath"`
+		Name        *string `json:"name"`
+		Description *string `json:"description"`
+		IconPath    *string `json:"iconPath"`
 	}
 
 	// ValidPreparationDataManager describes a structure capable of storing valid preparations permanently.
@@ -104,16 +104,16 @@ type (
 
 // Update merges an ValidPreparationUpdateRequestInput with a valid preparation.
 func (x *ValidPreparation) Update(input *ValidPreparationUpdateRequestInput) {
-	if input.Name != "" && input.Name != x.Name {
-		x.Name = input.Name
+	if input.Name != nil && *input.Name != x.Name {
+		x.Name = *input.Name
 	}
 
-	if input.Description != "" && input.Description != x.Description {
-		x.Description = input.Description
+	if input.Description != nil && *input.Description != x.Description {
+		x.Description = *input.Description
 	}
 
-	if input.IconPath != "" && input.IconPath != x.IconPath {
-		x.IconPath = input.IconPath
+	if input.IconPath != nil && *input.IconPath != x.IconPath {
+		x.IconPath = *input.IconPath
 	}
 }
 
@@ -138,6 +138,17 @@ func (x *ValidPreparationDatabaseCreationInput) ValidateWithContext(ctx context.
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Name, validation.Required),
 	)
+}
+
+// ValidPreparationUpdateRequestInputFromValidPreparation creates a DatabaseCreationInput from a CreationInput.
+func ValidPreparationUpdateRequestInputFromValidPreparation(input *ValidPreparation) *ValidPreparationUpdateRequestInput {
+	x := &ValidPreparationUpdateRequestInput{
+		Name:        &input.Name,
+		Description: &input.Description,
+		IconPath:    &input.IconPath,
+	}
+
+	return x
 }
 
 // ValidPreparationDatabaseCreationInputFromValidPreparationCreationInput creates a DatabaseCreationInput from a CreationInput.

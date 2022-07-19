@@ -74,11 +74,11 @@ type (
 	// RecipeStepProductUpdateRequestInput represents what a user could set as input for updating recipe step products.
 	RecipeStepProductUpdateRequestInput struct {
 		_                   struct{}
-		Name                string  `json:"name"`
-		QuantityType        string  `json:"quantityType"`
-		QuantityNotes       string  `json:"quantityNotes"`
-		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
-		QuantityValue       float32 `json:"quantityValue"`
+		Name                *string  `json:"name"`
+		QuantityType        *string  `json:"quantityType"`
+		QuantityNotes       *string  `json:"quantityNotes"`
+		BelongsToRecipeStep *string  `json:"belongsToRecipeStep"`
+		QuantityValue       *float32 `json:"quantityValue"`
 	}
 
 	// RecipeStepProductDataManager describes a structure capable of storing recipe step products permanently.
@@ -105,20 +105,20 @@ type (
 
 // Update merges an RecipeStepProductUpdateRequestInput with a recipe step product.
 func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateRequestInput) {
-	if input.Name != "" && input.Name != x.Name {
-		x.Name = input.Name
+	if input.Name != nil && *input.Name != x.Name {
+		x.Name = *input.Name
 	}
 
-	if input.QuantityType != "" && input.QuantityType != x.QuantityType {
-		x.QuantityType = input.QuantityType
+	if input.QuantityType != nil && *input.QuantityType != x.QuantityType {
+		x.QuantityType = *input.QuantityType
 	}
 
-	if input.QuantityValue != 0 && input.QuantityValue != x.QuantityValue {
-		x.QuantityValue = input.QuantityValue
+	if input.QuantityValue != nil && *input.QuantityValue != x.QuantityValue {
+		x.QuantityValue = *input.QuantityValue
 	}
 
-	if input.QuantityNotes != "" && input.QuantityNotes != x.QuantityNotes {
-		x.QuantityNotes = input.QuantityNotes
+	if input.QuantityNotes != nil && *input.QuantityNotes != x.QuantityNotes {
+		x.QuantityNotes = *input.QuantityNotes
 	}
 }
 
@@ -147,6 +147,23 @@ func (x *RecipeStepProductDatabaseCreationInput) ValidateWithContext(ctx context
 		validation.Field(&x.QuantityType, validation.Required),
 		validation.Field(&x.QuantityValue, validation.Required),
 	)
+}
+
+// RecipeStepProductUpdateRequestInputFromRecipeStepProduct creates a DatabaseCreationInput from a CreationInput.
+func RecipeStepProductUpdateRequestInputFromRecipeStepProduct(input *RecipeStepProduct) *RecipeStepProductUpdateRequestInput {
+	if input == nil {
+		return nil
+	}
+
+	x := &RecipeStepProductUpdateRequestInput{
+		Name:                &input.Name,
+		QuantityType:        &input.QuantityType,
+		QuantityNotes:       &input.QuantityNotes,
+		BelongsToRecipeStep: &input.BelongsToRecipeStep,
+		QuantityValue:       &input.QuantityValue,
+	}
+
+	return x
 }
 
 // RecipeStepProductDatabaseCreationInputFromRecipeStepProductCreationInput creates a DatabaseCreationInput from a CreationInput.

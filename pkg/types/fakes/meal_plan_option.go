@@ -61,22 +61,22 @@ func BuildFakeMealPlanOptionList() *types.MealPlanOptionList {
 func BuildFakeMealPlanOptionUpdateRequestInput() *types.MealPlanOptionUpdateRequestInput {
 	mealPlanOption := BuildFakeMealPlanOption()
 	return &types.MealPlanOptionUpdateRequestInput{
-		Day:               mealPlanOption.Day,
-		MealID:            mealPlanOption.Meal.ID,
-		Notes:             mealPlanOption.Notes,
-		MealName:          mealPlanOption.MealName,
-		BelongsToMealPlan: mealPlanOption.BelongsToMealPlan,
+		Day:               &mealPlanOption.Day,
+		MealID:            &mealPlanOption.Meal.ID,
+		Notes:             &mealPlanOption.Notes,
+		MealName:          &mealPlanOption.MealName,
+		BelongsToMealPlan: &mealPlanOption.BelongsToMealPlan,
 	}
 }
 
 // BuildFakeMealPlanOptionUpdateRequestInputFromMealPlanOption builds a faked MealPlanOptionUpdateRequestInput from a meal plan option.
 func BuildFakeMealPlanOptionUpdateRequestInputFromMealPlanOption(mealPlanOption *types.MealPlanOption) *types.MealPlanOptionUpdateRequestInput {
 	return &types.MealPlanOptionUpdateRequestInput{
-		Day:               mealPlanOption.Day,
-		MealID:            mealPlanOption.Meal.ID,
-		Notes:             mealPlanOption.Notes,
-		MealName:          mealPlanOption.MealName,
-		BelongsToMealPlan: mealPlanOption.BelongsToMealPlan,
+		Day:               &mealPlanOption.Day,
+		MealID:            &mealPlanOption.Meal.ID,
+		Notes:             &mealPlanOption.Notes,
+		MealName:          &mealPlanOption.MealName,
+		BelongsToMealPlan: &mealPlanOption.BelongsToMealPlan,
 	}
 }
 

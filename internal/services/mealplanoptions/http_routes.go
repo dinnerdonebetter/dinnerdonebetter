@@ -212,7 +212,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	input.BelongsToMealPlan = mealPlanID
+	input.BelongsToMealPlan = &mealPlanID
 
 	if err = input.ValidateWithContext(ctx); err != nil {
 		logger.Error(err, "provided input was invalid")

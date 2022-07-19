@@ -40,18 +40,18 @@ func BuildFakeValidPreparationList() *types.ValidPreparationList {
 func BuildFakeValidPreparationUpdateRequestInput() *types.ValidPreparationUpdateRequestInput {
 	validPreparation := BuildFakeValidPreparation()
 	return &types.ValidPreparationUpdateRequestInput{
-		Name:        validPreparation.Name,
-		Description: validPreparation.Description,
-		IconPath:    validPreparation.IconPath,
+		Name:        &validPreparation.Name,
+		Description: &validPreparation.Description,
+		IconPath:    &validPreparation.IconPath,
 	}
 }
 
 // BuildFakeValidPreparationUpdateRequestInputFromValidPreparation builds a faked ValidPreparationUpdateRequestInput from a valid preparation.
 func BuildFakeValidPreparationUpdateRequestInputFromValidPreparation(validPreparation *types.ValidPreparation) *types.ValidPreparationUpdateRequestInput {
 	return &types.ValidPreparationUpdateRequestInput{
-		Name:        validPreparation.Name,
-		Description: validPreparation.Description,
-		IconPath:    validPreparation.IconPath,
+		Name:        &validPreparation.Name,
+		Description: &validPreparation.Description,
+		IconPath:    &validPreparation.IconPath,
 	}
 }
 

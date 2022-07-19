@@ -92,16 +92,14 @@ type (
 	// RecipeStepUpdateRequestInput represents what a user could set as input for updating recipe steps.
 	RecipeStepUpdateRequestInput struct {
 		_                         struct{}
-		TemperatureInCelsius      *uint16              `json:"temperatureInCelsius"`
-		Notes                     string               `json:"notes"`
-		Why                       string               `json:"why"`
-		BelongsToRecipe           string               `json:"belongsToRecipe"`
-		Products                  []*RecipeStepProduct `json:"products"`
-		Preparation               ValidPreparation     `json:"preparation"`
-		Index                     uint32               `json:"index"`
-		MinEstimatedTimeInSeconds uint32               `json:"minEstimatedTimeInSeconds"`
-		MaxEstimatedTimeInSeconds uint32               `json:"maxEstimatedTimeInSeconds"`
-		Optional                  bool                 `json:"optional"`
+		TemperatureInCelsius      *uint16           `json:"temperatureInCelsius"`
+		Notes                     *string           `json:"notes"`
+		Preparation               *ValidPreparation `json:"preparation"`
+		Index                     *uint32           `json:"index"`
+		MinEstimatedTimeInSeconds *uint32           `json:"minEstimatedTimeInSeconds"`
+		MaxEstimatedTimeInSeconds *uint32           `json:"maxEstimatedTimeInSeconds"`
+		Optional                  *bool             `json:"optional"`
+		BelongsToRecipe           string            `json:"belongsToRecipe"`
 	}
 
 	// RecipeStepDataManager describes a structure capable of storing recipe steps permanently.
@@ -128,8 +126,8 @@ type (
 
 // Update merges an RecipeStepUpdateRequestInput with a recipe step.
 func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
-	if input.Index != 0 && input.Index != x.Index {
-		x.Index = input.Index
+	if input.Index != nil && *input.Index != x.Index {
+		x.Index = *input.Index
 	}
 
 	if input.Preparation.Name != "" && input.Preparation.Name != x.Preparation.Name {
@@ -144,26 +142,26 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
 		x.Preparation.IconPath = input.Preparation.IconPath
 	}
 
-	if input.MinEstimatedTimeInSeconds != 0 && input.MinEstimatedTimeInSeconds != x.MinEstimatedTimeInSeconds {
-		x.MinEstimatedTimeInSeconds = input.MinEstimatedTimeInSeconds
+	if input.MinEstimatedTimeInSeconds != nil && *input.MinEstimatedTimeInSeconds != x.MinEstimatedTimeInSeconds {
+		x.MinEstimatedTimeInSeconds = *input.MinEstimatedTimeInSeconds
 	}
 
-	if input.MaxEstimatedTimeInSeconds != 0 && input.MaxEstimatedTimeInSeconds != x.MaxEstimatedTimeInSeconds {
-		x.MaxEstimatedTimeInSeconds = input.MaxEstimatedTimeInSeconds
+	if input.MaxEstimatedTimeInSeconds != nil && *input.MaxEstimatedTimeInSeconds != x.MaxEstimatedTimeInSeconds {
+		x.MaxEstimatedTimeInSeconds = *input.MaxEstimatedTimeInSeconds
 	}
 
 	if input.TemperatureInCelsius != nil && (x.TemperatureInCelsius == nil || (*input.TemperatureInCelsius != 0 && *input.TemperatureInCelsius != *x.TemperatureInCelsius)) {
 		x.TemperatureInCelsius = input.TemperatureInCelsius
 	}
 
-	if input.Notes != "" && input.Notes != x.Notes {
-		x.Notes = input.Notes
+	if input.Notes != nil && *input.Notes != x.Notes {
+		x.Notes = *input.Notes
 	}
 
 	// TODO: do something about products here
 
-	if input.Optional != x.Optional {
-		x.Optional = input.Optional
+	if input.Optional != nil && *input.Optional != x.Optional {
+		x.Optional = *input.Optional
 	}
 
 	if input.TemperatureInCelsius != nil && (x.TemperatureInCelsius == nil || (*input.TemperatureInCelsius != 0 && *input.TemperatureInCelsius != *x.TemperatureInCelsius)) {
@@ -195,6 +193,22 @@ func (x *RecipeStepDatabaseCreationInput) ValidateWithContext(ctx context.Contex
 		validation.Field(&x.Products, validation.Required),
 		validation.Field(&x.PreparationID, validation.Required),
 	)
+}
+
+// RecipeStepUpdateRequestInputFromRecipeStep creates a DatabaseCreationInput from a CreationInput.
+func RecipeStepUpdateRequestInputFromRecipeStep(input *RecipeStep) *RecipeStepUpdateRequestInput {
+	x := &RecipeStepUpdateRequestInput{
+		TemperatureInCelsius:      input.TemperatureInCelsius,
+		Notes:                     &input.Notes,
+		BelongsToRecipe:           input.BelongsToRecipe,
+		Preparation:               &input.Preparation,
+		Index:                     &input.Index,
+		MinEstimatedTimeInSeconds: &input.MinEstimatedTimeInSeconds,
+		MaxEstimatedTimeInSeconds: &input.MaxEstimatedTimeInSeconds,
+		Optional:                  &input.Optional,
+	}
+
+	return x
 }
 
 // RecipeStepDatabaseCreationInputFromRecipeStepCreationInput creates a DatabaseCreationInput from a CreationInput.

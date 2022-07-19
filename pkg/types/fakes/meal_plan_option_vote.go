@@ -43,9 +43,9 @@ func BuildFakeMealPlanOptionVoteList() *types.MealPlanOptionVoteList {
 func BuildFakeMealPlanOptionVoteUpdateRequestInput() *types.MealPlanOptionVoteUpdateRequestInput {
 	mealPlanOptionVote := BuildFakeMealPlanOptionVote()
 	return &types.MealPlanOptionVoteUpdateRequestInput{
-		Rank:                    mealPlanOptionVote.Rank,
-		Abstain:                 mealPlanOptionVote.Abstain,
-		Notes:                   mealPlanOptionVote.Notes,
+		Rank:                    &mealPlanOptionVote.Rank,
+		Abstain:                 &mealPlanOptionVote.Abstain,
+		Notes:                   &mealPlanOptionVote.Notes,
 		BelongsToMealPlanOption: mealPlanOptionVote.BelongsToMealPlanOption,
 	}
 }
@@ -53,9 +53,9 @@ func BuildFakeMealPlanOptionVoteUpdateRequestInput() *types.MealPlanOptionVoteUp
 // BuildFakeMealPlanOptionVoteUpdateRequestInputFromMealPlanOptionVote builds a faked MealPlanOptionVoteUpdateRequestInput from a meal plan option vote.
 func BuildFakeMealPlanOptionVoteUpdateRequestInputFromMealPlanOptionVote(mealPlanOptionVote *types.MealPlanOptionVote) *types.MealPlanOptionVoteUpdateRequestInput {
 	return &types.MealPlanOptionVoteUpdateRequestInput{
-		Rank:                    mealPlanOptionVote.Rank,
-		Abstain:                 mealPlanOptionVote.Abstain,
-		Notes:                   mealPlanOptionVote.Notes,
+		Rank:                    &mealPlanOptionVote.Rank,
+		Abstain:                 &mealPlanOptionVote.Abstain,
+		Notes:                   &mealPlanOptionVote.Notes,
 		BelongsToMealPlanOption: mealPlanOptionVote.BelongsToMealPlanOption,
 	}
 }

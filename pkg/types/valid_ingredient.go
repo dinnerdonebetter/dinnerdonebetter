@@ -110,23 +110,23 @@ type (
 	// ValidIngredientUpdateRequestInput represents what a user could set as input for updating valid ingredients.
 	ValidIngredientUpdateRequestInput struct {
 		_                        struct{}
-		Name                     string `json:"name"`
-		Description              string `json:"description"`
-		Warning                  string `json:"warning"`
-		IconPath                 string `json:"iconPath"`
-		ContainsDairy            bool   `json:"containsDairy"`
-		ContainsPeanut           bool   `json:"containsPeanut"`
-		ContainsTreeNut          bool   `json:"containsTreeNut"`
-		ContainsEgg              bool   `json:"containsEgg"`
-		ContainsWheat            bool   `json:"containsWheat"`
-		ContainsShellfish        bool   `json:"containsShellfish"`
-		ContainsSesame           bool   `json:"containsSesame"`
-		ContainsFish             bool   `json:"containsFish"`
-		ContainsGluten           bool   `json:"containsGluten"`
-		AnimalFlesh              bool   `json:"animalFlesh"`
-		IsMeasuredVolumetrically bool   `json:"isMeasuredVolumetrically"`
-		IsLiquid                 bool   `json:"isLiquid"`
-		ContainsSoy              bool   `json:"containsSoy"`
+		Name                     *string `json:"name"`
+		Description              *string `json:"description"`
+		Warning                  *string `json:"warning"`
+		IconPath                 *string `json:"iconPath"`
+		ContainsDairy            *bool   `json:"containsDairy"`
+		ContainsPeanut           *bool   `json:"containsPeanut"`
+		ContainsTreeNut          *bool   `json:"containsTreeNut"`
+		ContainsEgg              *bool   `json:"containsEgg"`
+		ContainsWheat            *bool   `json:"containsWheat"`
+		ContainsShellfish        *bool   `json:"containsShellfish"`
+		ContainsSesame           *bool   `json:"containsSesame"`
+		ContainsFish             *bool   `json:"containsFish"`
+		ContainsGluten           *bool   `json:"containsGluten"`
+		AnimalFlesh              *bool   `json:"animalFlesh"`
+		IsMeasuredVolumetrically *bool   `json:"isMeasuredVolumetrically"`
+		IsLiquid                 *bool   `json:"isLiquid"`
+		ContainsSoy              *bool   `json:"containsSoy"`
 	}
 
 	// ValidIngredientDataManager describes a structure capable of storing valid ingredients permanently.
@@ -157,72 +157,72 @@ type (
 
 // Update merges an ValidIngredientUpdateRequestInput with a valid ingredient.
 func (x *ValidIngredient) Update(input *ValidIngredientUpdateRequestInput) {
-	if input.Name != "" && input.Name != x.Name {
-		x.Name = input.Name
+	if input.Name != nil && *input.Name != x.Name {
+		x.Name = *input.Name
 	}
 
-	if input.Description != "" && input.Description != x.Description {
-		x.Description = input.Description
+	if input.Description != nil && *input.Description != x.Description {
+		x.Description = *input.Description
 	}
 
-	if input.Warning != "" && input.Warning != x.Warning {
-		x.Warning = input.Warning
+	if input.Warning != nil && *input.Warning != x.Warning {
+		x.Warning = *input.Warning
 	}
 
-	if input.ContainsEgg != x.ContainsEgg {
-		x.ContainsEgg = input.ContainsEgg
+	if input.ContainsEgg != nil && *input.ContainsEgg != x.ContainsEgg {
+		x.ContainsEgg = *input.ContainsEgg
 	}
 
-	if input.ContainsDairy != x.ContainsDairy {
-		x.ContainsDairy = input.ContainsDairy
+	if input.ContainsDairy != nil && *input.ContainsDairy != x.ContainsDairy {
+		x.ContainsDairy = *input.ContainsDairy
 	}
 
-	if input.ContainsPeanut != x.ContainsPeanut {
-		x.ContainsPeanut = input.ContainsPeanut
+	if input.ContainsPeanut != nil && *input.ContainsPeanut != x.ContainsPeanut {
+		x.ContainsPeanut = *input.ContainsPeanut
 	}
 
-	if input.ContainsTreeNut != x.ContainsTreeNut {
-		x.ContainsTreeNut = input.ContainsTreeNut
+	if input.ContainsTreeNut != nil && *input.ContainsTreeNut != x.ContainsTreeNut {
+		x.ContainsTreeNut = *input.ContainsTreeNut
 	}
 
-	if input.ContainsSoy != x.ContainsSoy {
-		x.ContainsSoy = input.ContainsSoy
+	if input.ContainsSoy != nil && *input.ContainsSoy != x.ContainsSoy {
+		x.ContainsSoy = *input.ContainsSoy
 	}
 
-	if input.ContainsWheat != x.ContainsWheat {
-		x.ContainsWheat = input.ContainsWheat
+	if input.ContainsWheat != nil && *input.ContainsWheat != x.ContainsWheat {
+		x.ContainsWheat = *input.ContainsWheat
 	}
 
-	if input.ContainsShellfish != x.ContainsShellfish {
-		x.ContainsShellfish = input.ContainsShellfish
+	if input.ContainsShellfish != nil && *input.ContainsShellfish != x.ContainsShellfish {
+		x.ContainsShellfish = *input.ContainsShellfish
 	}
 
-	if input.ContainsSesame != x.ContainsSesame {
-		x.ContainsSesame = input.ContainsSesame
+	if input.ContainsSesame != nil && *input.ContainsSesame != x.ContainsSesame {
+		x.ContainsSesame = *input.ContainsSesame
 	}
 
-	if input.ContainsFish != x.ContainsFish {
-		x.ContainsFish = input.ContainsFish
+	if input.ContainsFish != nil && *input.ContainsFish != x.ContainsFish {
+		x.ContainsFish = *input.ContainsFish
 	}
 
-	if input.ContainsGluten != x.ContainsGluten {
-		x.ContainsGluten = input.ContainsGluten
+	if input.ContainsGluten != nil && *input.ContainsGluten != x.ContainsGluten {
+		x.ContainsGluten = *input.ContainsGluten
 	}
 
-	if input.AnimalFlesh != x.AnimalFlesh {
-		x.AnimalFlesh = input.AnimalFlesh
+	if input.AnimalFlesh != nil && *input.AnimalFlesh != x.AnimalFlesh {
+		x.AnimalFlesh = *input.AnimalFlesh
 	}
 
-	if input.IsMeasuredVolumetrically != x.IsMeasuredVolumetrically {
-		x.IsMeasuredVolumetrically = input.IsMeasuredVolumetrically
+	if input.IsMeasuredVolumetrically != nil && *input.IsMeasuredVolumetrically != x.IsMeasuredVolumetrically {
+		x.IsMeasuredVolumetrically = *input.IsMeasuredVolumetrically
 	}
 
-	if input.IsLiquid != x.IsLiquid {
-		x.IsLiquid = input.IsLiquid
+	if input.IsLiquid != nil && *input.IsLiquid != x.IsLiquid {
+		x.IsLiquid = *input.IsLiquid
 	}
 
-	if input.IconPath != "" && input.IconPath != x.IconPath {
-		x.IconPath = input.IconPath
+	if input.IconPath != nil && *input.IconPath != x.IconPath {
+		x.IconPath = *input.IconPath
 	}
 }
 
@@ -247,6 +247,31 @@ func (x *ValidIngredientDatabaseCreationInput) ValidateWithContext(ctx context.C
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Name, validation.Required),
 	)
+}
+
+// ValidIngredientUpdateRequestInputFromValidIngredient creates a DatabaseCreationInput from a CreationInput.
+func ValidIngredientUpdateRequestInputFromValidIngredient(input *ValidIngredient) *ValidIngredientUpdateRequestInput {
+	x := &ValidIngredientUpdateRequestInput{
+		Name:                     &input.Name,
+		Description:              &input.Description,
+		Warning:                  &input.Warning,
+		IconPath:                 &input.IconPath,
+		ContainsDairy:            &input.ContainsDairy,
+		ContainsPeanut:           &input.ContainsPeanut,
+		ContainsTreeNut:          &input.ContainsTreeNut,
+		ContainsEgg:              &input.ContainsEgg,
+		ContainsWheat:            &input.ContainsWheat,
+		ContainsShellfish:        &input.ContainsShellfish,
+		ContainsSesame:           &input.ContainsSesame,
+		ContainsFish:             &input.ContainsFish,
+		ContainsGluten:           &input.ContainsGluten,
+		AnimalFlesh:              &input.AnimalFlesh,
+		IsMeasuredVolumetrically: &input.IsMeasuredVolumetrically,
+		IsLiquid:                 &input.IsLiquid,
+		ContainsSoy:              &input.ContainsSoy,
+	}
+
+	return x
 }
 
 // ValidIngredientDatabaseCreationInputFromValidIngredientCreationInput creates a DatabaseCreationInput from a CreationInput.

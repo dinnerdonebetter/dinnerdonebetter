@@ -26,10 +26,10 @@ func checkRecipeStepProductEquality(t *testing.T, expected, actual *types.Recipe
 // convertRecipeStepProductToRecipeStepProductUpdateInput creates an RecipeStepProductUpdateRequestInput struct from a recipe step product.
 func convertRecipeStepProductToRecipeStepProductUpdateInput(x *types.RecipeStepProduct) *types.RecipeStepProductUpdateRequestInput {
 	return &types.RecipeStepProductUpdateRequestInput{
-		Name:          x.Name,
-		QuantityType:  x.QuantityType,
-		QuantityValue: x.QuantityValue,
-		QuantityNotes: x.QuantityNotes,
+		Name:          &x.Name,
+		QuantityType:  &x.QuantityType,
+		QuantityValue: &x.QuantityValue,
+		QuantityNotes: &x.QuantityNotes,
 	}
 }
 

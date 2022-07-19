@@ -27,10 +27,10 @@ func checkValidInstrumentEquality(t *testing.T, expected, actual *types.ValidIns
 // convertValidInstrumentToValidInstrumentUpdateInput creates an ValidInstrumentUpdateRequestInput struct from a valid instrument.
 func convertValidInstrumentToValidInstrumentUpdateInput(x *types.ValidInstrument) *types.ValidInstrumentUpdateRequestInput {
 	return &types.ValidInstrumentUpdateRequestInput{
-		Name:        x.Name,
-		Variant:     x.Variant,
-		Description: x.Description,
-		IconPath:    x.IconPath,
+		Name:        &x.Name,
+		Variant:     &x.Variant,
+		Description: &x.Description,
+		IconPath:    &x.IconPath,
 	}
 }
 

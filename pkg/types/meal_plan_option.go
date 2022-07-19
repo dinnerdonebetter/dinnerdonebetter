@@ -96,11 +96,11 @@ type (
 	// MealPlanOptionUpdateRequestInput represents what a user could set as input for updating meal plan options.
 	MealPlanOptionUpdateRequestInput struct {
 		_                 struct{}
-		MealID            string       `json:"mealID"`
-		Notes             string       `json:"notes"`
-		MealName          MealName     `json:"mealName"`
-		BelongsToMealPlan string       `json:"-"`
-		Day               time.Weekday `json:"day"`
+		MealID            *string       `json:"mealID"`
+		Notes             *string       `json:"notes"`
+		MealName          *MealName     `json:"mealName"`
+		BelongsToMealPlan *string       `json:"-"`
+		Day               *time.Weekday `json:"day"`
 	}
 
 	// MealPlanOptionDataManager describes a structure capable of storing meal plan options permanently.
@@ -128,17 +128,22 @@ type (
 
 // Update merges an MealPlanOptionUpdateRequestInput with a meal plan option.
 func (x *MealPlanOption) Update(input *MealPlanOptionUpdateRequestInput) {
-	if input.Day != 0 && input.Day != x.Day {
-		x.Day = input.Day
+	if input.Day != nil && *input.Day != x.Day {
+		x.Day = *input.Day
 	}
 
-	if input.MealID != "" && input.MealID != x.Meal.ID {
+	if input.MealID != nil && *input.MealID != x.Meal.ID {
 		// we should do something better here
-		x.Meal = Meal{ID: input.MealID}
+		x.Meal = Meal{ID: *input.MealID}
 	}
 
-	if input.Notes != "" && input.Notes != x.Notes {
-		x.Notes = input.Notes
+	if input.MealName != nil && *input.MealName != x.MealName {
+		// we should do something better here
+		x.MealName = *input.MealName
+	}
+
+	if input.Notes != nil && *input.Notes != x.Notes {
+		x.Notes = *input.Notes
 	}
 }
 
@@ -191,6 +196,19 @@ func (x *MealPlanOptionDatabaseCreationInput) ValidateWithContext(ctx context.Co
 			time.Sunday,
 		)),
 	)
+}
+
+// MealPlanOptionUpdateRequestInputFromMealPlanOption creates a DatabaseCreationInput from a CreationInput.
+func MealPlanOptionUpdateRequestInputFromMealPlanOption(input *MealPlanOption) *MealPlanOptionUpdateRequestInput {
+	x := &MealPlanOptionUpdateRequestInput{
+		MealID:            &input.Meal.ID,
+		Notes:             &input.Notes,
+		MealName:          &input.MealName,
+		BelongsToMealPlan: &input.BelongsToMealPlan,
+		Day:               &input.Day,
+	}
+
+	return x
 }
 
 // MealPlanOptionDatabaseCreationInputFromMealPlanOptionCreationInput creates a DatabaseCreationInput from a CreationInput.

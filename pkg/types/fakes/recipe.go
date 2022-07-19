@@ -50,22 +50,22 @@ func BuildFakeRecipeList() *types.RecipeList {
 func BuildFakeRecipeUpdateRequestInput() *types.RecipeUpdateRequestInput {
 	recipe := BuildFakeRecipe()
 	return &types.RecipeUpdateRequestInput{
-		Name:               recipe.Name,
-		Source:             recipe.Source,
-		Description:        recipe.Description,
+		Name:               &recipe.Name,
+		Source:             &recipe.Source,
+		Description:        &recipe.Description,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
-		CreatedByUser:      recipe.CreatedByUser,
+		CreatedByUser:      &recipe.CreatedByUser,
 	}
 }
 
 // BuildFakeRecipeUpdateRequestInputFromRecipe builds a faked RecipeUpdateRequestInput from a recipe.
 func BuildFakeRecipeUpdateRequestInputFromRecipe(recipe *types.Recipe) *types.RecipeUpdateRequestInput {
 	return &types.RecipeUpdateRequestInput{
-		Name:               recipe.Name,
-		Source:             recipe.Source,
-		Description:        recipe.Description,
+		Name:               &recipe.Name,
+		Source:             &recipe.Source,
+		Description:        &recipe.Description,
 		InspiredByRecipeID: recipe.InspiredByRecipeID,
-		CreatedByUser:      recipe.CreatedByUser,
+		CreatedByUser:      &recipe.CreatedByUser,
 	}
 }
 

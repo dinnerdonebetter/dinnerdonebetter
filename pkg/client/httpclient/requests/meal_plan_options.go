@@ -138,13 +138,7 @@ func (b *Builder) BuildUpdateMealPlanOptionRequest(ctx context.Context, mealPlan
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	input := &types.MealPlanOptionUpdateRequestInput{
-		MealID:            mealPlanOption.Meal.ID,
-		Notes:             mealPlanOption.Notes,
-		MealName:          mealPlanOption.MealName,
-		BelongsToMealPlan: mealPlanOption.BelongsToMealPlan,
-		Day:               mealPlanOption.Day,
-	}
+	input := types.MealPlanOptionUpdateRequestInputFromMealPlanOption(mealPlanOption)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {

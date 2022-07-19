@@ -142,7 +142,9 @@ func (b *Builder) BuildUpdateHouseholdRequest(ctx context.Context, household *ty
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	return b.buildDataRequest(ctx, http.MethodPut, uri, household)
+	input := types.HouseholdUpdateRequestInputFromHousehold(household)
+
+	return b.buildDataRequest(ctx, http.MethodPut, uri, input)
 }
 
 // BuildArchiveHouseholdRequest builds an HTTP request for archiving a household.

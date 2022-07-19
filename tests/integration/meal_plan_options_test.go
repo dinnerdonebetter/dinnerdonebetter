@@ -24,9 +24,9 @@ func checkMealPlanOptionEquality(t *testing.T, expected, actual *types.MealPlanO
 // convertMealPlanOptionToMealPlanOptionUpdateInput creates an MealPlanOptionUpdateRequestInput struct from a meal plan option.
 func convertMealPlanOptionToMealPlanOptionUpdateInput(x *types.MealPlanOption) *types.MealPlanOptionUpdateRequestInput {
 	return &types.MealPlanOptionUpdateRequestInput{
-		Day:    x.Day,
-		MealID: x.Meal.ID,
-		Notes:  x.Notes,
+		Day:    &x.Day,
+		MealID: &x.Meal.ID,
+		Notes:  &x.Notes,
 	}
 }
 

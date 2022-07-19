@@ -63,15 +63,7 @@ func BuildFakeHouseholdList() *types.HouseholdList {
 func BuildFakeHouseholdUpdateInput() *types.HouseholdUpdateRequestInput {
 	household := BuildFakeHousehold()
 	return &types.HouseholdUpdateRequestInput{
-		Name:          household.Name,
-		BelongsToUser: household.BelongsToUser,
-	}
-}
-
-// BuildFakeHouseholdUpdateInputFromHousehold builds a faked HouseholdUpdateRequestInput from a household.
-func BuildFakeHouseholdUpdateInputFromHousehold(household *types.Household) *types.HouseholdUpdateRequestInput {
-	return &types.HouseholdUpdateRequestInput{
-		Name:          household.Name,
+		Name:          &household.Name,
 		BelongsToUser: household.BelongsToUser,
 	}
 }

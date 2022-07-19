@@ -73,10 +73,10 @@ type (
 	ValidInstrumentUpdateRequestInput struct {
 		_ struct{}
 
-		Name        string `json:"name"`
-		Variant     string `json:"variant"`
-		Description string `json:"description"`
-		IconPath    string `json:"iconPath"`
+		Name        *string `json:"name"`
+		Variant     *string `json:"variant"`
+		Description *string `json:"description"`
+		IconPath    *string `json:"iconPath"`
 	}
 
 	// ValidInstrumentDataManager describes a structure capable of storing valid instruments permanently.
@@ -107,20 +107,20 @@ type (
 
 // Update merges an ValidInstrumentUpdateRequestInput with a valid instrument.
 func (x *ValidInstrument) Update(input *ValidInstrumentUpdateRequestInput) {
-	if input.Name != "" && input.Name != x.Name {
-		x.Name = input.Name
+	if input.Name != nil && *input.Name != x.Name {
+		x.Name = *input.Name
 	}
 
-	if input.Variant != "" && input.Variant != x.Variant {
-		x.Variant = input.Variant
+	if input.Variant != nil && *input.Variant != x.Variant {
+		x.Variant = *input.Variant
 	}
 
-	if input.Description != "" && input.Description != x.Description {
-		x.Description = input.Description
+	if input.Description != nil && *input.Description != x.Description {
+		x.Description = *input.Description
 	}
 
-	if input.IconPath != "" && input.IconPath != x.IconPath {
-		x.IconPath = input.IconPath
+	if input.IconPath != nil && *input.IconPath != x.IconPath {
+		x.IconPath = *input.IconPath
 	}
 }
 
@@ -145,6 +145,18 @@ func (x *ValidInstrumentDatabaseCreationInput) ValidateWithContext(ctx context.C
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Name, validation.Required),
 	)
+}
+
+// ValidInstrumentUpdateRequestInputFromValidInstrument creates a DatabaseCreationInput from a CreationInput.
+func ValidInstrumentUpdateRequestInputFromValidInstrument(input *ValidInstrument) *ValidInstrumentUpdateRequestInput {
+	x := &ValidInstrumentUpdateRequestInput{
+		Name:        &input.Name,
+		Variant:     &input.Variant,
+		Description: &input.Description,
+		IconPath:    &input.IconPath,
+	}
+
+	return x
 }
 
 // ValidInstrumentDatabaseCreationInputFromValidInstrumentCreationInput creates a DatabaseCreationInput from a CreationInput.

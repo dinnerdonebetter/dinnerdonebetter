@@ -29,9 +29,9 @@ func checkRecipeEquality(t *testing.T, expected, actual *types.Recipe) {
 // convertRecipeToRecipeUpdateInput creates an RecipeUpdateRequestInput struct from a recipe.
 func convertRecipeToRecipeUpdateInput(x *types.Recipe) *types.RecipeUpdateRequestInput {
 	return &types.RecipeUpdateRequestInput{
-		Name:               x.Name,
-		Source:             x.Source,
-		Description:        x.Description,
+		Name:               &x.Name,
+		Source:             &x.Source,
+		Description:        &x.Description,
 		InspiredByRecipeID: x.InspiredByRecipeID,
 	}
 }

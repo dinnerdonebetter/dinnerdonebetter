@@ -48,7 +48,7 @@ func main() {
 		panic(err)
 	}
 
-	createdWebhook, err := client.CreateWebhook(ctx, fakes.BuildFakeWebhookCreationInput())
+	createdWebhook, err := client.CreateWebhook(ctx, fakes.BuildFakeWebhookCreationRequestInput())
 	if err != nil {
 		panic(err)
 	}

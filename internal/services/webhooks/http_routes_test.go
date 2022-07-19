@@ -32,7 +32,7 @@ func TestWebhooksService_CreateHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeWebhookDatabaseCreationInput()
+		exampleCreationInput := fakes.BuildFakeWebhookCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -69,7 +69,7 @@ func TestWebhooksService_CreateHandler(T *testing.T) {
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeWebhookDatabaseCreationInput()
+		exampleCreationInput := fakes.BuildFakeWebhookCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -134,7 +134,7 @@ func TestWebhooksService_CreateHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeWebhookDatabaseCreationInput()
+		exampleCreationInput := fakes.BuildFakeWebhookCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -162,7 +162,7 @@ func TestWebhooksService_CreateHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeWebhookDatabaseCreationInput()
+		exampleCreationInput := fakes.BuildFakeWebhookCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error

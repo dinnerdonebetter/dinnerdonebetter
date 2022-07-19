@@ -170,7 +170,9 @@ func (b *Builder) BuildUpdateValidIngredientRequest(ctx context.Context, validIn
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, validIngredient)
+	input := types.ValidIngredientUpdateRequestInputFromValidIngredient(validIngredient)
+
+	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "building request")
 	}

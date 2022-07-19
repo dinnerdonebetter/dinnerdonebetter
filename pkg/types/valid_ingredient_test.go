@@ -54,22 +54,22 @@ func TestValidIngredientUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidIngredientUpdateRequestInput{
-			Name:                     fake.LoremIpsumSentence(exampleQuantity),
-			Description:              fake.LoremIpsumSentence(exampleQuantity),
-			Warning:                  fake.LoremIpsumSentence(exampleQuantity),
-			ContainsEgg:              fake.Bool(),
-			ContainsDairy:            fake.Bool(),
-			ContainsPeanut:           fake.Bool(),
-			ContainsTreeNut:          fake.Bool(),
-			ContainsSoy:              fake.Bool(),
-			ContainsWheat:            fake.Bool(),
-			ContainsShellfish:        fake.Bool(),
-			ContainsSesame:           fake.Bool(),
-			ContainsFish:             fake.Bool(),
-			ContainsGluten:           fake.Bool(),
-			AnimalFlesh:              fake.Bool(),
-			IsMeasuredVolumetrically: fake.Bool(),
-			IconPath:                 fake.LoremIpsumSentence(exampleQuantity),
+			Name:                     stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Description:              stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Warning:                  stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			ContainsEgg:              boolPointer(fake.Bool()),
+			ContainsDairy:            boolPointer(fake.Bool()),
+			ContainsPeanut:           boolPointer(fake.Bool()),
+			ContainsTreeNut:          boolPointer(fake.Bool()),
+			ContainsSoy:              boolPointer(fake.Bool()),
+			ContainsWheat:            boolPointer(fake.Bool()),
+			ContainsShellfish:        boolPointer(fake.Bool()),
+			ContainsSesame:           boolPointer(fake.Bool()),
+			ContainsFish:             boolPointer(fake.Bool()),
+			ContainsGluten:           boolPointer(fake.Bool()),
+			AnimalFlesh:              boolPointer(fake.Bool()),
+			IsMeasuredVolumetrically: boolPointer(fake.Bool()),
+			IconPath:                 stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

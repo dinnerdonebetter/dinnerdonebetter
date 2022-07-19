@@ -91,7 +91,7 @@ func TestBuilder_BuildCreateWebhookRequest(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper()
-		exampleInput := fakes.BuildFakeWebhookCreationInput()
+		exampleInput := fakes.BuildFakeWebhookCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 
@@ -128,7 +128,7 @@ func TestBuilder_BuildCreateWebhookRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
-		exampleInput := fakes.BuildFakeWebhookCreationInput()
+		exampleInput := fakes.BuildFakeWebhookCreationRequestInput()
 
 		actual, err := helper.builder.BuildCreateWebhookRequest(helper.ctx, exampleInput)
 		assert.Nil(t, actual)

@@ -87,10 +87,10 @@ type (
 	HouseholdUpdateRequestInput struct {
 		_ struct{}
 
-		Name          string `json:"name"`
-		ContactEmail  string `json:"contactEmail"`
-		ContactPhone  string `json:"contactPhone"`
-		BelongsToUser string `json:"-"`
+		Name          *string `json:"name"`
+		ContactEmail  *string `json:"contactEmail"`
+		ContactPhone  *string `json:"contactPhone"`
+		BelongsToUser string  `json:"-"`
 	}
 
 	// HouseholdDataManager describes a structure capable of storing households permanently.
@@ -122,8 +122,16 @@ type (
 
 // Update merges a householdUpdateInput with a household.
 func (x *Household) Update(input *HouseholdUpdateRequestInput) {
-	if input.Name != "" && input.Name != x.Name {
-		x.Name = input.Name
+	if input.Name != nil && *input.Name != x.Name {
+		x.Name = *input.Name
+	}
+
+	if input.ContactEmail != nil && *input.ContactEmail != x.ContactEmail {
+		x.ContactEmail = *input.ContactEmail
+	}
+
+	if input.ContactPhone != nil && *input.ContactPhone != x.ContactPhone {
+		x.ContactPhone = *input.ContactPhone
 	}
 }
 
@@ -160,6 +168,18 @@ func HouseholdDatabaseCreationInputFromHouseholdCreationInput(input *HouseholdCr
 		Name:          input.Name,
 		ContactEmail:  input.ContactEmail,
 		ContactPhone:  input.ContactPhone,
+		BelongsToUser: input.BelongsToUser,
+	}
+
+	return x
+}
+
+// HouseholdUpdateRequestInputFromHousehold creates a HouseholdCreationRequestInput from a CreationInput.
+func HouseholdUpdateRequestInputFromHousehold(input *Household) *HouseholdUpdateRequestInput {
+	x := &HouseholdUpdateRequestInput{
+		Name:          &input.Name,
+		ContactEmail:  &input.ContactEmail,
+		ContactPhone:  &input.ContactPhone,
 		BelongsToUser: input.BelongsToUser,
 	}
 
