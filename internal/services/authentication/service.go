@@ -4,15 +4,16 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/prixfixeco/api_server/internal/messagequeue"
-
 	"github.com/alexedwards/scs/v2"
 	"github.com/gorilla/securecookie"
 
 	"github.com/prixfixeco/api_server/internal/authentication"
+	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/encoding"
+	"github.com/prixfixeco/api_server/internal/messagequeue"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/random"
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
@@ -33,18 +34,21 @@ type (
 
 	// service handles passwords service-wide.
 	service struct {
-		config                     *Config
-		logger                     logging.Logger
-		authenticator              authentication.Authenticator
-		userDataManager            types.UserDataManager
-		apiClientManager           types.APIClientDataManager
-		householdMembershipManager types.HouseholdUserMembershipDataManager
-		encoderDecoder             encoding.ServerEncoderDecoder
-		cookieManager              cookieEncoderDecoder
-		sessionManager             sessionManager
-		sessionContextDataFetcher  func(*http.Request) (*types.SessionContextData, error)
-		tracer                     tracing.Tracer
-		dataChangesPublisher       messagequeue.Publisher
+		config                        *Config
+		logger                        logging.Logger
+		authenticator                 authentication.Authenticator
+		userDataManager               types.UserDataManager
+		passwordResetTokenDataManager types.PasswordResetTokenDataManager
+		apiClientManager              types.APIClientDataManager
+		householdMembershipManager    types.HouseholdUserMembershipDataManager
+		encoderDecoder                encoding.ServerEncoderDecoder
+		secretGenerator               random.Generator
+		emailer                       email.Emailer
+		cookieManager                 cookieEncoderDecoder
+		sessionManager                sessionManager
+		sessionContextDataFetcher     func(*http.Request) (*types.SessionContextData, error)
+		tracer                        tracing.Tracer
+		dataChangesPublisher          messagequeue.Publisher
 	}
 )
 
@@ -60,30 +64,36 @@ func ProvideService(
 	encoder encoding.ServerEncoderDecoder,
 	tracerProvider tracing.TracerProvider,
 	publisherProvider messagequeue.PublisherProvider,
+	passwordResetTokenDataManager types.PasswordResetTokenDataManager,
+	secretGenerator random.Generator,
+	emailer email.Emailer,
 ) (types.AuthService, error) {
 	hashKey := []byte(cfg.Cookies.HashKey)
 	if len(hashKey) == 0 {
 		hashKey = securecookie.GenerateRandomKey(cookieSecretSize)
 	}
 
-	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
-	if err != nil {
-		return nil, fmt.Errorf("setting up auth service data changes publisher: %w", err)
+	dataChangesPublisher, publisherProviderErr := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
+	if publisherProviderErr != nil {
+		return nil, fmt.Errorf("setting up auth service data changes publisher: %w", publisherProviderErr)
 	}
 
 	svc := &service{
-		logger:                     logging.EnsureLogger(logger).WithName(serviceName),
-		encoderDecoder:             encoder,
-		config:                     cfg,
-		userDataManager:            userDataManager,
-		apiClientManager:           apiClientsService,
-		householdMembershipManager: householdMembershipManager,
-		authenticator:              authenticator,
-		sessionManager:             sessionManager,
-		sessionContextDataFetcher:  FetchContextFromRequest,
-		cookieManager:              securecookie.New(hashKey, []byte(cfg.Cookies.BlockKey)),
-		tracer:                     tracing.NewTracer(tracerProvider.Tracer(serviceName)),
-		dataChangesPublisher:       dataChangesPublisher,
+		logger:                        logging.EnsureLogger(logger).WithName(serviceName),
+		encoderDecoder:                encoder,
+		config:                        cfg,
+		userDataManager:               userDataManager,
+		passwordResetTokenDataManager: passwordResetTokenDataManager,
+		apiClientManager:              apiClientsService,
+		householdMembershipManager:    householdMembershipManager,
+		authenticator:                 authenticator,
+		sessionManager:                sessionManager,
+		emailer:                       emailer,
+		secretGenerator:               secretGenerator,
+		sessionContextDataFetcher:     FetchContextFromRequest,
+		cookieManager:                 securecookie.New(hashKey, []byte(cfg.Cookies.BlockKey)),
+		tracer:                        tracing.NewTracer(tracerProvider.Tracer(serviceName)),
+		dataChangesPublisher:          dataChangesPublisher,
 	}
 
 	if _, err := svc.cookieManager.Encode(cfg.Cookies.Name, "blah"); err != nil {

@@ -55,10 +55,6 @@ func newCountDBRowResponse(count uint64) *sqlmock.Rows {
 	return sqlmock.NewRows([]string{"count"}).AddRow(count)
 }
 
-func newDatabaseIDResponse(id string) *sqlmock.Rows {
-	return sqlmock.NewRows([]string{"id"}).AddRow(id)
-}
-
 func newArbitraryDatabaseResult() driver.Result {
 	return sqlmock.NewResult(1, 1)
 }

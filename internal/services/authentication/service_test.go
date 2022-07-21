@@ -4,16 +4,17 @@ import (
 	"testing"
 	"time"
 
-	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
-
 	"github.com/alexedwards/scs/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	mockauthn "github.com/prixfixeco/api_server/internal/authentication/mock"
+	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/encoding"
+	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/random"
 	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
 )
 
@@ -50,6 +51,9 @@ func buildTestService(t *testing.T) *service {
 		encoderDecoder,
 		tracing.NewNoopTracerProvider(),
 		pp,
+		&mocktypes.PasswordResetTokenDataManager{},
+		random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
+		&email.MockEmailer{},
 	)
 	require.NoError(t, err)
 
@@ -85,6 +89,9 @@ func TestProvideService(T *testing.T) {
 			encoderDecoder,
 			tracing.NewNoopTracerProvider(),
 			pp,
+			&mocktypes.PasswordResetTokenDataManager{},
+			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
+			&email.MockEmailer{},
 		)
 
 		assert.NotNil(t, s)
@@ -122,6 +129,9 @@ func TestProvideService(T *testing.T) {
 			encoderDecoder,
 			tracing.NewNoopTracerProvider(),
 			pp,
+			&mocktypes.PasswordResetTokenDataManager{},
+			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
+			&email.MockEmailer{},
 		)
 
 		assert.Nil(t, s)

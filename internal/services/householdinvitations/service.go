@@ -54,6 +54,7 @@ func ProvideHouseholdInvitationsService(
 	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
 	emailer email.Emailer,
+	secretGenerator random.Generator,
 ) (types.HouseholdInvitationDataService, error) {
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
 	if err != nil {
@@ -67,7 +68,7 @@ func ProvideHouseholdInvitationsService(
 		encoderDecoder:                 encoder,
 		dataChangesPublisher:           dataChangesPublisher,
 		emailer:                        emailer,
-		secretGenerator:                random.NewGenerator(logger, tracerProvider),
+		secretGenerator:                secretGenerator,
 		sessionContextDataFetcher:      authservice.FetchContextFromRequest,
 		householdIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(householdsservice.HouseholdIDURIParamKey),
 		householdInvitationIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(HouseholdInvitationIDURIParamKey),

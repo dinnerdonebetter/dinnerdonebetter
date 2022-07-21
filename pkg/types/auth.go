@@ -126,6 +126,7 @@ type (
 		CycleCookieSecretHandler(res http.ResponseWriter, req *http.Request)
 		PASETOHandler(res http.ResponseWriter, req *http.Request)
 		ChangeActiveHouseholdHandler(res http.ResponseWriter, req *http.Request)
+		CreatePasswordResetTokenHandler(res http.ResponseWriter, req *http.Request)
 
 		PermissionFilterMiddleware(permissions ...authorization.Permission) func(next http.Handler) http.Handler
 		CookieRequirementMiddleware(next http.Handler) http.Handler

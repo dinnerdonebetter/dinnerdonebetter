@@ -34,6 +34,7 @@ func NewMockDatabase() *MockDatabase {
 		UserDataManager:                       &mocktypes.UserDataManager{},
 		AdminUserDataManager:                  &mocktypes.AdminUserDataManager{},
 		APIClientDataManager:                  &mocktypes.APIClientDataManager{},
+		PasswordResetTokenDataManager:         &mocktypes.PasswordResetTokenDataManager{},
 		WebhookDataManager:                    &mocktypes.WebhookDataManager{},
 	}
 }
@@ -58,6 +59,7 @@ type MockDatabase struct {
 	*mocktypes.MealPlanOptionVoteDataManager
 	*mocktypes.UserDataManager
 	*mocktypes.APIClientDataManager
+	*mocktypes.PasswordResetTokenDataManager
 	*mocktypes.WebhookDataManager
 	*mocktypes.HouseholdDataManager
 	*mocktypes.HouseholdInvitationDataManager

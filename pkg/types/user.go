@@ -161,7 +161,7 @@ type (
 		UserHasStatus(ctx context.Context, userID string, statuses ...string) (bool, error)
 		GetUser(ctx context.Context, userID string) (*User, error)
 		GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, userID string) (*User, error)
-		GetUserIDByEmail(ctx context.Context, email string) (string, error)
+		GetUserByEmail(ctx context.Context, email string) (*User, error)
 		MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID string) error
 		GetUserByUsername(ctx context.Context, username string) (*User, error)
 		GetAdminUserByUsername(ctx context.Context, username string) (*User, error)

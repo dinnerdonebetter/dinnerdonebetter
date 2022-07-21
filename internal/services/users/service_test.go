@@ -16,6 +16,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	mockmetrics "github.com/prixfixeco/api_server/internal/observability/metrics/mock"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/random"
 	"github.com/prixfixeco/api_server/internal/routing/chi"
 	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
@@ -59,6 +60,7 @@ func buildTestService(t *testing.T) *service {
 		chi.NewRouteParamManager(),
 		tracing.NewNoopTracerProvider(),
 		pp,
+		random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 	)
 
 	require.NoError(t, err)
@@ -101,6 +103,7 @@ func TestProvideUsersService(T *testing.T) {
 			rpm,
 			tracing.NewNoopTracerProvider(),
 			pp,
+			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 		)
 
 		assert.NotNil(t, s)

@@ -5,15 +5,15 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/prixfixeco/api_server/internal/email"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
+	"github.com/prixfixeco/api_server/internal/email"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/random"
 	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
 	householdsservice "github.com/prixfixeco/api_server/internal/services/households"
 	mocktypes "github.com/prixfixeco/api_server/pkg/types/mock"
@@ -61,6 +61,7 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 			pp,
 			tracing.NewNoopTracerProvider(),
 			&email.MockEmailer{},
+			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 		)
 
 		assert.NotNil(t, actual)
@@ -89,6 +90,7 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 			pp,
 			tracing.NewNoopTracerProvider(),
 			&email.MockEmailer{},
+			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 		)
 
 		assert.Nil(t, actual)

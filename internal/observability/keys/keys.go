@@ -9,7 +9,7 @@ const (
 	HouseholdIDKey = "household.id"
 	// HouseholdInvitationIDKey is the standard key for referring to a household ID.
 	HouseholdInvitationIDKey = "household_invitation.id"
-	// HouseholdInvitationTokenKey is the standard key for referring to a household ID.
+	// HouseholdInvitationTokenKey is the standard key for referring to a household invitation token.
 	HouseholdInvitationTokenKey = "household_invitation.token"
 	// ActiveHouseholdIDKey is the standard key for referring to an active household ID.
 	ActiveHouseholdIDKey = "active_household.id"
@@ -21,7 +21,7 @@ const (
 	UserIsServiceAdminKey = "user.is_admin"
 	// UsernameKey is the standard key for referring to a username.
 	UsernameKey = "user.username"
-	// ServiceRoleKey is the standard key for referring to a username.
+	// ServiceRoleKey is the standard key for referring to a user's service role.
 	ServiceRoleKey = "user.service_role"
 	// NameKey is the standard key for referring to a name.
 	NameKey = "name"
@@ -45,14 +45,16 @@ const (
 	FilterLimitKey = "query_filter.limit"
 	// FilterIsNilKey is the standard key for referring to a types.QueryFilter's null status.
 	FilterIsNilKey = "query_filter.is_nil"
-	// APIClientClientIDKey is the standard key for referring to an API client's database ID.
+	// APIClientClientIDKey is the standard key for referring to an API client's Client ID.
 	APIClientClientIDKey = "api_client.client.id"
 	// APIClientDatabaseIDKey is the standard key for referring to an API client's database ID.
 	APIClientDatabaseIDKey = "api_client.id"
 	// WebhookIDKey is the standard key for referring to a webhook's ID.
 	WebhookIDKey = "webhook.id"
-	// URLKey is the standard key for referring to a url.
+	// URLKey is the standard key for referring to a URL.
 	URLKey = "url"
+	// PasswordResetTokenIDKey is the standard key for referring to a password reset token's ID.
+	PasswordResetTokenIDKey = "password_reset_token.id"
 	// RequestHeadersKey is the standard key for referring to an http.Request's Headers.
 	RequestHeadersKey = "request.headers"
 	// RequestMethodKey is the standard key for referring to an http.Request's Method.
@@ -67,19 +69,19 @@ const (
 	ResponseStatusKey = "response.status"
 	// ResponseHeadersKey is the standard key for referring to an http.Response's Headers.
 	ResponseHeadersKey = "response.headers"
-	// ReasonKey is the standard key for referring to a reason.
+	// ReasonKey is the standard key for referring to a reason for a change.
 	ReasonKey = "reason"
 	// DatabaseQueryKey is the standard key for referring to a database query.
 	DatabaseQueryKey = "database_query"
-	// URLQueryKey is the standard key for referring to a url query.
+	// URLQueryKey is the standard key for referring to a URL query.
 	URLQueryKey = "url.query"
 	// SearchQueryKey is the standard key for referring to a search query parameter value.
 	SearchQueryKey = "search_query"
-	// UserAgentOSKey is the standard key for referring to a search query parameter value.
+	// UserAgentOSKey is the standard key for referring to a user agent's OS.
 	UserAgentOSKey = "os"
-	// UserAgentBotKey is the standard key for referring to a search query parameter value.
+	// UserAgentBotKey is the standard key for referring to a user agent's bot status.
 	UserAgentBotKey = "is_bot"
-	// UserAgentMobileKey is the standard key for referring to a search query parameter value.
+	// UserAgentMobileKey is the standard key for referring to user agent's mobile status.
 	UserAgentMobileKey = "is_mobile"
 	// QueryErrorKey is the standard key for referring to an error building a query.
 	QueryErrorKey = "QUERY_ERROR"

@@ -79,15 +79,15 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 	}
 	input.Token = token
 
-	userID, err := s.userDataManager.GetUserIDByEmail(ctx, input.ToEmail)
+	user, err := s.userDataManager.GetUserByEmail(ctx, input.ToEmail)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		observability.AcknowledgeError(err, logger, span, "fetching user ID by email")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	if userID != "" {
-		input.ToUser = &userID
+	if user != nil {
+		input.ToUser = &user.ID
 	}
 
 	householdInvitation, err := s.householdInvitationDataManager.CreateHouseholdInvitation(ctx, input)

@@ -68,6 +68,7 @@ func ProvideUsersService(
 	routeParamManager routing.RouteParamManager,
 	tracerProvider tracing.TracerProvider,
 	publisherProvider messagequeue.PublisherProvider,
+	secretGenerator random.Generator,
 ) (types.UserDataService, error) {
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
 	if err != nil {
@@ -85,7 +86,7 @@ func ProvideUsersService(
 		encoderDecoder:                 encoder,
 		authSettings:                   authSettings,
 		userCounter:                    metrics.EnsureUnitCounter(counterProvider, logger, counterName, counterDescription),
-		secretGenerator:                random.NewGenerator(logger, tracerProvider),
+		secretGenerator:                secretGenerator,
 		tracer:                         tracing.NewTracer(tracerProvider.Tracer(serviceName)),
 		imageUploadProcessor:           imageUploadProcessor,
 		uploadManager:                  uploadManager,

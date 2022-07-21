@@ -18,6 +18,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/random"
 	"github.com/prixfixeco/api_server/internal/routing/chi"
 	"github.com/prixfixeco/api_server/internal/server"
 	adminservice "github.com/prixfixeco/api_server/internal/services/admin"
@@ -67,6 +68,7 @@ func Build(
 		uploads.Providers,
 		storage.Providers,
 		chi.Providers,
+		random.Providers,
 		authentication.Providers,
 		authservice.Providers,
 		usersservice.Providers,

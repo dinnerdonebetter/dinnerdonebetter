@@ -135,6 +135,11 @@ var (
 			Description: "drop uniqueness constraints on meal plan optinos",
 			Script:      fetchMigration("00024_remove_meal_plan_uniqueness_constraint"),
 		},
+		{
+			Version:     25,
+			Description: "add password reset tokens",
+			Script:      fetchMigration("00025_add_password_reset_tokens"),
+		},
 	}
 )
 

@@ -16,8 +16,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/securecookie"
 	"github.com/o1egl/paseto"
+	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/internal/authentication"
+	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -522,6 +524,69 @@ func (s *service) buildPASETOResponse(ctx context.Context, sessionCtxData *types
 	}
 
 	return tokenRes, nil
+}
+
+// CreatePasswordResetTokenHandler rotates the cookie building secret with a new random secret.
+func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	input := new(types.PasswordResetTokenCreationRequestInput)
+	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
+		observability.AcknowledgeError(err, logger, span, "decoding request body")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		return
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	token, err := s.secretGenerator.GenerateBase32EncodedString(ctx, 32)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "generating secret")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	u, err := s.userDataManager.GetUserByEmail(ctx, input.EmailAddress)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "creating password reset token")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	dbInput := &types.PasswordResetTokenDatabaseCreationInput{
+		ID:            ksuid.New().String(),
+		Token:         token,
+		BelongsToUser: u.ID,
+		ExpiresAt:     uint64(time.Now().Add(30 * time.Minute).Unix()),
+	}
+
+	t, err := s.passwordResetTokenDataManager.CreatePasswordResetToken(ctx, dbInput)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "creating password reset token")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if s.emailer != nil {
+		msg, emailGenerationErr := email.BuildPasswordResetEmail(u.EmailAddress, t)
+		if emailGenerationErr != nil {
+			observability.AcknowledgeError(emailGenerationErr, logger, span, "building email message")
+		} else {
+			if err = s.emailer.SendEmail(ctx, msg); err != nil {
+				observability.AcknowledgeError(err, logger, span, "sending email notice")
+			}
+		}
+	}
+
+	res.WriteHeader(http.StatusAccepted)
 }
 
 // CycleCookieSecretHandler rotates the cookie building secret with a new random secret.
