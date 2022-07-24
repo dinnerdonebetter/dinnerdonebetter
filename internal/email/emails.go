@@ -234,7 +234,7 @@ func BuildPasswordResetTokenRedeemedEmail(toEmail string) (*OutboundMessageDetai
 		ToName:      "",
 		FromAddress: emails.passwordResetRedemption,
 		FromName:    "PrixFixe",
-		Subject:     "A password reset link was requested for your PrixFixe account",
+		Subject:     "Your PrixFixe account password has been changed.",
 		HTMLContent: b.String(),
 	}
 
