@@ -210,6 +210,26 @@ func BuildFakePasswordResetTokenCreationRequestInput() *types.PasswordResetToken
 	return &types.PasswordResetTokenCreationRequestInput{EmailAddress: fake.Email()}
 }
 
+// BuildFakePasswordResetTokenDatabaseCreationInput builds a faked PasswordResetTokenDatabaseCreationInput.
+func BuildFakePasswordResetTokenDatabaseCreationInput() *types.PasswordResetTokenDatabaseCreationInput {
+	return &types.PasswordResetTokenDatabaseCreationInput{
+		ID:            ksuid.New().String(),
+		Token:         fake.UUID(),
+		BelongsToUser: ksuid.New().String(),
+		ExpiresAt:     uint64(uint32(time.Now().Add(30 * time.Minute).Unix())),
+	}
+}
+
+// BuildFakePasswordResetTokenDatabaseCreationInputFromPasswordResetToken builds a faked PasswordResetTokenDatabaseCreationInput.
+func BuildFakePasswordResetTokenDatabaseCreationInputFromPasswordResetToken(input *types.PasswordResetToken) *types.PasswordResetTokenDatabaseCreationInput {
+	return &types.PasswordResetTokenDatabaseCreationInput{
+		ID:            input.ID,
+		Token:         input.Token,
+		BelongsToUser: input.BelongsToUser,
+		ExpiresAt:     input.ExpiresAt,
+	}
+}
+
 // BuildFakePasswordResetTokenRedemptionRequestInput builds a faked PasswordResetTokenRedemptionRequestInput.
 func BuildFakePasswordResetTokenRedemptionRequestInput() *types.PasswordResetTokenRedemptionRequestInput {
 	return &types.PasswordResetTokenRedemptionRequestInput{

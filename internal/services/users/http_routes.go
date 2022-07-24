@@ -782,15 +782,13 @@ func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *
 		return
 	}
 
-	if s.emailer != nil {
-		msg, emailGenerationErr := email.BuildGeneratedPasswordResetTokenEmail(u.EmailAddress, t)
-		if emailGenerationErr != nil {
-			observability.AcknowledgeError(emailGenerationErr, logger, span, "building email message")
-		} else {
-			if err = s.emailer.SendEmail(ctx, msg); err != nil {
-				observability.AcknowledgeError(err, logger, span, "sending email notice")
-			}
-		}
+	msg, emailGenerationErr := email.BuildGeneratedPasswordResetTokenEmail(u.EmailAddress, t)
+	if emailGenerationErr != nil {
+		observability.AcknowledgeError(emailGenerationErr, logger, span, "building email message")
+	}
+
+	if emailSendErr := s.emailer.SendEmail(ctx, msg); emailSendErr != nil {
+		observability.AcknowledgeError(emailSendErr, logger, span, "sending email notice")
 	}
 
 	res.WriteHeader(http.StatusAccepted)
@@ -823,7 +821,7 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching password reset token")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -856,15 +854,13 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 		return
 	}
 
-	if s.emailer != nil {
-		msg, emailGenerationErr := email.BuildPasswordResetTokenRedeemedEmail(u.EmailAddress)
-		if emailGenerationErr != nil {
-			observability.AcknowledgeError(emailGenerationErr, logger, span, "building email message")
-		} else {
-			if err = s.emailer.SendEmail(ctx, msg); err != nil {
-				observability.AcknowledgeError(err, logger, span, "sending email notice")
-			}
-		}
+	msg, emailGenerationErr := email.BuildPasswordResetTokenRedeemedEmail(u.EmailAddress)
+	if emailGenerationErr != nil {
+		observability.AcknowledgeError(emailGenerationErr, logger, span, "building email message")
+	}
+
+	if emailSendErr := s.emailer.SendEmail(ctx, msg); emailSendErr != nil {
+		observability.AcknowledgeError(emailSendErr, logger, span, "sending email notice")
 	}
 
 	res.WriteHeader(http.StatusAccepted)

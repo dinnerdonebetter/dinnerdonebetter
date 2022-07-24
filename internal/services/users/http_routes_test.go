@@ -6,16 +6,17 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/prixfixeco/api_server/internal/email"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+
 	mockauthn "github.com/prixfixeco/api_server/internal/authentication/mock"
 	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	mockencoding "github.com/prixfixeco/api_server/internal/encoding/mock"
 	mockpublishers "github.com/prixfixeco/api_server/internal/messagequeue/mock"
@@ -2549,6 +2550,213 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, sg, mockDB, emailer)
 	})
+
+	T.Run("with missing input", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader([]byte("")))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		helper.service.CreatePasswordResetTokenHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+	})
+
+	T.Run("with invalid input", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := types.PasswordResetTokenCreationRequestInput{}
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		helper.service.CreatePasswordResetTokenHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+	})
+
+	T.Run("with error generating secret", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakePasswordResetTokenCreationRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		sg := &mockrandom.Generator{}
+		sg.On(
+			"GenerateBase32EncodedString",
+			testutils.ContextMatcher,
+			passwordResetTokenSize,
+		).Return("", errors.New("blah"))
+		helper.service.secretGenerator = sg
+
+		helper.service.CreatePasswordResetTokenHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, sg)
+	})
+
+	T.Run("with error getting user by email", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakePasswordResetTokenCreationRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		exampleToken := fakes.BuildFakePasswordResetToken()
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		sg := &mockrandom.Generator{}
+		sg.On(
+			"GenerateBase32EncodedString",
+			testutils.ContextMatcher,
+			passwordResetTokenSize,
+		).Return(exampleToken.Token, nil)
+		helper.service.secretGenerator = sg
+
+		mockDB := database.NewMockDatabase()
+		mockDB.UserDataManager.On(
+			"GetUserByEmail",
+			testutils.ContextMatcher,
+			exampleInput.EmailAddress,
+		).Return((*types.User)(nil), errors.New("blah"))
+
+		helper.service.userDataManager = mockDB
+		helper.service.passwordResetTokenDataManager = mockDB
+
+		helper.service.CreatePasswordResetTokenHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, sg, mockDB)
+	})
+
+	T.Run("with error creating password reset token", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakePasswordResetTokenCreationRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		exampleToken := fakes.BuildFakePasswordResetToken()
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		sg := &mockrandom.Generator{}
+		sg.On(
+			"GenerateBase32EncodedString",
+			testutils.ContextMatcher,
+			passwordResetTokenSize,
+		).Return(exampleToken.Token, nil)
+		helper.service.secretGenerator = sg
+
+		mockDB := database.NewMockDatabase()
+		mockDB.UserDataManager.On(
+			"GetUserByEmail",
+			testutils.ContextMatcher,
+			exampleInput.EmailAddress,
+		).Return(helper.exampleUser, nil)
+
+		mockDB.PasswordResetTokenDataManager.On(
+			"CreatePasswordResetToken",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(x *types.PasswordResetTokenDatabaseCreationInput) bool { return true }),
+		).Return((*types.PasswordResetToken)(nil), errors.New("blah"))
+
+		helper.service.userDataManager = mockDB
+		helper.service.passwordResetTokenDataManager = mockDB
+
+		helper.service.CreatePasswordResetTokenHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, sg, mockDB)
+	})
+
+	T.Run("with error sending email", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakePasswordResetTokenCreationRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		exampleToken := fakes.BuildFakePasswordResetToken()
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		sg := &mockrandom.Generator{}
+		sg.On(
+			"GenerateBase32EncodedString",
+			testutils.ContextMatcher,
+			passwordResetTokenSize,
+		).Return(exampleToken.Token, nil)
+		helper.service.secretGenerator = sg
+
+		mockDB := database.NewMockDatabase()
+		mockDB.UserDataManager.On(
+			"GetUserByEmail",
+			testutils.ContextMatcher,
+			exampleInput.EmailAddress,
+		).Return(helper.exampleUser, nil)
+
+		mockDB.PasswordResetTokenDataManager.On(
+			"CreatePasswordResetToken",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(x *types.PasswordResetTokenDatabaseCreationInput) bool { return true }),
+		).Return(exampleToken, nil)
+
+		emailer := &email.MockEmailer{}
+		emailer.On(
+			"SendEmail",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(*email.OutboundMessageDetails) bool { return true }),
+		).Return(errors.New("blah"))
+		helper.service.emailer = emailer
+
+		helper.service.userDataManager = mockDB
+		helper.service.passwordResetTokenDataManager = mockDB
+
+		helper.service.CreatePasswordResetTokenHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, sg, mockDB, emailer)
+	})
 }
 
 func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
@@ -2605,6 +2813,355 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*email.OutboundMessageDetails) bool { return true }),
 		).Return(nil)
+		helper.service.emailer = emailer
+
+		helper.service.userDataManager = mockDB
+		helper.service.passwordResetTokenDataManager = mockDB
+
+		helper.service.PasswordResetTokenRedemptionHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB, emailer)
+	})
+
+	T.Run("with missing input", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader([]byte("")))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		helper.service.PasswordResetTokenRedemptionHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+	})
+
+	T.Run("with invalid input", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := &types.PasswordResetTokenRedemptionRequestInput{}
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+		helper.service.PasswordResetTokenRedemptionHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+	})
+
+	T.Run("with missing password reset token", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakePasswordResetTokenRedemptionRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		exampleToken := fakes.BuildFakePasswordResetToken()
+		exampleToken.BelongsToUser = helper.exampleUser.ID
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.PasswordResetTokenDataManager.On(
+			"GetPasswordResetTokenByToken",
+			testutils.ContextMatcher,
+			exampleInput.Token,
+		).Return((*types.PasswordResetToken)(nil), sql.ErrNoRows)
+
+		helper.service.userDataManager = mockDB
+		helper.service.passwordResetTokenDataManager = mockDB
+
+		helper.service.PasswordResetTokenRedemptionHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+
+	T.Run("with error finding password reset token", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakePasswordResetTokenRedemptionRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		exampleToken := fakes.BuildFakePasswordResetToken()
+		exampleToken.BelongsToUser = helper.exampleUser.ID
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.PasswordResetTokenDataManager.On(
+			"GetPasswordResetTokenByToken",
+			testutils.ContextMatcher,
+			exampleInput.Token,
+		).Return((*types.PasswordResetToken)(nil), errors.New("blah"))
+
+		helper.service.userDataManager = mockDB
+		helper.service.passwordResetTokenDataManager = mockDB
+
+		helper.service.PasswordResetTokenRedemptionHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+
+	T.Run("with error getting user", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakePasswordResetTokenRedemptionRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		exampleToken := fakes.BuildFakePasswordResetToken()
+		exampleToken.BelongsToUser = helper.exampleUser.ID
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.PasswordResetTokenDataManager.On(
+			"GetPasswordResetTokenByToken",
+			testutils.ContextMatcher,
+			exampleInput.Token,
+		).Return(exampleToken, nil)
+
+		mockDB.UserDataManager.On(
+			"GetUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return((*types.User)(nil), errors.New("blah"))
+
+		helper.service.userDataManager = mockDB
+		helper.service.passwordResetTokenDataManager = mockDB
+
+		helper.service.PasswordResetTokenRedemptionHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+
+	T.Run("with too weak a password", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakePasswordResetTokenRedemptionRequestInput()
+		exampleInput.NewPassword = "123"
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		exampleToken := fakes.BuildFakePasswordResetToken()
+		exampleToken.BelongsToUser = helper.exampleUser.ID
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.PasswordResetTokenDataManager.On(
+			"GetPasswordResetTokenByToken",
+			testutils.ContextMatcher,
+			exampleInput.Token,
+		).Return(exampleToken, nil)
+
+		mockDB.UserDataManager.On(
+			"GetUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleUser, nil)
+
+		helper.service.userDataManager = mockDB
+		helper.service.passwordResetTokenDataManager = mockDB
+
+		helper.service.PasswordResetTokenRedemptionHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+
+	T.Run("with error hashing password", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakePasswordResetTokenRedemptionRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		exampleToken := fakes.BuildFakePasswordResetToken()
+		exampleToken.BelongsToUser = helper.exampleUser.ID
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.PasswordResetTokenDataManager.On(
+			"GetPasswordResetTokenByToken",
+			testutils.ContextMatcher,
+			exampleInput.Token,
+		).Return(exampleToken, nil)
+
+		mockDB.UserDataManager.On(
+			"GetUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleUser, nil)
+
+		auth := &mockauthn.Authenticator{}
+		auth.On(
+			"HashPassword",
+			testutils.ContextMatcher,
+			exampleInput.NewPassword,
+		).Return("", errors.New("blah"))
+		helper.service.authenticator = auth
+
+		helper.service.userDataManager = mockDB
+		helper.service.passwordResetTokenDataManager = mockDB
+
+		helper.service.PasswordResetTokenRedemptionHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+
+	T.Run("with error updating new password", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakePasswordResetTokenRedemptionRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		exampleToken := fakes.BuildFakePasswordResetToken()
+		exampleToken.BelongsToUser = helper.exampleUser.ID
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.PasswordResetTokenDataManager.On(
+			"GetPasswordResetTokenByToken",
+			testutils.ContextMatcher,
+			exampleInput.Token,
+		).Return(exampleToken, nil)
+
+		mockDB.UserDataManager.On(
+			"GetUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleUser, nil)
+
+		auth := &mockauthn.Authenticator{}
+		auth.On(
+			"HashPassword",
+			testutils.ContextMatcher,
+			exampleInput.NewPassword,
+		).Return(helper.exampleUser.HashedPassword, nil)
+		helper.service.authenticator = auth
+
+		mockDB.UserDataManager.On(
+			"UpdateUserPassword",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+			mock.IsType("string"),
+		).Return(errors.New("blah"))
+
+		helper.service.userDataManager = mockDB
+		helper.service.passwordResetTokenDataManager = mockDB
+
+		helper.service.PasswordResetTokenRedemptionHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+
+	T.Run("with error sending email", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		exampleInput := fakes.BuildFakePasswordResetTokenRedemptionRequestInput()
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
+
+		exampleToken := fakes.BuildFakePasswordResetToken()
+		exampleToken.BelongsToUser = helper.exampleUser.ID
+
+		var err error
+		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://local.prixfixe.dev", bytes.NewReader(jsonBytes))
+		require.NoError(t, err)
+		require.NotNil(t, helper.req)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.PasswordResetTokenDataManager.On(
+			"GetPasswordResetTokenByToken",
+			testutils.ContextMatcher,
+			exampleInput.Token,
+		).Return(exampleToken, nil)
+
+		mockDB.UserDataManager.On(
+			"GetUser",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+		).Return(helper.exampleUser, nil)
+
+		auth := &mockauthn.Authenticator{}
+		auth.On(
+			"HashPassword",
+			testutils.ContextMatcher,
+			exampleInput.NewPassword,
+		).Return(helper.exampleUser.HashedPassword, nil)
+		helper.service.authenticator = auth
+
+		mockDB.UserDataManager.On(
+			"UpdateUserPassword",
+			testutils.ContextMatcher,
+			helper.exampleUser.ID,
+			mock.IsType("string"),
+		).Return(nil)
+
+		emailer := &email.MockEmailer{}
+		emailer.On(
+			"SendEmail",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(*email.OutboundMessageDetails) bool { return true }),
+		).Return(errors.New("blah"))
 		helper.service.emailer = emailer
 
 		helper.service.userDataManager = mockDB

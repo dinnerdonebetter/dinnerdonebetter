@@ -12,14 +12,23 @@ import (
 
 var (
 	_ types.PasswordResetTokenDataManager = (*SQLQuerier)(nil)
+
+	// passwordResetTokensTableColumns are the columns for the password_reset_tokens table.
+	passwordResetTokensTableColumns = []string{
+		"password_reset_tokens.id",
+		"password_reset_tokens.token",
+		"password_reset_tokens.expires_at",
+		"password_reset_tokens.created_on",
+		"password_reset_tokens.last_updated_on",
+		"password_reset_tokens.redeemed_on",
+		"password_reset_tokens.belongs_to_user",
+	}
 )
 
 // scanPasswordResetToken takes a database Scanner (i.e. *sql.Row) and scans the result into a password reset token struct.
-func (q *SQLQuerier) scanPasswordResetToken(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.PasswordResetToken, filteredCount, totalCount uint64, err error) {
+func (q *SQLQuerier) scanPasswordResetToken(ctx context.Context, scan database.Scanner) (x *types.PasswordResetToken, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := q.logger.WithValue("include_counts", includeCounts)
 
 	x = &types.PasswordResetToken{}
 
@@ -33,12 +42,8 @@ func (q *SQLQuerier) scanPasswordResetToken(ctx context.Context, scan database.S
 		&x.BelongsToUser,
 	}
 
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
-	}
-
 	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, logger, span, "")
+		return nil, 0, 0, observability.PrepareError(err, q.logger, span, "")
 	}
 
 	return x, filteredCount, totalCount, nil
@@ -76,7 +81,7 @@ func (q *SQLQuerier) GetPasswordResetTokenByToken(ctx context.Context, token str
 
 	row := q.getOneRow(ctx, q.db, "passwordResetToken", getPasswordResetTokenQuery, args)
 
-	passwordResetToken, _, _, err := q.scanPasswordResetToken(ctx, row, false)
+	passwordResetToken, _, _, err := q.scanPasswordResetToken(ctx, row)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "scanning passwordResetToken")
 	}
@@ -122,7 +127,7 @@ func (q *SQLQuerier) CreatePasswordResetToken(ctx context.Context, input *types.
 	return x, nil
 }
 
-const archivePasswordResetTokenQuery = "UPDATE password_reset_tokens SET redeemed_on = extract(epoch FROM NOW()) WHERE redeemed_on IS NULL AND id = $1"
+const redeemPasswordResetTokenQuery = "UPDATE password_reset_tokens SET redeemed_on = extract(epoch FROM NOW()) WHERE redeemed_on IS NULL AND id = $1"
 
 // RedeemPasswordResetToken redeems a password reset token from the database by its ID.
 func (q *SQLQuerier) RedeemPasswordResetToken(ctx context.Context, passwordResetTokenID string) error {
@@ -141,7 +146,7 @@ func (q *SQLQuerier) RedeemPasswordResetToken(ctx context.Context, passwordReset
 		passwordResetTokenID,
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "password reset token archive", archivePasswordResetTokenQuery, args); err != nil {
+	if err := q.performWriteQuery(ctx, q.db, "password reset token archive", redeemPasswordResetTokenQuery, args); err != nil {
 		return observability.PrepareError(err, logger, span, "updating password reset token")
 	}
 
