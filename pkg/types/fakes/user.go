@@ -205,6 +205,13 @@ func BuildFakePasswordResetToken() *types.PasswordResetToken {
 	}
 }
 
+// BuildFakeUsernameReminderRequestInput builds a faked UsernameReminderRequestInput.
+func BuildFakeUsernameReminderRequestInput() *types.UsernameReminderRequestInput {
+	return &types.UsernameReminderRequestInput{
+		EmailAddress: fake.Email(),
+	}
+}
+
 // BuildFakePasswordResetTokenCreationRequestInput builds a faked PasswordResetTokenCreationRequestInput.
 func BuildFakePasswordResetTokenCreationRequestInput() *types.PasswordResetTokenCreationRequestInput {
 	return &types.PasswordResetTokenCreationRequestInput{EmailAddress: fake.Email()}

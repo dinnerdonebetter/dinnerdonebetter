@@ -390,5 +390,10 @@ func (s *TestSuite) TestLogin_RequestingPasswordReset() {
 			TOTPToken: generateTOTPTokenForUser(t, u),
 		})
 		requireNotNilAndNoProblems(t, cookie, err)
+
+		require.Error(t, testClient.RedeemPasswordResetToken(ctx, &types.PasswordResetTokenRedemptionRequestInput{
+			Token:       resetToken.Token,
+			NewPassword: fakeInput.Password,
+		}))
 	})
 }

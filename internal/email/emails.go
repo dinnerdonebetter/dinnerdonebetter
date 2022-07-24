@@ -38,6 +38,8 @@ var (
 var (
 	//go:embed templates/invite.tmpl
 	outgoingInviteTemplate string
+	//go:embed templates/username_reminder.tmpl
+	usernameReminderTemplate string
 	//go:embed templates/password_reset.tmpl
 	passwordResetTemplate string
 	//go:embed templates/password_reset_token_redeemed.tmpl
@@ -132,6 +134,52 @@ func BuildGeneratedPasswordResetTokenEmail(toEmail string, passwordResetToken *t
 	}
 
 	tmpl := template.Must(template.New("").Funcs(map[string]interface{}{}).Parse(passwordResetTemplate))
+	var b bytes.Buffer
+	if err := tmpl.Execute(&b, content); err != nil {
+		return nil, fmt.Errorf("error rendering email template: %w", err)
+	}
+
+	msg := &OutboundMessageDetails{
+		ToAddress:   toEmail,
+		ToName:      "",
+		FromAddress: emails.passwordResetCreation,
+		FromName:    "PrixFixe",
+		Subject:     "A password reset link was requested for your PrixFixe account",
+		HTMLContent: b.String(),
+	}
+
+	return msg, nil
+}
+
+type usernameReminderContent struct {
+	WebAppURL string
+	Username  string
+}
+
+// BuildUsernameReminderEmail builds an email notifying a user that they've been invited to join a household.
+func BuildUsernameReminderEmail(toEmail, username string) (*OutboundMessageDetails, error) {
+	env := determineEnv()
+
+	urlMapHat.Lock()
+	envAddr, ok := urlMap[env]
+	if !ok {
+		return nil, fmt.Errorf("no available URL for environment")
+	}
+	urlMapHat.Unlock()
+
+	emailsMapHat.Lock()
+	emails, ok := emailsMap[env]
+	if !ok {
+		return nil, fmt.Errorf("no available email for environment")
+	}
+	emailsMapHat.Unlock()
+
+	content := &usernameReminderContent{
+		WebAppURL: envAddr,
+		Username:  username,
+	}
+
+	tmpl := template.Must(template.New("").Funcs(map[string]interface{}{}).Parse(usernameReminderTemplate))
 	var b bytes.Buffer
 	if err := tmpl.Execute(&b, content); err != nil {
 		return nil, fmt.Errorf("error rendering email template: %w", err)

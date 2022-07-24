@@ -72,6 +72,7 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 			Post("/logout", s.authService.EndSessionHandler)
 		userRouter.Post(root, s.usersService.CreateHandler)
 		userRouter.Post("/totp_secret/verify", s.usersService.TOTPSecretVerificationHandler)
+		userRouter.Post("/username/reminder", s.usersService.RequestUsernameReminderHandler)
 		userRouter.Post("/password/reset", s.usersService.CreatePasswordResetTokenHandler)
 		userRouter.Post("/password/reset/redeem", s.usersService.PasswordResetTokenRedemptionHandler)
 
