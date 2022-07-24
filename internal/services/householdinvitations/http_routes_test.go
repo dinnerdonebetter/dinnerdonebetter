@@ -45,10 +45,10 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 
 		udm := &mocktypes.UserDataManager{}
 		udm.On(
-			"GetUserIDByEmail",
+			"GetUserByEmail",
 			testutils.ContextMatcher,
 			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
-		).Return(helper.exampleUser.ID, nil)
+		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = udm
 
 		sg := &mockrandom.Generator{}
@@ -203,10 +203,10 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 
 		udm := &mocktypes.UserDataManager{}
 		udm.On(
-			"GetUserIDByEmail",
+			"GetUserByEmail",
 			testutils.ContextMatcher,
 			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
-		).Return("", errors.New("blah"))
+		).Return((*types.User)(nil), errors.New("blah"))
 		helper.service.userDataManager = udm
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
@@ -231,10 +231,10 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 
 		udm := &mocktypes.UserDataManager{}
 		udm.On(
-			"GetUserIDByEmail",
+			"GetUserByEmail",
 			testutils.ContextMatcher,
 			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
-		).Return(helper.exampleUser.ID, nil)
+		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = udm
 
 		sg := &mockrandom.Generator{}
@@ -275,10 +275,10 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 
 		udm := &mocktypes.UserDataManager{}
 		udm.On(
-			"GetUserIDByEmail",
+			"GetUserByEmail",
 			testutils.ContextMatcher,
 			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
-		).Return(helper.exampleUser.ID, nil)
+		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = udm
 
 		sg := &mockrandom.Generator{}
@@ -327,10 +327,10 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 
 		udm := &mocktypes.UserDataManager{}
 		udm.On(
-			"GetUserIDByEmail",
+			"GetUserByEmail",
 			testutils.ContextMatcher,
 			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
-		).Return(helper.exampleUser.ID, nil)
+		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = udm
 
 		sg := &mockrandom.Generator{}
@@ -379,10 +379,10 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 
 		udm := &mocktypes.UserDataManager{}
 		udm.On(
-			"GetUserIDByEmail",
+			"GetUserByEmail",
 			testutils.ContextMatcher,
 			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
-		).Return(helper.exampleUser.ID, nil)
+		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = udm
 
 		sg := &mockrandom.Generator{}

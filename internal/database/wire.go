@@ -28,6 +28,7 @@ var (
 		ProvideUserDataManager,
 		ProvideAdminUserDataManager,
 		ProvideAPIClientDataManager,
+		ProvidePasswordResetTokenDataManager,
 		ProvideWebhookDataManager,
 	)
 )
@@ -124,6 +125,11 @@ func ProvideAdminUserDataManager(db DataManager) types.AdminUserDataManager {
 
 // ProvideAPIClientDataManager is an arbitrary function for dependency injection's sake.
 func ProvideAPIClientDataManager(db DataManager) types.APIClientDataManager {
+	return db
+}
+
+// ProvidePasswordResetTokenDataManager is an arbitrary function for dependency injection's sake.
+func ProvidePasswordResetTokenDataManager(db DataManager) types.PasswordResetTokenDataManager {
 	return db
 }
 

@@ -14,6 +14,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	mockmetrics "github.com/prixfixeco/api_server/internal/observability/metrics/mock"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/random"
 	mockrandom "github.com/prixfixeco/api_server/internal/random/mock"
 	mockrouting "github.com/prixfixeco/api_server/internal/routing/mock"
 	authservice "github.com/prixfixeco/api_server/internal/services/authentication"
@@ -62,6 +63,7 @@ func TestProvideAPIClientsService(T *testing.T) {
 			rpm,
 			&Config{},
 			tracing.NewNoopTracerProvider(),
+			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 		)
 		assert.NotNil(t, s)
 

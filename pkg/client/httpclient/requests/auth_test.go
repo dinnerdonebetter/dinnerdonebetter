@@ -267,3 +267,86 @@ func TestBuilder_BuildVerifyTOTPSecretRequest(T *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+func TestBuilder_BuildPasswordResetTokenRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPath = "/users/password/reset"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
+
+		actual, err := helper.builder.BuildPasswordResetTokenRequest(helper.ctx, helper.exampleUser.EmailAddress)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid email address", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		actual, err := helper.builder.BuildPasswordResetTokenRequest(helper.ctx, "")
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+
+		actual, err := helper.builder.BuildPasswordResetTokenRequest(helper.ctx, helper.exampleUser.EmailAddress)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
+func TestBuilder_BuildPasswordResetTokenRedemptionRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPath = "/users/password/reset/redeem"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		exampleInput := &types.PasswordResetTokenRedemptionRequestInput{Token: t.Name()}
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
+
+		actual, err := helper.builder.BuildPasswordResetTokenRedemptionRequest(helper.ctx, exampleInput)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid email address", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		actual, err := helper.builder.BuildPasswordResetTokenRedemptionRequest(helper.ctx, nil)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+
+		exampleInput := &types.PasswordResetTokenRedemptionRequestInput{Token: t.Name()}
+
+		actual, err := helper.builder.BuildPasswordResetTokenRedemptionRequest(helper.ctx, exampleInput)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}

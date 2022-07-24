@@ -188,3 +188,63 @@ func (c *Client) VerifyTOTPSecret(ctx context.Context, userID, token string) err
 
 	return nil
 }
+
+// RequestPasswordResetToken requests a password reset token.
+func (c *Client) RequestPasswordResetToken(ctx context.Context, emailAddress string) error {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if emailAddress == "" {
+		return ErrEmptyEmailAddressProvided
+	}
+
+	logger := c.logger.WithValue(keys.UserEmailAddressKey, emailAddress)
+
+	req, err := c.requestBuilder.BuildPasswordResetTokenRequest(ctx, emailAddress)
+	if err != nil {
+		return observability.PrepareError(err, logger, span, "building password reset token request")
+	}
+
+	res, err := c.fetchResponseToRequest(ctx, c.unauthenticatedClient, req)
+	if err != nil {
+		return observability.PrepareError(err, logger, span, "requesting password reset token")
+	}
+
+	c.closeResponseBody(ctx, res)
+
+	if res.StatusCode != http.StatusAccepted {
+		return observability.PrepareError(errInvalidResponseCode, logger, span, "erroneous response code when requesting password reset token: %d", res.StatusCode)
+	}
+
+	return nil
+}
+
+// RedeemPasswordResetToken redeems a password reset token.
+func (c *Client) RedeemPasswordResetToken(ctx context.Context, input *types.PasswordResetTokenRedemptionRequestInput) error {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil {
+		return ErrNilInputProvided
+	}
+
+	logger := c.logger.Clone()
+
+	req, err := c.requestBuilder.BuildPasswordResetTokenRedemptionRequest(ctx, input)
+	if err != nil {
+		return observability.PrepareError(err, logger, span, "building password reset token redemption request")
+	}
+
+	res, err := c.fetchResponseToRequest(ctx, c.unauthenticatedClient, req)
+	if err != nil {
+		return observability.PrepareError(err, logger, span, "requesting password reset token redemption")
+	}
+
+	c.closeResponseBody(ctx, res)
+
+	if res.StatusCode != http.StatusAccepted {
+		return observability.PrepareError(errInvalidResponseCode, logger, span, "erroneous response code when redeeming password reset token: %d", res.StatusCode)
+	}
+
+	return nil
+}

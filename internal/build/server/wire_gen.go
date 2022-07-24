@@ -18,6 +18,7 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/metrics"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/internal/random"
 	"github.com/prixfixeco/api_server/internal/routing/chi"
 	"github.com/prixfixeco/api_server/internal/server"
 	"github.com/prixfixeco/api_server/internal/services/admin"
@@ -69,7 +70,8 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	if err != nil {
 		return nil, err
 	}
-	authService, err := authentication2.ProvideService(logger, authenticationConfig, authenticator, userDataManager, apiClientDataManager, householdUserMembershipDataManager, sessionManager, serverEncoderDecoder, tracerProvider, publisherProvider)
+	generator := random.NewGenerator(logger, tracerProvider)
+	authService, err := authentication2.ProvideService(logger, authenticationConfig, authenticator, userDataManager, apiClientDataManager, householdUserMembershipDataManager, sessionManager, serverEncoderDecoder, tracerProvider, publisherProvider, generator, emailer)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +87,8 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 		return nil, err
 	}
 	uploadManager := uploads.ProvideUploadManager(uploader)
-	userDataService, err := users.ProvideUsersService(usersConfig, authenticationConfig, logger, userDataManager, householdDataManager, householdInvitationDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, imageUploadProcessor, uploadManager, routeParamManager, tracerProvider, publisherProvider)
+	passwordResetTokenDataManager := database.ProvidePasswordResetTokenDataManager(dataManager)
+	userDataService, err := users.ProvideUsersService(usersConfig, authenticationConfig, logger, userDataManager, householdDataManager, householdInvitationDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, imageUploadProcessor, uploadManager, routeParamManager, tracerProvider, publisherProvider, generator, passwordResetTokenDataManager, emailer)
 	if err != nil {
 		return nil, err
 	}
@@ -95,12 +98,12 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 		return nil, err
 	}
 	householdinvitationsConfig := &servicesConfigurations.HouseholdInvitations
-	householdInvitationDataService, err := householdinvitations.ProvideHouseholdInvitationsService(logger, householdinvitationsConfig, userDataManager, householdInvitationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, emailer)
+	householdInvitationDataService, err := householdinvitations.ProvideHouseholdInvitationsService(logger, householdinvitationsConfig, userDataManager, householdInvitationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, emailer, generator)
 	if err != nil {
 		return nil, err
 	}
 	apiclientsConfig := apiclients.ProvideConfig(authenticationConfig)
-	apiClientDataService := apiclients.ProvideAPIClientsService(logger, apiClientDataManager, userDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, routeParamManager, apiclientsConfig, tracerProvider)
+	apiClientDataService := apiclients.ProvideAPIClientsService(logger, apiClientDataManager, userDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, routeParamManager, apiclientsConfig, tracerProvider, generator)
 	validinstrumentsConfig := &servicesConfigurations.ValidInstruments
 	validInstrumentDataManager := database.ProvideValidInstrumentDataManager(dataManager)
 	validInstrumentDataService, err := validinstruments.ProvideService(logger, validinstrumentsConfig, validInstrumentDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)

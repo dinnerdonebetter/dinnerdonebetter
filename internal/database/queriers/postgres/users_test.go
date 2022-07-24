@@ -344,7 +344,7 @@ func TestQuerier_GetUserWithUnverifiedTwoFactorSecret(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetUserIDByEmail(T *testing.T) {
+func TestQuerier_GetUserByEmail(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -358,11 +358,11 @@ func TestQuerier_GetUserIDByEmail(T *testing.T) {
 		args := []interface{}{exampleUser.EmailAddress}
 		db.ExpectQuery(formatQueryForSQLMock(getUserIDByEmailQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(newDatabaseIDResponse(exampleUser.ID))
+			WillReturnRows(buildMockRowsFromUsers(false, 0, exampleUser))
 
-		actual, err := c.GetUserIDByEmail(ctx, exampleUser.EmailAddress)
+		actual, err := c.GetUserByEmail(ctx, exampleUser.EmailAddress)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleUser.ID, actual)
+		assert.Equal(t, exampleUser, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -373,7 +373,7 @@ func TestQuerier_GetUserIDByEmail(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		actual, err := c.GetUserIDByEmail(ctx, "")
+		actual, err := c.GetUserByEmail(ctx, "")
 		assert.Error(t, err)
 		assert.Empty(t, actual)
 
@@ -393,7 +393,7 @@ func TestQuerier_GetUserIDByEmail(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.GetUserIDByEmail(ctx, exampleUser.EmailAddress)
+		actual, err := c.GetUserByEmail(ctx, exampleUser.EmailAddress)
 		assert.Error(t, err)
 		assert.Empty(t, actual)
 

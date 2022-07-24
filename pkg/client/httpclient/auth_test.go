@@ -408,3 +408,137 @@ func (s *authTestSuite) TestClient_VerifyTOTPSecret() {
 		assert.Error(t, err)
 	})
 }
+
+func (s *authTestSuite) TestClient_RequestPasswordResetToken() {
+	const expectedPath = "/users/password/reset"
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
+		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
+
+		err := c.RequestPasswordResetToken(s.ctx, s.exampleUser.EmailAddress)
+		assert.NoError(t, err)
+	})
+
+	s.Run("with invalid user ID", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+
+		err := c.RequestPasswordResetToken(s.ctx, "")
+		assert.Error(t, err)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		c := buildTestClientWithInvalidURL(t)
+
+		err := c.RequestPasswordResetToken(s.ctx, s.exampleUser.EmailAddress)
+		assert.Error(t, err)
+	})
+
+	s.Run("with bad request response", func() {
+		t := s.T()
+
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
+		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusBadRequest)
+
+		err := c.RequestPasswordResetToken(s.ctx, s.exampleUser.EmailAddress)
+		assert.Error(t, err)
+	})
+
+	s.Run("with otherwise invalid status code response", func() {
+		t := s.T()
+
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
+		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusInternalServerError)
+
+		err := c.RequestPasswordResetToken(s.ctx, s.exampleUser.EmailAddress)
+		assert.Error(t, err)
+	})
+
+	s.Run("with timeout", func() {
+		t := s.T()
+
+		c, _ := buildTestClientThatWaitsTooLong(t)
+		c.unauthenticatedClient.Timeout = time.Millisecond
+
+		err := c.RequestPasswordResetToken(s.ctx, s.exampleUser.EmailAddress)
+		assert.Error(t, err)
+	})
+}
+
+func (s *authTestSuite) TestClient_RedeemPasswordResetToken() {
+	const expectedPath = "/users/password/reset/redeem"
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
+		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
+
+		exampleInput := fakes.BuildFakePasswordResetTokenRedemptionRequestInput()
+
+		err := c.RedeemPasswordResetToken(s.ctx, exampleInput)
+		assert.NoError(t, err)
+	})
+
+	s.Run("with invalid user ID", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+
+		err := c.RedeemPasswordResetToken(s.ctx, nil)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		c := buildTestClientWithInvalidURL(t)
+
+		exampleInput := fakes.BuildFakePasswordResetTokenRedemptionRequestInput()
+
+		err := c.RedeemPasswordResetToken(s.ctx, exampleInput)
+		assert.Error(t, err)
+	})
+
+	s.Run("with bad request response", func() {
+		t := s.T()
+
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
+		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusBadRequest)
+
+		exampleInput := fakes.BuildFakePasswordResetTokenRedemptionRequestInput()
+
+		err := c.RedeemPasswordResetToken(s.ctx, exampleInput)
+		assert.Error(t, err)
+	})
+
+	s.Run("with otherwise invalid status code response", func() {
+		t := s.T()
+
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
+		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusInternalServerError)
+
+		exampleInput := fakes.BuildFakePasswordResetTokenRedemptionRequestInput()
+
+		err := c.RedeemPasswordResetToken(s.ctx, exampleInput)
+		assert.Error(t, err)
+	})
+
+	s.Run("with timeout", func() {
+		t := s.T()
+
+		c, _ := buildTestClientThatWaitsTooLong(t)
+		c.unauthenticatedClient.Timeout = time.Millisecond
+
+		exampleInput := fakes.BuildFakePasswordResetTokenRedemptionRequestInput()
+
+		err := c.RedeemPasswordResetToken(s.ctx, exampleInput)
+		assert.Error(t, err)
+	})
+}

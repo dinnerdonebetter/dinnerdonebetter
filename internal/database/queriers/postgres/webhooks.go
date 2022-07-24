@@ -23,7 +23,7 @@ const (
 var (
 	_ types.WebhookDataManager = (*SQLQuerier)(nil)
 
-	// householdInvitationsTableColumns are the columns for the webhooks table.
+	// webhooksTableColumns are the columns for the webhooks table.
 	webhooksTableColumns = []string{
 		"webhooks.id",
 		"webhooks.name",

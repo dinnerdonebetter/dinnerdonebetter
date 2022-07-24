@@ -71,6 +71,7 @@ type (
 		types.HouseholdUserMembershipDataManager
 		types.UserDataManager
 		types.APIClientDataManager
+		types.PasswordResetTokenDataManager
 		types.WebhookDataManager
 		types.ValidInstrumentDataManager
 		types.ValidIngredientDataManager

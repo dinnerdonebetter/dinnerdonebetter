@@ -10,6 +10,7 @@ import (
 	"image/png"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/boombuler/barcode"
 	"github.com/boombuler/barcode/qr"
@@ -19,6 +20,7 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/authorization"
 	"github.com/prixfixeco/api_server/internal/database"
+	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
@@ -33,6 +35,7 @@ const (
 	base64ImagePrefix      = "data:image/jpeg;base64,"
 	minimumPasswordEntropy = 75
 	totpSecretSize         = 64
+	passwordResetTokenSize = 32
 )
 
 // validateCredentialChangeRequest takes a user's credentials and determines
@@ -615,14 +618,14 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 
 	tracing.AttachUsernameToSpan(span, user.Username)
 
-	// ensure the passwords isn't garbage-tier
+	// ensure the password isn't garbage-tier
 	if err = passwordvalidator.Validate(input.NewPassword, minimumPasswordEntropy); err != nil {
 		logger.WithValue("password_validation_error", err).Debug("invalid password provided")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "new passwords is too weak!", http.StatusBadRequest)
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "new password is too weak!", http.StatusBadRequest)
 		return
 	}
 
-	// hash the new passwords.
+	// hash the new password.
 	newPasswordHash, err := s.authenticator.HashPassword(ctx, input.NewPassword)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "hashing password")
@@ -728,4 +731,137 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// we're all good.
 	res.WriteHeader(http.StatusNoContent)
+}
+
+// CreatePasswordResetTokenHandler rotates the cookie building secret with a new random secret.
+func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	input := new(types.PasswordResetTokenCreationRequestInput)
+	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
+		observability.AcknowledgeError(err, logger, span, "decoding request body")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		return
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	token, err := s.secretGenerator.GenerateBase32EncodedString(ctx, passwordResetTokenSize)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "generating secret")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	u, err := s.userDataManager.GetUserByEmail(ctx, input.EmailAddress)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "creating password reset token")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	dbInput := &types.PasswordResetTokenDatabaseCreationInput{
+		ID:            ksuid.New().String(),
+		Token:         token,
+		BelongsToUser: u.ID,
+		ExpiresAt:     uint64(time.Now().Add(30 * time.Minute).Unix()),
+	}
+
+	t, err := s.passwordResetTokenDataManager.CreatePasswordResetToken(ctx, dbInput)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "creating password reset token")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	msg, emailGenerationErr := email.BuildGeneratedPasswordResetTokenEmail(u.EmailAddress, t)
+	if emailGenerationErr != nil {
+		observability.AcknowledgeError(emailGenerationErr, logger, span, "building email message")
+	}
+
+	if emailSendErr := s.emailer.SendEmail(ctx, msg); emailSendErr != nil {
+		observability.AcknowledgeError(emailSendErr, logger, span, "sending email notice")
+	}
+
+	res.WriteHeader(http.StatusAccepted)
+}
+
+// PasswordResetTokenRedemptionHandler rotates the cookie building secret with a new random secret.
+func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	input := new(types.PasswordResetTokenRedemptionRequestInput)
+	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
+		observability.AcknowledgeError(err, logger, span, "decoding request body")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		return
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	t, err := s.passwordResetTokenDataManager.GetPasswordResetTokenByToken(ctx, input.Token)
+	if errors.Is(err, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusNotFound)
+		return
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "fetching password reset token")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	u, err := s.userDataManager.GetUser(ctx, t.BelongsToUser)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "fetching user")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// ensure the password isn't garbage-tier
+	if err = passwordvalidator.Validate(input.NewPassword, minimumPasswordEntropy); err != nil {
+		logger.WithValue("password_validation_error", err).Debug("invalid password provided")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "new password is too weak!", http.StatusBadRequest)
+		return
+	}
+
+	// hash the new password.
+	newPasswordHash, err := s.authenticator.HashPassword(ctx, input.NewPassword)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "hashing password")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	// update the user.
+	if err = s.userDataManager.UpdateUserPassword(ctx, u.ID, newPasswordHash); err != nil {
+		observability.AcknowledgeError(err, logger, span, "encountered updating user")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	msg, emailGenerationErr := email.BuildPasswordResetTokenRedeemedEmail(u.EmailAddress)
+	if emailGenerationErr != nil {
+		observability.AcknowledgeError(emailGenerationErr, logger, span, "building email message")
+	}
+
+	if emailSendErr := s.emailer.SendEmail(ctx, msg); emailSendErr != nil {
+		observability.AcknowledgeError(emailSendErr, logger, span, "sending email notice")
+	}
+
+	res.WriteHeader(http.StatusAccepted)
 }

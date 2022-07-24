@@ -352,20 +352,35 @@ func (q *SQLQuerier) GetAdminUserByUsername(ctx context.Context, username string
 
 const getUserIDByEmailQuery = `
 	SELECT
-		users.id
+		users.id,
+		users.username,
+		users.email_address,
+		users.avatar_src,
+		users.hashed_password,
+		users.requires_password_change,
+		users.password_last_changed_on,
+		users.two_factor_secret,
+		users.two_factor_secret_verified_on,
+		users.service_roles,
+		users.user_account_status,
+		users.user_account_status_explanation,
+		users.birth_day,
+		users.birth_month,
+		users.created_on,
+		users.last_updated_on,
+		users.archived_on 
 	FROM users
 	WHERE users.archived_on IS NULL
 	AND users.email_address = $1
-	AND users.two_factor_secret_verified_on IS NOT NULL
 `
 
-// GetUserIDByEmail fetches a user by their email.
-func (q *SQLQuerier) GetUserIDByEmail(ctx context.Context, email string) (string, error) {
+// GetUserByEmail fetches a user by their email.
+func (q *SQLQuerier) GetUserByEmail(ctx context.Context, email string) (*types.User, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if email == "" {
-		return "", ErrEmptyInputProvided
+		return nil, ErrEmptyInputProvided
 	}
 
 	tracing.AttachEmailAddressToSpan(span, email)
@@ -374,12 +389,16 @@ func (q *SQLQuerier) GetUserIDByEmail(ctx context.Context, email string) (string
 	args := []interface{}{email}
 	row := q.getOneRow(ctx, q.db, "user", getUserIDByEmailQuery, args)
 
-	var userID string
-	if err := row.Scan(&userID); err != nil {
-		return "", observability.PrepareError(err, logger, span, "scanning user ID")
+	u, _, _, err := q.scanUser(ctx, row, false)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, err
+		}
+
+		return nil, observability.PrepareError(err, logger, span, "scanning user")
 	}
 
-	return userID, nil
+	return u, nil
 }
 
 const searchForUserByUsernameQuery = `SELECT 

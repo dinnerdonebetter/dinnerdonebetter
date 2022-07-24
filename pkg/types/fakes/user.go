@@ -191,3 +191,49 @@ func BuildFakeTOTPSecretVerificationInputForUser(user *types.User) *types.TOTPSe
 		TOTPToken: token,
 	}
 }
+
+// BuildFakePasswordResetToken builds a faked PasswordResetToken.
+func BuildFakePasswordResetToken() *types.PasswordResetToken {
+	fakeDate := fake.Date()
+
+	return &types.PasswordResetToken{
+		ID:            ksuid.New().String(),
+		Token:         fake.UUID(),
+		BelongsToUser: ksuid.New().String(),
+		ExpiresAt:     uint64(uint32(fakeDate.Add(30 * time.Minute).Unix())),
+		CreatedOn:     uint64(uint32(fakeDate.Unix())),
+	}
+}
+
+// BuildFakePasswordResetTokenCreationRequestInput builds a faked PasswordResetTokenCreationRequestInput.
+func BuildFakePasswordResetTokenCreationRequestInput() *types.PasswordResetTokenCreationRequestInput {
+	return &types.PasswordResetTokenCreationRequestInput{EmailAddress: fake.Email()}
+}
+
+// BuildFakePasswordResetTokenDatabaseCreationInput builds a faked PasswordResetTokenDatabaseCreationInput.
+func BuildFakePasswordResetTokenDatabaseCreationInput() *types.PasswordResetTokenDatabaseCreationInput {
+	return &types.PasswordResetTokenDatabaseCreationInput{
+		ID:            ksuid.New().String(),
+		Token:         fake.UUID(),
+		BelongsToUser: ksuid.New().String(),
+		ExpiresAt:     uint64(uint32(time.Now().Add(30 * time.Minute).Unix())),
+	}
+}
+
+// BuildFakePasswordResetTokenDatabaseCreationInputFromPasswordResetToken builds a faked PasswordResetTokenDatabaseCreationInput.
+func BuildFakePasswordResetTokenDatabaseCreationInputFromPasswordResetToken(input *types.PasswordResetToken) *types.PasswordResetTokenDatabaseCreationInput {
+	return &types.PasswordResetTokenDatabaseCreationInput{
+		ID:            input.ID,
+		Token:         input.Token,
+		BelongsToUser: input.BelongsToUser,
+		ExpiresAt:     input.ExpiresAt,
+	}
+}
+
+// BuildFakePasswordResetTokenRedemptionRequestInput builds a faked PasswordResetTokenRedemptionRequestInput.
+func BuildFakePasswordResetTokenRedemptionRequestInput() *types.PasswordResetTokenRedemptionRequestInput {
+	return &types.PasswordResetTokenRedemptionRequestInput{
+		Token:       fake.LoremIpsumSentence(exampleQuantity),
+		NewPassword: fake.Password(true, true, true, true, false, 32),
+	}
+}

@@ -33,6 +33,9 @@ var (
 	// ErrInvalidIDProvided indicates a required ID was passed in as zero.
 	ErrInvalidIDProvided = errors.New("required ID provided is zero")
 
+	// ErrEmptyEmailAddressProvided indicates the user provided an empty username for search.
+	ErrEmptyEmailAddressProvided = errors.New("empty email address provided")
+
 	// ErrEmptyQueryProvided indicates the user provided an empty query.
 	ErrEmptyQueryProvided = errors.New("query provided was empty")
 
