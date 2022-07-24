@@ -635,7 +635,7 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 
 	// update the user.
 	if err = s.userDataManager.UpdateUserPassword(ctx, user.ID, newPasswordHash); err != nil {
-		observability.AcknowledgeError(err, logger, span, "encountered updating user")
+		observability.AcknowledgeError(err, logger, span, "updating user")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -733,6 +733,49 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	res.WriteHeader(http.StatusNoContent)
 }
 
+// RequestUsernameReminderHandler checks for a user with a given email address and notifies them via email if there is a username associated with it.
+func (s *service) RequestUsernameReminderHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	input := new(types.UsernameReminderRequestInput)
+	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
+		observability.AcknowledgeError(err, logger, span, "decoding request body")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		return
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	u, err := s.userDataManager.GetUserByEmail(ctx, input.EmailAddress)
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, nil, http.StatusAccepted)
+		return
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "fetching user")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	msg, emailGenerationErr := email.BuildUsernameReminderEmail(u.EmailAddress, u.Username)
+	if emailGenerationErr != nil {
+		observability.AcknowledgeError(emailGenerationErr, logger, span, "building username reminder email")
+	}
+
+	if emailSendErr := s.emailer.SendEmail(ctx, msg); emailSendErr != nil {
+		observability.AcknowledgeError(emailSendErr, logger, span, "sending username reminder email")
+	}
+
+	res.WriteHeader(http.StatusAccepted)
+}
+
 // CreatePasswordResetTokenHandler rotates the cookie building secret with a new random secret.
 func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
@@ -762,8 +805,11 @@ func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *
 	}
 
 	u, err := s.userDataManager.GetUserByEmail(ctx, input.EmailAddress)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating password reset token")
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, nil, http.StatusAccepted)
+		return
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "fetching user")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -784,11 +830,11 @@ func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *
 
 	msg, emailGenerationErr := email.BuildGeneratedPasswordResetTokenEmail(u.EmailAddress, t)
 	if emailGenerationErr != nil {
-		observability.AcknowledgeError(emailGenerationErr, logger, span, "building email message")
+		observability.AcknowledgeError(emailGenerationErr, logger, span, "building password reset token email")
 	}
 
 	if emailSendErr := s.emailer.SendEmail(ctx, msg); emailSendErr != nil {
-		observability.AcknowledgeError(emailSendErr, logger, span, "sending email notice")
+		observability.AcknowledgeError(emailSendErr, logger, span, "sending password reset token email")
 	}
 
 	res.WriteHeader(http.StatusAccepted)
@@ -849,18 +895,24 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 
 	// update the user.
 	if err = s.userDataManager.UpdateUserPassword(ctx, u.ID, newPasswordHash); err != nil {
-		observability.AcknowledgeError(err, logger, span, "encountered updating user")
+		observability.AcknowledgeError(err, logger, span, "updating user")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	if redemptionErr := s.passwordResetTokenDataManager.RedeemPasswordResetToken(ctx, t.ID); redemptionErr != nil {
+		observability.AcknowledgeError(err, logger, span, "redeeming password reset token")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
 	msg, emailGenerationErr := email.BuildPasswordResetTokenRedeemedEmail(u.EmailAddress)
 	if emailGenerationErr != nil {
-		observability.AcknowledgeError(emailGenerationErr, logger, span, "building email message")
+		observability.AcknowledgeError(emailGenerationErr, logger, span, "building password reset token redemption email")
 	}
 
 	if emailSendErr := s.emailer.SendEmail(ctx, msg); emailSendErr != nil {
-		observability.AcknowledgeError(emailSendErr, logger, span, "sending email notice")
+		observability.AcknowledgeError(emailSendErr, logger, span, "sending password reset token redemption email")
 	}
 
 	res.WriteHeader(http.StatusAccepted)

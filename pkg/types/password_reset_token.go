@@ -31,6 +31,12 @@ type (
 		CreatedOn     uint64  `json:"createdOn"`
 	}
 
+	// UsernameReminderRequestInput represents what a user could set as input for creating password reset tokens.
+	UsernameReminderRequestInput struct {
+		_            struct{}
+		EmailAddress string `json:"emailAddress"`
+	}
+
 	// PasswordResetTokenCreationRequestInput represents what a user could set as input for creating password reset tokens.
 	PasswordResetTokenCreationRequestInput struct {
 		_            struct{}
@@ -67,6 +73,17 @@ type (
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
+
+var _ validation.ValidatableWithContext = (*UsernameReminderRequestInput)(nil)
+
+// ValidateWithContext validates a UsernameReminderRequestInput.
+func (x *UsernameReminderRequestInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(
+		ctx,
+		x,
+		validation.Field(&x.EmailAddress, validation.Required),
+	)
+}
 
 var _ validation.ValidatableWithContext = (*PasswordResetTokenCreationRequestInput)(nil)
 

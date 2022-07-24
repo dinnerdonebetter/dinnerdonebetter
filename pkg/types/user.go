@@ -189,6 +189,7 @@ type (
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 		CreatePasswordResetTokenHandler(res http.ResponseWriter, req *http.Request)
 		PasswordResetTokenRedemptionHandler(res http.ResponseWriter, req *http.Request)
+		RequestUsernameReminderHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 

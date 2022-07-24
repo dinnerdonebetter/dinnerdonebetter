@@ -188,7 +188,6 @@ func provideHTTPServer(port uint16) *http.Server {
 		WriteTimeout: writeTimeout,
 		IdleTimeout:  idleTimeout,
 		TLSConfig: &tls.Config{
-			PreferServerCipherSuites: true,
 			// "Only use curves which have assembly implementations"
 			CurvePreferences: []tls.CurveID{
 				tls.CurveP256,
