@@ -284,3 +284,8 @@ func AttachMealPlanOptionVoteIDToSpan(span trace.Span, mealPlanOptionVoteID stri
 func AttachPasswordResetTokenIDToSpan(span trace.Span, passwordResetTokenID string) {
 	attachStringToSpan(span, keys.PasswordResetTokenIDKey, passwordResetTokenID)
 }
+
+// AttachPasswordResetTokenToSpan attaches a password reset token to a given span.
+func AttachPasswordResetTokenToSpan(span trace.Span, passwordResetToken string) {
+	attachStringToSpan(span, keys.PasswordResetTokenIDKey, passwordResetToken)
+}

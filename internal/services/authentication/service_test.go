@@ -51,7 +51,6 @@ func buildTestService(t *testing.T) *service {
 		encoderDecoder,
 		tracing.NewNoopTracerProvider(),
 		pp,
-		&mocktypes.PasswordResetTokenDataManager{},
 		random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 		&email.MockEmailer{},
 	)
@@ -89,7 +88,6 @@ func TestProvideService(T *testing.T) {
 			encoderDecoder,
 			tracing.NewNoopTracerProvider(),
 			pp,
-			&mocktypes.PasswordResetTokenDataManager{},
 			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 			&email.MockEmailer{},
 		)
@@ -129,7 +127,6 @@ func TestProvideService(T *testing.T) {
 			encoderDecoder,
 			tracing.NewNoopTracerProvider(),
 			pp,
-			&mocktypes.PasswordResetTokenDataManager{},
 			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 			&email.MockEmailer{},
 		)

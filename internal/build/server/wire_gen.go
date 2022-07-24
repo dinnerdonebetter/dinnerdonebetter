@@ -70,9 +70,8 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 	if err != nil {
 		return nil, err
 	}
-	passwordResetTokenDataManager := database.ProvidePasswordResetTokenDataManager(dataManager)
 	generator := random.NewGenerator(logger, tracerProvider)
-	authService, err := authentication2.ProvideService(logger, authenticationConfig, authenticator, userDataManager, apiClientDataManager, householdUserMembershipDataManager, sessionManager, serverEncoderDecoder, tracerProvider, publisherProvider, passwordResetTokenDataManager, generator, emailer)
+	authService, err := authentication2.ProvideService(logger, authenticationConfig, authenticator, userDataManager, apiClientDataManager, householdUserMembershipDataManager, sessionManager, serverEncoderDecoder, tracerProvider, publisherProvider, generator, emailer)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +87,8 @@ func Build(ctx context.Context, logger logging.Logger, cfg *config.InstanceConfi
 		return nil, err
 	}
 	uploadManager := uploads.ProvideUploadManager(uploader)
-	userDataService, err := users.ProvideUsersService(usersConfig, authenticationConfig, logger, userDataManager, householdDataManager, householdInvitationDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, imageUploadProcessor, uploadManager, routeParamManager, tracerProvider, publisherProvider, generator)
+	passwordResetTokenDataManager := database.ProvidePasswordResetTokenDataManager(dataManager)
+	userDataService, err := users.ProvideUsersService(usersConfig, authenticationConfig, logger, userDataManager, householdDataManager, householdInvitationDataManager, authenticator, serverEncoderDecoder, unitCounterProvider, imageUploadProcessor, uploadManager, routeParamManager, tracerProvider, publisherProvider, generator, passwordResetTokenDataManager, emailer)
 	if err != nil {
 		return nil, err
 	}

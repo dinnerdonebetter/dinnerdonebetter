@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/prixfixeco/api_server/internal/authentication"
+	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	"github.com/prixfixeco/api_server/internal/messagequeue"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
@@ -49,6 +50,8 @@ type (
 		uploadManager                  uploads.UploadManager
 		dataChangesPublisher           messagequeue.Publisher
 		tracer                         tracing.Tracer
+		passwordResetTokenDataManager  types.PasswordResetTokenDataManager
+		emailer                        email.Emailer
 	}
 )
 
@@ -69,6 +72,8 @@ func ProvideUsersService(
 	tracerProvider tracing.TracerProvider,
 	publisherProvider messagequeue.PublisherProvider,
 	secretGenerator random.Generator,
+	passwordResetTokenDataManager types.PasswordResetTokenDataManager,
+	emailer email.Emailer,
 ) (types.UserDataService, error) {
 	dataChangesPublisher, err := publisherProvider.ProviderPublisher(cfg.DataChangesTopicName)
 	if err != nil {
@@ -91,6 +96,8 @@ func ProvideUsersService(
 		imageUploadProcessor:           imageUploadProcessor,
 		uploadManager:                  uploadManager,
 		dataChangesPublisher:           dataChangesPublisher,
+		passwordResetTokenDataManager:  passwordResetTokenDataManager,
+		emailer:                        emailer,
 	}
 
 	return s, nil

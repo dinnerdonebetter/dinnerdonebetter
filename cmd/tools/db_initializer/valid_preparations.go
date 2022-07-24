@@ -5,8 +5,6 @@ import (
 
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
-
-	"github.com/segmentio/ksuid"
 )
 
 var validPreparationCollection = struct {
@@ -17,55 +15,74 @@ var validPreparationCollection = struct {
 	Marinate,
 	Boil,
 	Grill,
+	Whisk,
+	Mix,
+	Knead,
+	Divide,
+	Flatten,
+	Rest,
+	Griddle,
 	Drain *types.ValidPreparationDatabaseCreationInput
 }{
 	Dice: &types.ValidPreparationDatabaseCreationInput{
-		ID:          ksuid.New().String(),
-		Name:        "Dice",
-		Description: "",
-		IconPath:    "",
+		ID:   "vprep_dice",
+		Name: "Dice",
 	},
 	Slice: &types.ValidPreparationDatabaseCreationInput{
-		ID:          ksuid.New().String(),
-		Name:        "Slice",
-		Description: "",
-		IconPath:    "",
+		ID:   "vprep_slice",
+		Name: "Slice",
 	},
 	Plate: &types.ValidPreparationDatabaseCreationInput{
-		ID:          ksuid.New().String(),
-		Name:        "Plate",
-		Description: "",
-		IconPath:    "",
+		ID:   "vprep_plate",
+		Name: "Plate",
 	},
 	Sautee: &types.ValidPreparationDatabaseCreationInput{
-		ID:          ksuid.New().String(),
-		Name:        "Sautee",
-		Description: "",
-		IconPath:    "",
+		ID:   "vprep_sautee",
+		Name: "Sautee",
 	},
 	Marinate: &types.ValidPreparationDatabaseCreationInput{
-		ID:          ksuid.New().String(),
-		Name:        "Marinate",
-		Description: "",
-		IconPath:    "",
+		ID:   "vprep_marinate",
+		Name: "Marinate",
 	},
 	Boil: &types.ValidPreparationDatabaseCreationInput{
-		ID:          ksuid.New().String(),
-		Name:        "Boil",
-		Description: "",
-		IconPath:    "",
+		ID:   "vprep_boil",
+		Name: "Boil",
 	},
 	Grill: &types.ValidPreparationDatabaseCreationInput{
-		ID:          ksuid.New().String(),
-		Name:        "Grill",
-		Description: "",
-		IconPath:    "",
+		ID:   "vprep_grill",
+		Name: "Grill",
+	},
+	Whisk: &types.ValidPreparationDatabaseCreationInput{
+		ID:   "vprep_whisk",
+		Name: "Whisk",
+	},
+	Mix: &types.ValidPreparationDatabaseCreationInput{
+		ID:   "vprep_mix",
+		Name: "Mix",
+	},
+	Knead: &types.ValidPreparationDatabaseCreationInput{
+		ID:   "vprep_knead",
+		Name: "Knead",
+	},
+	Divide: &types.ValidPreparationDatabaseCreationInput{
+		ID:   "vprep_divide",
+		Name: "Divide",
+	},
+	Flatten: &types.ValidPreparationDatabaseCreationInput{
+		ID:   "vprep_flatten",
+		Name: "Flatten",
+	},
+	Rest: &types.ValidPreparationDatabaseCreationInput{
+		ID:   "vprep_rest",
+		Name: "Rest",
+	},
+	Griddle: &types.ValidPreparationDatabaseCreationInput{
+		ID:   "vprep_griddle",
+		Name: "Griddle",
 	},
 	Drain: &types.ValidPreparationDatabaseCreationInput{
-		ID:          ksuid.New().String(),
-		Name:        "Drain",
-		Description: "",
-		IconPath:    "",
+		ID:   "vprep_drain",
+		Name: "Drain",
 	},
 }
 
@@ -78,6 +95,13 @@ func scaffoldValidPreparations(ctx context.Context, db database.DataManager) err
 		validPreparationCollection.Marinate,
 		validPreparationCollection.Boil,
 		validPreparationCollection.Grill,
+		validPreparationCollection.Whisk,
+		validPreparationCollection.Mix,
+		validPreparationCollection.Knead,
+		validPreparationCollection.Divide,
+		validPreparationCollection.Flatten,
+		validPreparationCollection.Rest,
+		validPreparationCollection.Griddle,
 		validPreparationCollection.Drain,
 	}
 

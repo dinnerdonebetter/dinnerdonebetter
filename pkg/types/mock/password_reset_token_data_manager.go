@@ -15,8 +15,8 @@ type PasswordResetTokenDataManager struct {
 	mock.Mock
 }
 
-// GetPasswordResetToken implements our interface requirements.
-func (m *PasswordResetTokenDataManager) GetPasswordResetToken(ctx context.Context, passwordResetTokenID string) (*types.PasswordResetToken, error) {
+// GetPasswordResetTokenByToken implements our interface requirements.
+func (m *PasswordResetTokenDataManager) GetPasswordResetTokenByToken(ctx context.Context, passwordResetTokenID string) (*types.PasswordResetToken, error) {
 	args := m.Called(ctx, passwordResetTokenID)
 
 	return args.Get(0).(*types.PasswordResetToken), args.Error(1)
@@ -36,8 +36,8 @@ func (m *PasswordResetTokenDataManager) CreatePasswordResetToken(ctx context.Con
 	return args.Get(0).(*types.PasswordResetToken), args.Error(1)
 }
 
-// ArchivePasswordResetToken implements our interface requirements.
-func (m *PasswordResetTokenDataManager) ArchivePasswordResetToken(ctx context.Context, passwordResetTokenID string) error {
+// RedeemPasswordResetToken implements our interface requirements.
+func (m *PasswordResetTokenDataManager) RedeemPasswordResetToken(ctx context.Context, passwordResetTokenID string) error {
 	args := m.Called(ctx, passwordResetTokenID)
 
 	return args.Error(0)

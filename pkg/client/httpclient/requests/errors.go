@@ -24,6 +24,9 @@ var (
 	// ErrEmptyUsernameProvided indicates the user provided an empty username for search.
 	ErrEmptyUsernameProvided = errors.New("empty username provided")
 
+	// ErrEmptyEmailAddressProvided indicates the user provided an empty username for search.
+	ErrEmptyEmailAddressProvided = errors.New("empty email address provided")
+
 	// ErrCookieRequired indicates a cookie is required.
 	ErrCookieRequired = errors.New("cookie required for request")
 

@@ -23,7 +23,7 @@ type (
 	PasswordResetToken struct {
 		_             struct{}
 		LastUpdatedOn *uint64 `json:"lastUpdatedOn"`
-		ArchivedOn    *uint64 `json:"archivedOn"`
+		RedeemedOn    *uint64 `json:"archivedOn"`
 		ID            string  `json:"id"`
 		Token         string  `json:"token"`
 		BelongsToUser string  `json:"belongsToUser"`
@@ -46,12 +46,18 @@ type (
 		ExpiresAt     uint64 `json:"expiresAt"`
 	}
 
+	// PasswordResetTokenRedemptionRequestInput represents what a user could set as input for creating password reset tokens.
+	PasswordResetTokenRedemptionRequestInput struct {
+		_           struct{}
+		Token       string `json:"token"`
+		NewPassword string `json:"newPassword"`
+	}
+
 	// PasswordResetTokenDataManager describes a structure capable of storing password reset tokens permanently.
 	PasswordResetTokenDataManager interface {
-		GetPasswordResetToken(ctx context.Context, passwordResetTokenID string) (*PasswordResetToken, error)
-		GetTotalPasswordResetTokenCount(ctx context.Context) (uint64, error)
+		GetPasswordResetTokenByToken(ctx context.Context, passwordResetTokenID string) (*PasswordResetToken, error)
 		CreatePasswordResetToken(ctx context.Context, input *PasswordResetTokenDatabaseCreationInput) (*PasswordResetToken, error)
-		ArchivePasswordResetToken(ctx context.Context, passwordResetTokenID string) error
+		RedeemPasswordResetToken(ctx context.Context, passwordResetTokenID string) error
 	}
 
 	// PasswordResetTokenDataService describes a structure capable of serving traffic related to password reset tokens.
@@ -70,6 +76,18 @@ func (x *PasswordResetTokenCreationRequestInput) ValidateWithContext(ctx context
 		ctx,
 		x,
 		validation.Field(&x.EmailAddress, validation.Required),
+	)
+}
+
+var _ validation.ValidatableWithContext = (*PasswordResetTokenRedemptionRequestInput)(nil)
+
+// ValidateWithContext validates a PasswordResetTokenRedemptionRequestInput.
+func (x *PasswordResetTokenRedemptionRequestInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(
+		ctx,
+		x,
+		validation.Field(&x.Token, validation.Required),
+		validation.Field(&x.NewPassword, validation.Required),
 	)
 }
 

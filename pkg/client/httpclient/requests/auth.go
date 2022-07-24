@@ -140,3 +140,31 @@ func (b *Builder) BuildVerifyTOTPSecretRequest(ctx context.Context, userID, toke
 		UserID:    userID,
 	})
 }
+
+// BuildPasswordResetTokenRequest builds a request for requesting a password reset token.
+func (b *Builder) BuildPasswordResetTokenRequest(ctx context.Context, emailAddress string) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if emailAddress == "" {
+		return nil, ErrEmptyEmailAddressProvided
+	}
+
+	uri := b.buildUnversionedURL(ctx, nil, usersBasePath, "password", "reset")
+
+	return b.buildDataRequest(ctx, http.MethodPost, uri, &types.PasswordResetTokenCreationRequestInput{EmailAddress: emailAddress})
+}
+
+// BuildPasswordResetTokenRedemptionRequest builds a request for redeeming a password reset token.
+func (b *Builder) BuildPasswordResetTokenRedemptionRequest(ctx context.Context, input *types.PasswordResetTokenRedemptionRequestInput) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil {
+		return nil, ErrNilInputProvided
+	}
+
+	uri := b.buildUnversionedURL(ctx, nil, usersBasePath, "password", "reset", "redeem")
+
+	return b.buildDataRequest(ctx, http.MethodPost, uri, input)
+}

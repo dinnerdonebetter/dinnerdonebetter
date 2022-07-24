@@ -34,21 +34,20 @@ type (
 
 	// service handles passwords service-wide.
 	service struct {
-		config                        *Config
-		logger                        logging.Logger
-		authenticator                 authentication.Authenticator
-		userDataManager               types.UserDataManager
-		passwordResetTokenDataManager types.PasswordResetTokenDataManager
-		apiClientManager              types.APIClientDataManager
-		householdMembershipManager    types.HouseholdUserMembershipDataManager
-		encoderDecoder                encoding.ServerEncoderDecoder
-		secretGenerator               random.Generator
-		emailer                       email.Emailer
-		cookieManager                 cookieEncoderDecoder
-		sessionManager                sessionManager
-		sessionContextDataFetcher     func(*http.Request) (*types.SessionContextData, error)
-		tracer                        tracing.Tracer
-		dataChangesPublisher          messagequeue.Publisher
+		config                     *Config
+		logger                     logging.Logger
+		authenticator              authentication.Authenticator
+		userDataManager            types.UserDataManager
+		apiClientManager           types.APIClientDataManager
+		householdMembershipManager types.HouseholdUserMembershipDataManager
+		encoderDecoder             encoding.ServerEncoderDecoder
+		secretGenerator            random.Generator
+		emailer                    email.Emailer
+		cookieManager              cookieEncoderDecoder
+		sessionManager             sessionManager
+		sessionContextDataFetcher  func(*http.Request) (*types.SessionContextData, error)
+		tracer                     tracing.Tracer
+		dataChangesPublisher       messagequeue.Publisher
 	}
 )
 
@@ -64,7 +63,6 @@ func ProvideService(
 	encoder encoding.ServerEncoderDecoder,
 	tracerProvider tracing.TracerProvider,
 	publisherProvider messagequeue.PublisherProvider,
-	passwordResetTokenDataManager types.PasswordResetTokenDataManager,
 	secretGenerator random.Generator,
 	emailer email.Emailer,
 ) (types.AuthService, error) {
@@ -79,21 +77,20 @@ func ProvideService(
 	}
 
 	svc := &service{
-		logger:                        logging.EnsureLogger(logger).WithName(serviceName),
-		encoderDecoder:                encoder,
-		config:                        cfg,
-		userDataManager:               userDataManager,
-		passwordResetTokenDataManager: passwordResetTokenDataManager,
-		apiClientManager:              apiClientsService,
-		householdMembershipManager:    householdMembershipManager,
-		authenticator:                 authenticator,
-		sessionManager:                sessionManager,
-		emailer:                       emailer,
-		secretGenerator:               secretGenerator,
-		sessionContextDataFetcher:     FetchContextFromRequest,
-		cookieManager:                 securecookie.New(hashKey, []byte(cfg.Cookies.BlockKey)),
-		tracer:                        tracing.NewTracer(tracerProvider.Tracer(serviceName)),
-		dataChangesPublisher:          dataChangesPublisher,
+		logger:                     logging.EnsureLogger(logger).WithName(serviceName),
+		encoderDecoder:             encoder,
+		config:                     cfg,
+		userDataManager:            userDataManager,
+		apiClientManager:           apiClientsService,
+		householdMembershipManager: householdMembershipManager,
+		authenticator:              authenticator,
+		sessionManager:             sessionManager,
+		emailer:                    emailer,
+		secretGenerator:            secretGenerator,
+		sessionContextDataFetcher:  FetchContextFromRequest,
+		cookieManager:              securecookie.New(hashKey, []byte(cfg.Cookies.BlockKey)),
+		tracer:                     tracing.NewTracer(tracerProvider.Tracer(serviceName)),
+		dataChangesPublisher:       dataChangesPublisher,
 	}
 
 	if _, err := svc.cookieManager.Encode(cfg.Cookies.Name, "blah"); err != nil {

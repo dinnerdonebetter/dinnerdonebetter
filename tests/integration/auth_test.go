@@ -2,10 +2,12 @@ package integration
 
 import (
 	"context"
+	"database/sql"
 	"encoding/base64"
 	"encoding/json"
 	"net/http"
 	"net/url"
+	"os"
 	"time"
 
 	"github.com/pquerna/otp/totp"
@@ -344,5 +346,49 @@ func (s *TestSuite) TestTOTPTokenValidation() {
 		require.NoError(t, err)
 
 		assert.Error(t, testClient.VerifyTOTPSecret(ctx, user.CreatedUserID, "NOTREAL"))
+	})
+}
+
+func (s *TestSuite) TestLogin_RequestingPasswordReset() {
+	s.Run("able to reset one's password and then redeem it", func() {
+		t := s.T()
+
+		ctx, span := tracing.StartSpan(context.Background())
+		defer span.End()
+
+		u, _, testClient, _ := createUserAndClientForTest(ctx, t, nil)
+
+		require.NoError(t, testClient.RequestPasswordResetToken(ctx, u.EmailAddress))
+
+		dbAddr := os.Getenv("TARGET_DATABASE")
+		if dbAddr == "" {
+			panic("empty database address provided")
+		}
+
+		db, err := sql.Open("postgres", dbAddr)
+		if err != nil {
+			panic(err)
+		}
+
+		var token string
+		queryErr := db.QueryRow(`SELECT token FROM password_reset_tokens WHERE belongs_to_user = $1`, u.ID).Scan(&token)
+		require.NoError(t, queryErr)
+
+		resetToken, err := dbmanager.GetPasswordResetTokenByToken(ctx, token)
+		requireNotNilAndNoProblems(t, resetToken, err)
+
+		fakeInput := fakes.BuildFakeUserCreationInput()
+
+		require.NoError(t, testClient.RedeemPasswordResetToken(ctx, &types.PasswordResetTokenRedemptionRequestInput{
+			Token:       resetToken.Token,
+			NewPassword: fakeInput.Password,
+		}))
+
+		cookie, err := testClient.BeginSession(ctx, &types.UserLoginInput{
+			Username:  u.Username,
+			Password:  fakeInput.Password,
+			TOTPToken: generateTOTPTokenForUser(t, u),
+		})
+		requireNotNilAndNoProblems(t, cookie, err)
 	})
 }
