@@ -19,9 +19,10 @@ const (
 	name = "sendgrid_emailer"
 )
 
-var _ email.Emailer = (*Emailer)(nil)
-
 var (
+	_ email.Emailer = (*Emailer)(nil)
+	// ErrNilConfig indicates an empty API token was provided.
+	ErrNilConfig = errors.New("SendGrid config is nil")
 	// ErrEmptyAPIToken indicates an empty API token was provided.
 	ErrEmptyAPIToken = errors.New("empty API token")
 	// ErrNilHTTPClient indicates a nil HTTP client was provided.
@@ -29,17 +30,28 @@ var (
 )
 
 type (
+	// Config configures SendGrid to send email.
+	Config struct {
+		APIToken  string `json:"apiToken" mapstructure:"api_token" toml:"api_token,omitempty"`
+		WebAppURL string `json:"webAppURL" mapstructure:"web_app_url" toml:"web_app_url,omitempty"`
+	}
+
 	// Emailer uses SendGrid to send email.
 	Emailer struct {
 		logger logging.Logger
 		tracer tracing.Tracer
 		client *sendgrid.Client
+		config Config
 	}
 )
 
 // NewSendGridEmailer returns a new SendGrid-backed Emailer.
-func NewSendGridEmailer(apiToken string, logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client) (*Emailer, error) {
-	if apiToken == "" {
+func NewSendGridEmailer(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client) (*Emailer, error) {
+	if cfg == nil {
+		return nil, ErrNilConfig
+	}
+
+	if cfg.APIToken == "" {
 		return nil, ErrEmptyAPIToken
 	}
 
@@ -47,13 +59,15 @@ func NewSendGridEmailer(apiToken string, logger logging.Logger, tracerProvider t
 		return nil, ErrNilHTTPClient
 	}
 
+	// this line causes data races when the unit tests in this package are run in parallel.
+	// that sucks, but I also basically can't do anything about it because of how SendGrid's dogshit client works.
 	sendgrid.DefaultClient = &rest.Client{HTTPClient: client}
-	c := sendgrid.NewSendClient(apiToken)
 
 	e := &Emailer{
 		logger: logging.EnsureLogger(logger).WithName(name),
 		tracer: tracing.NewTracer(tracerProvider.Tracer(name)),
-		client: c,
+		client: sendgrid.NewSendClient(cfg.APIToken),
+		config: *cfg,
 	}
 
 	return e, nil
@@ -63,7 +77,7 @@ func NewSendGridEmailer(apiToken string, logger logging.Logger, tracerProvider t
 var ErrSendgridAPIIssue = errors.New("making SendGrid request")
 
 // SendEmail sends an email.
-func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundMessageDetails) error {
+func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMessage) error {
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -80,6 +94,41 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundMessageD
 
 	if res.StatusCode != http.StatusAccepted {
 		return observability.PrepareError(ErrSendgridAPIIssue, logger, span, "sending email yielded a %d response", res.StatusCode)
+	}
+
+	return nil
+}
+
+func (e *Emailer) preparePersonalization(to *mail.Email, data map[string]interface{}) *mail.Personalization {
+	p := mail.NewPersonalization()
+	p.AddTos(to)
+
+	for k, v := range data {
+		p.SetDynamicTemplateData(k, v)
+	}
+
+	return p
+}
+
+// sendDynamicTemplateEmail sends an email.
+func (e *Emailer) sendDynamicTemplateEmail(ctx context.Context, to, from *mail.Email, templateID string, data map[string]interface{}, request rest.Request) error {
+	_, span := e.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := e.logger.WithValue("to_email", to.Address)
+
+	m := mail.NewV3Mail()
+	m.SetFrom(from).SetTemplateID(templateID).AddPersonalizations(e.preparePersonalization(to, data))
+
+	request.Body = mail.GetRequestBody(m)
+
+	res, err := sendgrid.MakeRequestWithContext(ctx, request)
+	if err != nil {
+		return observability.PrepareError(err, logger, span, "sending dynamic email")
+	}
+
+	if res.StatusCode != http.StatusAccepted {
+		return observability.PrepareError(ErrSendgridAPIIssue, logger, span, "sending dynamic email yielded a %d response", res.StatusCode)
 	}
 
 	return nil

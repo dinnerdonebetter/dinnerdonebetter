@@ -17,6 +17,6 @@ func NewNoopEmailer() (*NoopEmailer, error) {
 }
 
 // SendEmail sends an email.
-func (e *NoopEmailer) SendEmail(context.Context, *OutboundMessageDetails) error {
+func (e *NoopEmailer) SendEmail(context.Context, *OutboundEmailMessage) error {
 	return nil
 }

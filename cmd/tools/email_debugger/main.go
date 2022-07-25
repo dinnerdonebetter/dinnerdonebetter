@@ -36,8 +36,13 @@ func main() {
 		panic(err)
 	}
 
+	cfg := &sendgrid.Config{
+		APIToken:  apiToken,
+		WebAppURL: "https://www.prixfixe.fake.lol",
+	}
+
 	emailer, err := sendgrid.NewSendGridEmailer(
-		apiToken,
+		cfg,
 		logger,
 		tracing.NewNoopTracerProvider(),
 		&http.Client{Timeout: 5 * time.Second},

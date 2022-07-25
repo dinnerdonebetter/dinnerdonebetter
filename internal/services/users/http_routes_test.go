@@ -2521,7 +2521,7 @@ func TestService_RequestUsernameReminderHandler(T *testing.T) {
 		emailer.On(
 			"SendEmail",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*email.OutboundMessageDetails) bool { return true }),
+			mock.MatchedBy(func(*email.OutboundEmailMessage) bool { return true }),
 		).Return(nil)
 		helper.service.emailer = emailer
 
@@ -2657,7 +2657,7 @@ func TestService_RequestUsernameReminderHandler(T *testing.T) {
 		emailer.On(
 			"SendEmail",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*email.OutboundMessageDetails) bool { return true }),
+			mock.MatchedBy(func(*email.OutboundEmailMessage) bool { return true }),
 		).Return(errors.New("blah"))
 		helper.service.emailer = emailer
 
@@ -2716,7 +2716,7 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		emailer.On(
 			"SendEmail",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*email.OutboundMessageDetails) bool { return true }),
+			mock.MatchedBy(func(*email.OutboundEmailMessage) bool { return true }),
 		).Return(nil)
 		helper.service.emailer = emailer
 
@@ -2964,7 +2964,7 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		emailer.On(
 			"SendEmail",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*email.OutboundMessageDetails) bool { return true }),
+			mock.MatchedBy(func(*email.OutboundEmailMessage) bool { return true }),
 		).Return(errors.New("blah"))
 		helper.service.emailer = emailer
 
@@ -3037,7 +3037,7 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		emailer.On(
 			"SendEmail",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*email.OutboundMessageDetails) bool { return true }),
+			mock.MatchedBy(func(*email.OutboundEmailMessage) bool { return true }),
 		).Return(nil)
 		helper.service.emailer = emailer
 
@@ -3453,7 +3453,7 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		emailer.On(
 			"SendEmail",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*email.OutboundMessageDetails) bool { return true }),
+			mock.MatchedBy(func(*email.OutboundEmailMessage) bool { return true }),
 		).Return(errors.New("blah"))
 		helper.service.emailer = emailer
 

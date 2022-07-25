@@ -46,13 +46,6 @@ var (
 	passwordResetTokenRedeemedTemplate string
 )
 
-type inviteContent struct {
-	WebAppURL    string
-	Token        string
-	InvitationID string
-	Note         string
-}
-
 func determineEnv() string {
 	env := os.Getenv("PF_ENVIRONMENT")
 	if env == "" {
@@ -62,8 +55,15 @@ func determineEnv() string {
 	return env
 }
 
+type inviteContent struct {
+	WebAppURL    string
+	Token        string
+	InvitationID string
+	Note         string
+}
+
 // BuildInviteMemberEmail builds an email notifying a user that they've been invited to join a household.
-func BuildInviteMemberEmail(householdInvitation *types.HouseholdInvitation) (*OutboundMessageDetails, error) {
+func BuildInviteMemberEmail(householdInvitation *types.HouseholdInvitation) (*OutboundEmailMessage, error) {
 	env := determineEnv()
 
 	urlMapHat.Lock()
@@ -93,7 +93,7 @@ func BuildInviteMemberEmail(householdInvitation *types.HouseholdInvitation) (*Ou
 		return nil, fmt.Errorf("error rendering email template: %w", err)
 	}
 
-	msg := &OutboundMessageDetails{
+	msg := &OutboundEmailMessage{
 		ToAddress:   householdInvitation.ToEmail,
 		ToName:      "",
 		FromAddress: emails.outboundInvites,
@@ -111,7 +111,7 @@ type resetContent struct {
 }
 
 // BuildGeneratedPasswordResetTokenEmail builds an email notifying a user that they've been invited to join a household.
-func BuildGeneratedPasswordResetTokenEmail(toEmail string, passwordResetToken *types.PasswordResetToken) (*OutboundMessageDetails, error) {
+func BuildGeneratedPasswordResetTokenEmail(toEmail string, passwordResetToken *types.PasswordResetToken) (*OutboundEmailMessage, error) {
 	env := determineEnv()
 
 	urlMapHat.Lock()
@@ -139,7 +139,7 @@ func BuildGeneratedPasswordResetTokenEmail(toEmail string, passwordResetToken *t
 		return nil, fmt.Errorf("error rendering email template: %w", err)
 	}
 
-	msg := &OutboundMessageDetails{
+	msg := &OutboundEmailMessage{
 		ToAddress:   toEmail,
 		ToName:      "",
 		FromAddress: emails.passwordResetCreation,
@@ -157,7 +157,7 @@ type usernameReminderContent struct {
 }
 
 // BuildUsernameReminderEmail builds an email notifying a user that they've been invited to join a household.
-func BuildUsernameReminderEmail(toEmail, username string) (*OutboundMessageDetails, error) {
+func BuildUsernameReminderEmail(toEmail, username string) (*OutboundEmailMessage, error) {
 	env := determineEnv()
 
 	urlMapHat.Lock()
@@ -185,7 +185,7 @@ func BuildUsernameReminderEmail(toEmail, username string) (*OutboundMessageDetai
 		return nil, fmt.Errorf("error rendering email template: %w", err)
 	}
 
-	msg := &OutboundMessageDetails{
+	msg := &OutboundEmailMessage{
 		ToAddress:   toEmail,
 		ToName:      "",
 		FromAddress: emails.passwordResetCreation,
@@ -202,7 +202,7 @@ type redemptionContent struct {
 }
 
 // BuildPasswordResetTokenRedeemedEmail builds an email notifying a user that they've been invited to join a household.
-func BuildPasswordResetTokenRedeemedEmail(toEmail string) (*OutboundMessageDetails, error) {
+func BuildPasswordResetTokenRedeemedEmail(toEmail string) (*OutboundEmailMessage, error) {
 	env := determineEnv()
 
 	urlMapHat.Lock()
@@ -229,7 +229,7 @@ func BuildPasswordResetTokenRedeemedEmail(toEmail string) (*OutboundMessageDetai
 		return nil, fmt.Errorf("error rendering email template: %w", err)
 	}
 
-	msg := &OutboundMessageDetails{
+	msg := &OutboundEmailMessage{
 		ToAddress:   toEmail,
 		ToName:      "",
 		FromAddress: emails.passwordResetRedemption,

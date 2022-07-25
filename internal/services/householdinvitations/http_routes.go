@@ -6,10 +6,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/prixfixeco/api_server/internal/email"
-
 	"github.com/segmentio/ksuid"
 
+	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/keys"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"

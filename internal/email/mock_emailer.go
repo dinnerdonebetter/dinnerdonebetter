@@ -16,6 +16,6 @@ type (
 )
 
 // SendEmail is a mock function.
-func (m *MockEmailer) SendEmail(ctx context.Context, details *OutboundMessageDetails) error {
+func (m *MockEmailer) SendEmail(ctx context.Context, details *OutboundEmailMessage) error {
 	return m.Called(ctx, details).Error(0)
 }

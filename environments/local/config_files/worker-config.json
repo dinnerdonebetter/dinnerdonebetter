@@ -20,8 +20,8 @@
 		}
 	},
 	"email": {
-		"provider": "",
-		"apiToken": ""
+		"sendgrid": null,
+		"provider": ""
 	},
 	"customerData": {
 		"provider": "",
@@ -160,7 +160,7 @@
 			},
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "SR6wekfgBy/Jd0GZk1k/gC0Dp5U8lzFg1y36ESrt76w=",
+				"localModeKey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
 				"lifetime": 60000000000
 			},
 			"debug": true,
