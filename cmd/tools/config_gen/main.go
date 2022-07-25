@@ -2,9 +2,7 @@ package main
 
 import (
 	"context"
-	"crypto/rand"
 	"encoding/json"
-	"github.com/prixfixeco/api_server/internal/email/sendgrid"
 	"log"
 	"os"
 	"path/filepath"
@@ -14,6 +12,7 @@ import (
 	customerdataconfig "github.com/prixfixeco/api_server/internal/customerdata/config"
 	dbconfig "github.com/prixfixeco/api_server/internal/database/config"
 	emailconfig "github.com/prixfixeco/api_server/internal/email/config"
+	"github.com/prixfixeco/api_server/internal/email/sendgrid"
 	"github.com/prixfixeco/api_server/internal/encoding"
 	msgconfig "github.com/prixfixeco/api_server/internal/messagequeue/config"
 	"github.com/prixfixeco/api_server/internal/messagequeue/redis"
@@ -180,9 +179,6 @@ var files = map[string]configFunc{
 
 func generatePASETOKey() []byte {
 	b := make([]byte, pasetoSecretSize)
-	if _, err := rand.Read(b); err != nil {
-		panic(err)
-	}
 
 	return b
 }
