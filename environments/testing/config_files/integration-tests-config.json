@@ -21,7 +21,12 @@
 	},
 	"email": {
 		"provider": "",
-		"apiToken": ""
+		"sendgrid": {
+			"apiToken": "",
+			"webAppURL": "",
+			"householdInviteOutboundEmailAddress": "",
+			"householdInviteTemplateID": ""
+		}
 	},
 	"customerData": {
 		"provider": "",
@@ -156,7 +161,7 @@
 			},
 			"paseto": {
 				"issuer": "prixfixe_service",
-				"localModeKey": "SR6wekfgBy/Jd0GZk1k/gC0Dp5U8lzFg1y36ESrt76w=",
+				"localModeKey": "XQdqjL3AHVHK7c8ARu4D7LKxIQepz3a+5BDNG5kgDn8=",
 				"lifetime": 60000000000
 			},
 			"enableUserSignup": true,

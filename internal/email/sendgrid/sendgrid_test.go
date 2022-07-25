@@ -43,7 +43,7 @@ func TestSendGridEmailer_SendEmail(T *testing.T) {
 		c.client.Request.BaseURL = ts.URL
 
 		ctx := context.Background()
-		details := &email.OutboundMessageDetails{
+		details := &email.OutboundEmailMessage{
 			ToAddress:   t.Name(),
 			ToName:      t.Name(),
 			FromAddress: t.Name(),
@@ -71,7 +71,7 @@ func TestSendGridEmailer_SendEmail(T *testing.T) {
 		c.client.Request.BaseURL = ts.URL
 
 		ctx := context.Background()
-		details := &email.OutboundMessageDetails{
+		details := &email.OutboundEmailMessage{
 			ToAddress:   t.Name(),
 			ToName:      t.Name(),
 			FromAddress: t.Name(),
@@ -98,7 +98,7 @@ func TestSendGridEmailer_SendEmail(T *testing.T) {
 		c.client.Request.BaseURL = ts.URL
 
 		ctx := context.Background()
-		details := &email.OutboundMessageDetails{
+		details := &email.OutboundEmailMessage{
 			ToAddress:   t.Name(),
 			ToName:      t.Name(),
 			FromAddress: t.Name(),

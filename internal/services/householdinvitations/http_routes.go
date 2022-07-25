@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/prixfixeco/api_server/internal/email"
-
 	"github.com/segmentio/ksuid"
 
 	"github.com/prixfixeco/api_server/internal/observability"
@@ -112,13 +110,8 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	if s.emailer != nil {
-		msg, emailGenerationErr := email.BuildInviteMemberEmail(householdInvitation)
-		if emailGenerationErr != nil {
-			observability.AcknowledgeError(emailGenerationErr, logger, span, "building email message")
-		} else {
-			if err = s.emailer.SendEmail(ctx, msg); err != nil {
-				observability.AcknowledgeError(err, logger, span, "sending email notice")
-			}
+		if err = s.emailer.SendHouseholdInvitationEmail(ctx, householdInvitation); err != nil {
+			observability.AcknowledgeError(err, logger, span, "sending email notice")
 		}
 	}
 

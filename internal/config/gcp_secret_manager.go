@@ -72,7 +72,8 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*Inst
 	dataChangesTopicName := string(changesTopic)
 	cfg.Events.Publishers.PubSubConfig.TopicName = dataChangesTopicName
 
-	cfg.Email.APIToken = os.Getenv("PRIXFIXE_SENDGRID_API_TOKEN")
+	cfg.Email.Sendgrid.APIToken = os.Getenv("PRIXFIXE_SENDGRID_API_TOKEN")
+	cfg.Email.Sendgrid.HouseholdInviteTemplateID = os.Getenv("PRIXFIXE_SENDGRID_HOUSEHOLD_INVITE_TEMPLATE_ID")
 	cfg.CustomerData.APIToken = os.Getenv("PRIXFIXE_SEGMENT_API_TOKEN")
 
 	cfg.Services.ValidInstruments.DataChangesTopicName = dataChangesTopicName
@@ -174,7 +175,7 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 
 	// we don't actually need these, except for validation
 	cfg.CustomerData.APIToken = " "
-	cfg.Email.APIToken = " "
+	cfg.Email.Sendgrid.APIToken = " "
 
 	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
 		return nil, validationErr
@@ -210,7 +211,8 @@ func GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx context.Context)
 	// don't worry about it
 	cfg.Database.ConnectionDetails = " "
 
-	cfg.Email.APIToken = os.Getenv("PRIXFIXE_SENDGRID_API_TOKEN")
+	cfg.Email.Sendgrid.APIToken = os.Getenv("PRIXFIXE_SENDGRID_API_TOKEN")
+	// we don't need the HouseholdInviteTemplateID here since we invoke that elsewhere
 	cfg.CustomerData.APIToken = os.Getenv("PRIXFIXE_SEGMENT_API_TOKEN")
 
 	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {

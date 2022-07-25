@@ -36,8 +36,6 @@ var (
 )
 
 var (
-	//go:embed templates/invite.tmpl
-	outgoingInviteTemplate string
 	//go:embed templates/username_reminder.tmpl
 	usernameReminderTemplate string
 	//go:embed templates/password_reset.tmpl
@@ -45,13 +43,6 @@ var (
 	//go:embed templates/password_reset_token_redeemed.tmpl
 	passwordResetTokenRedeemedTemplate string
 )
-
-type inviteContent struct {
-	WebAppURL    string
-	Token        string
-	InvitationID string
-	Note         string
-}
 
 func determineEnv() string {
 	env := os.Getenv("PF_ENVIRONMENT")
@@ -62,56 +53,13 @@ func determineEnv() string {
 	return env
 }
 
-// BuildInviteMemberEmail builds an email notifying a user that they've been invited to join a household.
-func BuildInviteMemberEmail(householdInvitation *types.HouseholdInvitation) (*OutboundMessageDetails, error) {
-	env := determineEnv()
-
-	urlMapHat.Lock()
-	envAddr, ok := urlMap[env]
-	if !ok {
-		return nil, fmt.Errorf("no available URL for environment")
-	}
-	urlMapHat.Unlock()
-
-	emailsMapHat.Lock()
-	emails, ok := emailsMap[env]
-	if !ok {
-		return nil, fmt.Errorf("no available email for environment")
-	}
-	emailsMapHat.Unlock()
-
-	content := &inviteContent{
-		WebAppURL:    envAddr,
-		Token:        householdInvitation.Token,
-		InvitationID: householdInvitation.ID,
-		Note:         householdInvitation.Note,
-	}
-
-	tmpl := template.Must(template.New("").Funcs(map[string]interface{}{}).Parse(outgoingInviteTemplate))
-	var b bytes.Buffer
-	if err := tmpl.Execute(&b, content); err != nil {
-		return nil, fmt.Errorf("error rendering email template: %w", err)
-	}
-
-	msg := &OutboundMessageDetails{
-		ToAddress:   householdInvitation.ToEmail,
-		ToName:      "",
-		FromAddress: emails.outboundInvites,
-		FromName:    "PrixFixe",
-		Subject:     "You've been invited to join a household on PrixFixe!",
-		HTMLContent: b.String(),
-	}
-
-	return msg, nil
-}
-
 type resetContent struct {
 	WebAppURL string
 	Token     string
 }
 
 // BuildGeneratedPasswordResetTokenEmail builds an email notifying a user that they've been invited to join a household.
-func BuildGeneratedPasswordResetTokenEmail(toEmail string, passwordResetToken *types.PasswordResetToken) (*OutboundMessageDetails, error) {
+func BuildGeneratedPasswordResetTokenEmail(toEmail string, passwordResetToken *types.PasswordResetToken) (*OutboundEmailMessage, error) {
 	env := determineEnv()
 
 	urlMapHat.Lock()
@@ -139,7 +87,7 @@ func BuildGeneratedPasswordResetTokenEmail(toEmail string, passwordResetToken *t
 		return nil, fmt.Errorf("error rendering email template: %w", err)
 	}
 
-	msg := &OutboundMessageDetails{
+	msg := &OutboundEmailMessage{
 		ToAddress:   toEmail,
 		ToName:      "",
 		FromAddress: emails.passwordResetCreation,
@@ -157,7 +105,7 @@ type usernameReminderContent struct {
 }
 
 // BuildUsernameReminderEmail builds an email notifying a user that they've been invited to join a household.
-func BuildUsernameReminderEmail(toEmail, username string) (*OutboundMessageDetails, error) {
+func BuildUsernameReminderEmail(toEmail, username string) (*OutboundEmailMessage, error) {
 	env := determineEnv()
 
 	urlMapHat.Lock()
@@ -185,7 +133,7 @@ func BuildUsernameReminderEmail(toEmail, username string) (*OutboundMessageDetai
 		return nil, fmt.Errorf("error rendering email template: %w", err)
 	}
 
-	msg := &OutboundMessageDetails{
+	msg := &OutboundEmailMessage{
 		ToAddress:   toEmail,
 		ToName:      "",
 		FromAddress: emails.passwordResetCreation,
@@ -202,7 +150,7 @@ type redemptionContent struct {
 }
 
 // BuildPasswordResetTokenRedeemedEmail builds an email notifying a user that they've been invited to join a household.
-func BuildPasswordResetTokenRedeemedEmail(toEmail string) (*OutboundMessageDetails, error) {
+func BuildPasswordResetTokenRedeemedEmail(toEmail string) (*OutboundEmailMessage, error) {
 	env := determineEnv()
 
 	urlMapHat.Lock()
@@ -229,7 +177,7 @@ func BuildPasswordResetTokenRedeemedEmail(toEmail string) (*OutboundMessageDetai
 		return nil, fmt.Errorf("error rendering email template: %w", err)
 	}
 
-	msg := &OutboundMessageDetails{
+	msg := &OutboundEmailMessage{
 		ToAddress:   toEmail,
 		ToName:      "",
 		FromAddress: emails.passwordResetRedemption,

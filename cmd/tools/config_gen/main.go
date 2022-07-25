@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/json"
+	"github.com/prixfixeco/api_server/internal/email/sendgrid"
 	"log"
 	"os"
 	"path/filepath"
@@ -130,7 +131,6 @@ var (
 
 	localEmailConfig = emailconfig.Config{
 		Provider: "",
-		APIToken: "",
 	}
 
 	localCustomerDataPlatformConfig = customerdataconfig.Config{
@@ -197,7 +197,10 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 
 	emailConfig := emailconfig.Config{
 		Provider: emailconfig.ProviderSendgrid,
-		APIToken: "",
+		Sendgrid: sendgrid.Config{
+			WebAppURL:                           "https://www.prixfixe.dev",
+			HouseholdInviteOutboundEmailAddress: "invites@prixfixe.dev",
+		},
 	}
 
 	customerDataPlatformConfig := customerdataconfig.Config{

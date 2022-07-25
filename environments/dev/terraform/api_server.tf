@@ -213,6 +213,11 @@ resource "google_cloud_run_service" "api_server" {
         }
 
         env {
+          name = "PRIXFIXE_SENDGRID_HOUSEHOLD_INVITE_TEMPLATE_ID"
+          value = "d-c7a81c620dc44c0580896c321f2a9dc1"
+        }
+
+        env {
           name = "PRIXFIXE_SEGMENT_API_TOKEN"
           value_from {
             secret_key_ref {

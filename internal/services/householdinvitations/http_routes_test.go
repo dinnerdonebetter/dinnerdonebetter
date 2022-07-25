@@ -79,7 +79,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		emailer.On(
 			"SendEmail",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*email.OutboundMessageDetails) bool { return true }),
+			mock.MatchedBy(func(*email.OutboundEmailMessage) bool { return true }),
 		).Return(nil)
 		helper.service.emailer = emailer
 
@@ -413,7 +413,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		emailer.On(
 			"SendEmail",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*email.OutboundMessageDetails) bool { return true }),
+			mock.MatchedBy(func(*email.OutboundEmailMessage) bool { return true }),
 		).Return(errors.New("blah"))
 		helper.service.emailer = emailer
 
