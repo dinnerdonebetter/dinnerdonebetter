@@ -13,7 +13,6 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
-	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 const (
@@ -22,6 +21,8 @@ const (
 
 var (
 	_ email.Emailer = (*Emailer)(nil)
+	// ErrNilConfig indicates an empty API token was provided.
+	ErrNilConfig = errors.New("SendGrid config is nil")
 	// ErrEmptyAPIToken indicates an empty API token was provided.
 	ErrEmptyAPIToken = errors.New("empty API token")
 	// ErrNilHTTPClient indicates a nil HTTP client was provided.
@@ -29,24 +30,27 @@ var (
 )
 
 type (
+	// Config configures SendGrid to send email.
 	Config struct {
-		APIToken                            string `json:"apiToken" mapstructure:"api_token" toml:"api_token,omitempty"`
-		WebAppURL                           string `json:"webAppURL" mapstructure:"web_app_url" toml:"web_app_url,omitempty"`
-		HouseholdInviteOutboundEmailAddress string `json:"householdInviteOutboundEmailAddress" mapstructure:"household_invitation_outbound_email_address" toml:"household_invitation_outbound_email_address,omitempty"`
-		HouseholdInviteTemplateID           string `json:"householdInviteTemplateID" mapstructure:"household_invite_template_id" toml:"household_invite_template_id,omitempty"`
+		APIToken  string `json:"apiToken" mapstructure:"api_token" toml:"api_token,omitempty"`
+		WebAppURL string `json:"webAppURL" mapstructure:"web_app_url" toml:"web_app_url,omitempty"`
 	}
 
 	// Emailer uses SendGrid to send email.
 	Emailer struct {
 		logger logging.Logger
 		tracer tracing.Tracer
-		config Config
 		client *sendgrid.Client
+		config Config
 	}
 )
 
 // NewSendGridEmailer returns a new SendGrid-backed Emailer.
-func NewSendGridEmailer(cfg Config, logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client) (*Emailer, error) {
+func NewSendGridEmailer(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client) (*Emailer, error) {
+	if cfg == nil {
+		return nil, ErrNilConfig
+	}
+
 	if cfg.APIToken == "" {
 		return nil, ErrEmptyAPIToken
 	}
@@ -55,14 +59,15 @@ func NewSendGridEmailer(cfg Config, logger logging.Logger, tracerProvider tracin
 		return nil, ErrNilHTTPClient
 	}
 
+	// this line causes data races when the unit tests in this package are run in parallel.
+	// that sucks, but I also basically can't do anything about it because of how SendGrid's dogshit client works.
 	sendgrid.DefaultClient = &rest.Client{HTTPClient: client}
-	c := sendgrid.NewSendClient(cfg.APIToken)
 
 	e := &Emailer{
 		logger: logging.EnsureLogger(logger).WithName(name),
 		tracer: tracing.NewTracer(tracerProvider.Tracer(name)),
-		client: c,
-		config: cfg,
+		client: sendgrid.NewSendClient(cfg.APIToken),
+		config: *cfg,
 	}
 
 	return e, nil
@@ -94,7 +99,7 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 	return nil
 }
 
-func preparePersonalization(to *mail.Email, data map[string]string) *mail.Personalization {
+func (e *Emailer) preparePersonalization(to *mail.Email, data map[string]interface{}) *mail.Personalization {
 	p := mail.NewPersonalization()
 	p.AddTos(to)
 
@@ -105,35 +110,15 @@ func preparePersonalization(to *mail.Email, data map[string]string) *mail.Person
 	return p
 }
 
-// SendHouseholdInvitationEmail sends an email.
-func (e *Emailer) SendHouseholdInvitationEmail(ctx context.Context, householdInvitation *types.HouseholdInvitation) error {
-	_, span := e.tracer.StartSpan(ctx)
-	defer span.End()
-
-	to := mail.NewEmail("PrixFixe Invitee", householdInvitation.ToEmail)
-	from := mail.NewEmail("Example Test", e.config.HouseholdInviteOutboundEmailAddress)
-
-	templateData := map[string]string{
-		"webAppURL":    e.config.WebAppURL,
-		"invitationID": householdInvitation.ID,
-		"token":        householdInvitation.Token,
-	}
-
-	request := sendgrid.GetRequest(e.config.APIToken, "/v3/mail/send", "https://api.sendgrid.com")
-	request.Method = http.MethodPost
-
-	return e.sendDynamicTemplateEmail(ctx, to, from, e.config.HouseholdInviteTemplateID, templateData, request)
-}
-
 // sendDynamicTemplateEmail sends an email.
-func (e *Emailer) sendDynamicTemplateEmail(ctx context.Context, to, from *mail.Email, templateID string, data map[string]string, request rest.Request) error {
+func (e *Emailer) sendDynamicTemplateEmail(ctx context.Context, to, from *mail.Email, templateID string, data map[string]interface{}, request rest.Request) error {
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := e.logger.WithValue("to_email", to.Address)
 
 	m := mail.NewV3Mail()
-	m.SetFrom(from).SetTemplateID(templateID).AddPersonalizations(preparePersonalization(to, data))
+	m.SetFrom(from).SetTemplateID(templateID).AddPersonalizations(e.preparePersonalization(to, data))
 
 	request.Body = mail.GetRequestBody(m)
 

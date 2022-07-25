@@ -2,7 +2,6 @@ package email
 
 import (
 	"context"
-	"github.com/prixfixeco/api_server/pkg/types"
 )
 
 type (
@@ -22,6 +21,5 @@ type (
 	// Emailer represents a service that can send emails.
 	Emailer interface {
 		SendEmail(ctx context.Context, details *OutboundEmailMessage) error
-		SendHouseholdInvitationEmail(ctx context.Context, householdInvitation *types.HouseholdInvitation) error
 	}
 )

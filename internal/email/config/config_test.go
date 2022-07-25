@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/prixfixeco/api_server/internal/email/sendgrid"
 	"github.com/prixfixeco/api_server/internal/observability/logging"
 )
 
@@ -19,7 +20,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
-			APIToken: t.Name(),
+			Sendgrid: &sendgrid.Config{APIToken: t.Name()},
 		}
 
 		require.NoError(t, cfg.ValidateWithContext(ctx))
@@ -46,7 +47,7 @@ func TestConfig_ProvideEmailer(T *testing.T) {
 		logger := logging.NewNoopLogger()
 		cfg := &Config{
 			Provider: ProviderSendgrid,
-			APIToken: t.Name(),
+			Sendgrid: &sendgrid.Config{APIToken: t.Name()},
 		}
 
 		actual, err := cfg.ProvideEmailer(logger, &http.Client{})

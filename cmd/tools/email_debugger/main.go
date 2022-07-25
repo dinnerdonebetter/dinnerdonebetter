@@ -8,7 +8,9 @@ import (
 
 	flag "github.com/spf13/pflag"
 
+	"github.com/prixfixeco/api_server/internal/email"
 	"github.com/prixfixeco/api_server/internal/email/sendgrid"
+	"github.com/prixfixeco/api_server/internal/observability"
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 	"github.com/prixfixeco/api_server/internal/observability/tracing"
 	"github.com/prixfixeco/api_server/pkg/types"
@@ -34,10 +36,9 @@ func main() {
 		panic(err)
 	}
 
-	cfg := sendgrid.Config{
-		APIToken:                            apiToken,
-		WebAppURL:                           "https://www.prixfixe.fake.lol",
-		HouseholdInviteOutboundEmailAddress: destinationEmail,
+	cfg := &sendgrid.Config{
+		APIToken:  apiToken,
+		WebAppURL: "https://www.prixfixe.fake.lol",
 	}
 
 	emailer, err := sendgrid.NewSendGridEmailer(
@@ -56,8 +57,13 @@ func main() {
 		DestinationHousehold: types.Household{ID: "__te$ting__"},
 	}
 
-	if sendErr := emailer.SendHouseholdInvitationEmail(ctx, householdInvitation); sendErr != nil {
-		panic(sendErr)
+	msg, emailGenerationErr := email.BuildInviteMemberEmail(householdInvitation)
+	if emailGenerationErr != nil {
+		panic(observability.PrepareError(emailGenerationErr, logger, nil, "building email message"))
+	}
+
+	if err = emailer.SendEmail(ctx, msg); err != nil {
+		panic(observability.PrepareError(err, logger, nil, "sending email notice"))
 	}
 
 	println("yay")

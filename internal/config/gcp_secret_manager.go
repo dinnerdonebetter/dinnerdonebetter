@@ -73,7 +73,6 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*Inst
 	cfg.Events.Publishers.PubSubConfig.TopicName = dataChangesTopicName
 
 	cfg.Email.Sendgrid.APIToken = os.Getenv("PRIXFIXE_SENDGRID_API_TOKEN")
-	cfg.Email.Sendgrid.HouseholdInviteTemplateID = os.Getenv("PRIXFIXE_SENDGRID_HOUSEHOLD_INVITE_TEMPLATE_ID")
 	cfg.CustomerData.APIToken = os.Getenv("PRIXFIXE_SEGMENT_API_TOKEN")
 
 	cfg.Services.ValidInstruments.DataChangesTopicName = dataChangesTopicName

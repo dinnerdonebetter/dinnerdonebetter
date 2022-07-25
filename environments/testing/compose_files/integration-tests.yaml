@@ -1,15 +1,17 @@
 version: "3.8"
 services:
     redis:
+        logging:
+            driver: none
         hostname: worker_queue
         image: redis:6-buster
         container_name: redis
         ports:
             - '6379:6379'
         command: [ "redis-server", "--cluster-enabled yes" ]
+    postgres:
         logging:
             driver: none
-    postgres:
         container_name: postgres
         hostname: pgdatabase
         image: postgres:10
@@ -17,8 +19,6 @@ services:
             POSTGRES_DB: 'prixfixe'
             POSTGRES_PASSWORD: 'hunter2'
             POSTGRES_USER: 'dbuser'
-        logging:
-            driver: none
         ports:
             - '5432:5432'
     workers:
@@ -36,6 +36,8 @@ services:
               target: '/etc/config'
               type: 'bind'
     prixfixe_api_server:
+        # logging:
+        #     driver: none
         hostname: api_server
         container_name: integration_tests_server
         depends_on:

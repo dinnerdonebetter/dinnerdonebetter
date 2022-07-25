@@ -21,8 +21,8 @@ const (
 type (
 	// Config is the configuration structure.
 	Config struct {
-		Provider string          `json:"provider" mapstructure:"provider" toml:"provider,omitempty"`
-		Sendgrid sendgrid.Config `json:"sendgrid" mapstructure:"sendgrid" toml:"sendgrid,omitempty"`
+		Sendgrid *sendgrid.Config `json:"sendgrid" mapstructure:"sendgrid" toml:"sendgrid,omitempty"`
+		Provider string           `json:"provider" mapstructure:"provider" toml:"provider,omitempty"`
 	}
 )
 

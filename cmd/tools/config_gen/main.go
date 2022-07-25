@@ -197,9 +197,8 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 
 	emailConfig := emailconfig.Config{
 		Provider: emailconfig.ProviderSendgrid,
-		Sendgrid: sendgrid.Config{
-			WebAppURL:                           "https://www.prixfixe.dev",
-			HouseholdInviteOutboundEmailAddress: "invites@prixfixe.dev",
+		Sendgrid: &sendgrid.Config{
+			WebAppURL: "https://www.prixfixe.dev",
 		},
 	}
 
