@@ -2,7 +2,7 @@ package postgres
 
 import (
 	"context"
-	"errors"
+	"database/sql"
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
@@ -364,7 +364,7 @@ func (q *SQLQuerier) getRecipe(ctx context.Context, recipeID, userID string) (*t
 	}
 
 	if x == nil {
-		return nil, errors.New("nil result for recipe")
+		return nil, sql.ErrNoRows
 	}
 
 	// need to grab ingredients here and add them to steps

@@ -259,3 +259,9 @@ tree:
 .PHONY: line_count
 line_count: ensure_scc_installed
 	@scc --include-ext go --exclude-dir vendor
+
+## maintenance
+
+.PHONY: start_%_cloud_sql_proxy
+start_%_cloud_sql_proxy:
+	cloud_sql_proxy -dir=/cloudsql -instances=`gcloud sql instances describe $* | grep connectionName | cut -d ' ' -f 2`=tcp:5434

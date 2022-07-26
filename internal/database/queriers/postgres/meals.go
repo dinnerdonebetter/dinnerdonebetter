@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
@@ -203,6 +204,10 @@ func (q *SQLQuerier) GetMeal(ctx context.Context, mealID string) (*types.Meal, e
 	m, recipeIDs, err := q.scanMealWithRecipes(ctx, rows)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "scanning meal retrieval query")
+	}
+
+	if m == nil {
+		return nil, sql.ErrNoRows
 	}
 
 	for _, id := range recipeIDs {
