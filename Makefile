@@ -262,6 +262,7 @@ line_count: ensure_scc_installed
 
 ## maintenance
 
+# https://cloud.google.com/sql/docs/postgres/connect-admin-proxy#connect-tcp
 .PHONY: start_%_cloud_sql_proxy
 start_%_cloud_sql_proxy:
 	cloud_sql_proxy -dir=/cloudsql -instances=`gcloud sql instances describe $* | grep connectionName | cut -d ' ' -f 2`=tcp:5434
