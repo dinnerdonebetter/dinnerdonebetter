@@ -13,8 +13,6 @@ const (
 
 	// APIClientCreatedCustomerEventType indicates an API client was created.
 	APIClientCreatedCustomerEventType CustomerEventType = "api_client_created"
-	// APIClientUpdatedCustomerEventType indicates an API client was updated.
-	APIClientUpdatedCustomerEventType CustomerEventType = "api_client_updated"
 	// APIClientArchivedCustomerEventType indicates an API client was archived.
 	APIClientArchivedCustomerEventType CustomerEventType = "api_client_archived"
 )

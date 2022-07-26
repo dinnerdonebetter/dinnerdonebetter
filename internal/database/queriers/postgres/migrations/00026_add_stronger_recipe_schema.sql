@@ -18,7 +18,10 @@ ALTER TABLE recipe_steps ADD COLUMN "max_temperature_in_celsius" DOUBLE PRECISIO
 ALTER TABLE valid_ingredients ADD COLUMN "animal_derived" BOOLEAN NOT NULL DEFAULT 'false';
 
 -- add preference_rank to recipe_step_instruments
+ALTER TABLE recipe_step_instruments ADD COLUMN "preference_rank" INTEGER NOT NULL DEFAULT 0;
 
 -- add type to recipe_step_products (to accommodate prepared instruments)
+ALTER TABLE recipe_step_products ADD COLUMN "type" TEXT NOT NULL DEFAULT '';
 
--- change quantity_type in recipe_step_ingredients to point to the new `valid_measurement_units` table.
+-- add measurement_unit in recipe_step_ingredients to point to the new `valid_measurement_units` table.
+ALTER TABLE recipe_step_ingredients ADD COLUMN "measurement_unit" CHAR(27) NOT NULL REFERENCES valid_measurement_unit("id") ON DELETE RESTRICT;
