@@ -33,7 +33,7 @@ const (
 
 	totpIssuer             = "Prixfixe"
 	base64ImagePrefix      = "data:image/jpeg;base64,"
-	minimumPasswordEntropy = 75
+	minimumPasswordEntropy = 60
 	totpSecretSize         = 64
 	passwordResetTokenSize = 32
 )
