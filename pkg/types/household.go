@@ -97,7 +97,6 @@ type (
 	HouseholdDataManager interface {
 		GetHousehold(ctx context.Context, householdID, userID string) (*Household, error)
 		GetHouseholdByID(ctx context.Context, householdID string) (*Household, error)
-		GetAllHouseholdsCount(ctx context.Context) (uint64, error)
 		GetHouseholds(ctx context.Context, userID string, filter *QueryFilter) (*HouseholdList, error)
 		GetHouseholdsForAdmin(ctx context.Context, userID string, filter *QueryFilter) (*HouseholdList, error)
 		CreateHousehold(ctx context.Context, input *HouseholdDatabaseCreationInput) (*Household, error)

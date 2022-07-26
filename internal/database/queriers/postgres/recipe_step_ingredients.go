@@ -57,7 +57,7 @@ func (q *SQLQuerier) scanRecipeStepIngredient(ctx context.Context, scan database
 		&x.Name,
 		&x.IngredientID,
 		&x.QuantityType,
-		&x.QuantityValue,
+		&x.MinimumQuantityValue,
 		&x.QuantityNotes,
 		&x.ProductOfRecipeStep,
 		&x.RecipeStepProductID,
@@ -224,23 +224,6 @@ func (q *SQLQuerier) GetRecipeStepIngredient(ctx context.Context, recipeID, reci
 	}
 
 	return recipeStepIngredient, nil
-}
-
-const getTotalRecipeStepIngredientsCountQuery = "SELECT COUNT(recipe_step_ingredients.id) FROM recipe_step_ingredients WHERE recipe_step_ingredients.archived_on IS NULL"
-
-// GetTotalRecipeStepIngredientCount fetches the count of recipe step ingredients from the database that meet a particular filter.
-func (q *SQLQuerier) GetTotalRecipeStepIngredientCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getTotalRecipeStepIngredientsCountQuery, "fetching count of recipe step ingredients")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of recipe step ingredients")
-	}
-
-	return count, nil
 }
 
 // getRecipeStepIngredientsForRecipe fetches a list of recipe step ingredients from the database that meet a particular filter.
@@ -419,17 +402,17 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 	}
 
 	x := &types.RecipeStepIngredient{
-		ID:                  input.ID,
-		Name:                input.Name,
-		IngredientID:        input.IngredientID,
-		QuantityType:        input.QuantityType,
-		QuantityValue:       input.QuantityValue,
-		QuantityNotes:       input.QuantityNotes,
-		ProductOfRecipeStep: input.ProductOfRecipeStep,
-		IngredientNotes:     input.IngredientNotes,
-		BelongsToRecipeStep: input.BelongsToRecipeStep,
-		RecipeStepProductID: input.RecipeStepProductID,
-		CreatedOn:           q.currentTime(),
+		ID:                   input.ID,
+		Name:                 input.Name,
+		IngredientID:         input.IngredientID,
+		QuantityType:         input.QuantityType,
+		MinimumQuantityValue: input.QuantityValue,
+		QuantityNotes:        input.QuantityNotes,
+		ProductOfRecipeStep:  input.ProductOfRecipeStep,
+		IngredientNotes:      input.IngredientNotes,
+		BelongsToRecipeStep:  input.BelongsToRecipeStep,
+		RecipeStepProductID:  input.RecipeStepProductID,
+		CreatedOn:            q.currentTime(),
 	}
 
 	tracing.AttachRecipeStepIngredientIDToSpan(span, x.ID)
@@ -473,7 +456,7 @@ func (q *SQLQuerier) UpdateRecipeStepIngredient(ctx context.Context, updated *ty
 		updated.IngredientID,
 		updated.Name,
 		updated.QuantityType,
-		updated.QuantityValue,
+		updated.MinimumQuantityValue,
 		updated.QuantityNotes,
 		updated.ProductOfRecipeStep,
 		updated.RecipeStepProductID,

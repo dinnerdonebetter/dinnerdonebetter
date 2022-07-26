@@ -38,6 +38,7 @@ type (
 		QuantityType        string  `json:"quantityType"`
 		QuantityNotes       string  `json:"quantityNotes"`
 		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
+		Type                string  `json:"type"`
 		CreatedOn           uint64  `json:"createdOn"`
 		QuantityValue       float32 `json:"quantityValue"`
 	}
@@ -57,6 +58,7 @@ type (
 		QuantityType        string  `json:"quantityType"`
 		QuantityNotes       string  `json:"quantityNotes"`
 		BelongsToRecipeStep string  `json:"-"`
+		Type                string  `json:"type"`
 		QuantityValue       float32 `json:"quantityValue"`
 	}
 
@@ -68,6 +70,7 @@ type (
 		QuantityType        string  `json:"quantityType"`
 		QuantityNotes       string  `json:"quantityNotes"`
 		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
+		Type                string  `json:"type"`
 		QuantityValue       float32 `json:"quantityValue"`
 	}
 
@@ -79,13 +82,13 @@ type (
 		QuantityNotes       *string  `json:"quantityNotes"`
 		BelongsToRecipeStep *string  `json:"belongsToRecipeStep"`
 		QuantityValue       *float32 `json:"quantityValue"`
+		Type                string   `json:"type"`
 	}
 
 	// RecipeStepProductDataManager describes a structure capable of storing recipe step products permanently.
 	RecipeStepProductDataManager interface {
 		RecipeStepProductExists(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) (bool, error)
 		GetRecipeStepProduct(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) (*RecipeStepProduct, error)
-		GetTotalRecipeStepProductCount(ctx context.Context) (uint64, error)
 		GetRecipeStepProducts(ctx context.Context, recipeID, recipeStepID string, filter *QueryFilter) (*RecipeStepProductList, error)
 		GetRecipeStepProductsWithIDs(ctx context.Context, recipeStepID string, limit uint8, ids []string) ([]*RecipeStepProduct, error)
 		CreateRecipeStepProduct(ctx context.Context, input *RecipeStepProductDatabaseCreationInput) (*RecipeStepProduct, error)

@@ -478,45 +478,6 @@ func TestQuerier_GetHouseholdInvitationByEmailAndToken(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetAllHouseholdInvitationsCount(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		expected := uint64(123)
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getAllHouseholdInvitationsCountQuery)).
-			WithArgs().
-			WillReturnRows(newCountDBRowResponse(expected))
-
-		actual, err := c.GetAllHouseholdInvitationsCount(ctx)
-		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getAllHouseholdInvitationsCountQuery)).
-			WithArgs().
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetAllHouseholdInvitationsCount(ctx)
-		assert.Error(t, err)
-		assert.Zero(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
 func TestQuerier_CreateHouseholdInvitation(T *testing.T) {
 	T.Parallel()
 

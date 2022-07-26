@@ -95,7 +95,6 @@ type (
 		GetHouseholdInvitationByHouseholdAndID(ctx context.Context, householdID, householdInvitationID string) (*HouseholdInvitation, error)
 		GetHouseholdInvitationByTokenAndID(ctx context.Context, token, invitationID string) (*HouseholdInvitation, error)
 		GetHouseholdInvitationByEmailAndToken(ctx context.Context, emailAddress, token string) (*HouseholdInvitation, error)
-		GetAllHouseholdInvitationsCount(ctx context.Context) (uint64, error)
 		GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *QueryFilter) (*HouseholdInvitationList, error)
 		GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *QueryFilter) (*HouseholdInvitationList, error)
 		CreateHouseholdInvitation(ctx context.Context, input *HouseholdInvitationDatabaseCreationInput) (*HouseholdInvitation, error)

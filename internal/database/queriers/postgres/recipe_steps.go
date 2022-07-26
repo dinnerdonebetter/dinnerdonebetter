@@ -69,7 +69,7 @@ func (q *SQLQuerier) scanRecipeStep(ctx context.Context, scan database.Scanner, 
 		&x.Preparation.ArchivedOn,
 		&x.MinEstimatedTimeInSeconds,
 		&x.MaxEstimatedTimeInSeconds,
-		&x.TemperatureInCelsius,
+		&x.MinTemperatureInCelsius,
 		&x.Notes,
 		&x.Optional,
 		&x.CreatedOn,
@@ -221,23 +221,6 @@ func (q *SQLQuerier) GetRecipeStep(ctx context.Context, recipeID, recipeStepID s
 	return recipeStep, nil
 }
 
-const getTotalRecipeStepsCountQuery = "SELECT COUNT(recipe_steps.id) FROM recipe_steps WHERE recipe_steps.archived_on IS NULL"
-
-// GetTotalRecipeStepCount fetches the count of recipe steps from the database that meet a particular filter.
-func (q *SQLQuerier) GetTotalRecipeStepCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getTotalRecipeStepsCountQuery, "fetching count of recipe steps")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of recipe steps")
-	}
-
-	return count, nil
-}
-
 // GetRecipeSteps fetches a list of recipe steps from the database that meet a particular filter.
 func (q *SQLQuerier) GetRecipeSteps(ctx context.Context, recipeID string, filter *types.QueryFilter) (x *types.RecipeStepList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -373,7 +356,7 @@ func (q *SQLQuerier) createRecipeStep(ctx context.Context, db database.SQLQueryE
 		Index:                     input.Index,
 		MinEstimatedTimeInSeconds: input.MinEstimatedTimeInSeconds,
 		MaxEstimatedTimeInSeconds: input.MaxEstimatedTimeInSeconds,
-		TemperatureInCelsius:      input.TemperatureInCelsius,
+		MinTemperatureInCelsius:   input.TemperatureInCelsius,
 		Notes:                     input.Notes,
 		Optional:                  input.Optional,
 		BelongsToRecipe:           input.BelongsToRecipe,
@@ -429,7 +412,7 @@ func (q *SQLQuerier) UpdateRecipeStep(ctx context.Context, updated *types.Recipe
 		updated.Preparation.ID,
 		updated.MinEstimatedTimeInSeconds,
 		updated.MaxEstimatedTimeInSeconds,
-		updated.TemperatureInCelsius,
+		updated.MinTemperatureInCelsius,
 		updated.Notes,
 		updated.Optional,
 		updated.BelongsToRecipe,

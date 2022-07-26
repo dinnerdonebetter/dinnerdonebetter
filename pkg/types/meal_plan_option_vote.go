@@ -87,7 +87,6 @@ type (
 	MealPlanOptionVoteDataManager interface {
 		MealPlanOptionVoteExists(ctx context.Context, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID string) (bool, error)
 		GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanOptionID, mealPlanOptionVoteID string) (*MealPlanOptionVote, error)
-		GetTotalMealPlanOptionVoteCount(ctx context.Context) (uint64, error)
 		GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanOptionID string, filter *QueryFilter) (*MealPlanOptionVoteList, error)
 		GetMealPlanOptionVotesWithIDs(ctx context.Context, mealPlanOptionID string, limit uint8, ids []string) ([]*MealPlanOptionVote, error)
 		CreateMealPlanOptionVote(ctx context.Context, input *MealPlanOptionVoteDatabaseCreationInput) ([]*MealPlanOptionVote, error)

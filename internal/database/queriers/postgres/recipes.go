@@ -220,7 +220,7 @@ func (q *SQLQuerier) scanRecipeAndStep(ctx context.Context, scan database.Scanne
 		recipeStepPreparationArchivedOn     *uint64
 		recipeStepMinEstimatedTimeInSeconds *uint32
 		recipeStepMaxEstimatedTimeInSeconds *uint32
-		recipeStepTemperatureInCelsius      *uint16
+		recipeStepTemperatureInCelsius      *float32
 		recipeStepNotes                     *string
 		recipeStepOptional                  *bool
 		recipeStepCreatedOn                 *uint64
@@ -297,7 +297,7 @@ func (q *SQLQuerier) scanRecipeAndStep(ctx context.Context, scan database.Scanne
 		y.MaxEstimatedTimeInSeconds = *recipeStepMaxEstimatedTimeInSeconds
 	}
 	if recipeStepTemperatureInCelsius != nil {
-		y.TemperatureInCelsius = recipeStepTemperatureInCelsius
+		y.MinTemperatureInCelsius = recipeStepTemperatureInCelsius
 	}
 	if recipeStepNotes != nil {
 		y.Notes = *recipeStepNotes
@@ -404,23 +404,6 @@ func (q *SQLQuerier) GetRecipe(ctx context.Context, recipeID string) (*types.Rec
 // GetRecipeByIDAndUser fetches a recipe from the database.
 func (q *SQLQuerier) GetRecipeByIDAndUser(ctx context.Context, recipeID, userID string) (*types.Recipe, error) {
 	return q.getRecipe(ctx, recipeID, userID)
-}
-
-const getTotalRecipesCountQuery = "SELECT COUNT(recipes.id) FROM recipes WHERE recipes.archived_on IS NULL"
-
-// GetTotalRecipeCount fetches the count of recipes from the database that meet a particular filter.
-func (q *SQLQuerier) GetTotalRecipeCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getTotalRecipesCountQuery, "fetching count of recipes")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of recipes")
-	}
-
-	return count, nil
 }
 
 // GetRecipes fetches a list of recipes from the database that meet a particular filter.

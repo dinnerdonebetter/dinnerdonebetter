@@ -107,7 +107,7 @@ func buildMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
 			&step.Preparation.ArchivedOn,
 			&step.MinEstimatedTimeInSeconds,
 			&step.MaxEstimatedTimeInSeconds,
-			&step.TemperatureInCelsius,
+			&step.MinTemperatureInCelsius,
 			&step.Notes,
 			&step.Optional,
 			&step.CreatedOn,
@@ -724,47 +724,6 @@ func TestQuerier_GetRecipeByUser(T *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 		assert.True(t, errors.Is(err, sql.ErrNoRows))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
-func TestQuerier_GetTotalRecipeCount(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleCount := uint64(123)
-
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getTotalRecipesCountQuery)).
-			WithArgs().
-			WillReturnRows(newCountDBRowResponse(uint64(123)))
-
-		actual, err := c.GetTotalRecipeCount(ctx)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleCount, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		c, db := buildTestClient(t)
-
-		db.ExpectQuery(formatQueryForSQLMock(getTotalRecipesCountQuery)).
-			WithArgs().
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetTotalRecipeCount(ctx)
-		assert.Error(t, err)
-		assert.Zero(t, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -1570,7 +1529,7 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 			Description: "",
 			Steps: []*types.RecipeStep{
 				{
-					TemperatureInCelsius: nil,
+					MinTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
 							ID:            fakes.BuildFakeID(),
@@ -1584,26 +1543,26 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					Preparation: *soak,
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							RecipeStepProductID: nil,
-							IngredientID:        &pintoBeans.ID,
-							Name:                "pinto beans",
-							QuantityType:        "grams",
-							QuantityValue:       500,
-							ProductOfRecipeStep: false,
+							RecipeStepProductID:  nil,
+							IngredientID:         &pintoBeans.ID,
+							Name:                 "pinto beans",
+							QuantityType:         "grams",
+							MinimumQuantityValue: 500,
+							ProductOfRecipeStep:  false,
 						},
 						{
-							RecipeStepProductID: nil,
-							IngredientID:        &water.ID,
-							Name:                "water",
-							QuantityType:        "grams",
-							QuantityValue:       500,
-							ProductOfRecipeStep: false,
+							RecipeStepProductID:  nil,
+							IngredientID:         &water.ID,
+							Name:                 "water",
+							QuantityType:         "grams",
+							MinimumQuantityValue: 500,
+							ProductOfRecipeStep:  false,
 						},
 					},
 					Index: 0,
 				},
 				{
-					TemperatureInCelsius: nil,
+					MinTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
 							Name:          "final output",
@@ -1616,20 +1575,20 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					Preparation: *soak,
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							IngredientID:        nil,
-							RecipeStepProductID: nil,
-							Name:                productName,
-							QuantityType:        "grams",
-							QuantityValue:       1000,
-							ProductOfRecipeStep: true,
+							IngredientID:         nil,
+							RecipeStepProductID:  nil,
+							Name:                 productName,
+							QuantityType:         "grams",
+							MinimumQuantityValue: 1000,
+							ProductOfRecipeStep:  true,
 						},
 						{
-							RecipeStepProductID: nil,
-							IngredientID:        &garlicPaste.ID,
-							Name:                "garlic paste",
-							QuantityType:        "grams",
-							QuantityValue:       10,
-							ProductOfRecipeStep: false,
+							RecipeStepProductID:  nil,
+							IngredientID:         &garlicPaste.ID,
+							Name:                 "garlic paste",
+							QuantityType:         "grams",
+							MinimumQuantityValue: 10,
+							ProductOfRecipeStep:  false,
 						},
 					},
 					Index: 1,
@@ -1644,7 +1603,7 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 
 		for _, step := range expected.Steps {
 			newStep := &types.RecipeStepDatabaseCreationInput{
-				TemperatureInCelsius:      step.TemperatureInCelsius,
+				TemperatureInCelsius:      step.MinTemperatureInCelsius,
 				Notes:                     step.Notes,
 				PreparationID:             step.Preparation.ID,
 				BelongsToRecipe:           step.BelongsToRecipe,
@@ -1664,7 +1623,7 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					QuantityType:        ingredient.QuantityType,
 					QuantityNotes:       ingredient.QuantityNotes,
 					IngredientNotes:     ingredient.IngredientNotes,
-					QuantityValue:       ingredient.QuantityValue,
+					QuantityValue:       ingredient.MinimumQuantityValue,
 					ProductOfRecipeStep: ingredient.ProductOfRecipeStep,
 				}
 				newStep.Ingredients = append(newStep.Ingredients, newIngredient)
@@ -1705,7 +1664,7 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 			Description: "",
 			Steps: []*types.RecipeStep{
 				{
-					TemperatureInCelsius: nil,
+					MinTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
 							ID:            fakes.BuildFakeID(),
@@ -1719,26 +1678,26 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					Preparation: *soak,
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							RecipeStepProductID: nil,
-							IngredientID:        &pintoBeans.ID,
-							Name:                "pinto beans",
-							QuantityType:        "grams",
-							QuantityValue:       500,
-							ProductOfRecipeStep: false,
+							RecipeStepProductID:  nil,
+							IngredientID:         &pintoBeans.ID,
+							Name:                 "pinto beans",
+							QuantityType:         "grams",
+							MinimumQuantityValue: 500,
+							ProductOfRecipeStep:  false,
 						},
 						{
-							RecipeStepProductID: nil,
-							IngredientID:        &water.ID,
-							Name:                "water",
-							QuantityType:        "cups",
-							QuantityValue:       5,
-							ProductOfRecipeStep: false,
+							RecipeStepProductID:  nil,
+							IngredientID:         &water.ID,
+							Name:                 "water",
+							QuantityType:         "cups",
+							MinimumQuantityValue: 5,
+							ProductOfRecipeStep:  false,
 						},
 					},
 					Index: 0,
 				},
 				{
-					TemperatureInCelsius: nil,
+					MinTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
 							Name:          "pressure cooked beans",
@@ -1751,26 +1710,26 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					Preparation: *soak,
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							IngredientID:        nil,
-							RecipeStepProductID: nil,
-							Name:                productName,
-							QuantityType:        "grams",
-							QuantityValue:       1000,
-							ProductOfRecipeStep: true,
+							IngredientID:         nil,
+							RecipeStepProductID:  nil,
+							Name:                 productName,
+							QuantityType:         "grams",
+							MinimumQuantityValue: 1000,
+							ProductOfRecipeStep:  true,
 						},
 						{
-							RecipeStepProductID: nil,
-							IngredientID:        &garlicPaste.ID,
-							Name:                "garlic paste",
-							QuantityType:        "grams",
-							QuantityValue:       10,
-							ProductOfRecipeStep: false,
+							RecipeStepProductID:  nil,
+							IngredientID:         &garlicPaste.ID,
+							Name:                 "garlic paste",
+							QuantityType:         "grams",
+							MinimumQuantityValue: 10,
+							ProductOfRecipeStep:  false,
 						},
 					},
 					Index: 1,
 				},
 				{
-					TemperatureInCelsius: nil,
+					MinTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
 							ID:            fakes.BuildFakeID(),
@@ -1784,26 +1743,26 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					Preparation: *soak,
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							RecipeStepProductID: nil,
-							IngredientID:        &pintoBeans.ID,
-							Name:                "pinto beans",
-							QuantityType:        "grams",
-							QuantityValue:       500,
-							ProductOfRecipeStep: false,
+							RecipeStepProductID:  nil,
+							IngredientID:         &pintoBeans.ID,
+							Name:                 "pinto beans",
+							QuantityType:         "grams",
+							MinimumQuantityValue: 500,
+							ProductOfRecipeStep:  false,
 						},
 						{
-							RecipeStepProductID: nil,
-							IngredientID:        &water.ID,
-							Name:                "water",
-							QuantityType:        "cups",
-							QuantityValue:       5,
-							ProductOfRecipeStep: false,
+							RecipeStepProductID:  nil,
+							IngredientID:         &water.ID,
+							Name:                 "water",
+							QuantityType:         "cups",
+							MinimumQuantityValue: 5,
+							ProductOfRecipeStep:  false,
 						},
 					},
 					Index: 2,
 				},
 				{
-					TemperatureInCelsius: nil,
+					MinTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
 							Name:          "final output",
@@ -1816,20 +1775,20 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					Preparation: *soak,
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							IngredientID:        nil,
-							RecipeStepProductID: nil,
-							Name:                productName,
-							QuantityType:        "grams",
-							QuantityValue:       1000,
-							ProductOfRecipeStep: true,
+							IngredientID:         nil,
+							RecipeStepProductID:  nil,
+							Name:                 productName,
+							QuantityType:         "grams",
+							MinimumQuantityValue: 1000,
+							ProductOfRecipeStep:  true,
 						},
 						{
-							RecipeStepProductID: nil,
-							IngredientID:        nil,
-							Name:                "pressure cooked beans",
-							QuantityType:        "grams",
-							QuantityValue:       10,
-							ProductOfRecipeStep: true,
+							RecipeStepProductID:  nil,
+							IngredientID:         nil,
+							Name:                 "pressure cooked beans",
+							QuantityType:         "grams",
+							MinimumQuantityValue: 10,
+							ProductOfRecipeStep:  true,
 						},
 					},
 					Index: 3,
@@ -1844,7 +1803,7 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 
 		for _, step := range expected.Steps {
 			newStep := &types.RecipeStepDatabaseCreationInput{
-				TemperatureInCelsius:      step.TemperatureInCelsius,
+				TemperatureInCelsius:      step.MinTemperatureInCelsius,
 				Notes:                     step.Notes,
 				PreparationID:             step.Preparation.ID,
 				BelongsToRecipe:           step.BelongsToRecipe,
@@ -1864,7 +1823,7 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					QuantityType:        ingredient.QuantityType,
 					QuantityNotes:       ingredient.QuantityNotes,
 					IngredientNotes:     ingredient.IngredientNotes,
-					QuantityValue:       ingredient.QuantityValue,
+					QuantityValue:       ingredient.MinimumQuantityValue,
 					ProductOfRecipeStep: ingredient.ProductOfRecipeStep,
 				}
 				newStep.Ingredients = append(newStep.Ingredients, newIngredient)

@@ -205,23 +205,6 @@ func (q *SQLQuerier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, meal
 	return mealPlanOptionVote, nil
 }
 
-const getTotalMealPlanOptionVotesCountQuery = "SELECT COUNT(meal_plan_option_votes.id) FROM meal_plan_option_votes WHERE meal_plan_option_votes.archived_on IS NULL"
-
-// GetTotalMealPlanOptionVoteCount fetches the count of meal plan option votes from the database that meet a particular filter.
-func (q *SQLQuerier) GetTotalMealPlanOptionVoteCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getTotalMealPlanOptionVotesCountQuery, "fetching count of meal plan option votes")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of meal plan option votes")
-	}
-
-	return count, nil
-}
-
 // GetMealPlanOptionVotes fetches a list of meal plan option votes from the database that meet a particular filter.
 func (q *SQLQuerier) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanOptionID string, filter *types.QueryFilter) (x *types.MealPlanOptionVoteList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)

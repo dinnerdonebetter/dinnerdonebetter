@@ -30,20 +30,21 @@ func init() {
 type (
 	// RecipeStepIngredient represents a recipe step ingredient.
 	RecipeStepIngredient struct {
-		_                   struct{}
-		RecipeStepProductID *string `json:"recipeStepProductID"`
-		LastUpdatedOn       *uint64 `json:"lastUpdatedOn"`
-		IngredientID        *string `json:"ingredientID"`
-		ArchivedOn          *uint64 `json:"archivedOn"`
-		Name                string  `json:"name"`
-		QuantityType        string  `json:"quantityType"`
-		QuantityNotes       string  `json:"quantityNotes"`
-		IngredientNotes     string  `json:"ingredientNotes"`
-		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
-		ID                  string  `json:"id"`
-		CreatedOn           uint64  `json:"createdOn"`
-		QuantityValue       float32 `json:"quantityValue"`
-		ProductOfRecipeStep bool    `json:"productOfRecipeStep"`
+		_                    struct{}
+		RecipeStepProductID  *string `json:"recipeStepProductID"`
+		LastUpdatedOn        *uint64 `json:"lastUpdatedOn"`
+		IngredientID         *string `json:"ingredientID"`
+		ArchivedOn           *uint64 `json:"archivedOn"`
+		Name                 string  `json:"name"`
+		QuantityType         string  `json:"quantityType"`
+		QuantityNotes        string  `json:"quantityNotes"`
+		IngredientNotes      string  `json:"ingredientNotes"`
+		BelongsToRecipeStep  string  `json:"belongsToRecipeStep"`
+		ID                   string  `json:"id"`
+		CreatedOn            uint64  `json:"createdOn"`
+		MinimumQuantityValue float32 `json:"minimumQuantityValue"`
+		MaximumQuantityValue float32 `json:"maximumQuantityValue"`
+		ProductOfRecipeStep  bool    `json:"productOfRecipeStep"`
 	}
 
 	// RecipeStepIngredientList represents a list of recipe step ingredients.
@@ -104,7 +105,6 @@ type (
 	RecipeStepIngredientDataManager interface {
 		RecipeStepIngredientExists(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (bool, error)
 		GetRecipeStepIngredient(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (*RecipeStepIngredient, error)
-		GetTotalRecipeStepIngredientCount(ctx context.Context) (uint64, error)
 		GetRecipeStepIngredients(ctx context.Context, recipeID, recipeStepID string, filter *QueryFilter) (*RecipeStepIngredientList, error)
 		GetRecipeStepIngredientsWithIDs(ctx context.Context, recipeStepID string, limit uint8, ids []string) ([]*RecipeStepIngredient, error)
 		CreateRecipeStepIngredient(ctx context.Context, input *RecipeStepIngredientDatabaseCreationInput) (*RecipeStepIngredient, error)
@@ -140,8 +140,8 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 		x.QuantityType = *input.QuantityType
 	}
 
-	if input.QuantityValue != nil && *input.QuantityValue != x.QuantityValue {
-		x.QuantityValue = *input.QuantityValue
+	if input.QuantityValue != nil && *input.QuantityValue != x.MinimumQuantityValue {
+		x.MinimumQuantityValue = *input.QuantityValue
 	}
 
 	if input.QuantityNotes != nil && *input.QuantityNotes != x.QuantityNotes {
@@ -192,7 +192,7 @@ func RecipeStepIngredientUpdateRequestInputFromRecipeStepIngredient(input *Recip
 		QuantityNotes:       &input.QuantityNotes,
 		IngredientNotes:     &input.IngredientNotes,
 		BelongsToRecipeStep: &input.BelongsToRecipeStep,
-		QuantityValue:       &input.QuantityValue,
+		QuantityValue:       &input.MinimumQuantityValue,
 		ProductOfRecipeStep: &input.ProductOfRecipeStep,
 	}
 

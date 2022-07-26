@@ -140,6 +140,11 @@ var (
 			Description: "add password reset tokens",
 			Script:      fetchMigration("00025_add_password_reset_tokens"),
 		},
+		{
+			Version:     26,
+			Description: "add password reset tokens",
+			Script:      fetchMigration("00026_add_stronger_recipe_schema"),
+		},
 	}
 )
 

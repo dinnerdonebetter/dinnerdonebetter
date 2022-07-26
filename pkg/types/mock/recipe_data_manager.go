@@ -33,12 +33,6 @@ func (m *RecipeDataManager) GetRecipeByIDAndUser(ctx context.Context, recipeID, 
 	return args.Get(0).(*types.Recipe), args.Error(1)
 }
 
-// GetTotalRecipeCount is a mock function.
-func (m *RecipeDataManager) GetTotalRecipeCount(ctx context.Context) (uint64, error) {
-	args := m.Called(ctx)
-	return args.Get(0).(uint64), args.Error(1)
-}
-
 // SearchForRecipes is a mock function.
 func (m *RecipeDataManager) SearchForRecipes(ctx context.Context, query string, filter *types.QueryFilter) (*types.RecipeList, error) {
 	args := m.Called(ctx, query, filter)

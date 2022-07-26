@@ -27,12 +27,6 @@ func (m *MealPlanOptionVoteDataManager) GetMealPlanOptionVote(ctx context.Contex
 	return args.Get(0).(*types.MealPlanOptionVote), args.Error(1)
 }
 
-// GetTotalMealPlanOptionVoteCount is a mock function.
-func (m *MealPlanOptionVoteDataManager) GetTotalMealPlanOptionVoteCount(ctx context.Context) (uint64, error) {
-	args := m.Called(ctx)
-	return args.Get(0).(uint64), args.Error(1)
-}
-
 // GetMealPlanOptionVotes is a mock function.
 func (m *MealPlanOptionVoteDataManager) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanOptionID string, filter *types.QueryFilter) (*types.MealPlanOptionVoteList, error) {
 	args := m.Called(ctx, mealPlanID, mealPlanOptionID, filter)

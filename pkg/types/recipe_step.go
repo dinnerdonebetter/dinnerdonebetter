@@ -35,12 +35,14 @@ type (
 	RecipeStep struct {
 		_                         struct{}
 		LastUpdatedOn             *uint64                 `json:"lastUpdatedOn"`
-		TemperatureInCelsius      *uint16                 `json:"temperatureInCelsius"`
+		MinTemperatureInCelsius   *float32                `json:"minTemperatureInCelsius"`
+		MaxTemperatureInCelsius   *float32                `json:"maxTemperatureInCelsius"`
 		ArchivedOn                *uint64                 `json:"archivedOn"`
 		BelongsToRecipe           string                  `json:"belongsToRecipe"`
 		Notes                     string                  `json:"notes"`
 		ID                        string                  `json:"id"`
 		Preparation               ValidPreparation        `json:"preparation"`
+		Instruments               []*RecipeStepInstrument `json:"instruments"`
 		Ingredients               []*RecipeStepIngredient `json:"ingredients"`
 		Products                  []*RecipeStepProduct    `json:"products"`
 		CreatedOn                 uint64                  `json:"createdOn"`
@@ -60,7 +62,8 @@ type (
 	// RecipeStepCreationRequestInput represents what a user could set as input for creating recipe steps.
 	RecipeStepCreationRequestInput struct {
 		_                         struct{}
-		TemperatureInCelsius      *uint16                                     `json:"temperatureInCelsius"`
+		TemperatureInCelsius      *float32                                    `json:"temperatureInCelsius"`
+		Instruments               []*RecipeStepInstrumentCreationRequestInput `json:"instruments"`
 		Products                  []*RecipeStepProductCreationRequestInput    `json:"products"`
 		Notes                     string                                      `json:"notes"`
 		PreparationID             string                                      `json:"preparationID"`
@@ -76,7 +79,8 @@ type (
 	// RecipeStepDatabaseCreationInput represents what a user could set as input for creating recipe steps.
 	RecipeStepDatabaseCreationInput struct {
 		_                         struct{}
-		TemperatureInCelsius      *uint16                                      `json:"temperatureInCelsius"`
+		TemperatureInCelsius      *float32                                     `json:"temperatureInCelsius"`
+		Instruments               []*RecipeStepInstrumentDatabaseCreationInput `json:"instruments"`
 		Products                  []*RecipeStepProductDatabaseCreationInput    `json:"products"`
 		Notes                     string                                       `json:"notes"`
 		PreparationID             string                                       `json:"preparationID"`
@@ -92,21 +96,21 @@ type (
 	// RecipeStepUpdateRequestInput represents what a user could set as input for updating recipe steps.
 	RecipeStepUpdateRequestInput struct {
 		_                         struct{}
-		TemperatureInCelsius      *uint16           `json:"temperatureInCelsius"`
-		Notes                     *string           `json:"notes"`
-		Preparation               *ValidPreparation `json:"preparation"`
-		Index                     *uint32           `json:"index"`
-		MinEstimatedTimeInSeconds *uint32           `json:"minEstimatedTimeInSeconds"`
-		MaxEstimatedTimeInSeconds *uint32           `json:"maxEstimatedTimeInSeconds"`
-		Optional                  *bool             `json:"optional"`
-		BelongsToRecipe           string            `json:"belongsToRecipe"`
+		TemperatureInCelsius      *float32           `json:"temperatureInCelsius"`
+		Notes                     *string            `json:"notes"`
+		Preparation               *ValidPreparation  `json:"preparation"`
+		Index                     *uint32            `json:"index"`
+		MinEstimatedTimeInSeconds *uint32            `json:"minEstimatedTimeInSeconds"`
+		MaxEstimatedTimeInSeconds *uint32            `json:"maxEstimatedTimeInSeconds"`
+		Optional                  *bool              `json:"optional"`
+		BelongsToRecipe           string             `json:"belongsToRecipe"`
+		Instruments               []*ValidInstrument `json:"instruments"`
 	}
 
 	// RecipeStepDataManager describes a structure capable of storing recipe steps permanently.
 	RecipeStepDataManager interface {
 		RecipeStepExists(ctx context.Context, recipeID, recipeStepID string) (bool, error)
 		GetRecipeStep(ctx context.Context, recipeID, recipeStepID string) (*RecipeStep, error)
-		GetTotalRecipeStepCount(ctx context.Context) (uint64, error)
 		GetRecipeSteps(ctx context.Context, recipeID string, filter *QueryFilter) (*RecipeStepList, error)
 		GetRecipeStepsWithIDs(ctx context.Context, recipeID string, limit uint8, ids []string) ([]*RecipeStep, error)
 		CreateRecipeStep(ctx context.Context, input *RecipeStepDatabaseCreationInput) (*RecipeStep, error)
@@ -150,8 +154,8 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
 		x.MaxEstimatedTimeInSeconds = *input.MaxEstimatedTimeInSeconds
 	}
 
-	if input.TemperatureInCelsius != nil && (x.TemperatureInCelsius == nil || (*input.TemperatureInCelsius != 0 && *input.TemperatureInCelsius != *x.TemperatureInCelsius)) {
-		x.TemperatureInCelsius = input.TemperatureInCelsius
+	if input.TemperatureInCelsius != nil && (x.MinTemperatureInCelsius == nil || (*input.TemperatureInCelsius != 0 && *input.TemperatureInCelsius != *x.MinTemperatureInCelsius)) {
+		x.MinTemperatureInCelsius = input.TemperatureInCelsius
 	}
 
 	if input.Notes != nil && *input.Notes != x.Notes {
@@ -164,8 +168,8 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
 		x.Optional = *input.Optional
 	}
 
-	if input.TemperatureInCelsius != nil && (x.TemperatureInCelsius == nil || (*input.TemperatureInCelsius != 0 && *input.TemperatureInCelsius != *x.TemperatureInCelsius)) {
-		x.TemperatureInCelsius = input.TemperatureInCelsius
+	if input.TemperatureInCelsius != nil && (x.MinTemperatureInCelsius == nil || (*input.TemperatureInCelsius != 0 && *input.TemperatureInCelsius != *x.MinTemperatureInCelsius)) {
+		x.MinTemperatureInCelsius = input.TemperatureInCelsius
 	}
 }
 
@@ -198,7 +202,7 @@ func (x *RecipeStepDatabaseCreationInput) ValidateWithContext(ctx context.Contex
 // RecipeStepUpdateRequestInputFromRecipeStep creates a DatabaseCreationInput from a CreationInput.
 func RecipeStepUpdateRequestInputFromRecipeStep(input *RecipeStep) *RecipeStepUpdateRequestInput {
 	x := &RecipeStepUpdateRequestInput{
-		TemperatureInCelsius:      input.TemperatureInCelsius,
+		TemperatureInCelsius:      input.MinTemperatureInCelsius,
 		Notes:                     &input.Notes,
 		BelongsToRecipe:           input.BelongsToRecipe,
 		Preparation:               &input.Preparation,

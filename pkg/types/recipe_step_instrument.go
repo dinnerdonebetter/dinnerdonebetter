@@ -39,6 +39,7 @@ type (
 		ID                  string  `json:"id"`
 		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
 		CreatedOn           uint64  `json:"createdOn"`
+		PreferenceRank      uint16  `json:"preferenceRank"`
 	}
 
 	// RecipeStepInstrumentList represents a list of recipe step instruments.
@@ -50,42 +51,40 @@ type (
 
 	// RecipeStepInstrumentCreationRequestInput represents what a user could set as input for creating recipe step instruments.
 	RecipeStepInstrumentCreationRequestInput struct {
-		_ struct{}
-
-		ID                  string  `json:"-"`
+		_                   struct{}
 		InstrumentID        *string `json:"instrumentID"`
+		ID                  string  `json:"-"`
 		RecipeStepID        string  `json:"recipeStepID"`
 		Notes               string  `json:"notes"`
 		BelongsToRecipeStep string  `json:"-"`
+		PreferenceRank      uint16  `json:"preferenceRank"`
 	}
 
 	// RecipeStepInstrumentDatabaseCreationInput represents what a user could set as input for creating recipe step instruments.
 	RecipeStepInstrumentDatabaseCreationInput struct {
-		_ struct{}
-
-		ID                  string  `json:"id"`
+		_                   struct{}
 		InstrumentID        *string `json:"instrumentID"`
+		ID                  string  `json:"id"`
 		RecipeStepID        string  `json:"recipeStepID"`
 		Notes               string  `json:"notes"`
 		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
+		PreferenceRank      uint16  `json:"preferenceRank"`
 	}
 
 	// RecipeStepInstrumentUpdateRequestInput represents what a user could set as input for updating recipe step instruments.
 	RecipeStepInstrumentUpdateRequestInput struct {
-		_ struct{}
-
-		// InstrumentID is already a pointer, I'm not about to make it a double pointer.
+		_                   struct{}
 		InstrumentID        *string `json:"instrumentID"`
 		RecipeStepID        *string `json:"recipeStepID"`
 		Notes               *string `json:"notes"`
 		BelongsToRecipeStep *string `json:"belongsToRecipeStep"`
+		PreferenceRank      uint16  `json:"preferenceRank"`
 	}
 
 	// RecipeStepInstrumentDataManager describes a structure capable of storing recipe step instruments permanently.
 	RecipeStepInstrumentDataManager interface {
 		RecipeStepInstrumentExists(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (bool, error)
 		GetRecipeStepInstrument(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (*RecipeStepInstrument, error)
-		GetTotalRecipeStepInstrumentCount(ctx context.Context) (uint64, error)
 		GetRecipeStepInstruments(ctx context.Context, recipeID, recipeStepID string, filter *QueryFilter) (*RecipeStepInstrumentList, error)
 		GetRecipeStepInstrumentsWithIDs(ctx context.Context, recipeStepID string, limit uint8, ids []string) ([]*RecipeStepInstrument, error)
 		CreateRecipeStepInstrument(ctx context.Context, input *RecipeStepInstrumentDatabaseCreationInput) (*RecipeStepInstrument, error)

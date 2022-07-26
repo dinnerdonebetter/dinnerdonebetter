@@ -46,6 +46,7 @@ type (
 		ContainsFish             bool    `json:"containsFish"`
 		ContainsGluten           bool    `json:"containsGluten"`
 		AnimalFlesh              bool    `json:"animalFlesh"`
+		AnimalDerived            bool    `json:"animalDerived"`
 		IsMeasuredVolumetrically bool    `json:"isMeasuredVolumetrically"`
 		IsLiquid                 bool    `json:"isLiquid"`
 		ContainsPeanut           bool    `json:"containsPeanut"`
@@ -77,6 +78,7 @@ type (
 		ContainsShellfish        bool   `json:"containsShellfish"`
 		ContainsSesame           bool   `json:"containsSesame"`
 		ContainsFish             bool   `json:"containsFish"`
+		AnimalDerived            bool   `json:"animalDerived"`
 		ContainsGluten           bool   `json:"containsGluten"`
 		AnimalFlesh              bool   `json:"animalFlesh"`
 		IsMeasuredVolumetrically bool   `json:"isMeasuredVolumetrically"`
@@ -97,6 +99,7 @@ type (
 		ContainsTreeNut          bool   `json:"containsTreeNut"`
 		ContainsEgg              bool   `json:"containsEgg"`
 		ContainsWheat            bool   `json:"containsWheat"`
+		AnimalDerived            bool   `json:"animalDerived"`
 		ContainsShellfish        bool   `json:"containsShellfish"`
 		ContainsSesame           bool   `json:"containsSesame"`
 		ContainsFish             bool   `json:"containsFish"`
@@ -110,7 +113,7 @@ type (
 	// ValidIngredientUpdateRequestInput represents what a user could set as input for updating valid ingredients.
 	ValidIngredientUpdateRequestInput struct {
 		_                        struct{}
-		Name                     *string `json:"name"`
+		ContainsWheat            *bool   `json:"containsWheat"`
 		Description              *string `json:"description"`
 		Warning                  *string `json:"warning"`
 		IconPath                 *string `json:"iconPath"`
@@ -118,15 +121,16 @@ type (
 		ContainsPeanut           *bool   `json:"containsPeanut"`
 		ContainsTreeNut          *bool   `json:"containsTreeNut"`
 		ContainsEgg              *bool   `json:"containsEgg"`
-		ContainsWheat            *bool   `json:"containsWheat"`
+		Name                     *string `json:"name"`
 		ContainsShellfish        *bool   `json:"containsShellfish"`
+		IsLiquid                 *bool   `json:"isLiquid"`
 		ContainsSesame           *bool   `json:"containsSesame"`
 		ContainsFish             *bool   `json:"containsFish"`
 		ContainsGluten           *bool   `json:"containsGluten"`
 		AnimalFlesh              *bool   `json:"animalFlesh"`
 		IsMeasuredVolumetrically *bool   `json:"isMeasuredVolumetrically"`
-		IsLiquid                 *bool   `json:"isLiquid"`
 		ContainsSoy              *bool   `json:"containsSoy"`
+		AnimalDerived            bool    `json:"animalDerived"`
 	}
 
 	// ValidIngredientDataManager describes a structure capable of storing valid ingredients permanently.
@@ -134,7 +138,6 @@ type (
 		ValidIngredientExists(ctx context.Context, validIngredientID string) (bool, error)
 		GetValidIngredient(ctx context.Context, validIngredientID string) (*ValidIngredient, error)
 		GetRandomValidIngredient(ctx context.Context) (*ValidIngredient, error)
-		GetTotalValidIngredientCount(ctx context.Context) (uint64, error)
 		GetValidIngredients(ctx context.Context, filter *QueryFilter) (*ValidIngredientList, error)
 		SearchForValidIngredients(ctx context.Context, query string) ([]*ValidIngredient, error)
 		GetValidIngredientsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*ValidIngredient, error)

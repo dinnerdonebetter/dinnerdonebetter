@@ -334,23 +334,6 @@ func (q *SQLQuerier) GetMealPlan(ctx context.Context, mealPlanID, householdID st
 	return q.getMealPlan(ctx, mealPlanID, householdID, false)
 }
 
-const getTotalMealPlansCountQuery = "SELECT COUNT(meal_plans.id) FROM meal_plans WHERE meal_plans.archived_on IS NULL"
-
-// GetTotalMealPlanCount fetches the count of meal plans from the database that meet a particular filter.
-func (q *SQLQuerier) GetTotalMealPlanCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getTotalMealPlansCountQuery, "fetching count of meal plans")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of meal plans")
-	}
-
-	return count, nil
-}
-
 // GetMealPlans fetches a list of meal plans from the database that meet a particular filter.
 func (q *SQLQuerier) GetMealPlans(ctx context.Context, householdID string, filter *types.QueryFilter) (x *types.MealPlanList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)

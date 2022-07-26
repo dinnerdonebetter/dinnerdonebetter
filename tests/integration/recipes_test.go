@@ -126,7 +126,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 				Description: "",
 				Steps: []*types.RecipeStep{
 					{
-						TemperatureInCelsius: nil,
+						MinTemperatureInCelsius: nil,
 						Products: []*types.RecipeStepProduct{
 							{
 								Name:          "soaked pinto beans",
@@ -139,26 +139,26 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						Preparation: *soak,
 						Ingredients: []*types.RecipeStepIngredient{
 							{
-								RecipeStepProductID: nil,
-								IngredientID:        &pintoBeans.ID,
-								Name:                "pinto beans",
-								QuantityType:        "grams",
-								QuantityValue:       500,
-								ProductOfRecipeStep: false,
+								RecipeStepProductID:  nil,
+								IngredientID:         &pintoBeans.ID,
+								Name:                 "pinto beans",
+								QuantityType:         "grams",
+								MinimumQuantityValue: 500,
+								ProductOfRecipeStep:  false,
 							},
 							{
-								RecipeStepProductID: nil,
-								IngredientID:        &water.ID,
-								Name:                "water",
-								QuantityType:        "cups",
-								QuantityValue:       5,
-								ProductOfRecipeStep: false,
+								RecipeStepProductID:  nil,
+								IngredientID:         &water.ID,
+								Name:                 "water",
+								QuantityType:         "cups",
+								MinimumQuantityValue: 5,
+								ProductOfRecipeStep:  false,
 							},
 						},
 						Index: 0,
 					},
 					{
-						TemperatureInCelsius: nil,
+						MinTemperatureInCelsius: nil,
 						Products: []*types.RecipeStepProduct{
 							{
 								Name:          "final output",
@@ -171,17 +171,17 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						Preparation: *soak,
 						Ingredients: []*types.RecipeStepIngredient{
 							{
-								Name:                "soaked pinto beans",
-								QuantityType:        "grams",
-								QuantityValue:       1000,
-								ProductOfRecipeStep: true,
+								Name:                 "soaked pinto beans",
+								QuantityType:         "grams",
+								MinimumQuantityValue: 1000,
+								ProductOfRecipeStep:  true,
 							},
 							{
-								IngredientID:        &garlicPaste.ID,
-								Name:                "garlic paste",
-								QuantityType:        "grams",
-								QuantityValue:       10,
-								ProductOfRecipeStep: false,
+								IngredientID:         &garlicPaste.ID,
+								Name:                 "garlic paste",
+								QuantityType:         "grams",
+								MinimumQuantityValue: 10,
+								ProductOfRecipeStep:  false,
 							},
 						},
 						Index: 1,
@@ -195,7 +195,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 			}
 			for _, step := range expected.Steps {
 				newStep := &types.RecipeStepCreationRequestInput{
-					TemperatureInCelsius:      step.TemperatureInCelsius,
+					TemperatureInCelsius:      step.MinTemperatureInCelsius,
 					Notes:                     step.Notes,
 					PreparationID:             step.Preparation.ID,
 					BelongsToRecipe:           step.BelongsToRecipe,
@@ -215,7 +215,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						QuantityType:        ingredient.QuantityType,
 						QuantityNotes:       ingredient.QuantityNotes,
 						IngredientNotes:     ingredient.IngredientNotes,
-						QuantityValue:       ingredient.QuantityValue,
+						QuantityValue:       ingredient.MinimumQuantityValue,
 						ProductOfRecipeStep: ingredient.ProductOfRecipeStep,
 					}
 					newStep.Ingredients = append(newStep.Ingredients, newIngredient)

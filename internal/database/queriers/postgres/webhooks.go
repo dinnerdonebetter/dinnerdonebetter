@@ -199,25 +199,6 @@ func (q *SQLQuerier) GetWebhook(ctx context.Context, webhookID, householdID stri
 	return webhook, nil
 }
 
-const getAllWebhooksCountQuery = `
-	SELECT COUNT(webhooks.id) FROM webhooks WHERE webhooks.archived_on IS NULL
-`
-
-// GetAllWebhooksCount fetches the count of webhooks from the database that meet a particular filter.
-func (q *SQLQuerier) GetAllWebhooksCount(ctx context.Context) (uint64, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	count, err := q.performCountQuery(ctx, q.db, getAllWebhooksCountQuery, "fetching count of webhooks")
-	if err != nil {
-		return 0, observability.PrepareError(err, logger, span, "querying for count of webhooks")
-	}
-
-	return count, nil
-}
-
 // GetWebhooks fetches a list of webhooks from the database that meet a particular filter.
 func (q *SQLQuerier) GetWebhooks(ctx context.Context, householdID string, filter *types.QueryFilter) (*types.WebhookList, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
