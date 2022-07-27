@@ -100,6 +100,12 @@ const (
 	// ValidIngredientPreparationIDKey is the standard key for referring to a valid ingredient preparation's ID.
 	ValidIngredientPreparationIDKey = "valid_ingredient_preparation.id"
 
+	// ValidPreparationInstrumentIDKey is the standard key for referring to a valid instrument preparation's ID.
+	ValidPreparationInstrumentIDKey = "valid_preparation_instrument.id"
+
+	// ValidIngredientMeasurementUnitIDKey is the standard key for referring to a valid instrument preparation's ID.
+	ValidIngredientMeasurementUnitIDKey = "valid_ingredient_measurement_unit.id"
+
 	// MealIDKey is the standard key for referring to a meal's ID.
 	MealIDKey = "meal.id"
 

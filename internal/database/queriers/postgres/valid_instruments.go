@@ -214,6 +214,11 @@ func (q *SQLQuerier) SearchForValidInstruments(ctx context.Context, query string
 	return validInstruments, nil
 }
 
+// SearchForValidInstrumentsForPreparation fetches a valid instrument from the database.
+func (q *SQLQuerier) SearchForValidInstrumentsForPreparation(ctx context.Context, preparationID, query string) ([]*types.ValidInstrument, error) {
+	return nil, nil
+}
+
 const getTotalValidInstrumentsCountQuery = "SELECT COUNT(valid_instruments.id) FROM valid_instruments WHERE valid_instruments.archived_on IS NULL"
 
 // GetTotalValidInstrumentCount fetches the count of valid instruments from the database that meet a particular filter.

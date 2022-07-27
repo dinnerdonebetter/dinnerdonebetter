@@ -253,6 +253,11 @@ func (q *SQLQuerier) SearchForValidIngredients(ctx context.Context, query string
 	return x, nil
 }
 
+// SearchForValidIngredientsForPreparation fetches a valid ingredient from the database.
+func (q *SQLQuerier) SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string) ([]*types.ValidIngredient, error) {
+	return nil, nil
+}
+
 const getTotalValidIngredientsCountQuery = "SELECT COUNT(valid_ingredients.id) FROM valid_ingredients WHERE valid_ingredients.archived_on IS NULL"
 
 // GetTotalValidIngredientCount fetches the count of valid ingredients from the database that meet a particular filter.

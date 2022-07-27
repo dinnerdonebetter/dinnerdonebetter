@@ -145,6 +145,11 @@ var (
 			Description: "add valid measurement units",
 			Script:      fetchMigration("00026_valid_measurement_units"),
 		},
+		{
+			Version:     27,
+			Description: "add valid measurement units",
+			Script:      fetchMigration("00027_various_bridge_tables"),
+		},
 	}
 )
 

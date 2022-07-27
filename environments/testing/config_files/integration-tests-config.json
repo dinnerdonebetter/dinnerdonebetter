@@ -107,6 +107,9 @@
 		"validIngredientPreparations": {
 			"dataChangesTopicName": "data_changes"
 		},
+		"validPreparationInstruments": {
+			"dataChangesTopicName": "data_changes"
+		},
 		"meals": {
 			"dataChangesTopicName": "data_changes"
 		},

@@ -101,6 +101,17 @@ const (
 	// ArchiveValidIngredientPreparationsPermission is a household user permission.
 	ArchiveValidIngredientPreparationsPermission Permission = "archive.valid_ingredient_preparations"
 
+	// CreateValidPreparationInstrumentsPermission is a household user permission.
+	CreateValidPreparationInstrumentsPermission Permission = "create.valid_preparation_instruments"
+	// ReadValidPreparationInstrumentsPermission is a household user permission.
+	ReadValidPreparationInstrumentsPermission Permission = "read.valid_preparation_instruments"
+	// SearchValidPreparationInstrumentsPermission is a household user permission.
+	SearchValidPreparationInstrumentsPermission Permission = "search.valid_preparation_instruments"
+	// UpdateValidPreparationInstrumentsPermission is a household user permission.
+	UpdateValidPreparationInstrumentsPermission Permission = "update.valid_preparation_instruments"
+	// ArchiveValidPreparationInstrumentsPermission is a household user permission.
+	ArchiveValidPreparationInstrumentsPermission Permission = "archive.valid_preparation_instruments"
+
 	// CreateMealsPermission is a household user permission.
 	CreateMealsPermission Permission = "create.meals"
 	// ReadMealsPermission is a household user permission.
@@ -236,6 +247,10 @@ var (
 		CreateValidIngredientPreparationsPermission.ID():  CreateValidIngredientPreparationsPermission,
 		UpdateValidIngredientPreparationsPermission.ID():  UpdateValidIngredientPreparationsPermission,
 		ArchiveValidIngredientPreparationsPermission.ID(): ArchiveValidIngredientPreparationsPermission,
+
+		CreateValidPreparationInstrumentsPermission.ID():  CreateValidPreparationInstrumentsPermission,
+		UpdateValidPreparationInstrumentsPermission.ID():  UpdateValidPreparationInstrumentsPermission,
+		ArchiveValidPreparationInstrumentsPermission.ID(): ArchiveValidPreparationInstrumentsPermission,
 	}
 
 	// household admin permissions.
@@ -318,6 +333,9 @@ var (
 
 		ReadValidIngredientPreparationsPermission.ID():   ReadValidIngredientPreparationsPermission,
 		SearchValidIngredientPreparationsPermission.ID(): SearchValidIngredientPreparationsPermission,
+
+		ReadValidPreparationInstrumentsPermission.ID():   ReadValidPreparationInstrumentsPermission,
+		SearchValidPreparationInstrumentsPermission.ID(): SearchValidPreparationInstrumentsPermission,
 
 		ReadMealPlansPermission.ID():   ReadMealPlansPermission,
 		SearchMealPlansPermission.ID(): SearchMealPlansPermission,

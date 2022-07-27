@@ -27,6 +27,7 @@ import (
 	validingredientsservice "github.com/prixfixeco/api_server/internal/services/validingredients"
 	validinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validinstruments"
 	validmeasurementunitsservice "github.com/prixfixeco/api_server/internal/services/validmeasurementunits"
+	validpreparationinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/prixfixeco/api_server/internal/services/validpreparations"
 	webhooksservice "github.com/prixfixeco/api_server/internal/services/webhooks"
 )
@@ -353,6 +354,31 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				singleValidIngredientPreparationRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidIngredientPreparationsPermission)).
 					Put(root, s.validIngredientPreparationsService.UpdateHandler)
+			})
+		})
+
+		// ValidPreparationInstruments
+		validPreparationInstrumentPath := "valid_preparation_instruments"
+		validPreparationInstrumentsRouteWithPrefix := fmt.Sprintf("/%s", validPreparationInstrumentPath)
+		validPreparationInstrumentIDRouteParam := buildURLVarChunk(validpreparationinstrumentsservice.ValidPreparationInstrumentIDURIParamKey, "")
+		v1Router.Route(validPreparationInstrumentsRouteWithPrefix, func(validPreparationInstrumentsRouter routing.Router) {
+			validPreparationInstrumentsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidPreparationInstrumentsPermission)).
+				Post(root, s.validPreparationInstrumentsService.CreateHandler)
+			validPreparationInstrumentsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationInstrumentsPermission)).
+				Get(root, s.validPreparationInstrumentsService.ListHandler)
+
+			validPreparationInstrumentsRouter.Route(validPreparationInstrumentIDRouteParam, func(singleValidPreparationInstrumentRouter routing.Router) {
+				singleValidPreparationInstrumentRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationInstrumentsPermission)).
+					Get(root, s.validPreparationInstrumentsService.ReadHandler)
+				singleValidPreparationInstrumentRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidPreparationInstrumentsPermission)).
+					Delete(root, s.validPreparationInstrumentsService.ArchiveHandler)
+				singleValidPreparationInstrumentRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidPreparationInstrumentsPermission)).
+					Put(root, s.validPreparationInstrumentsService.UpdateHandler)
 			})
 		})
 

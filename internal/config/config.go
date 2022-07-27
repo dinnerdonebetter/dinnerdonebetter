@@ -30,6 +30,7 @@ import (
 	validingredientsservice "github.com/prixfixeco/api_server/internal/services/validingredients"
 	validinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validinstruments"
 	validmeaurementunitsservice "github.com/prixfixeco/api_server/internal/services/validmeasurementunits"
+	validpreparationinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/prixfixeco/api_server/internal/services/validpreparations"
 	webhooksservice "github.com/prixfixeco/api_server/internal/services/webhooks"
 	websocketsservice "github.com/prixfixeco/api_server/internal/services/websockets"
@@ -77,6 +78,7 @@ type (
 		ValidPreparations           validpreparationsservice.Config           `json:"validPreparations" mapstructure:"valid_preparations" toml:"valid_preparations,omitempty"`
 		MealPlanOptionVotes         mealplanoptionvotesservice.Config         `json:"mealPlanOptionVotes" mapstructure:"meal_plan_option_votes" toml:"meal_plan_option_votes,omitempty"`
 		ValidIngredientPreparations validingredientpreparationsservice.Config `json:"validIngredientPreparations" mapstructure:"valid_ingredient_preparations" toml:"valid_ingredient_preparations,omitempty"`
+		ValidPreparationInstruments validpreparationinstrumentsservice.Config `json:"validPreparationInstruments" mapstructure:"valid_preparation_instruments" toml:"valid_preparation_instruments,omitempty"`
 		Meals                       mealsservice.Config                       `json:"meals" mapstructure:"meals" toml:"meals,omitempty"`
 		Recipes                     recipesservice.Config                     `json:"recipes" mapstructure:"recipes" toml:"recipes,omitempty"`
 		RecipeSteps                 recipestepsservice.Config                 `json:"recipeSteps" mapstructure:"recipe_steps" toml:"recipe_steps,omitempty"`
@@ -169,6 +171,10 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 
 		if err := cfg.Services.ValidIngredientPreparations.ValidateWithContext(ctx); err != nil {
 			return fmt.Errorf("error validating ValidIngredientPreparations service portion of config: %w", err)
+		}
+
+		if err := cfg.Services.ValidPreparationInstruments.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating ValidPreparationInstruments service portion of config: %w", err)
 		}
 
 		if err := cfg.Services.Recipes.ValidateWithContext(ctx); err != nil {

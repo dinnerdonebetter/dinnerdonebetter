@@ -43,6 +43,7 @@ import (
 	validingredientpreparationsservice "github.com/prixfixeco/api_server/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/prixfixeco/api_server/internal/services/validingredients"
 	validinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validinstruments"
+	validpreparationinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/prixfixeco/api_server/internal/services/validpreparations"
 	webhooksservice "github.com/prixfixeco/api_server/internal/services/webhooks"
 	websocketsservice "github.com/prixfixeco/api_server/internal/services/websockets"
@@ -377,6 +378,9 @@ func buildLocalDevConfig() *config.InstanceConfig {
 			ValidIngredientPreparations: validingredientpreparationsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			ValidPreparationInstruments: validpreparationinstrumentsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 			Meals: mealsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -524,6 +528,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidIngredientPreparations: validingredientpreparationsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidPreparationInstruments: validpreparationinstrumentsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			Meals: mealsservice.Config{
