@@ -140,6 +140,11 @@ var (
 			Description: "add password reset tokens",
 			Script:      fetchMigration("00025_add_password_reset_tokens"),
 		},
+		{
+			Version:     26,
+			Description: "add valid measurement units",
+			Script:      fetchMigration("00026_valid_measurement_units"),
+		},
 	}
 )
 

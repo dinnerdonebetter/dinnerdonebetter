@@ -29,6 +29,7 @@ import (
 	validingredientpreparationsservice "github.com/prixfixeco/api_server/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/prixfixeco/api_server/internal/services/validingredients"
 	validinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validinstruments"
+	validmeaurementunitsservice "github.com/prixfixeco/api_server/internal/services/validmeasurementunits"
 	validpreparationsservice "github.com/prixfixeco/api_server/internal/services/validpreparations"
 	webhooksservice "github.com/prixfixeco/api_server/internal/services/webhooks"
 	websocketsservice "github.com/prixfixeco/api_server/internal/services/websockets"
@@ -70,6 +71,7 @@ type (
 	// ServicesConfigurations collects the various service configurations.
 	ServicesConfigurations struct {
 		_                           struct{}
+		ValidMeasurementUnits       validmeaurementunitsservice.Config        `json:"validMeasurementUnits" mapstructure:"valid_measurement_units" toml:"valid_measurement_units,omitempty"`
 		ValidInstruments            validinstrumentsservice.Config            `json:"validInstruments" mapstructure:"valid_instruments" toml:"valid_instruments,omitempty"`
 		ValidIngredients            validingredientsservice.Config            `json:"validIngredients" mapstructure:"valid_ingredients" toml:"valid_ingredients,omitempty"`
 		ValidPreparations           validpreparationsservice.Config           `json:"validPreparations" mapstructure:"valid_preparations" toml:"valid_preparations,omitempty"`
@@ -158,6 +160,10 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 		}
 
 		if err := cfg.Services.ValidPreparations.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating ValidPreparations service portion of config: %w", err)
+		}
+
+		if err := cfg.Services.ValidMeasurementUnits.ValidateWithContext(ctx); err != nil {
 			return fmt.Errorf("error validating ValidPreparations service portion of config: %w", err)
 		}
 

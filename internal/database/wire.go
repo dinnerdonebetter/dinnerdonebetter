@@ -28,6 +28,7 @@ var (
 		ProvideUserDataManager,
 		ProvideAdminUserDataManager,
 		ProvideAPIClientDataManager,
+		ProvideValidMeasurementUnitDataManager,
 		ProvidePasswordResetTokenDataManager,
 		ProvideWebhookDataManager,
 	)
@@ -60,6 +61,11 @@ func ProvideValidIngredientDataManager(db DataManager) types.ValidIngredientData
 
 // ProvideValidPreparationDataManager is an arbitrary function for dependency injection's sake.
 func ProvideValidPreparationDataManager(db DataManager) types.ValidPreparationDataManager {
+	return db
+}
+
+// ProvideValidMeasurementUnitDataManager is an arbitrary function for dependency injection's sake.
+func ProvideValidMeasurementUnitDataManager(db DataManager) types.ValidMeasurementUnitDataManager {
 	return db
 }
 

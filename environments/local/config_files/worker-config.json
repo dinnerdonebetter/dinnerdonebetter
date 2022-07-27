@@ -93,6 +93,9 @@
 		"debug": true
 	},
 	"services": {
+		"validMeasurementUnits": {
+			"dataChangesTopicName": "data_changes"
+		},
 		"validInstruments": {
 			"dataChangesTopicName": "data_changes"
 		},

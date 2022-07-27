@@ -369,7 +369,7 @@ func (q *SQLQuerier) buildGetHouseholdsQuery(ctx context.Context, userID string,
 	tracing.AttachUserIDToSpan(span, userID)
 
 	if filter != nil {
-		tracing.AttachFilterToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+		tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
 	}
 
 	var includeArchived bool

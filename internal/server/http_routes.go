@@ -26,6 +26,7 @@ import (
 	validingredientpreparationsservice "github.com/prixfixeco/api_server/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/prixfixeco/api_server/internal/services/validingredients"
 	validinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validinstruments"
+	validmeasurementunitsservice "github.com/prixfixeco/api_server/internal/services/validmeasurementunits"
 	validpreparationsservice "github.com/prixfixeco/api_server/internal/services/validpreparations"
 	webhooksservice "github.com/prixfixeco/api_server/internal/services/webhooks"
 )
@@ -299,6 +300,34 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				singleValidPreparationRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidPreparationsPermission)).
 					Put(root, s.validPreparationsService.UpdateHandler)
+			})
+		})
+
+		// ValidMeasurementUnits
+		validMeasurementUnitPath := "valid_measurement_units"
+		validMeasurementUnitsRouteWithPrefix := fmt.Sprintf("/%s", validMeasurementUnitPath)
+		validMeasurementUnitIDRouteParam := buildURLVarChunk(validmeasurementunitsservice.ValidMeasurementUnitIDURIParamKey, "")
+		v1Router.Route(validMeasurementUnitsRouteWithPrefix, func(validMeasurementUnitsRouter routing.Router) {
+			validMeasurementUnitsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidMeasurementUnitsPermission)).
+				Post(root, s.validMeasurementUnitsService.CreateHandler)
+			validMeasurementUnitsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidMeasurementUnitsPermission)).
+				Get(root, s.validMeasurementUnitsService.ListHandler)
+			validMeasurementUnitsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.SearchValidMeasurementUnitsPermission)).
+				Get(searchRoot, s.validMeasurementUnitsService.SearchHandler)
+
+			validMeasurementUnitsRouter.Route(validMeasurementUnitIDRouteParam, func(singleValidMeasurementUnitRouter routing.Router) {
+				singleValidMeasurementUnitRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidMeasurementUnitsPermission)).
+					Get(root, s.validMeasurementUnitsService.ReadHandler)
+				singleValidMeasurementUnitRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidMeasurementUnitsPermission)).
+					Delete(root, s.validMeasurementUnitsService.ArchiveHandler)
+				singleValidMeasurementUnitRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidMeasurementUnitsPermission)).
+					Put(root, s.validMeasurementUnitsService.UpdateHandler)
 			})
 		})
 

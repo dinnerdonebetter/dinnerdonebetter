@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	validmeasurementunitsservice "github.com/prixfixeco/api_server/internal/services/validmeasurementunits"
 	"log"
 	"os"
 	"path/filepath"
@@ -370,6 +371,9 @@ func buildLocalDevConfig() *config.InstanceConfig {
 			ValidPreparations: validpreparationsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			ValidMeasurementUnits: validmeasurementunitsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 			ValidIngredientPreparations: validingredientpreparationsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -514,6 +518,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidPreparations: validpreparationsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidMeasurementUnits: validmeasurementunitsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidIngredientPreparations: validingredientpreparationsservice.Config{

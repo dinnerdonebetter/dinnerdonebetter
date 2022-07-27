@@ -79,6 +79,17 @@ const (
 	// ArchiveValidPreparationsPermission is a household user permission.
 	ArchiveValidPreparationsPermission Permission = "archive.valid_preparations"
 
+	// CreateValidMeasurementUnitsPermission is a household user permission.
+	CreateValidMeasurementUnitsPermission Permission = "create.measurement_units"
+	// ReadValidMeasurementUnitsPermission is a household user permission.
+	ReadValidMeasurementUnitsPermission Permission = "read.measurement_units"
+	// SearchValidMeasurementUnitsPermission is a household user permission.
+	SearchValidMeasurementUnitsPermission Permission = "search.measurement_units"
+	// UpdateValidMeasurementUnitsPermission is a household user permission.
+	UpdateValidMeasurementUnitsPermission Permission = "update.measurement_units"
+	// ArchiveValidMeasurementUnitsPermission is a household user permission.
+	ArchiveValidMeasurementUnitsPermission Permission = "archive.measurement_units"
+
 	// CreateValidIngredientPreparationsPermission is a household user permission.
 	CreateValidIngredientPreparationsPermission Permission = "create.valid_ingredient_preparations"
 	// ReadValidIngredientPreparationsPermission is a household user permission.
@@ -218,6 +229,10 @@ var (
 		UpdateValidPreparationsPermission.ID():  UpdateValidPreparationsPermission,
 		ArchiveValidPreparationsPermission.ID(): ArchiveValidPreparationsPermission,
 
+		CreateValidMeasurementUnitsPermission.ID():  CreateValidMeasurementUnitsPermission,
+		UpdateValidMeasurementUnitsPermission.ID():  UpdateValidMeasurementUnitsPermission,
+		ArchiveValidMeasurementUnitsPermission.ID(): ArchiveValidMeasurementUnitsPermission,
+
 		CreateValidIngredientPreparationsPermission.ID():  CreateValidIngredientPreparationsPermission,
 		UpdateValidIngredientPreparationsPermission.ID():  UpdateValidIngredientPreparationsPermission,
 		ArchiveValidIngredientPreparationsPermission.ID(): ArchiveValidIngredientPreparationsPermission,
@@ -297,6 +312,9 @@ var (
 
 		ReadValidPreparationsPermission.ID():   ReadValidPreparationsPermission,
 		SearchValidPreparationsPermission.ID(): SearchValidPreparationsPermission,
+
+		ReadValidMeasurementUnitsPermission.ID():   ReadValidMeasurementUnitsPermission,
+		SearchValidMeasurementUnitsPermission.ID(): SearchValidMeasurementUnitsPermission,
 
 		ReadValidIngredientPreparationsPermission.ID():   ReadValidIngredientPreparationsPermission,
 		SearchValidIngredientPreparationsPermission.ID(): SearchValidIngredientPreparationsPermission,

@@ -43,6 +43,8 @@ type (
 		HouseholdInvitation        *HouseholdInvitation        `json:"householdInvitation,omitempty"`
 		HouseholdInvitationID      string                      `json:"householdInvitationID,omitempty"`
 		UserMembership             *HouseholdUserMembership    `json:"userMembership,omitempty"`
+		ValidMeasurementUnitID     string                      `json:"validMeasurementUnitID,omitempty"`
+		ValidMeasurementUnit       *ValidMeasurementUnit       `json:"validMeasurementUnit,omitempty"`
 		Context                    map[string]string           `json:"context,omitempty"`
 		AttributableToUserID       string                      `json:"attributableToUserID,omitempty"`
 		AttributableToHouseholdID  string                      `json:"attributableToHouseholdID,omitempty"`

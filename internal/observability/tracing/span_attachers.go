@@ -49,8 +49,8 @@ func AttachToSpan(span trace.Span, key string, val interface{}) {
 	}
 }
 
-// AttachFilterToSpan provides a consistent way to attach a filter's info to a span.
-func AttachFilterToSpan(span trace.Span, page uint64, limit uint8, sortBy string) {
+// AttachFilterDataToSpan provides a consistent way to attach a filter's info to a span.
+func AttachFilterDataToSpan(span trace.Span, page uint64, limit uint8, sortBy string) {
 	attachUint64ToSpan(span, keys.FilterPageKey, page)
 	attachUint8ToSpan(span, keys.FilterLimitKey, limit)
 	attachStringToSpan(span, keys.FilterSortByKey, sortBy)
@@ -288,4 +288,9 @@ func AttachPasswordResetTokenIDToSpan(span trace.Span, passwordResetTokenID stri
 // AttachPasswordResetTokenToSpan attaches a password reset token to a given span.
 func AttachPasswordResetTokenToSpan(span trace.Span, passwordResetToken string) {
 	attachStringToSpan(span, keys.PasswordResetTokenIDKey, passwordResetToken)
+}
+
+// AttachValidMeasurementUnitIDToSpan attaches a valid measurement unit ID to a given span.
+func AttachValidMeasurementUnitIDToSpan(span trace.Span, validMeasurementUnitID string) {
+	attachStringToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 }
