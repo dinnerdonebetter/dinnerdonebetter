@@ -88,42 +88,45 @@ const (
 	// ValidationErrorKey is the standard key for referring to a struct validation error.
 	ValidationErrorKey = "validation_error"
 
-	// ValidInstrumentIDKey is the standard key for referring to a valid instrument ID.
+	// ValidInstrumentIDKey is the standard key for referring to a valid instrument's ID.
 	ValidInstrumentIDKey = "valid_instrument.id"
 
-	// ValidIngredientIDKey is the standard key for referring to a valid ingredient ID.
+	// ValidIngredientIDKey is the standard key for referring to a valid ingredient's ID.
 	ValidIngredientIDKey = "valid_ingredient.id"
 
-	// ValidPreparationIDKey is the standard key for referring to a valid preparation ID.
+	// ValidPreparationIDKey is the standard key for referring to a valid preparation's ID.
 	ValidPreparationIDKey = "valid_preparation.id"
 
-	// ValidIngredientPreparationIDKey is the standard key for referring to a valid ingredient preparation ID.
+	// ValidIngredientPreparationIDKey is the standard key for referring to a valid ingredient preparation's ID.
 	ValidIngredientPreparationIDKey = "valid_ingredient_preparation.id"
 
-	// MealIDKey is the standard key for referring to a meal ID.
+	// MealIDKey is the standard key for referring to a meal's ID.
 	MealIDKey = "meal.id"
 
-	// RecipeIDKey is the standard key for referring to a recipe ID.
+	// RecipeIDKey is the standard key for referring to a recipe's ID.
 	RecipeIDKey = "recipe.id"
 
-	// RecipeStepIDKey is the standard key for referring to a recipe step ID.
+	// RecipeStepIDKey is the standard key for referring to a recipe step's ID.
 	RecipeStepIDKey = "recipe_step.id"
 
-	// RecipeStepInstrumentIDKey is the standard key for referring to a recipe step instrument ID.
+	// RecipeStepInstrumentIDKey is the standard key for referring to a recipe step instrument's ID.
 	RecipeStepInstrumentIDKey = "recipe_step_instrument.id"
 
-	// RecipeStepIngredientIDKey is the standard key for referring to a recipe step ingredient ID.
+	// RecipeStepIngredientIDKey is the standard key for referring to a recipe step ingredient's ID.
 	RecipeStepIngredientIDKey = "recipe_step_ingredient.id"
 
-	// RecipeStepProductIDKey is the standard key for referring to a recipe step product ID.
+	// RecipeStepProductIDKey is the standard key for referring to a recipe step product's ID.
 	RecipeStepProductIDKey = "recipe_step_product.id"
 
-	// MealPlanIDKey is the standard key for referring to a meal plan ID.
+	// MealPlanIDKey is the standard key for referring to a meal plan's ID.
 	MealPlanIDKey = "meal_plan.id"
 
-	// MealPlanOptionIDKey is the standard key for referring to a meal plan option ID.
+	// MealPlanOptionIDKey is the standard key for referring to a meal plan option's ID.
 	MealPlanOptionIDKey = "meal_plan_option.id"
 
-	// MealPlanOptionVoteIDKey is the standard key for referring to a meal plan option vote ID.
+	// MealPlanOptionVoteIDKey is the standard key for referring to a meal plan option vote's ID.
 	MealPlanOptionVoteIDKey = "meal_plan_option_vote.id"
+
+	// ValidMeasurementUnitIDKey is the standard key for referring to a valid measurement unit's ID.
+	ValidMeasurementUnitIDKey = "valid_measurement_unit.id"
 )

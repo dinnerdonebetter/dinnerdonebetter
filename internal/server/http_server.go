@@ -49,6 +49,7 @@ type (
 		mealPlansService                   types.MealPlanDataService
 		mealPlanOptionsService             types.MealPlanOptionDataService
 		mealPlanOptionVotesService         types.MealPlanOptionVoteDataService
+		validMeasurementUnitsService       types.ValidMeasurementUnitDataService
 		encoder                            encoding.ServerEncoderDecoder
 		logger                             logging.Logger
 		router                             routing.Router
@@ -81,6 +82,7 @@ func ProvideHTTPServer(
 	mealPlansService types.MealPlanDataService,
 	mealPlanOptionsService types.MealPlanOptionDataService,
 	mealPlanOptionVotesService types.MealPlanOptionVoteDataService,
+	validMeasurementUnitsService types.ValidMeasurementUnitDataService,
 	webhooksService types.WebhookDataService,
 	adminService types.AdminService,
 	logger logging.Logger,
@@ -119,6 +121,7 @@ func ProvideHTTPServer(
 		mealPlansService:                   mealPlansService,
 		mealPlanOptionsService:             mealPlanOptionsService,
 		mealPlanOptionVotesService:         mealPlanOptionVotesService,
+		validMeasurementUnitsService:       validMeasurementUnitsService,
 		apiClientsService:                  apiClientsService,
 	}
 

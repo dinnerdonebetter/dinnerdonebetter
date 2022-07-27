@@ -86,5 +86,6 @@ type (
 		types.MealPlanDataManager
 		types.MealPlanOptionDataManager
 		types.MealPlanOptionVoteDataManager
+		types.ValidMeasurementUnitDataManager
 	}
 )

@@ -34,6 +34,7 @@ var (
 			"ValidInstruments",
 			"ValidIngredients",
 			"ValidPreparations",
+			"ValidMeasurementUnits",
 			"ValidIngredientPreparations",
 			"Meals",
 			"Recipes",

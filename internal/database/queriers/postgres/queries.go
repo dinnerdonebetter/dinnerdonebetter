@@ -150,7 +150,7 @@ func (q *SQLQuerier) buildFilteredCountQuery(
 	defer span.End()
 
 	if filter != nil {
-		tracing.AttachFilterToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+		tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
 	}
 
 	if where == nil {
@@ -202,7 +202,7 @@ func (q *SQLQuerier) buildFilteredCountQueryWithILike(
 	defer span.End()
 
 	if filter != nil {
-		tracing.AttachFilterToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+		tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
 	}
 
 	filteredCountQueryBuilder := q.sqlBuilder.
@@ -256,7 +256,7 @@ func (q *SQLQuerier) buildListQuery(
 	defer span.End()
 
 	if filter != nil {
-		tracing.AttachFilterToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+		tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
 	}
 
 	var includeArchived bool
@@ -331,7 +331,7 @@ func (q *SQLQuerier) buildListQueryWithILike(
 	defer span.End()
 
 	if filter != nil {
-		tracing.AttachFilterToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+		tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
 	}
 
 	var includeArchived bool

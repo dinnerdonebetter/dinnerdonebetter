@@ -89,7 +89,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	logger := filter.AttachToLogger(s.logger)
 
 	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
 
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
