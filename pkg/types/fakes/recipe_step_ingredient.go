@@ -10,16 +10,20 @@ import (
 // BuildFakeRecipeStepIngredient builds a faked recipe step ingredient.
 // NOTE: this currently represents a typical recipe step ingredient with a valid ingredient and not a product.
 func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
+	fakeValue := float32(fake.Uint8())
+
 	return &types.RecipeStepIngredient{
 		ID:                   ksuid.New().String(),
 		Name:                 fake.LoremIpsumSentence(exampleQuantity),
 		IngredientID:         func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
 		QuantityType:         fake.LoremIpsumSentence(exampleQuantity),
-		MinimumQuantityValue: float32(fake.Uint32()),
+		MinimumQuantityValue: fakeValue,
+		MaximumQuantityValue: fakeValue + float32(fake.Uint8()),
 		QuantityNotes:        fake.LoremIpsumSentence(exampleQuantity),
 		ProductOfRecipeStep:  false,
 		IngredientNotes:      fake.LoremIpsumSentence(exampleQuantity),
 		CreatedOn:            uint64(uint32(fake.Date().Unix())),
+		MeasurementUnit:      *BuildFakeValidMeasurementUnit(),
 		BelongsToRecipeStep:  ksuid.New().String(),
 	}
 }
@@ -46,28 +50,30 @@ func BuildFakeRecipeStepIngredientList() *types.RecipeStepIngredientList {
 func BuildFakeRecipeStepIngredientUpdateRequestInput() *types.RecipeStepIngredientUpdateRequestInput {
 	recipeStepIngredient := BuildFakeRecipeStepIngredient()
 	return &types.RecipeStepIngredientUpdateRequestInput{
-		Name:                &recipeStepIngredient.Name,
-		IngredientID:        recipeStepIngredient.IngredientID,
-		QuantityType:        &recipeStepIngredient.QuantityType,
-		QuantityValue:       &recipeStepIngredient.MinimumQuantityValue,
-		QuantityNotes:       &recipeStepIngredient.QuantityNotes,
-		ProductOfRecipeStep: &recipeStepIngredient.ProductOfRecipeStep,
-		IngredientNotes:     &recipeStepIngredient.IngredientNotes,
-		BelongsToRecipeStep: &recipeStepIngredient.BelongsToRecipeStep,
+		Name:                 &recipeStepIngredient.Name,
+		IngredientID:         recipeStepIngredient.IngredientID,
+		ValidMeasurementID:   &recipeStepIngredient.QuantityType,
+		MinimumQuantityValue: &recipeStepIngredient.MinimumQuantityValue,
+		MaximumQuantityValue: &recipeStepIngredient.MaximumQuantityValue,
+		QuantityNotes:        &recipeStepIngredient.QuantityNotes,
+		ProductOfRecipeStep:  &recipeStepIngredient.ProductOfRecipeStep,
+		IngredientNotes:      &recipeStepIngredient.IngredientNotes,
+		BelongsToRecipeStep:  &recipeStepIngredient.BelongsToRecipeStep,
 	}
 }
 
 // BuildFakeRecipeStepIngredientUpdateRequestInputFromRecipeStepIngredient builds a faked RecipeStepIngredientUpdateRequestInput from a recipe step ingredient.
 func BuildFakeRecipeStepIngredientUpdateRequestInputFromRecipeStepIngredient(recipeStepIngredient *types.RecipeStepIngredient) *types.RecipeStepIngredientUpdateRequestInput {
 	return &types.RecipeStepIngredientUpdateRequestInput{
-		Name:                &recipeStepIngredient.Name,
-		IngredientID:        recipeStepIngredient.IngredientID,
-		QuantityType:        &recipeStepIngredient.QuantityType,
-		QuantityValue:       &recipeStepIngredient.MinimumQuantityValue,
-		QuantityNotes:       &recipeStepIngredient.QuantityNotes,
-		ProductOfRecipeStep: &recipeStepIngredient.ProductOfRecipeStep,
-		IngredientNotes:     &recipeStepIngredient.IngredientNotes,
-		BelongsToRecipeStep: &recipeStepIngredient.BelongsToRecipeStep,
+		Name:                 &recipeStepIngredient.Name,
+		IngredientID:         recipeStepIngredient.IngredientID,
+		ValidMeasurementID:   &recipeStepIngredient.QuantityType,
+		MinimumQuantityValue: &recipeStepIngredient.MinimumQuantityValue,
+		MaximumQuantityValue: &recipeStepIngredient.MaximumQuantityValue,
+		QuantityNotes:        &recipeStepIngredient.QuantityNotes,
+		ProductOfRecipeStep:  &recipeStepIngredient.ProductOfRecipeStep,
+		IngredientNotes:      &recipeStepIngredient.IngredientNotes,
+		BelongsToRecipeStep:  &recipeStepIngredient.BelongsToRecipeStep,
 	}
 }
 
@@ -80,15 +86,16 @@ func BuildFakeRecipeStepIngredientCreationRequestInput() *types.RecipeStepIngred
 // BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient builds a faked RecipeStepIngredientCreationRequestInput from a recipe step ingredient.
 func BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(recipeStepIngredient *types.RecipeStepIngredient) *types.RecipeStepIngredientCreationRequestInput {
 	return &types.RecipeStepIngredientCreationRequestInput{
-		ID:                  recipeStepIngredient.ID,
-		Name:                recipeStepIngredient.Name,
-		IngredientID:        recipeStepIngredient.IngredientID,
-		QuantityType:        recipeStepIngredient.QuantityType,
-		QuantityValue:       recipeStepIngredient.MinimumQuantityValue,
-		QuantityNotes:       recipeStepIngredient.QuantityNotes,
-		ProductOfRecipeStep: recipeStepIngredient.ProductOfRecipeStep,
-		IngredientNotes:     recipeStepIngredient.IngredientNotes,
-		BelongsToRecipeStep: recipeStepIngredient.BelongsToRecipeStep,
+		ID:                   recipeStepIngredient.ID,
+		Name:                 recipeStepIngredient.Name,
+		IngredientID:         recipeStepIngredient.IngredientID,
+		ValidMeasurementID:   recipeStepIngredient.QuantityType,
+		MinimumQuantityValue: recipeStepIngredient.MinimumQuantityValue,
+		MaximumQuantityValue: recipeStepIngredient.MaximumQuantityValue,
+		QuantityNotes:        recipeStepIngredient.QuantityNotes,
+		ProductOfRecipeStep:  recipeStepIngredient.ProductOfRecipeStep,
+		IngredientNotes:      recipeStepIngredient.IngredientNotes,
+		BelongsToRecipeStep:  recipeStepIngredient.BelongsToRecipeStep,
 	}
 }
 
@@ -101,14 +108,15 @@ func BuildFakeRecipeStepIngredientDatabaseCreationInput() *types.RecipeStepIngre
 // BuildFakeRecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredient builds a faked RecipeStepIngredientDatabaseCreationInput from a recipe step ingredient.
 func BuildFakeRecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredient(recipeStepIngredient *types.RecipeStepIngredient) *types.RecipeStepIngredientDatabaseCreationInput {
 	return &types.RecipeStepIngredientDatabaseCreationInput{
-		ID:                  recipeStepIngredient.ID,
-		Name:                recipeStepIngredient.Name,
-		IngredientID:        recipeStepIngredient.IngredientID,
-		QuantityType:        recipeStepIngredient.QuantityType,
-		QuantityValue:       recipeStepIngredient.MinimumQuantityValue,
-		QuantityNotes:       recipeStepIngredient.QuantityNotes,
-		ProductOfRecipeStep: recipeStepIngredient.ProductOfRecipeStep,
-		IngredientNotes:     recipeStepIngredient.IngredientNotes,
-		BelongsToRecipeStep: recipeStepIngredient.BelongsToRecipeStep,
+		ID:                   recipeStepIngredient.ID,
+		Name:                 recipeStepIngredient.Name,
+		IngredientID:         recipeStepIngredient.IngredientID,
+		ValidMeasurementID:   recipeStepIngredient.QuantityType,
+		MinimumQuantityValue: recipeStepIngredient.MinimumQuantityValue,
+		MaximumQuantityValue: recipeStepIngredient.MaximumQuantityValue,
+		QuantityNotes:        recipeStepIngredient.QuantityNotes,
+		ProductOfRecipeStep:  recipeStepIngredient.ProductOfRecipeStep,
+		IngredientNotes:      recipeStepIngredient.IngredientNotes,
+		BelongsToRecipeStep:  recipeStepIngredient.BelongsToRecipeStep,
 	}
 }

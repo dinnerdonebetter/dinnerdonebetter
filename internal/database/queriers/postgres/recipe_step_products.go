@@ -52,7 +52,7 @@ func (q *SQLQuerier) scanRecipeStepProduct(ctx context.Context, scan database.Sc
 		&x.ID,
 		&x.Name,
 		&x.QuantityType,
-		&x.QuantityValue,
+		&x.MinimumQuantityValue,
 		&x.QuantityNotes,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
@@ -387,7 +387,7 @@ func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQ
 		input.ID,
 		input.Name,
 		input.QuantityType,
-		input.QuantityValue,
+		input.MinimumQuantityValue,
 		input.QuantityNotes,
 		input.BelongsToRecipeStep,
 	}
@@ -398,13 +398,13 @@ func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQ
 	}
 
 	x := &types.RecipeStepProduct{
-		ID:                  input.ID,
-		Name:                input.Name,
-		QuantityType:        input.QuantityType,
-		QuantityValue:       input.QuantityValue,
-		QuantityNotes:       input.QuantityNotes,
-		BelongsToRecipeStep: input.BelongsToRecipeStep,
-		CreatedOn:           q.currentTime(),
+		ID:                   input.ID,
+		Name:                 input.Name,
+		QuantityType:         input.QuantityType,
+		MinimumQuantityValue: input.MinimumQuantityValue,
+		QuantityNotes:        input.QuantityNotes,
+		BelongsToRecipeStep:  input.BelongsToRecipeStep,
+		CreatedOn:            q.currentTime(),
 	}
 
 	tracing.AttachRecipeStepProductIDToSpan(span, x.ID)
@@ -434,7 +434,7 @@ func (q *SQLQuerier) UpdateRecipeStepProduct(ctx context.Context, updated *types
 	args := []interface{}{
 		updated.Name,
 		updated.QuantityType,
-		updated.QuantityValue,
+		updated.MinimumQuantityValue,
 		updated.QuantityNotes,
 		updated.BelongsToRecipeStep,
 		updated.ID,

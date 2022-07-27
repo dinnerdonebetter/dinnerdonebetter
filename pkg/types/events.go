@@ -36,6 +36,8 @@ type (
 		MealPlanOptionID           string                      `json:"mealPlanOptionID,omitempty"`
 		MealPlanOptionVote         *MealPlanOptionVote         `json:"mealPlanOptionVote,omitempty"`
 		MealPlanOptionVoteID       string                      `json:"mealPlanOptionVoteID,omitempty"`
+		ValidMeasurementUnitID     string                      `json:"validMeasurementUnitID"`
+		ValidMeasurementUnit       *ValidMeasurementUnit       `json:"validMeasurementUnit"`
 		Webhook                    *Webhook                    `json:"webhook,omitempty"`
 		Household                  *Household                  `json:"household,omitempty"`
 		APIClientID                string                      `json:"apiClientID,omitempty"`

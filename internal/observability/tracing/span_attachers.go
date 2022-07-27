@@ -235,6 +235,21 @@ func AttachValidIngredientPreparationIDToSpan(span trace.Span, validIngredientPr
 	attachStringToSpan(span, keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 }
 
+// AttachValidMeasurementUnitIDToSpan attaches a valid measurement unit ID to a given span.
+func AttachValidMeasurementUnitIDToSpan(span trace.Span, validMeasurementUnitID string) {
+	attachStringToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, validMeasurementUnitID)
+}
+
+// AttachValidIngredientMeasurementUnitIDToSpan attaches a valid ingredient measurement unit ID to a given span.
+func AttachValidIngredientMeasurementUnitIDToSpan(span trace.Span, validIngredientMeasurementUnitID string) {
+	attachStringToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
+}
+
+// AttachValidPreparationInstrumentIDToSpan attaches a valid preparation instrument ID to a given span.
+func AttachValidPreparationInstrumentIDToSpan(span trace.Span, validPreparationInstrumentID string) {
+	attachStringToSpan(span, keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
+}
+
 // AttachMealIDToSpan attaches a recipe ID to a given span.
 func AttachMealIDToSpan(span trace.Span, mealID string) {
 	attachStringToSpan(span, keys.MealIDKey, mealID)

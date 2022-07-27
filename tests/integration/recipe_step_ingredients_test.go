@@ -17,7 +17,7 @@ func checkRecipeStepIngredientEquality(t *testing.T, expected, actual *types.Rec
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, *expected.IngredientID, *actual.IngredientID, "expected IngredientID for recipe step ingredient %s to be %v, but it was %v", expected.ID, *expected.IngredientID, *actual.IngredientID)
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
-	assert.Equal(t, expected.QuantityType, actual.QuantityType, "expected QuantityType for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.QuantityType, actual.QuantityType)
+	assert.Equal(t, expected.QuantityType, actual.QuantityType, "expected ValidMeasurementID for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.QuantityType, actual.QuantityType)
 	assert.Equal(t, expected.MinimumQuantityValue, actual.MinimumQuantityValue, "expected MinimumQuantityValue for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.MinimumQuantityValue, actual.MinimumQuantityValue)
 	assert.Equal(t, expected.QuantityNotes, actual.QuantityNotes, "expected QuantityNotes for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.QuantityNotes, actual.QuantityNotes)
 	assert.Equal(t, expected.ProductOfRecipeStep, actual.ProductOfRecipeStep, "expected ProductOfRecipeStep for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.ProductOfRecipeStep, actual.ProductOfRecipeStep)
@@ -28,15 +28,15 @@ func checkRecipeStepIngredientEquality(t *testing.T, expected, actual *types.Rec
 // convertRecipeStepIngredientToRecipeStepIngredientUpdateInput creates an RecipeStepIngredientUpdateRequestInput struct from a recipe step ingredient.
 func convertRecipeStepIngredientToRecipeStepIngredientUpdateInput(x *types.RecipeStepIngredient) *types.RecipeStepIngredientUpdateRequestInput {
 	return &types.RecipeStepIngredientUpdateRequestInput{
-		IngredientID:        x.IngredientID,
-		Name:                &x.Name,
-		QuantityType:        &x.QuantityType,
-		QuantityValue:       &x.MinimumQuantityValue,
-		QuantityNotes:       &x.QuantityNotes,
-		ProductOfRecipeStep: &x.ProductOfRecipeStep,
-		IngredientNotes:     &x.IngredientNotes,
-		RecipeStepProductID: x.RecipeStepProductID,
-		BelongsToRecipeStep: &x.BelongsToRecipeStep,
+		IngredientID:         x.IngredientID,
+		Name:                 &x.Name,
+		ValidMeasurementID:   &x.QuantityType,
+		MinimumQuantityValue: &x.MinimumQuantityValue,
+		QuantityNotes:        &x.QuantityNotes,
+		ProductOfRecipeStep:  &x.ProductOfRecipeStep,
+		IngredientNotes:      &x.IngredientNotes,
+		RecipeStepProductID:  x.RecipeStepProductID,
+		BelongsToRecipeStep:  &x.BelongsToRecipeStep,
 	}
 }
 

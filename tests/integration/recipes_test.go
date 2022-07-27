@@ -71,6 +71,11 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 	exampleRecipeInput := fakes.BuildFakeRecipeCreationRequestInputFromRecipe(exampleRecipe)
 	for i := range exampleRecipeInput.Steps {
 		exampleRecipeInput.Steps[i].PreparationID = createdValidPreparation.ID
+
+		// remove the next three lines
+		for j := range exampleRecipeInput.Steps[i].Ingredients {
+			exampleRecipeInput.Steps[i].Ingredients[j].ValidMeasurementID = "2CUumLd5Vxnbp79O7ewWFTeEG8b"
+		}
 	}
 
 	createdRecipe, err := client.CreateRecipe(ctx, exampleRecipeInput)
@@ -129,10 +134,10 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						MinTemperatureInCelsius: nil,
 						Products: []*types.RecipeStepProduct{
 							{
-								Name:          "soaked pinto beans",
-								QuantityType:  "grams",
-								QuantityNotes: "",
-								QuantityValue: 1000,
+								Name:                 "soaked pinto beans",
+								QuantityType:         "grams",
+								QuantityNotes:        "",
+								MinimumQuantityValue: 1000,
 							},
 						},
 						Notes:       "first step",
@@ -161,10 +166,10 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						MinTemperatureInCelsius: nil,
 						Products: []*types.RecipeStepProduct{
 							{
-								Name:          "final output",
-								QuantityType:  "grams",
-								QuantityNotes: "",
-								QuantityValue: 1010,
+								Name:                 "final output",
+								QuantityType:         "grams",
+								QuantityNotes:        "",
+								MinimumQuantityValue: 1010,
 							},
 						},
 						Notes:       "first step",
@@ -208,27 +213,27 @@ func (s *TestSuite) TestRecipes_Realistic() {
 
 				for _, ingredient := range step.Ingredients {
 					newIngredient := &types.RecipeStepIngredientCreationRequestInput{
-						IngredientID:        ingredient.IngredientID,
-						ID:                  ingredient.ID,
-						BelongsToRecipeStep: ingredient.BelongsToRecipeStep,
-						Name:                ingredient.Name,
-						QuantityType:        ingredient.QuantityType,
-						QuantityNotes:       ingredient.QuantityNotes,
-						IngredientNotes:     ingredient.IngredientNotes,
-						QuantityValue:       ingredient.MinimumQuantityValue,
-						ProductOfRecipeStep: ingredient.ProductOfRecipeStep,
+						IngredientID:         ingredient.IngredientID,
+						ID:                   ingredient.ID,
+						BelongsToRecipeStep:  ingredient.BelongsToRecipeStep,
+						Name:                 ingredient.Name,
+						ValidMeasurementID:   "2CUumLd5Vxnbp79O7ewWFTeEG8b",
+						QuantityNotes:        ingredient.QuantityNotes,
+						IngredientNotes:      ingredient.IngredientNotes,
+						MinimumQuantityValue: ingredient.MinimumQuantityValue,
+						ProductOfRecipeStep:  ingredient.ProductOfRecipeStep,
 					}
 					newStep.Ingredients = append(newStep.Ingredients, newIngredient)
 				}
 
 				for _, product := range step.Products {
 					newProduct := &types.RecipeStepProductCreationRequestInput{
-						ID:                  product.ID,
-						Name:                product.Name,
-						QuantityType:        product.QuantityType,
-						QuantityNotes:       product.QuantityNotes,
-						BelongsToRecipeStep: product.BelongsToRecipeStep,
-						QuantityValue:       product.QuantityValue,
+						ID:                   product.ID,
+						Name:                 product.Name,
+						QuantityType:         "2CUumLd5Vxnbp79O7ewWFTeEG8b",
+						QuantityNotes:        product.QuantityNotes,
+						BelongsToRecipeStep:  product.BelongsToRecipeStep,
+						MinimumQuantityValue: product.MinimumQuantityValue,
 					}
 					newStep.Products = append(newStep.Products, newProduct)
 				}

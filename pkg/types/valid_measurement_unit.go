@@ -38,6 +38,7 @@ type (
 		IconPath      string  `json:"iconPath"`
 		ID            string  `json:"id"`
 		CreatedOn     uint64  `json:"createdOn"`
+		Volumetric    bool    `json:"volumetric"`
 	}
 
 	// ValidMeasurementUnitList represents a list of valid measurement units.
@@ -49,22 +50,22 @@ type (
 
 	// ValidMeasurementUnitCreationRequestInput represents what a user could set as input for creating valid measurement units.
 	ValidMeasurementUnitCreationRequestInput struct {
-		_ struct{}
-
+		_           struct{}
 		ID          string `json:"-"`
 		Name        string `json:"name"`
 		Description string `json:"description"`
 		IconPath    string `json:"iconPath"`
+		Volumetric  bool   `json:"volumetric"`
 	}
 
 	// ValidMeasurementUnitDatabaseCreationInput represents what a user could set as input for creating valid measurement units.
 	ValidMeasurementUnitDatabaseCreationInput struct {
-		_ struct{}
-
+		_           struct{}
 		ID          string `json:"id"`
 		Name        string `json:"name"`
 		Description string `json:"description"`
 		IconPath    string `json:"iconPath"`
+		Volumetric  bool   `json:"volumetric"`
 	}
 
 	// ValidMeasurementUnitUpdateRequestInput represents what a user could set as input for updating valid measurement units.
@@ -73,6 +74,7 @@ type (
 
 		Name        *string `json:"name"`
 		Description *string `json:"description"`
+		Volumetric  *bool   `json:"volumetric"`
 		IconPath    *string `json:"iconPath"`
 	}
 
@@ -81,6 +83,7 @@ type (
 		ValidMeasurementUnitExists(ctx context.Context, validMeasurementUnitID string) (bool, error)
 		GetValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) (*ValidMeasurementUnit, error)
 		GetValidMeasurementUnits(ctx context.Context, filter *QueryFilter) (*ValidMeasurementUnitList, error)
+		SearchForValidMeasurementUnits(ctx context.Context, query string) ([]*ValidMeasurementUnit, error)
 		CreateValidMeasurementUnit(ctx context.Context, input *ValidMeasurementUnitDatabaseCreationInput) (*ValidMeasurementUnit, error)
 		UpdateValidMeasurementUnit(ctx context.Context, updated *ValidMeasurementUnit) error
 		ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error
@@ -92,7 +95,6 @@ type (
 		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
 		ReadHandler(res http.ResponseWriter, req *http.Request)
-		RandomHandler(res http.ResponseWriter, req *http.Request)
 		UpdateHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 	}
@@ -106,6 +108,10 @@ func (x *ValidMeasurementUnit) Update(input *ValidMeasurementUnitUpdateRequestIn
 
 	if input.Description != nil && *input.Description != x.Description {
 		x.Description = *input.Description
+	}
+
+	if input.Volumetric != nil && *input.Volumetric != x.Volumetric {
+		x.Volumetric = *input.Volumetric
 	}
 
 	if input.IconPath != nil && *input.IconPath != x.IconPath {
@@ -141,6 +147,7 @@ func ValidMeasurementUnitUpdateRequestInputFromValidMeasurementUnit(input *Valid
 	x := &ValidMeasurementUnitUpdateRequestInput{
 		Name:        &input.Name,
 		Description: &input.Description,
+		Volumetric:  &input.Volumetric,
 		IconPath:    &input.IconPath,
 	}
 
@@ -152,6 +159,7 @@ func ValidMeasurementUnitDatabaseCreationInputFromValidMeasurementUnitCreationIn
 	x := &ValidMeasurementUnitDatabaseCreationInput{
 		Name:        input.Name,
 		Description: input.Description,
+		Volumetric:  input.Volumetric,
 		IconPath:    input.IconPath,
 	}
 

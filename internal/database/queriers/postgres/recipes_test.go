@@ -73,7 +73,7 @@ var fullRecipesColumns = []string{
 	"valid_preparations.archived_on",
 	"recipe_steps.min_estimated_time_in_seconds",
 	"recipe_steps.max_estimated_time_in_seconds",
-	"recipe_steps.temperature_in_celsius",
+	"recipe_steps.min_temperature_in_celsius",
 	"recipe_steps.notes",
 	"recipe_steps.optional",
 	"recipe_steps.created_on",
@@ -1072,8 +1072,8 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					ingredient.ID,
 					ingredient.Name,
 					ingredient.IngredientID,
-					ingredient.QuantityType,
-					ingredient.QuantityValue,
+					ingredient.ValidMeasurementID,
+					ingredient.MinimumQuantityValue,
 					ingredient.QuantityNotes,
 					ingredient.ProductOfRecipeStep,
 					ingredient.RecipeStepProductID,
@@ -1532,11 +1532,11 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					MinTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
-							ID:            fakes.BuildFakeID(),
-							Name:          productName,
-							QuantityType:  "grams",
-							QuantityNotes: "",
-							QuantityValue: 1000,
+							ID:                   fakes.BuildFakeID(),
+							Name:                 productName,
+							QuantityType:         "grams",
+							QuantityNotes:        "",
+							MinimumQuantityValue: 1000,
 						},
 					},
 					Notes:       "first step",
@@ -1565,10 +1565,10 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					MinTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
-							Name:          "final output",
-							QuantityType:  "grams",
-							QuantityNotes: "",
-							QuantityValue: 1010,
+							Name:                 "final output",
+							QuantityType:         "grams",
+							QuantityNotes:        "",
+							MinimumQuantityValue: 1010,
 						},
 					},
 					Notes:       "second step",
@@ -1616,27 +1616,27 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 
 			for _, ingredient := range step.Ingredients {
 				newIngredient := &types.RecipeStepIngredientDatabaseCreationInput{
-					IngredientID:        ingredient.IngredientID,
-					ID:                  ingredient.ID,
-					BelongsToRecipeStep: ingredient.BelongsToRecipeStep,
-					Name:                ingredient.Name,
-					QuantityType:        ingredient.QuantityType,
-					QuantityNotes:       ingredient.QuantityNotes,
-					IngredientNotes:     ingredient.IngredientNotes,
-					QuantityValue:       ingredient.MinimumQuantityValue,
-					ProductOfRecipeStep: ingredient.ProductOfRecipeStep,
+					IngredientID:         ingredient.IngredientID,
+					ID:                   ingredient.ID,
+					BelongsToRecipeStep:  ingredient.BelongsToRecipeStep,
+					Name:                 ingredient.Name,
+					ValidMeasurementID:   ingredient.QuantityType,
+					QuantityNotes:        ingredient.QuantityNotes,
+					IngredientNotes:      ingredient.IngredientNotes,
+					MinimumQuantityValue: ingredient.MinimumQuantityValue,
+					ProductOfRecipeStep:  ingredient.ProductOfRecipeStep,
 				}
 				newStep.Ingredients = append(newStep.Ingredients, newIngredient)
 			}
 
 			for _, product := range step.Products {
 				newProduct := &types.RecipeStepProductDatabaseCreationInput{
-					ID:                  product.ID,
-					Name:                product.Name,
-					QuantityType:        product.QuantityType,
-					QuantityNotes:       product.QuantityNotes,
-					BelongsToRecipeStep: product.BelongsToRecipeStep,
-					QuantityValue:       product.QuantityValue,
+					ID:                   product.ID,
+					Name:                 product.Name,
+					QuantityType:         product.QuantityType,
+					QuantityNotes:        product.QuantityNotes,
+					BelongsToRecipeStep:  product.BelongsToRecipeStep,
+					MinimumQuantityValue: product.MinimumQuantityValue,
 				}
 				newStep.Products = append(newStep.Products, newProduct)
 			}
@@ -1667,11 +1667,11 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					MinTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
-							ID:            fakes.BuildFakeID(),
-							Name:          productName,
-							QuantityType:  "grams",
-							QuantityNotes: "",
-							QuantityValue: 1000,
+							ID:                   fakes.BuildFakeID(),
+							Name:                 productName,
+							QuantityType:         "grams",
+							QuantityNotes:        "",
+							MinimumQuantityValue: 1000,
 						},
 					},
 					Notes:       "first step",
@@ -1700,10 +1700,10 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					MinTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
-							Name:          "pressure cooked beans",
-							QuantityType:  "grams",
-							QuantityNotes: "",
-							QuantityValue: 1010,
+							Name:                 "pressure cooked beans",
+							QuantityType:         "grams",
+							QuantityNotes:        "",
+							MinimumQuantityValue: 1010,
 						},
 					},
 					Notes:       "second step",
@@ -1732,11 +1732,11 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					MinTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
-							ID:            fakes.BuildFakeID(),
-							Name:          productName,
-							QuantityType:  "grams",
-							QuantityNotes: "",
-							QuantityValue: 1000,
+							ID:                   fakes.BuildFakeID(),
+							Name:                 productName,
+							QuantityType:         "grams",
+							QuantityNotes:        "",
+							MinimumQuantityValue: 1000,
 						},
 					},
 					Notes:       "third step",
@@ -1765,10 +1765,10 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					MinTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
-							Name:          "final output",
-							QuantityType:  "grams",
-							QuantityNotes: "",
-							QuantityValue: 1010,
+							Name:                 "final output",
+							QuantityType:         "grams",
+							QuantityNotes:        "",
+							MinimumQuantityValue: 1010,
 						},
 					},
 					Notes:       "fourth step",
@@ -1816,27 +1816,27 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 
 			for _, ingredient := range step.Ingredients {
 				newIngredient := &types.RecipeStepIngredientDatabaseCreationInput{
-					IngredientID:        ingredient.IngredientID,
-					ID:                  ingredient.ID,
-					BelongsToRecipeStep: ingredient.BelongsToRecipeStep,
-					Name:                ingredient.Name,
-					QuantityType:        ingredient.QuantityType,
-					QuantityNotes:       ingredient.QuantityNotes,
-					IngredientNotes:     ingredient.IngredientNotes,
-					QuantityValue:       ingredient.MinimumQuantityValue,
-					ProductOfRecipeStep: ingredient.ProductOfRecipeStep,
+					IngredientID:         ingredient.IngredientID,
+					ID:                   ingredient.ID,
+					BelongsToRecipeStep:  ingredient.BelongsToRecipeStep,
+					Name:                 ingredient.Name,
+					ValidMeasurementID:   ingredient.QuantityType,
+					QuantityNotes:        ingredient.QuantityNotes,
+					IngredientNotes:      ingredient.IngredientNotes,
+					MinimumQuantityValue: ingredient.MinimumQuantityValue,
+					ProductOfRecipeStep:  ingredient.ProductOfRecipeStep,
 				}
 				newStep.Ingredients = append(newStep.Ingredients, newIngredient)
 			}
 
 			for _, product := range step.Products {
 				newProduct := &types.RecipeStepProductDatabaseCreationInput{
-					ID:                  product.ID,
-					Name:                product.Name,
-					QuantityType:        product.QuantityType,
-					QuantityNotes:       product.QuantityNotes,
-					BelongsToRecipeStep: product.BelongsToRecipeStep,
-					QuantityValue:       product.QuantityValue,
+					ID:                   product.ID,
+					Name:                 product.Name,
+					QuantityType:         product.QuantityType,
+					QuantityNotes:        product.QuantityNotes,
+					BelongsToRecipeStep:  product.BelongsToRecipeStep,
+					MinimumQuantityValue: product.MinimumQuantityValue,
 				}
 				newStep.Products = append(newStep.Products, newProduct)
 			}

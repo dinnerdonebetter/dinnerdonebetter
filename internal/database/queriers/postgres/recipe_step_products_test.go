@@ -30,7 +30,7 @@ func buildMockRowsFromRecipeStepProducts(includeCounts bool, filteredCount uint6
 			x.ID,
 			x.Name,
 			x.QuantityType,
-			x.QuantityValue,
+			x.MinimumQuantityValue,
 			x.QuantityNotes,
 			x.CreatedOn,
 			x.LastUpdatedOn,
@@ -666,7 +666,7 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.QuantityType,
-			exampleInput.QuantityValue,
+			exampleInput.MinimumQuantityValue,
 			exampleInput.QuantityNotes,
 			exampleInput.BelongsToRecipeStep,
 		}
@@ -711,7 +711,7 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.QuantityType,
-			exampleInput.QuantityValue,
+			exampleInput.MinimumQuantityValue,
 			exampleInput.QuantityNotes,
 			exampleInput.BelongsToRecipeStep,
 		}
@@ -747,7 +747,7 @@ func TestQuerier_UpdateRecipeStepProduct(T *testing.T) {
 		args := []interface{}{
 			exampleRecipeStepProduct.Name,
 			exampleRecipeStepProduct.QuantityType,
-			exampleRecipeStepProduct.QuantityValue,
+			exampleRecipeStepProduct.MinimumQuantityValue,
 			exampleRecipeStepProduct.QuantityNotes,
 			exampleRecipeStepProduct.BelongsToRecipeStep,
 			exampleRecipeStepProduct.ID,
@@ -782,7 +782,7 @@ func TestQuerier_UpdateRecipeStepProduct(T *testing.T) {
 		args := []interface{}{
 			exampleRecipeStepProduct.Name,
 			exampleRecipeStepProduct.QuantityType,
-			exampleRecipeStepProduct.QuantityValue,
+			exampleRecipeStepProduct.MinimumQuantityValue,
 			exampleRecipeStepProduct.QuantityNotes,
 			exampleRecipeStepProduct.BelongsToRecipeStep,
 			exampleRecipeStepProduct.ID,
