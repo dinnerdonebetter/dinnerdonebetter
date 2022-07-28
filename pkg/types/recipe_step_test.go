@@ -26,13 +26,13 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 		},
 		Ingredients: []*RecipeStepIngredientCreationRequestInput{
 			{
-				IngredientID:        func(s string) *string { return &s }(fake.LoremIpsumSentence(exampleQuantity)),
-				ID:                  fake.LoremIpsumSentence(exampleQuantity),
-				QuantityType:        fake.LoremIpsumSentence(exampleQuantity),
-				QuantityNotes:       fake.LoremIpsumSentence(exampleQuantity),
-				IngredientNotes:     fake.LoremIpsumSentence(exampleQuantity),
-				BelongsToRecipeStep: fake.LoremIpsumSentence(exampleQuantity),
-				QuantityValue:       1,
+				IngredientID:         func(s string) *string { return &s }(fake.LoremIpsumSentence(exampleQuantity)),
+				ID:                   fake.LoremIpsumSentence(exampleQuantity),
+				QuantityType:         fake.LoremIpsumSentence(exampleQuantity),
+				QuantityNotes:        fake.LoremIpsumSentence(exampleQuantity),
+				IngredientNotes:      fake.LoremIpsumSentence(exampleQuantity),
+				BelongsToRecipeStep:  fake.LoremIpsumSentence(exampleQuantity),
+				MinimumQuantityValue: 1,
 			},
 		},
 	}
@@ -79,13 +79,13 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 
 		for i := 0; i < maxIngredientsPerStep*2; i++ {
 			x.Ingredients = append(x.Ingredients, &RecipeStepIngredientCreationRequestInput{
-				IngredientID:        func(s string) *string { return &s }(fake.LoremIpsumSentence(exampleQuantity)),
-				ID:                  fake.LoremIpsumSentence(exampleQuantity),
-				QuantityType:        fake.LoremIpsumSentence(exampleQuantity),
-				QuantityNotes:       fake.LoremIpsumSentence(exampleQuantity),
-				IngredientNotes:     fake.LoremIpsumSentence(exampleQuantity),
-				BelongsToRecipeStep: fake.LoremIpsumSentence(exampleQuantity),
-				QuantityValue:       1,
+				IngredientID:         func(s string) *string { return &s }(fake.LoremIpsumSentence(exampleQuantity)),
+				ID:                   fake.LoremIpsumSentence(exampleQuantity),
+				QuantityType:         fake.LoremIpsumSentence(exampleQuantity),
+				QuantityNotes:        fake.LoremIpsumSentence(exampleQuantity),
+				IngredientNotes:      fake.LoremIpsumSentence(exampleQuantity),
+				BelongsToRecipeStep:  fake.LoremIpsumSentence(exampleQuantity),
+				MinimumQuantityValue: 1,
 			})
 		}
 
