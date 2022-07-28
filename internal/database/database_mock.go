@@ -15,29 +15,30 @@ var _ DataManager = (*MockDatabase)(nil)
 // NewMockDatabase builds a mock database.
 func NewMockDatabase() *MockDatabase {
 	return &MockDatabase{
-		HouseholdDataManager:                  &mocktypes.HouseholdDataManager{},
-		HouseholdInvitationDataManager:        &mocktypes.HouseholdInvitationDataManager{},
-		HouseholdUserMembershipDataManager:    &mocktypes.HouseholdUserMembershipDataManager{},
-		ValidInstrumentDataManager:            &mocktypes.ValidInstrumentDataManager{},
-		ValidIngredientDataManager:            &mocktypes.ValidIngredientDataManager{},
-		ValidPreparationDataManager:           &mocktypes.ValidPreparationDataManager{},
-		ValidIngredientPreparationDataManager: &mocktypes.ValidIngredientPreparationDataManager{},
-		MealDataManager:                       &mocktypes.MealDataManager{},
-		RecipeDataManager:                     &mocktypes.RecipeDataManager{},
-		RecipeStepDataManager:                 &mocktypes.RecipeStepDataManager{},
-		RecipeStepProductDataManager:          &mocktypes.RecipeStepProductDataManager{},
-		RecipeStepInstrumentDataManager:       &mocktypes.RecipeStepInstrumentDataManager{},
-		RecipeStepIngredientDataManager:       &mocktypes.RecipeStepIngredientDataManager{},
-		MealPlanDataManager:                   &mocktypes.MealPlanDataManager{},
-		MealPlanOptionDataManager:             &mocktypes.MealPlanOptionDataManager{},
-		MealPlanOptionVoteDataManager:         &mocktypes.MealPlanOptionVoteDataManager{},
-		UserDataManager:                       &mocktypes.UserDataManager{},
-		AdminUserDataManager:                  &mocktypes.AdminUserDataManager{},
-		APIClientDataManager:                  &mocktypes.APIClientDataManager{},
-		PasswordResetTokenDataManager:         &mocktypes.PasswordResetTokenDataManager{},
-		WebhookDataManager:                    &mocktypes.WebhookDataManager{},
-		ValidMeasurementUnitDataManager:       &mocktypes.ValidMeasurementUnitDataManager{},
-		ValidPreparationInstrumentDataManager: &mocktypes.ValidPreparationInstrumentDataManager{},
+		HouseholdDataManager:                      &mocktypes.HouseholdDataManager{},
+		HouseholdInvitationDataManager:            &mocktypes.HouseholdInvitationDataManager{},
+		HouseholdUserMembershipDataManager:        &mocktypes.HouseholdUserMembershipDataManager{},
+		ValidInstrumentDataManager:                &mocktypes.ValidInstrumentDataManager{},
+		ValidIngredientDataManager:                &mocktypes.ValidIngredientDataManager{},
+		ValidPreparationDataManager:               &mocktypes.ValidPreparationDataManager{},
+		ValidIngredientPreparationDataManager:     &mocktypes.ValidIngredientPreparationDataManager{},
+		MealDataManager:                           &mocktypes.MealDataManager{},
+		RecipeDataManager:                         &mocktypes.RecipeDataManager{},
+		RecipeStepDataManager:                     &mocktypes.RecipeStepDataManager{},
+		RecipeStepProductDataManager:              &mocktypes.RecipeStepProductDataManager{},
+		RecipeStepInstrumentDataManager:           &mocktypes.RecipeStepInstrumentDataManager{},
+		RecipeStepIngredientDataManager:           &mocktypes.RecipeStepIngredientDataManager{},
+		MealPlanDataManager:                       &mocktypes.MealPlanDataManager{},
+		MealPlanOptionDataManager:                 &mocktypes.MealPlanOptionDataManager{},
+		MealPlanOptionVoteDataManager:             &mocktypes.MealPlanOptionVoteDataManager{},
+		UserDataManager:                           &mocktypes.UserDataManager{},
+		AdminUserDataManager:                      &mocktypes.AdminUserDataManager{},
+		APIClientDataManager:                      &mocktypes.APIClientDataManager{},
+		PasswordResetTokenDataManager:             &mocktypes.PasswordResetTokenDataManager{},
+		WebhookDataManager:                        &mocktypes.WebhookDataManager{},
+		ValidMeasurementUnitDataManager:           &mocktypes.ValidMeasurementUnitDataManager{},
+		ValidPreparationInstrumentDataManager:     &mocktypes.ValidPreparationInstrumentDataManager{},
+		ValidIngredientMeasurementUnitDataManager: &mocktypes.ValidIngredientMeasurementUnitDataManager{},
 	}
 }
 
@@ -67,6 +68,7 @@ type MockDatabase struct {
 	*mocktypes.HouseholdInvitationDataManager
 	*mocktypes.ValidMeasurementUnitDataManager
 	*mocktypes.ValidPreparationInstrumentDataManager
+	*mocktypes.ValidIngredientMeasurementUnitDataManager
 
 	mock.Mock
 }

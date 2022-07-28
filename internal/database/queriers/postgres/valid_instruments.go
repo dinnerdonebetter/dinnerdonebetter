@@ -216,7 +216,34 @@ func (q *SQLQuerier) SearchForValidInstruments(ctx context.Context, query string
 
 // SearchForValidInstrumentsForPreparation fetches a valid instrument from the database.
 func (q *SQLQuerier) SearchForValidInstrumentsForPreparation(ctx context.Context, preparationID, query string) ([]*types.ValidInstrument, error) {
-	return nil, nil
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if query == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.SearchQueryKey, query)
+	tracing.AttachValidInstrumentIDToSpan(span, query)
+
+	// TODO: restrict results by preparation ID
+
+	args := []interface{}{
+		wrapQueryForILIKE(query),
+	}
+
+	rows, err := q.performReadQuery(ctx, q.db, "valid ingredients", validInstrumentSearchQuery, args)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "executing valid ingredients list retrieval query")
+	}
+
+	validInstruments, _, _, err := q.scanValidInstruments(ctx, rows, false)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "scanning validInstrument")
+	}
+
+	return validInstruments, nil
 }
 
 const getTotalValidInstrumentsCountQuery = "SELECT COUNT(valid_instruments.id) FROM valid_instruments WHERE valid_instruments.archived_on IS NULL"

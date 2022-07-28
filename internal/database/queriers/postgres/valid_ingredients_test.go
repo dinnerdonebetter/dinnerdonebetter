@@ -365,6 +365,88 @@ func TestQuerier_SearchForValidIngredients(T *testing.T) {
 	})
 }
 
+func TestSearchForValidIngredientsForPreparation(T *testing.T) {
+	T.Parallel()
+
+	exampleQuery := "blah"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleValidIngredients := fakes.BuildFakeValidIngredientList()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{
+			wrapQueryForILIKE(exampleQuery),
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(validIngredientSearchQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromValidIngredients(false, 0, exampleValidIngredients.ValidIngredients...))
+
+		actual, err := c.SearchForValidIngredientsForPreparation(ctx, "", exampleQuery)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidIngredients.ValidIngredients, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid valid ingredient ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		actual, err := c.SearchForValidIngredientsForPreparation(ctx, "", "")
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{
+			wrapQueryForILIKE(exampleQuery),
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(validIngredientSearchQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		actual, err := c.SearchForValidIngredientsForPreparation(ctx, "", exampleQuery)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with error scanning response", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []interface{}{
+			wrapQueryForILIKE(exampleQuery),
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(validIngredientSearchQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildErroneousMockRow())
+
+		actual, err := c.SearchForValidIngredientsForPreparation(ctx, "", exampleQuery)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_GetTotalValidIngredientCount(T *testing.T) {
 	T.Parallel()
 

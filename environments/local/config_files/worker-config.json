@@ -114,6 +114,9 @@
 		"validPreparationInstruments": {
 			"dataChangesTopicName": "data_changes"
 		},
+		"validInstrumentMeasurementUnits": {
+			"dataChangesTopicName": "data_changes"
+		},
 		"meals": {
 			"dataChangesTopicName": "data_changes"
 		},

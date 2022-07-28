@@ -26,6 +26,7 @@ import (
 	recipestepproductsservice "github.com/prixfixeco/api_server/internal/services/recipestepproducts"
 	recipestepsservice "github.com/prixfixeco/api_server/internal/services/recipesteps"
 	usersservice "github.com/prixfixeco/api_server/internal/services/users"
+	validingredientmeasurementunitsservice "github.com/prixfixeco/api_server/internal/services/validingredientmeasurementunits"
 	validingredientpreparationsservice "github.com/prixfixeco/api_server/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/prixfixeco/api_server/internal/services/validingredients"
 	validinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validinstruments"
@@ -71,28 +72,29 @@ type (
 
 	// ServicesConfigurations collects the various service configurations.
 	ServicesConfigurations struct {
-		_                           struct{}
-		ValidMeasurementUnits       validmeaurementunitsservice.Config        `json:"validMeasurementUnits" mapstructure:"valid_measurement_units" toml:"valid_measurement_units,omitempty"`
-		ValidInstruments            validinstrumentsservice.Config            `json:"validInstruments" mapstructure:"valid_instruments" toml:"valid_instruments,omitempty"`
-		ValidIngredients            validingredientsservice.Config            `json:"validIngredients" mapstructure:"valid_ingredients" toml:"valid_ingredients,omitempty"`
-		ValidPreparations           validpreparationsservice.Config           `json:"validPreparations" mapstructure:"valid_preparations" toml:"valid_preparations,omitempty"`
-		MealPlanOptionVotes         mealplanoptionvotesservice.Config         `json:"mealPlanOptionVotes" mapstructure:"meal_plan_option_votes" toml:"meal_plan_option_votes,omitempty"`
-		ValidIngredientPreparations validingredientpreparationsservice.Config `json:"validIngredientPreparations" mapstructure:"valid_ingredient_preparations" toml:"valid_ingredient_preparations,omitempty"`
-		ValidPreparationInstruments validpreparationinstrumentsservice.Config `json:"validPreparationInstruments" mapstructure:"valid_preparation_instruments" toml:"valid_preparation_instruments,omitempty"`
-		Meals                       mealsservice.Config                       `json:"meals" mapstructure:"meals" toml:"meals,omitempty"`
-		Recipes                     recipesservice.Config                     `json:"recipes" mapstructure:"recipes" toml:"recipes,omitempty"`
-		RecipeSteps                 recipestepsservice.Config                 `json:"recipeSteps" mapstructure:"recipe_steps" toml:"recipe_steps,omitempty"`
-		RecipeStepProducts          recipestepproductsservice.Config          `json:"recipeStepProducts" mapstructure:"recipe_step_products" toml:"recipe_step_products,omitempty"`
-		RecipeStepInstruments       recipestepinstrumentsservice.Config       `json:"recipeStepInstruments" mapstructure:"recipe_step_instruments" toml:"recipe_step_instruments,omitempty"`
-		RecipeStepIngredients       recipestepingredientsservice.Config       `json:"recipeStepIngredients" mapstructure:"recipe_step_ingredients" toml:"recipe_step_ingredients,omitempty"`
-		MealPlans                   mealplansservice.Config                   `json:"mealPlans" mapstructure:"meal_plans" toml:"meal_plans,omitempty"`
-		MealPlanOptions             mealplanoptionsservice.Config             `json:"mealPlanOptions" mapstructure:"meal_plan_options" toml:"meal_plan_options,omitempty"`
-		Households                  householdsservice.Config                  `json:"households" mapstructure:"households" toml:"households,omitempty"`
-		HouseholdInvitations        householdinvitationsservice.Config        `json:"householdInvitations" mapstructure:"household_invitations" toml:"household_invitations,omitempty"`
-		Websockets                  websocketsservice.Config                  `json:"websockets" mapstructure:"websockets" toml:"websockets,omitempty"`
-		Webhooks                    webhooksservice.Config                    `json:"webhooks" mapstructure:"webhooks" toml:"webhooks,omitempty"`
-		Users                       usersservice.Config                       `json:"users" mapstructure:"users" toml:"users,omitempty"`
-		Auth                        authservice.Config                        `json:"auth" mapstructure:"auth" toml:"auth,omitempty"`
+		_                               struct{}
+		ValidMeasurementUnits           validmeaurementunitsservice.Config            `json:"validMeasurementUnits" mapstructure:"valid_measurement_units" toml:"valid_measurement_units,omitempty"`
+		ValidInstruments                validinstrumentsservice.Config                `json:"validInstruments" mapstructure:"valid_instruments" toml:"valid_instruments,omitempty"`
+		ValidIngredients                validingredientsservice.Config                `json:"validIngredients" mapstructure:"valid_ingredients" toml:"valid_ingredients,omitempty"`
+		ValidPreparations               validpreparationsservice.Config               `json:"validPreparations" mapstructure:"valid_preparations" toml:"valid_preparations,omitempty"`
+		MealPlanOptionVotes             mealplanoptionvotesservice.Config             `json:"mealPlanOptionVotes" mapstructure:"meal_plan_option_votes" toml:"meal_plan_option_votes,omitempty"`
+		ValidIngredientPreparations     validingredientpreparationsservice.Config     `json:"validIngredientPreparations" mapstructure:"valid_ingredient_preparations" toml:"valid_ingredient_preparations,omitempty"`
+		ValidPreparationInstruments     validpreparationinstrumentsservice.Config     `json:"validPreparationInstruments" mapstructure:"valid_preparation_instruments" toml:"valid_preparation_instruments,omitempty"`
+		ValidInstrumentMeasurementUnits validingredientmeasurementunitsservice.Config `json:"validInstrumentMeasurementUnits" mapstructure:"valid_ingredient_measurement_units" toml:"valid_ingredient_measurement_units,omitempty"`
+		Meals                           mealsservice.Config                           `json:"meals" mapstructure:"meals" toml:"meals,omitempty"`
+		Recipes                         recipesservice.Config                         `json:"recipes" mapstructure:"recipes" toml:"recipes,omitempty"`
+		RecipeSteps                     recipestepsservice.Config                     `json:"recipeSteps" mapstructure:"recipe_steps" toml:"recipe_steps,omitempty"`
+		RecipeStepProducts              recipestepproductsservice.Config              `json:"recipeStepProducts" mapstructure:"recipe_step_products" toml:"recipe_step_products,omitempty"`
+		RecipeStepInstruments           recipestepinstrumentsservice.Config           `json:"recipeStepInstruments" mapstructure:"recipe_step_instruments" toml:"recipe_step_instruments,omitempty"`
+		RecipeStepIngredients           recipestepingredientsservice.Config           `json:"recipeStepIngredients" mapstructure:"recipe_step_ingredients" toml:"recipe_step_ingredients,omitempty"`
+		MealPlans                       mealplansservice.Config                       `json:"mealPlans" mapstructure:"meal_plans" toml:"meal_plans,omitempty"`
+		MealPlanOptions                 mealplanoptionsservice.Config                 `json:"mealPlanOptions" mapstructure:"meal_plan_options" toml:"meal_plan_options,omitempty"`
+		Households                      householdsservice.Config                      `json:"households" mapstructure:"households" toml:"households,omitempty"`
+		HouseholdInvitations            householdinvitationsservice.Config            `json:"householdInvitations" mapstructure:"household_invitations" toml:"household_invitations,omitempty"`
+		Websockets                      websocketsservice.Config                      `json:"websockets" mapstructure:"websockets" toml:"websockets,omitempty"`
+		Webhooks                        webhooksservice.Config                        `json:"webhooks" mapstructure:"webhooks" toml:"webhooks,omitempty"`
+		Users                           usersservice.Config                           `json:"users" mapstructure:"users" toml:"users,omitempty"`
+		Auth                            authservice.Config                            `json:"auth" mapstructure:"auth" toml:"auth,omitempty"`
 	}
 )
 
@@ -175,6 +177,10 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 
 		if err := cfg.Services.ValidPreparationInstruments.ValidateWithContext(ctx); err != nil {
 			return fmt.Errorf("error validating ValidPreparationInstruments service portion of config: %w", err)
+		}
+
+		if err := cfg.Services.ValidInstrumentMeasurementUnits.ValidateWithContext(ctx); err != nil {
+			return fmt.Errorf("error validating ValidInstrumentMeasurementUnits service portion of config: %w", err)
 		}
 
 		if err := cfg.Services.Recipes.ValidateWithContext(ctx); err != nil {
