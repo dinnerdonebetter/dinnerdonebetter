@@ -73,7 +73,8 @@ var fullRecipesColumns = []string{
 	"valid_preparations.archived_on",
 	"recipe_steps.min_estimated_time_in_seconds",
 	"recipe_steps.max_estimated_time_in_seconds",
-	"recipe_steps.temperature_in_celsius",
+	"recipe_steps.minimum_temperature_in_celsius",
+	"recipe_steps.maximum_temperature_in_celsius",
 	"recipe_steps.notes",
 	"recipe_steps.optional",
 	"recipe_steps.created_on",
@@ -105,9 +106,10 @@ func buildMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
 			&step.Preparation.CreatedOn,
 			&step.Preparation.LastUpdatedOn,
 			&step.Preparation.ArchivedOn,
-			&step.MinEstimatedTimeInSeconds,
-			&step.MaxEstimatedTimeInSeconds,
-			&step.TemperatureInCelsius,
+			&step.MinimumEstimatedTimeInSeconds,
+			&step.MaximumEstimatedTimeInSeconds,
+			&step.MinimumTemperatureInCelsius,
+			&step.MaximumTemperatureInCelsius,
 			&step.Notes,
 			&step.Optional,
 			&step.CreatedOn,
@@ -1096,9 +1098,10 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 				step.ID,
 				step.Index,
 				step.PreparationID,
-				step.MinEstimatedTimeInSeconds,
-				step.MaxEstimatedTimeInSeconds,
-				step.TemperatureInCelsius,
+				step.MinimumEstimatedTimeInSeconds,
+				step.MaximumEstimatedTimeInSeconds,
+				step.MinimumTemperatureInCelsius,
+				step.MaximumTemperatureInCelsius,
 				step.Notes,
 				step.Optional,
 				step.BelongsToRecipe,
@@ -1351,9 +1354,10 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleInput.Steps[0].ID,
 			0,
 			exampleInput.Steps[0].PreparationID,
-			exampleInput.Steps[0].MinEstimatedTimeInSeconds,
-			exampleInput.Steps[0].MaxEstimatedTimeInSeconds,
-			exampleInput.Steps[0].TemperatureInCelsius,
+			exampleInput.Steps[0].MinimumEstimatedTimeInSeconds,
+			exampleInput.Steps[0].MaximumEstimatedTimeInSeconds,
+			exampleInput.Steps[0].MinimumTemperatureInCelsius,
+			exampleInput.Steps[0].MaximumTemperatureInCelsius,
 			exampleInput.Steps[0].Notes,
 			exampleInput.Steps[0].Optional,
 			exampleInput.Steps[0].BelongsToRecipe,
@@ -1570,7 +1574,8 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 			Description: "",
 			Steps: []*types.RecipeStep{
 				{
-					TemperatureInCelsius: nil,
+					MinimumTemperatureInCelsius: nil,
+					MaximumTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
 							ID:            fakes.BuildFakeID(),
@@ -1603,7 +1608,8 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					Index: 0,
 				},
 				{
-					TemperatureInCelsius: nil,
+					MinimumTemperatureInCelsius: nil,
+					MaximumTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
 							Name:          "final output",
@@ -1644,15 +1650,16 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 
 		for _, step := range expected.Steps {
 			newStep := &types.RecipeStepDatabaseCreationInput{
-				TemperatureInCelsius:      step.TemperatureInCelsius,
-				Notes:                     step.Notes,
-				PreparationID:             step.Preparation.ID,
-				BelongsToRecipe:           step.BelongsToRecipe,
-				ID:                        step.ID,
-				Index:                     step.Index,
-				MinEstimatedTimeInSeconds: step.MinEstimatedTimeInSeconds,
-				MaxEstimatedTimeInSeconds: step.MaxEstimatedTimeInSeconds,
-				Optional:                  step.Optional,
+				MinimumTemperatureInCelsius:   step.MinimumTemperatureInCelsius,
+				MaximumTemperatureInCelsius:   step.MaximumTemperatureInCelsius,
+				Notes:                         step.Notes,
+				PreparationID:                 step.Preparation.ID,
+				BelongsToRecipe:               step.BelongsToRecipe,
+				ID:                            step.ID,
+				Index:                         step.Index,
+				MinimumEstimatedTimeInSeconds: step.MinimumEstimatedTimeInSeconds,
+				MaximumEstimatedTimeInSeconds: step.MaximumEstimatedTimeInSeconds,
+				Optional:                      step.Optional,
 			}
 
 			for _, ingredient := range step.Ingredients {
@@ -1705,7 +1712,8 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 			Description: "",
 			Steps: []*types.RecipeStep{
 				{
-					TemperatureInCelsius: nil,
+					MinimumTemperatureInCelsius: nil,
+					MaximumTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
 							ID:            fakes.BuildFakeID(),
@@ -1738,7 +1746,8 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					Index: 0,
 				},
 				{
-					TemperatureInCelsius: nil,
+					MinimumTemperatureInCelsius: nil,
+					MaximumTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
 							Name:          "pressure cooked beans",
@@ -1770,7 +1779,8 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					Index: 1,
 				},
 				{
-					TemperatureInCelsius: nil,
+					MinimumTemperatureInCelsius: nil,
+					MaximumTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
 							ID:            fakes.BuildFakeID(),
@@ -1803,7 +1813,8 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 					Index: 2,
 				},
 				{
-					TemperatureInCelsius: nil,
+					MinimumTemperatureInCelsius: nil,
+					MaximumTemperatureInCelsius: nil,
 					Products: []*types.RecipeStepProduct{
 						{
 							Name:          "final output",
@@ -1844,15 +1855,16 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 
 		for _, step := range expected.Steps {
 			newStep := &types.RecipeStepDatabaseCreationInput{
-				TemperatureInCelsius:      step.TemperatureInCelsius,
-				Notes:                     step.Notes,
-				PreparationID:             step.Preparation.ID,
-				BelongsToRecipe:           step.BelongsToRecipe,
-				ID:                        step.ID,
-				Index:                     step.Index,
-				MinEstimatedTimeInSeconds: step.MinEstimatedTimeInSeconds,
-				MaxEstimatedTimeInSeconds: step.MaxEstimatedTimeInSeconds,
-				Optional:                  step.Optional,
+				MinimumTemperatureInCelsius:   step.MinimumTemperatureInCelsius,
+				MaximumTemperatureInCelsius:   step.MaximumTemperatureInCelsius,
+				Notes:                         step.Notes,
+				PreparationID:                 step.Preparation.ID,
+				BelongsToRecipe:               step.BelongsToRecipe,
+				ID:                            step.ID,
+				Index:                         step.Index,
+				MinimumEstimatedTimeInSeconds: step.MinimumEstimatedTimeInSeconds,
+				MaximumEstimatedTimeInSeconds: step.MaximumEstimatedTimeInSeconds,
+				Optional:                      step.Optional,
 			}
 
 			for _, ingredient := range step.Ingredients {

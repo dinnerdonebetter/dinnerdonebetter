@@ -126,7 +126,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 				Description: "",
 				Steps: []*types.RecipeStep{
 					{
-						TemperatureInCelsius: nil,
+						MinimumTemperatureInCelsius: nil,
 						Products: []*types.RecipeStepProduct{
 							{
 								Name:          "soaked pinto beans",
@@ -158,7 +158,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						Index: 0,
 					},
 					{
-						TemperatureInCelsius: nil,
+						MinimumTemperatureInCelsius: nil,
 						Products: []*types.RecipeStepProduct{
 							{
 								Name:          "final output",
@@ -195,15 +195,15 @@ func (s *TestSuite) TestRecipes_Realistic() {
 			}
 			for _, step := range expected.Steps {
 				newStep := &types.RecipeStepCreationRequestInput{
-					TemperatureInCelsius:      step.TemperatureInCelsius,
-					Notes:                     step.Notes,
-					PreparationID:             step.Preparation.ID,
-					BelongsToRecipe:           step.BelongsToRecipe,
-					ID:                        step.ID,
-					Index:                     step.Index,
-					MinEstimatedTimeInSeconds: step.MinEstimatedTimeInSeconds,
-					MaxEstimatedTimeInSeconds: step.MaxEstimatedTimeInSeconds,
-					Optional:                  step.Optional,
+					MinimumTemperatureInCelsius:   step.MinimumTemperatureInCelsius,
+					Notes:                         step.Notes,
+					PreparationID:                 step.Preparation.ID,
+					BelongsToRecipe:               step.BelongsToRecipe,
+					ID:                            step.ID,
+					Index:                         step.Index,
+					MinimumEstimatedTimeInSeconds: step.MinimumEstimatedTimeInSeconds,
+					MaximumEstimatedTimeInSeconds: step.MaximumEstimatedTimeInSeconds,
+					Optional:                      step.Optional,
 				}
 
 				for _, ingredient := range step.Ingredients {

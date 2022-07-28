@@ -33,7 +33,8 @@ var (
 		"valid_preparations.archived_on",
 		"recipe_steps.min_estimated_time_in_seconds",
 		"recipe_steps.max_estimated_time_in_seconds",
-		"recipe_steps.temperature_in_celsius",
+		"recipe_steps.minimum_temperature_in_celsius",
+		"recipe_steps.maximum_temperature_in_celsius",
 		"recipe_steps.notes",
 		"recipe_steps.optional",
 		"recipe_steps.created_on",
@@ -67,9 +68,10 @@ func (q *SQLQuerier) scanRecipeStep(ctx context.Context, scan database.Scanner, 
 		&x.Preparation.CreatedOn,
 		&x.Preparation.LastUpdatedOn,
 		&x.Preparation.ArchivedOn,
-		&x.MinEstimatedTimeInSeconds,
-		&x.MaxEstimatedTimeInSeconds,
-		&x.TemperatureInCelsius,
+		&x.MinimumEstimatedTimeInSeconds,
+		&x.MaximumEstimatedTimeInSeconds,
+		&x.MinimumTemperatureInCelsius,
+		&x.MaximumTemperatureInCelsius,
 		&x.Notes,
 		&x.Optional,
 		&x.CreatedOn,
@@ -169,7 +171,8 @@ const getRecipeStepQuery = `SELECT
 	valid_preparations.archived_on,
 	recipe_steps.min_estimated_time_in_seconds,
 	recipe_steps.max_estimated_time_in_seconds,
-	recipe_steps.temperature_in_celsius,
+	recipe_steps.minimum_temperature_in_celsius,
+	recipe_steps.maximum_temperature_in_celsius,
 	recipe_steps.notes,
 	recipe_steps.optional,
 	recipe_steps.created_on,
@@ -338,7 +341,7 @@ func (q *SQLQuerier) GetRecipeStepsWithIDs(ctx context.Context, recipeID string,
 	return recipeSteps, nil
 }
 
-const recipeStepCreationQuery = "INSERT INTO recipe_steps (id,index,preparation_id,min_estimated_time_in_seconds,max_estimated_time_in_seconds,temperature_in_celsius,notes,optional,belongs_to_recipe) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)"
+const recipeStepCreationQuery = "INSERT INTO recipe_steps (id,index,preparation_id,min_estimated_time_in_seconds,max_estimated_time_in_seconds,minimum_temperature_in_celsius,maximum_temperature_in_celsius,notes,optional,belongs_to_recipe) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)"
 
 // CreateRecipeStep creates a recipe step in the database.
 func (q *SQLQuerier) createRecipeStep(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepDatabaseCreationInput) (*types.RecipeStep, error) {
@@ -355,9 +358,10 @@ func (q *SQLQuerier) createRecipeStep(ctx context.Context, db database.SQLQueryE
 		input.ID,
 		input.Index,
 		input.PreparationID,
-		input.MinEstimatedTimeInSeconds,
-		input.MaxEstimatedTimeInSeconds,
-		input.TemperatureInCelsius,
+		input.MinimumEstimatedTimeInSeconds,
+		input.MaximumEstimatedTimeInSeconds,
+		input.MinimumTemperatureInCelsius,
+		input.MaximumTemperatureInCelsius,
 		input.Notes,
 		input.Optional,
 		input.BelongsToRecipe,
@@ -369,15 +373,16 @@ func (q *SQLQuerier) createRecipeStep(ctx context.Context, db database.SQLQueryE
 	}
 
 	x := &types.RecipeStep{
-		ID:                        input.ID,
-		Index:                     input.Index,
-		MinEstimatedTimeInSeconds: input.MinEstimatedTimeInSeconds,
-		MaxEstimatedTimeInSeconds: input.MaxEstimatedTimeInSeconds,
-		TemperatureInCelsius:      input.TemperatureInCelsius,
-		Notes:                     input.Notes,
-		Optional:                  input.Optional,
-		BelongsToRecipe:           input.BelongsToRecipe,
-		CreatedOn:                 q.currentTime(),
+		ID:                            input.ID,
+		Index:                         input.Index,
+		MinimumEstimatedTimeInSeconds: input.MinimumEstimatedTimeInSeconds,
+		MaximumEstimatedTimeInSeconds: input.MaximumEstimatedTimeInSeconds,
+		MinimumTemperatureInCelsius:   input.MinimumTemperatureInCelsius,
+		MaximumTemperatureInCelsius:   input.MaximumTemperatureInCelsius,
+		Notes:                         input.Notes,
+		Optional:                      input.Optional,
+		BelongsToRecipe:               input.BelongsToRecipe,
+		CreatedOn:                     q.currentTime(),
 	}
 
 	for _, ingredientInput := range input.Ingredients {
@@ -410,7 +415,7 @@ func (q *SQLQuerier) CreateRecipeStep(ctx context.Context, input *types.RecipeSt
 	return q.createRecipeStep(ctx, q.db, input)
 }
 
-const updateRecipeStepQuery = "UPDATE recipe_steps SET index = $1, preparation_id = $2, min_estimated_time_in_seconds = $3, max_estimated_time_in_seconds = $4, temperature_in_celsius = $5, notes = $6, optional = $7, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe = $8 AND id = $9"
+const updateRecipeStepQuery = "UPDATE recipe_steps SET index = $1, preparation_id = $2, min_estimated_time_in_seconds = $3, max_estimated_time_in_seconds = $4, minimum_temperature_in_celsius = $5, maximum_temperature_in_celsius = $6, notes = $7, optional = $8, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe = $9 AND id = $10"
 
 // UpdateRecipeStep updates a particular recipe step.
 func (q *SQLQuerier) UpdateRecipeStep(ctx context.Context, updated *types.RecipeStep) error {
@@ -427,9 +432,10 @@ func (q *SQLQuerier) UpdateRecipeStep(ctx context.Context, updated *types.Recipe
 	args := []interface{}{
 		updated.Index,
 		updated.Preparation.ID,
-		updated.MinEstimatedTimeInSeconds,
-		updated.MaxEstimatedTimeInSeconds,
-		updated.TemperatureInCelsius,
+		updated.MinimumEstimatedTimeInSeconds,
+		updated.MaximumEstimatedTimeInSeconds,
+		updated.MinimumTemperatureInCelsius,
+		updated.MaximumTemperatureInCelsius,
 		updated.Notes,
 		updated.Optional,
 		updated.BelongsToRecipe,
