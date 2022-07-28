@@ -253,6 +253,38 @@ func (q *SQLQuerier) SearchForValidIngredients(ctx context.Context, query string
 	return x, nil
 }
 
+// SearchForValidIngredientsForPreparation fetches a valid ingredient from the database.
+func (q *SQLQuerier) SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string) ([]*types.ValidIngredient, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if query == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.SearchQueryKey, query)
+	tracing.AttachValidIngredientIDToSpan(span, query)
+
+	args := []interface{}{
+		wrapQueryForILIKE(query),
+	}
+
+	// TODO: find some way to restrict by preparationID
+
+	rows, err := q.performReadQuery(ctx, q.db, "valid ingredients", validIngredientSearchQuery, args)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "executing valid ingredients list retrieval query")
+	}
+
+	x, _, _, err := q.scanValidIngredients(ctx, rows, false)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "scanning valid ingredients")
+	}
+
+	return x, nil
+}
+
 const getTotalValidIngredientsCountQuery = "SELECT COUNT(valid_ingredients.id) FROM valid_ingredients WHERE valid_ingredients.archived_on IS NULL"
 
 // GetTotalValidIngredientCount fetches the count of valid ingredients from the database that meet a particular filter.

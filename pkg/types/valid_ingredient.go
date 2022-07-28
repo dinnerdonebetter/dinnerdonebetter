@@ -137,6 +137,7 @@ type (
 		GetTotalValidIngredientCount(ctx context.Context) (uint64, error)
 		GetValidIngredients(ctx context.Context, filter *QueryFilter) (*ValidIngredientList, error)
 		SearchForValidIngredients(ctx context.Context, query string) ([]*ValidIngredient, error)
+		SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string) ([]*ValidIngredient, error)
 		GetValidIngredientsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*ValidIngredient, error)
 		CreateValidIngredient(ctx context.Context, input *ValidIngredientDatabaseCreationInput) (*ValidIngredient, error)
 		UpdateValidIngredient(ctx context.Context, updated *ValidIngredient) error

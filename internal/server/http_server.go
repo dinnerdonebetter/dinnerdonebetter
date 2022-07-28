@@ -29,34 +29,36 @@ const (
 type (
 	// HTTPServer is our API http server.
 	HTTPServer struct {
-		authService                        types.AuthService
-		householdsService                  types.HouseholdDataService
-		householdInvitationsService        types.HouseholdInvitationDataService
-		usersService                       types.UserDataService
-		adminService                       types.AdminService
-		apiClientsService                  types.APIClientDataService
-		webhooksService                    types.WebhookDataService
-		validInstrumentsService            types.ValidInstrumentDataService
-		validIngredientsService            types.ValidIngredientDataService
-		validPreparationsService           types.ValidPreparationDataService
-		validIngredientPreparationsService types.ValidIngredientPreparationDataService
-		recipesService                     types.RecipeDataService
-		recipeStepsService                 types.RecipeStepDataService
-		recipeStepProductsService          types.RecipeStepProductDataService
-		recipeStepInstrumentsService       types.RecipeStepInstrumentDataService
-		recipeStepIngredientsService       types.RecipeStepIngredientDataService
-		mealsService                       types.MealDataService
-		mealPlansService                   types.MealPlanDataService
-		mealPlanOptionsService             types.MealPlanOptionDataService
-		mealPlanOptionVotesService         types.MealPlanOptionVoteDataService
-		validMeasurementUnitsService       types.ValidMeasurementUnitDataService
-		encoder                            encoding.ServerEncoderDecoder
-		logger                             logging.Logger
-		router                             routing.Router
-		tracer                             tracing.Tracer
-		panicker                           panicking.Panicker
-		httpServer                         *http.Server
-		config                             Config
+		authService                            types.AuthService
+		householdsService                      types.HouseholdDataService
+		householdInvitationsService            types.HouseholdInvitationDataService
+		usersService                           types.UserDataService
+		adminService                           types.AdminService
+		apiClientsService                      types.APIClientDataService
+		webhooksService                        types.WebhookDataService
+		validInstrumentsService                types.ValidInstrumentDataService
+		validIngredientsService                types.ValidIngredientDataService
+		validPreparationsService               types.ValidPreparationDataService
+		validIngredientPreparationsService     types.ValidIngredientPreparationDataService
+		recipesService                         types.RecipeDataService
+		recipeStepsService                     types.RecipeStepDataService
+		recipeStepProductsService              types.RecipeStepProductDataService
+		recipeStepInstrumentsService           types.RecipeStepInstrumentDataService
+		recipeStepIngredientsService           types.RecipeStepIngredientDataService
+		mealsService                           types.MealDataService
+		mealPlansService                       types.MealPlanDataService
+		mealPlanOptionsService                 types.MealPlanOptionDataService
+		mealPlanOptionVotesService             types.MealPlanOptionVoteDataService
+		validMeasurementUnitsService           types.ValidMeasurementUnitDataService
+		validPreparationInstrumentsService     types.ValidPreparationInstrumentDataService
+		validIngredientMeasurementUnitsService types.ValidIngredientMeasurementUnitDataService
+		encoder                                encoding.ServerEncoderDecoder
+		logger                                 logging.Logger
+		router                                 routing.Router
+		tracer                                 tracing.Tracer
+		panicker                               panicking.Panicker
+		httpServer                             *http.Server
+		config                                 Config
 	}
 )
 
@@ -83,6 +85,8 @@ func ProvideHTTPServer(
 	mealPlanOptionsService types.MealPlanOptionDataService,
 	mealPlanOptionVotesService types.MealPlanOptionVoteDataService,
 	validMeasurementUnitsService types.ValidMeasurementUnitDataService,
+	validPreparationInstrumentsService types.ValidPreparationInstrumentDataService,
+	validIngredientMeasurementUnitsService types.ValidIngredientMeasurementUnitDataService,
 	webhooksService types.WebhookDataService,
 	adminService types.AdminService,
 	logger logging.Logger,
@@ -102,27 +106,29 @@ func ProvideHTTPServer(
 		httpServer: provideHTTPServer(serverSettings.HTTPPort),
 
 		// services,
-		adminService:                       adminService,
-		webhooksService:                    webhooksService,
-		usersService:                       usersService,
-		householdsService:                  householdsService,
-		householdInvitationsService:        householdInvitationsService,
-		authService:                        authService,
-		validInstrumentsService:            validInstrumentsService,
-		validIngredientsService:            validIngredientsService,
-		validPreparationsService:           validPreparationsService,
-		validIngredientPreparationsService: validIngredientPreparationsService,
-		mealsService:                       mealsService,
-		recipesService:                     recipesService,
-		recipeStepsService:                 recipeStepsService,
-		recipeStepProductsService:          recipeStepProductsService,
-		recipeStepInstrumentsService:       recipeStepInstrumentsService,
-		recipeStepIngredientsService:       recipeStepIngredientsService,
-		mealPlansService:                   mealPlansService,
-		mealPlanOptionsService:             mealPlanOptionsService,
-		mealPlanOptionVotesService:         mealPlanOptionVotesService,
-		validMeasurementUnitsService:       validMeasurementUnitsService,
-		apiClientsService:                  apiClientsService,
+		adminService:                           adminService,
+		webhooksService:                        webhooksService,
+		usersService:                           usersService,
+		householdsService:                      householdsService,
+		householdInvitationsService:            householdInvitationsService,
+		authService:                            authService,
+		validInstrumentsService:                validInstrumentsService,
+		validIngredientsService:                validIngredientsService,
+		validPreparationsService:               validPreparationsService,
+		validIngredientPreparationsService:     validIngredientPreparationsService,
+		mealsService:                           mealsService,
+		recipesService:                         recipesService,
+		recipeStepsService:                     recipeStepsService,
+		recipeStepProductsService:              recipeStepProductsService,
+		recipeStepInstrumentsService:           recipeStepInstrumentsService,
+		recipeStepIngredientsService:           recipeStepIngredientsService,
+		mealPlansService:                       mealPlansService,
+		mealPlanOptionsService:                 mealPlanOptionsService,
+		mealPlanOptionVotesService:             mealPlanOptionVotesService,
+		validMeasurementUnitsService:           validMeasurementUnitsService,
+		apiClientsService:                      apiClientsService,
+		validPreparationInstrumentsService:     validPreparationInstrumentsService,
+		validIngredientMeasurementUnitsService: validIngredientMeasurementUnitsService,
 	}
 
 	srv.setupRouter(ctx, router, metricsHandler)

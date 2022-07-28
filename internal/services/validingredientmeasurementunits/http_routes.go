@@ -1,0 +1,289 @@
+package validingredientmeasurementunits
+
+import (
+	"database/sql"
+	"errors"
+	"net/http"
+
+	"github.com/segmentio/ksuid"
+
+	"github.com/prixfixeco/api_server/internal/observability"
+	"github.com/prixfixeco/api_server/internal/observability/keys"
+	"github.com/prixfixeco/api_server/internal/observability/tracing"
+	"github.com/prixfixeco/api_server/pkg/types"
+)
+
+const (
+	// ValidIngredientMeasurementUnitIDURIParamKey is a standard string that we'll use to refer to valid ingredient measurement unit IDs with.
+	ValidIngredientMeasurementUnitIDURIParamKey = "validIngredientMeasurementUnitID"
+)
+
+// CreateHandler is our valid ingredient measurement unit creation route.
+func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// read parsed input struct from request body.
+	providedInput := new(types.ValidIngredientMeasurementUnitCreationRequestInput)
+	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
+		observability.AcknowledgeError(err, logger, span, "decoding request")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		return
+	}
+
+	if err = providedInput.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	input := types.ValidIngredientMeasurementUnitDatabaseCreationInputFromValidIngredientMeasurementUnitCreationInput(providedInput)
+	input.ID = ksuid.New().String()
+
+	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, input.ID)
+
+	validIngredientMeasurementUnit, err := s.validIngredientMeasurementUnitDataManager.CreateValidIngredientMeasurementUnit(ctx, input)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "creating valid ingredient measurement unit")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                       types.ValidIngredientMeasurementUnitDataType,
+			EventType:                      types.ValidIngredientMeasurementUnitCreatedCustomerEventType,
+			ValidIngredientMeasurementUnit: validIngredientMeasurementUnit,
+			AttributableToUserID:           sessionCtxData.Requester.UserID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
+		}
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validIngredientMeasurementUnit, http.StatusCreated)
+}
+
+// ReadHandler returns a GET handler that returns a valid ingredient measurement unit.
+func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// determine valid ingredient measurement unit ID.
+	validIngredientMeasurementUnitID := s.validIngredientMeasurementUnitIDFetcher(req)
+	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, validIngredientMeasurementUnitID)
+	logger = logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
+
+	// fetch valid ingredient measurement unit from database.
+	x, err := s.validIngredientMeasurementUnitDataManager.GetValidIngredientMeasurementUnit(ctx, validIngredientMeasurementUnitID)
+	if errors.Is(err, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		return
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient measurement unit")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, x)
+}
+
+// ListHandler is our list route.
+func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	filter := types.ExtractQueryFilter(req)
+	logger := s.logger.WithRequest(req).
+		WithValue(keys.FilterLimitKey, filter.Limit).
+		WithValue(keys.FilterPageKey, filter.Page).
+		WithValue(keys.FilterSortByKey, string(filter.SortBy))
+
+	tracing.AttachRequestToSpan(span, req)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	validIngredientMeasurementUnits, err := s.validIngredientMeasurementUnitDataManager.GetValidIngredientMeasurementUnits(ctx, filter)
+	if errors.Is(err, sql.ErrNoRows) {
+		// in the event no rows exist, return an empty list.
+		validIngredientMeasurementUnits = &types.ValidIngredientMeasurementUnitList{ValidIngredientMeasurementUnits: []*types.ValidIngredientMeasurementUnit{}}
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient measurement units")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, validIngredientMeasurementUnits)
+}
+
+// UpdateHandler returns a handler that updates a valid ingredient measurement unit.
+func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// check for parsed input attached to session context data.
+	input := new(types.ValidIngredientMeasurementUnitUpdateRequestInput)
+	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
+		logger.Error(err, "error encountered decoding request body")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		return
+	}
+
+	if err = input.ValidateWithContext(ctx); err != nil {
+		logger.Error(err, "provided input was invalid")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// determine valid ingredient measurement unit ID.
+	validIngredientMeasurementUnitID := s.validIngredientMeasurementUnitIDFetcher(req)
+	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, validIngredientMeasurementUnitID)
+	logger = logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
+
+	// fetch valid ingredient measurement unit from database.
+	validIngredientMeasurementUnit, err := s.validIngredientMeasurementUnitDataManager.GetValidIngredientMeasurementUnit(ctx, validIngredientMeasurementUnitID)
+	if errors.Is(err, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		return
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient measurement unit for update")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	// update the valid ingredient measurement unit.
+	validIngredientMeasurementUnit.Update(input)
+
+	if err = s.validIngredientMeasurementUnitDataManager.UpdateValidIngredientMeasurementUnit(ctx, validIngredientMeasurementUnit); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating valid ingredient measurement unit")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:                       types.ValidIngredientMeasurementUnitDataType,
+			EventType:                      types.ValidIngredientMeasurementUnitUpdatedCustomerEventType,
+			ValidIngredientMeasurementUnit: validIngredientMeasurementUnit,
+			AttributableToUserID:           sessionCtxData.Requester.UserID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
+	}
+
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, validIngredientMeasurementUnit)
+}
+
+// ArchiveHandler returns a handler that archives a valid ingredient measurement unit.
+func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// determine valid ingredient measurement unit ID.
+	validIngredientMeasurementUnitID := s.validIngredientMeasurementUnitIDFetcher(req)
+	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, validIngredientMeasurementUnitID)
+	logger = logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
+
+	exists, existenceCheckErr := s.validIngredientMeasurementUnitDataManager.ValidIngredientMeasurementUnitExists(ctx, validIngredientMeasurementUnitID)
+	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
+		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking valid ingredient measurement unit existence")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		return
+	}
+
+	if err = s.validIngredientMeasurementUnitDataManager.ArchiveValidIngredientMeasurementUnit(ctx, validIngredientMeasurementUnitID); err != nil {
+		observability.AcknowledgeError(err, logger, span, "archiving valid ingredient measurement unit")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	if s.dataChangesPublisher != nil {
+		dcm := &types.DataChangeMessage{
+			DataType:             types.ValidIngredientMeasurementUnitDataType,
+			EventType:            types.ValidIngredientMeasurementUnitArchivedCustomerEventType,
+			AttributableToUserID: sessionCtxData.Requester.UserID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
+	}
+
+	// encode our response and peace.
+	res.WriteHeader(http.StatusNoContent)
+}

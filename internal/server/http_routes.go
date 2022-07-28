@@ -23,10 +23,12 @@ import (
 	recipestepproductsservice "github.com/prixfixeco/api_server/internal/services/recipestepproducts"
 	recipestepsservice "github.com/prixfixeco/api_server/internal/services/recipesteps"
 	usersservice "github.com/prixfixeco/api_server/internal/services/users"
+	validingredientmeasurementunitsservice "github.com/prixfixeco/api_server/internal/services/validingredientmeasurementunits"
 	validingredientpreparationsservice "github.com/prixfixeco/api_server/internal/services/validingredientpreparations"
 	validingredientsservice "github.com/prixfixeco/api_server/internal/services/validingredients"
 	validinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validinstruments"
 	validmeasurementunitsservice "github.com/prixfixeco/api_server/internal/services/validmeasurementunits"
+	validpreparationinstrumentsservice "github.com/prixfixeco/api_server/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/prixfixeco/api_server/internal/services/validpreparations"
 	webhooksservice "github.com/prixfixeco/api_server/internal/services/webhooks"
 )
@@ -353,6 +355,56 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				singleValidIngredientPreparationRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidIngredientPreparationsPermission)).
 					Put(root, s.validIngredientPreparationsService.UpdateHandler)
+			})
+		})
+
+		// ValidPreparationInstruments
+		validPreparationInstrumentPath := "valid_preparation_instruments"
+		validPreparationInstrumentsRouteWithPrefix := fmt.Sprintf("/%s", validPreparationInstrumentPath)
+		validPreparationInstrumentIDRouteParam := buildURLVarChunk(validpreparationinstrumentsservice.ValidPreparationInstrumentIDURIParamKey, "")
+		v1Router.Route(validPreparationInstrumentsRouteWithPrefix, func(validPreparationInstrumentsRouter routing.Router) {
+			validPreparationInstrumentsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidPreparationInstrumentsPermission)).
+				Post(root, s.validPreparationInstrumentsService.CreateHandler)
+			validPreparationInstrumentsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationInstrumentsPermission)).
+				Get(root, s.validPreparationInstrumentsService.ListHandler)
+
+			validPreparationInstrumentsRouter.Route(validPreparationInstrumentIDRouteParam, func(singleValidPreparationInstrumentRouter routing.Router) {
+				singleValidPreparationInstrumentRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationInstrumentsPermission)).
+					Get(root, s.validPreparationInstrumentsService.ReadHandler)
+				singleValidPreparationInstrumentRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidPreparationInstrumentsPermission)).
+					Delete(root, s.validPreparationInstrumentsService.ArchiveHandler)
+				singleValidPreparationInstrumentRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidPreparationInstrumentsPermission)).
+					Put(root, s.validPreparationInstrumentsService.UpdateHandler)
+			})
+		})
+
+		// ValidIngredientMeasurementUnit
+		validIngredientMeasurementUnitPath := "valid_ingredient_measurement_units"
+		validIngredientMeasurementUnitRouteWithPrefix := fmt.Sprintf("/%s", validIngredientMeasurementUnitPath)
+		validIngredientMeasurementUnitIDRouteParam := buildURLVarChunk(validingredientmeasurementunitsservice.ValidIngredientMeasurementUnitIDURIParamKey, "")
+		v1Router.Route(validIngredientMeasurementUnitRouteWithPrefix, func(validIngredientMeasurementUnitRouter routing.Router) {
+			validIngredientMeasurementUnitRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidIngredientMeasurementUnitsPermission)).
+				Post(root, s.validIngredientMeasurementUnitsService.CreateHandler)
+			validIngredientMeasurementUnitRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientMeasurementUnitsPermission)).
+				Get(root, s.validIngredientMeasurementUnitsService.ListHandler)
+
+			validIngredientMeasurementUnitRouter.Route(validIngredientMeasurementUnitIDRouteParam, func(singleValidIngredientMeasurementUnitRouter routing.Router) {
+				singleValidIngredientMeasurementUnitRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientMeasurementUnitsPermission)).
+					Get(root, s.validIngredientMeasurementUnitsService.ReadHandler)
+				singleValidIngredientMeasurementUnitRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidIngredientMeasurementUnitsPermission)).
+					Delete(root, s.validIngredientMeasurementUnitsService.ArchiveHandler)
+				singleValidIngredientMeasurementUnitRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidIngredientMeasurementUnitsPermission)).
+					Put(root, s.validIngredientMeasurementUnitsService.UpdateHandler)
 			})
 		})
 

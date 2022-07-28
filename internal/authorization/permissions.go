@@ -101,6 +101,28 @@ const (
 	// ArchiveValidIngredientPreparationsPermission is a household user permission.
 	ArchiveValidIngredientPreparationsPermission Permission = "archive.valid_ingredient_preparations"
 
+	// CreateValidPreparationInstrumentsPermission is a household user permission.
+	CreateValidPreparationInstrumentsPermission Permission = "create.valid_preparation_instruments"
+	// ReadValidPreparationInstrumentsPermission is a household user permission.
+	ReadValidPreparationInstrumentsPermission Permission = "read.valid_preparation_instruments"
+	// SearchValidPreparationInstrumentsPermission is a household user permission.
+	SearchValidPreparationInstrumentsPermission Permission = "search.valid_preparation_instruments"
+	// UpdateValidPreparationInstrumentsPermission is a household user permission.
+	UpdateValidPreparationInstrumentsPermission Permission = "update.valid_preparation_instruments"
+	// ArchiveValidPreparationInstrumentsPermission is a household user permission.
+	ArchiveValidPreparationInstrumentsPermission Permission = "archive.valid_preparation_instruments"
+
+	// CreateValidIngredientMeasurementUnitsPermission is a household user permission.
+	CreateValidIngredientMeasurementUnitsPermission Permission = "create.valid_ingredient_measurement_units"
+	// ReadValidIngredientMeasurementUnitsPermission is a household user permission.
+	ReadValidIngredientMeasurementUnitsPermission Permission = "read.valid_ingredient_measurement_units"
+	// SearchValidIngredientMeasurementUnitsPermission is a household user permission.
+	SearchValidIngredientMeasurementUnitsPermission Permission = "search.valid_ingredient_measurement_units"
+	// UpdateValidIngredientMeasurementUnitsPermission is a household user permission.
+	UpdateValidIngredientMeasurementUnitsPermission Permission = "update.valid_ingredient_measurement_units"
+	// ArchiveValidIngredientMeasurementUnitsPermission is a household user permission.
+	ArchiveValidIngredientMeasurementUnitsPermission Permission = "archive.valid_ingredient_measurement_units"
+
 	// CreateMealsPermission is a household user permission.
 	CreateMealsPermission Permission = "create.meals"
 	// ReadMealsPermission is a household user permission.
@@ -236,6 +258,14 @@ var (
 		CreateValidIngredientPreparationsPermission.ID():  CreateValidIngredientPreparationsPermission,
 		UpdateValidIngredientPreparationsPermission.ID():  UpdateValidIngredientPreparationsPermission,
 		ArchiveValidIngredientPreparationsPermission.ID(): ArchiveValidIngredientPreparationsPermission,
+
+		CreateValidPreparationInstrumentsPermission.ID():  CreateValidPreparationInstrumentsPermission,
+		UpdateValidPreparationInstrumentsPermission.ID():  UpdateValidPreparationInstrumentsPermission,
+		ArchiveValidPreparationInstrumentsPermission.ID(): ArchiveValidPreparationInstrumentsPermission,
+
+		CreateValidIngredientMeasurementUnitsPermission.ID():  CreateValidIngredientMeasurementUnitsPermission,
+		UpdateValidIngredientMeasurementUnitsPermission.ID():  UpdateValidIngredientMeasurementUnitsPermission,
+		ArchiveValidIngredientMeasurementUnitsPermission.ID(): ArchiveValidIngredientMeasurementUnitsPermission,
 	}
 
 	// household admin permissions.
@@ -318,6 +348,12 @@ var (
 
 		ReadValidIngredientPreparationsPermission.ID():   ReadValidIngredientPreparationsPermission,
 		SearchValidIngredientPreparationsPermission.ID(): SearchValidIngredientPreparationsPermission,
+
+		ReadValidPreparationInstrumentsPermission.ID():   ReadValidPreparationInstrumentsPermission,
+		SearchValidPreparationInstrumentsPermission.ID(): SearchValidPreparationInstrumentsPermission,
+
+		ReadValidIngredientMeasurementUnitsPermission.ID():   ReadValidIngredientMeasurementUnitsPermission,
+		SearchValidIngredientMeasurementUnitsPermission.ID(): SearchValidIngredientMeasurementUnitsPermission,
 
 		ReadMealPlansPermission.ID():   ReadMealPlansPermission,
 		SearchMealPlansPermission.ID(): SearchMealPlansPermission,
