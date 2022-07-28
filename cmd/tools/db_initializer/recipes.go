@@ -59,6 +59,7 @@ var recipeCollection = struct {
 		Steps: []*types.RecipeStepDatabaseCreationInput{
 			{
 				MinimumTemperatureInCelsius: nil,
+				MaximumTemperatureInCelsius: nil,
 				Products:                    nil,
 				Notes:                       "",
 				PreparationID:               validPreparationCollection.Dice.ID,
@@ -83,6 +84,7 @@ var recipeCollection = struct {
 			},
 			{
 				MinimumTemperatureInCelsius: nil,
+				MaximumTemperatureInCelsius: nil,
 				Products:                    nil,
 				Notes:                       "helps avoid burning the onion",
 				PreparationID:               validPreparationCollection.Sautee.ID,
@@ -117,6 +119,7 @@ var recipeCollection = struct {
 		Steps: []*types.RecipeStepDatabaseCreationInput{
 			{
 				MinimumTemperatureInCelsius: nil,
+				MaximumTemperatureInCelsius: nil,
 				Products:                    nil,
 				Notes:                       "",
 				PreparationID:               validPreparationCollection.Marinate.ID,
@@ -161,6 +164,7 @@ var recipeCollection = struct {
 			},
 			{
 				MinimumTemperatureInCelsius: nil,
+				MaximumTemperatureInCelsius: nil,
 				Products:                    nil,
 				Notes:                       "",
 				PreparationID:               validPreparationCollection.Grill.ID,
@@ -195,6 +199,7 @@ var recipeCollection = struct {
 		Steps: []*types.RecipeStepDatabaseCreationInput{
 			{
 				MinimumTemperatureInCelsius: nil,
+				MaximumTemperatureInCelsius: nil,
 				Products:                    nil,
 				Notes:                       "",
 				PreparationID:               validPreparationCollection.Slice.ID,
@@ -229,6 +234,7 @@ var recipeCollection = struct {
 			},
 			{
 				MinimumTemperatureInCelsius: nil,
+				MaximumTemperatureInCelsius: nil,
 				Products:                    nil,
 				Notes:                       "",
 				PreparationID:               validPreparationCollection.Plate.ID,
