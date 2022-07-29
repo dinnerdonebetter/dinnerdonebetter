@@ -31,20 +31,20 @@ type (
 	// RecipeStepIngredient represents a recipe step ingredient.
 	RecipeStepIngredient struct {
 		_                    struct{}
-		RecipeStepProductID  *string `json:"recipeStepProductID"`
-		LastUpdatedOn        *uint64 `json:"lastUpdatedOn"`
-		IngredientID         *string `json:"ingredientID"`
-		ArchivedOn           *uint64 `json:"archivedOn"`
-		Name                 string  `json:"name"`
-		QuantityType         string  `json:"quantityType"`
-		QuantityNotes        string  `json:"quantityNotes"`
-		IngredientNotes      string  `json:"ingredientNotes"`
-		BelongsToRecipeStep  string  `json:"belongsToRecipeStep"`
-		ID                   string  `json:"id"`
-		CreatedOn            uint64  `json:"createdOn"`
-		MinimumQuantityValue float32 `json:"minimumQuantityValue"`
-		MaximumQuantityValue float32 `json:"maximumQuantityValue"`
-		ProductOfRecipeStep  bool    `json:"productOfRecipeStep"`
+		LastUpdatedOn        *uint64              `json:"lastUpdatedOn"`
+		IngredientID         *string              `json:"ingredientID"`
+		ArchivedOn           *uint64              `json:"archivedOn"`
+		RecipeStepProductID  *string              `json:"recipeStepProductID"`
+		BelongsToRecipeStep  string               `json:"belongsToRecipeStep"`
+		Name                 string               `json:"name"`
+		ID                   string               `json:"id"`
+		IngredientNotes      string               `json:"ingredientNotes"`
+		QuantityNotes        string               `json:"quantityNotes"`
+		MeasurementUnit      ValidMeasurementUnit `json:"measurementUnit"`
+		CreatedOn            uint64               `json:"createdOn"`
+		MinimumQuantityValue float32              `json:"minimumQuantityValue"`
+		MaximumQuantityValue float32              `json:"maximumQuantityValue"`
+		ProductOfRecipeStep  bool                 `json:"productOfRecipeStep"`
 	}
 
 	// RecipeStepIngredientList represents a list of recipe step ingredients.
@@ -62,7 +62,7 @@ type (
 		ID                   string                                 `json:"-"`
 		BelongsToRecipeStep  string                                 `json:"-"`
 		Name                 string                                 `json:"name"`
-		QuantityType         string                                 `json:"quantityType"`
+		MeasurementUnitID    string                                 `json:"measurementUnit"`
 		QuantityNotes        string                                 `json:"quantityNotes"`
 		IngredientNotes      string                                 `json:"ingredientNotes"`
 		MinimumQuantityValue float32                                `json:"minimumQuantityValue"`
@@ -77,7 +77,7 @@ type (
 		RecipeStepProductID  *string `json:"recipeStepProductID"`
 		ID                   string  `json:"id"`
 		Name                 string  `json:"name"`
-		QuantityType         string  `json:"quantityType"`
+		MeasurementUnitID    string  `json:"measurementUnit"`
 		QuantityNotes        string  `json:"quantityNotes"`
 		IngredientNotes      string  `json:"ingredientNotes"`
 		BelongsToRecipeStep  string  `json:"belongsToRecipeStep"`
@@ -95,7 +95,7 @@ type (
 		// RecipeStepProductID is already a pointer, and I don't feel like making it a double pointer.
 		RecipeStepProductID  *string  `json:"recipeStepProductID"`
 		Name                 *string  `json:"name"`
-		QuantityType         *string  `json:"quantityType"`
+		MeasurementUnitID    *string  `json:"measurementUnit"`
 		QuantityNotes        *string  `json:"quantityNotes"`
 		IngredientNotes      *string  `json:"ingredientNotes"`
 		BelongsToRecipeStep  *string  `json:"belongsToRecipeStep"`
@@ -140,8 +140,8 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 		x.Name = *input.Name
 	}
 
-	if input.QuantityType != nil && *input.QuantityType != x.QuantityType {
-		x.QuantityType = *input.QuantityType
+	if input.MeasurementUnitID != nil && *input.MeasurementUnitID != x.MeasurementUnit.ID {
+		x.MeasurementUnit = ValidMeasurementUnit{ID: *input.MeasurementUnitID}
 	}
 
 	if input.MinimumQuantityValue != nil && *input.MinimumQuantityValue != x.MinimumQuantityValue {
@@ -172,7 +172,7 @@ func (x *RecipeStepIngredientCreationRequestInput) ValidateWithContext(ctx conte
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.QuantityType, validation.Required),
+		validation.Field(&x.MeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantityValue, validation.Required),
 	)
 }
@@ -185,7 +185,7 @@ func (x *RecipeStepIngredientDatabaseCreationInput) ValidateWithContext(ctx cont
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
-		validation.Field(&x.QuantityType, validation.Required),
+		validation.Field(&x.MeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantityValue, validation.Required),
 	)
 }
@@ -196,7 +196,7 @@ func RecipeStepIngredientUpdateRequestInputFromRecipeStepIngredient(input *Recip
 		IngredientID:         input.IngredientID,
 		RecipeStepProductID:  input.RecipeStepProductID,
 		Name:                 &input.Name,
-		QuantityType:         &input.QuantityType,
+		MeasurementUnitID:    &input.MeasurementUnit.ID,
 		QuantityNotes:        &input.QuantityNotes,
 		IngredientNotes:      &input.IngredientNotes,
 		BelongsToRecipeStep:  &input.BelongsToRecipeStep,
@@ -213,7 +213,7 @@ func RecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredientCreationIn
 	x := &RecipeStepIngredientDatabaseCreationInput{
 		IngredientID:         input.IngredientID,
 		Name:                 input.Name,
-		QuantityType:         input.QuantityType,
+		MeasurementUnitID:    input.MeasurementUnitID,
 		MinimumQuantityValue: input.MinimumQuantityValue,
 		MaximumQuantityValue: input.MaximumQuantityValue,
 		QuantityNotes:        input.QuantityNotes,
@@ -232,7 +232,7 @@ func (x *RecipeStepIngredientUpdateRequestInput) ValidateWithContext(ctx context
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.QuantityType, validation.Required),
+		validation.Field(&x.MeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantityValue, validation.Required),
 	)
 }

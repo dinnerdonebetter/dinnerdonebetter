@@ -30,7 +30,14 @@ func buildMockRowsFromRecipeStepIngredients(includeCounts bool, filteredCount ui
 			x.ID,
 			x.Name,
 			x.IngredientID,
-			x.QuantityType,
+			x.MeasurementUnit.ID,
+			x.MeasurementUnit.Name,
+			x.MeasurementUnit.Description,
+			x.MeasurementUnit.Volumetric,
+			x.MeasurementUnit.IconPath,
+			x.MeasurementUnit.CreatedOn,
+			x.MeasurementUnit.LastUpdatedOn,
+			x.MeasurementUnit.ArchivedOn,
 			x.MinimumQuantityValue,
 			x.MaximumQuantityValue,
 			x.QuantityNotes,
@@ -379,7 +386,7 @@ func TestQuerier_getRecipeStepIngredientsForRecipe(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
+		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromRecipeStepIngredients(false, 0, exampleRecipeStepIngredientList.RecipeStepIngredients...))
@@ -412,7 +419,7 @@ func TestQuerier_getRecipeStepIngredientsForRecipe(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
+		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
@@ -439,7 +446,7 @@ func TestQuerier_GetRecipeStepIngredients(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromRecipeStepIngredients(true, exampleRecipeStepIngredientList.FilteredCount, exampleRecipeStepIngredientList.RecipeStepIngredients...))
@@ -492,7 +499,7 @@ func TestQuerier_GetRecipeStepIngredients(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromRecipeStepIngredients(true, exampleRecipeStepIngredientList.FilteredCount, exampleRecipeStepIngredientList.RecipeStepIngredients...))
@@ -514,7 +521,7 @@ func TestQuerier_GetRecipeStepIngredients(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
@@ -536,7 +543,7 @@ func TestQuerier_GetRecipeStepIngredients(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
@@ -670,6 +677,7 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 
 		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 		exampleRecipeStepIngredient.ID = "1"
+		exampleRecipeStepIngredient.MeasurementUnit = types.ValidMeasurementUnit{ID: exampleRecipeStepIngredient.MeasurementUnit.ID}
 		exampleInput := fakes.BuildFakeRecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
 
 		ctx := context.Background()
@@ -679,7 +687,7 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.IngredientID,
-			exampleInput.QuantityType,
+			exampleInput.MeasurementUnitID,
 			exampleInput.MinimumQuantityValue,
 			exampleInput.MaximumQuantityValue,
 			exampleInput.QuantityNotes,
@@ -729,7 +737,7 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.IngredientID,
-			exampleInput.QuantityType,
+			exampleInput.MeasurementUnitID,
 			exampleInput.MinimumQuantityValue,
 			exampleInput.MaximumQuantityValue,
 			exampleInput.QuantityNotes,
@@ -775,7 +783,7 @@ func TestSQLQuerier_createRecipeStepIngredient(T *testing.T) {
 			exampleInput.ID,
 			exampleInput.Name,
 			exampleInput.IngredientID,
-			exampleInput.QuantityType,
+			exampleInput.MeasurementUnitID,
 			exampleInput.MinimumQuantityValue,
 			exampleInput.MaximumQuantityValue,
 			exampleInput.QuantityNotes,
@@ -808,6 +816,7 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 		t.Parallel()
 
 		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
+		exampleRecipeStepIngredient.MeasurementUnit = types.ValidMeasurementUnit{ID: exampleRecipeStepIngredient.MeasurementUnit.ID}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -815,7 +824,7 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 		args := []interface{}{
 			exampleRecipeStepIngredient.IngredientID,
 			exampleRecipeStepIngredient.Name,
-			exampleRecipeStepIngredient.QuantityType,
+			exampleRecipeStepIngredient.MeasurementUnit.ID,
 			exampleRecipeStepIngredient.MinimumQuantityValue,
 			exampleRecipeStepIngredient.MaximumQuantityValue,
 			exampleRecipeStepIngredient.QuantityNotes,
@@ -848,6 +857,7 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 		t.Parallel()
 
 		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
+		exampleRecipeStepIngredient.MeasurementUnit = types.ValidMeasurementUnit{ID: exampleRecipeStepIngredient.MeasurementUnit.ID}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -855,7 +865,7 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 		args := []interface{}{
 			exampleRecipeStepIngredient.IngredientID,
 			exampleRecipeStepIngredient.Name,
-			exampleRecipeStepIngredient.QuantityType,
+			exampleRecipeStepIngredient.MeasurementUnit.ID,
 			exampleRecipeStepIngredient.MinimumQuantityValue,
 			exampleRecipeStepIngredient.MaximumQuantityValue,
 			exampleRecipeStepIngredient.QuantityNotes,

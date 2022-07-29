@@ -16,14 +16,14 @@ func checkValidMeasurementUnitEquality(t *testing.T, expected, actual *types.Val
 	t.Helper()
 
 	assert.NotZero(t, actual.ID)
-	assert.Equal(t, expected.Name, actual.Name, "expected Name for valid ingredient %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
-	assert.Equal(t, expected.Description, actual.Description, "expected Description for valid ingredient %s to be %v, but it was %v", expected.ID, expected.Description, actual.Description)
-	assert.Equal(t, expected.Volumetric, actual.Volumetric, "expected Volumetric for valid ingredient %s to be %v, but it was %v", expected.ID, expected.Volumetric, actual.Volumetric)
-	assert.Equal(t, expected.IconPath, actual.IconPath, "expected IconPath for valid ingredient %s to be %v, but it was %v", expected.ID, expected.IconPath, actual.IconPath)
+	assert.Equal(t, expected.Name, actual.Name, "expected Name for valid measurement unit %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
+	assert.Equal(t, expected.Description, actual.Description, "expected Description for valid measurement unit %s to be %v, but it was %v", expected.ID, expected.Description, actual.Description)
+	assert.Equal(t, expected.Volumetric, actual.Volumetric, "expected Volumetric for valid measurement unit %s to be %v, but it was %v", expected.ID, expected.Volumetric, actual.Volumetric)
+	assert.Equal(t, expected.IconPath, actual.IconPath, "expected IconPath for valid measurement unit %s to be %v, but it was %v", expected.ID, expected.IconPath, actual.IconPath)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
-// convertValidMeasurementUnitToValidMeasurementUnitUpdateInput creates an ValidMeasurementUnitUpdateRequestInput struct from a valid ingredient.
+// convertValidMeasurementUnitToValidMeasurementUnitUpdateInput creates an ValidMeasurementUnitUpdateRequestInput struct from a valid measurement unit.
 func convertValidMeasurementUnitToValidMeasurementUnitUpdateInput(x *types.ValidMeasurementUnit) *types.ValidMeasurementUnitUpdateRequestInput {
 	return &types.ValidMeasurementUnitUpdateRequestInput{
 		Name:        &x.Name,
@@ -41,32 +41,32 @@ func (s *TestSuite) TestValidMeasurementUnits_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating valid ingredient")
+			t.Log("creating valid measurement unit")
 			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 			exampleValidMeasurementUnitInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(exampleValidMeasurementUnit)
 			createdValidMeasurementUnit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 			require.NoError(t, err)
-			t.Logf("valid ingredient %q created", createdValidMeasurementUnit.ID)
+			t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
 			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
 
 			createdValidMeasurementUnit, err = testClients.admin.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
 			requireNotNilAndNoProblems(t, createdValidMeasurementUnit, err)
 			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
 
-			t.Log("changing valid ingredient")
+			t.Log("changing valid measurement unit")
 			newValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 			createdValidMeasurementUnit.Update(convertValidMeasurementUnitToValidMeasurementUnitUpdateInput(newValidMeasurementUnit))
 			assert.NoError(t, testClients.admin.UpdateValidMeasurementUnit(ctx, createdValidMeasurementUnit))
 
-			t.Log("fetching changed valid ingredient")
+			t.Log("fetching changed valid measurement unit")
 			actual, err := testClients.admin.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
-			// assert valid ingredient equality
+			// assert valid measurement unit equality
 			checkValidMeasurementUnitEquality(t, newValidMeasurementUnit, actual)
 			assert.NotNil(t, actual.LastUpdatedOn)
 
-			t.Log("cleaning up valid ingredient")
+			t.Log("cleaning up valid measurement unit")
 			assert.NoError(t, testClients.admin.ArchiveValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID))
 		}
 	})
@@ -80,21 +80,21 @@ func (s *TestSuite) TestValidMeasurementUnits_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating valid ingredients")
+			t.Log("creating valid measurement units")
 			var expected []*types.ValidMeasurementUnit
 			for i := 0; i < 5; i++ {
 				exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 				exampleValidMeasurementUnitInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(exampleValidMeasurementUnit)
 				createdValidMeasurementUnit, createdValidMeasurementUnitErr := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 				require.NoError(t, createdValidMeasurementUnitErr)
-				t.Logf("valid ingredient %q created", createdValidMeasurementUnit.ID)
+				t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
 
 				checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
 
 				expected = append(expected, createdValidMeasurementUnit)
 			}
 
-			// assert valid ingredient list equality
+			// assert valid measurement unit list equality
 			actual, err := testClients.admin.GetValidMeasurementUnits(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
@@ -114,14 +114,14 @@ func (s *TestSuite) TestValidMeasurementUnits_Listing() {
 }
 
 func (s *TestSuite) TestValidMeasurementUnits_Searching() {
-	s.runForEachClient("should be able to be search for valid ingredients", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should be able to be search for valid measurement units", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating valid ingredients")
+			t.Log("creating valid measurement units")
 			var expected []*types.ValidMeasurementUnit
 			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 			exampleValidMeasurementUnit.Name = fmt.Sprintf("example_%s", testClients.authType)
@@ -132,14 +132,14 @@ func (s *TestSuite) TestValidMeasurementUnits_Searching() {
 				createdValidMeasurementUnit, createdValidMeasurementUnitErr := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 				require.NoError(t, createdValidMeasurementUnitErr)
 				checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
-				t.Logf("valid ingredient %q created", createdValidMeasurementUnit.ID)
+				t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
 
 				expected = append(expected, createdValidMeasurementUnit)
 			}
 
 			exampleLimit := uint8(20)
 
-			// assert valid ingredient list equality
+			// assert valid measurement unit list equality
 			actual, err := testClients.admin.SearchValidMeasurementUnits(ctx, searchQuery, exampleLimit)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(

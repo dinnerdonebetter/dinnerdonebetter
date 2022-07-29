@@ -17,7 +17,7 @@ func checkRecipeStepIngredientEquality(t *testing.T, expected, actual *types.Rec
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, *expected.IngredientID, *actual.IngredientID, "expected IngredientID for recipe step ingredient %s to be %v, but it was %v", expected.ID, *expected.IngredientID, *actual.IngredientID)
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
-	assert.Equal(t, expected.QuantityType, actual.QuantityType, "expected QuantityType for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.QuantityType, actual.QuantityType)
+	assert.Equal(t, expected.MeasurementUnit, actual.MeasurementUnit, "expected MeasurementUnitID for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.MeasurementUnit, actual.MeasurementUnit)
 	assert.Equal(t, expected.MinimumQuantityValue, actual.MinimumQuantityValue, "expected MinimumQuantityValue for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.MinimumQuantityValue, actual.MinimumQuantityValue)
 	assert.Equal(t, expected.MaximumQuantityValue, actual.MaximumQuantityValue, "expected MaximumQuantityValue for recipe step axgredient %s to be %v, but it was %v", expected.ID, expected.MaximumQuantityValue, actual.MaximumQuantityValue)
 	assert.Equal(t, expected.QuantityNotes, actual.QuantityNotes, "expected QuantityNotes for recipe step ingredient %s to be %v, but it was %v", expected.ID, expected.QuantityNotes, actual.QuantityNotes)
@@ -31,7 +31,7 @@ func convertRecipeStepIngredientToRecipeStepIngredientUpdateInput(x *types.Recip
 	return &types.RecipeStepIngredientUpdateRequestInput{
 		IngredientID:         x.IngredientID,
 		Name:                 &x.Name,
-		QuantityType:         &x.QuantityType,
+		MeasurementUnitID:    &x.MeasurementUnit.ID,
 		MinimumQuantityValue: &x.MinimumQuantityValue,
 		MaximumQuantityValue: &x.MaximumQuantityValue,
 		QuantityNotes:        &x.QuantityNotes,
@@ -80,6 +80,7 @@ func (s *TestSuite) TestRecipeStepIngredients_CompleteLifecycle() {
 			newRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStepID
 			newRecipeStepIngredient.IngredientID = &createdValidIngredient.ID
 			newRecipeStepIngredient.ID = createdRecipeStepIngredientID
+			newRecipeStepIngredient.MeasurementUnit = createdRecipeStepIngredient.MeasurementUnit
 
 			createdRecipeStepIngredient.Update(convertRecipeStepIngredientToRecipeStepIngredientUpdateInput(newRecipeStepIngredient))
 
@@ -125,6 +126,18 @@ func (s *TestSuite) TestRecipeStepIngredients_Listing() {
 				break
 			}
 
+			t.Log("creating valid measurement unit")
+			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
+			exampleValidMeasurementUnitInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(exampleValidMeasurementUnit)
+			createdValidMeasurementUnit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
+			require.NoError(t, err)
+			t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
+			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
+
+			createdValidMeasurementUnit, err = testClients.admin.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
+			requireNotNilAndNoProblems(t, createdValidMeasurementUnit, err)
+			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
+
 			t.Log("creating recipe step ingredients")
 			var expected []*types.RecipeStepIngredient
 			for i := 0; i < 5; i++ {
@@ -133,6 +146,7 @@ func (s *TestSuite) TestRecipeStepIngredients_Listing() {
 				exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 				exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStepID
 				exampleRecipeStepIngredient.IngredientID = &x[0].ID
+				exampleRecipeStepIngredient.MeasurementUnit = types.ValidMeasurementUnit{ID: createdValidMeasurementUnit.ID}
 
 				exampleRecipeStepIngredientInput := fakes.BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
 				createdRecipeStepIngredient, createdRecipeStepIngredientErr := testClients.main.CreateRecipeStepIngredient(ctx, createdRecipe.ID, exampleRecipeStepIngredientInput)

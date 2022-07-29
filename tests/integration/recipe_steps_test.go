@@ -92,6 +92,18 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 
 			createdValidIngredients, createdValidPreparation, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.main, nil)
 
+			t.Log("creating valid measurement unit")
+			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
+			exampleValidMeasurementUnitInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(exampleValidMeasurementUnit)
+			createdValidMeasurementUnit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
+			require.NoError(t, err)
+			t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
+			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
+
+			createdValidMeasurementUnit, err = testClients.admin.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
+			requireNotNilAndNoProblems(t, createdValidMeasurementUnit, err)
+			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
+
 			t.Log("creating recipe steps")
 			var expected []*types.RecipeStep
 			for i := 0; i < 5; i++ {
@@ -99,10 +111,12 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 				exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
 				for j := range exampleRecipeStep.Ingredients {
 					exampleRecipeStep.Ingredients[j].IngredientID = stringPointer(createdValidIngredients[j].ID)
+					exampleRecipeStep.Ingredients[j].MeasurementUnit = types.ValidMeasurementUnit{ID: createdValidMeasurementUnit.ID}
 				}
 
 				exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationRequestInputFromRecipeStep(exampleRecipeStep)
 				exampleRecipeStepInput.PreparationID = createdValidPreparation.ID
+
 				createdRecipeStep, createdRecipeStepErr := testClients.main.CreateRecipeStep(ctx, exampleRecipeStepInput)
 				require.NoError(t, createdRecipeStepErr)
 				t.Logf("recipe step %q created", createdRecipeStep.ID)
