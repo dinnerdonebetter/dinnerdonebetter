@@ -143,9 +143,10 @@ const getRecipeByIDQuery = `SELECT
 	valid_preparations.created_on,
 	valid_preparations.last_updated_on,
 	valid_preparations.archived_on,
-	recipe_steps.min_estimated_time_in_seconds,
-	recipe_steps.max_estimated_time_in_seconds,
-	recipe_steps.temperature_in_celsius,
+	recipe_steps.minimum_estimated_time_in_seconds,
+	recipe_steps.maximum_estimated_time_in_seconds,
+	recipe_steps.minimum_temperature_in_celsius,
+	recipe_steps.maximum_temperature_in_celsius,
 	recipe_steps.notes,
 	recipe_steps.optional,
 	recipe_steps.created_on,
@@ -179,9 +180,10 @@ const getRecipeByIDAndAuthorIDQuery = `SELECT
 	valid_preparations.created_on,
 	valid_preparations.last_updated_on,
 	valid_preparations.archived_on,
-	recipe_steps.min_estimated_time_in_seconds,
-	recipe_steps.max_estimated_time_in_seconds,
-	recipe_steps.temperature_in_celsius,
+	recipe_steps.minimum_estimated_time_in_seconds,
+	recipe_steps.maximum_estimated_time_in_seconds,
+	recipe_steps.minimum_temperature_in_celsius,
+	recipe_steps.maximum_temperature_in_celsius,
 	recipe_steps.notes,
 	recipe_steps.optional,
 	recipe_steps.created_on,
@@ -209,24 +211,25 @@ func (q *SQLQuerier) scanRecipeAndStep(ctx context.Context, scan database.Scanne
 	// create temporary nil values and assign them afterwards if they're not nil
 	// it sucks but we are prototyping
 	var (
-		recipeStepID                        *string
-		recipeStepIndex                     *uint32
-		recipeStepPreparationID             *string
-		recipeStepPreparationName           *string
-		recipeStepPreparationDescription    *string
-		recipeStepPreparationIconPath       *string
-		recipeStepPreparationCreatedOn      *uint64
-		recipeStepPreparationLastUpdatedOn  *uint64
-		recipeStepPreparationArchivedOn     *uint64
-		recipeStepMinEstimatedTimeInSeconds *uint32
-		recipeStepMaxEstimatedTimeInSeconds *uint32
-		recipeStepTemperatureInCelsius      *uint16
-		recipeStepNotes                     *string
-		recipeStepOptional                  *bool
-		recipeStepCreatedOn                 *uint64
-		recipeStepLastUpdatedOn             *uint64
-		recipeStepArchivedOn                *uint64
-		recipeStepBelongsToRecipe           *string
+		recipeStepID                            *string
+		recipeStepIndex                         *uint32
+		recipeStepPreparationID                 *string
+		recipeStepPreparationName               *string
+		recipeStepPreparationDescription        *string
+		recipeStepPreparationIconPath           *string
+		recipeStepPreparationCreatedOn          *uint64
+		recipeStepPreparationLastUpdatedOn      *uint64
+		recipeStepPreparationArchivedOn         *uint64
+		recipeStepMinimumEstimatedTimeInSeconds *uint32
+		recipeStepMaximumEstimatedTimeInSeconds *uint32
+		recipeStepMinimumTemperatureInCelsius   *uint16
+		recipeStepMaximumTemperatureInCelsius   *uint16
+		recipeStepNotes                         *string
+		recipeStepOptional                      *bool
+		recipeStepCreatedOn                     *uint64
+		recipeStepLastUpdatedOn                 *uint64
+		recipeStepArchivedOn                    *uint64
+		recipeStepBelongsToRecipe               *string
 	)
 
 	targetVars := []interface{}{
@@ -248,9 +251,10 @@ func (q *SQLQuerier) scanRecipeAndStep(ctx context.Context, scan database.Scanne
 		&recipeStepPreparationCreatedOn,
 		&recipeStepPreparationLastUpdatedOn,
 		&recipeStepPreparationArchivedOn,
-		&recipeStepMinEstimatedTimeInSeconds,
-		&recipeStepMaxEstimatedTimeInSeconds,
-		&recipeStepTemperatureInCelsius,
+		&recipeStepMinimumEstimatedTimeInSeconds,
+		&recipeStepMaximumEstimatedTimeInSeconds,
+		&recipeStepMinimumTemperatureInCelsius,
+		&recipeStepMaximumTemperatureInCelsius,
 		&recipeStepNotes,
 		&recipeStepOptional,
 		&recipeStepCreatedOn,
@@ -290,14 +294,17 @@ func (q *SQLQuerier) scanRecipeAndStep(ctx context.Context, scan database.Scanne
 	if recipeStepPreparationArchivedOn != nil {
 		y.Preparation.ArchivedOn = recipeStepPreparationArchivedOn
 	}
-	if recipeStepMinEstimatedTimeInSeconds != nil {
-		y.MinEstimatedTimeInSeconds = *recipeStepMinEstimatedTimeInSeconds
+	if recipeStepMinimumEstimatedTimeInSeconds != nil {
+		y.MinimumEstimatedTimeInSeconds = *recipeStepMinimumEstimatedTimeInSeconds
 	}
-	if recipeStepMaxEstimatedTimeInSeconds != nil {
-		y.MaxEstimatedTimeInSeconds = *recipeStepMaxEstimatedTimeInSeconds
+	if recipeStepMaximumEstimatedTimeInSeconds != nil {
+		y.MaximumEstimatedTimeInSeconds = *recipeStepMaximumEstimatedTimeInSeconds
 	}
-	if recipeStepTemperatureInCelsius != nil {
-		y.TemperatureInCelsius = recipeStepTemperatureInCelsius
+	if recipeStepMinimumTemperatureInCelsius != nil {
+		y.MinimumTemperatureInCelsius = recipeStepMinimumTemperatureInCelsius
+	}
+	if recipeStepMaximumTemperatureInCelsius != nil {
+		y.MaximumTemperatureInCelsius = recipeStepMaximumTemperatureInCelsius
 	}
 	if recipeStepNotes != nil {
 		y.Notes = *recipeStepNotes

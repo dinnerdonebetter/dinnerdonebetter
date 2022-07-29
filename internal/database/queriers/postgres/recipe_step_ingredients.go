@@ -26,9 +26,10 @@ var (
 		"recipe_step_ingredients.name",
 		"recipe_step_ingredients.ingredient_id",
 		"recipe_step_ingredients.quantity_type",
-		"recipe_step_ingredients.quantity_value",
+		"recipe_step_ingredients.minimum_quantity_value",
+		"recipe_step_ingredients.maximum_quantity_value",
 		"recipe_step_ingredients.quantity_notes",
-		"recipe_step_ingredients.product_of_recipe_step", // possibly superfluous now, but not for user input
+		"recipe_step_ingredients.product_of_recipe_step",
 		"recipe_step_ingredients.recipe_step_product_id",
 		"recipe_step_ingredients.ingredient_notes",
 		"recipe_step_ingredients.created_on",
@@ -57,7 +58,8 @@ func (q *SQLQuerier) scanRecipeStepIngredient(ctx context.Context, scan database
 		&x.Name,
 		&x.IngredientID,
 		&x.QuantityType,
-		&x.QuantityValue,
+		&x.MinimumQuantityValue,
+		&x.MaximumQuantityValue,
 		&x.QuantityNotes,
 		&x.ProductOfRecipeStep,
 		&x.RecipeStepProductID,
@@ -160,7 +162,8 @@ const getRecipeStepIngredientQuery = `SELECT
 	recipe_step_ingredients.name,
 	recipe_step_ingredients.ingredient_id,
 	recipe_step_ingredients.quantity_type,
-	recipe_step_ingredients.quantity_value,
+	recipe_step_ingredients.minimum_quantity_value,
+	recipe_step_ingredients.maximum_quantity_value,
 	recipe_step_ingredients.quantity_notes,
 	recipe_step_ingredients.product_of_recipe_step,
 	recipe_step_ingredients.recipe_step_product_id,
@@ -380,13 +383,14 @@ const recipeStepIngredientCreationQuery = `INSERT INTO recipe_step_ingredients (
 	name,
 	ingredient_id,
 	quantity_type,
-	quantity_value,
+	minimum_quantity_value,
+	maximum_quantity_value,
 	quantity_notes,
 	product_of_recipe_step,
 	recipe_step_product_id,
 	ingredient_notes,
 	belongs_to_recipe_step
-) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
 `
 
 // createRecipeStepIngredient creates a recipe step ingredient in the database.
@@ -405,7 +409,8 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 		input.Name,
 		input.IngredientID,
 		input.QuantityType,
-		input.QuantityValue,
+		input.MinimumQuantityValue,
+		input.MaximumQuantityValue,
 		input.QuantityNotes,
 		input.ProductOfRecipeStep,
 		input.RecipeStepProductID,
@@ -419,17 +424,18 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 	}
 
 	x := &types.RecipeStepIngredient{
-		ID:                  input.ID,
-		Name:                input.Name,
-		IngredientID:        input.IngredientID,
-		QuantityType:        input.QuantityType,
-		QuantityValue:       input.QuantityValue,
-		QuantityNotes:       input.QuantityNotes,
-		ProductOfRecipeStep: input.ProductOfRecipeStep,
-		IngredientNotes:     input.IngredientNotes,
-		BelongsToRecipeStep: input.BelongsToRecipeStep,
-		RecipeStepProductID: input.RecipeStepProductID,
-		CreatedOn:           q.currentTime(),
+		ID:                   input.ID,
+		Name:                 input.Name,
+		IngredientID:         input.IngredientID,
+		QuantityType:         input.QuantityType,
+		MinimumQuantityValue: input.MinimumQuantityValue,
+		MaximumQuantityValue: input.MaximumQuantityValue,
+		QuantityNotes:        input.QuantityNotes,
+		ProductOfRecipeStep:  input.ProductOfRecipeStep,
+		IngredientNotes:      input.IngredientNotes,
+		BelongsToRecipeStep:  input.BelongsToRecipeStep,
+		RecipeStepProductID:  input.RecipeStepProductID,
+		CreatedOn:            q.currentTime(),
 	}
 
 	tracing.AttachRecipeStepIngredientIDToSpan(span, x.ID)
@@ -447,14 +453,15 @@ UPDATE recipe_step_ingredients SET
 	ingredient_id = $1,
 	name = $2,
 	quantity_type = $3,
-	quantity_value = $4,
-	quantity_notes = $5,
-	product_of_recipe_step = $6,
-	recipe_step_product_id = $7,
-	ingredient_notes = $8,
+	minimum_quantity_value = $4,
+	maximum_quantity_value = $5,
+	quantity_notes = $6,
+	product_of_recipe_step = $7,
+	recipe_step_product_id = $8,
+	ingredient_notes = $9,
 	last_updated_on = extract(epoch FROM NOW()) 
-WHERE archived_on IS NULL AND belongs_to_recipe_step = $9
-AND id = $10
+WHERE archived_on IS NULL AND belongs_to_recipe_step = $10
+AND id = $11
 `
 
 // UpdateRecipeStepIngredient updates a particular recipe step ingredient.
@@ -473,7 +480,8 @@ func (q *SQLQuerier) UpdateRecipeStepIngredient(ctx context.Context, updated *ty
 		updated.IngredientID,
 		updated.Name,
 		updated.QuantityType,
-		updated.QuantityValue,
+		updated.MinimumQuantityValue,
+		updated.MaximumQuantityValue,
 		updated.QuantityNotes,
 		updated.ProductOfRecipeStep,
 		updated.RecipeStepProductID,

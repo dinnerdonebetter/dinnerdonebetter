@@ -10,12 +10,12 @@ import (
 
 func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput {
 	return &RecipeStepCreationRequestInput{
-		Index:                     fake.Uint32(),
-		PreparationID:             fake.LoremIpsumSentence(exampleQuantity),
-		MinEstimatedTimeInSeconds: fake.Uint32(),
-		MaxEstimatedTimeInSeconds: fake.Uint32(),
-		TemperatureInCelsius:      func(x uint16) *uint16 { return &x }(fake.Uint16()),
-		Notes:                     fake.LoremIpsumSentence(exampleQuantity),
+		Index:                         fake.Uint32(),
+		PreparationID:                 fake.LoremIpsumSentence(exampleQuantity),
+		MinimumEstimatedTimeInSeconds: fake.Uint32(),
+		MaximumEstimatedTimeInSeconds: fake.Uint32(),
+		MinimumTemperatureInCelsius:   func(x uint16) *uint16 { return &x }(fake.Uint16()),
+		Notes:                         fake.LoremIpsumSentence(exampleQuantity),
 		Products: []*RecipeStepProductCreationRequestInput{
 			{
 				Name:          fake.LoremIpsumSentence(exampleQuantity),
@@ -26,13 +26,13 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 		},
 		Ingredients: []*RecipeStepIngredientCreationRequestInput{
 			{
-				IngredientID:        func(s string) *string { return &s }(fake.LoremIpsumSentence(exampleQuantity)),
-				ID:                  fake.LoremIpsumSentence(exampleQuantity),
-				QuantityType:        fake.LoremIpsumSentence(exampleQuantity),
-				QuantityNotes:       fake.LoremIpsumSentence(exampleQuantity),
-				IngredientNotes:     fake.LoremIpsumSentence(exampleQuantity),
-				BelongsToRecipeStep: fake.LoremIpsumSentence(exampleQuantity),
-				QuantityValue:       1,
+				IngredientID:         func(s string) *string { return &s }(fake.LoremIpsumSentence(exampleQuantity)),
+				ID:                   fake.LoremIpsumSentence(exampleQuantity),
+				QuantityType:         fake.LoremIpsumSentence(exampleQuantity),
+				QuantityNotes:        fake.LoremIpsumSentence(exampleQuantity),
+				IngredientNotes:      fake.LoremIpsumSentence(exampleQuantity),
+				BelongsToRecipeStep:  fake.LoremIpsumSentence(exampleQuantity),
+				MinimumQuantityValue: 1,
 			},
 		},
 	}
@@ -63,12 +63,12 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepCreationRequestInput{
-			Index:                     fake.Uint32(),
-			PreparationID:             fake.LoremIpsumSentence(exampleQuantity),
-			MinEstimatedTimeInSeconds: fake.Uint32(),
-			MaxEstimatedTimeInSeconds: fake.Uint32(),
-			TemperatureInCelsius:      func(x uint16) *uint16 { return &x }(fake.Uint16()),
-			Notes:                     fake.LoremIpsumSentence(exampleQuantity),
+			Index:                         fake.Uint32(),
+			PreparationID:                 fake.LoremIpsumSentence(exampleQuantity),
+			MinimumEstimatedTimeInSeconds: fake.Uint32(),
+			MaximumEstimatedTimeInSeconds: fake.Uint32(),
+			MinimumTemperatureInCelsius:   func(x uint16) *uint16 { return &x }(fake.Uint16()),
+			Notes:                         fake.LoremIpsumSentence(exampleQuantity),
 			Products: []*RecipeStepProductCreationRequestInput{
 				{
 					Name: fake.LoremIpsumSentence(exampleQuantity),
@@ -79,13 +79,13 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 
 		for i := 0; i < maxIngredientsPerStep*2; i++ {
 			x.Ingredients = append(x.Ingredients, &RecipeStepIngredientCreationRequestInput{
-				IngredientID:        func(s string) *string { return &s }(fake.LoremIpsumSentence(exampleQuantity)),
-				ID:                  fake.LoremIpsumSentence(exampleQuantity),
-				QuantityType:        fake.LoremIpsumSentence(exampleQuantity),
-				QuantityNotes:       fake.LoremIpsumSentence(exampleQuantity),
-				IngredientNotes:     fake.LoremIpsumSentence(exampleQuantity),
-				BelongsToRecipeStep: fake.LoremIpsumSentence(exampleQuantity),
-				QuantityValue:       1,
+				IngredientID:         func(s string) *string { return &s }(fake.LoremIpsumSentence(exampleQuantity)),
+				ID:                   fake.LoremIpsumSentence(exampleQuantity),
+				QuantityType:         fake.LoremIpsumSentence(exampleQuantity),
+				QuantityNotes:        fake.LoremIpsumSentence(exampleQuantity),
+				IngredientNotes:      fake.LoremIpsumSentence(exampleQuantity),
+				BelongsToRecipeStep:  fake.LoremIpsumSentence(exampleQuantity),
+				MinimumQuantityValue: 1,
 			})
 		}
 
@@ -101,12 +101,12 @@ func TestRecipeStepUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepUpdateRequestInput{
-			Index:                     uint32Pointer(fake.Uint32()),
-			Preparation:               &ValidPreparation{},
-			MinEstimatedTimeInSeconds: uint32Pointer(fake.Uint32()),
-			MaxEstimatedTimeInSeconds: uint32Pointer(fake.Uint32()),
-			TemperatureInCelsius:      func(x uint16) *uint16 { return &x }(fake.Uint16()),
-			Notes:                     stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Index:                         uint32Pointer(fake.Uint32()),
+			Preparation:                   &ValidPreparation{},
+			MinimumEstimatedTimeInSeconds: uint32Pointer(fake.Uint32()),
+			MaximumEstimatedTimeInSeconds: uint32Pointer(fake.Uint32()),
+			MinimumTemperatureInCelsius:   func(x uint16) *uint16 { return &x }(fake.Uint16()),
+			Notes:                         stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

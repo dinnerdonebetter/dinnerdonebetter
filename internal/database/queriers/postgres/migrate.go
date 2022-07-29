@@ -150,6 +150,11 @@ var (
 			Description: "add valid measurement units",
 			Script:      fetchMigration("00027_various_bridge_tables"),
 		},
+		{
+			Version:     28,
+			Description: "add recipe step ranges",
+			Script:      fetchMigration("00028_recipe_step_ranges"),
+		},
 	}
 )
 
