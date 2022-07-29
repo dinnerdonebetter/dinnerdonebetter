@@ -677,7 +677,7 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 
 		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 		exampleRecipeStepIngredient.ID = "1"
-		exampleRecipeStepIngredient.MeasurementUnit = types.ValidMeasurementUnit{ID: exampleRecipeStepIngredient.MeasurementUnit.ID}
+		exampleRecipeStepIngredient.MeasurementUnit = &types.ValidMeasurementUnit{ID: exampleRecipeStepIngredient.MeasurementUnit.ID}
 		exampleInput := fakes.BuildFakeRecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredient(exampleRecipeStepIngredient)
 
 		ctx := context.Background()
@@ -816,7 +816,7 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 		t.Parallel()
 
 		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-		exampleRecipeStepIngredient.MeasurementUnit = types.ValidMeasurementUnit{ID: exampleRecipeStepIngredient.MeasurementUnit.ID}
+		exampleRecipeStepIngredient.MeasurementUnit = &types.ValidMeasurementUnit{ID: exampleRecipeStepIngredient.MeasurementUnit.ID}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -857,7 +857,7 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 		t.Parallel()
 
 		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-		exampleRecipeStepIngredient.MeasurementUnit = types.ValidMeasurementUnit{ID: exampleRecipeStepIngredient.MeasurementUnit.ID}
+		exampleRecipeStepIngredient.MeasurementUnit = &types.ValidMeasurementUnit{ID: exampleRecipeStepIngredient.MeasurementUnit.ID}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

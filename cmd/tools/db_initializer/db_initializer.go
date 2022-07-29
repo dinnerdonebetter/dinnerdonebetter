@@ -91,6 +91,10 @@ func main() {
 		log.Fatal(fmt.Errorf("error creating valid instruments: %w", err))
 	}
 
+	if err = scaffoldValidMeasurementUnits(ctx, dataManager); err != nil {
+		log.Fatal(fmt.Errorf("error creating valid measurement units: %w", err))
+	}
+
 	if err = scaffoldRecipes(ctx, dataManager); err != nil {
 		log.Fatal(fmt.Errorf("error creating recipes: %w", err))
 	}

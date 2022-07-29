@@ -28,7 +28,7 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 			{
 				IngredientID:         func(s string) *string { return &s }(fake.LoremIpsumSentence(exampleQuantity)),
 				ID:                   fake.LoremIpsumSentence(exampleQuantity),
-				MeasurementUnitID:    fake.LoremIpsumSentence(exampleQuantity),
+				MeasurementUnitID:    stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 				QuantityNotes:        fake.LoremIpsumSentence(exampleQuantity),
 				IngredientNotes:      fake.LoremIpsumSentence(exampleQuantity),
 				BelongsToRecipeStep:  fake.LoremIpsumSentence(exampleQuantity),
@@ -81,7 +81,7 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 			x.Ingredients = append(x.Ingredients, &RecipeStepIngredientCreationRequestInput{
 				IngredientID:         func(s string) *string { return &s }(fake.LoremIpsumSentence(exampleQuantity)),
 				ID:                   fake.LoremIpsumSentence(exampleQuantity),
-				MeasurementUnitID:    fake.LoremIpsumSentence(exampleQuantity),
+				MeasurementUnitID:    stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 				QuantityNotes:        fake.LoremIpsumSentence(exampleQuantity),
 				IngredientNotes:      fake.LoremIpsumSentence(exampleQuantity),
 				BelongsToRecipeStep:  fake.LoremIpsumSentence(exampleQuantity),

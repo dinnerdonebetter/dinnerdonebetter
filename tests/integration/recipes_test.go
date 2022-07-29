@@ -77,7 +77,7 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 
 			exampleRecipe.Steps[i].Ingredients[j].IngredientID = stringPointer(createdValidIngredient.ID)
 			exampleRecipe.Steps[i].Ingredients[j].ProductOfRecipeStep = false
-			exampleRecipe.Steps[i].Ingredients[j].MeasurementUnit = *createdValidMeasurementUnit
+			exampleRecipe.Steps[i].Ingredients[j].MeasurementUnit = createdValidMeasurementUnit
 		}
 	}
 
@@ -178,7 +178,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 								RecipeStepProductID:  nil,
 								IngredientID:         &pintoBeans.ID,
 								Name:                 "pinto beans",
-								MeasurementUnit:      *grams,
+								MeasurementUnit:      grams,
 								MinimumQuantityValue: 500,
 								ProductOfRecipeStep:  false,
 							},
@@ -186,7 +186,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 								RecipeStepProductID:  nil,
 								IngredientID:         &water.ID,
 								Name:                 "water",
-								MeasurementUnit:      *cups,
+								MeasurementUnit:      cups,
 								MinimumQuantityValue: 5,
 								ProductOfRecipeStep:  false,
 							},
@@ -208,14 +208,14 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						Ingredients: []*types.RecipeStepIngredient{
 							{
 								Name:                 "soaked pinto beans",
-								MeasurementUnit:      *grams,
+								MeasurementUnit:      grams,
 								MinimumQuantityValue: 1000,
 								ProductOfRecipeStep:  true,
 							},
 							{
 								IngredientID:         &garlicPaste.ID,
 								Name:                 "garlic paste",
-								MeasurementUnit:      *grams,
+								MeasurementUnit:      grams,
 								MinimumQuantityValue: 10,
 								ProductOfRecipeStep:  false,
 							},
@@ -248,7 +248,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						ID:                   ingredient.ID,
 						BelongsToRecipeStep:  ingredient.BelongsToRecipeStep,
 						Name:                 ingredient.Name,
-						MeasurementUnitID:    ingredient.MeasurementUnit.ID,
+						MeasurementUnitID:    &ingredient.MeasurementUnit.ID,
 						QuantityNotes:        ingredient.QuantityNotes,
 						IngredientNotes:      ingredient.IngredientNotes,
 						MinimumQuantityValue: ingredient.MinimumQuantityValue,
@@ -366,7 +366,7 @@ func (s *TestSuite) TestRecipes_AlsoCreateMeal() {
 
 					exampleRecipe.Steps[i].Ingredients[j].IngredientID = stringPointer(createdValidIngredient.ID)
 					exampleRecipe.Steps[i].Ingredients[j].ProductOfRecipeStep = false
-					exampleRecipe.Steps[i].Ingredients[j].MeasurementUnit = *createdValidMeasurementUnit
+					exampleRecipe.Steps[i].Ingredients[j].MeasurementUnit = createdValidMeasurementUnit
 				}
 			}
 
