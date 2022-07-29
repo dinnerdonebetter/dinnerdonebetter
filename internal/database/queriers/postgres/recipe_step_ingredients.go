@@ -25,7 +25,14 @@ var (
 		"recipe_step_ingredients.id",
 		"recipe_step_ingredients.name",
 		"recipe_step_ingredients.ingredient_id",
-		"recipe_step_ingredients.quantity_type",
+		"valid_measurement_units.id",
+		"valid_measurement_units.name",
+		"valid_measurement_units.description",
+		"valid_measurement_units.volumetric",
+		"valid_measurement_units.icon_path",
+		"valid_measurement_units.created_on",
+		"valid_measurement_units.last_updated_on",
+		"valid_measurement_units.archived_on",
 		"recipe_step_ingredients.minimum_quantity_value",
 		"recipe_step_ingredients.maximum_quantity_value",
 		"recipe_step_ingredients.quantity_notes",
@@ -41,6 +48,7 @@ var (
 	getRecipeStepIngredientsJoins = []string{
 		recipeStepsOnRecipeStepIngredientsJoinClause,
 		recipesOnRecipeStepsJoinClause,
+		validMeasurementUnitsOnRecipeStepIngredientsJoinClause,
 	}
 )
 
@@ -51,13 +59,22 @@ func (q *SQLQuerier) scanRecipeStepIngredient(ctx context.Context, scan database
 
 	logger := q.logger.WithValue("include_counts", includeCounts)
 
-	x = &types.RecipeStepIngredient{}
+	x = &types.RecipeStepIngredient{
+		MeasurementUnit: &types.ValidMeasurementUnit{},
+	}
 
 	targetVars := []interface{}{
 		&x.ID,
 		&x.Name,
 		&x.IngredientID,
-		&x.QuantityType,
+		&x.MeasurementUnit.ID,
+		&x.MeasurementUnit.Name,
+		&x.MeasurementUnit.Description,
+		&x.MeasurementUnit.Volumetric,
+		&x.MeasurementUnit.IconPath,
+		&x.MeasurementUnit.CreatedOn,
+		&x.MeasurementUnit.LastUpdatedOn,
+		&x.MeasurementUnit.ArchivedOn,
 		&x.MinimumQuantityValue,
 		&x.MaximumQuantityValue,
 		&x.QuantityNotes,
@@ -161,7 +178,14 @@ const getRecipeStepIngredientQuery = `SELECT
 	recipe_step_ingredients.id,
 	recipe_step_ingredients.name,
 	recipe_step_ingredients.ingredient_id,
-	recipe_step_ingredients.quantity_type,
+	valid_measurement_units.id,
+	valid_measurement_units.name,
+	valid_measurement_units.description,
+	valid_measurement_units.volumetric,
+	valid_measurement_units.icon_path,
+	valid_measurement_units.created_on,
+	valid_measurement_units.last_updated_on,
+	valid_measurement_units.archived_on,
 	recipe_step_ingredients.minimum_quantity_value,
 	recipe_step_ingredients.maximum_quantity_value,
 	recipe_step_ingredients.quantity_notes,
@@ -176,6 +200,7 @@ FROM recipe_step_ingredients
 JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id
 JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
 JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id=valid_ingredients.id
+JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit=valid_measurement_units.id
 WHERE recipe_step_ingredients.archived_on IS NULL
 AND recipe_step_ingredients.belongs_to_recipe_step = $1
 AND recipe_step_ingredients.id = $2
@@ -259,7 +284,7 @@ func (q *SQLQuerier) getRecipeStepIngredientsForRecipe(ctx context.Context, reci
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	query, args := q.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
+	query, args := q.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
 	rows, err := q.performReadQuery(ctx, q.db, "recipe step ingredients", query, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "executing recipe step ingredients list retrieval query")
@@ -300,7 +325,7 @@ func (q *SQLQuerier) GetRecipeStepIngredients(ctx context.Context, recipeID, rec
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
+	query, args := q.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter, true)
 	rows, err := q.performReadQuery(ctx, q.db, "recipeStepIngredients", query, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "executing recipe step ingredients list retrieval query")
@@ -382,7 +407,7 @@ const recipeStepIngredientCreationQuery = `INSERT INTO recipe_step_ingredients (
 	id,
 	name,
 	ingredient_id,
-	quantity_type,
+	measurement_unit,
 	minimum_quantity_value,
 	maximum_quantity_value,
 	quantity_notes,
@@ -408,7 +433,7 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 		input.ID,
 		input.Name,
 		input.IngredientID,
-		input.QuantityType,
+		input.MeasurementUnitID,
 		input.MinimumQuantityValue,
 		input.MaximumQuantityValue,
 		input.QuantityNotes,
@@ -427,7 +452,6 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 		ID:                   input.ID,
 		Name:                 input.Name,
 		IngredientID:         input.IngredientID,
-		QuantityType:         input.QuantityType,
 		MinimumQuantityValue: input.MinimumQuantityValue,
 		MaximumQuantityValue: input.MaximumQuantityValue,
 		QuantityNotes:        input.QuantityNotes,
@@ -436,6 +460,10 @@ func (q *SQLQuerier) createRecipeStepIngredient(ctx context.Context, db database
 		BelongsToRecipeStep:  input.BelongsToRecipeStep,
 		RecipeStepProductID:  input.RecipeStepProductID,
 		CreatedOn:            q.currentTime(),
+	}
+
+	if input.MeasurementUnitID != nil {
+		x.MeasurementUnit = &types.ValidMeasurementUnit{ID: *input.MeasurementUnitID}
 	}
 
 	tracing.AttachRecipeStepIngredientIDToSpan(span, x.ID)
@@ -452,7 +480,7 @@ const updateRecipeStepIngredientQuery = `
 UPDATE recipe_step_ingredients SET
 	ingredient_id = $1,
 	name = $2,
-	quantity_type = $3,
+	measurement_unit = $3,
 	minimum_quantity_value = $4,
 	maximum_quantity_value = $5,
 	quantity_notes = $6,
@@ -479,7 +507,7 @@ func (q *SQLQuerier) UpdateRecipeStepIngredient(ctx context.Context, updated *ty
 	args := []interface{}{
 		updated.IngredientID,
 		updated.Name,
-		updated.QuantityType,
+		updated.MeasurementUnit.ID,
 		updated.MinimumQuantityValue,
 		updated.MaximumQuantityValue,
 		updated.QuantityNotes,

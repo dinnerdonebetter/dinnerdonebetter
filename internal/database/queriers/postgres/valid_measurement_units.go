@@ -13,6 +13,10 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
+const (
+	validMeasurementUnitsOnRecipeStepIngredientsJoinClause = `valid_measurement_units ON recipe_step_ingredients.measurement_unit=valid_measurement_units.id`
+)
+
 var (
 	_ types.ValidMeasurementUnitDataManager = (*SQLQuerier)(nil)
 

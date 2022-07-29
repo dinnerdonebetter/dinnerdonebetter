@@ -155,6 +155,11 @@ var (
 			Description: "add recipe step ranges",
 			Script:      fetchMigration("00028_recipe_step_ranges"),
 		},
+		{
+			Version:     29,
+			Description: "add valid measurement unit constraints",
+			Script:      fetchMigration("00029_recipe_step_ingredient_units"),
+		},
 	}
 )
 

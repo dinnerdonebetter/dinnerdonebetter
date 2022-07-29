@@ -225,7 +225,7 @@ func TestQuerier_GetMeal(T *testing.T) {
 				WithArgs(interfaceToDriverValue(getRecipeArgs)...).
 				WillReturnRows(buildMockFullRowsFromRecipe(recipe))
 
-			query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"recipe_step_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
+			query, args := c.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, nil, false)
 			db.ExpectQuery(formatQueryForSQLMock(query)).
 				WithArgs(interfaceToDriverValue(args)...).
 				WillReturnRows(buildMockRowsFromRecipeStepIngredients(false, 0, allIngredients...))

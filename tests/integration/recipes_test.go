@@ -46,6 +46,18 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 	require.NoError(t, err)
 	t.Logf("valid preparation %q created", createdValidPreparation.ID)
 
+	t.Log("creating valid measurement unit")
+	exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
+	exampleValidMeasurementUnitInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(exampleValidMeasurementUnit)
+	createdValidMeasurementUnit, err := adminClient.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
+	require.NoError(t, err)
+	t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
+	checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
+
+	createdValidMeasurementUnit, err = adminClient.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
+	requireNotNilAndNoProblems(t, createdValidMeasurementUnit, err)
+	checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
+
 	t.Log("creating recipe")
 	exampleRecipe := fakes.BuildFakeRecipe()
 	if recipe != nil {
@@ -65,6 +77,7 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 
 			exampleRecipe.Steps[i].Ingredients[j].IngredientID = stringPointer(createdValidIngredient.ID)
 			exampleRecipe.Steps[i].Ingredients[j].ProductOfRecipeStep = false
+			exampleRecipe.Steps[i].Ingredients[j].MeasurementUnit = createdValidMeasurementUnit
 		}
 	}
 
@@ -101,6 +114,29 @@ func (s *TestSuite) TestRecipes_Realistic() {
 			soak, err := testClients.admin.CreateValidPreparation(ctx, soakInput)
 			require.NoError(t, err)
 			t.Logf("valid preparation %q created", soak.ID)
+
+			t.Log("creating valid measurement units")
+			exampleGrams := fakes.BuildFakeValidMeasurementUnit()
+			exampleGramsInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(exampleGrams)
+			grams, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleGramsInput)
+			require.NoError(t, err)
+			t.Logf("valid measurement unit %q created", grams.ID)
+			checkValidMeasurementUnitEquality(t, exampleGrams, grams)
+
+			grams, err = testClients.admin.GetValidMeasurementUnit(ctx, grams.ID)
+			requireNotNilAndNoProblems(t, grams, err)
+			checkValidMeasurementUnitEquality(t, exampleGrams, grams)
+
+			exampleCups := fakes.BuildFakeValidMeasurementUnit()
+			exampleCupsInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(exampleCups)
+			cups, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleCupsInput)
+			require.NoError(t, err)
+			t.Logf("valid measurement unit %q created", cups.ID)
+			checkValidMeasurementUnitEquality(t, exampleCups, cups)
+
+			cups, err = testClients.admin.GetValidMeasurementUnit(ctx, cups.ID)
+			requireNotNilAndNoProblems(t, cups, err)
+			checkValidMeasurementUnitEquality(t, exampleCups, cups)
 
 			t.Log("creating prerequisite valid ingredient")
 			pintoBeanBase := fakes.BuildFakeValidIngredient()
@@ -142,7 +178,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 								RecipeStepProductID:  nil,
 								IngredientID:         &pintoBeans.ID,
 								Name:                 "pinto beans",
-								QuantityType:         "grams",
+								MeasurementUnit:      grams,
 								MinimumQuantityValue: 500,
 								ProductOfRecipeStep:  false,
 							},
@@ -150,7 +186,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 								RecipeStepProductID:  nil,
 								IngredientID:         &water.ID,
 								Name:                 "water",
-								QuantityType:         "cups",
+								MeasurementUnit:      cups,
 								MinimumQuantityValue: 5,
 								ProductOfRecipeStep:  false,
 							},
@@ -172,14 +208,14 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						Ingredients: []*types.RecipeStepIngredient{
 							{
 								Name:                 "soaked pinto beans",
-								QuantityType:         "grams",
+								MeasurementUnit:      grams,
 								MinimumQuantityValue: 1000,
 								ProductOfRecipeStep:  true,
 							},
 							{
 								IngredientID:         &garlicPaste.ID,
 								Name:                 "garlic paste",
-								QuantityType:         "grams",
+								MeasurementUnit:      grams,
 								MinimumQuantityValue: 10,
 								ProductOfRecipeStep:  false,
 							},
@@ -212,7 +248,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						ID:                   ingredient.ID,
 						BelongsToRecipeStep:  ingredient.BelongsToRecipeStep,
 						Name:                 ingredient.Name,
-						QuantityType:         ingredient.QuantityType,
+						MeasurementUnitID:    &ingredient.MeasurementUnit.ID,
 						QuantityNotes:        ingredient.QuantityNotes,
 						IngredientNotes:      ingredient.IngredientNotes,
 						MinimumQuantityValue: ingredient.MinimumQuantityValue,
@@ -304,6 +340,18 @@ func (s *TestSuite) TestRecipes_AlsoCreateMeal() {
 			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
 
+			t.Log("creating valid measurement unit")
+			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
+			exampleValidMeasurementUnitInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInputFromValidMeasurementUnit(exampleValidMeasurementUnit)
+			createdValidMeasurementUnit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
+			require.NoError(t, err)
+			t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
+			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
+
+			createdValidMeasurementUnit, err = testClients.admin.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
+			requireNotNilAndNoProblems(t, createdValidMeasurementUnit, err)
+			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
+
 			exampleRecipe := fakes.BuildFakeRecipe()
 			createdValidIngredients := []*types.ValidIngredient{}
 			for i, recipeStep := range exampleRecipe.Steps {
@@ -318,6 +366,7 @@ func (s *TestSuite) TestRecipes_AlsoCreateMeal() {
 
 					exampleRecipe.Steps[i].Ingredients[j].IngredientID = stringPointer(createdValidIngredient.ID)
 					exampleRecipe.Steps[i].Ingredients[j].ProductOfRecipeStep = false
+					exampleRecipe.Steps[i].Ingredients[j].MeasurementUnit = createdValidMeasurementUnit
 				}
 			}
 
