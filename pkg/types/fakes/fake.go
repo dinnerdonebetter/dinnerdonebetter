@@ -40,3 +40,7 @@ func BuildFakeNumericID() uint64 {
 func BuildFakeTime() uint64 {
 	return fake.Uint64()
 }
+
+func buildUniqueString() string {
+	return fake.LoremIpsumSentence(5)
+}

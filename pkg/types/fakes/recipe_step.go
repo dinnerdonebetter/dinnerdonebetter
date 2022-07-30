@@ -33,7 +33,7 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 		MaximumEstimatedTimeInSeconds: fake.Uint32(),
 		MinimumTemperatureInCelsius:   func(x uint16) *uint16 { return &x }(fake.Uint16()),
 		MaximumTemperatureInCelsius:   func(x uint16) *uint16 { return &x }(fake.Uint16()),
-		Notes:                         fake.LoremIpsumSentence(exampleQuantity),
+		Notes:                         buildUniqueString(),
 		Products:                      products,
 		Optional:                      false,
 		CreatedOn:                     uint64(uint32(fake.Date().Unix())),

@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS meal_plan_options (
     "created_on" BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
 	"last_updated_on" BIGINT DEFAULT NULL,
 	"archived_on" BIGINT DEFAULT NULL,
-	"belongs_to_meal_plan" CHAR(27) NOT NULL REFERENCES meal_plans("id") ON DELETE CASCADE,
-    UNIQUE("meal_id", "belongs_to_meal_plan")
+	"belongs_to_meal_plan" CHAR(27) NOT NULL REFERENCES meal_plans("id") ON DELETE CASCADE
 );
+
+CREATE INDEX IF NOT EXISTS meal_plan_options_belongs_to_meal_plan on meal_plan_options (belongs_to_meal_plan);

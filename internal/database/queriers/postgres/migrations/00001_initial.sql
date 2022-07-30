@@ -17,13 +17,25 @@ CREATE TABLE IF NOT EXISTS users (
     "requires_password_change" BOOLEAN NOT NULL DEFAULT 'false',
     "two_factor_secret" TEXT NOT NULL,
     "two_factor_secret_verified_on" BIGINT DEFAULT NULL,
+    "birth_day" SMALLINT,
+    "birth_month" SMALLINT,
     "service_roles" TEXT NOT NULL DEFAULT 'service_user',
-    "reputation" TEXT NOT NULL DEFAULT 'unverified',
-    "reputation_explanation" TEXT NOT NULL DEFAULT '',
+    "user_account_status" TEXT NOT NULL DEFAULT 'unverified',
+    "user_account_status_explanation" TEXT NOT NULL DEFAULT '',
     "created_on" BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
     "last_updated_on" BIGINT DEFAULT NULL,
     "archived_on" BIGINT DEFAULT NULL,
     UNIQUE("username")
+);
+
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+     "id" CHAR(27) NOT NULL PRIMARY KEY,
+     "token" TEXT NOT NULL,
+     "expires_at" BIGINT NOT NULL,
+     "created_on" BIGINT NOT NULL DEFAULT extract(epoch FROM NOW()),
+     "last_updated_on" BIGINT DEFAULT NULL,
+     "redeemed_on" BIGINT DEFAULT NULL,
+     "belongs_to_user" CHAR(27) NOT NULL REFERENCES users("id") ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS households (
@@ -40,6 +52,8 @@ CREATE TABLE IF NOT EXISTS households (
     "belongs_to_user" CHAR(27) NOT NULL REFERENCES users("id") ON DELETE CASCADE,
     UNIQUE("belongs_to_user", "name")
 );
+
+CREATE INDEX IF NOT EXISTS households_belongs_to_user ON households (belongs_to_user);
 
 CREATE TYPE invitation_state AS ENUM ('pending', 'cancelled', 'accepted', 'rejected');
 
@@ -59,6 +73,10 @@ CREATE TABLE IF NOT EXISTS household_invitations (
     UNIQUE("to_user", "from_user", "destination_household")
 );
 
+CREATE INDEX IF NOT EXISTS household_invitations_destination_household ON household_invitations (destination_household);
+CREATE INDEX IF NOT EXISTS household_invitations_to_user ON household_invitations (to_user);
+CREATE INDEX IF NOT EXISTS household_invitations_from_user ON household_invitations (from_user);
+
 CREATE TABLE IF NOT EXISTS household_user_memberships (
     "id" CHAR(27) NOT NULL PRIMARY KEY,
     "belongs_to_household" CHAR(27) NOT NULL REFERENCES households("id") ON DELETE CASCADE,
@@ -70,6 +88,9 @@ CREATE TABLE IF NOT EXISTS household_user_memberships (
     "archived_on" BIGINT DEFAULT NULL,
     UNIQUE("belongs_to_household", "belongs_to_user")
 );
+
+CREATE INDEX IF NOT EXISTS household_user_memberships_belongs_to_household ON household_user_memberships (belongs_to_household);
+CREATE INDEX IF NOT EXISTS household_user_memberships_belongs_to_user ON household_user_memberships (belongs_to_user);
 
 CREATE TABLE IF NOT EXISTS api_clients (
     "id" CHAR(27) NOT NULL PRIMARY KEY,
@@ -83,6 +104,8 @@ CREATE TABLE IF NOT EXISTS api_clients (
     "archived_on" BIGINT DEFAULT NULL,
     "belongs_to_user" CHAR(27) NOT NULL REFERENCES users("id") ON DELETE CASCADE
 );
+
+CREATE INDEX IF NOT EXISTS api_clients_belongs_to_user ON api_clients (belongs_to_user);
 
 CREATE TABLE IF NOT EXISTS webhooks (
     "id" CHAR(27) NOT NULL PRIMARY KEY,

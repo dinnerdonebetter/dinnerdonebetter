@@ -11,10 +11,10 @@ import (
 func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 	return &types.RecipeStepProduct{
 		ID:                  ksuid.New().String(),
-		Name:                fake.LoremIpsumSentence(exampleQuantity),
+		Name:                buildUniqueString(),
 		QuantityValue:       fake.Float32(),
-		QuantityNotes:       fake.LoremIpsumSentence(exampleQuantity),
-		QuantityType:        fake.LoremIpsumSentence(exampleQuantity),
+		QuantityNotes:       buildUniqueString(),
+		QuantityType:        buildUniqueString(),
 		CreatedOn:           uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipeStep: fake.UUID(),
 	}

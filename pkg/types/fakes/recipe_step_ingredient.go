@@ -12,14 +12,14 @@ import (
 func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 	return &types.RecipeStepIngredient{
 		ID:                   ksuid.New().String(),
-		Name:                 fake.LoremIpsumSentence(exampleQuantity),
-		IngredientID:         func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
+		Name:                 buildUniqueString(),
+		IngredientID:         func(x string) *string { return &x }(buildUniqueString()),
 		MeasurementUnit:      BuildFakeValidMeasurementUnit(),
 		MinimumQuantityValue: float32(fake.Uint32()),
 		MaximumQuantityValue: float32(fake.Uint32()),
-		QuantityNotes:        fake.LoremIpsumSentence(exampleQuantity),
+		QuantityNotes:        buildUniqueString(),
 		ProductOfRecipeStep:  false,
-		IngredientNotes:      fake.LoremIpsumSentence(exampleQuantity),
+		IngredientNotes:      buildUniqueString(),
 		CreatedOn:            uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipeStep:  ksuid.New().String(),
 	}

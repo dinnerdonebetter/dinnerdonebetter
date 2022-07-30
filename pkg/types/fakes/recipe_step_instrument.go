@@ -11,9 +11,9 @@ import (
 func BuildFakeRecipeStepInstrument() *types.RecipeStepInstrument {
 	return &types.RecipeStepInstrument{
 		ID:                  ksuid.New().String(),
-		InstrumentID:        func(x string) *string { return &x }(fake.LoremIpsumSentence(exampleQuantity)),
-		RecipeStepID:        fake.LoremIpsumSentence(exampleQuantity),
-		Notes:               fake.LoremIpsumSentence(exampleQuantity),
+		InstrumentID:        func(x string) *string { return &x }(buildUniqueString()),
+		RecipeStepID:        buildUniqueString(),
+		Notes:               buildUniqueString(),
 		CreatedOn:           uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipeStep: fake.UUID(),
 	}

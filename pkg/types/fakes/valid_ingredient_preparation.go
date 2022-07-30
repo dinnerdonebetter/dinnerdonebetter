@@ -11,9 +11,9 @@ import (
 func BuildFakeValidIngredientPreparation() *types.ValidIngredientPreparation {
 	return &types.ValidIngredientPreparation{
 		ID:                 ksuid.New().String(),
-		Notes:              fake.LoremIpsumSentence(exampleQuantity),
-		ValidPreparationID: fake.LoremIpsumSentence(exampleQuantity),
-		ValidIngredientID:  fake.LoremIpsumSentence(exampleQuantity),
+		Notes:              buildUniqueString(),
+		ValidPreparationID: buildUniqueString(),
+		ValidIngredientID:  buildUniqueString(),
 		CreatedOn:          uint64(uint32(fake.Date().Unix())),
 	}
 }

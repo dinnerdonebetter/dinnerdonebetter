@@ -15,7 +15,7 @@ func BuildFakeMealPlanOptionVote() *types.MealPlanOptionVote {
 		ID:                      ksuid.New().String(),
 		Rank:                    uint8(fake.Number(1, math.MaxUint8)),
 		Abstain:                 fake.Bool(),
-		Notes:                   fake.LoremIpsumSentence(exampleQuantity),
+		Notes:                   buildUniqueString(),
 		CreatedOn:               uint64(uint32(fake.Date().Unix())),
 		BelongsToMealPlanOption: fake.UUID(),
 	}

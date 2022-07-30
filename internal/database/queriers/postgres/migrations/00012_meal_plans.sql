@@ -12,3 +12,5 @@ CREATE TABLE IF NOT EXISTS meal_plans (
 	"archived_on" BIGINT DEFAULT NULL,
 	"belongs_to_household" CHAR(27) NOT NULL REFERENCES households("id") ON DELETE CASCADE
 );
+
+CREATE INDEX IF NOT EXISTS meal_plans_belongs_to_household on meal_plans (belongs_to_household);

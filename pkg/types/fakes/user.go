@@ -157,9 +157,9 @@ func BuildFakeTOTPSecretRefreshInput() *types.TOTPSecretRefreshInput {
 func BuildFakeUserPermissionsRequestInput() *types.UserPermissionsRequestInput {
 	return &types.UserPermissionsRequestInput{
 		Permissions: []string{
-			fake.LoremIpsumSentence(exampleQuantity),
-			fake.LoremIpsumSentence(exampleQuantity),
-			fake.LoremIpsumSentence(exampleQuantity),
+			buildUniqueString(),
+			buildUniqueString(),
+			buildUniqueString(),
 		},
 	}
 }
@@ -240,7 +240,7 @@ func BuildFakePasswordResetTokenDatabaseCreationInputFromPasswordResetToken(inpu
 // BuildFakePasswordResetTokenRedemptionRequestInput builds a faked PasswordResetTokenRedemptionRequestInput.
 func BuildFakePasswordResetTokenRedemptionRequestInput() *types.PasswordResetTokenRedemptionRequestInput {
 	return &types.PasswordResetTokenRedemptionRequestInput{
-		Token:       fake.LoremIpsumSentence(exampleQuantity),
+		Token:       buildUniqueString(),
 		NewPassword: fake.Password(true, true, true, true, false, 32),
 	}
 }

@@ -11,9 +11,9 @@ import (
 func BuildFakeValidIngredient() *types.ValidIngredient {
 	return &types.ValidIngredient{
 		ID:                       ksuid.New().String(),
-		Name:                     fake.LoremIpsumSentence(exampleQuantity),
-		Description:              fake.LoremIpsumSentence(exampleQuantity),
-		Warning:                  fake.LoremIpsumSentence(exampleQuantity),
+		Name:                     buildUniqueString(),
+		Description:              buildUniqueString(),
+		Warning:                  buildUniqueString(),
 		ContainsEgg:              fake.Bool(),
 		ContainsDairy:            fake.Bool(),
 		ContainsPeanut:           fake.Bool(),
@@ -27,7 +27,7 @@ func BuildFakeValidIngredient() *types.ValidIngredient {
 		AnimalFlesh:              fake.Bool(),
 		IsMeasuredVolumetrically: fake.Bool(),
 		IsLiquid:                 fake.Bool(),
-		IconPath:                 fake.LoremIpsumSentence(exampleQuantity),
+		IconPath:                 buildUniqueString(),
 		CreatedOn:                uint64(uint32(fake.Date().Unix())),
 	}
 }

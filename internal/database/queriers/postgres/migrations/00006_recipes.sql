@@ -9,3 +9,5 @@ CREATE TABLE IF NOT EXISTS recipes (
 	"archived_on" BIGINT DEFAULT NULL,
 	"created_by_user" CHAR(27) NOT NULL REFERENCES users("id") ON DELETE CASCADE
 );
+
+CREATE INDEX IF NOT EXISTS recipes_created_by_user ON recipes (created_by_user);

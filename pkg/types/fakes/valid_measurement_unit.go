@@ -11,10 +11,10 @@ import (
 func BuildFakeValidMeasurementUnit() *types.ValidMeasurementUnit {
 	return &types.ValidMeasurementUnit{
 		ID:          ksuid.New().String(),
-		Name:        fake.LoremIpsumSentence(exampleQuantity),
-		Description: fake.LoremIpsumSentence(exampleQuantity),
+		Name:        buildUniqueString(),
+		Description: buildUniqueString(),
 		Volumetric:  fake.Bool(),
-		IconPath:    fake.LoremIpsumSentence(exampleQuantity),
+		IconPath:    buildUniqueString(),
 		CreatedOn:   uint64(uint32(fake.Date().Unix())),
 	}
 }
