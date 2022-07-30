@@ -11,10 +11,10 @@ import (
 func BuildFakeValidInstrument() *types.ValidInstrument {
 	return &types.ValidInstrument{
 		ID:          ksuid.New().String(),
-		Name:        fake.LoremIpsumSentence(exampleQuantity),
-		Variant:     fake.LoremIpsumSentence(exampleQuantity),
-		Description: fake.LoremIpsumSentence(exampleQuantity),
-		IconPath:    fake.LoremIpsumSentence(exampleQuantity),
+		Name:        buildUniqueString(),
+		Variant:     buildUniqueString(),
+		Description: buildUniqueString(),
+		IconPath:    buildUniqueString(),
 		CreatedOn:   uint64(uint32(fake.Date().Unix())),
 	}
 }

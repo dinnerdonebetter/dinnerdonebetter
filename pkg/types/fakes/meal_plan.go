@@ -26,7 +26,7 @@ func BuildFakeMealPlan() *types.MealPlan {
 
 	return &types.MealPlan{
 		ID:                 mealPlanID,
-		Notes:              fake.LoremIpsumSentence(exampleQuantity),
+		Notes:              buildUniqueString(),
 		Status:             types.AwaitingVotesMealPlanStatus,
 		VotingDeadline:     uint64(now.Unix()),
 		StartsAt:           uint64(inTenMinutes.Unix()),

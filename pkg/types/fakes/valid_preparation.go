@@ -11,9 +11,9 @@ import (
 func BuildFakeValidPreparation() *types.ValidPreparation {
 	return &types.ValidPreparation{
 		ID:          ksuid.New().String(),
-		Name:        fake.LoremIpsumSentence(exampleQuantity),
-		Description: fake.LoremIpsumSentence(exampleQuantity),
-		IconPath:    fake.LoremIpsumSentence(exampleQuantity),
+		Name:        buildUniqueString(),
+		Description: buildUniqueString(),
+		IconPath:    buildUniqueString(),
 		CreatedOn:   uint64(uint32(fake.Date().Unix())),
 	}
 }

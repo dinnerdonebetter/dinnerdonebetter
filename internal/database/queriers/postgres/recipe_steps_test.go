@@ -720,6 +720,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			args := []interface{}{
 				product.ID,
 				product.Name,
+				product.Type,
 				product.QuantityType,
 				product.QuantityValue,
 				product.QuantityNotes,
@@ -867,6 +868,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 		args := []interface{}{
 			exampleInput.Products[0].ID,
 			exampleInput.Products[0].Name,
+			exampleInput.Products[0].Type,
 			exampleInput.Products[0].QuantityType,
 			exampleInput.Products[0].QuantityValue,
 			exampleInput.Products[0].QuantityNotes,

@@ -1,6 +1,8 @@
 package integration
 
 import (
+	"bytes"
+	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -17,6 +19,7 @@ func checkRecipeStepProductEquality(t *testing.T, expected, actual *types.Recipe
 
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for recipe step product %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
+	assert.Equal(t, expected.Type, actual.Type, "expected Type for recipe step product %s to be %v, but it was %v", expected.ID, expected.Type, actual.Type)
 	assert.Equal(t, expected.QuantityType, actual.QuantityType, "expected MeasurementUnitID for recipe step product %s to be %v, but it was %v", expected.ID, expected.QuantityType, actual.QuantityType)
 	assert.Equal(t, expected.QuantityValue, actual.QuantityValue, "expected MinimumQuantityValue for recipe step product %s to be %v, but it was %v", expected.ID, expected.QuantityValue, actual.QuantityValue)
 	assert.Equal(t, expected.QuantityNotes, actual.QuantityNotes, "expected QuantityNotes for recipe step product %s to be %v, but it was %v", expected.ID, expected.QuantityNotes, actual.QuantityNotes)
@@ -27,6 +30,7 @@ func checkRecipeStepProductEquality(t *testing.T, expected, actual *types.Recipe
 func convertRecipeStepProductToRecipeStepProductUpdateInput(x *types.RecipeStepProduct) *types.RecipeStepProductUpdateRequestInput {
 	return &types.RecipeStepProductUpdateRequestInput{
 		Name:          &x.Name,
+		Type:          &x.Type,
 		QuantityType:  &x.QuantityType,
 		QuantityValue: &x.QuantityValue,
 		QuantityNotes: &x.QuantityNotes,
@@ -70,7 +74,12 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 			t.Log("changing recipe step product")
 			newRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
 			createdRecipeStepProduct.Update(convertRecipeStepProductToRecipeStepProductUpdateInput(newRecipeStepProduct))
-			assert.NoError(t, testClients.main.UpdateRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepProduct))
+
+			var b bytes.Buffer
+			require.NoError(t, json.NewEncoder(&b).Encode(createdRecipeStepProduct))
+			t.Log(b.String())
+
+			require.NoError(t, testClients.main.UpdateRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepProduct))
 
 			t.Log("fetching changed recipe step product")
 			actual, err := testClients.main.GetRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProduct.ID)

@@ -160,6 +160,11 @@ var (
 			Description: "add valid measurement unit constraints",
 			Script:      fetchMigration("00029_recipe_step_ingredient_units"),
 		},
+		{
+			Version:     30,
+			Description: "myriad recipe step improvements",
+			Script:      fetchMigration("00030_recipe_step_improvements"),
+		},
 	}
 )
 

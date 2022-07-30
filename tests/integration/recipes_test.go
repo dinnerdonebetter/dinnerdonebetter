@@ -166,6 +166,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						Products: []*types.RecipeStepProduct{
 							{
 								Name:          "soaked pinto beans",
+								Type:          types.RecipeStepProductIngredientType,
 								QuantityType:  "grams",
 								QuantityNotes: "",
 								QuantityValue: 1000,
@@ -198,6 +199,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						Products: []*types.RecipeStepProduct{
 							{
 								Name:          "final output",
+								Type:          types.RecipeStepProductIngredientType,
 								QuantityType:  "grams",
 								QuantityNotes: "",
 								QuantityValue: 1010,
@@ -261,6 +263,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 					newProduct := &types.RecipeStepProductCreationRequestInput{
 						ID:                  product.ID,
 						Name:                product.Name,
+						Type:                product.Type,
 						QuantityType:        product.QuantityType,
 						QuantityNotes:       product.QuantityNotes,
 						BelongsToRecipeStep: product.BelongsToRecipeStep,

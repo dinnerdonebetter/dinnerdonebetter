@@ -16,6 +16,7 @@ func TestRecipeStepProductCreationRequestInput_Validate(T *testing.T) {
 
 		x := &RecipeStepProductCreationRequestInput{
 			Name:          fake.LoremIpsumSentence(exampleQuantity),
+			Type:          RecipeStepProductIngredientType,
 			QuantityType:  fake.LoremIpsumSentence(exampleQuantity),
 			QuantityValue: fake.Float32(),
 			QuantityNotes: fake.LoremIpsumSentence(exampleQuantity),
@@ -43,6 +44,7 @@ func TestRecipeStepProductUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &RecipeStepProductUpdateRequestInput{
 			Name:          stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Type:          stringPointer(RecipeStepProductIngredientType),
 			QuantityType:  stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 			QuantityValue: float32Pointer(fake.Float32()),
 			QuantityNotes: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),

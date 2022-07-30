@@ -33,7 +33,7 @@ func BuildFakeMealPlanOption() *types.MealPlanOption {
 		})),
 		Votes:             examples,
 		Chosen:            false,
-		Notes:             fake.LoremIpsumSentence(exampleQuantity),
+		Notes:             buildUniqueString(),
 		CreatedOn:         uint64(uint32(fake.Date().Unix())),
 		BelongsToMealPlan: fake.UUID(),
 	}

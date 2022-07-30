@@ -12,6 +12,11 @@ const (
 	// RecipeStepProductDataType indicates an event is related to a recipe step product.
 	RecipeStepProductDataType dataType = "recipe_step_product"
 
+	// RecipeStepProductIngredientType represents one of the valid recipe step product type values.
+	RecipeStepProductIngredientType = "ingredient"
+	// RecipeStepProductInstrumentType represents one of the valid recipe step product type values.
+	RecipeStepProductInstrumentType = "instrument"
+
 	// RecipeStepProductCreatedCustomerEventType indicates a recipe step product was created.
 	RecipeStepProductCreatedCustomerEventType CustomerEventType = "recipe_step_product_created"
 	// RecipeStepProductUpdatedCustomerEventType indicates a recipe step product was updated.
@@ -35,6 +40,7 @@ type (
 		ArchivedOn          *uint64 `json:"archivedOn"`
 		ID                  string  `json:"id"`
 		Name                string  `json:"name"`
+		Type                string  `json:"type"`
 		QuantityType        string  `json:"quantityType"`
 		QuantityNotes       string  `json:"quantityNotes"`
 		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
@@ -54,6 +60,7 @@ type (
 		_                   struct{}
 		ID                  string  `json:"-"`
 		Name                string  `json:"name"`
+		Type                string  `json:"type"`
 		QuantityType        string  `json:"quantityType"`
 		QuantityNotes       string  `json:"quantityNotes"`
 		BelongsToRecipeStep string  `json:"-"`
@@ -65,6 +72,7 @@ type (
 		_                   struct{}
 		ID                  string  `json:"id"`
 		Name                string  `json:"name"`
+		Type                string  `json:"type"`
 		QuantityType        string  `json:"quantityType"`
 		QuantityNotes       string  `json:"quantityNotes"`
 		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
@@ -75,6 +83,7 @@ type (
 	RecipeStepProductUpdateRequestInput struct {
 		_                   struct{}
 		Name                *string  `json:"name"`
+		Type                *string  `json:"type"`
 		QuantityType        *string  `json:"quantityType"`
 		QuantityNotes       *string  `json:"quantityNotes"`
 		BelongsToRecipeStep *string  `json:"belongsToRecipeStep"`
@@ -109,6 +118,10 @@ func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateRequestInput) {
 		x.Name = *input.Name
 	}
 
+	if input.Type != nil && *input.Type != x.Type {
+		x.Type = *input.Type
+	}
+
 	if input.QuantityType != nil && *input.QuantityType != x.QuantityType {
 		x.QuantityType = *input.QuantityType
 	}
@@ -130,6 +143,7 @@ func (x *RecipeStepProductCreationRequestInput) ValidateWithContext(ctx context.
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.Type, validation.Required),
 		validation.Field(&x.QuantityType, validation.Required),
 		validation.Field(&x.QuantityValue, validation.Required),
 	)
@@ -144,6 +158,7 @@ func (x *RecipeStepProductDatabaseCreationInput) ValidateWithContext(ctx context
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.Type, validation.In(RecipeStepProductIngredientType, RecipeStepProductInstrumentType)),
 		validation.Field(&x.QuantityType, validation.Required),
 		validation.Field(&x.QuantityValue, validation.Required),
 	)
@@ -157,6 +172,7 @@ func RecipeStepProductUpdateRequestInputFromRecipeStepProduct(input *RecipeStepP
 
 	x := &RecipeStepProductUpdateRequestInput{
 		Name:                &input.Name,
+		Type:                &input.Type,
 		QuantityType:        &input.QuantityType,
 		QuantityNotes:       &input.QuantityNotes,
 		BelongsToRecipeStep: &input.BelongsToRecipeStep,
@@ -174,6 +190,7 @@ func RecipeStepProductDatabaseCreationInputFromRecipeStepProductCreationInput(in
 
 	x := &RecipeStepProductDatabaseCreationInput{
 		Name:          input.Name,
+		Type:          input.Type,
 		QuantityType:  input.QuantityType,
 		QuantityNotes: input.QuantityNotes,
 		QuantityValue: input.QuantityValue,
@@ -190,6 +207,7 @@ func (x *RecipeStepProductUpdateRequestInput) ValidateWithContext(ctx context.Co
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.Type, validation.Required),
 		validation.Field(&x.QuantityType, validation.Required),
 		validation.Field(&x.QuantityValue, validation.Required),
 	)
