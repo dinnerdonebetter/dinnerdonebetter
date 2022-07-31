@@ -26,6 +26,7 @@ var (
 		"recipe_step_instruments.instrument_id",
 		"recipe_step_instruments.recipe_step_id",
 		"recipe_step_instruments.notes",
+		"recipe_step_instruments.preference_rank",
 		"recipe_step_instruments.created_on",
 		"recipe_step_instruments.last_updated_on",
 		"recipe_step_instruments.archived_on",
@@ -52,6 +53,7 @@ func (q *SQLQuerier) scanRecipeStepInstrument(ctx context.Context, scan database
 		&x.InstrumentID,
 		&x.RecipeStepID,
 		&x.Notes,
+		&x.PreferenceRank,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
@@ -145,7 +147,7 @@ func (q *SQLQuerier) RecipeStepInstrumentExists(ctx context.Context, recipeID, r
 	return result, nil
 }
 
-const getRecipeStepInstrumentQuery = "SELECT recipe_step_instruments.id, recipe_step_instruments.instrument_id, recipe_step_instruments.recipe_step_id, recipe_step_instruments.notes, recipe_step_instruments.created_on, recipe_step_instruments.last_updated_on, recipe_step_instruments.archived_on, recipe_step_instruments.belongs_to_recipe_step FROM recipe_step_instruments JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_instruments.archived_on IS NULL AND recipe_step_instruments.belongs_to_recipe_step = $1 AND recipe_step_instruments.id = $2 AND recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_on IS NULL AND recipes.id = $5"
+const getRecipeStepInstrumentQuery = "SELECT recipe_step_instruments.id, recipe_step_instruments.instrument_id, recipe_step_instruments.recipe_step_id, recipe_step_instruments.notes, recipe_step_instruments.preference_rank, recipe_step_instruments.created_on, recipe_step_instruments.last_updated_on, recipe_step_instruments.archived_on, recipe_step_instruments.belongs_to_recipe_step FROM recipe_step_instruments JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_instruments.archived_on IS NULL AND recipe_step_instruments.belongs_to_recipe_step = $1 AND recipe_step_instruments.id = $2 AND recipe_steps.archived_on IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_on IS NULL AND recipes.id = $5"
 
 // GetRecipeStepInstrument fetches a recipe step instrument from the database.
 func (q *SQLQuerier) GetRecipeStepInstrument(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (*types.RecipeStepInstrument, error) {
@@ -318,6 +320,7 @@ const getRecipeStepInstrumentsForRecipeQuery = `SELECT
 	recipe_step_instruments.instrument_id,
 	recipe_step_instruments.recipe_step_id,
 	recipe_step_instruments.notes,
+	recipe_step_instruments.preference_rank,
 	recipe_step_instruments.created_on,
 	recipe_step_instruments.last_updated_on,
 	recipe_step_instruments.archived_on,
@@ -363,7 +366,7 @@ func (q *SQLQuerier) getRecipeStepInstrumentsForRecipe(ctx context.Context, reci
 	return recipeStepInstruments, nil
 }
 
-const recipeStepInstrumentCreationQuery = `INSERT INTO recipe_step_instruments (id,instrument_id,recipe_step_id,notes,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5)`
+const recipeStepInstrumentCreationQuery = `INSERT INTO recipe_step_instruments (id,instrument_id,recipe_step_id,notes,preference_rank,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6)`
 
 // CreateRecipeStepInstrument creates a recipe step instrument in the database.
 func (q *SQLQuerier) createRecipeStepInstrument(ctx context.Context, querier database.SQLQueryExecutor, input *types.RecipeStepInstrumentDatabaseCreationInput) (*types.RecipeStepInstrument, error) {
@@ -381,6 +384,7 @@ func (q *SQLQuerier) createRecipeStepInstrument(ctx context.Context, querier dat
 		input.InstrumentID,
 		input.RecipeStepID,
 		input.Notes,
+		input.PreferenceRank,
 		input.BelongsToRecipeStep,
 	}
 
@@ -394,6 +398,7 @@ func (q *SQLQuerier) createRecipeStepInstrument(ctx context.Context, querier dat
 		InstrumentID:        input.InstrumentID,
 		RecipeStepID:        input.RecipeStepID,
 		Notes:               input.Notes,
+		PreferenceRank:      input.PreferenceRank,
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		CreatedOn:           q.currentTime(),
 	}
@@ -409,7 +414,7 @@ func (q *SQLQuerier) CreateRecipeStepInstrument(ctx context.Context, input *type
 	return q.createRecipeStepInstrument(ctx, q.db, input)
 }
 
-const updateRecipeStepInstrumentQuery = "UPDATE recipe_step_instruments SET instrument_id = $1, recipe_step_id = $2, notes = $3, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $4 AND id = $5"
+const updateRecipeStepInstrumentQuery = "UPDATE recipe_step_instruments SET instrument_id = $1, recipe_step_id = $2, notes = $3, preference_rank = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $5 AND id = $6"
 
 // UpdateRecipeStepInstrument updates a particular recipe step instrument.
 func (q *SQLQuerier) UpdateRecipeStepInstrument(ctx context.Context, updated *types.RecipeStepInstrument) error {
@@ -427,6 +432,7 @@ func (q *SQLQuerier) UpdateRecipeStepInstrument(ctx context.Context, updated *ty
 		updated.InstrumentID,
 		updated.RecipeStepID,
 		updated.Notes,
+		updated.PreferenceRank,
 		updated.BelongsToRecipeStep,
 		updated.ID,
 	}

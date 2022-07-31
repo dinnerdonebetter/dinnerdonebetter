@@ -31,6 +31,7 @@ func buildMockRowsFromRecipeStepInstruments(includeCounts bool, filteredCount ui
 			x.InstrumentID,
 			x.RecipeStepID,
 			x.Notes,
+			x.PreferenceRank,
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,
@@ -620,6 +621,7 @@ func TestQuerier_CreateRecipeStepInstrument(T *testing.T) {
 			exampleInput.InstrumentID,
 			exampleInput.RecipeStepID,
 			exampleInput.Notes,
+			exampleInput.PreferenceRank,
 			exampleInput.BelongsToRecipeStep,
 		}
 
@@ -664,6 +666,7 @@ func TestQuerier_CreateRecipeStepInstrument(T *testing.T) {
 			exampleInput.InstrumentID,
 			exampleInput.RecipeStepID,
 			exampleInput.Notes,
+			exampleInput.PreferenceRank,
 			exampleInput.BelongsToRecipeStep,
 		}
 
@@ -699,6 +702,7 @@ func TestQuerier_UpdateRecipeStepInstrument(T *testing.T) {
 			exampleRecipeStepInstrument.InstrumentID,
 			exampleRecipeStepInstrument.RecipeStepID,
 			exampleRecipeStepInstrument.Notes,
+			exampleRecipeStepInstrument.PreferenceRank,
 			exampleRecipeStepInstrument.BelongsToRecipeStep,
 			exampleRecipeStepInstrument.ID,
 		}
@@ -733,6 +737,7 @@ func TestQuerier_UpdateRecipeStepInstrument(T *testing.T) {
 			exampleRecipeStepInstrument.InstrumentID,
 			exampleRecipeStepInstrument.RecipeStepID,
 			exampleRecipeStepInstrument.Notes,
+			exampleRecipeStepInstrument.PreferenceRank,
 			exampleRecipeStepInstrument.BelongsToRecipeStep,
 			exampleRecipeStepInstrument.ID,
 		}

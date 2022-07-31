@@ -39,6 +39,7 @@ type (
 		ID                  string  `json:"id"`
 		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
 		CreatedOn           uint64  `json:"createdOn"`
+		PreferenceRank      uint8   `json:"preferenceRank"`
 	}
 
 	// RecipeStepInstrumentList represents a list of recipe step instruments.
@@ -50,24 +51,24 @@ type (
 
 	// RecipeStepInstrumentCreationRequestInput represents what a user could set as input for creating recipe step instruments.
 	RecipeStepInstrumentCreationRequestInput struct {
-		_ struct{}
-
-		ID                  string  `json:"-"`
+		_                   struct{}
 		InstrumentID        *string `json:"instrumentID"`
+		ID                  string  `json:"-"`
 		RecipeStepID        string  `json:"recipeStepID"`
 		Notes               string  `json:"notes"`
 		BelongsToRecipeStep string  `json:"-"`
+		PreferenceRank      uint8   `json:"preferenceRank"`
 	}
 
 	// RecipeStepInstrumentDatabaseCreationInput represents what a user could set as input for creating recipe step instruments.
 	RecipeStepInstrumentDatabaseCreationInput struct {
-		_ struct{}
-
-		ID                  string  `json:"id"`
+		_                   struct{}
 		InstrumentID        *string `json:"instrumentID"`
+		ID                  string  `json:"id"`
 		RecipeStepID        string  `json:"recipeStepID"`
 		Notes               string  `json:"notes"`
 		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
+		PreferenceRank      uint8   `json:"preferenceRank"`
 	}
 
 	// RecipeStepInstrumentUpdateRequestInput represents what a user could set as input for updating recipe step instruments.
@@ -78,6 +79,7 @@ type (
 		InstrumentID        *string `json:"instrumentID"`
 		RecipeStepID        *string `json:"recipeStepID"`
 		Notes               *string `json:"notes"`
+		PreferenceRank      *uint8  `json:"preferenceRank"`
 		BelongsToRecipeStep *string `json:"belongsToRecipeStep"`
 	}
 
@@ -116,6 +118,10 @@ func (x *RecipeStepInstrument) Update(input *RecipeStepInstrumentUpdateRequestIn
 	if input.Notes != nil && *input.Notes != x.Notes {
 		x.Notes = *input.Notes
 	}
+
+	if input.PreferenceRank != nil && *input.PreferenceRank != x.PreferenceRank {
+		x.PreferenceRank = *input.PreferenceRank
+	}
 }
 
 var _ validation.ValidatableWithContext = (*RecipeStepInstrumentCreationRequestInput)(nil)
@@ -127,6 +133,7 @@ func (x *RecipeStepInstrumentCreationRequestInput) ValidateWithContext(ctx conte
 		x,
 		validation.Field(&x.InstrumentID, validation.Required),
 		validation.Field(&x.RecipeStepID, validation.Required),
+		validation.Field(&x.PreferenceRank, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
 	)
 }
@@ -141,6 +148,7 @@ func (x *RecipeStepInstrumentDatabaseCreationInput) ValidateWithContext(ctx cont
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.InstrumentID, validation.Required),
 		validation.Field(&x.RecipeStepID, validation.Required),
+		validation.Field(&x.PreferenceRank, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
 	)
 }
@@ -151,6 +159,7 @@ func RecipeStepInstrumentUpdateRequestInputFromRecipeStepInstrument(input *Recip
 		InstrumentID:        input.InstrumentID,
 		RecipeStepID:        &input.RecipeStepID,
 		Notes:               &input.Notes,
+		PreferenceRank:      &input.PreferenceRank,
 		BelongsToRecipeStep: &input.BelongsToRecipeStep,
 	}
 
@@ -163,6 +172,7 @@ func RecipeStepInstrumentDatabaseCreationInputFromRecipeStepInstrumentCreationIn
 		InstrumentID:        input.InstrumentID,
 		RecipeStepID:        input.RecipeStepID,
 		Notes:               input.Notes,
+		PreferenceRank:      input.PreferenceRank,
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 	}
 
@@ -177,6 +187,7 @@ func (x *RecipeStepInstrumentUpdateRequestInput) ValidateWithContext(ctx context
 		ctx,
 		x,
 		validation.Field(&x.RecipeStepID, validation.Required),
+		validation.Field(&x.PreferenceRank, validation.Required),
 		validation.Field(&x.Notes, validation.Required),
 	)
 }
