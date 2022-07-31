@@ -42,6 +42,7 @@ type (
 		Notes                         string                  `json:"notes"`
 		ID                            string                  `json:"id"`
 		Preparation                   ValidPreparation        `json:"preparation"`
+		Instruments                   []*RecipeStepInstrument `json:"instruments"`
 		Ingredients                   []*RecipeStepIngredient `json:"ingredients"`
 		Products                      []*RecipeStepProduct    `json:"products"`
 		CreatedOn                     uint64                  `json:"createdOn"`
@@ -69,6 +70,7 @@ type (
 		BelongsToRecipe               string                                      `json:"-"`
 		ID                            string                                      `json:"-"`
 		Ingredients                   []*RecipeStepIngredientCreationRequestInput `json:"ingredients"`
+		Instruments                   []*RecipeStepInstrumentCreationRequestInput `json:"instruments"`
 		Index                         uint32                                      `json:"index"`
 		MinimumEstimatedTimeInSeconds uint32                                      `json:"minimumEstimatedTimeInSeconds"`
 		MaximumEstimatedTimeInSeconds uint32                                      `json:"maximumEstimatedTimeInSeconds"`
@@ -81,6 +83,7 @@ type (
 		MinimumTemperatureInCelsius   *uint16                                      `json:"minimumTemperatureInCelsius"`
 		MaximumTemperatureInCelsius   *uint16                                      `json:"maximumTemperatureInCelsius"`
 		Products                      []*RecipeStepProductDatabaseCreationInput    `json:"products"`
+		Instruments                   []*RecipeStepInstrumentDatabaseCreationInput `json:"instruments"`
 		Notes                         string                                       `json:"notes"`
 		PreparationID                 string                                       `json:"preparationID"`
 		BelongsToRecipe               string                                       `json:"belongsToRecipe"`
@@ -227,6 +230,11 @@ func RecipeStepDatabaseCreationInputFromRecipeStepCreationInput(input *RecipeSte
 		ingredients = append(ingredients, RecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredientCreationInput(ingredient))
 	}
 
+	instruments := []*RecipeStepInstrumentDatabaseCreationInput{}
+	for _, instrument := range input.Instruments {
+		instruments = append(instruments, RecipeStepInstrumentDatabaseCreationInputFromRecipeStepInstrumentCreationInput(instrument))
+	}
+
 	products := []*RecipeStepProductDatabaseCreationInput{}
 	for _, product := range input.Products {
 		products = append(products, RecipeStepProductDatabaseCreationInputFromRecipeStepProductCreationInput(product))
@@ -243,6 +251,7 @@ func RecipeStepDatabaseCreationInputFromRecipeStepCreationInput(input *RecipeSte
 		Products:                      products,
 		Optional:                      input.Optional,
 		Ingredients:                   ingredients,
+		Instruments:                   instruments,
 	}
 
 	return x

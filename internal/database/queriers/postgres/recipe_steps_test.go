@@ -209,6 +209,7 @@ func TestQuerier_GetRecipeStep(T *testing.T) {
 
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStep := fakes.BuildFakeRecipeStep()
+		exampleRecipeStep.Instruments = nil
 		exampleRecipeStep.Ingredients = nil
 		exampleRecipeStep.Products = nil
 
@@ -337,6 +338,7 @@ func TestQuerier_GetRecipeSteps(T *testing.T) {
 		exampleRecipeStepList := fakes.BuildFakeRecipeStepList()
 
 		for i := range exampleRecipeStepList.RecipeSteps {
+			exampleRecipeStepList.RecipeSteps[i].Instruments = nil
 			exampleRecipeStepList.RecipeSteps[i].Ingredients = nil
 			exampleRecipeStepList.RecipeSteps[i].Products = nil
 		}
@@ -379,6 +381,7 @@ func TestQuerier_GetRecipeSteps(T *testing.T) {
 		exampleRecipeStepList.Page = 0
 		exampleRecipeStepList.Limit = 0
 		for i := range exampleRecipeStepList.RecipeSteps {
+			exampleRecipeStepList.RecipeSteps[i].Instruments = nil
 			exampleRecipeStepList.RecipeSteps[i].Ingredients = nil
 			exampleRecipeStepList.RecipeSteps[i].Products = nil
 		}
@@ -456,6 +459,7 @@ func TestQuerier_GetRecipeStepsWithIDs(T *testing.T) {
 		var exampleIDs []string
 		for i, x := range exampleRecipeStepList.RecipeSteps {
 			exampleIDs = append(exampleIDs, x.ID)
+			exampleRecipeStepList.RecipeSteps[i].Instruments = nil
 			exampleRecipeStepList.RecipeSteps[i].Ingredients = nil
 			exampleRecipeStepList.RecipeSteps[i].Products = nil
 		}
@@ -569,6 +573,7 @@ func TestQuerier_CreateRecipeStep(T *testing.T) {
 		exampleRecipeStep.ID = "1"
 		exampleRecipeStep.Ingredients = nil
 		exampleRecipeStep.Products = nil
+		exampleRecipeStep.Instruments = nil
 		exampleRecipeStep.Preparation = types.ValidPreparation{}
 		exampleInput := fakes.BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(exampleRecipeStep)
 
@@ -674,6 +679,11 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			exampleRecipeStep.Products[i].BelongsToRecipeStep = exampleRecipeStep.ID
 		}
 
+		for i := range exampleRecipeStep.Instruments {
+			exampleRecipeStep.Instruments[i].ID = "3"
+			exampleRecipeStep.Instruments[i].BelongsToRecipeStep = exampleRecipeStep.ID
+		}
+
 		exampleInput := fakes.BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(exampleRecipeStep)
 
 		ctx := context.Background()
@@ -728,6 +738,20 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 			}
 
 			db.ExpectExec(formatQueryForSQLMock(recipeStepProductCreationQuery)).
+				WithArgs(interfaceToDriverValue(args)...).
+				WillReturnResult(newArbitraryDatabaseResult())
+		}
+
+		for _, instrument := range exampleInput.Instruments {
+			args := []interface{}{
+				instrument.ID,
+				instrument.InstrumentID,
+				instrument.RecipeStepID,
+				instrument.Notes,
+				instrument.BelongsToRecipeStep,
+			}
+
+			db.ExpectExec(formatQueryForSQLMock(recipeStepInstrumentCreationQuery)).
 				WithArgs(interfaceToDriverValue(args)...).
 				WillReturnResult(newArbitraryDatabaseResult())
 		}
