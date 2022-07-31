@@ -36,17 +36,17 @@ type (
 	// RecipeStepProduct represents a recipe step product.
 	RecipeStepProduct struct {
 		_                    struct{}
-		LastUpdatedOn        *uint64 `json:"lastUpdatedOn"`
-		ArchivedOn           *uint64 `json:"archivedOn"`
-		ID                   string  `json:"id"`
-		Name                 string  `json:"name"`
-		Type                 string  `json:"type"`
-		QuantityType         string  `json:"quantityType"`
-		QuantityNotes        string  `json:"quantityNotes"`
-		BelongsToRecipeStep  string  `json:"belongsToRecipeStep"`
-		CreatedOn            uint64  `json:"createdOn"`
-		MinimumQuantityValue float32 `json:"minimumQuantityValue"`
-		MaximumQuantityValue float32 `json:"maximumQuantityValue"`
+		LastUpdatedOn        *uint64               `json:"lastUpdatedOn"`
+		ArchivedOn           *uint64               `json:"archivedOn"`
+		ID                   string                `json:"id"`
+		Name                 string                `json:"name"`
+		Type                 string                `json:"type"`
+		MeasurementUnit      *ValidMeasurementUnit `json:"measurementUnit"`
+		QuantityNotes        string                `json:"quantityNotes"`
+		BelongsToRecipeStep  string                `json:"belongsToRecipeStep"`
+		CreatedOn            uint64                `json:"createdOn"`
+		MinimumQuantityValue float32               `json:"minimumQuantityValue"`
+		MaximumQuantityValue float32               `json:"maximumQuantityValue"`
 	}
 
 	// RecipeStepProductList represents a list of recipe step products.
@@ -62,8 +62,8 @@ type (
 		ID                   string  `json:"-"`
 		Name                 string  `json:"name"`
 		Type                 string  `json:"type"`
-		QuantityType         string  `json:"quantityType"`
 		QuantityNotes        string  `json:"quantityNotes"`
+		MeasurementUnitID    string  `json:"measurementUnitID"`
 		BelongsToRecipeStep  string  `json:"-"`
 		MinimumQuantityValue float32 `json:"minimumQuantityValue"`
 		MaximumQuantityValue float32 `json:"maximumQuantityValue"`
@@ -75,7 +75,7 @@ type (
 		ID                   string  `json:"id"`
 		Name                 string  `json:"name"`
 		Type                 string  `json:"type"`
-		QuantityType         string  `json:"quantityType"`
+		MeasurementUnitID    string  `json:"measurementUnitID"`
 		QuantityNotes        string  `json:"quantityNotes"`
 		BelongsToRecipeStep  string  `json:"belongsToRecipeStep"`
 		MinimumQuantityValue float32 `json:"minimumQuantityValue"`
@@ -87,7 +87,7 @@ type (
 		_                    struct{}
 		Name                 *string  `json:"name"`
 		Type                 *string  `json:"type"`
-		QuantityType         *string  `json:"quantityType"`
+		MeasurementUnitID    *string  `json:"measurementUnitID"`
 		QuantityNotes        *string  `json:"quantityNotes"`
 		BelongsToRecipeStep  *string  `json:"belongsToRecipeStep"`
 		MinimumQuantityValue *float32 `json:"minimumQuantityValue"`
@@ -126,8 +126,8 @@ func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateRequestInput) {
 		x.Type = *input.Type
 	}
 
-	if input.QuantityType != nil && *input.QuantityType != x.QuantityType {
-		x.QuantityType = *input.QuantityType
+	if input.MeasurementUnitID != nil && *input.MeasurementUnitID != x.MeasurementUnit.ID {
+		x.MeasurementUnit = &ValidMeasurementUnit{ID: *input.MeasurementUnitID}
 	}
 
 	if input.MinimumQuantityValue != nil && *input.MinimumQuantityValue != x.MinimumQuantityValue {
@@ -152,7 +152,7 @@ func (x *RecipeStepProductCreationRequestInput) ValidateWithContext(ctx context.
 		x,
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Type, validation.Required),
-		validation.Field(&x.QuantityType, validation.Required),
+		validation.Field(&x.MeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantityValue, validation.Required),
 	)
 }
@@ -167,7 +167,7 @@ func (x *RecipeStepProductDatabaseCreationInput) ValidateWithContext(ctx context
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Type, validation.In(RecipeStepProductIngredientType, RecipeStepProductInstrumentType)),
-		validation.Field(&x.QuantityType, validation.Required),
+		validation.Field(&x.MeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantityValue, validation.Required),
 	)
 }
@@ -181,7 +181,7 @@ func RecipeStepProductUpdateRequestInputFromRecipeStepProduct(input *RecipeStepP
 	x := &RecipeStepProductUpdateRequestInput{
 		Name:                 &input.Name,
 		Type:                 &input.Type,
-		QuantityType:         &input.QuantityType,
+		MeasurementUnitID:    &input.MeasurementUnit.ID,
 		QuantityNotes:        &input.QuantityNotes,
 		BelongsToRecipeStep:  &input.BelongsToRecipeStep,
 		MinimumQuantityValue: &input.MinimumQuantityValue,
@@ -200,7 +200,7 @@ func RecipeStepProductDatabaseCreationInputFromRecipeStepProductCreationInput(in
 	x := &RecipeStepProductDatabaseCreationInput{
 		Name:                 input.Name,
 		Type:                 input.Type,
-		QuantityType:         input.QuantityType,
+		MeasurementUnitID:    input.MeasurementUnitID,
 		QuantityNotes:        input.QuantityNotes,
 		MinimumQuantityValue: input.MinimumQuantityValue,
 		MaximumQuantityValue: input.MaximumQuantityValue,
@@ -218,7 +218,7 @@ func (x *RecipeStepProductUpdateRequestInput) ValidateWithContext(ctx context.Co
 		x,
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Type, validation.Required),
-		validation.Field(&x.QuantityType, validation.Required),
+		validation.Field(&x.MeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantityValue, validation.Required),
 		validation.Field(&x.MaximumQuantityValue, validation.Required),
 	)

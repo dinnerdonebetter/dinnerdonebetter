@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -78,6 +79,10 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 			exampleRecipe.Steps[i].Ingredients[j].IngredientID = stringPointer(createdValidIngredient.ID)
 			exampleRecipe.Steps[i].Ingredients[j].ProductOfRecipeStep = false
 			exampleRecipe.Steps[i].Ingredients[j].MeasurementUnit = createdValidMeasurementUnit
+		}
+
+		for j := range recipeStep.Products {
+			exampleRecipe.Steps[i].Products[j].MeasurementUnit = createdValidMeasurementUnit
 		}
 	}
 
@@ -167,7 +172,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 							{
 								Name:                 "soaked pinto beans",
 								Type:                 types.RecipeStepProductIngredientType,
-								QuantityType:         "grams",
+								MeasurementUnit:      grams,
 								QuantityNotes:        "",
 								MinimumQuantityValue: 1000,
 							},
@@ -200,7 +205,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 							{
 								Name:                 "final output",
 								Type:                 types.RecipeStepProductIngredientType,
-								QuantityType:         "grams",
+								MeasurementUnit:      grams,
 								QuantityNotes:        "",
 								MinimumQuantityValue: 1010,
 							},
@@ -264,7 +269,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						ID:                   product.ID,
 						Name:                 product.Name,
 						Type:                 product.Type,
-						QuantityType:         product.QuantityType,
+						MeasurementUnitID:    product.MeasurementUnit.ID,
 						QuantityNotes:        product.QuantityNotes,
 						BelongsToRecipeStep:  product.BelongsToRecipeStep,
 						MinimumQuantityValue: product.MinimumQuantityValue,
@@ -274,6 +279,10 @@ func (s *TestSuite) TestRecipes_Realistic() {
 
 				exampleRecipeInput.Steps = append(exampleRecipeInput.Steps, newStep)
 			}
+
+			var b bytes.Buffer
+			require.NoError(t, json.NewEncoder(&b).Encode(exampleRecipeInput))
+			t.Logf("creating recipe with input: %s", b.String())
 
 			created, err := testClients.main.CreateRecipe(ctx, exampleRecipeInput)
 			require.NoError(t, err)
@@ -370,6 +379,10 @@ func (s *TestSuite) TestRecipes_AlsoCreateMeal() {
 					exampleRecipe.Steps[i].Ingredients[j].IngredientID = stringPointer(createdValidIngredient.ID)
 					exampleRecipe.Steps[i].Ingredients[j].ProductOfRecipeStep = false
 					exampleRecipe.Steps[i].Ingredients[j].MeasurementUnit = createdValidMeasurementUnit
+				}
+
+				for j := range recipeStep.Products {
+					exampleRecipe.Steps[i].Products[j].MeasurementUnit = createdValidMeasurementUnit
 				}
 			}
 

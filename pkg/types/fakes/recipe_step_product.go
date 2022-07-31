@@ -16,7 +16,7 @@ func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 		MinimumQuantityValue: fake.Float32(),
 		MaximumQuantityValue: fake.Float32(),
 		QuantityNotes:        buildUniqueString(),
-		QuantityType:         buildUniqueString(),
+		MeasurementUnit:      BuildFakeValidMeasurementUnit(),
 		CreatedOn:            uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipeStep:  fake.UUID(),
 	}
@@ -49,7 +49,7 @@ func BuildFakeRecipeStepProductUpdateRequestInput() *types.RecipeStepProductUpda
 		MinimumQuantityValue: &recipeStepProduct.MinimumQuantityValue,
 		MaximumQuantityValue: &recipeStepProduct.MaximumQuantityValue,
 		QuantityNotes:        &recipeStepProduct.QuantityNotes,
-		QuantityType:         &recipeStepProduct.QuantityType,
+		MeasurementUnitID:    &recipeStepProduct.MeasurementUnit.ID,
 		BelongsToRecipeStep:  &recipeStepProduct.BelongsToRecipeStep,
 	}
 }
@@ -62,7 +62,7 @@ func BuildFakeRecipeStepProductUpdateRequestInputFromRecipeStepProduct(recipeSte
 		MinimumQuantityValue: &recipeStepProduct.MinimumQuantityValue,
 		MaximumQuantityValue: &recipeStepProduct.MaximumQuantityValue,
 		QuantityNotes:        &recipeStepProduct.QuantityNotes,
-		QuantityType:         &recipeStepProduct.QuantityType,
+		MeasurementUnitID:    &recipeStepProduct.MeasurementUnit.ID,
 		BelongsToRecipeStep:  &recipeStepProduct.BelongsToRecipeStep,
 	}
 }
@@ -82,7 +82,7 @@ func BuildFakeRecipeStepProductCreationRequestInputFromRecipeStepProduct(recipeS
 		MinimumQuantityValue: recipeStepProduct.MinimumQuantityValue,
 		MaximumQuantityValue: recipeStepProduct.MaximumQuantityValue,
 		QuantityNotes:        recipeStepProduct.QuantityNotes,
-		QuantityType:         recipeStepProduct.QuantityType,
+		MeasurementUnitID:    recipeStepProduct.MeasurementUnit.ID,
 		BelongsToRecipeStep:  recipeStepProduct.BelongsToRecipeStep,
 	}
 }
@@ -102,7 +102,7 @@ func BuildFakeRecipeStepProductDatabaseCreationInputFromRecipeStepProduct(recipe
 		MinimumQuantityValue: recipeStepProduct.MinimumQuantityValue,
 		MaximumQuantityValue: recipeStepProduct.MaximumQuantityValue,
 		QuantityNotes:        recipeStepProduct.QuantityNotes,
-		QuantityType:         recipeStepProduct.QuantityType,
+		MeasurementUnitID:    recipeStepProduct.MeasurementUnit.ID,
 		BelongsToRecipeStep:  recipeStepProduct.BelongsToRecipeStep,
 	}
 }

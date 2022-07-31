@@ -33,7 +33,10 @@ func convertRecipeStepToRecipeStepUpdateInput(x *types.RecipeStep) *types.Recipe
 		MaximumEstimatedTimeInSeconds: &x.MaximumEstimatedTimeInSeconds,
 		MinimumTemperatureInCelsius:   x.MinimumTemperatureInCelsius,
 		MaximumTemperatureInCelsius:   x.MaximumTemperatureInCelsius,
+		Preparation:                   &x.Preparation,
+		Optional:                      &x.Optional,
 		Notes:                         &x.Notes,
+		BelongsToRecipe:               x.BelongsToRecipe,
 	}
 }
 
@@ -111,7 +114,11 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 				exampleRecipeStep.BelongsToRecipe = createdRecipe.ID
 				for j := range exampleRecipeStep.Ingredients {
 					exampleRecipeStep.Ingredients[j].IngredientID = stringPointer(createdValidIngredients[j].ID)
-					exampleRecipeStep.Ingredients[j].MeasurementUnit = &types.ValidMeasurementUnit{ID: createdValidMeasurementUnit.ID}
+					exampleRecipeStep.Ingredients[j].MeasurementUnit = createdValidMeasurementUnit
+				}
+
+				for j := range exampleRecipeStep.Products {
+					exampleRecipeStep.Products[j].MeasurementUnit = createdValidMeasurementUnit
 				}
 
 				exampleRecipeStepInput := fakes.BuildFakeRecipeStepCreationRequestInputFromRecipeStep(exampleRecipeStep)
