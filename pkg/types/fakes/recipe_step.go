@@ -18,6 +18,13 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 		ingredients = append(ingredients, ing)
 	}
 
+	var instruments []*types.RecipeStepInstrument
+	for i := 0; i < exampleQuantity; i++ {
+		ing := BuildFakeRecipeStepInstrument()
+		ing.BelongsToRecipeStep = recipeStepID
+		instruments = append(instruments, ing)
+	}
+
 	var products []*types.RecipeStepProduct
 	for i := 0; i < exampleQuantity; i++ {
 		p := BuildFakeRecipeStepProduct()
@@ -39,6 +46,7 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 		CreatedOn:                     uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipe:               ksuid.New().String(),
 		Ingredients:                   ingredients,
+		Instruments:                   instruments,
 	}
 }
 
@@ -104,6 +112,11 @@ func BuildFakeRecipeStepCreationRequestInputFromRecipeStep(recipeStep *types.Rec
 		ingredients = append(ingredients, BuildFakeRecipeStepIngredientCreationRequestInputFromRecipeStepIngredient(ingredient))
 	}
 
+	instruments := []*types.RecipeStepInstrumentCreationRequestInput{}
+	for _, instrument := range recipeStep.Instruments {
+		instruments = append(instruments, BuildFakeRecipeStepInstrumentCreationRequestInputFromRecipeStepInstrument(instrument))
+	}
+
 	products := []*types.RecipeStepProductCreationRequestInput{}
 	for _, product := range recipeStep.Products {
 		products = append(products, BuildFakeRecipeStepProductCreationRequestInputFromRecipeStepProduct(product))
@@ -122,6 +135,7 @@ func BuildFakeRecipeStepCreationRequestInputFromRecipeStep(recipeStep *types.Rec
 		Notes:                         recipeStep.Notes,
 		BelongsToRecipe:               recipeStep.BelongsToRecipe,
 		Ingredients:                   ingredients,
+		Instruments:                   instruments,
 	}
 }
 
@@ -136,6 +150,11 @@ func BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(recipeStep *types.Re
 	ingredients := []*types.RecipeStepIngredientDatabaseCreationInput{}
 	for _, i := range recipeStep.Ingredients {
 		ingredients = append(ingredients, BuildFakeRecipeStepIngredientDatabaseCreationInputFromRecipeStepIngredient(i))
+	}
+
+	instruments := []*types.RecipeStepInstrumentDatabaseCreationInput{}
+	for _, i := range recipeStep.Instruments {
+		instruments = append(instruments, BuildFakeRecipeStepInstrumentDatabaseCreationInputFromRecipeStepInstrument(i))
 	}
 
 	products := []*types.RecipeStepProductDatabaseCreationInput{}
@@ -154,6 +173,7 @@ func BuildFakeRecipeStepDatabaseCreationInputFromRecipeStep(recipeStep *types.Re
 		MaximumTemperatureInCelsius:   recipeStep.MaximumTemperatureInCelsius,
 		Notes:                         recipeStep.Notes,
 		Ingredients:                   ingredients,
+		Instruments:                   instruments,
 		Products:                      products,
 		BelongsToRecipe:               recipeStep.BelongsToRecipe,
 	}

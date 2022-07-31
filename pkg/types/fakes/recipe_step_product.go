@@ -12,6 +12,7 @@ func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 	return &types.RecipeStepProduct{
 		ID:                  ksuid.New().String(),
 		Name:                buildUniqueString(),
+		Type:                types.RecipeStepProductIngredientType,
 		QuantityValue:       fake.Float32(),
 		QuantityNotes:       buildUniqueString(),
 		QuantityType:        buildUniqueString(),
@@ -43,6 +44,7 @@ func BuildFakeRecipeStepProductUpdateRequestInput() *types.RecipeStepProductUpda
 	recipeStepProduct := BuildFakeRecipeStepProduct()
 	return &types.RecipeStepProductUpdateRequestInput{
 		Name:                &recipeStepProduct.Name,
+		Type:                &recipeStepProduct.Type,
 		QuantityValue:       &recipeStepProduct.QuantityValue,
 		QuantityNotes:       &recipeStepProduct.QuantityNotes,
 		QuantityType:        &recipeStepProduct.QuantityType,
@@ -54,6 +56,7 @@ func BuildFakeRecipeStepProductUpdateRequestInput() *types.RecipeStepProductUpda
 func BuildFakeRecipeStepProductUpdateRequestInputFromRecipeStepProduct(recipeStepProduct *types.RecipeStepProduct) *types.RecipeStepProductUpdateRequestInput {
 	return &types.RecipeStepProductUpdateRequestInput{
 		Name:                &recipeStepProduct.Name,
+		Type:                &recipeStepProduct.Type,
 		QuantityValue:       &recipeStepProduct.QuantityValue,
 		QuantityNotes:       &recipeStepProduct.QuantityNotes,
 		QuantityType:        &recipeStepProduct.QuantityType,
@@ -72,6 +75,7 @@ func BuildFakeRecipeStepProductCreationRequestInputFromRecipeStepProduct(recipeS
 	return &types.RecipeStepProductCreationRequestInput{
 		ID:                  recipeStepProduct.ID,
 		Name:                recipeStepProduct.Name,
+		Type:                recipeStepProduct.Type,
 		QuantityValue:       recipeStepProduct.QuantityValue,
 		QuantityNotes:       recipeStepProduct.QuantityNotes,
 		QuantityType:        recipeStepProduct.QuantityType,
@@ -90,6 +94,7 @@ func BuildFakeRecipeStepProductDatabaseCreationInputFromRecipeStepProduct(recipe
 	return &types.RecipeStepProductDatabaseCreationInput{
 		ID:                  recipeStepProduct.ID,
 		Name:                recipeStepProduct.Name,
+		Type:                recipeStepProduct.Type,
 		QuantityValue:       recipeStepProduct.QuantityValue,
 		QuantityNotes:       recipeStepProduct.QuantityNotes,
 		QuantityType:        recipeStepProduct.QuantityType,

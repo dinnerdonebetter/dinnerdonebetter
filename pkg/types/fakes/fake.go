@@ -42,5 +42,5 @@ func BuildFakeTime() uint64 {
 }
 
 func buildUniqueString() string {
-	return fake.LoremIpsumSentence(5)
+	return fake.LoremIpsumSentence(7)
 }

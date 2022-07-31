@@ -19,6 +19,7 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 		Products: []*RecipeStepProductCreationRequestInput{
 			{
 				Name:          fake.LoremIpsumSentence(exampleQuantity),
+				Type:          RecipeStepProductIngredientType,
 				QuantityType:  fake.LoremIpsumSentence(exampleQuantity),
 				QuantityValue: fake.Float32(),
 				QuantityNotes: fake.LoremIpsumSentence(exampleQuantity),

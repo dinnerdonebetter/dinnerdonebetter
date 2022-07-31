@@ -278,9 +278,11 @@ func TestQuerier_getRecipe(T *testing.T) {
 		}
 
 		allIngredients := []*types.RecipeStepIngredient{}
+		allInstruments := []*types.RecipeStepInstrument{}
 		allProducts := []*types.RecipeStepProduct{}
 		for _, step := range exampleRecipe.Steps {
 			allIngredients = append(allIngredients, step.Ingredients...)
+			allInstruments = append(allInstruments, step.Instruments...)
 			allProducts = append(allProducts, step.Products...)
 		}
 
@@ -308,6 +310,14 @@ func TestQuerier_getRecipe(T *testing.T) {
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).
 			WithArgs(interfaceToDriverValue(productsArgs)...).
 			WillReturnRows(buildMockRowsFromRecipeStepProducts(false, 0, allProducts...))
+
+		instrumentsArgs := []interface{}{
+			exampleRecipe.ID,
+			exampleRecipe.ID,
+		}
+		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepInstrumentsForRecipeQuery)).
+			WithArgs(interfaceToDriverValue(instrumentsArgs)...).
+			WillReturnRows(buildMockRowsFromRecipeStepInstruments(false, 0, allInstruments...))
 
 		actual, err := c.getRecipe(ctx, exampleRecipe.ID, exampleUserID)
 		assert.NoError(t, err)
@@ -415,9 +425,11 @@ func TestQuerier_GetRecipe(T *testing.T) {
 		}
 
 		allIngredients := []*types.RecipeStepIngredient{}
+		allInstruments := []*types.RecipeStepInstrument{}
 		allProducts := []*types.RecipeStepProduct{}
 		for _, step := range exampleRecipe.Steps {
 			allIngredients = append(allIngredients, step.Ingredients...)
+			allInstruments = append(allInstruments, step.Instruments...)
 			allProducts = append(allProducts, step.Products...)
 		}
 
@@ -444,6 +456,14 @@ func TestQuerier_GetRecipe(T *testing.T) {
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).
 			WithArgs(interfaceToDriverValue(productsArgs)...).
 			WillReturnRows(buildMockRowsFromRecipeStepProducts(false, 0, allProducts...))
+
+		instrumentsArgs := []interface{}{
+			exampleRecipe.ID,
+			exampleRecipe.ID,
+		}
+		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepInstrumentsForRecipeQuery)).
+			WithArgs(interfaceToDriverValue(instrumentsArgs)...).
+			WillReturnRows(buildMockRowsFromRecipeStepInstruments(false, 0, allInstruments...))
 
 		actual, err := c.GetRecipe(ctx, exampleRecipe.ID)
 		assert.NoError(t, err)
@@ -568,9 +588,11 @@ func TestQuerier_GetRecipeByUser(T *testing.T) {
 		}
 
 		allIngredients := []*types.RecipeStepIngredient{}
+		allInstruments := []*types.RecipeStepInstrument{}
 		allProducts := []*types.RecipeStepProduct{}
 		for _, step := range exampleRecipe.Steps {
 			allIngredients = append(allIngredients, step.Ingredients...)
+			allInstruments = append(allInstruments, step.Instruments...)
 			allProducts = append(allProducts, step.Products...)
 		}
 
@@ -598,6 +620,14 @@ func TestQuerier_GetRecipeByUser(T *testing.T) {
 		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).
 			WithArgs(interfaceToDriverValue(productsArgs)...).
 			WillReturnRows(buildMockRowsFromRecipeStepProducts(false, 0, allProducts...))
+
+		instrumentsArgs := []interface{}{
+			exampleRecipe.ID,
+			exampleRecipe.ID,
+		}
+		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepInstrumentsForRecipeQuery)).
+			WithArgs(interfaceToDriverValue(instrumentsArgs)...).
+			WillReturnRows(buildMockRowsFromRecipeStepInstruments(false, 0, allInstruments...))
 
 		actual, err := c.GetRecipeByIDAndUser(ctx, exampleRecipe.ID, exampleRecipe.CreatedByUser)
 		assert.NoError(t, err)
@@ -1065,10 +1095,16 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleRecipe.Steps[i].ID = "2"
 			exampleRecipe.Steps[i].BelongsToRecipe = "1"
 			exampleRecipe.Steps[i].Preparation = types.ValidPreparation{}
+
 			for j := range step.Ingredients {
 				exampleRecipe.Steps[i].Ingredients[j].ID = "3"
 				exampleRecipe.Steps[i].Ingredients[j].BelongsToRecipeStep = "2"
 				exampleRecipe.Steps[i].Ingredients[j].MeasurementUnit = &types.ValidMeasurementUnit{ID: exampleRecipe.Steps[i].Ingredients[j].MeasurementUnit.ID}
+			}
+
+			for j := range step.Instruments {
+				exampleRecipe.Steps[i].Instruments[j].ID = "3"
+				exampleRecipe.Steps[i].Instruments[j].BelongsToRecipeStep = "2"
 			}
 
 			step.Products = nil
@@ -1131,6 +1167,21 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					WithArgs(interfaceToDriverValue(recipeStepIngredientCreationArgs)...).
 					WillReturnResult(newArbitraryDatabaseResult())
 			}
+
+			for _, instrument := range step.Instruments {
+				recipeStepInstrumentCreationArgs := []interface{}{
+					instrument.ID,
+					instrument.InstrumentID,
+					instrument.RecipeStepID,
+					instrument.Notes,
+					instrument.PreferenceRank,
+					instrument.BelongsToRecipeStep,
+				}
+
+				db.ExpectExec(formatQueryForSQLMock(recipeStepInstrumentCreationQuery)).
+					WithArgs(interfaceToDriverValue(recipeStepInstrumentCreationArgs)...).
+					WillReturnResult(newArbitraryDatabaseResult())
+			}
 		}
 
 		db.ExpectCommit()
@@ -1140,8 +1191,8 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		}
 
 		actual, err := c.CreateRecipe(ctx, exampleInput)
-		require.NotNil(t, actual)
 		require.NoError(t, err)
+		require.NotNil(t, actual)
 		require.Equal(t, len(exampleRecipe.Steps), len(actual.Steps))
 
 		for i, step := range exampleRecipe.Steps {
@@ -1151,6 +1202,11 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			for j, ingredient := range step.Ingredients {
 				ingredient.BelongsToRecipeStep = step.ID
 				ingredient.CreatedOn = actual.Steps[i].Ingredients[j].CreatedOn
+			}
+
+			for j, instrument := range step.Instruments {
+				instrument.BelongsToRecipeStep = step.ID
+				instrument.CreatedOn = actual.Steps[i].Instruments[j].CreatedOn
 			}
 		}
 

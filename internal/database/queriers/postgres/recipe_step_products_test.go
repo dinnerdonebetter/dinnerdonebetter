@@ -29,6 +29,7 @@ func buildMockRowsFromRecipeStepProducts(includeCounts bool, filteredCount uint6
 		rowValues := []driver.Value{
 			x.ID,
 			x.Name,
+			x.Type,
 			x.QuantityType,
 			x.QuantityValue,
 			x.QuantityNotes,
@@ -706,6 +707,7 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 		args := []interface{}{
 			exampleInput.ID,
 			exampleInput.Name,
+			exampleInput.Type,
 			exampleInput.QuantityType,
 			exampleInput.QuantityValue,
 			exampleInput.QuantityNotes,
@@ -751,6 +753,7 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 		args := []interface{}{
 			exampleInput.ID,
 			exampleInput.Name,
+			exampleInput.Type,
 			exampleInput.QuantityType,
 			exampleInput.QuantityValue,
 			exampleInput.QuantityNotes,
@@ -787,6 +790,7 @@ func TestQuerier_UpdateRecipeStepProduct(T *testing.T) {
 
 		args := []interface{}{
 			exampleRecipeStepProduct.Name,
+			exampleRecipeStepProduct.Type,
 			exampleRecipeStepProduct.QuantityType,
 			exampleRecipeStepProduct.QuantityValue,
 			exampleRecipeStepProduct.QuantityNotes,
@@ -822,6 +826,7 @@ func TestQuerier_UpdateRecipeStepProduct(T *testing.T) {
 
 		args := []interface{}{
 			exampleRecipeStepProduct.Name,
+			exampleRecipeStepProduct.Type,
 			exampleRecipeStepProduct.QuantityType,
 			exampleRecipeStepProduct.QuantityValue,
 			exampleRecipeStepProduct.QuantityNotes,

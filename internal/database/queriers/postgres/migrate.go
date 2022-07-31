@@ -100,6 +100,16 @@ var (
 			Description: "create valid ingredient measurement units table",
 			Script:      fetchMigration("00017_valid_ingredient_measurement_units"),
 		},
+		{
+			Version:     30,
+			Description: "myriad recipe step improvements",
+			Script:      fetchMigration("00030_recipe_step_improvements"),
+		},
+		{
+			Version:     31,
+			Description: "add preference rank to recipe step instruments",
+			Script:      fetchMigration("00031_recipe_step_instruments_preference_rank"),
+		},
 	}
 )
 

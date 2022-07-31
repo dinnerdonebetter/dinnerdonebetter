@@ -61,11 +61,18 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			input.Steps[i].Ingredients[j].BelongsToRecipeStep = input.Steps[i].ID
 		}
 
+		for j := range step.Instruments {
+			input.Steps[i].Instruments[j].ID = ksuid.New().String()
+			input.Steps[i].Instruments[j].BelongsToRecipeStep = input.Steps[i].ID
+		}
+
 		for j := range step.Products {
 			input.Steps[i].Products[j].ID = ksuid.New().String()
 			input.Steps[i].Products[j].BelongsToRecipeStep = input.Steps[i].ID
 		}
 	}
+
+	logger.WithValue("input", input).Debug("creating recipe from HTTP route")
 
 	input.CreatedByUser = sessionCtxData.Requester.UserID
 	tracing.AttachRecipeIDToSpan(span, input.ID)

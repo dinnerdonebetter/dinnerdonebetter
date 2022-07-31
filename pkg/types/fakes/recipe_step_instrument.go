@@ -14,6 +14,7 @@ func BuildFakeRecipeStepInstrument() *types.RecipeStepInstrument {
 		InstrumentID:        func(x string) *string { return &x }(buildUniqueString()),
 		RecipeStepID:        buildUniqueString(),
 		Notes:               buildUniqueString(),
+		PreferenceRank:      fake.Uint8(),
 		CreatedOn:           uint64(uint32(fake.Date().Unix())),
 		BelongsToRecipeStep: fake.UUID(),
 	}
@@ -44,6 +45,7 @@ func BuildFakeRecipeStepInstrumentUpdateRequestInput() *types.RecipeStepInstrume
 		InstrumentID:        recipeStepInstrument.InstrumentID,
 		RecipeStepID:        &recipeStepInstrument.RecipeStepID,
 		Notes:               &recipeStepInstrument.Notes,
+		PreferenceRank:      &recipeStepInstrument.PreferenceRank,
 		BelongsToRecipeStep: &recipeStepInstrument.BelongsToRecipeStep,
 	}
 }
@@ -54,6 +56,7 @@ func BuildFakeRecipeStepInstrumentUpdateRequestInputFromRecipeStepInstrument(rec
 		InstrumentID:        recipeStepInstrument.InstrumentID,
 		RecipeStepID:        &recipeStepInstrument.RecipeStepID,
 		Notes:               &recipeStepInstrument.Notes,
+		PreferenceRank:      &recipeStepInstrument.PreferenceRank,
 		BelongsToRecipeStep: &recipeStepInstrument.BelongsToRecipeStep,
 	}
 }
@@ -71,6 +74,7 @@ func BuildFakeRecipeStepInstrumentCreationRequestInputFromRecipeStepInstrument(r
 		InstrumentID:        recipeStepInstrument.InstrumentID,
 		RecipeStepID:        recipeStepInstrument.RecipeStepID,
 		Notes:               recipeStepInstrument.Notes,
+		PreferenceRank:      recipeStepInstrument.PreferenceRank,
 		BelongsToRecipeStep: recipeStepInstrument.BelongsToRecipeStep,
 	}
 }
@@ -88,6 +92,7 @@ func BuildFakeRecipeStepInstrumentDatabaseCreationInputFromRecipeStepInstrument(
 		InstrumentID:        recipeStepInstrument.InstrumentID,
 		RecipeStepID:        recipeStepInstrument.RecipeStepID,
 		Notes:               recipeStepInstrument.Notes,
+		PreferenceRank:      recipeStepInstrument.PreferenceRank,
 		BelongsToRecipeStep: recipeStepInstrument.BelongsToRecipeStep,
 	}
 }

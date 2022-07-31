@@ -24,6 +24,7 @@ var (
 	recipeStepProductsTableColumns = []string{
 		"recipe_step_products.id",
 		"recipe_step_products.name",
+		"recipe_step_products.type",
 		"recipe_step_products.quantity_type",
 		"recipe_step_products.quantity_value",
 		"recipe_step_products.quantity_notes",
@@ -51,6 +52,7 @@ func (q *SQLQuerier) scanRecipeStepProduct(ctx context.Context, scan database.Sc
 	targetVars := []interface{}{
 		&x.ID,
 		&x.Name,
+		&x.Type,
 		&x.QuantityType,
 		&x.QuantityValue,
 		&x.QuantityNotes,
@@ -150,6 +152,7 @@ func (q *SQLQuerier) RecipeStepProductExists(ctx context.Context, recipeID, reci
 const getRecipeStepProductQuery = `SELECT
 	recipe_step_products.id,
 	recipe_step_products.name,
+	recipe_step_products.type,
 	recipe_step_products.quantity_type,
 	recipe_step_products.quantity_value,
 	recipe_step_products.quantity_notes,
@@ -233,6 +236,7 @@ func (q *SQLQuerier) GetTotalRecipeStepProductCount(ctx context.Context) (uint64
 const getRecipeStepProductsForRecipeQuery = `SELECT
 	recipe_step_products.id,
 	recipe_step_products.name,
+	recipe_step_products.type,
 	recipe_step_products.quantity_type,
 	recipe_step_products.quantity_value,
 	recipe_step_products.quantity_notes,
@@ -387,7 +391,7 @@ func (q *SQLQuerier) GetRecipeStepProductsWithIDs(ctx context.Context, recipeSte
 	return recipeStepProducts, nil
 }
 
-const recipeStepProductCreationQuery = "INSERT INTO recipe_step_products (id,name,quantity_type,quantity_value,quantity_notes,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6)"
+const recipeStepProductCreationQuery = "INSERT INTO recipe_step_products (id,name,type,quantity_type,quantity_value,quantity_notes,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7)"
 
 // CreateRecipeStepProduct creates a recipe step product in the database.
 func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepProductDatabaseCreationInput) (*types.RecipeStepProduct, error) {
@@ -403,6 +407,7 @@ func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQ
 	args := []interface{}{
 		input.ID,
 		input.Name,
+		input.Type,
 		input.QuantityType,
 		input.QuantityValue,
 		input.QuantityNotes,
@@ -417,6 +422,7 @@ func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQ
 	x := &types.RecipeStepProduct{
 		ID:                  input.ID,
 		Name:                input.Name,
+		Type:                input.Type,
 		QuantityType:        input.QuantityType,
 		QuantityValue:       input.QuantityValue,
 		QuantityNotes:       input.QuantityNotes,
@@ -434,7 +440,7 @@ func (q *SQLQuerier) CreateRecipeStepProduct(ctx context.Context, input *types.R
 	return q.createRecipeStepProduct(ctx, q.db, input)
 }
 
-const updateRecipeStepProductQuery = "UPDATE recipe_step_products SET name = $1, quantity_type = $2, quantity_value = $3, quantity_notes = $4, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $5 AND id = $6"
+const updateRecipeStepProductQuery = "UPDATE recipe_step_products SET name = $1, type = $2, quantity_type = $3, quantity_value = $4, quantity_notes = $5, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $6 AND id = $7"
 
 // UpdateRecipeStepProduct updates a particular recipe step product.
 func (q *SQLQuerier) UpdateRecipeStepProduct(ctx context.Context, updated *types.RecipeStepProduct) error {
@@ -450,6 +456,7 @@ func (q *SQLQuerier) UpdateRecipeStepProduct(ctx context.Context, updated *types
 
 	args := []interface{}{
 		updated.Name,
+		updated.Type,
 		updated.QuantityType,
 		updated.QuantityValue,
 		updated.QuantityNotes,

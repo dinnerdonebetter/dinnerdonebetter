@@ -211,9 +211,11 @@ func TestQuerier_GetMeal(T *testing.T) {
 
 		for _, recipe := range exampleMeal.Recipes {
 			allIngredients := []*types.RecipeStepIngredient{}
+			allInstruments := []*types.RecipeStepInstrument{}
 			allProducts := []*types.RecipeStepProduct{}
 			for _, step := range recipe.Steps {
 				allIngredients = append(allIngredients, step.Ingredients...)
+				allInstruments = append(allInstruments, step.Instruments...)
 				allProducts = append(allProducts, step.Products...)
 			}
 
@@ -237,6 +239,14 @@ func TestQuerier_GetMeal(T *testing.T) {
 			db.ExpectQuery(formatQueryForSQLMock(getRecipeStepProductsForRecipeQuery)).
 				WithArgs(interfaceToDriverValue(productsArgs)...).
 				WillReturnRows(buildMockRowsFromRecipeStepProducts(false, 0, allProducts...))
+
+			instrumentsArgs := []interface{}{
+				recipe.ID,
+				recipe.ID,
+			}
+			db.ExpectQuery(formatQueryForSQLMock(getRecipeStepInstrumentsForRecipeQuery)).
+				WithArgs(interfaceToDriverValue(instrumentsArgs)...).
+				WillReturnRows(buildMockRowsFromRecipeStepInstruments(false, 0, allInstruments...))
 		}
 
 		actual, err := c.GetMeal(ctx, exampleMeal.ID)

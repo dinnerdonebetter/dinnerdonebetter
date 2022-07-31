@@ -352,7 +352,8 @@ func (q *SQLQuerier) createRecipeStep(ctx context.Context, db database.SQLQueryE
 		return nil, ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue(keys.RecipeStepIDKey, input.ID)
+	logger := q.logger.WithValue(keys.RecipeStepIDKey, input.ID).WithValue("input", input)
+	logger.Debug("creating recipe step")
 
 	args := []interface{}{
 		input.ID,
@@ -403,6 +404,16 @@ func (q *SQLQuerier) createRecipeStep(ctx context.Context, db database.SQLQueryE
 		}
 
 		x.Products = append(x.Products, product)
+	}
+
+	for _, instrumentInput := range input.Instruments {
+		instrumentInput.BelongsToRecipeStep = x.ID
+		instrument, createErr := q.createRecipeStepInstrument(ctx, db, instrumentInput)
+		if createErr != nil {
+			return nil, observability.PrepareError(createErr, logger, span, "creating recipe step instrument")
+		}
+
+		x.Instruments = append(x.Instruments, instrument)
 	}
 
 	tracing.AttachRecipeStepIDToSpan(span, x.ID)
