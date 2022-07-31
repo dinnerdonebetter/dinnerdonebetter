@@ -18,11 +18,11 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 		Notes:                         fake.LoremIpsumSentence(exampleQuantity),
 		Products: []*RecipeStepProductCreationRequestInput{
 			{
-				Name:          fake.LoremIpsumSentence(exampleQuantity),
-				Type:          RecipeStepProductIngredientType,
-				QuantityType:  fake.LoremIpsumSentence(exampleQuantity),
-				QuantityValue: fake.Float32(),
-				QuantityNotes: fake.LoremIpsumSentence(exampleQuantity),
+				Name:                 fake.LoremIpsumSentence(exampleQuantity),
+				Type:                 RecipeStepProductIngredientType,
+				MeasurementUnitID:    fake.LoremIpsumSentence(exampleQuantity),
+				MinimumQuantityValue: fake.Float32(),
+				QuantityNotes:        fake.LoremIpsumSentence(exampleQuantity),
 			},
 		},
 		Ingredients: []*RecipeStepIngredientCreationRequestInput{

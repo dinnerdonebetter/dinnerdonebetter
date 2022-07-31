@@ -170,6 +170,11 @@ var (
 			Description: "add preference rank to recipe step instruments",
 			Script:      fetchMigration("00031_recipe_step_instruments_preference_rank"),
 		},
+		{
+			Version:     32,
+			Description: "various recipe step product improvements",
+			Script:      fetchMigration("00032_recipe_step_products_improvements"),
+		},
 	}
 )
 

@@ -15,6 +15,7 @@ import (
 
 const (
 	validMeasurementUnitsOnRecipeStepIngredientsJoinClause = `valid_measurement_units ON recipe_step_ingredients.measurement_unit=valid_measurement_units.id`
+	validMeasurementUnitsOnRecipeStepProductsJoinClause    = `valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id`
 )
 
 var (

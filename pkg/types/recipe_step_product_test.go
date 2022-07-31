@@ -15,11 +15,11 @@ func TestRecipeStepProductCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepProductCreationRequestInput{
-			Name:          fake.LoremIpsumSentence(exampleQuantity),
-			Type:          RecipeStepProductIngredientType,
-			QuantityType:  fake.LoremIpsumSentence(exampleQuantity),
-			QuantityValue: fake.Float32(),
-			QuantityNotes: fake.LoremIpsumSentence(exampleQuantity),
+			Name:                 fake.LoremIpsumSentence(exampleQuantity),
+			Type:                 RecipeStepProductIngredientType,
+			MeasurementUnitID:    fake.LoremIpsumSentence(exampleQuantity),
+			MinimumQuantityValue: fake.Float32(),
+			QuantityNotes:        fake.LoremIpsumSentence(exampleQuantity),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -43,11 +43,12 @@ func TestRecipeStepProductUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepProductUpdateRequestInput{
-			Name:          stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Type:          stringPointer(RecipeStepProductIngredientType),
-			QuantityType:  stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
-			QuantityValue: float32Pointer(fake.Float32()),
-			QuantityNotes: stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:                 stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Type:                 stringPointer(RecipeStepProductIngredientType),
+			MeasurementUnitID:    stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
+			MinimumQuantityValue: float32Pointer(fake.Float32()),
+			MaximumQuantityValue: float32Pointer(fake.Float32()),
+			QuantityNotes:        stringPointer(fake.LoremIpsumSentence(exampleQuantity)),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

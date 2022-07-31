@@ -352,8 +352,7 @@ func (q *SQLQuerier) createRecipeStep(ctx context.Context, db database.SQLQueryE
 		return nil, ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue(keys.RecipeStepIDKey, input.ID).WithValue("input", input)
-	logger.Debug("creating recipe step")
+	logger := q.logger.WithValue(keys.RecipeStepIDKey, input.ID)
 
 	args := []interface{}{
 		input.ID,
