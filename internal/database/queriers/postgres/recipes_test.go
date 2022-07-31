@@ -1174,6 +1174,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					instrument.InstrumentID,
 					instrument.RecipeStepID,
 					instrument.Notes,
+					instrument.PreferenceRank,
 					instrument.BelongsToRecipeStep,
 				}
 
