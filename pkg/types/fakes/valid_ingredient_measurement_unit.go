@@ -11,9 +11,9 @@ import (
 func BuildFakeValidIngredientMeasurementUnit() *types.ValidIngredientMeasurementUnit {
 	return &types.ValidIngredientMeasurementUnit{
 		ID:                     ksuid.New().String(),
-		Notes:                  fake.LoremIpsumSentence(exampleQuantity),
-		ValidMeasurementUnitID: fake.LoremIpsumSentence(exampleQuantity),
-		ValidIngredientID:      fake.LoremIpsumSentence(exampleQuantity),
+		Notes:                  buildUniqueString(),
+		ValidMeasurementUnitID: buildUniqueString(),
+		ValidIngredientID:      buildUniqueString(),
 		CreatedOn:              uint64(uint32(fake.Date().Unix())),
 	}
 }

@@ -386,6 +386,12 @@ func (q *SQLQuerier) getRecipe(ctx context.Context, recipeID, userID string) (*t
 		return nil, observability.PrepareError(err, logger, span, "fetching recipe step products for recipe")
 	}
 
+	// need to grab instruments here and add them to steps
+	instruments, err := q.getRecipeStepInstrumentsForRecipe(ctx, recipeID)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "fetching recipe step instruments for recipe")
+	}
+
 	for i, step := range x.Steps {
 		for _, ingredient := range ingredients {
 			if ingredient.BelongsToRecipeStep == step.ID {
@@ -396,6 +402,12 @@ func (q *SQLQuerier) getRecipe(ctx context.Context, recipeID, userID string) (*t
 		for _, product := range products {
 			if product.BelongsToRecipeStep == step.ID {
 				x.Steps[i].Products = append(x.Steps[i].Products, product)
+			}
+		}
+
+		for _, instrument := range instruments {
+			if instrument.BelongsToRecipeStep == step.ID {
+				x.Steps[i].Instruments = append(x.Steps[i].Instruments, instrument)
 			}
 		}
 	}

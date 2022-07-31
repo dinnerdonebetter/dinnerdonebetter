@@ -313,10 +313,60 @@ func (q *SQLQuerier) GetRecipeStepInstrumentsWithIDs(ctx context.Context, recipe
 	return recipeStepInstruments, nil
 }
 
-const recipeStepInstrumentCreationQuery = "INSERT INTO recipe_step_instruments (id,instrument_id,recipe_step_id,notes,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5)"
+const getRecipeStepInstrumentsForRecipeQuery = `SELECT
+	recipe_step_instruments.id,
+	recipe_step_instruments.instrument_id,
+	recipe_step_instruments.recipe_step_id,
+	recipe_step_instruments.notes,
+	recipe_step_instruments.created_on,
+	recipe_step_instruments.last_updated_on,
+	recipe_step_instruments.archived_on,
+	recipe_step_instruments.belongs_to_recipe_step
+FROM recipe_step_instruments
+JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id
+JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+WHERE recipe_step_instruments.archived_on IS NULL
+AND recipe_steps.archived_on IS NULL
+AND recipe_steps.belongs_to_recipe = $1
+AND recipes.archived_on IS NULL 
+AND recipes.id = $2
+`
+
+// getRecipeStepInstrumentsForRecipe fetches a list of recipe step instruments from the database that meet a particular filter.
+func (q *SQLQuerier) getRecipeStepInstrumentsForRecipe(ctx context.Context, recipeID string) ([]*types.RecipeStepInstrument, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if recipeID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+
+	args := []interface{}{
+		recipeID,
+		recipeID,
+	}
+
+	rows, err := q.performReadQuery(ctx, q.db, "recipe step instruments", getRecipeStepInstrumentsForRecipeQuery, args)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "executing recipe step instruments list retrieval query")
+	}
+
+	recipeStepInstruments, _, _, err := q.scanRecipeStepInstruments(ctx, rows, false)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "scanning recipe step instruments")
+	}
+
+	return recipeStepInstruments, nil
+}
+
+const recipeStepInstrumentCreationQuery = `INSERT INTO recipe_step_instruments (id,instrument_id,recipe_step_id,notes,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5)`
 
 // CreateRecipeStepInstrument creates a recipe step instrument in the database.
-func (q *SQLQuerier) CreateRecipeStepInstrument(ctx context.Context, input *types.RecipeStepInstrumentDatabaseCreationInput) (*types.RecipeStepInstrument, error) {
+func (q *SQLQuerier) createRecipeStepInstrument(ctx context.Context, querier database.SQLQueryExecutor, input *types.RecipeStepInstrumentDatabaseCreationInput) (*types.RecipeStepInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -335,7 +385,7 @@ func (q *SQLQuerier) CreateRecipeStepInstrument(ctx context.Context, input *type
 	}
 
 	// create the recipe step instrument.
-	if err := q.performWriteQuery(ctx, q.db, "recipe step instrument creation", recipeStepInstrumentCreationQuery, args); err != nil {
+	if err := q.performWriteQuery(ctx, querier, "recipe step instrument creation", recipeStepInstrumentCreationQuery, args); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "performing recipe step instrument creation query")
 	}
 
@@ -352,6 +402,11 @@ func (q *SQLQuerier) CreateRecipeStepInstrument(ctx context.Context, input *type
 	logger.Info("recipe step instrument created")
 
 	return x, nil
+}
+
+// CreateRecipeStepInstrument creates a recipe step instrument in the database.
+func (q *SQLQuerier) CreateRecipeStepInstrument(ctx context.Context, input *types.RecipeStepInstrumentDatabaseCreationInput) (*types.RecipeStepInstrument, error) {
+	return q.createRecipeStepInstrument(ctx, q.db, input)
 }
 
 const updateRecipeStepInstrumentQuery = "UPDATE recipe_step_instruments SET instrument_id = $1, recipe_step_id = $2, notes = $3, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $4 AND id = $5"

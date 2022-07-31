@@ -10,13 +10,13 @@ import (
 func BuildFakeHouseholdInvitation() *types.HouseholdInvitation {
 	return &types.HouseholdInvitation{
 		FromUser:             *BuildFakeUser(),
-		ToEmail:              fake.LoremIpsumSentence(exampleQuantity),
-		ToUser:               func(s string) *string { return &s }(fake.LoremIpsumSentence(exampleQuantity)),
-		Note:                 fake.LoremIpsumSentence(exampleQuantity),
-		StatusNote:           fake.LoremIpsumSentence(exampleQuantity),
+		ToEmail:              buildUniqueString(),
+		ToUser:               func(s string) *string { return &s }(buildUniqueString()),
+		Note:                 buildUniqueString(),
+		StatusNote:           buildUniqueString(),
 		Token:                fake.UUID(),
 		DestinationHousehold: *BuildFakeHousehold(),
-		ID:                   fake.LoremIpsumSentence(exampleQuantity),
+		ID:                   buildUniqueString(),
 		Status:               types.PendingHouseholdInvitationStatus,
 		CreatedOn:            uint64(uint32(fake.Date().Unix())),
 	}
