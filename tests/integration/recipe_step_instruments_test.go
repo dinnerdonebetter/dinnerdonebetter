@@ -19,15 +19,17 @@ func checkRecipeStepInstrumentEquality(t *testing.T, expected, actual *types.Rec
 	assert.Equal(t, expected.InstrumentID, actual.InstrumentID, "expected InstrumentID for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.InstrumentID, actual.InstrumentID)
 	assert.Equal(t, expected.RecipeStepID, actual.RecipeStepID, "expected RecipeStepID for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.RecipeStepID, actual.RecipeStepID)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
+	assert.Equal(t, expected.PreferenceRank, actual.PreferenceRank, "expected PreferenceRank for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.PreferenceRank, actual.PreferenceRank)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
 // convertRecipeStepInstrumentToRecipeStepInstrumentUpdateInput creates an RecipeStepInstrumentUpdateRequestInput struct from a recipe step instrument.
 func convertRecipeStepInstrumentToRecipeStepInstrumentUpdateInput(x *types.RecipeStepInstrument) *types.RecipeStepInstrumentUpdateRequestInput {
 	return &types.RecipeStepInstrumentUpdateRequestInput{
-		InstrumentID: x.InstrumentID,
-		RecipeStepID: &x.RecipeStepID,
-		Notes:        &x.Notes,
+		InstrumentID:   x.InstrumentID,
+		RecipeStepID:   &x.RecipeStepID,
+		Notes:          &x.Notes,
+		PreferenceRank: &x.PreferenceRank,
 	}
 }
 
