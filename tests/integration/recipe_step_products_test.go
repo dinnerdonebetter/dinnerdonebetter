@@ -21,7 +21,8 @@ func checkRecipeStepProductEquality(t *testing.T, expected, actual *types.Recipe
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for recipe step product %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
 	assert.Equal(t, expected.Type, actual.Type, "expected Type for recipe step product %s to be %v, but it was %v", expected.ID, expected.Type, actual.Type)
 	assert.Equal(t, expected.QuantityType, actual.QuantityType, "expected MeasurementUnitID for recipe step product %s to be %v, but it was %v", expected.ID, expected.QuantityType, actual.QuantityType)
-	assert.Equal(t, expected.QuantityValue, actual.QuantityValue, "expected MinimumQuantityValue for recipe step product %s to be %v, but it was %v", expected.ID, expected.QuantityValue, actual.QuantityValue)
+	assert.Equal(t, expected.MinimumQuantityValue, actual.MinimumQuantityValue, "expected MinimumQuantityValue for recipe step product %s to be %v, but it was %v", expected.ID, expected.MinimumQuantityValue, actual.MinimumQuantityValue)
+	assert.Equal(t, expected.MaximumQuantityValue, actual.MaximumQuantityValue, "expected MaximumQuantityValue for recipe step product %s to be %v, but it was %v", expected.ID, expected.MaximumQuantityValue, actual.MaximumQuantityValue)
 	assert.Equal(t, expected.QuantityNotes, actual.QuantityNotes, "expected QuantityNotes for recipe step product %s to be %v, but it was %v", expected.ID, expected.QuantityNotes, actual.QuantityNotes)
 	assert.NotZero(t, actual.CreatedOn)
 }
@@ -29,11 +30,12 @@ func checkRecipeStepProductEquality(t *testing.T, expected, actual *types.Recipe
 // convertRecipeStepProductToRecipeStepProductUpdateInput creates an RecipeStepProductUpdateRequestInput struct from a recipe step product.
 func convertRecipeStepProductToRecipeStepProductUpdateInput(x *types.RecipeStepProduct) *types.RecipeStepProductUpdateRequestInput {
 	return &types.RecipeStepProductUpdateRequestInput{
-		Name:          &x.Name,
-		Type:          &x.Type,
-		QuantityType:  &x.QuantityType,
-		QuantityValue: &x.QuantityValue,
-		QuantityNotes: &x.QuantityNotes,
+		Name:                 &x.Name,
+		Type:                 &x.Type,
+		QuantityType:         &x.QuantityType,
+		MinimumQuantityValue: &x.MinimumQuantityValue,
+		MaximumQuantityValue: &x.MaximumQuantityValue,
+		QuantityNotes:        &x.QuantityNotes,
 	}
 }
 

@@ -1731,12 +1731,12 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 
 			for _, product := range step.Products {
 				newProduct := &types.RecipeStepProductDatabaseCreationInput{
-					ID:                  product.ID,
-					Name:                product.Name,
-					QuantityType:        product.QuantityType,
-					QuantityNotes:       product.QuantityNotes,
-					BelongsToRecipeStep: product.BelongsToRecipeStep,
-					QuantityValue:       product.QuantityValue,
+					ID:                   product.ID,
+					Name:                 product.Name,
+					QuantityType:         product.QuantityType,
+					QuantityNotes:        product.QuantityNotes,
+					BelongsToRecipeStep:  product.BelongsToRecipeStep,
+					MinimumQuantityValue: product.MinimumQuantityValue,
 				}
 				newStep.Products = append(newStep.Products, newProduct)
 			}
@@ -1924,12 +1924,12 @@ func Test_findCreatedRecipeStepProducts(T *testing.T) {
 
 			for _, product := range step.Products {
 				newProduct := &types.RecipeStepProductDatabaseCreationInput{
-					ID:                  product.ID,
-					Name:                product.Name,
-					QuantityType:        product.QuantityType,
-					QuantityNotes:       product.QuantityNotes,
-					BelongsToRecipeStep: product.BelongsToRecipeStep,
-					QuantityValue:       product.QuantityValue,
+					ID:                   product.ID,
+					Name:                 product.Name,
+					QuantityType:         product.QuantityType,
+					QuantityNotes:        product.QuantityNotes,
+					BelongsToRecipeStep:  product.BelongsToRecipeStep,
+					MinimumQuantityValue: product.MinimumQuantityValue,
 				}
 				newStep.Products = append(newStep.Products, newProduct)
 			}

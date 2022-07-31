@@ -165,11 +165,11 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						MinimumTemperatureInCelsius: nil,
 						Products: []*types.RecipeStepProduct{
 							{
-								Name:          "soaked pinto beans",
-								Type:          types.RecipeStepProductIngredientType,
-								QuantityType:  "grams",
-								QuantityNotes: "",
-								QuantityValue: 1000,
+								Name:                 "soaked pinto beans",
+								Type:                 types.RecipeStepProductIngredientType,
+								QuantityType:         "grams",
+								QuantityNotes:        "",
+								MinimumQuantityValue: 1000,
 							},
 						},
 						Notes:       "first step",
@@ -198,11 +198,11 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						MinimumTemperatureInCelsius: nil,
 						Products: []*types.RecipeStepProduct{
 							{
-								Name:          "final output",
-								Type:          types.RecipeStepProductIngredientType,
-								QuantityType:  "grams",
-								QuantityNotes: "",
-								QuantityValue: 1010,
+								Name:                 "final output",
+								Type:                 types.RecipeStepProductIngredientType,
+								QuantityType:         "grams",
+								QuantityNotes:        "",
+								MinimumQuantityValue: 1010,
 							},
 						},
 						Notes:       "first step",
@@ -261,13 +261,13 @@ func (s *TestSuite) TestRecipes_Realistic() {
 
 				for _, product := range step.Products {
 					newProduct := &types.RecipeStepProductCreationRequestInput{
-						ID:                  product.ID,
-						Name:                product.Name,
-						Type:                product.Type,
-						QuantityType:        product.QuantityType,
-						QuantityNotes:       product.QuantityNotes,
-						BelongsToRecipeStep: product.BelongsToRecipeStep,
-						QuantityValue:       product.QuantityValue,
+						ID:                   product.ID,
+						Name:                 product.Name,
+						Type:                 product.Type,
+						QuantityType:         product.QuantityType,
+						QuantityNotes:        product.QuantityNotes,
+						BelongsToRecipeStep:  product.BelongsToRecipeStep,
+						MinimumQuantityValue: product.MinimumQuantityValue,
 					}
 					newStep.Products = append(newStep.Products, newProduct)
 				}

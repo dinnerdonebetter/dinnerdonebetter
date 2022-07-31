@@ -26,7 +26,8 @@ var (
 		"recipe_step_products.name",
 		"recipe_step_products.type",
 		"recipe_step_products.quantity_type",
-		"recipe_step_products.quantity_value",
+		"recipe_step_products.minimum_quantity_value",
+		"recipe_step_products.maximum_quantity_value",
 		"recipe_step_products.quantity_notes",
 		"recipe_step_products.created_on",
 		"recipe_step_products.last_updated_on",
@@ -54,7 +55,8 @@ func (q *SQLQuerier) scanRecipeStepProduct(ctx context.Context, scan database.Sc
 		&x.Name,
 		&x.Type,
 		&x.QuantityType,
-		&x.QuantityValue,
+		&x.MinimumQuantityValue,
+		&x.MaximumQuantityValue,
 		&x.QuantityNotes,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
@@ -154,7 +156,8 @@ const getRecipeStepProductQuery = `SELECT
 	recipe_step_products.name,
 	recipe_step_products.type,
 	recipe_step_products.quantity_type,
-	recipe_step_products.quantity_value,
+	recipe_step_products.minimum_quantity_value,
+	recipe_step_products.maximum_quantity_value,
 	recipe_step_products.quantity_notes,
 	recipe_step_products.created_on,
 	recipe_step_products.last_updated_on,
@@ -238,7 +241,8 @@ const getRecipeStepProductsForRecipeQuery = `SELECT
 	recipe_step_products.name,
 	recipe_step_products.type,
 	recipe_step_products.quantity_type,
-	recipe_step_products.quantity_value,
+	recipe_step_products.minimum_quantity_value,
+	recipe_step_products.maximum_quantity_value,
 	recipe_step_products.quantity_notes,
 	recipe_step_products.created_on,
 	recipe_step_products.last_updated_on,
@@ -391,7 +395,7 @@ func (q *SQLQuerier) GetRecipeStepProductsWithIDs(ctx context.Context, recipeSte
 	return recipeStepProducts, nil
 }
 
-const recipeStepProductCreationQuery = "INSERT INTO recipe_step_products (id,name,type,quantity_type,quantity_value,quantity_notes,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7)"
+const recipeStepProductCreationQuery = "INSERT INTO recipe_step_products (id,name,type,quantity_type,minimum_quantity_value,maximum_quantity_value,quantity_notes,belongs_to_recipe_step) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)"
 
 // CreateRecipeStepProduct creates a recipe step product in the database.
 func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepProductDatabaseCreationInput) (*types.RecipeStepProduct, error) {
@@ -409,7 +413,8 @@ func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQ
 		input.Name,
 		input.Type,
 		input.QuantityType,
-		input.QuantityValue,
+		input.MinimumQuantityValue,
+		input.MaximumQuantityValue,
 		input.QuantityNotes,
 		input.BelongsToRecipeStep,
 	}
@@ -420,14 +425,15 @@ func (q *SQLQuerier) createRecipeStepProduct(ctx context.Context, db database.SQ
 	}
 
 	x := &types.RecipeStepProduct{
-		ID:                  input.ID,
-		Name:                input.Name,
-		Type:                input.Type,
-		QuantityType:        input.QuantityType,
-		QuantityValue:       input.QuantityValue,
-		QuantityNotes:       input.QuantityNotes,
-		BelongsToRecipeStep: input.BelongsToRecipeStep,
-		CreatedOn:           q.currentTime(),
+		ID:                   input.ID,
+		Name:                 input.Name,
+		Type:                 input.Type,
+		QuantityType:         input.QuantityType,
+		MinimumQuantityValue: input.MinimumQuantityValue,
+		MaximumQuantityValue: input.MaximumQuantityValue,
+		QuantityNotes:        input.QuantityNotes,
+		BelongsToRecipeStep:  input.BelongsToRecipeStep,
+		CreatedOn:            q.currentTime(),
 	}
 
 	tracing.AttachRecipeStepProductIDToSpan(span, x.ID)
@@ -440,7 +446,7 @@ func (q *SQLQuerier) CreateRecipeStepProduct(ctx context.Context, input *types.R
 	return q.createRecipeStepProduct(ctx, q.db, input)
 }
 
-const updateRecipeStepProductQuery = "UPDATE recipe_step_products SET name = $1, type = $2, quantity_type = $3, quantity_value = $4, quantity_notes = $5, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $6 AND id = $7"
+const updateRecipeStepProductQuery = "UPDATE recipe_step_products SET name = $1, type = $2, quantity_type = $3, minimum_quantity_value = $4, maximum_quantity_value = $5, quantity_notes = $6, last_updated_on = extract(epoch FROM NOW()) WHERE archived_on IS NULL AND belongs_to_recipe_step = $7 AND id = $8"
 
 // UpdateRecipeStepProduct updates a particular recipe step product.
 func (q *SQLQuerier) UpdateRecipeStepProduct(ctx context.Context, updated *types.RecipeStepProduct) error {
@@ -458,7 +464,8 @@ func (q *SQLQuerier) UpdateRecipeStepProduct(ctx context.Context, updated *types
 		updated.Name,
 		updated.Type,
 		updated.QuantityType,
-		updated.QuantityValue,
+		updated.MinimumQuantityValue,
+		updated.MaximumQuantityValue,
 		updated.QuantityNotes,
 		updated.BelongsToRecipeStep,
 		updated.ID,

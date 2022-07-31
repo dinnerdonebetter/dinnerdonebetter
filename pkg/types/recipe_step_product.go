@@ -35,17 +35,18 @@ func init() {
 type (
 	// RecipeStepProduct represents a recipe step product.
 	RecipeStepProduct struct {
-		_                   struct{}
-		LastUpdatedOn       *uint64 `json:"lastUpdatedOn"`
-		ArchivedOn          *uint64 `json:"archivedOn"`
-		ID                  string  `json:"id"`
-		Name                string  `json:"name"`
-		Type                string  `json:"type"`
-		QuantityType        string  `json:"quantityType"`
-		QuantityNotes       string  `json:"quantityNotes"`
-		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
-		CreatedOn           uint64  `json:"createdOn"`
-		QuantityValue       float32 `json:"quantityValue"`
+		_                    struct{}
+		LastUpdatedOn        *uint64 `json:"lastUpdatedOn"`
+		ArchivedOn           *uint64 `json:"archivedOn"`
+		ID                   string  `json:"id"`
+		Name                 string  `json:"name"`
+		Type                 string  `json:"type"`
+		QuantityType         string  `json:"quantityType"`
+		QuantityNotes        string  `json:"quantityNotes"`
+		BelongsToRecipeStep  string  `json:"belongsToRecipeStep"`
+		CreatedOn            uint64  `json:"createdOn"`
+		MinimumQuantityValue float32 `json:"minimumQuantityValue"`
+		MaximumQuantityValue float32 `json:"maximumQuantityValue"`
 	}
 
 	// RecipeStepProductList represents a list of recipe step products.
@@ -57,37 +58,40 @@ type (
 
 	// RecipeStepProductCreationRequestInput represents what a user could set as input for creating recipe step products.
 	RecipeStepProductCreationRequestInput struct {
-		_                   struct{}
-		ID                  string  `json:"-"`
-		Name                string  `json:"name"`
-		Type                string  `json:"type"`
-		QuantityType        string  `json:"quantityType"`
-		QuantityNotes       string  `json:"quantityNotes"`
-		BelongsToRecipeStep string  `json:"-"`
-		QuantityValue       float32 `json:"quantityValue"`
+		_                    struct{}
+		ID                   string  `json:"-"`
+		Name                 string  `json:"name"`
+		Type                 string  `json:"type"`
+		QuantityType         string  `json:"quantityType"`
+		QuantityNotes        string  `json:"quantityNotes"`
+		BelongsToRecipeStep  string  `json:"-"`
+		MinimumQuantityValue float32 `json:"minimumQuantityValue"`
+		MaximumQuantityValue float32 `json:"maximumQuantityValue"`
 	}
 
 	// RecipeStepProductDatabaseCreationInput represents what a user could set as input for creating recipe step products.
 	RecipeStepProductDatabaseCreationInput struct {
-		_                   struct{}
-		ID                  string  `json:"id"`
-		Name                string  `json:"name"`
-		Type                string  `json:"type"`
-		QuantityType        string  `json:"quantityType"`
-		QuantityNotes       string  `json:"quantityNotes"`
-		BelongsToRecipeStep string  `json:"belongsToRecipeStep"`
-		QuantityValue       float32 `json:"quantityValue"`
+		_                    struct{}
+		ID                   string  `json:"id"`
+		Name                 string  `json:"name"`
+		Type                 string  `json:"type"`
+		QuantityType         string  `json:"quantityType"`
+		QuantityNotes        string  `json:"quantityNotes"`
+		BelongsToRecipeStep  string  `json:"belongsToRecipeStep"`
+		MinimumQuantityValue float32 `json:"minimumQuantityValue"`
+		MaximumQuantityValue float32 `json:"maximumQuantityValue"`
 	}
 
 	// RecipeStepProductUpdateRequestInput represents what a user could set as input for updating recipe step products.
 	RecipeStepProductUpdateRequestInput struct {
-		_                   struct{}
-		Name                *string  `json:"name"`
-		Type                *string  `json:"type"`
-		QuantityType        *string  `json:"quantityType"`
-		QuantityNotes       *string  `json:"quantityNotes"`
-		BelongsToRecipeStep *string  `json:"belongsToRecipeStep"`
-		QuantityValue       *float32 `json:"quantityValue"`
+		_                    struct{}
+		Name                 *string  `json:"name"`
+		Type                 *string  `json:"type"`
+		QuantityType         *string  `json:"quantityType"`
+		QuantityNotes        *string  `json:"quantityNotes"`
+		BelongsToRecipeStep  *string  `json:"belongsToRecipeStep"`
+		MinimumQuantityValue *float32 `json:"minimumQuantityValue"`
+		MaximumQuantityValue *float32 `json:"maximumQuantityValue"`
 	}
 
 	// RecipeStepProductDataManager describes a structure capable of storing recipe step products permanently.
@@ -126,8 +130,12 @@ func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateRequestInput) {
 		x.QuantityType = *input.QuantityType
 	}
 
-	if input.QuantityValue != nil && *input.QuantityValue != x.QuantityValue {
-		x.QuantityValue = *input.QuantityValue
+	if input.MinimumQuantityValue != nil && *input.MinimumQuantityValue != x.MinimumQuantityValue {
+		x.MinimumQuantityValue = *input.MinimumQuantityValue
+	}
+
+	if input.MaximumQuantityValue != nil && *input.MaximumQuantityValue != x.MaximumQuantityValue {
+		x.MaximumQuantityValue = *input.MaximumQuantityValue
 	}
 
 	if input.QuantityNotes != nil && *input.QuantityNotes != x.QuantityNotes {
@@ -145,7 +153,7 @@ func (x *RecipeStepProductCreationRequestInput) ValidateWithContext(ctx context.
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Type, validation.Required),
 		validation.Field(&x.QuantityType, validation.Required),
-		validation.Field(&x.QuantityValue, validation.Required),
+		validation.Field(&x.MinimumQuantityValue, validation.Required),
 	)
 }
 
@@ -160,7 +168,7 @@ func (x *RecipeStepProductDatabaseCreationInput) ValidateWithContext(ctx context
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Type, validation.In(RecipeStepProductIngredientType, RecipeStepProductInstrumentType)),
 		validation.Field(&x.QuantityType, validation.Required),
-		validation.Field(&x.QuantityValue, validation.Required),
+		validation.Field(&x.MinimumQuantityValue, validation.Required),
 	)
 }
 
@@ -171,12 +179,13 @@ func RecipeStepProductUpdateRequestInputFromRecipeStepProduct(input *RecipeStepP
 	}
 
 	x := &RecipeStepProductUpdateRequestInput{
-		Name:                &input.Name,
-		Type:                &input.Type,
-		QuantityType:        &input.QuantityType,
-		QuantityNotes:       &input.QuantityNotes,
-		BelongsToRecipeStep: &input.BelongsToRecipeStep,
-		QuantityValue:       &input.QuantityValue,
+		Name:                 &input.Name,
+		Type:                 &input.Type,
+		QuantityType:         &input.QuantityType,
+		QuantityNotes:        &input.QuantityNotes,
+		BelongsToRecipeStep:  &input.BelongsToRecipeStep,
+		MinimumQuantityValue: &input.MinimumQuantityValue,
+		MaximumQuantityValue: &input.MaximumQuantityValue,
 	}
 
 	return x
@@ -189,11 +198,12 @@ func RecipeStepProductDatabaseCreationInputFromRecipeStepProductCreationInput(in
 	}
 
 	x := &RecipeStepProductDatabaseCreationInput{
-		Name:          input.Name,
-		Type:          input.Type,
-		QuantityType:  input.QuantityType,
-		QuantityNotes: input.QuantityNotes,
-		QuantityValue: input.QuantityValue,
+		Name:                 input.Name,
+		Type:                 input.Type,
+		QuantityType:         input.QuantityType,
+		QuantityNotes:        input.QuantityNotes,
+		MinimumQuantityValue: input.MinimumQuantityValue,
+		MaximumQuantityValue: input.MaximumQuantityValue,
 	}
 
 	return x
@@ -209,6 +219,7 @@ func (x *RecipeStepProductUpdateRequestInput) ValidateWithContext(ctx context.Co
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Type, validation.Required),
 		validation.Field(&x.QuantityType, validation.Required),
-		validation.Field(&x.QuantityValue, validation.Required),
+		validation.Field(&x.MinimumQuantityValue, validation.Required),
+		validation.Field(&x.MaximumQuantityValue, validation.Required),
 	)
 }
