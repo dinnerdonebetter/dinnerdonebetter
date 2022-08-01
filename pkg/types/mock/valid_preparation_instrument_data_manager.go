@@ -39,6 +39,12 @@ func (m *ValidPreparationInstrumentDataManager) GetValidPreparationInstrumentsWi
 	return args.Get(0).([]*types.ValidPreparationInstrument), args.Error(1)
 }
 
+// GetValidInstrumentsForPreparations is a mock function.
+func (m *ValidPreparationInstrumentDataManager) GetValidInstrumentsForPreparations(ctx context.Context, preparationName string, filter *types.QueryFilter) (*types.ValidPreparationInstrumentList, error) {
+	args := m.Called(ctx, preparationName, filter)
+	return args.Get(0).(*types.ValidPreparationInstrumentList), args.Error(1)
+}
+
 // CreateValidPreparationInstrument is a mock function.
 func (m *ValidPreparationInstrumentDataManager) CreateValidPreparationInstrument(ctx context.Context, input *types.ValidPreparationInstrumentDatabaseCreationInput) (*types.ValidPreparationInstrument, error) {
 	args := m.Called(ctx, input)

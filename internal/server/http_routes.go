@@ -361,7 +361,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 		// ValidPreparationInstruments
 		validPreparationInstrumentPath := "valid_preparation_instruments"
 		validPreparationInstrumentsRouteWithPrefix := fmt.Sprintf("/%s", validPreparationInstrumentPath)
-		validPreparationInstrumentIDRouteParam := buildURLVarChunk(validpreparationinstrumentsservice.ValidPreparationInstrumentIDURIParamKey, "")
 		v1Router.Route(validPreparationInstrumentsRouteWithPrefix, func(validPreparationInstrumentsRouter routing.Router) {
 			validPreparationInstrumentsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidPreparationInstrumentsPermission)).
@@ -370,6 +369,15 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationInstrumentsPermission)).
 				Get(root, s.validPreparationInstrumentsService.ListHandler)
 
+			// TODO: integration test this route
+			validPreparationInstrumentsValidPreparationIDRouteParam := fmt.Sprintf("/by_preparation%s", buildURLVarChunk(validpreparationinstrumentsservice.ValidPreparationIDURIParamKey, ""))
+			validPreparationInstrumentsRouter.Route(validPreparationInstrumentsValidPreparationIDRouteParam, func(byValidPreparationIDRouter routing.Router) {
+				byValidPreparationIDRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationInstrumentsPermission)).
+					Get(root, s.validPreparationInstrumentsService.SearchByPreparationHandler)
+			})
+
+			validPreparationInstrumentIDRouteParam := buildURLVarChunk(validpreparationinstrumentsservice.ValidPreparationInstrumentIDURIParamKey, "")
 			validPreparationInstrumentsRouter.Route(validPreparationInstrumentIDRouteParam, func(singleValidPreparationInstrumentRouter routing.Router) {
 				singleValidPreparationInstrumentRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationInstrumentsPermission)).

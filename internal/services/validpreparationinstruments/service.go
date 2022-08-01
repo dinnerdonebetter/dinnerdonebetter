@@ -26,6 +26,7 @@ type (
 		logger                                logging.Logger
 		validPreparationInstrumentDataManager types.ValidPreparationInstrumentDataManager
 		validPreparationInstrumentIDFetcher   func(*http.Request) string
+		validPreparationIDFetcher             func(*http.Request) string
 		sessionContextDataFetcher             func(*http.Request) (*types.SessionContextData, error)
 		dataChangesPublisher                  messagequeue.Publisher
 		encoderDecoder                        encoding.ServerEncoderDecoder
@@ -51,6 +52,7 @@ func ProvideService(
 	svc := &service{
 		logger:                                logging.EnsureLogger(logger).WithName(serviceName),
 		validPreparationInstrumentIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(ValidPreparationInstrumentIDURIParamKey),
+		validPreparationIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(ValidPreparationIDURIParamKey),
 		sessionContextDataFetcher:             authservice.FetchContextFromRequest,
 		validPreparationInstrumentDataManager: validPreparationInstrumentDataManager,
 		dataChangesPublisher:                  dataChangesPublisher,

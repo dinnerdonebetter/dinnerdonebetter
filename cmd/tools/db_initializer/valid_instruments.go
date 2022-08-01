@@ -2,19 +2,114 @@ package main
 
 import (
 	"context"
-
 	"github.com/prixfixeco/api_server/internal/database"
 	"github.com/prixfixeco/api_server/pkg/types"
-
-	"github.com/segmentio/ksuid"
 )
 
 var validInstrumentCollection = struct {
-	Spoon *types.ValidInstrumentDatabaseCreationInput
+	ChefsKnife,
+	Grill,
+	BareHands,
+	TenInchFryingPan,
+	TwelveInchFryingPan,
+	FourQuartSaucepan,
+	Whisk,
+	Comal,
+	SmallMixingBowl,
+	MediumMixingBowl,
+	LargeMixingBowl,
+	PastryScraper,
+	RollingPin,
+
+	_ *types.ValidInstrumentDatabaseCreationInput
 }{
-	Spoon: &types.ValidInstrumentDatabaseCreationInput{
-		ID:          ksuid.New().String(),
-		Name:        "spoon",
+	ChefsKnife: &types.ValidInstrumentDatabaseCreationInput{
+		ID:          "vinst_chefsknife",
+		Name:        "chef's knife",
+		Variant:     "",
+		Description: "",
+		IconPath:    "",
+	},
+	Grill: &types.ValidInstrumentDatabaseCreationInput{
+		ID:          "vinst_grill",
+		Name:        "grill",
+		Variant:     "",
+		Description: "",
+		IconPath:    "",
+	},
+	BareHands: &types.ValidInstrumentDatabaseCreationInput{
+		ID:          "vinst_barehands",
+		Name:        "bare hands",
+		Variant:     "",
+		Description: "",
+		IconPath:    "",
+	},
+	TenInchFryingPan: &types.ValidInstrumentDatabaseCreationInput{
+		ID:          "vinst_10inchfp",
+		Name:        `10" frying pan`,
+		Variant:     "",
+		Description: "",
+		IconPath:    "",
+	},
+	TwelveInchFryingPan: &types.ValidInstrumentDatabaseCreationInput{
+		ID:          "vinst_12inchfp",
+		Name:        `12" frying pan`,
+		Variant:     "",
+		Description: "",
+		IconPath:    "",
+	},
+	FourQuartSaucepan: &types.ValidInstrumentDatabaseCreationInput{
+		ID:          "vinst_4qtsaucepan",
+		Name:        "4 quart saucepan",
+		Variant:     "",
+		Description: "",
+		IconPath:    "",
+	},
+	Whisk: &types.ValidInstrumentDatabaseCreationInput{
+		ID:          "vinst_whisk",
+		Name:        "whisk",
+		Variant:     "",
+		Description: "",
+		IconPath:    "",
+	},
+	Comal: &types.ValidInstrumentDatabaseCreationInput{
+		ID:          "vinst_comal",
+		Name:        "comal",
+		Variant:     "",
+		Description: "",
+		IconPath:    "",
+	},
+	SmallMixingBowl: &types.ValidInstrumentDatabaseCreationInput{
+		ID:          "vinst_smmixbowl",
+		Name:        "small mixing bowl",
+		Variant:     "",
+		Description: "",
+		IconPath:    "",
+	},
+	MediumMixingBowl: &types.ValidInstrumentDatabaseCreationInput{
+		ID:          "vinst_medmixbowl",
+		Name:        "medium mixing bowl",
+		Variant:     "",
+		Description: "",
+		IconPath:    "",
+	},
+	LargeMixingBowl: &types.ValidInstrumentDatabaseCreationInput{
+		ID:          "vinst_lgmixbowl",
+		Name:        "large mixing bowl",
+		Variant:     "",
+		Description: "",
+		IconPath:    "",
+	},
+	PastryScraper: &types.ValidInstrumentDatabaseCreationInput{
+		ID:          "vinst_pastryscraper",
+		Name:        "pastry scraper",
+		Variant:     "",
+		Description: "",
+		IconPath:    "",
+	},
+	RollingPin: &types.ValidInstrumentDatabaseCreationInput{
+		ID:          "vinst_rollingpin",
+		Name:        "rolling pin",
 		Variant:     "",
 		Description: "",
 		IconPath:    "",
@@ -23,7 +118,19 @@ var validInstrumentCollection = struct {
 
 func scaffoldValidInstruments(ctx context.Context, db database.DataManager) error {
 	validInstruments := []*types.ValidInstrumentDatabaseCreationInput{
-		validInstrumentCollection.Spoon,
+		validInstrumentCollection.ChefsKnife,
+		validInstrumentCollection.Grill,
+		validInstrumentCollection.BareHands,
+		validInstrumentCollection.TenInchFryingPan,
+		validInstrumentCollection.TwelveInchFryingPan,
+		validInstrumentCollection.FourQuartSaucepan,
+		validInstrumentCollection.Whisk,
+		validInstrumentCollection.Comal,
+		validInstrumentCollection.SmallMixingBowl,
+		validInstrumentCollection.MediumMixingBowl,
+		validInstrumentCollection.LargeMixingBowl,
+		validInstrumentCollection.PastryScraper,
+		validInstrumentCollection.RollingPin,
 	}
 
 	for _, input := range validInstruments {

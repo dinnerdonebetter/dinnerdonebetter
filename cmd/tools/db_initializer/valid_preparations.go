@@ -22,7 +22,7 @@ var validPreparationCollection = struct {
 	Flatten,
 	Rest,
 	Griddle,
-	Drain *types.ValidPreparationDatabaseCreationInput
+	_ *types.ValidPreparationDatabaseCreationInput
 }{
 	Dice: &types.ValidPreparationDatabaseCreationInput{
 		ID:   "vprep_dice",
@@ -80,10 +80,6 @@ var validPreparationCollection = struct {
 		ID:   "vprep_griddle",
 		Name: "Griddle",
 	},
-	Drain: &types.ValidPreparationDatabaseCreationInput{
-		ID:   "vprep_drain",
-		Name: "Drain",
-	},
 }
 
 func scaffoldValidPreparations(ctx context.Context, db database.DataManager) error {
@@ -102,7 +98,6 @@ func scaffoldValidPreparations(ctx context.Context, db database.DataManager) err
 		validPreparationCollection.Flatten,
 		validPreparationCollection.Rest,
 		validPreparationCollection.Griddle,
-		validPreparationCollection.Drain,
 	}
 
 	for _, input := range validPreparations {
