@@ -403,6 +403,14 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientMeasurementUnitsPermission)).
 				Get(root, s.validIngredientMeasurementUnitsService.ListHandler)
 
+			// TODO: integration test this route
+			validIngredientMeasurementUnitsByIngredientsRouteParam := fmt.Sprintf("/by_ingredient%s", buildURLVarChunk(validingredientmeasurementunitsservice.ValidIngredientIDURIParamKey, ""))
+			validIngredientMeasurementUnitRouter.Route(validIngredientMeasurementUnitsByIngredientsRouteParam, func(byValidIngredientIDRouter routing.Router) {
+				byValidIngredientIDRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientMeasurementUnitsPermission)).
+					Get(root, s.validIngredientMeasurementUnitsService.SearchByIngredientHandler)
+			})
+
 			validIngredientMeasurementUnitRouter.Route(validIngredientMeasurementUnitIDRouteParam, func(singleValidIngredientMeasurementUnitRouter routing.Router) {
 				singleValidIngredientMeasurementUnitRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientMeasurementUnitsPermission)).

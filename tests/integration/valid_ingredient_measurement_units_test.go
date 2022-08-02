@@ -16,8 +16,8 @@ func checkValidIngredientMeasurementUnitEquality(t *testing.T, expected, actual 
 
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for valid ingredient measurement unit %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
-	assert.Equal(t, expected.ValidMeasurementUnit, actual.ValidMeasurementUnit, "expected ValidMeasurementUnit for valid ingredient measurement unit %s to be %v, but it was %v", expected.ID, expected.ValidMeasurementUnit, actual.ValidMeasurementUnit)
-	assert.Equal(t, expected.ValidIngredient, actual.ValidIngredient, "expected ValidIngredient for valid ingredient measurement unit %s to be %v, but it was %v", expected.ID, expected.ValidIngredient, actual.ValidIngredient)
+	assert.Equal(t, expected.MeasurementUnit, actual.MeasurementUnit, "expected MeasurementUnit for valid ingredient measurement unit %s to be %v, but it was %v", expected.ID, expected.MeasurementUnit, actual.MeasurementUnit)
+	assert.Equal(t, expected.Ingredient, actual.Ingredient, "expected Ingredient for valid ingredient measurement unit %s to be %v, but it was %v", expected.ID, expected.Ingredient, actual.Ingredient)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
@@ -25,8 +25,8 @@ func checkValidIngredientMeasurementUnitEquality(t *testing.T, expected, actual 
 func convertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitUpdateInput(x *types.ValidIngredientMeasurementUnit) *types.ValidIngredientMeasurementUnitUpdateRequestInput {
 	return &types.ValidIngredientMeasurementUnitUpdateRequestInput{
 		Notes:                  &x.Notes,
-		ValidMeasurementUnitID: &x.ValidMeasurementUnit,
-		ValidIngredientID:      &x.ValidIngredient,
+		ValidMeasurementUnitID: &x.MeasurementUnit,
+		ValidIngredientID:      &x.Ingredient,
 	}
 }
 
@@ -66,8 +66,8 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_CompleteLifecycle() {
 
 			t.Log("creating valid ingredient measurement unit")
 			exampleValidIngredientMeasurementUnit := fakes.BuildFakeValidIngredientMeasurementUnit()
-			exampleValidIngredientMeasurementUnit.ValidIngredient = createdValidIngredient.ID
-			exampleValidIngredientMeasurementUnit.ValidMeasurementUnit = createdValidMeasurementUnit.ID
+			exampleValidIngredientMeasurementUnit.Ingredient = createdValidIngredient.ID
+			exampleValidIngredientMeasurementUnit.MeasurementUnit = createdValidMeasurementUnit.ID
 			exampleValidIngredientMeasurementUnitInput := fakes.BuildFakeValidIngredientMeasurementUnitCreationRequestInputFromValidIngredientMeasurementUnit(exampleValidIngredientMeasurementUnit)
 			createdValidIngredientMeasurementUnit, err := testClients.admin.CreateValidIngredientMeasurementUnit(ctx, exampleValidIngredientMeasurementUnitInput)
 			require.NoError(t, err)
@@ -82,8 +82,8 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_CompleteLifecycle() {
 
 			t.Log("changing valid ingredient measurement unit")
 			newValidIngredientMeasurementUnit := fakes.BuildFakeValidIngredientMeasurementUnit()
-			newValidIngredientMeasurementUnit.ValidIngredient = createdValidIngredient.ID
-			newValidIngredientMeasurementUnit.ValidMeasurementUnit = createdValidMeasurementUnit.ID
+			newValidIngredientMeasurementUnit.Ingredient = createdValidIngredient.ID
+			newValidIngredientMeasurementUnit.MeasurementUnit = createdValidMeasurementUnit.ID
 			createdValidIngredientMeasurementUnit.Update(convertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitUpdateInput(newValidIngredientMeasurementUnit))
 			assert.NoError(t, testClients.admin.UpdateValidIngredientMeasurementUnit(ctx, createdValidIngredientMeasurementUnit))
 
@@ -139,8 +139,8 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_Listing() {
 				t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
 				exampleValidIngredientMeasurementUnit := fakes.BuildFakeValidIngredientMeasurementUnit()
-				exampleValidIngredientMeasurementUnit.ValidIngredient = createdValidIngredient.ID
-				exampleValidIngredientMeasurementUnit.ValidMeasurementUnit = createdValidMeasurementUnit.ID
+				exampleValidIngredientMeasurementUnit.Ingredient = createdValidIngredient.ID
+				exampleValidIngredientMeasurementUnit.MeasurementUnit = createdValidMeasurementUnit.ID
 				exampleValidIngredientMeasurementUnitInput := fakes.BuildFakeValidIngredientMeasurementUnitCreationRequestInputFromValidIngredientMeasurementUnit(exampleValidIngredientMeasurementUnit)
 				createdValidIngredientMeasurementUnit, createdValidIngredientMeasurementUnitErr := testClients.admin.CreateValidIngredientMeasurementUnit(ctx, exampleValidIngredientMeasurementUnitInput)
 				require.NoError(t, createdValidIngredientMeasurementUnitErr)

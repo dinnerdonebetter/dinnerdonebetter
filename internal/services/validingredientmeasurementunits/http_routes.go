@@ -14,6 +14,8 @@ import (
 )
 
 const (
+	// ValidIngredientIDURIParamKey is a standard string that we'll use to refer to valid ingredient measurement unit IDs with.
+	ValidIngredientIDURIParamKey = "validIngredientID"
 	// ValidIngredientMeasurementUnitIDURIParamKey is a standard string that we'll use to refer to valid ingredient measurement unit IDs with.
 	ValidIngredientMeasurementUnitIDURIParamKey = "validIngredientMeasurementUnitID"
 )
@@ -286,4 +288,43 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// encode our response and peace.
 	res.WriteHeader(http.StatusNoContent)
+}
+
+// SearchByIngredientHandler is our valid ingredient measurement unit search route.
+func (s *service) SearchByIngredientHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	tracing.AttachRequestToSpan(span, req)
+
+	filter := types.ExtractQueryFilter(req)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, string(filter.SortBy))
+
+	logger := s.logger.WithRequest(req).
+		WithValue(keys.FilterLimitKey, filter.Limit).
+		WithValue(keys.FilterPageKey, filter.Page).
+		WithValue(keys.FilterSortByKey, string(filter.SortBy))
+
+	validIngredientID := s.validIngredientIDFetcher(req)
+	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	validPreparationInstrument, err := s.validIngredientMeasurementUnitDataManager.GetValidMeasurementUnitsForIngredient(ctx, validIngredientID, filter)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "searching for valid measurement units")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validPreparationInstrument, http.StatusOK)
 }

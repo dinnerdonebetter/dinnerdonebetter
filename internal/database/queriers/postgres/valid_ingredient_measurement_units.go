@@ -72,35 +72,35 @@ func (q *SQLQuerier) scanValidIngredientMeasurementUnit(ctx context.Context, sca
 	targetVars := []interface{}{
 		&x.ID,
 		&x.Notes,
-		&x.ValidMeasurementUnit.ID,
-		&x.ValidMeasurementUnit.Name,
-		&x.ValidMeasurementUnit.Description,
-		&x.ValidMeasurementUnit.Volumetric,
-		&x.ValidMeasurementUnit.IconPath,
-		&x.ValidMeasurementUnit.CreatedOn,
-		&x.ValidMeasurementUnit.LastUpdatedOn,
-		&x.ValidMeasurementUnit.ArchivedOn,
-		&x.ValidIngredient.ID,
-		&x.ValidIngredient.Name,
-		&x.ValidIngredient.Description,
-		&x.ValidIngredient.Warning,
-		&x.ValidIngredient.ContainsEgg,
-		&x.ValidIngredient.ContainsDairy,
-		&x.ValidIngredient.ContainsPeanut,
-		&x.ValidIngredient.ContainsTreeNut,
-		&x.ValidIngredient.ContainsSoy,
-		&x.ValidIngredient.ContainsWheat,
-		&x.ValidIngredient.ContainsShellfish,
-		&x.ValidIngredient.ContainsSesame,
-		&x.ValidIngredient.ContainsFish,
-		&x.ValidIngredient.ContainsGluten,
-		&x.ValidIngredient.AnimalFlesh,
-		&x.ValidIngredient.IsMeasuredVolumetrically,
-		&x.ValidIngredient.IsLiquid,
-		&x.ValidIngredient.IconPath,
-		&x.ValidIngredient.CreatedOn,
-		&x.ValidIngredient.LastUpdatedOn,
-		&x.ValidIngredient.ArchivedOn,
+		&x.MeasurementUnit.ID,
+		&x.MeasurementUnit.Name,
+		&x.MeasurementUnit.Description,
+		&x.MeasurementUnit.Volumetric,
+		&x.MeasurementUnit.IconPath,
+		&x.MeasurementUnit.CreatedOn,
+		&x.MeasurementUnit.LastUpdatedOn,
+		&x.MeasurementUnit.ArchivedOn,
+		&x.Ingredient.ID,
+		&x.Ingredient.Name,
+		&x.Ingredient.Description,
+		&x.Ingredient.Warning,
+		&x.Ingredient.ContainsEgg,
+		&x.Ingredient.ContainsDairy,
+		&x.Ingredient.ContainsPeanut,
+		&x.Ingredient.ContainsTreeNut,
+		&x.Ingredient.ContainsSoy,
+		&x.Ingredient.ContainsWheat,
+		&x.Ingredient.ContainsShellfish,
+		&x.Ingredient.ContainsSesame,
+		&x.Ingredient.ContainsFish,
+		&x.Ingredient.ContainsGluten,
+		&x.Ingredient.AnimalFlesh,
+		&x.Ingredient.IsMeasuredVolumetrically,
+		&x.Ingredient.IsLiquid,
+		&x.Ingredient.IconPath,
+		&x.Ingredient.CreatedOn,
+		&x.Ingredient.LastUpdatedOn,
+		&x.Ingredient.ArchivedOn,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
@@ -284,11 +284,11 @@ func (q *SQLQuerier) buildGetValidIngredientMeasurementUnitRestrictedByIDsQuery(
 	return query, args
 }
 
-func (q *SQLQuerier) buildGetValidIngredientMeasurementUnitWithInstrumentIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *SQLQuerier) buildGetValidIngredientMeasurementUnitRestrictedByIngredientIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
 	return q.buildGetValidIngredientMeasurementUnitRestrictedByIDsQuery(ctx, "valid_ingredient_id", limit, ids)
 }
 
-func (q *SQLQuerier) buildGetValidIngredientMeasurementUnitWithPreparationIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *SQLQuerier) buildGetValidIngredientMeasurementUnitsRestrictedByMeasurementUnitIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
 	return q.buildGetValidIngredientMeasurementUnitRestrictedByIDsQuery(ctx, "valid_measurement_unit_id", limit, ids)
 }
 
@@ -308,7 +308,7 @@ func (q *SQLQuerier) GetValidMeasurementUnitsForIngredient(ctx context.Context, 
 	}
 
 	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
-	query, args := q.buildGetValidIngredientMeasurementUnitWithPreparationIDsQuery(ctx, filter.Limit, []string{ingredientID})
+	query, args := q.buildGetValidIngredientMeasurementUnitRestrictedByIngredientIDsQuery(ctx, filter.Limit, []string{ingredientID})
 
 	rows, err := q.performReadQuery(ctx, q.db, "valid measurement units for ingredient", query, args)
 	if err != nil {
@@ -382,11 +382,11 @@ func (q *SQLQuerier) CreateValidIngredientMeasurementUnit(ctx context.Context, i
 	}
 
 	x := &types.ValidIngredientMeasurementUnit{
-		ID:                   input.ID,
-		Notes:                input.Notes,
-		ValidMeasurementUnit: types.ValidMeasurementUnit{ID: input.ValidMeasurementUnitID},
-		ValidIngredient:      types.ValidIngredient{ID: input.ValidIngredientID},
-		CreatedOn:            q.currentTime(),
+		ID:              input.ID,
+		Notes:           input.Notes,
+		MeasurementUnit: types.ValidMeasurementUnit{ID: input.ValidMeasurementUnitID},
+		Ingredient:      types.ValidIngredient{ID: input.ValidIngredientID},
+		CreatedOn:       q.currentTime(),
 	}
 
 	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, x.ID)
@@ -411,8 +411,8 @@ func (q *SQLQuerier) UpdateValidIngredientMeasurementUnit(ctx context.Context, u
 
 	args := []interface{}{
 		updated.Notes,
-		updated.ValidMeasurementUnit,
-		updated.ValidIngredient,
+		updated.MeasurementUnit,
+		updated.Ingredient,
 		updated.ID,
 	}
 

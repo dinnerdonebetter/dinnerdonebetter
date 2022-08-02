@@ -29,8 +29,8 @@ func buildMockRowsFromValidIngredientMeasurementUnits(includeCounts bool, filter
 		rowValues := []driver.Value{
 			x.ID,
 			x.Notes,
-			x.ValidMeasurementUnit,
-			x.ValidIngredient,
+			x.MeasurementUnit,
+			x.Ingredient,
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,
@@ -451,8 +451,8 @@ func TestQuerier_UpdateValidIngredientMeasurementUnit(T *testing.T) {
 
 		args := []interface{}{
 			exampleValidIngredientMeasurementUnit.Notes,
-			exampleValidIngredientMeasurementUnit.ValidMeasurementUnit,
-			exampleValidIngredientMeasurementUnit.ValidIngredient,
+			exampleValidIngredientMeasurementUnit.MeasurementUnit,
+			exampleValidIngredientMeasurementUnit.Ingredient,
 			exampleValidIngredientMeasurementUnit.ID,
 		}
 
@@ -484,8 +484,8 @@ func TestQuerier_UpdateValidIngredientMeasurementUnit(T *testing.T) {
 
 		args := []interface{}{
 			exampleValidIngredientMeasurementUnit.Notes,
-			exampleValidIngredientMeasurementUnit.ValidMeasurementUnit,
-			exampleValidIngredientMeasurementUnit.ValidIngredient,
+			exampleValidIngredientMeasurementUnit.MeasurementUnit,
+			exampleValidIngredientMeasurementUnit.Ingredient,
 			exampleValidIngredientMeasurementUnit.ID,
 		}
 
