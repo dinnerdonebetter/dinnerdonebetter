@@ -80,7 +80,7 @@ type (
 		ValidPreparationInstrumentExists(ctx context.Context, validPreparationInstrumentID string) (bool, error)
 		GetValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) (*ValidPreparationInstrument, error)
 		GetValidPreparationInstruments(ctx context.Context, filter *QueryFilter) (*ValidPreparationInstrumentList, error)
-		GetValidInstrumentsForPreparations(ctx context.Context, preparationName string, filter *QueryFilter) (*ValidPreparationInstrumentList, error)
+		GetValidInstrumentsForPreparation(ctx context.Context, preparationName string, filter *QueryFilter) (*ValidPreparationInstrumentList, error)
 		GetValidPreparationInstrumentsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*ValidPreparationInstrument, error)
 		CreateValidPreparationInstrument(ctx context.Context, input *ValidPreparationInstrumentDatabaseCreationInput) (*ValidPreparationInstrument, error)
 		UpdateValidPreparationInstrument(ctx context.Context, updated *ValidPreparationInstrument) error

@@ -39,12 +39,6 @@ func (m *ValidIngredientMeasurementUnitDataManager) GetValidIngredientMeasuremen
 	return args.Get(0).(*types.ValidIngredientMeasurementUnitList), args.Error(1)
 }
 
-// GetValidIngredientMeasurementUnitsWithIDs is a mock function.
-func (m *ValidIngredientMeasurementUnitDataManager) GetValidIngredientMeasurementUnitsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*types.ValidIngredientMeasurementUnit, error) {
-	args := m.Called(ctx, limit, ids)
-	return args.Get(0).([]*types.ValidIngredientMeasurementUnit), args.Error(1)
-}
-
 // CreateValidIngredientMeasurementUnit is a mock function.
 func (m *ValidIngredientMeasurementUnitDataManager) CreateValidIngredientMeasurementUnit(ctx context.Context, input *types.ValidIngredientMeasurementUnitDatabaseCreationInput) (*types.ValidIngredientMeasurementUnit, error) {
 	args := m.Called(ctx, input)

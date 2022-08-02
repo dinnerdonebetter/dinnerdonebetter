@@ -13,6 +13,11 @@ import (
 	"github.com/prixfixeco/api_server/pkg/types"
 )
 
+const (
+	validMeasurementUnitsOnValidIngredientMeasurementUnitsJoinClause = "valid_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id"
+	validIngredientsOnValidIngredientMeasurementUnitsJoinClause      = "valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id"
+)
+
 var (
 	_ types.ValidIngredientMeasurementUnitDataManager = (*SQLQuerier)(nil)
 
@@ -20,8 +25,35 @@ var (
 	validIngredientMeasurementUnitsTableColumns = []string{
 		"valid_ingredient_measurement_units.id",
 		"valid_ingredient_measurement_units.notes",
-		"valid_ingredient_measurement_units.valid_measurement_unit_id",
-		"valid_ingredient_measurement_units.valid_ingredient_id",
+		"valid_measurement_units.id",
+		"valid_measurement_units.name",
+		"valid_measurement_units.description",
+		"valid_measurement_units.volumetric",
+		"valid_measurement_units.icon_path",
+		"valid_measurement_units.created_on",
+		"valid_measurement_units.last_updated_on",
+		"valid_measurement_units.archived_on",
+		"valid_ingredients.id",
+		"valid_ingredients.name",
+		"valid_ingredients.description",
+		"valid_ingredients.warning",
+		"valid_ingredients.contains_egg",
+		"valid_ingredients.contains_dairy",
+		"valid_ingredients.contains_peanut",
+		"valid_ingredients.contains_tree_nut",
+		"valid_ingredients.contains_soy",
+		"valid_ingredients.contains_wheat",
+		"valid_ingredients.contains_shellfish",
+		"valid_ingredients.contains_sesame",
+		"valid_ingredients.contains_fish",
+		"valid_ingredients.contains_gluten",
+		"valid_ingredients.animal_flesh",
+		"valid_ingredients.volumetric",
+		"valid_ingredients.is_liquid",
+		"valid_ingredients.icon_path",
+		"valid_ingredients.created_on",
+		"valid_ingredients.last_updated_on",
+		"valid_ingredients.archived_on",
 		"valid_ingredient_measurement_units.created_on",
 		"valid_ingredient_measurement_units.last_updated_on",
 		"valid_ingredient_measurement_units.archived_on",
@@ -40,8 +72,35 @@ func (q *SQLQuerier) scanValidIngredientMeasurementUnit(ctx context.Context, sca
 	targetVars := []interface{}{
 		&x.ID,
 		&x.Notes,
-		&x.ValidMeasurementUnitID,
-		&x.ValidIngredientID,
+		&x.ValidMeasurementUnit.ID,
+		&x.ValidMeasurementUnit.Name,
+		&x.ValidMeasurementUnit.Description,
+		&x.ValidMeasurementUnit.Volumetric,
+		&x.ValidMeasurementUnit.IconPath,
+		&x.ValidMeasurementUnit.CreatedOn,
+		&x.ValidMeasurementUnit.LastUpdatedOn,
+		&x.ValidMeasurementUnit.ArchivedOn,
+		&x.ValidIngredient.ID,
+		&x.ValidIngredient.Name,
+		&x.ValidIngredient.Description,
+		&x.ValidIngredient.Warning,
+		&x.ValidIngredient.ContainsEgg,
+		&x.ValidIngredient.ContainsDairy,
+		&x.ValidIngredient.ContainsPeanut,
+		&x.ValidIngredient.ContainsTreeNut,
+		&x.ValidIngredient.ContainsSoy,
+		&x.ValidIngredient.ContainsWheat,
+		&x.ValidIngredient.ContainsShellfish,
+		&x.ValidIngredient.ContainsSesame,
+		&x.ValidIngredient.ContainsFish,
+		&x.ValidIngredient.ContainsGluten,
+		&x.ValidIngredient.AnimalFlesh,
+		&x.ValidIngredient.IsMeasuredVolumetrically,
+		&x.ValidIngredient.IsLiquid,
+		&x.ValidIngredient.IconPath,
+		&x.ValidIngredient.CreatedOn,
+		&x.ValidIngredient.LastUpdatedOn,
+		&x.ValidIngredient.ArchivedOn,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
@@ -118,7 +177,48 @@ func (q *SQLQuerier) ValidIngredientMeasurementUnitExists(ctx context.Context, v
 	return result, nil
 }
 
-const getValidIngredientMeasurementUnitQuery = "SELECT valid_ingredient_measurement_units.id, valid_ingredient_measurement_units.notes, valid_ingredient_measurement_units.valid_measurement_unit_id, valid_ingredient_measurement_units.valid_ingredient_id, valid_ingredient_measurement_units.created_on, valid_ingredient_measurement_units.last_updated_on, valid_ingredient_measurement_units.archived_on FROM valid_ingredient_measurement_units WHERE valid_ingredient_measurement_units.archived_on IS NULL AND valid_ingredient_measurement_units.id = $1"
+const getValidIngredientMeasurementUnitQuery = `
+SELECT 
+	valid_ingredient_measurement_units.id,
+	valid_ingredient_measurement_units.notes,
+	valid_measurement_units.id,
+	valid_measurement_units.name,
+	valid_measurement_units.description,
+	valid_measurement_units.volumetric,
+	valid_measurement_units.icon_path,
+	valid_measurement_units.created_on,
+	valid_measurement_units.last_updated_on,
+	valid_measurement_units.archived_on,
+	valid_ingredients.id,
+	valid_ingredients.name,
+	valid_ingredients.description,
+	valid_ingredients.warning,
+	valid_ingredients.contains_egg,
+	valid_ingredients.contains_dairy,
+	valid_ingredients.contains_peanut,
+	valid_ingredients.contains_tree_nut,
+	valid_ingredients.contains_soy,
+	valid_ingredients.contains_wheat,
+	valid_ingredients.contains_shellfish,
+	valid_ingredients.contains_sesame,
+	valid_ingredients.contains_fish,
+	valid_ingredients.contains_gluten,
+	valid_ingredients.animal_flesh,
+	valid_ingredients.volumetric,
+	valid_ingredients.is_liquid,
+	valid_ingredients.icon_path,
+	valid_ingredients.created_on,
+	valid_ingredients.last_updated_on,
+	valid_ingredients.archived_on,
+	valid_ingredient_measurement_units.created_on,
+	valid_ingredient_measurement_units.last_updated_on,
+	valid_ingredient_measurement_units.archived_on
+FROM valid_ingredient_measurement_units 
+JOIN valid_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
+JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
+WHERE valid_ingredient_measurement_units.archived_on IS NULL 
+  AND valid_ingredient_measurement_units.id = $1
+`
 
 // GetValidIngredientMeasurementUnit fetches a valid ingredient measurement unit from the database.
 func (q *SQLQuerier) GetValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) (*types.ValidIngredientMeasurementUnit, error) {
@@ -164,6 +264,64 @@ func (q *SQLQuerier) GetTotalValidIngredientMeasurementUnitCount(ctx context.Con
 	return count, nil
 }
 
+func (q *SQLQuerier) buildGetValidIngredientMeasurementUnitRestrictedByIDsQuery(ctx context.Context, column string, limit uint8, ids []string) (query string, args []interface{}) {
+	_, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	query, args, err := q.sqlBuilder.Select(validIngredientMeasurementUnitsTableColumns...).
+		From("valid_ingredient_measurement_units").
+		Join(validIngredientsOnValidIngredientMeasurementUnitsJoinClause).
+		Join(validMeasurementUnitsOnValidIngredientMeasurementUnitsJoinClause).
+		Where(squirrel.Eq{
+			fmt.Sprintf("valid_ingredient_measurement_units.%s", column): ids,
+			"valid_ingredient_measurement_units.archived_on":             nil,
+		}).
+		Limit(uint64(limit)).
+		ToSql()
+
+	q.logQueryBuildingError(span, err)
+
+	return query, args
+}
+
+func (q *SQLQuerier) buildGetValidIngredientMeasurementUnitWithInstrumentIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
+	return q.buildGetValidIngredientMeasurementUnitRestrictedByIDsQuery(ctx, "valid_ingredient_id", limit, ids)
+}
+
+func (q *SQLQuerier) buildGetValidIngredientMeasurementUnitWithPreparationIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
+	return q.buildGetValidIngredientMeasurementUnitRestrictedByIDsQuery(ctx, "valid_measurement_unit_id", limit, ids)
+}
+
+// GetValidMeasurementUnitsForIngredient fetches a list of valid measurement units from the database that belong to a given ingredient ID.
+func (q *SQLQuerier) GetValidMeasurementUnitsForIngredient(ctx context.Context, ingredientID string, filter *types.QueryFilter) (x *types.ValidIngredientMeasurementUnitList, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	x = &types.ValidIngredientMeasurementUnitList{}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	if filter != nil {
+		x.Page, x.Limit = filter.Page, filter.Limit
+	}
+
+	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
+	query, args := q.buildGetValidIngredientMeasurementUnitWithPreparationIDsQuery(ctx, filter.Limit, []string{ingredientID})
+
+	rows, err := q.performReadQuery(ctx, q.db, "valid measurement units for ingredient", query, args)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "executing valid ingredient measurement units list retrieval query")
+	}
+
+	if x.ValidIngredientMeasurementUnits, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientMeasurementUnits(ctx, rows, false); err != nil {
+		return nil, observability.PrepareError(err, logger, span, "scanning valid ingredient measurement units")
+	}
+
+	return x, nil
+}
+
 // GetValidIngredientMeasurementUnits fetches a list of valid ingredient measurement units from the database that meet a particular filter.
 func (q *SQLQuerier) GetValidIngredientMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (x *types.ValidIngredientMeasurementUnitList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -179,7 +337,12 @@ func (q *SQLQuerier) GetValidIngredientMeasurementUnits(ctx context.Context, fil
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildListQuery(ctx, "valid_ingredient_measurement_units", nil, nil, nil, householdOwnershipColumn, validIngredientMeasurementUnitsTableColumns, "", false, filter, true)
+	joins := []string{
+		validMeasurementUnitsOnValidIngredientMeasurementUnitsJoinClause,
+		validIngredientsOnValidIngredientMeasurementUnitsJoinClause,
+	}
+
+	query, args := q.buildListQuery(ctx, "valid_ingredient_measurement_units", joins, nil, nil, householdOwnershipColumn, validIngredientMeasurementUnitsTableColumns, "", false, filter, true)
 
 	rows, err := q.performReadQuery(ctx, q.db, "validIngredientMeasurementUnits", query, args)
 	if err != nil {
@@ -191,64 +354,6 @@ func (q *SQLQuerier) GetValidIngredientMeasurementUnits(ctx context.Context, fil
 	}
 
 	return x, nil
-}
-
-func (q *SQLQuerier) buildGetValidIngredientMeasurementUnitsWithIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	withIDsWhere := squirrel.Eq{
-		"valid_ingredient_measurement_units.id":          ids,
-		"valid_ingredient_measurement_units.archived_on": nil,
-	}
-
-	subqueryBuilder := q.sqlBuilder.Select(validIngredientMeasurementUnitsTableColumns...).
-		From("valid_ingredient_measurement_units").
-		Join(fmt.Sprintf("unnest('{%s}'::text[])", joinIDs(ids))).
-		Suffix(fmt.Sprintf("WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d", limit))
-
-	query, args, err := q.sqlBuilder.Select(validIngredientMeasurementUnitsTableColumns...).
-		FromSelect(subqueryBuilder, "valid_ingredient_measurement_units").
-		Where(withIDsWhere).ToSql()
-
-	q.logQueryBuildingError(span, err)
-
-	return query, args
-}
-
-// GetValidIngredientMeasurementUnitsWithIDs fetches valid ingredient measurement units from the database within a given set of IDs.
-func (q *SQLQuerier) GetValidIngredientMeasurementUnitsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*types.ValidIngredientMeasurementUnit, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if ids == nil {
-		return nil, ErrNilInputProvided
-	}
-
-	if limit == 0 {
-		limit = uint8(types.DefaultLimit)
-	}
-
-	logger = logger.WithValues(map[string]interface{}{
-		"limit":    limit,
-		"id_count": len(ids),
-	})
-
-	query, args := q.buildGetValidIngredientMeasurementUnitsWithIDsQuery(ctx, limit, ids)
-
-	rows, err := q.performReadQuery(ctx, q.db, "valid ingredient measurement units with IDs", query, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching valid ingredient measurement units from database")
-	}
-
-	validIngredientMeasurementUnits, _, _, err := q.scanValidIngredientMeasurementUnits(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "scanning valid ingredient measurement units")
-	}
-
-	return validIngredientMeasurementUnits, nil
 }
 
 const validIngredientMeasurementUnitCreationQuery = "INSERT INTO valid_ingredient_measurement_units (id,notes,valid_measurement_unit_id,valid_ingredient_id) VALUES ($1,$2,$3,$4)"
@@ -277,11 +382,11 @@ func (q *SQLQuerier) CreateValidIngredientMeasurementUnit(ctx context.Context, i
 	}
 
 	x := &types.ValidIngredientMeasurementUnit{
-		ID:                     input.ID,
-		Notes:                  input.Notes,
-		ValidMeasurementUnitID: input.ValidMeasurementUnitID,
-		ValidIngredientID:      input.ValidIngredientID,
-		CreatedOn:              q.currentTime(),
+		ID:                   input.ID,
+		Notes:                input.Notes,
+		ValidMeasurementUnit: types.ValidMeasurementUnit{ID: input.ValidMeasurementUnitID},
+		ValidIngredient:      types.ValidIngredient{ID: input.ValidIngredientID},
+		CreatedOn:            q.currentTime(),
 	}
 
 	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, x.ID)
@@ -306,8 +411,8 @@ func (q *SQLQuerier) UpdateValidIngredientMeasurementUnit(ctx context.Context, u
 
 	args := []interface{}{
 		updated.Notes,
-		updated.ValidMeasurementUnitID,
-		updated.ValidIngredientID,
+		updated.ValidMeasurementUnit,
+		updated.ValidIngredient,
 		updated.ID,
 	}
 

@@ -235,7 +235,7 @@ func (q *SQLQuerier) GetValidPreparationInstruments(ctx context.Context, filter 
 	return x, nil
 }
 
-func (q *SQLQuerier) buildGetValidPreparationInstrumentsWithPreparationIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
+func (q *SQLQuerier) buildGetValidPreparationInstrumentsRestrictedByIDsQuery(ctx context.Context, column string, limit uint8, ids []string) (query string, args []interface{}) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -244,9 +244,10 @@ func (q *SQLQuerier) buildGetValidPreparationInstrumentsWithPreparationIDsQuery(
 		Join(validInstrumentsOnValidPreparationInstrumentsJoinClause).
 		Join(validPreparationsOnValidPreparationInstrumentsJoinClause).
 		Where(squirrel.Eq{
-			"valid_preparation_instruments.valid_preparation_id": ids,
-			"valid_preparation_instruments.archived_on":          nil,
+			fmt.Sprintf("valid_preparation_instruments.%s", column): ids,
+			"valid_preparation_instruments.archived_on":             nil,
 		}).
+		Limit(uint64(limit)).
 		ToSql()
 
 	q.logQueryBuildingError(span, err)
@@ -254,8 +255,16 @@ func (q *SQLQuerier) buildGetValidPreparationInstrumentsWithPreparationIDsQuery(
 	return query, args
 }
 
-// GetValidInstrumentsForPreparations fetches a list of valid ingredient preparations from the database that meet a particular filter.
-func (q *SQLQuerier) GetValidInstrumentsForPreparations(ctx context.Context, preparationID string, filter *types.QueryFilter) (x *types.ValidPreparationInstrumentList, err error) {
+func (q *SQLQuerier) buildGetValidPreparationInstrumentsWithInstrumentIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
+	return q.buildGetValidPreparationInstrumentsRestrictedByIDsQuery(ctx, "valid_instrument_id", limit, ids)
+}
+
+func (q *SQLQuerier) buildGetValidPreparationInstrumentsWithPreparationIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
+	return q.buildGetValidPreparationInstrumentsRestrictedByIDsQuery(ctx, "valid_preparation_id", limit, ids)
+}
+
+// GetValidInstrumentsForPreparation fetches a list of valid ingredient preparations from the database that meet a particular filter.
+func (q *SQLQuerier) GetValidInstrumentsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (x *types.ValidPreparationInstrumentList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

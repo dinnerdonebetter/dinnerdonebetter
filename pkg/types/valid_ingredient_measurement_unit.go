@@ -30,14 +30,14 @@ func init() {
 type (
 	// ValidIngredientMeasurementUnit represents a valid ingredient measurement unit.
 	ValidIngredientMeasurementUnit struct {
-		_                      struct{}
-		ArchivedOn             *uint64 `json:"archivedOn"`
-		LastUpdatedOn          *uint64 `json:"lastUpdatedOn"`
-		Notes                  string  `json:"notes"`
-		ValidMeasurementUnitID string  `json:"validPreparationID"`
-		ValidIngredientID      string  `json:"validIngredientID"`
-		ID                     string  `json:"id"`
-		CreatedOn              uint64  `json:"createdOn"`
+		_                    struct{}
+		ArchivedOn           *uint64              `json:"archivedOn"`
+		LastUpdatedOn        *uint64              `json:"lastUpdatedOn"`
+		Notes                string               `json:"notes"`
+		ValidMeasurementUnit ValidMeasurementUnit `json:"validPreparation"`
+		ValidIngredient      ValidIngredient      `json:"validIngredient"`
+		ID                   string               `json:"id"`
+		CreatedOn            uint64               `json:"createdOn"`
 	}
 
 	// ValidIngredientMeasurementUnitList represents a list of valid ingredient measurement units.
@@ -80,7 +80,6 @@ type (
 		ValidIngredientMeasurementUnitExists(ctx context.Context, validIngredientMeasurementUnitID string) (bool, error)
 		GetValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) (*ValidIngredientMeasurementUnit, error)
 		GetValidIngredientMeasurementUnits(ctx context.Context, filter *QueryFilter) (*ValidIngredientMeasurementUnitList, error)
-		GetValidIngredientMeasurementUnitsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*ValidIngredientMeasurementUnit, error)
 		CreateValidIngredientMeasurementUnit(ctx context.Context, input *ValidIngredientMeasurementUnitDatabaseCreationInput) (*ValidIngredientMeasurementUnit, error)
 		UpdateValidIngredientMeasurementUnit(ctx context.Context, updated *ValidIngredientMeasurementUnit) error
 		ArchiveValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) error
@@ -102,12 +101,12 @@ func (x *ValidIngredientMeasurementUnit) Update(input *ValidIngredientMeasuremen
 		x.Notes = *input.Notes
 	}
 
-	if input.ValidMeasurementUnitID != nil && *input.ValidMeasurementUnitID != x.ValidMeasurementUnitID {
-		x.ValidMeasurementUnitID = *input.ValidMeasurementUnitID
+	if input.ValidMeasurementUnitID != nil && *input.ValidMeasurementUnitID != x.ValidMeasurementUnit.ID {
+		x.ValidMeasurementUnit.ID = *input.ValidMeasurementUnitID
 	}
 
-	if input.ValidIngredientID != nil && *input.ValidIngredientID != x.ValidIngredientID {
-		x.ValidIngredientID = *input.ValidIngredientID
+	if input.ValidIngredientID != nil && *input.ValidIngredientID != x.ValidIngredient.ID {
+		x.ValidIngredient.ID = *input.ValidIngredientID
 	}
 }
 
@@ -142,8 +141,8 @@ func (x *ValidIngredientMeasurementUnitDatabaseCreationInput) ValidateWithContex
 func ValidIngredientMeasurementUnitFromValidIngredientMeasurementUnit(input *ValidIngredientMeasurementUnit) *ValidIngredientMeasurementUnitUpdateRequestInput {
 	x := &ValidIngredientMeasurementUnitUpdateRequestInput{
 		Notes:                  &input.Notes,
-		ValidMeasurementUnitID: &input.ValidMeasurementUnitID,
-		ValidIngredientID:      &input.ValidIngredientID,
+		ValidMeasurementUnitID: &input.ValidMeasurementUnit.ID,
+		ValidIngredientID:      &input.ValidIngredient.ID,
 	}
 
 	return x

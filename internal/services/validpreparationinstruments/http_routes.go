@@ -187,7 +187,7 @@ func (s *service) SearchByPreparationHandler(res http.ResponseWriter, req *http.
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	validPreparationInstrument, err := s.validPreparationInstrumentDataManager.GetValidInstrumentsForPreparations(ctx, validPreparationID, filter)
+	validPreparationInstrument, err := s.validPreparationInstrumentDataManager.GetValidInstrumentsForPreparation(ctx, validPreparationID, filter)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating valid preparation instrument")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)

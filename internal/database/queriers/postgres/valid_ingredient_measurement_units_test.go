@@ -29,8 +29,8 @@ func buildMockRowsFromValidIngredientMeasurementUnits(includeCounts bool, filter
 		rowValues := []driver.Value{
 			x.ID,
 			x.Notes,
-			x.ValidMeasurementUnitID,
-			x.ValidIngredientID,
+			x.ValidMeasurementUnit,
+			x.ValidIngredient,
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,
@@ -358,96 +358,6 @@ func TestQuerier_GetValidIngredientMeasurementUnits(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetValidIngredientMeasurementUnitsWithIDs(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidIngredientMeasurementUnitList()
-
-		var exampleIDs []string
-		for _, x := range exampleValidIngredientMeasurementUnitList.ValidIngredientMeasurementUnits {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetValidIngredientMeasurementUnitsWithIDsQuery(ctx, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidIngredientMeasurementUnits(false, 0, exampleValidIngredientMeasurementUnitList.ValidIngredientMeasurementUnits...))
-
-		actual, err := c.GetValidIngredientMeasurementUnitsWithIDs(ctx, 0, exampleIDs)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredientMeasurementUnitList.ValidIngredientMeasurementUnits, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with invalid IDs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, _ := buildTestClient(t)
-
-		actual, err := c.GetValidIngredientMeasurementUnitsWithIDs(ctx, defaultLimit, nil)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidIngredientMeasurementUnitList()
-
-		var exampleIDs []string
-		for _, x := range exampleValidIngredientMeasurementUnitList.ValidIngredientMeasurementUnits {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetValidIngredientMeasurementUnitsWithIDsQuery(ctx, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetValidIngredientMeasurementUnitsWithIDs(ctx, defaultLimit, exampleIDs)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error scanning query results", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidIngredientMeasurementUnitList()
-
-		var exampleIDs []string
-		for _, x := range exampleValidIngredientMeasurementUnitList.ValidIngredientMeasurementUnits {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetValidIngredientMeasurementUnitsWithIDsQuery(ctx, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.GetValidIngredientMeasurementUnitsWithIDs(ctx, defaultLimit, exampleIDs)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
 func TestQuerier_CreateValidIngredientMeasurementUnit(T *testing.T) {
 	T.Parallel()
 
@@ -541,8 +451,8 @@ func TestQuerier_UpdateValidIngredientMeasurementUnit(T *testing.T) {
 
 		args := []interface{}{
 			exampleValidIngredientMeasurementUnit.Notes,
-			exampleValidIngredientMeasurementUnit.ValidMeasurementUnitID,
-			exampleValidIngredientMeasurementUnit.ValidIngredientID,
+			exampleValidIngredientMeasurementUnit.ValidMeasurementUnit,
+			exampleValidIngredientMeasurementUnit.ValidIngredient,
 			exampleValidIngredientMeasurementUnit.ID,
 		}
 
@@ -574,8 +484,8 @@ func TestQuerier_UpdateValidIngredientMeasurementUnit(T *testing.T) {
 
 		args := []interface{}{
 			exampleValidIngredientMeasurementUnit.Notes,
-			exampleValidIngredientMeasurementUnit.ValidMeasurementUnitID,
-			exampleValidIngredientMeasurementUnit.ValidIngredientID,
+			exampleValidIngredientMeasurementUnit.ValidMeasurementUnit,
+			exampleValidIngredientMeasurementUnit.ValidIngredient,
 			exampleValidIngredientMeasurementUnit.ID,
 		}
 
