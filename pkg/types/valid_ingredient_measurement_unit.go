@@ -121,7 +121,6 @@ func (x *ValidIngredientMeasurementUnitCreationRequestInput) ValidateWithContext
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.Notes, validation.Required),
 		validation.Field(&x.ValidMeasurementUnitID, validation.Required),
 		validation.Field(&x.ValidIngredientID, validation.Required),
 	)
@@ -135,7 +134,6 @@ func (x *ValidIngredientMeasurementUnitDatabaseCreationInput) ValidateWithContex
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
-		validation.Field(&x.Notes, validation.Required),
 		validation.Field(&x.ValidMeasurementUnitID, validation.Required),
 		validation.Field(&x.ValidIngredientID, validation.Required),
 	)
@@ -170,7 +168,6 @@ func (x *ValidIngredientMeasurementUnitUpdateRequestInput) ValidateWithContext(c
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.Notes, validation.Required),
 		validation.Field(&x.ValidMeasurementUnitID, validation.Required),
 		validation.Field(&x.ValidIngredientID, validation.Required),
 	)

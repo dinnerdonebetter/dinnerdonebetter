@@ -123,7 +123,6 @@ func (x *ValidIngredientPreparationCreationRequestInput) ValidateWithContext(ctx
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.Notes, validation.Required),
 		validation.Field(&x.ValidPreparationID, validation.Required),
 		validation.Field(&x.ValidIngredientID, validation.Required),
 	)
@@ -137,7 +136,6 @@ func (x *ValidIngredientPreparationDatabaseCreationInput) ValidateWithContext(ct
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
-		validation.Field(&x.Notes, validation.Required),
 		validation.Field(&x.ValidPreparationID, validation.Required),
 		validation.Field(&x.ValidIngredientID, validation.Required),
 	)
@@ -172,7 +170,6 @@ func (x *ValidIngredientPreparationUpdateRequestInput) ValidateWithContext(ctx c
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.Notes, validation.Required),
 		validation.Field(&x.ValidPreparationID, validation.Required),
 		validation.Field(&x.ValidIngredientID, validation.Required),
 	)

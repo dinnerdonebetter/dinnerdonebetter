@@ -121,7 +121,6 @@ func (x *ValidPreparationInstrumentCreationRequestInput) ValidateWithContext(ctx
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.Notes, validation.Required),
 		validation.Field(&x.ValidPreparationID, validation.Required),
 		validation.Field(&x.ValidInstrumentID, validation.Required),
 	)
@@ -135,7 +134,6 @@ func (x *ValidPreparationInstrumentDatabaseCreationInput) ValidateWithContext(ct
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
-		validation.Field(&x.Notes, validation.Required),
 		validation.Field(&x.ValidPreparationID, validation.Required),
 		validation.Field(&x.ValidInstrumentID, validation.Required),
 	)
@@ -170,7 +168,6 @@ func (x *ValidPreparationInstrumentUpdateRequestInput) ValidateWithContext(ctx c
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.Notes, validation.Required),
 		validation.Field(&x.ValidPreparationID, validation.Required),
 		validation.Field(&x.ValidInstrumentID, validation.Required),
 	)

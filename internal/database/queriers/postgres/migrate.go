@@ -175,6 +175,11 @@ var (
 			Description: "various recipe step product improvements",
 			Script:      fetchMigration("00032_recipe_step_products_improvements"),
 		},
+		{
+			Version:     33,
+			Description: "bridge table unique constraint improvements",
+			Script:      fetchMigration("00033_better_bridge_table_constaints"),
+		},
 	}
 )
 
