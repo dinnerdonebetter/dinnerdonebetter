@@ -83,7 +83,7 @@ func ProvideDatabaseClient(
 		db:            db,
 		config:        cfg,
 		tracer:        tracer,
-		logQueries:    true,
+		logQueries:    cfg.LogQueries,
 		timeFunc:      defaultTimeFunc,
 		connectionURL: string(cfg.ConnectionDetails),
 		logger:        logging.EnsureLogger(logger).WithName("querier"),

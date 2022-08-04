@@ -17,11 +17,13 @@ var validPreparationCollection = struct {
 	Grill,
 	Whisk,
 	Mix,
+	Mince,
 	Knead,
 	Divide,
 	Flatten,
 	Rest,
 	Griddle,
+	Grind,
 	_ *types.ValidPreparationDatabaseCreationInput
 }{
 	Dice: &types.ValidPreparationDatabaseCreationInput{
@@ -60,6 +62,10 @@ var validPreparationCollection = struct {
 		ID:   "vprep_mix",
 		Name: "Mix",
 	},
+	Mince: &types.ValidPreparationDatabaseCreationInput{
+		ID:   "vprep_mince",
+		Name: "Mince",
+	},
 	Knead: &types.ValidPreparationDatabaseCreationInput{
 		ID:   "vprep_knead",
 		Name: "Knead",
@@ -79,6 +85,10 @@ var validPreparationCollection = struct {
 	Griddle: &types.ValidPreparationDatabaseCreationInput{
 		ID:   "vprep_griddle",
 		Name: "Griddle",
+	},
+	Grind: &types.ValidPreparationDatabaseCreationInput{
+		ID:   "vprep_grind",
+		Name: "Grind",
 	},
 }
 

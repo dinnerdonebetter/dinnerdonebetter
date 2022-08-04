@@ -21,17 +21,6 @@ const (
 var (
 	_ types.ValidPreparationInstrumentDataManager = (*SQLQuerier)(nil)
 
-	// validPreparationInstrumentsTableColumns are the columns for the valid_preparation_instruments table.
-	validPreparationInstrumentsTableColumns = []string{
-		"valid_preparation_instruments.id",
-		"valid_preparation_instruments.notes",
-		"valid_preparation_instruments.valid_preparation_id",
-		"valid_preparation_instruments.valid_instrument_id",
-		"valid_preparation_instruments.created_on",
-		"valid_preparation_instruments.last_updated_on",
-		"valid_preparation_instruments.archived_on",
-	}
-
 	// fullValidPreparationInstrumentsTableColumns are the columns for the valid_preparation_instruments table.
 	fullValidPreparationInstrumentsTableColumns = []string{
 		"valid_preparation_instruments.id",
@@ -69,21 +58,21 @@ func (q *SQLQuerier) scanValidPreparationInstrument(ctx context.Context, scan da
 	targetVars := []interface{}{
 		&x.ID,
 		&x.Notes,
-		&x.ValidPreparation.ID,
-		&x.ValidPreparation.Name,
-		&x.ValidPreparation.Description,
-		&x.ValidPreparation.IconPath,
-		&x.ValidPreparation.CreatedOn,
-		&x.ValidPreparation.LastUpdatedOn,
-		&x.ValidPreparation.ArchivedOn,
-		&x.ValidInstrument.ID,
-		&x.ValidInstrument.Name,
-		&x.ValidInstrument.Variant,
-		&x.ValidInstrument.Description,
-		&x.ValidInstrument.IconPath,
-		&x.ValidInstrument.CreatedOn,
-		&x.ValidInstrument.LastUpdatedOn,
-		&x.ValidInstrument.ArchivedOn,
+		&x.Preparation.ID,
+		&x.Preparation.Name,
+		&x.Preparation.Description,
+		&x.Preparation.IconPath,
+		&x.Preparation.CreatedOn,
+		&x.Preparation.LastUpdatedOn,
+		&x.Preparation.ArchivedOn,
+		&x.Instrument.ID,
+		&x.Instrument.Name,
+		&x.Instrument.Variant,
+		&x.Instrument.Description,
+		&x.Instrument.IconPath,
+		&x.Instrument.CreatedOn,
+		&x.Instrument.LastUpdatedOn,
+		&x.Instrument.ArchivedOn,
 		&x.CreatedOn,
 		&x.LastUpdatedOn,
 		&x.ArchivedOn,
@@ -160,7 +149,35 @@ func (q *SQLQuerier) ValidPreparationInstrumentExists(ctx context.Context, valid
 	return result, nil
 }
 
-const getValidPreparationInstrumentQuery = "SELECT valid_preparation_instruments.id, valid_preparation_instruments.notes, valid_preparation_instruments.valid_preparation_id, valid_preparation_instruments.valid_instrument_id, valid_preparation_instruments.created_on, valid_preparation_instruments.last_updated_on, valid_preparation_instruments.archived_on FROM valid_preparation_instruments WHERE valid_preparation_instruments.archived_on IS NULL AND valid_preparation_instruments.id = $1"
+const getValidPreparationInstrumentQuery = `SELECT
+	valid_preparation_instruments.id,
+	valid_preparation_instruments.notes,
+	valid_preparations.id,
+	valid_preparations.name,
+	valid_preparations.description,
+	valid_preparations.icon_path,
+	valid_preparations.created_on,
+	valid_preparations.last_updated_on,
+	valid_preparations.archived_on,
+	valid_instruments.id,
+	valid_instruments.name,
+	valid_instruments.variant,
+	valid_instruments.description,
+	valid_instruments.icon_path,
+	valid_instruments.created_on,
+	valid_instruments.last_updated_on,
+	valid_instruments.archived_on,
+	valid_preparation_instruments.created_on,
+	valid_preparation_instruments.last_updated_on,
+	valid_preparation_instruments.archived_on
+FROM
+  valid_preparation_instruments
+JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+WHERE
+  valid_preparation_instruments.archived_on IS NULL
+  AND valid_preparation_instruments.id = $1
+`
 
 // GetValidPreparationInstrument fetches a valid ingredient preparation from the database.
 func (q *SQLQuerier) GetValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) (*types.ValidPreparationInstrument, error) {
@@ -221,9 +238,20 @@ func (q *SQLQuerier) GetValidPreparationInstruments(ctx context.Context, filter 
 		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	query, args := q.buildListQuery(ctx, "valid_preparation_instruments", nil, nil, nil, householdOwnershipColumn, validPreparationInstrumentsTableColumns, "", false, filter, true)
+	joins := []string{
+		validInstrumentsOnValidPreparationInstrumentsJoinClause,
+		validPreparationsOnValidPreparationInstrumentsJoinClause,
+	}
 
-	rows, err := q.performReadQuery(ctx, q.db, "validPreparationInstruments", query, args)
+	groupBys := []string{
+		"valid_preparations.id",
+		"valid_instruments.id",
+		"valid_preparation_instruments.id",
+	}
+
+	query, args := q.buildListQuery(ctx, "valid_preparation_instruments", joins, groupBys, nil, householdOwnershipColumn, fullValidPreparationInstrumentsTableColumns, "", false, filter, true)
+
+	rows, err := q.performReadQuery(ctx, q.db, "valid preparation instruments", query, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "executing valid ingredient preparations list retrieval query")
 	}
@@ -255,20 +283,22 @@ func (q *SQLQuerier) buildGetValidPreparationInstrumentsRestrictedByIDsQuery(ctx
 	return query, args
 }
 
-func (q *SQLQuerier) buildGetValidPreparationInstrumentsWithInstrumentIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
-	return q.buildGetValidPreparationInstrumentsRestrictedByIDsQuery(ctx, "valid_instrument_id", limit, ids)
-}
-
 func (q *SQLQuerier) buildGetValidPreparationInstrumentsWithPreparationIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
 	return q.buildGetValidPreparationInstrumentsRestrictedByIDsQuery(ctx, "valid_preparation_id", limit, ids)
 }
 
-// GetValidInstrumentsForPreparation fetches a list of valid ingredient preparations from the database that meet a particular filter.
-func (q *SQLQuerier) GetValidInstrumentsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (x *types.ValidPreparationInstrumentList, err error) {
+// GetValidPreparationInstrumentsForPreparation fetches a list of valid ingredient preparations from the database that meet a particular filter.
+func (q *SQLQuerier) GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (x *types.ValidPreparationInstrumentList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
+
+	if preparationID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidPreparationIDKey, preparationID)
+	tracing.AttachValidPreparationInstrumentIDToSpan(span, preparationID)
 
 	x = &types.ValidPreparationInstrumentList{}
 	logger = filter.AttachToLogger(logger)
@@ -281,7 +311,7 @@ func (q *SQLQuerier) GetValidInstrumentsForPreparation(ctx context.Context, prep
 	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
 	query, args := q.buildGetValidPreparationInstrumentsWithPreparationIDsQuery(ctx, filter.Limit, []string{preparationID})
 
-	rows, err := q.performReadQuery(ctx, q.db, "validPreparationInstruments", query, args)
+	rows, err := q.performReadQuery(ctx, q.db, "valid preparation instruments for preparation", query, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "executing valid ingredient preparations list retrieval query")
 	}
@@ -293,62 +323,44 @@ func (q *SQLQuerier) GetValidInstrumentsForPreparation(ctx context.Context, prep
 	return x, nil
 }
 
-func (q *SQLQuerier) buildGetValidPreparationInstrumentsWithIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	withIDsWhere := squirrel.Eq{
-		"valid_preparation_instruments.id":          ids,
-		"valid_preparation_instruments.archived_on": nil,
-	}
-
-	subqueryBuilder := q.sqlBuilder.Select(validPreparationInstrumentsTableColumns...).
-		From("valid_preparation_instruments").
-		Join(fmt.Sprintf("unnest('{%s}'::text[])", joinIDs(ids))).
-		Suffix(fmt.Sprintf("WITH ORDINALITY t(id, ord) USING (id) ORDER BY t.ord LIMIT %d", limit))
-
-	query, args, err := q.sqlBuilder.Select(validPreparationInstrumentsTableColumns...).
-		FromSelect(subqueryBuilder, "valid_preparation_instruments").
-		Where(withIDsWhere).ToSql()
-
-	q.logQueryBuildingError(span, err)
-
-	return query, args
+func (q *SQLQuerier) buildGetValidPreparationInstrumentsWithInstrumentIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []interface{}) {
+	return q.buildGetValidPreparationInstrumentsRestrictedByIDsQuery(ctx, "valid_instrument_id", limit, ids)
 }
 
-// GetValidPreparationInstrumentsWithIDs fetches valid ingredient preparations from the database within a given set of IDs.
-func (q *SQLQuerier) GetValidPreparationInstrumentsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*types.ValidPreparationInstrument, error) {
+// GetValidPreparationInstrumentsForInstrument fetches a list of valid ingredient preparations from the database that meet a particular filter.
+func (q *SQLQuerier) GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *types.QueryFilter) (x *types.ValidPreparationInstrumentList, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
-	if ids == nil {
-		return nil, ErrNilInputProvided
+	if instrumentID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidInstrumentIDKey, instrumentID)
+	tracing.AttachValidPreparationInstrumentIDToSpan(span, instrumentID)
+
+	x = &types.ValidPreparationInstrumentList{}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	if filter != nil {
+		x.Page, x.Limit = filter.Page, filter.Limit
 	}
 
-	if limit == 0 {
-		limit = uint8(types.DefaultLimit)
-	}
+	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
+	query, args := q.buildGetValidPreparationInstrumentsWithInstrumentIDsQuery(ctx, filter.Limit, []string{instrumentID})
 
-	logger = logger.WithValues(map[string]interface{}{
-		"limit":    limit,
-		"id_count": len(ids),
-	})
-
-	query, args := q.buildGetValidPreparationInstrumentsWithIDsQuery(ctx, limit, ids)
-
-	rows, err := q.performReadQuery(ctx, q.db, "valid ingredient preparations with IDs", query, args)
+	rows, err := q.performReadQuery(ctx, q.db, "valid preparation instruments for instrument", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, logger, span, "fetching valid ingredient preparations from database")
+		return nil, observability.PrepareError(err, logger, span, "executing valid ingredient preparations list retrieval query")
 	}
 
-	validPreparationInstruments, _, _, err := q.scanValidPreparationInstruments(ctx, rows, false)
-	if err != nil {
+	if x.ValidPreparationInstruments, x.FilteredCount, x.TotalCount, err = q.scanValidPreparationInstruments(ctx, rows, false); err != nil {
 		return nil, observability.PrepareError(err, logger, span, "scanning valid ingredient preparations")
 	}
 
-	return validPreparationInstruments, nil
+	return x, nil
 }
 
 const validPreparationInstrumentCreationQuery = "INSERT INTO valid_preparation_instruments (id,notes,valid_preparation_id,valid_instrument_id) VALUES ($1,$2,$3,$4)"
@@ -377,11 +389,11 @@ func (q *SQLQuerier) CreateValidPreparationInstrument(ctx context.Context, input
 	}
 
 	x := &types.ValidPreparationInstrument{
-		ID:               input.ID,
-		Notes:            input.Notes,
-		ValidPreparation: types.ValidPreparation{ID: input.ValidPreparationID},
-		ValidInstrument:  types.ValidInstrument{ID: input.ValidInstrumentID},
-		CreatedOn:        q.currentTime(),
+		ID:          input.ID,
+		Notes:       input.Notes,
+		Preparation: types.ValidPreparation{ID: input.ValidPreparationID},
+		Instrument:  types.ValidInstrument{ID: input.ValidInstrumentID},
+		CreatedOn:   q.currentTime(),
 	}
 
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, x.ID)
@@ -406,8 +418,8 @@ func (q *SQLQuerier) UpdateValidPreparationInstrument(ctx context.Context, updat
 
 	args := []interface{}{
 		updated.Notes,
-		updated.ValidPreparation.ID,
-		updated.ValidInstrument.ID,
+		updated.Preparation.ID,
+		updated.Instrument.ID,
 		updated.ID,
 	}
 

@@ -34,9 +34,9 @@ type (
 		ArchivedOn      *uint64              `json:"archivedOn"`
 		LastUpdatedOn   *uint64              `json:"lastUpdatedOn"`
 		Notes           string               `json:"notes"`
+		ID              string               `json:"id"`
 		MeasurementUnit ValidMeasurementUnit `json:"measurementUnit"`
 		Ingredient      ValidIngredient      `json:"ingredient"`
-		ID              string               `json:"id"`
 		CreatedOn       uint64               `json:"createdOn"`
 	}
 
@@ -80,7 +80,8 @@ type (
 		ValidIngredientMeasurementUnitExists(ctx context.Context, validIngredientMeasurementUnitID string) (bool, error)
 		GetValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) (*ValidIngredientMeasurementUnit, error)
 		GetValidIngredientMeasurementUnits(ctx context.Context, filter *QueryFilter) (*ValidIngredientMeasurementUnitList, error)
-		GetValidMeasurementUnitsForIngredient(ctx context.Context, ingredientID string, filter *QueryFilter) (*ValidIngredientMeasurementUnitList, error)
+		GetValidIngredientMeasurementUnitsForIngredient(ctx context.Context, ingredientID string, filter *QueryFilter) (*ValidIngredientMeasurementUnitList, error)
+		GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx context.Context, ingredientID string, filter *QueryFilter) (*ValidIngredientMeasurementUnitList, error)
 		CreateValidIngredientMeasurementUnit(ctx context.Context, input *ValidIngredientMeasurementUnitDatabaseCreationInput) (*ValidIngredientMeasurementUnit, error)
 		UpdateValidIngredientMeasurementUnit(ctx context.Context, updated *ValidIngredientMeasurementUnit) error
 		ArchiveValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) error
@@ -94,6 +95,7 @@ type (
 		UpdateHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
 		SearchByIngredientHandler(res http.ResponseWriter, req *http.Request)
+		SearchByMeasurementUnitHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 

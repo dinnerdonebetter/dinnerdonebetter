@@ -113,5 +113,6 @@ func init() {
 
 	fiftySpaces := strings.Repeat("\n", 50)
 	fmt.Printf("%s\tRunning tests%s", fiftySpaces, fiftySpaces)
-	time.Sleep(10 * time.Second)
+
+	time.Sleep(2 * time.Second)
 }

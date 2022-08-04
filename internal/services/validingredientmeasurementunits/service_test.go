@@ -37,6 +37,14 @@ func TestProvideValidIngredientMeasurementUnitsService(T *testing.T) {
 			"BuildRouteParamStringIDFetcher",
 			ValidIngredientMeasurementUnitIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
+		rpm.On(
+			"BuildRouteParamStringIDFetcher",
+			ValidIngredientIDURIParamKey,
+		).Return(func(*http.Request) string { return "" })
+		rpm.On(
+			"BuildRouteParamStringIDFetcher",
+			ValidMeasurementUnitIDURIParamKey,
+		).Return(func(*http.Request) string { return "" })
 
 		cfg := &Config{
 			DataChangesTopicName: "data_changes",

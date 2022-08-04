@@ -16,8 +16,8 @@ func checkValidPreparationInstrumentEquality(t *testing.T, expected, actual *typ
 
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for valid preparation instrument %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
-	assert.Equal(t, expected.ValidPreparationID, actual.ValidPreparationID, "expected ValidPreparationID for valid preparation instrument %s to be %v, but it was %v", expected.ID, expected.ValidPreparationID, actual.ValidPreparationID)
-	assert.Equal(t, expected.ValidInstrumentID, actual.ValidInstrumentID, "expected ValidInstrumentID for valid preparation instrument %s to be %v, but it was %v", expected.ID, expected.ValidInstrumentID, actual.ValidInstrumentID)
+	assert.Equal(t, expected.Preparation.ID, actual.Preparation.ID, "expected Preparation for valid preparation instrument %s to be %v, but it was %v", expected.ID, expected.Preparation.ID, actual.Preparation.ID)
+	assert.Equal(t, expected.Instrument.ID, actual.Instrument.ID, "expected Instrument for valid preparation instrument %s to be %v, but it was %v", expected.ID, expected.Instrument.ID, actual.Instrument.ID)
 	assert.NotZero(t, actual.CreatedOn)
 }
 
@@ -25,8 +25,8 @@ func checkValidPreparationInstrumentEquality(t *testing.T, expected, actual *typ
 func convertValidPreparationInstrumentToValidPreparationInstrumentUpdateInput(x *types.ValidPreparationInstrument) *types.ValidPreparationInstrumentUpdateRequestInput {
 	return &types.ValidPreparationInstrumentUpdateRequestInput{
 		Notes:              &x.Notes,
-		ValidPreparationID: &x.ValidPreparationID,
-		ValidInstrumentID:  &x.ValidInstrumentID,
+		ValidPreparationID: &x.Preparation.ID,
+		ValidInstrumentID:  &x.Instrument.ID,
 	}
 }
 
@@ -66,8 +66,8 @@ func (s *TestSuite) TestValidPreparationInstruments_CompleteLifecycle() {
 
 			t.Log("creating valid preparation instrument")
 			exampleValidPreparationInstrument := fakes.BuildFakeValidPreparationInstrument()
-			exampleValidPreparationInstrument.ValidInstrumentID = createdValidInstrument.ID
-			exampleValidPreparationInstrument.ValidPreparationID = createdValidPreparation.ID
+			exampleValidPreparationInstrument.Instrument = *createdValidInstrument
+			exampleValidPreparationInstrument.Preparation = *createdValidPreparation
 			exampleValidPreparationInstrumentInput := fakes.BuildFakeValidPreparationInstrumentCreationRequestInputFromValidPreparationInstrument(exampleValidPreparationInstrument)
 			createdValidPreparationInstrument, err := testClients.admin.CreateValidPreparationInstrument(ctx, exampleValidPreparationInstrumentInput)
 			require.NoError(t, err)
@@ -82,8 +82,8 @@ func (s *TestSuite) TestValidPreparationInstruments_CompleteLifecycle() {
 
 			t.Log("changing valid preparation instrument")
 			newValidPreparationInstrument := fakes.BuildFakeValidPreparationInstrument()
-			newValidPreparationInstrument.ValidInstrumentID = createdValidInstrument.ID
-			newValidPreparationInstrument.ValidPreparationID = createdValidPreparation.ID
+			newValidPreparationInstrument.Instrument = *createdValidInstrument
+			newValidPreparationInstrument.Preparation = *createdValidPreparation
 			createdValidPreparationInstrument.Update(convertValidPreparationInstrumentToValidPreparationInstrumentUpdateInput(newValidPreparationInstrument))
 			assert.NoError(t, testClients.admin.UpdateValidPreparationInstrument(ctx, createdValidPreparationInstrument))
 
@@ -139,8 +139,8 @@ func (s *TestSuite) TestValidPreparationInstruments_Listing() {
 				t.Logf("valid instrument %q created", createdValidInstrument.ID)
 
 				exampleValidPreparationInstrument := fakes.BuildFakeValidPreparationInstrument()
-				exampleValidPreparationInstrument.ValidInstrumentID = createdValidInstrument.ID
-				exampleValidPreparationInstrument.ValidPreparationID = createdValidPreparation.ID
+				exampleValidPreparationInstrument.Instrument = *createdValidInstrument
+				exampleValidPreparationInstrument.Preparation = *createdValidPreparation
 				exampleValidPreparationInstrumentInput := fakes.BuildFakeValidPreparationInstrumentCreationRequestInputFromValidPreparationInstrument(exampleValidPreparationInstrument)
 				createdValidPreparationInstrument, createdValidPreparationInstrumentErr := testClients.admin.CreateValidPreparationInstrument(ctx, exampleValidPreparationInstrumentInput)
 				require.NoError(t, createdValidPreparationInstrumentErr)

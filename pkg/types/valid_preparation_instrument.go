@@ -30,14 +30,14 @@ func init() {
 type (
 	// ValidPreparationInstrument represents a valid preparation instrument.
 	ValidPreparationInstrument struct {
-		_                struct{}
-		ArchivedOn       *uint64          `json:"archivedOn"`
-		LastUpdatedOn    *uint64          `json:"lastUpdatedOn"`
-		Notes            string           `json:"notes"`
-		ValidPreparation ValidPreparation `json:"validPreparation"`
-		ValidInstrument  ValidInstrument  `json:"validInstrument"`
-		ID               string           `json:"id"`
-		CreatedOn        uint64           `json:"createdOn"`
+		_             struct{}
+		ArchivedOn    *uint64          `json:"archivedOn"`
+		LastUpdatedOn *uint64          `json:"lastUpdatedOn"`
+		Notes         string           `json:"notes"`
+		ID            string           `json:"id"`
+		Instrument    ValidInstrument  `json:"instrument"`
+		Preparation   ValidPreparation `json:"preparation"`
+		CreatedOn     uint64           `json:"createdOn"`
 	}
 
 	// ValidPreparationInstrumentList represents a list of valid preparation instruments.
@@ -80,8 +80,8 @@ type (
 		ValidPreparationInstrumentExists(ctx context.Context, validPreparationInstrumentID string) (bool, error)
 		GetValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) (*ValidPreparationInstrument, error)
 		GetValidPreparationInstruments(ctx context.Context, filter *QueryFilter) (*ValidPreparationInstrumentList, error)
-		GetValidInstrumentsForPreparation(ctx context.Context, preparationName string, filter *QueryFilter) (*ValidPreparationInstrumentList, error)
-		GetValidPreparationInstrumentsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*ValidPreparationInstrument, error)
+		GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *QueryFilter) (*ValidPreparationInstrumentList, error)
+		GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *QueryFilter) (*ValidPreparationInstrumentList, error)
 		CreateValidPreparationInstrument(ctx context.Context, input *ValidPreparationInstrumentDatabaseCreationInput) (*ValidPreparationInstrument, error)
 		UpdateValidPreparationInstrument(ctx context.Context, updated *ValidPreparationInstrument) error
 		ArchiveValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) error
@@ -91,10 +91,11 @@ type (
 	ValidPreparationInstrumentDataService interface {
 		ListHandler(res http.ResponseWriter, req *http.Request)
 		CreateHandler(res http.ResponseWriter, req *http.Request)
-		SearchByPreparationHandler(res http.ResponseWriter, req *http.Request)
 		ReadHandler(res http.ResponseWriter, req *http.Request)
 		UpdateHandler(res http.ResponseWriter, req *http.Request)
 		ArchiveHandler(res http.ResponseWriter, req *http.Request)
+		SearchByPreparationHandler(res http.ResponseWriter, req *http.Request)
+		SearchByInstrumentHandler(res http.ResponseWriter, req *http.Request)
 	}
 )
 
@@ -104,12 +105,12 @@ func (x *ValidPreparationInstrument) Update(input *ValidPreparationInstrumentUpd
 		x.Notes = *input.Notes
 	}
 
-	if input.ValidPreparationID != nil && *input.ValidPreparationID != x.ValidPreparation.ID {
-		x.ValidPreparation.ID = *input.ValidPreparationID
+	if input.ValidPreparationID != nil && *input.ValidPreparationID != x.Preparation.ID {
+		x.Preparation.ID = *input.ValidPreparationID
 	}
 
-	if input.ValidInstrumentID != nil && *input.ValidInstrumentID != x.ValidInstrument.ID {
-		x.ValidInstrument.ID = *input.ValidInstrumentID
+	if input.ValidInstrumentID != nil && *input.ValidInstrumentID != x.Instrument.ID {
+		x.Instrument.ID = *input.ValidInstrumentID
 	}
 }
 
@@ -144,8 +145,8 @@ func (x *ValidPreparationInstrumentDatabaseCreationInput) ValidateWithContext(ct
 func ValidPreparationInstrumentFromValidPreparationInstrument(input *ValidPreparationInstrument) *ValidPreparationInstrumentUpdateRequestInput {
 	x := &ValidPreparationInstrumentUpdateRequestInput{
 		Notes:              &input.Notes,
-		ValidPreparationID: &input.ValidPreparation.ID,
-		ValidInstrumentID:  &input.ValidInstrument.ID,
+		ValidPreparationID: &input.Preparation.ID,
+		ValidInstrumentID:  &input.Instrument.ID,
 	}
 
 	return x

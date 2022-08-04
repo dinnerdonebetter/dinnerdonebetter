@@ -17,7 +17,7 @@ import (
 )
 
 func buildMockRowsFromValidPreparationInstruments(includeCounts bool, filteredCount uint64, validPreparationInstruments ...*types.ValidPreparationInstrument) *sqlmock.Rows {
-	columns := validPreparationInstrumentsTableColumns
+	columns := fullValidPreparationInstrumentsTableColumns
 
 	if includeCounts {
 		columns = append(columns, "filtered_count", "total_count")
@@ -29,8 +29,21 @@ func buildMockRowsFromValidPreparationInstruments(includeCounts bool, filteredCo
 		rowValues := []driver.Value{
 			x.ID,
 			x.Notes,
-			x.ValidPreparationID,
-			x.ValidInstrumentID,
+			x.Preparation.ID,
+			x.Preparation.Name,
+			x.Preparation.Description,
+			x.Preparation.IconPath,
+			x.Preparation.CreatedOn,
+			x.Preparation.LastUpdatedOn,
+			x.Preparation.ArchivedOn,
+			x.Instrument.ID,
+			x.Instrument.Name,
+			x.Instrument.Variant,
+			x.Instrument.Description,
+			x.Instrument.IconPath,
+			x.Instrument.CreatedOn,
+			x.Instrument.LastUpdatedOn,
+			x.Instrument.ArchivedOn,
 			x.CreatedOn,
 			x.LastUpdatedOn,
 			x.ArchivedOn,
@@ -269,6 +282,17 @@ func TestQuerier_GetTotalValidPreparationInstrumentCount(T *testing.T) {
 func TestQuerier_GetValidPreparationInstruments(T *testing.T) {
 	T.Parallel()
 
+	joins := []string{
+		validInstrumentsOnValidPreparationInstrumentsJoinClause,
+		validPreparationsOnValidPreparationInstrumentsJoinClause,
+	}
+
+	groupBys := []string{
+		"valid_preparations.id",
+		"valid_instruments.id",
+		"valid_preparation_instruments.id",
+	}
+
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
@@ -278,7 +302,7 @@ func TestQuerier_GetValidPreparationInstruments(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_preparation_instruments", nil, nil, nil, householdOwnershipColumn, validPreparationInstrumentsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "valid_preparation_instruments", joins, groupBys, nil, householdOwnershipColumn, fullValidPreparationInstrumentsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -302,7 +326,7 @@ func TestQuerier_GetValidPreparationInstruments(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_preparation_instruments", nil, nil, nil, householdOwnershipColumn, validPreparationInstrumentsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "valid_preparation_instruments", joins, groupBys, nil, householdOwnershipColumn, fullValidPreparationInstrumentsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -323,7 +347,7 @@ func TestQuerier_GetValidPreparationInstruments(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_preparation_instruments", nil, nil, nil, householdOwnershipColumn, validPreparationInstrumentsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "valid_preparation_instruments", joins, groupBys, nil, householdOwnershipColumn, fullValidPreparationInstrumentsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -344,7 +368,7 @@ func TestQuerier_GetValidPreparationInstruments(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "valid_preparation_instruments", nil, nil, nil, householdOwnershipColumn, validPreparationInstrumentsTableColumns, "", false, filter, true)
+		query, args := c.buildListQuery(ctx, "valid_preparation_instruments", joins, groupBys, nil, householdOwnershipColumn, fullValidPreparationInstrumentsTableColumns, "", false, filter, true)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -358,96 +382,6 @@ func TestQuerier_GetValidPreparationInstruments(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetValidPreparationInstrumentsWithIDs(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidPreparationInstrumentList := fakes.BuildFakeValidPreparationInstrumentList()
-
-		var exampleIDs []string
-		for _, x := range exampleValidPreparationInstrumentList.ValidPreparationInstruments {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetValidPreparationInstrumentsWithIDsQuery(ctx, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidPreparationInstruments(false, 0, exampleValidPreparationInstrumentList.ValidPreparationInstruments...))
-
-		actual, err := c.GetValidPreparationInstrumentsWithIDs(ctx, 0, exampleIDs)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleValidPreparationInstrumentList.ValidPreparationInstruments, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with invalid IDs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, _ := buildTestClient(t)
-
-		actual, err := c.GetValidPreparationInstrumentsWithIDs(ctx, defaultLimit, nil)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidPreparationInstrumentList := fakes.BuildFakeValidPreparationInstrumentList()
-
-		var exampleIDs []string
-		for _, x := range exampleValidPreparationInstrumentList.ValidPreparationInstruments {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetValidPreparationInstrumentsWithIDsQuery(ctx, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetValidPreparationInstrumentsWithIDs(ctx, defaultLimit, exampleIDs)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error scanning query results", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidPreparationInstrumentList := fakes.BuildFakeValidPreparationInstrumentList()
-
-		var exampleIDs []string
-		for _, x := range exampleValidPreparationInstrumentList.ValidPreparationInstruments {
-			exampleIDs = append(exampleIDs, x.ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetValidPreparationInstrumentsWithIDsQuery(ctx, defaultLimit, exampleIDs)
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.GetValidPreparationInstrumentsWithIDs(ctx, defaultLimit, exampleIDs)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
 func TestQuerier_CreateValidPreparationInstrument(T *testing.T) {
 	T.Parallel()
 
@@ -456,6 +390,9 @@ func TestQuerier_CreateValidPreparationInstrument(T *testing.T) {
 
 		exampleValidPreparationInstrument := fakes.BuildFakeValidPreparationInstrument()
 		exampleValidPreparationInstrument.ID = "1"
+		exampleValidPreparationInstrument.Preparation = types.ValidPreparation{ID: exampleValidPreparationInstrument.Preparation.ID}
+		exampleValidPreparationInstrument.Instrument = types.ValidInstrument{ID: exampleValidPreparationInstrument.Instrument.ID}
+
 		exampleInput := fakes.BuildFakeValidPreparationInstrumentDatabaseCreationInputFromValidPreparationInstrument(exampleValidPreparationInstrument)
 
 		ctx := context.Background()
@@ -541,8 +478,8 @@ func TestQuerier_UpdateValidPreparationInstrument(T *testing.T) {
 
 		args := []interface{}{
 			exampleValidPreparationInstrument.Notes,
-			exampleValidPreparationInstrument.ValidPreparationID,
-			exampleValidPreparationInstrument.ValidInstrumentID,
+			exampleValidPreparationInstrument.Preparation.ID,
+			exampleValidPreparationInstrument.Instrument.ID,
 			exampleValidPreparationInstrument.ID,
 		}
 
@@ -574,8 +511,8 @@ func TestQuerier_UpdateValidPreparationInstrument(T *testing.T) {
 
 		args := []interface{}{
 			exampleValidPreparationInstrument.Notes,
-			exampleValidPreparationInstrument.ValidPreparationID,
-			exampleValidPreparationInstrument.ValidInstrumentID,
+			exampleValidPreparationInstrument.Preparation.ID,
+			exampleValidPreparationInstrument.Instrument.ID,
 			exampleValidPreparationInstrument.ID,
 		}
 

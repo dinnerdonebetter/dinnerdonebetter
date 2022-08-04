@@ -12,8 +12,8 @@ func BuildFakeValidIngredientMeasurementUnit() *types.ValidIngredientMeasurement
 	return &types.ValidIngredientMeasurementUnit{
 		ID:              ksuid.New().String(),
 		Notes:           buildUniqueString(),
-		MeasurementUnit: buildUniqueString(),
-		Ingredient:      buildUniqueString(),
+		MeasurementUnit: *BuildFakeValidMeasurementUnit(),
+		Ingredient:      *BuildFakeValidIngredient(),
 		CreatedOn:       uint64(uint32(fake.Date().Unix())),
 	}
 }
@@ -41,8 +41,8 @@ func BuildFakeValidIngredientMeasurementUnitUpdateRequestInput() *types.ValidIng
 	validIngredientMeasurementUnit := BuildFakeValidIngredientMeasurementUnit()
 	return &types.ValidIngredientMeasurementUnitUpdateRequestInput{
 		Notes:                  &validIngredientMeasurementUnit.Notes,
-		ValidMeasurementUnitID: &validIngredientMeasurementUnit.MeasurementUnit,
-		ValidIngredientID:      &validIngredientMeasurementUnit.Ingredient,
+		ValidMeasurementUnitID: &validIngredientMeasurementUnit.MeasurementUnit.ID,
+		ValidIngredientID:      &validIngredientMeasurementUnit.Ingredient.ID,
 	}
 }
 
@@ -50,8 +50,8 @@ func BuildFakeValidIngredientMeasurementUnitUpdateRequestInput() *types.ValidIng
 func BuildFakeValidIngredientMeasurementUnitUpdateRequestInputFromValidIngredientMeasurementUnit(validIngredientMeasurementUnit *types.ValidIngredientMeasurementUnit) *types.ValidIngredientMeasurementUnitUpdateRequestInput {
 	return &types.ValidIngredientMeasurementUnitUpdateRequestInput{
 		Notes:                  &validIngredientMeasurementUnit.Notes,
-		ValidMeasurementUnitID: &validIngredientMeasurementUnit.MeasurementUnit,
-		ValidIngredientID:      &validIngredientMeasurementUnit.Ingredient,
+		ValidMeasurementUnitID: &validIngredientMeasurementUnit.MeasurementUnit.ID,
+		ValidIngredientID:      &validIngredientMeasurementUnit.Ingredient.ID,
 	}
 }
 
@@ -66,8 +66,8 @@ func BuildFakeValidIngredientMeasurementUnitCreationRequestInputFromValidIngredi
 	return &types.ValidIngredientMeasurementUnitCreationRequestInput{
 		ID:                     validIngredientMeasurementUnit.ID,
 		Notes:                  validIngredientMeasurementUnit.Notes,
-		ValidMeasurementUnitID: validIngredientMeasurementUnit.MeasurementUnit,
-		ValidIngredientID:      validIngredientMeasurementUnit.Ingredient,
+		ValidMeasurementUnitID: validIngredientMeasurementUnit.MeasurementUnit.ID,
+		ValidIngredientID:      validIngredientMeasurementUnit.Ingredient.ID,
 	}
 }
 
@@ -82,7 +82,7 @@ func BuildFakeValidIngredientMeasurementUnitDatabaseCreationInputFromValidIngred
 	return &types.ValidIngredientMeasurementUnitDatabaseCreationInput{
 		ID:                     validIngredientMeasurementUnit.ID,
 		Notes:                  validIngredientMeasurementUnit.Notes,
-		ValidMeasurementUnitID: validIngredientMeasurementUnit.MeasurementUnit,
-		ValidIngredientID:      validIngredientMeasurementUnit.Ingredient,
+		ValidMeasurementUnitID: validIngredientMeasurementUnit.MeasurementUnit.ID,
+		ValidIngredientID:      validIngredientMeasurementUnit.Ingredient.ID,
 	}
 }

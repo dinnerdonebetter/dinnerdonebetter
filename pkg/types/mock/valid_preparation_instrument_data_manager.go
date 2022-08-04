@@ -33,15 +33,15 @@ func (m *ValidPreparationInstrumentDataManager) GetValidPreparationInstruments(c
 	return args.Get(0).(*types.ValidPreparationInstrumentList), args.Error(1)
 }
 
-// GetValidPreparationInstrumentsWithIDs is a mock function.
-func (m *ValidPreparationInstrumentDataManager) GetValidPreparationInstrumentsWithIDs(ctx context.Context, limit uint8, ids []string) ([]*types.ValidPreparationInstrument, error) {
-	args := m.Called(ctx, limit, ids)
-	return args.Get(0).([]*types.ValidPreparationInstrument), args.Error(1)
+// GetValidPreparationInstrumentsForPreparation is a mock function.
+func (m *ValidPreparationInstrumentDataManager) GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (*types.ValidPreparationInstrumentList, error) {
+	args := m.Called(ctx, preparationID, filter)
+	return args.Get(0).(*types.ValidPreparationInstrumentList), args.Error(1)
 }
 
-// GetValidInstrumentsForPreparations is a mock function.
-func (m *ValidPreparationInstrumentDataManager) GetValidInstrumentsForPreparation(ctx context.Context, preparationName string, filter *types.QueryFilter) (*types.ValidPreparationInstrumentList, error) {
-	args := m.Called(ctx, preparationName, filter)
+// GetValidPreparationInstrumentsForInstrument is a mock function.
+func (m *ValidPreparationInstrumentDataManager) GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *types.QueryFilter) (*types.ValidPreparationInstrumentList, error) {
+	args := m.Called(ctx, instrumentID, filter)
 	return args.Get(0).(*types.ValidPreparationInstrumentList), args.Error(1)
 }
 

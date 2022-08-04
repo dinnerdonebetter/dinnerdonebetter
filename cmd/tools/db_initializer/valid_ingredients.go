@@ -69,23 +69,23 @@ var validIngredientCollection = struct {
 	},
 	AllPurposeFlour: &types.ValidIngredientDatabaseCreationInput{
 		ID:   "vi_ap_flour",
-		Name: "AllPurposeFLour",
+		Name: "all purpose flour",
 	},
 	Salt: &types.ValidIngredientDatabaseCreationInput{
 		ID:   "vi_salt",
-		Name: "Salt",
+		Name: "salt",
 	},
 	BakingPowder: &types.ValidIngredientDatabaseCreationInput{
 		ID:   "vi_baking_powder",
-		Name: "BakingPowder",
+		Name: "baking powder",
 	},
 	VegetableShortening: &types.ValidIngredientDatabaseCreationInput{
 		ID:   "vi_vegetable_shortening",
-		Name: "VegetableShortening",
+		Name: "vegetable shortening",
 	},
 	HotWater: &types.ValidIngredientDatabaseCreationInput{
 		ID:   "vi_hot_water",
-		Name: "HotWater",
+		Name: "hot water",
 	},
 	Mozzarella: &types.ValidIngredientDatabaseCreationInput{
 		ID:   "vi_mozzarella",
