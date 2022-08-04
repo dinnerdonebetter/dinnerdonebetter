@@ -352,7 +352,7 @@ func (q *SQLQuerier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx co
 	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
 	query, args := q.buildGetValidIngredientMeasurementUnitsRestrictedByMeasurementUnitIDsQuery(ctx, filter.Limit, []string{validMeasurementUnitID})
 
-	rows, err := q.performReadQuery(ctx, q.db, "valid measurement units for ingredient", query, args)
+	rows, err := q.performReadQuery(ctx, q.db, "valid measurement units for measurement unit", query, args)
 	if err != nil {
 		return nil, observability.PrepareError(err, logger, span, "executing valid ingredient measurement units list retrieval query")
 	}

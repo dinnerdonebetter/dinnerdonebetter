@@ -22,7 +22,8 @@ var validIngredientCollection = struct {
 	BakingPowder,
 	VegetableShortening,
 	HotWater,
-	Mozzarella *types.ValidIngredientDatabaseCreationInput
+	Mozzarella,
+	_ *types.ValidIngredientDatabaseCreationInput
 }{
 	ChickenBreast: &types.ValidIngredientDatabaseCreationInput{
 		ID:          "vi_chicken_breast",

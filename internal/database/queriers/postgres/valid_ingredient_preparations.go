@@ -362,7 +362,7 @@ func (q *SQLQuerier) buildGetValidIngredientPreparationsRestrictedByIDsQuery(ctx
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	query, args, err := q.sqlBuilder.Select(fullValidPreparationInstrumentsTableColumns...).
+	query, args, err := q.sqlBuilder.Select(validIngredientPreparationsTableColumns...).
 		From("valid_ingredient_preparations").
 		Join(validIngredientsOnValidIngredientPreparationsJoinClause).
 		Join(validPreparationsOnValidIngredientPreparationsJoinClause).

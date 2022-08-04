@@ -53,7 +53,7 @@ var validIngredientPreparationCollection = struct {
 		ValidIngredientID:  "vi_garlic",
 	},
 	BlackPepperGrind: &types.ValidIngredientPreparationDatabaseCreationInput{
-		ID:                 "vip_black_pepper_grind",
+		ID:                 "vip_bp_grind",
 		ValidPreparationID: "vprep_grind",
 		ValidIngredientID:  "vi_black_pepper",
 	},

@@ -103,6 +103,8 @@ func scaffoldValidPreparations(ctx context.Context, db database.DataManager) err
 		validPreparationCollection.Grill,
 		validPreparationCollection.Whisk,
 		validPreparationCollection.Mix,
+		validPreparationCollection.Mince,
+		validPreparationCollection.Grind,
 		validPreparationCollection.Knead,
 		validPreparationCollection.Divide,
 		validPreparationCollection.Flatten,
