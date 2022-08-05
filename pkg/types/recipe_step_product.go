@@ -63,7 +63,7 @@ type (
 		Name                 string  `json:"name"`
 		Type                 string  `json:"type"`
 		QuantityNotes        string  `json:"quantityNotes"`
-		MeasurementUnitID    string  `json:"measurementUnitID"`
+		MeasurementUnitID    *string `json:"measurementUnitID"`
 		BelongsToRecipeStep  string  `json:"-"`
 		MinimumQuantityValue float32 `json:"minimumQuantityValue"`
 		MaximumQuantityValue float32 `json:"maximumQuantityValue"`
@@ -75,7 +75,7 @@ type (
 		ID                   string  `json:"id"`
 		Name                 string  `json:"name"`
 		Type                 string  `json:"type"`
-		MeasurementUnitID    string  `json:"measurementUnitID"`
+		MeasurementUnitID    *string `json:"measurementUnitID"`
 		QuantityNotes        string  `json:"quantityNotes"`
 		BelongsToRecipeStep  string  `json:"belongsToRecipeStep"`
 		MinimumQuantityValue float32 `json:"minimumQuantityValue"`
@@ -152,7 +152,6 @@ func (x *RecipeStepProductCreationRequestInput) ValidateWithContext(ctx context.
 		x,
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Type, validation.Required),
-		validation.Field(&x.MeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantityValue, validation.Required),
 	)
 }
@@ -167,7 +166,6 @@ func (x *RecipeStepProductDatabaseCreationInput) ValidateWithContext(ctx context
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Type, validation.In(RecipeStepProductIngredientType, RecipeStepProductInstrumentType)),
-		validation.Field(&x.MeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantityValue, validation.Required),
 	)
 }
