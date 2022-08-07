@@ -33,22 +33,22 @@ func (s *TestSuite) TestWebhooks_Creating() {
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
 			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
-			createdWebhook, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			createdWebhook, err := testClients.user.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
 			t.Logf("created webhook %s", createdWebhook.ID)
 
-			createdWebhook, err = testClients.main.GetWebhook(ctx, createdWebhook.ID)
+			createdWebhook, err = testClients.user.GetWebhook(ctx, createdWebhook.ID)
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 
 			// assert webhook equality
 			checkWebhookEquality(t, exampleWebhook, createdWebhook)
 
-			actual, err := testClients.main.GetWebhook(ctx, createdWebhook.ID)
+			actual, err := testClients.user.GetWebhook(ctx, createdWebhook.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 			checkWebhookEquality(t, exampleWebhook, actual)
 
 			// Clean up.
-			assert.NoError(t, testClients.main.ArchiveWebhook(ctx, createdWebhook.ID))
+			assert.NoError(t, testClients.user.ArchiveWebhook(ctx, createdWebhook.ID))
 		}
 	})
 
@@ -62,18 +62,18 @@ func (s *TestSuite) TestWebhooks_Creating() {
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
 			exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
-			createdWebhook, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+			createdWebhook, err := testClients.user.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
 
 			// assert webhook equality
 			checkWebhookEquality(t, exampleWebhook, createdWebhook)
 
-			actual, err := testClients.main.GetWebhook(ctx, createdWebhook.ID)
+			actual, err := testClients.user.GetWebhook(ctx, createdWebhook.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 			checkWebhookEquality(t, exampleWebhook, actual)
 
 			// Clean up.
-			assert.NoError(t, testClients.main.ArchiveWebhook(ctx, createdWebhook.ID))
+			assert.NoError(t, testClients.user.ArchiveWebhook(ctx, createdWebhook.ID))
 		}
 	})
 }
@@ -87,7 +87,7 @@ func (s *TestSuite) TestWebhooks_Reading_Returns404ForNonexistentWebhook() {
 			defer span.End()
 
 			// Fetch webhook.
-			_, err := testClients.main.GetWebhook(ctx, nonexistentID)
+			_, err := testClients.user.GetWebhook(ctx, nonexistentID)
 			assert.Error(t, err)
 		}
 	})
@@ -107,20 +107,20 @@ func (s *TestSuite) TestWebhooks_Listing() {
 				// Create webhook.
 				exampleWebhook := fakes.BuildFakeWebhook()
 				exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
-				createdWebhook, webhookCreationErr := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+				createdWebhook, webhookCreationErr := testClients.user.CreateWebhook(ctx, exampleWebhookInput)
 				require.NoError(t, webhookCreationErr)
 
 				expected = append(expected, createdWebhook)
 			}
 
 			// Assert webhook list equality.
-			actual, err := testClients.main.GetWebhooks(ctx, nil)
+			actual, err := testClients.user.GetWebhooks(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(t, len(expected) <= len(actual.Webhooks))
 
 			// Clean up.
 			for _, webhook := range actual.Webhooks {
-				assert.NoError(t, testClients.main.ArchiveWebhook(ctx, webhook.ID))
+				assert.NoError(t, testClients.user.ArchiveWebhook(ctx, webhook.ID))
 			}
 		}
 	})
@@ -138,7 +138,7 @@ func (s *TestSuite) TestWebhooks_Listing() {
 				// Create webhook.
 				exampleWebhook := fakes.BuildFakeWebhook()
 				exampleWebhookInput := fakes.BuildFakeWebhookCreationInputFromWebhook(exampleWebhook)
-				createdWebhook, err := testClients.main.CreateWebhook(ctx, exampleWebhookInput)
+				createdWebhook, err := testClients.user.CreateWebhook(ctx, exampleWebhookInput)
 				require.NoError(t, err)
 
 				requireNotNilAndNoProblems(t, createdWebhook, err)
@@ -147,13 +147,13 @@ func (s *TestSuite) TestWebhooks_Listing() {
 			}
 
 			// Assert webhook list equality.
-			actual, err := testClients.main.GetWebhooks(ctx, nil)
+			actual, err := testClients.user.GetWebhooks(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(t, len(expected) <= len(actual.Webhooks))
 
 			// Clean up.
 			for _, webhook := range actual.Webhooks {
-				assert.NoError(t, testClients.main.ArchiveWebhook(ctx, webhook.ID))
+				assert.NoError(t, testClients.user.ArchiveWebhook(ctx, webhook.ID))
 			}
 		}
 	})
@@ -167,7 +167,7 @@ func (s *TestSuite) TestWebhooks_Archiving_Returns404ForNonexistentWebhook() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			assert.Error(t, testClients.main.ArchiveWebhook(ctx, nonexistentID))
+			assert.Error(t, testClients.user.ArchiveWebhook(ctx, nonexistentID))
 		}
 	})
 }

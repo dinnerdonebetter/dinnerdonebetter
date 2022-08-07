@@ -345,7 +345,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientPreparationsPermission)).
 				Get(root, s.validIngredientPreparationsService.ListHandler)
 
-			// TODO: integration test this route
 			validIngredientPreparationsByIngredientIDRouteParam := fmt.Sprintf("/by_ingredient%s", buildURLVarChunk(validingredientpreparationsservice.ValidIngredientIDURIParamKey, ""))
 			validIngredientPreparationsRouter.Route(validIngredientPreparationsByIngredientIDRouteParam, func(byValidPreparationIDRouter routing.Router) {
 				byValidPreparationIDRouter.
@@ -353,7 +352,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					Get(root, s.validIngredientPreparationsService.SearchByIngredientHandler)
 			})
 
-			// TODO: integration test this route
 			validIngredientPreparationsByPreparationIDRouteParam := fmt.Sprintf("/by_preparation%s", buildURLVarChunk(validingredientpreparationsservice.ValidPreparationIDURIParamKey, ""))
 			validIngredientPreparationsRouter.Route(validIngredientPreparationsByPreparationIDRouteParam, func(byValidPreparationIDRouter routing.Router) {
 				byValidPreparationIDRouter.
@@ -385,7 +383,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationInstrumentsPermission)).
 				Get(root, s.validPreparationInstrumentsService.ListHandler)
 
-			// TODO: integration test this route
 			validPreparationInstrumentsByPreparationIDRouteParam := fmt.Sprintf("/by_preparation%s", buildURLVarChunk(validpreparationinstrumentsservice.ValidPreparationIDURIParamKey, ""))
 			validPreparationInstrumentsRouter.Route(validPreparationInstrumentsByPreparationIDRouteParam, func(byValidPreparationIDRouter routing.Router) {
 				byValidPreparationIDRouter.
@@ -393,7 +390,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					Get(root, s.validPreparationInstrumentsService.SearchByPreparationHandler)
 			})
 
-			// TODO: integration test this route
 			validPreparationInstrumentsByInstrumentIDRouteParam := fmt.Sprintf("/by_instrument%s", buildURLVarChunk(validpreparationinstrumentsservice.ValidInstrumentIDURIParamKey, ""))
 			validPreparationInstrumentsRouter.Route(validPreparationInstrumentsByInstrumentIDRouteParam, func(byValidPreparationIDRouter routing.Router) {
 				byValidPreparationIDRouter.
@@ -427,7 +423,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidIngredientMeasurementUnitsPermission)).
 				Get(root, s.validIngredientMeasurementUnitsService.ListHandler)
 
-			// TODO: integration test this route
 			validIngredientMeasurementUnitsByIngredientRouteParam := fmt.Sprintf("/by_ingredient%s", buildURLVarChunk(validingredientmeasurementunitsservice.ValidIngredientIDURIParamKey, ""))
 			validIngredientMeasurementUnitRouter.Route(validIngredientMeasurementUnitsByIngredientRouteParam, func(byValidIngredientIDRouter routing.Router) {
 				byValidIngredientIDRouter.
@@ -435,7 +430,6 @@ func (s *HTTPServer) setupRouter(ctx context.Context, router routing.Router, met
 					Get(root, s.validIngredientMeasurementUnitsService.SearchByIngredientHandler)
 			})
 
-			// TODO: integration test this route
 			validIngredientMeasurementUnitsByMeasurementUnitRouteParam := fmt.Sprintf("/by_measurement_unit%s", buildURLVarChunk(validingredientmeasurementunitsservice.ValidMeasurementUnitIDURIParamKey, ""))
 			validIngredientMeasurementUnitRouter.Route(validIngredientMeasurementUnitsByMeasurementUnitRouteParam, func(byValidIngredientIDRouter routing.Router) {
 				byValidIngredientIDRouter.

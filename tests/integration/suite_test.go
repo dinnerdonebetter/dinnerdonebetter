@@ -26,7 +26,7 @@ var (
 )
 
 type testClientWrapper struct {
-	main     *httpclient.Client
+	user     *httpclient.Client
 	admin    *httpclient.Client
 	authType string
 }
@@ -99,8 +99,8 @@ func (s *TestSuite) eachClientExcept(exceptions ...string) map[string]*testClien
 	t := s.T()
 
 	clients := map[string]*testClientWrapper{
-		cookieAuthType: {authType: cookieAuthType, main: s.cookieClient, admin: s.adminCookieClient},
-		pasetoAuthType: {authType: pasetoAuthType, main: s.pasetoClient, admin: s.adminPASETOClient},
+		cookieAuthType: {authType: cookieAuthType, user: s.cookieClient, admin: s.adminCookieClient},
+		pasetoAuthType: {authType: pasetoAuthType, user: s.pasetoClient, admin: s.adminPASETOClient},
 	}
 
 	for _, name := range exceptions {
