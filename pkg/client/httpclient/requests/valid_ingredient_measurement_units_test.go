@@ -87,6 +87,98 @@ func TestBuilder_BuildGetValidIngredientMeasurementUnitsRequest(T *testing.T) {
 	})
 }
 
+func TestBuilder_BuildGetValidIngredientMeasurementUnitsForIngredientRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPathFormat = "/api/v1/valid_ingredient_measurement_units/by_ingredient/%s"
+
+	exampleIngredient := fakes.BuildFakeValidIngredient()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		filter := (*types.QueryFilter)(nil)
+		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPathFormat, exampleIngredient.ID)
+
+		actual, err := helper.builder.BuildGetValidIngredientMeasurementUnitsForIngredientRequest(helper.ctx, exampleIngredient.ID, filter)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid ID", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		filter := (*types.QueryFilter)(nil)
+
+		actual, err := helper.builder.BuildGetValidIngredientMeasurementUnitsForIngredientRequest(helper.ctx, "", filter)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+
+		filter := (*types.QueryFilter)(nil)
+
+		actual, err := helper.builder.BuildGetValidIngredientMeasurementUnitsForIngredientRequest(helper.ctx, exampleIngredient.ID, filter)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
+func TestBuilder_BuildGetValidIngredientMeasurementUnitsForMeasurementUnitRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPathFormat = "/api/v1/valid_ingredient_measurement_units/by_measurement_unit/%s"
+
+	exampleMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		filter := (*types.QueryFilter)(nil)
+		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPathFormat, exampleMeasurementUnit.ID)
+
+		actual, err := helper.builder.BuildGetValidIngredientMeasurementUnitsForMeasurementUnitRequest(helper.ctx, exampleMeasurementUnit.ID, filter)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid ID", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		filter := (*types.QueryFilter)(nil)
+
+		actual, err := helper.builder.BuildGetValidIngredientMeasurementUnitsForMeasurementUnitRequest(helper.ctx, "", filter)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+
+		filter := (*types.QueryFilter)(nil)
+
+		actual, err := helper.builder.BuildGetValidIngredientMeasurementUnitsForMeasurementUnitRequest(helper.ctx, exampleMeasurementUnit.ID, filter)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
 func TestBuilder_BuildCreateValidIngredientMeasurementUnitRequest(T *testing.T) {
 	T.Parallel()
 

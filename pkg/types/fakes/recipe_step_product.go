@@ -82,7 +82,7 @@ func BuildFakeRecipeStepProductCreationRequestInputFromRecipeStepProduct(recipeS
 		MinimumQuantityValue: recipeStepProduct.MinimumQuantityValue,
 		MaximumQuantityValue: recipeStepProduct.MaximumQuantityValue,
 		QuantityNotes:        recipeStepProduct.QuantityNotes,
-		MeasurementUnitID:    recipeStepProduct.MeasurementUnit.ID,
+		MeasurementUnitID:    &recipeStepProduct.MeasurementUnit.ID,
 		BelongsToRecipeStep:  recipeStepProduct.BelongsToRecipeStep,
 	}
 }
@@ -102,7 +102,7 @@ func BuildFakeRecipeStepProductDatabaseCreationInputFromRecipeStepProduct(recipe
 		MinimumQuantityValue: recipeStepProduct.MinimumQuantityValue,
 		MaximumQuantityValue: recipeStepProduct.MaximumQuantityValue,
 		QuantityNotes:        recipeStepProduct.QuantityNotes,
-		MeasurementUnitID:    recipeStepProduct.MeasurementUnit.ID,
+		MeasurementUnitID:    &recipeStepProduct.MeasurementUnit.ID,
 		BelongsToRecipeStep:  recipeStepProduct.BelongsToRecipeStep,
 	}
 }

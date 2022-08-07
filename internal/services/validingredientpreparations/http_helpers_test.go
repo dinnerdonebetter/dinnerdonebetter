@@ -22,6 +22,8 @@ type validIngredientPreparationsServiceHTTPRoutesTestHelper struct {
 	service                           *service
 	exampleUser                       *types.User
 	exampleHousehold                  *types.Household
+	exampleValidIngredient            *types.ValidIngredient
+	exampleValidPreparation           *types.ValidPreparation
 	exampleValidIngredientPreparation *types.ValidIngredientPreparation
 	exampleCreationInput              *types.ValidIngredientPreparationCreationRequestInput
 	exampleUpdateInput                *types.ValidIngredientPreparationUpdateRequestInput
@@ -37,12 +39,22 @@ func buildTestHelper(t *testing.T) *validIngredientPreparationsServiceHTTPRoutes
 	helper.exampleUser = fakes.BuildFakeUser()
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
+	helper.exampleValidIngredient = fakes.BuildFakeValidIngredient()
+	helper.exampleValidPreparation = fakes.BuildFakeValidPreparation()
 	helper.exampleValidIngredientPreparation = fakes.BuildFakeValidIngredientPreparation()
 	helper.exampleCreationInput = fakes.BuildFakeValidIngredientPreparationCreationRequestInputFromValidIngredientPreparation(helper.exampleValidIngredientPreparation)
 	helper.exampleUpdateInput = fakes.BuildFakeValidIngredientPreparationUpdateRequestInputFromValidIngredientPreparation(helper.exampleValidIngredientPreparation)
 
 	helper.service.validIngredientPreparationIDFetcher = func(*http.Request) string {
 		return helper.exampleValidIngredientPreparation.ID
+	}
+
+	helper.service.validIngredientIDFetcher = func(*http.Request) string {
+		return helper.exampleValidIngredient.ID
+	}
+
+	helper.service.validPreparationIDFetcher = func(*http.Request) string {
+		return helper.exampleValidPreparation.ID
 	}
 
 	sessionCtxData := &types.SessionContextData{

@@ -87,6 +87,98 @@ func TestBuilder_BuildGetValidIngredientPreparationsRequest(T *testing.T) {
 	})
 }
 
+func TestBuilder_BuildGetValidIngredientPreparationsForIngredientRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPathFormat = "/api/v1/valid_ingredient_preparations/by_ingredient/%s"
+
+	exampleIngredient := fakes.BuildFakeValidIngredient()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		filter := (*types.QueryFilter)(nil)
+		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPathFormat, exampleIngredient.ID)
+
+		actual, err := helper.builder.BuildGetValidIngredientPreparationsForIngredientRequest(helper.ctx, exampleIngredient.ID, filter)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid ID", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		filter := (*types.QueryFilter)(nil)
+
+		actual, err := helper.builder.BuildGetValidIngredientPreparationsForIngredientRequest(helper.ctx, "", filter)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+
+		filter := (*types.QueryFilter)(nil)
+
+		actual, err := helper.builder.BuildGetValidIngredientPreparationsForIngredientRequest(helper.ctx, exampleIngredient.ID, filter)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
+func TestBuilder_BuildGetValidIngredientPreparationsForPreparationRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPathFormat = "/api/v1/valid_ingredient_preparations/by_preparation/%s"
+
+	examplePreparation := fakes.BuildFakeValidPreparation()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		filter := (*types.QueryFilter)(nil)
+		spec := newRequestSpec(true, http.MethodGet, "includeArchived=false&limit=20&page=1&sortBy=asc", expectedPathFormat, examplePreparation.ID)
+
+		actual, err := helper.builder.BuildGetValidIngredientPreparationsForPreparationRequest(helper.ctx, examplePreparation.ID, filter)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid ID", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		filter := (*types.QueryFilter)(nil)
+
+		actual, err := helper.builder.BuildGetValidIngredientPreparationsForPreparationRequest(helper.ctx, "", filter)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+
+		filter := (*types.QueryFilter)(nil)
+
+		actual, err := helper.builder.BuildGetValidIngredientPreparationsForPreparationRequest(helper.ctx, examplePreparation.ID, filter)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
 func TestBuilder_BuildCreateValidIngredientPreparationRequest(T *testing.T) {
 	T.Parallel()
 

@@ -66,6 +66,68 @@ func (b *Builder) BuildGetValidPreparationInstrumentsRequest(ctx context.Context
 	return req, nil
 }
 
+// BuildGetValidPreparationInstrumentsForPreparationRequest builds an HTTP request for fetching a list of valid preparation instruments.
+func (b *Builder) BuildGetValidPreparationInstrumentsForPreparationRequest(ctx context.Context, validPreparationID string, filter *types.QueryFilter) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := filter.AttachToLogger(b.logger)
+
+	if validPreparationID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
+	tracing.AttachValidIngredientIDToSpan(span, validPreparationID)
+
+	uri := b.BuildURL(
+		ctx,
+		filter.ToValues(),
+		validPreparationInstrumentsBasePath,
+		"by_preparation",
+		validPreparationID,
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building user status request")
+	}
+
+	return req, nil
+}
+
+// BuildGetValidPreparationInstrumentsForInstrumentRequest builds an HTTP request for fetching a list of valid preparation instruments.
+func (b *Builder) BuildGetValidPreparationInstrumentsForInstrumentRequest(ctx context.Context, validInstrumentID string, filter *types.QueryFilter) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := filter.AttachToLogger(b.logger)
+
+	if validInstrumentID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidPreparationIDKey, validInstrumentID)
+	tracing.AttachValidIngredientIDToSpan(span, validInstrumentID)
+
+	uri := b.BuildURL(
+		ctx,
+		filter.ToValues(),
+		validPreparationInstrumentsBasePath,
+		"by_instrument",
+		validInstrumentID,
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
+	if err != nil {
+		return nil, observability.PrepareError(err, logger, span, "building user status request")
+	}
+
+	return req, nil
+}
+
 // BuildCreateValidPreparationInstrumentRequest builds an HTTP request for creating a valid ingredient preparation.
 func (b *Builder) BuildCreateValidPreparationInstrumentRequest(ctx context.Context, input *types.ValidPreparationInstrumentCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
