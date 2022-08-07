@@ -15,6 +15,21 @@ import (
 	"github.com/prixfixeco/api_server/internal/observability/logging/zerolog"
 )
 
+const (
+	gcpConfigFilePathEnvVarKey           = "CONFIGURATION_FILEPATH"
+	gcpPortEnvVarKey                     = "PORT"
+	gcpDatabaseSocketDirEnvVarKey        = "DB_SOCKET_DIR"
+	gcpDatabaseUserEnvVarKey             = "PRIXFIXE_DATABASE_USER"
+	gcpDatabaseUserPasswordEnvVarKey     = "PRIXFIXE_DATABASE_PASSWORD"
+	gcpDatabaseNameEnvVarKey             = "PRIXFIXE_DATABASE_NAME"
+	gcpDatabaseInstanceConnNameEnvVarKey = "PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME"
+	gcpCookieHashKeyEnvVarKey            = "PRIXFIXE_COOKIE_HASH_KEY"
+	gcpCookieBlockKeyEnvVarKey           = "PRIXFIXE_COOKIE_BLOCK_KEY"
+	gcpPASETOLocalKeyEnvVarKey           = "PRIXFIXE_PASETO_LOCAL_KEY"
+	gcpSendgridTokenEnvVarKey            = "PRIXFIXE_SENDGRID_API_TOKEN"
+	gcpSegmentTokenEnvVarKey             = "PRIXFIXE_SEGMENT_API_TOKEN"
+)
+
 // GetAPIServerConfigFromGoogleCloudRunEnvironment fetches and InstanceConfig from GCP Secret Manager.
 func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*InstanceConfig, error) {
 	logger := zerolog.NewZerologLogger()
@@ -26,7 +41,7 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*Inst
 	}
 
 	var cfg *InstanceConfig
-	configFilepath := os.Getenv("CONFIGURATION_FILEPATH")
+	configFilepath := os.Getenv(gcpConfigFilePathEnvVarKey)
 
 	configBytes, configReadErr := os.ReadFile(configFilepath)
 	if configReadErr != nil {
@@ -37,14 +52,14 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*Inst
 		return nil, encodeErr
 	}
 
-	rawPort := os.Getenv("PORT")
+	rawPort := os.Getenv(gcpPortEnvVarKey)
 	port, portParseErr := strconv.ParseUint(rawPort, 10, 64)
 	if portParseErr != nil {
 		return nil, fmt.Errorf("parsing port: %w", portParseErr)
 	}
 	cfg.Server.HTTPPort = uint16(port)
 
-	socketDir, isSet := os.LookupEnv("DB_SOCKET_DIR")
+	socketDir, isSet := os.LookupEnv(gcpDatabaseSocketDirEnvVarKey)
 	if !isSet {
 		socketDir = "/cloudsql"
 	}
@@ -52,17 +67,17 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*Inst
 	// fetch supplementary data from env vars
 	dbURI := fmt.Sprintf(
 		"user=%s password=%s database=%s host=%s/%s",
-		os.Getenv("PRIXFIXE_DATABASE_USER"),
-		os.Getenv("PRIXFIXE_DATABASE_PASSWORD"),
-		os.Getenv("PRIXFIXE_DATABASE_NAME"),
+		os.Getenv(gcpDatabaseUserEnvVarKey),
+		os.Getenv(gcpDatabaseUserPasswordEnvVarKey),
+		os.Getenv(gcpDatabaseNameEnvVarKey),
 		socketDir,
-		os.Getenv("PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME"),
+		os.Getenv(gcpDatabaseInstanceConnNameEnvVarKey),
 	)
 
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(dbURI)
-	cfg.Services.Auth.Cookies.HashKey = os.Getenv("PRIXFIXE_COOKIE_HASH_KEY")
-	cfg.Services.Auth.Cookies.BlockKey = os.Getenv("PRIXFIXE_COOKIE_BLOCK_KEY")
-	cfg.Services.Auth.PASETO.LocalModeKey = []byte(os.Getenv("PRIXFIXE_PASETO_LOCAL_KEY"))
+	cfg.Services.Auth.Cookies.HashKey = os.Getenv(gcpCookieHashKeyEnvVarKey)
+	cfg.Services.Auth.Cookies.BlockKey = os.Getenv(gcpCookieBlockKeyEnvVarKey)
+	cfg.Services.Auth.PASETO.LocalModeKey = []byte(os.Getenv(gcpPASETOLocalKeyEnvVarKey))
 
 	changesTopic, dataChangesNameFetchErr := fetchSecretFromSecretStore(ctx, client, "data_changes_topic_name")
 	if dataChangesNameFetchErr != nil {
@@ -72,8 +87,8 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*Inst
 	dataChangesTopicName := string(changesTopic)
 	cfg.Events.Publishers.PubSubConfig.TopicName = dataChangesTopicName
 
-	cfg.Email.Sendgrid.APIToken = os.Getenv("PRIXFIXE_SENDGRID_API_TOKEN")
-	cfg.CustomerData.APIToken = os.Getenv("PRIXFIXE_SEGMENT_API_TOKEN")
+	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
+	cfg.CustomerData.APIToken = os.Getenv(gcpSegmentTokenEnvVarKey)
 
 	cfg.Services.ValidMeasurementUnits.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ValidInstruments.DataChangesTopicName = dataChangesTopicName
