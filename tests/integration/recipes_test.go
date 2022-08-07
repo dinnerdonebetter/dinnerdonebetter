@@ -269,7 +269,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						ID:                   product.ID,
 						Name:                 product.Name,
 						Type:                 product.Type,
-						MeasurementUnitID:    product.MeasurementUnit.ID,
+						MeasurementUnitID:    &product.MeasurementUnit.ID,
 						QuantityNotes:        product.QuantityNotes,
 						BelongsToRecipeStep:  product.BelongsToRecipeStep,
 						MinimumQuantityValue: product.MinimumQuantityValue,

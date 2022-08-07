@@ -178,7 +178,7 @@ var (
 		{
 			Version:     33,
 			Description: "bridge table unique constraint improvements",
-			Script:      fetchMigration("00033_better_bridge_table_constaints"),
+			Script:      fetchMigration("00033_better_bridge_table_constraints"),
 		},
 	}
 )
