@@ -75,12 +75,16 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*Inst
 	cfg.Email.Sendgrid.APIToken = os.Getenv("PRIXFIXE_SENDGRID_API_TOKEN")
 	cfg.CustomerData.APIToken = os.Getenv("PRIXFIXE_SEGMENT_API_TOKEN")
 
+	cfg.Services.ValidMeasurementUnits.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ValidInstruments.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ValidIngredients.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ValidPreparations.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ValidIngredientPreparations.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.ValidPreparationInstruments.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.ValidInstrumentMeasurementUnits.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.Recipes.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.RecipeSteps.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.RecipeStepProducts.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.RecipeStepInstruments.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.RecipeStepIngredients.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.Meals.DataChangesTopicName = dataChangesTopicName
