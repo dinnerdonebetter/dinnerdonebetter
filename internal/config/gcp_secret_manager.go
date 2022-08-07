@@ -20,14 +20,17 @@ const (
 	gcpPortEnvVarKey                     = "PORT"
 	gcpDatabaseSocketDirEnvVarKey        = "DB_SOCKET_DIR"
 	gcpDatabaseUserEnvVarKey             = "PRIXFIXE_DATABASE_USER"
-	gcpDatabaseUserPasswordEnvVarKey     = "PRIXFIXE_DATABASE_PASSWORD"
 	gcpDatabaseNameEnvVarKey             = "PRIXFIXE_DATABASE_NAME"
 	gcpDatabaseInstanceConnNameEnvVarKey = "PRIXFIXE_DATABASE_INSTANCE_CONNECTION_NAME"
 	gcpCookieHashKeyEnvVarKey            = "PRIXFIXE_COOKIE_HASH_KEY"
 	gcpCookieBlockKeyEnvVarKey           = "PRIXFIXE_COOKIE_BLOCK_KEY"
 	gcpPASETOLocalKeyEnvVarKey           = "PRIXFIXE_PASETO_LOCAL_KEY"
-	gcpSendgridTokenEnvVarKey            = "PRIXFIXE_SENDGRID_API_TOKEN"
-	gcpSegmentTokenEnvVarKey             = "PRIXFIXE_SEGMENT_API_TOKEN"
+	/* #nosec G101 */
+	gcpDatabaseUserPasswordEnvVarKey = "PRIXFIXE_DATABASE_PASSWORD"
+	/* #nosec G101 */
+	gcpSendgridTokenEnvVarKey = "PRIXFIXE_SENDGRID_API_TOKEN"
+	/* #nosec G101 */
+	gcpSegmentTokenEnvVarKey = "PRIXFIXE_SEGMENT_API_TOKEN"
 )
 
 // GetAPIServerConfigFromGoogleCloudRunEnvironment fetches and InstanceConfig from GCP Secret Manager.
